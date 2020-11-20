@@ -94,6 +94,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                 }
+
                 if (CompressedMods.Count > 0)
                 {
                     ActionText = M3L.GetString(M3L.string_selectModsToImportIntoModManagerLibrary);
@@ -108,7 +109,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 else if (TextureFilesImported)
                 {
                     CancelButtonText = M3L.GetString(M3L.string_close);
-                    NoModSelectedText = M3L.GetString(M3L.string_interp_dialogImportedALOTMainToTextureLibrary, ScanningFile, Utilities.GetALOTInstallerTextureLibraryDirectory());
+                    NoModSelectedText = M3L.GetString(M3L.string_interp_dialogImportedALOTMainToTextureLibrary,
+                        ScanningFile, Utilities.GetALOTInstallerTextureLibraryDirectory());
                     ActionText = M3L.GetString(M3L.string_importCompleted);
                 }
                 else
@@ -131,22 +133,28 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                 var hasAnyImproperlyPackedMods =
                     CompressedMods.Any(x => x.CheckDeployedWithM3 && !x.DeployedWithM3);
-                Analytics.TrackEvent(@"Detected improperly packed M3 mod", new Dictionary<string, string>()
-                {
-                    {@"Archive name", Path.GetFileName(filepath)}
-                });
-                if (hasAnyImproperlyPackedMods && !Flighting.IsFeatureEnabled(@"passive_checkM3DeployedArchives"))
-                {
-                    
-                    Log.Error(@"A mod in the archive was not deployed using M3 and targets 6.0 or higher! You should contact the developer and tell them to deploy it properly.");
-                    M3L.ShowDialog(Window.GetWindow(this),
-                        M3L.GetString(M3L.string_dialog_improperlyDeployedMod),
-                        M3L.GetString(M3L.string_improperlyDeployedMod), MessageBoxButton.OK, MessageBoxImage.Warning);
-                }
-            };
-            ActionText = M3L.GetString(M3L.string_interp_scanningX, Path.GetFileName(filepath));
 
-            nbw.RunWorkerAsync(filepath);
+                if (hasAnyImproperlyPackedMods)
+                {
+                    Analytics.TrackEvent(@"Detected improperly packed M3 mod", new Dictionary<string, string>()
+                    {
+                        {@"Archive name", Path.GetFileName(filepath)}
+                    });
+                    Log.Error(
+                        @"A mod in the archive was not deployed using M3 and targets 6.0 or higher! You should contact the developer and tell them to deploy it properly.");
+                    if (!Flighting.IsFeatureEnabled(@"passive_checkM3DeployedArchives"))
+                    {
+                        M3L.ShowDialog(Window.GetWindow(this),
+                            M3L.GetString(M3L.string_dialog_improperlyDeployedMod),
+                            M3L.GetString(M3L.string_improperlyDeployedMod), MessageBoxButton.OK,
+                            MessageBoxImage.Warning);
+                    }
+                }
+
+                ActionText = M3L.GetString(M3L.string_interp_scanningX, Path.GetFileName(filepath));
+
+                nbw.RunWorkerAsync(filepath);
+            };
         }
 
 

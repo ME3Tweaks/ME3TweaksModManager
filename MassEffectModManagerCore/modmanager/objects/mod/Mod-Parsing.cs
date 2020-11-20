@@ -686,6 +686,7 @@ namespace MassEffectModManagerCore.modmanager
             CLog.Information(@"Parsing mod using moddesc target: " + ModDescTargetVersion, Settings.LogModStartup);
 
             #region Header Loops
+            
             #region BASEGAME and OFFICIAL HEADERS
 
             var supportedOfficialHeaders = ModJob.GetSupportedNonCustomDLCHeaders(Game);
@@ -801,8 +802,6 @@ namespace MassEffectModManagerCore.modmanager
                             CLog.Information($@"Parsing addfilesreadonlytargets on {headerAsString}. Found {addFilesReadOnlySplit.Count} items in list", Settings.LogModStartup);
                         }
 
-                        //TODO: Bini support
-
                         //Ensure TESTPATCH is supported by making sure we are at least on ModDesc 3 if using TESTPATCH header.
                         //ME3 only
                         if (ModDescTargetVersion < 3 && header == ModJob.JobHeader.TESTPATCH)
@@ -823,8 +822,6 @@ namespace MassEffectModManagerCore.modmanager
                     headerJob.JobDirectory = jobSubdirectory.Replace('/', '\\');
                     headerJob.RequirementText = jobRequirement;
 
-
-
                     //Build replacements 
                     int jobDirLength = jobSubdirectory == @"." ? 0 : jobSubdirectory.Length;
                     if (replaceFilesSourceSplit != null)
@@ -833,7 +830,7 @@ namespace MassEffectModManagerCore.modmanager
                         {
                             if (directoryMatchesGameStructure)
                             {
-                                var sourceDirectory = FilesystemInterposer.PathCombine(IsInArchive, ModPath, jobSubdirectory, replaceFilesSourceSplit[i]);
+                                var sourceDirectory = FilesystemInterposer.PathCombine(IsInArchive, ModPath, jobSubdirectory, replaceFilesSourceSplit[i]).Replace('/', '\\');
                                 var destGameDirectory = replaceFilesTargetSplit[i];
                                 if (FilesystemInterposer.DirectoryExists(sourceDirectory, Archive))
                                 {
@@ -843,7 +840,7 @@ namespace MassEffectModManagerCore.modmanager
                                         if (GameFileExtensions.Contains(Path.GetExtension(file), StringComparer.InvariantCultureIgnoreCase))
                                         {
                                             var destFile = destGameDirectory + file.Substring(replaceFilesSourceSplit[i].Length);
-                                            CLog.Information($@"Adding file to job installation queue: {file} => {destFile}", Settings.LogModStartup);
+                                            CLog.Information($@"Adding file to job replace files list: {file} => {destFile}", Settings.LogModStartup);
                                             string failurereason = headerJob.AddPreparsedFileToInstall(destFile, file, this);
                                             if (failurereason != null)
                                             {
@@ -1358,6 +1355,8 @@ namespace MassEffectModManagerCore.modmanager
             #endregion
 
             #endregion
+
+
             #region Additional Mod Items
 
             //Required DLC (Mod Manager 5.0)
@@ -1576,7 +1575,6 @@ namespace MassEffectModManagerCore.modmanager
 
                     // Custom DLC sourcedirs/destdirs are not checked as they are automatically scoped. However,
                     // their alternates are scoped.
-
                     List<string> allPossibleTargets = new List<string>();
                     allPossibleTargets.AddRange(job.FilesToInstall.Keys);
                     if (job.Header == ModJob.JobHeader.CUSTOMDLC)
