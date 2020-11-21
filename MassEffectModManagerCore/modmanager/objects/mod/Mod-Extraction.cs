@@ -65,7 +65,7 @@ namespace MassEffectModManagerCore.modmanager
             foreach (var item in itemsToExtract)
             {
                 requiredSize += (long)item.Size;
-                Debug.WriteLine($@"Add to size: {item.Size} {item.FileName}");
+                //Debug.WriteLine($@"Add to size: {item.Size} {item.FileName}");
             }
 
 

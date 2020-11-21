@@ -547,6 +547,7 @@ namespace MassEffectModManagerCore.modmanager
 
                 scopes.AllowedSilos.Add(@"Binaries" + Path.DirectorySeparatorChar); //Exec files
                 scopes.AllowedSilos.Add(@"BioGame" + Path.DirectorySeparatorChar); // Stuff in biogame
+                scopes.AllowedSilos.Add(@"data" + Path.DirectorySeparatorChar); // Stuff in biogame
                 scopes.DisallowedSilos.Add(dlcDir); // BASEGAME is not allowed into DLC
                 scopes.AllowedSilos.Add(@"Engine" + Path.DirectorySeparatorChar); //Shaders
             }
