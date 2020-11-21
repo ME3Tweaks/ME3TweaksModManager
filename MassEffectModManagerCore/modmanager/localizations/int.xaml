@@ -822,6 +822,7 @@
     <system:String xml:space="preserve" x:Key="string_tooltip_importMods">Imports the selected mods into your mod library.&#10;Importing provides additional features in Mod Manager:&#10; - Update checks for mods (if supported)&#10; - Compression on import (if supported)&#10; - Restoring mod from ME3Tweaks (if supported)</system:String>
     <system:String  x:Key="string_tooltip_launchesALOTInstaller">Launches ALOT Installer</system:String>
     <system:String xml:space="preserve" x:Key="string_tooltip_compressPackages">Compresses package files on import, reducing their file size. This is an experimental feature - if mods experience issues, you should not use this option.&#10;This option is not available for the following scenarios due to complexity:&#10; - Direct installation from archive&#10; - Mass Effect 1 files&#10;&#10;This feature can be disabled by ME3Tweaks when Mod Manager checks into the server</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_installModArchiveWindow">Directly installs the mod to the current active target for the relevant game.&#10;This will NOT import it into the mod library</system:String>
 
     <!-- Mod updater -->
     <system:String x:Key="string_modupdatesavailable">Mod updates available</system:String>

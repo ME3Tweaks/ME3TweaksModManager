@@ -151,9 +151,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             MessageBoxImage.Warning);
                     }
                 }
-
-                ActionText = M3L.GetString(M3L.string_interp_scanningX, Path.GetFileName(filepath));
             };
+            ActionText = M3L.GetString(M3L.string_interp_scanningX, Path.GetFileName(filepath));
             nbw.RunWorkerAsync(filepath);
         }
 
