@@ -301,7 +301,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         }
                     }
 
-                    if (tlkMappings.Count > 1)
+                    if (tlkMappings.Any())
                     {
                         //find TLK with most entries
                         //var tlkCounts = tlkMappings.Select(x => (x.Key, x.Value.Count));
@@ -675,20 +675,41 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     Log.Information(@"Checking file for broken textures: " + f);
                     var package = MEPackageHandler.OpenMEPackage(f);
-                    var textures = package.Exports.Where(x => x.IsTexture()).ToList();
+                    var textures = package.Exports.Where(x => x.IsTexture() && !x.IsDefaultObject).ToList();
                     foreach (var texture in textures)
                     {
                         if (_closed) return;
 
                         if (package.Game > Mod.MEGame.ME1)
                         {
+                            // CHECK NEVERSTREAM
+                            // 1. Has more than six mips.
+                            // 2. Has no external mips.
+                            Texture2D tex = new Texture2D(texture);
+
+                            var topMip = tex.GetTopMip();
+                            if (topMip.storageType == StorageTypes.pccUnc)
+                            {
+                                // It's an internally stored texture
+                                if (!tex.NeverStream && tex.Mips.Count(x => x.storageType != StorageTypes.empty) > 6)
+                                {
+                                    // NEVERSTREAM SHOULD HAVE BEEN SET.
+                                    Log.Error(@"Found texture missing 'NeverStream' attribute " + texture.GetInstancedFullPath);
+                                    hasError = true;
+                                    item.Icon = FontAwesomeIcon.TimesCircle;
+                                    item.Foreground = Brushes.Red;
+                                    item.Spinning = false;
+                                    item.DeploymentBlocking = true;
+                                    errors.Add($"{texture.FileRef.FilePath} texture {texture.UIndex} {texture.GetInstancedFullPath} is not externally stored, has more than 6 mips, but does not have the NeverStream flag. If LODs are raised this package will crash the game. Set the NeverStream flag to true to correct this issue, or use an external TFC (preferred). Using an external TFC for textures improves game performance.");
+                                }
+                            }
+
                             var cache = texture.GetProperty<NameProperty>(@"TextureFileCacheName");
                             if (cache != null)
                             {
                                 if (!VanillaDatabaseService.IsBasegameTFCName(cache.Value, ModBeingDeployed.Game))
                                 {
                                     //var mips = Texture2D.GetTexture2DMipInfos(texture, cache.Value);
-                                    Texture2D tex = new Texture2D(texture);
                                     try
                                     {
                                         tex.GetImageBytesForMip(tex.GetTopMip(), ValidationTarget, false, allTFCs); //use active target
