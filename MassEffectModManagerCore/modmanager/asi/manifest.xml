@@ -352,4 +352,16 @@
       <downloadlink>https://github.com/ME3Tweaks/ME3-ASI-Plugins/releases/download/v1.0-SplashEnabler/SplashEnabler-v1.0.asi</downloadlink>
     </asimod>
   </updategroup>
+  <updategroup groupid="22" game="3" hidden="0">
+    <asimod>
+      <name>Garbage Collection Forcer</name>
+      <installedname>GarbageCollectionForcer</installedname>
+      <author>Mgamerz</author>
+      <description>Forces the garbage collector to run more often in certain areas of Mass Effect 3. Read the source code page for information about how and when to use this ASI.</description>
+      <version>1</version>
+      <hash>f78c01d4fb150f5ff3280920345e95a0</hash>
+      <sourcecode>https://github.com/ME3Tweaks/ME3-ASI-Plugins/tree/master/GarbageCollectorForcer</sourcecode>
+      <downloadlink>https://github.com/ME3Tweaks/ME3-ASI-Plugins/releases/download/v1.0-GarbageCollectorForcer/GarbageCollectionForcer-v1.0.asi</downloadlink>
+    </asimod>
+  </updategroup>
 </ASIManifest>
