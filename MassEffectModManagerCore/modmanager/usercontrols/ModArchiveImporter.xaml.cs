@@ -15,6 +15,7 @@ using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.ui;
 using System.Diagnostics;
 using System.Globalization;
+using System.Web;
 using System.Xml.Linq;
 using SevenZip.EventArguments;
 using Threading;
@@ -24,6 +25,7 @@ using ByteSizeLib;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using Microsoft.AppCenter.Analytics;
+using Trinet.Core.IO.Ntfs;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -259,6 +261,41 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
             }
 
+            // Telemetry data to help find source of mods
+            // This should only run if we need to somehow look up source, like if mod is not in TPMI
+            FileInfo fi = new FileInfo(archive);
+            if (fi.AlternateDataStreamExists(@"Zone.Identifier"))
+            {
+                var s = fi.GetAlternateDataStream(@"Zone.Identifier", FileMode.Open);
+                string fullText = string.Empty;
+                using var reader = s.OpenText();
+                fullText = string.Format(reader.ReadToEnd());
+                // The Zone Identifier is an ini file
+                try
+                {
+                    DuplicatingIni ini = DuplicatingIni.ParseIni(fullText);
+                    var zoneId = ini[@"ZoneTransfer"][@"ZoneId"]?.Value;
+                    if (zoneId == @"3")
+                    {
+                        // File came from internet
+                        // Get the download url. We can identify which mod on nexus this is by it's CDN scheme
+                        var hostUrl = ini[@"ZoneTransfer"][@"HostUrl"]?.Value;
+                        if (hostUrl != null)
+                        {
+                            // Grab the pre-calculated MD5.
+                            // Make sure to NOT read any other parameters - they contain sensitive info!
+                            var uri = new Uri(hostUrl);
+                            var downloadLinkSanitized = $@"{uri.Scheme}://{uri.Authority}{uri.AbsolutePath}";
+
+                            var parameters = HttpUtility.ParseQueryString(uri.Query);
+                            string nexusMd5 = parameters[@"md5"];
+                        }
+                    }
+                }
+                catch
+                {
+                }
+            }
 
             void ActionTextUpdateCallback(string newText)
             {
@@ -689,7 +726,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             ProgressIndeterminate = false;
                             ActionText = M3L.GetString(M3L.string_selectModsToImportOrInstall);
                             return; //Don't do anything.
-                        }
+                    }
                     case ModImportResult.ERROR_COULD_NOT_DELETE_EXISTING_DIR:
                         {
                             ProgressValue = 0;
@@ -697,20 +734,20 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             ProgressIndeterminate = false;
                             ActionText = M3L.GetString(M3L.string_errorUnableToDeleteExistingModDirectory);
                             return; //Don't do anything.
-                        }
+                    }
                     case ModImportResult.ERROR_INSUFFICIENT_DISK_SPACE:
                         {
                             ProgressValue = 0;
                             ProgressMaximum = 100;
                             ProgressIndeterminate = false;
                             ActionText = M3L.GetString(M3L.string_insufficientDiskSpaceToExtractSelectedMods); //localize me
-                            Utilities.DriveFreeBytes(Utilities.GetModsDirectory(), out var freeSpace);
+                        Utilities.DriveFreeBytes(Utilities.GetModsDirectory(), out var freeSpace);
                             M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_dialogNotEnoughFreeSpaceToExtract, ByteSize.FromBytes(requiredSpace).ToString(), ByteSize.FromBytes(freeSpace).ToString()), M3L.GetString(M3L.string_insufficientDiskSpace), MessageBoxButton.OK, MessageBoxImage.Error);
                             return; //Don't do anything.
-                        }
+                    }
                 }
-                //Close.
-                OnClosing(DataEventArgs.Empty);
+            //Close.
+            OnClosing(DataEventArgs.Empty);
             };
             TaskRunning = true;
             TriggerPropertyChangedFor(nameof(CanCompressPackages));
@@ -790,8 +827,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         }
                         catch (Exception ex)
                         {
-                            //I don't think this can be triggered but will leave as failsafe anyways.
-                            Log.Error(@"Error while deleting existing output directory: " + App.FlattenException(ex));
+                        //I don't think this can be triggered but will leave as failsafe anyways.
+                        Log.Error(@"Error while deleting existing output directory: " + App.FlattenException(ex));
                             M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_interp_errorOccuredDeletingExistingModX, ex.Message), M3L.GetString(M3L.string_errorDeletingExistingMod), MessageBoxButton.OK, MessageBoxImage.Error);
                             e.Result = ModImportResult.ERROR_COULD_NOT_DELETE_EXISTING_DIR;
                             abort = true;
