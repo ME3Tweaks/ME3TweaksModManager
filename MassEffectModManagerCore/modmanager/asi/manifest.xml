@@ -93,7 +93,7 @@
       <name>Balance Changes Replacer</name>
       <installedname>BalanceChangesReplacer</installedname>
       <author>Erik JS</author>
-      <description>This plugin will replace the server-side Coalesced (balance changes for MP) with any custom Coalesced you want, as long as your file is named ServerCoalesced.bin, and put in "Mass Effect 3\Binaries\Win32" or "Mass Effect 3\Binaries\Win32\ASI" (the latter path will be ignored if the file is already found in the former). ModMaker mods will automatically use the latter when installing a balance changes file. DO NOT USE ANY COALESCED FILE THAT IS NOT BASED ON THE ORIGINAL SERVER ONE.</description>
+      <description>This plugin will replace the server-side Coalesced (balance changes for MP) with any custom Coalesced you want, as long as your file is named ServerCoalesced.bin, and put in "Binaries\Win32\ASI". ModMaker mods will automatically use the latter when installing a balance changes file. DO NOT USE ANY COALESCED FILE THAT IS NOT BASED ON THE ORIGINAL SERVER ONE.</description>
       <version>2</version>
       <hash>a44044728d08320537528121a193a7d8</hash>
       <sourcecode>https://github.com/Erik-JS/ME3-ASI/tree/master/ME3BalanceChangesReplacer</sourcecode>
@@ -103,7 +103,7 @@
       <name>Balance Changes Replacer</name>
       <installedname>BalanceChangesReplacer</installedname>
       <author>Erik JS</author>
-      <description>This plugin will replace the server-side Coalesced (balance changes for MP) with any custom Coalesced you want, as long as your file is named ServerCoalesced.bin, and put in "Mass Effect 3\Binaries\Win32" or "Mass Effect 3\Binaries\Win32\ASI" (the latter path will be ignored if the file is already found in the former). ModMaker mods will automatically use the latter when installing a balance changes file. DO NOT USE ANY COALESCED FILE THAT IS NOT BASED ON THE ORIGINAL SERVER ONE.</description>
+      <description>This plugin will replace the server-side Coalesced (balance changes for MP) with any custom Coalesced you want, as long as your file is named ServerCoalesced.bin, and put in "Mass Effect 3\Binaries\Win32\ASI". ModMaker mods will automatically use the latter when installing a balance changes file. DO NOT USE ANY COALESCED FILE THAT IS NOT BASED ON THE ORIGINAL SERVER ONE OR YOU RISK PERMANENTLY RUINING YOUR ONLINE PROFILE.</description>
       <version>3</version>
       <hash>6143daf3f9db91eef76590ffae09d743</hash>
       <sourcecode>https://github.com/Erik-JS/ME3-ASI/tree/master/ME3BalanceChangesReplacer</sourcecode>
@@ -213,7 +213,7 @@
       <name>Kismet Logger</name>
       <installedname>KismetLogger</installedname>
       <author>Mgamerz</author>
-      <description>This plugin logs kismet sequence object activations to a the console and to a file named KismetLog.txt. You can trace the execution of this log with ME3Explorer's Sequence Editor WPF.</description>
+      <description>This plugin logs kismet sequence object activations to the console and to a file named KismetLog.txt. You can trace the execution of this log with ME3Explorer's Sequence Editor WPF.</description>
       <version>4</version>
       <hash>00aa9650fb13c4149a625126102ea276</hash>
       <sourcecode>https://github.com/ME3Tweaks/ME3-ASI-Plugins/tree/master/KismetLogger</sourcecode>
@@ -261,7 +261,7 @@
       <name>Kismet Logger for ME2</name>
       <installedname>KismetLogger</installedname>
       <author>Mgamerz</author>
-      <description>This plugin logs kismet sequence object activations to a the console and to a file named KismetLog.txt. You can trace the execution of this log with ME3Explorer's Sequence Editor WPF.</description>
+      <description>This plugin logs kismet sequence object activations to the console and to a file named KismetLog.txt. You can trace the execution of this log with ME3Explorer's Sequence Editor WPF.</description>
       <version>1</version>
       <hash>965b2378c60430fb949b62a134b28414</hash>
       <sourcecode>https://github.com/ME3Tweaks/ME2-ASI-Plugins/tree/master/KismetLogger</sourcecode>
@@ -309,7 +309,7 @@
       <name>Ace Slammer for ME2</name>
       <installedname>AceSlammer-ME2</installedname>
       <author>Mgamerz</author>
-      <description>Ace Slammer changes gravity every few seconds, giong through a pattern. Gravity will invert, throwing enemies not based on the ground into the sky, after which it will become zero G for a brief moment allowing enemies (or players) to float, before slamming them into the ground with tremendous force and then returning to normal gravity.</description>
+      <description>Ace Slammer changes gravity every few seconds, going through a pattern. Gravity will invert, throwing enemies not based on the ground into the sky, after which it will become zero G for a brief moment allowing enemies (or players) to float, before slamming them into the ground with tremendous force and then returning to normal gravity.</description>
       <version>1</version>
       <hash>9179456d118c2ad02d280aec681acd8f</hash>
       <sourcecode>https://github.com/ME3Tweaks/ME2-ASI-Plugins/tree/master/AceSlammer</sourcecode>
