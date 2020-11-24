@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Text;
 using System.Windows.Media;
 using MassEffectModManagerCore.modmanager.localizations;
+using ME3ExplorerCore.Packages;
 
 namespace MassEffectModManagerCore.modmanager.asi
 {
@@ -44,7 +45,7 @@ namespace MassEffectModManagerCore.modmanager.asi
         /// <summary>
         /// The game this ASI is applicable to
         /// </summary>
-        public Mod.MEGame Game { get; set; }
+        public MEGame Game { get; set; }
         /// <summary>
         /// The description of this ASI
         /// </summary>

@@ -11,7 +11,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
-using MassEffectModManagerCore.GameDirectories;
+
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
@@ -110,7 +110,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 try
                 {
-                    var dlcFPath = MEDirectories.DLCPath(target);
+                    var dlcFPath = M3Directories.GetDLCPath(target);
                     var currentDLCPath = Path.Combine(dlcFPath, DLCFolderName);
                     string destPath = Path.Combine(dlcFPath, Enabled ? @"x" + UIDLCFolderName : UIDLCFolderName);
                     Directory.Move(currentDLCPath, destPath);

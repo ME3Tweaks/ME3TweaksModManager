@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.nexusmodsintegration;
+using ME3ExplorerCore.Packages;
 using Microsoft.AppCenter.Analytics;
 using Pathoschild.FluentNexus.Models;
 using Serilog;

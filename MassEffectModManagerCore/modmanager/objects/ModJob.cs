@@ -5,11 +5,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using IniParser.Model;
-using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager.gameini;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
-using Pathoschild.FluentNexus.Models;
+using ME3ExplorerCore.GameFilesystem;
+using ME3ExplorerCore.Packages;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager
@@ -382,15 +382,15 @@ namespace MassEffectModManagerCore.modmanager
             [JobHeader.TESTPATCH] = @"DLC_TestPatch" //This is not actually a DLC folder. This is the internal path though that the DLC would use if it worked unpacked.
         };
 
-        internal static IReadOnlyDictionary<JobHeader, string> GetHeadersToDLCNamesMap(Mod.MEGame game)
+        internal static IReadOnlyDictionary<JobHeader, string> GetHeadersToDLCNamesMap(MEGame game)
         {
             switch (game)
             {
-                case Mod.MEGame.ME1:
+                case MEGame.ME1:
                     return ME1HeadersToDLCNamesMap;
-                case Mod.MEGame.ME2:
+                case MEGame.ME2:
                     return ME2HeadersToDLCNamesMap;
-                case Mod.MEGame.ME3:
+                case MEGame.ME3:
                     return ME3HeadersToDLCNamesMap;
                 default:
                     throw new Exception(@"Can't get supported list of headers for unknown game type.");
@@ -413,15 +413,15 @@ namespace MassEffectModManagerCore.modmanager
         /// </summary>
         public List<string> ReadOnlyIndicators = new List<string>();
 
-        internal static JobHeader[] GetSupportedNonCustomDLCHeaders(Mod.MEGame game)
+        internal static JobHeader[] GetSupportedNonCustomDLCHeaders(MEGame game)
         {
             switch (game)
             {
-                case Mod.MEGame.ME1:
+                case MEGame.ME1:
                     return ME1SupportedNonCustomDLCJobHeaders;
-                case Mod.MEGame.ME2:
+                case MEGame.ME2:
                     return ME2SupportedNonCustomDLCJobHeaders;
-                case Mod.MEGame.ME3:
+                case MEGame.ME3:
                     return ME3SupportedNonCustomDLCJobHeaders;
                 default:
                     throw new Exception(@"Can't get supported list of headers for unknown game type.");
@@ -511,7 +511,7 @@ namespace MassEffectModManagerCore.modmanager
             }
         }
 
-        public static bool IsVanillaJob(ModJob job, Mod.MEGame game)
+        public static bool IsVanillaJob(ModJob job, MEGame game)
         {
             var officialHeaders = GetHeadersToDLCNamesMap(game);
             return officialHeaders.ContainsKey(job.Header) || job.Header == JobHeader.BASEGAME;
@@ -523,7 +523,7 @@ namespace MassEffectModManagerCore.modmanager
         /// <param name="job"></param>
         /// <param name="game"></param>
         /// <returns></returns>
-        public static SiloScopes GetScopedSilos(ModJob job, Mod.MEGame game)
+        public static SiloScopes GetScopedSilos(ModJob job, MEGame game)
         {
             switch (job.Header)
             {
@@ -535,12 +535,12 @@ namespace MassEffectModManagerCore.modmanager
             }
 
             SiloScopes scopes = new SiloScopes();
-            var dlcDir = MEDirectories.DLCPath("", game) + Path.DirectorySeparatorChar;
+            var dlcDir = MEDirectories.GetDLCPath(game, "") + Path.DirectorySeparatorChar;
 
             if (job.Header == JobHeader.BASEGAME)
             {
                 // There are specific directories we allow installation to.
-                if (game == Mod.MEGame.ME3)
+                if (game == MEGame.ME3)
                 {
                     scopes.DisallowedSilos.Add(@"Binaries\\Win32" + Path.DirectorySeparatorChar); //You are not allowed to install files into the game executable directory. ME1/2 unfortuantely share exec with exe dir.
                 }
@@ -554,7 +554,7 @@ namespace MassEffectModManagerCore.modmanager
             else if (GetHeadersToDLCNamesMap(game).TryGetValue(job.Header, out var dlcFoldername))
             {
                 // It's an official DLC
-                var relativeDlcDir = Path.Combine(MEDirectories.DLCPath("", game), dlcFoldername) + Path.DirectorySeparatorChar;
+                var relativeDlcDir = Path.Combine(MEDirectories.GetDLCPath(game, ""), dlcFoldername) + Path.DirectorySeparatorChar;
                 scopes.AllowedSilos.Add(relativeDlcDir); //Silos are folders. We should ensure they end with a slash
             }
             else if (job.Header == JobHeader.CUSTOMDLC)

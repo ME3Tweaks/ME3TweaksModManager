@@ -7,10 +7,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using ByteSizeLib;
 using Flurl.Http;
-using MassEffectModManagerCore.GameDirectories;
-using MassEffectModManagerCore.gamefileformats.sfar;
 using MassEffectModManagerCore.modmanager.asi;
 using MassEffectModManagerCore.modmanager.gameini;
 using MassEffectModManagerCore.modmanager.helpers;
@@ -19,7 +16,10 @@ using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
-using ME3Explorer.Packages;
+using ME3ExplorerCore.GameFilesystem;
+using ME3ExplorerCore.Helpers;
+using ME3ExplorerCore.Packages;
+using ME3ExplorerCore.Unreal;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using Newtonsoft.Json;
@@ -132,7 +132,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 Log.Information(@"Mod installation logging is off. If you want to view the installation log, turn it on in the settings and apply the mod again.");
             }
             var installationJobs = ModBeingInstalled.InstallationJobs;
-            var gameDLCPath = MEDirectories.DLCPath(gameTarget);
+            var gameDLCPath = M3Directories.GetDLCPath(gameTarget);
 
             Directory.CreateDirectory(gameDLCPath); //me1/me2 missing dlc might not have this folder
 
@@ -157,61 +157,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 return;
             }
 
-            //Check compat pack for me3
-            if (ModBeingInstalled.Game == MEGame.ME3 && ModBeingInstalled.ME3ControllerCompatBuiltAgainst.Any())
-            {
-                var installedDlcMods = VanillaDatabaseService.GetInstalledDLCMods(gameTarget);
-                installedDlcMods.Remove(@"DLC_MOD_" + GUICompatibilityGenerator.UI_MOD_NAME); //do not check that existing compat pack is installed
-                var missingCompatDlcs = ModBeingInstalled.ME3ControllerCompatBuiltAgainst.Except(installedDlcMods);
-                var addedAfterCompatDlcs = installedDlcMods.Except(ModBeingInstalled.ME3ControllerCompatBuiltAgainst);
-
-                if (missingCompatDlcs.Any() || addedAfterCompatDlcs.Any())
-                {
-                    var errorLines = new List<string>();
-                    Log.Error(@"This compatibility pack was built against a different DLC configuration and is not valid for this set of DLC mods.");
-                    errorLines.Add(M3L.GetString(M3L.string_dialog_incorrectCompatMod1));
-
-                    if (missingCompatDlcs.Any())
-                    {
-                        errorLines.Add("");
-                        Log.Error(@" > The following DLCs were removed after generating GUI compat pack: " + string.Join(@", ", missingCompatDlcs));
-                        errorLines.Add(M3L.GetString(M3L.string_dialog_incorrectCompatMod2_dlcRemoved));
-                        foreach (var v in missingCompatDlcs)
-                        {
-                            var tpmi = ThirdPartyServices.GetThirdPartyModInfo(v, ModBeingInstalled.Game);
-                            var line = $@" - {v}";
-                            if (tpmi != null) line += $@" ({tpmi.modname})";
-                            errorLines.Add(line);
-                        }
-                    }
-                    if (addedAfterCompatDlcs.Any())
-                    {
-                        errorLines.Add("");
-                        Log.Error(@" > The following DLCs were added after generating GUI compat pack: " + string.Join(@", ", addedAfterCompatDlcs));
-                        errorLines.Add(M3L.GetString(M3L.string_dialog_incorrectCompatMod2_dlcAdded));
-                        foreach (var v in addedAfterCompatDlcs)
-                        {
-                            var tpmi = ThirdPartyServices.GetThirdPartyModInfo(v, ModBeingInstalled.Game);
-                            var line = $@" - {v}";
-                            if (tpmi != null) line += $@" ({tpmi.modname})";
-                            errorLines.Add(line);
-                        }
-                    }
-                    errorLines.Add("");
-                    errorLines.Add(M3L.GetString(M3L.string_dialog_incorrectCompatMod3));
-
-                    //logs handled in precheck
-                    e.Result = (ModInstallCompletedStatus.INSTALL_FAILED_INVALID_CONFIG_FOR_COMPAT_PACK_ME3, errorLines);
-                    Log.Information(@"<<<<<<< Exiting modinstaller");
-
-                    return;
-                }
-
-            }
-
             Utilities.InstallBinkBypass(gameTarget); //Always install binkw32, don't bother checking if it is already ASI version.
 
-            if (ModBeingInstalled.Game == Mod.MEGame.ME2 && ModBeingInstalled.GetJob(ModJob.JobHeader.ME2_RCWMOD) != null && installationJobs.Count == 1)
+            if (ModBeingInstalled.Game == MEGame.ME2 && ModBeingInstalled.GetJob(ModJob.JobHeader.ME2_RCWMOD) != null && installationJobs.Count == 1)
             {
                 Log.Information(@"RCW mod: Beginning RCW mod subinstaller");
                 e.Result = InstallAttachedRCWMod();
@@ -364,7 +312,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     else
                     {
 
-                        var destFile = Path.Combine(unpackedQueue.Key.Header == ModJob.JobHeader.CUSTOMDLC ? MEDirectories.DLCPath(gameTarget) : gameTarget.TargetPath, originalMapping.Key); //official
+                        var destFile = Path.Combine(unpackedQueue.Key.Header == ModJob.JobHeader.CUSTOMDLC ? M3Directories.GetDLCPath(gameTarget) : gameTarget.TargetPath, originalMapping.Key); //official
 
                         //Extract Custom DLC name
                         if (unpackedQueue.Key.Header == ModJob.JobHeader.CUSTOMDLC)
@@ -467,14 +415,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             Utilities.DriveFreeBytes(gameTarget.TargetPath, out var freeSpaceOnTargetDisk);
             requiredSpaceToInstall = (long)(requiredSpaceToInstall * 1.1); //+10% for some overhead
-            Log.Information($@"Mod requires {ByteSize.FromBytes(requiredSpaceToInstall)} of disk space to install. We have {ByteSize.FromBytes(freeSpaceOnTargetDisk)} available");
+            Log.Information($@"Mod requires {FileSize.FormatSize(requiredSpaceToInstall)} of disk space to install. We have {FileSize.FormatSize(freeSpaceOnTargetDisk)} available");
             if (requiredSpaceToInstall > (long)freeSpaceOnTargetDisk && freeSpaceOnTargetDisk != 0)
             {
                 string driveletter = Path.GetPathRoot(gameTarget.TargetPath);
-                Log.Error($@"Insufficient disk space to install mod. Required: {ByteSize.FromBytes(requiredSpaceToInstall)}, available on {driveletter}: {ByteSize.FromBytes(freeSpaceOnTargetDisk)}");
+                Log.Error($@"Insufficient disk space to install mod. Required: {FileSize.FormatSize(requiredSpaceToInstall)}, available on {driveletter}: {FileSize.FormatSize(freeSpaceOnTargetDisk)}");
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    string message = M3L.GetString(M3L.string_interp_dialogNotEnoughSpaceToInstall, driveletter, ModBeingInstalled.ModName, ByteSize.FromBytes(requiredSpaceToInstall).ToString(), ByteSize.FromBytes(freeSpaceOnTargetDisk).ToString());
+                    string message = M3L.GetString(M3L.string_interp_dialogNotEnoughSpaceToInstall, driveletter, ModBeingInstalled.ModName, FileSize.FormatSize(requiredSpaceToInstall).ToString(), FileSize.FormatSize(freeSpaceOnTargetDisk).ToString());
                     M3L.ShowDialog(window, message, M3L.GetString(M3L.string_insufficientDiskSpace), MessageBoxButton.OK, MessageBoxImage.Error);
                 });
                 e.Result = ModInstallCompletedStatus.INSTALL_ABORTED_NOT_ENOUGH_SPACE;
@@ -546,7 +494,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 CLog.Information($@"[{numdone}/{numFilesToInstall}] Installed: {fileMapping.Key} -> {targetPath}", Settings.LogModInstallation);
                 //Debug.WriteLine(@"Installed: " + target);
                 Action = M3L.GetString(M3L.string_installing);
-                
+
 
                 //BASEGAME FILE TELEMETRY
                 if (Settings.EnableTelemetry && ModBeingInstalled.ModModMakerID == 0)
@@ -573,7 +521,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         // Reopen package fully
                         Log.Information($@"Compressing installed package: {targetPath}");
                         package = MEPackageHandler.OpenMEPackage(targetPath);
-                        package.save(true);
+                        package.Save(compress: true);
                     }
                 }
 
@@ -652,13 +600,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                          && fullPathMappingArchive[args.FileInfo.Index].Contains(gameTarget.TargetPath) &&
                            !Path.GetFileName(fullPathMappingArchive[args.FileInfo.Index]).Equals(@"PCConsoleTOC.bin", StringComparison.InvariantCultureIgnoreCase))
                         {
-                                //not installing to DLC
-                                basegameFilesInstalled.Add(fullPathMappingArchive[args.FileInfo.Index]);
+                            //not installing to DLC
+                            basegameFilesInstalled.Add(fullPathMappingArchive[args.FileInfo.Index]);
                         }
                     }
-                        //Debug.WriteLine($"{args.FileInfo.FileName} as file { numdone}");
-                        //Debug.WriteLine(numdone);
-                    };
+                    //Debug.WriteLine($"{args.FileInfo.FileName} as file { numdone}");
+                    //Debug.WriteLine(numdone);
+                };
                 try
                 {
                     ModBeingInstalled.Archive.ExtractFiles(gameTarget.TargetPath, installationRedirectCallback, fullPathMappingArchive.Keys.ToArray()); //directory parameter shouldn't be used here as we will be redirecting everything
@@ -735,12 +683,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             Action = M3L.GetString(M3L.string_installingSupportFiles);
             PercentVisibility = Visibility.Collapsed;
-            if (ModBeingInstalled.Game == Mod.MEGame.ME1)
+            if (ModBeingInstalled.Game == MEGame.ME1)
             {
                 Log.Information(@"Installing supporting ASI files");
                 ASIManager.InstallASIToTargetByGroupID(16, @"DLC Mod Enabler", gameTarget); //16 = DLC Mod Enabler
             }
-            else if (ModBeingInstalled.Game == Mod.MEGame.ME2)
+            else if (ModBeingInstalled.Game == MEGame.ME2)
             {
                 //None right now
             }
@@ -808,7 +756,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             ME2Coalesced me2c = null;
             try
             {
-                me2c = new ME2Coalesced(ME2Directory.CoalescedPath(gameTarget));
+                me2c = new ME2Coalesced(M3Directories.GetCoalescedPath(gameTarget));
             }
             catch (Exception e)
             {
@@ -1021,7 +969,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         /// <returns></returns>
         private bool PrecheckHeaders(List<ModJob> installationJobs)
         {
-            //if (ModBeingInstalled.Game != Mod.MEGame.ME3) { return true; } //me1/me2 don't have dlc header checks like me3
+            //if (ModBeingInstalled.Game != MEGame.ME3) { return true; } //me1/me2 don't have dlc header checks like me3
             foreach (var job in installationJobs)
             {
                 if (job.Header == ModJob.JobHeader.ME1_CONFIG)
@@ -1045,7 +993,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     continue;
                 }
 
-                if (!MEDirectories.IsOfficialDLCInstalled(job.Header, gameTarget))
+                if (!M3Directories.IsOfficialDLCInstalled(job.Header, gameTarget))
                 {
                     Log.Warning($@"DLC not installed that mod is marked to modify: {job.Header}, prompting user.");
                     //Prompt user

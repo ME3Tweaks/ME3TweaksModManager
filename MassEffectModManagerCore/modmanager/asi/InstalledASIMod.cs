@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Media;
 using MassEffectModManagerCore.modmanager.localizations;
+using ME3ExplorerCore.Packages;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.asi
@@ -15,10 +16,10 @@ namespace MassEffectModManagerCore.modmanager.asi
     /// </summary>
     public abstract class InstalledASIMod
     {
-        public Mod.MEGame Game { get; private set; }
+        public MEGame Game { get; private set; }
         public string Hash { get; private set; }
 
-        protected InstalledASIMod(string asiFile, string hash, Mod.MEGame game)
+        protected InstalledASIMod(string asiFile, string hash, MEGame game)
         {
             Game = game;
             InstalledPath = asiFile;
@@ -52,7 +53,7 @@ namespace MassEffectModManagerCore.modmanager.asi
         private static Brush installedBrush = new SolidColorBrush(Color.FromArgb(0x33, 0, 0xFF, 0));
         private static Brush outdatedBrush = new SolidColorBrush(Color.FromArgb(0x33, 0xFF, 0xFF, 0));
 
-        public KnownInstalledASIMod(string filepath, string hash, Mod.MEGame game, ASIModVersion mappedVersion) : base(filepath, hash, game)
+        public KnownInstalledASIMod(string filepath, string hash, MEGame game, ASIModVersion mappedVersion) : base(filepath, hash, game)
         {
             AssociatedManifestItem = mappedVersion;
         }
@@ -75,7 +76,7 @@ namespace MassEffectModManagerCore.modmanager.asi
     {
         private static Brush brush = new SolidColorBrush(Color.FromArgb(0x88, 0xFF, 0x10, 0x10));
 
-        public UnknownInstalledASIMod(string filepath, string hash, Mod.MEGame game) : base(filepath, hash, game)
+        public UnknownInstalledASIMod(string filepath, string hash, MEGame game) : base(filepath, hash, game)
         {
             UnmappedFilename = Path.GetFileNameWithoutExtension(filepath);
         }

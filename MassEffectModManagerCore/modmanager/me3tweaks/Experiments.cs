@@ -9,6 +9,7 @@ using System.Text;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using MassEffectModManagerCore.modmanager.helpers;
+using ME3ExplorerCore.Helpers;
 
 namespace MassEffectModManagerCore.modmanager.me3tweaks
 {

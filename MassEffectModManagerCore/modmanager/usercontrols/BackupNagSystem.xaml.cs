@@ -18,6 +18,7 @@ using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
+using ME3ExplorerCore.Packages;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -26,9 +27,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// </summary>
     public partial class BackupNagSystem : MMBusyPanelBase
     {
-        //public bool ME1BackedUp { get; } = BackupService.GetGameBackupPath(Mod.MEGame.ME1) != null;
-        //public bool ME2BackedUp { get; } = BackupService.GetGameBackupPath(Mod.MEGame.ME2) != null;
-        //public bool ME3BackedUp { get; } = BackupService.GetGameBackupPath(Mod.MEGame.ME3) != null;
+        //public bool ME1BackedUp { get; } = BackupService.GetGameBackupPath(MEGame.ME1) != null;
+        //public bool ME2BackedUp { get; } = BackupService.GetGameBackupPath(MEGame.ME2) != null;
+        //public bool ME3BackedUp { get; } = BackupService.GetGameBackupPath(MEGame.ME3) != null;
         public bool ME1Installed { get; set; }
         public bool ME2Installed { get; set; }
         public bool ME3Installed { get; set; }
@@ -74,25 +75,25 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public static bool ShouldShowNagScreen(List<GameTarget> targets)
         {
-            if (targets.Any(x => x.Game == Mod.MEGame.ME1))
+            if (targets.Any(x => x.Game == MEGame.ME1))
             {
-                if (BackupService.GetGameBackupPath(Mod.MEGame.ME1) == null)
+                if (BackupService.GetGameBackupPath(MEGame.ME1) == null)
                 {
                     return true;
                 }
             }
 
-            if (targets.Any(x => x.Game == Mod.MEGame.ME2))
+            if (targets.Any(x => x.Game == MEGame.ME2))
             {
-                if (BackupService.GetGameBackupPath(Mod.MEGame.ME2) == null)
+                if (BackupService.GetGameBackupPath(MEGame.ME2) == null)
                 {
                     return true;
                 }
             }
 
-            if (targets.Any(x => x.Game == Mod.MEGame.ME3))
+            if (targets.Any(x => x.Game == MEGame.ME3))
             {
-                if (BackupService.GetGameBackupPath(Mod.MEGame.ME3) == null)
+                if (BackupService.GetGameBackupPath(MEGame.ME3) == null)
                 {
                     return true;
                 }

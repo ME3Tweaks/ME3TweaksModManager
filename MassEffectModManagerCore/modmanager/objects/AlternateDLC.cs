@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
-using MassEffectModManagerCore.GameDirectories;
+
 using MassEffectModManagerCore.modmanager.helpers;
 using System.ComponentModel;
 using System.Configuration;
@@ -12,6 +12,7 @@ using System.IO;
 using System.Reflection.Metadata;
 using System.Text;
 using MassEffectModManagerCore.modmanager.localizations;
+using ME3ExplorerCore.Gammtek.Extensions.Collections.Generic;
 
 namespace MassEffectModManagerCore.modmanager.objects
 {
@@ -444,7 +445,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 IsSelected = CheckedByDefault;
                 if (DLCRequirementsForManual != null)
                 {
-                    var dlc = MEDirectories.GetInstalledDLC(target);
+                    var dlc = M3Directories.GetInstalledDLC(target);
                     UIIsSelectable = dlc.ContainsAll(DLCRequirementsForManual, StringComparer.InvariantCultureIgnoreCase);
                     CLog.Information($@" > AlternateDLC SetupInitialSelection() {FriendlyName}: UISelectable: {UIIsSelectable}, conducted DLCRequirements check.", Settings.LogModInstallation);
 
@@ -455,7 +456,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 }
                 return;
             }
-            var installedDLC = MEDirectories.GetInstalledDLC(target);
+            var installedDLC = M3Directories.GetInstalledDLC(target);
             switch (Condition)
             {
                 case AltDLCCondition.COND_DLC_NOT_PRESENT:

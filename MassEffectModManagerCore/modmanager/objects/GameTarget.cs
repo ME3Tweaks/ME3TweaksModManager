@@ -6,10 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager.asi;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
@@ -17,9 +14,10 @@ using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.modmanager.usercontrols;
 using MassEffectModManagerCore.ui;
+using ME3ExplorerCore.GameFilesystem;
 using Serilog;
-using static MassEffectModManagerCore.modmanager.usercontrols.InstallationInformation;
-using Path = System.IO.Path;
+using ME3ExplorerCore.Helpers;
+using ME3ExplorerCore.Packages;
 
 namespace MassEffectModManagerCore.modmanager.objects
 {
@@ -30,7 +28,7 @@ namespace MassEffectModManagerCore.modmanager.objects
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public Mod.MEGame Game { get; }
+        public MEGame Game { get; }
         public string TargetPath { get; }
         public bool RegistryActive { get; set; }
         public string GameSource { get; private set; }
@@ -59,7 +57,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         /// Indicates that this is a custom, abnormal game object. It may be used only for UI purposes, but it depends on the context.
         /// </summary>
         public bool IsCustomOption { get; set; } = false;
-        public GameTarget(Mod.MEGame game, string targetRootPath, bool currentRegistryActive, bool isCustomOption = false, bool isTest = false)
+        public GameTarget(MEGame game, string targetRootPath, bool currentRegistryActive, bool isCustomOption = false, bool isTest = false)
         {
             this.Game = game;
             this.RegistryActive = currentRegistryActive;
@@ -71,7 +69,7 @@ namespace MassEffectModManagerCore.modmanager.objects
 
         public void ReloadGameTarget(bool lodUpdateAndLogging = true, bool forceLodUpdate = false, bool isTest = false)
         {
-            if (Game != Mod.MEGame.Unknown && !IsCustomOption)
+            if (Game != MEGame.Unknown && !IsCustomOption)
             {
                 if (Directory.Exists(TargetPath))
                 {
@@ -107,7 +105,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     }
                     else
                     {
-                        if (GameSource.Contains(@"Origin") && Game == Mod.MEGame.ME3)
+                        if (GameSource.Contains(@"Origin") && Game == MEGame.ME3)
                         {
                             // Check for steam
                             if (Directory.Exists(Path.Combine(TargetPath, @"__overlay")))
@@ -118,7 +116,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         CLog.Information(@"Source: " + GameSource, lodUpdateAndLogging);
                     }
 
-                    IsPolishME1 = Game == Mod.MEGame.ME1 && File.Exists(Path.Combine(TargetPath, @"BioGame", @"CookedPC", @"Movies", @"niebieska_pl.bik"));
+                    IsPolishME1 = Game == MEGame.ME1 && File.Exists(Path.Combine(TargetPath, @"BioGame", @"CookedPC", @"Movies", @"niebieska_pl.bik"));
                     if (IsPolishME1)
                     {
                         CLog.Information(@"ME1 Polish Edition detected", lodUpdateAndLogging);
@@ -145,7 +143,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             }
             else
             {
-                if (Game == Mod.MEGame.ME1)
+                if (Game == MEGame.ME1)
                 {
                     if (MEUITMInstalled)
                     {
@@ -216,13 +214,13 @@ namespace MassEffectModManagerCore.modmanager.objects
                         int perGameFinal4Bytes = -20; //just some value
                         switch (Game)
                         {
-                            case Mod.MEGame.ME1:
+                            case MEGame.ME1:
                                 perGameFinal4Bytes = 0;
                                 break;
-                            case Mod.MEGame.ME2:
+                            case MEGame.ME2:
                                 perGameFinal4Bytes = 4352;
                                 break;
-                            case Mod.MEGame.ME3:
+                            case MEGame.ME3:
                                 perGameFinal4Bytes = 16777472;
                                 break;
                         }
@@ -258,7 +256,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         private string getALOTMarkerFilePath()
         {
             // this used to be shared method
-            return MEDirectories.ALOTMarkerPath(this);
+            return M3Directories.GetTextureMarkerPath(this);
         }
 
         public ObservableCollectionExtended<ModifiedFileObject> ModifiedBasegameFiles { get; } = new ObservableCollectionExtended<ModifiedFileObject>();
@@ -324,17 +322,17 @@ namespace MassEffectModManagerCore.modmanager.objects
             });
         }
 
-        public ObservableCollectionExtended<InstalledDLCMod> UIInstalledDLCMods { get; } = new ObservableCollectionExtended<InstalledDLCMod>();
+        public ObservableCollectionExtended<InstallationInformation.InstalledDLCMod> UIInstalledDLCMods { get; } = new ObservableCollectionExtended<InstallationInformation.InstalledDLCMod>();
 
-        public void PopulateDLCMods(bool includeDisabled, Func<InstalledDLCMod, bool> deleteConfirmationCallback = null, Action notifyDeleted = null, bool modNamePrefersTPMI = false)
+        public void PopulateDLCMods(bool includeDisabled, Func<InstallationInformation.InstalledDLCMod, bool> deleteConfirmationCallback = null, Action notifyDeleted = null, bool modNamePrefersTPMI = false)
         {
-            var dlcDir = MEDirectories.DLCPath(this);
-            var installedMods = MEDirectories.GetInstalledDLC(this, includeDisabled).Where(x => !MEDirectories.OfficialDLC(Game).Contains(x.TrimStart('x'), StringComparer.InvariantCultureIgnoreCase));
+            var dlcDir = M3Directories.GetDLCPath(this);
+            var installedMods = M3Directories.GetInstalledDLC(this, includeDisabled).Where(x => !MEDirectories.OfficialDLC(Game).Contains(x.TrimStart('x'), StringComparer.InvariantCultureIgnoreCase));
             //Must run on UI thread
             Application.Current.Dispatcher.Invoke(delegate
             {
                 UIInstalledDLCMods.ClearEx();
-                UIInstalledDLCMods.AddRange(installedMods.Select(x => new InstalledDLCMod(Path.Combine(dlcDir, x), Game, deleteConfirmationCallback, notifyDeleted, modNamePrefersTPMI)).ToList().OrderBy(x => x.ModName));
+                UIInstalledDLCMods.AddRange(installedMods.Select(x => new InstallationInformation.InstalledDLCMod(Path.Combine(dlcDir, x), Game, deleteConfirmationCallback, notifyDeleted, modNamePrefersTPMI)).ToList().OrderBy(x => x.ModName));
             });
         }
 
@@ -375,7 +373,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             string[] validationFiles = null;
             switch (Game)
             {
-                case Mod.MEGame.ME1:
+                case MEGame.ME1:
                     validationFiles = new[]
                     {
                         Path.Combine(TargetPath, @"Binaries", @"MassEffect.exe"),
@@ -386,7 +384,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         Path.Combine(TargetPath, @"BioGame", @"CookedPC", @"Movies", @"MEvisionSEQ3.bik")
                     };
                     break;
-                case Mod.MEGame.ME2:
+                case MEGame.ME2:
                     validationFiles = new[]
                     {
                         Path.Combine(TargetPath, @"Binaries", @"MassEffect2.exe"),
@@ -397,7 +395,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         Path.Combine(TargetPath, @"BioGame", @"Movies", @"Crit03_CollectArrive_Part2_1.bik")
                     };
                     break;
-                case Mod.MEGame.ME3:
+                case MEGame.ME3:
                     validationFiles = new[]
                     {
                         Path.Combine(TargetPath, @"Binaries", @"Win32", @"MassEffect3.exe"),
@@ -874,7 +872,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         public class InstalledExtraFile
         {
             private Action<InstalledExtraFile> notifyDeleted;
-            private Mod.MEGame game;
+            private MEGame game;
             public ICommand DeleteCommand { get; }
             public string DisplayName { get; }
             public enum EFileType
@@ -883,7 +881,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             }
 
             public EFileType FileType { get; }
-            public InstalledExtraFile(string filepath, EFileType type, Mod.MEGame game, Action<InstalledExtraFile> notifyDeleted = null)
+            public InstalledExtraFile(string filepath, EFileType type, MEGame game, Action<InstalledExtraFile> notifyDeleted = null)
             {
                 this.game = game;
                 this.notifyDeleted = notifyDeleted;
@@ -934,7 +932,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         {
             try
             {
-                var exeDir = MEDirectories.ExecutableDirectory(this);
+                var exeDir = M3Directories.GetExecutableDirectory(this);
                 var dlls = Directory.GetFiles(exeDir, @"*.dll").Select(x => Path.GetFileName(x));
                 var expectedDlls = MEDirectories.VanillaDlls(this.Game);
                 var extraDlls = dlls.Except(expectedDlls, StringComparer.InvariantCultureIgnoreCase);
@@ -969,7 +967,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         public string Binkw32StatusText { get; private set; }
         public void PopulateBinkInfo()
         {
-            if (Game != Mod.MEGame.ME1)
+            if (Game != MEGame.ME1)
             {
                 Binkw32StatusText = Utilities.CheckIfBinkw32ASIIsInstalled(this) ? M3L.GetString(M3L.string_bypassInstalledASIAndDLCModsWillBeAbleToLoad) : M3L.GetString(M3L.string_bypassNotInstalledASIAndDLCModsWillBeUnableToLoad);
             }
@@ -984,7 +982,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             List<InstalledASIMod> installedASIs = new List<InstalledASIMod>();
             try
             {
-                string asiDirectory = MEDirectories.ASIPath(this);
+                string asiDirectory = M3Directories.GetASIPath(this);
                 if (asiDirectory != null && Directory.Exists(TargetPath))
                 {
                     if (!Directory.Exists(asiDirectory))

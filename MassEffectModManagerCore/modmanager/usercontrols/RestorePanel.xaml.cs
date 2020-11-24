@@ -4,22 +4,14 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shell;
-using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
-using MassEffectModManagerCore.modmanager.windows;
 using MassEffectModManagerCore.ui;
+using ME3ExplorerCore.GameFilesystem;
+using ME3ExplorerCore.Packages;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using Microsoft.WindowsAPICodePack.Dialogs;
@@ -74,23 +66,23 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
-            GameRestoreControllers.Add(new GameRestoreObject(Mod.MEGame.ME1, targetsList.Where(x => x.Game == Mod.MEGame.ME1), mainwindow));
-            GameRestoreControllers.Add(new GameRestoreObject(Mod.MEGame.ME2, targetsList.Where(x => x.Game == Mod.MEGame.ME2), mainwindow));
-            GameRestoreControllers.Add(new GameRestoreObject(Mod.MEGame.ME3, targetsList.Where(x => x.Game == Mod.MEGame.ME3), mainwindow));
+            GameRestoreControllers.Add(new GameRestoreObject(MEGame.ME1, targetsList.Where(x => x.Game == MEGame.ME1), mainwindow));
+            GameRestoreControllers.Add(new GameRestoreObject(MEGame.ME2, targetsList.Where(x => x.Game == MEGame.ME2), mainwindow));
+            GameRestoreControllers.Add(new GameRestoreObject(MEGame.ME3, targetsList.Where(x => x.Game == MEGame.ME3), mainwindow));
         }
 
         public class GameRestoreObject : INotifyPropertyChanged
         {
             public bool RefreshTargets;
 
-            private Mod.MEGame Game;
+            private MEGame Game;
 
             public bool CanOpenDropdown => !RestoreInProgress && BackupLocation != null;
 
             public ObservableCollectionExtended<GameTarget> AvailableBackupSources { get; } = new ObservableCollectionExtended<GameTarget>();
             private MainWindow window;
 
-            public GameRestoreObject(Mod.MEGame game, IEnumerable<GameTarget> availableBackupSources, MainWindow window)
+            public GameRestoreObject(MEGame game, IEnumerable<GameTarget> availableBackupSources, MainWindow window)
             {
                 this.window = window;
                 this.Game = game;
@@ -99,15 +91,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 LoadCommands();
                 switch (Game)
                 {
-                    case Mod.MEGame.ME1:
+                    case MEGame.ME1:
                         GameTitle = @"Mass Effect";
                         GameIconSource = @"/images/gameicons/ME1_48.ico";
                         break;
-                    case Mod.MEGame.ME2:
+                    case MEGame.ME2:
                         GameTitle = @"Mass Effect 2";
                         GameIconSource = @"/images/gameicons/ME2_48.ico";
                         break;
-                    case Mod.MEGame.ME3:
+                    case MEGame.ME3:
                         GameTitle = @"Mass Effect 3";
                         GameIconSource = @"/images/gameicons/ME3_48.ico";
                         break;
@@ -221,10 +213,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 }
                             }
 
-                            string dlcFolderpath = MEDirectories.DLCPath(backupPath, Game) + '\\'; //\ at end makes sure we are restoring a subdir
+                            string dlcFolderpath = MEDirectories.GetDLCPath(Game, backupPath) + '\\'; //\ at end makes sure we are restoring a subdir
                             int dlcSubStringLen = dlcFolderpath.Length;
                             Debug.WriteLine(@"DLC Folder: " + dlcFolderpath);
-                            Debug.Write(@"DLC Fodler path len:" + dlcFolderpath);
+                            Debug.Write(@"DLC Folder path len:" + dlcFolderpath);
 
                             bool aboutToCopyCallback(string fileBeingCopied)
                             {

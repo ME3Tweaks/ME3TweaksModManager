@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using ME3ExplorerCore.Packages;
 
 namespace MassEffectModManagerCore.modmanager.me3tweaks
 {
@@ -30,7 +31,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         /// <param name="dlcName"></param>
         /// <param name="game">Game to look in database for</param>
         /// <returns>Third party mod info about dlc folder, null if not found</returns>
-        public static ThirdPartyModInfo GetThirdPartyModInfo(string dlcName, Mod.MEGame game)
+        public static ThirdPartyModInfo GetThirdPartyModInfo(string dlcName, MEGame game)
         {
             if (App.ThirdPartyIdentificationService == null) return null; //Not loaded
             if (App.ThirdPartyIdentificationService.TryGetValue(game.ToString(), out var infosForGame))
@@ -52,7 +53,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             public string filename { get; set; }
             public string subdirectorydepth { get; set; }
             public string servermoddescname { get; set; }
-            public Mod.MEGame game { get; set; }
+            public MEGame game { get; set; }
             public string version { get; set; }
             public string requireddlc { get; set; }
             public string zippedexepath { get; set; }
@@ -112,7 +113,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             return me2Values.Where(x => x.Value.modulenumber == modDLCModuleNumber.ToString()).Select(x => x.Value).ToList();
         }
 
-        internal static List<ThirdPartyModInfo> GetThirdPartyModInfosByMountPriority(Mod.MEGame game, int modMountPriority)
+        internal static List<ThirdPartyModInfo> GetThirdPartyModInfosByMountPriority(MEGame game, int modMountPriority)
         {
             if (App.ThirdPartyIdentificationService == null) return new List<ThirdPartyModInfo>(); //Not loaded
             var gameValues = App.ThirdPartyIdentificationService[game.ToString()];

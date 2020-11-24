@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ME3ExplorerCore.Packages;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -60,7 +61,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void DebugReloadMod()
         {
 #if DEBUG
-            Mod m = new Mod(SelectedMod.ModDescPath, Mod.MEGame.Unknown);
+            Mod m = new Mod(SelectedMod.ModDescPath, MEGame.Unknown);
             Debug.WriteLine(@"Is valid: " + m.ValidMod);
 #endif
         }

@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Linq;
 using System.Windows.Input;
-using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
+using ME3ExplorerCore.Packages;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -50,9 +50,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (SelectedTarget != null)
             {
                 // maps DLC folder name -> mount number
-                var mountpriorities = MEDirectories.GetMountPriorities(SelectedTarget);
+                var mountpriorities = M3Directories.GetMountPriorities(SelectedTarget);
                 //maps filename to list of DLC in order of precedence
-                var supercedances = MEDirectories.GetFileSupercedances(SelectedTarget).Where(x => x.Value.Count > 1).ToList();
+                var supercedances = M3Directories.GetFileSupercedances(SelectedTarget).Where(x => x.Value.Count > 1).ToList();
                 foreach (var supercedance in supercedances)
                 {
                     SupercedanceList sl = new SupercedanceList()
@@ -94,7 +94,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public class SupercedanceList
         {
-            public Mod.MEGame Game;
+            public MEGame Game;
             public string UIMountPriorityString => M3L.GetString(M3L.string_interp_mountPriorityX, WinningFile.MountPriority);
             public string UINumSupercededString => M3L.GetString(M3L.string_interp_XModsSuperceded, LosingFiles.Count);
             private string tpminame;
@@ -122,7 +122,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         }
         public class SupercedanceFile
         {
-            public Mod.MEGame Game;
+            public MEGame Game;
             public string UIMountPriorityString => M3L.GetString(M3L.string_interp_mountPriorityX, MountPriority);
             private string tpminame;
             public string UISourceString

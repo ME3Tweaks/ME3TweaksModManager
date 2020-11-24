@@ -10,15 +10,15 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 using AuthenticodeExaminer;
-using ByteSizeLib;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.ui;
+using ME3ExplorerCore.Compression;
+using ME3ExplorerCore.Helpers;
 using Microsoft.AppCenter.Analytics;
 using Serilog;
 using SevenZip;
-using SevenZipHelper;
 using Path = System.IO.Path;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -123,8 +123,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 ProgressIndeterminate = false;
                 ProgressValue = done;
                 ProgressMax = total;
-                var hrDone = ByteSize.FromBytes(done).ToString(@"0.00");
-                var hrTotal = ByteSize.FromBytes(total).ToString(@"0.00");
+                var hrDone = FileSize.FormatSize(done);
+                var hrTotal = FileSize.FormatSize(total);
                 ProgressText = M3L.GetString(M3L.string_downloadingUpdate) + $@" {hrDone} / {hrTotal}";
             }
 

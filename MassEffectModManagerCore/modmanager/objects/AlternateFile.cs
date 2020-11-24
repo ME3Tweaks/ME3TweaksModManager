@@ -4,9 +4,10 @@ using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using MassEffectModManagerCore.GameDirectories;
+
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
+using ME3ExplorerCore.Gammtek.Extensions.Collections.Generic;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.objects
@@ -437,7 +438,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 IsSelected = CheckedByDefault;
                 return;
             }
-            var installedDLC = MEDirectories.GetInstalledDLC(target);
+            var installedDLC = M3Directories.GetInstalledDLC(target);
             switch (Condition)
             {
                 case AltFileCondition.COND_DLC_NOT_PRESENT:

@@ -4,29 +4,22 @@ using MassEffectModManagerCore.ui;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Linq;
-using MassEffectModManagerCore.GameDirectories;
+
 using Serilog;
 using System.Threading.Tasks;
 using System.Globalization;
 using IniParser.Model;
-using ME3Explorer.Packages;
 using MassEffectModManagerCore.modmanager.helpers;
 using System.Threading;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.modmanager.windows;
-using MassEffectModManagerCore.gamefileformats.sfar;
-using System.Diagnostics;
+using ME3ExplorerCore.GameFilesystem;
+using ME3ExplorerCore.Packages;
+using ME3ExplorerCore.Unreal;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -54,19 +47,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             MixinHandler.LoadME3TweaksPackage();
             AvailableOfficialMixins.ReplaceAll(MixinHandler.ME3TweaksPackageMixins.OrderBy(x => x.PatchName));
 
-            var backupPath = BackupService.GetGameBackupPath(Mod.MEGame.ME3);
+            var backupPath = BackupService.GetGameBackupPath(MEGame.ME3);
             if (backupPath != null)
             {
-                var dlcPath = MEDirectories.DLCPath(backupPath, Mod.MEGame.ME3);
-                var headerTranslation = ModJob.GetHeadersToDLCNamesMap(Mod.MEGame.ME3);
+                var dlcPath = MEDirectories.GetDLCPath(MEGame.ME3, backupPath);
+                var headerTranslation = ModJob.GetHeadersToDLCNamesMap(MEGame.ME3);
                 foreach (var mixin in AvailableOfficialMixins)
                 {
                     mixin.UIStatusChanging += MixinUIStatusChanging;
                     if (mixin.TargetModule == ModJob.JobHeader.TESTPATCH)
                     {
-                        string biogame = MEDirectories.BioGamePath(backupPath);
-                        var sfar = Path.Combine(biogame, @"Patches", @"PCConsole", @"Patch_001.sfar");
-                        if (File.Exists(sfar))
+                        if (File.Exists(ME3Directory.GetTestPatchSFARPath(backupPath)))
                         {
                             mixin.CanBeUsed = true;
                         }
@@ -209,7 +200,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             try
                             {
                                 using var packageAsStream =
-                                    VanillaDatabaseService.FetchBasegameFile(Mod.MEGame.ME3,
+                                    VanillaDatabaseService.FetchBasegameFile(MEGame.ME3,
                                         Path.GetFileName(file.Key));
                                 //packageAsStream.WriteToFile(@"C:\users\dev\desktop\compressed.pcc");
                                 using var decompressedStream = MEPackage.GetDecompressedPackageStream(packageAsStream, true);
@@ -219,11 +210,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 completedSingleApplicationCallback, failedApplicationCallback);
                                 CLog.Information(@"Compressing package to mod directory: " + file.Key, Settings.LogModMakerCompiler);
                                 finalStream.Position = 0;
-                                var package = MEPackageHandler.OpenMEPackage(finalStream);
+                                var package = MEPackageHandler.OpenMEPackageFromStream(finalStream);
                                 var outfile = Path.Combine(outdir, Path.GetFileName(file.Key));
-                                package.save(outfile, false); // don't compress
-                                                              //finalStream.WriteToFile(outfile);
-                                                              //File.WriteAllBytes(outfile, finalStream.ToArray());
+                                package.Save(outfile, false, includeAdditionalPackagesToCook: false, includeDependencyTable: true); // don't compress, use mixin saving rules for basegame files
                             }
                             catch (Exception e)
                             {
@@ -247,9 +236,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 using var finalStream = MixinHandler.ApplyMixins(decompressedStream, file.Value, completedSingleApplicationCallback, failedApplicationCallback);
                                 CLog.Information(@"Compressing package to mod directory: " + file.Key, Settings.LogModMakerCompiler);
                                 finalStream.Position = 0;
-                                var package = MEPackageHandler.OpenMEPackage(finalStream);
+                                var package = MEPackageHandler.OpenMEPackageFromStream(finalStream);
                                 var outfile = Path.Combine(outdir, Path.GetFileName(file.Key));
-                                package.save(outfile, true);
+                                package.Save(outfile, true);
                             }
                             catch (Exception e)
                             {
@@ -366,26 +355,26 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         try
                         {
-                            using var vanillaPackageAsStream = VanillaDatabaseService.FetchBasegameFile(Mod.MEGame.ME3, Path.GetFileName(file.Key));
+                            using var vanillaPackageAsStream = VanillaDatabaseService.FetchBasegameFile(MEGame.ME3, Path.GetFileName(file.Key));
                             //packageAsStream.WriteToFile(@"C:\users\dev\desktop\compressed.pcc");
                             using var decompressedStream = MEPackage.GetDecompressedPackageStream(vanillaPackageAsStream, true);
                             decompressedStream.Position = 0;
-                            var vanillaPackage = MEPackageHandler.OpenMEPackage(decompressedStream, $@"Vanilla - {Path.GetFileName(file.Key)}");
+                            var vanillaPackage = MEPackageHandler.OpenMEPackageFromStream(decompressedStream, $@"Vanilla - {Path.GetFileName(file.Key)}");
                             //decompressedStream.WriteToFile(@"C:\users\dev\desktop\decompressed.pcc");
 
                             using var mixinModifiedStream = MixinHandler.ApplyMixins(decompressedStream, file.Value,
                                 completedSingleApplicationCallback, failedApplicationCallback);
                             mixinModifiedStream.Position = 0;
-                            var modifiedPackage = MEPackageHandler.OpenMEPackage(mixinModifiedStream, $@"Mixin Modified - {Path.GetFileName(file.Key)}");
+                            var modifiedPackage = MEPackageHandler.OpenMEPackageFromStream(mixinModifiedStream, $@"Mixin Modified - {Path.GetFileName(file.Key)}");
 
                             // three way merge: get target stream
-                            var targetFile = Path.Combine(MEDirectories.CookedPath(SelectedInstallTarget), Path.GetFileName(file.Key));
+                            var targetFile = Path.Combine(M3Directories.GetCookedPath(SelectedInstallTarget), Path.GetFileName(file.Key));
                             var targetPackage = MEPackageHandler.OpenMEPackage(targetFile);
 
                             var merged = ThreeWayPackageMerge.AttemptMerge(vanillaPackage, modifiedPackage, targetPackage);
                             if (merged)
                             {
-                                targetPackage.save();
+                                targetPackage.Save(compress: true);
                                 Log.Information(@"Three way merge succeeded for " + targetFile);
                             }
                             else
@@ -409,8 +398,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     //dlc
                     var dlcPackage = VanillaDatabaseService.FetchVanillaSFAR(dlcFolderName); //do not have to open file multiple times.
-                    var targetCookedPCDir = Path.Combine(MEDirectories.DLCPath(SelectedInstallTarget), dlcFolderName, @"CookedPCConsole");
-                    var sfar = mapping.Key == ModJob.JobHeader.TESTPATCH ? ME3Directory.GetTestPatchPath(SelectedInstallTarget) : Path.Combine(targetCookedPCDir, @"Default.sfar");
+                    var targetCookedPCDir = Path.Combine(M3Directories.GetDLCPath(SelectedInstallTarget), dlcFolderName, @"CookedPCConsole");
+                    var sfar = mapping.Key == ModJob.JobHeader.TESTPATCH ? M3Directories.GetTestPatchSFARPath(SelectedInstallTarget) : Path.Combine(targetCookedPCDir, @"Default.sfar");
                     bool unpacked = new FileInfo(sfar).Length == 32;
                     DLCPackage targetDLCPackage = unpacked ? null : new DLCPackage(sfar); //cache SFAR target
 
@@ -421,10 +410,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             using var vanillaPackageAsStream = VanillaDatabaseService.FetchFileFromVanillaSFAR(dlcFolderName, file.Key, forcedDLC: dlcPackage);
                             using var decompressedStream = MEPackage.GetDecompressedPackageStream(vanillaPackageAsStream);
                             decompressedStream.Position = 0;
-                            var vanillaPackage = MEPackageHandler.OpenMEPackage(decompressedStream, $@"VanillaDLC - {Path.GetFileName(file.Key)}");
+                            var vanillaPackage = MEPackageHandler.OpenMEPackageFromStream(decompressedStream, $@"VanillaDLC - {Path.GetFileName(file.Key)}");
                             using var mixinModifiedStream = MixinHandler.ApplyMixins(decompressedStream, file.Value, completedSingleApplicationCallback, failedApplicationCallback);
                             mixinModifiedStream.Position = 0;
-                            var modifiedPackage = MEPackageHandler.OpenMEPackage(mixinModifiedStream, $@"Mixin Modified - {Path.GetFileName(file.Key)}");
+                            var modifiedPackage = MEPackageHandler.OpenMEPackageFromStream(mixinModifiedStream, $@"Mixin Modified - {Path.GetFileName(file.Key)}");
 
                             // three way merge: get target stream
                             // must see if DLC is unpacked first
@@ -441,21 +430,21 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 targetFileStream = VanillaDatabaseService.FetchFileFromVanillaSFAR(dlcFolderName, Path.GetFileName(file.Key), forcedDLC: targetDLCPackage);
                             }
 
-                            var targetPackage = MEPackageHandler.OpenMEPackage(targetFileStream, $@"Target package {dlcFolderName} - {file.Key}, from SFAR: {unpacked}");
+                            var targetPackage = MEPackageHandler.OpenMEPackageFromStream(targetFileStream, $@"Target package {dlcFolderName} - {file.Key}, from SFAR: {unpacked}");
 
                             var merged = ThreeWayPackageMerge.AttemptMerge(vanillaPackage, modifiedPackage, targetPackage);
                             if (merged)
                             {
                                 if (unpacked)
                                 {
-                                    targetPackage.save();
+                                    targetPackage.Save(Path.Combine(targetCookedPCDir, file.Key));
                                     Log.Information(@"Three way merge succeeded for " + targetPackage.FilePath);
                                 }
                                 else
                                 {
-                                    var finalSTream = targetPackage.saveToStream();
+                                    var finalSTream = targetPackage.SaveToStream(false); // No compress. Not sure if we should support doing that though.
                                     targetDLCPackage.ReplaceEntry(finalSTream.ToArray(), targetDLCPackage.FindFileEntry(Path.GetFileName(file.Key)));
-                                    Log.Information(@"Three way merge succeeded for " + targetPackage.FileSourceForDebugging);
+                                    Log.Information(@"Three way merge succeeded for " + targetPackage.FilePath);
 
                                 }
                             }
@@ -593,7 +582,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
-            AvailableInstallTargets.ReplaceAll(mainwindow.InstallationTargets.Where(x => x.Game == Mod.MEGame.ME3));
+            AvailableInstallTargets.ReplaceAll(mainwindow.InstallationTargets.Where(x => x.Game == MEGame.ME3));
             SelectedInstallTarget = AvailableInstallTargets.FirstOrDefault();
         }
 

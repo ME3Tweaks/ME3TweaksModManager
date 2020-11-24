@@ -9,6 +9,7 @@ using System.Threading;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.windows;
+using ME3ExplorerCore.Helpers;
 using Microsoft.AppCenter.Crashes;
 using Newtonsoft.Json;
 using Serilog;
@@ -107,7 +108,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 {
                     var attachments = new List<ErrorAttachmentLog>();
                     string log = LogCollector.CollectLatestLog(true);
-                    if (log != null && log.Length < ByteSizeLib.ByteSize.BytesInMegaByte * 7)
+                    if (log != null && log.Length < FileSize.MebiByte * 7)
                     {
                         attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, @"applog.txt"));
                     }
@@ -186,7 +187,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 {
                     var attachments = new List<ErrorAttachmentLog>();
                     string log = LogCollector.CollectLatestLog(true);
-                    if (log != null && log.Length < ByteSizeLib.ByteSize.BytesInMegaByte * 7)
+                    if (log != null && log.Length < FileSize.MebiByte * 7)
                     {
                         attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, "applog.txt"));
                     }
@@ -308,7 +309,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 {
                     var attachments = new List<ErrorAttachmentLog>();
                     string log = LogCollector.CollectLatestLog(true);
-                    if (log != null && log.Length < ByteSizeLib.ByteSize.BytesInMegaByte * 7)
+                    if (log != null && log.Length < FileSize.MebiByte * 7)
                     {
                         attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, "applog.txt"));
                     }
@@ -371,7 +372,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 {
                     var attachments = new List<ErrorAttachmentLog>();
                     string log = LogCollector.CollectLatestLog(true);
-                    if (log != null && log.Length < ByteSizeLib.ByteSize.BytesInMegaByte * 7)
+                    if (log != null && log.Length < FileSize.MebiByte * 7)
                     {
                         attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, "applog.txt"));
                     }
@@ -710,7 +711,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 {
                     var attachments = new List<ErrorAttachmentLog>();
                     string log = LogCollector.CollectLatestLog(true);
-                    if (log != null && log.Length < ByteSizeLib.ByteSize.BytesInMegaByte * 7)
+                    if (log != null && log.Length < FileSize.MebiByte * 7)
                     {
                         attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, @"applog.txt"));
                     }

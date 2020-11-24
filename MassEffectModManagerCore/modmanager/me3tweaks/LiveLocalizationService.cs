@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using MassEffectModManagerCore.modmanager.helpers;
+using ME3ExplorerCore.Helpers;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.me3tweaks

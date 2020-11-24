@@ -1,20 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
-using System.Net;
-using System.Text;
-using System.Windows;
 using System.Windows.Input;
-using MassEffectModManagerCore.GameDirectories;
-using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
-using MassEffectModManagerCore.modmanager.usercontrols;
 using MassEffectModManagerCore.ui;
-using Microsoft.AppCenter.Analytics;
-using Serilog;
+using ME3ExplorerCore.Packages;
 
 namespace MassEffectModManagerCore.modmanager.asi
 {
@@ -24,7 +15,7 @@ namespace MassEffectModManagerCore.modmanager.asi
     public class ASIGame : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        public Mod.MEGame Game { get; }
+        public MEGame Game { get; }
         public ObservableCollectionExtended<GameTarget> GameTargets { get; } = new ObservableCollectionExtended<GameTarget>();
         public ObservableCollectionExtended<object> DisplayedASIMods { get; } = new ObservableCollectionExtended<object>();
         public GameTarget SelectedTarget { get; set; }
@@ -45,7 +36,7 @@ namespace MassEffectModManagerCore.modmanager.asi
         public string GameName => Utilities.GetGameName(Game);
 
         public ICommand InstallLoaderCommand { get; }
-        public ASIGame(Mod.MEGame game, List<GameTarget> targets)
+        public ASIGame(MEGame game, List<GameTarget> targets)
         {
             Game = game;
             GameTargets.ReplaceAll(targets);
@@ -139,7 +130,7 @@ namespace MassEffectModManagerCore.modmanager.asi
         ///// </summary>
         ///// <param name="game">Game to filter results by. Enter 1 2 or 3 for that game only, or anything else to get everything.</param>
         ///// <returns></returns>
-        //public List<InstalledASIMod> GetInstalledASIMods(Mod.MEGame game = Mod.MEGame.Unknown)
+        //public List<InstalledASIMod> GetInstalledASIMods(MEGame game = MEGame.Unknown)
         //{
         //    List<InstalledASIMod> results = new List<InstalledASIMod>();
         //    try

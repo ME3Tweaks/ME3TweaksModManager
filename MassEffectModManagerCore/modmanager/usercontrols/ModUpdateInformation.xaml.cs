@@ -15,6 +15,7 @@ using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.ui;
+using ME3ExplorerCore.Compression;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.WindowsAPICodePack.Taskbar;
 using Serilog;
@@ -120,7 +121,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         mui.UIStatusString = M3L.GetString(M3L.string_decompressingDelta);
                         // OK
-                        var decompressed = SevenZipHelper.LZMA.DecompressLZMAFile(download.result.ToArray());
+                        var decompressed = LZMA.DecompressLZMAFile(download.result.ToArray());
                         modDelta = Encoding.UTF8.GetString(decompressed);
                     }
                     else

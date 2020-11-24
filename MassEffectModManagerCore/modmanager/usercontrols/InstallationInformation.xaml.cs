@@ -13,6 +13,8 @@ using Serilog;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.memoryanalyzer;
+using ME3ExplorerCore.Helpers;
+using ME3ExplorerCore.Packages;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -155,7 +157,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                     }
                     RestoreAllBasegameInProgress = false;
-                    if (SelectedTarget.Game == Mod.MEGame.ME3)
+                    if (SelectedTarget.Game == MEGame.ME3)
                     {
                         AutoTOC.RunTOCOnGameTarget(SelectedTarget);
                     }
@@ -573,7 +575,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             public string Version { get; private set; }
             public string InstallerInstanceGUID { get; private set; }
             public string InstallerInstanceBuild { get; private set; }
-            private Mod.MEGame game;
+            private MEGame game;
             private static readonly SolidColorBrush DisabledBrushLightMode = new SolidColorBrush(Color.FromArgb(0xff, 232, 26, 26));
             private static readonly SolidColorBrush DisabledBrushDarkMode = new SolidColorBrush(Color.FromArgb(0xff, 247, 88, 77));
 
@@ -601,7 +603,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 TriggerPropertyChangedFor(nameof(TextColor));
             }
 
-            public InstalledDLCMod(string dlcFolderPath, Mod.MEGame game, Func<InstalledDLCMod, bool> deleteConfirmationCallback, Action notifyDeleted, bool modNamePrefersTPMI)
+            public InstalledDLCMod(string dlcFolderPath, MEGame game, Func<InstalledDLCMod, bool> deleteConfirmationCallback, Action notifyDeleted, bool modNamePrefersTPMI)
             {
                 this.dlcFolderPath = dlcFolderPath;
                 this.game = game;
@@ -685,9 +687,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyname));
             }
-            private bool CanToggleDLC() => (game == Mod.MEGame.ME3 || DLCFolderName.StartsWith('x')) && !Utilities.IsGameRunning(game);
+            private bool CanToggleDLC() => (game == MEGame.ME3 || DLCFolderName.StartsWith('x')) && !Utilities.IsGameRunning(game);
 
-            public bool EnableDisableVisible => game == Mod.MEGame.ME3 || DLCFolderName.StartsWith('x');
+            public bool EnableDisableVisible => game == MEGame.ME3 || DLCFolderName.StartsWith('x');
             public ICommand DeleteCommand { get; set; }
             public GenericCommand EnableDisableCommand { get; set; }
             private bool CanDeleteDLCMod(object obj) => !Utilities.IsGameRunning(game);

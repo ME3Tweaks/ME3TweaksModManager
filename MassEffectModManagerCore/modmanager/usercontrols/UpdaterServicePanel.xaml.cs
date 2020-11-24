@@ -1,5 +1,4 @@
-﻿using ByteSizeLib;
-using MassEffectModManagerCore.modmanager.helpers;
+﻿using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.nexusmodsintegration;
@@ -14,22 +13,14 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shell;
 using System.Xml;
-using System.Xml.Linq;
+using ME3ExplorerCore.Helpers;
 using static MassEffectModManagerCore.modmanager.me3tweaks.OnlineContent;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -675,11 +666,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             long amountUploaded = 0, amountToUpload = 1;
             //Confirm changes
-            if (filesToDeleteOffServer.Any() || filesToUploadToServer.Any())
+            if (Enumerable.Any(filesToDeleteOffServer) || Enumerable.Any(filesToUploadToServer))
             {
                 var text = M3L.GetString(M3L.string_interp_updaterServiceDeltaConfirmationHeader, mod.ModName);
-                if (filesToUploadToServer.Any()) text += M3L.GetString(M3L.string_nnFilesToUploadToServern) + @" " + string.Join('\n' + @" - ", filesToUploadToServer); //weird stuff to deal with localizer
-                if (filesToDeleteOffServer.Any()) text += M3L.GetString(M3L.string_nnFilesToDeleteOffServern) + @" " + string.Join('\n' + @" - ", filesToDeleteOffServer); //weird stuff to deal with localizer
+                if (Enumerable.Any(filesToUploadToServer)) text += M3L.GetString(M3L.string_nnFilesToUploadToServern) + @" " + string.Join('\n' + @" - ", filesToUploadToServer); //weird stuff to deal with localizer
+                if (Enumerable.Any(filesToDeleteOffServer)) text += M3L.GetString(M3L.string_nnFilesToDeleteOffServern) + @" " + string.Join('\n' + @" - ", filesToDeleteOffServer); //weird stuff to deal with localizer
                 text += M3L.GetString(M3L.string_interp_updaterServiceDeltaConfirmationFooter);
                 bool performUpload = false;
                 Log.Information(@"Prompting user to accept server delta");
@@ -764,8 +755,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             }
 
                             amountUploaded = amountUploadedBeforeChunk + (long)x;
-                            var uploadedHR = ByteSize.FromBytes(amountUploaded).ToString(@"0.00");
-                            var totalUploadHR = ByteSize.FromBytes(amountToUpload).ToString(@"0.00");
+                            var uploadedHR = FileSize.FormatSize(amountUploaded);
+                            var totalUploadHR = FileSize.FormatSize(amountToUpload);
                             if (amountToUpload > 0)
                             {
                                 progressCallback?.Invoke(amountUploaded * 1.0 / amountToUpload);
@@ -800,8 +791,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     Log.Information(@"Uploading manifest to server: " + serverManifestPath);
                     sftp.UploadFile(manifestStream, serverManifestPath, true, (x) =>
                     {
-                        var uploadedAmountHR = ByteSize.FromBytes(amountUploaded).ToString(@"0.00");
-                        var uploadAmountTotalHR = ByteSize.FromBytes(amountToUpload).ToString(@"0.00");
+                        var uploadedAmountHR = FileSize.FormatSize(amountUploaded);
+                        var uploadAmountTotalHR = FileSize.FormatSize(amountToUpload);
                         CurrentActionText = M3L.GetString(M3L.string_uploadingUpdateManifestToServer) + $@"{uploadedAmountHR}/{uploadAmountTotalHR}";
                     });
                 }
@@ -817,7 +808,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 Log.Information(@"Verifying hashes on server for new files");
                 var newServerhashes = getServerHashes(sshClient, serverFolderName, serverModPath);
                 var badHashes = verifyHashes(manifestFiles, newServerhashes);
-                if (badHashes.Any())
+                if (Enumerable.Any(badHashes))
                 {
                     CurrentActionText = M3L.GetString(M3L.string_someHashesOnServerAreIncorrectContactMgamerz);
                     return UploadModResult.BAD_SERVER_HASHES_AFTER_VALIDATION;

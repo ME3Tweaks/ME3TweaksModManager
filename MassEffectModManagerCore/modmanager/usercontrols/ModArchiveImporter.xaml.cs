@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -17,12 +16,13 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Xml.Linq;
 using SevenZip.EventArguments;
-using Threading;
 using MassEffectModManagerCore.modmanager.gameini;
 using System.Windows.Media.Animation;
-using ByteSizeLib;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.memoryanalyzer;
+using ME3ExplorerCore.Gammtek.Extensions.Collections.Generic;
+using ME3ExplorerCore.Helpers;
+using ME3ExplorerCore.Packages;
 using Microsoft.AppCenter.Analytics;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -62,7 +62,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public long ProgressMaximum { get; private set; }
         public bool ProgressIndeterminate { get; private set; }
 
-        public bool CanCompressPackages => CompressedMods.Any(x => x.Game >= Mod.MEGame.ME2) && App.AllowCompressingPackagesOnImport && ArchiveScanned && !TaskRunning;
+        public bool CanCompressPackages => CompressedMods.Any(x => x.Game >= MEGame.ME2) && App.AllowCompressingPackagesOnImport && ArchiveScanned && !TaskRunning;
 
         public ObservableCollectionExtended<Mod> CompressedMods { get; } = new ObservableCollectionExtended<Mod>();
         public ModArchiveImporter(string file)
@@ -390,7 +390,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         }
                     }
                 }
-                else if (textureModEntries.Any() && isAlotFile)
+                else if (Enumerable.Any(textureModEntries) && isAlotFile)
                 {
                     if (isAlotFile)
                     {
@@ -498,7 +498,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     //ME3
                     foreach (var sfarEntry in sfarEntries)
                     {
-                        var vMod = AttemptLoadVirtualMod(sfarEntry, archiveFile, Mod.MEGame.ME3, md5);
+                        var vMod = AttemptLoadVirtualMod(sfarEntry, archiveFile, MEGame.ME3, md5);
                         if (vMod != null)
                         {
                             addCompressedModCallback?.Invoke(vMod);
@@ -510,7 +510,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     //TODO: ME2 ?
                     //foreach (var entry in bioengineEntries)
                     //{
-                    //    var vMod = AttemptLoadVirtualMod(entry, archiveFile, Mod.MEGame.ME2, md5);
+                    //    var vMod = AttemptLoadVirtualMod(entry, archiveFile, MEGame.ME2, md5);
                     //    if (vMod.ValidMod)
                     //    {
                     //        addCompressedModCallback?.Invoke(vMod);
@@ -579,7 +579,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         }
 
 
-        private static Mod AttemptLoadVirtualMod(ArchiveFileInfo sfarEntry, SevenZipExtractor archive, Mod.MEGame game, string md5)
+        private static Mod AttemptLoadVirtualMod(ArchiveFileInfo sfarEntry, SevenZipExtractor archive, MEGame game, string md5)
         {
             var sfarPath = sfarEntry.FileName;
             var cookedPath = FilesystemInterposer.DirectoryGetParent(sfarPath, true);
@@ -705,7 +705,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             ProgressIndeterminate = false;
                             ActionText = M3L.GetString(M3L.string_insufficientDiskSpaceToExtractSelectedMods); //localize me
                             Utilities.DriveFreeBytes(Utilities.GetModsDirectory(), out var freeSpace);
-                            M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_dialogNotEnoughFreeSpaceToExtract, ByteSize.FromBytes(requiredSpace).ToString(), ByteSize.FromBytes(freeSpace).ToString()), M3L.GetString(M3L.string_insufficientDiskSpace), MessageBoxButton.OK, MessageBoxImage.Error);
+                            M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_dialogNotEnoughFreeSpaceToExtract, FileSize.FormatSize(requiredSpace), FileSize.FormatSize(freeSpace)), M3L.GetString(M3L.string_insufficientDiskSpace), MessageBoxButton.OK, MessageBoxImage.Error);
                             return; //Don't do anything.
                         }
                 }
@@ -732,11 +732,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (Utilities.DriveFreeBytes(Utilities.GetModsDirectory(), out var freespaceBytes))
             {
                 requiredDiskSpace = (long)(requiredDiskSpace * 1.05); //5% buffer
-                Log.Information($@"Selected mods require: {ByteSize.FromBytes(requiredDiskSpace)}");
+                Log.Information($@"Selected mods require: {FileSize.FormatSize(requiredDiskSpace)}");
                 if ((long)freespaceBytes < requiredDiskSpace)
                 {
                     Log.Error(@"There is not enough free space on the disk to extract these mods.");
-                    Log.Error($@"Selected mods require: {ByteSize.FromBytes(requiredDiskSpace)} | Disk space available in library partition: {ByteSize.FromBytes(freespaceBytes)}");
+                    Log.Error($@"Selected mods require: {FileSize.FormatSize(requiredDiskSpace)} | Disk space available in library partition: {FileSize.FormatSize(freespaceBytes)}");
                     e.Result = (requiredDiskSpace, ModImportResult.ERROR_INSUFFICIENT_DISK_SPACE);
                     return;
                 }
@@ -916,8 +916,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         }
 
-        private SerialQueue fileCompressionQueue = new SerialQueue();
-
         public ICommand ImportModsCommand { get; set; }
         public ICommand CancelCommand { get; set; }
         public ICommand InstallModCommand { get; set; }
@@ -980,12 +978,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void SelectedMod_Changed(object sender, SelectionChangedEventArgs e)
         {
             SelectedMod = CompressedMods_ListBox.SelectedItem as Mod;
-            if (SelectedMod != null && SelectedMod.Game > Mod.MEGame.ME1 && SelectedMod.PreferCompressed)
+            if (SelectedMod != null && SelectedMod.Game > MEGame.ME1 && SelectedMod.PreferCompressed)
             {
                 CompressPackages = true;
             }
 
-            if (SelectedMod != null && SelectedMod.Game == Mod.MEGame.ME1)
+            if (SelectedMod != null && SelectedMod.Game == MEGame.ME1)
             {
                 CompressPackages = false;
             }

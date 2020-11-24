@@ -6,7 +6,8 @@ using System.Linq;
 using System.Text;
 using MassEffect3.FileFormats.Coalesced;
 using MassEffect3.FileFormats.Huffman;
-using MassEffectModManagerCore.modmanager.helpers;
+using ME3ExplorerCore.Gammtek.Extensions.IO;
+using ME3ExplorerCore.Helpers;
 using Decoder = MassEffect3.FileFormats.Huffman.Decoder;
 using Encoder = MassEffect3.FileFormats.Huffman.Encoder;
 
@@ -87,8 +88,7 @@ namespace MassEffect3.FileFormats
                 {
                     var offset = (uint)data.Position;
                     data.WriteUInt16((ushort)key.Length);
-                    //data.WriteString(key, Encoding.UTF8);
-                    data.WriteStringUTF8(key);
+                    data.WriteString(key, Encoding.UTF8);
                     offsets.Add(new KeyValuePair<uint, uint>(key.HashCrc32(), offset));
                 }
 
@@ -325,9 +325,7 @@ namespace MassEffect3.FileFormats
 
                     data.Seek(8 + offset, SeekOrigin.Begin);
                     var length = data.ReadUInt16();
-                    //var text = data.ReadString(length, Encoding.UTF8);//original.
-                    var text = data.ReadStringUTF8(length);
-
+                    var text = data.ReadString(length, Encoding.UTF8);
                     if (text.HashCrc32() != hash)
                     {
                         throw new InvalidOperationException();

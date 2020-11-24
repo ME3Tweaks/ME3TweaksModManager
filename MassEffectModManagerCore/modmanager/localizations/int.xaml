@@ -38,8 +38,6 @@
     <system:String x:Key="string_ASIModManager">ASI Mod Manager</system:String>
     <system:String x:Key="string_ASIManagerTooltip">Manage ASI mods. For advanced users only.</system:String>
     <system:String x:Key="string_CustomDLCConflictDetector">Custom DLC Conflict Detector</system:String>
-    <system:String x:Key="string_GUICompact">Interface Scaling/Controller mod compatibility pack generator (ME3)</system:String>
-    <system:String x:Key="string_GUICompactTooltip">Scans ME3 mods for interface exports that are part of UI mods and will generate a patch mod if necessary</system:String>
     <system:String x:Key="string_BatchModInstaller">Batch Mod Installer</system:String>
     <system:String x:Key="string_Openmodslibrarydirectory">Open mods library directory</system:String>
     <system:String x:Key="string_Opensthemodlibraryfolder">Opens the mod library folder</system:String>
@@ -220,7 +218,6 @@
     <system:String x:Key="string_finishedCheckingBackups">Finished checking backups</system:String>
     <system:String xml:space="preserve" x:Key="string_dialog_optingIntoBeta">Opting into beta updates will allow Mod Manager to update to builds that have not yet been certified for wide deployment. These builds are not fully tested and may be unstable. Feedback on crashes on these builds is vital for improving ME3Tweaks Mod Manager. If you are not comfortable with unstable software, you should not enable this setting. You will have to manually downgrade if you wish to revert back to a stable version.\n\nEnable Beta Mode?</system:String>
     <system:String x:Key="string_enablingBetaMode">Enabling beta mode</system:String>
-    <system:String x:Key="string_controllerISMCompatibility">Interface Scaling Mod/Controller compatibility</system:String>
     <system:String x:Key="string_importAndManageMods">Import + manage mods</system:String>
     <system:String x:Key="string_libraryManagement">Library management</system:String>
     <system:String x:Key="string_optIntoBetaUpdates">Opt into beta updates</system:String>
@@ -318,10 +315,6 @@
     <system:String  x:Key="string_tooltip_installsCustomKeybindsOfYourDesignIntoTheGame">Installs Custom Keybinds of your design into the game</system:String>
     <system:String  x:Key="string_originIngameOverlayDisabler">Origin in-game overlay disabler</system:String>
     <system:String  x:Key="string_tooltip_oigDisabler">Installs a file that forcibly disables Origin in-game overlay</system:String>
-    <system:String x:Key="string_dialog_cantMakeCompatPackTextureModInstalled">A GUI compatibility pack cannot be generated against a game target that has been texture modded.</system:String>
-    <system:String x:Key="string_cannotGenerateCompatibilityPack">Cannot generate compatibility pack</system:String>
-    <system:String x:Key="string_installTheCompatibilityPackNowQuestion">Install the compatibility pack now?</system:String>
-    <system:String x:Key="string_compatibilityPackGenerated">Compatibility pack generated</system:String>
     <system:String x:Key="string_selectMod">Select mod</system:String>
     <!-- When no mod is selected -->
     <system:String x:Key="string_noTarget">No target</system:String>
@@ -638,37 +631,6 @@
     <!-- This is only seen in debug builds, but localize it anyways. -->
     <system:String  x:Key="string_deleteFromLibrary">Delete from library</system:String>
     <system:String  x:Key="string_visitWebsite">Visit website</system:String>
-
-    <!-- GUI Compatibility Generator -->
-    <system:String x:Key="string_preparingToScanGame">Preparing to scan game</system:String>
-    <system:String x:Key="string_pleaseWait">Please wait</system:String>
-    <system:String xml:space="preserve" x:Key="string_dialogWhatGuiCompatPackIsFor">A GUI compatibility mod is used to make SP Controller Support (version 2.34 or lower), Interface Scaling Mod, and Interface Scaling Add-on work with mods that modify the same files or include their own interface files. This is a critical step when using UI mods or you may experience softlocks or incorrect interfaces on screen.\n\nGenerate a GUI compatibility pack ONLY when you have installed all other non-texture mods as it is built against your current installation.\n\nGenerate compatibility pack?</system:String>
-    <system:String x:Key="string_confirmGeneration">Confirm generation</system:String>
-    <system:String x:Key="string_dialogNoUiModsAreInstalled">No UI mods are installed. GUI compatibility generator only works with SP Controller Mod (version 2.34 or lower), Interface Scaling Mod, and Interface Scaling Add-On.</system:String>
-    <system:String x:Key="string_noUiModsAreInstalled">No UI mods installed</system:String>
-    <system:String x:Key="string_preparingCompatGenerator">Preparing compatibility generator</system:String>
-    <system:String x:Key="string_dialogCannotGenerateCompatPackInvalidConfig">Cannot generate a compatibility pack: Both Interface Scaling Mod and SP Controller support are installed. These mods are not compatible with each other. You must use one or the other.</system:String>
-    <system:String x:Key="string_invalidConfiguration">Invalid configuration</system:String>
-    <system:String x:Key="string_downloadingUiLibrary">Downloading UI library</system:String>
-    <system:String x:Key="string_cannotGeneratorCompatPackCouldNotDownload">Cannot generate a compatibility pack: The required UI library could not be downloaded from ME3Tweaks. See the log for more information.</system:String>
-    <system:String x:Key="string_couldNotAcquireUiLibrary">Could not acquire UI library</system:String>
-    <system:String x:Key="string_scanningForGuiExports">Scanning for GUI exports</system:String>
-    <system:String x:Key="string_singularFile">file</system:String>
-    <!-- Singular version of file-->
-    <system:String x:Key="string_pluralFiles">files</system:String>
-    <!-- Plural version of file-->
-    <system:String x:Key="string_interp_XFilesNeedToBePatched">Number of files requiring patches: {0}</system:String>
-    <!-- 0 = number, 1 = singular/plural version of file -->
-    <system:String xml:space="preserve" x:Key="string_interp_compatPackModDescription">User generated compatibility pack made to inject proper interface files into other DLC mods from the game configuration. This pack was built against the following mods and should not be used against any other configuration.\n - {0}\n\nThis compatibility pack was generated at {1}</system:String>
-    <!-- 0 = bulleted dlc list, 1 = date time-->
-    <system:String x:Key="string_guiCompatibilityPack">GUI Compatibility Pack</system:String>
-    <system:String x:Key="string_preparingUiLibrary">Preparing UI library</system:String>
-    <system:String x:Key="string_decompressingData">Decompressing data</system:String>
-    <system:String x:Key="string_patchingFiles">Patching files</system:String>
-    <system:String x:Key="string_interp_patchedXY">Patched {0} {1}</system:String>
-    <!-- 0 = number, 1 = plural files/singular file-->
-    <system:String x:Key="string_noCompatPackRequired">No compatibility pack required</system:String>
-    <system:String x:Key="string_dialogNoCompatPackRequired">The current game configuration does not need a compatibility pack.</system:String>
 
     <!-- Installation Information -->
     <system:String x:Key="string_dialogRestoringFilesWhileAlotIsInstalledNotAllowed">Restoring files on a texture modded target is not allowed as it will introduce invalid texture pointers into the installation. Only full game restores are allowed while a game is texture modded.</system:String>
@@ -1734,7 +1696,7 @@
     <!-- Texture2D -->
     <system:String x:Key="string_error_couldNotFetchTextureData">Could not fetch texture data for texture {0} in file {1}</system:String>
     <!-- 0=Shown when checking textures during deployment. 1 = export object name, so just a long string ID. 1 = filepath-->
-    <system:String x:Key="string_error_me1TextureFileNotFound">Externally referenced texture file not found in game: {0}.</system:String>
+    <system:String x:Key="string_error_me1TextureFileNotFound">Externally referenced texture package not found in game: {0}.</system:String>
     <!-- 0= filepath -->
     <system:String x:Key="string_error_me23TextureTFCNotFound">Externally referenced texture cache not found: {0}.</system:String>
     <!-- 0=filepath -->

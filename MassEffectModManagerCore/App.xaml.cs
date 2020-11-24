@@ -21,13 +21,13 @@ using System.Linq;
 using System.Management;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
-using ME3Explorer.Packages;
-using MassEffectModManagerCore.modmanager.usercontrols;
+using System.Threading.Tasks;
 using AuthenticodeExaminer;
 using MassEffectModManagerCore.modmanager.asi;
-using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.windows;
-using Microsoft.AppCenter; // do not remove
+using ME3ExplorerCore;
+using ME3ExplorerCore.Packages;
+using Microsoft.AppCenter; // do not remove. It's used in release builds
 
 namespace MassEffectModManagerCore
 {
@@ -227,11 +227,11 @@ namespace MassEffectModManagerCore
 
                 Log.Information("The following backup paths are listed in the registry:");
                 Log.Information("Mass Effect ======");
-                Log.Information(BackupService.GetGameBackupPath(Mod.MEGame.ME1, true, true));
+                Log.Information(BackupService.GetGameBackupPath(MEGame.ME1, true, true));
                 Log.Information("Mass Effect 2 ====");
-                Log.Information(BackupService.GetGameBackupPath(Mod.MEGame.ME2, true, true));
+                Log.Information(BackupService.GetGameBackupPath(MEGame.ME2, true, true));
                 Log.Information("Mass Effect 3 ====");
-                Log.Information(BackupService.GetGameBackupPath(Mod.MEGame.ME3, true, true));
+                Log.Information(BackupService.GetGameBackupPath(MEGame.ME3, true, true));
 
                 //Build 104 changed location of settings from AppData to ProgramData.
                 if (!AppDataExistedAtBoot)
@@ -300,11 +300,15 @@ namespace MassEffectModManagerCore
                     Log.Error($"Unable to delete temporary files directory {Utilities.GetTempPath()}: {e.Message}");
                 }
 
-                Log.Information("Initializing package handlers");
-                MEPackageHandler.Initialize();
-
                 Log.Information("Ensuring default ASI assets are present");
                 ASIManager.ExtractDefaultASIResources();
+
+                Log.Information(@"Initializing ME3ExplorerCore library");
+                MEPackageHandler.GlobalSharedCacheEnabled = false; // Do not use the package caching system
+                CoreLib.InitLib(TaskScheduler.Current, x =>
+                {
+                    Log.Error($@"Error saving package: {x}");
+                });
 
                 collectHardwareInfo();
 

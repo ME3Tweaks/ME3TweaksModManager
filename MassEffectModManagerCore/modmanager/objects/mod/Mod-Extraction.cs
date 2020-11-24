@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -11,17 +9,17 @@ using System.Threading;
 using IniParser;
 using IniParser.Model;
 using IniParser.Parser;
-using MassEffectModManagerCore.gamefileformats.unreal;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
-using MassEffectModManagerCore.modmanager.usercontrols;
-using ME3Explorer.Packages;
+using ME3ExplorerCore.Helpers;
+using ME3ExplorerCore.Packages;
+using ME3ExplorerCore.Unreal;
+using ME3ExplorerCore.Unreal.Classes;
 using Microsoft.AppCenter.Crashes;
 using Serilog;
 using SevenZip;
 using SevenZip.EventArguments;
-using Threading;
 
 namespace MassEffectModManagerCore.modmanager
 {
@@ -267,32 +265,24 @@ namespace MassEffectModManagerCore.modmanager
                             while (true)
                             {
                                 var package = compressionQueue.Take();
-                                //updateTextCallback?.Invoke(M3L.GetString(M3L.string_interp_compressingX, Path.GetFileName(package)));
-                                FileInfo fileInfo = new FileInfo(package);
-                                var created = fileInfo.CreationTime; //File Creation
-                                var lastmodified = fileInfo.LastWriteTime;//File Modification
-                                
                                 var p = MEPackageHandler.OpenMEPackage(package);
-                                //Check if any compressed textures.
-                                bool shouldNotCompress = false;
-                                foreach (var texture in p.Exports.Where(x => x.IsTexture()))
-                                {
-                                    var storageType = Texture2D.GetTopMipStorageType(texture);
-                                    shouldNotCompress |= storageType == ME3Explorer.Unreal.StorageTypes.pccLZO || storageType == ME3Explorer.Unreal.StorageTypes.pccZlib;
-                                    if (!shouldNotCompress) break;
-                                }
-
+                                bool shouldNotCompress = Game == MEGame.ME1;
                                 if (!shouldNotCompress)
                                 {
+                                    //updateTextCallback?.Invoke(M3L.GetString(M3L.string_interp_compressingX, Path.GetFileName(package)));
+                                    FileInfo fileInfo = new FileInfo(package);
+                                    var created = fileInfo.CreationTime; //File Creation
+                                    var lastmodified = fileInfo.LastWriteTime;//File Modification
+
                                     compressedPackageCallback?.Invoke(M3L.GetString(M3L.string_interp_compressingX, Path.GetFileName(package)), compressedPackageCount, numberOfPackagesToCompress);
                                     Log.Information(@"Compressing package: " + package);
-                                    p.save(true);
+                                    p.Save(compress: true);
                                     File.SetCreationTime(package,created);
                                     File.SetLastWriteTime(package, lastmodified);
                                 }
                                 else
                                 {
-                                    Log.Information(@"Not compressing package due to file containing compressed textures: " + package);
+                                    Log.Information(@"Skipping compression for ME1 package file: " + package);
                                 }
 
 

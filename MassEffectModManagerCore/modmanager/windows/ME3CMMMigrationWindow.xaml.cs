@@ -11,6 +11,7 @@ using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
+using ME3ExplorerCore.Packages;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using Serilog;
@@ -169,7 +170,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                             {
                                 var gamepath = Directory.GetParent(line).FullName;
                                 Log.Information(@"Validating ME3CMM target: " + gamepath);
-                                GameTarget t = new GameTarget(Mod.MEGame.ME3, gamepath, false);
+                                GameTarget t = new GameTarget(MEGame.ME3, gamepath, false);
                                 var failureReason = t.ValidateTarget();
                                 if (failureReason == null)
                                 {

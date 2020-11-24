@@ -1,30 +1,25 @@
 ﻿using IniParser;
 using IniParser.Model;
-using IniParser.Parser;
-using MassEffectModManagerCore.gamefileformats;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.objects;
-using ME3Explorer;
-using ME3Explorer.Packages;
+using ME3ExplorerCore.Helpers;
 using Serilog;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
-using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.usercontrols;
+using ME3ExplorerCore.GameFilesystem;
+using ME3ExplorerCore.Packages;
+using ME3ExplorerCore.TLK.ME2ME3;
 using Microsoft.AppCenter.Analytics;
-using static MassEffectModManagerCore.modmanager.Mod;
 
 namespace MassEffectModManagerCore.modmanager.me3tweaks
 {
@@ -136,7 +131,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             SortedSet<string> requiredDLCFolders = new SortedSet<string>();
             var backupDir = BackupService.GetGameBackupPath(MEGame.ME3, true);
 
-            var backupDlcDir = MEDirectories.DLCPath(backupDir, MEGame.ME3);
+            var backupDlcDir = MEDirectories.GetDLCPath(MEGame.ME3, backupDir);
             DLCFolders = Directory.EnumerateDirectories(backupDlcDir).Select(x => Path.GetFileName(x)).ToList();
 
             int numTasks = 0;
@@ -242,7 +237,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     var vanillaTLK = VanillaDatabaseService.FetchBasegameFile(MEGame.ME3, filename);
                     if (vanillaTLK != null)
                     {
-                        var tf = new TalkFileME2ME3();
+                        var tf = new TalkFile();
                         tf.LoadTlkDataFromStream(vanillaTLK);
                         SetCurrentValueCallback?.Invoke(Interlocked.Increment(ref numDoneTLKSteps)); //decomp
                         foreach (var strnode in newstringnodes)
@@ -267,7 +262,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         Directory.CreateDirectory(outfolder);
                         string outfile = Path.Combine(outfolder, filename);
                         CLog.Information($@"{loggingPrefix} Saving TLK", Settings.LogModMakerCompiler);
-                        HuffmanCompressionME2ME3.SaveToTlkFile(outfile, tf.StringRefs);
+                        HuffmanCompression.SaveToTlkFile(outfile, tf.StringRefs);
                         CLog.Information($@"{loggingPrefix} Saved TLK to mod BASEGAME folder",
                             Settings.LogModMakerCompiler);
                         SetCurrentValueCallback?.Invoke(Interlocked.Increment(ref numDoneTLKSteps)); //recomp
@@ -326,7 +321,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 var backupDir = BackupService.GetGameBackupPath(MEGame.ME3, true);
                 if (backupDir != null)
                 {
-                    var backupDlcDir = MEDirectories.DLCPath(backupDir, MEGame.ME3);
+                    var backupDlcDir = MEDirectories.GetDLCPath(MEGame.ME3, backupDir);
                     var dlcFolders = Directory.EnumerateDirectories(backupDlcDir).Select(x => Path.GetFileName(x)).ToList();
                     allmixins = allmixins.Where(x => x.TargetModule == ModJob.JobHeader.BASEGAME
                                                      || x.TargetModule == ModJob.JobHeader.TESTPATCH
@@ -373,18 +368,18 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                             foreach (var file in mapping.Value)
                             {
                                 using var packageAsStream =
-                                    VanillaDatabaseService.FetchBasegameFile(Mod.MEGame.ME3,
+                                    VanillaDatabaseService.FetchBasegameFile(MEGame.ME3,
                                         Path.GetFileName(file.Key));
                                 using var decompressedStream = MEPackage.GetDecompressedPackageStream(packageAsStream, true);
                                 using var finalStream = MixinHandler.ApplyMixins(decompressedStream, file.Value,
                                     completedSingleApplicationCallback);
                                 CLog.Information(@"Compressing package to mod directory: " + file.Key, Settings.LogModMakerCompiler);
                                 finalStream.Position = 0;
-                                var package = MEPackageHandler.OpenMEPackage(finalStream);
+                                var package = MEPackageHandler.OpenMEPackageFromStream(finalStream);
                                 var outfile = Path.Combine(outdir, Path.GetFileName(file.Key));
-                                package.save(outfile, true); //set to true once compression bugs are fixed
-                                                             //finalStream.WriteToFile(outfile);
-                                                             //File.WriteAllBytes(outfile, finalStream.ToArray());
+                                package.Save(outfile, true, true, false); //set to true once compression bugs are fixed
+                                                                          //finalStream.WriteToFile(outfile);
+                                                                          //File.WriteAllBytes(outfile, finalStream.ToArray());
                             }
                         }
                         else
@@ -394,13 +389,13 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                             foreach (var file in mapping.Value)
                             {
                                 using var packageAsStream = VanillaDatabaseService.FetchFileFromVanillaSFAR(dlcFolderName, file.Key, forcedDLC: dlcPackage);
-                                using var finalStream = MixinHandler.ApplyMixins(packageAsStream, file.Value, completedSingleApplicationCallback); 
+                                using var finalStream = MixinHandler.ApplyMixins(packageAsStream, file.Value, completedSingleApplicationCallback);
                                 //as file comes from backup, we don't need to decompress it, it will always be decompressed in sfar
                                 CLog.Information(@"Compressing package to mod directory: " + file.Key, Settings.LogModMakerCompiler);
                                 finalStream.Position = 0;
-                                var package = MEPackageHandler.OpenMEPackage(finalStream);
+                                var package = MEPackageHandler.OpenMEPackageFromStream(finalStream);
                                 var outfile = Path.Combine(outdir, Path.GetFileName(file.Key));
-                                package.save(outfile, true);
+                                package.Save(outfile, true, true, true);
                             }
                         }
                     });
@@ -513,10 +508,10 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     coalescedFilemapping[fileNode.Name + @".xml"] = updatedDocumentText;
                 }
 
-                if (Settings.ModMakerAutoInjectCustomKeybindsOption && chunkName == @"BASEGAME" && KeybindsInjectorPanel.GetDefaultKeybindsOverride(Mod.MEGame.ME3) != null)
+                if (Settings.ModMakerAutoInjectCustomKeybindsOption && chunkName == @"BASEGAME" && KeybindsInjectorPanel.GetDefaultKeybindsOverride(MEGame.ME3) != null)
                 {
-                    Log.Information(@"Injecting keybinds file into mod: " + KeybindsInjectorPanel.GetDefaultKeybindsOverride(Mod.MEGame.ME3));
-                    coalescedFilemapping[@"BioInput.xml"] = File.ReadAllText(KeybindsInjectorPanel.GetDefaultKeybindsOverride(Mod.MEGame.ME3));
+                    Log.Information(@"Injecting keybinds file into mod: " + KeybindsInjectorPanel.GetDefaultKeybindsOverride(MEGame.ME3));
+                    coalescedFilemapping[@"BioInput.xml"] = File.ReadAllText(KeybindsInjectorPanel.GetDefaultKeybindsOverride(MEGame.ME3));
                 }
 
                 CLog.Information($@"{loggingPrefix} Recompiling coalesced file", Settings.LogModMakerCompiler);

@@ -7,7 +7,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using IniParser.Parser;
-using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager.gameini;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
@@ -15,7 +14,9 @@ using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
-using ME3Explorer.Packages;
+using ME3ExplorerCore.GameFilesystem;
+using ME3ExplorerCore.Gammtek.Extensions.Collections.Generic;
+using ME3ExplorerCore.Packages;
 using Microsoft.AppCenter.Analytics;
 using Serilog;
 using SevenZip;
@@ -25,13 +26,13 @@ namespace MassEffectModManagerCore.modmanager
     [DebuggerDisplay("Mod - {ModName}")] //do not localize
     public partial class Mod : INotifyPropertyChanged
     {
-        public enum MEGame
-        {
-            Unknown = 0,
-            ME1,
-            ME2,
-            ME3
-        }
+        //public enum MEGame
+        //{
+        //    Unknown = 0,
+        //    ME1,
+        //    ME2,
+        //    ME3
+        //}
 
         /// <summary>
         /// The default website value, to indicate one was not set. This value must be set to a valid url or navigation request in UI binding may not work.
@@ -756,7 +757,7 @@ namespace MassEffectModManagerCore.modmanager
                     List<string> addFilesSourceSplit = null;
                     List<string> addFilesTargetSplit = null;
                     List<string> addFilesReadOnlySplit = null;
-                    if (Game == Mod.MEGame.ME3 || header == ModJob.JobHeader.BASEGAME)
+                    if (Game == MEGame.ME3 || header == ModJob.JobHeader.BASEGAME)
                     {
 
                         if (addFilesSourceList != null && addFilesTargetList != null)
@@ -1340,6 +1341,7 @@ namespace MassEffectModManagerCore.modmanager
                         return;
                     }
 
+
                     var failurereason = localizationJob.AddFileToInstall($@"BIOGame/DLC/{destDlc}/{MEDirectories.CookedName(Game)}/{fname}", f, this);
                     if (failurereason != null)
                     {
@@ -1581,12 +1583,12 @@ namespace MassEffectModManagerCore.modmanager
                     {
                         allPossibleTargets.AddRange(job.AlternateFiles.Where(x =>
                             x.Operation == AlternateFile.AltFileOperation.OP_INSTALL ||
-                            x.Operation == AlternateFile.AltFileOperation.OP_SUBSTITUTE).Select(x => Path.Combine(MEDirectories.DLCPath("", Game), x.ModFile)));
+                            x.Operation == AlternateFile.AltFileOperation.OP_SUBSTITUTE).Select(x => Path.Combine(MEDirectories.GetDLCPath(Game, ""), x.ModFile)));
                         allPossibleTargets.AddRange(job.AlternateFiles.Where(x =>
-                            x.Operation == AlternateFile.AltFileOperation.OP_APPLY_MULTILISTFILES).Select(x => Path.Combine(MEDirectories.DLCPath("", Game), x.MultiListTargetPath)));
+                            x.Operation == AlternateFile.AltFileOperation.OP_APPLY_MULTILISTFILES).Select(x => Path.Combine(MEDirectories.GetDLCPath(Game, ""), x.MultiListTargetPath)));
                         allPossibleTargets.AddRange(job.AlternateDLCs.Where(x =>
                             x.Operation == AlternateDLC.AltDLCOperation.OP_ADD_FOLDERFILES_TO_CUSTOMDLC ||
-                            x.Operation == AlternateDLC.AltDLCOperation.OP_ADD_MULTILISTFILES_TO_CUSTOMDLC).Select(x => Path.Combine(MEDirectories.DLCPath("", Game), x.DestinationDLCFolder) + Path.DirectorySeparatorChar));
+                            x.Operation == AlternateDLC.AltDLCOperation.OP_ADD_MULTILISTFILES_TO_CUSTOMDLC).Select(x => Path.Combine(MEDirectories.GetDLCPath(Game, ""), x.DestinationDLCFolder) + Path.DirectorySeparatorChar));
                     }
                     else
                     {
@@ -1597,7 +1599,7 @@ namespace MassEffectModManagerCore.modmanager
                             x.Operation == AlternateFile.AltFileOperation.OP_APPLY_MULTILISTFILES).Select(x => x.MultiListTargetPath));
                         allPossibleTargets.AddRange(job.AlternateDLCs.Where(x =>
                             x.Operation == AlternateDLC.AltDLCOperation.OP_ADD_FOLDERFILES_TO_CUSTOMDLC ||
-                            x.Operation == AlternateDLC.AltDLCOperation.OP_ADD_MULTILISTFILES_TO_CUSTOMDLC).Select(x => Path.Combine(MEDirectories.DLCPath("", Game), x.DestinationDLCFolder) + Path.DirectorySeparatorChar));
+                            x.Operation == AlternateDLC.AltDLCOperation.OP_ADD_MULTILISTFILES_TO_CUSTOMDLC).Select(x => Path.Combine(MEDirectories.GetDLCPath(Game, ""), x.DestinationDLCFolder) + Path.DirectorySeparatorChar));
 
                     }
 

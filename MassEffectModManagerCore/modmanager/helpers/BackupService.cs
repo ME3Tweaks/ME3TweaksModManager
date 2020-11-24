@@ -9,6 +9,7 @@ using FontAwesome.WPF;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
+using ME3ExplorerCore.Packages;
 using Octokit;
 using Serilog;
 using Application = System.Windows.Application;
@@ -71,21 +72,21 @@ namespace MassEffectModManagerCore.modmanager.helpers
         private static bool _me1BackedUp;
         public static bool ME1BackedUp
         {
-            get => GetGameBackupPath(Mod.MEGame.ME1, true) != null;
+            get => GetGameBackupPath(MEGame.ME1, true) != null;
             private set => SetProperty(ref _me1BackedUp, value);
         }
 
         private static bool _me2BackedUp;
         public static bool ME2BackedUp
         {
-            get => GetGameBackupPath(Mod.MEGame.ME2, true) != null;
+            get => GetGameBackupPath(MEGame.ME2, true) != null;
             private set => SetProperty(ref _me2BackedUp, value);
         }
 
         private static bool _me3BackedUp;
         public static bool ME3BackedUp
         {
-            get => GetGameBackupPath(Mod.MEGame.ME3, true) != null;
+            get => GetGameBackupPath(MEGame.ME3, true) != null;
             private set => SetProperty(ref _me3BackedUp, value);
         }
 
@@ -139,31 +140,31 @@ namespace MassEffectModManagerCore.modmanager.helpers
         /// </summary>
         /// <param name="window">Main window which houses the installation targets list. If htis is null, the game will behave as if it was installed.</param>
         /// <param name="game">Game to refresh. If not specified all strings will be updated</param>
-        public static void RefreshBackupStatus(MainWindow window, Mod.MEGame game = Mod.MEGame.Unknown)
+        public static void RefreshBackupStatus(MainWindow window, MEGame game = MEGame.Unknown)
         {
             Application.Current.Dispatcher.Invoke(delegate
             {
 
-                if (game == Mod.MEGame.ME1 || game == Mod.MEGame.Unknown)
+                if (game == MEGame.ME1 || game == MEGame.Unknown)
                 {
-                    RefreshBackupStatus(Mod.MEGame.ME1, window == null || window.InstallationTargets.Any(x => x.Game == Mod.MEGame.ME1),
+                    RefreshBackupStatus(MEGame.ME1, window == null || window.InstallationTargets.Any(x => x.Game == MEGame.ME1),
                         ME1BackedUp, msg => ME1BackupStatus = msg, msg => ME1BackupStatusTooltip = msg);
                 }
 
-                if (game == Mod.MEGame.ME2 || game == Mod.MEGame.Unknown)
+                if (game == MEGame.ME2 || game == MEGame.Unknown)
                 {
-                    RefreshBackupStatus(Mod.MEGame.ME2, window == null || window.InstallationTargets.Any(x => x.Game == Mod.MEGame.ME2),
+                    RefreshBackupStatus(MEGame.ME2, window == null || window.InstallationTargets.Any(x => x.Game == MEGame.ME2),
                         ME2BackedUp, msg => ME2BackupStatus = msg, msg => ME2BackupStatusTooltip = msg);
                 }
-                if (game == Mod.MEGame.ME3 || game == Mod.MEGame.Unknown)
+                if (game == MEGame.ME3 || game == MEGame.Unknown)
                 {
-                    RefreshBackupStatus(Mod.MEGame.ME3, window == null || window.InstallationTargets.Any(x => x.Game == Mod.MEGame.ME3), ME3BackedUp,
+                    RefreshBackupStatus(MEGame.ME3, window == null || window.InstallationTargets.Any(x => x.Game == MEGame.ME3), ME3BackedUp,
                         msg => ME3BackupStatus = msg, msg => ME3BackupStatusTooltip = msg);
                 }
             });
         }
 
-        private static void RefreshBackupStatus(Mod.MEGame game, bool installed, bool backedUp, Action<string> setStatus, Action<string> setStatusToolTip)
+        private static void RefreshBackupStatus(MEGame game, bool installed, bool backedUp, Action<string> setStatus, Action<string> setStatusToolTip)
         {
             //if (installed)
             //{
@@ -253,13 +254,13 @@ namespace MassEffectModManagerCore.modmanager.helpers
         /// </summary>
         /// <param name="game"></param>
         /// <returns></returns>
-        internal static string GetBackupStatus(Mod.MEGame game)
+        internal static string GetBackupStatus(MEGame game)
         {
             switch (game)
             {
-                case Mod.MEGame.ME1: return ME1BackupStatus;
-                case Mod.MEGame.ME2: return ME2BackupStatus;
-                case Mod.MEGame.ME3: return ME3BackupStatus;
+                case MEGame.ME1: return ME1BackupStatus;
+                case MEGame.ME2: return ME2BackupStatus;
+                case MEGame.ME3: return ME3BackupStatus;
             }
 
             return null;
@@ -270,13 +271,13 @@ namespace MassEffectModManagerCore.modmanager.helpers
         /// </summary>
         /// <param name="game"></param>
         /// <returns></returns>
-        internal static string GetBackupStatusTooltip(Mod.MEGame game)
+        internal static string GetBackupStatusTooltip(MEGame game)
         {
             switch (game)
             {
-                case Mod.MEGame.ME1: return ME1BackupStatusTooltip;
-                case Mod.MEGame.ME2: return ME2BackupStatusTooltip;
-                case Mod.MEGame.ME3: return ME3BackupStatusTooltip;
+                case MEGame.ME1: return ME1BackupStatusTooltip;
+                case MEGame.ME2: return ME2BackupStatusTooltip;
+                case MEGame.ME3: return ME3BackupStatusTooltip;
             }
 
             return null;
@@ -288,71 +289,71 @@ namespace MassEffectModManagerCore.modmanager.helpers
         /// <param name="game"></param>
         /// <param name="checkingBackup"></param>
         /// <param name="pleaseWait"></param>
-        public static void SetStatus(Mod.MEGame game, string status, string tooltip)
+        public static void SetStatus(MEGame game, string status, string tooltip)
         {
             switch (game)
             {
-                case Mod.MEGame.ME1:
+                case MEGame.ME1:
                     ME1BackupStatus = status;
                     ME1BackupStatusTooltip = tooltip;
                     break;
-                case Mod.MEGame.ME2:
+                case MEGame.ME2:
                     ME2BackupStatus = status;
                     ME2BackupStatusTooltip = tooltip;
                     break;
-                case Mod.MEGame.ME3:
+                case MEGame.ME3:
                     ME3BackupStatus = status;
                     ME3BackupStatusTooltip = tooltip;
                     break;
             }
         }
 
-        public static void SetActivity(Mod.MEGame game, bool p1)
+        public static void SetActivity(MEGame game, bool p1)
         {
             switch (game)
             {
-                case Mod.MEGame.ME1:
+                case MEGame.ME1:
                     ME1BackupActivity = p1;
                     break;
-                case Mod.MEGame.ME2:
+                case MEGame.ME2:
                     ME2BackupActivity = p1;
                     break;
-                case Mod.MEGame.ME3:
+                case MEGame.ME3:
                     ME3BackupActivity = p1;
                     break;
             }
 
         }
 
-        public static void SetIcon(Mod.MEGame game, FontAwesomeIcon p1)
+        public static void SetIcon(MEGame game, FontAwesomeIcon p1)
         {
             switch (game)
             {
-                case Mod.MEGame.ME1:
+                case MEGame.ME1:
                     ME1ActivityIcon = p1;
                     break;
-                case Mod.MEGame.ME2:
+                case MEGame.ME2:
                     ME2ActivityIcon = p1;
                     break;
-                case Mod.MEGame.ME3:
+                case MEGame.ME3:
                     ME3ActivityIcon = p1;
                     break;
             }
         }
 
 
-        public static string GetGameBackupPath(Mod.MEGame game, bool forceCmmVanilla = true, bool logReturnedPath = false, bool forceReturnPath = false)
+        public static string GetGameBackupPath(MEGame game, bool forceCmmVanilla = true, bool logReturnedPath = false, bool forceReturnPath = false)
         {
             string path;
             switch (game)
             {
-                case Mod.MEGame.ME1:
+                case MEGame.ME1:
                     path = Utilities.GetRegistrySettingString(App.BACKUP_REGISTRY_KEY, @"ME1VanillaBackupLocation");
                     break;
-                case Mod.MEGame.ME2:
+                case MEGame.ME2:
                     path = Utilities.GetRegistrySettingString(App.BACKUP_REGISTRY_KEY, @"ME2VanillaBackupLocation");
                     break;
-                case Mod.MEGame.ME3:
+                case MEGame.ME3:
                     //Check for backup via registry - Use Mod Manager's game backup key to find backup.
                     path = Utilities.GetRegistrySettingString(App.REGISTRY_KEY_ME3CMM, @"VanillaCopyLocation");
                     break;
@@ -406,22 +407,22 @@ namespace MassEffectModManagerCore.modmanager.helpers
             return path;
         }
 
-        public static void ResetIcon(Mod.MEGame game)
+        public static void ResetIcon(MEGame game)
         {
             SetIcon(game, FontAwesomeIcon.TimesCircle);
         }
 
-        public static void SetBackedUp(Mod.MEGame game, bool b)
+        public static void SetBackedUp(MEGame game, bool b)
         {
             switch (game)
             {
-                case Mod.MEGame.ME1:
+                case MEGame.ME1:
                     ME1BackedUp = b;
                     break;
-                case Mod.MEGame.ME2:
+                case MEGame.ME2:
                     ME2BackedUp = b;
                     break;
-                case Mod.MEGame.ME3:
+                case MEGame.ME3:
                     ME3BackedUp = b;
                     break;
             }
@@ -431,9 +432,9 @@ namespace MassEffectModManagerCore.modmanager.helpers
 
         public static void SetInstallStatuses(ObservableCollectionExtended<GameTarget> installationTargets)
         {
-            ME1Installed = installationTargets.Any(x => x.Game == Mod.MEGame.ME1);
-            ME2Installed = installationTargets.Any(x => x.Game == Mod.MEGame.ME2);
-            ME3Installed = installationTargets.Any(x => x.Game == Mod.MEGame.ME3);
+            ME1Installed = installationTargets.Any(x => x.Game == MEGame.ME1);
+            ME2Installed = installationTargets.Any(x => x.Game == MEGame.ME2);
+            ME3Installed = installationTargets.Any(x => x.Game == MEGame.ME3);
             StaticPropertyChanged?.Invoke(null, new PropertyChangedEventArgs(nameof(AnyGameMissingBackup)));
             StaticBackupStateChanged?.Invoke(null, null);
         }

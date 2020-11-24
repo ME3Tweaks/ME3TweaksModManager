@@ -1,6 +1,4 @@
-﻿using MassEffectModManagerCore.GameDirectories;
-using MassEffectModManagerCore.gamefileformats.sfar;
-using MassEffectModManagerCore.modmanager.helpers;
+﻿using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
@@ -10,15 +8,13 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
+using ME3ExplorerCore.GameFilesystem;
+using ME3ExplorerCore.Helpers;
+using ME3ExplorerCore.Packages;
+using ME3ExplorerCore.Unreal;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -75,7 +71,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (fileTofetch.Module == @"BASEGAME")
                 {
-                    var fetchedfilestream = VanillaDatabaseService.FetchBasegameFile(Mod.MEGame.ME3, fileTofetch.Filename);
+                    var fetchedfilestream = VanillaDatabaseService.FetchBasegameFile(MEGame.ME3, fileTofetch.Filename);
                     fetchedfilestream.WriteToFile(m.FileName);
                 }
                 else
@@ -101,12 +97,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (fileTofetch.Module == @"BASEGAME")
                 {
-                    var fetchedfilestream = VanillaDatabaseService.FetchBasegameFile(Mod.MEGame.ME2, fileTofetch.Filename);
+                    var fetchedfilestream = VanillaDatabaseService.FetchBasegameFile(MEGame.ME2, fileTofetch.Filename);
                     fetchedfilestream.WriteToFile(m.FileName);
                 }
                 else
                 {
-                    var fetchedfilestream = VanillaDatabaseService.FetchME1ME2DLCFile(Mod.MEGame.ME2, fileTofetch.Module, fileTofetch.Filename);
+                    var fetchedfilestream = VanillaDatabaseService.FetchME1ME2DLCFile(MEGame.ME2, fileTofetch.Module, fileTofetch.Filename);
                     fetchedfilestream.WriteToFile(m.FileName);
                 }
             }
@@ -129,12 +125,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (fileTofetch.Module == @"BASEGAME")
                 {
-                    var fetchedfilestream = VanillaDatabaseService.FetchBasegameFile(Mod.MEGame.ME1, fileTofetch.Filename);
+                    var fetchedfilestream = VanillaDatabaseService.FetchBasegameFile(MEGame.ME1, fileTofetch.Filename);
                     fetchedfilestream.WriteToFile(m.FileName);
                 }
                 else
                 {
-                    var fetchedfilestream = VanillaDatabaseService.FetchME1ME2DLCFile(Mod.MEGame.ME1, fileTofetch.Module, fileTofetch.Filename);
+                    var fetchedfilestream = VanillaDatabaseService.FetchME1ME2DLCFile(MEGame.ME1, fileTofetch.Module, fileTofetch.Filename);
                     fetchedfilestream.WriteToFile(m.FileName);
                 }
             }
@@ -193,18 +189,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void LoadME1FilesList()
         {
             var me1files = new List<BackupFile>();
-            var bup = BackupService.GetGameBackupPath(Mod.MEGame.ME1);
+            var bup = BackupService.GetGameBackupPath(MEGame.ME1);
             if (bup != null)
             {
-                var target = new GameTarget(Mod.MEGame.ME1, bup, false);
-                var cookedPath = MEDirectories.CookedPath(target);
+                var target = new GameTarget(MEGame.ME1, bup, false);
+                var cookedPath = M3Directories.GetCookedPath(target);
                 foreach (var f in Extensions.GetFiles(cookedPath, @"\.u|\.upk|\.sfm", SearchOption.AllDirectories))
                 {
                     me1files.Add(new BackupFile(@"BASEGAME", Path.GetFileName(f)));
                 }
                 me1files.Sort(); //sort basegame
 
-                var dlcDir = MEDirectories.DLCPath(target);
+                var dlcDir = M3Directories.GetDLCPath(target);
                 var officialDLC = VanillaDatabaseService.GetInstalledOfficialDLC(target);
                 foreach (var v in officialDLC)
                 {
@@ -234,18 +230,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             var me2files = new List<BackupFile>();
 
-            var bup = BackupService.GetGameBackupPath(Mod.MEGame.ME2);
+            var bup = BackupService.GetGameBackupPath(MEGame.ME2);
             if (bup != null)
             {
-                var target = new GameTarget(Mod.MEGame.ME2, bup, false);
-                var cookedPath = MEDirectories.CookedPath(target);
+                var target = new GameTarget(MEGame.ME2, bup, false);
+                var cookedPath = M3Directories.GetCookedPath(target);
                 foreach (var f in Extensions.GetFiles(cookedPath, @"\.pcc|\.tfc|\.afc|\.bin|\.tlk", SearchOption.AllDirectories))
                 {
                     me2files.Add(new BackupFile(@"BASEGAME", Path.GetFileName(f)));
                 }
                 me2files.Sort(); //sort basegame
 
-                var dlcDir = MEDirectories.DLCPath(target);
+                var dlcDir = M3Directories.GetDLCPath(target);
                 var officialDLC = VanillaDatabaseService.GetInstalledOfficialDLC(target);
                 foreach (var v in officialDLC)
                 {
@@ -326,18 +322,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void LoadME3FilesList()
         {
             var me3files = new List<BackupFile>();
-            var bup = BackupService.GetGameBackupPath(Mod.MEGame.ME3);
+            var bup = BackupService.GetGameBackupPath(MEGame.ME3);
             if (bup != null)
             {
-                var target = new GameTarget(Mod.MEGame.ME3, bup, false);
-                var cookedPath = MEDirectories.CookedPath(target);
+                var target = new GameTarget(MEGame.ME3, bup, false);
+                var cookedPath = M3Directories.GetCookedPath(target);
                 foreach (var f in Extensions.GetFiles(cookedPath, @"\.pcc|\.tfc|\.afc|\.bin|\.tlk", SearchOption.AllDirectories))
                 {
                     me3files.Add(new BackupFile(@"BASEGAME", Path.GetFileName(f)));
                 }
                 me3files.Sort(); //sort basegame
 
-                var dlcDir = MEDirectories.DLCPath(target);
+                var dlcDir = M3Directories.GetDLCPath(target);
                 var officialDLC = VanillaDatabaseService.GetInstalledOfficialDLC(target);
                 foreach (var v in officialDLC)
                 {
@@ -356,7 +352,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
 
                 //TESTPATCH
-                var tpPath = ME3Directory.GetTestPatchPath(target);
+                var tpPath = M3Directories.GetTestPatchSFARPath(target);
                 if (File.Exists(tpPath))
                 {
                     var filesToAdd = new List<BackupFile>();

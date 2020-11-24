@@ -17,6 +17,7 @@ using System.Windows.Navigation;
 using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.windows;
+using ME3ExplorerCore.Packages;
 using Microsoft.AppCenter.Analytics;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -186,7 +187,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public ObservableCollectionExtended<Mod> ModsToInstall { get; } = new ObservableCollectionExtended<Mod>();
         public ObservableCollectionExtended<string> ModsMissing { get; } = new ObservableCollectionExtended<string>();
 
-        public Mod.MEGame Game { get; private set; }
+        public MEGame Game { get; private set; }
         public string QueueName { get; private set; }
         public string QueueDescription { get; private set; }
 
@@ -206,7 +207,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (Path.GetExtension(queueFile) == @".biq")
             {
                 //New Mod Manager 6 format
-                if (Enum.TryParse<Mod.MEGame>(lines[line], out var game))
+                if (Enum.TryParse<MEGame>(lines[line], out var game))
                 {
                     result.Game = game;
                     line++;
@@ -215,7 +216,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             else
             {
                 //Old Mod Manager 5 format. This code is only used for transition purposes
-                result.Game = Mod.MEGame.ME3;
+                result.Game = MEGame.ME3;
             }
 
             result.QueueName = lines[line];

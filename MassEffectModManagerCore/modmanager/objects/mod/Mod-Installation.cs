@@ -5,9 +5,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
-using MassEffectModManagerCore.GameDirectories;
+
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.objects;
+using ME3ExplorerCore.GameFilesystem;
+using ME3ExplorerCore.Packages;
 using Serilog;
 using SevenZip;
 
@@ -23,7 +25,7 @@ namespace MassEffectModManagerCore.modmanager
         public (Dictionary<ModJob, (Dictionary<string, InstallSourceFile> unpackedJobMapping, List<string> dlcFoldersBeingInstalled)>, List<(ModJob job, string sfarPath, Dictionary<string, InstallSourceFile>)>) GetInstallationQueues(GameTarget gameTarget)
         {
             if (IsInArchive) Archive = new SevenZipExtractor(ArchivePath); //load archive file for inspection
-            var gameDLCPath = MEDirectories.DLCPath(gameTarget);
+            var gameDLCPath = M3Directories.GetDLCPath(gameTarget);
             var customDLCMapping = InstallationJobs.FirstOrDefault(x => x.Header == ModJob.JobHeader.CUSTOMDLC)?.CustomDLCFolderMapping;
             if (customDLCMapping != null)
             {
@@ -191,9 +193,9 @@ namespace MassEffectModManagerCore.modmanager
                 {
                     #region Installation: DLC Unpacked and SFAR (ME3 ONLY)
 
-                    if (MEDirectories.IsOfficialDLCInstalled(job.Header, gameTarget))
+                    if (M3Directories.IsOfficialDLCInstalled(job.Header, gameTarget))
                     {
-                        string sfarPath = job.Header == ModJob.JobHeader.TESTPATCH ? ME3Directory.GetTestPatchPath(gameTarget) : Path.Combine(gameDLCPath, ModJob.GetHeadersToDLCNamesMap(MEGame.ME3)[job.Header], @"CookedPCConsole", @"Default.sfar");
+                        string sfarPath = job.Header == ModJob.JobHeader.TESTPATCH ? M3Directories.GetTestPatchSFARPath(gameTarget) : Path.Combine(gameDLCPath, ModJob.GetHeadersToDLCNamesMap(MEGame.ME3)[job.Header], @"CookedPCConsole", @"Default.sfar");
 
 
                         if (File.Exists(sfarPath))
@@ -224,7 +226,7 @@ namespace MassEffectModManagerCore.modmanager
                 {
                     #region Installation: DLC Unpacked (ME1/ME2 ONLY)
                     //Unpacked
-                    if (MEDirectories.IsOfficialDLCInstalled(job.Header, gameTarget))
+                    if (M3Directories.IsOfficialDLCInstalled(job.Header, gameTarget))
                     {
                         var installationMapping = new CaseInsensitiveDictionary<InstallSourceFile>();
                         unpackedJobInstallationMapping[job] = (installationMapping, new List<string>());
@@ -405,7 +407,7 @@ namespace MassEffectModManagerCore.modmanager
                 }
                 return x;
             });
-            var installedDLC = MEDirectories.GetInstalledDLC(gameTarget);
+            var installedDLC = M3Directories.GetInstalledDLC(gameTarget);
             return requiredDLC.Except(installedDLC).ToList();
         }
 

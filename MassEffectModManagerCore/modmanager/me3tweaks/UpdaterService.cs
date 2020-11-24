@@ -6,22 +6,18 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Xml.Linq;
-using ByteSizeLib;
-
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.ui;
-using ME3Explorer.Packages;
+using ME3ExplorerCore.Compression;
+using ME3ExplorerCore.Helpers;
+using ME3ExplorerCore.Packages;
 using Microsoft.AppCenter.Crashes;
-using Newtonsoft.Json;
 using Serilog;
-using SevenZip;
 
 namespace MassEffectModManagerCore.modmanager.me3tweaks
 {
@@ -194,7 +190,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                         CLog.Information($" >> Decompressing compressed package for update comparison check: {serverFile.relativefilepath}", Settings.LogModUpdater);
                                         qPackage = MEPackageHandler.OpenMEPackage(localFile);
                                         MemoryStream tStream = new MemoryStream();
-                                        tStream = qPackage.saveToStream(includeAdditionalPackagesToCook: true);
+                                        tStream = qPackage.SaveToStream(false);
                                         localMd5 = Utilities.CalculateMD5(tStream);
                                         localSize = tStream.Length;
                                     }
@@ -325,7 +321,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
                     //Decompress file
                     MemoryStream decompressedStream = new MemoryStream();
-                    SevenZipHelper.LZMA.DecompressLZMAStream(downloadedFile.result, decompressedStream);
+                    LZMA.DecompressLZMAStream(downloadedFile.result, decompressedStream);
                     //SevenZipExtractor.DecompressStream(downloadedFile.result, decompressedStream, null, null);
 
                     //Hash check output
@@ -428,7 +424,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             Directory.CreateDirectory(Directory.GetParent(destPath).FullName);
 
             var src = File.ReadAllBytes(sourcePath);
-            var compressedBytes = SevenZipHelper.LZMA.Compress(src);
+            var compressedBytes = LZMA.Compress(src);
             byte[] fixedBytes = new byte[compressedBytes.Count() + 8]; //needs 8 byte header written into it (only mem version needs this)
             Buffer.BlockCopy(compressedBytes, 0, fixedBytes, 0, 5);
             fixedBytes.OverwriteRange(5, BitConverter.GetBytes((int)new FileInfo(sourcePath).Length));
@@ -543,10 +539,10 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             public ObservableCollectionExtended<SourceFile> applicableUpdates { get; } = new ObservableCollectionExtended<SourceFile>();
             public ObservableCollectionExtended<string> filesToDelete { get; } = new ObservableCollectionExtended<string>();
             public bool CanUpdate { get; internal set; } = true; //Default to true
-            public string TotalBytesHR => ByteSize.FromBytes(TotalBytesToDownload).ToString();
+            public string TotalBytesHR => FileSize.FormatSize(TotalBytesToDownload);
             public string RemainingDataToDownload
             {
-                get => (TotalBytesToDownload - CurrentBytesDownloaded) > 0 ? ByteSize.FromBytes(TotalBytesToDownload - CurrentBytesDownloaded).ToString(@"0.00") : "";
+                get => (TotalBytesToDownload - CurrentBytesDownloaded) > 0 ? FileSize.FormatSize(TotalBytesToDownload - CurrentBytesDownloaded) : "";
                 set { } //do nothing.
             }
 

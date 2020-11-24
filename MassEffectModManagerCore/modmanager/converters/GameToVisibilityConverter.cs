@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Data;
+using ME3ExplorerCore.Packages;
 
 namespace MassEffectModManagerCore.modmanager.converters
 {
@@ -23,9 +24,9 @@ namespace MassEffectModManagerCore.modmanager.converters
                     inverted = splitparms.Any(x => x == "Not");
                     gameStr = splitparms.Last();
                 }
-                if (Enum.TryParse(gameStr, out Mod.MEGame parameterGame))
+                if (Enum.TryParse(gameStr, out MEGame parameterGame))
                 {
-                    if (inverted ^ parameterGame == (Mod.MEGame)value) return Visibility.Visible;
+                    if (inverted ^ parameterGame == (MEGame)value) return Visibility.Visible;
                 }
             }
             return Visibility.Collapsed;
