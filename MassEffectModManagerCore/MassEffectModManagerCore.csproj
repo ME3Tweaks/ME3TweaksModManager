@@ -23,6 +23,7 @@
 		<AssemblyName>ME3TweaksModManager</AssemblyName>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
+		<UserSecretsId>7b27ce2b-30bb-4b0a-b86c-79c02467be9f</UserSecretsId>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -188,6 +189,7 @@
 		<PackageReference Include="Serilog.Sinks.Debug" Version="1.0.1" />
 		<PackageReference Include="Serilog.Sinks.RollingFile.Extension" Version="2.0.2" />
 		<PackageReference Include="SSH.NET" Version="2016.1.0" />
+		<PackageReference Include="Trinet.Core.IO.Ntfs" Version="4.1.1" />
 		<PackageReference Include="WatsonWebsocket" Version="2.2.0.8" />
 		<PackageReference Include="WindowsAPICodePack-Shell" Version="1.1.1" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.0" />
