@@ -244,7 +244,7 @@ namespace MassEffectModManagerCore.gamefileformats.unreal
             else if (mipToLoad.storageType == StorageTypes.extUnc || mipToLoad.storageType == StorageTypes.extLZO || mipToLoad.storageType == StorageTypes.extZlib)
             {
                 string filename = null;
-                List<string> loadedFiles = MELoadedFiles.GetAllGameFiles(target, false, false);
+                List<string> loadedFiles = MELoadedFiles.GetAllGameFiles(target, false, true);
                 if (mipToLoad.Export.Game == Mod.MEGame.ME1)
                 {
                     var fullPath = loadedFiles.FirstOrDefault(x => Path.GetFileName(x).Equals(mipToLoad.TextureCacheName, StringComparison.InvariantCultureIgnoreCase));
@@ -274,8 +274,7 @@ namespace MassEffectModManagerCore.gamefileformats.unreal
                     else
                     {
                         var tfcs = loadedFiles.Where(x => x.EndsWith(@".tfc")).ToList();
-
-                        var fullPath = loadedFiles.FirstOrDefault(x => Path.GetFileName(x).Equals(archive, StringComparison.InvariantCultureIgnoreCase));
+                        var fullPath = tfcs.FirstOrDefault(x => Path.GetFileName(x).Equals(archive, StringComparison.InvariantCultureIgnoreCase));
                         if (fullPath != null)
                         {
                             filename = fullPath;

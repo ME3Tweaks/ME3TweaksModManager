@@ -146,6 +146,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     //Mods cannot include metacmm files
                     item.Errors.Add(M3L.GetString(M3L.string_interp_modReferencesMetaCmm, m));
                 }
+                blocking = true;
             }
 
             // Check for ALOT markers
@@ -163,20 +164,20 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     if (package.NameCount == 0)
                     {
                         item.Errors.Add(M3L.GetString(M3L.string_interp_packageFileNoNames, p));
-                        item.DeploymentBlocking = true;
+                        blocking = true;
                     }
 
                     if (package.ImportCount == 0)
                     {
                         // Is there always an import? I assume from native classes...?
                         item.Errors.Add(M3L.GetString(M3L.string_interp_packageFileNoImports, p));
-                        item.DeploymentBlocking = true;
+                        blocking = true;
                     }
 
                     if (package.ExportCount == 0)
                     {
                         item.Errors.Add(M3L.GetString(M3L.string_interp_packageFileNoExports, p));
-                        item.DeploymentBlocking = true;
+                        blocking = true;
                     }
                 }
             }

@@ -13,6 +13,9 @@ namespace MassEffectModManagerCore.modmanager
     //This file contains deployment to archive related functionality
     public partial class Mod
     {
+        /// <summary>
+        /// Transform that is applied to help convert an exe installer to a mod manager mod
+        /// </summary>
         internal ModArchiveImporter.ExeTransform ExeExtractionTransform;
 
         /// <summary>

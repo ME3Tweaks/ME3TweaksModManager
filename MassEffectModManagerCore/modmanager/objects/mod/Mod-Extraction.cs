@@ -372,6 +372,7 @@ namespace MassEffectModManagerCore.modmanager
                 {
                     if (ExeExtractionTransform.VPatches.Any())
                     {
+                        // MEHEM uses Vpatching for its alternates.
                         var vpat = Utilities.GetCachedExecutablePath(@"vpat.exe");
                         if (!testRun)
                         {
