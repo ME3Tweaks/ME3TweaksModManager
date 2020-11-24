@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MassEffectModManagerCore\MassEffectModManagerCore.csproj" />
+    <ProjectReference Include="..\ME3Explorer\ME3ExplorerCore\ME3ExplorerCore.csproj" />
   </ItemGroup>
 
   <ItemGroup>

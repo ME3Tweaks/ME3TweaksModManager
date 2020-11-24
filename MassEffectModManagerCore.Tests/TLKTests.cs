@@ -1,12 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MassEffectModManagerCore.gamefileformats;
-using ME3Explorer;
+using ME3ExplorerCore.TLK.ME2ME3;
 
 namespace MassEffectModManagerCore.Tests
 {
@@ -24,10 +19,10 @@ namespace MassEffectModManagerCore.Tests
             var tlksToTestOn = Directory.GetFiles(tlksDir, "*.tlk", SearchOption.AllDirectories);
             foreach (var tlk in tlksToTestOn)
             {
-                TalkFileME2ME3 talkFileMe2 = new TalkFileME2ME3();
+                TalkFile talkFileMe2 = new TalkFile();
                 talkFileMe2.LoadTlkData(tlk);
-                var tlkStream = HuffmanCompressionME2ME3.SaveToTlkStream(talkFileMe2.StringRefs);
-                var reloadedTlk = new TalkFileME2ME3();
+                var tlkStream = ME3ExplorerCore.TLK.ME2ME3.HuffmanCompression.SaveToTlkStream(talkFileMe2.StringRefs);
+                var reloadedTlk = new TalkFile();
                 tlkStream.Position = 0;
                 reloadedTlk.LoadTlkDataFromStream(tlkStream);
 

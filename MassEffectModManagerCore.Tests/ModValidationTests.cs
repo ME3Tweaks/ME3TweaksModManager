@@ -6,6 +6,7 @@ using System.Reflection;
 using MassEffectModManagerCore.modmanager;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.usercontrols;
+using ME3ExplorerCore.Packages;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Serilog;
 
@@ -27,13 +28,13 @@ namespace MassEffectModManagerCore.Tests
 
 
             //Test cases
-            Mod aceSlammer = new Mod(Path.Combine(testingDataPath, "Ace Slammer", "moddesc.ini"), Mod.MEGame.Unknown);
+            Mod aceSlammer = new Mod(Path.Combine(testingDataPath, "Ace Slammer", "moddesc.ini"), MEGame.Unknown);
             Assert.IsTrue(aceSlammer.ValidMod, "Ace slammer didn't parse into a valid mod! Reason: " + aceSlammer.LoadFailedReason);
 
-            Mod diamondDifficulty = new Mod(Path.Combine(testingDataPath, "Diamond Difficulty", "moddesc.ini"), Mod.MEGame.Unknown);
+            Mod diamondDifficulty = new Mod(Path.Combine(testingDataPath, "Diamond Difficulty", "moddesc.ini"), MEGame.Unknown);
             Assert.IsTrue(diamondDifficulty.ValidMod, "Diamond Difficulty didn't parse into a valid mod! Reason: " + diamondDifficulty.LoadFailedReason);
 
-            Mod egm = new Mod(Path.Combine(testingDataPath, "Expanded Galaxy Mod", "moddesc.ini"), Mod.MEGame.Unknown);
+            Mod egm = new Mod(Path.Combine(testingDataPath, "Expanded Galaxy Mod", "moddesc.ini"), MEGame.Unknown);
             Assert.IsTrue(egm.ValidMod, "EGM didn't parse into a valid mod! Reason: " + egm.LoadFailedReason);
             var egmCustDLCJob = egm.GetJob(ModJob.JobHeader.CUSTOMDLC);
             Assert.IsNotNull(egmCustDLCJob, "Could not find EGM Custom DLC job!");
@@ -46,22 +47,22 @@ namespace MassEffectModManagerCore.Tests
 
             Assert.IsNull(egm.GetJob(ModJob.JobHeader.CITADEL), "EGM somehow returned a job for non-existent header!");
 
-            Mod firefight = new Mod(Path.Combine(testingDataPath, "Firefight mod", "moddesc.ini"), Mod.MEGame.Unknown);
+            Mod firefight = new Mod(Path.Combine(testingDataPath, "Firefight mod", "moddesc.ini"), MEGame.Unknown);
             Assert.IsTrue(firefight.ValidMod, "Firefight mod didn't parse into a valid mod! Reason: " + firefight.LoadFailedReason);
 
             //SP Controller Support 2.31 - invalid cause missing ) on moddesc.ini altfiles in customdlc.
-            Mod spcontroller = new Mod(Path.Combine(testingDataPath, "SP Controller Support", "moddesc.ini"), Mod.MEGame.Unknown);
+            Mod spcontroller = new Mod(Path.Combine(testingDataPath, "SP Controller Support", "moddesc.ini"), MEGame.Unknown);
             Assert.IsFalse(spcontroller.ValidMod, "SP Controller support (wrong parenthesis on customdlc alts!) loaded as a valid mod when it shouldn't!");
 
-            Mod zombiesupercoal = new Mod(Path.Combine(testingDataPath, "Zombie [SuperCoal]", "moddesc.ini"), Mod.MEGame.Unknown);
+            Mod zombiesupercoal = new Mod(Path.Combine(testingDataPath, "Zombie [SuperCoal]", "moddesc.ini"), MEGame.Unknown);
             Assert.IsTrue(zombiesupercoal.ValidMod, "zombie mod supercoal failed to load as a valid mod! Reason: " + zombiesupercoal.LoadFailedReason);
 
             // Can't find moddesc.ini
-            Mod badPath = new Mod(Path.Combine(testingDataPath, "Not A Path", "moddesc.ini"), Mod.MEGame.Unknown);
+            Mod badPath = new Mod(Path.Combine(testingDataPath, "Not A Path", "moddesc.ini"), MEGame.Unknown);
             Assert.IsFalse(badPath.ValidMod, "An invalid/non-existing moddesc.ini somehow loaded as a valid mod!");
 
             //Same Gender Romances
-            Mod sameGender = new Mod(Path.Combine(testingDataPath, "Same-Gender Romances for ME3", "moddesc.ini"), Mod.MEGame.Unknown);
+            Mod sameGender = new Mod(Path.Combine(testingDataPath, "Same-Gender Romances for ME3", "moddesc.ini"), MEGame.Unknown);
             Assert.IsTrue(sameGender.ValidMod, "Same-Gender Romances failed to load as a valid mod!  Reason: " + sameGender.LoadFailedReason);
             var sgCustDLCJob = sameGender.InstallationJobs.FirstOrDefault(x => x.Header == ModJob.JobHeader.CUSTOMDLC);
             Assert.IsNotNull(sgCustDLCJob, "Could not find Same-Gender Romances Custom DLC job!");
