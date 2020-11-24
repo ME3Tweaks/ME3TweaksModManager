@@ -208,22 +208,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         {
                             try
                             {
-                                using var packageAsStream =
-                                    VanillaDatabaseService.FetchBasegameFile(Mod.MEGame.ME3,
-                                        Path.GetFileName(file.Key));
-                                //packageAsStream.WriteToFile(@"C:\users\dev\desktop\compressed.pcc");
+                                using var packageAsStream = VanillaDatabaseService.FetchBasegameFile(Mod.MEGame.ME3, Path.GetFileName(file.Key));
                                 using var decompressedStream = MEPackage.GetDecompressedPackageStream(packageAsStream, true);
-                                //decompressedStream.WriteToFile(@"C:\users\dev\desktop\decompressed.pcc");
-
-                                using var finalStream = MixinHandler.ApplyMixins(decompressedStream, file.Value,
-                                completedSingleApplicationCallback, failedApplicationCallback);
+                                using var finalStream = MixinHandler.ApplyMixins(decompressedStream, file.Value, completedSingleApplicationCallback, failedApplicationCallback);
                                 CLog.Information(@"Compressing package to mod directory: " + file.Key, Settings.LogModMakerCompiler);
                                 finalStream.Position = 0;
                                 var package = MEPackageHandler.OpenMEPackage(finalStream);
                                 var outfile = Path.Combine(outdir, Path.GetFileName(file.Key));
-                                package.save(outfile, false); // don't compress
-                                                              //finalStream.WriteToFile(outfile);
-                                                              //File.WriteAllBytes(outfile, finalStream.ToArray());
+                                package.save(outfile, true);
                             }
                             catch (Exception e)
                             {
@@ -241,10 +233,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         {
                             try
                             {
-                                using var packageAsStream =
-                                    VanillaDatabaseService.FetchFileFromVanillaSFAR(dlcFolderName, file.Key, forcedDLC: dlcPackage);
-                                using var decompressedStream = MEPackage.GetDecompressedPackageStream(packageAsStream);
-                                using var finalStream = MixinHandler.ApplyMixins(decompressedStream, file.Value, completedSingleApplicationCallback, failedApplicationCallback);
+                                using var packageAsStream = VanillaDatabaseService.FetchFileFromVanillaSFAR(dlcFolderName, file.Key, forcedDLC: dlcPackage);
+                                //as file comes from backup, we don't need to decompress it, it will always be decompressed in sfar
+                                using var finalStream = MixinHandler.ApplyMixins(packageAsStream, file.Value, completedSingleApplicationCallback, failedApplicationCallback);
                                 CLog.Information(@"Compressing package to mod directory: " + file.Key, Settings.LogModMakerCompiler);
                                 finalStream.Position = 0;
                                 var package = MEPackageHandler.OpenMEPackage(finalStream);

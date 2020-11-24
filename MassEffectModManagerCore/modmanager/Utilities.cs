@@ -643,7 +643,7 @@ namespace MassEffectModManagerCore
             return null;
         }
 
-        internal static string GetDllDirectory()
+        public static string GetDllDirectory()
         {
             return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "dlls")).FullName;
         }
@@ -859,9 +859,9 @@ namespace MassEffectModManagerCore
             return null;
         }
 
-        public static Stream GetResourceStream(string assemblyResource)
+        public static Stream GetResourceStream(string assemblyResource, Assembly assembly = null)
         {
-            var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            assembly ??= System.Reflection.Assembly.GetExecutingAssembly();
             var res = assembly.GetManifestResourceNames();
             return assembly.GetManifestResourceStream(assemblyResource);
         }
@@ -874,16 +874,17 @@ namespace MassEffectModManagerCore
             return "Error: Unknown game";
         }
 
-        internal static string ExtractInternalFile(string internalResourceName, string destination, bool overwrite)
+        public static string ExtractInternalFile(string internalResourceName, string destination, bool overwrite, Assembly assembly = null)
         {
             Log.Information("Extracting embedded file: " + internalResourceName + " to " + destination);
+            assembly ??= Assembly.GetExecutingAssembly();
 #if DEBUG
-            var resources = Assembly.GetExecutingAssembly().GetManifestResourceNames();
+            var resources = assembly.GetManifestResourceNames();
 #endif
             if (!File.Exists(destination) || overwrite || new FileInfo(destination).Length == 0)
             {
 
-                using (Stream stream = Utilities.GetResourceStream(internalResourceName))
+                using (Stream stream = Utilities.GetResourceStream(internalResourceName, assembly))
                 {
                     if (File.Exists(destination))
                     {

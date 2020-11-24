@@ -372,19 +372,14 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                             //basegame
                             foreach (var file in mapping.Value)
                             {
-                                using var packageAsStream =
-                                    VanillaDatabaseService.FetchBasegameFile(Mod.MEGame.ME3,
-                                        Path.GetFileName(file.Key));
+                                using var packageAsStream = VanillaDatabaseService.FetchBasegameFile(Mod.MEGame.ME3, Path.GetFileName(file.Key));
                                 using var decompressedStream = MEPackage.GetDecompressedPackageStream(packageAsStream, true);
-                                using var finalStream = MixinHandler.ApplyMixins(decompressedStream, file.Value,
-                                    completedSingleApplicationCallback);
+                                using var finalStream = MixinHandler.ApplyMixins(decompressedStream, file.Value, completedSingleApplicationCallback);
                                 CLog.Information(@"Compressing package to mod directory: " + file.Key, Settings.LogModMakerCompiler);
                                 finalStream.Position = 0;
                                 var package = MEPackageHandler.OpenMEPackage(finalStream);
                                 var outfile = Path.Combine(outdir, Path.GetFileName(file.Key));
-                                package.save(outfile, true); //set to true once compression bugs are fixed
-                                                             //finalStream.WriteToFile(outfile);
-                                                             //File.WriteAllBytes(outfile, finalStream.ToArray());
+                                package.save(outfile, true); 
                             }
                         }
                         else
@@ -394,7 +389,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                             foreach (var file in mapping.Value)
                             {
                                 using var packageAsStream = VanillaDatabaseService.FetchFileFromVanillaSFAR(dlcFolderName, file.Key, forcedDLC: dlcPackage);
-                                using var finalStream = MixinHandler.ApplyMixins(packageAsStream, file.Value, completedSingleApplicationCallback); 
+                                using var finalStream = MixinHandler.ApplyMixins(packageAsStream, file.Value, completedSingleApplicationCallback);
                                 //as file comes from backup, we don't need to decompress it, it will always be decompressed in sfar
                                 CLog.Information(@"Compressing package to mod directory: " + file.Key, Settings.LogModMakerCompiler);
                                 finalStream.Position = 0;
