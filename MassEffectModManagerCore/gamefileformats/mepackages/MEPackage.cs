@@ -145,6 +145,11 @@ namespace ME3Explorer.Packages
         public static MemoryStream GetDecompressedPackageStream(MemoryStream stream, bool mixinRules = false)
         {
             var package = MEPackageHandler.OpenMEPackage(stream);
+            if (!package.IsCompressed)
+            {
+                stream.Position = 0;
+                return stream;
+            }
             return package.saveToStream(false, mixinRules: mixinRules);
         }
 
