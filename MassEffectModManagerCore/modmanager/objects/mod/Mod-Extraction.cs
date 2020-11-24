@@ -235,7 +235,7 @@ namespace MassEffectModManagerCore.modmanager
                     if (ExeExtractionTransform != null && ExeExtractionTransform.AlternateRedirects.Any(x => x.index == entryInfo.Index))
                     {
                         var outfile = ExeExtractionTransform.AlternateRedirects.First(x => x.index == entryInfo.Index).outfile;
-                        Log.Information($@"Extracting file with redirection: {entryPath} {outfile}");
+                        Log.Information($@"Extracting file with redirection: {entryPath} -> {outfile}");
                         return Path.Combine(outputFolderPath, outfile);
                     }
 

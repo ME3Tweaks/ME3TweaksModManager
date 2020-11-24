@@ -686,7 +686,7 @@ namespace MassEffectModManagerCore.modmanager
             CLog.Information(@"Parsing mod using moddesc target: " + ModDescTargetVersion, Settings.LogModStartup);
 
             #region Header Loops
-            
+
             #region BASEGAME and OFFICIAL HEADERS
 
             var supportedOfficialHeaders = ModJob.GetSupportedNonCustomDLCHeaders(Game);

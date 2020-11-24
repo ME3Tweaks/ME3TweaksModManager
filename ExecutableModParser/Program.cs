@@ -38,6 +38,16 @@ namespace ExecutableModParser
                 Console.WriteLine($"{entry.Index}\t{(entry.IsDirectory ? "Folder" : "File")}\t{entry.FileName}");
             }
 
+            foreach (var entry in archive.ArchiveFileData)
+            {
+                if (entry.FileName.Contains("BIOGame\\DLC"))
+                {
+                    var outName = entry.FileName.Substring(entry.FileName.IndexOf("BIOGame\\DLC\\") + "BIOGame\\DLC\\".Length);
+                    outName = $"<alternateredirect index=\"{entry.Index}\" outfile=\"{outName}\"/>";
+                    Console.WriteLine(outName);
+                }
+            }
+
         }
 
         public static void ParseArguments(string[] args)
