@@ -276,7 +276,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
 
                     var mount = new MountFile(mountFile);
-                    
+
                     int moduleNum = -1;
                     if (ModBeingDeployed.Game == Mod.MEGame.ME2)
                     {
@@ -299,7 +299,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             }
                         }
                     }
-                    
+
                     var tlkBasePath = ModBeingDeployed.Game == Mod.MEGame.ME2 ? $@"DLC_{moduleNum}" : customDLC;
                     Dictionary<string, List<TalkFileME1.TLKStringRef>> tlkMappings = new Dictionary<string, List<TalkFileME1.TLKStringRef>>();
                     foreach (var language in languages)
@@ -603,7 +603,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     item.Icon = FontAwesomeIcon.TimesCircle;
                                     item.Foreground = Brushes.Red;
                                     item.Spinning = false;
-                                    errors.Add(M3L.GetString(M3L.string_interp_couldNotFindReferencedAFC, Path.GetFileName(wwisestream.FileRef.FilePath), wwisestream.GetInstancedFullPath, afcNameProp.ToString()));
+                                    errors.Add(M3L.GetString(M3L.string_interp_couldNotFindReferencedAFC, wwisestream.FileRef.FilePath.Substring(ModBeingDeployed.ModPath.Length + 1), wwisestream.GetInstancedFullPath, afcNameProp.ToString()));
                                     continue;
                                 }
                             }
@@ -623,7 +623,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     item.Icon = FontAwesomeIcon.TimesCircle;
                                     item.Foreground = Brushes.Red;
                                     item.Spinning = false;
-                                    errors.Add(M3L.GetString(M3L.string_interp_invalidAudioPointerOutsideAFC, Path.GetFileName(wwisestream.FileRef.FilePath), wwisestream.UIndex, wwisestream.ObjectName, audioOffset, afcPath, audioStream.Length));
+                                    errors.Add(M3L.GetString(M3L.string_interp_invalidAudioPointerOutsideAFC, wwisestream.FileRef.FilePath.Substring(ModBeingDeployed.ModPath.Length + 1), wwisestream.UIndex, wwisestream.ObjectName, audioOffset, afcPath, audioStream.Length));
                                     if (audioStream is FileStream) audioStream.Close();
                                     continue;
                                 }
