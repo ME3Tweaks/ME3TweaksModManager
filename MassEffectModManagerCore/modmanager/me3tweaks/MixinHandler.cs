@@ -44,8 +44,16 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             return false;
         }
 
+        /// <summary>
+        /// Gets the list of all ME3Tweaks Mixins
+        /// </summary>
         public static List<Mixin> ME3TweaksPackageMixins = new List<Mixin>();
+        
+        /// <summary>
+        /// Gets the list of User Mixins
+        /// </summary>
         public static List<Mixin> UserMixins = new List<Mixin>();
+
         /// <summary>
         /// Gets a dictionary of module=> [filename, list of mixins] to apply.
         /// </summary>
@@ -116,7 +124,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             return File.Exists(MixinPackagePath);
         }
 
-        internal static void LoadME3TweaksPackage()
+        public static void LoadME3TweaksPackage()
         {
             if (MixinPackageAvailable())
             {
@@ -227,15 +235,15 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         }
 
         [Localizable(true)]
-        internal static MemoryStream ApplyMixins(MemoryStream decompressedStream, List<Mixin> mixins, Action notifyApplicationDone = null, Action<string> failedApplicationCallback = null)
+        public static MemoryStream ApplyMixins(MemoryStream decompressedStream, List<Mixin> mixins, Action notifyApplicationDone = null, Action<string> failedApplicationCallback = null)
         {
             foreach (var mixin in mixins)
             {
-                Log.Information($@"Applying mixin:{mixin.PatchName} on {mixin.TargetFile}");
+                Log.Information($@"Applying mixin: {mixin.PatchName} on {mixin.TargetFile}");
                 if (decompressedStream.Length == mixin.TargetSize)
                 {
+                    decompressedStream.Position = 0;
                     var outStream = MixinMemoryStreamManager.GetStream();
-                    //MemoryStream outStream = new MemoryStream();
                     JPatch.ApplyJPatch(decompressedStream, mixin.PatchData, outStream);
                     if (!mixin.IsFinalizer && outStream.Length != decompressedStream.Length)
                     {
@@ -272,7 +280,6 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     mixin.PatchData = null;
                 }
             }
-            //MixinMemoryStreamManager.AggressiveBufferReturn = true;
         }
 
         public static void AttemptResetMemoryManager()
@@ -287,6 +294,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 MixinMemoryStreamManager.AggressiveBufferReturn = true;
                 MemoryAnalyzer.AddTrackedMemoryItem(@"Mixin Memory Stream Manager", new WeakReference(MixinMemoryStreamManager));
             }
+
             if (isResetting)
             {
                 GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;

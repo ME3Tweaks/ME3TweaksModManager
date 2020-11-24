@@ -533,7 +533,7 @@
     <!-- This is a 'status' text to show what's being worked on-->
     <system:String x:Key="string_uncompressedModItems">Uncompressed mod items</system:String>
     <!-- This is a 'status' text to show what's being worked on-->
-    <system:String xml:space="preserve" x:Key="string_dialog_improperlyDeployedMod">This archive contains a mod that was built using ME3Tweaks Mod Manager, but the archive that was distributed was not created by ME3Tweaks Mod Manager. The mods in this archive may not be fully supported or have other issues.\n\nMods designed for ME3Tweaks Mod Manager should be deployed through it.</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialog_improperlyDeployedMod">This archive contains a mod that was built using ME3Tweaks Mod Manager, but the archive that was distributed was not created by ME3Tweaks Mod Manager. The mods in this archive may not be fully supported or have other issues.\n\nMods designed for ME3Tweaks Mod Manager should be deployed through it. Contact the developer and ask them to deploy the mod properly through Mod Manager.</system:String>
     <system:String x:Key="string_improperlyDeployedMod">Improperly deployed mod</system:String>
     <system:String x:Key="string_interp_packageFileNoNames">Package file {0} does not contain any names. This is an invalid package file</system:String>
     <!-- 0=relative file path -->
@@ -1176,7 +1176,7 @@
     <!-- 0={Incorrect filename} -->
     <system:String x:Key="string_interp_errorOccuredWhileAddingFileForLOCALIZATIONJobX">Error occurred while adding file for LOCALIZATION job: {0}</system:String>
     <!-- 0={failurereason} -->
-    <system:String x:Key="string_interp_validation_modparsing_securityCheckOutsideAllowSilo">{0}'s job {1} installs a file to {2}, which is outside of the allowed locations by this header. This is a security risk, mods must only install files to their specified task header directories.</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_validation_modparsing_securityCheckOutsideAllowSilo">{0}'s job {1} installs a file to {2}, which is outside of the allowed locations by this header. This is a security risk, mods must only install files to their specified task header directories.\n\nThis check was added in 6.1.5. Mods may have been updated to correct this issue, try importing the mod again to see if it has been fixed.</system:String>
     <!-- 0={ModName} 1={job.Header} 2={Filepath} This comes up if a mod tries to install a file outside of the list of allowed locations for that task, such as the RETLAITION job trying to install files into the RECKONING DLC. -->
     <system:String x:Key="string_interp_validation_modparsing_securityCheckInsideDisallowedSilo">{0}'s job {1} installs a file to {2}, which is not an allowed location to install files to for this task header. This is a security risk, mods may only install to specific directories, for example the BASEGAME header cannot install files into the DLC directory.</system:String>
     <!-- 0={ModName} 1={job.Header, such as RETALIATION}, 2={Filepath}. This comes up if a mod task tries to install a file into a disallowed location, like a mod using the BASEGAME header to install to DLC. -->

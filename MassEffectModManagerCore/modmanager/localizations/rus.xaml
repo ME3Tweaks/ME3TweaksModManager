@@ -822,6 +822,7 @@
 	<system:String x:Key="string_tooltip_importMods" xml:space="preserve">Импортирует выбранные моды в библиотеку модов.&#10;Импорт обеспечивает дополнительные функции в Mod Manager:&#10; - Проверка обновлений для модов (если поддерживаются)&#10; - Сжатие при импорте (если поддерживается)&#10; - Восстановление мода через ME3Tweaks (если поддерживается)</system:String>
 	<system:String x:Key="string_tooltip_launchesALOTInstaller">Запускает ALOT Installer</system:String>
 	<system:String x:Key="string_tooltip_compressPackages" xml:space="preserve">Сжимает пакетные файлы при импорте, уменьшая их размер. Это экспериментальная функция - если с модом возникают проблемы, вам не следует использовать данную опцию.&#10;Эта опция недоступна для следующих сценариев из-за сложности:&#10; - Прямая установка из архива&#10; - Файлы Mass Effect 1&#10;&#10; Эта функция может быть отключена ME3Tweaks когда Mod Manager связывается с сервером</system:String>
+	<system:String x:Key="string_tooltip_installModArchiveWindow" xml:space="preserve">Устанавливает мод напрямую в текущую активную целевую игру соответствующего типа.&#10;Мод при этом НЕ будет импортирован в библиотеку</system:String>
 
 	<!-- Mod updater -->
 	<system:String x:Key="string_modupdatesavailable">Доступно обновление мода</system:String>

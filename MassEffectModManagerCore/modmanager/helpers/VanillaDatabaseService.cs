@@ -181,7 +181,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
         /// <param name="game"></param>
         /// <param name="filename">FILENAME only of file. Do not pass a relative path</param>
         /// <returns></returns>
-        internal static MemoryStream FetchBasegameFile(MEGame game, string filename)
+        public static MemoryStream FetchBasegameFile(MEGame game, string filename)
         {
             var backupPath = BackupService.GetGameBackupPath(game);
             if (backupPath == null/* && target == null*/) return null; //can't fetch

@@ -371,8 +371,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                     VanillaDatabaseService.FetchBasegameFile(MEGame.ME3,
                                         Path.GetFileName(file.Key));
                                 using var decompressedStream = MEPackage.GetDecompressedPackageStream(packageAsStream, true);
-                                using var finalStream = MixinHandler.ApplyMixins(decompressedStream, file.Value,
-                                    completedSingleApplicationCallback);
+                                using var finalStream = MixinHandler.ApplyMixins(decompressedStream, file.Value, completedSingleApplicationCallback);
                                 CLog.Information(@"Compressing package to mod directory: " + file.Key, Settings.LogModMakerCompiler);
                                 finalStream.Position = 0;
                                 var package = MEPackageHandler.OpenMEPackageFromStream(finalStream);
