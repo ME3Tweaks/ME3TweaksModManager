@@ -285,6 +285,10 @@ namespace MassEffectModManagerCore.modmanager
         public int ModClassicUpdateCode { get; set; }
         public string LoadFailedReason { get; set; }
         public List<string> RequiredDLC = new List<string>();
+        /// <summary>
+        /// List of DLC, of which at least one must be installed
+        /// </summary>
+        public List<string> OptionalSingleRequiredDLC = new List<string>();
         private List<string> AdditionalDeploymentFolders = new List<string>();
         private List<string> AdditionalDeploymentFiles = new List<string>();
         public string ModPath { get; private set; }
@@ -1368,42 +1372,55 @@ namespace MassEffectModManagerCore.modmanager
                 var requiredDlcsSplit = requiredDLCText.Split(';').Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
                 foreach (var reqDLC in requiredDlcsSplit)
                 {
+                    var reqDLCss = reqDLC;
+                    var list = RequiredDLC;
+                    if (ModDescTargetVersion >= 6.2) // This feature requires M3 6.2
+                    {
+                        if (reqDLCss.StartsWith('?'))
+                        {
+                            reqDLCss = reqDLCss.Substring(1); //? means the DLC is optional, but one item prefixed with ? must be installed.
+                            list = OptionalSingleRequiredDLC;
+                        }
+                    }
+
                     switch (Game)
                     {
                         case MEGame.ME1:
-                            if (Enum.TryParse(reqDLC, out ModJob.JobHeader header1) && ModJob.GetHeadersToDLCNamesMap(MEGame.ME1).TryGetValue(header1, out var foldername1))
+                            if (Enum.TryParse(reqDLCss, out ModJob.JobHeader header1) && ModJob.GetHeadersToDLCNamesMap(MEGame.ME1).TryGetValue(header1, out var foldername1))
                             {
-                                RequiredDLC.Add(foldername1);
+                                list.Add(foldername1);
                                 CLog.Information(@"Adding DLC requirement to mod: " + foldername1, Settings.LogModStartup);
                                 continue;
                             }
                             break;
                         case MEGame.ME2:
-                            if (Enum.TryParse(reqDLC, out ModJob.JobHeader header2) && ModJob.GetHeadersToDLCNamesMap(MEGame.ME2).TryGetValue(header2, out var foldername2))
+                            if (Enum.TryParse(reqDLCss, out ModJob.JobHeader header2) && ModJob.GetHeadersToDLCNamesMap(MEGame.ME2).TryGetValue(header2, out var foldername2))
                             {
-                                RequiredDLC.Add(foldername2);
+                                list.Add(foldername2);
                                 CLog.Information(@"Adding DLC requirement to mod: " + foldername2, Settings.LogModStartup);
                                 continue;
                             }
                             break;
                         case MEGame.ME3:
-                            if (Enum.TryParse(reqDLC, out ModJob.JobHeader header3) && ModJob.GetHeadersToDLCNamesMap(MEGame.ME3).TryGetValue(header3, out var foldername3))
+                            if (Enum.TryParse(reqDLCss, out ModJob.JobHeader header3) && ModJob.GetHeadersToDLCNamesMap(MEGame.ME3).TryGetValue(header3, out var foldername3))
                             {
-                                RequiredDLC.Add(foldername3);
+                                list.Add(foldername3);
                                 CLog.Information(@"Adding DLC requirement to mod: " + foldername3, Settings.LogModStartup);
                                 continue;
                             }
                             break;
                     }
 
-                    if (!reqDLC.StartsWith(@"DLC_"))
+                    
+
+                    if (!reqDLCss.StartsWith(@"DLC_"))
                     {
                         Log.Error(@"Required DLC does not match officially supported header or start with DLC_.");
                         LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_invalidRequiredDLCSpecified, reqDLC);
                         return;
                     }
-                    CLog.Information(@"Adding DLC requirement to mod: " + reqDLC, Settings.LogModStartup);
-                    RequiredDLC.Add(reqDLC);
+                    CLog.Information(@"Adding DLC requirement to mod: " + reqDLCss, Settings.LogModStartup);
+                    list.Add(reqDLCss);
                 }
             }
 

@@ -68,7 +68,7 @@ namespace MassEffectModManagerCore
         /// <summary>
         /// The highest version of ModDesc that this version of Mod Manager can support.
         /// </summary>
-        public const double HighestSupportedModDesc = 6.1;
+        public const double HighestSupportedModDesc = 6.2;
 
         //Windows 8.1 Update 1
         public static readonly Version MIN_SUPPORTED_OS = new Version("6.3.9600");

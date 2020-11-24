@@ -335,6 +335,8 @@
     <system:String x:Key="string_cannotDeployMod">Cannot deploy mod</system:String>
     <system:String x:Key="string_interp_dialog_cannotDeployModNoBackup">No backup for {0} is available. Deploying a mod requires a game backup for the game the mod will install to, so the deployment checks can check against a vanilla game installation.</system:String>
     <!-- 0=ME1/ME2/ME3 -->
+    <system:String x:Key="string_preparingToScanGame">Preparing to scan game</system:String>
+    <system:String x:Key="string_pleaseWait">Please wait</system:String>
 
     <!-- Global Styles -->
     <system:String x:Key="string_thisTargetHasBeenTextureModded">This target has been texture modded</system:String>
