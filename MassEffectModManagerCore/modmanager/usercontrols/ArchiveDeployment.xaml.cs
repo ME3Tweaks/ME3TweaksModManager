@@ -4,6 +4,7 @@ using MassEffectModManagerCore.ui;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -265,12 +266,46 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (_closed) return;
                 if (ModBeingDeployed.Game >= Mod.MEGame.ME2)
                 {
-                    var tlkBasePath = Path.Combine(ModBeingDeployed.ModPath, customDLC, ModBeingDeployed.Game == Mod.MEGame.ME2 ? @"CookedPC" : @"CookedPCConsole", customDLC);
+                    var modCookedDir = Path.Combine(ModBeingDeployed.ModPath, customDLC, ModBeingDeployed.Game == Mod.MEGame.ME2 ? @"CookedPC" : @"CookedPCConsole");
+                    var mountFile = Path.Combine(modCookedDir, "mount.dlc");
+                    if (!File.Exists(mountFile))
+                    {
+                        errors.Add($@"Custom DLC {customDLC} does not have a mount.dlc file. This DLC will not load in game!");
+                        obj.DeploymentBlocking = true;
+                        continue;
+                    }
+
+                    var mount = new MountFile(mountFile);
+                    
+                    int moduleNum = -1;
+                    if (ModBeingDeployed.Game == Mod.MEGame.ME2)
+                    {
+                        // Look up the module number
+                        var bioengine = Path.Combine(modCookedDir, @"BioEngine.ini");
+                        if (!File.Exists(bioengine))
+                        {
+                            errors.Add($@"Custom DLC {customDLC} does not have a bioengine.ini file. This is required for all DLC mods as they require at least one TLK file.");
+                            obj.DeploymentBlocking = true;
+                            continue;
+                        }
+                        else
+                        {
+                            var ini = DuplicatingIni.LoadIni(Path.Combine(bioengine));
+                            if (!int.TryParse(ini[@"Engine.DLCModules"][customDLC]?.Value, out moduleNum) || moduleNum < 1)
+                            {
+                                errors.Add($@"Custom DLC {customDLC} does not specify a module number, or does not have a valid integer (> 0) value for this DLC in it. Each DLC must have a defined, unique module number.");
+                                obj.DeploymentBlocking = true;
+                                continue;
+                            }
+                        }
+                    }
+                    
+                    var tlkBasePath = ModBeingDeployed.Game == Mod.MEGame.ME2 ? $@"DLC_{moduleNum}" : customDLC;
                     Dictionary<string, List<TalkFileME1.TLKStringRef>> tlkMappings = new Dictionary<string, List<TalkFileME1.TLKStringRef>>();
                     foreach (var language in languages)
                     {
                         if (_closed) return;
-                        var tlkLangPath = tlkBasePath + @"_" + language.filecode + @".tlk";
+                        var tlkLangPath = Path.Combine(modCookedDir, tlkBasePath + @"_" + language.filecode + @".tlk");
                         if (File.Exists(tlkLangPath))
                         {
                             //inspect
@@ -293,6 +328,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 gender = M3L.GetString(M3L.string_female);
                                 //Some TLK strings will not work
                                 errors.Add(M3L.GetString(M3L.string_interp_error_outOfOrderTLK, gender, language.filecode));
+                            }
+
+                            // Check to make sure TLK contains the mount file TLK ID
+                            var referencedStr = tf.findDataById(mount.TLKID);
+                            if (referencedStr == null || referencedStr == @"No Data")
+                            {
+                                // TLK STRING REF NOT FOUND
+                                errors.Add($@"Custom DLC {customDLC}'s TLK {Path.GetFileName(tlkLangPath)} does not contain the listed TLK string ID {mount.TLKID}, as declared it's mount.dlc file. Mod TLKs must contain the TLK string referenced by the mount.dlc file.");
+                                obj.DeploymentBlocking = true;
+                                continue;
                             }
                         }
                         else
