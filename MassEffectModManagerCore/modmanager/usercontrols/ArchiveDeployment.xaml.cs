@@ -329,7 +329,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             }
                         }
                     }
-                    else
+                    else if (tlkMappings.Count == 0)
                     {
                         errors.Add(M3L.GetString(M3L.string_interp_dlcModHasNoTlkFiles, customDLC));
                         obj.DeploymentBlocking = true;
