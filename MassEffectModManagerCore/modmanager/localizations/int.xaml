@@ -540,7 +540,7 @@
     <!-- This is a 'status' text to show what's being worked on-->
     <system:String x:Key="string_uncompressedModItems">Uncompressed mod items</system:String>
     <!-- This is a 'status' text to show what's being worked on-->
-    <system:String xml:space="preserve" x:Key="string_dialog_improperlyDeployedMod">This archive contains a mod that was built using ME3Tweaks Mod Manager, but the archive that was distributed was not created by ME3Tweaks Mod Manager. The mods in this archive may not be fully supported or have other issues.\n\nMods designed for ME3Tweaks Mod Manager should be deployed through it.</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialog_improperlyDeployedMod">This archive contains a mod that was built using ME3Tweaks Mod Manager, but the archive that was distributed was not created by ME3Tweaks Mod Manager. The mods in this archive may not be fully supported or have other issues.\n\nMods designed for ME3Tweaks Mod Manager should be deployed through it. Contact the developer and ask them to deploy the mod properly through Mod Manager.</system:String>
     <system:String x:Key="string_improperlyDeployedMod">Improperly deployed mod</system:String>
     <system:String x:Key="string_interp_packageFileNoNames">Package file {0} does not contain any names. This is an invalid package file</system:String>
     <!-- 0=relative file path -->
