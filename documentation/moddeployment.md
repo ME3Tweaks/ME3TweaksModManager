@@ -1,6 +1,7 @@
 ![Documentation Image](images/documentation_header.png)
 
 Deployment of your mod to an archive is done through the Mod Utils menu when your mod is selected. Deploying your mod to 7z packages it up and packs in a way that is quick to load in M3, use less memory to decompress for users, while balancing compression to reduce the file size. As of Build 113, mods that target moddesc.ini 6.0 or higher will be checked if they were deployed using M3, and if not, will throw a warning dialog to end users.
+
 M3 packaging the mod ensures a consistent user experience. When M3 is not used to deploy the mod, users have experienced the following scenarios in the past:
  - Large mods that were compressed using 7z manually take significant time to read the moddesc.ini for importing - sometimes _several minutes_, when it's instantaneous on M3 deployed mods
  - Large mods may use _multiple gigabytes_ of memory to decompress due to poorly chosen dictionary sizes on the archive
