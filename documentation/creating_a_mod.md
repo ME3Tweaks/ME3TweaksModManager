@@ -44,4 +44,4 @@ https://www.nexusmods.com/masseffect3/mods/807?tab=files
 ### Deploying your mod
 You should deploy your mod through M3 by going to the Mod Utils menu and doing Developer options > Deploy Mod. Deploying a mod prepares it for distribution through a highly optimized 7z file that features high compression (so users spend less time downloading, you spend less time uploading) while having very fast parsing support when the file is dropped onto M3.
 
-Mods targeting moddesc 6.0 or higher will throw warning dialogs if their archive file is opened and it the archive is detected as not having been deployed through M3. You can read more information about deployment in the [deployment documention](moddeployment.md)
+Mods targeting moddesc 6.0 or higher will throw warning dialogs if their archive file is opened and it the archive is detected as not having been deployed through M3. More information on deployment is available on the [deployment documention](moddeployment.md) page.
