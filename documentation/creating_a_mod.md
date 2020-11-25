@@ -6,7 +6,7 @@ To create a mod for M3, you will need to know what kind you are making. Most dev
 You can create a fully working, blank DLC mod by going to Tools > Generate new DLC mod (Starter Kit) > \[Game\].
 
 ### Starter Kit
-[Starter kit](images/documentation_starterkit.png)
+![Starter kit](images/documentation_starterkit.png)
 
 Starter kit is an easy to use DLC generator that produces a working, blank DLC mod. The values you must enter are described below.
 
