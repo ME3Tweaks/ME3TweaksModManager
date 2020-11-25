@@ -13,7 +13,8 @@ When deploying a mod through M3, a series of checks are conducted on the mod. Cr
 
 When deploying your mod, there are several things to keep in mind:
 1. Deploying a mod requires a vanilla game backup. Backups are used to check against for things like out of bounds audio references, which can cause game instability.
-2. Ensure all referenced content is installed into the current active target in M3. The target should not be texture modded, or it will cause many false positives on broken textures. If you have compatibility files in your mod, the files they are applied to should likely be installed - in the textures will point to that mod's TFC, for example.
+2. Ensure all referenced content is installed into the current active target in M3.  If you have compatibility files in your mod, the mods they are applied to should also be installed. This allows your compatibility files to check against other mod's assets, such as your patch file textures still being valid against the other mod. You may need to manually install a few things if some are mutually exclusive so that all content can be checked. I may change M3 in the future to allow developers to install incompatible content for this reason.
+3. The current active game target (the one with the game source icon) should not be texture modded, or it will cause many false positives on broken textures. As of build 113, you cannot choose which target is validated against, in the future this may change.
 
 ## Deployment blocking issues
 M3 will block deployment if any of the following items are found:
