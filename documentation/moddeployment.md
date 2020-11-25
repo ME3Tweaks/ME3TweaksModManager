@@ -7,7 +7,8 @@ M3 packaging the mod ensures a consistent user experience. When M3 is not used t
  - Mods may not even _parse_ and/or work due to broken features that could have been easily tested for in the deployment step
 
 When deploying a mod through M3, a series of checks are conducted on the mod. Critical issues will block deployment, while less critical ones can be treated as warnings. They should still be fixed before deployment, but they will not prevent deployment.
-![Deployment checklist](images/deployment_panel.png)
+
+![Deployment checklist](images/deployment_checklist.png)
 
 When deploying your mod, there are several things to keep in mind:
 1. Deploying a mod requires a vanilla game backup. Backups are used to check against for things like out of bounds audio references, which can cause game instability.
