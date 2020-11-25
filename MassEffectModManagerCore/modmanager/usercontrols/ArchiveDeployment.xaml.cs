@@ -113,7 +113,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 ModToValidateAgainst = mod,
                 ErrorsMessage = M3L.GetString(M3L.string_texturesCheckDetectedErrors),
                 ErrorsTitle = M3L.GetString(M3L.string_textureErrorsInMod),
-                ValidationFunction = CheckModForTFCCompactability
+                ValidationFunction = CheckTextures
             });
             DeploymentChecklistItems.Add(new DeploymentChecklistItem()
             {
@@ -268,10 +268,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (ModBeingDeployed.Game >= Mod.MEGame.ME2)
                 {
                     var modCookedDir = Path.Combine(ModBeingDeployed.ModPath, customDLC, ModBeingDeployed.Game == Mod.MEGame.ME2 ? @"CookedPC" : @"CookedPCConsole");
-                    var mountFile = Path.Combine(modCookedDir, "mount.dlc");
+                    var mountFile = Path.Combine(modCookedDir, @"mount.dlc");
                     if (!File.Exists(mountFile))
                     {
-                        errors.Add($@"Custom DLC {customDLC} does not have a mount.dlc file. This DLC will not load in game!");
+                        errors.Add(M3L.GetString(M3L.string_interp_noMountDlcFile!, customDLC));
                         obj.DeploymentBlocking = true;
                         continue;
                     }
@@ -285,7 +285,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         var bioengine = Path.Combine(modCookedDir, @"BioEngine.ini");
                         if (!File.Exists(bioengine))
                         {
-                            errors.Add($@"Custom DLC {customDLC} does not have a bioengine.ini file. This is required for all DLC mods as they require at least one TLK file.");
+                            errors.Add(M3L.GetString(M3L.string_interp_me2NoBioEngineFile, customDLC));
                             obj.DeploymentBlocking = true;
                             continue;
                         }
@@ -294,7 +294,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             var ini = DuplicatingIni.LoadIni(Path.Combine(bioengine));
                             if (!int.TryParse(ini[@"Engine.DLCModules"][customDLC]?.Value, out moduleNum) || moduleNum < 1)
                             {
-                                errors.Add($@"Custom DLC {customDLC} does not specify a module number, or does not have a valid integer (> 0) value for this DLC in it. Each DLC must have a defined, unique module number.");
+                                errors.Add(M3L.GetString(M3L.string_interp_me2MissingInvalidModuleNum, customDLC));
                                 obj.DeploymentBlocking = true;
                                 continue;
                             }
@@ -336,7 +336,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             if (referencedStr == null || referencedStr == @"No Data")
                             {
                                 // TLK STRING REF NOT FOUND
-                                errors.Add($@"Custom DLC {customDLC}'s TLK {Path.GetFileName(tlkLangPath)} does not contain the listed TLK string ID {mount.TLKID}, as declared it's mount.dlc file. Mod TLKs must contain the TLK string referenced by the mount.dlc file.");
+                                errors.Add(M3L.GetString(M3L.string_interp_missingReferencedTlkStrInMod, customDLC, Path.GetFileName(tlkLangPath), mount.TLKID));
                                 obj.DeploymentBlocking = true;
                                 continue;
                             }
@@ -418,7 +418,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                                 TalkFileME1 tf = new TalkFileME1(tfExp);
                                 var str = tf.findDataById(tlkid);
-                                if (str == @"No Data")
+                                if (str == null || str == @"No Data")
                                 {
                                     // INVALID
                                     errors.Add(M3L.GetString(M3L.string_interp_dlcModTlkPackageMissingStringId, customDLC, tlkid));
@@ -480,7 +480,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             item.Icon = FontAwesomeIcon.TimesCircle;
                             item.Foreground = Brushes.Red;
                             item.Spinning = false;
-                            errors.Add(f);
+                            errors.Add(f.Substring(ModBeingDeployed.ModPath.Length + 1));
+                            item.DeploymentBlocking = true;
                         }
                     }
                 }
@@ -701,7 +702,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             cachedAudio.Clear();
         }
 
-        private void CheckModForTFCCompactability(DeploymentChecklistItem item)
+        private void CheckTextures(DeploymentChecklistItem item)
         {
             // if (ModBeingDeployed.Game >= Mod.MEGame.ME2)
             //{
