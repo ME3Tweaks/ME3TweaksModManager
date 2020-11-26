@@ -566,7 +566,7 @@
     <!-- 0={DLC folder name} -->
     <system:String x:Key="string_interp_me2MissingInvalidModuleNum">Custom DLC {0} does not specify a module number, or does not have a valid integer (> 0) value for this DLC in it. Each DLC must have a defined, unique module number.</system:String>
     <!-- 0={DLC folder name} -->
-    <system:String x:Key="string_interp_missingReferencedTlkStrInMod">Custom DLC {0}'s TLK {1} does not contain the listed TLK string ID {2}, as declared it's mount.dlc file. Mod TLKs must contain the TLK string referenced by the mount.dlc file.</system:String>
+    <system:String x:Key="string_interp_missingReferencedTlkStrInMod">Custom DLC {0}'s TLK {1} does not contain the listed TLK string ID {2}, as declared in it's mount.dlc file. Mod TLKs must contain the TLK string referenced by the mount.dlc file.</system:String>
     <!-- 0={DLC folder name} 1={TLK file path} 2={Mount file TLK integer} -->
 
     <!-- Backup Creator-->
@@ -1741,7 +1741,7 @@
 
     <!-- Texture2D -->
     <system:String x:Key="string_error_couldNotFetchTextureData">Could not fetch texture data for texture {0} in file {1}</system:String>
-    <!-- 0=Shown when checking textures during deployment. 1 = export object name, so just a long string ID. 1 = filepath-->
+    <!-- Shown when checking textures during deployment. 0 = export object name, so just a long string ID. 1 = filepath-->
     <system:String x:Key="string_error_me1TextureFileNotFound">Externally referenced texture file not found in game: {0}.</system:String>
     <!-- 0= filepath -->
     <system:String x:Key="string_error_me23TextureTFCNotFound">Externally referenced texture cache not found: {0}.</system:String>
