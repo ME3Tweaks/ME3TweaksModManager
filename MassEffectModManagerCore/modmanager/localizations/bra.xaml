@@ -560,6 +560,14 @@
 	<!-- 0={filepath} 1={integer} -->
 	<system:String x:Key="string_interp_dlcModAutoLoadMissingNameStrRef">O Mod de DLC {0} não especifica um NameStrRef válido no [GUI] cabeçalho do arquivo AutoLoad.ini Este atributo deve ser especificado por conta de outros Modders.</system:String>
 	<!-- 0={filepath} -->
+	<system:String x:Key="string_interp_noMountDlcFile">O DLC Personalizado {0} não possui um arquivo mount.dlc. Este DLC não será carregado no jogo!</system:String>
+	<!-- 0={DLC folder name} -->
+	<system:String x:Key="string_interp_me2NoBioEngineFile">O DLC Personlizado {0} não possui um arquivo BioEngine.ini. E é requerido para todos os Mods de DLC já que nessecitam pelo menos um arquivo TLK, e este arquivo é baseado no número de módulo no BioEngine.ini</system:String>
+	<!-- 0={DLC folder name} -->
+	<system:String x:Key="string_interp_me2MissingInvalidModuleNum">O DLC Personalizado {0} não especifica um número de módulo, ou não tem um valor válido (>0) para este DLC. Cada DLC deve possuir um número de módulo único definido.</system:String>
+	<!-- 0={DLC folder name} -->
+	<system:String x:Key="string_interp_missingReferencedTlkStrInMod">O arquivo TLK {1} do DLC Personalizado {0} não contéma string ID {2} listada, como declarada em seu arquivo mount.dlc. TLKs de de Mods devem ter sua string ID referenciada por seu arquivo mount.dlc.</system:String>
+	<!-- 0={DLC folder name} 1={TLK file path} 2={Mount file TLK integer} -->
 
 	<!-- Backup Creator -->
 	<system:String x:Key="string_backupsAreShared">Backups são usados por várias ferramentas incluindo o Randomizador Mass Effect e o Instalador ALOT.</system:String>
