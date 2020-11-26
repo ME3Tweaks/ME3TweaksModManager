@@ -22,6 +22,7 @@
 	<system:String x:Key="string_LogMixinStartup">Protokolliere Mixin-Start</system:String>
 	<system:String x:Key="string_LogModInstallation">Protokolliere Mod-Installation</system:String>
 	<system:String x:Key="string_LogModMakerCompiler">ModMaker Compiler protokollieren</system:String>
+	<system:String x:Key="string_LogModUpdater">Protokolliere Mod-Aktualisierungen</system:String>
 	<system:String x:Key="string_Checkforcontentupdates">Suche nach Aktualisierungen</system:String>
 	<system:String x:Key="string_ChecksME3Tweaksforupdatestovariousservices">Durchsucht ME3Tweaks.com nach Aktualisierungen für verschiedene Dienste</system:String>
 	<system:String x:Key="string_Reloadsmodsfromthemodlibrary">Lädt Mods erneut aus der Mod-Bibliothek</system:String>
@@ -228,6 +229,7 @@
 	<system:String x:Key="string_tooltip_logModLoading">Protokolliere Details über das Laden von Mods aus der Bibliothek oder Archivdateien</system:String>
 	<system:String x:Key="string_tooltip_logModMakerCompiler">Protokolliere Details über die Ausführung des ModMaker Compilers</system:String>
 	<system:String x:Key="string_tooltip_logModInstaller">Protokolliere Installationsinformationen detailreich</system:String>
+	<system:String x:Key="string_tooltip_logModUpdater">Protokolliere Informationen über Mod-Aktualisierungsüberprüfungen</system:String>
 	<system:String x:Key="string_tooltip_importAnAlreadyinstalledDLCMod">Importiere einen bereits installierten DLC-Mod in die Mod Manager Bibliothek</system:String>
 	<system:String x:Key="string_tooltip_downloadME3TweaksMod">Lade und kompiliere Mods, die mit ME3Tweaks ModMaker erstellt wurden</system:String>
 	<system:String x:Key="string_tooltip_createME3TweaksModMakerMod">Erstelle Gameplay-Mods mittels einer einfach zu benutzenden, gut dokumentierten Browserapplikation</system:String>
@@ -264,6 +266,7 @@
 	<system:String x:Key="string_interp_visitSelectedModWebSite">Besuche die Website von {0}</system:String>
 	<!-- 0=SelectedMod.ModName -->
 	<system:String x:Key="string_openModdesciniFile">moddesc.ini-Datei öffnen</system:String>
+	<system:String x:Key="string_tooltip_openModdescIniFile">Öffne die moddesc.ini-Datei dieses Mods zum Bearbeiten</system:String>
 	<system:String x:Key="string_autoUpdateLODs2K">LODs automatisch aktualisieren (2K, gute Qualität)</system:String>
 	<system:String x:Key="string_autoUpdateLODs4K">LODs automatisch aktualisieren (4K, beste Qualität)</system:String>
 	<system:String x:Key="string_tooltip_autoLods2K" xml:space="preserve">Aktualisiert automatisch die Texturdetailgradeinstellungen (LOD) beim Wiederherstellen und Starten des Spiels.&#10;Dies stellt sicher, dass die richtigen Textureinstellungen eingestellt sind, egal welches Installationsziel du startest, solange es von Mod Manager gestartet wird.&#10;&#10;Dies ist die Einstellung 'gute Qualität'. Diese Einstellung stellt eine kleine Verbesserung gegenüber Standardtexturen dar, wenn sie mit einem Texturqualitätsmod wie ALOT kombiniert wird.&#10;Die 2K-Option braucht weniger Arbeitsspeicher und bietet höhere Spielstabilität, wenn andere große Mods benutzt werden</system:String>
@@ -309,8 +312,6 @@
 	<system:String x:Key="string_tooltip_checksForUpdatesToModsThatSupportCheckingForUpdates">Sucht nach Aktualisierungen für Mods, die Suche nach Aktualisierungen unterstützen</system:String>
 	<system:String x:Key="string_mEMVanillaDBViewer">MEM Vanilla DB Anzeige</system:String>
 	<!-- This is only shown in Debug Mode. But might as well translate it anyways. Do not localize the term MEM (Mass Effect Modder). -->
-	<system:String x:Key="string_alotInstallerV4">ALOT Installer V4</system:String>
-	<!-- v4 is upcoming version of the installer and is different from the existing version (V3). Do not change the other instance of ALOT Installer -->
 	<system:String x:Key="string_autoInjectCustomKeybindsIntoModMakerMods">Personalisierte Tastenbelegung automatisch auf ModMaker Mods anwenden</system:String>
 	<system:String x:Key="string_tooltip_autoInjectCustomKeybinds" xml:space="preserve">Automatisch eine benutzerdefinierte BioInput.xml-Datei injizieren, sofern diese im keybindsoverride Ordner vorhanden ist.&#10;Definiere eigene Tastenbelegungen im Custom Keybinds Injector im Werkzeuge-Menü</system:String>
 	<system:String x:Key="string_customKeybindsInjectorMenuItem">Custom Keybinds Injector (ME3)</system:String>
@@ -336,13 +337,18 @@
 	<!-- This is bolded text that shows up at the top of the mod library list area when there are no mods. Try to keep it short, feel free to adapt to your language. -->
 	<system:String x:Key="string_noModsInLibraryDescription" xml:space="preserve">Diese Liste zeigt dir alle Mods, die du in Mod Manager importiert hast. Du kannst Mods importieren, indem du die heruntergeladene Archivdatei (.7z/.rar/.zip/.exe/.me2mod) auf dieses Fenster ziehst und loslässt.&#10;&#10;Mods die direkt vom Importieren-Fenster installiert werden, werden hier nicht angezeigt, da sie direkt in das Spiel installiert werden ohne in die Bibliothek importiert zu werden. Du kannst dir die Installierten Mods anzeigen lassen indem du auf 'Ziel verwalten' oben rechts in diesem Fenster klickst.&#10;&#10;Mods in der Mod-Bibliothek können leicht nochmal oder automatisch in Gruppen installiert werden, automatisch aktualisiert werden, und mehr.</system:String>
 	<!-- This is the text shown under the no mods in library header. It shows up when there are no mods imported. Make sure Manage Target lines up with your localization of that term. -->
+	<system:String x:Key="string_interp_dialog_cannotDeployModNoTarget">Für {0} ist keine Spielinstallation verfügbar. Veröffentlichen eines Mods benötigt eine Installation des entsprechenden Spiels, um nach Daten zu suchen, die in einer anderen Installation nicht vorhanden sind.</system:String>
+	<!-- 0=ME1/ME2/ME3 -->
+	<system:String x:Key="string_cannotDeployMod">Mod kann nicht veröffentlicht werden</system:String>
+	<system:String x:Key="string_interp_dialog_cannotDeployModNoBackup">Für {0} ist kein Backup vorhanden. Veröffentlichen eines Mods benötigt ein Backup des entsprechenden Spiels, damit die Tests mit einer Vanilla-Installation durchgeführt werden können.</system:String>
+	<!-- 0=ME1/ME2/ME3 -->
 
 	<!-- Global Styles -->
 	<system:String x:Key="string_thisTargetHasBeenTextureModded">Diese Zielinstallation enthält modifizierte Texturen</system:String>
 
 	<!-- Mod Installer Panel -->
 	<system:String x:Key="string_preparingToInstall">Bereite Installation vor</system:String>
-	<system:String x:Key="string_interp_devModeAlotInstalledWarning" xml:space="preserve">ALOT ist installiert und dieser Mod installiert Paketdateien. Fortsetzen der Installation dieses Mods wird wahrscheinlich aufgrund von ungültigen Texturzeigern und möglicherweise leeren Mips zu defekten Texturen oder Spielabstürzen führen. Außerdem befindet sich dadurch deine ALOT-Installation in einem nicht unterstützten Zustand.\n\nInstallation von {0} fortsetzen? Du wurdest gewarnt.</system:String>
+	<system:String x:Key="string_interp_devModeAlotInstalledWarning" xml:space="preserve">Texturmods sind installiert und dieser Mod installiert Paketdateien. Fortsetzen der Installation dieses Mods wird wahrscheinlich aufgrund von ungültigen Texturzeigern und möglicherweise leeren Mips zu defekten Texturen oder Spielabstürzen führen. Außerdem befindet sich dadurch deine Installation in einem nicht unterstützten Zustand.\n\nInstallation von {0} fortsetzen? Du wurdest gewarnt.</system:String>
 	<system:String x:Key="string_brokenTexturesWarning">Warnung: Defekte Texturen</system:String>
 	<system:String x:Key="string_installing">Installiere</system:String>
 	<system:String x:Key="string_loadingModArchive">Lade Mod-Archiv</system:String>
@@ -371,7 +377,7 @@
 	<system:String x:Key="string_dialogRequiredContentMissing">Dieser Mod setzt voraus, dass die folgenden DLC-Mods bereits installiert sind:{0}</system:String>
 	<!-- {0} is a list of DLC in bulleted form. It should always go at the end -->
 	<system:String x:Key="string_dialogInstallationSucceededFailedInstallCountCheck">Mod wurde installiert aber hat die Installationsverifikation nicht bestanden. Dies ist wahrscheinlich ein Bug von Mod Manager, bitte melde dieses Ereignis an Mgamerz auf Discord.</system:String>
-	<system:String x:Key="string_dialogInstallationBlockedByALOT">Die Installation von Mods, welche Paketdateien installieren, ist für Ziele mit installiertem ALOT nicht gestattet. Paketdateien müssen vor ALOT installiert werden.</system:String>
+	<system:String x:Key="string_dialogInstallationBlockedByALOT">Die Installation von Mods, welche Paketdateien installieren, ist für Ziele mit installierten Texturmods nicht gestattet. Paketdateien müssen vor Texturmods installiert werden.</system:String>
 	<system:String x:Key="string_installationBlocked">Installation blockiert</system:String>
 	<system:String x:Key="string_installationSucceededMaybe">Installation vielleicht erfolgreich</system:String>
 	<system:String x:Key="string_dialogRunGameOnceFirst">Mods, die Konfigurationsdateien verändern, setzen voraus, dass Mass Effect mindestens einmal vor der Installation gestartet wurde. Dies dient dazu, dass das Spiel die Dateien beim ersten Start nicht überschreibt.</system:String>
@@ -410,6 +416,8 @@
 	<!-- 0={Mod name} -->
 	<system:String x:Key="string_thisModShouldBeReinstalled">Dieser Mod sollte neu installiert werden.</system:String>
 	<system:String x:Key="string_invalidCompatibilityPack">Ungültiges Kompatibilitätspack</system:String>
+	<system:String x:Key="string_interp_errorOccuredBuildingInstallationQueues">Beim Erstellen der Installationswarteschlange ist ein Fehler aufgetreten: {0}</system:String>
+	<!-- 0={Exception message} -->
 
 	<!-- Welcome panel -->
 	<system:String x:Key="string_previewPanelTitle">Willkommen beim ME3Tweaks Mod Manager</system:String>
@@ -532,9 +540,37 @@
 	<!-- This is a 'status' text to show what's being worked on -->
 	<system:String x:Key="string_uncompressedModItems">Unkomprimierte Modbestandteile</system:String>
 	<!-- This is a 'status' text to show what's being worked on -->
+	<system:String x:Key="string_dialog_improperlyDeployedMod" xml:space="preserve">Diese Archivdatei enthält einen Mod, der mit ME3Tweaks Mod Manger erstellt wurde, doch die veröffentlichte Datei wurde nicht mit ME3Tweaks Mod Manager erstellt. Die Mods in dieser Archivdatei sind möglicherweise nicht vollständig unterstützt oder haben andere Probleme.\n\nMods für ME3Tweaks Mod Manager sollten auch damit gepackt werden. Kontaktiere den Entwickler und bitte darum, den Mod ordnugsgemäß mit Mod Manager zu veröffentlichen.</system:String>
+	<system:String x:Key="string_improperlyDeployedMod">Unsachgemäß veröffentlichter Mod</system:String>
+	<system:String x:Key="string_interp_packageFileNoNames">Paketdatei {0} enthält keine names. Dies ist eine ungültige Paketdatei</system:String>
+	<!-- 0=relative file path -->
+	<system:String x:Key="string_interp_packageFileNoImports">Paketdatei {0} enthält keine imports. Dies ist eine ungültige Paketdatei</system:String>
+	<!-- 0=relativepath -->
+	<system:String x:Key="string_interp_packageFileNoExports">Paketdatei {0} enthält keine exports. Dies ist eine ungültige Paketdatei</system:String>
+	<!-- 0=relativefilepath -->
+	<system:String x:Key="string_interp_dlcModHasNoTlkFiles">Der DLC-Mod ({0}) hat keine TLK-Dateien. Mods müssen mindestens eine TLK-Datei enthalten, damit Benutzern ein Fehlertext angezeigt wird, wenn es beim Laden des Mods zu einem Fehler kommt.</system:String>
+	<!-- 0={filepath} -->
+	<system:String x:Key="string_interp_dlcModMissingTlkInAutoloadIni">DLC-Mod {0} gibt keine TLK-Datei in seiner AutoLoad.ini an. Diese Eigenschaft wird benötigt und eine gültige TLK-Datei muss zu Modding-Szene Zwecken immer enthalten sein.</system:String>
+	<!-- 0={filepath} -->
+	<system:String x:Key="string_interp_dlcModMissingAutoLoadTlkFile">DLC-Mod {0} gibt eine TLK-Datei namens {1} (.upk) an, aber diese Datei existiert nicht im DLC-Mod Ordner.</system:String>
+	<!-- 0={filepath} 1={filepath} -->
+	<system:String x:Key="string_interp_dlcModTlkPackageHasNoUsableTlk">Das TLK-Paket von DLC-Mod {0} enthält keinen nutzbaren TLK-export.</system:String>
+	<!-- 0={filepath} -->
+	<system:String x:Key="string_interp_dlcModTlkPackageMissingStringId">Das TLK-Paket von DLC-Mod {0} enthält die angegebene string id {1} nicht, doch dies ist zwingend nötig.</system:String>
+	<!-- 0={filepath} 1={integer} -->
+	<system:String x:Key="string_interp_dlcModAutoLoadMissingNameStrRef">DLC-Mod {0} gibt im [GUI]-Bereich der AutoLoad.ini keine gültige NameStrRef an. Dieses Attribut wird zu Modding-Szene Zwecken benötigt.</system:String>
+	<!-- 0={filepath} -->
+	<system:String x:Key="string_interp_noMountDlcFile">Custom DLC {0} hat keine mount.dlc-Datei. Dieses DLC wird im Spiel nicht geladen!</system:String>
+	<!-- 0={DLC folder name} -->
+	<system:String x:Key="string_interp_me2NoBioEngineFile">Custom DLC {0} hat keine BioEngine.ini-Datei. Diese Datei wird von allen DLC-Mods benötigt, da sie mindestens eine TLK-Datei benötigen und die TLK-Datei auf der module number der BioEngine.ini basiert</system:String>
+	<!-- 0={DLC folder name} -->
+	<system:String x:Key="string_interp_me2MissingInvalidModuleNum">Custom DLC {0} gibt keine module number an oder hat keinen gültigen ganzzahligen Wert (> 0) für dieses DLC. Jedes DLC braucht eine wohldefinierte, eindeutige module number.</system:String>
+	<!-- 0={DLC folder name} -->
+	<system:String x:Key="string_interp_missingReferencedTlkStrInMod">Die TLK {1} von Custom DLC {0} enthält die in mount.dlc angegebene TLK string ID {2} nicht.</system:String>
+	<!-- 0={DLC folder name} 1={TLK file path} 2={Mount file TLK integer} -->
 
 	<!-- Backup Creator -->
-	<system:String x:Key="string_backupsAreShared">Backups können von verschiedenen Moddingprogrammen benutzt werden, darunter Mass Effect Randomizer und ALOT Installer.</system:String>
+	<system:String x:Key="string_backupsAreShared">Backups können von verschiedenen Moddingprogrammen benutzt werden, darunter Mass Effect Randomizer, ALOT Installer und ME3Explorer - ME3Tweaks Fork.</system:String>
 	<system:String x:Key="string_backupsMustBeCreatedFresh">Backups müssen von einer frischen, unmodifizierten Installation des Spielt erstellt werden. Backups von modifizierten Installationen werden nicht unterstützt.</system:String>
 	<system:String x:Key="string_backUp">Backup erstellen</system:String>
 	<system:String x:Key="string_backupsAreUsedToRestoreYourGame" xml:space="preserve">Backups können benutzt werden um deine Installation auf den ungemoddeten Zustand zurückzusetzen und sind ein wichtiger Schritt beim Modden. Um ein Backup zu entkoppeln, verschiebe oder lösche den Ordner mit dem Backup. Um aus einem Backup wiederherzustellen, benutze den Ziel verwalten Knopf im Hauptfenster.&#10;&#10;Backups werden außerdem als Dateiquelle für bestimmte Programmfunktionen benutzt. Daher benötigen einige fortgeschrittene Optionen ein Backup als Quelle für unmodifizierte Dateien.</system:String>
@@ -643,14 +679,14 @@
 	<system:String x:Key="string_dialogNoCompatPackRequired">Die aktuelle Spielkonfiguration braucht kein Kompatibilitätspack.</system:String>
 
 	<!-- Installation Information -->
-	<system:String x:Key="string_dialogRestoringFilesWhileAlotIsInstalledNotAllowed">Während ALOT installiert ist können keine Dateien wiederhergestellt werden, da sonst Texturzeiger ungültig werden.</system:String>
+	<system:String x:Key="string_dialogRestoringFilesWhileAlotIsInstalledNotAllowed">Während Texturmods installiert sind können keine Dateien wiederhergestellt werden, da sonst Texturzeiger ungültig werden.</system:String>
 	<system:String x:Key="string_cannotRestoreSfarFiles">SFAR-Dateien können nicht wiederhergestellt werden</system:String>
-	<system:String x:Key="string_dialogRestoringFilesWhileAlotIsInstalledNotAllowedDevMode">Wenn Dateien wiederhergestellt werden während ALOT installiert ist, werden Texturzeiger ungültig, was zu schwarzen Texturen und möglicherweise Spielabstürzen führt. Bitte stelle sicher, dass du weißt was du tust, bevor du fortfährst.</system:String>
+	<system:String x:Key="string_dialogRestoringFilesWhileAlotIsInstalledNotAllowedDevMode">Wenn Dateien wiederhergestellt werden während ein Texturmod installiert ist, werden Texturzeiger ungültig, was zu schwarzen Texturen und möglicherweise Spielabstürzen führt. Bitte stelle sicher, dass du weißt was du tust, bevor du fortfährst.</system:String>
 	<system:String x:Key="string_invalidTexturePointersWarning">Warnung vor ungültigen Texturzeigern</system:String>
 	<system:String x:Key="string_restoreAllModifiedFilesQuestion">Alle modifizierten Dateien wiederherstellen?</system:String>
 	<system:String x:Key="string_confirmRestoration">Wiederherstellen bestätigen</system:String>
-	<system:String x:Key="string_restoringSfarsAlotBlocked">Während ALOT installiert ist können keine SFAR-Dateien wiederhergestellt werden, da sonst Texturzeiger ungültig werden.</system:String>
-	<system:String x:Key="string_restoringSfarsAlotDevMode">Wenn SFAR-Dateien wiederhergestellt werden während ALOT installiert ist, werden Texturzeiger ungültig, was zu schwarzen Texturen und möglicherweise Spielabstürzen führt. Diese Operation wird außerdem alle ungepackten Dateien aus dem Ordner löschen. Bitte stelle sicher, dass du weißt was du tust, bevor du fortfährst.</system:String>
+	<system:String x:Key="string_restoringSfarsAlotBlocked">Während Texturmods installiert sind können keine SFAR-Dateien wiederhergestellt werden, da sonst Texturzeiger ungültig werden.</system:String>
+	<system:String x:Key="string_restoringSfarsAlotDevMode">Wenn SFAR-Dateien wiederhergestellt werden während ein Texturmod installiert ist, werden Texturzeiger ungültig, was zu schwarzen Texturen und möglicherweise Spielabstürzen führt. Diese Operation wird außerdem alle ungepackten Dateien aus dem Ordner löschen. Bitte stelle sicher, dass du weißt was du tust, bevor du fortfährst.</system:String>
 	<system:String x:Key="string_restoreAllModifiedSfarsQuestion">Alle modifizierten SFAR-Dateien wiederherstellen?</system:String>
 	<system:String x:Key="string_restoreSPSfarsQuestion">Alle modifizierten Einspielermodus SFARs widerherstellen?</system:String>
 	<system:String x:Key="string_restoreMPSfarsQuestion">Alle modifizierten Mehrspielermodus SFARs widerherstellen?</system:String>
@@ -661,15 +697,15 @@
 	<!-- 0 = gamename -->
 	<system:String x:Key="string_interp_deletingXwhileAlotInstalledUnsupported" xml:space="preserve">Löschen von {0} während ALOT installiert ist wird dein Spiel nicht zerstören, jedoch wirst du keine ALOT-Aktualisierungen installieren können ohne eine vollständige Neuinstallation (Konfiguration nicht unterstützt).\n\nBist du sicher, dass du diesen DLC-Mod löschen willst?</system:String>
 	<!-- 0 = mod name -->
-	<system:String x:Key="string_deletingWillPutAlotInUnsupportedConfig">Durch Löschen wird ALOT in eine nicht unterstützte Konfiguration versetzt</system:String>
+	<system:String x:Key="string_deletingWillPutAlotInUnsupportedConfig">Durch Löschen wird das Spiel in eine nicht unterstützte Konfiguration versetzt</system:String>
 	<system:String x:Key="string_interp_removeXFromTheGameInstallationQuestion">{0} aus der Spiel-Installation entfernen?</system:String>
 	<!-- 0 = modname of dlc -->
 	<system:String x:Key="string_interp_cannotRestoreFilesWhileXIsRunning">Dateien können nicht wiederhergestellt werden während {0} läuft.</system:String>
 	<!-- 0 = game name -->
-	<system:String x:Key="string_interp_restoringXWhileAlotInstalledIsNotAllowed">Wiederherstellung von {0} während ALOT installiert ist, ist nicht erlaubt, da sonst Texturzeiger ungültig werden.</system:String>
+	<system:String x:Key="string_interp_restoringXWhileAlotInstalledIsNotAllowed">Wiederherstellen von {0} während Texturmods installiert sind, ist nicht erlaubt, da sonst Texturzeiger ungültig werden.</system:String>
 	<!-- 0 = filename -->
 	<system:String x:Key="string_cannotRestorePackageFiles">Paketdateien können nicht wiederhergestellt werden</system:String>
-	<system:String x:Key="string_interp_restoringXwhileAlotInstalledLikelyBreaksThingsDevMode">Durch Wiederherstellen von {0} während ALOT installiert ist entstehen höchstwahrscheinlich ungültige Texturzeiger, welche schwarze Texturen oder Spielabstürze wegen leerer Mips verursachen können. Bitte stelle sicher, dass du weißt was du tust, bevor du fortfährst.</system:String>
+	<system:String x:Key="string_interp_restoringXwhileAlotInstalledLikelyBreaksThingsDevMode">Durch Wiederherstellen von {0} während ein Texturmod installiert ist entstehen höchstwahrscheinlich ungültige Texturzeiger, welche schwarze Texturen oder Spielabstürze wegen leerer Mips verursachen können. Bitte stelle sicher, dass du weißt was du tust, bevor du fortfährst.</system:String>
 	<!-- 0 = filename -->
 	<system:String x:Key="string_interp_restoreXquestion">{0} wiederherstellen?</system:String>
 	<!-- 0 = item (filename, dlc name) -->
@@ -699,7 +735,7 @@
 	<system:String x:Key="string_enable">Aktivieren</system:String>
 	<system:String x:Key="string_disable">Deaktivieren</system:String>
 	<system:String x:Key="string_disabled">Deaktiviert</system:String>
-	<system:String x:Key="string_tooltip_disableDLC" xml:space="preserve">Deaktiviert das Laden dieses DLC-Mods.&#10;Da keine Dateien verändert werden, ist dies auch nach der Insallation von Texturmods sicher möglich</system:String>
+	<system:String x:Key="string_tooltip_disableDLC" xml:space="preserve">Deaktiviert das Laden dieses DLC-Mods.&#10;Da keine Dateien verändert werden, ist dies auch nach der Installation von Texturmods sicher möglich</system:String>
 	<system:String x:Key="string_tooltip_enableDLC" xml:space="preserve">Aktiviert das Laden dieses DLC-Mods im Spiel.</system:String>
 	<system:String x:Key="string_tooltip_deleteDLC" xml:space="preserve">Entfernt diesen DLC-Mod aus dem Spiel.&#10;Halte SHIFT gedrückt, um den Bestätigungsdialog zu überspringen (falls es keine Warnungen gibt)</system:String>
 	<system:String x:Key="string_tooltip_openTargetInExplorer">Öffnet den Ordner dieses Installationsziels im Datei-Explorer</system:String>
@@ -710,6 +746,8 @@
 	<system:String x:Key="string_tooltip_clickToOpenASIManager">Klicke, um den ASI-Manager zu öffnen</system:String>
 	<system:String x:Key="string_manageASIsWithASIManager">ASIs mit dem ASI-Manager verwalten</system:String>
 	<system:String x:Key="string_binkw32DLCBypass">Binkw32 DLC-Umgehung</system:String>
+	<system:String x:Key="string_dialog_restoringSFARWithoutBackup">Wiederherstellen von SFARs ohne Backup wird nur ungepackte Dateien löschen, da es keine Backup-Datei gibt, die kopiert werden kann. Dies versetzt das DLC in einen defekten und unbenutzbaren Zustand. Du musst ein Backup einer unmodifizierten Installation des Spiels erstellen, bevor du DLC SFARs korrekt wiederherstellen kannst.</system:String>
+	<system:String x:Key="string_backupNotAvailable">Backup nicht verfügbar</system:String>
 
 	<!-- Log uploader -->
 	<system:String x:Key="string_selectALogToView">Wähle das anzuzeigende Ereignisprotokoll</system:String>
@@ -722,11 +760,11 @@
 	<system:String x:Key="string_logUploadFailed">Hochladen des Ereignisprotokolls fehlgeschlagen</system:String>
 	<system:String x:Key="string_logsAndDiagnostics">Ereignisprotokolle und Fehlerbehebung</system:String>
 	<system:String x:Key="string_uploadToLogViewer">Hochladen zum Ereignisprotokollanzeigedienst</system:String>
-	<system:String x:Key="string_selectWhatDataToCollect">Wähle die zu sammelnden Daten.</system:String>
+	<system:String x:Key="string_selectWhatDataToCollect">Wähle die zu sammelnden Daten. Du kannst eine oder beide Optionen wählen.</system:String>
 	<system:String x:Key="string_modManagerApplicationLog">Mod Manager Anwendungsereignisprotokoll</system:String>
 	<system:String x:Key="string_applicationLogDescription">Das Anwendungsereignisprotokoll enthält detaillierte Informationen über eine Mod Manager-Sitzung und kann von ME3Tweaks benutzt werden, um Fehler zu beheben. Wenn du versuchst herauszufinden, warum etwas in Mod Manager passiert ist, wähle ein Anwendungsereignisprotokoll.</system:String>
 	<system:String x:Key="string_gameDiagnostic">Spiel-Diagnose</system:String>
-	<system:String x:Key="string_gameDiagnosticDescription">Eine Spiel-Diagnose sammelt Daten über eine Installation, darunter ALOT-Status, installierte DLCs, Spielversion, Absturzberichte (falls vorhanden), Texturprobleme und mehr. Wenn du ein Problem im Spiel hast, wähle das Spiel bei dem es auftritt.</system:String>
+	<system:String x:Key="string_gameDiagnosticDescription">Eine Spiel-Diagnose sammelt Daten über eine Installation, darunter Texturmod-Status, installierte DLCs, Spielversion, Absturzberichte (falls vorhanden), Texturprobleme und mehr. Wenn du ein Problem im Spiel hast, wähle das Spiel bei dem es auftritt.</system:String>
 	<system:String x:Key="string_tooltip_checkAllTexturesInGameDescription" xml:space="preserve">Wähle diese Option, um alle Texturen im Spiel zu prüfen.&#10;Die Texturenüberprüfung kann einige Minuten dauern</system:String>
 	<system:String x:Key="string_fullTexturesCheck">Komplette Texturenüberprüfung</system:String>
 	<system:String x:Key="string_diagShareTheLink">Teile den Link mit dem Empfänger deiner Ereignisprotokolle/Diagnose. Wenn du nicht sicher bist, welche Optionen du wählen sollst, wähle einfach eine von beiden.</system:String>
@@ -778,7 +816,7 @@
 	<system:String x:Key="string_unknown">Unbekannt</system:String>
 	<!-- This is the version number string that is set when a mod is imported (third party) but the version number is not able to be determined -->
 	<system:String x:Key="string_launchALOTInstaller">ALOT Installer starten</system:String>
-	<system:String x:Key="string_interp_dialogImportedALOTMainToTextureLibrary">{0} wurde die die ALOT Installer Textur-Bibliothek in {1} importiert. Starte ALOT Installer, um die Datei zu installieren. Nachdem du Dateien mit ALOT Installer installiert hast, wirdst du Mod Manager nicht mehr nutzen können, um weitere Dateien in diese Zielinstallation zu installieren, ohne das Spiel wiederherzustellen. Stelle daher sicher, dass du alle nicht-Textur-Mods installierst, BEVOR du ALOT Installer verwendest.</system:String>
+	<system:String x:Key="string_interp_dialogImportedALOTMainToTextureLibrary">{0} wurde die die ALOT Installer Textur-Bibliothek in {1} importiert. Starte ALOT Installer, um die Datei zu installieren. Nachdem du Dateien mit ALOT Installer installiert hast, wirdst du Mod Manager nicht mehr nutzen können, um weitere Dateien in diese Zielinstallation zu installieren, ohne das Spiel wiederherzustellen. Stelle daher sicher, dass du alle nicht-Texturmods installierst, BEVOR du ALOT Installer verwendest.</system:String>
 	<!-- 0=filepath 1=filepath -->
 	<system:String x:Key="string_importCompleted">Import abgeschlossen</system:String>
 	<system:String x:Key="string_thisFileIsNotInTheTextureLibraryMovingItToTheTextureLibrary">Diese Datei ist nicht in der Textur-Bibliothek. Wird in die Textur-Bibliothek verschoben</system:String>
@@ -792,6 +830,7 @@
 	<system:String x:Key="string_tooltip_importMods" xml:space="preserve">Importiert die gewählten Mods in deine Mod-Bibliothek.&#10;Importieren ermöglicht zusätzliche Mod Manager-Funktionen;&#10; - Aktualisierungsüberprüfungen für Mods (falls unterstützt)&#10; - Komprimierung beim Importieren (falls unterstützt)&#10; - Mod von ME3Tweaks wiederherstellen (falls unterstützt)</system:String>
 	<system:String x:Key="string_tooltip_launchesALOTInstaller">Startet ALOT Installer</system:String>
 	<system:String x:Key="string_tooltip_compressPackages" xml:space="preserve">Komprimiert Paketdateien beim Importieren und reduziert dadurch ihre Größe. Dies ist eine experimentelle Funktion - falls es Probleme mit Mods gibt, solltest du diese Option nicht benutzen.&#10;Diese Option ist aufgrund ihrer Komplexität in den folgenden Situationen nicht verfügbar:&#10; - Direkte Installation aus Archivdatei&#10; - Dateien von Mass Effect 1&#10;&#10;Diese Funktion kann von ME3Tweaks deaktiviert werden, wenn Mod Manager sich mit dem Server verbindet</system:String>
+	<system:String x:Key="string_tooltip_installModArchiveWindow" xml:space="preserve">Installiert den Mod direkt in das aktuell gewählte Installationsziel des entsprechenden Spiels.&#10;Der Mod wird NICHT in die Mod-Bibliothek importiert</system:String>
 
 	<!-- Mod updater -->
 	<system:String x:Key="string_modupdatesavailable">Aktualisierungen für Mods verfügbar</system:String>
@@ -868,7 +907,7 @@
 	<system:String x:Key="string_noBackup">Kein Backup</system:String>
 	<system:String x:Key="string_error">Fehler!</system:String>
 	<system:String x:Key="string_fullGameRestore">Komplettes Spiel wiederherstellen</system:String>
-	<system:String x:Key="string_restoringTextureLODs">Wiederherstellen aus einem Backup wird deine Texturqualitätseinstellungen auf die Standardeinstellungen zurücksetzen. Wenn du das aktive Ziel auf ein Ziel mit installiertem ALOT änderst, wirst du gefragt, die Textureinstellungen wieder entsprechend zu ändern.</system:String>
+	<system:String x:Key="string_restoringTextureLODs">Wiederherstellen aus einem Backup wird deine Texturqualitätseinstellungen auf die Standardeinstellungen zurücksetzen. Starte das Spiel mit Mod Manager, damit immer die richtigen Textur-LODs eingestellt sind.</system:String>
 	<system:String x:Key="string_entireGameDirectoryWillBeDeleted">Der vollständige Spiel-Installationsordner wird gelöscht. Wenn du nur teilweise wiederherstellen willst, inklusive des Entfernen von DLC-Mods, wiederherstellen einzelner Dateien oder SFAR-Dateien, dann erreichst du stattdessen die Wiederherstellungsoptionen über den Ziel verwalten Knopf.</system:String>
 	<system:String x:Key="string_youMaySeeElevationPromptOnRestore">Eventuell wird dir beim Wiederherstellen eine Eingabeaufforderung für erhöhte Rechte angezeigt. Das liegt daran, dass ME3Tweaks Mod Manager deinem Benutzeraccount wieder die Rechte am neuen Spiel-Installationsordner erteilen muss, nachdem der alte Ordner gelöscht wurde.</system:String>
 	<system:String x:Key="string_dialog_restoringXWillDeleteGameDir" xml:space="preserve">Wiederherstellen von {0} wird den Spiel-Installationsordner vollständig löschen und dann das Backup an den ursprünglichen Ort kopieren.\n\nDiese Installation löschen und aus Backup wiederherstellen?</system:String>
@@ -995,9 +1034,9 @@
 	<!-- 0={FriendlyName} -->
 
 	<!-- GameTarget -->
-	<system:String x:Key="string_interp_ui_alotInstalledVersion" xml:space="preserve">A Lot Of Textures (ALOT) ist installiert\nVersion {0}</system:String>
+	<system:String x:Key="string_interp_ui_alotInstalledVersion" xml:space="preserve">A Lot of Textures (ALOT) ist installiert\nVersion {0}</system:String>
 	<!-- 0 = ALOT Version -->
-	<system:String x:Key="string_ui_alotNotInstalled" xml:space="preserve">A Lot Of Textures (ALOT)\nNicht installiert</system:String>
+	<system:String x:Key="string_ui_alotNotInstalled" xml:space="preserve">A Lot of Textures (ALOT)\nNicht installiert</system:String>
 	<system:String x:Key="string_interp_invalidTargetMissingFile">Ungültiges Ziel: {0} wurde nicht im Spiel-Installationsordner gefunden.</system:String>
 	<!-- 0 = filename of file that is not found in game dir but should be there -->
 	<system:String x:Key="string_invalidTargetProtectedByCmmvanilla">Ungültiges Ziel: Dies ist mittels cmm_vanilla-Datei als geschütztes Backup markiert</system:String>
@@ -1183,6 +1222,10 @@
 	<!-- 0={Incorrect filename} -->
 	<system:String x:Key="string_interp_errorOccuredWhileAddingFileForLOCALIZATIONJobX">Ein Fehler ist aufgetreten beim hinzufügen der Datei zum LOCALISATION job: {0}</system:String>
 	<!-- 0={failurereason} -->
+	<system:String x:Key="string_interp_validation_modparsing_securityCheckOutsideAllowSilo" xml:space="preserve">Der Job {1} von {0} installiert eine Datei in {2}, was außerhalb der von diesem header erlaubten Orte liegt. Dies ist ein Sicherheitsrisiko, Mods dürfen Dateien nur in die in ihrem task header angegebenen Ordner installieren.\n\nDieser Test wurde in 6.1.5 hinzugefügt. Mods wurden möglicherweise aktualisiert um dieses Problem zu beseitigen. Importiere den Mod erneut, um dies zu überprüfen.</system:String>
+	<!-- 0={ModName} 1={job.Header} 2={Filepath} This comes up if a mod tries to install a file outside of the list of allowed locations for that task, such as the RETLAITION job trying to install files into the RECKONING DLC. -->
+	<system:String x:Key="string_interp_validation_modparsing_securityCheckInsideDisallowedSilo">Der Job {1} von {0} installiert eine Datei in {2}, was außerhalb der für diesen task header erlaubten Orte liegt. Dies ist ein Sicherheitsrisiko, Mods dürfen Dateien nur in bestimmte Ordner installieren, zum Beispiel kann der BASEGAME header keine Dateien in den DLC-Ordner installieren.</system:String>
+	<!-- 0={ModName} 1={job.Header, such as RETALIATION}, 2={Filepath}. This comes up if a mod task tries to install a file into a disallowed location, like a mod using the BASEGAME header to install to DLC. -->
 
 	<!-- About Panel -->
 	<system:String x:Key="string_tooltip_hello">Hallo!</system:String>
@@ -1570,8 +1613,8 @@
 	<system:String x:Key="string_description_importFromGameToModManager">Mit diesem Importer kannst du einen Mod aus einer Spiel-Installation in Mod Manager importieren, was dir erlaubt diesen Mod später schnell und einfach zu installieren. Auf diese Art installierte Mods unterstützen keine Konfigurationsoptionen, Aktualisierungen, oder andere Mod Manager Funktionen. Importiere Mods aus einer Archivdatei für vollständigen Funktionsumfang.</system:String>
 	<system:String x:Key="string_modsInstalledByManagedSolutionCannotBeImported">Mods die via Managed Installer (z.B. Mod Manager oder ALOT Installer) importiert wurden, können nicht mit diesem Importer importiert werden.</system:String>
 	<system:String x:Key="string_importMod">Mod Importieren</system:String>
-	<system:String x:Key="string_thisInstallationHasBeenTextureModded">Diese Installation hat Textur-Mods installiert</system:String>
-	<system:String x:Key="string_cannotImportModsFromTextureModdedTarget">Du kannst keine Mods aus aus einer Spiel-Installation importieren, die Textur-Mods installiert hat</system:String>
+	<system:String x:Key="string_thisInstallationHasBeenTextureModded">Diese Installation hat Texturmods installiert</system:String>
+	<system:String x:Key="string_cannotImportModsFromTextureModdedTarget">Du kannst keine Mods aus aus einer Spiel-Installation importieren, die Texturmods installiert hat</system:String>
 	<system:String x:Key="string_thisModHasNotBeenCatalogedByME3TweaksYet">Dieser Mod wurde noch nicht von ME3Tweaks katalogisiert</system:String>
 	<system:String x:Key="string_pleaseEnterModInfoForTPMI">Dieser Mod scheint nicht Teil des ME3Tweaks Third Party Mod Identification (Drittanbieter-Mod Indentifikations-) Dienstes (TPMI) zu sein. Dieser Dienst hilft Benutzern und Entwicklern Mods in Mod Manager und anderen Werkzeugen zu identifizieren. Bitte gibt die folgenden Informationen an. Diese Informationen werden zur überprüfung an ME3Tweaks gesendet, bevor sie dem TPMI-Dienst hinzugefügt werden.</system:String>
 	<system:String x:Key="string_nameOfThisModRequired">Name dieses Mods (benötigt)</system:String>
@@ -1692,4 +1735,16 @@
 	<system:String x:Key="string_selectWhichKeybindsToInstall">Wähle, welche Tastaturbelegung installiert werden soll:</system:String>
 	<system:String x:Key="string_resetKeybinds">Tastaturbelegung zurücksetzen</system:String>
 	<system:String x:Key="string_installKeybinds">Tastaturbelegung installieren</system:String>
+
+	<!-- Texture2D -->
+	<system:String x:Key="string_error_couldNotFetchTextureData">Konnte Texturdaten für Textur {0} in Datei {1} nicht laden</system:String>
+	<!-- 0=Shown when checking textures during deployment. 1 = export object name, so just a long string ID. 1 = filepath -->
+	<system:String x:Key="string_error_me1TextureFileNotFound">Extern referenzierte Texturdatei nicht im Spiel gefunden: {0}.</system:String>
+	<!-- 0= filepath -->
+	<system:String x:Key="string_error_me23TextureTFCNotFound">Extern referenzierter Texturcache nicht gefunden: {0}.</system:String>
+	<!-- 0=filepath -->
+	<system:String x:Key="string_interp_error_textureExceptionExternal" xml:space="preserve">{0}\nDatei: {1}\nStorageType: {2}\nAdressabstand in externer Datei: {3}</system:String>
+	<!-- This technical string is shown when there is error loading texture data. 0=exception message. 1=filepath. 2=string (pccUnc, extLZO...) 3=file offset 0xhhhhhhhh -->
+	<system:String x:Key="string_interp_error_textureExceptionInternal" xml:space="preserve">{0}\nStorageType: {1}\n</system:String>
+	<!-- 0={exception message} 1={storage type (pccUnc, pccLZO, pccZLib)} -->
 </ResourceDictionary>
