@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -1133,6 +1134,21 @@ namespace MassEffectModManagerCore.modmanager.helpers
             }
 
             return true;
+        }
+    }
+
+    public static class ExceptionExtensions
+    {
+        public static void LogStackTrace(this Exception ex)
+        {
+            var staceTrace = new StackTrace(ex, true);
+            if (staceTrace.FrameCount > 0)
+            {
+                var stackFrame = staceTrace.GetFrame(0);
+                Serilog.Log.Error(@"  At line {0} column {1} in {2}: {3} {4}{3}{5}  ",
+                    stackFrame.GetFileLineNumber(), stackFrame.GetFileColumnNumber(),
+                    stackFrame.GetMethod(), Environment.NewLine, stackFrame.GetFileName());
+            }
         }
     }
 }

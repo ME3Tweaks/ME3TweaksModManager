@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager;
 using MassEffectModManagerCore.modmanager.asi;
 using MassEffectModManagerCore.modmanager.objects;
+using ME3ExplorerCore.Packages;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MassEffectModManagerCore.Tests
@@ -22,7 +20,7 @@ namespace MassEffectModManagerCore.Tests
             Console.WriteLine(@"Loading ASI Manager Manifest");
             ASIManager.LoadManifest();
 
-            var games = new[] { Mod.MEGame.ME1, Mod.MEGame.ME2, Mod.MEGame.ME3 };
+            var games = new[] { MEGame.ME1, MEGame.ME2, MEGame.ME3 };
 
             foreach (var game in games)
             {
@@ -30,7 +28,7 @@ namespace MassEffectModManagerCore.Tests
                 var normal = Path.Combine(root, "normal");
                 GameTarget gt = new GameTarget(game, normal, true, false, isTest: true);
 
-                var asiDir = MEDirectories.ASIPath(gt);
+                var asiDir = M3Directories.GetASIPath(gt);
                 if (Directory.Exists(asiDir))
                 {
                     // Clean slate

@@ -560,6 +560,10 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_interp_dlcModTlkPackageHasNoUsableTlk = "string_interp_dlcModTlkPackageHasNoUsableTlk";
 		public static readonly string string_interp_dlcModTlkPackageMissingStringId = "string_interp_dlcModTlkPackageMissingStringId";
 		public static readonly string string_interp_dlcModAutoLoadMissingNameStrRef = "string_interp_dlcModAutoLoadMissingNameStrRef";
+		public static readonly string string_interp_noMountDlcFile = "string_interp_noMountDlcFile";
+		public static readonly string string_interp_me2NoBioEngineFile = "string_interp_me2NoBioEngineFile";
+		public static readonly string string_interp_me2MissingInvalidModuleNum = "string_interp_me2MissingInvalidModuleNum";
+		public static readonly string string_interp_missingReferencedTlkStrInMod = "string_interp_missingReferencedTlkStrInMod";
 		public static readonly string string_backupsAreShared = "string_backupsAreShared";
 		public static readonly string string_backupsMustBeCreatedFresh = "string_backupsMustBeCreatedFresh";
 		public static readonly string string_backUp = "string_backUp";
@@ -768,6 +772,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_tooltip_importMods = "string_tooltip_importMods";
 		public static readonly string string_tooltip_launchesALOTInstaller = "string_tooltip_launchesALOTInstaller";
 		public static readonly string string_tooltip_compressPackages = "string_tooltip_compressPackages";
+		public static readonly string string_tooltip_installModArchiveWindow = "string_tooltip_installModArchiveWindow";
 		public static readonly string string_modupdatesavailable = "string_modupdatesavailable";
 		public static readonly string string_downloadUpdate = "string_downloadUpdate";
 		public static readonly string string_downloading = "string_downloading";

@@ -4,6 +4,7 @@ using MassEffectModManagerCore.ui;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -115,7 +116,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 ModToValidateAgainst = mod,
                 ErrorsMessage = M3L.GetString(M3L.string_texturesCheckDetectedErrors),
                 ErrorsTitle = M3L.GetString(M3L.string_textureErrorsInMod),
-                ValidationFunction = CheckModForTFCCompactability
+                ValidationFunction = CheckTextures
             });
             DeploymentChecklistItems.Add(new DeploymentChecklistItem()
             {
@@ -148,6 +149,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     //Mods cannot include metacmm files
                     item.Errors.Add(M3L.GetString(M3L.string_interp_modReferencesMetaCmm, m));
                 }
+                blocking = true;
             }
 
             // Check for ALOT markers
@@ -165,20 +167,20 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     if (package.NameCount == 0)
                     {
                         item.Errors.Add(M3L.GetString(M3L.string_interp_packageFileNoNames, p));
-                        item.DeploymentBlocking = true;
+                        blocking = true;
                     }
 
                     if (package.ImportCount == 0)
                     {
                         // Is there always an import? I assume from native classes...?
                         item.Errors.Add(M3L.GetString(M3L.string_interp_packageFileNoImports, p));
-                        item.DeploymentBlocking = true;
+                        blocking = true;
                     }
 
                     if (package.ExportCount == 0)
                     {
                         item.Errors.Add(M3L.GetString(M3L.string_interp_packageFileNoExports, p));
-                        item.DeploymentBlocking = true;
+                        blocking = true;
                     }
                 }
             }
@@ -268,12 +270,46 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (_closed) return;
                 if (ModBeingDeployed.Game >= MEGame.ME2)
                 {
-                    var tlkBasePath = Path.Combine(ModBeingDeployed.ModPath, customDLC, ModBeingDeployed.Game == MEGame.ME2 ? @"CookedPC" : @"CookedPCConsole", customDLC);
+                    var modCookedDir = Path.Combine(ModBeingDeployed.ModPath, customDLC, ModBeingDeployed.Game == MEGame.ME2 ? @"CookedPC" : @"CookedPCConsole");
+                    var mountFile = Path.Combine(modCookedDir, @"mount.dlc");
+                    if (!File.Exists(mountFile))
+                    {
+                        errors.Add(M3L.GetString(M3L.string_interp_noMountDlcFile, customDLC));
+                        obj.DeploymentBlocking = true;
+                        continue;
+                    }
+
+                    var mount = new MountFile(mountFile);
+
+                    int moduleNum = -1;
+                    if (ModBeingDeployed.Game == MEGame.ME2)
+                    {
+                        // Look up the module number
+                        var bioengine = Path.Combine(modCookedDir, @"BioEngine.ini");
+                        if (!File.Exists(bioengine))
+                        {
+                            errors.Add(M3L.GetString(M3L.string_interp_me2NoBioEngineFile, customDLC));
+                            obj.DeploymentBlocking = true;
+                            continue;
+                        }
+                        else
+                        {
+                            var ini = DuplicatingIni.LoadIni(Path.Combine(bioengine));
+                            if (!int.TryParse(ini[@"Engine.DLCModules"][customDLC]?.Value, out moduleNum) || moduleNum < 1)
+                            {
+                                errors.Add(M3L.GetString(M3L.string_interp_me2MissingInvalidModuleNum, customDLC));
+                                obj.DeploymentBlocking = true;
+                                continue;
+                            }
+                        }
+                    }
+
+                    var tlkBasePath = ModBeingDeployed.Game == MEGame.ME2 ? $@"DLC_{moduleNum}" : customDLC;
                     Dictionary<string, List<ME1TalkFile.TLKStringRef>> tlkMappings = new Dictionary<string, List<ME1TalkFile.TLKStringRef>>();
                     foreach (var language in languages)
                     {
                         if (_closed) return;
-                        var tlkLangPath = tlkBasePath + @"_" + language.filecode + @".tlk";
+                        var tlkLangPath = Path.Combine(modCookedDir, tlkBasePath + @"_" + language.filecode + @".tlk");
                         if (File.Exists(tlkLangPath))
                         {
                             //inspect
@@ -296,6 +332,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 gender = M3L.GetString(M3L.string_female);
                                 //Some TLK strings will not work
                                 errors.Add(M3L.GetString(M3L.string_interp_error_outOfOrderTLK, gender, language.filecode));
+                            }
+
+                            // Check to make sure TLK contains the mount file TLK ID
+                            var referencedStr = tf.findDataById(mount.TLKID);
+                            if (referencedStr == null || referencedStr == @"No Data")
+                            {
+                                // TLK STRING REF NOT FOUND
+                                errors.Add(M3L.GetString(M3L.string_interp_missingReferencedTlkStrInMod, customDLC, Path.GetFileName(tlkLangPath), mount.TLKID));
+                                obj.DeploymentBlocking = true;
+                                continue;
                             }
                         }
                         else
@@ -332,7 +378,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             }
                         }
                     }
-                    else
+                    else if (tlkMappings.Count == 0)
                     {
                         errors.Add(M3L.GetString(M3L.string_interp_dlcModHasNoTlkFiles, customDLC));
                         obj.DeploymentBlocking = true;
@@ -375,7 +421,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                                 ME1TalkFile tf = new ME1TalkFile(tfExp);
                                 var str = tf.findDataById(tlkid);
-                                if (str == @"No Data")
+                                if (str == null || str == @"No Data")
                                 {
                                     // INVALID
                                     errors.Add(M3L.GetString(M3L.string_interp_dlcModTlkPackageMissingStringId, customDLC, tlkid));
@@ -437,7 +483,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             item.Icon = FontAwesomeIcon.TimesCircle;
                             item.Foreground = Brushes.Red;
                             item.Spinning = false;
-                            errors.Add(f);
+                            errors.Add(f.Substring(ModBeingDeployed.ModPath.Length + 1));
+                            item.DeploymentBlocking = true;
                         }
                     }
                 }
@@ -484,7 +531,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             item.ItemText = M3L.GetString(M3L.string_checkingAudioReferencesInMod);
             var referencedFiles = ModBeingDeployed.GetAllRelativeReferences().Select(x => Path.Combine(ModBeingDeployed.ModPath, x)).ToList();
             int numChecked = 0;
-            List<string> gameFiles = M3Directories.EnumerateGameFiles(ValidationTarget);
+
+            Predicate<string> predicate = s => s.ToLowerInvariant().EndsWith(@".afc", true, null) ;
+            List<string> gameFiles = M3Directories.EnumerateGameFiles(ValidationTarget, predicate);
 
             var errors = new List<string>();
             Dictionary<string, MemoryStream> cachedAudio = new Dictionary<string, MemoryStream>();
@@ -496,6 +545,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 item.ItemText = $@"{M3L.GetString(M3L.string_checkingAudioReferencesInMod)} [{numChecked}/{referencedFiles.Count}]";
                 if (f.RepresentsPackageFilePath())
                 {
+                    Log.Information(@"Checking file for audio issues: " + f);
                     var package = MEPackageHandler.OpenMEPackage(f);
                     var wwiseStreams = package.Exports.Where(x => x.ClassName == @"WwiseStream" && !x.IsDefaultObject).ToList();
                     foreach (var wwisestream in wwiseStreams)
@@ -557,11 +607,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 }
                                 else
                                 {
+                                    Log.Warning($@"Could not find AFC file {afcNameProp.ToString()}.afc. Export: {wwisestream.UIndex} {wwisestream.ObjectName}");
                                     hasError = true;
                                     item.Icon = FontAwesomeIcon.TimesCircle;
                                     item.Foreground = Brushes.Red;
                                     item.Spinning = false;
-                                    errors.Add(M3L.GetString(M3L.string_interp_couldNotFindReferencedAFC, Path.GetFileName(wwisestream.FileRef.FilePath), wwisestream.InstancedFullPath, afcNameProp.ToString()));
+                                    errors.Add(M3L.GetString(M3L.string_interp_couldNotFindReferencedAFC, wwisestream.FileRef.FilePath.Substring(ModBeingDeployed.ModPath.Length + 1), wwisestream.InstancedFullPath, afcNameProp.ToString()));
                                     continue;
                                 }
                             }
@@ -581,7 +632,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     item.Icon = FontAwesomeIcon.TimesCircle;
                                     item.Foreground = Brushes.Red;
                                     item.Spinning = false;
-                                    errors.Add(M3L.GetString(M3L.string_interp_invalidAudioPointerOutsideAFC, Path.GetFileName(wwisestream.FileRef.FilePath), wwisestream.UIndex, wwisestream.ObjectName, audioOffset, afcPath, audioStream.Length));
+                                    errors.Add(M3L.GetString(M3L.string_interp_invalidAudioPointerOutsideAFC, wwisestream.FileRef.FilePath.Substring(ModBeingDeployed.ModPath.Length + 1), wwisestream.UIndex, wwisestream.ObjectName, audioOffset, afcPath, audioStream.Length));
                                     if (audioStream is FileStream) audioStream.Close();
                                     continue;
                                 }
@@ -625,13 +676,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             }
                             catch (Exception e)
                             {
-                                Log.Error($@"Error checking for broken audio: {wwisestream?.UIndex} {wwisestream?.ObjectName}. Package file: {wwisestream?.FileRef?.FilePath}, referenced AFC: {afcPath} @ 0x{audioOffset:X8}. The error was: {e.Message}");
+                                Log.Error($@"Error checking for broken audio: {wwisestream?.UIndex} {wwisestream?.ObjectName}. Package file: {wwisestream?.FileRef?.FilePath?.Substring(ModBeingDeployed.ModPath.Length + 1)}, referenced AFC: {afcPath} @ 0x{audioOffset:X8}. The error was: {e.Message}");
+                                e.LogStackTrace();
                                 hasError = true;
                                 item.Icon = FontAwesomeIcon.TimesCircle;
                                 item.Foreground = Brushes.Red;
                                 item.Spinning = false;
                                 if (audioStream is FileStream) audioStream.Close();
-                                errors.Add(M3L.GetString(M3L.string_errorValidatingAudioReference, wwisestream.FileRef.FilePath, wwisestream.InstancedFullPath, e.Message));
+                                errors.Add(M3L.GetString(M3L.string_errorValidatingAudioReference, wwisestream.FileRef.FilePath.Substring(ModBeingDeployed.ModPath.Length + 1), wwisestream.InstancedFullPath, e.Message));
                                 continue;
                             }
                         }
@@ -657,7 +709,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             cachedAudio.Clear();
         }
 
-        private void CheckModForTFCCompactability(DeploymentChecklistItem item)
+        private void CheckTextures(DeploymentChecklistItem item)
         {
             // if (ModBeingDeployed.Game >= MEGame.ME2)
             //{

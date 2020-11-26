@@ -335,6 +335,8 @@
     <system:String x:Key="string_cannotDeployMod">Cannot deploy mod</system:String>
     <system:String x:Key="string_interp_dialog_cannotDeployModNoBackup">No backup for {0} is available. Deploying a mod requires a game backup for the game the mod will install to, so the deployment checks can check against a vanilla game installation.</system:String>
     <!-- 0=ME1/ME2/ME3 -->
+    <system:String x:Key="string_preparingToScanGame">Preparing to scan game</system:String>
+    <system:String x:Key="string_pleaseWait">Please wait</system:String>
 
     <!-- Global Styles -->
     <system:String x:Key="string_thisTargetHasBeenTextureModded">This target has been texture modded</system:String>
@@ -366,7 +368,7 @@
     <system:String x:Key="string_dialogNoWritePermissions">Your user account does not have write privileges to the game directory. You can grant your account privileges using the "Grant write access to game directories" option in the tools menu.</system:String>
     <!-- Make sure the Grant Write Privileges matches what shows up in the Main Window strings (string_Grantwriteaccesstogamedirectories)! -->
     <system:String x:Key="string_cannotWriteToGameDirectory">Cannot write to game directory</system:String>
-    <system:String x:Key="string_requiredContentMissing">Required content mismsing</system:String>
+    <system:String x:Key="string_requiredContentMissing">Required content missing</system:String>
     <system:String x:Key="string_dialogRequiredContentMissing">This mod requires the following DLC/mods to be installed prior to installation:{0}</system:String>
     <!-- {0} is a list of DLC in bulleted form. It should always go at the end -->
     <system:String x:Key="string_dialogInstallationSucceededFailedInstallCountCheck">Mod was installed but did not pass installation count verification. This is likely a bug in Mod Manager, please report this to Mgamerz on Discord.</system:String>
@@ -533,7 +535,7 @@
     <!-- This is a 'status' text to show what's being worked on-->
     <system:String x:Key="string_uncompressedModItems">Uncompressed mod items</system:String>
     <!-- This is a 'status' text to show what's being worked on-->
-    <system:String xml:space="preserve" x:Key="string_dialog_improperlyDeployedMod">This archive contains a mod that was built using ME3Tweaks Mod Manager, but the archive that was distributed was not created by ME3Tweaks Mod Manager. The mods in this archive may not be fully supported or have other issues.\n\nMods designed for ME3Tweaks Mod Manager should be deployed through it.</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialog_improperlyDeployedMod">This archive contains a mod that was built using ME3Tweaks Mod Manager, but the archive that was distributed was not created by ME3Tweaks Mod Manager. The mods in this archive may not be fully supported or have other issues.\n\nMods designed for ME3Tweaks Mod Manager should be deployed through it. Contact the developer and ask them to deploy the mod properly through Mod Manager.</system:String>
     <system:String x:Key="string_improperlyDeployedMod">Improperly deployed mod</system:String>
     <system:String x:Key="string_interp_packageFileNoNames">Package file {0} does not contain any names. This is an invalid package file</system:String>
     <!-- 0=relative file path -->
@@ -553,6 +555,14 @@
     <!-- 0={filepath} 1={integer} -->
     <system:String x:Key="string_interp_dlcModAutoLoadMissingNameStrRef">DLC mod {0} does not specify a valid NameStrRef in the [GUI] header of the AutoLoad.ini file. This attribute must be specified for modding scene purposes.</system:String>
     <!-- 0={filepath} -->
+    <system:String x:Key="string_interp_noMountDlcFile">Custom DLC {0} does not have a mount.dlc file. This DLC will not load in game!</system:String>
+    <!-- 0={DLC folder name} -->
+    <system:String x:Key="string_interp_me2NoBioEngineFile">Custom DLC {0} does not have a BioEngine.ini file. This is required for all DLC mods as they require at least one TLK file, and the TLK file is based on the module number in BioEngine.ini</system:String>
+    <!-- 0={DLC folder name} -->
+    <system:String x:Key="string_interp_me2MissingInvalidModuleNum">Custom DLC {0} does not specify a module number, or does not have a valid integer (> 0) value for this DLC in it. Each DLC must have a defined, unique module number.</system:String>
+    <!-- 0={DLC folder name} -->
+    <system:String x:Key="string_interp_missingReferencedTlkStrInMod">Custom DLC {0}'s TLK {1} does not contain the listed TLK string ID {2}, as declared it's mount.dlc file. Mod TLKs must contain the TLK string referenced by the mount.dlc file.</system:String>
+    <!-- 0={DLC folder name} 1={TLK file path} 2={Mount file TLK integer} -->
 
     <!-- Backup Creator-->
     <system:String x:Key="string_backupsAreShared">Backups are shared across various modding tools including Mass Effect Randomizer, ALOT Installer, and ME3Explorer - ME3Tweaks Fork.</system:String>
@@ -1176,7 +1186,7 @@
     <!-- 0={Incorrect filename} -->
     <system:String x:Key="string_interp_errorOccuredWhileAddingFileForLOCALIZATIONJobX">Error occurred while adding file for LOCALIZATION job: {0}</system:String>
     <!-- 0={failurereason} -->
-    <system:String x:Key="string_interp_validation_modparsing_securityCheckOutsideAllowSilo">{0}'s job {1} installs a file to {2}, which is outside of the allowed locations by this header. This is a security risk, mods must only install files to their specified task header directories.</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_validation_modparsing_securityCheckOutsideAllowSilo">{0}'s job {1} installs a file to {2}, which is outside of the allowed locations by this header. This is a security risk, mods must only install files to their specified task header directories.\n\nThis check was added in 6.1.5. Mods may have been updated to correct this issue, try importing the mod again to see if it has been fixed.</system:String>
     <!-- 0={ModName} 1={job.Header} 2={Filepath} This comes up if a mod tries to install a file outside of the list of allowed locations for that task, such as the RETLAITION job trying to install files into the RECKONING DLC. -->
     <system:String x:Key="string_interp_validation_modparsing_securityCheckInsideDisallowedSilo">{0}'s job {1} installs a file to {2}, which is not an allowed location to install files to for this task header. This is a security risk, mods may only install to specific directories, for example the BASEGAME header cannot install files into the DLC directory.</system:String>
     <!-- 0={ModName} 1={job.Header, such as RETALIATION}, 2={Filepath}. This comes up if a mod task tries to install a file into a disallowed location, like a mod using the BASEGAME header to install to DLC. -->
