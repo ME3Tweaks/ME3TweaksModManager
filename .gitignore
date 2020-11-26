@@ -344,3 +344,4 @@ healthchecksdb
 /MassEffectModManagerCore/Deployment
 /LocalizationHelper/Deployment
 /MassEffectModManagerCore.Tests/testdata/exemods
+/MassEffectModManagerCore.Tests/testdata/Scratch/MixinTest
