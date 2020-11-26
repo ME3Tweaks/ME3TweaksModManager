@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SevenZip\SevenZip.csproj" />
+    <ProjectReference Include="..\MassEffectModManagerCore\MassEffectModManagerCore.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="7z64.dll">

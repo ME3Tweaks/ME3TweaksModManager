@@ -1112,7 +1112,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
         public static string DownloadStringAwareOfEncoding(this WebClient webClient, string uri)
         {
             var rawData = webClient.DownloadData(uri);
-            if (rawData.StartsWith(utf8Preamble))
+            if (rawData.Length >= utf8Preamble.Length && rawData.StartsWith(utf8Preamble))
             {
                 return Encoding.UTF8.GetString(rawData, utf8Preamble.Length, rawData.Length - utf8Preamble.Length);
             }
