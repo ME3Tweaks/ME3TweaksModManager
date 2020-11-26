@@ -271,7 +271,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     var mountFile = Path.Combine(modCookedDir, @"mount.dlc");
                     if (!File.Exists(mountFile))
                     {
-                        errors.Add(M3L.GetString(M3L.string_interp_noMountDlcFile!, customDLC));
+                        errors.Add(M3L.GetString(M3L.string_interp_noMountDlcFile, customDLC));
                         obj.DeploymentBlocking = true;
                         continue;
                     }
@@ -528,7 +528,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             item.ItemText = M3L.GetString(M3L.string_checkingAudioReferencesInMod);
             var referencedFiles = ModBeingDeployed.GetAllRelativeReferences().Select(x => Path.Combine(ModBeingDeployed.ModPath, x)).ToList();
             int numChecked = 0;
-            List<string> gameFiles = MEDirectories.EnumerateGameFiles(ValidationTarget);
+            Predicate<string> predicate = s => Path.GetExtension(s) == @".afc";
+            List<string> gameFiles = MEDirectories.EnumerateGameFiles(ValidationTarget, predicate: predicate);
 
             var errors = new List<string>();
             Dictionary<string, MemoryStream> cachedAudio = new Dictionary<string, MemoryStream>();

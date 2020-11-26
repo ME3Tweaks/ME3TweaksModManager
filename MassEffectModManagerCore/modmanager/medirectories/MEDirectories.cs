@@ -450,9 +450,9 @@ namespace MassEffectModManagerCore.GameDirectories
             }
         }
 
-        internal static List<string> EnumerateGameFiles(GameTarget validationTarget)
+        internal static List<string> EnumerateGameFiles(GameTarget validationTarget, Predicate<string> predicate = null)
         {
-            return EnumerateGameFiles(validationTarget.Game, validationTarget.TargetPath);
+            return EnumerateGameFiles(validationTarget.Game, validationTarget.TargetPath, predicate: predicate);
         }
     }
 }
