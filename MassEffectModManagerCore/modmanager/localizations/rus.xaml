@@ -560,6 +560,14 @@
 	<!-- 0={filepath} 1={integer} -->
 	<system:String x:Key="string_interp_dlcModAutoLoadMissingNameStrRef">AutoLoad.ini DLC-мода {0} не содержит допустимого NameStrRef в заголовке [GUI]. Данный атрибут должен быть указан для возможности работы с модом.</system:String>
 	<!-- 0={filepath} -->
+	<system:String x:Key="string_interp_noMountDlcFile">В Custom DLC {0} отсутствует файл mount.dlc. Данное DLC не загрузится в игре!</system:String>
+	<!-- 0={DLC folder name} -->
+	<system:String x:Key="string_interp_me2NoBioEngineFile">В Custom DLC {0} отсутствует файл BioEngine.ini. Он необходим для всех DLC-модов, так в них должен быть хотя бы один файл TLK, который привязан к номеру модуля DLC в BioEngine.ini.</system:String>
+	<!-- 0={DLC folder name} -->
+	<system:String x:Key="string_interp_me2MissingInvalidModuleNum">В Custom DLC {0} не указан номер модуля для данного DLC или он не является допустимым целочисленным (> 0) значением. Каждое DLC должно иметь определенный, уникальный номер модуля.</system:String>
+	<!-- 0={DLC folder name} -->
+	<system:String x:Key="string_interp_missingReferencedTlkStrInMod">TLK {1} в Custom DLC {0} не содержит строку с ID {2}, объявленную в файле mount.dlc. TLK модов должны содержать строки, указанные в файле mount.dlc.</system:String>
+	<!-- 0={DLC folder name} 1={TLK file path} 2={Mount file TLK integer} -->
 
 	<!-- Backup Creator -->
 	<system:String x:Key="string_backupsAreShared">Архивы могут быть использованы различными средствами моддинга, включая Mass Effect Randomizer и ALOT Installer.</system:String>
@@ -1214,6 +1222,10 @@
 	<!-- 0={Incorrect filename} -->
 	<system:String x:Key="string_interp_errorOccuredWhileAddingFileForLOCALIZATIONJobX">Возникла ошибка при добавлении файла для задания LOCALIZATION: {0}</system:String>
 	<!-- 0={failurereason} -->
+	<system:String x:Key="string_interp_validation_modparsing_securityCheckOutsideAllowSilo" xml:space="preserve">Задание {1} мода {0} устанавливает файл в {2}, что находится за пределами разрешенных для него расположений. Это угроза безопасности, моды должны устанавливать файлы только в места, указанные в заголовке задания.\n\nДанная проверка была добавлена в версии 6.1.5. Моды могли быть обновлены для исправления данной проблемы, попробуйте импортировать мод заново для проверки.</system:String>
+	<!-- 0={ModName} 1={job.Header} 2={Filepath} This comes up if a mod tries to install a file outside of the list of allowed locations for that task, such as the RETLAITION job trying to install files into the RECKONING DLC. -->
+	<system:String x:Key="string_interp_validation_modparsing_securityCheckInsideDisallowedSilo">Задание {1} мода {0} устанавливает файл в {2}, что не разрешено для данного типа задания. Это угроза безопасности, моды могут устанавливать файлы только в соответствующие директории, например в заголовке BASEGAME не может быть указана установка в директорию DLC.</system:String>
+	<!-- 0={ModName} 1={job.Header, such as RETALIATION}, 2={Filepath}. This comes up if a mod task tries to install a file into a disallowed location, like a mod using the BASEGAME header to install to DLC. -->
 
 	<!-- About Panel -->
 	<system:String x:Key="string_tooltip_hello">Здравствуйте!</system:String>
@@ -1725,4 +1737,14 @@
 	<system:String x:Key="string_installKeybinds">Установить Привязки Клавиш</system:String>
 
 	<!-- Texture2D -->
+	<system:String x:Key="string_error_couldNotFetchTextureData">Невозможно выгрузить данные для текстуры {0} из файла {1}</system:String>
+	<!-- 0=Shown when checking textures during deployment. 1 = export object name, so just a long string ID. 1 = filepath -->
+	<system:String x:Key="string_error_me1TextureFileNotFound">Текстурный файл по внешней ссылке отсутствует в игре: {0}</system:String>
+	<!-- 0= filepath -->
+	<system:String x:Key="string_error_me23TextureTFCNotFound">Текстурный кэш по внешней ссылке не обнаружен: {0}</system:String>
+	<!-- 0=filepath -->
+	<system:String x:Key="string_interp_error_textureExceptionExternal" xml:space="preserve">{0}\nФайл: {1}\ShortageType: {2}\nСмещение внешнего файла: {3}</system:String>
+	<!-- This technical string is shown when there is error loading texture data. 0=exception message. 1=filepath. 2=string (pccUnc, extLZO...) 3=file offset 0xhhhhhhhh -->
+	<system:String x:Key="string_interp_error_textureExceptionInternal" xml:space="preserve">{0}\nShortageType: {1}\n</system:String>
+	<!-- 0={exception message} 1={storage type (pccUnc, pccLZO, pccZLib)} -->
 </ResourceDictionary>
