@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "TestDirectoryGenerator": {
+      "commandName": "Project",
+      "commandLineArgs": "--inputdir \"C:\\users\\mgamerz\\desktop\""
+    },
+    "Laptop for folder Desktop": {
+      "commandName": "Project",
+      "commandLineArgs": "--inputdir \"C:\\users\\mgamerz\\desktop\""
+    }
+  }
+}

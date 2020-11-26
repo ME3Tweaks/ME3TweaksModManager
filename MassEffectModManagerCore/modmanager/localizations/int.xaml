@@ -555,6 +555,14 @@
     <!-- 0={filepath} 1={integer} -->
     <system:String x:Key="string_interp_dlcModAutoLoadMissingNameStrRef">DLC mod {0} does not specify a valid NameStrRef in the [GUI] header of the AutoLoad.ini file. This attribute must be specified for modding scene purposes.</system:String>
     <!-- 0={filepath} -->
+    <system:String x:Key="string_interp_noMountDlcFile">Custom DLC {0} does not have a mount.dlc file. This DLC will not load in game!</system:String>
+    <!-- 0={DLC folder name} -->
+    <system:String x:Key="string_interp_me2NoBioEngineFile">Custom DLC {0} does not have a BioEngine.ini file. This is required for all DLC mods as they require at least one TLK file, and the TLK file is based on the module number in BioEngine.ini</system:String>
+    <!-- 0={DLC folder name} -->
+    <system:String x:Key="string_interp_me2MissingInvalidModuleNum">Custom DLC {0} does not specify a module number, or does not have a valid integer (> 0) value for this DLC in it. Each DLC must have a defined, unique module number.</system:String>
+    <!-- 0={DLC folder name} -->
+    <system:String x:Key="string_interp_missingReferencedTlkStrInMod">Custom DLC {0}'s TLK {1} does not contain the listed TLK string ID {2}, as declared it's mount.dlc file. Mod TLKs must contain the TLK string referenced by the mount.dlc file.</system:String>
+    <!-- 0={DLC folder name} 1={TLK file path} 2={Mount file TLK integer} -->
 
     <!-- Backup Creator-->
     <system:String x:Key="string_backupsAreShared">Backups are shared across various modding tools including Mass Effect Randomizer, ALOT Installer, and ME3Explorer - ME3Tweaks Fork.</system:String>
