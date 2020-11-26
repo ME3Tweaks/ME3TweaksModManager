@@ -15,28 +15,30 @@ namespace ExecutableModParser
         private static string SourceDir;
         static void Main(string[] args)
         {
-            BuildTransform();
-            return;
-            ParseArguments(args);
+            //BuildTransform();
+            //return;
+            
+            //ParseArguments(args);
+            SourceDir = @"X:\MEHEM_TO_CEM";
             if (SourceDir != null)
             {
                 ParseSourceDir();
                 return;
             }
-            SourceEXE = @"C:\Users\mgame\Desktop\CEMG_ver_1.exe";
-            ParseArguments(args);
-            if (SourceEXE == null)
-            {
-                if (args.Count() == 1 && File.Exists(args[0]))
-                {
-                    SourceEXE = args[0];
-                }
-                else
-                {
-                    Console.WriteLine("--inputexe not specified");
-                    return;
-                }
-            }
+            SourceEXE = @"Z:\exemods\MEHEMv0.5_to_CEM_v1_4_1.exe";
+            //ParseArguments(args);
+            //if (SourceEXE == null)
+            //{
+            //    if (args.Count() == 1 && File.Exists(args[0]))
+            //    {
+            //        SourceEXE = args[0];
+            //    }
+            //    else
+            //    {
+            //        Console.WriteLine("--inputexe not specified");
+            //        return;
+            //    }
+            //}
 
             if (SourceEXE != null && !File.Exists(SourceEXE))
             {
@@ -59,7 +61,6 @@ namespace ExecutableModParser
                     Console.WriteLine(outName);
                 }
             }
-
         }
 
         private static void BuildTransform()
@@ -168,14 +169,14 @@ namespace ExecutableModParser
             }
 
             Console.WriteLine(@"The following files are present in every directory:");
-            var mainOutDir = @"X:\m3modlibrary\ME3\Citadel Epiloge Mod - Lite";
+            //var mainOutDir = @"X:\m3modlibrary\ME3\Citadel Epiloge Mod - Lite";
             foreach (var f in allFiles)
             {
                 Console.WriteLine($"{f.entry.Index}\t{f.path}");
-                var p = f.path.Substring(@"BIOGame\DLC\".Length);
-                var outP = Path.Combine(mainOutDir, p);
-                Directory.CreateDirectory(Directory.GetParent(outP).FullName);
-                f.dataStream.WriteToFile(outP);
+                //var p = f.path.Substring(@"BIOGame\DLC\".Length);
+                //var outP = Path.Combine(mainOutDir, p);
+                //Directory.CreateDirectory(Directory.GetParent(outP).FullName);
+                //f.dataStream.WriteToFile(outP);
             }
 
             Console.WriteLine("The following files are unique:");
@@ -187,21 +188,21 @@ namespace ExecutableModParser
                 var folder = GetDiskPathForEntry(f, optionFileMapping);
                 Console.WriteLine($"{f.entry.Index}\t{f.entry.FileName.PadRight(longestName)} | {folder}");
                 // CEML SPECIFIC
-                if (!string.IsNullOrWhiteSpace(folder) && !folder.Contains(' '))
-                {
-                    var outP = Path.Combine(@"X:\m3modlibrary\ME3\Citadel Epiloge Mod - Lite\Alternates\Music", folder, Path.GetFileName(f.path));
-                    f.dataStream.WriteToFile(outP);
-                }
-                else if (f.entry.Index == 53 || f.entry.Index == 54)
-                {
-                    var outP = Path.Combine(@"X:\m3modlibrary\ME3\Citadel Epiloge Mod - Lite\Alternates\MiriJack", Path.GetFileName(f.path));
-                    f.dataStream.WriteToFile(outP);
-                }
-                else if (f.entry.Index >= 55)
-                {
-                    var outP = Path.Combine(@"X:\m3modlibrary\ME3\Citadel Epiloge Mod - Lite\Alternates\NoUltimateParty", Path.GetFileName(f.path));
-                    f.dataStream.WriteToFile(outP);
-                }
+                //if (!string.IsNullOrWhiteSpace(folder) && !folder.Contains(' '))
+                //{
+                //    var outP = Path.Combine(@"X:\m3modlibrary\ME3\Citadel Epiloge Mod - Lite\Alternates\Music", folder, Path.GetFileName(f.path));
+                //    f.dataStream.WriteToFile(outP);
+                //}
+                //else if (f.entry.Index == 53 || f.entry.Index == 54)
+                //{
+                //    var outP = Path.Combine(@"X:\m3modlibrary\ME3\Citadel Epiloge Mod - Lite\Alternates\MiriJack", Path.GetFileName(f.path));
+                //    f.dataStream.WriteToFile(outP);
+                //}
+                //else if (f.entry.Index >= 55)
+                //{
+                //    var outP = Path.Combine(@"X:\m3modlibrary\ME3\Citadel Epiloge Mod - Lite\Alternates\NoUltimateParty", Path.GetFileName(f.path));
+                //    f.dataStream.WriteToFile(outP);
+                //}
             }
         }
 
