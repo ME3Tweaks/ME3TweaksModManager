@@ -1017,7 +1017,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     return @"DLC_EXP_Pack003";
                 case @"CITADEL_BASE":
                     return @"DLC_EXP_Pack003_Base";
-                case "BALANCE_CHANGES":
+                case @"BALANCE_CHANGES":
                     return null; //This is not handled by this code. But it's not an error
                 //Special case
                 //case @"BALANCE_CHANGES":
