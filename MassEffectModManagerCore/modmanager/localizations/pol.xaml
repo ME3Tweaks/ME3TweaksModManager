@@ -548,6 +548,14 @@
 	<!-- 0={filepath} 1={integer} -->
 	<system:String x:Key="string_interp_dlcModAutoLoadMissingNameStrRef">Modyfikacja DLC {0} nie wyszczególnia poprawnej zmiennej NameStrRef w [GUI] nagłówku pliku AutoLoad.ini. Scena modderska wymaga wyszczególnienia tego atrybutu.</system:String>
 	<!-- 0={filepath} -->
+	<system:String x:Key="string_interp_noMountDlcFile">Autorskie DLC {0} nie posiada pliku mount.dlc. Gra nie załaduje tego DLC!</system:String>
+	<!-- 0={DLC folder name} -->
+	<system:String x:Key="string_interp_me2NoBioEngineFile">Autorskie DLC {0} nie posiada pliku BioEngine.ini. Wszystkie modyfikacje DLC wymagają tego pliku ze względu na wymóg co najmniej jednego pliku TLK. Pliki TLK bazują na numerze modułu znajdującym się w BioEngine.ini</system:String>
+	<!-- 0={DLC folder name} -->
+	<system:String x:Key="string_interp_me2MissingInvalidModuleNum">Autorskie DLC {0} nie wyszczególnia numeru modułu bądź nie posiada prawidłowej zmiennej liczby całkowitej (integer >0) dla tego DLC. Każde DLC musi mieć zdefiniowany, unikalny numer modułu.</system:String>
+	<!-- 0={DLC folder name} -->
+	<system:String x:Key="string_interp_missingReferencedTlkStrInMod">Plik TLK {1} zawarty w autorskim DLC {0} nie zawiera zmiennej ciągu znaków TLK string ID {2}, jak zadeklarowano w pliku mount.dlc. Mod TLK musi zawierać zawierać zmienną ciągu znaków TLK do której odnosi się plik mount.dlc</system:String>
+	<!-- 0={DLC folder name} 1={TLK file path} 2={Mount file TLK integer} -->
 
 	<!-- Backup Creator -->
 	<system:String x:Key="string_backupsAreShared">Kopie zapasowe są dostępne dla różnych narzędzi, takich jak Mass Effect Randomizer, Instalator ALOT, ME3Explorer - ME3Tweaks Fork.</system:String>
