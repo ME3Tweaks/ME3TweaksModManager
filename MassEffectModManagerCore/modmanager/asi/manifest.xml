@@ -364,4 +364,16 @@
       <downloadlink>https://github.com/ME3Tweaks/ME3-ASI-Plugins/releases/download/v1.0-GarbageCollectorForcer/GarbageCollectionForcer-v1.0.asi</downloadlink>
     </asimod>
   </updategroup>
+  <updategroup groupid="23" game="2" hidden="0">
+    <asimod>
+      <name>Kasumi DLC Crash Fix</name>
+      <installedname>KasumiCrashFix</installedname>
+      <author>adolfintel</author>
+      <description>This ASI mod fixes a crash that occurs on modern systems at the end of Kasumi's loyalty mission, when returning to Normandy after defeating the boss.</description>
+      <version>1</version>
+      <hash>f320d81dee4e935b353101e528352433</hash>
+      <sourcecode>https://github.com/adolfintel/ME2KasumiCrashFix</sourcecode>
+      <downloadlink>https://github.com/adolfintel/ME2KasumiCrashFix/releases/download/v1.0-KasumiCrashFix/KasumiCrashFix-v1.0.asi</downloadlink>
+    </asimod>
+  </updategroup>
 </ASIManifest>
