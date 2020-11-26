@@ -566,7 +566,7 @@
     <!-- 0={DLC folder name} -->
     <system:String x:Key="string_interp_me2MissingInvalidModuleNum">Custom DLC {0} does not specify a module number, or does not have a valid integer (> 0) value for this DLC in it. Each DLC must have a defined, unique module number.</system:String>
     <!-- 0={DLC folder name} -->
-    <system:String x:Key="string_interp_missingReferencedTlkStrInMod">Custom DLC {0}'s TLK {1} does not contain the listed TLK string ID {2}, as declared it's mount.dlc file. Mod TLKs must contain the TLK string referenced by the mount.dlc file.</system:String>
+    <system:String x:Key="string_interp_missingReferencedTlkStrInMod">Custom DLC {0}'s TLK {1} does not contain the listed TLK string ID {2}, as declared in it's mount.dlc file. Mod TLKs must contain the TLK string referenced by the mount.dlc file.</system:String>
     <!-- 0={DLC folder name} 1={TLK file path} 2={Mount file TLK integer} -->
 
     <!-- Backup Creator-->
@@ -764,7 +764,7 @@
     <system:String x:Key="string_modManagerApplicationLog">Mod Manager application log</system:String>
     <system:String x:Key="string_applicationLogDescription">The application log details what occurred during a Mod Manager session and can be used to troubleshoot the application. If you are trying to identify why something occurred in Mod Manager, select an application log.</system:String>
     <system:String x:Key="string_gameDiagnostic">Game diagnostic</system:String>
-    <system:String x:Key="string_gameDiagnosticDescription">A game diagnostic collects information about a specific game target, including data on texture imod status, installed DLC, game version, crash logs (if any), texture issues, and more. If you are having an issue with a game, please select it.</system:String>
+    <system:String x:Key="string_gameDiagnosticDescription">A game diagnostic collects information about a specific game target, including data on texture mod status, installed DLC, game version, crash logs (if any), texture issues, and more. If you are having an issue with a game, please select it.</system:String>
     <system:String xml:space="preserve" x:Key="string_tooltip_checkAllTexturesInGameDescription">Selecting this option checks all textures in the game.&#10;The texture check step can take several minutes</system:String>
     <system:String x:Key="string_fullTexturesCheck">Full textures check</system:String>
     <system:String x:Key="string_diagShareTheLink">Share the resulting link of your log/diagnostic with your recipient. If you aren't sure what options to pick, simply select one from both.</system:String>
@@ -1741,7 +1741,7 @@
 
     <!-- Texture2D -->
     <system:String x:Key="string_error_couldNotFetchTextureData">Could not fetch texture data for texture {0} in file {1}</system:String>
-    <!-- 0=Shown when checking textures during deployment. 1 = export object name, so just a long string ID. 1 = filepath-->
+    <!-- Shown when checking textures during deployment. 0 = export object name, so just a long string ID. 1 = filepath-->
     <system:String x:Key="string_error_me1TextureFileNotFound">Externally referenced texture file not found in game: {0}.</system:String>
     <!-- 0= filepath -->
     <system:String x:Key="string_error_me23TextureTFCNotFound">Externally referenced texture cache not found: {0}.</system:String>
