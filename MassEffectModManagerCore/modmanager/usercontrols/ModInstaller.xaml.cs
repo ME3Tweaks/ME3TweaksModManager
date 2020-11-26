@@ -79,7 +79,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             INSTALL_FAILED_EXCEPTION_FILE_COPY,
             INSTALL_FAILED_COULD_NOT_DELETE_EXISTING_FOLDER,
             INSTALL_FAILED_INVALID_CONFIG_FOR_COMPAT_PACK_ME3,
-            INSTALL_FAILED_ERROR_BUILDING_INSTALLQUEUES
+            INSTALL_FAILED_ERROR_BUILDING_INSTALLQUEUES,
+            INSTALL_FAILED_SINGLEREQUIRED_DLC_MISSING
         }
 
         public string Action { get; set; }
@@ -146,6 +147,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 return;
             }
 
+            // Check optional DLCs
+            if (!ModBeingInstalled.ValidateSingleOptionalRequiredDLCInstalled(gameTarget))
+            {
+                Log.Error($@"Mod requires installation of at least one of the following DLC, none of which are installed: {String.Join(',', ModBeingInstalled.OptionalSingleRequiredDLC)}");
+                e.Result = (ModInstallCompletedStatus.INSTALL_FAILED_SINGLEREQUIRED_DLC_MISSING, ModBeingInstalled.OptionalSingleRequiredDLC);
+                Log.Information(@"<<<<<<< Finishing modinstaller");
+                return;
+            }
 
             //Check/warn on official headers
             if (!PrecheckHeaders(installationJobs))
@@ -1092,22 +1101,45 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     switch (result)
                     {
                         case ModInstallCompletedStatus.INSTALL_FAILED_REQUIRED_DLC_MISSING:
-                            string dlcText = "";
-                            foreach (var dlc in items)
                             {
-                                var info = ThirdPartyServices.GetThirdPartyModInfo(dlc, ModBeingInstalled.Game);
-                                if (info != null)
+                                string dlcText = "";
+                                foreach (var dlc in items)
                                 {
-                                    dlcText += $"\n - {info.modname} ({dlc})"; //Do not localize
+                                    var info = ThirdPartyServices.GetThirdPartyModInfo(dlc, ModBeingInstalled.Game);
+                                    if (info != null)
+                                    {
+                                        dlcText += $"\n - {info.modname} ({dlc})"; //Do not localize
+                                    }
+                                    else
+                                    {
+                                        dlcText += $"\n - {dlc}"; //Do not localize
+                                    }
                                 }
-                                else
-                                {
-                                    dlcText += $"\n - {dlc}"; //Do not localize
-                                }
+
+                                InstallationCancelled = true;
+                                M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogRequiredContentMissing, dlcText), M3L.GetString(M3L.string_requiredContentMissing), MessageBoxButton.OK, MessageBoxImage.Error);
                             }
 
-                            InstallationCancelled = true;
-                            M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogRequiredContentMissing, dlcText), M3L.GetString(M3L.string_requiredContentMissing), MessageBoxButton.OK, MessageBoxImage.Error);
+                            break;
+                        case ModInstallCompletedStatus.INSTALL_FAILED_SINGLEREQUIRED_DLC_MISSING:
+                            {
+                                string dlcText = "";
+                                foreach (var dlc in items)
+                                {
+                                    var info = ThirdPartyServices.GetThirdPartyModInfo(dlc, ModBeingInstalled.Game);
+                                    if (info != null)
+                                    {
+                                        dlcText += $"\n - {info.modname} ({dlc})"; //Do not localize
+                                    }
+                                    else
+                                    {
+                                        dlcText += $"\n - {dlc}"; //Do not localize
+                                    }
+                                }
+
+                                InstallationCancelled = true;
+                                M3L.ShowDialog(window, $"{ModBeingInstalled.ModName} requires at least one of the following DLC to be installed:{dlcText}", M3L.GetString(M3L.string_requiredContentMissing), MessageBoxButton.OK, MessageBoxImage.Error);
+                            }
                             break;
                         case ModInstallCompletedStatus.INSTALL_FAILED_COULD_NOT_DELETE_EXISTING_FOLDER:
                             // Will only be one item in this list

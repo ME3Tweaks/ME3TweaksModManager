@@ -484,7 +484,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             item.ItemText = M3L.GetString(M3L.string_checkingAudioReferencesInMod);
             var referencedFiles = ModBeingDeployed.GetAllRelativeReferences().Select(x => Path.Combine(ModBeingDeployed.ModPath, x)).ToList();
             int numChecked = 0;
-            List<string> gameFiles = M3Directories.EnumerateGameFiles(ValidationTarget);
+
+            Predicate<string> predicate = s => s.ToLowerInvariant().EndsWith(@".afc", true, null) ;
+            List<string> gameFiles = M3Directories.EnumerateGameFiles(ValidationTarget, predicate);
 
             var errors = new List<string>();
             Dictionary<string, MemoryStream> cachedAudio = new Dictionary<string, MemoryStream>();
@@ -496,6 +498,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 item.ItemText = $@"{M3L.GetString(M3L.string_checkingAudioReferencesInMod)} [{numChecked}/{referencedFiles.Count}]";
                 if (f.RepresentsPackageFilePath())
                 {
+                    Log.Information(@"Checking file for audio issues: " + f);
                     var package = MEPackageHandler.OpenMEPackage(f);
                     var wwiseStreams = package.Exports.Where(x => x.ClassName == @"WwiseStream" && !x.IsDefaultObject).ToList();
                     foreach (var wwisestream in wwiseStreams)
@@ -557,6 +560,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 }
                                 else
                                 {
+                                    Log.Warning($@"Could not find AFC file {afcNameProp.ToString()}.afc. Export: {wwisestream.UIndex} {wwisestream.ObjectName}");
                                     hasError = true;
                                     item.Icon = FontAwesomeIcon.TimesCircle;
                                     item.Foreground = Brushes.Red;

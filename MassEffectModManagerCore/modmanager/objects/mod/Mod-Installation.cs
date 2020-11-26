@@ -411,6 +411,30 @@ namespace MassEffectModManagerCore.modmanager
             return requiredDLC.Except(installedDLC).ToList();
         }
 
+        /// <summary>
+        /// Validates this mod can install against a game target with respect to the list of RequiredDLC. 
+        /// </summary>
+        /// <param name="gameTarget">Target to validate against</param>
+        /// <returns>List of missing DLC modules, or an empty list if none</returns>
+        internal bool ValidateSingleOptionalRequiredDLCInstalled(GameTarget gameTarget)
+        {
+            if (gameTarget.Game != Game)
+            {
+                throw new Exception(@"Cannot validate a mod against a gametarget that is not for its game");
+            }
+
+            var requiredAnyDLC = OptionalSingleRequiredDLC.Select(x =>
+            {
+                if (Enum.TryParse(x, out ModJob.JobHeader parsedHeader) && ModJob.GetHeadersToDLCNamesMap(Game).TryGetValue(parsedHeader, out var dlcname))
+                {
+                    return dlcname;
+                }
+                return x;
+            });
+            var installedDLC = M3Directories.GetInstalledDLC(gameTarget);
+            return installedDLC.FirstOrDefault(x => requiredAnyDLC.Contains(x)) != null;
+        }
+
         internal List<string> GetAllRelativeReadonlyTargets(bool includeME1Config)
         {
             var list = new List<string>();

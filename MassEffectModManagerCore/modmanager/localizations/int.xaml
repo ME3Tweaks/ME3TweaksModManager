@@ -368,7 +368,7 @@
     <system:String x:Key="string_dialogNoWritePermissions">Your user account does not have write privileges to the game directory. You can grant your account privileges using the "Grant write access to game directories" option in the tools menu.</system:String>
     <!-- Make sure the Grant Write Privileges matches what shows up in the Main Window strings (string_Grantwriteaccesstogamedirectories)! -->
     <system:String x:Key="string_cannotWriteToGameDirectory">Cannot write to game directory</system:String>
-    <system:String x:Key="string_requiredContentMissing">Required content mismsing</system:String>
+    <system:String x:Key="string_requiredContentMissing">Required content missing</system:String>
     <system:String x:Key="string_dialogRequiredContentMissing">This mod requires the following DLC/mods to be installed prior to installation:{0}</system:String>
     <!-- {0} is a list of DLC in bulleted form. It should always go at the end -->
     <system:String x:Key="string_dialogInstallationSucceededFailedInstallCountCheck">Mod was installed but did not pass installation count verification. This is likely a bug in Mod Manager, please report this to Mgamerz on Discord.</system:String>

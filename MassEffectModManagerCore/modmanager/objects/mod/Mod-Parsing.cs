@@ -264,6 +264,16 @@ namespace MassEffectModManagerCore.modmanager
                     }
                 }
 
+                if (OptionalSingleRequiredDLC.Any())
+                {
+                    sb.AppendLine($"Requires at least one of the following DLC to install:");
+                    foreach (var reqDLC in OptionalSingleRequiredDLC)
+                    {
+                        string name = ThirdPartyServices.GetThirdPartyModInfo(reqDLC, Game)?.modname ?? reqDLC;
+                        sb.AppendLine($@" - {name}");
+                    }
+                }
+
                 return sb.ToString();
             }
         }
@@ -691,7 +701,7 @@ namespace MassEffectModManagerCore.modmanager
             CLog.Information(@"Parsing mod using moddesc target: " + ModDescTargetVersion, Settings.LogModStartup);
 
             #region Header Loops
-            
+
             #region BASEGAME and OFFICIAL HEADERS
 
             var supportedOfficialHeaders = ModJob.GetSupportedNonCustomDLCHeaders(Game);
@@ -1411,7 +1421,7 @@ namespace MassEffectModManagerCore.modmanager
                             break;
                     }
 
-                    
+
 
                     if (!reqDLCss.StartsWith(@"DLC_"))
                     {
