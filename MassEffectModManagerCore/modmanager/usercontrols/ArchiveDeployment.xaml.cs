@@ -4,7 +4,6 @@ using MassEffectModManagerCore.ui;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -13,7 +12,6 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using FontAwesome.WPF;
-
 using MassEffectModManagerCore.modmanager.windows;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
@@ -137,7 +135,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             bool blocking = false;
             item.HasError = false;
             item.ItemText = M3L.GetString(M3L.string_checkingForMiscellaneousIssues);
-            var referencedFiles = ModBeingDeployed.GetAllRelativeReferences();
+            var referencedFiles = ModBeingDeployed.GetAllRelativeReferences(false);
 
             var metacmms = referencedFiles.Where(x => Path.GetFileName(x) == @"_metacmm.txt").ToList();
 
@@ -532,7 +530,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             var referencedFiles = ModBeingDeployed.GetAllRelativeReferences().Select(x => Path.Combine(ModBeingDeployed.ModPath, x)).ToList();
             int numChecked = 0;
 
-            Predicate<string> predicate = s => s.ToLowerInvariant().EndsWith(@".afc", true, null) ;
+            Predicate<string> predicate = s => s.ToLowerInvariant().EndsWith(@".afc", true, null);
             List<string> gameFiles = M3Directories.EnumerateGameFiles(ValidationTarget, predicate);
 
             var errors = new List<string>();
@@ -920,11 +918,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void Deployment_BackgroundThread(object sender, DoWorkEventArgs e)
         {
             NamedBackgroundWorker worker = (NamedBackgroundWorker)sender;
-            var referencedFiles = ModBeingDeployed.GetAllRelativeReferences();
+            var referencedFiles = ModBeingDeployed.GetAllRelativeReferences(true);
             string archivePath = e.Argument as string;
             //Key is in-archive path, value is on disk path
             var archiveMapping = new Dictionary<string, string>();
             SortedSet<string> directories = new SortedSet<string>();
+
+            // Add list of directories first so they appear first in the list of archive entries
+            // This is required for proper archive format
             foreach (var file in referencedFiles)
             {
                 var path = Path.Combine(ModBeingDeployed.ModPath, file);
@@ -950,31 +951,32 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             }
 
+            // Add the files
             archiveMapping.AddRange(referencedFiles.ToDictionary(x => x, x => Path.Combine(ModBeingDeployed.ModPath, x)));
 
+            // setup the compressor for pass 1
             var compressor = new SevenZip.SevenZipCompressor();
-            //compressor.CompressionLevel = CompressionLevel.Ultra;
             compressor.CustomParameters.Add(@"s", @"on");
             if (!MultithreadedCompression)
             {
+                // Single thread
                 compressor.CustomParameters.Add(@"mt", @"off");
             }
             else
             {
+                // Multi thread
                 var foldersize = Utilities.GetSizeOfDirectory(ModBeingDeployed.ModPath);
                 if (foldersize > FileSize.GibiByte * 1.25)
                 {
-                    //cap threads to prevent huge memory
+                    //cap threads to prevent huge memory usage when compressing big mods
                     var cores = Environment.ProcessorCount;
                     cores = Math.Min(cores, 5);
                     compressor.CustomParameters.Add(@"mt", cores.ToString());
                 }
             }
 
-
             compressor.CustomParameters.Add(@"yx", @"9");
-            //compressor.CustomParameters.Add("x", "9");
-            compressor.CustomParameters.Add(@"d", @"28");
+            compressor.CustomParameters.Add(@"d", @"28"); //Dictionary size 2^28 (256MB)
             string currentDeploymentStep = M3L.GetString(M3L.string_mod);
             compressor.Progressing += (a, b) =>
             {
@@ -999,28 +1001,51 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             // Pass 1: Compressed items and empty folders
             // Includes package files and other basic file types
             // Does not include AFC, TFC, or .BIK
+            // Does not include moddesc.ini
+            // Does not include any referenced image files under M3Images
             currentDeploymentStep = M3L.GetString(M3L.string_compressedModItems);
 
-            var compressItems = archiveMapping.Where(x => x.Value == null || !NoCompressExtensions.Contains(Path.GetExtension(x.Value))).ToDictionary(p => p.Key, p => p.Value);
+            //x.Value == null means it's a folder
+            var compressItems = archiveMapping.Where(ShouldBeCompressed).ToDictionary(p => p.Key, p => p.Value);
             compressor.CompressFileDictionary(compressItems, archivePath);
-            compressor.CustomParameters.Clear(); //remove custom params as it seems to force LZMA
-            compressor.CompressionMode = CompressionMode.Append;
-            compressor.CompressionLevel = CompressionLevel.None;
+
 
             // Pass 2: Uncompressed items that are not moddesc.ini
+            compressor.CustomParameters.Clear(); //remove custom params as it seems to force LZMA
+            compressor.CompressionMode = CompressionMode.Append; //Append to 
+            compressor.CompressionLevel = CompressionLevel.None;
+
             currentDeploymentStep = M3L.GetString(M3L.string_uncompressedModItems);
-            var nocompressItems = archiveMapping.Where(x => x.Value != null && NoCompressExtensions.Contains(Path.GetExtension(x.Key))).ToDictionary(p => p.Key, p => p.Value);
+            var nocompressItems = archiveMapping.Where(x => !ShouldBeCompressed(x)).ToDictionary(p => p.Key, p => p.Value);
+
             compressor.CompressFileDictionary(nocompressItems, archivePath);
 
             // Pass 3: Moddesc.ini
             // Appends at end of archive
-            currentDeploymentStep = @"moddesc.ini";
-            compressor.CompressFiles(archivePath, new string[]
-            {
-                Path.Combine(ModBeingDeployed.ModPath, @"moddesc.ini")
-            });
+            //currentDeploymentStep = @"moddesc.ini";
+            //compressor.CompressFiles(archivePath, new string[]
+            //{
+            //    Path.Combine(ModBeingDeployed.ModPath, @"moddesc.ini")
+            //});
             OperationText = M3L.GetString(M3L.string_deploymentSucceeded);
             Utilities.HighlightInExplorer(archivePath);
+        }
+
+        /// <summary>
+        /// Determines if a file should be compressed into the archive, or stored uncompressed
+        /// </summary>
+        /// <param name="fileMapping">Mapping of the in-archive path to the source file. If the value is null, it means it's a folder.</param>
+        /// <returns></returns>
+        private bool ShouldBeCompressed(KeyValuePair<string, string> fileMapping)
+        {
+            if (fileMapping.Value == null) return true; //This can't be compressed but it should be done in the compression pass
+            if (NoCompressExtensions.Contains(Path.GetExtension(fileMapping.Value))) return false; //Do not compress these extensions
+            var modRelPath = fileMapping.Value.Substring(ModBeingDeployed.ModPath.Length + 1);
+            if (modRelPath.StartsWith(@"M3Images", StringComparison.InvariantCultureIgnoreCase))
+                return false; // Referenced image file should not be compressed.
+            if (modRelPath == @"moddesc.ini")
+                return false; // moddesc.ini should not be compressed.
+            return true;
         }
 
         private bool CanDeploy()

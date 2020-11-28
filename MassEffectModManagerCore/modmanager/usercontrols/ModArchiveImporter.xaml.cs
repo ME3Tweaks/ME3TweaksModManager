@@ -21,6 +21,7 @@ using MassEffectModManagerCore.modmanager.gameini;
 using System.Windows.Media.Animation;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.memoryanalyzer;
+using MassEffectModManagerCore.modmanager.objects.mod;
 using ME3ExplorerCore.Gammtek.Extensions.Collections.Generic;
 using ME3ExplorerCore.Helpers;
 using ME3ExplorerCore.Packages;
@@ -54,7 +55,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public int CompressionProgressValue { get; set; }
         public int CompressionProgressMaximum { get; set; } = 100;
 
-        public objects.mod.Mod SelectedMod { get; private set; }
+        public Mod SelectedMod { get; private set; }
 
         private string ArchiveFilePath;
 
@@ -66,7 +67,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public bool CanCompressPackages => CompressedMods.Any(x => x.Game >= MEGame.ME2) && App.AllowCompressingPackagesOnImport && ArchiveScanned && !TaskRunning;
 
-        public ObservableCollectionExtended<objects.mod.Mod> CompressedMods { get; } = new ObservableCollectionExtended<objects.mod.Mod>();
+        public ObservableCollectionExtended<Mod> CompressedMods { get; } = new ObservableCollectionExtended<Mod>();
         public ModArchiveImporter(string file)
         {
             MemoryAnalyzer.AddTrackedMemoryItem($@"Mod Archive Importer ({Path.GetFileName(file)})", new WeakReference(this));
@@ -182,7 +183,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             var archive = e.Argument as string;
             Log.Information($@"Scanning archive for mods: {archive}");
-            void AddCompressedModCallback(objects.mod.Mod m)
+            void AddCompressedModCallback(Mod m)
             {
                 Application.Current.Dispatcher.Invoke(delegate
                 {
@@ -201,7 +202,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     CompressedMods.Sort(x => x.ModName);
                 });
             }
-            void CompressedModFailedCallback(objects.mod.Mod m)
+            void CompressedModFailedCallback(Mod m)
             {
                 Application.Current.Dispatcher.Invoke(delegate { NoModSelectedText += M3L.GetString(M3L.string_interp_XfailedToLoadY, m.ModName, m.LoadFailedReason); });
             }
@@ -213,7 +214,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 var RCWMods = RCWMod.ParseRCWMods(Path.GetFileNameWithoutExtension(archive), File.ReadAllText(archive));
                 foreach (var rcw in RCWMods)
                 {
-                    AddCompressedModCallback(new objects.mod.Mod(rcw));
+                    AddCompressedModCallback(new Mod(rcw));
                 }
                 return;
             }
@@ -318,11 +319,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         /// <param name="addCompressedModCallback">Callback indicating that the mod should be added to the collection of found mods</param>
         /// <param name="currentOperationTextCallback">Callback to tell caller what's going on'</param>
         /// <param name="forcedOverrideData">Override data about archive. Used for testing only</param>
-        public static void InspectArchive(string filepath, Action<objects.mod.Mod> addCompressedModCallback = null, Action<objects.mod.Mod> failedToLoadModeCallback = null, Action<string> currentOperationTextCallback = null,
+        public static void InspectArchive(string filepath, Action<Mod> addCompressedModCallback = null, Action<Mod> failedToLoadModeCallback = null, Action<string> currentOperationTextCallback = null,
             Action showALOTLauncher = null, string forcedMD5 = null, int forcedSize = -1)
         {
             string relayVersionResponse = @"-1";
-            List<objects.mod.Mod> internalModList = new List<objects.mod.Mod>(); //internal mod list is for this function only so we don't need a callback to get our list since results are returned immediately
+            List<Mod> internalModList = new List<Mod>(); //internal mod list is for this function only so we don't need a callback to get our list since results are returned immediately
             var isExe = filepath.EndsWith(@".exe");
             var archiveFile = isExe ? new SevenZipExtractor(filepath, InArchiveFormat.Nsis) : new SevenZipExtractor(filepath);
             using (archiveFile)
@@ -379,7 +380,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 catch (SevenZipArchiveException svae)
                 {
                     //error reading archive!
-                    objects.mod.Mod failed = new objects.mod.Mod(false);
+                    Mod failed = new Mod(false);
                     failed.ModName = M3L.GetString(M3L.string_archiveError);
                     failed.LoadFailedReason = M3L.GetString(M3L.string_couldNotInspectArchive7zException);
                     Log.Error($@"Unable to inspect archive {filepath}: SevenZipException occurred! It may be corrupt. The specific error was: {svae.Message}");
@@ -396,7 +397,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     foreach (var entry in moddesciniEntries)
                     {
                         currentOperationTextCallback?.Invoke(M3L.GetString(M3L.string_interp_readingX, entry.FileName));
-                        objects.mod.Mod m = new objects.mod.Mod(entry, archiveFile);
+                        Mod m = new Mod(entry, archiveFile);
                         if (!m.ValidMod)
                         {
                             failedToLoadModeCallback?.Invoke(m);
@@ -421,7 +422,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         var rcwModsForFile = RCWMod.ParseRCWMods(Path.GetFileNameWithoutExtension(entry.FileName), text);
                         foreach (var rcw in rcwModsForFile)
                         {
-                            objects.mod.Mod m = new objects.mod.Mod(rcw);
+                            Mod m = new Mod(rcw);
                             addCompressedModCallback?.Invoke(m);
                             internalModList.Add(m);
                         }
@@ -510,7 +511,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                         //if (!isExe)
                         //{
-                        objects.mod.Mod virutalCustomMod = new objects.mod.Mod(custommoddesc, "", archiveFile); //Load virtual mod
+                        Mod virutalCustomMod = new Mod(custommoddesc, "", archiveFile); //Load virtual mod
                         if (virutalCustomMod.ValidMod)
                         {
                             Log.Information(@"Mod loaded from server moddesc.");
@@ -570,7 +571,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                     if (importingInfo?.version != null)
                     {
-                        foreach (objects.mod.Mod compressedMod in internalModList)
+                        foreach (Mod compressedMod in internalModList)
                         {
                             compressedMod.ModVersionString = importingInfo.version;
                             Version.TryParse(importingInfo.version, out var parsedValue);
@@ -588,7 +589,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         if (modInfo != null && modInfo.TryGetValue(@"version", out string value))
                         {
                             Log.Information(@"ME3Tweaks reports version number for this file is: " + value);
-                            foreach (objects.mod.Mod compressedMod in internalModList)
+                            foreach (Mod compressedMod in internalModList)
                             {
                                 compressedMod.ModVersionString = value;
                                 Version.TryParse(value, out var parsedValue);
@@ -604,7 +605,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 {@"Filename", Path.GetFileName(filepath)},
                                 {@"MD5", md5}
                             });
-                            foreach (objects.mod.Mod compressedMod in internalModList)
+                            foreach (Mod compressedMod in internalModList)
                             {
                                 compressedMod.ModVersionString = M3L.GetString(M3L.string_unknown);
                             }
@@ -627,7 +628,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         }
 
 
-        private static objects.mod.Mod AttemptLoadVirtualMod(ArchiveFileInfo sfarEntry, SevenZipExtractor archive, MEGame game, string md5)
+        private static Mod AttemptLoadVirtualMod(ArchiveFileInfo sfarEntry, SevenZipExtractor archive, MEGame game, string md5)
         {
             var sfarPath = sfarEntry.FileName;
             var cookedPath = FilesystemInterposer.DirectoryGetParent(sfarPath, true);
@@ -676,11 +677,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 virtualModDesc[@"ModInfo"][@"requireddlc"] = importingInfos[0].requireddlc;
                             }
 
-                            return new objects.mod.Mod(virtualModDesc.ToString(), FilesystemInterposer.DirectoryGetParent(dlcDir, true), archive);
+                            return new Mod(virtualModDesc.ToString(), FilesystemInterposer.DirectoryGetParent(dlcDir, true), archive);
                         }
 
                         //Mod is marked for preventing import
-                        return new objects.mod.Mod(false)
+                        return new Mod(false)
                         {
                             ModName = thirdPartyInfo.modname,
                             ModDeveloper = thirdPartyInfo.moddev,
@@ -708,7 +709,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                 }
                 TaskRunning = false;
-                if (b.Result is List<objects.mod.Mod> modList)
+                if (b.Result is List<Mod> modList)
                 {
                     OnClosing(new DataEventArgs(modList));
                     return;
@@ -767,8 +768,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void ExtractModsBackgroundThread(object sender, DoWorkEventArgs e)
         {
-            List<objects.mod.Mod> mods = (List<objects.mod.Mod>)e.Argument;
-            List<objects.mod.Mod> extractedMods = new List<objects.mod.Mod>();
+            List<Mod> mods = (List<Mod>)e.Argument;
+            List<Mod> extractedMods = new List<Mod>();
 
             void TextUpdateCallback(string x)
             {
@@ -1004,7 +1005,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private bool CanInstallCompressedMod()
         {
             //This will have to pass some sort of validation code later.
-            return CompressedMods_ListBox != null && CompressedMods_ListBox.SelectedItem is objects.mod.Mod cm &&
+            return CompressedMods_ListBox != null && CompressedMods_ListBox.SelectedItem is Mod cm &&
                    cm.ExeExtractionTransform == null && cm.ValidMod
                    && !TaskRunning /*&& !CompressPackages*/ && mainwindow.InstallationTargets.Any(x => x.Game == cm.Game);
         }
@@ -1025,7 +1026,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void SelectedMod_Changed(object sender, SelectionChangedEventArgs e)
         {
-            SelectedMod = CompressedMods_ListBox.SelectedItem as objects.mod.Mod;
+            SelectedMod = CompressedMods_ListBox.SelectedItem as Mod;
             if (SelectedMod != null && SelectedMod.Game > MEGame.ME1 && SelectedMod.PreferCompressed)
             {
                 CompressPackages = true;
@@ -1036,7 +1037,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 CompressPackages = false;
             }
 
-            SelectedMod?.LoadBannerImage();
         }
 
         public override void OnPanelVisible()

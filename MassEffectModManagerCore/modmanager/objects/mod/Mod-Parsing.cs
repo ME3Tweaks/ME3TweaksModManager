@@ -727,12 +727,13 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         var storageType = Archive.GetStorageTypeOfFile(fullPath);
                         if (storageType != @"Copy")
                         {
-                            Log.Error(
-                                $@"Mod has banner image that is in an archive, but the storage type is not listed as 'Copy'. Mod Manager will not load mods from archive that list images that were not deployed using Mod Manager.");
-                            LoadFailedReason =
-                                $"Mod has banner image that is in an archive, but the storage type is not listed as 'Copy'. Mod Manager will not load mods from archive that list images that were not deployed using Mod Manager.";
+                            Log.Error($@"Mod has banner image that is in an archive, but the storage type is not listed as 'Copy'. Mod Manager will not load mods from archive that list images that were not deployed using Mod Manager.");
+                            LoadFailedReason = $"Mod has banner image that is in an archive, but the storage type is not listed as 'Copy'. Mod Manager will not load mods from archive that list images that were not deployed using Mod Manager.";
                             return;
                         }
+
+                        // If we are loading from archive we must load it here while the archive stream is still available
+                        LoadBannerImage();
                     }
                 }
             }

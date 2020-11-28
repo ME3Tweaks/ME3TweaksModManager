@@ -46,6 +46,8 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     bitmap.CacheOption = BitmapCacheOption.OnLoad;
                     bitmap.StreamSource = loadStream;
                     bitmap.EndInit();
+                    bitmap.Freeze();
+
                     if (loadStream is FileStream fs)
                     {
                         fs.Close();
@@ -55,10 +57,10 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
 
                     var aspectRatio = bitmap.Width / bitmap.Height;
                     var aspectRatioDiff = RequiredBannerAspectRatio - aspectRatio;
-                    if (aspectRatioDiff > RequiredAspectRatioTolerance && -aspectRatioDiff < RequiredAspectRatioTolerance )
+                    if (Math.Abs(aspectRatioDiff) > RequiredAspectRatioTolerance)
                     {
                          // Must have specific aspect ratio.limes
-                         Log.Error($"{ModName}'s banner image is not the correct aspect ratio. Aspect ratio should be 580x47. The banner won't be displayed.");
+                         Log.Error($@"{ModName}'s banner image is not the correct aspect ratio. Aspect ratio should be 580x47. The banner won't be displayed.");
                     }
                     else
                     {
