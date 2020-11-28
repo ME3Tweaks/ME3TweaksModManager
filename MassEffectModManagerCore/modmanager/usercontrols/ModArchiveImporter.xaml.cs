@@ -361,7 +361,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             }
                             else if (fname.Equals(@"BIOEngine.ini", StringComparison.InvariantCultureIgnoreCase))
                             {
-                                //for unofficial lookups
+                                //for unofficial lookups [NOT USED]
                                 bioengineEntries.Add(entry);
                             }
                             else if (Path.GetExtension(fname) == @".me2mod")
@@ -484,16 +484,23 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         return;
                     }
 
-                    if (importingInfo?.servermoddescname != null)
+                    ExeTransform transform = null;
+                    if (importingInfo?.exetransform != null)
+                    {
+                        Log.Information(@"TPIS lists exe transform for this mod: " + importingInfo.exetransform);
+                        transform = new ExeTransform(OnlineContent.FetchExeTransform(importingInfo.exetransform));
+                    }
+
+                    string custommoddesc = null;
+                    if (importingInfo?.servermoddescname != null || transform != null)
                     {
                         //Partially supported unofficial third party mod
                         //Mod has a custom written moddesc.ini stored on ME3Tweaks
                         Log.Information(@"Fetching premade moddesc.ini from ME3Tweaks for this mod archive");
-                        string custommoddesc = null;
                         string loadFailedReason = null;
                         try
                         {
-                            custommoddesc = OnlineContent.FetchThirdPartyModdesc(importingInfo.servermoddescname);
+                            custommoddesc = OnlineContent.FetchThirdPartyModdesc(importingInfo.servermoddescname ?? transform.PostTransformModdesc);
                         }
                         catch (Exception e)
                         {
@@ -501,34 +508,38 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             Log.Error(@"Error fetching moddesc from server: " + e.Message);
                         }
 
-                        Mod virutalCustomMod = new Mod(custommoddesc, "", archiveFile); //Load virutal mod
-                        if (virutalCustomMod.ValidMod)
-                        {
-                            Log.Information(@"Mod loaded from server moddesc.");
-                            addCompressedModCallback?.Invoke(virutalCustomMod);
-                            internalModList.Add(virutalCustomMod);
-                            return; //Don't do further parsing as this is custom written
-                        }
-                        else
-                        {
-                            if (loadFailedReason != null)
+                        //if (!isExe)
+                        //{
+                            Mod virutalCustomMod = new Mod(custommoddesc, "", archiveFile); //Load virtual mod
+                            if (virutalCustomMod.ValidMod)
                             {
-                                virutalCustomMod.LoadFailedReason = M3L.GetString(M3L.string_interp_failedToFetchModdesciniFileFromServerReasonLoadFailedReason, loadFailedReason);
+                                Log.Information(@"Mod loaded from server moddesc.");
+                                addCompressedModCallback?.Invoke(virutalCustomMod);
+                                internalModList.Add(virutalCustomMod);
+                                return; //Don't do further parsing as this is custom written
                             }
                             else
                             {
-                                Log.Error(@"Server moddesc was not valid for this mod. This shouldn't occur. Please report to Mgamerz.");
+                                if (loadFailedReason != null)
+                                {
+                                    virutalCustomMod.LoadFailedReason = M3L.GetString(
+                                        M3L.string_interp_failedToFetchModdesciniFileFromServerReasonLoadFailedReason,
+                                        loadFailedReason);
+                                }
+                                else
+                                {
+                                    Log.Error(@"Server moddesc was not valid for this mod. This shouldn't occur. Please report to Mgamerz.");
+                                }
+
+                                return;
                             }
-                            return;
-                        }
+                        //} else
+                        //{
+                        //    Log.Information(@"Fetched premade moddesc.ini from server. We will fake the mod for the user");
+                        //}
                     }
 
-                    ExeTransform transform = null;
-                    if (importingInfo?.exetransform != null)
-                    {
-                        Log.Information(@"TPIS lists exe transform for this mod: " + importingInfo.exetransform);
-                        transform = new ExeTransform(OnlineContent.FetchExeTransform(importingInfo.exetransform));
-                    }
+                    
 
                     //Fully unofficial third party mod.
 
