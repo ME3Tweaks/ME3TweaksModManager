@@ -214,7 +214,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     compiler.SetCompileStarted = CompilationInProgress;
                     compiler.SetModNotFoundCallback = ModNotFound;
                     compiler.NotifySomeDLCIsMissing = NotifySomeDLCIsMissing;
-                    Mod m = compiler.DownloadAndCompileMod(modDelta);
+                    objects.mod.Mod m = compiler.DownloadAndCompileMod(modDelta);
                     if (m != null && !LocalFileOption)
                     {
                         var sanitizedname = Utilities.SanitizePath(m.ModName);
@@ -230,7 +230,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                 }
                 CompileInProgress = false;
-                if (!KeepOpenWhenThreadFinishes && b.Result is Mod m)
+                if (!KeepOpenWhenThreadFinishes && b.Result is objects.mod.Mod m)
                 {
                     OnClosing(new DataEventArgs(m));
                 }

@@ -8,6 +8,8 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using ME3ExplorerCore.Packages;
+using Serilog;
+using SevenZip;
 
 
 namespace MassEffectModManagerCore.modmanager.helpers
@@ -34,6 +36,19 @@ namespace MassEffectModManagerCore.modmanager.helpers
             if (game == MEGame.ME2) return 2;
             if (game == MEGame.ME3) return 3;
             return 0;
+        }
+
+        public static string GetStorageTypeOfFile(this SevenZipExtractor archive, string fileName)
+        {
+            var ae = archive.ArchiveFileData.FirstOrDefault(x =>
+                x.FileName.Equals(fileName, StringComparison.InvariantCultureIgnoreCase));
+            if (ae.FileName != null) //structs have empty properties if 'null'
+            {
+                return ae.Method;
+            }
+
+            Log.Error($@"File not found in archive: {fileName}. Can't get compression type");
+            return null;
         }
 
         /// <summary>

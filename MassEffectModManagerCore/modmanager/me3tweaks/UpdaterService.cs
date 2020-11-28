@@ -67,7 +67,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         /// <param name="modsToCheck">Mods to have server send information about</param>
         /// <param name="forceUpdateCheck">Force update check regardless of version</param>
         /// <returns></returns>
-        public static List<ModUpdateInfo> CheckForModUpdates(List<Mod> modsToCheck, bool forceUpdateCheck)
+        public static List<ModUpdateInfo> CheckForModUpdates(List<objects.mod.Mod> modsToCheck, bool forceUpdateCheck)
         {
             string updateFinalRequest = UpdaterServiceManifestEndpoint;
             bool first = true;
@@ -387,7 +387,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         }
 
         [Localizable(true)]
-        public static string StageModForUploadToUpdaterService(Mod mod, List<string> files, long totalAmountToCompress, Func<bool?> canceledCallback = null, Action<string> updateUiTextCallback = null, Action<double> setProgressCallback = null)
+        public static string StageModForUploadToUpdaterService(objects.mod.Mod mod, List<string> files, long totalAmountToCompress, Func<bool?> canceledCallback = null, Action<string> updateUiTextCallback = null, Action<double> setProgressCallback = null)
         {
             //create staging dir
             var stagingPath = Utilities.GetUpdaterServiceUploadStagingPath();
@@ -486,7 +486,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         [DebuggerDisplay("ModUpdateInfo | {mod.ModName} with {filesToDelete.Count} FTDelete and {applicableUpdates.Count} FTDownload")]
         public class ModUpdateInfo : INotifyPropertyChanged
         {
-            public Mod mod { get; set; }
+            public objects.mod.Mod mod { get; set; }
             public List<SourceFile> sourceFiles;
             public List<string> blacklistedFiles;
             public string changelog { get; set; }

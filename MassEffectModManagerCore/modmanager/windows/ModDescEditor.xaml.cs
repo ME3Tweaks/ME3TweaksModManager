@@ -21,12 +21,12 @@ namespace MassEffectModManagerCore.modmanager.windows
     /// </summary>
     public partial class ModDescEditor : Window, INotifyPropertyChanged
     {
-        public Mod EditingMod { get; private set; }
+        public objects.mod.Mod EditingMod { get; private set; }
 
-        public ModDescEditor(Mod selectedMod)
+        public ModDescEditor(objects.mod.Mod selectedMod)
         {
             DataContext = this;
-            EditingMod = new Mod(selectedMod.ModDescPath, selectedMod.Game); //RELOAD MOD TO CREATE NEW OBJECT
+            EditingMod = new objects.mod.Mod(selectedMod.ModDescPath, selectedMod.Game); //RELOAD MOD TO CREATE NEW OBJECT
             InitializeComponent();
             metadataEditor_control.EditingMod = EditingMod;
             customdlcEditor_control.EditingMod = EditingMod;
@@ -48,7 +48,7 @@ namespace MassEffectModManagerCore.modmanager.windows
         private void SerializeData_Click(object sender, RoutedEventArgs e)
         {
             var moddesc = EditingMod.SerializeModdesc();
-            Mod m = new Mod(moddesc, EditingMod.ModPath, null);
+            objects.mod.Mod m = new objects.mod.Mod(moddesc, EditingMod.ModPath, null);
 
             Clipboard.SetText(moddesc);
         }

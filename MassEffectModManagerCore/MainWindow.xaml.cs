@@ -18,7 +18,6 @@ using System.Xml;
 using System.Xml.Linq;
 using AdonisUI;
 using MassEffect3.Coalesce;
-
 using MassEffectModManagerCore.modmanager;
 using MassEffectModManagerCore.modmanager.asi;
 using MassEffectModManagerCore.modmanager.gameini;
@@ -43,7 +42,7 @@ using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Pathoschild.FluentNexus.Models;
 using Serilog;
-using Mod = MassEffectModManagerCore.modmanager.Mod;
+using Mod = MassEffectModManagerCore.modmanager.objects.mod.Mod;
 
 namespace MassEffectModManagerCore
 {
@@ -2080,6 +2079,11 @@ namespace MassEffectModManagerCore
                 if (installTarget != null)
                 {
                     SelectedGameTarget = installTarget;
+                }
+
+                if (SelectedMod.BannerBitmap == null && SelectedMod.BannerImageName != null)
+                {
+                    SelectedMod.LoadBannerImage();
                 }
 
                 VisitWebsiteText = SelectedMod.ModWebsite != Mod.DefaultWebsite ? M3L.GetString(M3L.string_interp_visitSelectedModWebSite, SelectedMod.ModName) : "";

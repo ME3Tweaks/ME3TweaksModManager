@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Text;
 using System.Threading.Tasks;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.nexusmodsintegration;
@@ -10,7 +8,7 @@ using Microsoft.AppCenter.Analytics;
 using Pathoschild.FluentNexus.Models;
 using Serilog;
 
-namespace MassEffectModManagerCore.modmanager
+namespace MassEffectModManagerCore.modmanager.objects.mod
 {
     public partial class Mod
     {
@@ -74,7 +72,7 @@ namespace MassEffectModManagerCore.modmanager
         /// <param name="newEndorsementStatus"></param>
         /// <param name="endorse"></param>
         /// <param name="currentuserid"></param>
-        public void EndorseMod(Action<Mod, bool> newEndorsementStatus, bool endorse, int currentuserid)
+        public void EndorseMod(Action<objects.mod.Mod, bool> newEndorsementStatus, bool endorse, int currentuserid)
         {
             if (!NexusModsUtilities.HasAPIKey || !CanEndorse) return;
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"ModSpecificEndorsement");

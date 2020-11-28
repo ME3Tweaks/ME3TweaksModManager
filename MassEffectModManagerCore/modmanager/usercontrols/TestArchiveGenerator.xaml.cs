@@ -30,9 +30,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     {
         public int Percent { get; private set; }
         public string ActionText { get; private set; }
-        public Mod ModForArchive { get; private set; }
+        public objects.mod.Mod ModForArchive { get; private set; }
 
-        public TestArchiveGenerator(Mod mod)
+        public TestArchiveGenerator(objects.mod.Mod mod)
         {
             DataContext = this;
             ModForArchive = mod;
@@ -80,7 +80,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                       });
                     Log.Information(@"Copying moddesc.ini");
                     File.Copy(ModForArchive.ModDescPath, Path.Combine(stagingPath, @"moddesc.ini"), true);
-                    Mod testmod = new Mod(Path.Combine(stagingPath, @"moddesc.ini"), MEGame.Unknown);
+                    objects.mod.Mod testmod = new objects.mod.Mod(Path.Combine(stagingPath, @"moddesc.ini"), MEGame.Unknown);
                     if (testmod.ValidMod)
                     {
                         ActionText = M3L.GetString(M3L.string_creatingArchive);

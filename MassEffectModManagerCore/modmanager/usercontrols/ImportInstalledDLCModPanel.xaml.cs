@@ -189,7 +189,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             File.WriteAllText(moddescPath, ini.ToString());
 
             //Generate and load mod
-            Mod m = new Mod(moddescPath, MEGame.ME3);
+            objects.mod.Mod m = new objects.mod.Mod(moddescPath, MEGame.ME3);
             e.Result = m;
             Log.Information(@"Mod import complete.");
             Analytics.TrackEvent(@"Imported already installed mod", new Dictionary<string, string>()

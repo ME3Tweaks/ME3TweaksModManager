@@ -1,19 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-
-
 using MassEffectModManagerCore.modmanager.helpers;
-using MassEffectModManagerCore.modmanager.objects;
-using ME3ExplorerCore.GameFilesystem;
 using ME3ExplorerCore.Packages;
 using Serilog;
 using SevenZip;
 
-namespace MassEffectModManagerCore.modmanager
+namespace MassEffectModManagerCore.modmanager.objects.mod
 {
     public partial class Mod
     {
@@ -26,7 +21,7 @@ namespace MassEffectModManagerCore.modmanager
         {
             if (IsInArchive) Archive = new SevenZipExtractor(ArchivePath); //load archive file for inspection
             var gameDLCPath = M3Directories.GetDLCPath(gameTarget);
-            var customDLCMapping = InstallationJobs.FirstOrDefault(x => x.Header == ModJob.JobHeader.CUSTOMDLC)?.CustomDLCFolderMapping;
+            var customDLCMapping = Enumerable.FirstOrDefault<ModJob>(InstallationJobs, x => x.Header == ModJob.JobHeader.CUSTOMDLC)?.CustomDLCFolderMapping;
             if (customDLCMapping != null)
             {
                 //Make clone so original value is not modified
@@ -38,9 +33,9 @@ namespace MassEffectModManagerCore.modmanager
             foreach (var job in InstallationJobs)
             {
                 Log.Information($@"Preprocessing installation job: {job.Header}");
-                var alternateFiles = job.AlternateFiles.Where(x => x.IsSelected && x.Operation != AlternateFile.AltFileOperation.OP_NOTHING
-                && x.Operation != AlternateFile.AltFileOperation.OP_NOINSTALL_MULTILISTFILES).ToList();
-                var alternateDLC = job.AlternateDLCs.Where(x => x.IsSelected).ToList();
+                var alternateFiles = Enumerable.Where<AlternateFile>(job.AlternateFiles, x => x.IsSelected && x.Operation != AlternateFile.AltFileOperation.OP_NOTHING
+                                                                                                                   && x.Operation != AlternateFile.AltFileOperation.OP_NOINSTALL_MULTILISTFILES).ToList();
+                var alternateDLC = Enumerable.Where<AlternateDLC>(job.AlternateDLCs, x => x.IsSelected).ToList();
                 if (job.Header == ModJob.JobHeader.CUSTOMDLC)
                 {
                     #region Installation: CustomDLC
@@ -83,7 +78,7 @@ namespace MassEffectModManagerCore.modmanager
                                             break;
                                         case AlternateFile.AltFileOperation.OP_SUBSTITUTE:
                                             CLog.Information($@"Repointing {sourceFile} to {altFile.AltFile} for Alternate File {altFile.FriendlyName} due to operation OP_SUBSTITUTE", Settings.LogModInstallation);
-                                            if (job.JobDirectory != null && altFile.AltFile.StartsWith(job.JobDirectory))
+                                            if (job.JobDirectory != null && altFile.AltFile.StartsWith((string) job.JobDirectory))
                                             {
                                                 installationMapping[sourceFile] = new InstallSourceFile(altFile.AltFile.Substring(job.JobDirectory.Length).TrimStart('/', '\\'))
                                                 {
@@ -100,7 +95,7 @@ namespace MassEffectModManagerCore.modmanager
                                         case AlternateFile.AltFileOperation.OP_INSTALL:
                                             //same logic as substitute, just different logging.
                                             CLog.Information($@"Adding {sourceFile} to install (from {altFile.AltFile}) as part of Alternate File {altFile.FriendlyName} due to operation OP_INSTALL", Settings.LogModInstallation);
-                                            if (job.JobDirectory != null && altFile.AltFile.StartsWith(job.JobDirectory))
+                                            if (job.JobDirectory != null && altFile.AltFile.StartsWith((string) job.JobDirectory))
                                             {
                                                 installationMapping[sourceFile] = new InstallSourceFile(altFile.AltFile.Substring(job.JobDirectory.Length).TrimStart('/', '\\'))
                                                 {
@@ -154,7 +149,7 @@ namespace MassEffectModManagerCore.modmanager
                         }
 
                         // Process altfile removal of multilist, since it should be done last
-                        var fileRemoveAltFiles = job.AlternateFiles.Where(x => x.IsSelected && x.Operation == AlternateFile.AltFileOperation.OP_NOINSTALL_MULTILISTFILES);
+                        var fileRemoveAltFiles = Enumerable.Where<AlternateFile>(job.AlternateFiles, x => x.IsSelected && x.Operation == AlternateFile.AltFileOperation.OP_NOINSTALL_MULTILISTFILES);
                         foreach (var altFile in fileRemoveAltFiles)
                         {
                             foreach (var multifile in altFile.MultiListSourceFiles)
@@ -399,7 +394,7 @@ namespace MassEffectModManagerCore.modmanager
                 throw new Exception(@"Cannot validate a mod against a gametarget that is not for its game");
             }
 
-            var requiredDLC = RequiredDLC.Select(x =>
+            var requiredDLC = Enumerable.Select<string, string>(RequiredDLC, x =>
             {
                 if (Enum.TryParse(x, out ModJob.JobHeader parsedHeader) && ModJob.GetHeadersToDLCNamesMap(Game).TryGetValue(parsedHeader, out var dlcname))
                 {
@@ -423,10 +418,10 @@ namespace MassEffectModManagerCore.modmanager
                 throw new Exception(@"Cannot validate a mod against a gametarget that is not for its game");
             }
 
-            if (OptionalSingleRequiredDLC.Any())
+            if (Enumerable.Any<string>(OptionalSingleRequiredDLC))
             {
 
-                var requiredAnyDLC = OptionalSingleRequiredDLC.Select(x =>
+                var requiredAnyDLC = Enumerable.Select<string, string>(OptionalSingleRequiredDLC, x =>
                 {
                     if (Enum.TryParse(x, out ModJob.JobHeader parsedHeader) && ModJob.GetHeadersToDLCNamesMap(Game)
                         .TryGetValue(parsedHeader, out var dlcname))
@@ -456,7 +451,7 @@ namespace MassEffectModManagerCore.modmanager
                 {
                     foreach (var item in job.ReadOnlyIndicators)
                     {
-                        var destPath = job.FilesToInstall.FirstOrDefault(x => x.Value.Equals(item, StringComparison.InvariantCultureIgnoreCase));
+                        var destPath = Enumerable.FirstOrDefault<KeyValuePair<string, string>>(job.FilesToInstall, x => x.Value.Equals(item, StringComparison.InvariantCultureIgnoreCase));
                         if (destPath.Key == null) Log.Error(@"Error: Bug triggered: destPath for addreadonly files returned null!");
                         list.Add(destPath.Key); //pathcombine?
                     }

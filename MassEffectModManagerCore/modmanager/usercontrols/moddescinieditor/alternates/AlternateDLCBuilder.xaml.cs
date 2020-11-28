@@ -22,7 +22,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alte
     /// </summary>
     public partial class AlternateDLCBuilder : UserControl, INotifyPropertyChanged
     {
-        public Mod EditingMod { get; set; }
+        public objects.mod.Mod EditingMod { get; set; }
 
         public void OnEditingModChanged()
         {

@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.usercontrols;
 using SevenZip;
 
-namespace MassEffectModManagerCore.modmanager
+namespace MassEffectModManagerCore.modmanager.objects.mod
 {
     //This file contains deployment to archive related functionality
     public partial class Mod
@@ -116,6 +113,13 @@ namespace MassEffectModManagerCore.modmanager
             {
                 references.AddRange(FilesystemInterposer.DirectoryGetFiles(FilesystemInterposer.PathCombine(IsInArchive, ModPath, additionalDeploymentDir), "*", SearchOption.AllDirectories, archive).Select(x => (IsInArchive && ModPath.Length == 0) ? x : x.Substring(ModPath.Length + 1)).ToList());
             }
+
+            // Banner Image
+            if (!string.IsNullOrWhiteSpace(BannerImageName))
+            {
+                references.Add(FilesystemInterposer.PathCombine(IsInArchive, @"M3Images", BannerImageName));
+            }
+
             if (includeModdesc && GetJob(ModJob.JobHeader.ME2_RCWMOD) == null)
             {
                 references.Add(ModDescPath.Substring(ModPath.Length).TrimStart('/', '\\'));

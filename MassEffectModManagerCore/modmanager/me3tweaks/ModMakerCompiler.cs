@@ -49,7 +49,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             this.code = code;
         }
 
-        public Mod DownloadAndCompileMod(string delta = null)
+        public objects.mod.Mod DownloadAndCompileMod(string delta = null)
         {
             if (delta != null)
             {
@@ -74,7 +74,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         /// Compiles a mod using the specified mod definition text
         /// </summary>
         /// <param name="modxml">XML document for the mod</param>
-        private Mod CompileMod(string modxml)
+        private objects.mod.Mod CompileMod(string modxml)
         {
             Log.Information(@"Compiling modmaker mod");
             var xmlDoc = XDocument.Parse(modxml);
@@ -216,7 +216,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         }
 
 
-        private void compileTLKs(XDocument xmlDoc, Mod mod)
+        private void compileTLKs(XDocument xmlDoc, objects.mod.Mod mod)
         {
             var tlkNode = xmlDoc.XPathSelectElement(@"/ModMaker/TLKData");
             if (tlkNode != null)
@@ -284,7 +284,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
         }
 
-        private void compileMixins(XDocument xmlDoc, Mod mod)
+        private void compileMixins(XDocument xmlDoc, objects.mod.Mod mod)
         {
             SetCurrentTaskStringCallback?.Invoke(M3L.GetString(M3L.string_preparingMixinPatchData));
             SetCurrentTaskIndeterminateCallback?.Invoke(true);
@@ -410,7 +410,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         int totalNumCoalescedFileChunks = 0;
         int numDoneCoalescedFileChunks = 0;
 
-        private void compileCoalesceds(XDocument xmlDoc, Mod mod)
+        private void compileCoalesceds(XDocument xmlDoc, objects.mod.Mod mod)
         {
             SetCurrentTaskStringCallback?.Invoke(M3L.GetString(M3L.string_compilingCoalescedFiles));
             List<XElement> jobCollection = new List<XElement>();
@@ -446,7 +446,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             CLog.Information(@"Finished compiling coalesceds.", Settings.LogModMakerCompiler);
         }
 
-        private bool compileCoalescedChunk(XElement xmlChunk, Mod mod)
+        private bool compileCoalescedChunk(XElement xmlChunk, objects.mod.Mod mod)
         {
             var chunkName = xmlChunk.Name.LocalName;
             string loggingPrefix = $@"ModMaker Compiler [{chunkName}]";
@@ -887,7 +887,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             return elementValues[identifierKey] == newValues[identifierKey];
         }
 
-        private void finalizeModdesc(XDocument doc, Mod mod)
+        private void finalizeModdesc(XDocument doc, objects.mod.Mod mod)
         {
             SetCurrentTaskStringCallback?.Invoke(M3L.GetString(M3L.string_finalizingMod));
             //Update moddesc
@@ -1034,7 +1034,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         /// </summary>
         /// <param name="xmlDoc">mod document</param>
         /// <returns>Mod object</returns>
-        private Mod GenerateLibraryModFromDocument(XDocument xmlDoc)
+        private objects.mod.Mod GenerateLibraryModFromDocument(XDocument xmlDoc)
         {
             var hasError = xmlDoc.XPathSelectElement(@"/ModMaker/error");
             if (hasError != null)
@@ -1083,7 +1083,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             File.WriteAllText(moddescPath, ini.ToString());
 
             //Generate and load mod - it will be invalid as it has no jobs yet.
-            Mod m = new Mod(moddescPath, MEGame.ME3, blankLoad: true);
+            objects.mod.Mod m = new objects.mod.Mod(moddescPath, MEGame.ME3, blankLoad: true);
             return m;
         }
     }

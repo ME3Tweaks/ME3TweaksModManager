@@ -74,7 +74,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         /// </summary>
         public bool ValidAlternate;
         public string LoadFailedReason;
-        public AlternateDLC(string alternateDLCText, Mod modForValidating, ModJob job)
+        public AlternateDLC(string alternateDLCText, mod.Mod modForValidating, ModJob job)
         {
             var properties = StringStructParser.GetCommaSplitValues(alternateDLCText);
             buildParameterMap(properties);

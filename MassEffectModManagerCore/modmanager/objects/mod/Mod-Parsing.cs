@@ -12,7 +12,6 @@ using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.memoryanalyzer;
-using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
 using ME3ExplorerCore.GameFilesystem;
 using ME3ExplorerCore.Gammtek.Extensions.Collections.Generic;
@@ -21,7 +20,7 @@ using Microsoft.AppCenter.Analytics;
 using Serilog;
 using SevenZip;
 
-namespace MassEffectModManagerCore.modmanager
+namespace MassEffectModManagerCore.modmanager.objects.mod
 {
     [DebuggerDisplay("Mod - {ModName}")] //do not localize
     public partial class Mod : INotifyPropertyChanged
@@ -696,9 +695,49 @@ namespace MassEffectModManagerCore.modmanager
                 ModDescTargetVersion = 3.1;
             }
 
-            //This was in Java version - I belevie this was to ensure only tenth version of precision would be used. E.g no moddesc 4.52
+            //This was in Java version - I believe this was to ensure only tenth version of precision would be used. E.g no moddesc 4.52
             ModDescTargetVersion = Math.Round(ModDescTargetVersion * 10) / 10;
             CLog.Information(@"Parsing mod using moddesc target: " + ModDescTargetVersion, Settings.LogModStartup);
+
+            #region Banner Image
+            if (ModDescTargetVersion >= 6.2)
+            {
+                // Requires 6.2. Mods not deployed using M3 will NOT support this as it has special
+                // archive requirements.
+                BannerImageName = iniData[@"ModInfo"][@"bannerimagename"];
+
+                if (!string.IsNullOrWhiteSpace(BannerImageName))
+                {
+                    // Test this path exists?
+                    var fullPath =
+                        FilesystemInterposer.PathCombine(Archive != null, ModPath, @"M3Images", BannerImageName);
+                    if (!FilesystemInterposer.FileExists(fullPath, Archive))
+                    {
+                        Log.Error(
+                            $@"Mod has banner image name of {BannerImageName}, but this file does not exist under the M3Images directory.");
+                        LoadFailedReason =
+                            $"Mod has banner image name of {BannerImageName}, but this file does not exist under the M3Images directory.";
+                        return;
+                    }
+
+                    // File exists
+                    if (Archive != null)
+                    {
+                        // Check archive lists it as Store. If any other format we will not load this mod as it was improperly deployed
+                        var storageType = Archive.GetStorageTypeOfFile(fullPath);
+                        if (storageType != @"Copy")
+                        {
+                            Log.Error(
+                                $@"Mod has banner image that is in an archive, but the storage type is not listed as 'Copy'. Mod Manager will not load mods from archive that list images that were not deployed using Mod Manager.");
+                            LoadFailedReason =
+                                $"Mod has banner image that is in an archive, but the storage type is not listed as 'Copy'. Mod Manager will not load mods from archive that list images that were not deployed using Mod Manager.";
+                            return;
+                        }
+                    }
+                }
+            }
+            #endregion
+
 
             #region Header Loops
 

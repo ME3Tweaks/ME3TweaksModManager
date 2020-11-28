@@ -1633,14 +1633,19 @@
                         Height="0">
                         <TextBlock
                             ToolTip="{Binding SelectedMod.ModWebsite}">
-              <Hyperlink
+                            <Hyperlink
                                 RequestNavigate="RequestNavigate"
                                 NavigateUri="{Binding SelectedMod.ModWebsite}">
-                <TextBlock
-                                    Text="{Binding VisitWebsiteText}" />
-              </Hyperlink>
-            </TextBlock>
+                                    <TextBlock
+                                        Text="{Binding VisitWebsiteText}" />
+                            </Hyperlink>
+                        </TextBlock>
                     </StackPanel>
+                    <Image Source="{Binding SelectedMod.BannerBitmap}"  
+                           Visibility="{Binding SelectedMod.BannerBitmap, Converter={StaticResource NullVisibilityConverter}}"
+                           Margin="0,1"
+                           RenderOptions.BitmapScalingMode="HighQuality"
+                           DockPanel.Dock="Top"/>
                     <TextBox
                         Name="ModDescription_TextBox"
                         IsReadOnly="True"

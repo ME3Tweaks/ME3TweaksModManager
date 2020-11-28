@@ -20,7 +20,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
     /// </summary>
     public partial class MetadataEditorControl : UserControl, INotifyPropertyChanged
     {
-        public Mod EditingMod { get; set; }
+        public objects.mod.Mod EditingMod { get; set; }
         public MetadataEditorControl()
         {
             DataContext = this;

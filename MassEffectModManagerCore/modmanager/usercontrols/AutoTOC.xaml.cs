@@ -30,7 +30,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         }
 
         private AutoTOCMode mode;
-        private Mod modModeMod;
+        private objects.mod.Mod modModeMod;
         private GameTarget gameWideModeTarget;
 
         public int Percent { get; private set; }
@@ -43,7 +43,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             InitializeComponent();
         }
 
-        public AutoTOC(Mod mod)
+        public AutoTOC(objects.mod.Mod mod)
         {
             DataContext = this;
             if (mod.Game != MEGame.ME3) throw new Exception(@"AutoTOC cannot be run on mods not designed for Mass Effect 3.");

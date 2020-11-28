@@ -109,7 +109,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         }
 
 
-        public AlternateFile(string alternateFileText, ModJob associatedJob, Mod modForValidating)
+        public AlternateFile(string alternateFileText, ModJob associatedJob, mod.Mod modForValidating)
         {
             var properties = StringStructParser.GetCommaSplitValues(alternateFileText);
             buildParameterMap(properties);

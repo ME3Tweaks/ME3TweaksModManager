@@ -22,7 +22,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// </summary>
     public partial class FailedModsPanel : MMBusyPanelBase
     {
-        public FailedModsPanel(List<Mod> FailedMods)
+        public FailedModsPanel(List<objects.mod.Mod> FailedMods)
         {
             DataContext = this;
             this.FailedMods.ReplaceAll(FailedMods);
@@ -30,7 +30,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             InitializeComponent();
         }
 
-        public Mod SelectedMod { get; set; }
+        public objects.mod.Mod SelectedMod { get; set; }
         public ICommand RestoreSelectedModCommand { get; set; }
         public ICommand DebugReloadCommand { get; set; }
         public ICommand DeleteModCommand { get; set; }
@@ -56,12 +56,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
         }
 
-        private bool CanVisitWebsite() => SelectedMod != null && SelectedMod.ModWebsite != Mod.DefaultWebsite;
+        private bool CanVisitWebsite() => SelectedMod != null && SelectedMod.ModWebsite != objects.mod.Mod.DefaultWebsite;
 
         private void DebugReloadMod()
         {
 #if DEBUG
-            Mod m = new Mod(SelectedMod.ModDescPath, MEGame.Unknown);
+            objects.mod.Mod m = new objects.mod.Mod(SelectedMod.ModDescPath, MEGame.Unknown);
             Debug.WriteLine(@"Is valid: " + m.ValidMod);
 #endif
         }
@@ -85,13 +85,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             OnClosing(new DataEventArgs(SelectedMod));
         }
 
-        public ObservableCollectionExtended<Mod> FailedMods { get; } = new ObservableCollectionExtended<Mod>();
+        public ObservableCollectionExtended<objects.mod.Mod> FailedMods { get; } = new ObservableCollectionExtended<objects.mod.Mod>();
 
         private void ModsList_ListBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (e.AddedItems.Count > 0)
             {
-                SelectedMod = (Mod)e.AddedItems[0];
+                SelectedMod = (objects.mod.Mod)e.AddedItems[0];
             }
             else
             {

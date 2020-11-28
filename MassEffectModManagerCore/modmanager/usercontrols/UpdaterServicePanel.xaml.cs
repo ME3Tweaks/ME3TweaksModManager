@@ -32,14 +32,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     {
         private bool CancelOperations;
 
-        public Mod mod { get; }
+        public objects.mod.Mod mod { get; }
         public string CurrentActionText { get; private set; }
         public string Username { get; set; }
         public string ChangelogText { get; set; }
         public string ManifestStoragePath { get; set; }
         public string LZMAStoragePath { get; set; }
         public string SettingsSubtext { get; set; }
-        public UpdaterServicePanel(Mod mod)
+        public UpdaterServicePanel(objects.mod.Mod mod)
         {
             DataContext = this;
             this.mod = mod;

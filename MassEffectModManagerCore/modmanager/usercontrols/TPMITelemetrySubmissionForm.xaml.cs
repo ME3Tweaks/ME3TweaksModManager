@@ -25,7 +25,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     {
         public ObservableCollectionExtended<TelemetryPackage> TelemetryPackages { get; } = new ObservableCollectionExtended<TelemetryPackage>();
 
-        public TPMITelemetrySubmissionForm(Mod telemetryMod)
+        public TPMITelemetrySubmissionForm(objects.mod.Mod telemetryMod)
         {
             DataContext = this;
             this.TelemetryMod = telemetryMod;
@@ -46,7 +46,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private bool CanClosePanel() => !TelemetryPackages.Any(x => x.TelemetrySubmissionInProgress);
 
-        public Mod TelemetryMod { get; }
+        public objects.mod.Mod TelemetryMod { get; }
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
@@ -157,7 +157,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             e.Result = telemetryPackages;
         }
 
-        private TelemetryPackage GetTelemetryPackageForModDLC(Mod telemetryMod, string dlcFoldername, string inGameName)
+        private TelemetryPackage GetTelemetryPackageForModDLC(objects.mod.Mod telemetryMod, string dlcFoldername, string inGameName)
         {
             return GetTelemetryPackageForDLC(telemetryMod.Game,
                 TelemetryMod.ModPath,
@@ -169,7 +169,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 TelemetryMod);
         }
 
-        public static TelemetryPackage GetTelemetryPackageForDLC(MEGame game, string dlcDirectory, string dlcFoldername, string destinationDLCName, string modName, string modAuthor, string modSite, Mod telemetryMod)
+        public static TelemetryPackage GetTelemetryPackageForDLC(MEGame game, string dlcDirectory, string dlcFoldername, string destinationDLCName, string modName, string modAuthor, string modSite, objects.mod.Mod telemetryMod)
         {
             try
             {

@@ -180,7 +180,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     //compiler.SetModNameCallback = SetModNameOrDownloadText;
                     //compiler.SetCompileStarted = CompilationInProgress;
                     //compiler.SetModNotFoundCallback = ModNotFound;
-                    Mod m = compiler.DownloadAndCompileMod(modDelta);
+                    objects.mod.Mod m = compiler.DownloadAndCompileMod(modDelta);
                     if (m != null)
                     {
                         try

@@ -26,9 +26,9 @@ namespace MassEffectModManagerCore.modmanager.windows
     /// </summary>
     public partial class BatchModQueueEditor : Window, INotifyPropertyChanged
     {
-        private List<Mod> allMods;
-        public ObservableCollectionExtended<Mod> VisibleFilteredMods { get; } = new ObservableCollectionExtended<Mod>();
-        public ObservableCollectionExtended<Mod> ModsInGroup { get; } = new ObservableCollectionExtended<Mod>();
+        private List<objects.mod.Mod> allMods;
+        public ObservableCollectionExtended<objects.mod.Mod> VisibleFilteredMods { get; } = new ObservableCollectionExtended<objects.mod.Mod>();
+        public ObservableCollectionExtended<objects.mod.Mod> ModsInGroup { get; } = new ObservableCollectionExtended<objects.mod.Mod>();
         public string GroupName { get; set; }
         public string GroupDescription { get; set; }
         private string existingFilename;
@@ -37,7 +37,7 @@ namespace MassEffectModManagerCore.modmanager.windows
         /// </summary>
         public string SavedPath;
 
-        public BatchModQueueEditor(List<Mod> allMods, Window owner = null, BatchLibraryInstallQueue queueToEdit = null)
+        public BatchModQueueEditor(List<objects.mod.Mod> allMods, Window owner = null, BatchLibraryInstallQueue queueToEdit = null)
         {
             MemoryAnalyzer.AddTrackedMemoryItem(@"Batch Mod Queue Editor", new WeakReference(this));
             Owner = owner;
@@ -149,7 +149,7 @@ namespace MassEffectModManagerCore.modmanager.windows
 
         private void AddToInstallGroup()
         {
-            Mod m = SelectedAvailableMod;
+            objects.mod.Mod m = SelectedAvailableMod;
             if (VisibleFilteredMods.Remove(m))
             {
                 ModsInGroup.Add(m);
@@ -158,7 +158,7 @@ namespace MassEffectModManagerCore.modmanager.windows
 
         private void RemoveFromInstallGroup()
         {
-            Mod m = SelectedInstallGroupMod;
+            objects.mod.Mod m = SelectedInstallGroupMod;
             if (ModsInGroup.Remove(m))
             {
                 VisibleFilteredMods.Add(m);
@@ -241,8 +241,8 @@ namespace MassEffectModManagerCore.modmanager.windows
 
         public event PropertyChangedEventHandler PropertyChanged;
         public MEGame SelectedGame { get; set; }
-        public Mod SelectedInstallGroupMod { get; set; }
-        public Mod SelectedAvailableMod { get; set; }
+        public objects.mod.Mod SelectedInstallGroupMod { get; set; }
+        public objects.mod.Mod SelectedAvailableMod { get; set; }
 
         public void OnSelectedGameChanged()
         {

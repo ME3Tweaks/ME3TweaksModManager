@@ -28,7 +28,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     public partial class BatchModLibrary : MMBusyPanelBase
     {
         public BatchLibraryInstallQueue SelectedBatchQueue { get; set; }
-        public Mod SelectedModInGroup { get; set; }
+        public objects.mod.Mod SelectedModInGroup { get; set; }
         public ObservableCollectionExtended<BatchLibraryInstallQueue> AvailableBatchQueues { get; } = new ObservableCollectionExtended<BatchLibraryInstallQueue>();
         public ObservableCollectionExtended<GameTarget> InstallationTargetsForGroup { get; } = new ObservableCollectionExtended<GameTarget>();
         public BatchModLibrary()
@@ -184,7 +184,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public GameTarget Target;
 
         public string BackingFilename { get; set; }
-        public ObservableCollectionExtended<Mod> ModsToInstall { get; } = new ObservableCollectionExtended<Mod>();
+        public ObservableCollectionExtended<objects.mod.Mod> ModsToInstall { get; } = new ObservableCollectionExtended<objects.mod.Mod>();
         public ObservableCollectionExtended<string> ModsMissing { get; } = new ObservableCollectionExtended<string>();
 
         public MEGame Game { get; private set; }
@@ -197,7 +197,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
 
         }
-        public static BatchLibraryInstallQueue ParseInstallQueue(string queueFile, List<Mod> allLoadedMods)
+        public static BatchLibraryInstallQueue ParseInstallQueue(string queueFile, List<objects.mod.Mod> allLoadedMods)
         {
             if (!File.Exists(queueFile)) return null;
             BatchLibraryInstallQueue result = new BatchLibraryInstallQueue();
@@ -230,7 +230,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 //workaround for 103/104 to 105: moddesc path's in biq were stored as full paths instead of relative. me3cmm is relative paths
                 var fullModdescPath = File.Exists(moddescPath) ? moddescPath : Path.Combine(libraryRoot, moddescPath);
 
-                Mod m = allLoadedMods.FirstOrDefault(x => x.ModDescPath.Equals(fullModdescPath, StringComparison.InvariantCultureIgnoreCase));
+                objects.mod.Mod m = allLoadedMods.FirstOrDefault(x => x.ModDescPath.Equals(fullModdescPath, StringComparison.InvariantCultureIgnoreCase));
                 if (m != null)
                 {
                     result.ModsToInstall.Add(m);

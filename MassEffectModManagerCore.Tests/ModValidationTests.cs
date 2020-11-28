@@ -9,6 +9,7 @@ using MassEffectModManagerCore.modmanager.usercontrols;
 using ME3ExplorerCore.Packages;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Serilog;
+using Mod = MassEffectModManagerCore.modmanager.objects.mod.Mod;
 
 namespace MassEffectModManagerCore.Tests
 {

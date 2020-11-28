@@ -205,7 +205,7 @@ namespace MassEffectModManagerCore.modmanager
         /// </summary>
         /// <param name="jobHeader">Header this job is for</param>
         /// <param name="mod">Mod object this job is for. This object is not saved and is only used to pull the path in and other necessary variables.</param>
-        public ModJob(JobHeader jobHeader, Mod mod = null)
+        public ModJob(JobHeader jobHeader, objects.mod.Mod mod = null)
         {
             this.Header = jobHeader;
         }
@@ -218,7 +218,7 @@ namespace MassEffectModManagerCore.modmanager
         /// <param name="ignoreLoadErrors">Ignore checking if new file exists on disk</param>
         /// <param name="mod">Mod to parse against</param>
         /// <returns>string of failure reason. null if OK.</returns>
-        internal string AddFileToInstall(string destRelativePath, string sourceRelativePath, Mod mod)
+        internal string AddFileToInstall(string destRelativePath, string sourceRelativePath, objects.mod.Mod mod)
         {
             //Security check
             if (!checkExtension(sourceRelativePath, out string failReason))
@@ -273,7 +273,7 @@ namespace MassEffectModManagerCore.modmanager
         /// <param name="sourcePath">Path to parsed file</param>
         /// <param name="mod">Mod to parse against</param>
         /// <returns>string of failure reason. null if OK.</returns>
-        internal string AddPreparsedFileToInstall(string destRelativePath, string sourcePath, Mod mod)
+        internal string AddPreparsedFileToInstall(string destRelativePath, string sourcePath, objects.mod.Mod mod)
         {
             //string checkingSourceFile;
             //if (JobDirectory != null)
@@ -305,7 +305,7 @@ namespace MassEffectModManagerCore.modmanager
         /// <param name="sourceRelativePath">Relative (to mod root) path of new file to install</param>
         /// <param name="mod">Mod to parse against</param>
         /// <returns>string of failure reason. null if OK.</returns>
-        internal string AddAdditionalFileToInstall(string destRelativePath, string sourceRelativePath, Mod mod)
+        internal string AddAdditionalFileToInstall(string destRelativePath, string sourceRelativePath, objects.mod.Mod mod)
         {
             //Security check
             if (!checkExtension(sourceRelativePath, out string failReason))
@@ -428,7 +428,7 @@ namespace MassEffectModManagerCore.modmanager
             }
         }
 
-        internal string AddReadOnlyIndicatorForFile(string sourceRelativePath, Mod mod)
+        internal string AddReadOnlyIndicatorForFile(string sourceRelativePath, objects.mod.Mod mod)
         {
             if (!FilesToInstall.Any(x => x.Value.Equals(sourceRelativePath, StringComparison.InvariantCultureIgnoreCase)))
             {

@@ -40,11 +40,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// </summary>
     public partial class ArchiveDeployment : MMBusyPanelBase
     {
-        public Mod ModBeingDeployed { get; }
+        public objects.mod.Mod ModBeingDeployed { get; }
         public string Header { get; set; } = M3L.GetString(M3L.string_prepareModForDistribution);
         public bool MultithreadedCompression { get; set; } = true;
         public string DeployButtonText { get; set; } = M3L.GetString(M3L.string_pleaseWait);
-        public ArchiveDeployment(GameTarget validationTarget, Mod mod)
+        public ArchiveDeployment(GameTarget validationTarget, objects.mod.Mod mod)
         {
             ValidationTarget = validationTarget;
             Analytics.TrackEvent(@"Started deployment panel for mod", new Dictionary<string, string>()
@@ -238,7 +238,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
             else
             {
-                if (ModBeingDeployed.ModWebsite == Mod.DefaultWebsite)
+                if (ModBeingDeployed.ModWebsite == objects.mod.Mod.DefaultWebsite)
                 {
                     obj.Icon = FontAwesomeIcon.TimesCircle;
                     obj.Foreground = Brushes.Red;
@@ -1050,7 +1050,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             public bool DeploymentBlocking { get; set; }
 
             public Action<DeploymentChecklistItem> ValidationFunction;
-            public Mod ModToValidateAgainst;
+            public objects.mod.Mod ModToValidateAgainst;
             internal string ErrorsMessage;
             internal string ErrorsTitle;
 

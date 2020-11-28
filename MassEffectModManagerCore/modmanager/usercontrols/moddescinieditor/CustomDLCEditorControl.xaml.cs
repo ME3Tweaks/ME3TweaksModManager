@@ -21,7 +21,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
     /// </summary>
     public partial class CustomDLCEditorControl : UserControl, INotifyPropertyChanged
     {
-        public Mod EditingMod { get; set; }
+        public objects.mod.Mod EditingMod { get; set; }
         public void OnEditingModChanged()
         {
             if (EditingMod != null)
