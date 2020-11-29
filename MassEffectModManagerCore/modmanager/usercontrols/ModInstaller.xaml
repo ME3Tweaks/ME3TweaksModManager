@@ -36,7 +36,7 @@
                         <!--<DataTemplate DataType="{x:Type objects:ReadOnlyOption}">
                             <DockPanel Margin="0,0,0,5" MouseUp="AlternateItem_MouseUp" Opacity="{Binding UIOpacity}">
                                 <CheckBox Margin="5,0,0,0" IsChecked="{Binding IsSelected, Mode=TwoWay}" DockPanel.Dock="Left" VerticalContentAlignment="Center" VerticalAlignment="Center" Padding="0,0,5,0"/>
-                                <DockPanel DockPanel.Dock="Top">
+                                <DockPanel DockPanel.Dock="Top">ImageBitmap
                                     <TextBlock Text="{Binding FriendlyName}" VerticalAlignment="Center" DockPanel.Dock="Left" FontWeight="Bold"/>
                                 </DockPanel>
                                 <TextBlock Text="{Binding Description}" VerticalAlignment="Center" HorizontalAlignment="Stretch" DockPanel.Dock="Bottom" TextWrapping="Wrap" Foreground="{DynamicResource {x:Static adonisUi:Brushes.SlightlyDimmedForegroundBrush}}" MaxWidth="380" FontSize="11" Padding="0,0,20,0"/>
@@ -54,14 +54,25 @@
                         </DataTemplate>-->
                         <DataTemplate DataType="{x:Type objects:AlternateOption}">
                             <DockPanel Margin="0,0,0,5" MouseUp="AlternateItem_MouseUp">
+                                <DockPanel.ToolTip>
+                                    <ToolTip 
+                                        Placement="Right">
+                                    <DockPanel>
+                                        <Image Source="{Binding ImageBitmap }"/>
+                                    </DockPanel>
+                                </ToolTip>
+                                </DockPanel.ToolTip>
                                 <CheckBox IsEnabled="{Binding UIIsSelectable}" Margin="5,0,0,0" IsChecked="{Binding IsSelected, Mode=TwoWay}" Visibility="{Binding GroupName, Converter={StaticResource NullVisibilityConverter}, ConverterParameter='Reversed'}"  DockPanel.Dock="Left" VerticalContentAlignment="Center" VerticalAlignment="Center" Padding="0,0,5,0" Opacity="{Binding CheckboxOpacity}"/>
                                 <RadioButton IsEnabled="{Binding UIIsSelectable}" Margin="5,0,0,0" IsChecked="{Binding IsSelected, Mode=TwoWay}" GroupName="{Binding GroupName}" Visibility="{Binding GroupName, Converter={StaticResource NullVisibilityConverter}}" DockPanel.Dock="Left" VerticalContentAlignment="Center" VerticalAlignment="Center" Padding="0,0,5,0"  Opacity="{Binding CheckboxOpacity}"/>
+                                
+                                <Grid
                                 <DockPanel DockPanel.Dock="Top" Background="Transparent">
                                     <TextBlock Text="{Binding FriendlyName}" VerticalAlignment="Center" DockPanel.Dock="Left" FontWeight="Bold" Opacity="{Binding TextOpacity}"/>
                                     <TextBlock Foreground="LimeGreen" Text="{Binding ApplicableAutoText, StringFormat=' - {0}'}" VerticalAlignment="Center" FontWeight="Bold" Visibility="{Binding UIRequired, Converter={StaticResource BoolToVisibilityConverter}}" Opacity="{Binding TextOpacity}"/>
                                     <TextBlock Foreground="Red" Text="{Binding NotApplicableAutoText, StringFormat=' - {0}'}" VerticalAlignment="Center" FontWeight="Bold" Visibility="{Binding UINotApplicable, Converter={StaticResource BoolToVisibilityConverter}}" Opacity="{Binding TextOpacity}"/>
+                                    <TextBlock DockPanel.Dock="Bottom" Text="{Binding Description}" VerticalAlignment="Center" HorizontalAlignment="Left" TextWrapping="Wrap" Foreground="{DynamicResource {x:Static adonisUi:Brushes.SlightlyDimmedForegroundBrush}}" MaxWidth="380" FontSize="11" Padding="0,0,20,0" Opacity="{Binding TextOpacity}"/>
                                 </DockPanel>
-                                <TextBlock Text="{Binding Description}" VerticalAlignment="Center" HorizontalAlignment="Left" DockPanel.Dock="Bottom" TextWrapping="Wrap" Foreground="{DynamicResource {x:Static adonisUi:Brushes.SlightlyDimmedForegroundBrush}}" MaxWidth="380" FontSize="11" Padding="0,0,20,0" Opacity="{Binding TextOpacity}"/>
+                                <fa:ImageAwesome Icon="Image" DockPanel.Dock="Right" Height="16" VerticalAlignment="Top" Foreground="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}"/>
                                 <DockPanel.Style>
                                     <Style TargetType="{x:Type DockPanel}">
                                         <Style.Triggers>

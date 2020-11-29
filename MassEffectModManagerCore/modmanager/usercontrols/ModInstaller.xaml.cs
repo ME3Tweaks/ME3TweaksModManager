@@ -15,6 +15,7 @@ using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.modmanager.objects;
+using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.ui;
 using ME3ExplorerCore.GameFilesystem;
 using ME3ExplorerCore.Helpers;
@@ -25,7 +26,6 @@ using Microsoft.AppCenter.Crashes;
 using Newtonsoft.Json;
 using Serilog;
 using SevenZip;
-using static MassEffectModManagerCore.modmanager.objects.mod.Mod;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -41,7 +41,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public bool ModIsInstalling { get; set; }
         public bool AllOptionsAreAutomatic { get; private set; }
         private readonly ReadOnlyOption me1ConfigReadOnlyOption = new ReadOnlyOption();
-        public ModInstaller(objects.mod.Mod modBeingInstalled, GameTarget gameTarget, bool installCompressed = false)
+        public ModInstaller(Mod modBeingInstalled, GameTarget gameTarget, bool installCompressed = false)
         {
             MemoryAnalyzer.AddTrackedMemoryItem(@"Mod Installer", new WeakReference(this));
             Log.Information($@">>>>>>> Starting mod installer for mod: {modBeingInstalled.ModName} {modBeingInstalled.ModVersionString} for game {modBeingInstalled.Game}. Install source: {(modBeingInstalled.IsInArchive ? @"Archive" : @"Library (disk)")}"); //do not localize
@@ -53,10 +53,21 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             Action = M3L.GetString(M3L.string_preparingToInstall);
             CompressInstalledPackages = installCompressed;
             InitializeComponent();
+
+            if (!ModBeingInstalled.IsInArchive)
+            {
+                foreach (var alt in ModBeingInstalled.GetAllAlternates())
+                {
+                    if (!string.IsNullOrWhiteSpace(alt.ImageAssetName))
+                    {
+                        alt.LoadImageAsset(modBeingInstalled);
+                    }
+                }
+            }
         }
 
 
-        public objects.mod.Mod ModBeingInstalled { get; }
+        public Mod ModBeingInstalled { get; }
         public bool CompressInstalledPackages { get; }
         private GameTarget gameTarget;
         private DateTime lastPercentUpdateTime;
@@ -178,8 +189,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             //Prepare queues
             Log.Information(@"Building installation queues");
-            (Dictionary<ModJob, (Dictionary<string, InstallSourceFile> fileMapping, List<string> dlcFoldersBeingInstalled)> unpackedJobMappings,
-                List<(ModJob job, string sfarPath, Dictionary<string, InstallSourceFile> sfarInstallationMapping)> sfarJobs) installationQueues = default;
+            (Dictionary<ModJob, (Dictionary<string, Mod.InstallSourceFile> fileMapping, List<string> dlcFoldersBeingInstalled)> unpackedJobMappings,
+                List<(ModJob job, string sfarPath, Dictionary<string, Mod.InstallSourceFile> sfarInstallationMapping)> sfarJobs) installationQueues = default;
             try
             {
                 installationQueues = ModBeingInstalled.GetInstallationQueues(gameTarget);
@@ -478,7 +489,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
 
             var basegameFilesInstalled = new List<string>();
-            void FileInstalledIntoSFARCallback(Dictionary<string, InstallSourceFile> sfarMapping, string targetPath)
+            void FileInstalledIntoSFARCallback(Dictionary<string, Mod.InstallSourceFile> sfarMapping, string targetPath)
             {
                 numdone++;
                 targetPath = targetPath.Replace('/', '\\').TrimStart('\\');
@@ -933,7 +944,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             return ModInstallCompletedStatus.INSTALL_SUCCESSFUL;
         }
 
-        private bool InstallIntoSFAR((ModJob job, string sfarPath, Dictionary<string, InstallSourceFile> fileMapping) sfarJob, objects.mod.Mod mod, Action<Dictionary<string, InstallSourceFile>, string> FileInstalledCallback = null, string ForcedSourcePath = null)
+        private bool InstallIntoSFAR((ModJob job, string sfarPath, Dictionary<string, Mod.InstallSourceFile> fileMapping) sfarJob, Mod mod, Action<Dictionary<string, Mod.InstallSourceFile>, string> FileInstalledCallback = null, string ForcedSourcePath = null)
         {
 
             int numfiles = sfarJob.fileMapping.Count;
@@ -1406,6 +1417,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         protected override void OnClosing(DataEventArgs e)
         {
+            foreach (var ao in AlternateOptions)
+            {
+                ao.ReleaseLoadedImageAsset();
+            }
             AlternateOptions.ClearEx(); //remove collection of items
             base.OnClosing(DataEventArgs.Empty);
         }

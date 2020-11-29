@@ -4,9 +4,10 @@ using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-
+using System.Windows.Media.Imaging;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
+using MassEffectModManagerCore.modmanager.objects.mod;
 using ME3ExplorerCore.Gammtek.Extensions.Collections.Generic;
 using Serilog;
 
@@ -31,7 +32,8 @@ namespace MassEffectModManagerCore.modmanager.objects
             @"MultiListId",
             @"MultiListRootPath",
             @"MultiListTargetPath",
-            @"DLCRequirements"
+            @"DLCRequirements", // This is not used?
+            @"ImageAssetName"
         };
 
         public enum AltFileOperation
@@ -98,8 +100,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         //public const string CONDITION_MANUAL = "COND_MANUAL"; //user must choose alt
         //public const string CONDITION_DLC_PRESENT = "COND_DLC_PRESENT"; //automatically choose alt if DLC listed is present
         //public const string CONDITION_DLC_NOT_PRESENT = "COND_DLC_NOT_PRESENT"; //automatically choose if DLC is not present
-        public bool ValidAlternate;
-        public string LoadFailedReason;
+        
         public string ApplicableAutoText { get; }
         public string NotApplicableAutoText { get; }
         public override bool UIIsSelectable
@@ -389,6 +390,30 @@ namespace MassEffectModManagerCore.modmanager.objects
                 }
             }
 
+            if (properties.TryGetValue(@"ImageAssetName", out string imageAssetName) && !string.IsNullOrWhiteSpace(imageAssetName))
+            {
+                // We need to validate the file exists
+                var iap = FilesystemInterposer.PathCombine(modForValidating.Archive != null, modForValidating.ModImageAssetsPath, imageAssetName);
+                if (!FilesystemInterposer.FileExists(iap, modForValidating.Archive))
+                {
+                    Log.Error($@"Alternate file {FriendlyName} lists image asset {imageAssetName}, but the asset does not exist in the mods {Mod.ModImageAssetFolderName} directory.");
+                    ValidAlternate = false;
+                    LoadFailedReason = $"Alternate file {FriendlyName} lists image asset {ImageAssetName}, but the asset does not exist in the mods {Mod.ModImageAssetFolderName} directory.";
+                    return;
+                }
+
+                if (modForValidating.Archive != null)
+                {
+                    // We need to load this asset cause it's not going to have an open archive until we begin install, if user tries to do install
+                    ImageBitmap = LoadImageAsset(modForValidating, imageAssetName);
+                    if (ImageBitmap == null)
+                    {
+                        return; // Loading failed. 
+                    }
+                }
+                ImageAssetName = imageAssetName;
+            }
+
             ApplicableAutoText = properties.TryGetValue(@"ApplicableAutoText", out string applicableText) ? applicableText : M3L.GetString(M3L.string_autoApplied);
 
             NotApplicableAutoText = properties.TryGetValue(@"NotApplicableAutoText", out string notApplicableText) ? notApplicableText : M3L.GetString(M3L.string_notApplicable);
@@ -407,6 +432,8 @@ namespace MassEffectModManagerCore.modmanager.objects
             CLog.Information($@"Alternate file loaded and validated: {FriendlyName}", Settings.LogModStartup);
             ValidAlternate = true;
         }
+
+        
 
         /// <summary>
         /// Builds the editable parameter map for use in moddesc.ini editor

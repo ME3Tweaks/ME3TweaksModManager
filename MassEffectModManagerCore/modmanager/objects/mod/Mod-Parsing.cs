@@ -708,15 +708,11 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
 
                 if (!string.IsNullOrWhiteSpace(BannerImageName))
                 {
-                    // Test this path exists?
-                    var fullPath =
-                        FilesystemInterposer.PathCombine(Archive != null, ModPath, @"M3Images", BannerImageName);
+                    var fullPath = FilesystemInterposer.PathCombine(Archive != null, ModPath, Mod.ModImageAssetFolderName, BannerImageName);
                     if (!FilesystemInterposer.FileExists(fullPath, Archive))
                     {
-                        Log.Error(
-                            $@"Mod has banner image name of {BannerImageName}, but this file does not exist under the M3Images directory.");
-                        LoadFailedReason =
-                            $"Mod has banner image name of {BannerImageName}, but this file does not exist under the M3Images directory.";
+                        Log.Error($@"Mod has banner image name of {BannerImageName}, but this file does not exist under the M3Images directory.");
+                        LoadFailedReason = $"Mod has banner image name of {BannerImageName}, but this file does not exist under the M3Images directory.";
                         return;
                     }
 
@@ -728,7 +724,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         if (storageType != @"Copy")
                         {
                             Log.Error($@"Mod has banner image that is in an archive, but the storage type is not listed as 'Copy'. Mod Manager will not load mods from archive that list images that were not deployed using Mod Manager.");
-                            LoadFailedReason = $"Mod has banner image that is in an archive, but the storage type is not listed as 'Copy'. Mod Manager will not load mods from archive that list images that were not deployed using Mod Manager.";
+                            LoadFailedReason = $"Mod has banner image that is in an archive, but the storage type is not listed as 'Copy'. Mod Manager will not load mods from an archive that use images that were not deployed using Mod Manager.";
                             return;
                         }
 
@@ -738,8 +734,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 }
             }
             #endregion
-
-
+            
             #region Header Loops
 
             #region BASEGAME and OFFICIAL HEADERS
@@ -1411,8 +1406,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             #endregion
 
             #endregion
-
-
+            
             #region Additional Mod Items
 
             //Required DLC (Mod Manager 5.0)

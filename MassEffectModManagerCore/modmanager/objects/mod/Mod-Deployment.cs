@@ -67,6 +67,11 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                             }
                         }
                     }
+                    // Add the referenced image asset
+                    if (dlc.ImageAssetName != null)
+                    {
+                        references.Add(FilesystemInterposer.PathCombine(IsInArchive, ModImageAssetsPath, dlc.ImageAssetName).Substring(ModPath.Length + (ModPath.Length > 1 ? 1 : 0)));
+                    }
                 }
                 foreach (var file in job.AlternateFiles)
                 {
@@ -101,6 +106,12 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                             }
                         }
                     }
+
+                    // Add the referenced image asset
+                    if (file.ImageAssetName != null)
+                    {
+                        references.Add(FilesystemInterposer.PathCombine(IsInArchive, ModImageAssetsPath, file.ImageAssetName).Substring(ModPath.Length + (ModPath.Length > 1 ? 1 : 0)));
+                    }
                 }
 
                 foreach (var customDLCmapping in job.CustomDLCFolderMapping)
@@ -117,7 +128,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             // Banner Image
             if (!string.IsNullOrWhiteSpace(BannerImageName))
             {
-                references.Add(FilesystemInterposer.PathCombine(IsInArchive, @"M3Images", BannerImageName));
+                references.Add(FilesystemInterposer.PathCombine(IsInArchive, Mod.ModImageAssetFolderName, BannerImageName));
             }
 
             if (includeModdesc && GetJob(ModJob.JobHeader.ME2_RCWMOD) == null)
@@ -126,6 +137,21 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 //references.Add(ModDescPath.TrimStart('/', '\\'));
             }
             return references.Distinct(StringComparer.InvariantCultureIgnoreCase).ToList();
+        }
+
+        /// <summary>
+        /// Returns all alternate options that are attached to any job.
+        /// </summary>
+        /// <returns></returns>
+        public List<AlternateOption> GetAllAlternates()
+        {
+            List<AlternateOption> alternates = new List<AlternateOption>();
+            foreach (var mj in InstallationJobs)
+            {
+                alternates.AddRange(mj.AlternateFiles);
+                alternates.AddRange(mj.AlternateDLCs);
+            }
+            return alternates;
         }
     }
 }
