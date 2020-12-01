@@ -439,7 +439,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 }
                 Log.Information(@"Reloading target for most up to date information");
                 selectedDiagnosticTarget.ReloadGameTarget(false); //reload vars
-                ALOTVersionInfo avi = selectedDiagnosticTarget.GetInstalledALOTInfo();
+                TextureModInstallationInfo avi = selectedDiagnosticTarget.GetInstalledALOTInfo();
 
                 string exePath = M3Directories.GetExecutablePath(selectedDiagnosticTarget);
                 if (File.Exists(exePath))

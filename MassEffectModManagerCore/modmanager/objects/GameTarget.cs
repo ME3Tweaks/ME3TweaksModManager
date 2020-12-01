@@ -178,7 +178,12 @@ namespace MassEffectModManagerCore.modmanager.objects
 
         public bool TextureModded { get; private set; }
 
-        public ALOTVersionInfo GetInstalledALOTInfo(int startPos = -1)
+        /// <summary>
+        /// Gets the installed texture mod info. If startpos is not defined (<0) the latest version is used from the end of the file.
+        /// </summary>
+        /// <param name="startpos"></param>
+        /// <returns></returns>
+        public TextureModInstallationInfo GetInstalledALOTInfo(int startPos = -1)
         {
             string gamePath = getALOTMarkerFilePath();
             if (gamePath != null && File.Exists(gamePath))
@@ -186,7 +191,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 try
                 {
                     using FileStream fs = new FileStream(gamePath, System.IO.FileMode.Open, FileAccess.Read);
-                    if (startPos == -1)
+                    if (startPos < 0)
                     {
                         fs.SeekEnd();
                     }
@@ -201,17 +206,14 @@ namespace MassEffectModManagerCore.modmanager.objects
 
                     if (memi == MEMI_TAG)
                     {
-                        //Texture stuff has been installed
-                        fs.Position = endPos - 8; // -4 from MEMI
+                        long markerStartOffset = fs.Position;
+                        //MEM has been run on this installation
+                        fs.Position = endPos - 8;
                         short installerVersionUsed = fs.ReadInt16();
                         short memVersionUsed = fs.ReadInt16();
                         fs.Position -= 4; //roll back so we can read this whole thing as 4 bytes
-
-                        // -4 from MEMI
-
-                        // Check bytes before MEMI are not original end. This is what we did pre ALOT 5, just write MEMI with no info
                         int preMemi4Bytes = fs.ReadInt32();
-                        int perGameFinal4Bytes = -20; //just some value
+                        int perGameFinal4Bytes = -20;
                         switch (Game)
                         {
                             case MEGame.ME1:
@@ -225,32 +227,79 @@ namespace MassEffectModManagerCore.modmanager.objects
                                 break;
                         }
 
-                        if (preMemi4Bytes != perGameFinal4Bytes) //default bytes before 178 MEMI Format
+                        // Note: If MEMI v1 is written after any other MEMI marker, it will not work as we cannot differentiate v1 to v2+
+
+                        if (preMemi4Bytes != perGameFinal4Bytes) //default bytes before 178 MEMI Format (MEMI v1)
                         {
-                            // Read bytes
-                            fs.Position = endPos - 16;
-                            int MEUITMVER = fs.ReadInt32();
+                            // MEMI v2
+                            fs.Position = endPos - 12;
                             short ALOTVER = fs.ReadInt16();
                             byte ALOTUPDATEVER = (byte)fs.ReadByte();
                             byte ALOTHOTFIXVER = (byte)fs.ReadByte();
-                            return new ALOTVersionInfo(ALOTVER, ALOTUPDATEVER, ALOTHOTFIXVER, MEUITMVER, memVersionUsed, installerVersionUsed, (int)endPos - 16);
+
+                            //unused for now
+                            fs.Position = endPos - 16;
+
+                            markerStartOffset = fs.Position;
+                            int MEUITMVER = fs.ReadInt32();
+
+                            var tmii = new TextureModInstallationInfo(ALOTVER, ALOTUPDATEVER, ALOTHOTFIXVER, MEUITMVER, memVersionUsed, installerVersionUsed);
+                            tmii.MarkerExtendedVersion = 0x02;
+                            tmii.MarkerStartPosition = (int) markerStartOffset;
+
+                            // MEMI v3 DETECTION
+                            fs.Position = endPos - 20;
+                            if (fs.ReadUInt32() == TextureModInstallationInfo.TEXTURE_MOD_MARKER_VERSIONING_MAGIC)
+                            {
+                                // It's MEMI v3 (or higher)
+                                var memiExtendedEndPos = endPos - 24; // Sanity check should make reading end here
+                                fs.Position = memiExtendedEndPos;
+                                fs.Position = fs.ReadInt32(); // Go to start of MEMI extended marker
+                                tmii.MarkerStartPosition = (int)fs.Position;
+                                tmii.MarkerExtendedVersion = fs.ReadInt32();
+                                // Extensions go here
+
+                                if (tmii.MarkerExtendedVersion == 0x03)
+                                {
+                                    tmii.InstallerVersionFullName = fs.ReadUnrealString();
+                                    tmii.InstallationTimestamp = DateTime.FromBinary(fs.ReadInt64());
+                                    var fileCount = fs.ReadInt32();
+                                    for (int i = 0; i < fileCount; i++)
+                                    {
+                                        tmii.InstalledTextureMods.Add(new TextureModInstallationInfo.InstalledTextureMod()
+                                        {
+                                            ModType = (TextureModInstallationInfo.InstalledTextureMod.InstalledTextureModType)fs.ReadByte(),
+                                            ModName = fs.ReadUnrealString()
+                                        });
+                                    }
+                                }
+
+                                if (fs.Position != memiExtendedEndPos)
+                                {
+                                    Log.Warning($@"Sanity check for MEMI extended marker failed. We did not read data until the marker info offset. Should be at 0x{memiExtendedEndPos:X6}, but ended at 0x{fs.Position:X6}");
+                                }
+                            }
+
+                            return tmii;
                         }
-                        else
+
+                        return new TextureModInstallationInfo(0, 0, 0, 0)
                         {
-                            return new ALOTVersionInfo(0, 0, 0, 0, 0, 0, -1); //MEMI tag but no info we know of
-                        }
+                            MarkerStartPosition = (int)markerStartOffset,
+                            MarkerExtendedVersion = 0x01
+                        }; //MEMI tag but no info we know of
                     }
                 }
                 catch (Exception e)
                 {
-                    Log.Error($@"Error reading ALOT marker file for {Game}. ALOT Info will be returned as null (nothing installed). " + e.Message);
+                    Log.Error($@"Error reading texture mod marker file for {Game}. Installed info will be returned as null (nothing installed). " + e.Message);
                     return null;
                 }
             }
+
             return null;
             //Debug. Force ALOT always on
             //return new ALOTVersionInfo(9, 0, 0, 0); //MEMI tag but no info we know of
-
         }
 
         private string getALOTMarkerFilePath()
@@ -765,15 +814,15 @@ namespace MassEffectModManagerCore.modmanager.objects
         }
 
         //Todo: Check this actually works
-        public List<ALOTVersionInfo> GetALOTInstallationHistory()
+        public List<TextureModInstallationInfo> GetALOTInstallationHistory()
         {
-            var alotInfos = new List<ALOTVersionInfo>();
+            var alotInfos = new List<TextureModInstallationInfo>();
             int startPos = -1;
             while (GetInstalledALOTInfo(startPos) != null)
             {
                 var info = GetInstalledALOTInfo(startPos);
                 alotInfos.Add(info);
-                startPos = info.markerOffsetStart;
+                startPos = info.MarkerStartPosition;
             }
 
             return alotInfos;

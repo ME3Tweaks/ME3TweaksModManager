@@ -1062,6 +1062,10 @@
                         Click="StripCurrentTargetALOTMarker_Click"
                         Visibility="{x:Static local:App.DebugOnlyVisibility}" />
                     <MenuItem
+                        Header="Show texture mod installation history"
+                        Click="DebugShowTextureModInstallationHistory_Click"
+                        Visibility="{x:Static local:App.DebugOnlyVisibility}" />
+                    <MenuItem
                         Header="{DynamicResource string_requiresNothing}"
                         Style="{StaticResource MenuItemHeaderStyle}"
                         Visibility="{x:Static local:App.DebugOnlyVisibility}" />

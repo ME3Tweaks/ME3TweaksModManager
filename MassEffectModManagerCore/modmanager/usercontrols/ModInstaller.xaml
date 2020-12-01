@@ -17,6 +17,7 @@
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
     </local:MMBusyPanelBase.Resources>
     <StackPanel VerticalAlignment="Center">
+        <Image Source="{Binding ModBeingInstalled.BannerBitmap}" Visibility="{Binding NullToVisibilityConverter}"/>
         <DockPanel Visibility="{Binding ModIsInstalling, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Inverse'}" VerticalAlignment="Center">
             <TextBlock TextAlignment="Center" FontSize="16" FontWeight="Bold" Text="{DynamicResource string_ui_title_selectInstallationOptions}" Margin="0,5,0,0" DockPanel.Dock="Top" />
             <TextBlock TextAlignment="Center" Text="{Binding ModBeingInstalled.ModName}" DockPanel.Dock="Top" Margin="0,0,0,10"/>

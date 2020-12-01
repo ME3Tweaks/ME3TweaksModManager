@@ -2070,15 +2070,29 @@ namespace MassEffectModManagerCore
             RepopulatingTargets = false;
         }
 
+        public void DebugShowCurrentTargetTextureHistory()
+        {
+#if DEBUG
+            var history = SelectedGameTarget.GetALOTInstallationHistory();
+            ListDialog ld = new ListDialog(history.Select(x => x.ToExtendedString()).ToList(), "Texture mod installation history", "The history of texture mods is shown below.", this);
+            ld.Show();
+#endif
+        }
+
         public async void OnSelectedModChanged()
         {
             if (SelectedMod != null)
             {
                 SetWebsitePanelVisibility(SelectedMod.ModWebsite != Mod.DefaultWebsite);
-                var installTarget = InstallationTargets.FirstOrDefault(x => x.RegistryActive && x.Game == SelectedMod.Game);
-                if (installTarget != null)
+
+                if (SelectedGameTarget == null || SelectedGameTarget.Game != SelectedMod.Game)
                 {
-                    SelectedGameTarget = installTarget;
+                    // Update the target
+                    var installTarget = InstallationTargets.FirstOrDefault(x => x.RegistryActive && x.Game == SelectedMod.Game);
+                    if (installTarget != null)
+                    {
+                        SelectedGameTarget = installTarget;
+                    }
                 }
 
                 if (SelectedMod.BannerBitmap == null && SelectedMod.BannerImageName != null)
@@ -2417,7 +2431,7 @@ namespace MassEffectModManagerCore
 
                 if (firstStartupCheck)
                 {
-                    
+
 
 #if DEBUG
                     //debugMethod();
@@ -3417,6 +3431,11 @@ namespace MassEffectModManagerCore
                 }
             };
             ShowBusyControl(previewPanel);
+        }
+
+        private void DebugShowTextureModInstallationHistory_Click(object sender, RoutedEventArgs e)
+        {
+            DebugShowCurrentTargetTextureHistory();
         }
     }
 }
