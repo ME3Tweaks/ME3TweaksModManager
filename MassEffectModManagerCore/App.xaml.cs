@@ -26,6 +26,8 @@ using AuthenticodeExaminer;
 using MassEffectModManagerCore.modmanager.asi;
 using MassEffectModManagerCore.modmanager.windows;
 using ME3ExplorerCore;
+using ME3ExplorerCore.Compression;
+using ME3ExplorerCore.Helpers;
 using ME3ExplorerCore.Packages;
 using Microsoft.AppCenter; // do not remove. It's used in release builds
 
@@ -336,14 +338,14 @@ namespace MassEffectModManagerCore
                     string errorMessage = "ME3Tweaks Mod Manager has crashed! This is the exception that caused the crash:\n" + report.StackTrace;
                     Log.Fatal(errorMessage);
                     string log = LogCollector.CollectLatestLog(false);
-                    if (log.Length < ByteSizeLib.ByteSize.BytesInMegaByte * 7)
+                    if (log.Length < FileSize.MebiByte * 7)
                     {
                         attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, "crashlog.txt"));
                     }
                     else
                     {
                         //Compress log
-                        var compressedLog = SevenZipHelper.LZMA.CompressToLZMAFile(Encoding.UTF8.GetBytes(log));
+                        var compressedLog = LZMA.CompressToLZMAFile(Encoding.UTF8.GetBytes(log));
                         attachments.Add(ErrorAttachmentLog.AttachmentWithBinary(compressedLog, "crashlog.txt.lzma", "application/x-lzma"));
                     }
 

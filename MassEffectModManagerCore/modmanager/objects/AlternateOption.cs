@@ -25,6 +25,11 @@ namespace MassEffectModManagerCore.modmanager.objects
             }
         }
 
+        /// <summary>
+        /// The MultilistId for this alternate. This is only used in the moddesc.ini editor as
+        /// the list of files is built during loading of the alternate
+        /// </summary>
+        public int MultiListId { get; set; } = -1;
         public bool IsSelected { get; set; }
         public virtual bool UIRequired => !IsManual && !IsAlways && IsSelected;
         public abstract bool UINotApplicable { get; }
@@ -81,6 +86,67 @@ namespace MassEffectModManagerCore.modmanager.objects
             return assetData;
         }
 
+        public bool ReadImageAssetOptions(Mod modForValidating, Dictionary<string, string> properties)
+        {
+            if (modForValidating.ModDescTargetVersion >= 6.2)
+            {
+                if (properties.TryGetValue(@"ImageAssetName", out string imageAssetName) && !string.IsNullOrWhiteSpace(imageAssetName))
+                {
+                    // We need to validate the file exists
+                    var iap = FilesystemInterposer.PathCombine(modForValidating.Archive != null, modForValidating.ModImageAssetsPath, imageAssetName);
+                    if (!FilesystemInterposer.FileExists(iap, modForValidating.Archive))
+                    {
+                        Log.Error($@"Alternate file {FriendlyName} lists image asset {imageAssetName}, but the asset does not exist in the mods {Mod.ModImageAssetFolderName} directory.");
+                        ValidAlternate = false;
+                        LoadFailedReason = $"Alternate file {FriendlyName} lists image asset {ImageAssetName}, but the asset does not exist in the mods {Mod.ModImageAssetFolderName} directory.";
+                        return false;
+                    }
+
+
+                    if (modForValidating.Archive != null)
+                    {
+                        // We need to load this asset cause it's not going to have an open archive until we begin install, if user tries to do install
+                        ImageBitmap = LoadImageAsset(modForValidating, imageAssetName);
+                        if (ImageBitmap == null)
+                        {
+                            return false; // Loading failed. 
+                        }
+                    }
+
+                    ImageAssetName = imageAssetName;
+                }
+
+                if (!string.IsNullOrWhiteSpace(ImageAssetName))
+                {
+                    // We need to ensure height is also set
+                    if (properties.TryGetValue(@"ImageHeight", out string imageHeightStr) && int.TryParse(imageHeightStr, out var imageHeight))
+                    {
+                        if (imageHeight < 0 || imageHeight > 1040)
+                        {
+                            Log.Error($@"Alternate {FriendlyName} lists image asset height {imageHeight}, but it is not within the valid values range. ImageHeight must be between 1 and 1039 inclusive.");
+                            ValidAlternate = false;
+                            LoadFailedReason = $"Alternate {FriendlyName} lists image asset height {imageHeight}, but it is not within the valid values range. ImageHeight must be between 1 and 1039 inclusive.";
+                            return false;
+                        }
+
+                        ImageHeight = imageHeight;
+                    }
+                    else
+                    {
+                        Log.Error($@"Alternate {FriendlyName} specifies an image asset but does not set (or have a valid value for) ImageHeight. ImageHeight is required to be set on alternates that specify an image asset.");
+                        ValidAlternate = false;
+                        LoadFailedReason = $"Alternate {FriendlyName} specifies an image asset but does not set (or have a valid value for) ImageHeight. ImageHeight is required to be set on alternates that specify an image asset.";
+                        return false;
+                    }
+                }
+            }
+
+            return true; //Succeeded (or older moddesc that does not support this)
+        }
+
+        /// <summary>
+        /// Parameter map, used for the moddesc.ini editor Contains a list of values in the alternate mapped to their string value
+        /// </summary>
         public ObservableCollection<AlternateOption.Parameter> ParameterMap { get; } = new ObservableCollection<AlternateOption.Parameter>();
 
         /// <summary>

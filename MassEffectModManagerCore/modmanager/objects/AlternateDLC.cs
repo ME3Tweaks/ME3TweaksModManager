@@ -1,16 +1,10 @@
 ﻿using Serilog;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
-
 using MassEffectModManagerCore.modmanager.helpers;
-using System.ComponentModel;
-using System.Configuration;
 using System.IO;
-using System.Reflection.Metadata;
-using System.Text;
 using MassEffectModManagerCore.modmanager.localizations;
 using ME3ExplorerCore.Gammtek.Extensions.Collections.Generic;
 
@@ -44,8 +38,6 @@ namespace MassEffectModManagerCore.modmanager.objects
 
         public AltDLCCondition Condition;
         public AltDLCOperation Operation;
-
-
 
         /// <summary>
         /// Requirements for this manual option to be able to be picked
@@ -205,6 +197,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     {
                         if (job.MultiLists.TryGetValue(multilistid, out var ml))
                         {
+                            MultiListId = multilistid;
                             MultiListSourceFiles = ml;
                         }
                         else
@@ -377,6 +370,11 @@ namespace MassEffectModManagerCore.modmanager.objects
                 }
             }
 
+            if (!ReadImageAssetOptions(modForValidating, properties))
+            {
+                return; // Failed in super call
+            }
+
             ApplicableAutoText = properties.TryGetValue(@"ApplicableAutoText", out string applicableText) ? applicableText : M3L.GetString(M3L.string_autoApplied);
 
             NotApplicableAutoText = properties.TryGetValue(@"NotApplicableAutoText", out string notApplicableText) ? notApplicableText : M3L.GetString(M3L.string_notApplicable);
@@ -406,7 +404,6 @@ namespace MassEffectModManagerCore.modmanager.objects
             ValidAlternate = true;
         }
 
-        //public bool IsSelected { get; set; }
         public string[] MultiListSourceFiles { get; }
         public string MultiListRootPath { get; }
 
@@ -450,7 +447,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     CLog.Information($@" > AlternateDLC SetupInitialSelection() {FriendlyName}: UISelectable: {UIIsSelectable}, conducted DLCRequirements check.", Settings.LogModInstallation);
 
                 }
-                else //TODO: FILE LEVEL CHECKS FOR ALOV
+                else
                 {
                     UIIsSelectable = true;
                 }
@@ -525,7 +522,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             var parms = properties.Select(x => new AlternateOption.Parameter() { Key = x.Key, Value = x.Value }).ToList();
             foreach (var v in AllParameters)
             {
-                if (!parms.Any(x => x.Key == v))
+                if (parms.All(x => x.Key != v))
                 {
                     parms.Add(new Parameter(v, ""));
                 }
@@ -552,7 +549,9 @@ namespace MassEffectModManagerCore.modmanager.objects
             @"MultiListId",
             @"MultiListRootPath",
             @"RequiredFileRelativePaths",
-            @"RequiredFileSizes"
+            @"RequiredFileSizes",
+            @"ImageAsset",
+            @"ImageHeight"
         };
 
         /// <summary>
@@ -592,7 +591,10 @@ namespace MassEffectModManagerCore.modmanager.objects
                 props[@"MultiListRootPath"] = MultiListRootPath;
             }
 
-            // TODO: MULTILISTID... tied to job somehow.
+            if (!string.IsNullOrWhiteSpace(MultiListRootPath))
+            {
+                props[@"MultiListId"] = MultiListId.ToString();
+            }
 
             if (RequiredSpecificFiles.Any())
             {
