@@ -531,7 +531,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                     huff = new HuffmanCompressionME1();
                     huff.LoadInputData(tlk2.StringRefs.ToList());
                     huff.serializeTalkfileToExport(tlkFile.getUExport(2));
-                    Log.Information(@"Saving ME1 TLK pacakge");
+                    Log.Information(@"Saving ME1 TLK package");
                     tlkFile.save();
                 }
                 else

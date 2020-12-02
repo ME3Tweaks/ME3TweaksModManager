@@ -398,8 +398,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         {
                             // Check TLK exists.
                             var tlkExportObjName = tlkFile.Split('.').Last();
-                            tlkFile = tlkFile.Substring(0, tlkFile.IndexOf(@"_tlk")); //They end with _tlk
-                            var tlkPackagePath = Directory.GetFiles(Path.Combine(ModBeingDeployed.ModPath, customDLC), $@"{tlkFile}.upk").FirstOrDefault();
+                            tlkFile = tlkFile.Substring(0, tlkFile.IndexOf(@".")); //They end with _tlk
+                            var tlkPackagePath = Directory.GetFiles(Path.Combine(ModBeingDeployed.ModPath, customDLC), $@"{tlkFile}.upk", SearchOption.AllDirectories).FirstOrDefault();
                             if (tlkPackagePath == null)
                             {
                                 errors.Add(M3L.GetString(M3L.string_interp_dlcModMissingAutoLoadTlkFile, customDLC, tlkFile));
