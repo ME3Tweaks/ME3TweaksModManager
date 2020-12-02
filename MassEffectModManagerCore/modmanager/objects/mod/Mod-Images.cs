@@ -18,7 +18,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
         /// <summary>
         /// Bitmap data for the banner of the mod
         /// </summary>
-        public BitmapImage BannerBitmap { get; set; }
+        public BitmapSource BannerBitmap { get; set; }
 
         /// <summary>
         /// Relative path to the banner image, from the root of the folder
@@ -35,7 +35,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
         {
             LoadedImageAssets.Clear();
         }
-        
+
         /// <summary>
         /// Loads the requested image 
         /// </summary>
@@ -108,6 +108,10 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     // Must have specific aspect ratio.limes
                     Log.Error($@"{ModName}'s banner image is not the correct aspect ratio. Aspect ratio should be 580x47. The banner won't be displayed.");
                     RemoveAssetFromCache(BannerImageName);
+                }
+                else
+                {
+                    BannerBitmap = bitmap;
                 }
             }
         }

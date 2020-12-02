@@ -33,7 +33,8 @@ namespace MassEffectModManagerCore.modmanager.objects
             @"MultiListRootPath",
             @"MultiListTargetPath",
             @"DLCRequirements", // This is not used?
-            @"ImageAssetName"
+            @"ImageAssetName",
+            @"ImageHeight"
         };
 
         public enum AltFileOperation
@@ -100,7 +101,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         //public const string CONDITION_MANUAL = "COND_MANUAL"; //user must choose alt
         //public const string CONDITION_DLC_PRESENT = "COND_DLC_PRESENT"; //automatically choose alt if DLC listed is present
         //public const string CONDITION_DLC_NOT_PRESENT = "COND_DLC_NOT_PRESENT"; //automatically choose if DLC is not present
-        
+
         public string ApplicableAutoText { get; }
         public string NotApplicableAutoText { get; }
         public override bool UIIsSelectable
@@ -390,28 +391,59 @@ namespace MassEffectModManagerCore.modmanager.objects
                 }
             }
 
-            if (properties.TryGetValue(@"ImageAssetName", out string imageAssetName) && !string.IsNullOrWhiteSpace(imageAssetName))
+            if (modForValidating.ModDescTargetVersion >= 6.2)
             {
-                // We need to validate the file exists
-                var iap = FilesystemInterposer.PathCombine(modForValidating.Archive != null, modForValidating.ModImageAssetsPath, imageAssetName);
-                if (!FilesystemInterposer.FileExists(iap, modForValidating.Archive))
+
+
+                if (properties.TryGetValue(@"ImageAssetName", out string imageAssetName) && !string.IsNullOrWhiteSpace(imageAssetName))
                 {
-                    Log.Error($@"Alternate file {FriendlyName} lists image asset {imageAssetName}, but the asset does not exist in the mods {Mod.ModImageAssetFolderName} directory.");
-                    ValidAlternate = false;
-                    LoadFailedReason = $"Alternate file {FriendlyName} lists image asset {ImageAssetName}, but the asset does not exist in the mods {Mod.ModImageAssetFolderName} directory.";
-                    return;
+                    // We need to validate the file exists
+                    var iap = FilesystemInterposer.PathCombine(modForValidating.Archive != null, modForValidating.ModImageAssetsPath, imageAssetName);
+                    if (!FilesystemInterposer.FileExists(iap, modForValidating.Archive))
+                    {
+                        Log.Error($@"Alternate file {FriendlyName} lists image asset {imageAssetName}, but the asset does not exist in the mods {Mod.ModImageAssetFolderName} directory.");
+                        ValidAlternate = false;
+                        LoadFailedReason = $"Alternate file {FriendlyName} lists image asset {ImageAssetName}, but the asset does not exist in the mods {Mod.ModImageAssetFolderName} directory.";
+                        return;
+                    }
+
+
+                    if (modForValidating.Archive != null)
+                    {
+                        // We need to load this asset cause it's not going to have an open archive until we begin install, if user tries to do install
+                        ImageBitmap = LoadImageAsset(modForValidating, imageAssetName);
+                        if (ImageBitmap == null)
+                        {
+                            return; // Loading failed. 
+                        }
+                    }
+
+                    ImageAssetName = imageAssetName;
                 }
 
-                if (modForValidating.Archive != null)
+                if (!string.IsNullOrWhiteSpace(ImageAssetName))
                 {
-                    // We need to load this asset cause it's not going to have an open archive until we begin install, if user tries to do install
-                    ImageBitmap = LoadImageAsset(modForValidating, imageAssetName);
-                    if (ImageBitmap == null)
+                    // We need to ensure height is also set
+                    if (properties.TryGetValue(@"ImageHeight", out string imageHeightStr) && int.TryParse(imageHeightStr, out var imageHeight))
                     {
-                        return; // Loading failed. 
+                        if (imageHeight < 0 || imageHeight > 1040)
+                        {
+                            Log.Error($@"Alternate file {FriendlyName} lists image asset height {imageHeight}, but it is not within the valid values range. ImageHeight must be between 1 and 1039 inclusive.");
+                            ValidAlternate = false;
+                            LoadFailedReason = $"Alternate file {FriendlyName} lists image asset height {imageHeight}, but it is not within the valid values range. ImageHeight must be between 1 and 1039 inclusive.";
+                            return;
+                        }
+
+                        ImageHeight = imageHeight;
+                    }
+                    else
+                    {
+                        Log.Error($@"Alternate file {FriendlyName} specifies an image asset but does not set (or have a valid value for) ImageHeight. ImageHeight is required to be set on alternates that specify an image asset.");
+                        ValidAlternate = false;
+                        LoadFailedReason = $"Alternate file {FriendlyName} specifies an image asset but does not set (or have a valid value for) ImageHeight. ImageHeight is required to be set on alternates that specify an image asset.";
+                        return;
                     }
                 }
-                ImageAssetName = imageAssetName;
             }
 
             ApplicableAutoText = properties.TryGetValue(@"ApplicableAutoText", out string applicableText) ? applicableText : M3L.GetString(M3L.string_autoApplied);
@@ -433,7 +465,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             ValidAlternate = true;
         }
 
-        
+
 
         /// <summary>
         /// Builds the editable parameter map for use in moddesc.ini editor

@@ -178,6 +178,7 @@ namespace MassEffectModManagerCore.modmanager.objects
 
         public bool TextureModded { get; private set; }
 
+
         /// <summary>
         /// Gets the installed texture mod info. If startpos is not defined (<0) the latest version is used from the end of the file.
         /// </summary>
@@ -231,7 +232,7 @@ namespace MassEffectModManagerCore.modmanager.objects
 
                         if (preMemi4Bytes != perGameFinal4Bytes) //default bytes before 178 MEMI Format (MEMI v1)
                         {
-                            // MEMI v2
+                            // MEMI v3 (and technically also v2 but values will be wrong)
                             fs.Position = endPos - 12;
                             short ALOTVER = fs.ReadInt16();
                             byte ALOTUPDATEVER = (byte)fs.ReadByte();
@@ -244,33 +245,29 @@ namespace MassEffectModManagerCore.modmanager.objects
                             int MEUITMVER = fs.ReadInt32();
 
                             var tmii = new TextureModInstallationInfo(ALOTVER, ALOTUPDATEVER, ALOTHOTFIXVER, MEUITMVER, memVersionUsed, installerVersionUsed);
-                            tmii.MarkerExtendedVersion = 0x02;
-                            tmii.MarkerStartPosition = (int) markerStartOffset;
+                            tmii.MarkerExtendedVersion = 0x03; // detected memi v3
+                            tmii.MarkerStartPosition = (int)markerStartOffset;
 
-                            // MEMI v3 DETECTION
+                            // MEMI v4 DETECTION
                             fs.Position = endPos - 20;
                             if (fs.ReadUInt32() == TextureModInstallationInfo.TEXTURE_MOD_MARKER_VERSIONING_MAGIC)
                             {
-                                // It's MEMI v3 (or higher)
+                                // It's MEMI v4 (or higher)
                                 var memiExtendedEndPos = endPos - 24; // Sanity check should make reading end here
                                 fs.Position = memiExtendedEndPos;
                                 fs.Position = fs.ReadInt32(); // Go to start of MEMI extended marker
                                 tmii.MarkerStartPosition = (int)fs.Position;
                                 tmii.MarkerExtendedVersion = fs.ReadInt32();
-                                // Extensions go here
+                                // Extensions to memi format go here
 
-                                if (tmii.MarkerExtendedVersion == 0x03)
+                                if (tmii.MarkerExtendedVersion == 0x04)
                                 {
                                     tmii.InstallerVersionFullName = fs.ReadUnrealString();
                                     tmii.InstallationTimestamp = DateTime.FromBinary(fs.ReadInt64());
                                     var fileCount = fs.ReadInt32();
                                     for (int i = 0; i < fileCount; i++)
                                     {
-                                        tmii.InstalledTextureMods.Add(new TextureModInstallationInfo.InstalledTextureMod()
-                                        {
-                                            ModType = (TextureModInstallationInfo.InstalledTextureMod.InstalledTextureModType)fs.ReadByte(),
-                                            ModName = fs.ReadUnrealString()
-                                        });
+                                        tmii.InstalledTextureMods.Add(new TextureModInstallationInfo.InstalledTextureMod(fs, tmii.MarkerExtendedVersion));
                                     }
                                 }
 
@@ -831,10 +828,11 @@ namespace MassEffectModManagerCore.modmanager.objects
         internal void StampDebugALOTInfo()
         {
 #if DEBUG
-            var markerPAth = getALOTMarkerFilePath();
+            // Writes a MEMI v3 marker
+            var markerPath = getALOTMarkerFilePath();
             try
             {
-                using (FileStream fs = new FileStream(markerPAth, System.IO.FileMode.Open, FileAccess.ReadWrite))
+                using (FileStream fs = new FileStream(markerPath, System.IO.FileMode.Open, FileAccess.ReadWrite))
                 {
                     fs.SeekEnd();
                     fs.WriteInt32(0); //meuitm

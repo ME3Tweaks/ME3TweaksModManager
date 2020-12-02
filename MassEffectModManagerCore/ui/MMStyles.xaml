@@ -16,6 +16,7 @@
     <converters:EqualIntVisibilityConverter x:Key="EqualIntVisibilityConverter"/>
     <converters:NullEnabledConverter x:Key="NullEnabledConverter" />
     <converters:BoolEnabledConverter x:Key="BoolToEnabledConverter" />
+    <converters:NotNullToBoolConverter x:Key="NotNullToBoolConverter" />
     <converters:GameToVisibilityConverter x:Key="GameToVisibilityConverter" />
     <helpers:FlightingVisibilityConverter x:Key="FlightingVisibilityConverter"/>
     <DataTemplate x:Key="TargetSelectorTemplate" DataType="{x:Type modmanager:GameTarget}">

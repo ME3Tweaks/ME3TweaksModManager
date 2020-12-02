@@ -51,6 +51,11 @@ namespace MassEffectModManagerCore.modmanager.objects
         public BitmapSource ImageBitmap { get; set; }
 
         /// <summary>
+        /// The height in pixels (resolution independent) of the image to show. The aspect ratio is preserved, so this will automatically product the width.
+        /// </summary>
+        public int ImageHeight { get; set; }
+
+        /// <summary>
         /// Loads the image asset for the specified mod. If this method is called on an archive based mod, it must be done while the archive is still open.
         /// </summary>
         /// <param name="mod"></param>
