@@ -551,7 +551,7 @@
     <!-- 0={filepath} 1={filepath} -->
     <system:String x:Key="string_interp_dlcModTlkPackageHasNoUsableTlk">DLC mod {0}'s TLK package doesn't contain a usable TLK export in it.</system:String>
     <!-- 0={filepath} -->
-    <system:String x:Key="string_interp_dlcModTlkPackageMissingStringId">DLC mod {0}'s TLK package doesn't contain the listed string id {1}. The mod's TLK must contain the listed string id.</system:String>
+    <system:String x:Key="string_interp_dlcModTlkPackageMissingStringId">DLC mod {0}'s TLK package doesn't contain the listed string ID {1}. The mod's TLK must contain the listed string ID.</system:String>
     <!-- 0={filepath} 1={integer} -->
     <system:String x:Key="string_interp_dlcModAutoLoadMissingNameStrRef">DLC mod {0} does not specify a valid NameStrRef in the [GUI] header of the AutoLoad.ini file. This attribute must be specified for modding scene purposes.</system:String>
     <!-- 0={filepath} -->
