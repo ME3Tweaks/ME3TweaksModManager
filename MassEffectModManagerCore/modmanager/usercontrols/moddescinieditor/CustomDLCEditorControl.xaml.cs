@@ -21,35 +21,35 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
     /// </summary>
     public partial class CustomDLCEditorControl : UserControl, INotifyPropertyChanged
     {
-        public objects.mod.Mod EditingMod { get; set; }
-        public void OnEditingModChanged()
-        {
-            if (EditingMod != null)
-            {
-                CustomDLCJob = EditingMod.GetJob(ModJob.JobHeader.CUSTOMDLC);
-                if (CustomDLCJob != null)
-                {
-                    foreach (var v in CustomDLCJob.CustomDLCFolderMapping)
-                    {
-                        CustomDLCMapping.Add(new AlternateOption.Parameter(v.Key, v.Value));
-                    }
-                }
-            }
-            else
-            {
-                CustomDLCJob = null;
-                CustomDLCMapping.ClearEx();
-            }
-        }
+//        public objects.mod.Mod EditingMod { get; set; }
+//        public void OnEditingModChanged()
+//        {
+//            if (EditingMod != null)
+//            {
+//                CustomDLCJob = EditingMod.GetJob(ModJob.JobHeader.CUSTOMDLC);
+//                if (CustomDLCJob != null)
+//                {
+//                    foreach (var v in CustomDLCJob.CustomDLCFolderMapping)
+//                    {
+//                        CustomDLCMapping.Add(new AlternateOption.Parameter(v.Key, v.Value));
+//                    }
+//                }
+//            }
+//            else
+//            {
+//                CustomDLCJob = null;
+//                CustomDLCMapping.ClearEx();
+//            }
+//        }
 
-        public CustomDLCEditorControl()
-        {
-            DataContext = this;
-            InitializeComponent();
-        }
+//        public CustomDLCEditorControl()
+//        {
+//            DataContext = this;
+//            InitializeComponent();
+//        }
 
-        public ModJob CustomDLCJob { get; set; }
-        public ObservableCollectionExtended<AlternateOption.Parameter> CustomDLCMapping { get; } = new ObservableCollectionExtended<AlternateOption.Parameter>();
+//        public ModJob CustomDLCJob { get; set; }
+////        public ObservableCollectionExtended<AlternateOption.Parameter> CustomDLCMapping { get; } = new ObservableCollectionExtended<AlternateOption.Parameter>();
 
         public event PropertyChangedEventHandler PropertyChanged;
     }

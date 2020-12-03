@@ -271,7 +271,7 @@ namespace MassEffectModManagerCore
                 {
                     Log.Warning("Telemetry is disabled :(");
                 }
-                else
+                else if (Settings.ShowedPreviewPanel)
                 {
                     InitAppCenter();
                 }
@@ -302,17 +302,6 @@ namespace MassEffectModManagerCore
                     Log.Error($"Unable to delete temporary files directory {Utilities.GetTempPath()}: {e.Message}");
                 }
 
-                Log.Information("Ensuring default ASI assets are present");
-                ASIManager.ExtractDefaultASIResources();
-
-                Log.Information(@"Initializing ME3ExplorerCore library");
-                MEPackageHandler.GlobalSharedCacheEnabled = false; // Do not use the package caching system
-                CoreLib.InitLib(TaskScheduler.Current, x =>
-                {
-                    Log.Error($@"Error saving package: {x}");
-                });
-
-                collectHardwareInfo();
                 Log.Information("Mod Manager pre-UI startup has completed. The UI will now load.");
                 Log.Information("If the UI fails to start, it may be that a third party tool is injecting itself into Mod Manager, such as RivaTuner or Afterburner, and is corrupting the process.");
                 POST_STARTUP = true; //this could be earlier but i'm not sure when crash handler actually is used, doesn't seem to be after setting it...
@@ -367,41 +356,6 @@ namespace MassEffectModManagerCore
                 Debug.WriteLine("This build has an API key for AppCenter");
             }
 #endif
-        }
-
-        private void collectHardwareInfo()
-        {
-            NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"HardwareInventory");
-            nbw.DoWork += (a, b) =>
-            {
-                var data = new Dictionary<string, string>();
-                try
-                {
-                    ManagementObjectSearcher mosProcessor = new ManagementObjectSearcher("SELECT * FROM Win32_Processor");
-                    foreach (ManagementObject moProcessor in mosProcessor.Get())
-                    {
-                        // For seeing AMD vs Intel (for ME1 lighting)
-                        if (moProcessor["name"] != null)
-                        {
-                            data[@"Processor"] = moProcessor["name"].ToString();
-                            IsRunningOnAMD = data[@"Processor"].Contains("AMD");
-                        }
-                    }
-
-                    data[@"BetaMode"] = Settings.BetaMode.ToString();
-                    data[@"DeveloperMode"] = Settings.DeveloperMode.ToString();
-
-                    if (Settings.EnableTelemetry)
-                    {
-                        Analytics.TrackEvent(@"Hardware Info", data);
-                    }
-                }
-                catch //(Exception e)
-                {
-
-                }
-            };
-            nbw.RunWorkerAsync();
         }
 
         public static bool IsRunningOnAMD;

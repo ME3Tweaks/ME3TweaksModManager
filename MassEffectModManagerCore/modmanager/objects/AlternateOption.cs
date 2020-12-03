@@ -5,11 +5,13 @@ using System.ComponentModel;
 using System.Text;
 using System.Windows.Media.Imaging;
 using MassEffectModManagerCore.modmanager.objects.mod;
+using MassEffectModManagerCore.modmanager.objects.mod.editor;
+using MassEffectModManagerCore.ui;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.objects
 {
-    public abstract class AlternateOption : INotifyPropertyChanged
+    public abstract class AlternateOption : INotifyPropertyChanged, IMDParameterMap
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public virtual bool CheckedByDefault { get; internal set; }
@@ -35,6 +37,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         public abstract bool UINotApplicable { get; }
         public abstract bool UIIsSelectable { get; set; }
         public abstract bool IsAlways { get; }
+        public abstract void BuildParameterMap();
         public virtual string GroupName { get; internal set; }
         public virtual string FriendlyName { get; internal set; }
         public virtual string Description { get; internal set; }
@@ -147,27 +150,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         /// <summary>
         /// Parameter map, used for the moddesc.ini editor Contains a list of values in the alternate mapped to their string value
         /// </summary>
-        public ObservableCollection<AlternateOption.Parameter> ParameterMap { get; } = new ObservableCollection<AlternateOption.Parameter>();
-
-        /// <summary>
-        /// Parameter for the alternate. Used in the editor, because we don't have bindable dictionary
-        /// </summary>
-        public class Parameter
-        {
-            public Parameter()
-            {
-
-            }
-            public Parameter(string key, string value)
-            {
-                Key = key;
-                Value = value;
-            }
-
-            // This class exists cause we can't bind to a dictionary
-            public string Key { get; set; }
-            public string Value { get; set; }
-        }
+        public ObservableCollectionExtended<MDParameter> ParameterMap { get; } = new ObservableCollectionExtended<MDParameter>();
 
         public void ReleaseLoadedImageAsset()
         {

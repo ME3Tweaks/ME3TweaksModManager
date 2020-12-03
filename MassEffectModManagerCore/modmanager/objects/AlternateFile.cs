@@ -8,6 +8,7 @@ using System.Windows.Media.Imaging;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects.mod;
+using MassEffectModManagerCore.modmanager.objects.mod.editor;
 using ME3ExplorerCore.Gammtek.Extensions.Collections.Generic;
 using Serilog;
 
@@ -16,27 +17,6 @@ namespace MassEffectModManagerCore.modmanager.objects
     [DebuggerDisplay(@"AlternateFile | {Condition} {Operation}, ConditionalDLC: {ConditionalDLC}, ModFile: {ModFile}, AltFile: {AltFile}")]
     public class AlternateFile : AlternateOption
     {
-        private static readonly string[] AllParameters =
-        {
-            @"Condition",
-            @"ConditionalDLC",
-            @"ModOperation",
-            @"FriendlyName",
-            @"ModFile",
-            @"ModAltFile",
-            @"Description",
-            @"CheckedByDefault",
-            @"OptionGroup",
-            @"ApplicableAutoText",
-            @"NotApplicableAutoText",
-            @"MultiListId",
-            @"MultiListRootPath",
-            @"MultiListTargetPath",
-            @"DLCRequirements", // This is not used?
-            @"ImageAssetName",
-            @"ImageHeight"
-        };
-
         public enum AltFileOperation
         {
             INVALID_OPERATION,
@@ -62,6 +42,7 @@ namespace MassEffectModManagerCore.modmanager.objects
 
         public override bool IsManual => Condition == AltFileCondition.COND_MANUAL;
         public override bool IsAlways => Condition == AltFileCondition.COND_ALWAYS;
+
         public override bool UIRequired => !IsManual && IsSelected && !IsAlways;
         public override bool UINotApplicable => !IsManual && !IsSelected && !IsAlways;
         public List<string> ConditionalDLC = new List<string>();
@@ -110,11 +91,20 @@ namespace MassEffectModManagerCore.modmanager.objects
             set { } //you can't set these for altfiles
         }
 
+        /// <summary>
+        /// ONLY FOR USE IN MODDESC.INI EDITOR
+        /// Creates a new, blank Alternate DLC object
+        /// </summary>
+        /// <param name="alternateName"></param>
+        public AlternateFile(string alternateName)
+        {
+            FriendlyName = alternateName;
+            BuildParameterMap();
+        }
 
         public AlternateFile(string alternateFileText, ModJob associatedJob, mod.Mod modForValidating)
         {
             var properties = StringStructParser.GetCommaSplitValues(alternateFileText);
-            buildParameterMap(properties);
             if (properties.TryGetValue(@"FriendlyName", out string friendlyName))
             {
                 FriendlyName = friendlyName;
@@ -418,23 +408,6 @@ namespace MassEffectModManagerCore.modmanager.objects
 
 
 
-        /// <summary>
-        /// Builds the editable parameter map for use in moddesc.ini editor
-        /// </summary>
-        /// <param name="properties"></param>
-        private void buildParameterMap(Dictionary<string, string> properties)
-        {
-            var parms = properties.Select(x => new AlternateOption.Parameter() { Key = x.Key, Value = x.Value }).ToList();
-            foreach (var v in AllParameters)
-            {
-                if (!parms.Any(x => x.Key == v))
-                {
-                    parms.Add(new Parameter(v, ""));
-                }
-            }
-            ParameterMap.ReplaceAll(parms.OrderBy(x => x.Key));
-        }
-
         public void SetupInitialSelection(GameTarget target)
         {
             IsSelected = CheckedByDefault; //Reset
@@ -465,6 +438,35 @@ namespace MassEffectModManagerCore.modmanager.objects
                     //    IsSelected = ConditionalDLC.All(i => installedDLC.Contains(i, StringComparer.CurrentCultureIgnoreCase));
                     //    break;
             }
+        }
+
+        /// <summary>
+        /// List of all keys in the altdlc struct that are publicly parsable
+        /// </summary>
+        public override void BuildParameterMap()
+        {
+            var parameterDictionary = new Dictionary<string, object>()
+            {
+                {@"Condition", Condition},
+                {@"ConditionalDLC", ConditionalDLC},
+                {@"ModOperation", Operation},
+
+                {@"ModAltDLC", AltFile},
+                {@"ModFile", ModFile},
+                {@"FriendlyName", FriendlyName},
+                {@"Description", Description},
+                {@"CheckedByDefault", CheckedByDefault ? @"True" : null}, //don't put checkedbydefault in if it is not set to true.
+                {@"OptionGroup", GroupName},
+                {@"ApplicableAutoText", ApplicableAutoText},
+                {@"NotApplicableAutoText", NotApplicableAutoText},
+                {@"MultiListId", MultiListId > 0 ? MultiListId.ToString() : null},
+                {@"MultiListRootPath", MultiListRootPath},
+                {@"MultiListTargetPath", MultiListTargetPath},
+                {@"ImageAsset", ImageAssetName},
+                {@"ImageHeight", ImageHeight > 0 ? ImageHeight.ToString() : null}
+            };
+
+            ParameterMap.ReplaceAll(MDParameter.MapIntoParameterMap(parameterDictionary));
         }
     }
 }

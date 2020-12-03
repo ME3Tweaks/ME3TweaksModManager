@@ -15,46 +15,11 @@
         <Button Command="{Binding AddAlternateDLCCommand}" HorizontalAlignment="Left" DockPanel.Dock="Top">
             <Button.Content>
                 <StackPanel Orientation="Horizontal">
-                    <fa:ImageAwesome Icon="Plus" Width="12" Height="12" Margin="0,0,5,0"  
-                                     Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
-                    />
+                    <fa:ImageAwesome Icon="Plus" Width="12" Height="12" Margin="0,0,5,0" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>
                     <TextBlock Text="Add new Alternate DLC"/>
                 </StackPanel>
             </Button.Content>
         </Button>
-        <ItemsControl ItemsSource="{Binding AlternateDLCs}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"  
-                  AlternationCount="2" VirtualizingStackPanel.IsVirtualizing="True" ScrollViewer.CanContentScroll="True">
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <Expander
-                        Header="{Binding FriendlyName}"
-                        Margin="5,3">
-                        <ItemsControl ItemsSource="{Binding ParameterMap}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"  
-                              AlternationCount="2" VirtualizingStackPanel.IsVirtualizing="True" ScrollViewer.CanContentScroll="True">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <DockPanel Margin="0,10,0,0">
-                                        <TextBlock DockPanel.Dock="Left" Text="{Binding Key}" Width="150"/>
-                                        <TextBox Text="{Binding Value}"/>
-                                    </DockPanel>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                            <ItemsControl.Template>
-                                <ControlTemplate>
-                                    <ScrollViewer x:Name="ScrollViewer" Padding="2">
-                                        <ItemsPresenter />
-                                    </ScrollViewer>
-                                </ControlTemplate>
-                            </ItemsControl.Template>
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <VirtualizingStackPanel />
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                        </ItemsControl>
-                    </Expander>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
+        <local:AlternateItemsControl/>
     </DockPanel>
 </moddescinieditor:ModdescEditorControlBase>

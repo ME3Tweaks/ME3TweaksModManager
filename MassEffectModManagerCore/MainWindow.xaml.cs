@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Management;
 using System.Runtime;
 using System.Security;
 using System.Threading;
@@ -43,6 +44,7 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 using Pathoschild.FluentNexus.Models;
 using Serilog;
 using Mod = MassEffectModManagerCore.modmanager.objects.mod.Mod;
+using ME3ExplorerCore.Helpers;
 
 namespace MassEffectModManagerCore
 {
@@ -167,8 +169,6 @@ namespace MassEffectModManagerCore
             }
 
             CheckProgramDataWritable();
-
-            PopulateTargets();
             AttachListeners();
             SetTheme();
             //Must be done after UI has initialized
@@ -181,7 +181,6 @@ namespace MassEffectModManagerCore
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    Log.Information(@"Setting BLText: " + updateText);
                     CurrentOperationText = updateText;
                 });
             },
@@ -1631,26 +1630,81 @@ namespace MassEffectModManagerCore
             {
                 // Only show if OS is supported
                 var lastCrash = Crashes.GetLastSessionCrashReportAsync().Result;
-                if (Settings.DeveloperMode && lastCrash != null && lastCrash.StackTrace != null)
+                if (Settings.DeveloperMode && lastCrash?.StackTrace != null)
                 {
                     // Show messagebox?
                 }
             }
+            var syncContext = TaskScheduler.FromCurrentSynchronizationContext();
+            CoreLib.SetSynchronizationContext(syncContext);
+            IsEnabled = false;
+            Task.Run(() =>
+            {
+                Log.Information(@"Ensuring default ASI assets are present");
+                ASIManager.ExtractDefaultASIResources();
 
-            if (!Settings.ShowedPreviewPanel)
+                Log.Information(@"Initializing ME3ExplorerCore library");
+                MEPackageHandler.GlobalSharedCacheEnabled = false; // Do not use the package caching system
+                CoreLib.InitLib(syncContext, x =>
+                {
+                    Log.Error($@"Error saving package: {x}");
+                });
+                PopulateTargets();
+            }).ContinueWithOnUIThread(x =>
             {
-                ShowPreviewPanel();
-            }
-            else
-            {
-                LoadMods();
-            }
+                IsEnabled = true;
+                if (!Settings.ShowedPreviewPanel)
+                {
+                    ShowPreviewPanel();
+                }
+                else
+                {
+                    LoadMods();
+                }
 
-            PerformStartupNetworkFetches(true);
-            if (BackupNagSystem.ShouldShowNagScreen(InstallationTargets.ToList()))
+                PerformStartupNetworkFetches(true);
+                if (BackupNagSystem.ShouldShowNagScreen(InstallationTargets.ToList()))
+                {
+                    ShowBackupNag();
+                }
+                collectHardwareInfo();
+            });
+
+        }
+
+        private void collectHardwareInfo()
+        {
+            NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"HardwareInventory");
+            nbw.DoWork += (a, b) =>
             {
-                ShowBackupNag();
-            }
+                var data = new Dictionary<string, string>();
+                try
+                {
+                    ManagementObjectSearcher mosProcessor = new ManagementObjectSearcher("SELECT * FROM Win32_Processor");
+                    foreach (ManagementObject moProcessor in mosProcessor.Get())
+                    {
+                        // For seeing AMD vs Intel (for ME1 lighting)
+                        if (moProcessor["name"] != null)
+                        {
+                            data[@"Processor"] = moProcessor["name"].ToString();
+                            App.IsRunningOnAMD = data[@"Processor"].Contains("AMD");
+                        }
+                    }
+
+                    data[@"BetaMode"] = Settings.BetaMode.ToString();
+                    data[@"DeveloperMode"] = Settings.DeveloperMode.ToString();
+
+                    if (Settings.EnableTelemetry)
+                    {
+                        Analytics.TrackEvent(@"Hardware Info", data);
+                    }
+                }
+                catch //(Exception e)
+                {
+
+                }
+            };
+            nbw.RunWorkerAsync();
         }
 
         private void ShowPreviewPanel()
@@ -1975,7 +2029,7 @@ namespace MassEffectModManagerCore
             SelectedGameTarget = null;
             MEDirectories.ReloadGamePaths(true); //this is redundant on the first boot but whatever.
             Log.Information(@"Populating game targets");
-
+            List<GameTarget> targets = new List<GameTarget>();
             if (ME3Directory.DefaultGamePath != null && Directory.Exists(ME3Directory.DefaultGamePath))
             {
                 var target = new GameTarget(MEGame.ME3, ME3Directory.DefaultGamePath, true);
@@ -1983,7 +2037,7 @@ namespace MassEffectModManagerCore
                 if (failureReason == null)
                 {
                     Log.Information(@"Current boot target for ME3: " + target.TargetPath);
-                    InstallationTargets.Add(target);
+                    targets.Add(target);
                     Utilities.AddCachedTarget(target);
                 }
                 else
@@ -1999,7 +2053,7 @@ namespace MassEffectModManagerCore
                 if (failureReason == null)
                 {
                     Log.Information(@"Current boot target for ME2: " + target.TargetPath);
-                    InstallationTargets.Add(target);
+                    targets.Add(target);
                     Utilities.AddCachedTarget(target);
                 }
                 else
@@ -2015,7 +2069,7 @@ namespace MassEffectModManagerCore
                 if (failureReason == null)
                 {
                     Log.Information(@"Current boot target for ME1: " + target.TargetPath);
-                    InstallationTargets.Add(target);
+                    targets.Add(target);
                     Utilities.AddCachedTarget(target);
                 }
                 else
@@ -2034,21 +2088,26 @@ namespace MassEffectModManagerCore
             if (otherTargetsFileME1.Any() || otherTargetsFileME2.Any() || otherTargetsFileME3.Any())
             {
                 int count = InstallationTargets.Count;
-                InstallationTargets.AddRange(otherTargetsFileME1);
-                InstallationTargets.AddRange(otherTargetsFileME2);
-                InstallationTargets.AddRange(otherTargetsFileME3);
+                targets.AddRange(otherTargetsFileME1);
+                targets.AddRange(otherTargetsFileME2);
+                targets.AddRange(otherTargetsFileME3);
                 var distinct = InstallationTargets.Distinct().ToList();
                 InstallationTargets.ReplaceAll(distinct);
                 if (InstallationTargets.Count > count)
                 {
-                    InstallationTargets.Insert(count, new GameTarget(MEGame.Unknown, $@"==================={M3L.GetString(M3L.string_otherSavedTargets)}===================", false) { Selectable = false });
+                    targets.Insert(count, new GameTarget(MEGame.Unknown, $@"==================={M3L.GetString(M3L.string_otherSavedTargets)}===================", false) { Selectable = false });
                 }
             }
+
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                InstallationTargets.ReplaceAll(targets);
+            });
 
             if (selectedTarget != null)
             {
                 //find new corresponding target
-                var newTarget = InstallationTargets.FirstOrDefault(x => x.TargetPath == selectedTarget.TargetPath);
+                var newTarget = targets.FirstOrDefault(x => x.TargetPath == selectedTarget.TargetPath);
                 if (newTarget != null)
                 {
                     SelectedGameTarget = newTarget;

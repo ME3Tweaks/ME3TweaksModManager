@@ -13,6 +13,11 @@ namespace MassEffectModManagerCore.modmanager.objects
         public override bool CheckedByDefault => false;
         public override bool IsManual => true;
         public override bool IsAlways => false;
+        public override void BuildParameterMap()
+        {
+            // This class does not use parameters
+        }
+
         public override double CheckboxOpacity => 1;
         public override bool UIRequired => false;
         public override bool UINotApplicable => false;

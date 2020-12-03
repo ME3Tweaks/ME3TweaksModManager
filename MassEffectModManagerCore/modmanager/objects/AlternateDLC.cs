@@ -6,6 +6,7 @@ using System.Linq;
 using MassEffectModManagerCore.modmanager.helpers;
 using System.IO;
 using MassEffectModManagerCore.modmanager.localizations;
+using MassEffectModManagerCore.modmanager.objects.mod.editor;
 using ME3ExplorerCore.Gammtek.Extensions.Collections.Generic;
 
 namespace MassEffectModManagerCore.modmanager.objects
@@ -43,6 +44,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         /// Requirements for this manual option to be able to be picked
         /// </summary>
         public string[] DLCRequirementsForManual { get; }
+
         public string ApplicableAutoText { get; }
         public string NotApplicableAutoText { get; }
         public override bool IsAlways => false; //AlternateDLC doesn't support this
@@ -52,6 +54,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         /// Alternate DLC folder to process the operation from (as the source)
         /// </summary>
         public string AlternateDLCFolder { get; private set; }
+
         /// <summary>
         /// In-mod path that the AlternateDLCFolder will apply to
         /// </summary>
@@ -61,21 +64,35 @@ namespace MassEffectModManagerCore.modmanager.objects
         /// Used by COND_SIZED_FILE_PRESENT
         /// </summary>
         public Dictionary<string, long> RequiredSpecificFiles { get; private set; } = new Dictionary<string, long>();
+
         /// <summary>
         /// Used by COND_SIZED_FILE_PRESENT
         /// </summary>
         public bool ValidAlternate;
+
         public string LoadFailedReason;
+
+        /// <summary>
+        /// ONLY FOR USE IN MODDESC.INI EDITOR
+        /// Creates a new, blank Alternate DLC object
+        /// </summary>
+        /// <param name="alternateDLCFriendlyName"></param>
+        public AlternateDLC(string alternateDLCFriendlyName)
+        {
+            FriendlyName = alternateDLCFriendlyName;
+            BuildParameterMap();
+        }
+
         public AlternateDLC(string alternateDLCText, mod.Mod modForValidating, ModJob job)
         {
             var properties = StringStructParser.GetCommaSplitValues(alternateDLCText);
-            buildParameterMap(properties);
 
             //todo: if statements to check these.
             if (properties.TryGetValue(@"FriendlyName", out string friendlyName))
             {
                 FriendlyName = friendlyName;
             }
+
             if (modForValidating.ModDescTargetVersion >= 6 && string.IsNullOrWhiteSpace(FriendlyName))
             {
                 //Cannot be null.
@@ -107,6 +124,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             {
                 Description = description;
             }
+
             if (modForValidating.ModDescTargetVersion >= 6 && string.IsNullOrWhiteSpace(Description))
             {
                 //Cannot be null.
@@ -193,6 +211,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         LoadFailedReason = M3L.GetString(M3L.string_interp_altdlc_multilistMissingMultiListRootPath, FriendlyName);
                         return;
                     }
+
                     if (properties.TryGetValue(@"MultiListId", out string multilistidstr) && int.TryParse(multilistidstr, out multilistid))
                     {
                         if (job.MultiLists.TryGetValue(multilistid, out var ml))
@@ -250,7 +269,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 //Validation
                 if (string.IsNullOrWhiteSpace(AlternateDLCFolder) && MultiListRootPath == null)
                 {
-                    Log.Error($@"Alternate DLC directory (ModAltDLC) not specified for { FriendlyName}");
+                    Log.Error($@"Alternate DLC directory (ModAltDLC) not specified for {FriendlyName}");
                     LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altdlc_sourceDirectoryNotSpecifiedForModAltDLC, FriendlyName);
                     return;
                 }
@@ -388,6 +407,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             {
                 CheckedByDefault = cbd;
             }
+
             if (Condition != AltDLCCondition.COND_MANUAL && Condition != AltDLCCondition.COND_SPECIFIC_SIZED_FILES && Condition != AltDLCCondition.INVALID_CONDITION)
             {
                 //ensure conditional dlc list has at least one item.
@@ -451,8 +471,10 @@ namespace MassEffectModManagerCore.modmanager.objects
                 {
                     UIIsSelectable = true;
                 }
+
                 return;
             }
+
             var installedDLC = M3Directories.GetInstalledDLC(target);
             switch (Condition)
             {
@@ -505,114 +527,122 @@ namespace MassEffectModManagerCore.modmanager.objects
                                 }
                             }
                         }
+
                         IsSelected = selected;
                     }
                     break;
             }
+
             UIIsSelectable = false; //autos
-                                    //IsSelected; //autos
+            //IsSelected; //autos
         }
 
         /// <summary>
         /// Builds the editable parameter map for use in moddesc.ini editor
         /// </summary>
         /// <param name="properties"></param>
-        private void buildParameterMap(Dictionary<string, string> properties)
-        {
-            var parms = properties.Select(x => new AlternateOption.Parameter() { Key = x.Key, Value = x.Value }).ToList();
-            foreach (var v in AllParameters)
-            {
-                if (parms.All(x => x.Key != v))
-                {
-                    parms.Add(new Parameter(v, ""));
-                }
-            }
-            ParameterMap.ReplaceAll(parms.OrderBy(x => x.Key));
-        }
+        //private void buildParameterMap(Dictionary<string, string> properties)
+        //{
+        //    var parms = properties.Select(x => new AlternateOption.Parameter() { Key = x.Key, Value = x.Value }).ToList();
+        //    foreach (var v in AllParameters)
+        //    {
+        //        if (parms.All(x => x.Key != v))
+        //        {
+        //            parms.Add(new MDParameter(v, ""));
+        //        }
+        //    }
+
+        //    ParameterMap.ReplaceAll(parms.OrderBy(x => x.Key));
+        //}
 
         /// <summary>
         /// List of all keys in the altdlc struct that are publicly parsable
         /// </summary>
-        private static readonly string[] AllParameters =
+        public override void BuildParameterMap()
         {
-            @"Condition",
-            @"ConditionalDLC",
-            @"ModOperation",
-            @"ModAltDLC",
-            @"ModDestDLC",
-            @"FriendlyName",
-            @"Description",
-            @"CheckedByDefault",
-            @"OptionGroup",
-            @"ApplicableAutoText",
-            @"NotApplicableAutoText",
-            @"MultiListId",
-            @"MultiListRootPath",
-            @"RequiredFileRelativePaths",
-            @"RequiredFileSizes",
-            @"ImageAsset",
-            @"ImageHeight"
-        };
-
-        /// <summary>
-        /// Serializes this object to it's moddesc.ini representation
-        /// </summary>
-        /// <returns></returns>
-        public string Serialize()
-        {
-            var props = new Dictionary<string, string>();
-            props[@"Condition"] = Condition.ToString(); //always set
-            props[@"ConditionalDLC"] = string.Join(';', ConditionalDLC);
-            props[@"ModOperation"] = Operation.ToString(); //always set
-            props[@"ModAltDLC"] = AlternateDLCFolder;
-            props[@"ModDestDLC"] = DestinationDLCFolder;
-            props[@"FriendlyName"] = FriendlyName;
-            props[@"Description"] = Description;
-            if (CheckedByDefault)
+            var parameterDictionary = new Dictionary<string, object>()
             {
-                props[@"CheckedByDefault"] = CheckedByDefault.ToString();
-            }
+                {@"Condition", Condition},
+                {@"ConditionalDLC", ConditionalDLC},
+                {@"ModOperation", Operation},
+                {@"ModAltDLC", AlternateDLCFolder},
+                {@"ModDestDLC", DestinationDLCFolder},
+                {@"FriendlyName", FriendlyName},
+                {@"Description", Description},
+                {@"CheckedByDefault", CheckedByDefault ? @"True" : null}, //don't put checkedbydefault in if it is not set to true.
+                {@"OptionGroup", GroupName},
+                {@"ApplicableAutoText", ApplicableAutoText},
+                {@"NotApplicableAutoText", NotApplicableAutoText},
+                {@"MultiListId", MultiListId > 0 ? MultiListId.ToString() : null},
+                {@"MultiListRootPath", MultiListRootPath},
+                {@"RequiredFileRelativePaths", RequiredSpecificFiles.Keys.ToList()}, // List of relative paths
+                {@"RequiredFileSizes", RequiredSpecificFiles.Values.ToList()}, // List of relative sizes
+                {@"ImageAsset", ImageAssetName},
+                {@"ImageHeight", ImageHeight > 0 ? ImageHeight.ToString() : null}
+            };
 
-            if (!string.IsNullOrWhiteSpace(GroupName))
-            {
-                props[@"OptionGroup"] = GroupName;
-            }
-            if (!string.IsNullOrWhiteSpace(ApplicableAutoText))
-            {
-                props[@"ApplicableAutoText"] = ApplicableAutoText;
-            }
-            if (!string.IsNullOrWhiteSpace(NotApplicableAutoText))
-            {
-                props[@"NotApplicableAutoText"] = NotApplicableAutoText;
-            }
-
-            if (!string.IsNullOrWhiteSpace(MultiListRootPath))
-            {
-                props[@"MultiListRootPath"] = MultiListRootPath;
-            }
-
-            if (!string.IsNullOrWhiteSpace(MultiListRootPath))
-            {
-                props[@"MultiListId"] = MultiListId.ToString();
-            }
-
-            if (RequiredSpecificFiles.Any())
-            {
-                var paths = "";
-                var sizes = "";
-                foreach (var v in RequiredSpecificFiles)
-                {
-                    if (paths != @"") paths += @";";
-                    if (sizes != @"") sizes += @";";
-                    paths += v.Key; // should we check for spaces? Can game files support spaces?
-                    sizes += v.Value;
-                }
-                props[@"RequiredFileRelativePaths"] = paths;
-                props[@"RequiredFileSizes"] = sizes;
-            }
-
-
-            return StringStructParser.BuildCommaSeparatedSplitValueList(props);
+            ParameterMap.ReplaceAll(MDParameter.MapIntoParameterMap(parameterDictionary));
         }
+
+        ///// <summary>
+        ///// Serializes this object to it's moddesc.ini representation
+        ///// </summary>
+        ///// <returns></returns>
+        //public string Serialize()
+        //{
+        //    var props = new Dictionary<string, string>();
+        //    props[@"Condition"] = Condition.ToString(); //always set
+        //    props[@"ConditionalDLC"] = string.Join(';', ConditionalDLC);
+        //    props[@"ModOperation"] = Operation.ToString(); //always set
+        //    props[@"ModAltDLC"] = AlternateDLCFolder;
+        //    props[@"ModDestDLC"] = DestinationDLCFolder;
+        //    props[@"FriendlyName"] = FriendlyName;
+        //    props[@"Description"] = Description;
+        //    if (CheckedByDefault)
+        //    {
+        //        props[@"CheckedByDefault"] = CheckedByDefault.ToString();
+        //    }
+
+        //    if (!string.IsNullOrWhiteSpace(GroupName))
+        //    {
+        //        props[@"OptionGroup"] = GroupName;
+        //    }
+        //    if (!string.IsNullOrWhiteSpace(ApplicableAutoText))
+        //    {
+        //        props[@"ApplicableAutoText"] = ApplicableAutoText;
+        //    }
+        //    if (!string.IsNullOrWhiteSpace(NotApplicableAutoText))
+        //    {
+        //        props[@"NotApplicableAutoText"] = NotApplicableAutoText;
+        //    }
+
+        //    if (!string.IsNullOrWhiteSpace(MultiListRootPath))
+        //    {
+        //        props[@"MultiListRootPath"] = MultiListRootPath;
+        //    }
+
+        //    if (!string.IsNullOrWhiteSpace(MultiListRootPath))
+        //    {
+        //        props[@"MultiListId"] = MultiListId.ToString();
+        //    }
+
+        //    if (RequiredSpecificFiles.Any())
+        //    {
+        //        var paths = "";
+        //        var sizes = "";
+        //        foreach (var v in RequiredSpecificFiles)
+        //        {
+        //            if (paths != @"") paths += @";";
+        //            if (sizes != @"") sizes += @";";
+        //            paths += v.Key; // should we check for spaces? Can game files support spaces?
+        //            sizes += v.Value;
+        //        }
+        //        props[@"RequiredFileRelativePaths"] = paths;
+        //        props[@"RequiredFileSizes"] = sizes;
+        //    }
+
+
+        //    return StringStructParser.BuildCommaSeparatedSplitValueList(props);
+        //}
     }
 }

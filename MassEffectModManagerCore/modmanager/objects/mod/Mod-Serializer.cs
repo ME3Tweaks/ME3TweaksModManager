@@ -1,8 +1,11 @@
-﻿using IniParser.Model;
+﻿using System.Collections.Generic;
+using IniParser.Model;
+using MassEffectModManagerCore.modmanager.objects.mod.editor;
+using MassEffectModManagerCore.ui;
 
 namespace MassEffectModManagerCore.modmanager.objects.mod
 {
-    public partial class Mod
+    public partial class Mod : IMDParameterMap
     {
         /// <summary>
         /// Generates the corresponding moddesc.ini text for this mod
@@ -32,6 +35,38 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
 
             return moddessc.ToString();
 
+        }
+
+        public ObservableCollectionExtended<MDParameter> ParameterMap { get; } = new ObservableCollectionExtended<MDParameter>();
+
+        public void BuildParameterMap()
+        {
+            var parameterDictionary = new Dictionary<string, object>()
+            {
+                // ModManager
+                {@"cmmver", ModDescTargetVersion},
+                {@"minbuild", MinimumSupportedBuild},
+
+                // ModInfo
+                {@"game", Game},
+                {@"moddesc", ModDescription},
+                {@"modver", ParsedModVersion},
+                {@"moddev", ModDeveloper},
+                {@"modsite", ModWebsite},
+                {@"nexuscode", NexusModID},
+                {@"requireddlc", RequiredDLC},
+                {@"prefercompressed", PreferCompressed},
+                {@"bannerimagename", BannerImageName},
+
+                // UPDATES
+                {@"serverfolder", UpdaterServiceServerFolder},
+                {@"blacklistedfiles", UpdaterServiceBlacklistedFiles},
+                {@"additionaldeploymentfolders", AdditionalDeploymentFolders},
+                {@"additionaldeploymentfiles", AdditionalDeploymentFiles}, // List of relative paths
+                {@"updatecode", ModClassicUpdateCode}, // List of relative sizes
+            };
+
+            ParameterMap.ReplaceAll(MDParameter.MapIntoParameterMap(parameterDictionary));
         }
     }
 }

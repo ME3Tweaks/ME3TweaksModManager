@@ -21,7 +21,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alte
         /// <summary>
         /// List of editing Alternate DLCs. These have to be extracted out of the job as they are not bindable in job
         /// </summary>
-        public ObservableCollectionExtended<AlternateDLC> AlternateDLCs { get; } = new ObservableCollectionExtended<AlternateDLC>();
+        public ObservableCollectionExtended<AlternateDLC> Alternates { get; } = new ObservableCollectionExtended<AlternateDLC>();
 
         public override void OnEditingModChanged(Mod newMod)
         {
@@ -29,21 +29,25 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alte
             CustomDLCJob = EditingMod?.GetJob(ModJob.JobHeader.CUSTOMDLC);
             if (CustomDLCJob != null)
             {
-                AlternateDLCs.ReplaceAll(CustomDLCJob.AlternateDLCs);
+                Alternates.ReplaceAll(CustomDLCJob.AlternateDLCs);
+                foreach (var a in Alternates)
+                {
+                    a.BuildParameterMap();
+                }
             }
             else
             {
-                AlternateDLCs.ClearEx();
+                Alternates.ClearEx();
             }
         }
 
         public override void Serialize(IniData ini)
         {
-            if (CustomDLCJob != null && AlternateDLCs.Any())
+            if (CustomDLCJob != null && Alternates.Any())
             {
                 string outStr = "(";
                 bool isFirst = true;
-                foreach (var adlc in AlternateDLCs)
+                foreach (var adlc in Alternates)
                 {
                     if (isFirst)
                     {
@@ -76,7 +80,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alte
 
         private void AddAlternateDLC()
         {
-
+            Alternates.Add(new AlternateDLC($"Alternate DLC {Alternates.Count + 1}"));
         }
 
 

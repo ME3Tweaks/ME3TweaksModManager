@@ -24,6 +24,9 @@ namespace MassEffectModManagerCore.modmanager.windows
             DataContext = this;
             EditingMod = new Mod(selectedMod.ModDescPath, selectedMod.Game); //RELOAD MOD TO CREATE NEW OBJECT
             InitializeComponent();
+
+            // Tabs
+            editorControls.Add(customdlc_alternateFileEditor_control);
             editorControls.Add(customdlc_alternateDlcEditor_control);
         }
 
