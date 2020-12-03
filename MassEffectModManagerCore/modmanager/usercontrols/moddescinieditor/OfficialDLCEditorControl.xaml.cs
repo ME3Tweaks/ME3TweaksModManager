@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using IniParser.Model;
+using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using ME3ExplorerCore.Misc;
 
@@ -34,6 +35,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
         {
             base.OnEditingModChanged(newMod);
             OfficialDLCJobs.ReplaceAll(newMod.InstallationJobs.Where(x => x.IsOfficialDLCJob(EditingMod.Game)));
+            foreach (var v in OfficialDLCJobs)
+            {
+                v.BuildParameterMap(EditingMod);
+            }
         }
 
         public override void Serialize(IniData ini)

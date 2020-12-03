@@ -1,10 +1,6 @@
 ﻿using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
-using System.Windows.Controls;
-using IniParser;
 using IniParser.Model;
-using IniParser.Parser;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.objects.mod;
@@ -32,7 +28,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alte
                 Alternates.ReplaceAll(CustomDLCJob.AlternateDLCs);
                 foreach (var a in Alternates)
                 {
-                    a.BuildParameterMap();
+                    a.BuildParameterMap(EditingMod);
                 }
             }
             else
@@ -80,13 +76,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alte
 
         private void AddAlternateDLC()
         {
-            Alternates.Add(new AlternateDLC($"Alternate DLC {Alternates.Count + 1}"));
+            Alternates.Add(new AlternateDLC($@"Alternate DLC {Alternates.Count + 1}")); // As this is noun in mod manager terminology it shouldn't be localized, i think
         }
 
 
         public GenericCommand AddAlternateDLCCommand { get; set; }
 
-        //public ObservableCollectionExtended<AlternateDLC> AlternateDLCs { get; } = new ObservableCollectionExtended<AlternateDLC>();
         public event PropertyChangedEventHandler PropertyChanged;
     }
 }

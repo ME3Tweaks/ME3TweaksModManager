@@ -7,15 +7,17 @@ using System.Linq;
 using IniParser.Model;
 using MassEffectModManagerCore.modmanager.gameini;
 using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.modmanager.objects;
+using MassEffectModManagerCore.modmanager.objects.mod;
+using MassEffectModManagerCore.modmanager.objects.mod.editor;
+using MassEffectModManagerCore.ui;
 using ME3ExplorerCore.GameFilesystem;
 using ME3ExplorerCore.Packages;
 using Serilog;
 
-namespace MassEffectModManagerCore.modmanager
+namespace MassEffectModManagerCore.modmanager.objects
 {
     [DebuggerDisplay(@"ModJob for {Header}")]
-    public class ModJob
+    public class ModJob : IMDParameterMap
     {
         public enum JobHeader
         {
@@ -83,7 +85,7 @@ namespace MassEffectModManagerCore.modmanager
         /// </summary>
         public RCWMod RCW { get; set; }
 
-        public static IReadOnlyDictionary<string, JobHeader> ME3OfficialDLCFolderToHeaderMapping = new Dictionary<string, JobHeader>()
+        public static IReadOnlyDictionary<string, JobHeader> ME3OfficialDLCFolderToHeaderMapping = new Dictionary<string, JobHeader>
         {
             { @"DLC_CON_MP1", JobHeader.RESURGENCE },
             { @"DLC_CON_MP2", JobHeader.REBELLION },
@@ -205,9 +207,9 @@ namespace MassEffectModManagerCore.modmanager
         /// </summary>
         /// <param name="jobHeader">Header this job is for</param>
         /// <param name="mod">Mod object this job is for. This object is not saved and is only used to pull the path in and other necessary variables.</param>
-        public ModJob(JobHeader jobHeader, objects.mod.Mod mod = null)
+        public ModJob(JobHeader jobHeader, Mod mod = null)
         {
-            this.Header = jobHeader;
+            Header = jobHeader;
         }
 
         /// <summary>
@@ -218,7 +220,7 @@ namespace MassEffectModManagerCore.modmanager
         /// <param name="ignoreLoadErrors">Ignore checking if new file exists on disk</param>
         /// <param name="mod">Mod to parse against</param>
         /// <returns>string of failure reason. null if OK.</returns>
-        internal string AddFileToInstall(string destRelativePath, string sourceRelativePath, objects.mod.Mod mod)
+        internal string AddFileToInstall(string destRelativePath, string sourceRelativePath, Mod mod)
         {
             //Security check
             if (!checkExtension(sourceRelativePath, out string failReason))
@@ -273,7 +275,7 @@ namespace MassEffectModManagerCore.modmanager
         /// <param name="sourcePath">Path to parsed file</param>
         /// <param name="mod">Mod to parse against</param>
         /// <returns>string of failure reason. null if OK.</returns>
-        internal string AddPreparsedFileToInstall(string destRelativePath, string sourcePath, objects.mod.Mod mod)
+        internal string AddPreparsedFileToInstall(string destRelativePath, string sourcePath, Mod mod)
         {
             //string checkingSourceFile;
             //if (JobDirectory != null)
@@ -305,7 +307,7 @@ namespace MassEffectModManagerCore.modmanager
         /// <param name="sourceRelativePath">Relative (to mod root) path of new file to install</param>
         /// <param name="mod">Mod to parse against</param>
         /// <returns>string of failure reason. null if OK.</returns>
-        internal string AddAdditionalFileToInstall(string destRelativePath, string sourceRelativePath, objects.mod.Mod mod)
+        internal string AddAdditionalFileToInstall(string destRelativePath, string sourceRelativePath, Mod mod)
         {
             //Security check
             if (!checkExtension(sourceRelativePath, out string failReason))
@@ -326,13 +328,13 @@ namespace MassEffectModManagerCore.modmanager
         }
 
 
-        private static IReadOnlyDictionary<JobHeader, string> ME1HeadersToDLCNamesMap = new Dictionary<JobHeader, string>()
+        private static IReadOnlyDictionary<JobHeader, string> ME1HeadersToDLCNamesMap = new Dictionary<JobHeader, string>
         {
             [JobHeader.BRING_DOWN_THE_SKY] = @"DLC_UNC",
             [JobHeader.PINNACLE_STATION] = @"DLC_Vegas"
         };
 
-        private static IReadOnlyDictionary<JobHeader, string> ME2HeadersToDLCNamesMap = new Dictionary<JobHeader, string>()
+        private static IReadOnlyDictionary<JobHeader, string> ME2HeadersToDLCNamesMap = new Dictionary<JobHeader, string>
         {
             [JobHeader.AEGIS_PACK] = @"DLC_CER_02",
             [JobHeader.APPEARANCE_PACK_1] = @"DLC_CON_Pack01",
@@ -359,7 +361,7 @@ namespace MassEffectModManagerCore.modmanager
             [JobHeader.ZAEED] = @"DLC_HEN_VT"
         };
 
-        private static IReadOnlyDictionary<JobHeader, string> ME3HeadersToDLCNamesMap = new Dictionary<JobHeader, string>()
+        private static IReadOnlyDictionary<JobHeader, string> ME3HeadersToDLCNamesMap = new Dictionary<JobHeader, string>
         {
             [JobHeader.COLLECTORS_EDITION] = @"DLC_OnlinePassHidCE",
             [JobHeader.RESURGENCE] = @"DLC_CON_MP1",
@@ -443,7 +445,7 @@ namespace MassEffectModManagerCore.modmanager
             switch (game)
             {
                 case MEGame.ME1:
-                    return ME1SupportedNonCustomDLCJobHeaders.Except(new []{JobHeader.BASEGAME}).ToArray();
+                    return ME1SupportedNonCustomDLCJobHeaders.Except(new[] { JobHeader.BASEGAME }).ToArray();
                 case MEGame.ME2:
                     return ME2SupportedNonCustomDLCJobHeaders.Except(new[] { JobHeader.BASEGAME }).ToArray();
                 case MEGame.ME3:
@@ -453,7 +455,7 @@ namespace MassEffectModManagerCore.modmanager
             }
         }
 
-        internal string AddReadOnlyIndicatorForFile(string sourceRelativePath, objects.mod.Mod mod)
+        internal string AddReadOnlyIndicatorForFile(string sourceRelativePath, Mod mod)
         {
             if (!FilesToInstall.Any(x => x.Value.Equals(sourceRelativePath, StringComparison.InvariantCultureIgnoreCase)))
             {
@@ -628,6 +630,58 @@ namespace MassEffectModManagerCore.modmanager
             return true;
         }
 
-        public bool IsOfficialDLCJob(MEGame game)=>GetSupportedOfficialDLCHeaders(game).Contains(Header);
+        public bool IsOfficialDLCJob(MEGame game) => GetSupportedOfficialDLCHeaders(game).Contains(Header);
+
+        #region Raw values for editor
+        public string NewFilesRaw { get; set; }
+        public string ReplaceFilesRaw { get; set; }
+        public string AddFilesRaw { get; set; }
+        public string AddFilesTargetsRaw { get; set; }
+        public bool GameDirectoryStructureRaw { get; set; }
+        #endregion
+
+        public void BuildParameterMap(Mod mod)
+        {
+            Dictionary<string, object> parameterDictionary = new Dictionary<string, object>();
+            if (IsVanillaJob(this, mod.Game))
+            {
+                parameterDictionary[@"moddir"] = JobDirectory;
+                parameterDictionary[@"newfiles"] = NewFilesRaw;
+                parameterDictionary[@"replacefiles"] = ReplaceFilesRaw;
+
+                if (mod.Game == MEGame.ME3 || Header == JobHeader.BASEGAME)
+                {
+                    // Add files
+                    parameterDictionary[@"addfiles"] = AddFilesRaw;
+                    parameterDictionary[@"addfilestargets"] = AddFilesRaw;
+                    parameterDictionary[@"addfilesreadonlytargets"] = ReadOnlyIndicators;
+                }
+
+                parameterDictionary[@"gamedirectorystructure"] = GameDirectoryStructureRaw ? @"True" : null;
+                parameterDictionary[@"jobdescription"] = RequirementText;
+                // TODO: MULTILISTS
+
+                // TODO: ALTFILES?
+
+            }
+            else if (Header == JobHeader.CUSTOMDLC)
+            {
+                parameterDictionary[@"sourcedirs"] = CustomDLCFolderMapping.Keys;
+                parameterDictionary[@"destdirs"] = CustomDLCFolderMapping.Values;
+
+                // TODO: MULTILISTS?
+
+                // NOT MAPPED: HUMAN READABLE NAMES
+                // MUST BE CONFIGURED DIRECTLY BY EDITOR UI
+            } else if (Header == JobHeader.LOCALIZATION)
+            {
+                parameterDictionary[@"files"] = FilesToInstall.Values;
+                parameterDictionary[@"dlcname"] = mod.RequiredDLC.FirstOrDefault();
+            }
+
+            ParameterMap.ReplaceAll(MDParameter.MapIntoParameterMap(parameterDictionary, Header.ToString()));
+        }
+
+        public ObservableCollectionExtended<MDParameter> ParameterMap { get; } = new ObservableCollectionExtended<MDParameter>();
     }
 }

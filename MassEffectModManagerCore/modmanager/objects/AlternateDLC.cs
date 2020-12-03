@@ -6,8 +6,10 @@ using System.Linq;
 using MassEffectModManagerCore.modmanager.helpers;
 using System.IO;
 using MassEffectModManagerCore.modmanager.localizations;
+using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.modmanager.objects.mod.editor;
 using ME3ExplorerCore.Gammtek.Extensions.Collections.Generic;
+using ME3ExplorerCore.Packages;
 
 namespace MassEffectModManagerCore.modmanager.objects
 {
@@ -78,7 +80,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         public AlternateDLC(string alternateDLCFriendlyName)
         {
             FriendlyName = alternateDLCFriendlyName;
-            BuildParameterMap();
+            BuildParameterMap(null); //Alternates don't need a mod, as nothing is game specific
         }
 
         public AlternateDLC(string alternateDLCText, mod.Mod modForValidating, ModJob job)
@@ -554,7 +556,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         /// <summary>
         /// List of all keys in the altdlc struct that are publicly parsable
         /// </summary>
-        public override void BuildParameterMap()
+        public override void BuildParameterMap(Mod mod)
         {
             var parameterDictionary = new Dictionary<string, object>()
             {

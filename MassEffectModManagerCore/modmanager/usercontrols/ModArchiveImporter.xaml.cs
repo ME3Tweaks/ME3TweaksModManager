@@ -21,6 +21,7 @@ using MassEffectModManagerCore.modmanager.gameini;
 using System.Windows.Media.Animation;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.memoryanalyzer;
+using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using ME3ExplorerCore.Gammtek.Extensions.Collections.Generic;
 using ME3ExplorerCore.Helpers;

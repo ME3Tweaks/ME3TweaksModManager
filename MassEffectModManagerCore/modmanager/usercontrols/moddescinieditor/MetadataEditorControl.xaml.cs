@@ -26,10 +26,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
         public override void OnEditingModChanged(Mod newMod)
         {
             base.OnEditingModChanged(newMod);
-            newMod.BuildParameterMap();
-            ModManagerParameterMap.ReplaceAll(newMod.ParameterMap.Where(x => x.Header == "ModManager"));
-            ModInfoParameterMap.ReplaceAll(newMod.ParameterMap.Where(x => x.Header == "ModInfo"));
-            UPDATESParameterMap.ReplaceAll(newMod.ParameterMap.Where(x => x.Header == "UPDATES"));
+            newMod.BuildParameterMap(EditingMod);
+            ModManagerParameterMap.ReplaceAll(newMod.ParameterMap.Where(x => x.Header == @"ModManager"));
+            ModInfoParameterMap.ReplaceAll(newMod.ParameterMap.Where(x => x.Header == @"ModInfo"));
+            UPDATESParameterMap.ReplaceAll(newMod.ParameterMap.Where(x => x.Header == @"UPDATES"));
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

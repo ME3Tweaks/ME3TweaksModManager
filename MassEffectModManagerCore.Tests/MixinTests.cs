@@ -5,6 +5,7 @@ using System.Linq;
 using MassEffectModManagerCore.modmanager;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.me3tweaks;
+using MassEffectModManagerCore.modmanager.objects;
 using ME3ExplorerCore.Packages;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

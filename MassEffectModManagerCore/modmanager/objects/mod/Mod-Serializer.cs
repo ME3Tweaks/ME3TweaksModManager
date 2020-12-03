@@ -2,6 +2,7 @@
 using IniParser.Model;
 using MassEffectModManagerCore.modmanager.objects.mod.editor;
 using MassEffectModManagerCore.ui;
+using ME3ExplorerCore.Packages;
 
 namespace MassEffectModManagerCore.modmanager.objects.mod
 {
@@ -39,7 +40,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
 
         public ObservableCollectionExtended<MDParameter> ParameterMap { get; } = new ObservableCollectionExtended<MDParameter>();
 
-        public void BuildParameterMap()
+        public void BuildParameterMap(Mod _)
         {
             ParameterMap.ClearEx();
 
@@ -47,15 +48,16 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             {
                 // ModManager
                 {@"cmmver", ModDescTargetVersion},
-                {@"minbuild", MinimumSupportedBuild},
+                {@"minbuild", MinimumSupportedBuild > 102 ? MinimumSupportedBuild.ToString() : null},
             };
-            ParameterMap.AddRange(MDParameter.MapIntoParameterMap(parameterDictionary, "ModManager"));
+            ParameterMap.AddRange(MDParameter.MapIntoParameterMap(parameterDictionary, @"ModManager"));
 
 
             // ModInfo
             parameterDictionary = new Dictionary<string, object>()
             {
                 {@"game", Game},
+                {@"modname", ModName},
                 {@"moddesc", ModDescription},
                 {@"modver", ParsedModVersion},
                 {@"moddev", ModDeveloper},
@@ -66,7 +68,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 {@"prefercompressed", PreferCompressed ? "True" : null},
                 {@"bannerimagename", BannerImageName},
             };
-            ParameterMap.AddRange(MDParameter.MapIntoParameterMap(parameterDictionary, "ModInfo"));
+            ParameterMap.AddRange(MDParameter.MapIntoParameterMap(parameterDictionary, @"ModInfo"));
 
             // UPDATES
             parameterDictionary = new Dictionary<string, object>()
@@ -77,7 +79,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 {@"additionaldeploymentfiles", AdditionalDeploymentFiles},
             };
 
-            ParameterMap.AddRange(MDParameter.MapIntoParameterMap(parameterDictionary, "UPDATES"));
+            ParameterMap.AddRange(MDParameter.MapIntoParameterMap(parameterDictionary, @"UPDATES"));
         }
     }
 }

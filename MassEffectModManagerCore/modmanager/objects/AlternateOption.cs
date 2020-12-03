@@ -8,6 +8,7 @@ using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.modmanager.objects.mod.editor;
 using MassEffectModManagerCore.ui;
+using ME3ExplorerCore.Packages;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.objects
@@ -48,7 +49,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         public abstract bool UINotApplicable { get; }
         public abstract bool UIIsSelectable { get; set; }
         public abstract bool IsAlways { get; }
-        public abstract void BuildParameterMap();
+        public abstract void BuildParameterMap(Mod mod);
         public virtual string GroupName { get; internal set; }
         public virtual string FriendlyName { get; internal set; }
         public virtual string Description { get; internal set; }

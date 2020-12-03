@@ -778,7 +778,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     string addFilesTargetReadOnlyList = ModDescTargetVersion >= 4.3 ? iniData[headerAsString][@"addfilesreadonlytargets"] : null;
 
 
-                    //Remove files (ModDesc 4.1) - REMOVE IN MODDESC 6
+                    //Remove files (ModDesc 4.1) - REMOVED IN MOD MANAGER 6
 
 
                     //Check that the lists here are at least populated in one category. If none are populated then this job will do effectively nothing.
@@ -876,6 +876,14 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     CLog.Information($@"Read job requirement text: {jobRequirement}", Settings.LogModStartup && jobRequirement != null);
 
                     ModJob headerJob = new ModJob(header, this);
+                    // Editor only stuff
+                    headerJob.NewFilesRaw = replaceFilesSourceList;
+                    headerJob.ReplaceFilesRaw = replaceFilesTargetList;
+                    headerJob.AddFilesRaw = addFilesSourceList;
+                    headerJob.AddFilesTargetsRaw = addFilesTargetList;
+                    headerJob.GameDirectoryStructureRaw = directoryMatchesGameStructure;
+
+                    // End editor only stuff
                     headerJob.JobDirectory = jobSubdirectory.Replace('/', '\\');
                     headerJob.RequirementText = jobRequirement;
 
@@ -1371,7 +1379,6 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 // Files check
                 var locFiles = StringStructParser.GetSemicolonSplitList(localizationFilesStr);
                 ModJob localizationJob = new ModJob(ModJob.JobHeader.LOCALIZATION);
-
                 foreach (var f in locFiles)
                 {
                     var filePath = FilesystemInterposer.PathCombine(IsInArchive, ModPath, f);
@@ -1385,16 +1392,24 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     var fname = Path.GetFileName(f);
                     if (!fname.EndsWith(@".tlk"))
                     {
-                        Log.Error($@"Referenced localization file is not a .tlk: {f}. LOCALIATION tasks only allow installation of .tlk files.");
+                        Log.Error($@"Referenced localization file is not a .tlk: {f}. LOCALIZATION tasks only allow installation of .tlk files.");
                         LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_invalidLocalizationFileType, f);
                         return;
                     }
 
-                    if (!fname.StartsWith(destDlc + @"_"))
+                    if (Game == MEGame.ME3)
                     {
-                        Log.Error($@"Referenced localization file has incorrect name: {f}. Localization filenames must begin with the name of the DLC, followed by an underscore and then the three letter language code.");
-                        LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_invalidLocalizationFilename, f);
-                        return;
+                        if (!fname.StartsWith(destDlc + @"_"))
+                        {
+                            Log.Error($@"Referenced localization file has incorrect name: {f}. Localization filenames must begin with the name of the DLC, followed by an underscore and then the three letter language code.");
+                            LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_invalidLocalizationFilename, f);
+                            return;
+                        }
+                    } else if (Game == MEGame.ME2)
+                    {
+                        // Read bioengine before install maybe?
+                        // We need to know the module number
+                        // TODO: FIX THIS FOR ME2
                     }
 
 

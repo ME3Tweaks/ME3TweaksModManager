@@ -4,8 +4,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows;
 using IniParser.Model;
-using IniParser.Parser;
-using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor;
 
@@ -28,6 +26,7 @@ namespace MassEffectModManagerCore.modmanager.windows
             // Tabs
             editorControls.Add(metadataEditor_control);
             editorControls.Add(officialdlc_editor_control);
+            editorControls.Add(customdlcEditor_control);
             editorControls.Add(customdlc_alternateFileEditor_control);
             editorControls.Add(customdlc_alternateDlcEditor_control);
         }
@@ -49,9 +48,16 @@ namespace MassEffectModManagerCore.modmanager.windows
                 control.Serialize(ini);
             }
 
+            Debug.WriteLine(ini.ToString());
             ListDialog ld = new ListDialog(new List<string>(new[] { ini.ToString() }), "Moddesc.ini editor TEST OUTPUT", "Copy this data into your moddesc.ini.", this);
             ld.Show();
 
+            // Load the moddesc.ini as if it was in the library at the original mod folder location
+            var m = new Mod(ini.ToString(), EditingMod.ModPath, null);
+            if (m.ValidMod)
+            {
+                // wow
+            }
             //var moddesc = EditingMod.SerializeModdesc();
             ////Mod m = new Mod(moddesc, EditingMod.ModPath, null);
 

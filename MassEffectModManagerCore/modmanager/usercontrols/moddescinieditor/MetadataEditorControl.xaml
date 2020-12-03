@@ -8,9 +8,12 @@
              mc:Ignorable="d" 
              DataContext="{Binding RelativeSource={RelativeSource Self}}"
              d:DesignHeight="450" d:DesignWidth="800">
+    <ScrollViewer>
+
     <StackPanel>
         <local:DescriptorEditorItemsControl Header="ModManager" ItemsSource="{Binding ModManagerParameterMap}"/>
         <local:DescriptorEditorItemsControl Header="ModInfo" ItemsSource="{Binding ModInfoParameterMap}"/>
         <local:DescriptorEditorItemsControl Header="UPDATES" ItemsSource="{Binding UPDATESParameterMap}"/>
     </StackPanel>
+    </ScrollViewer>
 </local:ModdescEditorControlBase>

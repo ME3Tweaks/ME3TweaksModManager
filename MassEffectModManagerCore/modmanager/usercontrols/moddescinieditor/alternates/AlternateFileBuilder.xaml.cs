@@ -28,7 +28,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alte
                 Alternates.ReplaceAll(AttachedJob.AlternateFiles);
                 foreach (var a in Alternates)
                 {
-                    a.BuildParameterMap();
+                    a.BuildParameterMap(EditingMod);
                 }
             }
             else
@@ -41,7 +41,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alte
         {
             if (AttachedJob != null && Alternates.Any())
             {
-                string outStr = "(";
+                string outStr = @"(";
                 bool isFirst = true;
                 foreach (var adlc in Alternates)
                 {
@@ -56,7 +56,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alte
                     outStr += StringStructParser.BuildCommaSeparatedSplitValueList(adlc.ParameterMap.Where(x => !string.IsNullOrWhiteSpace(x.Value)).ToDictionary(x => x.Key, x => x.Value));
                 }
 
-                outStr += ")";
+                outStr += @")";
                 ini[@"CUSTOMDLC"][@"altfiles"] = outStr;
             }
         }

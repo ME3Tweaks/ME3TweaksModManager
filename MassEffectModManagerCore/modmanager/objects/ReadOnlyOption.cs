@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Text;
+﻿using System.ComponentModel;
 using MassEffectModManagerCore.modmanager.localizations;
+using MassEffectModManagerCore.modmanager.objects.mod;
 
 namespace MassEffectModManagerCore.modmanager.objects
 {
@@ -13,7 +11,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         public override bool CheckedByDefault => false;
         public override bool IsManual => true;
         public override bool IsAlways => false;
-        public override void BuildParameterMap()
+        public override void BuildParameterMap(Mod mod)
         {
             // This class does not use parameters
         }
