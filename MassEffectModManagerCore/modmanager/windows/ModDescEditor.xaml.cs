@@ -26,6 +26,8 @@ namespace MassEffectModManagerCore.modmanager.windows
             InitializeComponent();
 
             // Tabs
+            editorControls.Add(metadataEditor_control);
+            editorControls.Add(officialdlc_editor_control);
             editorControls.Add(customdlc_alternateFileEditor_control);
             editorControls.Add(customdlc_alternateDlcEditor_control);
         }

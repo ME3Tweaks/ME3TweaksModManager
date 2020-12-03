@@ -15,7 +15,7 @@ using Serilog;
 namespace MassEffectModManagerCore.modmanager.objects
 {
     [DebuggerDisplay(@"AlternateFile | {Condition} {Operation}, ConditionalDLC: {ConditionalDLC}, ModFile: {ModFile}, AltFile: {AltFile}")]
-    public class AlternateFile : AlternateOption
+    public sealed class AlternateFile : AlternateOption
     {
         public enum AltFileOperation
         {
@@ -83,8 +83,6 @@ namespace MassEffectModManagerCore.modmanager.objects
         //public const string CONDITION_DLC_PRESENT = "COND_DLC_PRESENT"; //automatically choose alt if DLC listed is present
         //public const string CONDITION_DLC_NOT_PRESENT = "COND_DLC_NOT_PRESENT"; //automatically choose if DLC is not present
 
-        public string ApplicableAutoText { get; }
-        public string NotApplicableAutoText { get; }
         public override bool UIIsSelectable
         {
             get => (!IsAlways && !UIRequired && !UINotApplicable) || IsManual;
@@ -387,9 +385,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 return; // Failed in super call
             }
 
-            ApplicableAutoText = properties.TryGetValue(@"ApplicableAutoText", out string applicableText) ? applicableText : M3L.GetString(M3L.string_autoApplied);
-
-            NotApplicableAutoText = properties.TryGetValue(@"NotApplicableAutoText", out string notApplicableText) ? notApplicableText : M3L.GetString(M3L.string_notApplicable);
+            ReadAutoApplicableText(properties);
 
             if (modForValidating.ModDescTargetVersion >= 6.0)
             {
@@ -457,8 +453,8 @@ namespace MassEffectModManagerCore.modmanager.objects
                 {@"Description", Description},
                 {@"CheckedByDefault", CheckedByDefault ? @"True" : null}, //don't put checkedbydefault in if it is not set to true.
                 {@"OptionGroup", GroupName},
-                {@"ApplicableAutoText", ApplicableAutoText},
-                {@"NotApplicableAutoText", NotApplicableAutoText},
+                {@"ApplicableAutoText", ApplicableAutoTextRaw},
+                {@"NotApplicableAutoText", NotApplicableAutoTextRaw},
                 {@"MultiListId", MultiListId > 0 ? MultiListId.ToString() : null},
                 {@"MultiListRootPath", MultiListRootPath},
                 {@"MultiListTargetPath", MultiListTargetPath},

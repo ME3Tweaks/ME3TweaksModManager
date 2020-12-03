@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Text;
 using System.Windows.Media.Imaging;
+using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.modmanager.objects.mod.editor;
 using MassEffectModManagerCore.ui;
@@ -14,6 +15,16 @@ namespace MassEffectModManagerCore.modmanager.objects
     public abstract class AlternateOption : INotifyPropertyChanged, IMDParameterMap
     {
         public event PropertyChangedEventHandler PropertyChanged;
+        public string ApplicableAutoText { get; private set; }
+        public string NotApplicableAutoText { get; private set; }
+        /// <summary>
+        /// For moddesc.ini editor only
+        /// </summary>
+        public string ApplicableAutoTextRaw { get; private set; }
+        /// <summary>
+        /// For moddesc.ini editor only
+        /// </summary>
+        public string NotApplicableAutoTextRaw { get; private set; }
         public virtual bool CheckedByDefault { get; internal set; }
         public abstract bool IsManual { get; }
         public virtual double CheckboxOpacity => (!UIIsSelectable) ? .5 : 1;
@@ -87,6 +98,17 @@ namespace MassEffectModManagerCore.modmanager.objects
             }
 
             return assetData;
+        }
+
+        public void ReadAutoApplicableText(Dictionary<string, string> properties)
+        {
+            properties.TryGetValue(@"ApplicableAutoText", out string applicableText);
+            ApplicableAutoText = applicableText ?? M3L.GetString(M3L.string_autoApplied);
+            ApplicableAutoTextRaw = applicableText;
+
+            properties.TryGetValue(@"NotApplicableAutoText", out string notApplicableText);
+            NotApplicableAutoText = notApplicableText ?? M3L.GetString(M3L.string_notApplicable);
+            NotApplicableAutoTextRaw = notApplicableText;
         }
 
         public bool ReadImageAssetOptions(Mod modForValidating, Dictionary<string, string> properties)

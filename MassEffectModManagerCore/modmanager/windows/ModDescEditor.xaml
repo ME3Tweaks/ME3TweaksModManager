@@ -27,6 +27,7 @@
             <TabItem Header="Basegame">
             </TabItem>
             <TabItem Header="Official DLC">
+                <moddescinieditor:OfficialDLCEditorControl x:Name="officialdlc_editor_control"/>
             </TabItem>
             <TabItem Header="Custom DLC">
                 <moddescinieditor:CustomDLCEditorControl x:Name="customdlcEditor_control"/>

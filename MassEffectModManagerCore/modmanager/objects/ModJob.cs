@@ -413,6 +413,11 @@ namespace MassEffectModManagerCore.modmanager
         /// </summary>
         public List<string> ReadOnlyIndicators = new List<string>();
 
+        /// <summary>
+        /// Gets list of headers that does not include CUSTOMDLC. Includes BASEGAME.
+        /// </summary>
+        /// <param name="game"></param>
+        /// <returns></returns>
         internal static JobHeader[] GetSupportedNonCustomDLCHeaders(MEGame game)
         {
             switch (game)
@@ -425,6 +430,26 @@ namespace MassEffectModManagerCore.modmanager
                     return ME3SupportedNonCustomDLCJobHeaders;
                 default:
                     throw new Exception(@"Can't get supported list of headers for unknown game type.");
+            }
+        }
+
+        /// <summary>
+        /// Gets list of official DLC headers for the specified game.
+        /// </summary>
+        /// <param name="game"></param>
+        /// <returns></returns>
+        internal static JobHeader[] GetSupportedOfficialDLCHeaders(MEGame game)
+        {
+            switch (game)
+            {
+                case MEGame.ME1:
+                    return ME1SupportedNonCustomDLCJobHeaders.Except(new []{JobHeader.BASEGAME}).ToArray();
+                case MEGame.ME2:
+                    return ME2SupportedNonCustomDLCJobHeaders.Except(new[] { JobHeader.BASEGAME }).ToArray();
+                case MEGame.ME3:
+                    return ME3SupportedNonCustomDLCJobHeaders.Except(new[] { JobHeader.BASEGAME }).ToArray();
+                default:
+                    throw new Exception(@"Can't get supported list of dlc headers for unknown game type.");
             }
         }
 
@@ -602,5 +627,7 @@ namespace MassEffectModManagerCore.modmanager
 
             return true;
         }
+
+        public bool IsOfficialDLCJob(MEGame game)=>GetSupportedOfficialDLCHeaders(game).Contains(Header);
     }
 }

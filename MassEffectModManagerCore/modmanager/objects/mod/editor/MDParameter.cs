@@ -43,12 +43,13 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.editor
         /// Which header this descriptor is under
         /// </summary>
         public string Header { get; set; }
-        public static List<MDParameter> MapIntoParameterMap(Dictionary<string, object> parameterDictionary)
+        public static List<MDParameter> MapIntoParameterMap(Dictionary<string, object> parameterDictionary, string header = null)
         {
             var parammap = new List<MDParameter>();
             foreach (var p in parameterDictionary)
             {
                 var param = new MDParameter(GetMDType(p), p.Key, GetValue(p));
+                param.Header = header;
                 parammap.Add(param);
             }
 

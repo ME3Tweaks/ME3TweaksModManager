@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.MetadataEditorControl"
+﻿<local:ModdescEditorControlBase x:Class="MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.MetadataEditorControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -6,71 +6,11 @@
              xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor"
              xmlns:system="clr-namespace:System;assembly=System.Runtime"
              mc:Ignorable="d" 
+             DataContext="{Binding RelativeSource={RelativeSource Self}}"
              d:DesignHeight="450" d:DesignWidth="800">
-    <UserControl.Resources>
-        <Thickness x:Key="topBottomMargin" Top="4" Left="0" Right="0" Bottom ="4"/>
-    </UserControl.Resources>
-    <Grid>
-            <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-
-
-        <TextBlock FontWeight="Bold" Text="[ModManager]" Grid.Row="0" Grid.Column="0"  Grid.ColumnSpan="2"/>
-        <TextBlock Grid.Row="1" Grid.Column="0" Text="ModDesc target version (cmmver)" Margin="{StaticResource topBottomMargin}"/>
-        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding EditingMod.ModDescTargetVersion}" Margin="{StaticResource topBottomMargin}"/>
-
-        <TextBlock Grid.Row="2" Grid.Column="0" Text="Minimum supported build (minbuild)" Margin="{StaticResource topBottomMargin}"/>
-        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding EditingMod.MinimumSupportedBuild}" Margin="{StaticResource topBottomMargin}"/>
-
-        <TextBlock FontWeight="Bold" Text="[ModInfo]" Grid.Row="3" Grid.Column="0"  Grid.ColumnSpan="2"/>
-        <TextBlock Grid.Row="4" Grid.Column="0" Text="Mod Name (modname)" Margin="{StaticResource topBottomMargin}"/>
-        <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding EditingMod.ModName}" Margin="{StaticResource topBottomMargin}"/>
-
-        <TextBlock Grid.Row="5" Grid.Column="0" Text="Game (game)" Margin="{StaticResource topBottomMargin}"/>
-        <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding EditingMod.Game}" Margin="{StaticResource topBottomMargin}"/>
-
-        <TextBlock Grid.Row="6" Grid.Column="0" Text="Mod Version (modver)" Margin="{StaticResource topBottomMargin}"/>
-        <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding EditingMod.ModVersionString}"  Margin="{StaticResource topBottomMargin}"/>
-
-        <TextBlock Grid.Row="7" Grid.Column="0" Text="Mod Developer (moddev)" Margin="{StaticResource topBottomMargin}"/>
-        <TextBox Grid.Row="7" Grid.Column="1" Text="{Binding EditingMod.ModDeveloper}" Margin="{StaticResource topBottomMargin}"/>
-
-        <TextBlock Grid.Row="8" Grid.Column="0" Text="Mod Website (modsite)" Margin="{StaticResource topBottomMargin}"/>
-        <TextBox Grid.Row="8" Grid.Column="1" Text="{Binding EditingMod.ModWebsite}" Margin="{StaticResource topBottomMargin}"/>
-
-        <TextBlock Grid.Row="9" Grid.Column="0" Text="ME3Tweaks Updater Service Code (updatecode)" Margin="{StaticResource topBottomMargin}"/>
-        <TextBox Grid.Row="9" Grid.Column="1" Text="{Binding EditingMod.ModClassicUpdateCode}" Margin="{StaticResource topBottomMargin}"/>
-
-        <TextBlock FontWeight="Bold" Text="[UPDATES]" Grid.Row="20" Grid.Column="0"  Grid.ColumnSpan="2"/>
-        <TextBlock Grid.Row="21" Grid.Column="0" Text="Server folder (serverfolder)" Margin="{StaticResource topBottomMargin}"/>
-        <TextBox Grid.Row="21" Grid.Column="1" Text="{Binding EditingMod.UpdaterServiceServerFolder}" Margin="{StaticResource topBottomMargin}"/>
-    </Grid>
-</UserControl>
+    <StackPanel>
+        <local:DescriptorEditorItemsControl Header="ModManager" ItemsSource="{Binding ModManagerParameterMap}"/>
+        <local:DescriptorEditorItemsControl Header="ModInfo" ItemsSource="{Binding ModInfoParameterMap}"/>
+        <local:DescriptorEditorItemsControl Header="UPDATES" ItemsSource="{Binding UPDATESParameterMap}"/>
+    </StackPanel>
+</local:ModdescEditorControlBase>

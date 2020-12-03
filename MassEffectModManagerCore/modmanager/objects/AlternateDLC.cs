@@ -12,7 +12,7 @@ using ME3ExplorerCore.Gammtek.Extensions.Collections.Generic;
 namespace MassEffectModManagerCore.modmanager.objects
 {
     [DebuggerDisplay(@"AlternateDLC | {Condition} {Operation}, ConditionalDLC: {ConditionalDLC}, DestDLC: {DestinationDLCFolder}, AltDLC: {AlternateDLCFolder}")]
-    public class AlternateDLC : AlternateOption
+    public sealed class AlternateDLC : AlternateOption
     {
         public enum AltDLCOperation
         {
@@ -45,8 +45,6 @@ namespace MassEffectModManagerCore.modmanager.objects
         /// </summary>
         public string[] DLCRequirementsForManual { get; }
 
-        public string ApplicableAutoText { get; }
-        public string NotApplicableAutoText { get; }
         public override bool IsAlways => false; //AlternateDLC doesn't support this
         public List<string> ConditionalDLC = new List<string>();
 
@@ -394,9 +392,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 return; // Failed in super call
             }
 
-            ApplicableAutoText = properties.TryGetValue(@"ApplicableAutoText", out string applicableText) ? applicableText : M3L.GetString(M3L.string_autoApplied);
-
-            NotApplicableAutoText = properties.TryGetValue(@"NotApplicableAutoText", out string notApplicableText) ? notApplicableText : M3L.GetString(M3L.string_notApplicable);
+            ReadAutoApplicableText(properties);
 
             if (modForValidating.ModDescTargetVersion >= 6.0)
             {
@@ -571,8 +567,8 @@ namespace MassEffectModManagerCore.modmanager.objects
                 {@"Description", Description},
                 {@"CheckedByDefault", CheckedByDefault ? @"True" : null}, //don't put checkedbydefault in if it is not set to true.
                 {@"OptionGroup", GroupName},
-                {@"ApplicableAutoText", ApplicableAutoText},
-                {@"NotApplicableAutoText", NotApplicableAutoText},
+                {@"ApplicableAutoText", ApplicableAutoTextRaw},
+                {@"NotApplicableAutoText", NotApplicableAutoTextRaw},
                 {@"MultiListId", MultiListId > 0 ? MultiListId.ToString() : null},
                 {@"MultiListRootPath", MultiListRootPath},
                 {@"RequiredFileRelativePaths", RequiredSpecificFiles.Keys.ToList()}, // List of relative paths

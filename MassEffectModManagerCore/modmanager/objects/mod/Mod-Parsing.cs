@@ -43,6 +43,12 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
         /// The numerical ID for a mod on the respective game's NexusMods page. This is automatically parsed from the ModWebsite if this is not explicitly set and the ModWebsite attribute is a nexusmods url.
         /// </summary>
         public int NexusModID { get; set; }
+
+        /// <summary>
+        /// The moddesc.ini value that was set for nexuscode. If one was not set, this value is blank.
+        /// </summary>
+        public string NexusCodeRaw { get; set; }
+
         /// <summary>
         /// Indicates if this is a valid mod or not.
         /// </summary>
@@ -552,6 +558,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
 
             int.TryParse(iniData[@"ModInfo"][@"nexuscode"], out int nexuscode);
             NexusModID = nexuscode;
+            NexusCodeRaw = iniData[@"ModInfo"][@"nexuscode"];
 
             #region NexusMods ID from URL
 

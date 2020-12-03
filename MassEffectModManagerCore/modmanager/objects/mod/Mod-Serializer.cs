@@ -41,32 +41,43 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
 
         public void BuildParameterMap()
         {
+            ParameterMap.ClearEx();
+
             var parameterDictionary = new Dictionary<string, object>()
             {
                 // ModManager
                 {@"cmmver", ModDescTargetVersion},
                 {@"minbuild", MinimumSupportedBuild},
+            };
+            ParameterMap.AddRange(MDParameter.MapIntoParameterMap(parameterDictionary, "ModManager"));
 
-                // ModInfo
+
+            // ModInfo
+            parameterDictionary = new Dictionary<string, object>()
+            {
                 {@"game", Game},
                 {@"moddesc", ModDescription},
                 {@"modver", ParsedModVersion},
                 {@"moddev", ModDeveloper},
                 {@"modsite", ModWebsite},
-                {@"nexuscode", NexusModID},
+                {@"updatecode", ModClassicUpdateCode > 0 ? ModClassicUpdateCode.ToString() : null},
+                {@"nexuscode", NexusModID > 0 ? NexusModID.ToString() : null},
                 {@"requireddlc", RequiredDLC},
-                {@"prefercompressed", PreferCompressed},
+                {@"prefercompressed", PreferCompressed ? "True" : null},
                 {@"bannerimagename", BannerImageName},
+            };
+            ParameterMap.AddRange(MDParameter.MapIntoParameterMap(parameterDictionary, "ModInfo"));
 
-                // UPDATES
+            // UPDATES
+            parameterDictionary = new Dictionary<string, object>()
+                {
                 {@"serverfolder", UpdaterServiceServerFolder},
                 {@"blacklistedfiles", UpdaterServiceBlacklistedFiles},
                 {@"additionaldeploymentfolders", AdditionalDeploymentFolders},
-                {@"additionaldeploymentfiles", AdditionalDeploymentFiles}, // List of relative paths
-                {@"updatecode", ModClassicUpdateCode}, // List of relative sizes
+                {@"additionaldeploymentfiles", AdditionalDeploymentFiles},
             };
 
-            ParameterMap.ReplaceAll(MDParameter.MapIntoParameterMap(parameterDictionary));
+            ParameterMap.AddRange(MDParameter.MapIntoParameterMap(parameterDictionary, "UPDATES"));
         }
     }
 }
