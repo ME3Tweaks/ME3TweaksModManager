@@ -1,3 +1,5 @@
+![Documentation Image](images/documentation_header.png)
+
 ### Official DLC Task Headers
 Mod Manager 2.0 (cmmver 2) and above added support for modding official game DLC. M3 added support for ME1 and ME2 modding, which has an additional set of headers that are supported. 
 
