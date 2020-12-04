@@ -36,7 +36,7 @@
                 <DataTemplate DataType="{x:Type editor:MDParameter}" >
                     <DockPanel Margin="0,0,0,3">
                         <TextBlock DockPanel.Dock="Left" Text="{Binding Key}" Width="160"/>
-                        <TextBox Text="{Binding Value}" TextWrapping="Wrap"/>
+                        <TextBox Text="{Binding Value}" AcceptsReturn="{Binding AcceptsNewLines}" TextWrapping="Wrap"/>
                     </DockPanel>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>

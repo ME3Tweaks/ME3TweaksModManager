@@ -211,7 +211,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         return;
                     }
 
-                    if (properties.TryGetValue(@"MultiListId", out string multilistidstr) && int.TryParse(multilistidstr, out  var multilistid))
+                    if (properties.TryGetValue(@"MultiListId", out string multilistidstr) && int.TryParse(multilistidstr, out var multilistid))
                     {
                         if (associatedJob.MultiLists.TryGetValue(multilistid, out var ml))
                         {
@@ -223,7 +223,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                             Log.Error($@"Alternate File ({FriendlyName}) Multilist ID does not exist as part of the task: multilist" + multilistid);
                             ValidAlternate = false;
                             var id = @"multilist" + multilistid;
-                            LoadFailedReason = M3L.GetString(M3L.string_interp_altfile_multilistMissingFileInMultiList, FriendlyName) + $@" multilist{multilistid}";
+                            LoadFailedReason = M3L.GetString(M3L.string_interp_altfile_multilistMissingFileInMultiList, FriendlyName, associatedJob.Header) + $@" multilist{multilistid}";
                             return;
                         }
                     }
@@ -273,8 +273,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         {
                             Log.Error($@"Alternate File ({FriendlyName}) Multilist ID does not exist as part of the task: multilist" + multilistid);
                             ValidAlternate = false;
-                            var id = @"multilist" + multilistid;
-                            LoadFailedReason = M3L.GetString(M3L.string_interp_altfile_multilistMissingFileInMultiList, FriendlyName) + $@" multilist{multilistid}";
+                            LoadFailedReason = M3L.GetString(M3L.string_interp_altfile_multilistMissingFileInMultiList, FriendlyName, associatedJob.Header) + $@" multilist{multilistid}";
                             return;
                         }
                     }

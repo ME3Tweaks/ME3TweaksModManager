@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Windows;
 using ME3ExplorerCore.Packages;
 using Serilog;
 using SevenZip;
@@ -28,6 +29,35 @@ namespace MassEffectModManagerCore.modmanager.helpers
             enumerable.AddRange((IEnumerable<char>)Path.GetInvalidFileNameChars());
             enumerable.AddRange((IEnumerable<char>)Path.GetInvalidPathChars());
             Extensions.InvalidPathingChars = enumerable.ToArray<char>(enumerable.Count);
+        }
+
+        /// <summary>
+        /// Returns logical children of this UI object of the specified type
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parent"></param>
+        /// <returns></returns>
+        public static IEnumerable<T> FindLogicalChildren<T>(this DependencyObject parent) where T : DependencyObject
+        {
+            if (parent == null)
+                throw new ArgumentNullException(nameof(parent));
+
+            var queue = new Queue<DependencyObject>(new[] { parent });
+
+            while (queue.Any())
+            {
+                var reference = queue.Dequeue();
+                var children = LogicalTreeHelper.GetChildren(reference);
+                var objects = children.OfType<DependencyObject>();
+
+                foreach (var o in objects)
+                {
+                    if (o is T child)
+                        yield return child;
+
+                    queue.Enqueue(o);
+                }
+            }
         }
 
         public static int ToGameNum(this MEGame game)

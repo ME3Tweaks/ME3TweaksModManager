@@ -16,6 +16,11 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.editor
 
         }
 
+        /// <summary>
+        /// If the editor for this value accepts newlines or not. Used by moddesc descriptor
+        /// </summary>
+        public bool AcceptsNewLines { get; set; }
+
         public MDParameter(string type, string key, string value)
         {
             ValueType = type;
@@ -50,6 +55,10 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.editor
             {
                 var param = new MDParameter(GetMDType(p), p.Key, GetValue(p));
                 param.Header = header;
+                if (header == @"ModInfo" && p.Key == @"moddesc")
+                {
+                    param.AcceptsNewLines = true;
+                }
                 parammap.Add(param);
             }
 

@@ -221,10 +221,10 @@ namespace MassEffectModManagerCore.modmanager.objects
                         }
                         else
                         {
-                            Log.Error($@"Alternate DLC ({FriendlyName}) Multilist ID does not exist as part of the task: multilist" + multilistid);
+                            Log.Error($@"Alternate DLC ({FriendlyName}) Multilist ID does not exist as part of the {job.Header} task: multilist" + multilistid);
                             ValidAlternate = false;
                             var id = @"multilist" + multilistid;
-                            LoadFailedReason = M3L.GetString(M3L.string_interp_altdlc_multilistMissingMultiListX, FriendlyName, id);
+                            LoadFailedReason = M3L.GetString(M3L.string_interp_altdlc_multilistMissingMultiListX, FriendlyName, job.Header,id);
                             return;
                         }
                     }
@@ -307,6 +307,8 @@ namespace MassEffectModManagerCore.modmanager.objects
                         }
                     }
                 }
+
+                // Validate multilist dlc
             }
 
             var dlcReqs = properties.TryGetValue(@"DLCRequirements", out string _dlcReqs) ? _dlcReqs.Split(';') : null;

@@ -47,9 +47,19 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
                     v.Value = App.HighestSupportedModDesc.ToString(CultureInfo.InvariantCulture);
                 }
 
+
                 if (!string.IsNullOrWhiteSpace(v.Value))
                 {
-                    ini[v.Header][v.Key] = v.Value;
+                    if (v.Key == @"moddesc" && v.Header == @"ModInfo")
+                    {
+                        // Convert what's written into moddesc
+                        ini[v.Header][v.Key] = Utilities.ConvertNewlineToBr(v.Value);
+                    }
+                    else
+                    {
+                        ini[v.Header][v.Key] = v.Value;
+
+                    }
                 }
             }
         }

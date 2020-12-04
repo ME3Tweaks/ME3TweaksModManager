@@ -76,7 +76,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
         {
             if (CustomDLCJob != null)
             {
-                // Pass 1: sourcedirs destdirs
                 var srcDirs = CustomDLCParameters.ToDictionary(x => x.SourcePath, x => x.DestDLCName);
 
                 if (srcDirs.Any())
@@ -89,6 +88,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
                         ini[@"CUSTOMDLC"][v.DestDLCName] = v.HumanReadableName;
                     }
                 }
+
+                customdlc_multilists_editor.Serialize(ini);
             }
         }
     }

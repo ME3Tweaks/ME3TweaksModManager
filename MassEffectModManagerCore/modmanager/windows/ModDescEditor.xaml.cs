@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows;
+using System.Windows.Media;
 using IniParser.Model;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor;
@@ -14,13 +15,13 @@ namespace MassEffectModManagerCore.modmanager.windows
     /// </summary>
     public partial class ModDescEditor : Window, INotifyPropertyChanged
     {
-        public Mod EditingMod
-        {
-            get;
-            private set;
-        }
+        public Mod EditingMod { get; private set; }
         private List<ModdescEditorControlBase> editorControls = new List<ModdescEditorControlBase>();
 
+        /// <summary>
+        /// The generated ini from the last serialization
+        /// </summary>
+        public string GeneratedIni { get; set; }
         public ModDescEditor(Mod selectedMod)
         {
             EditingMod = new Mod(selectedMod.ModDescPath, selectedMod.Game);
@@ -52,26 +53,52 @@ namespace MassEffectModManagerCore.modmanager.windows
                 control.Serialize(ini);
             }
 
-            Debug.WriteLine(ini.ToString());
-            ListDialog ld = new ListDialog(new List<string>(new[] { ini.ToString() }), "Moddesc.ini editor TEST OUTPUT", "Copy this data into your moddesc.ini.", this);
-            ld.Show();
+            //Debug.WriteLine(ini.ToString());
+            //ListDialog ld = new ListDialog(new List<string>(new[] { ini.ToString() }), "Moddesc.ini editor TEST OUTPUT", "Copy this data into your moddesc.ini.", this);
+            //ld.Show();
 
             // Load the moddesc.ini as if it was in the library at the original mod folder location
             var m = new Mod(ini.ToString(), EditingMod.ModPath, null);
+
+            StatusMessage = m.LoadFailedReason;
+            if (StatusMessage == null)
+            {
+                if (Settings.DarkTheme)
+                {
+                    StatusForeground = Brushes.LightGreen;
+                }
+                else
+                {
+                    StatusForeground = Brushes.DarkGreen;
+                }
+
+            }
+            else
+            {
+                StatusForeground = Brushes.Red;
+            }
+
             if (m.ValidMod)
             {
                 // wow
+                StatusMessage = "Mod loaded successfully";
                 if (Application.Current.MainWindow is MainWindow mw)
                 {
                     mw.VisibleFilteredMods.Add(m);
                     mw.SelectedMod = m;
                 }
             }
+
+            GeneratedIni = ini.ToString();
             //var moddesc = EditingMod.SerializeModdesc();
             ////Mod m = new Mod(moddesc, EditingMod.ModPath, null);
 
             //Clipboard.SetText(moddesc);
         }
+
+        public SolidColorBrush StatusForeground { get; set; }
+
+        public string StatusMessage { get; set; }
 
         private void ModDescEditor_OnContentRendered(object? sender, EventArgs e)
         {

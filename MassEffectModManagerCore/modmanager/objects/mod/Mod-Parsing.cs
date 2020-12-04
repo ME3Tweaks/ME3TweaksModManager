@@ -551,9 +551,21 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 ModClassicUpdateCode = modupdatecode2;
             }
 
-            int.TryParse(iniData[@"ModInfo"][@"nexuscode"], out int nexuscode);
-            NexusModID = nexuscode;
-            NexusCodeRaw = iniData[@"ModInfo"][@"nexuscode"];
+            if (!string.IsNullOrWhiteSpace(iniData[@"ModInfo"][@"nexuscode"]))
+            {
+                if (int.TryParse(iniData[@"ModInfo"][@"nexuscode"], out int nexuscode))
+                {
+                    NexusModID = nexuscode;
+                    NexusCodeRaw = iniData[@"ModInfo"][@"nexuscode"];
+                }
+                else
+                {
+                    // Invalid value provided
+                    Log.Error("The nexuscode descriptor must be an integer that corresponds to your NexusMods' page for this mod. The ID can be found the end of the URL for the main mod page.");
+                    LoadFailedReason = "The nexuscode descriptor must be an integer that corresponds to your NexusMods' page for this mod. The ID can be found the end of the URL for the main mod page.";
+                    return;
+                }
+            }
 
             #region NexusMods ID from URL
 
@@ -736,13 +748,13 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 }
             }
             #endregion
-            
+
             #region Header Loops
 
             #region BASEGAME and OFFICIAL HEADERS
 
             var supportedOfficialHeaders = ModJob.GetSupportedNonCustomDLCHeaders(Game);
-            
+
             //We must check against official headers
             foreach (var header in supportedOfficialHeaders)
             {
@@ -1398,7 +1410,8 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                             LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_invalidLocalizationFilename, f);
                             return;
                         }
-                    } else if (Game == MEGame.ME2)
+                    }
+                    else if (Game == MEGame.ME2)
                     {
                         // Read bioengine before install maybe?
                         // We need to know the module number
@@ -1421,7 +1434,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             #endregion
 
             #endregion
-            
+
             #region Additional Mod Items
 
             //Required DLC (Mod Manager 5.0)

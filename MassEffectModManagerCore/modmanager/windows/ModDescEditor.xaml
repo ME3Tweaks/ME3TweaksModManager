@@ -17,10 +17,13 @@
     <DockPanel>
         <DockPanel DockPanel.Dock="Bottom" Margin="5">
             <Button Content="Open moddesc.ini documentation" DockPanel.Dock="Left" Click="OpenModdescDocumenation_Click"/>
+            <TextBlock Text="{Binding StatusMessage}" DockPanel.Dock="Left" 
+                       Foreground="{Binding StatusForeground}"
+                       Margin="5,0,0,0" VerticalAlignment="Center" TextWrapping="Wrap"
+                       MaxWidth="900"/>
             <Button Content="Close" Click="Close_Click" DockPanel.Dock="Right"/>
-
+            
             <Button Content="Serialize" Margin="5,0" Click="SerializeData_Click" HorizontalAlignment="Right"/>
-
         </DockPanel>
         <TabControl>
             <TabItem Header="Metadata">
@@ -39,7 +42,6 @@
                 <ScrollViewer HorizontalScrollBarVisibility="Disabled" Margin="-8">
 
                 <alternates:AlternateFileBuilder x:Name="customdlc_alternateFileEditor_control" 
-                                                
                                                  TaskHeader="CUSTOMDLC"
                                                  DirectionsText="Alternate Files (Custom DLC) allows you to define single-item alternate file options for the CUSTOMDLC task header. Typically for the CUSTOMDLC task header, you will want to use the Alternate DLC feature instead."/>
                 </ScrollViewer>
@@ -47,6 +49,15 @@
 
             <TabItem Header="Alternate DLC (Custom DLC)">
                 <alternates:AlternateDLCBuilder x:Name="customdlc_alternateDlcEditor_control"/>
+            </TabItem>
+            <TabItem Header="Localization mod info">
+
+            </TabItem>
+            <TabItem Header="Resulting moddesc.ini">
+                <DockPanel>
+                    <TextBlock Text="The generated moddesc.ini file is shown below for review." DockPanel.Dock="Top"/>
+                    <TextBox Text="{Binding GeneratedIni}" IsReadOnly="True" IsReadOnlyCaretVisible="False" TextWrapping="Wrap" VerticalAlignment="Top" TextAlignment="Left"/>
+                </DockPanel>
             </TabItem>
         </TabControl>
     </DockPanel>

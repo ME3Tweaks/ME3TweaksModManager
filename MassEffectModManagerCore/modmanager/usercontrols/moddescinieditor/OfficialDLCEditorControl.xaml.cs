@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using IniParser.Model;
+using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alternates;
@@ -68,17 +69,22 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
         {
             foreach (var odlc in OfficialDLCJobs)
             {
-                if (odlc.ParameterMap.Any(x => !string.IsNullOrWhiteSpace(x.Value)))
-                {
-                    // Serialize
-                    foreach (var p in odlc.ParameterMap)
-                    {
-                        if (!string.IsNullOrWhiteSpace(p.Value))
-                        {
-                            ini[odlc.Header.ToString()][p.Key] = p.Value;
-                        }
-                    }
-                }
+                // Main job descriptors
+                odlc.Serialize(ini, EditingMod);
+            }
+
+            // This is kind of a hack but I'm not sure how to get reference unless I pass reference to owner so it can be registered
+            var multilistEditors = this.FindLogicalChildren<MultilistEditorControl>();
+            var alternateEditors = this.FindLogicalChildren<AlternateFileBuilder>();
+
+            foreach (var m in multilistEditors)
+            {
+                m.Serialize(ini);
+            }
+
+            foreach (var m in alternateEditors)
+            {
+                m.Serialize(ini);
             }
         }
 

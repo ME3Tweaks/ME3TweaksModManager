@@ -519,22 +519,44 @@ namespace MassEffectModManagerCore.modmanager.objects
         /// <summary>
         /// Serializes this job into the specified IniData object
         /// </summary>
-        /// <param name="moddessc"></param>
-        public void Serialize(IniData moddessc)
+        /// <param name="ini"></param>
+        public void Serialize(IniData ini, Mod associatedMod)
         {
             var header = Header.ToString();
             if (!string.IsNullOrWhiteSpace(JobDirectory))
             {
-                moddessc[header][@"moddir"] = JobDirectory;
+                ini[header][@"moddir"] = JobDirectory;
             }
 
             if (Header == JobHeader.CUSTOMDLC)
             {
                 if (CustomDLCFolderMapping.Any())
                 {
-                    moddessc[header][@"sourcedirs"] = string.Join(';', CustomDLCFolderMapping.Keys);
-                    moddessc[header][@"destdirs"] = string.Join(';', CustomDLCFolderMapping.Values);
+                    ini[header][@"sourcedirs"] = string.Join(';', CustomDLCFolderMapping.Keys);
+                    ini[header][@"destdirs"] = string.Join(';', CustomDLCFolderMapping.Values);
                 }
+            }
+            else if (IsVanillaJob(this, associatedMod.Game))
+            {
+                foreach (var v in ParameterMap)
+                {
+                    if (!string.IsNullOrWhiteSpace(v.Value))
+                    {
+                        ini[header][v.Key] = v.Value;
+                    }
+                }
+            }
+            else if (Header == JobHeader.BALANCE_CHANGES)
+            {
+
+            }
+            else if (Header == JobHeader.ME1_CONFIG)
+            {
+
+            }
+            else if (Header == JobHeader.LOCALIZATION)
+            {
+
             }
         }
 
@@ -653,8 +675,8 @@ namespace MassEffectModManagerCore.modmanager.objects
                     // cached into raw
 
                     parameterDictionary[@"moddir"] = @".";
-                    parameterDictionary[@"newfiles"] = @"BIOGame\CookedPCConsole\Coalesced.bin";
-                    parameterDictionary[@"replacefiles"] = @"Coalesced.bin";
+                    parameterDictionary[@"newfiles"] = @"Coalesced.bin";
+                    parameterDictionary[@"replacefiles"] = @"BIOGame\CookedPCConsole\Coalesced.bin"; 
 
                     // Technically this doesn't support more on this version of moddesc.
                     // But since we can't save older moddesc formats we will allow

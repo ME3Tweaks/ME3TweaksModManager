@@ -29,8 +29,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
             {
                 BasegameJob = EditingMod.GetJob(ModJob.JobHeader.BASEGAME);
                 BasegameJob?.BuildParameterMap(EditingMod);
-                //basegame_multilists_editor.OnLoaded(EditingMod);
-                //basegame_alternatefiles_editor.OnLoaded(EditingMod);
                 HasLoaded = true;
             }
         }
@@ -48,7 +46,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
 
         public override void Serialize(IniData ini)
         {
-
+            BasegameJob?.Serialize(ini, EditingMod);
+            basegame_multilists_editor.Serialize(ini);
+            basegame_alternatefiles_editor.Serialize(ini);
         }
     }
 }

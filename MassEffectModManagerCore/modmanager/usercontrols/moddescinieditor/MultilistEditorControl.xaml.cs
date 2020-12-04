@@ -94,7 +94,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
 
         public override void Serialize(IniData ini)
         {
-            // This object does not serialize
+            foreach (var ml in Multilists)
+            {
+                ini[Header.ToString()][$@"multilist{ml.MultilistId}"] = string.Join(';', ml.Files.Select(x=>x.Value));
+            }
         }
     }
 
