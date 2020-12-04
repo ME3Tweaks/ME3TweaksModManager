@@ -1,7 +1,7 @@
 ## [CUSTOMDLC] Header
 The [CUSTOMDLC] header is likely the most important header for mod developers. It allows Mod Manager to add a Custom DLC folder to the game, such as DLC_MOD_EGM. This header has some advanced optional descriptors that allow you to add compatibility shims and packs automatically when the mod loads in Mod Manager. This header is supported starting with moddesc 3.1.
 
-The following descriptors are supported by this header. They are explained in more detail below the table.
+The following descriptors are supported by this header. The alternates are explained on the alternates page.
 
 ### [CUSTOMDLC] Descriptors
 |Descriptor|Value|Purpose & Notes|Required|Supported Versions|
