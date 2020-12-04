@@ -9,12 +9,15 @@
              mc:Ignorable="d" 
              DataContext="{Binding RelativeSource={RelativeSource Self}}"
              d:DesignHeight="450" d:DesignWidth="800">
-    <StackPanel>
-        <TextBlock Text="Multilists" FontWeight="Bold" DockPanel.Dock="Top"/>
-        <TextBlock Text="Multilists are used by alternates to specify a specific list of files, such as adding files from multiple folders to a mod. They are referenced by their multilistid number."
+    <DockPanel>
+        <TextBlock  Text="Multilists" FontWeight="Bold" DockPanel.Dock="Top"/>
+        <TextBlock Text="Multilists are used by alternates to specify a specific list of files, such as adding files from multiple folders to a mod. They don't do anything on their own unless they are referenced by the multilistid number defined in an alternate."
                    TextWrapping="Wrap"
+                   MaxWidth="700"
+                   TextAlignment="Left"
+                   HorizontalAlignment="Left"
                    DockPanel.Dock="Top"/>
-        <Button Command="{Binding AddNewListCommand}" HorizontalAlignment="Left" DockPanel.Dock="Top" Margin="5,5,0,5">
+        <Button Command="{Binding AddNewListCommand}" HorizontalAlignment="Left" DockPanel.Dock="Top" Margin="0,5,0,5">
             <Button.Content>
                 <StackPanel Orientation="Horizontal">
                     <fa:ImageAwesome Icon="Plus" Width="12" Height="12" Margin="0,0,5,0" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>
@@ -29,5 +32,5 @@
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
-    </StackPanel>
+    </DockPanel>
 </local:ModdescEditorControlBase>

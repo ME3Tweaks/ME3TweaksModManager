@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Linq;
+using System.Windows;
 using IniParser.Model;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.objects;
@@ -19,21 +20,25 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alte
         /// </summary>
         public ObservableCollectionExtended<AlternateDLC> Alternates { get; } = new ObservableCollectionExtended<AlternateDLC>();
 
-        public override void OnEditingModChanged(Mod newMod)
+        public override void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
         {
-            base.OnEditingModChanged(newMod);
-            CustomDLCJob = EditingMod?.GetJob(ModJob.JobHeader.CUSTOMDLC);
-            if (CustomDLCJob != null)
+            if (!HasLoaded)
             {
-                Alternates.ReplaceAll(CustomDLCJob.AlternateDLCs);
-                foreach (var a in Alternates)
+                CustomDLCJob = EditingMod?.GetJob(ModJob.JobHeader.CUSTOMDLC);
+                if (CustomDLCJob != null)
                 {
-                    a.BuildParameterMap(EditingMod);
+                    Alternates.ReplaceAll(CustomDLCJob.AlternateDLCs);
+                    foreach (var a in Alternates)
+                    {
+                        a.BuildParameterMap(EditingMod);
+                    }
                 }
-            }
-            else
-            {
-                Alternates.ClearEx();
+                else
+                {
+                    Alternates.ClearEx();
+                }
+
+                HasLoaded = true;
             }
         }
 

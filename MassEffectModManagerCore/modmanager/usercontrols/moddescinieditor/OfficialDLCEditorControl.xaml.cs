@@ -1,9 +1,15 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
 using IniParser.Model;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.objects.mod;
+using MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alternates;
 using MassEffectModManagerCore.ui;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
@@ -43,15 +49,20 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
 
         public ObservableCollectionExtended<ModJob> OfficialDLCJobs { get; } = new ObservableCollectionExtended<ModJob>();
 
-        public override void OnEditingModChanged(Mod newMod)
+        public override void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
         {
-            base.OnEditingModChanged(newMod);
-            OfficialDLCJobs.ReplaceAll(newMod.InstallationJobs.Where(x => x.IsOfficialDLCJob(EditingMod.Game)));
-            foreach (var v in OfficialDLCJobs)
+            if (!HasLoaded)
             {
-                v.BuildParameterMap(EditingMod);
+                OfficialDLCJobs.ReplaceAll(EditingMod.InstallationJobs.Where(x => x.IsOfficialDLCJob(EditingMod.Game)));
+                foreach (var v in OfficialDLCJobs)
+                {
+                    v.BuildParameterMap(EditingMod);
+                }
+
+                HasLoaded = true;
             }
         }
+
 
         public override void Serialize(IniData ini)
         {
@@ -68,6 +79,21 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
                         }
                     }
                 }
+            }
+        }
+
+        private void HandleMouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
+        {
+            // This forces scrolling to bubble up
+            // cause expander eats it
+            if (!e.Handled)
+            {
+                e.Handled = true;
+                var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta);
+                eventArg.RoutedEvent = UIElement.MouseWheelEvent;
+                eventArg.Source = sender;
+                var parent = (((Control)sender).TemplatedParent ?? ((Control)sender).Parent) as UIElement;
+                parent.RaiseEvent(eventArg);
             }
         }
     }

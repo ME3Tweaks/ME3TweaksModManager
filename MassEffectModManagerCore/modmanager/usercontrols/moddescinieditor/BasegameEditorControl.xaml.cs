@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Windows;
 using IniParser.Model;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.objects.mod;
@@ -22,13 +23,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
             AddBasegameTaskCommand = new GenericCommand(AddBasegameTask, () => BasegameJob == null);
         }
 
-        public override void OnEditingModChanged(Mod newMod)
+        public override void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
         {
-            base.OnEditingModChanged(newMod);
-            BasegameJob = newMod.GetJob(ModJob.JobHeader.BASEGAME);
-            BasegameJob?.BuildParameterMap(newMod);
-            basegame_multilists_editor.OnEditingModChanged(newMod);
-            basegame_alternatefiles_editor.OnEditingModChanged(newMod);
+            if (!HasLoaded)
+            {
+                BasegameJob = EditingMod.GetJob(ModJob.JobHeader.BASEGAME);
+                BasegameJob?.BuildParameterMap(EditingMod);
+                //basegame_multilists_editor.OnLoaded(EditingMod);
+                //basegame_alternatefiles_editor.OnLoaded(EditingMod);
+                HasLoaded = true;
+            }
         }
 
         public ModJob BasegameJob { get; set; }

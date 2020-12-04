@@ -14,13 +14,16 @@ namespace MassEffectModManagerCore.modmanager.windows
     /// </summary>
     public partial class ModDescEditor : Window, INotifyPropertyChanged
     {
-        public Mod EditingMod { get; private set; }
+        public Mod EditingMod
+        {
+            get;
+            private set;
+        }
         private List<ModdescEditorControlBase> editorControls = new List<ModdescEditorControlBase>();
 
         public ModDescEditor(Mod selectedMod)
         {
-            DataContext = this;
-            EditingMod = new Mod(selectedMod.ModDescPath, selectedMod.Game); //RELOAD MOD TO CREATE NEW OBJECT
+            EditingMod = new Mod(selectedMod.ModDescPath, selectedMod.Game);
             InitializeComponent();
 
             // Tabs
@@ -72,10 +75,11 @@ namespace MassEffectModManagerCore.modmanager.windows
 
         private void ModDescEditor_OnContentRendered(object? sender, EventArgs e)
         {
-            foreach (var control in editorControls)
-            {
-                control.OnEditingModChanged(EditingMod);
-            }
+
+            //foreach (var control in editorControls)
+            //{
+            //    control.OnLoaded();
+            //}
 #if !DEBUG
             M3L.ShowDialog(this, M3L.GetString(M3L.string_toolUnderDevelopment), M3L.GetString(M3L.string_underDevelopment), MessageBoxButton.OK, MessageBoxImage.Warning);
 #endif

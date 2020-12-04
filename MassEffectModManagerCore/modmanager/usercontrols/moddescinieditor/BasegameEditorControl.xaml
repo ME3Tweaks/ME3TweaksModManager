@@ -10,9 +10,13 @@
              xmlns:alternates="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alternates"
              mc:Ignorable="d" 
              DataContext="{Binding RelativeSource={RelativeSource Self}}">
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
+    <ScrollViewer VerticalScrollBarVisibility="Auto"  Margin="-8">
         <DockPanel>
-            <TextBlock DockPanel.Dock="Top" Text="The Basegame task allows you to install files into the basegame, including the BIOGame, Binaries (not Win32), and Engine folders. This task is useful for mods that edit files that load before DLC." TextWrapping="Wrap"/>
+            <TextBlock DockPanel.Dock="Top" Text="The Basegame task allows you to install files into the basegame, including the BIOGame, Binaries (not Win32), and Engine folders. This task is useful for mods that edit files that load before DLC."
+                       MaxWidth="750"
+                       HorizontalAlignment="Left"
+                       TextAlignment="Left"
+                       TextWrapping="Wrap"/>
             <Button Command="{Binding AddBasegameTaskCommand}" HorizontalAlignment="Left" DockPanel.Dock="Top" Margin="0,5,0,5">
                 <Button.Content>
                     <StackPanel Orientation="Horizontal">
@@ -23,14 +27,14 @@
             </Button>
             <StackPanel>
 
-            <local:DescriptorEditorItemsControl ItemsSource="{Binding BasegameJob.ParameterMap}" Margin="10,0,0,15"/>
+            <local:DescriptorEditorItemsControl ItemsSource="{Binding BasegameJob.ParameterMap}" Margin="10,0,0,5"/>
             <local:MultilistEditorControl Header="BASEGAME"
                                           x:Name="basegame_multilists_editor"/>
             <TextBlock Text="Alternate files" FontWeight="Bold"/>
             <alternates:AlternateFileBuilder 
                 x:Name="basegame_alternatefiles_editor"
                 DirectionsText="Alternate files allow you to specify alternate installation options for this task. These options are presented to the user before installation begins."
-                Header="BASEGAME"/>
+                TaskHeader="BASEGAME"/>
             </StackPanel>
 
 <!--<ItemsControl.Template>

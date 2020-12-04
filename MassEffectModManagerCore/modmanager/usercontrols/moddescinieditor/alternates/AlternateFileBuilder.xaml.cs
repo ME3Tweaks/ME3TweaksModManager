@@ -1,11 +1,11 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using IniParser.Model;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.objects;
-using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.ui;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alternates
@@ -23,13 +23,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alte
 
         public static readonly DependencyProperty DirectionsTextProperty = DependencyProperty.Register("DirectionsText", typeof(string), typeof(AlternateFileBuilder));
 
-        public ModJob.JobHeader? Header
+        public ModJob.JobHeader? TaskHeader
         {
-            get => (ModJob.JobHeader?)GetValue(HeaderProperty);
-            set => SetValue(HeaderProperty, value);
+            get => (ModJob.JobHeader?)GetValue(TaskHeaderProperty);
+            set => SetValue(TaskHeaderProperty, value);
         }
 
-        public static readonly DependencyProperty HeaderProperty = DependencyProperty.Register("Header", typeof(ModJob.JobHeader?), typeof(AlternateFileBuilder));
+        public static readonly DependencyProperty TaskHeaderProperty = DependencyProperty.Register("TaskHeader", typeof(ModJob.JobHeader?), typeof(AlternateFileBuilder));
 
         public ModJob AttachedJob { get; set; }
         /// <summary>
@@ -37,29 +37,26 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alte
         /// </summary>
         public ObservableCollectionExtended<AlternateFile> Alternates { get; } = new ObservableCollectionExtended<AlternateFile>();
 
-        public override void OnEditingModChanged(Mod newMod)
+        public override void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
         {
-            base.OnEditingModChanged(newMod);
-            if (Header != null)
+            if (!HasLoaded)
             {
-                AttachedJob = EditingMod?.GetJob(Header.Value);
-            }
-            else
-            {
-                AttachedJob = null;
-            }
+                AttachedJob = TaskHeader != null ? EditingMod.GetJob(TaskHeader.Value) : null;
 
-            if (AttachedJob != null)
-            {
-                Alternates.ReplaceAll(AttachedJob.AlternateFiles);
-                foreach (var a in Alternates)
+                if (AttachedJob != null)
                 {
-                    a.BuildParameterMap(EditingMod);
+                    Alternates.ReplaceAll(AttachedJob.AlternateFiles);
+                    foreach (var a in Alternates)
+                    {
+                        a.BuildParameterMap(EditingMod);
+                    }
                 }
-            }
-            else
-            {
-                Alternates.ClearEx();
+                else
+                {
+                    Alternates.ClearEx();
+                }
+
+                HasLoaded = true;
             }
         }
 
@@ -83,7 +80,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alte
                 }
 
                 outStr += @")";
-                ini[Header.ToString()][@"altfiles"] = outStr;
+                ini[TaskHeader.ToString()][@"altfiles"] = outStr;
             }
         }
 
@@ -98,7 +95,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alte
             AddAlternateFileCommand = new GenericCommand(AddAlternateFile, CanAddAlternateFile);
         }
 
-        private bool CanAddAlternateFile() => Header != null && EditingMod?.GetJob(Header.Value) != null;
+        private bool CanAddAlternateFile() => TaskHeader != null && EditingMod?.GetJob(TaskHeader.Value) != null;
 
         private void AddAlternateFile()
         {

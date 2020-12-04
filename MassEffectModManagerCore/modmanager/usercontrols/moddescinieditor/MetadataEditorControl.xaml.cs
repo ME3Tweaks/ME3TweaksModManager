@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
 using IniParser.Model;
 using MassEffectModManagerCore.modmanager.objects.mod;
@@ -16,7 +17,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
     {
         public MetadataEditorControl()
         {
-            DataContext = this;
             InitializeComponent();
         }
 
@@ -24,13 +24,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
         public ObservableCollectionExtended<MDParameter> ModInfoParameterMap { get; } = new ObservableCollectionExtended<MDParameter>();
         public ObservableCollectionExtended<MDParameter> UPDATESParameterMap { get; } = new ObservableCollectionExtended<MDParameter>();
 
-        public override void OnEditingModChanged(Mod newMod)
+        public override void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
         {
-            base.OnEditingModChanged(newMod);
-            newMod.BuildParameterMap(EditingMod);
-            ModManagerParameterMap.ReplaceAll(newMod.ParameterMap.Where(x => x.Header == @"ModManager"));
-            ModInfoParameterMap.ReplaceAll(newMod.ParameterMap.Where(x => x.Header == @"ModInfo"));
-            UPDATESParameterMap.ReplaceAll(newMod.ParameterMap.Where(x => x.Header == @"UPDATES"));
+            if (!HasLoaded)
+            {
+                EditingMod.BuildParameterMap(EditingMod);
+                ModManagerParameterMap.ReplaceAll(EditingMod.ParameterMap.Where(x => x.Header == @"ModManager"));
+                ModInfoParameterMap.ReplaceAll(EditingMod.ParameterMap.Where(x => x.Header == @"ModInfo"));
+                UPDATESParameterMap.ReplaceAll(EditingMod.ParameterMap.Where(x => x.Header == @"UPDATES"));
+                HasLoaded = true;
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -43,7 +46,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
                     // Editor only can write latest version format
                     v.Value = App.HighestSupportedModDesc.ToString(CultureInfo.InvariantCulture);
                 }
-                
+
                 if (!string.IsNullOrWhiteSpace(v.Value))
                 {
                     ini[v.Header][v.Key] = v.Value;

@@ -645,7 +645,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             Dictionary<string, object> parameterDictionary = new Dictionary<string, object>();
             if (IsVanillaJob(this, mod.Game))
             {
-                if (mod.LegacyModCoal)
+                if (Header == JobHeader.BASEGAME && mod.Game == MEGame.ME3 && mod.LegacyModCoal)
                 {
                     // moddesc 2 supported this flag. In MM3 it auto converted the
                     // meaning of this into basegame coalesced job. We 

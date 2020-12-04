@@ -7,8 +7,10 @@
         xmlns:alternates="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alternates"
         xmlns:moddescinieditor="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor"
         mc:Ignorable="d"
+        DataContext="{Binding RelativeSource={RelativeSource Self}}"
         ContentRendered="ModDescEditor_OnContentRendered"
-        Title="moddesc.ini Editor" Height="450" Width="800">
+        Title="moddesc.ini Editor" MinHeight="750" MinWidth="1280"
+        Height="750" Width="1280">
     <Window.Style>
         <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
     </Window.Style>
@@ -34,10 +36,11 @@
                 <moddescinieditor:CustomDLCEditorControl x:Name="customdlcEditor_control"/>
             </TabItem>
             <TabItem Header="Alternate Files (Custom DLC)">
-                <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled" Margin="-8">
 
                 <alternates:AlternateFileBuilder x:Name="customdlc_alternateFileEditor_control" 
-                                                 Header="CUSTOMDLC"
+                                                
+                                                 TaskHeader="CUSTOMDLC"
                                                  DirectionsText="Alternate Files (Custom DLC) allows you to define single-item alternate file options for the CUSTOMDLC task header. Typically for the CUSTOMDLC task header, you will want to use the Alternate DLC feature instead."/>
                 </ScrollViewer>
             </TabItem>

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Windows;
 using IniParser.Model;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.objects.mod;
@@ -14,26 +15,31 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
     /// </summary>
     public partial class CustomDLCEditorControl : ModdescEditorControlBase, INotifyPropertyChanged
     {
-        public override void OnEditingModChanged(Mod newMod)
+        public override void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
         {
-            base.OnEditingModChanged(newMod);
-            CustomDLCJob = EditingMod.GetJob(ModJob.JobHeader.CUSTOMDLC);
-            CustomDLCParameters.ClearEx();
-
-            if (CustomDLCJob != null)
+            if (!HasLoaded)
             {
-                foreach (var v in CustomDLCJob.CustomDLCFolderMapping)
+                CustomDLCJob = EditingMod.GetJob(ModJob.JobHeader.CUSTOMDLC);
+                CustomDLCParameters.ClearEx();
+
+                if (CustomDLCJob != null)
                 {
-                    EditingMod.HumanReadableCustomDLCNames.TryGetValue(v.Value, out var hrName);
-                    CustomDLCParameters.Add(new MDCustomDLCParameter
+                    foreach (var v in CustomDLCJob.CustomDLCFolderMapping)
                     {
-                        SourcePath = v.Key,
-                        DestDLCName = v.Value,
-                        HumanReadableName = hrName
-                    });
+                        EditingMod.HumanReadableCustomDLCNames.TryGetValue(v.Value, out var hrName);
+                        CustomDLCParameters.Add(new MDCustomDLCParameter
+                        {
+                            SourcePath = v.Key,
+                            DestDLCName = v.Value,
+                            HumanReadableName = hrName
+                        });
+                    }
                 }
+
+                HasLoaded = true;
             }
-            customdlc_multilists_editor.OnEditingModChanged(newMod);
+
+            //customdlc_multilists_editor.OnLoaded(newMod);
         }
 
         public CustomDLCEditorControl()

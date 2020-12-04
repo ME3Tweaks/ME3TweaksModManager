@@ -11,12 +11,12 @@
              BorderThickness="1"
              BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer0BorderBrush}}">
     <DockPanel Margin="5,0,0,0">
-        <TextBlock Text="{Binding MultilistId, StringFormat='Multilist {0}'}" FontWeight="Bold" DockPanel.Dock="Top"/>
+        <TextBlock Text="{Binding MultilistId, StringFormat='Multilist (ID {0})'}" FontWeight="Bold" DockPanel.Dock="Top"/>
         <Button Command="{Binding AddFileCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=local:SingleMultilistEditorControl}}" HorizontalAlignment="Left" DockPanel.Dock="Top" Margin="5,5,0,5">
             <Button.Content>
                 <StackPanel Orientation="Horizontal">
                     <fa:ImageAwesome Icon="Plus" Width="12" Height="12" Margin="0,0,5,0" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>
-                    <TextBlock Text="Add file to multilist"/>
+                    <TextBlock Text="Add file to this Multilist"/>
                 </StackPanel>
             </Button.Content>
         </Button>

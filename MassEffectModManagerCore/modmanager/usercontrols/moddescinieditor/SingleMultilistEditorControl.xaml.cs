@@ -12,28 +12,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
     /// </summary>
     public partial class SingleMultilistEditorControl : UserControl, INotifyPropertyChanged
     {
-
-        /// <summary>
-        /// The owner of this single editor
-        /// </summary>
-        //public MultilistEditorControl Owner
-        //{
-        //    get => (MultilistEditorControl)GetValue(OwnerProperty);
-        //    set
-        //    {
-        //        SetValue(OwnerProperty, value);
-        //        if (Owner != null)
-        //        {
-        //            //Owner.
-        //        }
-        //    }
-        //}
-
-        //public static readonly DependencyProperty OwnerProperty = DependencyProperty.Register("Owner", typeof(string), typeof(SingleMultilistEditorControl));
-        /// <summary>
-        /// The list index (as in moddesc.ini) of this multilist
-        /// </summary>
-        public int ListIndex { get; set; }
+        ///// <summary>
+        ///// The list index (as in moddesc.ini) of this multilist
+        ///// </summary>
+        //public int ListIndex { get; set; }
         public SingleMultilistEditorControl()
         {
             LoadCommands();
@@ -47,27 +29,32 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
 
         private void AddFile()
         {
-            if (!MultilistItems.Any() || !string.IsNullOrWhiteSpace(MultilistItems.Last().Value))
+            if (DataContext is MDMultilist ml)
             {
-                MultilistItems.Add(new SingleMultilistEditorItem()
+                if (!ml.Files.Any() || !string.IsNullOrWhiteSpace(ml.Files.Last().Value))
                 {
-                    ItemIndex = MultilistItems.Count + 1 // we use 1 based UI indexing
-                });
+                    ml.Files.Add(new SingleMultilistEditorItem()
+                    {
+                        ItemIndex = ml.Files.Count + 1 // we use 1 based UI indexing
+                    });
+                }
             }
+
         }
 
         public GenericCommand AddFileCommand { get; set; }
 
-        public ObservableCollectionExtended<SingleMultilistEditorItem> MultilistItems { get; } = new ObservableCollectionExtended<SingleMultilistEditorItem>();
+        //public ObservableCollectionExtended<SingleMultilistEditorItem> ml.Files { get; } = new ObservableCollectionExtended<SingleMultilistEditorItem>();
 
         public event PropertyChangedEventHandler PropertyChanged;
     }
 
-    public class SingleMultilistEditorItem
+    public class SingleMultilistEditorItem : INotifyPropertyChanged
     {
         // The index of the file in the list
         public int ItemIndex { get; set; }
         // The value of the multilist item
         public string Value { get; set; }
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

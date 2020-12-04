@@ -36,7 +36,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
 
         private void LoadCommands()
         {
-            AddNewListCommand = new GenericCommand(AddNewList, ()=> AttachedJob != null);
+            AddNewListCommand = new GenericCommand(AddNewList, CanAddNewList);
+        }
+
+        private bool CanAddNewList()
+        {
+            if (AttachedJob == null && Header != null)
+            {
+                AttachedJob = EditingMod.GetJob(Header.Value);
+            }
+
+            return AttachedJob != null;
         }
 
         private void AddNewList()
@@ -52,29 +62,33 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
         // Kind of a hack. This is a list of multilist indexes. They're passed through the data context
         public ObservableCollectionExtended<MDMultilist> Multilists { get; } = new ObservableCollectionExtended<MDMultilist>();
 
-        public override void OnEditingModChanged(Mod newMod)
+        public override void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
         {
-            base.OnEditingModChanged(newMod);
-            AttachedJob = Header != null ? EditingMod?.GetJob(Header.Value) : null;
+            if (!HasLoaded)
+            {
+                AttachedJob = Header != null ? EditingMod?.GetJob(Header.Value) : null;
 
-            if (AttachedJob != null)
-            {
-                Multilists.ReplaceAll(AttachedJob.MultiLists.Select(x =>
+                if (AttachedJob != null)
                 {
-                    var ml = new MDMultilist();
-                    int i = 0;
-                    ml.Files.ReplaceAll(x.Value.Select(y => new SingleMultilistEditorItem()
+                    Multilists.ReplaceAll(AttachedJob.MultiLists.Select(x =>
                     {
-                        ItemIndex = ++i,
-                        Value = y
+                        var ml = new MDMultilist();
+                        int i = 0;
+                        ml.Files.ReplaceAll(x.Value.Select(y => new SingleMultilistEditorItem()
+                        {
+                            ItemIndex = ++i,
+                            Value = y
+                        }));
+                        ml.MultilistId = x.Key;
+                        return ml;
                     }));
-                    ml.MultilistId = x.Key;
-                    return ml;
-                }));
-            }
-            else
-            {
-                Multilists.ClearEx();
+                }
+                else
+                {
+                    Multilists.ClearEx();
+                }
+
+                HasLoaded = true;
             }
         }
 

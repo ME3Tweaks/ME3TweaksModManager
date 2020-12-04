@@ -10,10 +10,12 @@
              mc:Ignorable="d" 
              DataContext="{Binding RelativeSource={RelativeSource Self}}"
              d:DesignHeight="450" d:DesignWidth="800">
-    <ScrollViewer>
-
-    <DockPanel>
-        <TextBlock DockPanel.Dock="Top" Text="Alternate DLC allows you to define alternate installation options for the CUSTOMDLC task header."/>
+    <ScrollViewer Margin="-8">
+        <DockPanel>
+        <TextBlock DockPanel.Dock="Top" Text="Alternate DLC allows you to define alternate installation options for the CUSTOMDLC task header."
+                   MaxWidth="700"
+                   HorizontalAlignment="Left"
+                   TextAlignment="Left"/>
         <Button Command="{Binding AddAlternateDLCCommand}" HorizontalAlignment="Left" DockPanel.Dock="Top" Margin="-2,5,0,5">
             <Button.Content>
                 <StackPanel Orientation="Horizontal">

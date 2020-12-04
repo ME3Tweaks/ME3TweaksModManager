@@ -9,10 +9,14 @@
                           mc:Ignorable="d" 
                           DataContext="{Binding RelativeSource={RelativeSource Self}}"
                           d:DesignHeight="450" d:DesignWidth="800">
-    <ScrollViewer>
-        <StackPanel>
+    <ScrollViewer  Margin="-8">
+        <DockPanel>
             <TextBlock FontWeight="Bold" Text="[CUSTOMDLC]" DockPanel.Dock="Top"/>
-            <TextBlock Text="Custom DLC, also known as DLC mods, are mods that load at the main menu and can override files that are not already loaded. Items on this page are always installed with your mod." TextWrapping="Wrap" DockPanel.Dock="Top"/>
+            <TextBlock Text="Custom DLC, also known as DLC mods, are mods that load at the main menu and can override files that are not already loaded. The list of DLC mappings below are always installed with your mod." 
+                       MaxWidth="700"
+                       TextAlignment="Left"
+                       HorizontalAlignment="Left"
+                       TextWrapping="Wrap" DockPanel.Dock="Top"/>
             <Button Command="{Binding AddCustomDLCCommand}" HorizontalAlignment="Left" DockPanel.Dock="Top" Margin="0,5">
                 <Button.Content>
                     <StackPanel Orientation="Horizontal">
@@ -22,7 +26,7 @@
                     </StackPanel>
                 </Button.Content>
             </Button>
-            <ItemsControl ItemsSource="{Binding CustomDLCParameters}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"  
+            <ItemsControl DockPanel.Dock="Top" ItemsSource="{Binding CustomDLCParameters}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"  
                       AlternationCount="2" VirtualizingStackPanel.IsVirtualizing="True" ScrollViewer.CanContentScroll="True">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
@@ -43,14 +47,13 @@
                             <TextBox Grid.Row="1" Grid.Column="0" Text="{Binding SourcePath}" />
                             <TextBlock Grid.Row="1" Grid.Column="1" Text=" => "/>
                             <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding DestDLCName}"/>
-
                             <TextBox Grid.Row="1" Grid.Column="3" Margin="10,0,0,0" Text="{Binding HumanReadableName}"/>
                         </Grid>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
-            <local:MultilistEditorControl Header="CUSTOMDLC" x:Name="customdlc_multilists_editor"/>
-        </StackPanel>
+            <local:MultilistEditorControl Header="CUSTOMDLC" x:Name="customdlc_multilists_editor" Margin="0,5,0,0"/>
+        </DockPanel>
     </ScrollViewer>
 
 </local:ModdescEditorControlBase>

@@ -17,16 +17,25 @@
            Visibility="{Binding Header, 
                 RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type moddescinieditor:DescriptorEditorItemsControl}},    
                 Converter={StaticResource NullVisibilityConverter}}"/>
+        <TextBlock DockPanel.Dock="Top"
+                   Text="{Binding Description, 
+                RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type moddescinieditor:DescriptorEditorItemsControl}}}"
+                   Visibility="{Binding Description, 
+                RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type moddescinieditor:DescriptorEditorItemsControl}},    
+                Converter={StaticResource NullVisibilityConverter}}"
+                   MaxWidth="700"
+                   TextAlignment="Left"
+                   HorizontalAlignment="Left"
+                   TextWrapping="Wrap"
+                   Margin="0,0,0,5"
+                   />
         <ItemsControl ItemsSource="{Binding ItemsSource, 
-        RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type moddescinieditor:DescriptorEditorItemsControl}}}" 
-                  HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"  
-                  AlternationCount="2" 
-                  VirtualizingPanel.IsVirtualizingWhenGrouping="True" 
-                  VirtualizingPanel.IsVirtualizing="True">
+                                    RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type moddescinieditor:DescriptorEditorItemsControl}}}" 
+                        HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch">
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="{x:Type editor:MDParameter}" >
                     <DockPanel Margin="0,0,0,3">
-                        <TextBlock DockPanel.Dock="Left" Text="{Binding Key}" Width="150"/>
+                        <TextBlock DockPanel.Dock="Left" Text="{Binding Key}" Width="160"/>
                         <TextBox Text="{Binding Value}" TextWrapping="Wrap"/>
                     </DockPanel>
                 </DataTemplate>
