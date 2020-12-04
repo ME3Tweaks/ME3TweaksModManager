@@ -14,7 +14,7 @@
     </Window.Style>
     <DockPanel>
         <DockPanel DockPanel.Dock="Bottom" Margin="5">
-            <Button Content="Open moddesc.ini documentation" DockPanel.Dock="Left"/>
+            <Button Content="Open moddesc.ini documentation" DockPanel.Dock="Left" Click="OpenModdescDocumenation_Click"/>
             <Button Content="Close" Click="Close_Click" DockPanel.Dock="Right"/>
 
             <Button Content="Serialize" Margin="5,0" Click="SerializeData_Click" HorizontalAlignment="Right"/>
@@ -25,6 +25,7 @@
                 <moddescinieditor:MetadataEditorControl x:Name="metadataEditor_control"/>
             </TabItem>
             <TabItem Header="Basegame">
+                <moddescinieditor:BasegameEditorControl x:Name="basegame_editor_control"/>
             </TabItem>
             <TabItem Header="Official DLC">
                 <moddescinieditor:OfficialDLCEditorControl x:Name="officialdlc_editor_control"/>
@@ -33,21 +34,16 @@
                 <moddescinieditor:CustomDLCEditorControl x:Name="customdlcEditor_control"/>
             </TabItem>
             <TabItem Header="Alternate Files (Custom DLC)">
-                <DockPanel>
-                    <TextBlock TextWrapping="Wrap"  DockPanel.Dock="Top" Text="Alternate Files (Custom DLC) allows you to define single-item alternate file options for the CUSTOMDLC task header. Typically for the CUSTOMDLC task header, you will want to use the Alternate DLC feature instead."/>
-                    <ScrollViewer>
-                        <alternates:AlternateFileBuilder x:Name="customdlc_alternateFileEditor_control"/>
-                    </ScrollViewer>
-                </DockPanel>
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+
+                <alternates:AlternateFileBuilder x:Name="customdlc_alternateFileEditor_control" 
+                                                 Header="CUSTOMDLC"
+                                                 DirectionsText="Alternate Files (Custom DLC) allows you to define single-item alternate file options for the CUSTOMDLC task header. Typically for the CUSTOMDLC task header, you will want to use the Alternate DLC feature instead."/>
+                </ScrollViewer>
             </TabItem>
 
             <TabItem Header="Alternate DLC (Custom DLC)">
-                <DockPanel>
-                    <TextBlock DockPanel.Dock="Top" Text="Alternate DLC allows you to define alternate installation options for the CUSTOMDLC task header."/>
-                    <ScrollViewer>
-                        <alternates:AlternateDLCBuilder x:Name="customdlc_alternateDlcEditor_control"/>
-                    </ScrollViewer>
-                </DockPanel>
+                <alternates:AlternateDLCBuilder x:Name="customdlc_alternateDlcEditor_control"/>
             </TabItem>
         </TabControl>
     </DockPanel>

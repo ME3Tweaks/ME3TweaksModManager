@@ -1,21 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using IniParser.Model;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.objects.mod;
-using ME3ExplorerCore.Misc;
+using MassEffectModManagerCore.ui;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
 {
@@ -26,8 +15,31 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
     {
         public OfficialDLCEditorControl()
         {
+            LoadCommands();
             InitializeComponent();
         }
+
+        private void LoadCommands()
+        {
+            AddOfficialDLCJobCommand = new GenericCommand(AddOfficialDLCJob);
+        }
+
+        private void AddOfficialDLCJob()
+        {
+            var currentOfficialDLCJobs = EditingMod.InstallationJobs.Where(x => x.IsOfficialDLCJob(EditingMod.Game)).Select(x => x.Header).ToList();
+            var acceptableHeaders = ModJob.GetSupportedOfficialDLCHeaders(EditingMod.Game);
+            var selectableOptions = acceptableHeaders.Except(currentOfficialDLCJobs).ToList();
+            var selection = DropdownSelectorDialog.GetSelection(Window.GetWindow(this), "Select task", selectableOptions, "Select a task header", "Select an official DLC to add a task header for. Only headers that are not already added are listed here.");
+            if (selection is ModJob.JobHeader header)
+            {
+                ModJob job = new ModJob(header);
+                EditingMod.InstallationJobs.Add(job);
+                job.BuildParameterMap(EditingMod);
+                OfficialDLCJobs.Add(job);
+            }
+        }
+
+        public GenericCommand AddOfficialDLCJobCommand { get; set; }
 
         public ObservableCollectionExtended<ModJob> OfficialDLCJobs { get; } = new ObservableCollectionExtended<ModJob>();
 
@@ -45,7 +57,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
         {
             foreach (var odlc in OfficialDLCJobs)
             {
-                // Serialize
+                if (odlc.ParameterMap.Any(x => !string.IsNullOrWhiteSpace(x.Value)))
+                {
+                    // Serialize
+                    foreach (var p in odlc.ParameterMap)
+                    {
+                        if (!string.IsNullOrWhiteSpace(p.Value))
+                        {
+                            ini[odlc.Header.ToString()][p.Key] = p.Value;
+                        }
+                    }
+                }
             }
         }
     }

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Windows.Controls;
 using IniParser.Model;
@@ -37,6 +38,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
         {
             foreach (var v in EditingMod.ParameterMap) //references will still be same
             {
+                if (v.Key == @"cmmver" && v.Header == @"ModManager")
+                {
+                    // Editor only can write latest version format
+                    v.Value = App.HighestSupportedModDesc.ToString(CultureInfo.InvariantCulture);
+                }
+                
                 if (!string.IsNullOrWhiteSpace(v.Value))
                 {
                     ini[v.Header][v.Key] = v.Value;

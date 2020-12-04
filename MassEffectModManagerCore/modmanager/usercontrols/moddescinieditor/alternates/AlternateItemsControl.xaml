@@ -12,8 +12,9 @@
         <ItemsControl.ItemTemplate>
             <DataTemplate DataType="{x:Type objects:AlternateOption}">
                 <Expander
-            Header="{Binding FriendlyName}"
-            Margin="5,3">
+                    Header="{Binding FriendlyName}"
+                    Margin="5,3"
+                    PreviewMouseWheel="HandleMouseWheel">
                     <moddescinieditor:DescriptorEditorItemsControl ItemsSource="{Binding ParameterMap}"/>
                 </Expander>
             </DataTemplate>

@@ -1,0 +1,33 @@
+﻿<local:ModdescEditorControlBase x:Class="MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.MultilistEditorControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor"
+             xmlns:fa="http://schemas.fontawesome.io/icons/"
+             xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+             mc:Ignorable="d" 
+             DataContext="{Binding RelativeSource={RelativeSource Self}}"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <StackPanel>
+        <TextBlock Text="Multilists" FontWeight="Bold" DockPanel.Dock="Top"/>
+        <TextBlock Text="Multilists are used by alternates to specify a specific list of files, such as adding files from multiple folders to a mod. They are referenced by their multilistid number."
+                   TextWrapping="Wrap"
+                   DockPanel.Dock="Top"/>
+        <Button Command="{Binding AddNewListCommand}" HorizontalAlignment="Left" DockPanel.Dock="Top" Margin="5,5,0,5">
+            <Button.Content>
+                <StackPanel Orientation="Horizontal">
+                    <fa:ImageAwesome Icon="Plus" Width="12" Height="12" Margin="0,0,5,0" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>
+                    <TextBlock Text="Add new Multilist"/>
+                </StackPanel>
+            </Button.Content>
+        </Button>
+        <ItemsControl Margin="10,0,0,0"  ItemsSource="{Binding Multilists}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="{x:Type local:SingleMultilistEditorItem}" >
+                    <local:SingleMultilistEditorControl/>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </StackPanel>
+</local:ModdescEditorControlBase>

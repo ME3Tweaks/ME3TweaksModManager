@@ -7,26 +7,42 @@
              xmlns:editor="clr-namespace:MassEffectModManagerCore.modmanager.objects.mod.editor"
              xmlns:modmanager="clr-namespace:MassEffectModManagerCore.modmanager"
              xmlns:objects="clr-namespace:MassEffectModManagerCore.modmanager.objects"
+             xmlns:fa="http://schemas.fontawesome.io/icons/"
+             xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+             xmlns:alternates="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alternates"
              mc:Ignorable="d" 
-             DataContext="{Binding RelativeSource={RelativeSource Self}}"
-             d:DesignHeight="450" d:DesignWidth="800">
-    <DockPanel>
-        <ScrollViewer VerticalScrollBarVisibility="Auto">
-<ItemsControl ItemsSource="{Binding OfficialDLCJobs}" 
-                      HorizontalContentAlignment="Stretch" 
-                      HorizontalAlignment="Stretch"  
-                      VirtualizingPanel.IsVirtualizing="True">
-            <ItemsControl.ItemTemplate>
-                <DataTemplate DataType="{x:Type objects:ModJob}" >
-                    <Expander Padding="0,10,0,0">
+             DataContext="{Binding RelativeSource={RelativeSource Self}}">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <DockPanel>
+            <TextBlock DockPanel.Dock="Top" Text="Official DLC tasks allow you to install files into official game DLC. Modding official DLC is useful for multiplayer, which can't add DLC without creating additional problems." TextWrapping="Wrap"/>
+            <Button Command="{Binding AddOfficialDLCJobCommand}" HorizontalAlignment="Left" DockPanel.Dock="Top" Margin="0,5,0,5">
+                <Button.Content>
+                    <StackPanel Orientation="Horizontal">
+                        <fa:ImageAwesome Icon="Plus" Width="12" Height="12" Margin="0,0,5,0" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>
+                        <TextBlock Text="Add Official DLC task"/>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
+            <ItemsControl ItemsSource="{Binding OfficialDLCJobs}" 
+                          HorizontalContentAlignment="Stretch" 
+                          HorizontalAlignment="Stretch"  
+                          VirtualizingPanel.IsVirtualizing="True">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type objects:ModJob}" >
+                        <Expander Padding="0,10,0,0">
                             <Expander.Header>
                                 <TextBlock DockPanel.Dock="Top" Text="{Binding Header, StringFormat='[{0}]'}" FontWeight="Bold"/>
-                        </Expander.Header>
-                        <local:DescriptorEditorItemsControl ItemsSource="{Binding ParameterMap}" Margin="10,0,0,15"/>
-                    </Expander>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-            <!--<ItemsControl.Template>
+                            </Expander.Header>
+                            <StackPanel Margin="10,0,0,0">
+                                <local:DescriptorEditorItemsControl ItemsSource="{Binding ParameterMap}"/>
+                                <local:MultilistEditorControl/>
+                                <alternates:AlternateFileBuilder
+                                    DirectionsText="Alternate files allow you to specify alternate installation options for this task. These options are presented to the user before installation begins."/>
+                            </StackPanel>
+                        </Expander>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+                <!--<ItemsControl.Template>
                         <ControlTemplate>
                             <ScrollViewer x:Name="ScrollViewer" Padding="2">
                                 <ItemsPresenter />
@@ -38,7 +54,7 @@
                             <VirtualizingStackPanel />
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>-->
-        </ItemsControl>
-            </ScrollViewer>
-    </DockPanel>
+            </ItemsControl>
+        </DockPanel>
+    </ScrollViewer>
 </local:ModdescEditorControlBase>

@@ -13,6 +13,7 @@
     Width="850"
     MinHeight="630"
     MinWidth="700"
+    DataContext="{Binding RelativeSource={RelativeSource Self}}"
     Name="MainWindow_Ref">
     <Window.Style>
         <Style

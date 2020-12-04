@@ -51,6 +51,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 }
                 else
                 {
+                    // values with spaces need quoted
                     str += $"\"{kp.Value}\""; //do not localize
                 }
             }

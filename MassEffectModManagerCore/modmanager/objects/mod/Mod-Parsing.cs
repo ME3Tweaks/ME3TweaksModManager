@@ -112,11 +112,6 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
         public ObservableCollectionExtended<string> UpdaterServiceBlacklistedFiles { get; } = new ObservableCollectionExtended<string>();
 
         /// <summary>
-        /// List of DLC folder names the controller compatibilty pack was built against. This list is passed through to Metacmm and will be checked on install to prevent improper installation
-        /// </summary>
-        public ObservableCollectionExtended<string> ME3ControllerCompatBuiltAgainst { get; } = new ObservableCollectionExtended<string>();
-
-        /// <summary>
         /// If this mod can attempt to check for updates via Nexus. This being true doesn't mean it will - it requires whitelisting.
         /// This essentially is only used to disable nexus update checks.
         /// </summary>
@@ -747,10 +742,8 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             #region BASEGAME and OFFICIAL HEADERS
 
             var supportedOfficialHeaders = ModJob.GetSupportedNonCustomDLCHeaders(Game);
-
-
+            
             //We must check against official headers
-            //ME2 doesn't support anything but basegame.
             foreach (var header in supportedOfficialHeaders)
             {
                 //if (Game != MEGame.ME3 && header != ModJob.JobHeader.BASEGAME) continue; //Skip any non-basegame offical headers for ME1/ME2
@@ -1598,6 +1591,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             //method of checking in place.
             if (modCoalFlag != null && Int32.TryParse(modCoalFlag, out int modCoalInt) && modCoalInt != 0)
             {
+                LegacyModCoal = true;
                 CLog.Information(@"Mod targets ModDesc 2.0, found modcoal flag", Settings.LogModStartup);
                 if (!CheckAndCreateLegacyCoalescedJob())
                 {
@@ -1630,12 +1624,6 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
 
             //What tool to launch post-install
             PostInstallToolLaunch = iniData[@"ModInfo"][@"postinstalltool"];
-
-            // Non-public descriptors
-            if (!string.IsNullOrEmpty(iniData[@"ControllerCompat"][@"builtagainst"]))
-            {
-                ME3ControllerCompatBuiltAgainst.ReplaceAll(StringStructParser.GetSemicolonSplitList(iniData[@"ControllerCompat"][@"builtagainst"]));
-            }
 
             // SECURITY CHECK
             #region TASK SILOING CHECK
@@ -1732,7 +1720,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             #endregion
 
 
-            if (InstallationJobs.Count > 0)
+            if (InstallationJobs.Any())
             {
                 CLog.Information($@"Finalizing: {InstallationJobs.Count} installation job(s) were found.", Settings.LogModStartup);
                 ValidMod = true;

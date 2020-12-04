@@ -1,0 +1,35 @@
+﻿<UserControl x:Class="MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.SingleMultilistEditorControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor"
+             xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+             xmlns:fa="http://schemas.fontawesome.io/icons/"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             BorderThickness="1"
+             BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer0BorderBrush}}">
+    <DockPanel Margin="5,0,0,0">
+        <TextBlock Text="{Binding MultilistId, StringFormat='Multilist {0}'}" FontWeight="Bold" DockPanel.Dock="Top"/>
+        <Button Command="{Binding AddFileCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=local:SingleMultilistEditorControl}}" HorizontalAlignment="Left" DockPanel.Dock="Top" Margin="5,5,0,5">
+            <Button.Content>
+                <StackPanel Orientation="Horizontal">
+                    <fa:ImageAwesome Icon="Plus" Width="12" Height="12" Margin="0,0,5,0" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>
+                    <TextBlock Text="Add file to multilist"/>
+                </StackPanel>
+            </Button.Content>
+        </Button>
+        <ItemsControl Margin="10,0,0,0"  ItemsSource="{Binding Files}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="{x:Type local:SingleMultilistEditorItem}" >
+                    <DockPanel Margin="0,0,0,3">
+                        <TextBlock DockPanel.Dock="Left" Text="{Binding ItemIndex, StringFormat='Item {0}'}" Width="150"/>
+                        <TextBox Text="{Binding Value}" TextWrapping="Wrap"/>
+                    </DockPanel>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+    </DockPanel>
+</UserControl>

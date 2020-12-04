@@ -66,7 +66,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public long ProgressMaximum { get; private set; }
         public bool ProgressIndeterminate { get; private set; }
 
-        public bool CanCompressPackages => CompressedMods.Any(x => x.Game >= MEGame.ME2) && App.AllowCompressingPackagesOnImport && ArchiveScanned && !TaskRunning;
+        // Must be ME2 or ME3, cannot have a transform, we allow it, archive has been scanned, we haven't started an operation
+        public bool CanCompressPackages => CompressedMods.Any(x => x.Game >= MEGame.ME2) && CompressedMods.All(x=>x.ExeExtractionTransform == null) && App.AllowCompressingPackagesOnImport && ArchiveScanned && !TaskRunning;
 
         public ObservableCollectionExtended<Mod> CompressedMods { get; } = new ObservableCollectionExtended<Mod>();
         public ModArchiveImporter(string file)
@@ -494,7 +495,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
 
                     string custommoddesc = null;
-                    if (importingInfo?.servermoddescname != null || transform != null)
+                    if (importingInfo?.servermoddescname != null)
                     {
                         //Partially supported unofficial third party mod
                         //Mod has a custom written moddesc.ini stored on ME3Tweaks
@@ -531,6 +532,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             else
                             {
                                 Log.Error(@"Server moddesc was not valid for this mod. This shouldn't occur. Please report to Mgamerz.");
+                                Analytics.TrackEvent(@"Invalid servermoddesc detected", new Dictionary<string, string>()
+                                {
+                                    {@"moddesc.ini name", importingInfo.servermoddescname ?? transform.PostTransformModdesc}
+                                });
                             }
 
                             return;

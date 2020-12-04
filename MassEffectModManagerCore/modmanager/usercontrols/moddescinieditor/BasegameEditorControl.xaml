@@ -1,0 +1,50 @@
+﻿<local:ModdescEditorControlBase x:Class="MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.BasegameEditorControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor"
+             xmlns:fa="http://schemas.fontawesome.io/icons/"
+             xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+             xmlns:objects="clr-namespace:MassEffectModManagerCore.modmanager.objects"
+             xmlns:alternates="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alternates"
+             mc:Ignorable="d" 
+             DataContext="{Binding RelativeSource={RelativeSource Self}}">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <DockPanel>
+            <TextBlock DockPanel.Dock="Top" Text="The Basegame task allows you to install files into the basegame, including the BIOGame, Binaries (not Win32), and Engine folders. This task is useful for mods that edit files that load before DLC." TextWrapping="Wrap"/>
+            <Button Command="{Binding AddBasegameTaskCommand}" HorizontalAlignment="Left" DockPanel.Dock="Top" Margin="0,5,0,5">
+                <Button.Content>
+                    <StackPanel Orientation="Horizontal">
+                        <fa:ImageAwesome Icon="Plus" Width="12" Height="12" Margin="0,0,5,0" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>
+                        <TextBlock Text="Add Basegame task"/>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
+            <StackPanel>
+
+            <local:DescriptorEditorItemsControl ItemsSource="{Binding BasegameJob.ParameterMap}" Margin="10,0,0,15"/>
+            <local:MultilistEditorControl Header="BASEGAME"
+                                          x:Name="basegame_multilists_editor"/>
+            <TextBlock Text="Alternate files" FontWeight="Bold"/>
+            <alternates:AlternateFileBuilder 
+                x:Name="basegame_alternatefiles_editor"
+                DirectionsText="Alternate files allow you to specify alternate installation options for this task. These options are presented to the user before installation begins."
+                Header="BASEGAME"/>
+            </StackPanel>
+
+<!--<ItemsControl.Template>
+                        <ControlTemplate>
+                            <ScrollViewer x:Name="ScrollViewer" Padding="2">
+                                <ItemsPresenter />
+                            </ScrollViewer>
+                        </ControlTemplate>
+                    </ItemsControl.Template>
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>-->
+        </DockPanel>
+    </ScrollViewer>
+</local:ModdescEditorControlBase>

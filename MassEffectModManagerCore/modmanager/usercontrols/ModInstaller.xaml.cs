@@ -663,13 +663,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 var metacmm = Path.Combine(addedDLCFolder, @"_metacmm.txt");
                 ModBeingInstalled.HumanReadableCustomDLCNames.TryGetValue(Path.GetFileName(addedDLCFolder), out var assignedDLCName);
                 string contents = $"{assignedDLCName ?? ModBeingInstalled.ModName}\n{ModBeingInstalled.ModVersionString}\n{App.BuildNumber}\n{Guid.NewGuid().ToString()}"; //Do not localize
-
-                if (ModBeingInstalled.ME3ControllerCompatBuiltAgainst.Any())
-                {
-                    // This is a compat pack
-                    contents += $"\n{MetaCMM.ControllerCompatMetaPrefix}{string.Join(';', ModBeingInstalled.ME3ControllerCompatBuiltAgainst)}"; //do not localize
-                }
-
                 File.WriteAllText(metacmm, contents);
             }
 

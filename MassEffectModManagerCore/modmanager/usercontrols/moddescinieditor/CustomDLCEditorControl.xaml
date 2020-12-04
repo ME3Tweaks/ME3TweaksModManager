@@ -4,38 +4,53 @@
                           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
                           xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
                           xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor"
+                          xmlns:fa="http://schemas.fontawesome.io/icons/"
+                          xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
                           mc:Ignorable="d" 
                           DataContext="{Binding RelativeSource={RelativeSource Self}}"
                           d:DesignHeight="450" d:DesignWidth="800">
-    <DockPanel>
-        <TextBlock FontWeight="Bold" Text="[CUSTOMDLC]" DockPanel.Dock="Top"/>
-
-        <ItemsControl ItemsSource="{Binding CustomDLCParameters}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"  
+    <ScrollViewer>
+        <StackPanel>
+            <TextBlock FontWeight="Bold" Text="[CUSTOMDLC]" DockPanel.Dock="Top"/>
+            <TextBlock Text="Custom DLC, also known as DLC mods, are mods that load at the main menu and can override files that are not already loaded. Items on this page are always installed with your mod." TextWrapping="Wrap" DockPanel.Dock="Top"/>
+            <Button Command="{Binding AddCustomDLCCommand}" HorizontalAlignment="Left" DockPanel.Dock="Top" Margin="0,5">
+                <Button.Content>
+                    <StackPanel Orientation="Horizontal">
+                        <fa:ImageAwesome Icon="Plus" Width="12" Height="12" Margin="0,0,5,0"  
+                                     Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>
+                        <TextBlock Text="Add Custom DLC"/>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
+            <ItemsControl ItemsSource="{Binding CustomDLCParameters}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"  
                       AlternationCount="2" VirtualizingStackPanel.IsVirtualizing="True" ScrollViewer.CanContentScroll="True">
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="250"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="Source directory path" Grid.Row="0" Grid.Column="0"/>
-                        <TextBlock Text="Installed DLC name" Grid.Row="0" Grid.Column="2"/>
-                        <TextBlock Text="DLC human readable name" Grid.Row="0" Grid.Column="3" Margin="10,0,0,0"/>
-                        <TextBox Grid.Row="1" Grid.Column="0" Text="{Binding SourcePath}" />
-                        <TextBlock Grid.Row="1" Grid.Column="1" Text=" => "/>
-                        <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding DestDLCName}"/>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="250"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Source directory path" Grid.Row="0" Grid.Column="0"/>
+                            <TextBlock Text="Installed DLC name" Grid.Row="0" Grid.Column="2"/>
+                            <TextBlock Text="DLC human readable name" Grid.Row="0" Grid.Column="3" Margin="10,0,0,0"/>
+                            <TextBox Grid.Row="1" Grid.Column="0" Text="{Binding SourcePath}" />
+                            <TextBlock Grid.Row="1" Grid.Column="1" Text=" => "/>
+                            <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding DestDLCName}"/>
 
-                        <TextBox Grid.Row="1" Grid.Column="3" Margin="10,0,0,0" Text="{Binding HumanReadableName}"/>
-                    </Grid>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
-    </DockPanel>
+                            <TextBox Grid.Row="1" Grid.Column="3" Margin="10,0,0,0" Text="{Binding HumanReadableName}"/>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <local:MultilistEditorControl Header="CUSTOMDLC" x:Name="customdlc_multilists_editor"/>
+        </StackPanel>
+    </ScrollViewer>
+
 </local:ModdescEditorControlBase>

@@ -10,9 +10,11 @@
              mc:Ignorable="d" 
              DataContext="{Binding RelativeSource={RelativeSource Self}}"
              d:DesignHeight="450" d:DesignWidth="800">
+    <ScrollViewer>
 
     <DockPanel>
-        <Button Command="{Binding AddAlternateDLCCommand}" HorizontalAlignment="Left" DockPanel.Dock="Top">
+        <TextBlock DockPanel.Dock="Top" Text="Alternate DLC allows you to define alternate installation options for the CUSTOMDLC task header."/>
+        <Button Command="{Binding AddAlternateDLCCommand}" HorizontalAlignment="Left" DockPanel.Dock="Top" Margin="-2,5,0,5">
             <Button.Content>
                 <StackPanel Orientation="Horizontal">
                     <fa:ImageAwesome Icon="Plus" Width="12" Height="12" Margin="0,0,5,0" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>
@@ -22,4 +24,6 @@
         </Button>
         <local:AlternateItemsControl/>
     </DockPanel>
+    </ScrollViewer>
+
 </moddescinieditor:ModdescEditorControlBase>

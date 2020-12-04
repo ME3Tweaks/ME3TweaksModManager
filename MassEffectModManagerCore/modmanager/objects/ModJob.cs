@@ -645,9 +645,27 @@ namespace MassEffectModManagerCore.modmanager.objects
             Dictionary<string, object> parameterDictionary = new Dictionary<string, object>();
             if (IsVanillaJob(this, mod.Game))
             {
-                parameterDictionary[@"moddir"] = JobDirectory;
-                parameterDictionary[@"newfiles"] = NewFilesRaw;
-                parameterDictionary[@"replacefiles"] = ReplaceFilesRaw;
+                if (mod.LegacyModCoal)
+                {
+                    // moddesc 2 supported this flag. In MM3 it auto converted the
+                    // meaning of this into basegame coalesced job. We 
+                    // should convert it here since there are no raw values 
+                    // cached into raw
+
+                    parameterDictionary[@"moddir"] = @".";
+                    parameterDictionary[@"newfiles"] = @"BIOGame\CookedPCConsole\Coalesced.bin";
+                    parameterDictionary[@"replacefiles"] = @"Coalesced.bin";
+
+                    // Technically this doesn't support more on this version of moddesc.
+                    // But since we can't save older moddesc formats we will allow
+                    // additional parameters and not show the modcoal flag in the UI.
+                }
+                else
+                {
+                    parameterDictionary[@"moddir"] = JobDirectory;
+                    parameterDictionary[@"newfiles"] = NewFilesRaw;
+                    parameterDictionary[@"replacefiles"] = ReplaceFilesRaw;
+                }
 
                 if (mod.Game == MEGame.ME3 || Header == JobHeader.BASEGAME)
                 {
@@ -660,23 +678,25 @@ namespace MassEffectModManagerCore.modmanager.objects
                 parameterDictionary[@"gamedirectorystructure"] = GameDirectoryStructureRaw ? @"True" : null;
                 parameterDictionary[@"jobdescription"] = RequirementText;
                 // TODO: MULTILISTS
-
                 // TODO: ALTFILES?
-
             }
             else if (Header == JobHeader.CUSTOMDLC)
             {
                 parameterDictionary[@"sourcedirs"] = CustomDLCFolderMapping.Keys;
                 parameterDictionary[@"destdirs"] = CustomDLCFolderMapping.Values;
-
                 // TODO: MULTILISTS?
 
                 // NOT MAPPED: HUMAN READABLE NAMES
-                // MUST BE CONFIGURED DIRECTLY BY EDITOR UI
-            } else if (Header == JobHeader.LOCALIZATION)
+                // CONFIGURED DIRECTLY BY EDITOR UI
+            }
+            else if (Header == JobHeader.LOCALIZATION)
             {
                 parameterDictionary[@"files"] = FilesToInstall.Values;
                 parameterDictionary[@"dlcname"] = mod.RequiredDLC.FirstOrDefault();
+            }
+            else if (Header == JobHeader.BALANCE_CHANGES)
+            {
+                // ?
             }
 
             ParameterMap.ReplaceAll(MDParameter.MapIntoParameterMap(parameterDictionary, Header.ToString()));

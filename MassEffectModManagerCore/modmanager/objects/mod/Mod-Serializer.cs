@@ -8,6 +8,15 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
 {
     public partial class Mod : IMDParameterMap
     {
+        // Class for editing the mod in moddesc.ini editor and related variables
+
+        /// <summary>
+        /// If the mod specified the modcoal flag (MD 2.0 only)
+        /// </summary>
+        public bool LegacyModCoal { get; set; }
+
+
+
         /// <summary>
         /// Generates the corresponding moddesc.ini text for this mod
         /// </summary>
@@ -51,8 +60,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 {@"minbuild", MinimumSupportedBuild > 102 ? MinimumSupportedBuild.ToString() : null},
             };
             ParameterMap.AddRange(MDParameter.MapIntoParameterMap(parameterDictionary, @"ModManager"));
-
-
+            
             // ModInfo
             parameterDictionary = new Dictionary<string, object>()
             {
@@ -65,9 +73,15 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 {@"updatecode", ModClassicUpdateCode > 0 ? ModClassicUpdateCode.ToString() : null},
                 {@"nexuscode", NexusModID > 0 ? NexusModID.ToString() : null},
                 {@"requireddlc", RequiredDLC},
-                {@"prefercompressed", PreferCompressed ? "True" : null},
                 {@"bannerimagename", BannerImageName},
             };
+
+            if (Game > MEGame.ME1)
+            {
+                // This flag only makes a difference for ME1
+                parameterDictionary[@"prefercompressed"] = PreferCompressed ? "True" : null;
+            }
+
             ParameterMap.AddRange(MDParameter.MapIntoParameterMap(parameterDictionary, @"ModInfo"));
 
             // UPDATES

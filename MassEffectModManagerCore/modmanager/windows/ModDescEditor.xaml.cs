@@ -25,6 +25,7 @@ namespace MassEffectModManagerCore.modmanager.windows
 
             // Tabs
             editorControls.Add(metadataEditor_control);
+            editorControls.Add(basegame_editor_control);
             editorControls.Add(officialdlc_editor_control);
             editorControls.Add(customdlcEditor_control);
             editorControls.Add(customdlc_alternateFileEditor_control);
@@ -57,6 +58,11 @@ namespace MassEffectModManagerCore.modmanager.windows
             if (m.ValidMod)
             {
                 // wow
+                if (Application.Current.MainWindow is MainWindow mw)
+                {
+                    mw.VisibleFilteredMods.Add(m);
+                    mw.SelectedMod = m;
+                }
             }
             //var moddesc = EditingMod.SerializeModdesc();
             ////Mod m = new Mod(moddesc, EditingMod.ModPath, null);
@@ -73,6 +79,11 @@ namespace MassEffectModManagerCore.modmanager.windows
 #if !DEBUG
             M3L.ShowDialog(this, M3L.GetString(M3L.string_toolUnderDevelopment), M3L.GetString(M3L.string_underDevelopment), MessageBoxButton.OK, MessageBoxImage.Warning);
 #endif
+        }
+
+        private void OpenModdescDocumenation_Click(object sender, RoutedEventArgs e)
+        {
+            Utilities.OpenWebpage(@"https://github.com/ME3Tweaks/ME3TweaksModManager/tree/master/documentation");
         }
     }
 }

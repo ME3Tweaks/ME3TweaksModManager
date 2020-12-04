@@ -11,7 +11,8 @@
              DataContext="{Binding RelativeSource={RelativeSource Self}}"
              d:DesignHeight="450" d:DesignWidth="800">
     <DockPanel>
-        <Button Command="{Binding AddAlternateFileCommand}" HorizontalAlignment="Left" DockPanel.Dock="Top">
+        <TextBlock TextWrapping="Wrap"  DockPanel.Dock="Top" Text="{Binding DirectionsText}"/>
+        <Button Command="{Binding AddAlternateFileCommand}" HorizontalAlignment="Left" DockPanel.Dock="Top" Margin="0,5,0,5">
             <Button.Content>
                 <StackPanel Orientation="Horizontal">
                     <fa:ImageAwesome Icon="Plus" Width="12" Height="12" Margin="0,0,5,0"  
