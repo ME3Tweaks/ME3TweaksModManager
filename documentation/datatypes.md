@@ -1,3 +1,5 @@
+![Documentation Image](images/documentation_header.png)
+
 ## Data types in moddesc.ini
 There are several data types you will need to know about for moddesc.ini files.
 
