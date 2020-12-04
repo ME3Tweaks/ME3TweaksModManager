@@ -1,3 +1,5 @@
+![Documentation Image](images/documentation_header.png)
+
 ## Creating a mod for ME3Tweaks Mod Manager
 If you are planning to create mods with ME3Tweaks Mod Manager, you should ensure your local installation of M3 is in developer mode. Turn this feature on in the Actions > Options menu. This will enable developer oriented features.
 
