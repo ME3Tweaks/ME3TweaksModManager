@@ -2,9 +2,9 @@
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
 		<PublishTrimmed>false</PublishTrimmed>
-		<PublishReadyToRun>true</PublishReadyToRun>
+		<PublishReadyToRun>false</PublishReadyToRun>
 		<PublishSingleFile>true</PublishSingleFile>
-		<TargetFramework>net5.0-windows</TargetFramework>
+		<TargetFramework>net5.0-windows8.0</TargetFramework>
 		<RuntimeIdentifier>win10-x64</RuntimeIdentifier>
 		<PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
 		<UseWPF>true</UseWPF>
@@ -24,6 +24,8 @@
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
 		<UserSecretsId>7b27ce2b-30bb-4b0a-b86c-79c02467be9f</UserSecretsId>
+		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+		<PublishTrimmed>TrFalseue</PublishTrimmed>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -42,10 +44,7 @@
 	</ItemGroup>
 	<ItemGroup>
 		<None Remove="appicon.ico" />
-		<None Remove="bundleddlls\lzo2wrapper.dll" />
-		<None Remove="bundleddlls\sevenzipwrapper.dll" />
-		<None Remove="bundleddlls\zlibwrapper.dll" />
-		<None Remove="images\darktheme.png" />
+	  <None Remove="images\darktheme.png" />
 		<None Remove="images\dvd.png" />
 		<None Remove="images\gameicons\ME1_48.ico" />
 		<None Remove="images\gameicons\ME2_48.ico" />
@@ -134,9 +133,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<EmbeddedResource Include="bundleddlls\lzo2wrapper.dll" />
-		<EmbeddedResource Include="bundleddlls\sevenzipwrapper.dll" />
-		<EmbeddedResource Include="bundleddlls\zlibwrapper.dll" />
 		<EmbeddedResource Include="modmanager\asi\ME1-DLC-ModEnabler-v1.0.asi" />
 		<EmbeddedResource Include="modmanager\asi\ME3Logger_truncating-v1.0.asi" />
 		<EmbeddedResource Include="modmanager\binkw32\me1\binkw23.dll" />

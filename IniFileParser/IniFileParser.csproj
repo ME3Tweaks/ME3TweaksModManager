@@ -13,10 +13,8 @@
     <PackageProjectUrl>https://github.com/rickyah/ini-parser</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Version>2.5.3-sh1</Version>
-    <SignAssembly>True</SignAssembly>
-    <AssemblyOriginatorKeyFile>Properties\publickey.snk</AssemblyOriginatorKeyFile>
     <OutputType>Library</OutputType>
-    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <GenerateDocumentationFile>False</GenerateDocumentationFile>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <NoWarn>$(NoWarn);0618;1591;1573</NoWarn>
     <!-- Ignore: Use of Deprecated, Undocumented Public Members, Undocumented Parameters -->

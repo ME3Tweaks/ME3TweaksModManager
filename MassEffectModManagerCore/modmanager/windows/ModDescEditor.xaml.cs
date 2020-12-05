@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
 using IniParser.Model;
+using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor;
 
@@ -121,18 +122,6 @@ namespace MassEffectModManagerCore.modmanager.windows
         public SolidColorBrush StatusForeground { get; set; }
 
         public string StatusMessage { get; set; }
-
-        private void ModDescEditor_OnContentRendered(object? sender, EventArgs e)
-        {
-
-            //foreach (var control in editorControls)
-            //{
-            //    control.OnLoaded();
-            //}
-#if !DEBUG
-            M3L.ShowDialog(this, M3L.GetString(M3L.string_toolUnderDevelopment), M3L.GetString(M3L.string_underDevelopment), MessageBoxButton.OK, MessageBoxImage.Warning);
-#endif
-        }
 
         private void OpenModdescDocumenation_Click(object sender, RoutedEventArgs e)
         {
