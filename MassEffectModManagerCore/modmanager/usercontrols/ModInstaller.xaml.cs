@@ -32,7 +32,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// <summary>
     /// Interaction logic for ModInstaller.xaml
     /// </summary>
-    public partial class ModInstaller : MMBusyPanelBase
+    public partial class ModInstaller : MMBusyPanelBase, INotifyPropertyChanged
     {
         public static readonly int PERCENT_REFRESH_COOLDOWN = 125;
         private readonly ReadOnlyOption me1ConfigReadOnlyOption = new ReadOnlyOption();
@@ -49,6 +49,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             MemoryAnalyzer.AddTrackedMemoryItem(@"Mod Installer", new WeakReference(this));
             Log.Information($@">>>>>>> Starting mod installer for mod: {modBeingInstalled.ModName} {modBeingInstalled.ModVersionString} for game {modBeingInstalled.Game}. Install source: {(modBeingInstalled.IsInArchive ? @"Archive" : @"Library (disk)")}"); //do not localize
+            LoadCommands();
             DataContext = this;
             lastPercentUpdateTime = DateTime.Now;
             this.ModBeingInstalled = modBeingInstalled;
@@ -70,8 +71,19 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
         }
 
+        private void LoadCommands()
+        {
+            InstallCommand = new GenericCommand(BeginInstallingMod, CanInstall);
 
-        
+        }
+        private bool CanInstall()
+        {
+            return !PreventInstallUntilTargetChange;
+        }
+
+        public GenericCommand InstallCommand { get; set; }
+
+
         private DateTime lastPercentUpdateTime;
         public bool InstallationCancelled;
 
@@ -1227,11 +1239,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             OnClosing(DataEventArgs.Empty);
         }
 
-        private void InstallStart_Click(object sender, RoutedEventArgs e)
-        {
-            BeginInstallingMod();
-        }
-
         private void InstallCancel_Click(object sender, RoutedEventArgs e)
         {
             InstallationSucceeded = false;
@@ -1279,15 +1286,27 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public override void OnPanelVisible()
         {
             GC.Collect(); //this should help with the oddities of missing radio button's somehow still in the visual tree from busyhost
+            SetupOptions(true);
+        }
 
+        private void SetupOptions(bool initialSetup)
+        {
+            AlternateOptions.ClearEx();
             //Write check
             var canWrite = Utilities.IsDirectoryWritable(SelectedGameTarget.TargetPath);
             if (!canWrite)
             {
-                //needs write permissions
-                InstallationCancelled = true;
                 M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogNoWritePermissions), M3L.GetString(M3L.string_cannotWriteToGameDirectory), MessageBoxButton.OK, MessageBoxImage.Warning);
-                OnClosing(DataEventArgs.Empty);
+                if (initialSetup)
+                {
+                    //needs write permissions
+                    InstallationCancelled = true;
+                    OnClosing(DataEventArgs.Empty);
+                }
+                else
+                {
+                    PreventInstallUntilTargetChange = true;
+                }
                 return;
             }
 
@@ -1318,9 +1337,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     string message = M3L.GetString(M3L.string_dialogIncompatibleDLCDetectedHeader, ModBeingInstalled.ModName);
                     message += string.Join('\n', incompatibleDLC);
                     message += M3L.GetString(M3L.string_dialogIncompatibleDLCDetectedFooter, ModBeingInstalled.ModName);
-                    InstallationCancelled = true;
                     M3L.ShowDialog(window, message, M3L.GetString(M3L.string_incompatibleDLCDetected), MessageBoxButton.OK, MessageBoxImage.Error);
-                    OnClosing(DataEventArgs.Empty);
+
+                    if (initialSetup)
+                    {
+                        InstallationCancelled = true;
+                        OnClosing(DataEventArgs.Empty);
+                    }
+                    else
+                    {
+                        PreventInstallUntilTargetChange = true;
+                    }
+
                     return;
                 }
             }
@@ -1342,7 +1370,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         else
                         {
                             outdatedDLC.Add(@" - " + outdatedItem);
-
                         }
                     }
                 }
@@ -1380,16 +1407,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             SortOptions();
 
-            foreach (object o in AlternateOptions)
+            foreach (AlternateOption o in AlternateOptions)
             {
                 if (o is AlternateDLC altdlc)
                 {
-                    altdlc.SetupInitialSelection(SelectedGameTarget);
+                    altdlc.SetupInitialSelection(SelectedGameTarget, ModBeingInstalled);
                     if (altdlc.IsManual) AllOptionsAreAutomatic = false;
                 }
                 else if (o is AlternateFile altfile)
                 {
-                    altfile.SetupInitialSelection(SelectedGameTarget);
+                    altfile.SetupInitialSelection(SelectedGameTarget, ModBeingInstalled);
                     if (altfile.IsManual) AllOptionsAreAutomatic = false;
                 }
             }
@@ -1402,6 +1429,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             else
             {
                 InstallationTargets.ReplaceAll(mainwindow.InstallationTargets.Where(x => x.Game == ModBeingInstalled.Game));
+            }
+        }
+
+        public bool PreventInstallUntilTargetChange { get; set; }
+
+        public void OnSelectedGameTargetChanged(object oldT, object newT)
+        {
+            if (oldT != null && newT != null)
+            {
+                PreventInstallUntilTargetChange = false;
+                SetupOptions(false);
             }
         }
 

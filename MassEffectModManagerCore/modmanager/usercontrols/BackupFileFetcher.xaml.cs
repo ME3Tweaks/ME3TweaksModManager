@@ -35,6 +35,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public ICommand CloseCommand { get; set; }
         public ICommand FetchFileCommand { get; set; }
 
+#if DEBUG
+        public bool ShowMixinSourceOption => SelectedGameIndex == 2; // ME3
+        public bool ExtractAsMixinSource { get; set; }
+
+#else
+        public bool ShowMixinSourceOption => false;
+        public bool ExtractAsMixinSource => false;
+#endif
+
         private void LoadCommands()
         {
             CloseCommand = new GenericCommand(ClosePanel);
@@ -72,7 +81,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (fileTofetch.Module == @"BASEGAME")
                 {
                     var fetchedfilestream = VanillaDatabaseService.FetchBasegameFile(MEGame.ME3, fileTofetch.Filename);
-                    fetchedfilestream.WriteToFile(m.FileName);
+
+                    if (ExtractAsMixinSource)
+                    {
+                        // Decompress and save as mixin rules
+                        var p = MEPackageHandler.OpenMEPackageFromStream(fetchedfilestream);
+                        p.Save(m.FileName, includeAdditionalPackagesToCook: false, includeDependencyTable: true);
+                    }
+                    else
+                    {
+                        fetchedfilestream.WriteToFile(m.FileName);
+                    }
                 }
                 else
                 {

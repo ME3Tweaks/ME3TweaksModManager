@@ -453,7 +453,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             return AlternateDLCFolder != null || MultiListSourceFiles != null;
         }
 
-        public void SetupInitialSelection(GameTarget target)
+        public void SetupInitialSelection(GameTarget target, Mod mod)
         {
             UIIsSelectable = false; //Reset
             IsSelected = false; //Reset
@@ -464,6 +464,12 @@ namespace MassEffectModManagerCore.modmanager.objects
                 {
                     var dlc = M3Directories.GetInstalledDLC(target);
                     UIIsSelectable = dlc.ContainsAll(DLCRequirementsForManual, StringComparer.InvariantCultureIgnoreCase);
+                    if (!UIIsSelectable && mod.ModDescTargetVersion >= 6.2)
+                    {
+                        // Mod Manager 6.2: If requirements are not met this option is forcibly not checked.
+                        // Mods targeting Moddesc 6 or 6.1 will possibly be bugged if they used this feature
+                        IsSelected = false;
+                    }
                     CLog.Information($@" > AlternateDLC SetupInitialSelection() {FriendlyName}: UISelectable: {UIIsSelectable}, conducted DLCRequirements check.", Settings.LogModInstallation);
 
                 }
@@ -577,6 +583,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 {@"MultiListRootPath", MultiListRootPath},
                 {@"RequiredFileRelativePaths", RequiredSpecificFiles.Keys.ToList()}, // List of relative paths
                 {@"RequiredFileSizes", RequiredSpecificFiles.Values.ToList()}, // List of relative sizes
+                {@"DLCRequirements", DLCRequirementsForManual},
                 {@"ImageAsset", ImageAssetName},
                 {@"ImageHeight", ImageHeight > 0 ? ImageHeight.ToString() : null}
             };

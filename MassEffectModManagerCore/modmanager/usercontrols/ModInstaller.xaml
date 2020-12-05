@@ -31,7 +31,7 @@
 
                 <!--<Button Content="{DynamicResource string_debugPrintQueue}" Click="DebugPrintInstallationQueue_Click" Visibility="{x:Static massEffectModManagerCore:App.DebugOnlyVisibility}" Margin="0,10,0,0"  DockPanel.Dock="Left"/>-->
 
-                <Button Content="{DynamicResource string_install}" DockPanel.Dock="Right" Padding="40,0" Click="InstallStart_Click" Margin="0,0,0,0" ToolTip="{DynamicResource string_installMod}"/>
+                <Button Content="{DynamicResource string_install}" DockPanel.Dock="Right" Padding="40,0" Command="{Binding InstallCommand}" Margin="0,0,0,0" ToolTip="{DynamicResource string_installMod}"/>
                 <Button Content="{DynamicResource string_cancel}" DockPanel.Dock="Right" Padding="5,0" Margin="5,0,5,0" Click="InstallCancel_Click" ToolTip="{DynamicResource string_abortInstallingMod}"/>
                 <local:TargetSelector ShowTextureInfo="False" ToolTip="Target that the mod will be installed to" AvailableTargets="{Binding InstallationTargets}" SelectedGameTarget="{Binding SelectedGameTarget, Mode=TwoWay}"/>
             </DockPanel>

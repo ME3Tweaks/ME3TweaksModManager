@@ -404,7 +404,7 @@ namespace MassEffectModManagerCore.modmanager.objects
 
 
 
-        public void SetupInitialSelection(GameTarget target)
+        public void SetupInitialSelection(GameTarget target, Mod mod)
         {
             IsSelected = CheckedByDefault; //Reset
             if (IsAlways)
