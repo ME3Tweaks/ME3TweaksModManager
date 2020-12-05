@@ -114,7 +114,13 @@ namespace MassEffectModManagerCore
         /// </summary>
         private Queue<MMBusyPanelBase> queuedUserControls = new Queue<MMBusyPanelBase>();
 
-
+        /// <summary>
+        /// The backend libraries and game targets have initially loaded
+        /// </summary>
+        public bool StartedUp { get; set; }
+        /// <summary>
+        /// The currently selected mod
+        /// </summary>
         public Mod SelectedMod { get; set; }
         /// <summary>
         /// Mods currently visible in the left panel
@@ -270,8 +276,21 @@ namespace MassEffectModManagerCore
             EndorseM3String = M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
         }
 
-        private async Task<User> AuthToNexusMods()
+        private async Task<User> AuthToNexusMods(bool languageUpdateOnly = false)
         {
+            if (languageUpdateOnly)
+            {
+                if (NexusUsername != null)
+                {
+                    EndorseM3String = (ME1NexusEndorsed || ME2NexusEndorsed || ME3NexusEndorsed) ? M3L.GetString(M3L.string_endorsedME3TweaksModManagerOnNexusMods) : M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
+                }
+                else
+                {
+                    EndorseM3String = M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
+                }
+                return null;
+            }
+
             Log.Information(@"Authenticating to NexusMods...");
             var userInfo = await NexusModsUtilities.AuthToNexusMods();
             if (userInfo != null)
@@ -1668,6 +1687,7 @@ namespace MassEffectModManagerCore
                     ShowBackupNag();
                 }
                 collectHardwareInfo();
+                StartedUp = true;
             });
 
         }
@@ -1880,7 +1900,7 @@ namespace MassEffectModManagerCore
                         });
                     }
                 }
-
+                
                 backgroundTaskEngine.SubmitJobCompletion(uiTask);
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NoModSelectedText)));
 
@@ -3352,7 +3372,7 @@ namespace MassEffectModManagerCore
                     {
                         Settings.Save(); //save this language option
                     }
-                    AuthToNexusMods();
+                    await AuthToNexusMods(languageUpdateOnly: true); //this call will immediately return
                     FailedMods.RaiseBindableCountChanged();
                     CurrentOperationText = M3L.GetString(M3L.string_setLanguageToX);
                     VisitWebsiteText = (SelectedMod != null && SelectedMod.ModWebsite != Mod.DefaultWebsite) ? M3L.GetString(M3L.string_interp_visitSelectedModWebSite, SelectedMod.ModName) : "";

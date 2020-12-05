@@ -337,6 +337,8 @@
     <!-- 0=ME1/ME2/ME3 -->
     <system:String x:Key="string_preparingToScanGame">Preparing to scan game</system:String>
     <system:String x:Key="string_pleaseWait">Please wait</system:String>
+    <system:String x:Key="string_pleaseWait_startup">Mod Manager is starting up, your mod library will be available momentarily.</system:String>
+
 
     <!-- Global Styles -->
     <system:String x:Key="string_thisTargetHasBeenTextureModded">This target has been texture modded</system:String>

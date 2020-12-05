@@ -68,6 +68,7 @@
     <Color x:Key="{x:Static adonisUi:Colors.ErrorColor}">#dd2c00</Color>
     <Color x:Key="{x:Static adonisUi:Colors.AlertColor}">#ffa000</Color>
     <Color x:Key="{x:Static adonisUi:Colors.HyperlinkColor}">#0645ad</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.MenuHeaderBackgroundColor}">#d7d7d7</Color>
 
     <Color x:Key="{x:Static adonisUi:Colors.WindowButtonHighlightColor}">#e5e5e5</Color>
     <Color x:Key="{x:Static adonisUi:Colors.WindowButtonInteractionColor}">#cacaca</Color>
@@ -137,6 +138,7 @@
     <SolidColorBrush x:Key="{x:Static adonisUi:Brushes.ErrorBrush}" Color="{DynamicResource {x:Static adonisUi:Colors.ErrorColor}}" presentationOptions:Freeze="True"/>
     <SolidColorBrush x:Key="{x:Static adonisUi:Brushes.AlertBrush}" Color="{DynamicResource {x:Static adonisUi:Colors.AlertColor}}" presentationOptions:Freeze="True"/>
     <SolidColorBrush x:Key="{x:Static adonisUi:Brushes.HyperlinkBrush}" Color="{DynamicResource {x:Static adonisUi:Colors.HyperlinkColor}}" presentationOptions:Freeze="True"/>
+    <SolidColorBrush x:Key="{x:Static adonisUi:Brushes.MenuHeaderBackgroundBrush}" Color="{DynamicResource {x:Static adonisUi:Colors.MenuHeaderBackgroundColor}}" presentationOptions:Freeze="True"/>
 
     <SolidColorBrush x:Key="{x:Static adonisUi:Brushes.WindowButtonHighlightBrush}" Color="{DynamicResource {x:Static adonisUi:Colors.WindowButtonHighlightColor}}" presentationOptions:Freeze="True"/>
     <SolidColorBrush x:Key="{x:Static adonisUi:Brushes.WindowButtonInteractionBrush}" Color="{DynamicResource {x:Static adonisUi:Colors.WindowButtonInteractionColor}}" presentationOptions:Freeze="True"/>

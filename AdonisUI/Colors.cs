@@ -71,6 +71,8 @@ namespace AdonisUI
         public static ComponentResourceKey ErrorColor => new ComponentResourceKey(typeof(Colors), "ErrorColor");
         public static ComponentResourceKey AlertColor => new ComponentResourceKey(typeof(Colors), "AlertColor");
         public static ComponentResourceKey HyperlinkColor => new ComponentResourceKey(typeof(Colors), "HyperlinkColor");
+        public static ComponentResourceKey MenuHeaderBackgroundColor => new ComponentResourceKey(typeof(Colors), "MenuHeaderBackgroundColor");
+        
 
         public static ComponentResourceKey WindowButtonHighlightColor => new ComponentResourceKey(typeof(Brushes), "WindowButtonHighlightColor");
         public static ComponentResourceKey WindowButtonInteractionColor => new ComponentResourceKey(typeof(Brushes), "WindowButtonInteractionColor");
