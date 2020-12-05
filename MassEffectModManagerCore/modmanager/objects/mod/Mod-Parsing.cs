@@ -25,14 +25,6 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
     [DebuggerDisplay("Mod - {ModName}")] //do not localize
     public partial class Mod : INotifyPropertyChanged
     {
-        //public enum MEGame
-        //{
-        //    Unknown = 0,
-        //    ME1,
-        //    ME2,
-        //    ME3
-        //}
-
         /// <summary>
         /// The default website value, to indicate one was not set. This value must be set to a valid url or navigation request in UI binding may not work.
         /// </summary>
@@ -551,21 +543,9 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 ModClassicUpdateCode = modupdatecode2;
             }
 
-            if (!string.IsNullOrWhiteSpace(iniData[@"ModInfo"][@"nexuscode"]))
-            {
-                if (int.TryParse(iniData[@"ModInfo"][@"nexuscode"], out int nexuscode))
-                {
-                    NexusModID = nexuscode;
-                    NexusCodeRaw = iniData[@"ModInfo"][@"nexuscode"];
-                }
-                else
-                {
-                    // Invalid value provided
-                    Log.Error("The nexuscode descriptor must be an integer that corresponds to your NexusMods' page for this mod. The ID can be found the end of the URL for the main mod page.");
-                    LoadFailedReason = "The nexuscode descriptor must be an integer that corresponds to your NexusMods' page for this mod. The ID can be found the end of the URL for the main mod page.";
-                    return;
-                }
-            }
+            int.TryParse(iniData[@"ModInfo"][@"nexuscode"], out int nexuscode);
+            NexusModID = nexuscode;
+            NexusCodeRaw = iniData[@"ModInfo"][@"nexuscode"];
 
             #region NexusMods ID from URL
 
@@ -748,14 +728,16 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 }
             }
             #endregion
-
+            
             #region Header Loops
 
             #region BASEGAME and OFFICIAL HEADERS
 
             var supportedOfficialHeaders = ModJob.GetSupportedNonCustomDLCHeaders(Game);
 
+
             //We must check against official headers
+            //ME2 doesn't support anything but basegame.
             foreach (var header in supportedOfficialHeaders)
             {
                 //if (Game != MEGame.ME3 && header != ModJob.JobHeader.BASEGAME) continue; //Skip any non-basegame offical headers for ME1/ME2
@@ -1410,8 +1392,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                             LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_invalidLocalizationFilename, f);
                             return;
                         }
-                    }
-                    else if (Game == MEGame.ME2)
+                    } else if (Game == MEGame.ME2)
                     {
                         // Read bioengine before install maybe?
                         // We need to know the module number
@@ -1434,7 +1415,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             #endregion
 
             #endregion
-
+            
             #region Additional Mod Items
 
             //Required DLC (Mod Manager 5.0)
@@ -1604,7 +1585,6 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             //method of checking in place.
             if (modCoalFlag != null && Int32.TryParse(modCoalFlag, out int modCoalInt) && modCoalInt != 0)
             {
-                LegacyModCoal = true;
                 CLog.Information(@"Mod targets ModDesc 2.0, found modcoal flag", Settings.LogModStartup);
                 if (!CheckAndCreateLegacyCoalescedJob())
                 {
@@ -1733,7 +1713,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             #endregion
 
 
-            if (InstallationJobs.Any())
+            if (InstallationJobs.Count > 0)
             {
                 CLog.Information($@"Finalizing: {InstallationJobs.Count} installation job(s) were found.", Settings.LogModStartup);
                 ValidMod = true;
