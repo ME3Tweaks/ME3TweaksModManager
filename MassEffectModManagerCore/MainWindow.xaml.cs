@@ -1668,6 +1668,11 @@ namespace MassEffectModManagerCore
                 {
                     Log.Error($@"Error saving package: {x}");
                 });
+
+                var vanillaF = new TalkFile();
+                vanillaF.LoadTlkData(@"Z:\ME3-Backup\BIOGame\CookedPCConsole\BIOGame_INT.tlk");
+                HuffmanCompression.SaveToTlkFile(@"C:\Users\Public\testtlk.tlk", vanillaF.StringRefs);
+
                 PopulateTargets();
             }).ContinueWithOnUIThread(x =>
             {

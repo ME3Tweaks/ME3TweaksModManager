@@ -89,10 +89,8 @@ namespace MassEffectModManagerCore
 
         public App() : base()
         {
-            //var converted = Experiments.ConvertAlternatesToALOTManifestMod(File.ReadAllText(@"C:\Users\Mgame\Desktop\moddesc.ini"));
-            //Debug.WriteLine(converted);
-            //Environment.Exit(0);
             ExecutableLocation = Process.GetCurrentProcess().MainModule.FileName;
+            // Are these necessary anymore?
             Utilities.ExtractInternalFile("MassEffectModManagerCore.bundleddlls.sevenzipwrapper.dll", Path.Combine(Utilities.GetDllDirectory(), "sevenzipwrapper.dll"), false);
             Utilities.ExtractInternalFile("MassEffectModManagerCore.bundleddlls.lzo2wrapper.dll", Path.Combine(Utilities.GetDllDirectory(), "lzo2wrapper.dll"), false);
             Utilities.ExtractInternalFile("MassEffectModManagerCore.bundleddlls.zlibwrapper.dll", Path.Combine(Utilities.GetDllDirectory(), "zlibwrapper.dll"), false);
