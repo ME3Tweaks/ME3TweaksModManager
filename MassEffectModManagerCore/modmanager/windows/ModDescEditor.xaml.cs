@@ -27,13 +27,17 @@ namespace MassEffectModManagerCore.modmanager.windows
             EditingMod = new Mod(selectedMod.ModDescPath, selectedMod.Game);
             InitializeComponent();
 
-            // Tabs
+            // Tabs that can edit content
             editorControls.Add(metadataEditor_control);
             editorControls.Add(basegame_editor_control);
             editorControls.Add(officialdlc_editor_control);
             editorControls.Add(customdlcEditor_control);
             editorControls.Add(customdlc_alternateFileEditor_control);
             editorControls.Add(customdlc_alternateDlcEditor_control);
+
+            editorControls.Add(me1config_editor_control);
+            editorControls.Add(balancechanges_editor_control);
+            editorControls.Add(localization_editor_control);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -50,7 +54,25 @@ namespace MassEffectModManagerCore.modmanager.windows
             var ini = new IniData();
             foreach (var control in editorControls)
             {
-                control.Serialize(ini);
+                if (control is LocalizationTaskEditorControl)
+                {
+                    if (IsLocalizationMod)
+                    {
+                        control.Serialize(ini);
+                        continue;
+                    }
+                }
+                else if (control is MetadataEditorControl)
+                {
+                    control.Serialize(ini);
+                    continue;
+                }
+
+                if (!IsLocalizationMod)
+                {
+                    control.Serialize(ini);
+                }
+
             }
 
             //Debug.WriteLine(ini.ToString());
@@ -116,5 +138,16 @@ namespace MassEffectModManagerCore.modmanager.windows
         {
             Utilities.OpenWebpage(@"https://github.com/ME3Tweaks/ME3TweaksModManager/tree/master/documentation");
         }
+
+        /// <summary>
+        /// Tells the editor that the mod is being converted to localization mod
+        /// and that other fields should be dumped
+        /// </summary>
+        public void ConvertModToLocalizationMod()
+        {
+            IsLocalizationMod = true;
+        }
+
+        public bool IsLocalizationMod { get; set; }
     }
 }

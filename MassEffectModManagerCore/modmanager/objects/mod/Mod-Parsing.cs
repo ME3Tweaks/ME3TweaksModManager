@@ -1237,6 +1237,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         }
                         CLog.Information($@"Successfully made mod job for {balanceJob.Header}", Settings.LogModStartup);
                         InstallationJobs.Add(balanceJob);
+                        balanceJob.BalanceChangesFileRaw = balanceFile;
                     }
                     else
                     {
@@ -1292,6 +1293,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         }
                         CLog.Information($@"Successfully made mod job for {ModJob.JobHeader.ME1_CONFIG}", Settings.LogModStartup);
                         InstallationJobs.Add(me1ConfigJob);
+                        me1ConfigJob.ConfigFilesRaw = configfilesStr;
                     }
                 }
 
@@ -1409,6 +1411,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     }
                 }
 
+                localizationJob.LocalizationFilesStrRaw = localizationFilesStr;
                 InstallationJobs.Add(localizationJob);
                 RequiredDLC.Add(destDlc); //Add DLC requirement.
             }

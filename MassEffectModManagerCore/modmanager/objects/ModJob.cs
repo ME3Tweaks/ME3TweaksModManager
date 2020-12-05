@@ -660,6 +660,9 @@ namespace MassEffectModManagerCore.modmanager.objects
         public string AddFilesRaw { get; set; }
         public string AddFilesTargetsRaw { get; set; }
         public bool GameDirectoryStructureRaw { get; set; }
+        public string LocalizationFilesStrRaw { get; set; }
+        public string BalanceChangesFileRaw { get; set; }
+        public string ConfigFilesRaw { get; set; }
         #endregion
 
         public void BuildParameterMap(Mod mod)
@@ -693,20 +696,17 @@ namespace MassEffectModManagerCore.modmanager.objects
                 {
                     // Add files
                     parameterDictionary[@"addfiles"] = AddFilesRaw;
-                    parameterDictionary[@"addfilestargets"] = AddFilesRaw;
+                    parameterDictionary[@"addfilestargets"] = AddFilesTargetsRaw;
                     parameterDictionary[@"addfilesreadonlytargets"] = ReadOnlyIndicators;
                 }
 
                 parameterDictionary[@"gamedirectorystructure"] = GameDirectoryStructureRaw ? @"True" : null;
                 parameterDictionary[@"jobdescription"] = RequirementText;
-                // TODO: MULTILISTS
-                // TODO: ALTFILES?
             }
             else if (Header == JobHeader.CUSTOMDLC)
             {
                 parameterDictionary[@"sourcedirs"] = CustomDLCFolderMapping.Keys;
                 parameterDictionary[@"destdirs"] = CustomDLCFolderMapping.Values;
-                // TODO: MULTILISTS?
 
                 // NOT MAPPED: HUMAN READABLE NAMES
                 // CONFIGURED DIRECTLY BY EDITOR UI
@@ -718,7 +718,12 @@ namespace MassEffectModManagerCore.modmanager.objects
             }
             else if (Header == JobHeader.BALANCE_CHANGES)
             {
-                // ?
+                parameterDictionary[@"moddir"] = JobDirectory;
+                parameterDictionary[@"newfiles"] = FilesToInstall.Values;
+            } else if (Header == JobHeader.ME1_CONFIG)
+            {
+                parameterDictionary[@"moddir"] = JobDirectory;
+                // files raw is handled by ui
             }
 
             ParameterMap.ReplaceAll(MDParameter.MapIntoParameterMap(parameterDictionary, Header.ToString()));

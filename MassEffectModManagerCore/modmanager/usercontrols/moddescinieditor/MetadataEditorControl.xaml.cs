@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using IniParser.Model;
+using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.modmanager.objects.mod.editor;
 using ME3ExplorerCore.Misc;
@@ -41,6 +42,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
         {
             foreach (var v in EditingMod.ParameterMap) //references will still be same
             {
+                if (v.Header == @"ModInfo" && v.Key== @"requireddlc" && EditingMod.GetJob(ModJob.JobHeader.LOCALIZATION) != null)
+                {
+                    // Do not store RequiredDLC in localization mod.
+                    continue;
+                }
+
                 if (v.Key == @"cmmver" && v.Header == @"ModManager")
                 {
                     // Editor only can write latest version format

@@ -50,9 +50,22 @@
             <TabItem Header="Alternate DLC (Custom DLC)">
                 <alternates:AlternateDLCBuilder x:Name="customdlc_alternateDlcEditor_control"/>
             </TabItem>
-            <TabItem Header="Localization mod info">
-
+            <!-- ME1 only -->
+            <TabItem Header="ME1 config files" 
+                     Visibility="{Binding EditingMod.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='ME1'}">
+                <moddescinieditor:ME1ConfigEditorControl x:Name="me1config_editor_control"/>
             </TabItem>
+            <!-- ME3 only -->
+            <TabItem Header="Balance changes"
+                     Visibility="{Binding EditingMod.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='ME3'}">
+                <moddescinieditor:BalanceChangesTaskEditorControl x:Name="balancechanges_editor_control"/>
+            </TabItem>
+            <!-- ME2, 3 only -->
+            <TabItem Header="Localization mod info"
+                     Visibility="{Binding EditingMod.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Not_ME1'}">
+                <moddescinieditor:LocalizationTaskEditorControl x:Name="localization_editor_control"/>
+            </TabItem>
+            
             <TabItem Header="Resulting moddesc.ini">
                 <DockPanel>
                     <TextBlock Text="The generated moddesc.ini file is shown below for review." DockPanel.Dock="Top"/>
