@@ -22,7 +22,7 @@ namespace MassEffectModManagerCore.modmanager
         public static string GetDLCPath(GameTarget target) => MEDirectories.GetDLCPath(target.Game, target.TargetPath);
         public static string GetCookedPath(GameTarget target) => MEDirectories.GetCookedPath(target.Game, target.TargetPath);
         public static string GetExecutablePath(GameTarget target) => MEDirectories.GetExecutablePath(target.Game, target.TargetPath);
-        public static string GetExecutableDirectory(GameTarget target) => MEDirectories.GetExecutableDirectory(target.Game, target.TargetPath);
+        public static string GetExecutableDirectory(GameTarget target) => MEDirectories.GetExecutableFolderPath(target.Game, target.TargetPath);
         public static string GetLODConfigFile(GameTarget target) => MEDirectories.GetLODConfigFile(target.Game);
         public static string GetTextureMarkerPath(GameTarget target) => MEDirectories.GetTextureModMarkerPath(target.Game, target.TargetPath);
         public static string GetASIPath(GameTarget target) => MEDirectories.GetASIPath(target.Game, target.TargetPath);
