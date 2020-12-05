@@ -8,6 +8,7 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
+using System.Windows.Media;
 using ME3ExplorerCore.Packages;
 using Serilog;
 using SevenZip;
@@ -56,6 +57,26 @@ namespace MassEffectModManagerCore.modmanager.helpers
                         yield return child;
 
                     queue.Enqueue(o);
+                }
+            }
+        }
+
+        public static IEnumerable<T> FindVisualChildren<T>(this DependencyObject depObj) where T : DependencyObject
+        {
+            if (depObj != null)
+            {
+                for (int i = 0; i < VisualTreeHelper.GetChildrenCount(depObj); i++)
+                {
+                    DependencyObject child = VisualTreeHelper.GetChild(depObj, i);
+                    if (child != null && child is T)
+                    {
+                        yield return (T)child;
+                    }
+
+                    foreach (T childOfChild in child.FindVisualChildren<T>())
+                    {
+                        yield return childOfChild;
+                    }
                 }
             }
         }

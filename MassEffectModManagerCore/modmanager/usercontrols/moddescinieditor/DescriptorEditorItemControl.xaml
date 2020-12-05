@@ -10,11 +10,11 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <DockPanel>
         <TextBlock DockPanel.Dock="Top"
-           Text="{Binding Header, 
+           Text="{Binding HeaderText, 
                 RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type moddescinieditor:DescriptorEditorItemsControl}},    
                 StringFormat='[{0}]'}"
            FontWeight="Bold"
-           Visibility="{Binding Header, 
+           Visibility="{Binding HeaderText, 
                 RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type moddescinieditor:DescriptorEditorItemsControl}},    
                 Converter={StaticResource NullVisibilityConverter}}"/>
         <TextBlock DockPanel.Dock="Top"

@@ -40,8 +40,7 @@
                             <DockPanel Margin="10,0,0,0">
                                 <local:DescriptorEditorItemsControl 
                                     DockPanel.Dock="Top"
-                                    ItemsSource="{Binding DataContext.ParameterMap, RelativeSource={RelativeSource FindAncestor, AncestorType=Expander}}" 
-                                    Header="{Binding DataContext.Header, RelativeSource={RelativeSource FindAncestor, AncestorType=Expander}}"/>
+                                    ItemsSource="{Binding DataContext.ParameterMap, RelativeSource={RelativeSource FindAncestor, AncestorType=Expander}}" />
                                 <local:MultilistEditorControl 
                                     DockPanel.Dock="Top"
                                     Header="{Binding DataContext.Header, RelativeSource={RelativeSource FindAncestor, AncestorType=Expander}}"/>

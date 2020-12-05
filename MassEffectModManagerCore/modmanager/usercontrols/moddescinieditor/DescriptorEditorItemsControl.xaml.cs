@@ -13,14 +13,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
     /// </summary>
     public partial class DescriptorEditorItemsControl : UserControl, INotifyPropertyChanged
     {
-        public string Header
+        public string HeaderText
         {
-            get => (string)GetValue(HeaderProperty);
-            set => SetValue(HeaderProperty, value);
+            get => (string)GetValue(HeaderTextProperty);
+            set => SetValue(HeaderTextProperty, value);
         }
 
-        public static readonly DependencyProperty HeaderProperty =
-            DependencyProperty.Register("Header", typeof(string), typeof(DescriptorEditorItemsControl));
+        public static readonly DependencyProperty HeaderTextProperty =
+            DependencyProperty.Register("HeaderText", typeof(string), typeof(DescriptorEditorItemsControl));
 
         public string Description
         {

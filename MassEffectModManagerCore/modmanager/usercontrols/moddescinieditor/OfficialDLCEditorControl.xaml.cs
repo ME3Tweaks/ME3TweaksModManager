@@ -74,8 +74,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
             }
 
             // This is kind of a hack but I'm not sure how to get reference unless I pass reference to owner so it can be registered
-            var multilistEditors = this.FindLogicalChildren<MultilistEditorControl>();
-            var alternateEditors = this.FindLogicalChildren<AlternateFileBuilder>();
+            var multilistEditors = this.FindVisualChildren<MultilistEditorControl>().ToList();
+            var alternateEditors = this.FindVisualChildren<AlternateFileBuilder>().ToList();
 
             foreach (var m in multilistEditors)
             {

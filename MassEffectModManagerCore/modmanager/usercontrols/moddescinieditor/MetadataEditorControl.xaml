@@ -17,14 +17,14 @@
                    HorizontalAlignment="Left"
                    TextWrapping="Wrap"
                    Margin="0,0,0,10"/>
-        <local:DescriptorEditorItemsControl Header="ModManager" 
+        <local:DescriptorEditorItemsControl HeaderText="ModManager" 
                                             Description="The ModManager header is the first item read when parsing a mod and is used to configure the mod parser. This editor only supports saving mods targeting the latest version of moddesc that this build supports."
                                             ItemsSource="{Binding ModManagerParameterMap}"
                                             />
-        <local:DescriptorEditorItemsControl Header="ModInfo" 
+        <local:DescriptorEditorItemsControl HeaderText="ModInfo" 
                                             Description="The ModInfo header contains most of the information that is displayed to the user in Mod Manager's interface. The more information you give to a user, the less likely they will need to ask you questions about your mod."
                                             ItemsSource="{Binding ModInfoParameterMap}" Margin="0,10"/>
-        <local:DescriptorEditorItemsControl Header="UPDATES" 
+        <local:DescriptorEditorItemsControl HeaderText="UPDATES" 
                                             Description="The UPDATES header is used for the ME3Tweaks Updater Service. The additionaldeployment items can be used to force non-referenced files to be included when deploying your mod." 
                                             ItemsSource="{Binding UPDATESParameterMap}"/>
     </StackPanel>

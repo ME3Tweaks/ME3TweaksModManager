@@ -293,7 +293,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         string cmmVanilla = Path.Combine(restoreTargetPath, @"cmm_vanilla");
                         if (File.Exists(cmmVanilla))
                         {
-                            Log.Information(@"Removing cmm_vanilla file");
+                            Log.Information($@"Removing cmm_vanilla file: {cmmVanilla}");
                             File.Delete(cmmVanilla);
                         }
 

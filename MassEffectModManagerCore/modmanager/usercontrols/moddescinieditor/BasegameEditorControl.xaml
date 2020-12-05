@@ -12,6 +12,9 @@
              DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <ScrollViewer VerticalScrollBarVisibility="Auto"  Margin="-8">
         <DockPanel>
+            <TextBlock Text="[BASEGAME]"
+                       FontWeight="Bold"
+                       DockPanel.Dock="Top"/>
             <TextBlock DockPanel.Dock="Top" Text="The Basegame task allows you to install files into the basegame, including the BIOGame, Binaries (not Win32), and Engine folders. This task is useful for mods that edit files that load before DLC."
                        MaxWidth="750"
                        HorizontalAlignment="Left"
