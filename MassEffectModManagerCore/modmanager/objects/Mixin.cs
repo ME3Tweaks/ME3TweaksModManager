@@ -60,7 +60,11 @@ namespace MassEffectModManagerCore.modmanager.objects
         public ModJob.JobHeader TargetModule { get; set; }
         public string TargetFile { get; set; }
         public int TargetSize { get; set; }
-        public bool IsFinalizer { get; set; }
+        public bool IsFinalizer
+        {
+            get;
+            set;
+        }
         //public string patchurl { get; set; }
         public string FolderName { get; set; }
         public int ME3TweaksID { get; set; }

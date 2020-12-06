@@ -203,7 +203,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     VanillaDatabaseService.FetchBasegameFile(MEGame.ME3,
                                         Path.GetFileName(file.Key));
                                 //packageAsStream.WriteToFile(@"C:\users\dev\desktop\compressed.pcc");
-                                using var decompressedStream = MEPackage.GetDecompressedPackageStream(packageAsStream, true);
+                                using var decompressedStream = MEPackage.GetDecompressedPackageStream(packageAsStream, false, true);
                                 using var finalStream = MixinHandler.ApplyMixins(decompressedStream, file.Value, completedSingleApplicationCallback, failedApplicationCallback);
                                 CLog.Information(@"Compressing package to mod directory: " + file.Key, Settings.LogModMakerCompiler);
                                 finalStream.Position = 0;
@@ -519,7 +519,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 //automap
                 var dirname = Path.GetFileName(dir);
-                var headername = ModMakerCompiler.defaultFoldernameToHeader(dirname).ToString();
+                var headername = ModMakerCompiler.DefaultFoldernameToHeader(dirname).ToString();
                 ini[headername][@"moddir"] = dirname;
                 if (dirname != @"BALANCE_CHANGES")
                 {

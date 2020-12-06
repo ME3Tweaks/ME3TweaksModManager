@@ -898,7 +898,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             {
                 //automap
                 var dirname = Path.GetFileName(dir);
-                var headername = defaultFoldernameToHeader(dirname).ToString();
+                var headername = DefaultFoldernameToHeader(dirname).ToString();
                 ini[headername][@"moddir"] = dirname;
                 if (dirname != @"BALANCE_CHANGES")
                 {
@@ -947,7 +947,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             return header.ToString();
         }
 
-        public static ModJob.JobHeader defaultFoldernameToHeader(string foldername)
+        public static ModJob.JobHeader DefaultFoldernameToHeader(string foldername)
         {
             if (Enum.TryParse<ModJob.JobHeader>(foldername, out var header))
             {

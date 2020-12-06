@@ -6,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Management;
 using System.Runtime;
-using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -34,7 +33,6 @@ using MassEffectModManagerCore.ui;
 using ME3ExplorerCore;
 using ME3ExplorerCore.GameFilesystem;
 using ME3ExplorerCore.Gammtek.Extensions.Collections.Generic;
-using ME3ExplorerCore.Gammtek.Extensions.IO;
 using ME3ExplorerCore.Packages;
 using ME3ExplorerCore.TLK.ME2ME3;
 using Microsoft.AppCenter.Analytics;
@@ -1668,6 +1666,8 @@ namespace MassEffectModManagerCore
                 {
                     Log.Error($@"Error saving package: {x}");
                 });
+                //debugMethod();
+
                 PopulateTargets();
             }).ContinueWithOnUIThread(x =>
             {
@@ -1900,7 +1900,7 @@ namespace MassEffectModManagerCore
                         });
                     }
                 }
-                
+
                 backgroundTaskEngine.SubmitJobCompletion(uiTask);
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NoModSelectedText)));
 
@@ -2621,8 +2621,31 @@ namespace MassEffectModManagerCore
 
         private void debugMethod()
         {
+            var mixinP = @"X:\m3modlibrary\ME3\RealisticGravOLD";
+            foreach (var mp in Directory.GetFiles(mixinP, "*.pcc", SearchOption.AllDirectories))
+            {
+                var packageName = Path.GetFileName(mp);
+                var dirname = Directory.GetParent(packageName).Parent.Parent.Name;
 
 
+                MemoryStream fileData = null;
+                if (dirname == "BASEGAME")
+                {
+                    fileData = VanillaDatabaseService.FetchBasegameFile(MEGame.ME3, packageName);
+                }
+                else
+                {
+                    var map = ModJob.GetHeadersToDLCNamesMap(MEGame.ME3);
+                    var header = ModMakerCompiler.DefaultFoldernameToHeader(dirname);
+                    fileData = VanillaDatabaseService.FetchFileFromVanillaSFAR(map[header], packageName);
+                }
+
+                if (dirname == "BASEGAME")
+                {
+                    var package = MEPackageHandler.OpenMEPackageFromStream(fileData);
+                    fileData = package.SaveToStream(false, false, true);
+                }
+            }
         }
 
         /// <summary>
