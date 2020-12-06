@@ -205,12 +205,12 @@ namespace MassEffectModManagerCore
                 },
                 () =>
                 {
-                    //Application.Current.Dispatcher.Invoke(delegate
-                    //{
-                    //    Storyboard sb = this.FindResource(@"CloseLoadingSpinner") as Storyboard;
-                    //    Storyboard.SetTarget(sb, LoadingSpinner_Image);
-                    //    sb.Begin();
-                    //});
+                    Application.Current.Dispatcher.Invoke(delegate
+                    {
+                        Storyboard sb = this.FindResource(@"CloseLoadingSpinner") as Storyboard;
+                        Storyboard.SetTarget(sb, LoadingSpinner_Image);
+                        sb.Begin();
+                    });
                 }
             );
         }

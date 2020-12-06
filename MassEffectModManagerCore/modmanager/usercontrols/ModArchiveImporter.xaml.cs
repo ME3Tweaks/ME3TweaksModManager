@@ -67,7 +67,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public bool ProgressIndeterminate { get; private set; }
 
         // Must be ME2 or ME3, cannot have a transform, we allow it, archive has been scanned, we haven't started an operation
-        public bool CanCompressPackages => CompressedMods.Any(x => x.Game >= MEGame.ME2) && CompressedMods.All(x=>x.ExeExtractionTransform == null) && App.AllowCompressingPackagesOnImport && ArchiveScanned && !TaskRunning;
+        // Mods that use the updater service cannot be compressed to ensure the update checks are reliable
+        public bool CanCompressPackages => CompressedMods.Any(x => x.Game >= MEGame.ME2) && CompressedMods.All(x=>x.ExeExtractionTransform == null && x.ModClassicUpdateCode == 0) && App.AllowCompressingPackagesOnImport && ArchiveScanned && !TaskRunning;
 
         public ObservableCollectionExtended<Mod> CompressedMods { get; } = new ObservableCollectionExtended<Mod>();
         public ModArchiveImporter(string file)

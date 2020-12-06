@@ -21,6 +21,7 @@ using System.Windows.Input;
 using System.Windows.Media.Animation;
 using System.Xml;
 using ME3ExplorerCore.Helpers;
+using ME3ExplorerCore.Packages;
 using static MassEffectModManagerCore.modmanager.me3tweaks.OnlineContent;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -141,7 +142,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 OperationInProgress = false;
             });
-
         }
 
         private void SetChangelog()
@@ -331,7 +331,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             ABORTED_BY_USER_SAME_VERSION_UPLOADED,
             ABORTED_BY_USER,
             BAD_SERVER_HASHES_AFTER_VALIDATION,
-            UPLOAD_OK
+            UPLOAD_OK,
+            CANT_UPLOAD_NATIVE_COMPRESSED_PACKAGES
         }
 
         private UploadModResult UploadMod(Action<double> progressCallback = null, Action<TaskbarProgressBarState> setTaskbarProgressState = null)
@@ -403,6 +404,55 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             var files = mod.GetAllRelativeReferences(true);
             files = files.OrderByDescending(x => new FileInfo(Path.Combine(mod.ModPath, x)).Length).ToList();
             long totalModSizeUncompressed = files.Sum(x => new FileInfo(Path.Combine(mod.ModPath, x)).Length);
+
+            #endregion
+
+            #region Check package files are not natively compressed
+            {
+                // In brackets to scope
+                Log.Information(@"UpdaterServiceUpload: Checking for compressed packages");
+                double numDone = 0;
+                int totalFiles = files.Count;
+                var compressedPackages = new List<string>();
+                foreach (var f in files)
+                {
+                    CurrentActionText = $"Checking packages before upload {(numDone * 100 / totalFiles)}%";
+                    numDone++;
+                    if (f.RepresentsPackageFilePath())
+                    {
+                        //var p = MEPackageHandler.OpenMEPackage(Path.Combine(mod.ModPath, f));
+                        //p.Save(compress: true);
+                        var quickP = MEPackageHandler.QuickOpenMEPackage(Path.Combine(mod.ModPath, f));
+                        if (quickP.IsCompressed)
+                        {
+                            if (quickP.NumCompressedChunksAtLoad > 0)
+                            {
+                                Log.Error($@"Found compressed package: {quickP.FilePath}");
+                            }
+                            else
+                            {
+                                Log.Error($@"Found package with IsCompressed flag but no compressed chunks: {quickP.FilePath}");
+                            }
+
+                            compressedPackages.Add(f);
+
+                        }
+                    }
+                }
+
+                if (compressedPackages.Any())
+                {
+                    CurrentActionText = "Upload aborted: Cannot upload packages that are natively compressed";
+                    // Abort
+                    Application.Current.Dispatcher.InvokeAsync(() =>
+                    {
+                        M3L.ShowDialog(mainwindow, $"The follow packages are natively compressed and cannot be uploaded. Package files must be saved uncompressed so end user instances of Mod Manager can reliably determine which files need updated. Resave these packages in ME3Explorer - ME3Tweaks Fork to decompress them.\n\n{string.Join('\n', compressedPackages.OrderBy(x => x))}",
+                            "Cannot upload mod", MessageBoxButton.OK, MessageBoxImage.Error);
+                    });
+                    CancelOperations = true;
+                    return UploadModResult.CANT_UPLOAD_NATIVE_COMPRESSED_PACKAGES;
+                }
+            }
 
             #endregion
 
@@ -675,7 +725,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 bool performUpload = false;
                 Log.Information(@"Prompting user to accept server delta");
                 setTaskbarProgressState?.Invoke(TaskbarProgressBarState.Paused);
-                Application.Current.Dispatcher.Invoke(delegate { performUpload = M3L.ShowDialog(mainwindow, text, M3L.GetString(M3L.string_confirmChanges), MessageBoxButton.OKCancel, MessageBoxImage.Exclamation) == MessageBoxResult.OK; });
+                Application.Current.Dispatcher.Invoke(() => { performUpload = M3L.ShowDialog(mainwindow, text, M3L.GetString(M3L.string_confirmChanges), MessageBoxButton.OKCancel, MessageBoxImage.Exclamation) == MessageBoxResult.OK; });
                 setTaskbarProgressState?.Invoke(TaskbarProgressBarState.Indeterminate);
 
                 if (performUpload)
