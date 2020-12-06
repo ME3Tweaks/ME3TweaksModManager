@@ -24,7 +24,7 @@
             
             <Button Content="Serialize" Margin="5,0" Click="SerializeData_Click" HorizontalAlignment="Right"/>
         </DockPanel>
-        <TabControl>
+        <TabControl x:Name="editor_tabcontrol">
             <TabItem Header="Metadata">
                 <moddescinieditor:MetadataEditorControl x:Name="metadataEditor_control"/>
             </TabItem>
@@ -65,9 +65,13 @@
                 <moddescinieditor:LocalizationTaskEditorControl x:Name="localization_editor_control"/>
             </TabItem>
             
-            <TabItem Header="Resulting moddesc.ini">
+            <TabItem Header="Resulting moddesc.ini" x:Name="results_tab">
                 <DockPanel>
                     <TextBlock Text="The generated moddesc.ini file is shown below for review." DockPanel.Dock="Top"/>
+                    <DockPanel Dock="Bottom">
+                        <Button Content="Save moddesc.ini to mod" DockPanel.Dock="Right" Margin="5,0,0,0" HorizontalAlignment="Right" Command="{Binding SaveModdescToModCommand}"/>
+                        <Button Content="Copy text" HorizontalAlignment="Right" Command="{Binding CopyModdescIniTextCommand}"/>
+                    </DockPanel>
                     <TextBox Text="{Binding GeneratedIni}" IsReadOnly="True" IsReadOnlyCaretVisible="False" TextWrapping="Wrap" VerticalAlignment="Top" TextAlignment="Left"/>
                 </DockPanel>
             </TabItem>

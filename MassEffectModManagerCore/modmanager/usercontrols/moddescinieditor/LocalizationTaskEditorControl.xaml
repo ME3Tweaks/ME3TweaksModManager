@@ -12,7 +12,7 @@
     <ScrollViewer Margin="-8">
         <DockPanel>
             <TextBlock Text="[LOCALIZATION]" FontWeight="Bold" DockPanel.Dock="Top"/>
-            <TextBlock DockPanel.Dock="Top" Text="The LOCALIZATION task header allows you to install .tlk files to existing mods, to provide localizations for them. The LOCALIZATION header must be used by itself and cannot install anything but TLK files."
+            <TextBlock DockPanel.Dock="Top" Text="The LOCALIZATION task header allows you to install .tlk files to existing mods, to provide localizations for them. The LOCALIZATION header must be used by itself and cannot be used with other task headers. This task can only install TLK files."
                        MaxWidth="700"
                        TextWrapping="Wrap"
                        HorizontalAlignment="Left"

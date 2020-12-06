@@ -27,7 +27,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
 
         private void LoadCommands()
         {
-            AddME1ConfigTaskCommand = new GenericCommand(AddME1ConfigTask, ()=>ConfigJob == null);
+            AddME1ConfigTaskCommand = new GenericCommand(AddME1ConfigTask, () => ConfigJob == null);
             AddConfigFileCommand = new GenericCommand(AddConfigFile, CanAddConfigFile);
         }
 
@@ -49,7 +49,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
 
         private bool CanAddConfigFile()
         {
-            return ConfigJob != null && (!Files.Any() || !string.IsNullOrWhiteSpace(Files.Last().Value));
+            return ConfigJob != null && !string.IsNullOrWhiteSpace(ModDir) && (!Files.Any() || !string.IsNullOrWhiteSpace(Files.Last().Value));
         }
 
         public override void OnLoaded(object sender, RoutedEventArgs e)
@@ -75,7 +75,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
             {
                 if (Files.Any())
                 {
-                    ini[ConfigJob.Header.ToString()][@"configfiles"] = string.Join(';', Files.Select(x => x.Value));
+                    ini[ConfigJob.Header.ToString()][@"configfiles"] = string.Join(';', Files.Where(x => !string.IsNullOrWhiteSpace(x.Value)).Select(x => x.Value));
                 }
 
                 if (!string.IsNullOrWhiteSpace(ModDir))

@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Windows;
 using System.Windows.Media;
 using IniParser.Model;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor;
+using MassEffectModManagerCore.ui;
+using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.windows
 {
@@ -26,6 +29,7 @@ namespace MassEffectModManagerCore.modmanager.windows
         public ModDescEditor(Mod selectedMod)
         {
             EditingMod = new Mod(selectedMod.ModDescPath, selectedMod.Game);
+            LoadCommands();
             InitializeComponent();
 
             // Tabs that can edit content
@@ -41,6 +45,62 @@ namespace MassEffectModManagerCore.modmanager.windows
             editorControls.Add(localization_editor_control);
         }
 
+        private void LoadCommands()
+        {
+            CopyModdescIniTextCommand = new GenericCommand(CopyModdesc, CanCopyModdesc);
+            SaveModdescToModCommand = new GenericCommand(SaveModdesc, CanSaveModdesc);
+        }
+
+        private void CopyModdesc()
+        {
+            try
+            {
+                Clipboard.SetText(GeneratedIni);
+                StatusMessage = "Copied moddesc.ini contents to clipboard";
+                StatusForeground = Settings.DarkTheme ? Brushes.LightGreen : Brushes.DarkGreen;
+            }
+            catch (Exception e)
+            {
+                Log.Error($@"Failed to copy moddesc.ini text to clipboard: {e.Message}");
+                StatusMessage = $"Failed to copy moddesc.ini text to clipboard: {e.Message}";
+                StatusForeground = Brushes.Red;
+            }
+        }
+
+        public bool LastSerializationSuccessful { get; private set; }
+
+        private void SaveModdesc()
+        {
+            // Make a backup of the existing file
+            try
+            {
+                // See if it's different
+                var existinText = File.ReadAllText(EditingMod.ModDescPath);
+                if (existinText.Equals(GeneratedIni))
+                {
+                    StatusMessage = "Existing moddesc.ini is same as generated one";
+                    return;
+                }
+
+                var buDest = Path.Combine(EditingMod.ModPath, $@"backup_moddesc_{DateTime.Now:yy-MM-dd h-mm-ss}.ini");
+                File.Copy(EditingMod.ModDescPath, buDest, true);
+                File.WriteAllText(EditingMod.ModDescPath, GeneratedIni);
+                StatusMessage = $"moddesc.ini has been updated for {EditingMod.ModName}. Reload the library for changes to take effect.";
+            }
+            catch (Exception e)
+            {
+                StatusMessage = $"Could not save moddesc.ini: {e.Message}";
+            }
+        }
+
+        private bool CanSaveModdesc() => LastSerializationSuccessful;
+
+        private bool CanCopyModdesc() => !string.IsNullOrWhiteSpace(GeneratedIni);
+
+        public GenericCommand SaveModdescToModCommand { get; set; }
+
+        public GenericCommand CopyModdescIniTextCommand { get; set; }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         private void Close_Click(object sender, RoutedEventArgs e)
@@ -49,8 +109,8 @@ namespace MassEffectModManagerCore.modmanager.windows
         }
 
 
-        // this should move into the control
-        private void SerializeData_Click(object sender, RoutedEventArgs e)
+
+        private string SerializeData()
         {
             var ini = new IniData();
             foreach (var control in editorControls)
@@ -73,28 +133,22 @@ namespace MassEffectModManagerCore.modmanager.windows
                 {
                     control.Serialize(ini);
                 }
-
             }
 
-            //Debug.WriteLine(ini.ToString());
-            //ListDialog ld = new ListDialog(new List<string>(new[] { ini.ToString() }), "Moddesc.ini editor TEST OUTPUT", "Copy this data into your moddesc.ini.", this);
-            //ld.Show();
+            return ini.ToString();
+        }
 
+        // this should move into the control
+        private void SerializeData_Click(object sender, RoutedEventArgs e)
+        {
+            var ini = SerializeData();
             // Load the moddesc.ini as if it was in the library at the original mod folder location
-            var m = new Mod(ini.ToString(), EditingMod.ModPath, null);
+            var m = new Mod(ini, EditingMod.ModPath, null);
 
             StatusMessage = m.LoadFailedReason;
             if (StatusMessage == null)
             {
-                if (Settings.DarkTheme)
-                {
-                    StatusForeground = Brushes.LightGreen;
-                }
-                else
-                {
-                    StatusForeground = Brushes.DarkGreen;
-                }
-
+                StatusForeground = Settings.DarkTheme ? Brushes.LightGreen : Brushes.DarkGreen;
             }
             else
             {
@@ -110,9 +164,13 @@ namespace MassEffectModManagerCore.modmanager.windows
                     mw.VisibleFilteredMods.Add(m);
                     mw.SelectedMod = m;
                 }
+
+                editor_tabcontrol.SelectedItem = results_tab;
             }
 
-            GeneratedIni = ini.ToString();
+            // Set generated page
+            GeneratedIni = ini;
+            LastSerializationSuccessful = m.ValidMod;
             //var moddesc = EditingMod.SerializeModdesc();
             ////Mod m = new Mod(moddesc, EditingMod.ModPath, null);
 
