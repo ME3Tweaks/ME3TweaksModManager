@@ -110,6 +110,8 @@
                             <TreeView
                                 ItemsSource="{Binding applicableUpdates}"
                                 DisplayMemberPath="relativefilepath"
+                                VirtualizingStackPanel.IsVirtualizing="True"
+                                VirtualizingStackPanel.VirtualizationMode="Recycling"
                                 MaxHeight="300"
                                 Background="Transparent"
                                 BorderThickness="0" />
@@ -120,8 +122,11 @@
                             IsEnabled="{Binding HasFilesToDelete}">
                             <TreeView
                                 ItemsSource="{Binding filesToDelete}"
+                                VirtualizingStackPanel.IsVirtualizing="True"
+                                VirtualizingStackPanel.VirtualizationMode="Recycling"
                                 Background="Transparent"
-                                BorderThickness="0" />
+                                BorderThickness="0" 
+                                MaxHeight="300"/>
                         </Expander>
                         <TextBlock
                             Text="{DynamicResource string_poweredByME3TweaksUpdaterService}"

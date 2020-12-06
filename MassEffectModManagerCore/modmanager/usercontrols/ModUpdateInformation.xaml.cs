@@ -49,7 +49,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     x.DownloadButtonText = M3L.GetString(M3L.string_downloadUpdate);
                 }
             });
-            UpdatableMods.AddRange(modsWithUpdates);
+            UpdatableMods.ReplaceAll(modsWithUpdates);
             LoadCommands();
             InitializeComponent();
         }

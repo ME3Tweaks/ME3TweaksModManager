@@ -181,6 +181,8 @@ namespace MassEffectModManagerCore
             //    SelectedGameTarget = InstallationTargets[0];
             //}
 
+            Storyboard openLoadingSpinner = null, closeLoadingSpinner = null;
+
             backgroundTaskEngine = new BackgroundTaskEngine(updateText =>
             {
                 Application.Current.Dispatcher.Invoke(() =>
@@ -192,19 +194,23 @@ namespace MassEffectModManagerCore
                 {
                     Application.Current.Dispatcher.Invoke(delegate
                     {
-                        Storyboard sb = this.FindResource(@"OpenLoadingSpinner") as Storyboard;
-                        Storyboard.SetTarget(sb, LoadingSpinner_Image);
-                        sb.Begin();
+                        if (openLoadingSpinner == null)
+                        {
+                            openLoadingSpinner = FindResource(@"OpenLoadingSpinner") as Storyboard;
+                        }
+
+                        Storyboard.SetTarget(openLoadingSpinner, LoadingSpinner_Image);
+                        openLoadingSpinner.Begin();
                     });
                 },
                 () =>
                 {
-                    Application.Current.Dispatcher.Invoke(delegate
-                    {
-                        Storyboard sb = this.FindResource(@"CloseLoadingSpinner") as Storyboard;
-                        Storyboard.SetTarget(sb, LoadingSpinner_Image);
-                        sb.Begin();
-                    });
+                    //Application.Current.Dispatcher.Invoke(delegate
+                    //{
+                    //    Storyboard sb = this.FindResource(@"CloseLoadingSpinner") as Storyboard;
+                    //    Storyboard.SetTarget(sb, LoadingSpinner_Image);
+                    //    sb.Begin();
+                    //});
                 }
             );
         }
@@ -1957,8 +1963,14 @@ namespace MassEffectModManagerCore
             {
                 CLog.Information($@" >> Checking for updates to {m.ModName} {m.ParsedModVersion}", Settings.LogModUpdater);
             }
+
             BackgroundTask bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"ModCheckForUpdates", M3L.GetString(M3L.string_checkingModsForUpdates), M3L.GetString(M3L.string_modUpdateCheckCompleted));
-            var allModsInManifest = OnlineContent.CheckForModUpdates(updatableMods, restoreMode);
+            void updateCheckProgressCallback(string newStr)
+            {
+                backgroundTaskEngine.SubmitBackgroundTaskUpdate(bgTask, newStr);
+            }
+
+            var allModsInManifest = OnlineContent.CheckForModUpdates(updatableMods, restoreMode, updateCheckProgressCallback);
             if (allModsInManifest != null)
             {
                 //Calculate CLASSIC Updates
