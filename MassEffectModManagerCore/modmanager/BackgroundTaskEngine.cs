@@ -8,10 +8,12 @@ using System.Linq;
 namespace MassEffectModManagerCore.modmanager
 {
     [Localizable(false)]
-    public class BackgroundTaskEngine
+    public class BackgroundTaskEngine : INotifyPropertyChanged
     {
         //No real concurrent list so i guess we'll use a dictionary
-        private ConcurrentDictionary<int, BackgroundTask> backgroundJobs = new ConcurrentDictionary<int, BackgroundTask>();
+        private ConcurrentDictionary<int, BackgroundTask> backgroundJobs =
+            new ConcurrentDictionary<int, BackgroundTask>();
+
         private Action<string> updateTextDelegate;
         private Action showIndicatorDelegate;
         private Action hideIndicatorDelegate;
@@ -20,14 +22,25 @@ namespace MassEffectModManagerCore.modmanager
         private static object lockReleaseJob = new object();
 
 
+        public BackgroundTask ActiveJob { get; set; }
         public ConcurrentDictionary<int, BackgroundTask> getJobs() => backgroundJobs;
 
 
-        public BackgroundTaskEngine(Action<string> updateTextDelegate, Action showIndicatorDelegate, Action hideIndicatorDelegate)
+        public BackgroundTaskEngine(Action<string> updateTextDelegate, Action showIndicatorDelegate,
+            Action hideIndicatorDelegate)
         {
             this.updateTextDelegate = updateTextDelegate;
             this.showIndicatorDelegate = showIndicatorDelegate;
             this.hideIndicatorDelegate = hideIndicatorDelegate;
+        }
+
+        public void SubmitBackgroundTaskUpdate(BackgroundTask bt, string newStr)
+        {
+            bt.uiText = newStr;
+            if (ActiveJob == bt)
+            {
+                updateTextDelegate(newStr);
+            }
         }
 
         public BackgroundTask SubmitBackgroundJob(string taskName, string uiText = null, string finishedUiText = null)
@@ -36,7 +49,8 @@ namespace MassEffectModManagerCore.modmanager
             {
                 if (uiText != null && finishedUiText == null || uiText == null && finishedUiText != null)
                 {
-                    throw new Exception("Internal error: Cannot submit background job only specifying start or end text without the specifying both.");
+                    throw new Exception(
+                        "Internal error: Cannot submit background job only specifying start or end text without the specifying both.");
                 }
 
                 BackgroundTask bt = new BackgroundTask(taskName, ++nextJobID, uiText, finishedUiText);
@@ -45,7 +59,7 @@ namespace MassEffectModManagerCore.modmanager
                 {
                     updateTextDelegate(uiText);
                 }
-
+                ActiveJob = bt;
                 showIndicatorDelegate();
                 Log.Information("Submitted a background task to engine: " + taskName);
                 return bt;
@@ -66,15 +80,31 @@ namespace MassEffectModManagerCore.modmanager
                         {
                             updateTextDelegate(task.finishedUiText);
                         }
+                        ActiveJob = null;
                     }
                     else
                     {
-                        backgroundJobs.First().Value.active = true;
-                        updateTextDelegate(backgroundJobs.First().Value.uiText);
+                        ActiveJob = backgroundJobs.First().Value;
+                        updateTextDelegate(ActiveJob.uiText);
                     }
                 }
             }
         }
+
+        public void OnActiveJobChanged(object oldValue, object newValue)
+        {
+            if (oldValue is BackgroundTask bto)
+            {
+                bto.active = false;
+            }
+
+            if (newValue is BackgroundTask btn)
+            {
+                btn.active = true;
+            }
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
     }
 
     public class BackgroundTask
