@@ -42,18 +42,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     {
         public string Header { get; set; } = M3L.GetString(M3L.string_prepareModForDistribution);
         public bool MultithreadedCompression { get; set; } = true;
+        private Mod initialMod;
         public string DeployButtonText { get; set; } = M3L.GetString(M3L.string_pleaseWait);
         public ObservableCollectionExtended<EncompassingModDeploymentCheck> ModsInDeployment { get; } = new ObservableCollectionExtended<EncompassingModDeploymentCheck>();
-        public ArchiveDeployment(GameTarget validationTarget, Mod mod)
+        public ArchiveDeployment(Mod mod)
         {
-            ValidationTarget = validationTarget;
             Analytics.TrackEvent(@"Started deployment panel for mod", new Dictionary<string, string>()
             {
                 { @"Mod name" , $@"{mod.ModName} {mod.ParsedModVersion}"}
             });
-            var firstMod = new EncompassingModDeploymentCheck(mod);
-            ModsInDeployment.Add(firstMod);
-            PendingChecks.Enqueue(firstMod);
+            initialMod = mod;
             LoadCommands();
             InitializeComponent();
 
@@ -62,16 +60,21 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public ConcurrentQueue<EncompassingModDeploymentCheck> PendingChecks { get; } = new ConcurrentQueue<EncompassingModDeploymentCheck>();
 
         /// <summary>
-        ///  Class that checks a mod for issues
+        ///  Class that checks a single mod for issues
         /// </summary>
-        public class EncompassingModDeploymentCheck
+        public class EncompassingModDeploymentCheck : INotifyPropertyChanged
         {
             public ObservableCollectionExtended<DeploymentChecklistItem> DeploymentChecklistItems { get; } = new ObservableCollectionExtended<DeploymentChecklistItem>();
-            public GameTarget ValidationTarget { get; set; }
+            public DeploymentValidationTarget DepValidationTarget { get; set; }
+            private GameTarget internalValidationTarget { get; set; }
+            public Mod ModBeingDeployed { get; }
+
             public bool CheckCancelled { get; set; }
-            public EncompassingModDeploymentCheck(Mod mod)
+            public EncompassingModDeploymentCheck(Mod mod, DeploymentValidationTarget dvt)
             {
                 ModBeingDeployed = mod;
+                DepValidationTarget = dvt;
+                internalValidationTarget = dvt.SelectedTarget;
                 string versionString = mod.ParsedModVersion != null ? mod.ParsedModVersion.ToString(Utilities.GetDisplayableVersionFieldCount(mod.ParsedModVersion)) : mod.ModVersionString;
                 string versionFormat = mod.ModDescTargetVersion < 6 ? @"X.X" : @"X.X[.X[.X]]";
                 string checklistItemText = mod.ParsedModVersion != null ? M3L.GetString(M3L.string_verifyModVersion) : M3L.GetString(M3L.string_recommendedVersionFormatNotFollowed, versionFormat);
@@ -147,9 +150,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 });
             }
 
-            public Mod ModBeingDeployed { get; }
+            #region CHECK FUNCTIONS
 
-
+            /// <summary>
+            /// Checks for ALOT markers
+            /// </summary>
+            /// <param name="item"></param>
             private void CheckModForMiscellaneousIssues(DeploymentChecklistItem item)
             {
                 item.ItemText = M3L.GetString(M3L.string_checkingForMiscellaneousIssues);
@@ -226,6 +232,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
             }
 
+            /// <summary>
+            /// Validates the URL of the mod
+            /// </summary>
+            /// <param name="obj"></param>
             private void URLValidation(DeploymentChecklistItem obj)
             {
                 bool OK = Uri.TryCreate(ModBeingDeployed.ModWebsite, UriKind.Absolute, out var uriResult)
@@ -252,6 +262,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
             }
 
+            /// <summary>
+            /// Checks localizations and proper DLC mod setup for TLK
+            /// </summary>
+            /// <param name="obj"></param>
             private void CheckLocalizations(DeploymentChecklistItem obj)
             {
                 var customDLCJob = ModBeingDeployed.GetJob(ModJob.JobHeader.CUSTOMDLC);
@@ -438,6 +452,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
             }
 
+            /// <summary>
+            /// Checks SFAR sizes
+            /// </summary>
+            /// <param name="item"></param>
             private void CheckModSFARs(DeploymentChecklistItem item)
             {
                 item.ItemText = M3L.GetString(M3L.string_checkingSFARFilesSizes);
@@ -479,11 +497,19 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
             }
 
+            /// <summary>
+            /// Manually validated items
+            /// </summary>
+            /// <param name="item"></param>
             private void ManualValidation(DeploymentChecklistItem item)
             {
                 item.ToolTip = M3L.GetString(M3L.string_thisItemMustBeManuallyCheckedByYou);
             }
 
+            /// <summary>
+            /// Checks for broken audio
+            /// </summary>
+            /// <param name="item"></param>
             private void CheckAFCs(DeploymentChecklistItem item)
             {
                 item.ItemText = M3L.GetString(M3L.string_checkingAudioReferencesInMod);
@@ -491,7 +517,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 int numChecked = 0;
 
                 Predicate<string> predicate = s => s.ToLowerInvariant().EndsWith(@".afc", true, null);
-                List<string> gameFiles = M3Directories.EnumerateGameFiles(ValidationTarget, predicate);
+                List<string> gameFiles = M3Directories.EnumerateGameFiles(internalValidationTarget, predicate);
 
                 Dictionary<string, MemoryStream> cachedAudio = new Dictionary<string, MemoryStream>();
 
@@ -542,14 +568,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     if (fullPath != null)
                                     {
                                         afcPath = fullPath;
-                                        isInOfficialArea = M3Directories.IsInBasegame(afcPath, ValidationTarget) || M3Directories.IsInOfficialDLC(afcPath, ValidationTarget);
+                                        isInOfficialArea = M3Directories.IsInBasegame(afcPath, internalValidationTarget) || M3Directories.IsInOfficialDLC(afcPath, internalValidationTarget);
                                     }
                                     else if (cachedAudio.TryGetValue(afcNameProp.Value.Name, out var cachedAudioStream))
                                     {
                                         audioStream = cachedAudioStream;
                                         //isInOfficialArea = true; //cached from vanilla SFAR
                                     }
-                                    else if (MEDirectories.OfficialDLC(ValidationTarget.Game).Any(x => afcNameProp.Value.Name.StartsWith(x)))
+                                    else if (MEDirectories.OfficialDLC(internalValidationTarget.Game).Any(x => afcNameProp.Value.Name.StartsWith(x)))
                                     {
                                         var dlcName = afcNameProp.Value.Name.Substring(0, afcNameProp.Value.Name.LastIndexOf(@"_", StringComparison.InvariantCultureIgnoreCase));
                                         var audio = VanillaDatabaseService.FetchFileFromVanillaSFAR(dlcName, afcNameWithExtension /*, ValidationTarget*/);
@@ -601,10 +627,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     if (isInOfficialArea)
                                     {
                                         //Verify offset is not greater than vanilla size
-                                        var vanillaInfo = VanillaDatabaseService.GetVanillaFileInfo(ValidationTarget, afcPath.Substring(ValidationTarget.TargetPath.Length + 1));
+                                        var vanillaInfo = VanillaDatabaseService.GetVanillaFileInfo(internalValidationTarget, afcPath.Substring(internalValidationTarget.TargetPath.Length + 1));
                                         if (vanillaInfo == null)
                                         {
-                                            Crashes.TrackError(new Exception($@"Vanilla information was null when performing vanilla file check for {afcPath.Substring(ValidationTarget.TargetPath.Length + 1)}"));
+                                            Crashes.TrackError(new Exception($@"Vanilla information was null when performing vanilla file check for {afcPath.Substring(internalValidationTarget.TargetPath.Length + 1)}"));
                                         }
 
                                         if (audioOffset >= vanillaInfo[0].size)
@@ -644,6 +670,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 cachedAudio.Clear();
             }
 
+            /// <summary>
+            /// Checks texture references and known bad texture setups
+            /// </summary>
+            /// <param name="item"></param>
             private void CheckTextures(DeploymentChecklistItem item)
             {
                 // if (ModBeingDeployed.Game >= MEGame.ME2)
@@ -693,7 +723,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                         //var mips = Texture2D.GetTexture2DMipInfos(texture, cache.Value);
                                         try
                                         {
-                                            tex.GetImageBytesForMip(tex.GetTopMip(), ValidationTarget.Game, false, ValidationTarget.TargetPath, allTFCs); //use active target
+                                            tex.GetImageBytesForMip(tex.GetTopMip(), internalValidationTarget.Game, false, internalValidationTarget.TargetPath, allTFCs); //use active target
                                         }
                                         catch (Exception e)
                                         {
@@ -724,7 +754,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     {
                                         try
                                         {
-                                            tex.GetImageBytesForMip(mip, ValidationTarget.Game, false, ValidationTarget.TargetPath);
+                                            tex.GetImageBytesForMip(mip, internalValidationTarget.Game, false, internalValidationTarget.TargetPath);
                                         }
                                         catch (Exception e)
                                         {
@@ -749,15 +779,38 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     item.ToolTip = M3L.GetString(M3L.string_validationFailed);
                 }
             }
+
+            /// <summary>
+            /// Checks
+            /// and references
+            /// </summary>
+            /// <param name="item"></param>
+            private void CheckReferences(DeploymentChecklistItem item)
+            {
+
+            }
+            #endregion
+
+            public event PropertyChangedEventHandler? PropertyChanged;
         }
 
         public ICommand DeployCommand { get; set; }
         public ICommand CloseCommand { get; set; }
+        public ICommand AddModToDeploymentCommand { get; set; }
         private void LoadCommands()
         {
             DeployCommand = new GenericCommand(StartDeployment, CanDeploy);
             CloseCommand = new GenericCommand(ClosePanel, CanClose);
+            AddModToDeploymentCommand = new GenericCommand(AddModToDeploymentWrapper, CanAddModToDeployment);
         }
+
+        private void AddModToDeploymentWrapper()
+        {
+            var m = mainwindow.AllLoadedMods.RandomElement();
+            AddModToDeployment(m);
+        }
+
+        private bool CanAddModToDeployment() => ModsInDeployment.All(x => x.DeploymentChecklistItems.All(y => !y.DeploymentBlocking));
 
         private void ClosePanel()
         {
@@ -1034,9 +1087,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public string OperationText { get; set; } = M3L.GetString(M3L.string_checkingModBeforeDeployment);
         //M3L.GetString(M3L.string_verifyAboveItemsBeforeDeployment);
 
-        private DateTime lastPercentUpdateTime;
-        private GameTarget ValidationTarget;
-
         /// <summary>
         /// A single deployment checklist item and state
         /// </summary>
@@ -1148,12 +1198,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
-            lastPercentUpdateTime = DateTime.Now;
-
-            if (PendingChecks.TryDequeue(out var emc))
-            {
-                StartCheck(emc);
-            }
+            AddModToDeployment(initialMod);
+            initialMod = null;
         }
 
         private void StartCheck(EncompassingModDeploymentCheck emc)
@@ -1189,12 +1235,57 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     OperationText = M3L.GetString(M3L.string_verifyAboveItemsBeforeDeployment);
                 }
                 CommandManager.InvalidateRequerySuggested();
+
+                // Queue next item
+                if (PendingChecks.TryDequeue(out var emc_next))
+                {
+                    StartCheck(emc_next);
+                }
             };
             TaskbarHelper.SetProgressState(TaskbarProgressBarState.Indeterminate);
             nbw.RunWorkerAsync();
+        }
 
+        public void AddModToDeployment(Mod mod)
+        {
+            var dvt = ValidationTargets.FirstOrDefault(x => x.Game == mod.Game);
+            if (dvt == null)
+            {
+                // No validation targets for this game yet
+                dvt = new DeploymentValidationTarget(mod.Game, mainwindow.InstallationTargets.Where(x => x.Game == mod.Game));
+                var sortedTargetList = ValidationTargets.ToList();
+                sortedTargetList.Add(dvt);
+                ValidationTargets.ReplaceAll(sortedTargetList.OrderBy(x => x.Game));
+            }
+
+            var depMod = new EncompassingModDeploymentCheck(mod, dvt);
+            ModsInDeployment.Add(depMod);
+            PendingChecks.Enqueue(depMod);
+            if (PendingChecks.TryDequeue(out var emc))
+            {
+                StartCheck(emc);
+            }
         }
 
         public bool ProgressIndeterminate { get; set; }
+
+        public ObservableCollectionExtended<DeploymentValidationTarget> ValidationTargets { get; } = new ObservableCollectionExtended<DeploymentValidationTarget>();
+
+        public class DeploymentValidationTarget : INotifyPropertyChanged
+        {
+            public MEGame Game { get; }
+            public GameTarget SelectedTarget { get; set; }
+            public string HeaderString { get; }
+            public ObservableCollectionExtended<GameTarget> AvailableTargets { get; } = new ObservableCollectionExtended<GameTarget>();
+            public DeploymentValidationTarget(MEGame game, IEnumerable<GameTarget> targets)
+            {
+                Game = game;
+                HeaderString = $"{game.ToGameName()} validation target";
+                AvailableTargets.ReplaceAll(targets.Where(x => !x.TextureModded));
+                SelectedTarget = AvailableTargets.FirstOrDefault();
+            }
+
+            public event PropertyChangedEventHandler? PropertyChanged;
+        }
     }
 }

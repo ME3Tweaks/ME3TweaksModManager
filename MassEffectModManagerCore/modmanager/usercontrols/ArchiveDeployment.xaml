@@ -12,8 +12,17 @@
              MinWidth="450">
     <StackPanel>
         <TextBlock FontSize="20" FontWeight="Bold" Text="{Binding Header}" TextAlignment="Center"/>
-
-
+        <ItemsControl ItemsSource="{Binding ValidationTargets}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="{x:Type local:ArchiveDeployment+DeploymentValidationTarget}">
+                    <DockPanel>
+                        <TextBlock Text="{Binding HeaderString}" FontWeight="Bold" DockPanel.Dock="Top"/>
+                        <local:TargetSelector SelectedGameTarget="{Binding SelectedTarget}" AvailableTargets="{Binding AvailableTargets}"/>
+                    </DockPanel>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <Button Content="Add mod to deployment" HorizontalAlignment="Left" Command="{Binding AddModToDeploymentCommand}"/>
         <ItemsControl ItemsSource ="{Binding ModsInDeployment}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="{x:Type local:ArchiveDeployment+EncompassingModDeploymentCheck}">

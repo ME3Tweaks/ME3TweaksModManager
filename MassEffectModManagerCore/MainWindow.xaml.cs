@@ -941,6 +941,7 @@ namespace MassEffectModManagerCore
                 return;
             }
 
+            // TODO: Move this into archive panel
             GameTarget vt = GetCurrentTarget(SelectedMod.Game);
             if (vt == null)
             {
@@ -954,7 +955,7 @@ namespace MassEffectModManagerCore
             var bup = BackupService.GetGameBackupPath(SelectedMod.Game);
             if (bup != null && Directory.Exists(bup))
             {
-                var archiveDeploymentPane = new ArchiveDeployment(vt, SelectedMod);
+                var archiveDeploymentPane = new ArchiveDeployment(SelectedMod);
                 archiveDeploymentPane.Close += (a, b) => { ReleaseBusyControl(); };
                 ShowBusyControl(archiveDeploymentPane);
             }
