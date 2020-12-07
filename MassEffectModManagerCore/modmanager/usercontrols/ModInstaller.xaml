@@ -86,7 +86,9 @@
                                     </StackPanel>
                                     <TextBlock Grid.Row="1" Grid.Column="0"  Grid.ColumnSpan="2" DockPanel.Dock="Bottom" Text="{Binding Description}" VerticalAlignment="Center" HorizontalAlignment="Left" TextWrapping="Wrap" Foreground="{DynamicResource {x:Static adonisUi:Brushes.SlightlyDimmedForegroundBrush}}" MaxWidth="410" FontSize="11" Padding="0,0,20,0" Opacity="{Binding TextOpacity}"/>
                                 </Grid>
-                                <fa:ImageAwesome Icon="Image" Grid.RowSpan="2" Grid.Row="0" Grid.Column="2" Height="16" Margin="10,0"  VerticalAlignment="Center" Foreground="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" 
+                                <fa:ImageAwesome Icon="Image" Grid.RowSpan="2" Grid.Row="0" Grid.Column="2" Height="16" Margin="10,0"
+                                                 Opacity="0.75"
+                                                 VerticalAlignment="Center" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" 
                                                  Visibility="{Binding ImageBitmap, Converter={StaticResource NullVisibilityConverter}}"/>
                                 <Grid.Style>
                                     <Style TargetType="{x:Type Grid}">

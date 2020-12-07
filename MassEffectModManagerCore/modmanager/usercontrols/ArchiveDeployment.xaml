@@ -31,7 +31,7 @@
                         <TextBlock Text="{Binding ModBeingDeployed.ModVersionString, StringFormat='Version {0}'}" HorizontalAlignment="Center"/>
                         <TextBlock Text="{DynamicResource string_deploymentChecklist}" FontSize="14" FontWeight="Bold"/>
                         <ItemsControl ItemsSource="{Binding DeploymentChecklistItems}" Height="200" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"  
-                      AlternationCount="2" VirtualizingStackPanel.IsVirtualizing="True" ScrollViewer.CanContentScroll="True">
+                            AlternationCount="2" VirtualizingStackPanel.IsVirtualizing="True" ScrollViewer.CanContentScroll="True">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate DataType="{x:Type local:ArchiveDeployment+DeploymentChecklistItem}">
                                     <StackPanel Orientation="Horizontal" Margin="2" ToolTip="{Binding ToolTip}">
