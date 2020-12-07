@@ -14,7 +14,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private bool panelVisible = false;
         protected MMBusyPanelBase()
         {
             Loaded += UserControl_Loaded;

@@ -404,6 +404,7 @@ namespace MassEffectModManagerCore
         public ICommand OpenModDescCommand { get; set; }
         public ICommand CheckAllModsForUpdatesCommand { get; set; }
         public ICommand CustomKeybindsInjectorCommand { get; set; }
+        public ICommand NexusModsFileSearchCommand { get; set; }
         private void LoadCommands()
         {
             ReloadModsCommand = new GenericCommand(ReloadMods, CanReloadMods);
@@ -454,6 +455,14 @@ namespace MassEffectModManagerCore
             OriginInGameOverlayDisablerCommand = new GenericCommand(OpenOIGDisabler, () => ModsLoaded && InstallationTargets.Any());
             OpenTutorialCommand = new GenericCommand(OpenTutorial, () => App.TutorialService != null && App.TutorialService.Any());
             OpenASIManagerCommand = new GenericCommand(OpenASIManager, NetworkThreadNotRunning);
+            NexusModsFileSearchCommand = new GenericCommand(OpenNexusSearch); // no conditions for this
+        }
+
+        private void OpenNexusSearch()
+        {
+            var nexusSearchPanel = new NexusFileQueryPanel();
+            nexusSearchPanel.Close += (a, b) => { ReleaseBusyControl(); };
+            ShowBusyControl(nexusSearchPanel);
         }
 
         private void OpenTutorial()

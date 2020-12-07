@@ -38,10 +38,10 @@
                                         <fa:ImageAwesome Icon="{Binding Icon}" Foreground="{Binding Foreground}" Spin="{Binding Spinning}" SpinDuration="1.2" Width="16"/>
                                         <TextBlock FontSize="12" Text="{Binding ItemText}" Margin="5,0" VerticalAlignment="Center" Visibility="{Binding HasMessage, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Inverse'}"/>
                                         <TextBlock  Margin="5,0" VerticalAlignment="Center" Visibility="{Binding HasMessage, Converter={StaticResource BoolToVisibilityConverter}}">           
-                            <Hyperlink NavigateUri="http://www.google.com" RequestNavigate="Hyperlink_RequestNavigate">
-                                <TextBlock Text="{Binding ItemText}"/>
-                            </Hyperlink>
-                        </TextBlock>
+                                            <Hyperlink NavigateUri="http://www.google.com" RequestNavigate="Hyperlink_RequestNavigate">
+                                                <TextBlock Text="{Binding ItemText}"/>
+                                            </Hyperlink>
+                                        </TextBlock>
                                         <!--<Button Grid.Row="0" Grid.Column="1" Content="Restore" HorizontalAlignment="Right" Padding ="3,0" Command="{Binding RestoreCommand}"/>-->
                                     </StackPanel>
                                 </DataTemplate>
