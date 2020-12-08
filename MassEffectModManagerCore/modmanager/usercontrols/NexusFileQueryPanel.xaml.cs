@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -24,6 +25,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public string APIEndpoint = @"https://api.jonatanrek.cz/NEXUS/api/search/";
         public string SearchTerm { get; set; }
         public bool QueryInProgress { get; set; }
+
+        public bool SearchME1 { get; set; }
+        public bool SearchME2 { get; set; }
+        public bool SearchME3 { get; set; }
         public NexusFileQueryPanel()
         {
             LoadCommands();
@@ -40,12 +45,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
 
 
-        private bool CanSearch() => !QueryInProgress && !string.IsNullOrWhiteSpace(SearchTerm);
+        private bool CanSearch() => !QueryInProgress && !string.IsNullOrWhiteSpace(SearchTerm) && (SearchME1 || SearchME2 || SearchME3);
 
         private void PerformSearch()
         {
             var searchUrl = $@"{APIEndpoint}{Uri.EscapeDataString(SearchTerm)}";
-
+            Debug.WriteLine(searchUrl);
             QueryInProgress = true;
             try
             {
@@ -55,14 +60,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     var i = result.Result;
                     var x = JsonConvert.DeserializeObject<SearchTopLevelResult>(i);
                     Results.ReplaceAll(x.mod_ids);
+                    QueryInProgress = false;
                 });
             }
             catch (Exception e)
             {
-
+                QueryInProgress = false;
             }
 
-            QueryInProgress = false;
         }
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
@@ -87,6 +92,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             public string size_unit { get; set; }
             public string mod_name { get; set; }
             public string mod_game { get; set; }
+            public string file_master_title { get; set; }
+            public string file_master_file { get; set; }
 
             public string GameIconSource { get; private set; }
 

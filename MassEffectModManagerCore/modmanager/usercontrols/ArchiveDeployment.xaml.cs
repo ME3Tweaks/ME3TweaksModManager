@@ -1060,8 +1060,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void AddModToDeploymentWrapper()
         {
-            var m = mainwindow.AllLoadedMods.RandomElement();
-            AddModToDeployment(m);
+            var m = mainwindow.AllLoadedMods.Except(ModsInDeployment.Select(x => x.ModBeingDeployed));
+            ModSelectorDialog msd = new ModSelectorDialog(window, m.ToList());
+            var result = msd.ShowDialog();
+            if (result.HasValue && result.Value)
+            {
+                foreach (var v in msd.SelectedMods)
+                {
+                    AddModToDeployment(v);
+                }
+            }
         }
 
         private bool CanAddModToDeployment() => ModsInDeployment.All(x => x.DeploymentChecklistItems.All(y => !y.DeploymentBlocking));

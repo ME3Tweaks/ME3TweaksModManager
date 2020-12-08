@@ -4,47 +4,72 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols"
+             xmlns:fa="http://schemas.fontawesome.io/icons/"
+             xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
              mc:Ignorable="d" 
              DataContext="{Binding RelativeSource={RelativeSource Self}}"
              d:DesignHeight="450" d:DesignWidth="800">
-    <DockPanel Margin="5">
+    <DockPanel>
         <TextBlock TextAlignment="Center" Text="NexusMods File Search" FontWeight="Bold" FontSize="20" DockPanel.Dock="Top"/>
         <TextBlock TextAlignment="Center" Text="You can search for files contained in mods on NexusMods for the Mass Effect trilogy games with NexusMods File Search. The database is regularly updated and maintained by JonatanTek." 
                    TextWrapping="Wrap"
-                   DockPanel.Dock="Top"/>
-        <DockPanel DockPanel.Dock="Top">
+                   MaxWidth="600"
+                   DockPanel.Dock="Top" Margin="0,0,0,5"/>
+        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,5">
             <Button Content="Search" Command="{Binding SearchCommand}" DockPanel.Dock="Right" Margin="5,0"/>
+            <StackPanel Orientation=" Horizontal" DockPanel.Dock="Bottom" Margin="0,3">
+                <CheckBox Content="Mass Effect" IsChecked="{Binding SearchME1}"/>
+                <CheckBox Content="Mass Effect 2" IsChecked="{Binding SearchME2}" Margin="10,0"/>
+                <CheckBox Content="Mass Effect 3" IsChecked="{Binding SearchME3}"/>
+            </StackPanel>
             <TextBox Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}">
                 <TextBox.InputBindings>
                     <KeyBinding Key="Enter" Command="{Binding SearchCommand}"/>
                 </TextBox.InputBindings>
             </TextBox>
         </DockPanel>
-        <Button Content="{DynamicResource string_close}" DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="5,3" Click="ClosePanel"/>
-        <ScrollViewer Height="300" BorderThickness="1">
-            <ItemsControl ItemsSource="{Binding Results}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="{x:Type local:NexusFileQueryPanel+SearchedItemResult}">
-                        <DockPanel Margin="0,2">
-                            <Image Source="{Binding GameIconSource}" Width="48" Margin="0,0,4,0" VerticalAlignment="Top" Height="48" DockPanel.Dock="Left" />
-                            <TextBlock Text="{Binding mod_name}" FontWeight="Bold" DockPanel.Dock="Top"/>
-                            <TextBlock DockPanel.Dock="Top">
-                                <TextBlock.Text>
-                                    <MultiBinding StringFormat="{}{0}{1}">
-                                        <Binding Path="file_size" />
-                                        <Binding Path="size_unit" />
-                                    </MultiBinding>
-                                </TextBlock.Text>
-                            </TextBlock>
-                            <TextBlock VerticalAlignment="Center">
-                                <Hyperlink NavigateUri="http://www.google.com" RequestNavigate="Hyperlink_RequestNavigate">
-                                    <TextBlock Text="Go to mod page"/>
-                                </Hyperlink>
-                            </TextBlock>
-                        </DockPanel>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </ScrollViewer>
+        <Button Content="{DynamicResource string_close}" DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="5,3,5,0" Click="ClosePanel"/>
+        <Grid Height="300" HorizontalAlignment="Stretch">
+                <StackPanel
+                VerticalAlignment="Center"
+                HorizontalAlignment="Stretch"
+                Visibility="{Binding QueryInProgress, Converter={StaticResource BoolToVisibilityConverter}}">
+                <fa:ImageAwesome Icon="Spinner" Spin="True" SpinDuration="1.5" Height="32" Margin="5" HorizontalAlignment="Center"/>
+                <TextBlock Text="Searching..." TextAlignment="Center"  HorizontalAlignment="Center"/>
+            </StackPanel>
+            <ScrollViewer
+                Padding="1"
+                Margin="0,0,5,0"
+                          BorderThickness="1" 
+                          BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1BorderBrush}}"
+                          Visibility="{Binding QueryInProgress, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}">
+                <ItemsControl ItemsSource="{Binding Results}" 
+                              Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type local:NexusFileQueryPanel+SearchedItemResult}">
+                            <DockPanel Margin="0,2">
+                                <Image Source="{Binding GameIconSource}" Width="48" Margin="0,0,4,0" VerticalAlignment="Top" Height="48" DockPanel.Dock="Left" />
+                                <TextBlock Text="{Binding mod_name}" FontWeight="Bold" DockPanel.Dock="Top"/>
+                                <TextBlock Text="{Binding file_master_title}" DockPanel.Dock="Top"/>
+
+                                <TextBlock DockPanel.Dock="Top">
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="{}{0}{1}">
+                                            <Binding Path="file_size" />
+                                            <Binding Path="size_unit" />
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                                <TextBlock VerticalAlignment="Center">
+                                    <Hyperlink NavigateUri="http://www.google.com" RequestNavigate="Hyperlink_RequestNavigate">
+                                        <TextBlock Text="Go to mod page"/>
+                                    </Hyperlink>
+                                </TextBlock>
+                            </DockPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Grid>
     </DockPanel>
 </local:MMBusyPanelBase>
