@@ -76,7 +76,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             tocTargets.Add(Path.Combine(target.TargetPath, @"BIOGame\Patches\PCConsole\Patch_001.sfar"));
 
             //Debug.WriteLine("Found TOC Targets:");
-            tocTargets.ForEach(x => Debug.WriteLine(x));
+            //tocTargets.ForEach(x => Debug.WriteLine(x));
             //Debug.WriteLine("=====Generating TOC Files=====");
             int done = 0;
 

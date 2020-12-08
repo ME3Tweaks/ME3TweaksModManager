@@ -1,11 +1,11 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Windows;
 using System.Windows.Data;
 
 namespace MassEffectModManagerCore.ui
@@ -39,8 +39,12 @@ namespace MassEffectModManagerCore.ui
         {
             if (collection == null) throw new ArgumentNullException(nameof(collection));
             int oldcount = Count;
-            foreach (var i in collection) Items.Add(i);
-            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+            lock (_syncLock)
+            {
+                foreach (var i in collection) Items.Add(i);
+                OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+            }
+
             if (oldcount != Count)
             {
                 OnPropertyChanged(nameof(Any));
@@ -58,8 +62,13 @@ namespace MassEffectModManagerCore.ui
             if (collection == Items) throw new Exception(@"Cannot remove range of same collection");
             int oldcount = Count;
             //Todo: catch reachspec crash when changing size
-            foreach (var i in collection) Items.Remove(i);
-            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+
+            lock (_syncLock)
+            {
+                foreach (var i in collection) Items.Remove(i);
+                OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+            }
+
             if (oldcount != Count)
             {
                 OnPropertyChanged(nameof(Any));
@@ -73,8 +82,12 @@ namespace MassEffectModManagerCore.ui
         public void ClearEx()
         {
             int oldcount = Count;
-            Items.Clear();
-            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+            lock (_syncLock)
+            {
+                Items.Clear();
+                OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+            }
+
             if (oldcount != Count)
             {
                 OnPropertyChanged(nameof(Any));
@@ -98,9 +111,14 @@ namespace MassEffectModManagerCore.ui
         {
             if (collection == null) throw new ArgumentNullException(nameof(collection));
             int oldcount = Count;
-            Items.Clear();
-            foreach (var i in collection) Items.Add(i);
-            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+
+            lock (_syncLock)
+            {
+                Items.Clear();
+                foreach (var i in collection) Items.Add(i);
+                OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+            }
+
             if (oldcount != Count)
             {
                 OnPropertyChanged(nameof(Any));
@@ -159,7 +177,7 @@ namespace MassEffectModManagerCore.ui
         private int _bindableCount;
         public int BindableCount
         {
-            get { return Count; }
+            get => Count;
             private set
             {
                 if (_bindableCount != Count)
@@ -186,13 +204,12 @@ namespace MassEffectModManagerCore.ui
         /// </summary> 
         public ObservableCollectionExtended() : base()
         {
+            Application.Current.Dispatcher.BeginInvoke(new Action(() => { BindingOperations.EnableCollectionSynchronization(this, _syncLock); }));
             CollectionChanged += (a, b) =>
             {
                 BindableCount = Count;
                 OnPropertyChanged(nameof(Any));
             };
-            BindingOperations.EnableCollectionSynchronization(this, _syncLock);
-
         }
 
         /// <summary> 
@@ -200,9 +217,9 @@ namespace MassEffectModManagerCore.ui
         /// </summary> 
         /// <param name="collection">collection: The collection from which the elements are copied.</param> 
         /// <exception cref="System.ArgumentNullException">The collection parameter cannot be null.</exception> 
-        public ObservableCollectionExtended(IEnumerable<T> collection)
-            : base(collection)
+        public ObservableCollectionExtended(IEnumerable<T> collection) : base(collection)
         {
+            Application.Current.Dispatcher.BeginInvoke(new Action(() => { BindingOperations.EnableCollectionSynchronization(this, _syncLock); }));
             CollectionChanged += (a, b) =>
             {
                 BindableCount = Count;

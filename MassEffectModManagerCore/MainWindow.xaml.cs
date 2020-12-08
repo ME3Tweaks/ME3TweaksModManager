@@ -139,8 +139,6 @@ namespace MassEffectModManagerCore
         //private ModLoader modLoadSer;
         public MainWindow()
         {
-            DataContext = this;
-
             if (App.UpgradingFromME3CMM/* || true*/)
             {
                 App.Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
@@ -152,9 +150,6 @@ namespace MassEffectModManagerCore
             }
 
             LoadCommands();
-            NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"NexusModsInitialAuthentication");
-            nbw.DoWork += (a, b) => RefreshNexusStatus();
-            nbw.RunWorkerAsync();
             InitializeComponent();
             languageMenuItems = new Dictionary<string, MenuItem>()
             {
@@ -1668,6 +1663,12 @@ namespace MassEffectModManagerCore
                     // Show messagebox?
                 }
             }
+
+            // Run on background thread as we don't need the result of this
+            NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"NexusModsInitialAuthentication");
+            nbw.DoWork += (a, b) => RefreshNexusStatus();
+            nbw.RunWorkerAsync();
+
             var syncContext = TaskScheduler.FromCurrentSynchronizationContext();
             CoreLib.SetSynchronizationContext(syncContext);
             IsEnabled = false;
@@ -2121,23 +2122,21 @@ namespace MassEffectModManagerCore
             }
 
             // TODO: Read and import java version configuration
+            var activeTargetCount = targets.Count;
             Log.Information(@"Loading cached targets");
-            var currentTargets = InstallationTargets.ToList();
-            var otherTargetsFileME1 = Utilities.GetCachedTargets(MEGame.ME1, currentTargets);
-            var otherTargetsFileME2 = Utilities.GetCachedTargets(MEGame.ME2, currentTargets);
-            var otherTargetsFileME3 = Utilities.GetCachedTargets(MEGame.ME3, currentTargets);
+            var otherTargetsFileME1 = Utilities.GetCachedTargets(MEGame.ME1, targets);
+            var otherTargetsFileME2 = Utilities.GetCachedTargets(MEGame.ME2, targets);
+            var otherTargetsFileME3 = Utilities.GetCachedTargets(MEGame.ME3, targets);
 
             if (otherTargetsFileME1.Any() || otherTargetsFileME2.Any() || otherTargetsFileME3.Any())
             {
-                int count = InstallationTargets.Count;
                 targets.AddRange(otherTargetsFileME1);
                 targets.AddRange(otherTargetsFileME2);
                 targets.AddRange(otherTargetsFileME3);
-                var distinct = InstallationTargets.Distinct().ToList();
-                InstallationTargets.ReplaceAll(distinct);
-                if (InstallationTargets.Count > count)
+                InstallationTargets.ReplaceAll(targets.Distinct());
+                if (InstallationTargets.Count > activeTargetCount)
                 {
-                    targets.Insert(count, new GameTarget(MEGame.Unknown, $@"==================={M3L.GetString(M3L.string_otherSavedTargets)}===================", false) { Selectable = false });
+                    targets.Insert(activeTargetCount, new GameTarget(MEGame.Unknown, $@"==================={M3L.GetString(M3L.string_otherSavedTargets)}===================", false) { Selectable = false });
                 }
             }
 

@@ -503,13 +503,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     if (item.HasAnyMessages())
                     {
-                        item.ItemText = M3L.GetString(M3L.string_noSFARSizeIssuesWereDetected);
-                        item.ToolTip = M3L.GetString(M3L.string_validationOK);
+                        item.ItemText = M3L.GetString(M3L.string_someSFARSizesAreTheIncorrectSize);
+                        item.ToolTip = M3L.GetString(M3L.string_validationFailed);
                     }
                     else
                     {
-                        item.ItemText = M3L.GetString(M3L.string_someSFARSizesAreTheIncorrectSize);
-                        item.ToolTip = M3L.GetString(M3L.string_validationFailed);
+                        item.ItemText = M3L.GetString(M3L.string_noSFARSizeIssuesWereDetected);
+                        item.ToolTip = M3L.GetString(M3L.string_validationOK);
                     }
                 }
             }
@@ -545,6 +545,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     item.ItemText = $@"{M3L.GetString(M3L.string_checkingAudioReferencesInMod)} [{numChecked}/{referencedFiles.Count}]";
                     if (f.RepresentsPackageFilePath())
                     {
+                        var relativePath = f.Substring(ModBeingDeployed.ModPath.Length + 1);
                         Log.Information(@"Checking file for audio issues: " + f);
                         var package = MEPackageHandler.OpenMEPackage(f);
                         var wwiseStreams = package.Exports.Where(x => x.ClassName == @"WwiseStream" && !x.IsDefaultObject).ToList();
@@ -608,7 +609,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     else
                                     {
                                         Log.Warning($@"Could not find AFC file {afcNameProp.ToString()}.afc. Export: {wwisestream.UIndex} {wwisestream.ObjectName}");
-                                        item.AddSignificantIssue(M3L.GetString(M3L.string_interp_couldNotFindReferencedAFC, wwisestream.FileRef.FilePath.Substring(ModBeingDeployed.ModPath.Length + 1), wwisestream.InstancedFullPath, afcNameProp.ToString()));
+                                        item.AddSignificantIssue(M3L.GetString(M3L.string_interp_couldNotFindReferencedAFC, relativePath, wwisestream.InstancedFullPath, afcNameProp.ToString()));
                                         continue;
                                     }
                                 }
@@ -623,16 +624,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     audioStream.Seek(audioOffset, SeekOrigin.Begin);
                                     if (audioStream.Position > audioStream.Length - 4)
                                     {
-                                        Log.Warning($@"Found broken audio: {wwisestream.UIndex} {wwisestream.ObjectName} has broken audio, pointer points inside of AFC, but the size ofi t extends beyond the end of the AFC. Package file: {wwisestream.FileRef.FilePath}, referenced AFC: {afcPath} @ 0x{audioOffset:X8}. The AFC is only 0x{audioStream.Length:X8} bytes long.");
-                                        item.AddSignificantIssue(M3L.GetString(M3L.string_interp_invalidAudioPointerOutsideAFC, wwisestream.FileRef.FilePath.Substring(ModBeingDeployed.ModPath.Length + 1), wwisestream.UIndex, wwisestream.ObjectName, audioOffset, afcPath, audioStream.Length));
+                                        Log.Warning($@"Found broken audio: {wwisestream.UIndex} {wwisestream.ObjectName} has broken audio, pointer points inside of AFC, but the size of it extends beyond the end of the AFC. Package file: {relativePath}, referenced AFC: {afcPath} @ 0x{audioOffset:X8}. The AFC is only 0x{audioStream.Length:X8} bytes long.");
+                                        item.AddSignificantIssue(M3L.GetString(M3L.string_interp_invalidAudioPointerOutsideAFC, relativePath, wwisestream.UIndex, wwisestream.ObjectName, audioOffset, afcPath, audioStream.Length));
                                         if (audioStream is FileStream) audioStream.Close();
                                         continue;
                                     }
 
                                     if (audioStream.ReadStringASCIINull(4) != @"RIFF")
                                     {
-                                        Log.Warning($@"Found broken audio: {wwisestream.UIndex} {wwisestream.ObjectName} has broken audio, pointer points to data that does not start with RIFF, which is the start of audio data. Package file: {wwisestream.FileRef.FilePath}, referenced AFC: {afcPath} @ 0x{audioOffset:X8}.");
-                                        item.AddSignificantIssue(M3L.GetString(M3L.string_interp_invalidAudioPointer, Path.GetFileName(wwisestream.FileRef.FilePath), wwisestream.InstancedFullPath));
+                                        Log.Warning($@"Found broken audio: {wwisestream.UIndex} {wwisestream.ObjectName} has broken audio, pointer points to data that does not start with RIFF, which is the start of audio data. Package file: {relativePath}, referenced AFC: {afcPath} @ 0x{audioOffset:X8}.");
+                                        item.AddSignificantIssue(M3L.GetString(M3L.string_interp_invalidAudioPointer, relativePath, wwisestream.InstancedFullPath));
                                         if (audioStream is FileStream) audioStream.Close();
                                         continue;
                                     }
@@ -652,8 +653,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                                         if (audioOffset >= vanillaInfo[0].size)
                                         {
-                                            Log.Warning($@"Found broken audio: {wwisestream.UIndex} {wwisestream.ObjectName} has broken audio, pointer points beyond the end of the AFC file. Package file: {wwisestream.FileRef.FilePath}, referenced AFC: {afcPath} @ 0x{audioOffset:X8}.");
-                                            item.AddSignificantIssue(M3L.GetString(M3L.string_interp_audioStoredInOfficialAFC, wwisestream.FileRef.FilePath, wwisestream.InstancedFullPath));
+                                            Log.Warning($@"Found broken audio: {wwisestream.UIndex} {wwisestream.ObjectName} has broken audio, pointer points beyond the end of the AFC file. Package file: {relativePath}, referenced AFC: {afcPath} @ 0x{audioOffset:X8}.");
+                                            item.AddSignificantIssue(M3L.GetString(M3L.string_interp_audioStoredInOfficialAFC, relativePath, wwisestream.InstancedFullPath));
                                         }
                                     }
 
@@ -661,10 +662,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 }
                                 catch (Exception e)
                                 {
-                                    Log.Error($@"Error checking for broken audio: {wwisestream?.UIndex} {wwisestream?.ObjectName}. Package file: {wwisestream?.FileRef?.FilePath?.Substring(ModBeingDeployed.ModPath.Length + 1)}, referenced AFC: {afcPath} @ 0x{audioOffset:X8}. The error was: {e.Message}");
+                                    Log.Error($@"Error checking for broken audio: {wwisestream?.UIndex} {wwisestream?.ObjectName}. Package file: {relativePath}, referenced AFC: {afcPath} @ 0x{audioOffset:X8}. The error was: {e.Message}");
                                     e.LogStackTrace();
                                     if (audioStream is FileStream) audioStream.Close();
-                                    item.AddSignificantIssue(M3L.GetString(M3L.string_errorValidatingAudioReference, wwisestream.FileRef.FilePath.Substring(ModBeingDeployed.ModPath.Length + 1), wwisestream.InstancedFullPath, e.Message));
+                                    item.AddSignificantIssue(M3L.GetString(M3L.string_errorValidatingAudioReference, relativePath, wwisestream.InstancedFullPath, e.Message));
                                     continue;
                                 }
                             }
@@ -706,6 +707,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     item.ItemText = $@"{M3L.GetString(M3L.string_checkingTexturesInMod)} [{numChecked}/{referencedFiles.Count}]";
                     if (f.RepresentsPackageFilePath())
                     {
+                        var relativePath = f.Substring(ModBeingDeployed.ModPath.Length + 1);
                         Log.Information(@"Checking file for broken textures: " + f);
                         var package = MEPackageHandler.OpenMEPackage(f);
                         var textures = package.Exports.Where(x => x.IsTexture() && !x.IsDefaultObject).ToList();
@@ -728,9 +730,27 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     {
                                         // NEVERSTREAM SHOULD HAVE BEEN SET.
                                         Log.Error(@"Found texture missing 'NeverStream' attribute " + texture.InstancedFullPath);
-                                        item.AddBlockingError($"{texture.FileRef.FilePath} texture {texture.UIndex} {texture.InstancedFullPath} is not externally stored, has more than 6 mips, but does not have the NeverStream flag. If LODs are raised this package will crash the game. Set the NeverStream flag to true to correct this issue, or use an external TFC (preferred). Using an external TFC for textures improves game performance.");
+                                        item.AddBlockingError($"{relativePath} texture {texture.UIndex} {texture.InstancedFullPath} is not externally stored, has more than 6 mips, but does not have the NeverStream flag. If texture LODs are raised, this package will crash the game. Set the NeverStream flag to true to correct this issue, or use an external TFC (preferred). Using an external TFC for textures improves game performance.");
                                     }
                                 }
+
+                                if (package.Game == MEGame.ME3)
+                                {
+                                    // CHECK FOR 4K NORM
+                                    var compressionSettings = texture.GetProperty<EnumProperty>(@"CompressionSettings");
+                                    if (compressionSettings != null && compressionSettings.Value == @"TC_NormalMapUncompressed")
+                                    {
+                                        var mipTailBaseIdx = texture.GetProperty<IntProperty>(@"MipTailBaseIdx");
+                                        if (mipTailBaseIdx != null && mipTailBaseIdx == 12)
+                                        {
+                                            // It's 4K (2^12)
+                                            Log.Error(@"Found 4K Norm. These are not used by game (they use up to 1 mip below the diff) and waste large amounts of memory. Drop the top mip to correct this issue. " + texture.InstancedFullPath);
+                                            item.AddBlockingError($"{relativePath} texture {texture.UIndex} {texture.InstancedFullPath} is a 4K uncompressed normal. Unreal Engine 3 uses uncompressed normals at one mip level below the diff, so the maximum normal size is effectively 2K. The 4K normal will load when texture LODs are set to 4K but will result in wasting 64MB of both process and texture memory, as well as wasting significant amounts of disk space, as this mip will never be usable. Drop the top mip (you can drop mips in ME3Explorer - ME3Tweaks Fork) from this texture to correct this issue.");
+                                        }
+                                    }
+                                }
+
+
 
                                 var cache = texture.GetProperty<NameProperty>(@"TextureFileCacheName");
                                 if (cache != null)
@@ -745,19 +765,19 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                         catch (Exception e)
                                         {
                                             Log.Warning(@"Found broken texture: " + texture.InstancedFullPath);
-                                            item.AddSignificantIssue(M3L.GetString(M3L.string_interp_couldNotLoadTextureData, texture.FileRef.FilePath, texture.InstancedFullPath, e.Message));
+                                            item.AddSignificantIssue(M3L.GetString(M3L.string_interp_couldNotLoadTextureData, relativePath, texture.InstancedFullPath, e.Message));
                                         }
                                     }
 
                                     if (cache.Value.Name.Contains(@"CustTextures"))
                                     {
                                         // ME3Explorer 3.0 or below Texplorer
-                                        item.AddSignificantIssue(M3L.GetString(M3L.string_interp_error_foundCustTexturesTFCRef, texture.FileRef.FilePath, texture.InstancedFullPath, cache.Value.Name));
+                                        item.AddSignificantIssue(M3L.GetString(M3L.string_interp_error_foundCustTexturesTFCRef, relativePath, texture.InstancedFullPath, cache.Value.Name));
                                     }
                                     else if (cache.Value.Name.Contains(@"TexturesMEM"))
                                     {
                                         // Textures replaced by MEM. This is not allowed in mods as it'll immediately be broken
-                                        item.AddBlockingError(M3L.GetString(M3L.string_interp_error_foundTexturesMEMTFCRef, texture.FileRef.FilePath, texture.InstancedFullPath, cache.Value.Name));
+                                        item.AddBlockingError(M3L.GetString(M3L.string_interp_error_foundTexturesMEMTFCRef, relativePath, texture.InstancedFullPath, cache.Value.Name));
                                     }
                                 }
                             }
@@ -776,7 +796,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                         catch (Exception e)
                                         {
                                             Log.Warning(@"Found broken texture: " + texture.InstancedFullPath);
-                                            item.AddSignificantIssue(M3L.GetString(M3L.string_interp_couldNotLoadTextureData, texture.FileRef.FilePath, texture.InstancedFullPath, e.Message));
+                                            item.AddSignificantIssue(M3L.GetString(M3L.string_interp_couldNotLoadTextureData, relativePath, texture.InstancedFullPath, e.Message));
                                         }
                                     }
                                 }
@@ -875,78 +895,92 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             /// <param name="item"></param>
             private void CheckReferences(DeploymentChecklistItem item)
             {
-                item.ItemText = M3L.GetString(M3L.string_checkingTexturesInMod);
+                item.ItemText = "Checking name and object references";
                 var referencedFiles = ModBeingDeployed.GetAllRelativeReferences().Where(x => x.RepresentsPackageFilePath()).Select(x => Path.Combine(ModBeingDeployed.ModPath, x)).ToList();
                 int numChecked = 0;
                 foreach (var f in referencedFiles)
                 {
                     // Mostly ported from ME3Explorer
                     var Pcc = MEPackageHandler.OpenMEPackage(Path.Combine(item.ModToValidateAgainst.ModPath, f));
-                    item.ItemText = $"Checking name and object references [{numChecked}/{referencedFiles.Count}]";
+                    item.ItemText = "Checking name and object references" + $@" [{numChecked}/{referencedFiles.Count}]";
                     numChecked++;
 
                     foreach (ExportEntry exp in Pcc.Exports)
                     {
-                        if (exp.idxArchetype != 0 && !Pcc.IsEntry(exp.idxArchetype))
+                        if (exp.idxLink == exp.UIndex)
                         {
-                            item.AddSignificantIssue($"{f}, export {exp.UIndex} {exp.ObjectName.Name} ({exp.ClassName}): Archetype {exp.idxArchetype} is outside of import/export table");
+                            item.AddBlockingError($"{f}, export {exp.UIndex} has a circular self reference for it' link. The game and the toolset will be unable to handle this condition");
+                            continue;
                         }
-
-                        if (exp.idxSuperClass != 0 && !Pcc.IsEntry(exp.idxSuperClass))
+                        var prefix = $"{f}, export {exp.UIndex} {exp.ObjectName.Name} ({exp.ClassName})";
+                        try
                         {
-                            item.AddSignificantIssue($"{f}, export {exp.UIndex} {exp.ObjectName.Name} ({exp.ClassName}): Header SuperClass {exp.idxSuperClass} is outside of import/export table");
-                        }
-
-                        if (exp.idxClass != 0 && !Pcc.IsEntry(exp.idxClass))
-                        {
-                            item.AddSignificantIssue($"{f}, export {exp.UIndex} {exp.ObjectName.Name} ({exp.ClassName}): Header Class {exp.idxClass} is outside of import/export table");
-                        }
-
-                        if (exp.idxLink != 0 && !Pcc.IsEntry(exp.idxLink))
-                        {
-                            item.AddSignificantIssue($"{f}, export {exp.UIndex} {exp.ObjectName.Name} ({exp.ClassName}): Header Link {exp.idxLink} is outside of import/export table");
-                        }
-
-                        if (exp.HasComponentMap)
-                        {
-                            foreach (var c in exp.ComponentMap)
+                            if (exp.idxArchetype != 0 && !Pcc.IsEntry(exp.idxArchetype))
                             {
-                                if (!Pcc.IsEntry(c.Value))
+                                item.AddSignificantIssue($"{prefix} Archetype {exp.idxArchetype} is outside of import/export table");
+                            }
+
+                            if (exp.idxSuperClass != 0 && !Pcc.IsEntry(exp.idxSuperClass))
+                            {
+                                item.AddSignificantIssue($"{prefix} Header SuperClass {exp.idxSuperClass} is outside of import/export table");
+                            }
+
+                            if (exp.idxClass != 0 && !Pcc.IsEntry(exp.idxClass))
+                            {
+                                item.AddSignificantIssue($"{prefix} Header Class {exp.idxClass} is outside of import/export table");
+                            }
+
+                            if (exp.idxLink != 0 && !Pcc.IsEntry(exp.idxLink))
+                            {
+                                item.AddSignificantIssue($"{prefix} Header Link {exp.idxLink} is outside of import/export table");
+                            }
+
+                            if (exp.HasComponentMap)
+                            {
+                                foreach (var c in exp.ComponentMap)
                                 {
-                                    // Can components point to 0? I don't think so
-                                    item.AddSignificantIssue($"{f}, export {exp.UIndex} {exp.ObjectName.Name} ({exp.ClassName}): Header Component Map item ({c.Value}) is outside of import/export table");
+                                    if (!Pcc.IsEntry(c.Value))
+                                    {
+                                        // Can components point to 0? I don't think so
+                                        item.AddSignificantIssue($"{prefix} Header Component Map item ({c.Value}) is outside of import/export table");
+                                    }
                                 }
                             }
-                        }
 
-                        //find stack references
-                        if (exp.HasStack && exp.Data is byte[] data)
-                        {
-                            var stack1 = EndianReader.ToInt32(data, 0, exp.FileRef.Endian);
-                            var stack2 = EndianReader.ToInt32(data, 4, exp.FileRef.Endian);
-                            if (stack1 != 0 && !Pcc.IsEntry(stack1))
+                            //find stack references
+                            if (exp.HasStack && exp.Data is byte[] data)
                             {
-                                item.AddSignificantIssue($"{f}, export {exp.UIndex} {exp.ObjectName.Name} ({exp.ClassName}): Export Stack[0] ({stack1}) is outside of import/export table");
+                                var stack1 = EndianReader.ToInt32(data, 0, exp.FileRef.Endian);
+                                var stack2 = EndianReader.ToInt32(data, 4, exp.FileRef.Endian);
+                                if (stack1 != 0 && !Pcc.IsEntry(stack1))
+                                {
+                                    item.AddSignificantIssue($"{prefix} Export Stack[0] ({stack1}) is outside of import/export table");
+                                }
+
+                                if (stack2 != 0 && !Pcc.IsEntry(stack2))
+                                {
+                                    item.AddSignificantIssue($"{prefix} Export Stack[1] ({stack2}) is outside of import/export table");
+                                }
+                            }
+                            else if (exp.TemplateOwnerClassIdx is var toci && toci >= 0)
+                            {
+                                var TemplateOwnerClassIdx = EndianReader.ToInt32(exp.Data, toci, exp.FileRef.Endian);
+                                if (TemplateOwnerClassIdx != 0 && !Pcc.IsEntry(TemplateOwnerClassIdx))
+                                {
+                                    item.AddSignificantIssue($"{prefix} TemplateOwnerClass (Data offset 0x{toci:X}) ({TemplateOwnerClassIdx}) is outside of import/export table");
+                                }
                             }
 
-                            if (stack2 != 0 && !Pcc.IsEntry(stack2))
+                            var props = exp.GetProperties();
+                            foreach (var p in props)
                             {
-                                item.AddSignificantIssue($"{f}, export {exp.UIndex} {exp.ObjectName.Name} ({exp.ClassName}): Export Stack[1] ({stack2}) is outside of import/export table");
+                                recursiveCheckProperty(item, f, exp, p);
                             }
                         }
-                        else if (exp.TemplateOwnerClassIdx is var toci && toci >= 0)
+                        catch (Exception e)
                         {
-                            var TemplateOwnerClassIdx = EndianReader.ToInt32(exp.Data, toci, exp.FileRef.Endian);
-                            if (TemplateOwnerClassIdx != 0 && !Pcc.IsEntry(TemplateOwnerClassIdx))
-                            {
-                                item.AddSignificantIssue($"{f}, export {exp.UIndex} {exp.ObjectName.Name} ({exp.ClassName}): TemplateOwnerClass (Data offset 0x{toci:X}) ({TemplateOwnerClassIdx}) is outside of import/export table");
-                            }
-                        }
-
-                        var props = exp.GetProperties();
-                        foreach (var p in props)
-                        {
-                            recursiveCheckProperty(item, f, exp, p);
+                            item.AddSignificantIssue($"{prefix} Exception occurred while parsing properties: {e.Message}");
+                            continue;
                         }
 
                         //find binary references
@@ -959,11 +993,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 {
                                     if (uIndex.value != 0 && !exp.FileRef.IsEntry(uIndex.value))
                                     {
-                                        item.AddSignificantIssue($"{f}, export {exp.UIndex} {exp.ObjectName.Name} ({exp.ClassName}): Binary reference ({uIndex.value}) is outside of import/export table");
+                                        item.AddSignificantIssue($"{prefix} Binary reference ({uIndex.value}) is outside of import/export table");
                                     }
                                     else if (exp.FileRef.GetEntry(uIndex.value)?.ObjectName.ToString() == "Trash")
                                     {
-                                        item.AddSignificantIssue($"{f}, export {exp.UIndex} {exp.ObjectName.Name} ({exp.ClassName}): Binary reference ({uIndex.value}) is a Trashed object");
+                                        item.AddSignificantIssue($"{prefix} Binary reference ({uIndex.value}) is a Trashed object");
                                     }
                                 }
 
@@ -972,14 +1006,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 {
                                     if (ni.Item1 == "")
                                     {
-                                        item.AddSignificantIssue($"{f}, export {exp.UIndex} {exp.ObjectName.Name} ({exp.ClassName}): Found invalid binary reference for a name");
+                                        item.AddSignificantIssue($"{prefix} Found invalid binary reference for a name");
                                     }
                                 }
                             }
                         }
                         catch (Exception e)/* when (!App.IsDebug)*/
                         {
-                            item.AddSignificantIssue($"{f}, export {exp.UIndex} {exp.ObjectName.Name} ({exp.ClassName}): Unable to parse binary. It may be malformed. Error message: {e.Message}. Note the error message is likely code-context specific and is not useful without running application in debug mode to determine it's context");
+                            item.AddSignificantIssue($"{prefix} Unable to parse binary. It may be malformed. Error message: {e.Message}. Note the error message is likely code-context specific and is not useful without running application in debug mode to determine it's context");
                         }
                     }
 
@@ -991,19 +1025,19 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         }
                         else if (imp.idxLink == imp.UIndex)
                         {
-                            item.AddSignificantIssue($"{f}, import {imp.UIndex} has a circular self reference for it's link. The game and the toolset may be unable to handle this condition");
+                            item.AddBlockingError($"{f}, import {imp.UIndex} has a circular self reference for its link. The game and the toolset will be unable to handle this condition");
                         }
                     }
                 }
 
                 if (!item.HasAnyMessages())
                 {
-                    item.ItemText = "No issues found when checking name and object references";
+                    item.ItemText = "No reference issues were detected";
                     item.ToolTip = M3L.GetString(M3L.string_validationOK);
                 }
                 else
                 {
-                    item.ItemText = "Name and object references check detected issues";
+                    item.ItemText = "References check detected issues";
                     item.ToolTip = M3L.GetString(M3L.string_validationFailed);
                 }
 
@@ -1323,8 +1357,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             public bool DeploymentBlocking { get; private set; }
             public string ToolTip { get; set; }
             public Action<DeploymentChecklistItem> ValidationFunction { get; set; }
-            internal string DialogMessage { get; set; }
-            internal string DialogTitle { get; set; }
+            public string DialogMessage { get; set; }
+            public string DialogTitle { get; set; }
             public bool CheckDone { get; private set; }
 
             public bool HasMessage => CheckDone && HasAnyMessages();
@@ -1394,6 +1428,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             public event PropertyChangedEventHandler PropertyChanged;
 
             public bool HasAnyMessages() => InfoWarnings.Any() || SignificantIssues.Any() || BlockingErrors.Any();
+
+            public IReadOnlyCollection<string> GetBlockingIssues() => BlockingErrors.AsReadOnly();
+            public IReadOnlyCollection<string> GetSignificantIssues() => SignificantIssues.AsReadOnly();
+            public IReadOnlyCollection<string> GetInfoWarningIssues() => InfoWarnings.AsReadOnly();
         }
 
         private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
@@ -1401,8 +1439,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (sender is Hyperlink hl && hl.DataContext is DeploymentChecklistItem dcli)
             {
                 // Todo: Make special dialog for this window
-                //ListDialog ld = new ListDialog(dcli.BlockingErrors, dcli.DialogTitle, dcli.DialogMessage, Window.GetWindow(hl));
-                //ld.ShowDialog();
+                DeploymentListDialog ld = new DeploymentListDialog(dcli, Window.GetWindow(hl));
+                ld.ShowDialog();
             }
         }
 

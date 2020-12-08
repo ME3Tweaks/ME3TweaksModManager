@@ -499,7 +499,7 @@
     <system:String x:Key="string_checkingTexturesInMod">Checking textures in mod</system:String>
     <system:String x:Key="string_interp_couldNotLoadTextureData">{0} - {1}: Could not load texture data: {2}</system:String>
     <!-- 0 = filepath, 1=export path in-package, 2=error message -->
-    <system:String x:Key="string_noBrokenTexturesWereFound">No broken textures were found</system:String>
+    <system:String x:Key="string_noBrokenTexturesWereFound">No texture issues were detected</system:String>
     <system:String x:Key="string_textureIssuesWereDetected">Texture issues were detected</system:String>
     <system:String x:Key="string_7zipArchiveFile">7-zip archive file</system:String>
     <system:String x:Key="string_deploymentInProgress">Deployment in progress...</system:String>

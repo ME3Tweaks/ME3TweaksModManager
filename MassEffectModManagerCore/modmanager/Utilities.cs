@@ -1027,29 +1027,42 @@ namespace MassEffectModManagerCore
             return Path.Combine(GetAppDataFolder(), $"GameTargets{game}.txt");
         }
 
+        /// <summary>
+        /// Loads cached targets from the cache list
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="existingTargets"></param>
+        /// <returns></returns>
         internal static List<GameTarget> GetCachedTargets(MEGame game, List<GameTarget> existingTargets = null)
         {
             var cacheFile = GetCachedTargetsFile(game);
             if (File.Exists(cacheFile))
             {
                 OrderedSet<GameTarget> targets = new OrderedSet<GameTarget>();
-                foreach (var file in Utilities.WriteSafeReadAllLines(cacheFile))
+                foreach (var gameDir in Utilities.WriteSafeReadAllLines(cacheFile))
                 {
                     //Validate game directory
-                    if (existingTargets != null && existingTargets.Any(x => x.TargetPath.Equals(file, StringComparison.InvariantCultureIgnoreCase)))
+                    if (existingTargets != null && existingTargets.Any(x => x.TargetPath.Equals(gameDir, StringComparison.InvariantCultureIgnoreCase)))
                     {
                         continue; //don't try to load an existing target
                     }
 
-                    GameTarget target = new GameTarget(game, file, false);
-                    var failureReason = target.ValidateTarget();
-                    if (failureReason == null)
+                    if (Directory.Exists(gameDir))
                     {
-                        targets.Add(target);
+                        GameTarget target = new GameTarget(game, gameDir, false);
+                        var failureReason = target.ValidateTarget();
+                        if (failureReason == null)
+                        {
+                            targets.Add(target);
+                        }
+                        else
+                        {
+                            Log.Error("Cached target for " + target.Game.ToString() + " is invalid: " + failureReason);
+                        }
                     }
                     else
                     {
-                        Log.Error("Cached target for " + target.Game.ToString() + " is invalid: " + failureReason);
+                        Log.Warning($@"Cached target directory does not exist, skipping: {gameDir}");
                     }
                 }
 
