@@ -535,8 +535,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     // ME3 is SFAR DLC so we don't track those. Track if it path has 'DLC' directory and the path of file being installed contains an official DLC directory in it
                     // There is probably better way to do this
-                    var shouldTrack = SelectedGameTarget.Game != MEGame.ME3 && targetPath.Contains(@"\DLC\", StringComparison.InvariantCultureIgnoreCase) 
-                                                                            && targetPath.ContainsAny(MEDirectories.OfficialDLC(SelectedGameTarget.Game).Select(x=> $@"\{x}\"), StringComparison.InvariantCultureIgnoreCase);
+                    var shouldTrack = SelectedGameTarget.Game != MEGame.ME3 && targetPath.Contains(@"\DLC\", StringComparison.InvariantCultureIgnoreCase)
+                                                                            && targetPath.ContainsAny(MEDirectories.OfficialDLC(SelectedGameTarget.Game).Select(x => $@"\{x}\"), StringComparison.InvariantCultureIgnoreCase);
                     if ((shouldTrack || !targetPath.Contains(@"DLC", StringComparison.InvariantCultureIgnoreCase)) //Only track basegame files, or all official directories if ME1/ME2
                         && targetPath.Contains(SelectedGameTarget.TargetPath) // Must be within the game directory (no config files)
                         && !Path.GetFileName(targetPath).Equals(@"PCConsoleTOC.bin", StringComparison.InvariantCultureIgnoreCase)) //no pcconsoletoc
@@ -674,8 +674,29 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 Log.Information(@"Writing metacmm file for " + addedDLCFolder);
                 var metacmm = Path.Combine(addedDLCFolder, @"_metacmm.txt");
                 ModBeingInstalled.HumanReadableCustomDLCNames.TryGetValue(Path.GetFileName(addedDLCFolder), out var assignedDLCName);
-                string contents = $"{assignedDLCName ?? ModBeingInstalled.ModName}\n{ModBeingInstalled.ModVersionString}\n{App.BuildNumber}\n{Guid.NewGuid().ToString()}"; //Do not localize
-                File.WriteAllText(metacmm, contents);
+                var metaOutLines = new List<string>();
+
+                // Write out MetaCMM Classic
+                metaOutLines.Add(assignedDLCName ?? ModBeingInstalled.ModName);
+                metaOutLines.Add(ModBeingInstalled.ModVersionString);
+                metaOutLines.Add(App.BuildNumber.ToString());
+                metaOutLines.Add(Guid.NewGuid().ToString()); // This is not used in Mod Manager 6
+
+                // Write MetaCMM Extended
+                if (ModBeingInstalled.IncompatibleDLC.Any())
+                {
+                    metaOutLines.Add($@"{MetaCMM.PrefixIncompatibleDLC}{string.Join(';', ModBeingInstalled.IncompatibleDLC)}");
+                }
+
+                var alternates = ModBeingInstalled.GetAllAlternates().Where(x => x.IsSelected).ToList();
+                if (alternates.Any())
+                {
+                    // I hope this covers all cases. Mods targeting moddesc 6 or lower don't need friendlyname or description, but virtually all of them did
+                    // as MM4/5 autonaming was ugly
+                    metaOutLines.Add($@"{MetaCMM.PrefixOptionsSelectedOnInstall}{string.Join(';', alternates.Where(x=>!string.IsNullOrWhiteSpace(x.FriendlyName)).Select(x=>x.FriendlyName))}");
+                }
+
+                File.WriteAllLines(metacmm, metaOutLines);
             }
 
             //Stage: SFAR Installation
