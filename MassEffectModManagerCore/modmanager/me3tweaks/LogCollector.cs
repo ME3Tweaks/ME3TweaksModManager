@@ -20,6 +20,7 @@ using IniParser.Model;
 using MassEffectModManagerCore.modmanager.helpers;
 using NickStrupat;
 using System.Windows.Shell;
+using MassEffectModManagerCore.modmanager.asi;
 using ME3ExplorerCore.GameFilesystem;
 using ME3ExplorerCore.Helpers;
 using ME3ExplorerCore.Unreal;
@@ -1305,10 +1306,41 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     }
                     else
                     {
-                        foreach (string f in files)
+                        var installedASIs = selectedDiagnosticTarget.GetInstalledASIs();
+                        var nonUniqueItems = installedASIs.OfType<KnownInstalledASIMod>().SelectMany(
+                            x => installedASIs.OfType<KnownInstalledASIMod>().Where(
+                                y => x != y
+                                     && x.AssociatedManifestItem.OwningMod ==
+                                     y.AssociatedManifestItem.OwningMod)
+                            ).Distinct().ToList();
+
+                        foreach (var knownAsiMod in installedASIs.OfType<KnownInstalledASIMod>().Except(nonUniqueItems))
                         {
-                            addDiagLine(@" - " + Path.GetFileName(f));
+                            var str = $@" - {knownAsiMod.AssociatedManifestItem.Name} v{knownAsiMod.AssociatedManifestItem.Version} ({Path.GetFileName(knownAsiMod.InstalledPath)})";
+                            if (knownAsiMod.Outdated)
+                            {
+                                str += @" - Outdated";
+                            }
+                            addDiagLine(str, knownAsiMod.Outdated ? Severity.WARN : Severity.GOOD);
                         }
+
+                        foreach (var unknownAsiMod in installedASIs.OfType<UnknownInstalledASIMod>())
+                        {
+                            addDiagLine($@" - {Path.GetFileName(unknownAsiMod.InstalledPath)} - Unknown ASI mod", Severity.WARN);
+                        }
+
+                        foreach (var duplicateItem in nonUniqueItems)
+                        {
+                            var str = $@" - {duplicateItem.AssociatedManifestItem.Name} v{duplicateItem.AssociatedManifestItem.Version} ({Path.GetFileName(duplicateItem.InstalledPath)})";
+                            if (duplicateItem.Outdated)
+                            {
+                                str += @" - Outdated";
+                            }
+
+                            str += @" - DUPLICATE ASI";
+                            addDiagLine(str, Severity.FATAL);
+                        }
+
                         addDiagLine();
                         addDiagLine(@"Ensure that only one version of an ASI is installed. If multiple copies of the same one are installed, the game may crash on startup.");
                     }
@@ -1509,6 +1541,16 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
 
             return diagStringBuilder.ToString();
+        }
+
+        private static void SeeIfDuplicateASIsAreInstalled(Action<string, Severity> addDiagLine)
+        {
+
+        }
+
+        private static void SeeIfIncompatibleDLCIsInstalled(Action<string, Severity> addDiagLine)
+        {
+
         }
 
         private static void diagPrintSignatures(FileInspector info, Action<string, Severity> addDiagLine)

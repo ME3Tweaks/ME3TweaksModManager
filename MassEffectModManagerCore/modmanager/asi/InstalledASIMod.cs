@@ -48,6 +48,9 @@ namespace MassEffectModManagerCore.modmanager.asi
         }
     }
 
+    /// <summary>
+    /// ASI file that is mapped to a known ASI file
+    /// </summary>
     public class KnownInstalledASIMod : InstalledASIMod
     {
         private static Brush installedBrush = new SolidColorBrush(Color.FromArgb(0x33, 0, 0xFF, 0));
@@ -72,6 +75,9 @@ namespace MassEffectModManagerCore.modmanager.asi
         public override Brush BackgroundColor => Outdated ? outdatedBrush : installedBrush;
     }
 
+    /// <summary>
+    /// ASI mod that is not in the manifest
+    /// </summary>
     public class UnknownInstalledASIMod : InstalledASIMod
     {
         private static Brush brush = new SolidColorBrush(Color.FromArgb(0x88, 0xFF, 0x10, 0x10));
