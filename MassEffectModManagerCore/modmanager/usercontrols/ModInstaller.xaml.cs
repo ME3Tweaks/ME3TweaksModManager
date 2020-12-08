@@ -535,8 +535,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     // ME3 is SFAR DLC so we don't track those. Track if it path has 'DLC' directory and the path of file being installed contains an official DLC directory in it
                     // There is probably better way to do this
-                    var shouldTrack = SelectedGameTarget.Game != MEGame.ME3 && targetPath.Contains(@"\DLC\", StringComparison.InvariantCultureIgnoreCase) && targetPath.ContainsAny(MEDirectories.OfficialDLC(SelectedGameTarget.Game), StringComparison.InvariantCultureIgnoreCase);
-
+                    var shouldTrack = SelectedGameTarget.Game != MEGame.ME3 && targetPath.Contains(@"\DLC\", StringComparison.InvariantCultureIgnoreCase) 
+                                                                            && targetPath.ContainsAny(MEDirectories.OfficialDLC(SelectedGameTarget.Game).Select(x=> $@"\{x}\"), StringComparison.InvariantCultureIgnoreCase);
                     if ((shouldTrack || !targetPath.Contains(@"DLC", StringComparison.InvariantCultureIgnoreCase)) //Only track basegame files, or all official directories if ME1/ME2
                         && targetPath.Contains(SelectedGameTarget.TargetPath) // Must be within the game directory (no config files)
                         && !Path.GetFileName(targetPath).Equals(@"PCConsoleTOC.bin", StringComparison.InvariantCultureIgnoreCase)) //no pcconsoletoc
