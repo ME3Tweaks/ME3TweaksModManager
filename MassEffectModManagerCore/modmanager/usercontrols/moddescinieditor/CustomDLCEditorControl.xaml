@@ -6,9 +6,13 @@
                           xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor"
                           xmlns:fa="http://schemas.fontawesome.io/icons/"
                           xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+                          xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters"
                           mc:Ignorable="d" 
                           DataContext="{Binding RelativeSource={RelativeSource Self}}"
                           d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <converters:DebugDataBindingConverter x:Key="DebugDataBindingConverter"/>
+    </UserControl.Resources>
     <ScrollViewer  Margin="-8">
         <DockPanel>
             <TextBlock FontWeight="Bold" Text="[CUSTOMDLC]" DockPanel.Dock="Top"/>
@@ -26,6 +30,12 @@
                     </StackPanel>
                 </Button.Content>
             </Button>
+            <local:DescriptorEditorItemsControl Description="These values allow you to control when your mod cannot be installed, as well as allow Mod Manager to remove older versions of your mod if the DLC folder name has changed." 
+                                                ItemsSource="{Binding CustomDLCJob.ParameterMap}"  
+                                                DockPanel.Dock="Top"
+                                                x:Name="custdlc_descriptor_editor"/>
+            <TextBlock Text="Installed Custom DLC folders" DockPanel.Dock="Top" FontWeight="Bold"/>
+            <TextBlock Text="Items listed here are always installed with your mod." DockPanel.Dock="Top"/>
             <ItemsControl DockPanel.Dock="Top" ItemsSource="{Binding CustomDLCParameters}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"  
                       AlternationCount="2" VirtualizingStackPanel.IsVirtualizing="True" ScrollViewer.CanContentScroll="True">
                 <ItemsControl.ItemTemplate>
@@ -41,12 +51,12 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text="Source directory path" Grid.Row="0" Grid.Column="0"/>
-                            <TextBlock Text="Installed DLC name" Grid.Row="0" Grid.Column="2"/>
-                            <TextBlock Text="DLC human readable name" Grid.Row="0" Grid.Column="3" Margin="10,0,0,0"/>
-                            <TextBox Grid.Row="1" Grid.Column="0" Text="{Binding SourcePath}" />
+                            <TextBlock Text="Source directory path" Grid.Row="0" Grid.Column="0" FontStyle="Italic"/>
+                            <TextBlock Text="Installed DLC name" Grid.Row="0" Grid.Column="2" FontStyle="Italic"/>
+                            <TextBlock Text="DLC human readable name" Grid.Row="0" Grid.Column="3" Margin="10,0,0,0" FontStyle="Italic"/>
+                            <TextBox Grid.Row="1" Grid.Column="0" Text="{Binding SourcePath, UpdateSourceTrigger=PropertyChanged}" />
                             <TextBlock Grid.Row="1" Grid.Column="1" Text=" => "/>
-                            <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding DestDLCName}"/>
+                            <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding DestDLCName, UpdateSourceTrigger=PropertyChanged}"/>
                             <TextBox Grid.Row="1" Grid.Column="3" Margin="10,0,0,0" Text="{Binding HumanReadableName}"/>
                         </Grid>
                     </DataTemplate>
@@ -55,5 +65,4 @@
             <local:MultilistEditorControl Header="CUSTOMDLC" x:Name="customdlc_multilists_editor" Margin="0,5,0,0"/>
         </DockPanel>
     </ScrollViewer>
-
 </local:ModdescEditorControlBase>

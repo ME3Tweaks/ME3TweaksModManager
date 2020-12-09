@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace MassEffectModManagerCore.modmanager.objects.mod.editor
@@ -9,6 +10,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.editor
     /// <summary>
     /// A single parameter mapping that is used for various items in moddesc.ini 
     /// </summary>
+    [DebuggerDisplay("MDParameter {Key}={Value}")]
     public class MDParameter
     {
         public MDParameter()

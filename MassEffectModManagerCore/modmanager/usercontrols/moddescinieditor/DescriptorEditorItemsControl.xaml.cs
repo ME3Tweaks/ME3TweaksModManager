@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,6 +12,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
     /// <summary>
     /// Interaction logic for AlternatesItemsControl.xaml
     /// </summary>
+    [DebuggerDisplay("DescriptorEditorItemsControl Header={HeaderText} ItemCount={GetItemCount()}")]
     public partial class DescriptorEditorItemsControl : UserControl, INotifyPropertyChanged
     {
         public string HeaderText
@@ -31,22 +33,26 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
         public static readonly DependencyProperty DescriptionProperty =
             DependencyProperty.Register("Description", typeof(string), typeof(DescriptorEditorItemsControl));
 
-        public IEnumerable ItemsSource
+        public ICollection ItemsSource
         {
-            get => (IEnumerable)GetValue(ItemsSourceProperty);
-            set => SetValue(ItemsSourceProperty, value);
+            get => (ICollection)GetValue(ItemsSourceProperty);
+            set
+            {
+                Debug.WriteLine("SETTING");
+                SetValue(ItemsSourceProperty, value);
+            }
         }
 
         public static readonly DependencyProperty ItemsSourceProperty =
-            DependencyProperty.Register("ItemsSource", typeof(IEnumerable), typeof(DescriptorEditorItemsControl), new PropertyMetadata(new PropertyChangedCallback(OnItemsSourcePropertyChanged)));
+            DependencyProperty.Register("ItemsSource", typeof(ICollection), typeof(DescriptorEditorItemsControl), new PropertyMetadata(new PropertyChangedCallback(OnItemsSourcePropertyChanged)));
 
         private static void OnItemsSourcePropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             var control = sender as DescriptorEditorItemsControl;
-            control?.OnItemsSourceChanged((IEnumerable)e.OldValue, (IEnumerable)e.NewValue);
+            control?.OnItemsSourceChanged((ICollection)e.OldValue, (ICollection)e.NewValue);
         }
 
-        private void OnItemsSourceChanged(IEnumerable oldValue, IEnumerable newValue)
+        private void OnItemsSourceChanged(ICollection oldValue, ICollection newValue)
         {
             // Remove handler for oldValue.CollectionChanged
             var oldValueINotifyCollectionChanged = oldValue as INotifyCollectionChanged;
@@ -65,9 +71,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
 
         void newValueINotifyCollectionChanged_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-
         }
 
+#if DEBUG
+        public string GetItemCount()
+        {
+            return ItemsSource != null ? $"{ItemsSource.Count} items" : "ItemsSource is null";
+        }
+#endif
 
         public DescriptorEditorItemsControl()
         {

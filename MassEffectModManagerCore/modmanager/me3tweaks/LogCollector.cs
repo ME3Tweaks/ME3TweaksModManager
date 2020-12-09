@@ -853,6 +853,12 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
                     addDiagLine(dlctext, officialDLC.Contains(dlc.Key, StringComparer.InvariantCultureIgnoreCase) ? Severity.OFFICIALDLC : Severity.DLC);
                 }
+
+                if (installedDLCs.Any())
+                {
+                    SeeIfIncompatibleDLCIsInstalled(selectedDiagnosticTarget, addDiagLine);
+                }
+
                 Log.Information(@"Collecting supercedance list");
 
                 var supercedanceList = M3Directories.GetFileSupercedances(selectedDiagnosticTarget).Where(x => x.Value.Count > 1).ToList();
@@ -1543,14 +1549,24 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             return diagStringBuilder.ToString();
         }
 
-        private static void SeeIfDuplicateASIsAreInstalled(Action<string, Severity> addDiagLine)
+        private static void SeeIfIncompatibleDLCIsInstalled(GameTarget target, Action<string, Severity> addDiagLine)
         {
+            var installedDLCMods = VanillaDatabaseService.GetInstalledDLCMods(target);
+            var metaFiles = M3Directories.GetMetaMappedInstalledDLC(target, false);
 
-        }
-
-        private static void SeeIfIncompatibleDLCIsInstalled(Action<string, Severity> addDiagLine)
-        {
-
+            foreach (var v in metaFiles)
+            {
+                if (v.Value != null && v.Value.IncompatibleDLC.Any())
+                {
+                    // See if any DLC is not compatible
+                    var installedIncompatDLC = installedDLCMods.Intersect(v.Value.IncompatibleDLC, StringComparer.InvariantCultureIgnoreCase).ToList();
+                    foreach (var id in installedIncompatDLC)
+                    {
+                        var incompatName = ThirdPartyServices.GetThirdPartyModInfo(id, target.Game);
+                        addDiagLine($"{v.Value.ModName} is not compatible with {incompatName?.modname ?? id}", Severity.FATAL);
+                    }
+                }
+            }
         }
 
         private static void diagPrintSignatures(FileInspector info, Action<string, Severity> addDiagLine)

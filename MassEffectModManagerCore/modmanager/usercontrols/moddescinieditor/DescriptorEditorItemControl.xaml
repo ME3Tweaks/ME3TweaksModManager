@@ -7,6 +7,7 @@
              xmlns:editor="clr-namespace:MassEffectModManagerCore.modmanager.objects.mod.editor"
              xmlns:moddescinieditor="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor"
              mc:Ignorable="d" 
+             xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
              d:DesignHeight="450" d:DesignWidth="800">
     <DockPanel>
         <TextBlock DockPanel.Dock="Top"
@@ -29,9 +30,13 @@
                    TextWrapping="Wrap"
                    Margin="0,0,0,5"
                    />
+        <TextBlock Text="ItemsSource is null!" Visibility="{Binding ItemsSource, 
+            RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type moddescinieditor:DescriptorEditorItemsControl}}, 
+            Converter={StaticResource NullVisibilityConverter}, ConverterParameter='Reversed'}" FontWeight="Bold" Foreground="Red"/>
         <ItemsControl ItemsSource="{Binding ItemsSource, 
                                     RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type moddescinieditor:DescriptorEditorItemsControl}}}" 
-                        HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch">
+                        HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"
+                        >
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="{x:Type editor:MDParameter}" >
                     <DockPanel Margin="0,0,0,3">

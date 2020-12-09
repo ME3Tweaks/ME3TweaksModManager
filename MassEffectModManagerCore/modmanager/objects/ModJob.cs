@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -705,9 +706,13 @@ namespace MassEffectModManagerCore.modmanager.objects
             }
             else if (Header == JobHeader.CUSTOMDLC)
             {
-                parameterDictionary[@"sourcedirs"] = CustomDLCFolderMapping.Keys;
-                parameterDictionary[@"destdirs"] = CustomDLCFolderMapping.Values;
+                // These are serialized in special way by the editor
+                // Do not put them into the parameter map
+                //parameterDictionary[@"sourcedirs"] = CustomDLCFolderMapping.Keys;
+                //parameterDictionary[@"destdirs"] = CustomDLCFolderMapping.Values;
 
+                parameterDictionary[@"outdatedcustomdlc"] = mod.OutdatedCustomDLC;
+                parameterDictionary[@"incompatiblecustomdlc"] = mod.IncompatibleDLC;
                 // NOT MAPPED: HUMAN READABLE NAMES
                 // CONFIGURED DIRECTLY BY EDITOR UI
             }

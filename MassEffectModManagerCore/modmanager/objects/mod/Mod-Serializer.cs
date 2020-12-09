@@ -28,7 +28,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 {@"minbuild", MinimumSupportedBuild > 102 ? MinimumSupportedBuild.ToString() : null},
             };
             ParameterMap.AddRange(MDParameter.MapIntoParameterMap(parameterDictionary, @"ModManager"));
-            
+
             // ModInfo
             parameterDictionary = new Dictionary<string, object>()
             {
@@ -37,7 +37,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 {@"moddesc", ModDescription},
                 {@"modver", ParsedModVersion},
                 {@"moddev", ModDeveloper},
-                {@"modsite", ModWebsite},
+                {@"modsite", ModWebsite == Mod.DefaultWebsite ? "" : ModWebsite},
                 {@"updatecode", ModClassicUpdateCode > 0 ? ModClassicUpdateCode.ToString() : null},
                 {@"nexuscode", NexusModID > 0 ? NexusModID.ToString() : null},
                 {@"requireddlc", RequiredDLC},

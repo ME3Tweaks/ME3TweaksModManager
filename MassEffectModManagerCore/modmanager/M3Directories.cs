@@ -136,13 +136,14 @@ namespace MassEffectModManagerCore.modmanager
         /// </summary>
         /// <param name="target"></param>
         /// <returns></returns>
-        public static Dictionary<string, MetaCMM> GetMetaMappedInstalledDLC(GameTarget target)
+        public static Dictionary<string, MetaCMM> GetMetaMappedInstalledDLC(GameTarget target, bool includeOfficial = true)
         {
             var installedDLC = GetInstalledDLC(target);
             var metamap = new Dictionary<string, MetaCMM>();
             var dlcpath = GetDLCPath(target);
             foreach (var v in installedDLC)
             {
+                if (!includeOfficial && MEDirectories.OfficialDLC(target.Game).Contains(v)) continue; // This is not a mod
                 var meta = Path.Combine(dlcpath, v, @"_metacmm.txt");
                 MetaCMM mf = null;
                 if (File.Exists(meta))
