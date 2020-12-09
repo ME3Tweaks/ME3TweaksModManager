@@ -2,7 +2,8 @@
                        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
                        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
                        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-                       xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" 
+                       xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols"
+                       xmlns:mod="clr-namespace:MassEffectModManagerCore.modmanager.objects.mod"
                        mc:Ignorable="d" MaxHeight="500" MaxWidth="600" Width="530">
     <DockPanel>
         <TextBlock Text="{DynamicResource string_mE3TweaksTPMISubmission}" TextAlignment="Center" FontSize="20" FontWeight="Bold" DockPanel.Dock="Top" />
@@ -17,7 +18,7 @@
                     </Style>
                 </ItemsControl.ItemContainerStyle>
                 <ItemsControl.ItemTemplate>
-                    <DataTemplate>
+                    <DataTemplate DataType="{x:Type local:TPMITelemetrySubmissionForm+TelemetryPackage}">
                         <Grid Margin="2,5">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />

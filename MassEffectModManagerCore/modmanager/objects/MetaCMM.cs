@@ -46,7 +46,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         if (line.StartsWith(PrefixOptionsSelectedOnInstall))
                         {
                             var parsedline = line.Substring(PrefixOptionsSelectedOnInstall.Length);
-                            IncompatibleDLC.ReplaceAll(StringStructParser.GetSemicolonSplitList(parsedline));
+                            OptionsSelectedAtInstallTime.ReplaceAll(StringStructParser.GetSemicolonSplitList(parsedline));
                         }
                         else if (line.StartsWith(PrefixIncompatibleDLC))
                         {

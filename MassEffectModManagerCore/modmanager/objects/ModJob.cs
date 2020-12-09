@@ -115,7 +115,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         public Dictionary<string, string> FilesToInstall = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
 
         /// <summary>
-        /// CUSTOMDLC folder mapping. The key is the source (mod folder), the value is the destination (dlc directory in game)
+        /// CUSTOMDLC folder mapping. The key is the source (mod folder), the value is the destination (dlc directory in game). This is only used for always installed folders, not alternates
         /// </summary>
         public Dictionary<string, string> CustomDLCFolderMapping = new Dictionary<string, string>();
 

@@ -20,6 +20,7 @@ using SevenZip;
 using Brushes = System.Windows.Media.Brushes;
 using Microsoft.Win32;
 using MassEffectModManagerCore.modmanager.localizations;
+using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using ME3ExplorerCore.GameFilesystem;
 using ME3ExplorerCore.Helpers;
@@ -1150,6 +1151,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                     DeploymentInProgress = false;
                     CommandManager.InvalidateRequerySuggested();
+
+                    if (b.Error == null && b.Result is List<Mod> modsForTPMISubmission && modsForTPMISubmission.Any())
+                    {
+                        var goToTPMIForm = M3L.ShowDialog(window, $"The following mods contain DLC folders that are not in the Third Party Mod Identification Service (TPMI). If this mod is about to be released, you should submit telemetry for this mod so it can be identified in various tools such as ALOT Installer/Mod Manager diagnostics, be in the DLC mod database, and be identified by Mod Manager.\n\n{string.Join('\n', modsForTPMISubmission.Select(x => x.ModName))}\n\nMods are only entered into the database once they have a public mod page.", "Mod(s) not in Third Party Identification Service", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                        if (goToTPMIForm == MessageBoxResult.Yes)
+                        {
+                            OnClosing(new DataEventArgs(modsForTPMISubmission));
+                        }
+                    }
+
                 };
                 TaskbarHelper.SetProgress(0);
                 TaskbarHelper.SetProgressState(TaskbarProgressBarState.Normal);
@@ -1314,6 +1325,28 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             OperationText = M3L.GetString(M3L.string_deploymentSucceeded);
             Utilities.HighlightInExplorer(archivePath);
+
+            e.Result = GetModsNeedingTPMISubmission(modsBeingDeployed);
+        }
+
+        private List<Mod> GetModsNeedingTPMISubmission(List<Mod> modsBeingDeployed)
+        {
+            List<Mod> modsNeedingSubmission = new List<Mod>();
+            foreach (var v in modsBeingDeployed)
+            {
+                var folders = v.GetAllPossibleCustomDLCFolders();
+                foreach (var f in folders)
+                {
+                    var tpmi = ThirdPartyServices.GetThirdPartyModInfo(f, v.Game);
+                    if (tpmi == null)
+                    {
+                        modsNeedingSubmission.Add(v);
+                        break; // don't need to parse more of this mod
+                    }
+                }
+            }
+
+            return modsNeedingSubmission;
         }
 
         /// <summary>

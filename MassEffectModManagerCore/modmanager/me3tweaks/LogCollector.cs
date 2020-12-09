@@ -16,7 +16,6 @@ using MassEffectModManagerCore.modmanager.usercontrols;
 using Microsoft.Win32;
 using IniParser;
 using IniParser.Model;
-
 using MassEffectModManagerCore.modmanager.helpers;
 using NickStrupat;
 using System.Windows.Shell;
@@ -96,6 +95,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             TPMI,
             SUB
         }
+
         private static int GetPartitionDiskBackingType(string partitionLetter)
         {
             using (var partitionSearcher = new ManagementObjectSearcher(
@@ -727,7 +727,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 {
                     if (!selectedDiagnosticTarget.TextureModded)
                     {
-                        addDiagLine(@"The following basegame files have been modified:");
+                        var modifiedBGFiles = new List<string>();
                         var cookedPath = M3Directories.GetCookedPath(selectedDiagnosticTarget);
                         var markerPath = M3Directories.GetTextureMarkerPath(selectedDiagnosticTarget);
                         foreach (var mf in modifiedFiles)
@@ -738,14 +738,28 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                 var info = BasegameFileIdentificationService.GetBasegameFileSource(selectedDiagnosticTarget, mf);
                                 if (info != null)
                                 {
-                                    addDiagLine($@" - {mf.Substring(cookedPath.Length + 1)} - {info.source}");
+                                    modifiedBGFiles.Add($@" - {mf.Substring(cookedPath.Length + 1)} - {info.source}");
                                 }
                                 else
                                 {
-                                    addDiagLine($@" - {mf.Substring(cookedPath.Length + 1)}");
+                                    modifiedBGFiles.Add($@" - {mf.Substring(cookedPath.Length + 1)}");
                                 }
                             }
                         }
+
+                        if (modifiedBGFiles.Any())
+                        {
+                            addDiagLine(@"The following basegame files have been modified:");
+                            foreach (var mbgf in modifiedBGFiles)
+                            {
+                                addDiagLine(mbgf);
+                            }
+                        }
+                        else
+                        {
+                            addDiagLine(@"No modified basegame files were found");
+                        }
+
                     }
                     else
                     {
@@ -851,7 +865,21 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         }
                     }
 
-                    addDiagLine(dlctext, officialDLC.Contains(dlc.Key, StringComparer.InvariantCultureIgnoreCase) ? Severity.OFFICIALDLC : Severity.DLC);
+                    var isOfficialDLC = officialDLC.Contains(dlc.Key, StringComparer.InvariantCultureIgnoreCase);
+                    addDiagLine(dlctext, isOfficialDLC ? Severity.OFFICIALDLC : Severity.DLC);
+
+                    if (!isOfficialDLC)
+                    {
+                        if (dlc.Value != null && dlc.Value.OptionsSelectedAtInstallTime.Any())
+                        {
+                            // Print options
+                            addDiagLine(@"   > The following options were chosen at install time:");
+                            foreach (var o in dlc.Value.OptionsSelectedAtInstallTime)
+                            {
+                                addDiagLine(($@"     > {o}"));
+                            }
+                        }
+                    }
                 }
 
                 if (installedDLCs.Any())

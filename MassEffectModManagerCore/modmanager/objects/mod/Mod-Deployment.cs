@@ -153,5 +153,23 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             }
             return alternates;
         }
+
+        /// <summary>
+        /// Gets a list of all possible DLC folders that can be installed by this mod, if all the alternates were also chosen that could produce a new DLC folder
+        /// </summary>
+        /// <returns></returns>
+        public List<string> GetAllPossibleCustomDLCFolders()
+        {
+            var custDlcJob = GetJob(ModJob.JobHeader.CUSTOMDLC);
+            if (custDlcJob != null)
+            {
+                var folders = custDlcJob.CustomDLCFolderMapping.Values.Select(x => x).ToList();
+                folders.AddRange(custDlcJob.AlternateDLCs.Where(x => x.Operation == AlternateDLC.AltDLCOperation.OP_ADD_CUSTOMDLC)
+                    .Select(x => x.DestinationDLCFolder));
+                return folders;
+            }
+
+            return new List<string>();
+        }
     }
 }

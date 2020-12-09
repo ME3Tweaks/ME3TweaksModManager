@@ -960,7 +960,20 @@ namespace MassEffectModManagerCore
             if (bup != null && Directory.Exists(bup))
             {
                 var archiveDeploymentPane = new ArchiveDeployment(SelectedMod);
-                archiveDeploymentPane.Close += (a, b) => { ReleaseBusyControl(); };
+                archiveDeploymentPane.Close += (a, b) =>
+                {
+                    ReleaseBusyControl();
+                    if (b.Data is List<Mod> modsForTPMI)
+                    {
+                        // Show form for each mod
+                        foreach (var m in modsForTPMI)
+                        {
+                            var telemetryPane = new TPMITelemetrySubmissionForm(m);
+                            telemetryPane.Close += (a, b) => { ReleaseBusyControl(); };
+                            ShowBusyControl(telemetryPane);
+                        }
+                    }
+                };
                 ShowBusyControl(archiveDeploymentPane);
             }
             else

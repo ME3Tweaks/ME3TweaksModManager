@@ -10,6 +10,7 @@ using MassEffectModManagerCore.modmanager.gameini;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
+using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.ui;
 using ME3ExplorerCore.GameFilesystem;
 using ME3ExplorerCore.Gammtek.Extensions.Collections.Generic;
@@ -25,10 +26,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     {
         public ObservableCollectionExtended<TelemetryPackage> TelemetryPackages { get; } = new ObservableCollectionExtended<TelemetryPackage>();
 
-        public TPMITelemetrySubmissionForm(objects.mod.Mod telemetryMod)
+        public TPMITelemetrySubmissionForm(Mod telemetryMod)
         {
             DataContext = this;
-            this.TelemetryMod = telemetryMod;
+            TelemetryMod = telemetryMod;
             LoadCommands();
             InitializeComponent();
         }
@@ -46,7 +47,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private bool CanClosePanel() => !TelemetryPackages.Any(x => x.TelemetrySubmissionInProgress);
 
-        public objects.mod.Mod TelemetryMod { get; }
+        public Mod TelemetryMod { get; }
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
@@ -157,7 +158,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             e.Result = telemetryPackages;
         }
 
-        private TelemetryPackage GetTelemetryPackageForModDLC(objects.mod.Mod telemetryMod, string dlcFoldername, string inGameName)
+        private TelemetryPackage GetTelemetryPackageForModDLC(Mod telemetryMod, string dlcFoldername, string inGameName)
         {
             return GetTelemetryPackageForDLC(telemetryMod.Game,
                 TelemetryMod.ModPath,
@@ -165,11 +166,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 inGameName,
                 TelemetryMod.ModName,
                 TelemetryMod.ModDeveloper,
-                TelemetryMod.ModWebsite,
+                TelemetryMod.ModWebsite == Mod.DefaultWebsite ? "" : TelemetryMod.ModWebsite,
                 TelemetryMod);
         }
 
-        public static TelemetryPackage GetTelemetryPackageForDLC(MEGame game, string dlcDirectory, string dlcFoldername, string destinationDLCName, string modName, string modAuthor, string modSite, objects.mod.Mod telemetryMod)
+        public static TelemetryPackage GetTelemetryPackageForDLC(MEGame game, string dlcDirectory, string dlcFoldername, string destinationDLCName, string modName, string modAuthor, string modSite, Mod telemetryMod)
         {
             try
             {
