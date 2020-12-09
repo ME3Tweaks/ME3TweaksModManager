@@ -10,6 +10,7 @@ using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
 using ME3ExplorerCore.Compression;
 using ME3ExplorerCore.GameFilesystem;
+using ME3ExplorerCore.Misc;
 using ME3ExplorerCore.Packages;
 using ME3ExplorerCore.Unreal;
 using Serilog;

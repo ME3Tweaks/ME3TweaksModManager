@@ -128,9 +128,17 @@
                                             <DockPanel
                                                 Background="Transparent"
                                                 Grid.Row="0"
-                                                Grid.Column="1"
-                                                LastChildFill="False"
-                                                HorizontalAlignment="Right">
+                                                Grid.Column="1">
+                                                <Button
+                                                    Content="{DynamicResource string_delete}"
+                                                    Foreground="{Binding TextColor}"
+                                                    Command="{Binding DeleteCommand}"
+                                                    CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type TabControl}}, Path=DataContext}"
+                                                    HorizontalAlignment="Right"
+                                                    DockPanel.Dock="Right"
+                                                    Padding="7,2"
+                                                    Margin="5,0,0,0"
+                                                    ToolTip="{DynamicResource string_tooltip_deleteDLC}" />
                                                 <Button
                                                     Content="{Binding EnableDisableText}"
                                                     Foreground="{Binding TextColor}"
@@ -141,15 +149,7 @@
                                                     Margin="5,0,0,0"
                                                     Visibility="{Binding EnableDisableVisible, Converter={StaticResource BoolToVisibilityConverter}}"
                                                     ToolTip="{Binding EnableDisableTooltip}" />
-                                                <Button
-                                                    Content="{DynamicResource string_delete}"
-                                                    Foreground="{Binding TextColor}"
-                                                    Command="{Binding DeleteCommand}"
-                                                    CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type TabControl}}, Path=DataContext}"
-                                                    HorizontalAlignment="Right"
-                                                    Padding="7,2"
-                                                    Margin="5,0,0,0"
-                                                    ToolTip="{DynamicResource string_tooltip_deleteDLC}" />
+                                                
                                             </DockPanel>
                                         </Grid>
                                     </DockPanel>

@@ -163,28 +163,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         {
                             DownloadAndModNameText = M3L.GetString(M3L.string_decompressingDelta);
                             // OK
-                            byte[] decompressed = null;
-                            download.result.Position = 5;
-                            var lzmaLen = download.result.ReadInt32();
-                            download.result.Position = 0;
-                            if (lzmaLen > 0)
-                            {
-                                decompressed = LZMA.DecompressLZMAFile(download.result.ToArray());
-                            }
-                            else
-                            {
-                                // It's streaming lzma. MEM code can't handle streamed so we have to fallback
-                                var lzmads = new LzmaDecodeStream(download.result);
-                                using var decompressedStream = new MemoryStream();
-                                int bufSize = 24576, count;
-                                byte[] buf = new byte[bufSize];
-                                while (/*lzmads.Position < lzmaFile.Length && */(count = lzmads.Read(buf, 0, bufSize)) > 0)
-                                {
-                                    decompressedStream.Write(buf, 0, count);
-                                }
-                                decompressed = decompressedStream.ToArray();
-                            }
-                            modDelta = Encoding.UTF8.GetString(decompressed);
+                            modDelta = Encoding.UTF8.GetString(StreamingLZMAWrapper.DecompressLZMA(download.result));
                         }
                         else
                         {

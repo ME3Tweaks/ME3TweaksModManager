@@ -10,6 +10,7 @@ using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.windows;
 using ME3ExplorerCore.Helpers;
+using ME3ExplorerCore.Misc;
 using Microsoft.AppCenter.Crashes;
 using Newtonsoft.Json;
 using Serilog;

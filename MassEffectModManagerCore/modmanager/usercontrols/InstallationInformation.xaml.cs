@@ -607,16 +607,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 this.dlcFolderPath = dlcFolderPath;
                 this.game = game;
-                DLCFolderName = DLCFolderNameString = Path.GetFileName(dlcFolderPath);
-                if (App.ThirdPartyIdentificationService[game.ToString()].TryGetValue(DLCFolderName.TrimStart('x'), out var tpmi))
+                var dlcFolderName = DLCFolderNameString = Path.GetFileName(dlcFolderPath);
+                if (App.ThirdPartyIdentificationService[game.ToString()].TryGetValue(dlcFolderName.TrimStart('x'), out var tpmi))
                 {
                     ModName = tpmi.modname;
                 }
                 else
                 {
-                    ModName = DLCFolderName;
+                    ModName = dlcFolderName;
                 }
-                parseInstalledBy(DLCFolderName.StartsWith('x'), modNamePrefersTPMI);
+
+                DLCFolderName = dlcFolderName;
                 this.deleteConfirmationCallback = deleteConfirmationCallback;
                 this.notifyDeleted = notifyDeleted;
                 DeleteCommand = new RelayCommand(DeleteDLCMod, CanDeleteDLCMod);
@@ -633,7 +634,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     InstalledByManagedSolution = true;
                     InstalledBy = M3L.GetString(M3L.string_installedByModManager); //Default value when finding metacmm.
                     MetaCMM mcmm = new MetaCMM(metaFile);
-                    if (mcmm.ModName != ModName)
+                    if (DLCFolderNameString != ModName && mcmm.ModName != ModName)
                     {
                         DLCFolderNameString += $@" ({ModName})";
                         if (!modNamePrefersTPMI || ModName == null)

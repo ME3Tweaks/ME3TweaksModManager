@@ -28,6 +28,7 @@ using MassEffectModManagerCore.modmanager.windows;
 using ME3ExplorerCore;
 using ME3ExplorerCore.Compression;
 using ME3ExplorerCore.Helpers;
+using ME3ExplorerCore.Misc;
 using ME3ExplorerCore.Packages;
 using Microsoft.AppCenter; // do not remove. It's used in release builds
 

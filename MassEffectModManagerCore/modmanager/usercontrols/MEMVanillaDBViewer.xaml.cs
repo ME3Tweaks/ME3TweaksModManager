@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Data;
 using System.Windows.Input;
+using ME3ExplorerCore.Misc;
 using ME3ExplorerCore.Packages;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -83,9 +84,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         }
 
 
-        private ObservableCollectionExtended<VanillaEntry> ME1Files { get; } = new ObservableCollectionExtended<VanillaEntry>();
-        private ObservableCollectionExtended<VanillaEntry> ME2Files { get; } = new ObservableCollectionExtended<VanillaEntry>();
-        private ObservableCollectionExtended<VanillaEntry> ME3Files { get; } = new ObservableCollectionExtended<VanillaEntry>();
+        private ui.ObservableCollectionExtended<VanillaEntry> ME1Files { get; } = new ui.ObservableCollectionExtended<VanillaEntry>();
+        private ui.ObservableCollectionExtended<VanillaEntry> ME2Files { get; } = new ui.ObservableCollectionExtended<VanillaEntry>();
+        private ui.ObservableCollectionExtended<VanillaEntry> ME3Files { get; } = new ui.ObservableCollectionExtended<VanillaEntry>();
         public ICollectionView ME1FilesView => CollectionViewSource.GetDefaultView(ME1Files);
         public ICollectionView ME2FilesView => CollectionViewSource.GetDefaultView(ME2Files);
         public ICollectionView ME3FilesView => CollectionViewSource.GetDefaultView(ME3Files);

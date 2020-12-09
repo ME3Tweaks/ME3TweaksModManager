@@ -1970,9 +1970,12 @@ namespace MassEffectModManagerCore
         private void CheckModsForUpdates(List<Mod> updatableMods, bool restoreMode = false)
         {
             Log.Information($@"Checking {updatableMods.Count} mods for updates. Turn on mod update logging to view which mods");
-            foreach (var m in updatableMods)
+            if (Settings.LogModUpdater)
             {
-                CLog.Information($@" >> Checking for updates to {m.ModName} {m.ParsedModVersion}", Settings.LogModUpdater);
+                foreach (var m in updatableMods)
+                {
+                    Log.Information($@" >> Checking for updates to {m.ModName} {m.ParsedModVersion}");
+                }
             }
 
             BackgroundTask bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"ModCheckForUpdates", M3L.GetString(M3L.string_checkingModsForUpdates), M3L.GetString(M3L.string_modUpdateCheckCompleted));

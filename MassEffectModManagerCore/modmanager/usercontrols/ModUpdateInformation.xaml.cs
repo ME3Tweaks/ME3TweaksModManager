@@ -121,7 +121,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         mui.UIStatusString = M3L.GetString(M3L.string_decompressingDelta);
                         // OK
-                        var decompressed = LZMA.DecompressLZMAFile(download.result.ToArray());
+                        var decompressed = StreamingLZMAWrapper.DecompressLZMA(download.result);
                         modDelta = Encoding.UTF8.GetString(decompressed);
                     }
                     else

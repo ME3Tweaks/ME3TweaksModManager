@@ -13,9 +13,9 @@ using System.Xml.Linq;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects.mod;
-using MassEffectModManagerCore.ui;
 using ME3ExplorerCore.Compression;
 using ME3ExplorerCore.Helpers;
+using ME3ExplorerCore.Misc;
 using ME3ExplorerCore.Packages;
 using Microsoft.AppCenter.Crashes;
 using Serilog;
@@ -166,13 +166,12 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                           }).ToList();
 
                 // CALCULATE UPDATE DELTA
-                Dictionary<string, USFileInfo> hashMap = new Dictionary<string, USFileInfo>(); //Used to rename files
+                CaseInsensitiveDictionary<USFileInfo> hashMap = new CaseInsensitiveDictionary<USFileInfo>(); //Used to rename files
                 foreach (var modUpdateInfo in classicUpdateInfos)
                 {
                     modUpdateInfo.ResolveVersionVar();
                     //Calculate update information
-                    var matchingMod =
-                        modsToCheck.FirstOrDefault(x => x.ModClassicUpdateCode == modUpdateInfo.updatecode);
+                    var matchingMod = modsToCheck.FirstOrDefault(x => x.ModClassicUpdateCode == modUpdateInfo.updatecode);
                     if (matchingMod != null && (forceUpdateCheck || matchingMod.ParsedModVersion < modUpdateInfo.version))
                     {
                         modUpdateInfo.mod = matchingMod;
@@ -204,12 +203,14 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                     hashMap[v] = new USFileInfo()
                                     {
                                         MD5 = Utilities.CalculateMD5(tStream),
+                                        CompressedMD5 = Utilities.CalculateMD5(fpath),
                                         Filesize = tStream.Length,
                                         RelativeFilepath = v
                                     };
                                     continue;
                                 }
                             }
+
                             hashMap[v] = new USFileInfo()
                             {
                                 MD5 = Utilities.CalculateMD5(fpath),
@@ -223,7 +224,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         foreach (var serverFile in modUpdateInfo.sourceFiles)
                         {
                             Log.Information($@"Checking {serverFile.relativefilepath} for update applicability");
-                            updateStatusCallback?.Invoke($"Calculating update delta for {modUpdateInfo.mod.ModName} {(int)(i * 100 / total)}%");
+                            updateStatusCallback?.Invoke(
+                                $"Calculating update delta for {modUpdateInfo.mod.ModName} {(int)(i * 100 / total)}%");
                             i++;
 
                             bool calculatedOp = false;
@@ -234,42 +236,61 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                     CLog.Information(@" >> File is up to date", Settings.LogModUpdater);
                                     calculatedOp = true;
                                 }
+                                else if (indexInfo.CompressedMD5 != null && indexInfo.CompressedMD5 == serverFile.hash)
+                                {
+                                    CLog.Information(@" >> Compressed package file is up to date",
+                                        Settings.LogModUpdater);
+                                    calculatedOp = true;
+                                }
                             }
 
                             if (!calculatedOp)
                             {
                                 // File is missing or hash was wrong. We should try to map it to another existing file
                                 // to save bandwidth
-                                var existingFilesThatMatchServerHash = hashMap.Where(x => x.Value.MD5 == serverFile.hash).ToList();
+                                var existingFilesThatMatchServerHash =
+                                    hashMap.Where(x =>
+                                            x.Value.MD5 == serverFile.hash || (x.Value.CompressedMD5 != null &&
+                                                                               x.Value.CompressedMD5 ==
+                                                                               serverFile.hash))
+                                        .ToList();
                                 if (existingFilesThatMatchServerHash.Any())
                                 {
-                                    CLog.Information($" >> File is applicable for updates: {serverFile.relativefilepath}. File can be cloned from {existingFilesThatMatchServerHash[0].Value.RelativeFilepath} as it has same hash",
+                                    CLog.Information(
+                                        $" >> Server file can be cloned from local file {existingFilesThatMatchServerHash[0].Value.RelativeFilepath} as it has same hash",
                                         Settings.LogModUpdater);
-                                    modUpdateInfo.cloneOperations[serverFile] = existingFilesThatMatchServerHash[0].Value; // Server file can be sourced from the value
+                                    modUpdateInfo.cloneOperations[serverFile] =
+                                        existingFilesThatMatchServerHash[0]
+                                            .Value; // Server file can be sourced from the value
                                 }
                                 else if (indexInfo == null)
                                 {
+                                    // we don't have file hashed (new file)
                                     CLog.Information(
-                                        $" >> File is applicable for updates: {serverFile.relativefilepath}. File does not exist locally",
+                                        $" >> Applicable for updates, File does not exist locally",
                                         Settings.LogModUpdater);
                                     modUpdateInfo.applicableUpdates.Add(serverFile);
                                 }
                                 else
                                 {
-                                    // ?
-                                }
-
-                                foreach (var blacklistedFile in modUpdateInfo.blacklistedFiles)
-                                {
-                                    var blLocalFile = Path.Combine(modBasepath, blacklistedFile);
-                                    if (File.Exists(blLocalFile))
-                                    {
-                                        Log.Information(@"Blacklisted file marked for deletion: " + blLocalFile);
-                                        modUpdateInfo.filesToDelete.Add(blLocalFile);
-                                    }
+                                    // Existing file has wrong hash
+                                    CLog.Information($" >> Applicable for updates, hash has changed",
+                                        Settings.LogModUpdater);
+                                    modUpdateInfo.applicableUpdates.Add(serverFile);
                                 }
                             }
                         }
+
+                        foreach (var blacklistedFile in modUpdateInfo.blacklistedFiles)
+                        {
+                            var blLocalFile = Path.Combine(modBasepath, blacklistedFile);
+                            if (File.Exists(blLocalFile))
+                            {
+                                Log.Information(@"Blacklisted file marked for deletion: " + blLocalFile);
+                                modUpdateInfo.filesToDelete.Add(blLocalFile);
+                            }
+                        }
+
 
                         // alphabetize files
                         modUpdateInfo.applicableUpdates.Sort(x => x.relativefilepath);
@@ -278,50 +299,52 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         var modFiles = Directory.GetFiles(modBasepath, "*", SearchOption.AllDirectories)
                             .Select(x => x.Substring(modBasepath.Length + 1)).ToList();
 
-                        var additionalFilesToDelete = modFiles.Except(modUpdateInfo.sourceFiles.Select(x => x.relativefilepath),
+                        var additionalFilesToDelete = modFiles.Except(
+                            modUpdateInfo.sourceFiles.Select(x => x.relativefilepath),
                             StringComparer.InvariantCultureIgnoreCase).Distinct().ToList();
-                        modUpdateInfo.filesToDelete.AddRange(additionalFilesToDelete); //Todo: Add security check here to prevent malicious 
+                        modUpdateInfo.filesToDelete.AddRange(
+                            additionalFilesToDelete); //Todo: Add security check here to prevent malicious 
 
 
                         modUpdateInfo.TotalBytesToDownload = modUpdateInfo.applicableUpdates.Sum(x => x.lzmasize);
                     }
-
-                    modUpdateInfos.AddRange(classicUpdateInfos);
-
-                    #endregion
-
-                    #region modmaker mods
-
-                    var modmakerModUpdateInfos = (from e in rootElement.Elements("modmakermod")
-                                                  select new ModMakerModUpdateInfo
-                                                  {
-                                                      ModMakerId = (int)e.Attribute("id"),
-                                                      versionstr = (string)e.Attribute("version"),
-                                                      PublishDate = DateTime.ParseExact((string)e.Attribute("publishdate"), "yyyy-MM-dd",
-                                                          CultureInfo.InvariantCulture),
-                                                      changelog = (string)e.Attribute("changelog")
-                                                  }).ToList();
-                    modUpdateInfos.AddRange(modmakerModUpdateInfos);
-
-                    #endregion
-
-                    #region Nexus Mod Third Party
-
-                    var nexusModsUpdateInfo = (from e in rootElement.Elements("nexusmod")
-                                               select new NexusModUpdateInfo
-                                               {
-                                                   NexusModsId = (int)e.Attribute("id"),
-                                                   GameId = (int)e.Attribute("game"),
-                                                   versionstr = (string)e.Attribute("version"),
-                                                   UpdatedTime = DateTimeOffset.FromUnixTimeSeconds((long)e.Attribute("updated_timestamp"))
-                                                       .DateTime
-                                               }).ToList();
-                    modUpdateInfos.AddRange(nexusModsUpdateInfo);
-
-                    #endregion
-
-                    return modUpdateInfos;
                 }
+
+                modUpdateInfos.AddRange(classicUpdateInfos);
+
+                #endregion
+
+                #region modmaker mods
+
+                var modmakerModUpdateInfos = (from e in rootElement.Elements("modmakermod")
+                                              select new ModMakerModUpdateInfo
+                                              {
+                                                  ModMakerId = (int)e.Attribute("id"),
+                                                  versionstr = (string)e.Attribute("version"),
+                                                  PublishDate = DateTime.ParseExact((string)e.Attribute("publishdate"), "yyyy-MM-dd",
+                                                      CultureInfo.InvariantCulture),
+                                                  changelog = (string)e.Attribute("changelog")
+                                              }).ToList();
+                modUpdateInfos.AddRange(modmakerModUpdateInfos);
+
+                #endregion
+
+                #region Nexus Mod Third Party
+
+                var nexusModsUpdateInfo = (from e in rootElement.Elements("nexusmod")
+                                           select new NexusModUpdateInfo
+                                           {
+                                               NexusModsId = (int)e.Attribute("id"),
+                                               GameId = (int)e.Attribute("game"),
+                                               versionstr = (string)e.Attribute("version"),
+                                               UpdatedTime = DateTimeOffset.FromUnixTimeSeconds((long)e.Attribute("updated_timestamp"))
+                                                   .DateTime
+                                           }).ToList();
+                modUpdateInfos.AddRange(nexusModsUpdateInfo);
+
+                #endregion
+
+                return modUpdateInfos;
             }
             catch (Exception e)
             {
@@ -541,6 +564,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             public string MD5 { get; set; }
             public long Filesize { get; set; }
             public string RelativeFilepath { get; set; }
+            public string CompressedMD5 { get; set; }
         }
 
         [Localizable(true)]
@@ -562,7 +586,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         }
 
         [Localizable(true)]
-        [DebuggerDisplay("ModUpdateInfo | {mod.ModName} with {filesToDelete.Count} FTDelete and {applicableUpdates.Count} FTDownload")]
+        [DebuggerDisplay("ModUpdateInfo | {mod?.ModName} with {filesToDelete?.Count} FTDelete and {applicableUpdates?.Count} FTDownload")]
         public class ModUpdateInfo : INotifyPropertyChanged
         {
             public Mod mod { get; set; }
@@ -618,7 +642,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             /// <summary>
             /// List of files that must be remotely fetched
             /// </summary>
-            public ObservableCollectionExtended<SourceFile> applicableUpdates { get; } = new ObservableCollectionExtended<SourceFile>();
+            public ui.ObservableCollectionExtended<SourceFile> applicableUpdates { get; } = new ui.ObservableCollectionExtended<SourceFile>();
             /// <summary>
             /// List of files that can be sourced locally, e.g. they were renamed/moved or copied.
             /// </summary>
@@ -626,7 +650,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             /// <summary>
             /// List of files that no longer are referenced and can be deleted
             /// </summary>
-            public ObservableCollectionExtended<string> filesToDelete { get; } = new ObservableCollectionExtended<string>();
+            public ui.ObservableCollectionExtended<string> filesToDelete { get; } = new ui.ObservableCollectionExtended<string>();
             public bool CanUpdate { get; internal set; } = true; //Default to true
             public string TotalBytesHR => FileSize.FormatSize(TotalBytesToDownload);
             public string RemainingDataToDownload
