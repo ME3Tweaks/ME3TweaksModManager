@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols"
              xmlns:fa="http://schemas.fontawesome.io/icons/"
              xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters"
+             xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              DataContext="{Binding RelativeSource={RelativeSource Self}}"
@@ -22,14 +23,21 @@
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
-        <Button Content="Add mod to deployment" HorizontalAlignment="Left" Command="{Binding AddModToDeploymentCommand}"/>
+        <Button HorizontalAlignment="Left" Command="{Binding AddModToDeploymentCommand}">
+            <Button.Content>
+                <StackPanel Orientation="Horizontal">
+                    <fa:ImageAwesome Icon="Plus" Height="16" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Margin="0,0,5,0"/>
+                    <TextBlock Text="Add mod to deployment"/>
+                </StackPanel>
+            </Button.Content>
+        </Button>
         <ItemsControl ItemsSource ="{Binding ModsInDeployment}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="{x:Type local:ArchiveDeployment+EncompassingModDeploymentCheck}">
                     <StackPanel>
-                        <TextBlock Text="{Binding ModBeingDeployed.ModName}" FontWeight="Bold" HorizontalAlignment="Center"/>
-                        <TextBlock Text="{Binding ModBeingDeployed.ModVersionString, StringFormat='Version {0}'}" HorizontalAlignment="Center"/>
-                        <TextBlock Text="{DynamicResource string_deploymentChecklist}" FontSize="14" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding ModBeingDeployed.ModName}" FontWeight="Bold" FontSize="14"/>
+                        <TextBlock Text="{Binding ModBeingDeployed.ModVersionString, StringFormat='Version {0}'}"/>
+                        <TextBlock Text="{DynamicResource string_deploymentChecklist}" FontWeight="Bold"/>
                         <ItemsControl ItemsSource="{Binding DeploymentChecklistItems}" Height="200" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"  
                             AlternationCount="2" VirtualizingStackPanel.IsVirtualizing="True" ScrollViewer.CanContentScroll="True">
                             <ItemsControl.ItemTemplate>

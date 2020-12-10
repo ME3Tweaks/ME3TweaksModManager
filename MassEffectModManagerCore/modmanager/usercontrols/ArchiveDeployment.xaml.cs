@@ -8,6 +8,8 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -374,29 +376,27 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                         if (tlkMappings.Any())
                         {
-                            //find TLK with most entries
-                            //var tlkCounts = tlkMappings.Select(x => (x.Key, x.Value.Count));
-                            double numLoops = Math.Pow(tlkMappings.Count - 1, tlkMappings.Count - 1);
+                            double numLoops = Math.Pow(tlkMappings.Count, 2);
                             int numDone = 0;
                             foreach (var mapping1 in tlkMappings)
                             {
                                 foreach (var mapping2 in tlkMappings)
                                 {
+                                    var percent = (int)((numDone * 100.0) / numLoops);
+                                    obj.ItemText = $@"{M3L.GetString(M3L.string_languageCheckInProgress)} {percent}%";
+                                    numDone++;
+
                                     if (mapping1.Equals(mapping2))
                                     {
                                         continue;
                                     }
-
+                                    
                                     var differences = mapping1.Value.Select(x => x.StringID).Except(mapping2.Value.Select(x => x.StringID));
                                     foreach (var difference in differences)
                                     {
                                         var str = mapping1.Value.FirstOrDefault(x => x.StringID == difference)?.Data ?? M3L.GetString(M3L.string_errorFindingString);
                                         obj.AddSignificantIssue(M3L.GetString(M3L.string_interp_tlkDifference, difference.ToString(), mapping1.Key, mapping2.Key, str));
                                     }
-
-                                    numDone++;
-                                    double percent = (numDone * 100.0) / numLoops;
-                                    obj.ItemText = $@"{M3L.GetString(M3L.string_languageCheckInProgress)} {percent:0.00}%";
                                 }
                             }
                         }
@@ -818,9 +818,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
             }
 
-            void recursiveCheckProperty(DeploymentChecklistItem item, string relativePath, IEntry entry, Property property)
+            void recursiveCheckProperty(DeploymentChecklistItem item, string relativePath, string containingClassOrStructName, IEntry entry, Property property)
             {
-                var prefix = $"{relativePath}, entry {entry.UIndex} {entry.ObjectName.Name} ({entry.ClassName}):";
+                var prefix = $"{relativePath}, entry {entry.UIndex} {entry.ObjectName.Name} ({entry.ClassName}), @ 0x{property.StartOffset:X6}:";
                 if (property is UnknownProperty up)
                 {
                     item.AddSignificantIssue($"{prefix} Found broken property data! This should be investigated and fixed as this is almost guaranteed to cause game crashes");
@@ -828,17 +828,19 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 else if (property is ObjectProperty op)
                 {
+                    bool validRef = true;
                     if (op.Value > 0 && op.Value > entry.FileRef.ExportCount)
                     {
-                        //bad
                         //bad
                         if (op.Name.Name != null)
                         {
                             item.AddSignificantIssue($"{prefix} {op.Name.Name} Export {op.Value} is outside of export table");
+                            validRef = false;
                         }
                         else
                         {
                             item.AddSignificantIssue($"{prefix} [Nested property] Export {op.Value} is outside of export table");
+                            validRef = false;
                         }
                     }
                     else if (op.Value < 0 && Math.Abs(op.Value) > entry.FileRef.ImportCount)
@@ -847,36 +849,92 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         if (op.Name.Name != null)
                         {
                             item.AddSignificantIssue($"{prefix} {op.Name.Name} Import {op.Value} is outside of import table");
+                            validRef = false;
+
                         }
                         else
                         {
                             item.AddSignificantIssue($"{prefix} [Nested property] Import {op.Value} is outside of import table");
+                            validRef = false;
+
                         }
                     }
-                    else if (entry.FileRef.GetEntry(op.Value)?.ObjectName.ToString() == @"Trash")
+                    else if (entry.FileRef.GetEntry(op.Value)?.ObjectName.ToString() == @"Trash" || entry.FileRef.GetEntry(op.Value)?.ObjectName.ToString() == @"ME3ExplorerTrashPackage")
                     {
                         item.AddSignificantIssue($"{prefix} [Nested property] Export {op.Value} is a Trashed object");
+                        validRef = false;
+                    }
+
+                    // Check object is of correct typing?
+                    if (validRef)
+                    {
+                        var propInfo = UnrealObjectInfo.GetPropertyInfo(entry.Game, op.Name, containingClassOrStructName, containingExport: entry as ExportEntry);
+                        if (propInfo == null && entry.ClassName == @"Class")
+                        {
+                            // Needs dynamically generated
+                            var currentInfo = UnrealObjectInfo.generateClassInfo(entry as ExportEntry);
+                            propInfo = UnrealObjectInfo.GetPropertyInfo(entry.Game, op.Name, containingClassOrStructName, currentInfo, containingExport: entry as ExportEntry);
+                        }
+
+                        if (propInfo != null && propInfo.Reference != null)
+                        {
+                            var resolvedEntry = op.ResolveToEntry(entry.FileRef);
+
+                            // We can't resolve if an object inherits from a class object that's only defined in native.
+                            // This is only possible if the refernce is an import and it's importing native class object.
+                            // Like Engine.CodecBinkMovie
+                            if (resolvedEntry != null && !resolvedEntry.IsAKnownNativeClass())
+                            {
+                                if (resolvedEntry.ClassName == @"Class")
+                                {
+                                    // Inherits
+                                    if (!resolvedEntry.InheritsFrom(propInfo.Reference))
+                                    {
+                                        if (op.Name.Name != null)
+                                        {
+                                            item.AddSignificantIssue($"{prefix} {op.Name.Name} references entry {op.Value} {op.ResolveToEntry(entry.FileRef).FullPath}, but it appears to be wrong type. Property type expects a class (or subclass) of {propInfo.Reference}, but the referenced one is of type {resolvedEntry.ObjectName}");
+                                        }
+                                        else
+                                        {
+                                            item.AddSignificantIssue($"{prefix} [Nested Property] references entry {op.Value} {op.ResolveToEntry(entry.FileRef).FullPath}, but it appears to be wrong type. Property type expects a class (or subclass) {propInfo.Reference}, but the referenced one is of type {resolvedEntry.ObjectName}");
+                                        }
+                                    }
+                                }
+                                else if (!resolvedEntry.IsA(propInfo.Reference))
+                                {
+                                    // Is instance of
+                                    if (op.Name.Name != null)
+                                    {
+                                        item.AddSignificantIssue($"{prefix} {op.Name.Name} references entry {op.Value} {op.ResolveToEntry(entry.FileRef).FullPath}, but it appears to be wrong type. Property type expects an instance of an object of class (or subclass) {propInfo.Reference}, but the referenced one is of type {resolvedEntry.ObjectName}");
+                                    }
+                                    else
+                                    {
+                                        item.AddSignificantIssue($"{prefix} [Nested Property] references entry {op.Value} {op.ResolveToEntry(entry.FileRef).FullPath}, but it appears to be wrong type. Property type expects an instance of an object of class (or subclass) {propInfo.Reference}, but the referenced one is of type {resolvedEntry.ObjectName}");
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
                 else if (property is ArrayProperty<ObjectProperty> aop)
                 {
                     foreach (var p in aop)
                     {
-                        recursiveCheckProperty(item, relativePath, entry, p);
+                        recursiveCheckProperty(item, relativePath, aop.Name, entry, p);
                     }
                 }
                 else if (property is StructProperty sp)
                 {
                     foreach (var p in sp.Properties)
                     {
-                        recursiveCheckProperty(item, relativePath, entry, p);
+                        recursiveCheckProperty(item, relativePath, sp.StructType, entry, p);
                     }
                 }
                 else if (property is ArrayProperty<StructProperty> asp)
                 {
                     foreach (var p in asp)
                     {
-                        recursiveCheckProperty(item, relativePath, entry, p);
+                        recursiveCheckProperty(item, relativePath, p.StructType, entry, p);
                     }
                 }
                 else if (property is DelegateProperty dp)
@@ -899,137 +957,152 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 item.ItemText = "Checking name and object references";
                 var referencedFiles = ModBeingDeployed.GetAllRelativeReferences().Where(x => x.RepresentsPackageFilePath()).Select(x => Path.Combine(ModBeingDeployed.ModPath, x)).ToList();
                 int numChecked = 0;
-                foreach (var f in referencedFiles)
-                {
-                    // Mostly ported from ME3Explorer
-                    var Pcc = MEPackageHandler.OpenMEPackage(Path.Combine(item.ModToValidateAgainst.ModPath, f));
-                    item.ItemText = "Checking name and object references" + $@" [{numChecked}/{referencedFiles.Count}]";
-                    numChecked++;
 
-                    foreach (ExportEntry exp in Pcc.Exports)
+
+                Parallel.ForEach(referencedFiles,
+                    new ParallelOptions()
                     {
-                        if (exp.idxLink == exp.UIndex)
-                        {
-                            item.AddBlockingError($"{f}, export {exp.UIndex} has a circular self reference for it' link. The game and the toolset will be unable to handle this condition");
-                            continue;
-                        }
-                        var prefix = $"{f}, export {exp.UIndex} {exp.ObjectName.Name} ({exp.ClassName})";
-                        try
-                        {
-                            if (exp.idxArchetype != 0 && !Pcc.IsEntry(exp.idxArchetype))
-                            {
-                                item.AddSignificantIssue($"{prefix} Archetype {exp.idxArchetype} is outside of import/export table");
-                            }
-
-                            if (exp.idxSuperClass != 0 && !Pcc.IsEntry(exp.idxSuperClass))
-                            {
-                                item.AddSignificantIssue($"{prefix} Header SuperClass {exp.idxSuperClass} is outside of import/export table");
-                            }
-
-                            if (exp.idxClass != 0 && !Pcc.IsEntry(exp.idxClass))
-                            {
-                                item.AddSignificantIssue($"{prefix} Header Class {exp.idxClass} is outside of import/export table");
-                            }
-
-                            if (exp.idxLink != 0 && !Pcc.IsEntry(exp.idxLink))
-                            {
-                                item.AddSignificantIssue($"{prefix} Header Link {exp.idxLink} is outside of import/export table");
-                            }
-
-                            if (exp.HasComponentMap)
-                            {
-                                foreach (var c in exp.ComponentMap)
-                                {
-                                    if (!Pcc.IsEntry(c.Value))
-                                    {
-                                        // Can components point to 0? I don't think so
-                                        item.AddSignificantIssue($"{prefix} Header Component Map item ({c.Value}) is outside of import/export table");
-                                    }
-                                }
-                            }
-
-                            //find stack references
-                            if (exp.HasStack && exp.Data is byte[] data)
-                            {
-                                var stack1 = EndianReader.ToInt32(data, 0, exp.FileRef.Endian);
-                                var stack2 = EndianReader.ToInt32(data, 4, exp.FileRef.Endian);
-                                if (stack1 != 0 && !Pcc.IsEntry(stack1))
-                                {
-                                    item.AddSignificantIssue($"{prefix} Export Stack[0] ({stack1}) is outside of import/export table");
-                                }
-
-                                if (stack2 != 0 && !Pcc.IsEntry(stack2))
-                                {
-                                    item.AddSignificantIssue($"{prefix} Export Stack[1] ({stack2}) is outside of import/export table");
-                                }
-                            }
-                            else if (exp.TemplateOwnerClassIdx is var toci && toci >= 0)
-                            {
-                                var TemplateOwnerClassIdx = EndianReader.ToInt32(exp.Data, toci, exp.FileRef.Endian);
-                                if (TemplateOwnerClassIdx != 0 && !Pcc.IsEntry(TemplateOwnerClassIdx))
-                                {
-                                    item.AddSignificantIssue($"{prefix} TemplateOwnerClass (Data offset 0x{toci:X}) ({TemplateOwnerClassIdx}) is outside of import/export table");
-                                }
-                            }
-
-                            var props = exp.GetProperties();
-                            foreach (var p in props)
-                            {
-                                recursiveCheckProperty(item, f, exp, p);
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            item.AddSignificantIssue($"{prefix} Exception occurred while parsing properties: {e.Message}");
-                            continue;
-                        }
-
-                        //find binary references
-                        try
-                        {
-                            if (!exp.IsDefaultObject && ObjectBinary.From(exp) is ObjectBinary objBin)
-                            {
-                                List<(UIndex, string)> indices = objBin.GetUIndexes(exp.FileRef.Game);
-                                foreach ((UIndex uIndex, string propName) in indices)
-                                {
-                                    if (uIndex.value != 0 && !exp.FileRef.IsEntry(uIndex.value))
-                                    {
-                                        item.AddSignificantIssue($"{prefix} Binary reference ({uIndex.value}) is outside of import/export table");
-                                    }
-                                    else if (exp.FileRef.GetEntry(uIndex.value)?.ObjectName.ToString() == "Trash")
-                                    {
-                                        item.AddSignificantIssue($"{prefix} Binary reference ({uIndex.value}) is a Trashed object");
-                                    }
-                                }
-
-                                var nameIndicies = objBin.GetNames(exp.FileRef.Game);
-                                foreach (var ni in nameIndicies)
-                                {
-                                    if (ni.Item1 == "")
-                                    {
-                                        item.AddSignificantIssue($"{prefix} Found invalid binary reference for a name");
-                                    }
-                                }
-                            }
-                        }
-                        catch (Exception e)/* when (!App.IsDebug)*/
-                        {
-                            item.AddSignificantIssue($"{prefix} Unable to parse binary. It may be malformed. Error message: {e.Message}. Note the error message is likely code-context specific and is not useful without running application in debug mode to determine it's context");
-                        }
-                    }
-
-                    foreach (ImportEntry imp in Pcc.Imports)
+                        MaxDegreeOfParallelism = Math.Min(6, Environment.ProcessorCount)
+                    },
+                    f =>
+                    //foreach (var f in referencedFiles)
                     {
-                        if (imp.idxLink != 0 && !Pcc.TryGetEntry(imp.idxLink, out _))
+                        // Mostly ported from ME3Explorer
+                        var lnumChecked = Interlocked.Increment(ref numChecked);
+                        item.ItemText = "Checking name and object references" + $@" [{lnumChecked - 1}/{referencedFiles.Count}]";
+
+                        var relativePath = f.Substring(ModBeingDeployed.ModPath.Length + 1);
+                        var package = MEPackageHandler.OpenMEPackage(Path.Combine(item.ModToValidateAgainst.ModPath, f));
+                        foreach (ExportEntry exp in package.Exports)
                         {
-                            item.AddSignificantIssue($"{f}, import {imp.UIndex} has an invalid link value that is outside of the import/export table: {imp.idxLink}");
+                            // Has to be done before accessing the name because it will cause infinite crash loop
+                            if (exp.idxLink == exp.UIndex)
+                            {
+                                item.AddBlockingError($"{f.Substring(ModBeingDeployed.ModPath.Length + 1)}, export {exp.UIndex} has a circular self reference for it' link. The game and the toolset will be unable to handle this condition");
+                                continue;
+                            }
+
+                            var prefix = $"{f.Substring(ModBeingDeployed.ModPath.Length + 1)}, export {exp.UIndex} {exp.ObjectName.Name} ({exp.ClassName})";
+                            try
+                            {
+                                if (exp.idxArchetype != 0 && !package.IsEntry(exp.idxArchetype))
+                                {
+                                    item.AddSignificantIssue($"{prefix} Archetype {exp.idxArchetype} is outside of import/export table");
+                                }
+
+                                if (exp.idxSuperClass != 0 && !package.IsEntry(exp.idxSuperClass))
+                                {
+                                    item.AddSignificantIssue($"{prefix} Header SuperClass {exp.idxSuperClass} is outside of import/export table");
+                                }
+
+                                if (exp.idxClass != 0 && !package.IsEntry(exp.idxClass))
+                                {
+                                    item.AddSignificantIssue($"{prefix} Header Class {exp.idxClass} is outside of import/export table");
+                                }
+
+                                if (exp.idxLink != 0 && !package.IsEntry(exp.idxLink))
+                                {
+                                    item.AddSignificantIssue($"{prefix} Header Link {exp.idxLink} is outside of import/export table");
+                                }
+
+                                if (exp.HasComponentMap)
+                                {
+                                    foreach (var c in exp.ComponentMap)
+                                    {
+                                        if (!package.IsEntry(c.Value))
+                                        {
+                                            // Can components point to 0? I don't think so
+                                            item.AddSignificantIssue($"{prefix} Header Component Map item ({c.Value}) is outside of import/export table");
+                                        }
+                                    }
+                                }
+
+                                //find stack references
+                                if (exp.HasStack && exp.Data is byte[] data)
+                                {
+                                    var stack1 = EndianReader.ToInt32(data, 0, exp.FileRef.Endian);
+                                    var stack2 = EndianReader.ToInt32(data, 4, exp.FileRef.Endian);
+                                    if (stack1 != 0 && !package.IsEntry(stack1))
+                                    {
+                                        item.AddSignificantIssue($"{prefix} Export Stack[0] ({stack1}) is outside of import/export table");
+                                    }
+
+                                    if (stack2 != 0 && !package.IsEntry(stack2))
+                                    {
+                                        item.AddSignificantIssue($"{prefix} Export Stack[1] ({stack2}) is outside of import/export table");
+                                    }
+                                }
+                                else if (exp.TemplateOwnerClassIdx is var toci && toci >= 0)
+                                {
+                                    var TemplateOwnerClassIdx = EndianReader.ToInt32(exp.Data, toci, exp.FileRef.Endian);
+                                    if (TemplateOwnerClassIdx != 0 && !package.IsEntry(TemplateOwnerClassIdx))
+                                    {
+                                        item.AddSignificantIssue($"{prefix} TemplateOwnerClass (Data offset 0x{toci:X}) ({TemplateOwnerClassIdx}) is outside of import/export table");
+                                    }
+                                }
+
+                                var props = exp.GetProperties();
+                                foreach (var p in props)
+                                {
+                                    recursiveCheckProperty(item, relativePath, exp.ClassName, exp, p);
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                item.AddSignificantIssue($"{prefix} Exception occurred while parsing properties: {e.Message}");
+                                continue;
+                            }
+
+                            //find binary references
+                            try
+                            {
+                                if (!exp.IsDefaultObject && ObjectBinary.From(exp) is ObjectBinary objBin)
+                                {
+                                    List<(UIndex, string)> indices = objBin.GetUIndexes(exp.FileRef.Game);
+                                    foreach ((UIndex uIndex, string propName) in indices)
+                                    {
+                                        if (uIndex.value != 0 && !exp.FileRef.IsEntry(uIndex.value))
+                                        {
+                                            item.AddSignificantIssue($"{prefix} Binary reference ({uIndex.value}) is outside of import/export table");
+                                        }
+                                        else if (exp.FileRef.GetEntry(uIndex.value)?.ObjectName.ToString() == "Trash")
+                                        {
+                                            item.AddSignificantIssue($"{prefix} Binary reference ({uIndex.value}) is a Trashed object");
+                                        }
+                                        else if (exp.FileRef.GetEntry(uIndex.value)?.ObjectName.ToString() == "ME3ExplorerTrashPackage")
+                                        {
+                                            item.AddSignificantIssue($"{prefix} Binary reference ({uIndex.value}) is a Trashed object");
+                                        }
+                                    }
+
+                                    var nameIndicies = objBin.GetNames(exp.FileRef.Game);
+                                    foreach (var ni in nameIndicies)
+                                    {
+                                        if (ni.Item1 == "")
+                                        {
+                                            item.AddSignificantIssue($"{prefix} Found invalid binary reference for a name");
+                                        }
+                                    }
+                                }
+                            }
+                            catch (Exception e) /* when (!App.IsDebug)*/
+                            {
+                                item.AddSignificantIssue($"{prefix} Unable to parse binary. It may be malformed. Error message: {e.Message}. Note the error message is likely code-context specific and is not useful without running application in debug mode to determine it's context");
+                            }
                         }
-                        else if (imp.idxLink == imp.UIndex)
+
+                        foreach (ImportEntry imp in package.Imports)
                         {
-                            item.AddBlockingError($"{f}, import {imp.UIndex} has a circular self reference for its link. The game and the toolset will be unable to handle this condition");
+                            if (imp.idxLink != 0 && !package.TryGetEntry(imp.idxLink, out _))
+                            {
+                                item.AddSignificantIssue($"{f}, import {imp.UIndex} has an invalid link value that is outside of the import/export table: {imp.idxLink}");
+                            }
+                            else if (imp.idxLink == imp.UIndex)
+                            {
+                                item.AddBlockingError($"{f}, import {imp.UIndex} has a circular self reference for its link. The game and the toolset will be unable to handle this condition");
+                            }
                         }
-                    }
-                }
+                    });
 
                 if (!item.HasAnyMessages())
                 {
@@ -1403,22 +1476,36 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             public bool CheckDone { get; private set; }
 
             public bool HasMessage => CheckDone && HasAnyMessages();
+
+            private object syncLock = new object();
             public void AddBlockingError(string message)
             {
-                BlockingErrors.Add(message);
+                lock (syncLock)
+                {
+                    BlockingErrors.Add(message);
+                }
+
                 DeploymentBlocking = true;
                 //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(HasMessage)));
             }
 
             public void AddSignificantIssue(string message)
             {
-                SignificantIssues.Add(message);
+                lock (syncLock)
+                {
+                    SignificantIssues.Add(message);
+                }
+
                 //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(HasMessage)));
             }
 
             public void AddInfoWarning(string message)
             {
-                InfoWarnings.Add(message);
+                lock (syncLock)
+                {
+                    InfoWarnings.Add(message);
+                }
+
                 //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(HasMessage)));
             }
 

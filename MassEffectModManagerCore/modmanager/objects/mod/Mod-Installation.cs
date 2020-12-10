@@ -522,7 +522,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 }
             }
 
-            return list.Distinct().ToList();
+            return list.Distinct().OrderBy(x => x).ToList();
         }
 
         [DebuggerDisplay("InstallSourceFile {FilePath} IsFullRelPath: {IsFullRelativeFilePath}")] //do not localize

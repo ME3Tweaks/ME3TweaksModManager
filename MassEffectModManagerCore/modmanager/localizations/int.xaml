@@ -442,7 +442,7 @@
     <system:String x:Key="string_multiThreadedCompression">Multi-threaded compression</system:String>
     <system:String x:Key="string_deploy">Deploy to .7z</system:String>
     <system:String x:Key="string_deploymentChecklist">Deployment checklist</system:String>
-    <system:String x:Key="string_prepareModForDistribution">Prepare mod for distribution</system:String>
+    <system:String x:Key="string_prepareModForDistribution">Deploy mod for distribution</system:String>
     <system:String x:Key="string_compressiongModForDistribution">Compressing mod for distribution</system:String>
     <system:String x:Key="string_verifyModVersion">Verify mod version is correct</system:String>
     <system:String x:Key="string_recommendedVersionFormatNotFollowed">Recommended version format not followed ({0})</system:String>
