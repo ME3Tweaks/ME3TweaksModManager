@@ -179,6 +179,13 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         string modBasepath = matchingMod.ModPath;
                         double i = 0;
                         var references = matchingMod.GetAllRelativeReferences(true);
+                        if (!matchingMod.ValidMod)
+                        {
+                            // The mod failed to load. We should just index everything the
+                            // references will not be fully parsed.
+                            var localFiles = Directory.GetFiles(matchingMod.ModPath, "*", SearchOption.AllDirectories);
+                            references = localFiles.Select(x => x.Substring(matchingMod.ModPath.Length + 1)).ToList();
+                        }
                         int total = references.Count;
 
                         // Index existing files

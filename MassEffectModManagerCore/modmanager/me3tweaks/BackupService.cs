@@ -341,9 +341,16 @@ namespace MassEffectModManagerCore.modmanager.helpers
             }
         }
 
+        private static DateTime LastBackupPathCheck = DateTime.MinValue;
+        private static Dictionary<MEGame, string> GameBackupPathCache = new Dictionary<MEGame, string>();
 
         public static string GetGameBackupPath(MEGame game, bool forceCmmVanilla = true, bool logReturnedPath = false, bool forceReturnPath = false)
         {
+            if (!forceReturnPath && !logReturnedPath && DateTime.Now < LastBackupPathCheck.AddSeconds(10) && GameBackupPathCache.ContainsKey(game))
+            {
+                return GameBackupPathCache[game];
+            }
+
             string path;
             switch (game)
             {
@@ -368,6 +375,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 Log.Information($@" >> Backup path lookup in registry for {game} returned: {path}");
             }
 
+            LastBackupPathCheck = DateTime.Now;
             if (path == null || !Directory.Exists(path))
             {
                 if (logReturnedPath)
@@ -375,6 +383,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                     Log.Information(@" >> Path is null or directory doesn't exist.");
                 }
 
+                GameBackupPathCache[game] = null;
                 return null;
             }
 
@@ -385,7 +394,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 {
                     Log.Warning(@" >> " + path + @" is missing biogame/binaries subdirectory, invalid backup");
                 }
-
+                GameBackupPathCache[game] = null;
                 return null;
             }
 
@@ -395,7 +404,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 {
                     Log.Warning(@" >> " + path + @" is not marked as a vanilla backup. This backup will not be considered vanilla and thus will not be used by Mod Manager");
                 }
-
+                GameBackupPathCache[game] = null;
                 return null; //do not accept alot installer backups that are missing cmm_vanilla as they are not vanilla.
             }
 
@@ -403,7 +412,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
             {
                 Log.Information(@" >> " + path + @" is considered a valid backup path");
             }
-
+            GameBackupPathCache[game] = path;
             return path;
         }
 
