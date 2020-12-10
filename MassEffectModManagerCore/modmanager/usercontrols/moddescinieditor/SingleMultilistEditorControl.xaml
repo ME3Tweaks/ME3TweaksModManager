@@ -20,7 +20,7 @@
                 </StackPanel>
             </Button.Content>
         </Button>
-        <ItemsControl Margin="10,0,0,0"  ItemsSource="{Binding Files}">
+        <ItemsControl Margin="10,0,0,0"  ItemsSource="{Binding Files}" Style="{StaticResource ItemsControlVirtualizedStyle}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="{x:Type local:SingleMultilistEditorItem}" >
                     <DockPanel Margin="0,0,0,3">

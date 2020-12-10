@@ -33,11 +33,13 @@
                           x:Name="dlcJobs_itemscontrol">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="{x:Type objects:ModJob}" >
-                        <Expander Padding="0,10,0,0" PreviewMouseWheel="HandleMouseWheel">
+                        <Expander Padding="0,10,0,0" PreviewMouseWheel="HandleMouseWheel" x:Name="dlcJobExpander">
                             <Expander.Header>
                                 <TextBlock DockPanel.Dock="Top" Text="{Binding Header, StringFormat='[{0}]'}" FontWeight="Bold"/>
                             </Expander.Header>
-                            <DockPanel Margin="10,0,0,0">
+                            <DockPanel Margin="10,0,0,0"
+                                       Visibility="{Binding ElementName=dlcJobExpander, Path=IsExpanded, Converter={StaticResource BoolToVisibilityConverter}}"
+                                       >
                                 <local:DescriptorEditorItemsControl 
                                     DockPanel.Dock="Top"
                                     ItemsSource="{Binding DataContext.ParameterMap, RelativeSource={RelativeSource FindAncestor, AncestorType=Expander}}" />

@@ -1873,16 +1873,16 @@ namespace MassEffectModManagerCore
                 return;
             }
 
-            IsLoadingMods = true;
             VisibleFilteredMods.ClearEx();
             AllLoadedMods.ClearEx();
             FailedMods.ClearEx();
-
+            IsLoadingMods = true;
 
             NamedBackgroundWorker bw = new NamedBackgroundWorker(@"ModLoaderThread");
             bw.WorkerReportsProgress = true;
             bw.DoWork += (a, args) =>
             {
+
                 bool canCheckForModUpdates = OnlineContent.CanFetchContentThrottleCheck(); //This is here as it will fire before other threads can set this value used in this session.
                 ModsLoaded = false;
                 var uiTask = backgroundTaskEngine.SubmitBackgroundJob(@"ModLoader", M3L.GetString(M3L.string_loadingMods), M3L.GetString(M3L.string_loadedMods));
@@ -1891,19 +1891,20 @@ namespace MassEffectModManagerCore
                 var me2modDescsToLoad = Directory.GetDirectories(Utilities.GetME2ModsDirectory()).Select(x => (game: MEGame.ME2, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
                 var me1modDescsToLoad = Directory.GetDirectories(Utilities.GetME1ModsDirectory()).Select(x => (game: MEGame.ME1, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
                 var modDescsToLoad = me3modDescsToLoad.Concat(me2modDescsToLoad).Concat(me1modDescsToLoad);
+
                 foreach (var moddesc in modDescsToLoad)
                 {
                     var mod = new Mod(moddesc.path, moddesc.game);
                     if (mod.ValidMod)
                     {
-                        Application.Current.Dispatcher.Invoke(delegate
-                        {
+                        //Application.Current.Dispatcher.Invoke(delegate
+                        //{
                             AllLoadedMods.Add(mod);
                             if (ME1ModsVisible && mod.Game == MEGame.ME1 || ME2ModsVisible && mod.Game == MEGame.ME2 || ME3ModsVisible && mod.Game == MEGame.ME3)
                             {
                                 VisibleFilteredMods.Add(mod);
                             }
-                        });
+                        //});
                     }
                     else
                     {
@@ -1933,6 +1934,7 @@ namespace MassEffectModManagerCore
                 backgroundTaskEngine.SubmitJobCompletion(uiTask);
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NoModSelectedText)));
 
+                ModsLoaded = true;
                 if (canCheckForModUpdates)
                 {
                     CheckAllModsForUpdates();
@@ -1944,6 +1946,7 @@ namespace MassEffectModManagerCore
             };
             bw.RunWorkerCompleted += (a, b) =>
             {
+                ModsLoaded = true;
                 if (b.Error != null)
                 {
                     Log.Error(@"Exception occurred in ModLoader thread: " + b.Error.Message);
@@ -1954,8 +1957,6 @@ namespace MassEffectModManagerCore
                     ModsList_ListBox.SelectedItem = m;
                     ModsList_ListBox.ScrollIntoView(m);
                 }
-
-                ModsLoaded = true;
             };
             bw.RunWorkerAsync();
         }

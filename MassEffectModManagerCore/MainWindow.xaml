@@ -134,7 +134,7 @@
                 </MenuItem.Icon>
             </MenuItem>
 
-            
+
             <!--<Separator/>-->
             <MenuItem
                 Header="{DynamicResource string_Openmodfolder}"

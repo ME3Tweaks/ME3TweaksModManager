@@ -36,6 +36,7 @@
         <ItemsControl ItemsSource="{Binding ItemsSource, 
                                     RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type moddescinieditor:DescriptorEditorItemsControl}}}" 
                         HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"
+                        Style="{StaticResource ItemsControlVirtualizedStyle}"
                         >
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="{x:Type editor:MDParameter}" >

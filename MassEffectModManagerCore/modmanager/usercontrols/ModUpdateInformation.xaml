@@ -104,10 +104,12 @@
                             Text="{Binding changelog}"
                             TextWrapping="Wrap" />
                         <Expander
+                            x:Name="ftl_Expander"
                             Header="{Binding FilesToDownloadUIString}"
                             Margin="5,3"
                             IsEnabled="{Binding HasFilesToDownload}">
                             <TreeView
+                                Visibility="{Binding ElementName=ftl_Expander, Path=IsExpanded, Converter={StaticResource BoolToVisibilityConverter}}"
                                 ItemsSource="{Binding applicableUpdates}"
                                 DisplayMemberPath="relativefilepath"
                                 VirtualizingStackPanel.IsVirtualizing="True"
@@ -117,10 +119,12 @@
                                 BorderThickness="0" />
                         </Expander>
                         <Expander
+                            x:Name="ftd_Expander"
                             Header="{Binding FilesToDeleteUIString}"
                             Margin="5,3"
                             IsEnabled="{Binding HasFilesToDelete}">
                             <TreeView
+                                Visibility="{Binding ElementName=ftd_Expander, Path=IsExpanded, Converter={StaticResource BoolToVisibilityConverter}}"
                                 ItemsSource="{Binding filesToDelete}"
                                 VirtualizingStackPanel.IsVirtualizing="True"
                                 VirtualizingStackPanel.VirtualizationMode="Recycling"

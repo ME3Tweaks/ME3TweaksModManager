@@ -505,21 +505,19 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
 
                 foreach (var v in job.AlternateDLCs)
                 {
-                    if (v.Operation == AlternateDLC.AltDLCOperation.OP_ADD_CUSTOMDLC)
+                    if (v.Operation == AlternateDLC.AltDLCOperation.OP_ADD_CUSTOMDLC || v.Operation == AlternateDLC.AltDLCOperation.OP_ADD_FOLDERFILES_TO_CUSTOMDLC)
                     {
                         var dlcSourceDir = Path.Combine(ModPath, v.AlternateDLCFolder);
                         var files = Directory.GetFiles(dlcSourceDir, @"*", SearchOption.AllDirectories).Select(x => x.Substring(dlcSourceDir.Length + 1));
                         list.AddRange(files.Select(x => $@"{MEDirectories.GetDLCPath(Game, @"")}\{v.DestinationDLCFolder}\{x}"));
                     }
 
-                    if (v.Operation == AlternateDLC.AltDLCOperation.OP_ADD_FOLDERFILES_TO_CUSTOMDLC)
-                    {
-
-                    }
-
                     if (v.Operation == AlternateDLC.AltDLCOperation.OP_ADD_MULTILISTFILES_TO_CUSTOMDLC)
                     {
-
+                        foreach (var mlFile in v.MultiListSourceFiles)
+                        {
+                            list.Add(v.DestinationDLCFolder + @"\" + mlFile);
+                        }
                     }
                 }
             }

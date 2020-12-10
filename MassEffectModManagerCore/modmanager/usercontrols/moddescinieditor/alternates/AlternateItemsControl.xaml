@@ -12,10 +12,12 @@
         <ItemsControl.ItemTemplate>
             <DataTemplate DataType="{x:Type objects:AlternateOption}">
                 <Expander
+                    x:Name="altExpander"
                     Header="{Binding FriendlyName}"
                     Margin="5,3"
                     PreviewMouseWheel="HandleMouseWheel">
-                    <moddescinieditor:DescriptorEditorItemsControl ItemsSource="{Binding ParameterMap}"/>
+                    <moddescinieditor:DescriptorEditorItemsControl ItemsSource="{Binding ParameterMap}"
+                                                                   Visibility="{Binding ElementName=altExpander, Path=IsExpanded, Converter={StaticResource BoolToVisibilityConverter}}"/>
                 </Expander>
             </DataTemplate>
         </ItemsControl.ItemTemplate>
