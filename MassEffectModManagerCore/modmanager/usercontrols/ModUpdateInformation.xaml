@@ -6,7 +6,9 @@
     d:DesignWidth="500"
     MaxHeight="500"
     MinWidth="420"
-    MaxWidth="550">
+    MaxWidth="550"
+    DataContext="{Binding RelativeSource={RelativeSource Self}}"
+    >
     <UserControl.Resources>
         <converters:BoolToVisibilityConverter
             x:Key="BoolToVisibilityConverter" />
@@ -22,13 +24,23 @@
             DockPanel.Dock="Top"
             Text="{DynamicResource string_modManagerDetectedModUpdates}"
             TextAlignment="Center" />
-        <Button
+        <DockPanel Dock="Bottom">
+            <Button
+                DockPanel.Dock="Left"
+                Content="Download all"
+                ToolTip="Download updates to mods that support direct updates"
+                Command="{Binding DownloadAllCommand}"
+                Padding="7,4"
+                HorizontalAlignment="Left"
+                Margin="0,5,0,5" />
+            <Button
             DockPanel.Dock="Bottom"
             Content="{DynamicResource string_close}"
             Command="{Binding CloseCommand}"
-            Padding="7,4"
+            Padding="14,4"
             HorizontalAlignment="Right"
             Margin="5,5,0,5" />
+        </DockPanel>
         <ItemsControl
             ItemsSource="{Binding UpdatableMods}"
             AlternationCount="{Binding RelativeSource={RelativeSource Self}, Path=Items.Count}">

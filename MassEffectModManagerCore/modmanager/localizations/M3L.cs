@@ -774,7 +774,8 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public static readonly string string_tooltip_compressPackages = "string_tooltip_compressPackages";
 		public static readonly string string_tooltip_installModArchiveWindow = "string_tooltip_installModArchiveWindow";
 		public static readonly string string_modupdatesavailable = "string_modupdatesavailable";
-		public static readonly string string_downloadUpdate = "string_downloadUpdate";
+        public static readonly string string_downloadUpdate = "string_downloadUpdate";
+        public static readonly string string_downloadUpdateFromNexusMods = "string_downloadUpdateFromNexusMods";
 		public static readonly string string_downloading = "string_downloading";
 		public static readonly string string_interp_errorOccuredWhileUpdatingXErrorMessage = "string_interp_errorOccuredWhileUpdatingXErrorMessage";
 		public static readonly string string_interp_errorUpdatingX = "string_interp_errorUpdatingX";

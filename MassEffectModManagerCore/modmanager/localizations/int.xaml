@@ -801,6 +801,7 @@
     <!-- Mod updater -->
     <system:String x:Key="string_modupdatesavailable">Mod updates available</system:String>
     <system:String x:Key="string_downloadUpdate">Download update</system:String>
+    <system:String x:Key="string_downloadUpdateFromNexusMods">Download from NexusMods</system:String>
     <system:String x:Key="string_downloading">Downloading</system:String>
     <system:String xml:space="preserve" x:Key="string_interp_errorOccuredWhileUpdatingXErrorMessage">Error occurred while updating {0}:\n{1}</system:String>
     <!-- 0 = mod name, 1 = error message -->
