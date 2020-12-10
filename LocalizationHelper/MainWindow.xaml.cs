@@ -22,7 +22,6 @@ namespace LocalizationHelper
     {
         public ObservableCollectionExtended<string> SourceFiles { get; } = new ObservableCollectionExtended<string>();
         public string SelectedFile { get; set; }
-        C
         public MainWindow()
         {
             DataContext = this;

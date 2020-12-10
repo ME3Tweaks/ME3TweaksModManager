@@ -420,7 +420,7 @@
     <system:String x:Key="string_previewPanelTitle">Welcome to ME3Tweaks Mod Manager</system:String>
     <system:String x:Key="string_selectYourLanguage">Select your language</system:String>
     <system:String x:Key="string_howToChangeLanguage">You can change your language at any time from the Actions > Options menu. Note that all support is provided in English only.</system:String>
-    <system:String xml:space="preserve" x:Key="string_previewPanelIntro">Import mods into ME3Tweaks Mod Manager by dragging and dropping their mod archive files onto this window after you close this dialog.&#10;&#10;If you have any issues or feedback, please join the ME3Tweaks Discord via the button below.</system:String>
+    <system:String xml:space="preserve" x:Key="string_previewPanelIntro">Welcome to ME3Tweaks Mod Manager, or M3 for short. Import mods into ME3Tweaks Mod Manager by dragging and dropping their mod archive files onto this window after you close this dialog. See what's installed by selecting Manage Target on the top right of the main window.&#10;&#10;If you have any issues or feedback, please join the ME3Tweaks Discord via the button below.</system:String>
     <system:String x:Key="string_joinDiscord">Join the ME3Tweaks Discord</system:String>
     <system:String x:Key="string_close">Close</system:String>
     <!-- Close (as in close dialog) -->

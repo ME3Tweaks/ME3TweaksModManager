@@ -267,6 +267,7 @@ namespace MassEffectModManagerCore
                 }
                 else if (Settings.ShowedPreviewPanel)
                 {
+                    // Telemetry is on. Start appcenter
                     InitAppCenter();
                 }
 
@@ -278,26 +279,26 @@ namespace MassEffectModManagerCore
                 {
                     //first boot?
                     var currentCultureLang = CultureInfo.InstalledUICulture.Name;
-                    if (currentCultureLang.StartsWith("de")) InitialLanguage = Settings.Language = "deu";
-                    if (currentCultureLang.StartsWith("ru")) InitialLanguage = Settings.Language = "rus";
-                    if (currentCultureLang.StartsWith("pl")) InitialLanguage = Settings.Language = "pol";
-                    if (currentCultureLang.StartsWith("pt")) InitialLanguage = Settings.Language = "bra";
-                    Analytics.TrackEvent("Auto set startup language", new Dictionary<string, string>() { { @"Language", InitialLanguage } });
+                    if (currentCultureLang.StartsWith(@"de")) InitialLanguage = Settings.Language = @"deu";
+                    if (currentCultureLang.StartsWith(@"ru")) InitialLanguage = Settings.Language = @"rus";
+                    if (currentCultureLang.StartsWith(@"pl")) InitialLanguage = Settings.Language = @"pol";
+                    if (currentCultureLang.StartsWith(@"pt")) InitialLanguage = Settings.Language = @"bra";
+                    SubmitAnalyticTelemetryEvent(@"Auto set startup language", new Dictionary<string, string>() { { @"Language", InitialLanguage } });
                     Log.Information(@"This is a first boot. The system language code is " + currentCultureLang);
                 }
 
-                Log.Information("Deleting temp files (if any)");
+                Log.Information(@"Deleting temp files (if any)");
                 try
                 {
                     Utilities.DeleteFilesAndFoldersRecursively(Utilities.GetTempPath());
                 }
                 catch (Exception e)
                 {
-                    Log.Error($"Unable to delete temporary files directory {Utilities.GetTempPath()}: {e.Message}");
+                    Log.Error($@"Unable to delete temporary files directory {Utilities.GetTempPath()}: {e.Message}");
                 }
 
-                Log.Information("Mod Manager pre-UI startup has completed. The UI will now load.");
-                Log.Information("If the UI fails to start, it may be that a third party tool is injecting itself into Mod Manager, such as RivaTuner or Afterburner, and is corrupting the process.");
+                Log.Information(@"Mod Manager pre-UI startup has completed. The UI will now load.");
+                Log.Information(@"If the UI fails to start, it may be that a third party tool is injecting itself into Mod Manager, such as RivaTuner or Afterburner, and is corrupting the process.");
                 POST_STARTUP = true; //this could be earlier but i'm not sure when crash handler actually is used, doesn't seem to be after setting it...
             }
             catch (Exception e)
@@ -307,7 +308,43 @@ namespace MassEffectModManagerCore
             }
         }
 
-        private void InitAppCenter()
+        private static List<(string, Dictionary<string, string>)> QueuedTelemetryItems = new List<(string, Dictionary<string, string>)>();
+
+        /// <summary>
+        /// Submits a telemetry event. Queues them if the first run panel has not shown yet.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="data"></param>
+        public static void SubmitAnalyticTelemetryEvent(string name, Dictionary<string, string> data = null)
+        {
+            if (!Settings.ShowedPreviewPanel && QueuedTelemetryItems != null)
+            {
+                QueuedTelemetryItems.Add((name, data));
+            }
+            else
+            {
+                // if telemetry is not enabled this will not do anything.
+                Analytics.TrackEvent(name, data);
+            }
+        }
+
+        /// <summary>
+        /// Flushes the startup telemetry events and disables the queue.
+        /// </summary>
+        public static void FlushTelemetryItems()
+        {
+            if (Settings.EnableTelemetry)
+            {
+                foreach (var v in QueuedTelemetryItems)
+                {
+                    Analytics.TrackEvent(v.Item1, v.Item2);
+                }
+            }
+
+            QueuedTelemetryItems = null; // Just release the memory. This variable is never used again
+        }
+
+        internal static void InitAppCenter()
         {
 
 #if !DEBUG
@@ -318,7 +355,7 @@ namespace MassEffectModManagerCore
                 {
                     var attachments = new List<ErrorAttachmentLog>();
                     // Attach some text.
-                    string errorMessage = "ME3Tweaks Mod Manager has crashed! This is the exception that caused the crash:\n" + report.StackTrace;
+                    string errorMessage = @"ME3Tweaks Mod Manager has crashed! This is the exception that caused the crash:\n" + report.StackTrace;
                     Log.Fatal(errorMessage);
                     string log = LogCollector.CollectLatestLog(false);
                     if (log.Length < FileSize.MebiByte * 7)
@@ -332,10 +369,6 @@ namespace MassEffectModManagerCore
                         attachments.Add(ErrorAttachmentLog.AttachmentWithBinary(compressedLog, "crashlog.txt.lzma", "application/x-lzma"));
                     }
 
-                    // Attach binary data.
-                    //var fakeImage = System.Text.Encoding.Default.GetBytes("Fake image");
-                    //ErrorAttachmentLog binaryLog = ErrorAttachmentLog.AttachmentWithBinary(fakeImage, "ic_launcher.jpeg", "image/jpeg");
-
                     return attachments;
                 };
                 AppCenter.Start(APIKeys.AppCenterKey, typeof(Analytics), typeof(Crashes));
@@ -343,18 +376,18 @@ namespace MassEffectModManagerCore
 #else
             if (!APIKeys.HasAppCenterKey)
             {
-                Debug.WriteLine(" >>> This build is missing an API key for AppCenter!");
+                Debug.WriteLine(@" >>> This build is missing an API key for AppCenter!");
             }
             else
             {
-                Debug.WriteLine("This build has an API key for AppCenter");
+                Debug.WriteLine(@"This build has an API key for AppCenter");
             }
 #endif
         }
 
         public static bool IsRunningOnAMD;
 
-        public static string[] SupportedLanguages = { "int", "pol", "rus", "deu", "fra", "bra", "esn" };
+        public static string[] SupportedLanguages = { @"int", @"pol", @"rus", @"deu", @"fra", @"bra", @"esn" };
 
         public static int BuildNumber = Assembly.GetEntryAssembly().GetName().Version.Revision;
 
@@ -363,12 +396,11 @@ namespace MassEffectModManagerCore
         /// </summary>
         public static Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>> ThirdPartyIdentificationService;
 
-        internal static string BugReportURL = "https://github.com/ME3Tweaks/ME3TweaksModManager/issues";
         public static Dictionary<long, List<ThirdPartyServices.ThirdPartyImportingInfo>> ThirdPartyImportingService;
         public static Dictionary<string, CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>> BasegameFileIdentificationService;
         public static bool BootingUpdate;
         public static int UpdatedFrom = 0;
-        public static string InitialLanguage = "int";
+        public static string InitialLanguage = @"int";
         internal static Dictionary<string, List<string>> TipsService;
         internal static string CurrentLanguage = InitialLanguage;
 
@@ -398,10 +430,10 @@ namespace MassEffectModManagerCore
             get
             {
                 Version assemblyVersion = Assembly.GetEntryAssembly().GetName().Version;
-                string version = $"{assemblyVersion.Major}.{assemblyVersion.Minor}";
+                string version = $@"{assemblyVersion.Major}.{assemblyVersion.Minor}";
                 if (assemblyVersion.Build != 0)
                 {
-                    version += "." + assemblyVersion.Build;
+                    version += @"." + assemblyVersion.Build;
                 }
 
                 return version;
@@ -414,7 +446,7 @@ namespace MassEffectModManagerCore
             {
                 string version = AppVersion;
 #if DEBUG
-                version += " DEBUG";
+                version += @" DEBUG";
 #elif PRERELEASE
                  //version += " PRERELEASE";
 #endif
@@ -428,7 +460,7 @@ namespace MassEffectModManagerCore
             {
                 string version = AppVersion;
 #if DEBUG
-                version += " DEBUG";
+                version += @" DEBUG";
 #elif PRERELEASE
                  //version += " PRERELEASE";
 #endif
@@ -486,7 +518,7 @@ namespace MassEffectModManagerCore
         {
             if (!Crashes.IsEnabledAsync().Result)
             {
-                string errorMessage = "ME3Tweaks Mod Manager has crashed! This is the exception that caused the crash:\n" + FlattenException(e.Exception);
+                string errorMessage = @"ME3Tweaks Mod Manager has crashed! This is the exception that caused the crash:\n" + FlattenException(e.Exception);
                 Log.Fatal(errorMessage);
             }
         }
@@ -499,7 +531,7 @@ namespace MassEffectModManagerCore
         {
             if (!POST_STARTUP)
             {
-                Log.Fatal("ME3Tweaks Mod Manager has encountered a fatal startup crash:\n" + FlattenException(e));
+                Log.Fatal(@"ME3Tweaks Mod Manager has encountered a fatal startup crash:\n" + FlattenException(e));
             }
         }
 
@@ -527,7 +559,7 @@ namespace MassEffectModManagerCore
         {
             if (e.ApplicationExitCode == 0)
             {
-                Log.Information("Application exiting normally");
+                Log.Information(@"Application exiting normally");
                 Log.CloseAndFlush();
             }
         }
@@ -548,20 +580,20 @@ namespace MassEffectModManagerCore
     {
         public string UpdateDest { get; set; }
 
-        [Option('c', "completing-update",
-            HelpText = "Indicates that we are booting a new copy of ME3Tweaks Mod Manager that has just been upgraded. --update-from should be included when calling this parameter.")]
+        [Option('c', @"completing-update",
+            HelpText = @"Indicates that we are booting a new copy of ME3Tweaks Mod Manager that has just been upgraded. --update-from should be included when calling this parameter.")]
         public bool BootingNewUpdate { get; set; }
 
-        [Option("update-from",
-            HelpText = "Indicates what build of Mod Manager we are upgrading from.")]
+        [Option(@"update-from",
+            HelpText = @"Indicates what build of Mod Manager we are upgrading from.")]
         public int UpdateFromBuild { get; set; }
 
-        [Option("update-boot",
-            HelpText = "Indicates that the process should run in update mode for a single file .net core executable. The process will exit upon starting because the platform extraction process will have completed.")]
+        [Option(@"update-boot",
+            HelpText = @"Indicates that the process should run in update mode for a single file .net core executable. The process will exit upon starting because the platform extraction process will have completed.")]
         public bool UpdateBoot { get; set; }
 
-        [Option("upgrade-from-me3cmm",
-            HelpText = "Indicates that this is an upgrade from ME3CMM, and that a migration should take place.")]
+        [Option(@"upgrade-from-me3cmm",
+            HelpText = @"Indicates that this is an upgrade from ME3CMM, and that a migration should take place.")]
         public bool UpgradingFromME3CMM { get; set; }
     }
 }

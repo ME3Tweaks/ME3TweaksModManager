@@ -78,6 +78,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void CloseInternal()
         {
+            if (Settings.EnableTelemetry)
+            {
+                // Start app center
+                App.InitAppCenter();
+            }
+            App.FlushTelemetryItems(); // Push through any pending telemetry items
+
             OnClosing(new DataEventArgs(true));
             Settings.ShowedPreviewPanel = true;
             Settings.Save();

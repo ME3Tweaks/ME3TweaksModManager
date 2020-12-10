@@ -105,7 +105,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             INSTALL_FAILED_COULD_NOT_DELETE_EXISTING_FOLDER,
             INSTALL_FAILED_INVALID_CONFIG_FOR_COMPAT_PACK_ME3,
             INSTALL_FAILED_ERROR_BUILDING_INSTALLQUEUES,
-            INSTALL_FAILED_SINGLEREQUIRED_DLC_MISSING
+            INSTALL_FAILED_SINGLEREQUIRED_DLC_MISSING,
+            INSTALL_FAILED_AMD_PROCESSOR_REQUIRED
         }
 
         public string Action { get; set; }
@@ -187,7 +188,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 //logs handled in precheck
                 e.Result = ModInstallCompletedStatus.INSTALL_FAILED_USER_CANCELED_MISSING_MODULES;
                 Log.Information(@"<<<<<<< Exiting modinstaller");
+                return;
+            }
 
+            if (ModBeingInstalled.RequiresAMD && !App.IsRunningOnAMD)
+            {
+                e.Result = ModInstallCompletedStatus.INSTALL_FAILED_AMD_PROCESSOR_REQUIRED;
+                Log.Error(@"This mod can only be installed on AMD processors, as it does nothing for Intel users.");
+                Log.Information(@"<<<<<<< Exiting modinstaller");
                 return;
             }
 
@@ -693,7 +701,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     // I hope this covers all cases. Mods targeting moddesc 6 or lower don't need friendlyname or description, but virtually all of them did
                     // as MM4/5 autonaming was ugly
-                    metaOutLines.Add($@"{MetaCMM.PrefixOptionsSelectedOnInstall}{string.Join(';', alternates.Where(x=>!string.IsNullOrWhiteSpace(x.FriendlyName)).Select(x=>x.FriendlyName))}");
+                    metaOutLines.Add($@"{MetaCMM.PrefixOptionsSelectedOnInstall}{string.Join(';', alternates.Where(x => !string.IsNullOrWhiteSpace(x.FriendlyName)).Select(x => x.FriendlyName))}");
                 }
 
                 File.WriteAllLines(metacmm, metaOutLines);
@@ -1126,6 +1134,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         InstallationCancelled = true;
                         M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogInvalidME2Coalesced), M3L.GetString(M3L.string_installationAborted), MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                    else if (mcis == ModInstallCompletedStatus.INSTALL_FAILED_AMD_PROCESSOR_REQUIRED)
+                    {
+                        InstallationCancelled = true;
+                        M3L.ShowDialog(window, @"This mod can only be installed on a system with an AMD processor.", "Cannot install mod", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                     else if (mcis == ModInstallCompletedStatus.INSTALL_FAILED_USER_CANCELED_MISSING_MODULES || mcis == ModInstallCompletedStatus.USER_CANCELED_INSTALLATION || mcis == ModInstallCompletedStatus.INSTALL_ABORTED_NOT_ENOUGH_SPACE)
                     {

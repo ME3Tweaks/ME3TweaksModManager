@@ -99,6 +99,10 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
         /// </summary>
         public bool PreferCompressed { get; set; }
         /// <summary>
+        /// If the mod requires an AMD processor to install. This is only used for ME1 lighting fix.
+        /// </summary>
+        public bool RequiresAMD { get; set; }
+        /// <summary>
         /// List of files that will always be deleted locally when servicing an update on a client. This has mostly been deprecated for new mods.
         /// </summary>
         public ObservableCollectionExtended<string> UpdaterServiceBlacklistedFiles { get; } = new ObservableCollectionExtended<string>();
@@ -614,6 +618,12 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 CLog.Information($@"Found prefercompressed descriptor. The mod will default the compress packages flag to {pCompressed} in the mod import panel.",
                     Settings.LogModStartup);
                 PreferCompressed = pCompressed;
+            }
+
+            if (bool.TryParse(iniData[@"ModInfo"][@"amdprocessoronly"], out var bRequiresAMD))
+            {
+                // Only used for ME1 AMD Lighting Fix
+                RequiresAMD = bRequiresAMD;
             }
 
             string game = iniData[@"ModInfo"][@"game"];

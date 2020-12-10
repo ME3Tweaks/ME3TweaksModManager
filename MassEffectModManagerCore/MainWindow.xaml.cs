@@ -1729,24 +1729,21 @@ namespace MassEffectModManagerCore
                 var data = new Dictionary<string, string>();
                 try
                 {
-                    ManagementObjectSearcher mosProcessor = new ManagementObjectSearcher("SELECT * FROM Win32_Processor");
+                    ManagementObjectSearcher mosProcessor = new ManagementObjectSearcher(@"SELECT * FROM Win32_Processor");
                     foreach (ManagementObject moProcessor in mosProcessor.Get())
                     {
                         // For seeing AMD vs Intel (for ME1 lighting)
-                        if (moProcessor["name"] != null)
+                        if (moProcessor[@"name"] != null)
                         {
-                            data[@"Processor"] = moProcessor["name"].ToString();
-                            App.IsRunningOnAMD = data[@"Processor"].Contains("AMD");
+                            data[@"Processor"] = moProcessor[@"name"].ToString();
+                            App.IsRunningOnAMD = data[@"Processor"].Contains(@"AMD");
                         }
                     }
 
                     data[@"BetaMode"] = Settings.BetaMode.ToString();
                     data[@"DeveloperMode"] = Settings.DeveloperMode.ToString();
 
-                    if (Settings.EnableTelemetry)
-                    {
-                        Analytics.TrackEvent(@"Hardware Info", data);
-                    }
+                    App.SubmitAnalyticTelemetryEvent(@"Hardware Info", data);
                 }
                 catch //(Exception e)
                 {
@@ -2505,15 +2502,15 @@ namespace MassEffectModManagerCore
                     }
                 }
 
-                bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"EnsureStaticFiles", M3L.GetString(M3L.string_downloadingStaticFiles), M3L.GetString(M3L.string_staticFilesDownloaded));
-                success = OnlineContent.EnsureStaticAssets();
-                if (!success)
-                {
-                    Application.Current.Dispatcher.Invoke(delegate { M3L.ShowDialog(this, M3L.GetString(M3L.string_dialogCouldNotDownloadStaticAssets), M3L.GetString(M3L.string_missingAssets), MessageBoxButton.OK, MessageBoxImage.Error); });
-                    bgTask.finishedUiText = M3L.GetString(M3L.string_failedToDownloadStaticFiles);
-                }
+                //bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"EnsureStaticFiles", M3L.GetString(M3L.string_downloadingStaticFiles), M3L.GetString(M3L.string_staticFilesDownloaded));
+                //success = OnlineContent.EnsureStaticAssets();
+                //if (!success)
+                //{
+                //    Application.Current.Dispatcher.Invoke(delegate { M3L.ShowDialog(this, M3L.GetString(M3L.string_dialogCouldNotDownloadStaticAssets), M3L.GetString(M3L.string_missingAssets), MessageBoxButton.OK, MessageBoxImage.Error); });
+                //    bgTask.finishedUiText = M3L.GetString(M3L.string_failedToDownloadStaticFiles);
+                //}
 
-                backgroundTaskEngine.SubmitJobCompletion(bgTask);
+                //backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
                 bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"LoadTutorialService", M3L.GetString(M3L.string_checkingTutorialAssets), M3L.GetString(M3L.string_checkedTutorialAssets));
                 App.TutorialService = OnlineContent.FetchTutorialManifest(!firstStartupCheck);
@@ -2906,7 +2903,7 @@ namespace MassEffectModManagerCore
                     case @".7z":
                     case @".zip":
                     case @".exe":
-                        Analytics.TrackEvent(@"User opened mod archive for import", new Dictionary<string, string>
+                        App.SubmitAnalyticTelemetryEvent(@"User opened mod archive for import", new Dictionary<string, string>
                         {
                             {@"Method", @"Drag & drop"},
                             {@"Filename", Path.GetFileName(files[0])}
@@ -2917,11 +2914,11 @@ namespace MassEffectModManagerCore
                     case @".tpf":
                     case @".mod":
                     case @".mem":
-                        Analytics.TrackEvent(@"User redirected to MEM/ALOT Installer", new Dictionary<string, string> { { @"Filename", Path.GetFileName(files[0]) } });
+                        App.SubmitAnalyticTelemetryEvent(@"User redirected to MEM/ALOT Installer", new Dictionary<string, string> { { @"Filename", Path.GetFileName(files[0]) } });
                         M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_dialog_installingTextureMod, ext), M3L.GetString(M3L.string_nonModManagerModFound), MessageBoxButton.OK, MessageBoxImage.Warning);
                         break;
                     case @".me2mod":
-                        Analytics.TrackEvent(@"User opened me2mod file", new Dictionary<string, string> { { @"Filename", Path.GetFileName(files[0]) } });
+                        App.SubmitAnalyticTelemetryEvent(@"User opened me2mod file", new Dictionary<string, string> { { @"Filename", Path.GetFileName(files[0]) } });
                         openModImportUI(files[0]);
                         break;
                     case @".xaml":

@@ -154,10 +154,7 @@
 		<EmbeddedResource Include="modmanager\starterkit\BlankTlkFile.upk" />
 		<EmbeddedResource Include="modmanager\starterkit\Default.sfar" />
 		<EmbeddedResource Include="modmanager\starterkit\Default_DLC_MOD_StarterKit.bin" />
-		<EmbeddedResource Include="staticfiles\objectinfos\ME1ObjectInfo.json" />
-		<EmbeddedResource Include="staticfiles\objectinfos\ME2ObjectInfo.json" />
-		<EmbeddedResource Include="staticfiles\objectinfos\ME3ObjectInfo.json" />
-		<EmbeddedResource Include="updater\ME3CMM.exe" />
+    <EmbeddedResource Include="updater\ME3CMM.exe" />
 		<EmbeddedResource Include="updater\ME3TweaksUpdater.exe" />
 	</ItemGroup>
 
