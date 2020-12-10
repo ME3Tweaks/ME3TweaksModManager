@@ -43,9 +43,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public GenericCommand SearchCommand { get; set; }
         public ObservableCollectionExtended<SearchedItemResult> Results { get; } = new ObservableCollectionExtended<SearchedItemResult>();
 
+        public bool HasAPIToken { get; } = APIKeys.HasNexusSearchKey;
 
-
-        private bool CanSearch() => !QueryInProgress && !string.IsNullOrWhiteSpace(SearchTerm) && (SearchME1 || SearchME2 || SearchME3);
+        private bool CanSearch() => HasAPIToken && !QueryInProgress && !string.IsNullOrWhiteSpace(SearchTerm) && (SearchME1 || SearchME2 || SearchME3);
 
         private void PerformSearch()
         {
@@ -55,7 +55,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             try
             {
 
-                Task.Run(() => OnlineContent.FetchRemoteString(searchUrl)).ContinueWithOnUIThread(result =>
+                Task.Run(() => OnlineContent.FetchRemoteString(searchUrl, authorizationToken: APIKeys.NexusSearchKey)).ContinueWithOnUIThread(result =>
                 {
                     var i = result.Result;
                     var x = JsonConvert.DeserializeObject<SearchTopLevelResult>(i);

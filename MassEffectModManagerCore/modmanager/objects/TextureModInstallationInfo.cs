@@ -188,6 +188,20 @@ namespace MassEffectModManagerCore.modmanager.objects
             public InstalledTextureModType ModType { get; set; }
             public string ModName { get; set; }
             public string AuthorName { get; set; }
+
+            public string UIName
+            {
+                get
+                {
+                    var ret = ModName;
+                    if (ModType == InstalledTextureModType.MANIFESTFILE)
+                    {
+                        ret = $"{ModName} by {AuthorName}";
+                    }
+                    return ret;
+                }
+            }
+
             public List<string> ChosenOptions { get; } = new List<string>();
 
             ///// <summary>
@@ -239,6 +253,11 @@ namespace MassEffectModManagerCore.modmanager.objects
                         numChoices--;
                     }
                 }
+            }
+
+            public InstalledTextureMod()
+            {
+
             }
 
             /// <summary>

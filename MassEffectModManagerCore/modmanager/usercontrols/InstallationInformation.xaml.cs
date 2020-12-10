@@ -323,7 +323,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                 SelectedTarget.PopulateDLCMods(true, deleteConfirmationCallback, notifyDeleted);
                 SelectedTarget.PopulateExtras();
-
+                SelectedTarget.PopulateTextureInstallHistory();
                 bool restoreBasegamefileConfirmationCallback(string filepath)
                 {
                     if (Utilities.IsGameRunning(SelectedTarget.Game))
@@ -550,11 +550,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             PreviousTarget = SelectedTarget;
         }
 
-        private void TargetChanged(GameTarget oldTarget, GameTarget newTarget)
-        {
-
-        }
-
         public class InstalledDLCMod : INotifyPropertyChanged
         {
             private string dlcFolderPath;
@@ -720,10 +715,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         }
 
 
-        private void OpenALOTInstaller_Click(object sender, RequestNavigateEventArgs e)
-        {
-            ClosePanel(new DataEventArgs(@"ALOTInstaller"));
-        }
 
         private void OpenInExplorer_Click(object sender, RoutedEventArgs e)
         {
@@ -750,6 +741,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void OpenASIManager_Click(object sender, RequestNavigateEventArgs e)
         {
             ClosePanel(new DataEventArgs(@"ASIManager"));
+        }
+
+        private void OpenALOTInstaller_Click(object sender, RoutedEventArgs e)
+        {
+            ClosePanel(new DataEventArgs(@"ALOTInstaller"));
         }
     }
 }

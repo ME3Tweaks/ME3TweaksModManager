@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using MassEffectModManagerCore.modmanager.helpers;
+using ME3ExplorerCore.GameFilesystem;
 using ME3ExplorerCore.Misc;
 using ME3ExplorerCore.Packages;
 using Serilog;
@@ -79,7 +80,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                                             break;
                                         case AlternateFile.AltFileOperation.OP_SUBSTITUTE:
                                             CLog.Information($@"Repointing {sourceFile} to {altFile.AltFile} for Alternate File {altFile.FriendlyName} due to operation OP_SUBSTITUTE", Settings.LogModInstallation);
-                                            if (job.JobDirectory != null && altFile.AltFile.StartsWith((string) job.JobDirectory))
+                                            if (job.JobDirectory != null && altFile.AltFile.StartsWith((string)job.JobDirectory))
                                             {
                                                 installationMapping[sourceFile] = new InstallSourceFile(altFile.AltFile.Substring(job.JobDirectory.Length).TrimStart('/', '\\'))
                                                 {
@@ -96,7 +97,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                                         case AlternateFile.AltFileOperation.OP_INSTALL:
                                             //same logic as substitute, just different logging.
                                             CLog.Information($@"Adding {sourceFile} to install (from {altFile.AltFile}) as part of Alternate File {altFile.FriendlyName} due to operation OP_INSTALL", Settings.LogModInstallation);
-                                            if (job.JobDirectory != null && altFile.AltFile.StartsWith((string) job.JobDirectory))
+                                            if (job.JobDirectory != null && altFile.AltFile.StartsWith((string)job.JobDirectory))
                                             {
                                                 installationMapping[sourceFile] = new InstallSourceFile(altFile.AltFile.Substring(job.JobDirectory.Length).TrimStart('/', '\\'))
                                                 {
@@ -459,6 +460,71 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 }
             }
             return list;
+        }
+
+        /// <summary>
+        /// Gets a list of all files that *may* be installed by a mod.
+        /// </summary>
+        /// <returns></returns>
+        public List<string> GetAllInstallableFiles()
+        {
+            var list = new List<string>();
+
+            foreach (var job in InstallationJobs)
+            {
+                if (ModJob.IsVanillaJob(job, Game))
+                {
+                    // Basegame, Official DLC
+                    list.AddRange(job.FilesToInstall.Keys);
+                }
+                else if (job.Header == ModJob.JobHeader.CUSTOMDLC)
+                {
+                    foreach (var cdlcDir in job.CustomDLCFolderMapping)
+                    {
+                        var dlcSourceDir = Path.Combine(ModPath, cdlcDir.Key);
+                        var files = Directory.GetFiles(dlcSourceDir, @"*", SearchOption.AllDirectories).Select(x => x.Substring(dlcSourceDir.Length + 1));
+                        list.AddRange(files.Select(x => $@"{MEDirectories.GetDLCPath(Game, @"")}\{cdlcDir.Value}\{x}"));
+                    }
+                }
+
+                foreach (var v in job.AlternateFiles)
+                {
+                    if (v.Operation == AlternateFile.AltFileOperation.OP_INSTALL)
+                    {
+                        list.Add(v.ModFile);
+                    }
+
+                    if (v.Operation == AlternateFile.AltFileOperation.OP_APPLY_MULTILISTFILES)
+                    {
+                        foreach (var mlFile in v.MultiListSourceFiles)
+                        {
+                            list.Add(v.MultiListTargetPath + @"\" + mlFile);
+                        }
+                    }
+                }
+
+                foreach (var v in job.AlternateDLCs)
+                {
+                    if (v.Operation == AlternateDLC.AltDLCOperation.OP_ADD_CUSTOMDLC)
+                    {
+                        var dlcSourceDir = Path.Combine(ModPath, v.AlternateDLCFolder);
+                        var files = Directory.GetFiles(dlcSourceDir, @"*", SearchOption.AllDirectories).Select(x => x.Substring(dlcSourceDir.Length + 1));
+                        list.AddRange(files.Select(x => $@"{MEDirectories.GetDLCPath(Game, @"")}\{v.DestinationDLCFolder}\{x}"));
+                    }
+
+                    if (v.Operation == AlternateDLC.AltDLCOperation.OP_ADD_FOLDERFILES_TO_CUSTOMDLC)
+                    {
+
+                    }
+
+                    if (v.Operation == AlternateDLC.AltDLCOperation.OP_ADD_MULTILISTFILES_TO_CUSTOMDLC)
+                    {
+
+                    }
+                }
+            }
+
+            return list.Distinct().ToList();
         }
 
         [DebuggerDisplay("InstallSourceFile {FilePath} IsFullRelPath: {IsFullRelativeFilePath}")] //do not localize

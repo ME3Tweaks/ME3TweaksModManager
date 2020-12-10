@@ -382,7 +382,6 @@ namespace MassEffectModManagerCore
         public ICommand RestoreModFromME3TweaksCommand { get; set; }
         public ICommand GrantWriteAccessCommand { get; set; }
         public ICommand AutoTOCCommand { get; set; }
-        public ICommand ME3UICompatibilityPackGeneratorCommand { get; set; }
         public ICommand ConsoleKeyKeybinderCommand { get; set; }
         public ICommand LoginToNexusCommand { get; set; }
         public GenericCommand EndorseSelectedModCommand { get; set; }
@@ -3575,6 +3574,17 @@ namespace MassEffectModManagerCore
         private void DebugShowTextureModInstallationHistory_Click(object sender, RoutedEventArgs e)
         {
             DebugShowCurrentTargetTextureHistory();
+        }
+
+        private void ListAllInstallableFiles_Click(object sender, RoutedEventArgs e)
+        {
+            if (SelectedMod != null)
+            {
+                var files = SelectedMod.GetAllInstallableFiles();
+                ListDialog l = new ListDialog(files, $"All installable files for {SelectedMod.ModName}", "The following files are what this mod can potentially install into the game. Note that some of them may only be installed if certain options are chosen.", this);
+                l.Show();
+
+            }
         }
     }
 }

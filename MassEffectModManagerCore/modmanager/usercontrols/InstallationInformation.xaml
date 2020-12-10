@@ -4,7 +4,9 @@
     mc:Ignorable="d"
     MinWidth="600"
     MaxHeight="500" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+    xmlns:objects="clr-namespace:MassEffectModManagerCore.modmanager.objects"
     d:DesignHeight="550"
+    DataContext="{Binding RelativeSource={RelativeSource Self}}"
     d:DesignWidth="800">
     <UserControl.Resources></UserControl.Resources>
     <StackPanel
@@ -149,7 +151,7 @@
                                                     Margin="5,0,0,0"
                                                     Visibility="{Binding EnableDisableVisible, Converter={StaticResource BoolToVisibilityConverter}}"
                                                     ToolTip="{Binding EnableDisableTooltip}" />
-                                                
+
                                             </DockPanel>
                                         </Grid>
                                     </DockPanel>
@@ -388,6 +390,75 @@
                 </DockPanel>
             </TabItem>
             <TabItem
+                Header="Textures"
+                Margin="0"
+                Padding="0">
+                <DockPanel
+                    Height="300"
+                    Margin="-8">
+                    <DockPanel DockPanel.Dock="Bottom" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}">
+                        <Button HorizontalAlignment="Right"
+                                Margin="4"
+                                Padding="7,3"
+                                ToolTip="Textures for the trilogy are installed using ALOT Installer.&#10;Texture mods must be installed last"
+                                Click="OpenALOTInstaller_Click">
+                            <Button.Content>
+                                <DockPanel>
+                                    <TextBlock Text="Install textures with ALOT Installer" DockPanel.Dock="Left" Margin="0,0,5,0"/>
+                                    <Image Source="/modmanager/toolicons/alot_32.png" Height="16"/>
+                                </DockPanel>
+                            </Button.Content>
+                        </Button>
+                    </DockPanel>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <DockPanel
+                            HorizontalAlignment="Stretch">
+                            <!--<TextBlock Text="Mod Manager does not handle texture mods, but textures installed through ALOT Installer are shown here. Once texture mods are installed, Mod Manager will not operate on that installation." 
+                               TextWrapping="Wrap"/>-->
+                            <ItemsControl ItemsSource="{Binding TextureInstallHistory}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="{x:Type objects:TextureModInstallationInfo}">
+                                        <DockPanel Margin="0,0,0,10">
+                                            <TextBlock Text="{Binding InstallationTimestamp, StringFormat='Texture installation - {0}'}" FontWeight="Bold" DockPanel.Dock="Top"/>
+                                            <TextBlock Text="{Binding StringFormat='Versioning info: {0}'}" DockPanel.Dock="Top"/>
+                                            <!-- Todo localization converter -->
+                                            <TextBlock Text="Files installed in session:" DockPanel.Dock="Top"/>
+                                            <ItemsControl ItemsSource="{Binding InstalledTextureMods}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate DataType="{x:Type objects:TextureModInstallationInfo+InstalledTextureMod}">
+                                                        <DockPanel Margin="5,0,5,0">
+                                                            <DockPanel.Resources>
+                                                                <Style
+                                                            TargetType="{x:Type DockPanel}">
+                                                                    <Style.Triggers>
+                                                                        <Trigger
+                                                                    Property="IsMouseOver"
+                                                                    Value="True">
+                                                                            <Setter
+                                                                        Property="Background"
+                                                                        Value="{DynamicResource {x:Static adonisUi:Brushes.HoverBackgroundBrush}}" />
+                                                                        </Trigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </DockPanel.Resources>
+                                                            <TextBlock DockPanel.Dock="Right" 
+                                                               Text="{Binding ModType}"
+                                                               FontStyle="Italic"
+                                                               Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}"/>
+                                                            <TextBlock Text="{Binding UIName}"/>
+                                                        </DockPanel>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </DockPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </DockPanel>
+                    </ScrollViewer>
+                </DockPanel>
+            </TabItem>
+            <TabItem
                 Header="{DynamicResource string_other}"
                 Margin="0"
                 Padding="0">
@@ -505,12 +576,7 @@
             </TabItem>
         </TabControl>
         <DockPanel>
-            <Image
-                Source="/modmanager/toolicons/alot_big.png"
-                DockPanel.Dock="Left"
-                Width="32"
-                RenderOptions.BitmapScalingMode="HighQuality"
-                VerticalAlignment="Center" />
+
             <DockPanel
                 Dock="Right"
                 HorizontalAlignment="Right">
@@ -549,20 +615,6 @@
                     Foreground="Gray"
                     VerticalAlignment="Center" />
             </DockPanel>
-            <StackPanel
-                Margin="5,5,0,0">
-                <TextBlock
-                    Text="{Binding SelectedTarget.ALOTStatusString}" />
-                <TextBlock
-                    ToolTip="{DynamicResource string_clickToOpenALOTInstaller}">
-          <Hyperlink
-                        RequestNavigate="OpenALOTInstaller_Click"
-                        NavigateUri="internal://trigger">
-            <TextBlock
-                            Text="{DynamicResource string_manageTexturesWithALOTInstaller}" />
-          </Hyperlink>
-        </TextBlock>
-            </StackPanel>
         </DockPanel>
     </StackPanel>
 </local:MMBusyPanelBase>

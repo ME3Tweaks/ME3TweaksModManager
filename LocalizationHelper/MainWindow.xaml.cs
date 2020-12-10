@@ -8,16 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Xml;
 using System.Xml.Linq;
 using Path = System.IO.Path;
@@ -31,7 +22,7 @@ namespace LocalizationHelper
     {
         public ObservableCollectionExtended<string> SourceFiles { get; } = new ObservableCollectionExtended<string>();
         public string SelectedFile { get; set; }
-
+        C
         public MainWindow()
         {
             DataContext = this;

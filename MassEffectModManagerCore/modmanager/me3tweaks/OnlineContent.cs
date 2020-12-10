@@ -251,11 +251,15 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
         }
 
-        public static string FetchRemoteString(string url)
+        public static string FetchRemoteString(string url, string authorizationToken = null)
         {
             try
             {
                 using var wc = new ShortTimeoutWebClient();
+                if (authorizationToken != null)
+                {
+                    wc.Headers.Add("Authorization", authorizationToken);
+                }
                 return wc.DownloadStringAwareOfEncoding(url);
             }
             catch (Exception e)
