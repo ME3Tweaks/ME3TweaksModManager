@@ -12,7 +12,8 @@
              xmlns:ui="clr-namespace:MassEffectModManagerCore.ui"
              xmlns:massEffectModManagerCore="clr-namespace:MassEffectModManagerCore"
              mc:Ignorable="d" 
-             Height="Auto" MinWidth="300" MaxWidth="480">
+             DataContext="{Binding RelativeSource={RelativeSource Self}}"
+             Height="Auto" MinWidth="300" MaxWidth="500">
     <local:MMBusyPanelBase.Resources>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <converters:ImageTooltipVerticalOffsetConverter x:Key="ImageTooltipVerticalOffsetConverter"/>
@@ -27,18 +28,19 @@
             <DockPanel DockPanel.Dock="Bottom">
                 <TextBlock Visibility="{Binding AllOptionsAreAutomatic, Converter={StaticResource BoolToVisibilityConverter}}" DockPanel.Dock="Top" TextWrapping="Wrap" HorizontalAlignment="Left" 
                            Text="{DynamicResource string_ui_allAlternatesAreAutomatic}"/>
-                <!--<Image Name="BottomBarGameID_Image" Source="{Binding ModBeingInstalled.Game, Converter={StaticResource GameToImageIconConverter}}" Width="25" Height="25"  DockPanel.Dock="Left" VerticalAlignment="Bottom"/>-->
-
-                <!--<Button Content="{DynamicResource string_debugPrintQueue}" Click="DebugPrintInstallationQueue_Click" Visibility="{x:Static massEffectModManagerCore:App.DebugOnlyVisibility}" Margin="0,10,0,0"  DockPanel.Dock="Left"/>-->
-
-                <Button Content="{DynamicResource string_install}" DockPanel.Dock="Right" Padding="40,0" Command="{Binding InstallCommand}" Margin="0,0,0,0" ToolTip="{DynamicResource string_installMod}"/>
-                <Button Content="{DynamicResource string_cancel}" DockPanel.Dock="Right" Padding="5,0" Margin="5,0,5,0" Click="InstallCancel_Click" ToolTip="{DynamicResource string_abortInstallingMod}"/>
-                <local:TargetSelector ShowTextureInfo="False" ToolTip="Target that the mod will be installed to" AvailableTargets="{Binding InstallationTargets}" SelectedGameTarget="{Binding SelectedGameTarget, Mode=TwoWay}"/>
+                <TextBlock Text="Install to:" FontWeight="Bold" DockPanel.Dock="Top"/>
+                <local:TargetSelector ShowTextureInfo="False" ToolTip="Target that the mod will be installed to" DockPanel.Dock="Top" AvailableTargets="{Binding InstallationTargets}" SelectedGameTarget="{Binding SelectedGameTarget, Mode=TwoWay}"/>
+                <Button Content="{DynamicResource string_install}" DockPanel.Dock="Right" Padding="40,4" Command="{Binding InstallCommand}" Margin="0,4,0,0" ToolTip="{DynamicResource string_installMod}"/>
+                <Button Content="{DynamicResource string_cancel}" DockPanel.Dock="Right" Padding="5,4" Margin="5,4,5,0" Click="InstallCancel_Click" ToolTip="{DynamicResource string_abortInstallingMod}"/>
+                <CheckBox Content="Compress packages" 
+                          Visibility="{Binding ModBeingInstalled.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Not_ME1'}"
+                          ToolTip="Compressing packages will reduce the amount of disk space required for most mods&#10;Compressing will increase the time it takes to install a mod"
+                          IsChecked="{Binding CompressInstalledPackages}" Margin="0,4,0,0"/>
             </DockPanel>
 
             <!-- End bottom stuff -->
 
-            <ScrollViewer MaxHeight="300" BorderThickness="2" Padding="0" Focusable="False">
+            <ScrollViewer MaxHeight="400" BorderThickness="0" Padding="0" Focusable="False" BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1BorderBrush}}">
                 <ItemsControl ItemsSource="{Binding AlternateOptions}">
                     <ItemsControl.Resources>
                         <DataTemplate DataType="{x:Type objects:AlternateOption}">

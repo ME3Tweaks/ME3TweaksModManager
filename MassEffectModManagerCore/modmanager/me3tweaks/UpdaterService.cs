@@ -178,11 +178,20 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         modUpdateInfo.SetLocalizedInfo();
                         string modBasepath = matchingMod.ModPath;
                         double i = 0;
-                        var references = matchingMod.GetAllRelativeReferences(true);
-                        if (!matchingMod.ValidMod)
+                        List<string> references = null;
+                        try
+                        {
+                            references = matchingMod.GetAllRelativeReferences(true);
+                        }
+                        catch
+                        {
+                            // There's an error. Underlying disk state may have changed since we originally loaded the mod
+                        }
+
+                        if (references == null || !matchingMod.ValidMod)
                         {
                             // The mod failed to load. We should just index everything the
-                            // references will not be fully parsed.
+                            // references will not be dfully parsed.
                             var localFiles = Directory.GetFiles(matchingMod.ModPath, "*", SearchOption.AllDirectories);
                             references = localFiles.Select(x => x.Substring(matchingMod.ModPath.Length + 1)).ToList();
                         }

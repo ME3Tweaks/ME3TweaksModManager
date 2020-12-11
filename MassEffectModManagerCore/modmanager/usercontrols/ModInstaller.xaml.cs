@@ -40,7 +40,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public ObservableCollectionExtended<AlternateOption> AlternateOptions { get; } = new ObservableCollectionExtended<AlternateOption>();
         public ObservableCollectionExtended<GameTarget> InstallationTargets { get; } = new ObservableCollectionExtended<GameTarget>();
         public Mod ModBeingInstalled { get; }
-        public bool CompressInstalledPackages { get; }
+        public bool CompressInstalledPackages { get; set; }
         public GameTarget SelectedGameTarget { get; set; }
         public bool InstallationSucceeded { get; private set; }
         public bool ModIsInstalling { get; set; }
@@ -56,7 +56,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             this.SelectedGameTarget = selectedGameTarget;
             selectedGameTarget.ReloadGameTarget(false); //Reload so we can have consistent state with ALOT on disk
             Action = M3L.GetString(M3L.string_preparingToInstall);
-            CompressInstalledPackages = installCompressed;
+            CompressInstalledPackages = installCompressed || modBeingInstalled.PreferCompressed;
             InitializeComponent();
 
             if (!ModBeingInstalled.IsInArchive)
@@ -1457,13 +1457,21 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             if (AlternateOptions.Count == 0)
             {
-                //Just start installing mod
-                BeginInstallingMod();
+                AllOptionsAreAutomatic = false; //Don't show the UI for this
             }
-            else
-            {
-                InstallationTargets.ReplaceAll(mainwindow.InstallationTargets.Where(x => x.Game == ModBeingInstalled.Game));
-            }
+
+            var targets = mainwindow.InstallationTargets.Where(x => x.Game == ModBeingInstalled.Game).ToList();
+            //if (AlternateOptions.Count == 0 && targets.Count == 1)
+            //{
+            //    //Just start installing mod
+            //    // target already set in constructor
+            //    BeginInstallingMod();
+            //}
+            //else
+            //{
+            // Set the list of targets.
+            InstallationTargets.ReplaceAll(targets);
+            //}
         }
 
         public bool PreventInstallUntilTargetChange { get; set; }
