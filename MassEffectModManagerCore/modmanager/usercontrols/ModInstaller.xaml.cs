@@ -56,7 +56,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             this.SelectedGameTarget = selectedGameTarget;
             selectedGameTarget.ReloadGameTarget(false); //Reload so we can have consistent state with ALOT on disk
             Action = M3L.GetString(M3L.string_preparingToInstall);
-            CompressInstalledPackages = installCompressed || modBeingInstalled.PreferCompressed;
+            CompressInstalledPackages = (installCompressed || modBeingInstalled.PreferCompressed)
+                                        && modBeingInstalled.Game > MEGame.ME1;
             InitializeComponent();
 
             if (!ModBeingInstalled.IsInArchive)
@@ -1461,17 +1462,22 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
 
             var targets = mainwindow.InstallationTargets.Where(x => x.Game == ModBeingInstalled.Game).ToList();
-            //if (AlternateOptions.Count == 0 && targets.Count == 1)
-            //{
-            //    //Just start installing mod
-            //    // target already set in constructor
-            //    BeginInstallingMod();
-            //}
-            //else
-            //{
-            // Set the list of targets.
-            InstallationTargets.ReplaceAll(targets);
-            //}
+            if (ModBeingInstalled.IsInArchive && targets.Count == 1 && AlternateOptions.Count == 0)
+            {
+                // All available options were chosen already (compression would come from import dialog)
+                BeginInstallingMod();
+            }
+            else if (targets.Count == 1 && AlternateOptions.Count == 0 && (Settings.PreferCompressingPackages || ModBeingInstalled.Game == MEGame.ME1))
+            {
+                // ME1 can't compress. If user has elected to compress packages, and there are no alternates/additional targets, just begin installation
+                CompressInstalledPackages = Settings.PreferCompressingPackages && ModBeingInstalled.Game > MEGame.ME1;
+                BeginInstallingMod();
+            }
+            else
+            {
+                // Set the list of targets.
+                InstallationTargets.ReplaceAll(targets);
+            }
         }
 
         public bool PreventInstallUntilTargetChange { get; set; }

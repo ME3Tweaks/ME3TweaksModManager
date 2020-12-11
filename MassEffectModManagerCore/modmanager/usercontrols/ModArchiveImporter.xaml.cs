@@ -68,7 +68,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         // Must be ME2 or ME3, cannot have a transform, we allow it, archive has been scanned, we haven't started an operation
         // Mods that use the updater service cannot be compressed to ensure the update checks are reliable
-        public bool CanCompressPackages => CompressedMods.Any(x => x.Game >= MEGame.ME2) && CompressedMods.All(x=>x.ExeExtractionTransform == null && x.ModClassicUpdateCode == 0) && App.AllowCompressingPackagesOnImport && ArchiveScanned && !TaskRunning;
+        public bool CanCompressPackages => CompressedMods.Any(x => x.Game >= MEGame.ME2) && CompressedMods.All(x => x.ExeExtractionTransform == null && x.ModClassicUpdateCode == 0) && App.AllowCompressingPackagesOnImport && ArchiveScanned && !TaskRunning;
 
         public ObservableCollectionExtended<Mod> CompressedMods { get; } = new ObservableCollectionExtended<Mod>();
         public ModArchiveImporter(string file)
@@ -149,13 +149,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         {@"Archive name", Path.GetFileName(filepath)}
                     });
                     Log.Error(@"A mod in the archive was not deployed using M3 and targets 6.0 or higher! You should contact the developer and tell them to deploy it properly.");
-                    if (!Flighting.IsFeatureEnabled(@"passive_checkM3DeployedArchives"))
-                    {
-                        M3L.ShowDialog(Window.GetWindow(this),
-                            M3L.GetString(M3L.string_dialog_improperlyDeployedMod),
-                            M3L.GetString(M3L.string_improperlyDeployedMod), MessageBoxButton.OK,
-                            MessageBoxImage.Warning);
-                    }
+                    M3L.ShowDialog(Window.GetWindow(this),
+                        M3L.GetString(M3L.string_dialog_improperlyDeployedMod),
+                        M3L.GetString(M3L.string_improperlyDeployedMod), MessageBoxButton.OK,
+                        MessageBoxImage.Warning);
                 }
             };
             ActionText = M3L.GetString(M3L.string_interp_scanningX, Path.GetFileName(filepath));

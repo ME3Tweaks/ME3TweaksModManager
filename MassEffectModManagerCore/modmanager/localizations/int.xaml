@@ -415,6 +415,7 @@
     <system:String x:Key="string_invalidCompatibilityPack">Invalid compatibility pack</system:String>
     <system:String x:Key="string_interp_errorOccuredBuildingInstallationQueues">An error occurred building installation queues: {0}</system:String>
     <!-- 0={Exception message} -->
+    <system:String x:Key="string_interp_optionGroupX">Option group: {0}</system:String>
 
     <!-- Welcome panel -->
     <system:String x:Key="string_previewPanelTitle">Welcome to ME3Tweaks Mod Manager</system:String>

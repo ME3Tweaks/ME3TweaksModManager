@@ -36,7 +36,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public const string MEM = @"Mass Effect Modder";
         public const string MEM_CMD = @"Mass Effect Modder No Gui";
         public const string MER = @"Mass Effect Randomizer";
-        public const string ALOTInstallerV4 = @"ALOT Installer V4";
         private string tool;
 
         public static List<string> ToolsCheckedForUpdatesInThisSession = new List<string>();
@@ -52,7 +51,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 switch (tool)
                 {
                     case ALOTInstaller:
-                    case ALOTInstallerV4:
                         return @"/modmanager/toolicons/alot_big.png";
                     case MER:
                         return @"/modmanager/toolicons/masseffectrandomizer_big.png";
@@ -570,12 +568,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         return new Version(me3expbLatestversion);
                     }
                     break;
-                case ALOTInstallerV4:
-                    if (App.ServerManifest.TryGetValue(@"alotinstallerv4_latestversion", out var alotinstallerv4_latestversion))
-                    {
-                        return new Version(alotinstallerv4_latestversion);
-                    }
-                    break;
             }
 
             return null;
@@ -591,12 +583,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         return me3expbLatestlink;
                     }
                     break;
-                case ALOTInstallerV4:
-                    if (App.ServerManifest.TryGetValue(@"alotinstallerv4_latestlink", out var alotinstallerv4link))
-                    {
-                        return alotinstallerv4link;
-                    }
-                    break;
             }
 
             return null;
@@ -605,14 +591,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private static bool toolIsGithubBased(string toolname)
         {
             if (toolname == ME3Explorer_Beta) return false; //me3tweaks. Info is in startup manifest
-            if (toolname == ALOTInstallerV4) return false; //me3tweaks. Info is in startup manifest
             return true;
         }
 
         private static string toolNameToExeName(string toolname)
         {
             if (toolname == ME3Explorer_Beta) return @"ME3Explorer.exe";
-            if (toolname == ALOTInstallerV4) return @"ALOTInstaller.exe";
             return toolname.Replace(@" ", @"") + @".exe";
         }
 
@@ -624,7 +608,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             MEM,
             MER,
             ALOTInstaller,
-            ALOTInstallerV4
         };
         internal static bool IsSupportedToolID(string toolId) => SupportedToolIDs.Contains(toolId);
     }

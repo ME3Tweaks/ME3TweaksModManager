@@ -65,8 +65,6 @@ namespace MassEffectModManagerCore
         private readonly string[] SupportedDroppableExtensions = { @".rar", @".zip", @".7z", @".exe", @".tpf", @".mod", @".mem", @".me2mod", @".xml", @".bin", @".tlk" };
         private bool StartupCompleted;
         public string ApplyModButtonText { get; set; } = M3L.GetString(M3L.string_applyMod);
-        public string AddTargetButtonText { get; set; } = M3L.GetString(M3L.string_addTarget);
-        public string StartGameButtonText { get; set; } = M3L.GetString(M3L.string_startGame);
         public string InstallationTargetText { get; set; } = M3L.GetString(M3L.string_installationTarget);
         public bool ME1ASILoaderInstalled { get; set; }
         public bool ME2ASILoaderInstalled { get; set; }
@@ -2781,11 +2779,6 @@ namespace MassEffectModManagerCore
             if (sender == ALOTInstaller_MenuItem)
             {
                 BootALOTInstallerPassthrough(ExternalToolLauncher.ALOTInstaller);
-                return;
-            }
-            if (sender == ALOTInstallerV4_MenuItem)
-            {
-                BootALOTInstallerPassthrough(ExternalToolLauncher.ALOTInstallerV4);
                 return;
             }
             if (sender == MassEffectRandomizer_MenuItem) tool = ExternalToolLauncher.MER;

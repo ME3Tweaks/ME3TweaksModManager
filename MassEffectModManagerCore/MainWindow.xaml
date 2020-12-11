@@ -382,6 +382,15 @@
                             ToolTip="{DynamicResource string_tooltip_autoLods4K}"
                             IsCheckable="True" />
                         <MenuItem
+                            Name="PreferCompressingPackages_MenuItem"
+                            Visibility="Visible"
+                            Header="Compress packages on install"
+                            StaysOpenOnClick="True"
+                            Click="ChangeSetting_Clicked"
+                            IsChecked="{Binding Path=(modmanager:Settings.PreferCompressingPackages)}"
+                            ToolTip="Sets the default option for compressing packages on install to true, which saves disk space at the cost of slightly increased install time."
+                            IsCheckable="True" />
+                        <MenuItem
                             Name="DarkMode_MenuItem"
                             Visibility="Visible"
                             Header="{DynamicResource string_Darktheme}"
@@ -934,19 +943,6 @@
                         Name="ALOTInstaller_MenuItem"
                         Click="LaunchExternalTool_Clicked"
                         ToolTip="{DynamicResource string_ALOTInstallerTooltip}">
-                        <MenuItem.Icon>
-                            <Image
-                                Source="/modmanager/toolicons/alot_32.png"
-                                Width="16"
-                                RenderOptions.BitmapScalingMode="HighQuality" />
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem
-                        Header="{DynamicResource string_alotInstallerV4}"
-                        Name="ALOTInstallerV4_MenuItem"
-                        Click="LaunchExternalTool_Clicked"
-                        ToolTip="{DynamicResource string_ALOTInstallerTooltip}"
-                        Visibility="{Binding Path=(local:App.ServerManifest), Converter={StaticResource FlightingVisibilityConverter}, ConverterParameter='alotinstallerv4-2'}">
                         <MenuItem.Icon>
                             <Image
                                 Source="/modmanager/toolicons/alot_32.png"

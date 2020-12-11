@@ -170,6 +170,16 @@ namespace MassEffectModManagerCore.modmanager
             }
         }
 
+        private static bool _preferCompressingPackages = true;
+        public static bool PreferCompressingPackages
+        {
+            get => _preferCompressingPackages;
+            set
+            {
+                SetProperty(ref _preferCompressingPackages, value);
+            }
+        }
+
         private static bool changingLODSetting;
 
         private static string _modLibraryPath;
@@ -226,6 +236,7 @@ namespace MassEffectModManagerCore.modmanager
             BetaMode = LoadSettingBool(settingsIni, "ModManager", "BetaMode", false);
             AutoUpdateLODs2K = LoadSettingBool(settingsIni, "ModManager", "AutoUpdateLODs2K", false);
             AutoUpdateLODs4K = LoadSettingBool(settingsIni, "ModManager", "AutoUpdateLODs4K", true);
+            PreferCompressingPackages = LoadSettingBool(settingsIni, "ModManager", "PreferCompressingPackages", false); // 'May set to true in the future.
             WebClientTimeout = LoadSettingInt(settingsIni, "ModManager", "WebclientTimeout", 5);
             ModMakerControllerModOption = LoadSettingBool(settingsIni, "ModMaker", "AutoAddControllerMixins", false);
             ModMakerAutoInjectCustomKeybindsOption = LoadSettingBool(settingsIni, "ModMaker", "AutoInjectCustomKeybinds", false);
@@ -391,6 +402,7 @@ namespace MassEffectModManagerCore.modmanager
                 SaveSettingBool(settingsIni, "ModManager", "ShowedPreviewMessage2", ShowedPreviewPanel);
                 SaveSettingBool(settingsIni, "ModManager", "AutoUpdateLODs4K", AutoUpdateLODs4K);
                 SaveSettingBool(settingsIni, "ModManager", "AutoUpdateLODs2K", AutoUpdateLODs2K);
+                SaveSettingBool(settingsIni, "ModManager", "PreferCompressingPackages", PreferCompressingPackages);
                 SaveSettingInt(settingsIni, "ModManager", "WebclientTimeout", WebClientTimeout);
                 SaveSettingBool(settingsIni, "ModMaker", "AutoAddControllerMixins", ModMakerControllerModOption);
                 SaveSettingBool(settingsIni, "ModMaker", "AutoInjectCustomKeybinds", ModMakerAutoInjectCustomKeybindsOption);

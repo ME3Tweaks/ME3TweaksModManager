@@ -11,15 +11,19 @@
              xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
              xmlns:ui="clr-namespace:MassEffectModManagerCore.ui"
              xmlns:massEffectModManagerCore="clr-namespace:MassEffectModManagerCore"
+             xmlns:localizations="clr-namespace:MassEffectModManagerCore.modmanager.localizations"
              mc:Ignorable="d" 
              DataContext="{Binding RelativeSource={RelativeSource Self}}"
              Height="Auto" MinWidth="300" MaxWidth="500">
     <local:MMBusyPanelBase.Resources>
-        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <converters:GroupNameToColorConverter x:Key="GroupNameToColorConverter"/>
+        <converters:LocalizationConverter x:Key="LocalizationConverter"/>
         <converters:ImageTooltipVerticalOffsetConverter x:Key="ImageTooltipVerticalOffsetConverter"/>
     </local:MMBusyPanelBase.Resources>
     <StackPanel VerticalAlignment="Center">
-        <Image Source="{Binding ModBeingInstalled.BannerBitmap}" Visibility="{Binding ModBeingInstalled.BannerBitmap, Converter= {StaticResource NullVisibilityConverter}}" RenderOptions.BitmapScalingMode="HighQuality"/>
+        <Image Source="{Binding ModBeingInstalled.BannerBitmap}" 
+               Visibility="{Binding ModBeingInstalled.BannerBitmap, Converter= {StaticResource NullVisibilityConverter}}" 
+               RenderOptions.BitmapScalingMode="HighQuality"/>
         <DockPanel Visibility="{Binding ModIsInstalling, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Inverse'}" VerticalAlignment="Center">
             <TextBlock TextAlignment="Center" FontSize="16" FontWeight="Bold" Text="{DynamicResource string_ui_title_selectInstallationOptions}" Margin="0,5,0,0" DockPanel.Dock="Top" />
             <TextBlock TextAlignment="Center" Text="{Binding ModBeingInstalled.ModName}" DockPanel.Dock="Top" Margin="0,0,0,10"/>
@@ -29,7 +33,10 @@
                 <TextBlock Visibility="{Binding AllOptionsAreAutomatic, Converter={StaticResource BoolToVisibilityConverter}}" DockPanel.Dock="Top" TextWrapping="Wrap" HorizontalAlignment="Left" 
                            Text="{DynamicResource string_ui_allAlternatesAreAutomatic}"/>
                 <TextBlock Text="Install to:" FontWeight="Bold" DockPanel.Dock="Top"/>
-                <local:TargetSelector ShowTextureInfo="False" ToolTip="Target that the mod will be installed to" DockPanel.Dock="Top" AvailableTargets="{Binding InstallationTargets}" SelectedGameTarget="{Binding SelectedGameTarget, Mode=TwoWay}"/>
+                <local:TargetSelector ShowTextureInfo="False" ToolTip="Target that the mod will be installed to" DockPanel.Dock="Top" 
+                                      AvailableTargets="{Binding InstallationTargets}" 
+                                      SelectedGameTarget="{Binding SelectedGameTarget, Mode=TwoWay}"
+                                      MinWidth="350"/>
                 <Button Content="{DynamicResource string_install}" DockPanel.Dock="Right" Padding="40,4" Command="{Binding InstallCommand}" Margin="0,4,0,0" ToolTip="{DynamicResource string_installMod}"/>
                 <Button Content="{DynamicResource string_cancel}" DockPanel.Dock="Right" Padding="5,4" Margin="5,4,5,0" Click="InstallCancel_Click" ToolTip="{DynamicResource string_abortInstallingMod}"/>
                 <CheckBox Content="Compress packages" 
@@ -76,6 +83,7 @@
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto"/>
@@ -86,12 +94,20 @@
                                         <TextBlock Foreground="LimeGreen" Text="{Binding ApplicableAutoText, StringFormat=' - {0}'}" VerticalAlignment="Center" FontWeight="Bold" Visibility="{Binding UIRequired, Converter={StaticResource BoolToVisibilityConverter}}" Opacity="{Binding TextOpacity}"/>
                                         <TextBlock Foreground="Red" Text="{Binding NotApplicableAutoText, StringFormat=' - {0}'}" VerticalAlignment="Center" FontWeight="Bold" Visibility="{Binding UINotApplicable, Converter={StaticResource BoolToVisibilityConverter}}" Opacity="{Binding TextOpacity}"/>
                                     </StackPanel>
-                                    <TextBlock Grid.Row="1" Grid.Column="0"  Grid.ColumnSpan="2" DockPanel.Dock="Bottom" Text="{Binding Description}" VerticalAlignment="Center" HorizontalAlignment="Left" TextWrapping="Wrap" Foreground="{DynamicResource {x:Static adonisUi:Brushes.SlightlyDimmedForegroundBrush}}" MaxWidth="410" FontSize="11" Padding="0,0,20,0" Opacity="{Binding TextOpacity}"/>
+                                    <TextBlock Text="{Binding GroupName, Converter={StaticResource LocalizationConverter}, ConverterParameter='string_interp_optionGroupX'}"
+                                               FontSize="10"
+                                               Foreground="{Binding GroupName, Converter={StaticResource GroupNameToColorConverter}}"
+                                               Grid.Row="1" Grid.Column="0" Visibility="{Binding GroupName, Converter={StaticResource NullVisibilityConverter}}"
+                                               
+                                               />
+                                    <TextBlock Grid.Row="2" Grid.Column="0"  Grid.ColumnSpan="2" DockPanel.Dock="Bottom" Text="{Binding Description}" VerticalAlignment="Center" HorizontalAlignment="Left" TextWrapping="Wrap" Foreground="{DynamicResource {x:Static adonisUi:Brushes.SlightlyDimmedForegroundBrush}}" MaxWidth="410" FontSize="11" Padding="0,0,20,0" Opacity="{Binding TextOpacity}"/>
                                 </Grid>
-                                <fa:ImageAwesome Icon="Image" Grid.RowSpan="2" Grid.Row="0" Grid.Column="2" Height="16" Margin="10,0"
-                                                 Opacity="0.75"
-                                                 VerticalAlignment="Center" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" 
-                                                 Visibility="{Binding ImageBitmap, Converter={StaticResource NullVisibilityConverter}}"/>
+                                <DockPanel Grid.RowSpan="2" Grid.Row="0" Grid.Column="2" Background="Transparent">
+                                    <fa:ImageAwesome Icon="Image" Height="16" Margin="10,0"
+                                                     Opacity="0.75"
+                                                     VerticalAlignment="Center" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" 
+                                                     Visibility="{Binding ImageBitmap, Converter={StaticResource NullVisibilityConverter}}"/>
+                                </DockPanel>
                                 <Grid.Style>
                                     <Style TargetType="{x:Type Grid}">
                                         <Style.Triggers>
