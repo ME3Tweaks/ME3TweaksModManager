@@ -204,7 +204,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                         Path.GetFileName(file.Key));
                                 //packageAsStream.WriteToFile(@"C:\users\dev\desktop\compressed.pcc");
                                 using var decompressedStream = MEPackage.GetDecompressedPackageStream(packageAsStream, false, true);
-                                using var finalStream = MixinHandler.ApplyMixins(decompressedStream, file.Value, completedSingleApplicationCallback, failedApplicationCallback);
+                                using var finalStream = MixinHandler.ApplyMixins(decompressedStream, file.Value, true, completedSingleApplicationCallback, failedApplicationCallback);
                                 CLog.Information(@"Compressing package to mod directory: " + file.Key, Settings.LogModMakerCompiler);
                                 finalStream.Position = 0;
                                 var package = MEPackageHandler.OpenMEPackageFromStream(finalStream);
@@ -229,7 +229,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             {
                                 using var packageAsStream = VanillaDatabaseService.FetchFileFromVanillaSFAR(dlcFolderName, file.Key, forcedDLC: dlcPackage);
                                 //as file comes from backup, we don't need to decompress it, it will always be decompressed in sfar
-                                using var finalStream = MixinHandler.ApplyMixins(packageAsStream, file.Value, completedSingleApplicationCallback, failedApplicationCallback);
+                                using var finalStream = MixinHandler.ApplyMixins(packageAsStream, file.Value, true, completedSingleApplicationCallback, failedApplicationCallback);
                                 CLog.Information(@"Compressing package to mod directory: " + file.Key, Settings.LogModMakerCompiler);
                                 finalStream.Position = 0;
                                 var package = MEPackageHandler.OpenMEPackageFromStream(finalStream);
@@ -358,7 +358,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             var vanillaPackage = MEPackageHandler.OpenMEPackageFromStream(decompressedStream, $@"Vanilla - {Path.GetFileName(file.Key)}");
                             //decompressedStream.WriteToFile(@"C:\users\dev\desktop\decompressed.pcc");
 
-                            using var mixinModifiedStream = MixinHandler.ApplyMixins(decompressedStream, file.Value,
+                            using var mixinModifiedStream = MixinHandler.ApplyMixins(decompressedStream, file.Value, true,
                                 completedSingleApplicationCallback, failedApplicationCallback);
                             mixinModifiedStream.Position = 0;
                             var modifiedPackage = MEPackageHandler.OpenMEPackageFromStream(mixinModifiedStream, $@"Mixin Modified - {Path.GetFileName(file.Key)}");
@@ -407,7 +407,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             using var decompressedStream = MEPackage.GetDecompressedPackageStream(vanillaPackageAsStream);
                             decompressedStream.Position = 0;
                             var vanillaPackage = MEPackageHandler.OpenMEPackageFromStream(decompressedStream, $@"VanillaDLC - {Path.GetFileName(file.Key)}");
-                            using var mixinModifiedStream = MixinHandler.ApplyMixins(decompressedStream, file.Value, completedSingleApplicationCallback, failedApplicationCallback);
+                            using var mixinModifiedStream = MixinHandler.ApplyMixins(decompressedStream, file.Value, true, completedSingleApplicationCallback, failedApplicationCallback);
                             mixinModifiedStream.Position = 0;
                             var modifiedPackage = MEPackageHandler.OpenMEPackageFromStream(mixinModifiedStream, $@"Mixin Modified - {Path.GetFileName(file.Key)}");
 

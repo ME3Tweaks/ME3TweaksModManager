@@ -180,7 +180,7 @@ namespace MassEffectModManagerCore
 
             backgroundTaskEngine = new BackgroundTaskEngine(updateText =>
             {
-                Application.Current.Dispatcher.Invoke(() =>
+                Application.Current?.Dispatcher.Invoke(() =>
                 {
                     CurrentOperationText = updateText;
                 });

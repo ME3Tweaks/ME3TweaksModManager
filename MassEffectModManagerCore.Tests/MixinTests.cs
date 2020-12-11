@@ -50,7 +50,7 @@ namespace MassEffectModManagerCore.Tests
                             {
                                 using var packageAsStream = VanillaDatabaseService.FetchBasegameFile(MEGame.ME3, Path.GetFileName(file.Key));
                                 using var decompressedStream = MEPackage.GetDecompressedPackageStream(packageAsStream, true);
-                                using var finalStream = MixinHandler.ApplyMixins(decompressedStream, file.Value, null, failedApplicationCallback);
+                                using var finalStream = MixinHandler.ApplyMixins(decompressedStream, file.Value, true, null, failedApplicationCallback);
                                 CLog.Information(@"Compressing package to mod directory: " + file.Key, Settings.LogModMakerCompiler);
                                 finalStream.Position = 0;
                                 var package = MEPackageHandler.OpenMEPackageFromStream(finalStream);
@@ -73,7 +73,7 @@ namespace MassEffectModManagerCore.Tests
                             try
                             {
                                 using var packageAsStream = VanillaDatabaseService.FetchFileFromVanillaSFAR(dlcFolderName, file.Key, forcedDLC: dlcPackage);
-                                using var finalStream = MixinHandler.ApplyMixins(packageAsStream, file.Value, null, failedApplicationCallback);
+                                using var finalStream = MixinHandler.ApplyMixins(packageAsStream, file.Value, true, null, failedApplicationCallback);
                                 CLog.Information(@"Compressing package to mod directory: " + file.Key, Settings.LogModMakerCompiler);
                                 finalStream.Position = 0;
                                 var package = MEPackageHandler.OpenMEPackageFromStream(finalStream);

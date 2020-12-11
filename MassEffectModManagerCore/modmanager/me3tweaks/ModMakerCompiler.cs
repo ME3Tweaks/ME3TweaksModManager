@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using MassEffectModManagerCore.modmanager.localizations;
+using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.modmanager.usercontrols;
 using ME3ExplorerCore.GameFilesystem;
 using ME3ExplorerCore.Packages;
@@ -49,11 +50,11 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             this.code = code;
         }
 
-        public objects.mod.Mod DownloadAndCompileMod(string delta = null)
+        public Mod DownloadAndCompileMod(string delta = null, string modPathOverride = null)
         {
             if (delta != null)
             {
-                return CompileMod(delta);
+                return CompileMod(delta, modPathOverride);
             }
             else if (code != 0)
             {
@@ -63,7 +64,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 {
                     //Going to compile cached item
                     Log.Information(@"Compiling cached modmaker mode with code " + code);
-                    return CompileMod(File.ReadAllText(cachedFilename));
+                    return CompileMod(File.ReadAllText(cachedFilename), modPathOverride);
                 }
             }
             return null; //could not compile mod
@@ -74,12 +75,12 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         /// Compiles a mod using the specified mod definition text
         /// </summary>
         /// <param name="modxml">XML document for the mod</param>
-        private objects.mod.Mod CompileMod(string modxml)
+        private Mod CompileMod(string modxml, string modPathOverride = null)
         {
             Log.Information(@"Compiling modmaker mod");
             var xmlDoc = XDocument.Parse(modxml);
 
-            var mod = GenerateLibraryModFromDocument(xmlDoc);
+            var mod = GenerateLibraryModFromDocument(xmlDoc, modPathOverride);
             if (mod != null)
             {
                 var requiredDLC = calculateNumberOfTasks(xmlDoc);
@@ -107,8 +108,11 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 }
 
                 compileTLKs(xmlDoc, mod); //Compile TLK
+                Debug.WriteLine($@"Progress at end of TLK compiling: {OverallProgressValue}");
                 compileMixins(xmlDoc, mod);
+                Debug.WriteLine($@"Progress at end of mixin compilation: {OverallProgressValue}");
                 compileCoalesceds(xmlDoc, mod);
+                Debug.WriteLine($@"Progress at end of coalesceds: {OverallProgressValue}");
                 finalizeModdesc(xmlDoc, mod);
                 MixinHandler.AttemptResetMemoryManager();
                 Analytics.TrackEvent(@"Downloaded ModMaker Mod", new Dictionary<string, string>()
@@ -142,7 +146,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 var tlknodescount = tlkNode.Elements().Count();
                 numTasks += tlknodescount * TLK_OVERALL_WEIGHT; //TLK is worth 3 units
             }
-
+            Debug.WriteLine($@"Num tasks after TLK: {numTasks}");
             //MIXINS
             var mixinNode = xmlDoc.XPathSelectElement(@"/ModMaker/MixInData");
             if (mixinNode != null)
@@ -191,6 +195,9 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 numTasks += mixincount * MIXIN_OVERALL_WEIGHT; //Mixin is 1 unit.
             }
 
+            Debug.WriteLine($@"Num tasks after Mixins: {numTasks}");
+
+
             //COALESCED
             var jobs = xmlDoc.XPathSelectElements(@"/ModMaker/ModData/*");
             if (jobs != null)
@@ -202,6 +209,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     if (job.Name.LocalName == @"BASEGAME" || job.Name.LocalName == @"BALANCE_CHANGES" || job.Name.LocalName == @"TESTPATCH" || DLCFolders.Contains(foldername, StringComparer.InvariantCultureIgnoreCase))
                     {
                         numTasks += job.Elements().Count() * COALESCED_CHUNK_OVERALL_WEIGHT;
+                        numTasks += COALESCED_CHUNK_OVERALL_WEIGHT; //Compile adds weight
                     }
                     else
                     {
@@ -210,13 +218,16 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 }
             }
 
+            // add compile of coalesced
+            Debug.WriteLine($@"Num tasks after Coalesced: {numTasks}");
+
             OverallProgressMax = numTasks;
             SetOverallMaxCallback?.Invoke(numTasks);
             return requiredDLCFolders;
         }
 
 
-        private void compileTLKs(XDocument xmlDoc, objects.mod.Mod mod)
+        private void compileTLKs(XDocument xmlDoc, Mod mod)
         {
             var tlkNode = xmlDoc.XPathSelectElement(@"/ModMaker/TLKData");
             if (tlkNode != null)
@@ -284,7 +295,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
         }
 
-        private void compileMixins(XDocument xmlDoc, objects.mod.Mod mod)
+        private void compileMixins(XDocument xmlDoc, Mod mod)
         {
             SetCurrentTaskStringCallback?.Invoke(M3L.GetString(M3L.string_preparingMixinPatchData));
             SetCurrentTaskIndeterminateCallback?.Invoke(true);
@@ -307,12 +318,17 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     {
                         Log.Information(@"Added controller camera mixin as this mod modifies SFXGame and controller option is on");
                         allmixins.Add(MixinHandler.GetMixinByME3TweaksID(1533));
+                        Interlocked.Increment(ref OverallProgressMax);
                     }
                     if (allmixins.Any(x => Path.GetFileName(x.TargetFile) == @"Patch_BioPlayerController.pcc"))
                     {
                         Log.Information(@"Added controller vibration mixin as this mod modifies Patch_BioPlayerController and controller option is on");
                         allmixins.Add(MixinHandler.GetMixinByME3TweaksID(1557));
+                        Interlocked.Increment(ref OverallProgressMax);
                     }
+
+                    // We need to re-issue this as the number of mixins to install has changed. We could technically precalculate this but it would require additional work.
+                    SetOverallMaxCallback?.Invoke(OverallProgressMax);
                 }
 
                 MixinHandler.LoadPatchDataForMixins(allmixins); //before dynamic
@@ -371,7 +387,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                     VanillaDatabaseService.FetchBasegameFile(MEGame.ME3,
                                         Path.GetFileName(file.Key));
                                 using var decompressedStream = MEPackage.GetDecompressedPackageStream(packageAsStream, true);
-                                using var finalStream = MixinHandler.ApplyMixins(decompressedStream, file.Value, completedSingleApplicationCallback);
+                                using var finalStream = MixinHandler.ApplyMixins(decompressedStream, file.Value, Settings.LogModMakerCompiler, completedSingleApplicationCallback);
                                 CLog.Information(@"Compressing package to mod directory: " + file.Key, Settings.LogModMakerCompiler);
                                 finalStream.Position = 0;
                                 var package = MEPackageHandler.OpenMEPackageFromStream(finalStream);
@@ -388,7 +404,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                             foreach (var file in mapping.Value)
                             {
                                 using var packageAsStream = VanillaDatabaseService.FetchFileFromVanillaSFAR(dlcFolderName, file.Key, forcedDLC: dlcPackage);
-                                using var finalStream = MixinHandler.ApplyMixins(packageAsStream, file.Value, completedSingleApplicationCallback);
+                                using var finalStream = MixinHandler.ApplyMixins(packageAsStream, file.Value, Settings.LogModMakerCompiler, completedSingleApplicationCallback);
                                 //as file comes from backup, we don't need to decompress it, it will always be decompressed in sfar
                                 CLog.Information(@"Compressing package to mod directory: " + file.Key, Settings.LogModMakerCompiler);
                                 finalStream.Position = 0;
@@ -410,7 +426,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         int totalNumCoalescedFileChunks = 0;
         int numDoneCoalescedFileChunks = 0;
 
-        private void compileCoalesceds(XDocument xmlDoc, objects.mod.Mod mod)
+        private void compileCoalesceds(XDocument xmlDoc, Mod mod)
         {
             SetCurrentTaskStringCallback?.Invoke(M3L.GetString(M3L.string_compilingCoalescedFiles));
             List<XElement> jobCollection = new List<XElement>();
@@ -443,17 +459,18 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         ? MaxModmakerCores
                         : Environment.ProcessorCount
                 }, (xmlChunk) => compileCoalescedChunk(xmlChunk, mod));
+            Debug.WriteLine($@"Progress at end of coalesced chunking: {OverallProgressValue}");
             CLog.Information(@"Finished compiling coalesceds.", Settings.LogModMakerCompiler);
         }
 
-        private bool compileCoalescedChunk(XElement xmlChunk, objects.mod.Mod mod)
+        private bool compileCoalescedChunk(XElement xmlChunk, Mod mod)
         {
             var chunkName = xmlChunk.Name.LocalName;
             string loggingPrefix = $@"ModMaker Compiler [{chunkName}]";
             //var header = Enum.Parse(typeof(ModJob.JobHeader), chunkName);
             //string dlcFoldername = ModJob.GetHeadersToDLCNamesMap(MEGame.ME3)[header];
             var outPath = Directory.CreateDirectory(Path.Combine(mod.ModPath, chunkName)).FullName;
-            Debug.WriteLine(@"Compiling chunk: " + chunkName);
+            //Debug.WriteLine(@"Compiling chunk: " + chunkName);
 
             //File fetch
             Dictionary<string, string> coalescedFilemapping = null;
@@ -500,7 +517,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 // get filenames for chunk
                 foreach (var fileNode in xmlChunk.Elements())
                 {
-                    Debug.WriteLine($@"{loggingPrefix} {fileNode.Name.LocalName}");
+                    //Debug.WriteLine($@"{loggingPrefix} {fileNode.Name.LocalName}");
                     var matchingCoalFile = coalescedFilemapping[fileNode.Name + @".xml"];
                     var coalFileDoc = XDocument.Parse(matchingCoalFile);
                     string updatedDocumentText = compileCoalescedChunkFile(coalFileDoc, fileNode, $@"{loggingPrefix}[{fileNode.Name}]: ");
@@ -516,6 +533,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 CLog.Information($@"{loggingPrefix} Recompiling coalesced file", Settings.LogModMakerCompiler);
                 var newFileStream = MassEffect3.Coalesce.Converter.CompileFromMemory(coalescedFilemapping);
 
+
                 var outFolder = Path.Combine(mod.ModPath, chunkName, @"CookedPCConsole");
                 if (chunkName == @"BALANCE_CHANGES")
                 {
@@ -525,6 +543,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 var outFile = Path.Combine(outFolder, coalescedFilename);
 
                 newFileStream.WriteToFile(outFile);
+                Interlocked.Add(ref OverallProgressValue, COALESCED_CHUNK_OVERALL_WEIGHT);
+                SetOverallValueCallback?.Invoke(OverallProgressValue);
                 CLog.Information($@"{loggingPrefix} Compiled coalesced file, chunk finished", Settings.LogModMakerCompiler);
             }
 
@@ -887,7 +907,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             return elementValues[identifierKey] == newValues[identifierKey];
         }
 
-        private void finalizeModdesc(XDocument doc, objects.mod.Mod mod)
+        private void finalizeModdesc(XDocument doc, Mod mod)
         {
             SetCurrentTaskStringCallback?.Invoke(M3L.GetString(M3L.string_finalizingMod));
             //Update moddesc
@@ -1034,7 +1054,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         /// </summary>
         /// <param name="xmlDoc">mod document</param>
         /// <returns>Mod object</returns>
-        private objects.mod.Mod GenerateLibraryModFromDocument(XDocument xmlDoc)
+        private Mod GenerateLibraryModFromDocument(XDocument xmlDoc, string modPathOverride = null)
         {
             var hasError = xmlDoc.XPathSelectElement(@"/ModMaker/error");
             if (hasError != null)
@@ -1069,7 +1089,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             ini[@"ModInfo"][@"compiledagainst"] = modmakerServerVer;
             ini[@"ModInfo"][@"modsite"] = @"https://me3tweaks.com/modmaker/mods/" + code;
 
-            var outputDir = Path.Combine(Utilities.GetME3ModsDirectory(), Utilities.SanitizePath(modName));
+            var outputDir = modPathOverride ?? Path.Combine(Utilities.GetME3ModsDirectory(), Utilities.SanitizePath(modName));
             CLog.Information(@"Generating new mod directory: " + outputDir, Settings.LogModMakerCompiler);
             if (Directory.Exists(outputDir))
             {
@@ -1083,7 +1103,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             File.WriteAllText(moddescPath, ini.ToString());
 
             //Generate and load mod - it will be invalid as it has no jobs yet.
-            objects.mod.Mod m = new objects.mod.Mod(moddescPath, MEGame.ME3, blankLoad: true);
+            Mod m = new Mod(moddescPath, MEGame.ME3, blankLoad: true);
             return m;
         }
     }

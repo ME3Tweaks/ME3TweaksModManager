@@ -563,7 +563,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             public string UIStatusString { get; set; }
             public DateTime PublishDate { get; internal set; }
             public int OverallProgressValue { get; set; }
-            public int OverallProgressMax { get; set; }
+            public int OverallProgressMax { get; set; } = 1; //Default to not zero so the bar is not full by default
 
             internal override void SetLocalizedInfo()
             {

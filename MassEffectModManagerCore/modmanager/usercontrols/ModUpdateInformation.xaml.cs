@@ -166,7 +166,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         Debugger.Break();
                     }
-
                 }
                 void setCurrentTaskString(string str)
                 {
@@ -185,7 +184,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     //compiler.SetModNameCallback = SetModNameOrDownloadText;
                     //compiler.SetCompileStarted = CompilationInProgress;
                     //compiler.SetModNotFoundCallback = ModNotFound;
-                    objects.mod.Mod m = compiler.DownloadAndCompileMod(modDelta);
+                    objects.mod.Mod m = compiler.DownloadAndCompileMod(modDelta, mui.mod.ModPath);
                     if (m != null)
                     {
                         try
