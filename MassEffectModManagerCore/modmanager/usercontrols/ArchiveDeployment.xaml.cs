@@ -1687,7 +1687,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 ValidationTargets.ReplaceAll(sortedTargetList.OrderBy(x => x.Game));
             }
 
-            var depMod = new EncompassingModDeploymentCheck(mod, dvt);
+            var depMod = new EncompassingModDeploymentCheck(this, mod, dvt);
             ModsInDeployment.Add(depMod);
             PendingChecks.Enqueue(depMod);
             if (PendingChecks.TryDequeue(out var emc))
