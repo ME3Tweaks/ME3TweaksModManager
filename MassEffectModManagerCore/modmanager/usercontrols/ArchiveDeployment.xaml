@@ -31,47 +31,48 @@
                 </StackPanel>
             </Button.Content>
         </Button>
-        <ItemsControl ItemsSource ="{Binding ModsInDeployment}">
-            <ItemsControl.ItemTemplate>
-                <DataTemplate DataType="{x:Type local:ArchiveDeployment+EncompassingModDeploymentCheck}">
-                    <StackPanel>
-                        <TextBlock Text="{Binding ModBeingDeployed.ModName}" FontWeight="Bold" FontSize="14"/>
-                        <TextBlock Text="{Binding ModBeingDeployed.ModVersionString, StringFormat='Version {0}'}"/>
-                        <TextBlock Text="{DynamicResource string_deploymentChecklist}" FontWeight="Bold"/>
-                        <ItemsControl ItemsSource="{Binding DeploymentChecklistItems}" Height="200" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"  
+        <ScrollViewer MaxHeight="300">
+
+            <ItemsControl ItemsSource ="{Binding ModsInDeployment}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type local:ArchiveDeployment+EncompassingModDeploymentCheck}">
+                        <StackPanel>
+                            <DockPanel>
+                                <Button Margin="0,0,5,0" 
+                                        ToolTip="Re-run check on mod"
+                                        Command="{Binding RerunChecksCommand}"
+                                        Visibility="{Binding CanReRun, 
+                                    Converter={StaticResource BoolToVisibilityConverter}}">
+                                    <Button.Content>
+                                        <fa:ImageAwesome Icon="Refresh" Foreground="{DynamicResource {x:Static adonisUi:Brushes.HyperlinkBrush}}" Height="12"/>
+                                    </Button.Content>
+                                </Button>
+                                <TextBlock Text="{Binding ModBeingDeployed.ModName}" FontWeight="Bold" FontSize="14"/>
+                            </DockPanel>
+                            <TextBlock Text="{Binding ModBeingDeployed.ModVersionString, StringFormat='Version {0}'}"/>
+                            <TextBlock Text="{DynamicResource string_deploymentChecklist}" FontWeight="Bold"/>
+                            <ItemsControl ItemsSource="{Binding DeploymentChecklistItems}" Height="200" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"  
                             AlternationCount="2" VirtualizingStackPanel.IsVirtualizing="True" ScrollViewer.CanContentScroll="True">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate DataType="{x:Type local:ArchiveDeployment+DeploymentChecklistItem}">
-                                    <StackPanel Orientation="Horizontal" Margin="2" ToolTip="{Binding ToolTip}">
-                                        <fa:ImageAwesome Icon="{Binding Icon}" Foreground="{Binding Foreground}" Spin="{Binding Spinning}" SpinDuration="1.2" Width="16"/>
-                                        <TextBlock FontSize="12" Text="{Binding ItemText}" Margin="5,0" VerticalAlignment="Center" Visibility="{Binding HasMessage, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Inverse'}"/>
-                                        <TextBlock  Margin="5,0" VerticalAlignment="Center" Visibility="{Binding HasMessage, Converter={StaticResource BoolToVisibilityConverter}}">           
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="{x:Type local:ArchiveDeployment+DeploymentChecklistItem}">
+                                        <StackPanel Orientation="Horizontal" Margin="2" ToolTip="{Binding ToolTip}">
+                                            <fa:ImageAwesome Icon="{Binding Icon}" Foreground="{Binding Foreground}" Spin="{Binding Spinning}" SpinDuration="1.2" Width="16"/>
+                                            <TextBlock FontSize="12" Text="{Binding ItemText}" Margin="5,0" VerticalAlignment="Center" Visibility="{Binding HasMessage, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Inverse'}"/>
+                                            <TextBlock  Margin="5,0" VerticalAlignment="Center" Visibility="{Binding HasMessage, Converter={StaticResource BoolToVisibilityConverter}}">           
                                             <Hyperlink NavigateUri="http://www.google.com" RequestNavigate="Hyperlink_RequestNavigate">
                                                 <TextBlock Text="{Binding ItemText}"/>
                                             </Hyperlink>
                                         </TextBlock>
-                                        <!--<Button Grid.Row="0" Grid.Column="1" Content="Restore" HorizontalAlignment="Right" Padding ="3,0" Command="{Binding RestoreCommand}"/>-->
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                            <ItemsControl.Template>
-                                <ControlTemplate>
-                                    <ScrollViewer x:Name="ScrollViewer" Padding="2">
-                                        <ItemsPresenter />
-                                    </ScrollViewer>
-                                </ControlTemplate>
-                            </ItemsControl.Template>
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <VirtualizingStackPanel />
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                        </ItemsControl>
-                    </StackPanel>
-                </DataTemplate>
-
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
+                                            <!--<Button Grid.Row="0" Grid.Column="1" Content="Restore" HorizontalAlignment="Right" Padding ="3,0" Command="{Binding RestoreCommand}"/>-->
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
 
 
         <CheckBox Content="{DynamicResource string_multiThreadedCompression}" IsEnabled="{Binding DeploymentInProgress, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" ToolTip="{DynamicResource string_tooltip_multithreadDeployment}" IsChecked="{Binding MultithreadedCompression}" Margin="0,5"/>
