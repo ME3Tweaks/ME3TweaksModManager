@@ -440,7 +440,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                     vanillaDB = ME2VanillaDatabase;
                     break;
                 case MEGame.ME3:
-                    if (ME2VanillaDatabase.Count == 0) LoadDatabaseFor(MEGame.ME3);
+                    if (ME3VanillaDatabase.Count == 0) LoadDatabaseFor(MEGame.ME3);
                     vanillaDB = ME3VanillaDatabase;
                     break;
                 default:
