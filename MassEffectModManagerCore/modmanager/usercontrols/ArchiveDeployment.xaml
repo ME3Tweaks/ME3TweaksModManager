@@ -27,15 +27,16 @@
                     <DataTemplate DataType="{x:Type local:ArchiveDeployment+DeploymentValidationTarget}">
                         <DockPanel>
                             <TextBlock Text="{Binding HeaderString}" FontWeight="Bold" DockPanel.Dock="Top"/>
-                            <local:TargetSelector SelectedGameTarget="{Binding SelectedTarget}" AvailableTargets="{Binding AvailableTargets}"/>
+                            <local:TargetSelector IsEnabled="{Binding CanChangeValidationTarget, 
+                                RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ArchiveDeployment}}}"  
+                                                  SelectedGameTarget="{Binding SelectedTarget, Mode=TwoWay}" 
+                                                  AvailableTargets="{Binding AvailableTargets}"/>
                         </DockPanel>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </Expander>
-
         <ScrollViewer MaxHeight="300">
-
             <ItemsControl ItemsSource ="{Binding ModsInDeployment}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="{x:Type local:ArchiveDeployment+EncompassingModDeploymentCheck}">

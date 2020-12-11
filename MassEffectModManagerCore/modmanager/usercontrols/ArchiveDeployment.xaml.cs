@@ -35,6 +35,7 @@ using ME3ExplorerCore.Unreal.BinaryConverters;
 using ME3ExplorerCore.Unreal.Classes;
 using Serilog;
 using Microsoft.WindowsAPICodePack.Taskbar;
+using PropertyChanged;
 using DuplicatingIni = MassEffectModManagerCore.modmanager.gameini.DuplicatingIni;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -1185,9 +1186,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             var result = msd.ShowDialog();
             if (result.HasValue && result.Value)
             {
-                foreach (var v in msd.SelectedMods)
+                if (!DeploymentBlocked)
                 {
-                    AddModToDeployment(v);
+                    foreach (var v in msd.SelectedMods)
+                    {
+                        AddModToDeployment(v);
+                    }
                 }
             }
         }
@@ -1490,7 +1494,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             return PrecheckCompleted && !DeploymentInProgress && ModsInDeployment.All(x => x.DeploymentChecklistItems.All(x => !x.DeploymentBlocking));
         }
 
+        public bool CanChangeValidationTarget => !DeploymentInProgress && ModBeingChecked == null;
+
         public bool PrecheckCompleted { get; private set; }
+        [AlsoNotifyFor(nameof(CanChangeValidationTarget))]
         public bool DeploymentInProgress { get; private set; }
         public ulong ProgressMax { get; set; } = 100;
         public ulong ProgressValue { get; set; } = 0;
@@ -1676,8 +1683,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                 }
 
-                var deploymentBlocked = emc.DeploymentChecklistItems.Any(x => x.DeploymentBlocking);
-                if (deploymentBlocked)
+                DeploymentBlocked = emc.DeploymentChecklistItems.Any(x => x.DeploymentBlocking);
+                if (DeploymentBlocked)
                 {
                     // Deployment has been blocked
                     OperationText = M3L.GetString(M3L.string_deploymentBlockedUntilAboveItemsAreFixed);
@@ -1709,6 +1716,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             nbw.RunWorkerAsync();
         }
 
+        public bool DeploymentBlocked { get; set; }
+
         private void EndChecks()
         {
             ModBeingChecked = null;
@@ -1720,7 +1729,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             CommandManager.InvalidateRequerySuggested();
         }
 
-        public EncompassingModDeploymentCheck ModBeingChecked;
+        [AlsoNotifyFor(nameof(CanChangeValidationTarget))]
+        public EncompassingModDeploymentCheck ModBeingChecked { get; set; }
 
         public void AddModToDeployment(Mod mod)
         {
@@ -1728,7 +1738,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (dvt == null)
             {
                 // No validation targets for this game yet
-                dvt = new DeploymentValidationTarget(mod.Game, mainwindow.InstallationTargets.Where(x => x.Game == mod.Game));
+                dvt = new DeploymentValidationTarget(this, mod.Game, mainwindow.InstallationTargets.Where(x => x.Game == mod.Game));
                 var sortedTargetList = ValidationTargets.ToList();
                 sortedTargetList.Add(dvt);
                 ValidationTargets.ReplaceAll(sortedTargetList.OrderBy(x => x.Game));
@@ -1759,15 +1769,47 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             public GameTarget SelectedTarget { get; set; }
             public string HeaderString { get; }
             public ObservableCollectionExtended<GameTarget> AvailableTargets { get; } = new ObservableCollectionExtended<GameTarget>();
-            public DeploymentValidationTarget(MEGame game, IEnumerable<GameTarget> targets)
+            public ArchiveDeployment DeploymentHost { get; set; }
+
+            public DeploymentValidationTarget(ArchiveDeployment deploymentHost, MEGame game, IEnumerable<GameTarget> targets)
             {
+                DeploymentHost = deploymentHost;
                 Game = game;
                 HeaderString = $"{game.ToGameName()} validation target";
                 AvailableTargets.ReplaceAll(targets.Where(x => !x.TextureModded));
                 SelectedTarget = AvailableTargets.FirstOrDefault();
             }
 
-            public event PropertyChangedEventHandler? PropertyChanged;
+
+            public void OnSelectedTargetChanged(object before, object after)
+            {
+                if (before != null)
+                {
+                    //Target has changed
+                    DeploymentHost.OnValidationTargetChanged((after as GameTarget).Game);
+                }
+            }
+
+            public event PropertyChangedEventHandler PropertyChanged;
+        }
+
+        // This is not incorrectly named. It's just got not matching value
+        [SuppressPropertyChangedWarnings]
+        private void OnValidationTargetChanged(MEGame game)
+        {
+            foreach (var v in ModsInDeployment.Where(x=>x.ModBeingDeployed.Game == game))
+            {
+                PendingChecks.Enqueue(v);
+                foreach (var c in v.DeploymentChecklistItems)
+                {
+                    c.Reset();
+                }
+            }
+
+            if (PendingChecks.TryDequeue(out var mod))
+            {
+                StartCheck(mod);
+            }
         }
     }
 }
