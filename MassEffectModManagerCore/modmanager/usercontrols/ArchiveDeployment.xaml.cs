@@ -78,12 +78,40 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             private GameTarget internalValidationTarget { get; set; }
             public Mod ModBeingDeployed { get; }
 
+            public ICommand RerunChecksCommand { get; }
+
+            public void RunChecks()
+            {
+                CanReRun = false;
+                foreach (var checkItem in DeploymentChecklistItems)
+                {
+                    checkItem.Reset();
+                }
+
+                foreach (var checkItem in DeploymentChecklistItems)
+                {
+                    checkItem.ExecuteValidationFunction();
+                }
+
+                CanReRun = CanRerunCheck();
+            }
+            private bool CanRerunCheck()
+            {
+                return DeploymentChecklistItems.All(x => x.CheckDone) && DeploymentChecklistItems.Any(x => x.HasMessage);
+            }
+
             public bool CheckCancelled { get; set; }
+
+            public bool CanReRun { get; set; }
             public EncompassingModDeploymentCheck(Mod mod, DeploymentValidationTarget dvt)
             {
                 ModBeingDeployed = mod;
                 DepValidationTarget = dvt;
                 internalValidationTarget = dvt.SelectedTarget;
+
+                // Commands
+                RerunChecksCommand = new GenericCommand(RunChecksWrapper, CanRerunCheck);
+
                 string versionString = mod.ParsedModVersion != null ? mod.ParsedModVersion.ToString(Utilities.GetDisplayableVersionFieldCount(mod.ParsedModVersion)) : mod.ModVersionString;
                 string versionFormat = mod.ModDescTargetVersion < 6 ? @"X.X" : @"X.X[.X[.X]]";
                 string checklistItemText = mod.ParsedModVersion != null ? M3L.GetString(M3L.string_verifyModVersion) : M3L.GetString(M3L.string_recommendedVersionFormatNotFollowed, versionFormat);
@@ -168,6 +196,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     DialogTitle = M3L.GetString(M3L.string_detectedMiscellaneousIssues),
                     ValidationFunction = CheckModForMiscellaneousIssues
                 });
+            }
+
+            private void RunChecksWrapper()
+            {
+                NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"ModChecksThread");
+                nbw.DoWork += (sender, args) => RunChecks();
+                nbw.RunWorkerAsync();
             }
 
             #region CHECK FUNCTIONS
@@ -390,7 +425,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     {
                                         continue;
                                     }
-                                    
+
                                     var differences = mapping1.Value.Select(x => x.StringID).Except(mapping2.Value.Select(x => x.StringID));
                                     foreach (var difference in differences)
                                     {
@@ -1512,6 +1547,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             public DeploymentChecklistItem()
             {
+                Initialize();
+            }
+
+            private void Initialize()
+            {
                 Icon = FontAwesomeIcon.Spinner;
                 Spinning = true;
                 Foreground = Application.Current.FindResource(AdonisUI.Brushes.DisabledAccentForegroundBrush) as SolidColorBrush;
@@ -1560,6 +1600,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             public IReadOnlyCollection<string> GetBlockingIssues() => BlockingErrors.AsReadOnly();
             public IReadOnlyCollection<string> GetSignificantIssues() => SignificantIssues.AsReadOnly();
             public IReadOnlyCollection<string> GetInfoWarningIssues() => InfoWarnings.AsReadOnly();
+
+            public void Reset()
+            {
+                BlockingErrors.Clear();
+                SignificantIssues.Clear();
+                InfoWarnings.Clear();
+                CheckDone = false;
+                Initialize();
+            }
         }
 
         private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
@@ -1592,10 +1641,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             nbw.DoWork += (a, b) =>
             {
                 ProgressIndeterminate = true;
-                foreach (var checkItem in emc.DeploymentChecklistItems)
-                {
-                    checkItem.ExecuteValidationFunction();
-                }
+                emc.RunChecks();
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {
