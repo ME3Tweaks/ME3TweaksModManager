@@ -44,8 +44,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// </summary>
     public partial class ArchiveDeployment : MMBusyPanelBase
     {
+        public string Header { get; set; } = M3L.GetString(M3L.string_prepareModForDistribution);
         public bool MultithreadedCompression { get; set; } = true;
-        public string DeployButtonText { get; set; } = M3L.GetString(M3L.string_pleaseWait);
+        public string DeployButtonText { get; set; } = M3L.GetString(M3L.string_pleaseWait); //Initial value
         public ObservableCollectionExtended<EncompassingModDeploymentCheck> ModsInDeployment { get; } = new ObservableCollectionExtended<EncompassingModDeploymentCheck>();
 
         // Mod that will be first added to the deployment when the UI is loaded
@@ -70,8 +71,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         /// </summary>
         public class EncompassingModDeploymentCheck : INotifyPropertyChanged
         {
-            private ArchiveDeployment deploymentHost;
-            public ui.ObservableCollectionExtended<DeploymentChecklistItem> DeploymentChecklistItems { get; } = new ui.ObservableCollectionExtended<DeploymentChecklistItem>();
+            public ObservableCollectionExtended<DeploymentChecklistItem> DeploymentChecklistItems { get; } = new ObservableCollectionExtended<DeploymentChecklistItem>();
             public DeploymentValidationTarget DepValidationTarget { get; set; }
             private GameTarget internalValidationTarget { get; set; }
             public Mod ModBeingDeployed { get; }
@@ -101,9 +101,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             public bool CheckCancelled { get; set; }
 
             public bool CanReRun { get; set; }
-            public EncompassingModDeploymentCheck(ArchiveDeployment deploymentHost, Mod mod, DeploymentValidationTarget dvt)
+            public EncompassingModDeploymentCheck(Mod mod, DeploymentValidationTarget dvt)
             {
-                this.deploymentHost = deploymentHost;
                 ModBeingDeployed = mod;
                 DepValidationTarget = dvt;
                 internalValidationTarget = dvt.SelectedTarget;
@@ -160,7 +159,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                 DeploymentChecklistItems.Add(new DeploymentChecklistItem()
                 {
-                    ItemText = "Check name and object references in package files",
+                    ItemText = "References check",
                     ModToValidateAgainst = mod,
                     DialogMessage = "The following issues were detected when checking package files for invalid name and object references. This may be due to errors in the ME3ExplorerCore build Mod Manager uses, but these issues should be investigated as invalid references will most likely cause the game to crash.",
                     DialogTitle = "Invalid name and object references",
@@ -1001,11 +1000,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     f =>
                     //foreach (var f in referencedFiles)
                     {
+                        if (CheckCancelled) return;
                         // Mostly ported from ME3Explorer
                         var lnumChecked = Interlocked.Increment(ref numChecked);
                         item.ItemText = "Checking name and object references" + $@" [{lnumChecked - 1}/{referencedFiles.Count}]";
 
                         var relativePath = f.Substring(ModBeingDeployed.ModPath.Length + 1);
+                        Log.Information($@"Checking package and name references in {relativePath}");
                         var package = MEPackageHandler.OpenMEPackage(Path.Combine(item.ModToValidateAgainst.ModPath, f));
                         foreach (ExportEntry exp in package.Exports)
                         {
@@ -1154,6 +1155,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             #endregion
 
             public event PropertyChangedEventHandler PropertyChanged;
+
+            /// <summary>
+            /// Sets all checks to the 'abandoned' state, as in they will not run due to previous blocking item
+            /// </summary>
+            public void SetAbandoned()
+            {
+                foreach (var check in DeploymentChecklistItems)
+                {
+                    check.SetAbandoned();
+                }
+            }
         }
 
         public ICommand DeployCommand { get; set; }
@@ -1366,7 +1378,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             //Debug.WriteLine("DONE");
 
             // setup the compressor for pass 1
-            var compressor = new SevenZip.SevenZipCompressor();
+            var compressor = new SevenZipCompressor();
             compressor.CustomParameters.Add(@"s", @"on");
             if (!MultithreadedCompression)
             {
@@ -1608,6 +1620,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 CheckDone = false;
                 Initialize();
             }
+
+            public void SetAbandoned()
+            {
+                Foreground = Brushes.Gray;
+                Icon = FontAwesomeIcon.Ban;
+                Spinning = false;
+            }
         }
 
         private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
@@ -1636,6 +1655,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void StartCheck(EncompassingModDeploymentCheck emc)
         {
+            ModBeingChecked = emc;
+
+            // Ensure UI vars are set
+            DeployButtonText = M3L.GetString(M3L.string_pleaseWait);
+            PrecheckCompleted = false;
+            ProgressIndeterminate = true;
+            TaskbarHelper.SetProgressState(TaskbarProgressBarState.Indeterminate);
+
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"DeploymentValidation");
             nbw.DoWork += (a, b) =>
             {
@@ -1644,36 +1671,56 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {
-                MELoadedFiles.InvalidateCaches();
-                TaskbarHelper.SetProgress(0);
-                TaskbarHelper.SetProgressState(TaskbarProgressBarState.NoProgress);
                 if (b.Error != null)
                 {
                     Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                 }
-                PrecheckCompleted = true;
-                ProgressIndeterminate = false;
-                if (emc.DeploymentChecklistItems.Any(x => x.DeploymentBlocking))
+
+                var deploymentBlocked = emc.DeploymentChecklistItems.Any(x => x.DeploymentBlocking);
+                if (deploymentBlocked)
                 {
+                    // Deployment has been blocked
                     OperationText = M3L.GetString(M3L.string_deploymentBlockedUntilAboveItemsAreFixed);
                     DeployButtonText = M3L.GetString(M3L.string_deploymentBlocked);
+
+                    while (!PendingChecks.IsEmpty)
+                    {
+                        if (PendingChecks.TryDequeue(out var nEmc))
+                        {
+                            nEmc.SetAbandoned();
+                        }
+                    }
+                    EndChecks();
+                }
+                else if (PendingChecks.TryDequeue(out var emc_next))
+                {
+                    // Run the next check
+                    StartCheck(emc_next);
                 }
                 else
                 {
+                    // No more checks and deployment not blocked
                     DeployButtonText = M3L.GetString(M3L.string_deploy);
                     OperationText = M3L.GetString(M3L.string_verifyAboveItemsBeforeDeployment);
-                }
-                CommandManager.InvalidateRequerySuggested();
-
-                // Queue next item
-                if (PendingChecks.TryDequeue(out var emc_next))
-                {
-                    StartCheck(emc_next);
+                    EndChecks();
                 }
             };
-            TaskbarHelper.SetProgressState(TaskbarProgressBarState.Indeterminate);
+
             nbw.RunWorkerAsync();
         }
+
+        private void EndChecks()
+        {
+            ModBeingChecked = null;
+            MELoadedFiles.InvalidateCaches();
+            TaskbarHelper.SetProgress(0);
+            TaskbarHelper.SetProgressState(TaskbarProgressBarState.NoProgress);
+            PrecheckCompleted = true;
+            ProgressIndeterminate = false;
+            CommandManager.InvalidateRequerySuggested();
+        }
+
+        public EncompassingModDeploymentCheck ModBeingChecked;
 
         public void AddModToDeployment(Mod mod)
         {
@@ -1687,25 +1734,31 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 ValidationTargets.ReplaceAll(sortedTargetList.OrderBy(x => x.Game));
             }
 
-            var depMod = new EncompassingModDeploymentCheck(this, mod, dvt);
+            var depMod = new EncompassingModDeploymentCheck(mod, dvt);
             ModsInDeployment.Add(depMod);
-            PendingChecks.Enqueue(depMod);
-            if (PendingChecks.TryDequeue(out var emc))
+            if (ModBeingChecked != null)
             {
-                StartCheck(emc);
+                PendingChecks.Enqueue(depMod);
+            }
+            else
+            {
+                StartCheck(depMod);
             }
         }
 
         public bool ProgressIndeterminate { get; set; }
 
-        public ui.ObservableCollectionExtended<DeploymentValidationTarget> ValidationTargets { get; } = new ui.ObservableCollectionExtended<DeploymentValidationTarget>();
+        public ObservableCollectionExtended<DeploymentValidationTarget> ValidationTargets { get; } = new ObservableCollectionExtended<DeploymentValidationTarget>();
 
+        /// <summary>
+        /// Object that contains info about the validation targets for a mod. Only one of these can exist per game
+        /// </summary>
         public class DeploymentValidationTarget : INotifyPropertyChanged
         {
             public MEGame Game { get; }
             public GameTarget SelectedTarget { get; set; }
             public string HeaderString { get; }
-            public ui.ObservableCollectionExtended<GameTarget> AvailableTargets { get; } = new ui.ObservableCollectionExtended<GameTarget>();
+            public ObservableCollectionExtended<GameTarget> AvailableTargets { get; } = new ObservableCollectionExtended<GameTarget>();
             public DeploymentValidationTarget(MEGame game, IEnumerable<GameTarget> targets)
             {
                 Game = game;
