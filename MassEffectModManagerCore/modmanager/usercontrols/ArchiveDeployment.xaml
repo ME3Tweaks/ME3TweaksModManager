@@ -12,7 +12,7 @@
              DataContext="{Binding RelativeSource={RelativeSource Self}}"
              MinWidth="450">
     <StackPanel>
-        <TextBlock FontSize="20" FontWeight="Bold" Text="{Binding Header}" TextAlignment="Center"/>
+        <TextBlock FontSize="20" FontWeight="Bold" Text="{StaticResource string_prepareModForDistribution}" TextAlignment="Center"/>
         <ItemsControl ItemsSource="{Binding ValidationTargets}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="{x:Type local:ArchiveDeployment+DeploymentValidationTarget}">

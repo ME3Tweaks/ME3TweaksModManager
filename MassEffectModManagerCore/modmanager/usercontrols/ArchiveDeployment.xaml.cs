@@ -26,9 +26,7 @@ using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using ME3ExplorerCore.GameFilesystem;
 using ME3ExplorerCore.Helpers;
-using ME3ExplorerCore.Gammtek.Extensions.Collections.Generic;
 using ME3ExplorerCore.Gammtek.IO;
-using ME3ExplorerCore.Misc;
 using ME3ExplorerCore.Packages;
 using ME3ExplorerCore.TLK.ME1;
 using ME3ExplorerCore.TLK.ME2ME3;
@@ -46,10 +44,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// </summary>
     public partial class ArchiveDeployment : MMBusyPanelBase
     {
-        public string Header { get; set; } = M3L.GetString(M3L.string_prepareModForDistribution);
         public bool MultithreadedCompression { get; set; } = true;
         public string DeployButtonText { get; set; } = M3L.GetString(M3L.string_pleaseWait);
-        public ui.ObservableCollectionExtended<EncompassingModDeploymentCheck> ModsInDeployment { get; } = new ui.ObservableCollectionExtended<EncompassingModDeploymentCheck>();
+        public ObservableCollectionExtended<EncompassingModDeploymentCheck> ModsInDeployment { get; } = new ObservableCollectionExtended<EncompassingModDeploymentCheck>();
 
         // Mod that will be first added to the deployment when the UI is loaded
         private Mod initialMod;
@@ -73,14 +70,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         /// </summary>
         public class EncompassingModDeploymentCheck : INotifyPropertyChanged
         {
+            private ArchiveDeployment deploymentHost;
             public ui.ObservableCollectionExtended<DeploymentChecklistItem> DeploymentChecklistItems { get; } = new ui.ObservableCollectionExtended<DeploymentChecklistItem>();
             public DeploymentValidationTarget DepValidationTarget { get; set; }
             private GameTarget internalValidationTarget { get; set; }
             public Mod ModBeingDeployed { get; }
 
             public bool CheckCancelled { get; set; }
-            public EncompassingModDeploymentCheck(Mod mod, DeploymentValidationTarget dvt)
+            public EncompassingModDeploymentCheck(ArchiveDeployment deploymentHost, Mod mod, DeploymentValidationTarget dvt)
             {
+                this.deploymentHost = deploymentHost;
                 ModBeingDeployed = mod;
                 DepValidationTarget = dvt;
                 internalValidationTarget = dvt.SelectedTarget;
