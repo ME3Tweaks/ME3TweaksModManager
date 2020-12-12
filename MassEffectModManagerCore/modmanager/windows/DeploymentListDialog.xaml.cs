@@ -71,7 +71,7 @@ namespace MassEffectModManagerCore.modmanager.windows
             try
             {
                 Clipboard.SetText(toClipboard);
-                StatusText = "Copied to clipboard";
+                StatusText = M3L.GetString(M3L.string_copiedToClipboard);
             }
             catch (Exception ex)
             {

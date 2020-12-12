@@ -479,6 +479,12 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_changeSettingsInActionsMenu = "string_changeSettingsInActionsMenu";
 		public const string string_nexusModsIntegration = "string_nexusModsIntegration";
 		public const string string_nexusModsIntegrationDescription = "string_nexusModsIntegrationDescription";
+		public const string string_startUsingModManager = "string_startUsingModManager";
+		public const string string_additionalOptions = "string_additionalOptions";
+		public const string string_enableTelemetry = "string_enableTelemetry";
+		public const string string_wp_description_telemetry = "string_wp_description_telemetry";
+		public const string string_developerMode = "string_developerMode";
+		public const string string_wp_description_developermod = "string_wp_description_developermod";
 		public const string string_tooltip_multithreadDeployment = "string_tooltip_multithreadDeployment";
 		public const string string_multiThreadedCompression = "string_multiThreadedCompression";
 		public const string string_deploy = "string_deploy";
@@ -780,6 +786,8 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_tooltip_poweredByME3TweaksUpdaterService = "string_tooltip_poweredByME3TweaksUpdaterService";
 		public const string string_poweredByME3TweaksUpdaterService = "string_poweredByME3TweaksUpdaterService";
 		public const string string_requiresBackup = "string_requiresBackup";
+		public const string string_tooltip_downloadAll = "string_tooltip_downloadAll";
+		public const string string_downloadAll = "string_downloadAll";
 		public const string string_anUpdateToME3TweaksModManagerIsAvailable = "string_anUpdateToME3TweaksModManagerIsAvailable";
 		public const string string_downloadingUpdate = "string_downloadingUpdate";
 		public const string string_preparingToApplyUpdate = "string_preparingToApplyUpdate";
@@ -1276,6 +1284,10 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_nnFilesToDeleteOffServern = "string_nnFilesToDeleteOffServern";
 		public const string string_interp_updaterServiceDeltaConfirmationFooter = "string_interp_updaterServiceDeltaConfirmationFooter";
 		public const string string_confirmChanges = "string_confirmChanges";
+		public const string string_interp_checkingPackagesBeforeUploadX = "string_interp_checkingPackagesBeforeUploadX";
+		public const string string_uploadAborted_foundCompressedPackage = "string_uploadAborted_foundCompressedPackage";
+		public const string string_dialog_uploadAborted_foundCompressedPackage = "string_dialog_uploadAborted_foundCompressedPackage";
+		public const string string_cannotUploadMod = "string_cannotUploadMod";
 		public const string string_selectMixinsToCompile = "string_selectMixinsToCompile";
 		public const string string_noGameBackupOfME3IsAvailableMixinsCannotBeUsedWithoutABackup = "string_noGameBackupOfME3IsAvailableMixinsCannotBeUsedWithoutABackup";
 		public const string string_interp_dialogCreatingNewModWithExistingName = "string_interp_dialogCreatingNewModWithExistingName";
@@ -1342,6 +1354,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_dialog_me3cmmMigrationCompleted = "string_dialog_me3cmmMigrationCompleted";
 		public const string string_dialog_performMe3cmmCleanup = "string_dialog_performMe3cmmCleanup";
 		public const string string_performCleanupQuestion = "string_performCleanupQuestion";
+		public const string string_massEffect3ModManagerMigration = "string_massEffect3ModManagerMigration";
 		public const string string_officialDLCToggler = "string_officialDLCToggler";
 		public const string string_officialDLCTogglerDescription = "string_officialDLCTogglerDescription";
 		public const string string_officialDLCTogglerME1ME2Warning = "string_officialDLCTogglerME1ME2Warning";
@@ -1353,6 +1366,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_next = "string_next";
 		public const string string_previous = "string_previous";
 		public const string string_skipTutorial = "string_skipTutorial";
+		public const string string_title_quickTutorial = "string_title_quickTutorial";
 		public const string string_interp_exceptionOccuredWhileCompilingTLKSubfileTankmaster = "string_interp_exceptionOccuredWhileCompilingTLKSubfileTankmaster";
 		public const string string_interp_exceptionOccuredWhileCompilingTLKFileME3Exp = "string_interp_exceptionOccuredWhileCompilingTLKFileME3Exp";
 		public const string string_checkingBackup = "string_checkingBackup";
@@ -1404,5 +1418,6 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_interp_error_textureExceptionInternal = "string_interp_error_textureExceptionInternal";
 		public const string string_addSelectedModsToDeployment = "string_addSelectedModsToDeployment";
 		public const string string_description_addSelectedModsToDeployment = "string_description_addSelectedModsToDeployment";
+		public const string string_addModsToDeployment = "string_addModsToDeployment";
 	}
 }

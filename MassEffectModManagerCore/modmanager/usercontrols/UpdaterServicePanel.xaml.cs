@@ -416,7 +416,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 var compressedPackages = new List<string>();
                 foreach (var f in files)
                 {
-                    CurrentActionText = $"Checking packages before upload {(numDone * 100 / totalFiles)}%";
+                    CurrentActionText = M3L.GetString(M3L.string_interp_checkingPackagesBeforeUploadX, (numDone * 100 / totalFiles));
                     numDone++;
                     if (f.RepresentsPackageFilePath())
                     {
@@ -442,12 +442,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                 if (compressedPackages.Any())
                 {
-                    CurrentActionText = "Upload aborted: Cannot upload packages that are natively compressed";
+                    CurrentActionText = M3L.GetString(M3L.string_uploadAborted_foundCompressedPackage);
                     // Abort
                     Application.Current.Dispatcher.InvokeAsync(() =>
                     {
-                        M3L.ShowDialog(mainwindow, $"The follow packages are natively compressed and cannot be uploaded. Package files must be saved uncompressed so end user instances of Mod Manager can reliably determine which files need updated. Resave these packages in ME3Explorer - ME3Tweaks Fork to decompress them.\n\n{string.Join('\n', compressedPackages.OrderBy(x => x))}",
-                            "Cannot upload mod", MessageBoxButton.OK, MessageBoxImage.Error);
+                        M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_dialog_uploadAborted_foundCompressedPackage, string.Join('\n', compressedPackages.OrderBy(x => x))),
+                            M3L.GetString(M3L.string_cannotUploadMod), MessageBoxButton.OK, MessageBoxImage.Error);
                     });
                     CancelOperations = true;
                     return UploadModResult.CANT_UPLOAD_NATIVE_COMPRESSED_PACKAGES;

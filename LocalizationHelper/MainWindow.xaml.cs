@@ -519,7 +519,7 @@ namespace LocalizationHelper
             var M3folder = Path.Combine(solutionroot, "MassEffectModManagerCore");
 
             var file = Path.Combine(M3folder, SelectedFile);
-            string[] attributes = { "Header", "ToolTip", "Content", "Text", "Watermark" };
+            string[] attributes = { "Title", "Header", "ToolTip", "Content", "Text", "Watermark" };
             try
             {
                 XDocument doc = XDocument.Load(file);
@@ -797,7 +797,9 @@ namespace LocalizationHelper
 
         private bool isNotLocalizableWord(string str)
         {
+            
             if (str.Equals("ME3Tweaks Mod Manager", StringComparison.InvariantCultureIgnoreCase)) return false;
+            if (str.Equals("Mass Effect Ini Modder", StringComparison.InvariantCultureIgnoreCase)) return false;
             return true;
         }
 

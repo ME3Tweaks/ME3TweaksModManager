@@ -29,7 +29,6 @@ namespace MassEffectModManagerCore.modmanager.windows
         BasicUITask CleaningUpTask = new BasicUITask(M3L.GetString(M3L.string_cleaningUp));
         public ME3CMMMigrationWindow()
         {
-            DataContext = this;
             InitializeComponent();
             Tasks.Add(MigratingModsTask);
             Tasks.Add(MigratingSettings);

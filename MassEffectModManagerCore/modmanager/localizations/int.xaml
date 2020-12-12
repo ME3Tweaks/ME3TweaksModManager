@@ -1392,7 +1392,7 @@
     <system:String x:Key="string_interp_codeX">Code {0}</system:String>
     <!-- 0=ModMaker ID/Code -->
 
-    <!-- Updater Service-->
+    <!-- Mod updates panel -->
     <system:String x:Key="string_interp_decompressedFileNotCorrectSize">Decompressed file ({0}) is not the correct size. Expected: {1}, received: {2}</system:String>
     <!-- 0=sourcefile.relativefilepath 1=sourcefile.size 2=decompressedStream.Length -->
     <system:String x:Key="string_interp_decompressedFileWrongHash">Decompressed file ({0}) has the wrong hash. Expected: {1}, received: {2}</system:String>
@@ -1563,7 +1563,7 @@
     <system:String x:Key="string_lZMAStoragePath">LZMA storage path</system:String>
     <system:String x:Key="string_manifestsStoragePath">Manifests storage path</system:String>
     <system:String x:Key="string_interp_updaterServiceDeltaMessageHeader">The following delta will be applied to the ME3Tweaks Updater Service for {0}:</system:String>
-    <!-- 0=mod.ModName -->
+    <!-- 0=ModName -->
     <system:String x:Key="string_interp_updaterServiceDeltaConfirmationHeader">The following delta will be applied to the ME3Tweaks Updater Service for {0}:</system:String> 
     <!-- 0=Mod name -->
     <system:String xml:space="preserve" x:Key="string_nnFilesToUploadToServern">\n\nFiles to upload to server:\n -</system:String>
@@ -1572,6 +1572,12 @@
     <!-- ensure you do not change any positions of the \n or the -! -->
     <system:String xml:space="preserve" x:Key="string_interp_updaterServiceDeltaConfirmationFooter">\n\nConfirm these are the changes you wish to apply to the ME3Tweaks Updater Service for this mod.</system:String>
     <system:String x:Key="string_confirmChanges">Confirm changes</system:String>
+    <system:String x:Key="string_interp_checkingPackagesBeforeUploadX">Checking packages before upload {0}%</system:String>
+    <!-- 0={Percent number} -->
+    <system:String x:Key="string_uploadAborted_foundCompressedPackage">Upload aborted: Cannot upload packages that are natively compressed</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialog_uploadAborted_foundCompressedPackage">The follow packages are natively compressed and cannot be uploaded. Package files must be saved uncompressed so end user instances of Mod Manager can reliably determine which files need updated. Resave these packages in ME3Explorer - ME3Tweaks Fork to decompress them.\n\n{0}</system:String>
+    <!-- 0=List of packages -->
+    <system:String x:Key="string_cannotUploadMod">Cannot upload mod</system:String>
 
     <!-- Mixin Library -->
     <system:String x:Key="string_selectMixinsToCompile">Select Mixins to compile</system:String>
@@ -1654,8 +1660,7 @@
     <system:String x:Key="string_dialog_cannotImportModTextureMarkersFound">This mod contains files that have been marked as being part of a texture modded installation. Mods that have been modified by a texture mod cannot be imported.</system:String>
     <system:String x:Key="string_cannotImportMod">Cannot import mod</system:String>
 
-
-<!-- ME3CMM Migration -->
+    <!-- ME3CMM Migration -->
     <system:String x:Key="string_migratingMods">Migrating mods</system:String>
     <system:String x:Key="string_migratingSettings">Migrating settings</system:String>
     <system:String x:Key="string_interp_migratingModsXoFY">Migrating mods [{0}/{1}]</system:String>
@@ -1663,6 +1668,7 @@
     <system:String xml:space="preserve" x:Key="string_dialog_me3cmmMigrationCompleted">Migration from Mass Effect 3 Mod Manager to ME3Tweaks Mod Manager completed.\n\nLaunch ME3TweaksModManager.exe from now on instead of ME3CMM.exe.</system:String>
     <system:String x:Key="string_dialog_performMe3cmmCleanup">Cleanup ME3CMM files? This will delete loose files in the data directory, ME3CMM specific folders in the data directory, and ME3CMM.exe.</system:String>
     <system:String x:Key="string_performCleanupQuestion">Perform cleanup?</system:String>
+    <system:String x:Key="string_massEffect3ModManagerMigration">Mass Effect 3 Mod Manager Migration</system:String>
 
     <!-- Official DLC Toggler -->
     <system:String x:Key="string_officialDLCToggler">Official DLC toggler</system:String>
@@ -1682,6 +1688,7 @@
     <system:String x:Key="string_next">Next</system:String>
 	<system:String x:Key="string_previous">Previous</system:String>
 	<system:String x:Key="string_skipTutorial">Skip tutorial</system:String>
+    <system:String  x:Key="string_title_quickTutorial">ME3Tweaks Mod Manager Quick Tutorial</system:String>
 
     <!-- TLK Transpiler -->
     <system:String x:Key="string_interp_exceptionOccuredWhileCompilingTLKSubfileTankmaster">Exception occurred while compiling TLK subfile {0}: {1}</system:String>
@@ -1764,5 +1771,6 @@
     <!-- Mod Selector Dialog -->
     <system:String  x:Key="string_addSelectedModsToDeployment">Add selected mods to deployment</system:String>
     <system:String  x:Key="string_description_addSelectedModsToDeployment">Select mods to add to deployment. You can select multiple mods by holding the Control key or Shift.</system:String>
+    <system:String  x:Key="string_addModsToDeployment">Add mods to deployment</system:String>
 
 </ResourceDictionary>
