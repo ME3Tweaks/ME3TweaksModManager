@@ -28,7 +28,10 @@
                 </TextBox.InputBindings>
             </TextBox>
         </DockPanel>
-        <Button Content="{DynamicResource string_close}" DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="5,3,5,0" Click="ClosePanel"/>
+        <DockPanel DockPanel.Dock="Bottom">
+            <TextBlock Text="{Binding StatusText}" DockPanel.Dock="Left" VerticalAlignment="Center"/>
+            <Button Content="{DynamicResource string_close}" DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="5,3,5,0" Click="ClosePanel"/>
+        </DockPanel>
         <Grid Height="300" HorizontalAlignment="Stretch">
                 <StackPanel
                 VerticalAlignment="Center"

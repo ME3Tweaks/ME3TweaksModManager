@@ -338,7 +338,17 @@
     <system:String x:Key="string_preparingToScanGame">Preparing to scan game</system:String>
     <system:String x:Key="string_pleaseWait">Please wait</system:String>
     <system:String x:Key="string_pleaseWait_startup">Mod Manager is starting up, your mod library will be available momentarily.</system:String>
-
+    <!-- Shown when Mod Manager is starting up, in place of 'no mods loaded!' message -->
+    <system:String  x:Key="string_listFilesThisModCanInstall">List files this mod can install</system:String>
+    <system:String  x:Key="string_tooltip_listFilesThisModCanInstall">Lists all files this mod can potentially install</system:String>
+    <system:String  x:Key="string_editModInfo">Edit mod info</system:String>
+    <system:String  x:Key="string_compressPackagesOnInstall">Compress packages on install</system:String>
+    <system:String  x:Key="string_tooltip_compressPackagesOnInstall">Sets the default option for compressing packages on install to true, which saves disk space at the cost of slightly increased install time.</system:String>
+    <system:String  x:Key="string_nexusFileSearch">NexusMods File Search</system:String>
+    <system:String  x:Key="string_tooltip_nexusFileSearch">Search for files contained in archive downloads on NexusMods</system:String>
+    <system:String x:Key="string_interp_allInstallableFiles">All installable files for {0}</system:String>
+    <!-- 0={mod name} -->
+    <system:String x:Key="string_description_allInstallableFiles">The following files are what this mod can potentially install into the game. Note that some of them may only be installed if certain options are chosen.</system:String>
 
     <!-- Global Styles -->
     <system:String x:Key="string_thisTargetHasBeenTextureModded">This target has been texture modded</system:String>

@@ -22,10 +22,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         /// <summary>
         /// The API endpoint for searching. Append an encoded filename to search.
         /// </summary>
-        public string APIEndpoint = @"https://api.jonatanrek.cz/NEXUS/api/search/";
+        public string APIEndpoint = @"https://api.jonatanrek.cz/NEXUS/api/";
         public string SearchTerm { get; set; }
         public bool QueryInProgress { get; set; }
-
+        public string StatusText { get; set; }
         public bool SearchME1 { get; set; }
         public bool SearchME2 { get; set; }
         public bool SearchME3 { get; set; }
@@ -49,7 +49,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void PerformSearch()
         {
-            var searchUrl = $@"{APIEndpoint}{Uri.EscapeDataString(SearchTerm)}";
+            var searchUrl = $@"{APIEndpoint}search/{Uri.EscapeDataString(SearchTerm)}";
             Debug.WriteLine(searchUrl);
             QueryInProgress = true;
             try
@@ -76,12 +76,37 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
+            Task.Run(() =>
+            {
+                if (APIKeys.HasNexusSearchKey)
+                {
+                    var latestStatusStr =
+                        OnlineContent.FetchRemoteString($@"{APIEndpoint}status", APIKeys.NexusSearchKey);
+                    var latestStatus = JsonConvert.DeserializeObject<Dictionary<int, APIStatusResult>>(latestStatusStr);
+                    var lastFileIndexing = UnixTimeStampToDateTime(latestStatus[11].value);
+                    var lastModIndexing = UnixTimeStampToDateTime(latestStatus[10].value);
+                    StatusText = $"Last file indexing: {lastFileIndexing}, Last mod indexing: {lastModIndexing}";
+                }
+            });
+        }
 
+        private DateTime UnixTimeStampToDateTime(double unixTimeStamp)
+        {
+            // Unix timestamp is seconds past epoch
+            System.DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
+            dtDateTime = dtDateTime.AddSeconds(unixTimeStamp).ToLocalTime();
+            return dtDateTime;
         }
 
         private void ClosePanel(object sender, System.Windows.RoutedEventArgs e)
         {
             OnClosing(DataEventArgs.Empty);
+        }
+
+        public class APIStatusResult
+        {
+            public string name { get; set; }
+            public double value { get; set; }
         }
 
         public class SearchedItemResult : INotifyPropertyChanged

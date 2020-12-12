@@ -2545,28 +2545,6 @@ namespace MassEffectModManagerCore
 
                 if (firstStartupCheck)
                 {
-
-
-#if DEBUG
-                    //debugMethod();
-                    //DEBUG STUFF
-                    //var p = MEPackageHandler.OpenMEPackage(@"Z:\ME3-Backup\BIOGame\CookedPCConsole\BioP_MPSlum.pcc");
-                    //p.save(@"C:\users\mgame\desktop\mpslum_m3_decompressed.pcc");
-                    //var vanilla = MEPackageHandler.OpenMEPackage(VanillaDatabaseService.FetchBasegameFile(MEGame.ME2, @"BioGame\CookedPC\Startup_INT.pcc"));
-
-                    //Dev
-                    //var modified = MEPackageHandler.OpenMEPackage(@"C:\Users\Dev\Desktop\ME2NoVignette\Vanilla\Startup_INT.pcc");
-                    //var target = MEPackageHandler.OpenMEPackage(@"C:\Users\Dev\Desktop\ME2Controller\BioGame\CookedPC\Startup_INT.pcc");
-
-                    //Laptop
-                    //var modified = MEPackageHandler.OpenMEPackage(@"C:\Users\Dev\Desktop\ME2NoVignette\Vanilla\Startup_INT.pcc");
-                    //var target = MEPackageHandler.OpenMEPackage(@"C:\Users\Dev\Desktop\ME2Controller\BioGame\CookedPC\Startup_INT.pcc");
-
-                    //Desktop
-                    //var modified = MEPackageHandler.OpenMEPackage(@"X:\m3modlibrary\ME2\ME2NoMinigames-Vanilla\BioGame\CookedPC\Startup_INT.pcc");
-                    //var target = MEPackageHandler.OpenMEPackage(@"X:\m3modlibrary\ME2\ME2 Controller\ME2Controller\BioGame\CookedPC\Startup_INT.pcc");
-                    //ThreeWayPackageMerge.AttemptMerge(vanilla, modified, target);
-#endif
                     bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"WritePermissions", M3L.GetString(M3L.string_checkingWritePermissions), M3L.GetString(M3L.string_checkedUserWritePermissions));
                     CheckTargetPermissions(true);
                     backgroundTaskEngine.SubmitJobCompletion(bgTask);
@@ -2656,31 +2634,31 @@ namespace MassEffectModManagerCore
 
         private void debugMethod()
         {
-            var mixinP = @"X:\m3modlibrary\ME3\RealisticGravOLD";
-            foreach (var mp in Directory.GetFiles(mixinP, "*.pcc", SearchOption.AllDirectories))
-            {
-                var packageName = Path.GetFileName(mp);
-                var dirname = Directory.GetParent(packageName).Parent.Parent.Name;
+            //var mixinP = @"X:\m3modlibrary\ME3\RealisticGravOLD";
+            //foreach (var mp in Directory.GetFiles(mixinP, "*.pcc", SearchOption.AllDirectories))
+            //{
+            //    var packageName = Path.GetFileName(mp);
+            //    var dirname = Directory.GetParent(packageName).Parent.Parent.Name;
 
 
-                MemoryStream fileData = null;
-                if (dirname == "BASEGAME")
-                {
-                    fileData = VanillaDatabaseService.FetchBasegameFile(MEGame.ME3, packageName);
-                }
-                else
-                {
-                    var map = ModJob.GetHeadersToDLCNamesMap(MEGame.ME3);
-                    var header = ModMakerCompiler.DefaultFoldernameToHeader(dirname);
-                    fileData = VanillaDatabaseService.FetchFileFromVanillaSFAR(map[header], packageName);
-                }
+            //    MemoryStream fileData = null;
+            //    if (dirname == "BASEGAME")
+            //    {
+            //        fileData = VanillaDatabaseService.FetchBasegameFile(MEGame.ME3, packageName);
+            //    }
+            //    else
+            //    {
+            //        var map = ModJob.GetHeadersToDLCNamesMap(MEGame.ME3);
+            //        var header = ModMakerCompiler.DefaultFoldernameToHeader(dirname);
+            //        fileData = VanillaDatabaseService.FetchFileFromVanillaSFAR(map[header], packageName);
+            //    }
 
-                if (dirname == "BASEGAME")
-                {
-                    var package = MEPackageHandler.OpenMEPackageFromStream(fileData);
-                    fileData = package.SaveToStream(false, false, true);
-                }
-            }
+            //    if (dirname == "BASEGAME")
+            //    {
+            //        var package = MEPackageHandler.OpenMEPackageFromStream(fileData);
+            //        fileData = package.SaveToStream(false, false, true);
+            //    }
+            //}
         }
 
         /// <summary>
@@ -3565,17 +3543,12 @@ namespace MassEffectModManagerCore
             ShowBusyControl(previewPanel);
         }
 
-        private void DebugShowTextureModInstallationHistory_Click(object sender, RoutedEventArgs e)
-        {
-            DebugShowCurrentTargetTextureHistory();
-        }
-
         private void ListAllInstallableFiles_Click(object sender, RoutedEventArgs e)
         {
             if (SelectedMod != null)
             {
                 var files = SelectedMod.GetAllInstallableFiles();
-                ListDialog l = new ListDialog(files, $"All installable files for {SelectedMod.ModName}", "The following files are what this mod can potentially install into the game. Note that some of them may only be installed if certain options are chosen.", this);
+                ListDialog l = new ListDialog(files, M3L.GetString(M3L.string_interp_allInstallableFiles, SelectedMod.ModName), M3L.GetString(M3L.string_description_allInstallableFiles), this);
                 l.Show();
 
             }
