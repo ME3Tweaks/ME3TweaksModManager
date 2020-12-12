@@ -937,6 +937,16 @@
     <system:String x:Key="string_manuallyEnterAPIKey">Manually enter API key</system:String>
     <system:String x:Key="string_yourAPIKeyWillAppearHere">Your API key will appear here</system:String>
 
+    <!-- Alternates Global -->
+    <system:String x:Key="string_validation_alt_imageAssetArchiveError">Alternate {0} lists image asset {1}, but the asset could not be read from the archive. The log will contain additional information.</system:String>
+    <!-- 0={FriendlyName} 1={ImageAssetName} -->
+    <system:String x:Key="string_validation_alt_imageAssetNotFound">Alternate file {0} lists image asset {1}, but the asset does not exist in the mod's {2} directory.</system:String>
+    <!-- 0={FriendlyName} 1={ImageAssetName} 2={Mod.ModImageAssetFolderName} -->
+    <system:String x:Key="string_validation_alt_imageAssetOutOfRangeHeight">Alternate {0} lists image asset height {1}, but it is not within the valid values range. ImageHeight must be between 1 and 1039 inclusive.</system:String>
+    <!-- 0={FriendlyName} 1={imageHeight} -->
+    <system:String x:Key="string_validation_alt_imageAssetMissingHeight">Alternate {0} specifies an image asset but does not set (or have a valid value for) ImageHeight. ImageHeight is required to be set on alternates that specify an image asset.</system:String>
+    <!-- 0={FriendlyName} -->
+
     <!-- Alternate DLC -->
     <system:String x:Key="string_validation_altdlc_oneAltDlcMissingFriendlyNameCmm6">At least one specified Alternate DLC does not specify a FriendlyName, which is required for mods targeting cmmver >= 6.0.</system:String>
     <system:String x:Key="string_validation_altdlc_unknownCondition">Alternate DLC specifies unknown/unsupported condition:</system:String>

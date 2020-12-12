@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
-using System.Text;
 using System.Windows.Media.Imaging;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.modmanager.objects.mod.editor;
 using MassEffectModManagerCore.ui;
-using ME3ExplorerCore.Packages;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.objects
@@ -90,7 +86,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 if (initializingAssetName != null)
                 {
                     ValidAlternate = false;
-                    LoadFailedReason = $"Alternate {FriendlyName} lists image asset {ImageAssetName}, but the asset could not be read from the archive. The log will contain additional information.";
+                    LoadFailedReason = M3L.GetString(M3L.string_validation_alt_imageAssetArchiveError, FriendlyName, ImageAssetName);
                 }
             }
             else
@@ -124,7 +120,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     {
                         Log.Error($@"Alternate file {FriendlyName} lists image asset {imageAssetName}, but the asset does not exist in the mods {Mod.ModImageAssetFolderName} directory.");
                         ValidAlternate = false;
-                        LoadFailedReason = $"Alternate file {FriendlyName} lists image asset {ImageAssetName}, but the asset does not exist in the mods {Mod.ModImageAssetFolderName} directory.";
+                        LoadFailedReason = M3L.GetString(M3L.string_validation_alt_imageAssetNotFound, FriendlyName, ImageAssetName, Mod.ModImageAssetFolderName);
                         return false;
                     }
 
@@ -151,7 +147,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         {
                             Log.Error($@"Alternate {FriendlyName} lists image asset height {imageHeight}, but it is not within the valid values range. ImageHeight must be between 1 and 1039 inclusive.");
                             ValidAlternate = false;
-                            LoadFailedReason = $"Alternate {FriendlyName} lists image asset height {imageHeight}, but it is not within the valid values range. ImageHeight must be between 1 and 1039 inclusive.";
+                            LoadFailedReason = M3L.GetString(M3L.string_validation_alt_imageAssetOutOfRangeHeight, FriendlyName, imageHeight);
                             return false;
                         }
 
@@ -161,7 +157,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     {
                         Log.Error($@"Alternate {FriendlyName} specifies an image asset but does not set (or have a valid value for) ImageHeight. ImageHeight is required to be set on alternates that specify an image asset.");
                         ValidAlternate = false;
-                        LoadFailedReason = $"Alternate {FriendlyName} specifies an image asset but does not set (or have a valid value for) ImageHeight. ImageHeight is required to be set on alternates that specify an image asset.";
+                        LoadFailedReason = M3L.GetString(M3L.string_validation_alt_imageAssetMissingHeight, FriendlyName);
                         return false;
                     }
                 }

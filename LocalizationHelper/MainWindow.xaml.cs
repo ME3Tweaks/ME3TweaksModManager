@@ -190,7 +190,7 @@ namespace LocalizationHelper
             foreach (var key in keys)
             {
                 var keyStr = key.Attribute(x + "Key").Value;
-                m3llines.Add($"\t\tpublic static readonly string {keyStr} = \"{keyStr}\";");
+                m3llines.Add($"\t\tpublic const string {keyStr} = \"{keyStr}\";");
                 //Debug.WriteLine(keyStr);
             }
 

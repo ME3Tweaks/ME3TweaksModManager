@@ -2184,15 +2184,6 @@ namespace MassEffectModManagerCore
             RepopulatingTargets = false;
         }
 
-        public void DebugShowCurrentTargetTextureHistory()
-        {
-#if DEBUG
-            var history = SelectedGameTarget.GetALOTInstallationHistory();
-            ListDialog ld = new ListDialog(history.Select(x => x.ToExtendedString()).ToList(), "Texture mod installation history", "The history of texture mods is shown below.", this);
-            ld.Show();
-#endif
-        }
-
         public async void OnSelectedModChanged()
         {
             if (SelectedMod != null)
