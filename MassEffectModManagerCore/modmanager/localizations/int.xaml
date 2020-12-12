@@ -740,7 +740,12 @@
     <system:String xml:space="preserve" x:Key="string_tooltip_manageTextures">Textures for the trilogy are installed using ALOT Installer.&#10;Texture mods must be installed last</system:String>
     <system:String  x:Key="string_manageTextures">Install textures with ALOT Installer</system:String>
     <system:String  x:Key="string_filesInstalledInSession">Files installed in session:</system:String>
+    <system:String  x:Key="string_interp_textureInstallationDate">Texture installation - {0}</system:String>
+    <!-- 0 = date -->
+    <system:String  x:Key="string_interp_versioningInfoX">Texture installation - {0}</system:String>
+    <!-- 0 = alot version string, like 'ALOT 12.0, MEUITM v3' -->
 
+    
     <!-- Log uploader-->
     <system:String x:Key="string_selectALogToView">Select a log to view on log viewing service</system:String>
     <system:String x:Key="string_collectingLogInformation">Collecting log information</system:String>

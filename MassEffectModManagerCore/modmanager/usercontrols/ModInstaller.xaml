@@ -8,8 +8,6 @@
     <local:MMBusyPanelBase.Resources>
         <converters:GroupNameToColorConverter
             x:Key="GroupNameToColorConverter" />
-        <converters:LocalizationConverter
-            x:Key="LocalizationConverter" />
         <converters:ImageTooltipVerticalOffsetConverter
             x:Key="ImageTooltipVerticalOffsetConverter" />
     </local:MMBusyPanelBase.Resources>

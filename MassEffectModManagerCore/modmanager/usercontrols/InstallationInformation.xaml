@@ -429,13 +429,14 @@
                                         <DockPanel
                                             Margin="0,0,0,10">
                                             <TextBlock
-                                                Text="{Binding InstallationTimestamp, StringFormat='Texture installation - {0}'}"
+                                                Text="{Binding InstallationTimestamp, 
+                                                Converter={StaticResource LocalizationConverter}, ConverterParameter='string_interp_textureInstallationDate'}"
                                                 FontWeight="Bold"
                                                 DockPanel.Dock="Top" />
                                             <TextBlock
-                                                Text="{Binding StringFormat='Versioning info: {0}'}"
+                                                Text="{Binding
+                                                Converter={StaticResource LocalizationConverter}, ConverterParameter='string_interp_versioningInfoX'}"
                                                 DockPanel.Dock="Top" />
-                                            <!-- Todo localization converter -->
                                             <TextBlock
                                                 Text="{DynamicResource string_filesInstalledInSession}"
                                                 DockPanel.Dock="Top" />

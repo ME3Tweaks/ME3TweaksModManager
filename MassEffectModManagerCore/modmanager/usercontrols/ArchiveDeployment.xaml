@@ -53,7 +53,7 @@
                                 </Button>
                                 <TextBlock Text="{Binding ModBeingDeployed.ModName}" FontWeight="Bold" FontSize="14"/>
                             </DockPanel>
-                            <TextBlock Text="{Binding ModBeingDeployed.ModVersionString, StringFormat='Version {0}'}"/>
+                            <TextBlock Text="{Binding ModBeingDeployed.ModVersionString, Converter={StaticResource LocalizationConverter}, ConverterParameter='string_interp_versionX'}"/>
                             <TextBlock Text="{DynamicResource string_deploymentChecklist}" FontWeight="Bold"/>
                             <ItemsControl ItemsSource="{Binding DeploymentChecklistItems}" Height="200" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"  
                             AlternationCount="2" VirtualizingStackPanel.IsVirtualizing="True" ScrollViewer.CanContentScroll="True">

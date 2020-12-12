@@ -27,8 +27,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public string BuildDate { get; set; }
         public AboutPanel()
         {
-            DataContext = this;
-            Debug.WriteLine(TelemetryKeyAvailable);
             InitializeComponent();
             BuildDate = App.BuildDate;
         }
