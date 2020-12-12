@@ -1756,7 +1756,7 @@ namespace MassEffectModManagerCore
 
         private void ShowPreviewPanel()
         {
-            var previewPanel = new PreviewWelcomePanel();
+            var previewPanel = new FirstRunPanel();
             previewPanel.Close += (a, b) =>
             {
                 ReleaseBusyControl();

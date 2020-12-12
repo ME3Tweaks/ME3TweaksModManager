@@ -1,17 +1,9 @@
 ﻿using MassEffectModManagerCore.ui;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using FontAwesome.WPF;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
@@ -19,21 +11,20 @@ using MassEffectModManagerCore.modmanager.nexusmodsintegration;
 using Microsoft.AppCenter.Analytics;
 using Pathoschild.Http.Client;
 using Serilog;
-using Path = System.Windows.Shapes.Path;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
     /// <summary>
     /// Interaction logic for PreviewWelcomePanel.xaml
     /// </summary>
-    public partial class PreviewWelcomePanel : MMBusyPanelBase
+    public partial class FirstRunPanel : MMBusyPanelBase
     {
         public FontAwesomeIcon ActiveIcon { get; set; }
         public bool SpinIcon { get; set; }
         public bool VisibleIcon { get; set; }
 
 
-        public PreviewWelcomePanel()
+        public FirstRunPanel()
         {
             DataContext = this;
             LibraryDir = Utilities.GetModsDirectory();

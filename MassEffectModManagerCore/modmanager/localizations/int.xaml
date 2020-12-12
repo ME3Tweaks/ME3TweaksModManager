@@ -452,6 +452,12 @@
     <system:String x:Key="string_changeSettingsInActionsMenu">You can change your settings at any time through the Actions menu.</system:String>
     <system:String x:Key="string_nexusModsIntegration">NexusMods Integration</system:String>
     <system:String x:Key="string_nexusModsIntegrationDescription">ME3Tweaks Mod Manager can endorse and unendorse mods on your behalf when you authorize with NexusMods. This way you can show developers your appreciation for their work. Integration with NexusMods is optional and can be managed at the top right of the window.</system:String>
+    <system:String  x:Key="string_startUsingModManager">Start using Mod Manager</system:String>
+    <system:String  x:Key="string_additionalOptions">Additional options</system:String>
+    <system:String  x:Key="string_enableTelemetry">Enable telemetry</system:String>
+    <system:String  x:Key="string_wp_description_telemetry">Mod Manager telemetry is used by developers and modders to identify new mods, fix issues in Mod Manager, and see what users expect of the application.</system:String>
+    <system:String  x:Key="string_developerMode">Enable Developer mode</system:String>
+    <system:String  x:Key="string_wp_description_developermod">Developer mode unlocks developer oriented features, such as mod deployments, official DLC toggler, and more. If you're not a mod developer, do not turn this on.</system:String>
 
     <!-- Deployment panel -->
     <system:String xml:space="preserve" x:Key="string_tooltip_multithreadDeployment">Multi-threaded compression is significantly faster than single threaded, but will use significantly more memory.&#10;If you have a large mod (>600MB) you may want to turn this off if you have less than 16GB of available memory</system:String>
@@ -841,6 +847,8 @@
     <system:String  x:Key="string_tooltip_poweredByME3TweaksUpdaterService">Mods hosted on the ME3Tweaks Updater Service can be directly updated in Mod Manager</system:String>
     <system:String  x:Key="string_poweredByME3TweaksUpdaterService">Powered by ME3Tweaks Updater Service</system:String>
     <system:String x:Key="string_requiresBackup">Requires backup</system:String>
+    <system:String  x:Key="string_tooltip_downloadAll">Download updates to mods that support direct updates</system:String>
+    <system:String  x:Key="string_downloadAll">Download all</system:String>
 
     <!-- Program updater -->
     <system:String x:Key="string_anUpdateToME3TweaksModManagerIsAvailable">An update to ME3Tweaks Mod Manager is available.</system:String>
