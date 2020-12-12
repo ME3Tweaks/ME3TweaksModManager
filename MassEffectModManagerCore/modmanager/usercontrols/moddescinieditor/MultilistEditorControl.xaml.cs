@@ -22,7 +22,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
             set => SetValue(HeaderProperty, value);
         }
 
-        public static readonly DependencyProperty HeaderProperty = DependencyProperty.Register("Header", typeof(ModJob.JobHeader?), typeof(MultilistEditorControl));
+        public static readonly DependencyProperty HeaderProperty = DependencyProperty.Register(@"Header", typeof(ModJob.JobHeader?), typeof(MultilistEditorControl));
         /// <summary>
         /// The job for this multilist editor control
         /// </summary>

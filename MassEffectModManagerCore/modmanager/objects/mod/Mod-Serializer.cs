@@ -47,7 +47,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             if (Game > MEGame.ME1)
             {
                 // This flag only makes a difference for ME1
-                parameterDictionary[@"prefercompressed"] = PreferCompressed ? "True" : null;
+                parameterDictionary[@"prefercompressed"] = PreferCompressed ? @"True" : null;
             }
 
             ParameterMap.AddRange(MDParameter.MapIntoParameterMap(parameterDictionary, @"ModInfo"));

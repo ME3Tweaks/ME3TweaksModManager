@@ -101,13 +101,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 switch (mod_game)
                 {
-                    case "masseffect":
+                    case @"masseffect":
                         GameIconSource = @"/images/gameicons/ME1_48.ico";
                         break;
-                    case "masseffect2":
+                    case @"masseffect2":
                         GameIconSource = @"/images/gameicons/ME2_48.ico";
                         break;
-                    case "masseffect3":
+                    case @"masseffect3":
                         GameIconSource = @"/images/gameicons/ME3_48.ico";
                         break;
                 }
@@ -130,6 +130,4 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             public List<SearchedItemResult> mod_ids { get; set; }
         }
     }
-
-
 }

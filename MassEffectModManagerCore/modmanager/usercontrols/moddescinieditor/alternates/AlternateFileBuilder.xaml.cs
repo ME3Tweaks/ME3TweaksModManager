@@ -21,7 +21,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alte
             set => SetValue(DirectionsTextProperty, value);
         }
 
-        public static readonly DependencyProperty DirectionsTextProperty = DependencyProperty.Register("DirectionsText", typeof(string), typeof(AlternateFileBuilder));
+        public static readonly DependencyProperty DirectionsTextProperty = DependencyProperty.Register(@"DirectionsText", typeof(string), typeof(AlternateFileBuilder));
 
         public ModJob.JobHeader? TaskHeader
         {
@@ -29,7 +29,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alte
             set => SetValue(TaskHeaderProperty, value);
         }
 
-        public static readonly DependencyProperty TaskHeaderProperty = DependencyProperty.Register("TaskHeader", typeof(ModJob.JobHeader?), typeof(AlternateFileBuilder));
+        public static readonly DependencyProperty TaskHeaderProperty = DependencyProperty.Register(@"TaskHeader", typeof(ModJob.JobHeader?), typeof(AlternateFileBuilder));
 
         public ModJob AttachedJob { get; set; }
         /// <summary>

@@ -1591,7 +1591,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     foreach (var id in installedIncompatDLC)
                     {
                         var incompatName = ThirdPartyServices.GetThirdPartyModInfo(id, target.Game);
-                        addDiagLine($"{v.Value.ModName} is not compatible with {incompatName?.modname ?? id}", Severity.FATAL);
+                        addDiagLine($@"{v.Value.ModName} is not compatible with {incompatName?.modname ?? id}", Severity.FATAL);
                     }
                 }
             }

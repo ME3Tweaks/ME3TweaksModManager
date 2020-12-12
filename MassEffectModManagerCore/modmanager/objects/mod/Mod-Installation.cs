@@ -483,7 +483,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     {
                         var dlcSourceDir = Path.Combine(ModPath, cdlcDir.Key);
                         var files = Directory.GetFiles(dlcSourceDir, @"*", SearchOption.AllDirectories).Select(x => x.Substring(dlcSourceDir.Length + 1));
-                        list.AddRange(files.Select(x => $@"{MEDirectories.GetDLCPath(Game, @"")}\{cdlcDir.Value}\{x}"));
+                        list.AddRange(files.Select(x => $@"{MEDirectories.GetDLCPath(Game, @"")}\{cdlcDir.Value}\{x}")); // do not localize
                     }
                 }
 
@@ -509,7 +509,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     {
                         var dlcSourceDir = Path.Combine(ModPath, v.AlternateDLCFolder);
                         var files = Directory.GetFiles(dlcSourceDir, @"*", SearchOption.AllDirectories).Select(x => x.Substring(dlcSourceDir.Length + 1));
-                        list.AddRange(files.Select(x => $@"{MEDirectories.GetDLCPath(Game, @"")}\{v.DestinationDLCFolder}\{x}"));
+                        list.AddRange(files.Select(x => $@"{MEDirectories.GetDLCPath(Game, @"")}\{v.DestinationDLCFolder}\{x}")); //do not localize
                     }
 
                     if (v.Operation == AlternateDLC.AltDLCOperation.OP_ADD_MULTILISTFILES_TO_CUSTOMDLC)
