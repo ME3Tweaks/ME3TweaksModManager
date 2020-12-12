@@ -856,6 +856,10 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_pasteYourAPIKeyHere = "string_pasteYourAPIKeyHere";
 		public const string string_manuallyEnterAPIKey = "string_manuallyEnterAPIKey";
 		public const string string_yourAPIKeyWillAppearHere = "string_yourAPIKeyWillAppearHere";
+		public const string string_validation_alt_imageAssetArchiveError = "string_validation_alt_imageAssetArchiveError";
+		public const string string_validation_alt_imageAssetNotFound = "string_validation_alt_imageAssetNotFound";
+		public const string string_validation_alt_imageAssetOutOfRangeHeight = "string_validation_alt_imageAssetOutOfRangeHeight";
+		public const string string_validation_alt_imageAssetMissingHeight = "string_validation_alt_imageAssetMissingHeight";
 		public const string string_validation_altdlc_oneAltDlcMissingFriendlyNameCmm6 = "string_validation_altdlc_oneAltDlcMissingFriendlyNameCmm6";
 		public const string string_validation_altdlc_unknownCondition = "string_validation_altdlc_unknownCondition";
 		public const string string_validation_altdlc_unknownOperation = "string_validation_altdlc_unknownOperation";
@@ -1003,6 +1007,9 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_interp_errorOccuredWhileAddingFileForLOCALIZATIONJobX = "string_interp_errorOccuredWhileAddingFileForLOCALIZATIONJobX";
 		public const string string_interp_validation_modparsing_securityCheckOutsideAllowSilo = "string_interp_validation_modparsing_securityCheckOutsideAllowSilo";
 		public const string string_interp_validation_modparsing_securityCheckInsideDisallowedSilo = "string_interp_validation_modparsing_securityCheckInsideDisallowedSilo";
+		public const string string_interp_singleRequiredDLC = "string_interp_singleRequiredDLC";
+		public const string string_interp_validation_modparsing_bannerImageAssetNotFound = "string_interp_validation_modparsing_bannerImageAssetNotFound";
+		public const string string_interp_validation_modparsing_bannerUsedButNotDeployedWithM3 = "string_interp_validation_modparsing_bannerUsedButNotDeployedWithM3";
 		public const string string_tooltip_hello = "string_tooltip_hello";
 		public const string string_tooltip_softwareDevelopedWithLoveByME3Tweaks = "string_tooltip_softwareDevelopedWithLoveByME3Tweaks";
 		public const string string_libraries = "string_libraries";

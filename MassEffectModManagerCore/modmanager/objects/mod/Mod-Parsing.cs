@@ -262,7 +262,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
 
                 if (OptionalSingleRequiredDLC.Any())
                 {
-                    sb.AppendLine($"Requires at least one of the following DLC to install:");
+                    sb.AppendLine(M3L.GetString(M3L.string_interp_singleRequiredDLC));
                     foreach (var reqDLC in OptionalSingleRequiredDLC)
                     {
                         string name = ThirdPartyServices.GetThirdPartyModInfo(reqDLC, Game)?.modname ?? reqDLC;
@@ -716,7 +716,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     if (!FilesystemInterposer.FileExists(fullPath, Archive))
                     {
                         Log.Error($@"Mod has banner image name of {BannerImageName}, but this file does not exist under the M3Images directory.");
-                        LoadFailedReason = $"Mod has banner image name of {BannerImageName}, but this file does not exist under the M3Images directory.";
+                        LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_bannerImageAssetNotFound, BannerImageName);
                         return;
                     }
 
@@ -728,7 +728,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         if (storageType != @"Copy")
                         {
                             Log.Error($@"Mod has banner image that is in an archive, but the storage type is not listed as 'Copy'. Mod Manager will not load mods from archive that list images that were not deployed using Mod Manager.");
-                            LoadFailedReason = $"Mod has banner image that is in an archive, but the storage type is not listed as 'Copy'. Mod Manager will not load mods from an archive that use images that were not deployed using Mod Manager.";
+                            LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_bannerUsedButNotDeployedWithM3);
                             return;
                         }
 
@@ -738,7 +738,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 }
             }
             #endregion
-            
+
             #region Header Loops
 
             #region BASEGAME and OFFICIAL HEADERS
@@ -1404,7 +1404,8 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                             LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_invalidLocalizationFilename, f);
                             return;
                         }
-                    } else if (Game == MEGame.ME2)
+                    }
+                    else if (Game == MEGame.ME2)
                     {
                         // Read bioengine before install maybe?
                         // We need to know the module number
@@ -1428,7 +1429,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             #endregion
 
             #endregion
-            
+
             #region Additional Mod Items
 
             //Required DLC (Mod Manager 5.0)
