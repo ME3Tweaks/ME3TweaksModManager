@@ -160,10 +160,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                 DeploymentChecklistItems.Add(new DeploymentChecklistItem()
                 {
-                    ItemText = "References check",
+                    ItemText = M3L.GetString(M3L.string_referencesCheck),
                     ModToValidateAgainst = mod,
-                    DialogMessage = "The following issues were detected when checking package files for invalid name and object references. This may be due to errors in the ME3ExplorerCore build Mod Manager uses, but these issues should be investigated as invalid references will most likely cause the game to crash.",
-                    DialogTitle = "Invalid name and object references",
+                    DialogMessage = M3L.GetString(M3L.string_interp_dialog_invalidReferencesFound),
+                    DialogTitle = M3L.GetString(M3L.string_invalidNameAndObjectReferences),
                     ValidationFunction = CheckReferences
                 });
 
@@ -270,7 +270,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 // Check mod name length
                 if (ModBeingDeployed.ModName.Length > 40)
                 {
-                    item.AddInfoWarning($"The mod name '{ModBeingDeployed.ModName}' is more than 40 characters long ({ModBeingDeployed.ModName.Length} characters). Consider shortening the name of this mod so it can be easily read by the user in the mod library.");
+                    item.AddInfoWarning(M3L.GetString(M3L.string_interp_infoModNameTooLong, ModBeingDeployed.ModName, ModBeingDeployed.ModName.Length));
                 }
 
                 //end setup
@@ -765,7 +765,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     {
                                         // NEVERSTREAM SHOULD HAVE BEEN SET.
                                         Log.Error(@"Found texture missing 'NeverStream' attribute " + texture.InstancedFullPath);
-                                        item.AddBlockingError($"{relativePath} texture {texture.UIndex} {texture.InstancedFullPath} is not externally stored, has more than 6 mips, but does not have the NeverStream flag. If texture LODs are raised, this package will crash the game. Set the NeverStream flag to true to correct this issue, or use an external TFC (preferred). Using an external TFC for textures improves game performance.");
+                                        item.AddBlockingError(M3L.GetString(M3L.string_interp_fatalMissingNeverstreamFlag, relativePath, texture.UIndex, texture.InstancedFullPath));
                                     }
                                 }
 
@@ -780,7 +780,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                         {
                                             // It's 4K (2^12)
                                             Log.Error(@"Found 4K Norm. These are not used by game (they use up to 1 mip below the diff) and waste large amounts of memory. Drop the top mip to correct this issue. " + texture.InstancedFullPath);
-                                            item.AddBlockingError($"{relativePath} texture {texture.UIndex} {texture.InstancedFullPath} is a 4K uncompressed normal. Unreal Engine 3 uses uncompressed normals at one mip level below the diff, so the maximum normal size is effectively 2K. The 4K normal will load when texture LODs are set to 4K but will result in wasting 64MB of both process and texture memory, as well as wasting significant amounts of disk space, as this mip will never be usable. Drop the top mip (you can drop mips in ME3Explorer - ME3Tweaks Fork) from this texture to correct this issue.");
+                                            item.AddBlockingError(M3L.GetString(M3L.string_interp_fatalFound4KNorm, relativePath, texture.UIndex, texture.InstancedFullPath));
                                         }
                                     }
                                 }
@@ -854,10 +854,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             void recursiveCheckProperty(DeploymentChecklistItem item, string relativePath, string containingClassOrStructName, IEntry entry, Property property)
             {
-                var prefix = $"{relativePath}, entry {entry.UIndex} {entry.ObjectName.Name} ({entry.ClassName}), @ 0x{property.StartOffset:X6}:";
+                var prefix = M3L.GetString(M3L.string_interp_warningPropertyTypingWrongPrefix, relativePath, entry.UIndex, entry.ObjectName.Name, entry.ClassName, property.StartOffset.ToString(@"X6"));
                 if (property is UnknownProperty up)
                 {
-                    item.AddSignificantIssue($"{prefix} Found broken property data! This should be investigated and fixed as this is almost guaranteed to cause game crashes");
+                    item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningFoundBrokenPropertyData, prefix));
 
                 }
                 else if (property is ObjectProperty op)
@@ -868,12 +868,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         //bad
                         if (op.Name.Name != null)
                         {
-                            item.AddSignificantIssue($"{prefix} {op.Name.Name} Export {op.Value} is outside of export table");
+                            item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningReferenceNotInExportTable, prefix, op.Name.Name, op.Value));
                             validRef = false;
                         }
                         else
                         {
-                            item.AddSignificantIssue($"{prefix} [Nested property] Export {op.Value} is outside of export table");
+                            item.AddSignificantIssue(M3L.GetString(M3L.string_interp_nested_warningReferenceNoInExportTable, prefix, op.Value));
                             validRef = false;
                         }
                     }
@@ -882,20 +882,20 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         //bad
                         if (op.Name.Name != null)
                         {
-                            item.AddSignificantIssue($"{prefix} {op.Name.Name} Import {op.Value} is outside of import table");
+                            item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningReferenceNotInImportTable, prefix, op.Name.Name, op.Value));
                             validRef = false;
 
                         }
                         else
                         {
-                            item.AddSignificantIssue($"{prefix} [Nested property] Import {op.Value} is outside of import table");
+                            item.AddSignificantIssue(M3L.GetString(M3L.string_interp_nested_warningReferenceNoInImportTable, prefix, op.Value));
                             validRef = false;
 
                         }
                     }
                     else if (entry.FileRef.GetEntry(op.Value)?.ObjectName.ToString() == @"Trash" || entry.FileRef.GetEntry(op.Value)?.ObjectName.ToString() == @"ME3ExplorerTrashPackage")
                     {
-                        item.AddSignificantIssue($"{prefix} [Nested property] Export {op.Value} is a Trashed object");
+                        item.AddSignificantIssue(M3L.GetString(M3L.string_interp_nested_warningTrashedExportReference, prefix, op.Value));
                         validRef = false;
                     }
 
@@ -926,11 +926,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     {
                                         if (op.Name.Name != null)
                                         {
-                                            item.AddSignificantIssue($"{prefix} {op.Name.Name} references entry {op.Value} {op.ResolveToEntry(entry.FileRef).FullPath}, but it appears to be wrong type. Property type expects a class (or subclass) of {propInfo.Reference}, but the referenced one is of type {resolvedEntry.ObjectName}");
+                                            item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningWrongPropertyTypingWrongMessage, prefix, op.Name.Name, op.Value, op.ResolveToEntry(entry.FileRef).FullPath, propInfo.Reference, resolvedEntry.ObjectName));
                                         }
                                         else
                                         {
-                                            item.AddSignificantIssue($"{prefix} [Nested Property] references entry {op.Value} {op.ResolveToEntry(entry.FileRef).FullPath}, but it appears to be wrong type. Property type expects a class (or subclass) {propInfo.Reference}, but the referenced one is of type {resolvedEntry.ObjectName}");
+                                            item.AddSignificantIssue(M3L.GetString(M3L.string_interp_nested_warningWrongClassPropertyTypingWrongMessage, prefix, op.Value, op.ResolveToEntry(entry.FileRef).FullPath, propInfo.Reference, resolvedEntry.ObjectName));
                                         }
                                     }
                                 }
@@ -939,11 +939,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     // Is instance of
                                     if (op.Name.Name != null)
                                     {
-                                        item.AddSignificantIssue($"{prefix} {op.Name.Name} references entry {op.Value} {op.ResolveToEntry(entry.FileRef).FullPath}, but it appears to be wrong type. Property type expects an instance of an object of class (or subclass) {propInfo.Reference}, but the referenced one is of type {resolvedEntry.ObjectName}");
+                                        item.AddSignificantIssue(M3L.GetString(M3L.string_interp_nested_warningWrongObjectPropertyTypingWrongMessage, prefix, op.Name.Name, op.Value, op.ResolveToEntry(entry.FileRef).FullPath, propInfo.Reference, resolvedEntry.ObjectName));
                                     }
                                     else
                                     {
-                                        item.AddSignificantIssue($"{prefix} [Nested Property] references entry {op.Value} {op.ResolveToEntry(entry.FileRef).FullPath}, but it appears to be wrong type. Property type expects an instance of an object of class (or subclass) {propInfo.Reference}, but the referenced one is of type {resolvedEntry.ObjectName}");
+                                        item.AddSignificantIssue(M3L.GetString(M3L.string_interp_nested_warningWrongObjectPropertyTypingWrongMessage, prefix, op.Value, op.ResolveToEntry(entry.FileRef).FullPath, propInfo.Reference, resolvedEntry.ObjectName));
                                     }
                                 }
                             }
@@ -975,7 +975,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     if (dp.Value.Object != 0 && !entry.FileRef.IsEntry(dp.Value.Object))
                     {
-                        item.AddSignificantIssue($"{prefix} DelegateProperty {dp.Name.Name} is outside of export table");
+                        item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningDelegatePropertyIsOutsideOfExportTable, prefix, dp.Name.Name));
                     }
                 }
             }
@@ -988,7 +988,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             /// <param name="item"></param>
             private void CheckReferences(DeploymentChecklistItem item)
             {
-                item.ItemText = "Checking name and object references";
+                item.ItemText = M3L.GetString(M3L.string_checkingNameAndObjectReferences);
                 var referencedFiles = ModBeingDeployed.GetAllRelativeReferences().Where(x => x.RepresentsPackageFilePath()).Select(x => Path.Combine(ModBeingDeployed.ModPath, x)).ToList();
                 int numChecked = 0;
 
@@ -1004,7 +1004,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         if (CheckCancelled) return;
                         // Mostly ported from ME3Explorer
                         var lnumChecked = Interlocked.Increment(ref numChecked);
-                        item.ItemText = "Checking name and object references" + $@" [{lnumChecked - 1}/{referencedFiles.Count}]";
+                        item.ItemText = M3L.GetString(M3L.string_checkingNameAndObjectReferences) + $@" [{lnumChecked - 1}/{referencedFiles.Count}]";
 
                         var relativePath = f.Substring(ModBeingDeployed.ModPath.Length + 1);
                         Log.Information($@"Checking package and name references in {relativePath}");
@@ -1014,31 +1014,31 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             // Has to be done before accessing the name because it will cause infinite crash loop
                             if (exp.idxLink == exp.UIndex)
                             {
-                                item.AddBlockingError($"{f.Substring(ModBeingDeployed.ModPath.Length + 1)}, export {exp.UIndex} has a circular self reference for it' link. The game and the toolset will be unable to handle this condition");
+                                item.AddBlockingError(M3L.GetString(M3L.string_interp_fatalExportCircularReference, f.Substring(ModBeingDeployed.ModPath.Length + 1), exp.UIndex));
                                 continue;
                             }
 
-                            var prefix = $"{f.Substring(ModBeingDeployed.ModPath.Length + 1)}, export {exp.UIndex} {exp.ObjectName.Name} ({exp.ClassName})";
+                            var prefix = M3L.GetString(M3L.string_interp_warningGenericExportPrefix, f.Substring(ModBeingDeployed.ModPath.Length + 1), exp.UIndex, exp.ObjectName.Name, exp.ClassName);
                             try
                             {
                                 if (exp.idxArchetype != 0 && !package.IsEntry(exp.idxArchetype))
                                 {
-                                    item.AddSignificantIssue($"{prefix} Archetype {exp.idxArchetype} is outside of import/export table");
+                                    item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningArchetypeOutsideTables, prefix, exp.idxArchetype));
                                 }
 
                                 if (exp.idxSuperClass != 0 && !package.IsEntry(exp.idxSuperClass))
                                 {
-                                    item.AddSignificantIssue($"{prefix} Header SuperClass {exp.idxSuperClass} is outside of import/export table");
+                                    item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningSuperclassOutsideTables, prefix, exp.idxSuperClass));
                                 }
 
                                 if (exp.idxClass != 0 && !package.IsEntry(exp.idxClass))
                                 {
-                                    item.AddSignificantIssue($"{prefix} Header Class {exp.idxClass} is outside of import/export table");
+                                    item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningClassOutsideTables, prefix, exp.idxClass));
                                 }
 
                                 if (exp.idxLink != 0 && !package.IsEntry(exp.idxLink))
                                 {
-                                    item.AddSignificantIssue($"{prefix} Header Link {exp.idxLink} is outside of import/export table");
+                                    item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningLinkOutsideTables, prefix, exp.idxLink));
                                 }
 
                                 if (exp.HasComponentMap)
@@ -1048,7 +1048,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                         if (!package.IsEntry(c.Value))
                                         {
                                             // Can components point to 0? I don't think so
-                                            item.AddSignificantIssue($"{prefix} Header Component Map item ({c.Value}) is outside of import/export table");
+                                            item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningComponentMapItemOutsideTables, prefix, c.Value));
                                         }
                                     }
                                 }
@@ -1060,12 +1060,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     var stack2 = EndianReader.ToInt32(data, 4, exp.FileRef.Endian);
                                     if (stack1 != 0 && !package.IsEntry(stack1))
                                     {
-                                        item.AddSignificantIssue($"{prefix} Export Stack[0] ({stack1}) is outside of import/export table");
+                                        item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningExportStackElementOutsideTables, prefix, 0, stack1));
                                     }
 
                                     if (stack2 != 0 && !package.IsEntry(stack2))
                                     {
-                                        item.AddSignificantIssue($"{prefix} Export Stack[1] ({stack2}) is outside of import/export table");
+                                        item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningExportStackElementOutsideTables, prefix, 1, stack2));
                                     }
                                 }
                                 else if (exp.TemplateOwnerClassIdx is var toci && toci >= 0)
@@ -1073,7 +1073,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     var TemplateOwnerClassIdx = EndianReader.ToInt32(exp.Data, toci, exp.FileRef.Endian);
                                     if (TemplateOwnerClassIdx != 0 && !package.IsEntry(TemplateOwnerClassIdx))
                                     {
-                                        item.AddSignificantIssue($"{prefix} TemplateOwnerClass (Data offset 0x{toci:X}) ({TemplateOwnerClassIdx}) is outside of import/export table");
+                                        item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningTemplateOwnerClassOutsideTables, prefix, toci: X, TemplateOwnerClassIdx));
                                     }
                                 }
 
@@ -1085,7 +1085,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             }
                             catch (Exception e)
                             {
-                                item.AddSignificantIssue($"{prefix} Exception occurred while parsing properties: {e.Message}");
+                                item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningExceptionParsingProperties, prefix, e.Message));
                                 continue;
                             }
 
@@ -1099,15 +1099,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     {
                                         if (uIndex.value != 0 && !exp.FileRef.IsEntry(uIndex.value))
                                         {
-                                            item.AddSignificantIssue($"{prefix} Binary reference ({uIndex.value}) is outside of import/export table");
+                                            item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningBinaryReferenceOutsideTables, prefix, uIndex.value));
                                         }
-                                        else if (exp.FileRef.GetEntry(uIndex.value)?.ObjectName.ToString() == "Trash")
+                                        else if (exp.FileRef.GetEntry(uIndex.value)?.ObjectName.ToString() == @"Trash")
                                         {
-                                            item.AddSignificantIssue($"{prefix} Binary reference ({uIndex.value}) is a Trashed object");
+                                            item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningBinaryReferenceTrashed, prefix, uIndex.value));
                                         }
-                                        else if (exp.FileRef.GetEntry(uIndex.value)?.ObjectName.ToString() == "ME3ExplorerTrashPackage")
+                                        else if (exp.FileRef.GetEntry(uIndex.value)?.ObjectName.ToString() == @"ME3ExplorerTrashPackage")
                                         {
-                                            item.AddSignificantIssue($"{prefix} Binary reference ({uIndex.value}) is a Trashed object");
+                                            item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningBinaryReferenceTrashed, prefix, uIndex.value));
                                         }
                                     }
 
@@ -1116,14 +1116,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     {
                                         if (ni.Item1 == "")
                                         {
-                                            item.AddSignificantIssue($"{prefix} Found invalid binary reference for a name");
+                                            item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningBinaryNameReferenceOutsideNameTable, prefix));
                                         }
                                     }
                                 }
                             }
                             catch (Exception e) /* when (!App.IsDebug)*/
                             {
-                                item.AddSignificantIssue($"{prefix} Unable to parse binary. It may be malformed. Error message: {e.Message}. Note the error message is likely code-context specific and is not useful without running application in debug mode to determine it's context");
+                                item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningUnableToParseBinary, prefix, e.Message));
                             }
                         }
 
@@ -1131,23 +1131,23 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         {
                             if (imp.idxLink != 0 && !package.TryGetEntry(imp.idxLink, out _))
                             {
-                                item.AddSignificantIssue($"{f}, import {imp.UIndex} has an invalid link value that is outside of the import/export table: {imp.idxLink}");
+                                item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningImportLinkOutideOfTables, f, imp.UIndex, imp.idxLink));
                             }
                             else if (imp.idxLink == imp.UIndex)
                             {
-                                item.AddBlockingError($"{f}, import {imp.UIndex} has a circular self reference for its link. The game and the toolset will be unable to handle this condition");
+                                item.AddBlockingError(M3L.GetString(M3L.string_interp_fatalImportCircularReference, f, imp.UIndex));
                             }
                         }
                     });
 
                 if (!item.HasAnyMessages())
                 {
-                    item.ItemText = "No reference issues were detected";
+                    item.ItemText = M3L.GetString(M3L.string_noReferenceIssuesWereDetected);
                     item.ToolTip = M3L.GetString(M3L.string_validationOK);
                 }
                 else
                 {
-                    item.ItemText = "References check detected issues";
+                    item.ItemText = M3L.GetString(M3L.string_referencesCheckDetectedIssues);
                     item.ToolTip = M3L.GetString(M3L.string_validationFailed);
                 }
 
@@ -1277,7 +1277,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                     if (b.Error == null && b.Result is List<Mod> modsForTPMISubmission && modsForTPMISubmission.Any())
                     {
-                        var goToTPMIForm = M3L.ShowDialog(window, $"The following mods contain DLC folders that are not in the Third Party Mod Identification Service (TPMI). If this mod is about to be released, you should submit telemetry for this mod so it can be identified in various tools such as ALOT Installer/Mod Manager diagnostics, be in the DLC mod database, and be identified by Mod Manager.\n\n{string.Join('\n', modsForTPMISubmission.Select(x => x.ModName))}\n\nMods are only entered into the database once they have a public mod page.", "Mod(s) not in Third Party Identification Service", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                        var goToTPMIForm = M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_dialog_dlcFolderNotInTPMI, string.Join('\n', modsForTPMISubmission.Select(x => x.ModName))), M3L.GetString(M3L.string_modsNotInThirdPartyIdentificationService), MessageBoxButton.YesNo, MessageBoxImage.Warning);
                         if (goToTPMIForm == MessageBoxResult.Yes)
                         {
                             OnClosing(new DataEventArgs(modsForTPMISubmission));
@@ -1775,7 +1775,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 DeploymentHost = deploymentHost;
                 Game = game;
-                HeaderString = $"{game.ToGameName()} validation target";
+                HeaderString = M3L.GetString(M3L.string_interp_gamenameValidationTarget, game.ToGameName());
                 AvailableTargets.ReplaceAll(targets.Where(x => !x.TextureModded));
                 SelectedTarget = AvailableTargets.FirstOrDefault();
             }
@@ -1797,7 +1797,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         [SuppressPropertyChangedWarnings]
         private void OnValidationTargetChanged(MEGame game)
         {
-            foreach (var v in ModsInDeployment.Where(x=>x.ModBeingDeployed.Game == game))
+            foreach (var v in ModsInDeployment.Where(x => x.ModBeingDeployed.Game == game))
             {
                 PendingChecks.Enqueue(v);
                 foreach (var c in v.DeploymentChecklistItems)

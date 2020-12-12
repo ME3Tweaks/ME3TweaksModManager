@@ -587,7 +587,80 @@
     <!-- 0={DLC folder name} -->
     <system:String x:Key="string_interp_missingReferencedTlkStrInMod">Custom DLC {0}'s TLK {1} does not contain the listed TLK string ID {2}, as declared in it's mount.dlc file. Mod TLKs must contain the TLK string referenced by the mount.dlc file.</system:String>
     <!-- 0={DLC folder name} 1={TLK file path} 2={Mount file TLK integer} -->
-
+    <system:String x:Key="string_referencesCheck">References check</system:String>
+    <system:String x:Key="string_interp_dialog_invalidReferencesFound">The following issues were detected when checking package files for invalid name and object references. This may be due to errors in the ME3ExplorerCore build Mod Manager uses, but these issues should be investigated as invalid references will most likely cause the game to crash.</system:String>
+    <system:String x:Key="string_invalidNameAndObjectReferences">Invalid name and object references</system:String>
+    <system:String x:Key="string_checkingNameAndObjectReferences">Checking name and object references</system:String>
+    <system:String x:Key="string_noReferenceIssuesWereDetected">No reference issues were detected</system:String>
+    <system:String x:Key="string_referencesCheckDetectedIssues">References check detected issues</system:String>
+    <system:String x:Key="string_modsNotInThirdPartyIdentificationService">Mod(s) not in Third Party Identification Service</system:String>
+    <system:String x:Key="string_interp_infoModNameTooLong">The mod name '{0}' is more than 40 characters long ({1} characters). Consider shortening the name of this mod so it can be easily read by the user in the mod library.</system:String>
+    <!-- 0={ModName} 1={integer} -->
+    <system:String x:Key="string_interp_fatalMissingNeverstreamFlag">{0} texture {1} {2} is not externally stored, has more than 6 mips, but does not have the NeverStream flag. If texture LODs are raised, this package will crash the game. Set the NeverStream flag to true to correct this issue, or use an external TFC (preferred). Using an external TFC for textures improves game performance.</system:String>
+    <!-- 0={Relative file path} 1={integer} 2={Full texture object path string} -->
+    <system:String x:Key="string_interp_fatalFound4KNorm">{0} texture {1} {2} is a 4K uncompressed normal. Unreal Engine 3 uses uncompressed normals at one mip level below the diff, so the maximum normal size is effectively 2K. The 4K normal will load when texture LODs are set to 4K but will result in wasting 64MB of both process and texture memory, as well as wasting significant amounts of disk space, as this mip will never be usable. Drop the top mip (you can drop mips in ME3Explorer - ME3Tweaks Fork) from this texture to correct this issue.</system:String>
+    <!-- 0={Relative file path} 1={integer} 2={Full texture object path string} -->
+    <system:String x:Key="string_interp_warningPropertyTypingWrongPrefix">{0}, entry {1} {2} ({3}), @ 0x{4}:</system:String>
+    <!-- 0={Relative file path} 1={integer} 2={referenced object name} 3={Class name} 4={Hex number} -->
+    <system:String x:Key="string_interp_warningFoundBrokenPropertyData">{0} Found broken property data! This should be investigated and fixed as this is almost guaranteed to cause game crashes</system:String>
+    <!-- 0={Message prefix string} -->
+    <system:String x:Key="string_interp_warningReferenceNotInExportTable">{0} {1} Export {2} is outside of export table</system:String>
+    <!-- 0={Message prefix string} 1={Export name string} 2={integer} -->
+    <system:String x:Key="string_interp_nested_warningReferenceNoInExportTable">{0} [Nested property] Export {1} is outside of export table</system:String>
+    <!-- 0={Message prefix string} 1={integer} -->
+    <system:String x:Key="string_interp_warningReferenceNotInImportTable">{0} {1} Import {2} is outside of import table</system:String>
+    <!-- 0={Message prefix string} 1={Import name string} 2={integer} -->
+    <system:String x:Key="string_interp_nested_warningReferenceNoInImportTable">{0} [Nested property] Import {1} is outside of import table</system:String>
+    <!-- 0={Message prefix string} 1={integer} -->
+    <system:String x:Key="string_interp_nested_warningTrashedExportReference">{0} [Nested property] Export {1} is a Trashed object</system:String>
+    <!-- 0={Message prefix string} 1={integer} -->
+    <system:String x:Key="string_interp_warningWrongPropertyTypingWrongMessage">{0} {1} references entry {2} {3}, but it appears to be wrong type. Property type expects a class (or subclass) of {4}, but the referenced one is of type {5}</system:String>
+    <!-- 0={Message prefix string} 1={Object property name} 2={integer} 3={Full object path string} 4={Object type name, like 'SFXDamageType'} 5={Object type name, like 'SFXDamageType'} -->
+    <system:String x:Key="string_interp_nested_warningWrongClassPropertyTypingWrongMessage">{0} [Nested Property] references entry {1} {2}, but it appears to be wrong type. Property type expects a class (or subclass) {3}, but the referenced one is of type {4}</system:String>
+    <!-- 0={Message prefix string} 1={integer} 2={Full object path} 3={Object type name, like 'SFXDamageType'} 4={Object type name, like 'SFXDamageType'} -->
+    <system:String x:Key="string_interp_warningWrongObjectPropertyTypingWrongMessage">{0} {1} references entry {2} {3}, but it appears to be wrong type. Property type expects an instance of an object of class (or subclass) {4}, but the referenced one is of type {5}</system:String>
+    <!-- 0={Message prefix string} 1={Object property name} 2={integer} 3={Full object path of referenced object} 4={Object type name, like 'SFXDamageType'} 5={Referenced object property name} -->
+    <system:String x:Key="string_interp_nested_warningWrongObjectPropertyTypingWrongMessage">{0} [Nested Property] references entry {1} {2}, but it appears to be wrong type. Property type expects an instance of an object of class (or subclass) {3}, but the referenced one is of type {4}</system:String>
+    <!-- 0={Message prefix string} 1={integer} 2={Full object path string} 3={Object type name, like 'SFXDamageType'} 4={Object type name, like 'SFXDamageType'} -->
+    <system:String x:Key="string_interp_warningDelegatePropertyIsOutsideOfExportTable">{0} DelegateProperty {1} is outside of export table</system:String>
+    <!-- 0={Message prefix string} 1={Property name string} -->
+    <system:String x:Key="string_interp_fatalExportCircularReference">{0}, export {1} has a circular self reference for it' link. The game and the toolset will be unable to handle this condition</system:String>
+    <!-- 0={relativepath} 1={integer} -->
+    <system:String x:Key="string_interp_warningGenericExportPrefix">{0}, export {1} {2} ({3})</system:String>
+    <!-- 0={relativepath} 1={integer} 2={Object name string} 3={Object class string} -->
+    <system:String x:Key="string_interp_warningArchetypeOutsideTables">{0} Archetype {1} is outside of import/export table</system:String>
+    <!-- 0={Message prefix string} 1={integer} -->
+    <system:String x:Key="string_interp_warningSuperclassOutsideTables">{0} Header SuperClass {1} is outside of import/export table</system:String>
+    <!-- 0={Message prefix string} 1={integer} -->
+    <system:String x:Key="string_interp_warningClassOutsideTables">{0} Header Class {1} is outside of import/export table</system:String>
+    <!-- 0={Message prefix string} 1={integer} -->
+    <system:String x:Key="string_interp_warningLinkOutsideTables">{0} Header Link {1} is outside of import/export table</system:String>
+    <!-- 0={Message prefix string} 1={intger} -->
+    <system:String x:Key="string_interp_warningComponentMapItemOutsideTables">{0} Header Component Map item ({1}) is outside of import/export table</system:String>
+    <!-- 0={Message prefix string} 1={integer} -->
+    <system:String x:Key="string_interp_warningExportStackElementOutsideTables">{0} Export Stack[{1}] ({2}) is outside of import/export table</system:String>
+    <!-- 0={Message prefix string} 1={integer}, 2={integer} -->
+    <system:String x:Key="string_interp_fatalImportCircularReference">{0}, import {1} has a circular self reference for its link. The game and the toolset will be unable to handle this condition</system:String>
+    <!-- 0={f} 1={integer} -->
+    <system:String x:Key="string_interp_warningExceptionParsingProperties">{0} Exception occurred while parsing properties: {1}</system:String>
+    <!-- 0={Message prefix string} 1={exception message} -->
+    <system:String x:Key="string_interp_warningTemplateOwnerClassOutsideTables">{0} TemplateOwnerClass (Data offset 0x{1}) ({2}) is outside of import/export table</system:String>
+    <!-- 0={Message prefix string} 1={hex number} 2={integer} -->
+    <system:String x:Key="string_interp_warningBinaryReferenceOutsideTables">{0} Binary reference ({1}) is outside of import/export table</system:String>
+    <!-- 0={Message prefix string} 1={integer} -->
+    <system:String x:Key="string_interp_warningBinaryReferenceTrashed">{0} Binary reference ({1}) is a Trashed object</system:String>
+    <!-- 0={Message prefix string} 1={integer} -->
+    <system:String x:Key="string_interp_warningBinaryNameReferenceOutsideNameTable">{0} Found invalid binary reference for a name</system:String>
+    <!-- 0={Message prefix string} -->
+    <system:String x:Key="string_interp_warningUnableToParseBinary">{0} Unable to parse binary. It may be malformed. Error message: {1}. Note the error message is likely code-context specific and is not useful without running application in debug mode to determine it's context</system:String>
+    <!-- 0={Message prefix string} 1={Exception message} -->
+    <system:String x:Key="string_interp_warningImportLinkOutideOfTables">{0}, import {1} has an invalid link value that is outside of the import/export table: {2}</system:String>
+    <!-- 0={Relative filepath} 1={integer} 2={integer} -->
+    <system:String xml:space="preserve" x:Key="string_interp_dialog_dlcFolderNotInTPMI">The following mods contain DLC folders that are not in the Third Party Mod Identification Service (TPMI). If this mod is about to be released, you should submit telemetry for this mod so it can be identified in various tools such as ALOT Installer/Mod Manager diagnostics, be in the DLC mod database, and be identified by Mod Manager.\n\n{0}\n\nMods are only entered into the database once they have a public mod page.</system:String>
+    <!-- 0={List of mod names} -->
+    <system:String x:Key="string_interp_gamenameValidationTarget">{0} validation target</system:String>
+    <!-- 0={Name of game (Mass Effect, Mass Effect 2, Mass Effect 3)} -->
+    
     <!-- Backup Creator-->
     <system:String x:Key="string_backupsAreShared">Backups are shared across various modding tools including Mass Effect Randomizer, ALOT Installer, and ME3Explorer - ME3Tweaks Fork.</system:String>
     <system:String x:Key="string_backupsMustBeCreatedFresh">Backups must be created from a fresh, unmodified copy of the game. Modified backups are not supported.</system:String>
@@ -743,9 +816,11 @@
     <system:String  x:Key="string_interp_textureInstallationDate">Texture installation - {0}</system:String>
     <!-- 0 = date -->
     <system:String  x:Key="string_interp_versioningInfoX">Texture installation - {0}</system:String>
-    <!-- 0 = alot version string, like 'ALOT 12.0, MEUITM v3' -->
+    <!-- 0 = texture version string, like 'ALOT 12.0, MEUITM v3' -->
+    <system:String  x:Key="string_addModToDeployment">Add mod to deployment</system:String>
+    <system:String  x:Key="string_validationTargets">Validation targets</system:String>
+    <system:String  x:Key="string_tooltip_rerunCheckOnMod">Re-run check on mod</system:String>
 
-    
     <!-- Log uploader-->
     <system:String x:Key="string_selectALogToView">Select a log to view on log viewing service</system:String>
     <system:String x:Key="string_collectingLogInformation">Collecting log information</system:String>
