@@ -1656,6 +1656,8 @@
 
     <!-- ALOT Version Info -->
     <system:String x:Key="string_textureModded">Texture modded</system:String>
+    <system:String x:Key="string_interp_modNameByAuthorName">{0} by {1}</system:String>
+    <!-- 0={ModName} 1={AuthorName} -->
 
     <!-- Intro Tutorial -->
     <system:String x:Key="string_next">Next</system:String>
@@ -1739,4 +1741,9 @@
     <!-- This technical string is shown when there is error loading texture data. 0=exception message. 1=filepath. 2=string (pccUnc, extLZO...) 3=file offset 0xhhhhhhhh -->
     <system:String xml:space="preserve" x:Key="string_interp_error_textureExceptionInternal">{0}\nStorageType: {1}\n</system:String>
     <!-- 0={exception message} 1={storage type (pccUnc, pccLZO, pccZLib)} -->
+
+    <!-- Mod Selector Dialog -->
+    <system:String  x:Key="string_addSelectedModsToDeployment">Add selected mods to deployment</system:String>
+    <system:String  x:Key="string_description_addSelectedModsToDeployment">Select mods to add to deployment. You can select multiple mods by holding the Control key or Shift.</system:String>
+
 </ResourceDictionary>

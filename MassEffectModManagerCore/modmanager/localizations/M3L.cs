@@ -1340,6 +1340,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_toggleOn = "string_toggleOn";
 		public const string string_interp_errorTogglingDLC = "string_interp_errorTogglingDLC";
 		public const string string_textureModded = "string_textureModded";
+		public const string string_interp_modNameByAuthorName = "string_interp_modNameByAuthorName";
 		public const string string_next = "string_next";
 		public const string string_previous = "string_previous";
 		public const string string_skipTutorial = "string_skipTutorial";
@@ -1392,5 +1393,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_error_me23TextureTFCNotFound = "string_error_me23TextureTFCNotFound";
 		public const string string_interp_error_textureExceptionExternal = "string_interp_error_textureExceptionExternal";
 		public const string string_interp_error_textureExceptionInternal = "string_interp_error_textureExceptionInternal";
+		public const string string_addSelectedModsToDeployment = "string_addSelectedModsToDeployment";
+		public const string string_description_addSelectedModsToDeployment = "string_description_addSelectedModsToDeployment";
 	}
 }

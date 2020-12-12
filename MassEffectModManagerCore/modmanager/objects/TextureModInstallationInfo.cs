@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using MassEffectModManagerCore.modmanager.localizations;
 using ME3ExplorerCore.Helpers;
 
 namespace MassEffectModManagerCore.modmanager.objects
@@ -109,7 +110,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             string str = "";
             if (IsNotVersioned)
             {
-                return @"Texture modded";
+                return M3L.GetString(M3L.string_textureModded);
             }
 
             if (ALOTVER > 0)
@@ -196,7 +197,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     var ret = ModName;
                     if (ModType == InstalledTextureModType.MANIFESTFILE)
                     {
-                        ret = $"{ModName} by {AuthorName}";
+                        ret = M3L.GetString(M3L.string_interp_modNameByAuthorName, ModName, AuthorName);
                     }
                     return ret;
                 }
@@ -289,32 +290,32 @@ namespace MassEffectModManagerCore.modmanager.objects
         //    InstalledTextureMods.ReplaceAll(installedInstallerFiles.Where(x => !(x is PreinstallMod)).Select(x => new InstalledTextureMod(x)));
         //}
 
-        public string ToExtendedString()
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine($"MEMI Marker Version {MarkerExtendedVersion}");
-            sb.AppendLine($"Installation by {InstallerVersionFullName}");
-            sb.AppendLine($"Installed on {InstallationTimestamp}");
-            sb.AppendLine("Files installed:");
-            foreach (var v in InstalledTextureMods)
-            {
-                var str = $@"  [{v.ModType}] {v.ModName}";
-                if (!string.IsNullOrWhiteSpace(v.AuthorName)) str += $" by {v.AuthorName}";
-                sb.AppendLine(str);
-                if (v.ChosenOptions.Any())
-                {
-                    sb.AppendLine(@"  Optional items:");
-                    foreach (var c in v.ChosenOptions)
-                    {
-                        sb.AppendLine($@"    {c}");
-                    }
-                }
-            }
+        //public string ToExtendedString()
+        //{
+        //    StringBuilder sb = new StringBuilder();
+        //    sb.AppendLine($"MEMI Marker Version {MarkerExtendedVersion}");
+        //    sb.AppendLine($"Installation by {InstallerVersionFullName}");
+        //    sb.AppendLine($"Installed on {InstallationTimestamp}");
+        //    sb.AppendLine("Files installed:");
+        //    foreach (var v in InstalledTextureMods)
+        //    {
+        //        var str = $@"  [{v.ModType}] {v.ModName}";
+        //        if (!string.IsNullOrWhiteSpace(v.AuthorName)) str += $" by {v.AuthorName}";
+        //        sb.AppendLine(str);
+        //        if (v.ChosenOptions.Any())
+        //        {
+        //            sb.AppendLine(@"  Optional items:");
+        //            foreach (var c in v.ChosenOptions)
+        //            {
+        //                sb.AppendLine($@"    {c}");
+        //            }
+        //        }
+        //    }
 
-            sb.AppendLine($"MEM version used: {MEM_VERSION_USED}");
-            sb.AppendLine($"Installer core version: {ALOT_INSTALLER_VERSION_USED}");
-            sb.AppendLine($"Versioned texture info: {ToString()}");
-            return sb.ToString();
-        }
+        //    sb.AppendLine($"MEM version used: {MEM_VERSION_USED}");
+        //    sb.AppendLine($"Installer core version: {ALOT_INSTALLER_VERSION_USED}");
+        //    sb.AppendLine($"Versioned texture info: {ToString()}");
+        //    return sb.ToString();
+        //}
     }
 }

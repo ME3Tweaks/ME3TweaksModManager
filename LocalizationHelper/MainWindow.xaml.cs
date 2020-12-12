@@ -11,6 +11,7 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Xml;
 using System.Xml.Linq;
+using MassEffectModManagerCore.modmanager.objects;
 using Path = System.IO.Path;
 
 namespace LocalizationHelper
@@ -106,11 +107,18 @@ namespace LocalizationHelper
 
                 foreach (var item in menuitems)
                 {
+                    string title = (string)item.Attribute("Title");
                     string header = (string)item.Attribute("Header");
                     string tooltip = (string)item.Attribute("ToolTip");
                     string content = (string)item.Attribute("Content");
                     string text = (string)item.Attribute("Text");
                     string watermark = (string)item.Attribute("Watermark");
+
+                    if (title != null && !title.StartsWith("{") && isNotLangWord(title) && isNotGameName(title) && isNotJobheader(title) && isNotLocalizableWord(title))
+                    {
+                        localizations[title] = $"string_{toCamelCase(title)}";
+                        //item.Attribute("Header").Value = $"{{DynamicResource {localizations[header]}}}";
+                    }
 
                     if (header != null && !header.StartsWith("{") && isNotLangWord(header) && isNotGameName(header))
                     {
@@ -118,19 +126,19 @@ namespace LocalizationHelper
                         //item.Attribute("Header").Value = $"{{DynamicResource {localizations[header]}}}";
                     }
 
-                    if (tooltip != null && !tooltip.StartsWith("{") && isNotLangWord(tooltip) && isNotGameName(tooltip))
+                    if (tooltip != null && !tooltip.StartsWith("{") && isNotLangWord(tooltip) && isNotGameName(tooltip) && isNotJobheader(tooltip))
                     {
                         localizations[tooltip] = $"string_tooltip_{toCamelCase(tooltip)}";
                         //item.Attribute("ToolTip").Value = $"{{DynamicResource {localizations[tooltip]}}}";
                     }
 
-                    if (content != null && !content.StartsWith("{") && content.Length > 1 && !content.StartsWith("/images/") && isNotLangWord(content) && isNotGameName(content))
+                    if (content != null && !content.StartsWith("{") && content.Length > 1 && !content.StartsWith("/images/") && isNotLangWord(content) && isNotGameName(content) && isNotJobheader(content))
                     {
                         localizations[content] = $"string_{toCamelCase(content)}";
                         //item.Attribute("Content").Value = $"{{DynamicResource {localizations[content]}}}";
                     }
 
-                    if (watermark != null && !watermark.StartsWith("{") && watermark.Length > 1 && !long.TryParse(watermark, out var _) && isNotLangWord(watermark) && isNotGameName(watermark)
+                    if (watermark != null && !watermark.StartsWith("{") && watermark.Length > 1 && !long.TryParse(watermark, out var _) && isNotLangWord(watermark) && isNotJobheader(watermark) && isNotGameName(watermark)
                         && !watermark.StartsWith("http"))
                     {
                         localizations[watermark] = $"string_{toCamelCase(watermark)}";
@@ -784,6 +792,25 @@ namespace LocalizationHelper
             if (str.Equals("ME1", StringComparison.InvariantCultureIgnoreCase)) return false;
             if (str.Equals("ME2", StringComparison.InvariantCultureIgnoreCase)) return false;
             if (str.Equals("ME3", StringComparison.InvariantCultureIgnoreCase)) return false;
+            return true;
+        }
+
+        private bool isNotLocalizableWord(string str)
+        {
+            if (str.Equals("ME3Tweaks Mod Manager", StringComparison.InvariantCultureIgnoreCase)) return false;
+            return true;
+        }
+
+        private bool isNotJobheader(string str)
+        {
+            str = str.TrimStart('[');
+            str = str.TrimEnd(']');
+            if (Enum.TryParse<ModJob.JobHeader>(str, out var parsed))
+            {
+                // it's a job header
+                return false;
+            }
+
             return true;
         }
 
