@@ -1139,7 +1139,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     else if (mcis == ModInstallCompletedStatus.INSTALL_FAILED_AMD_PROCESSOR_REQUIRED)
                     {
                         InstallationCancelled = true;
-                        M3L.ShowDialog(window, @"This mod can only be installed on a system with an AMD processor.", "Cannot install mod", MessageBoxButton.OK, MessageBoxImage.Error);
+                        M3L.ShowDialog(window, @"This mod can only be installed on a system with an AMD processor.", M3L.GetString(M3L.string_cannotInstallMod), MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                     else if (mcis == ModInstallCompletedStatus.INSTALL_FAILED_USER_CANCELED_MISSING_MODULES || mcis == ModInstallCompletedStatus.USER_CANCELED_INSTALLATION || mcis == ModInstallCompletedStatus.INSTALL_ABORTED_NOT_ENOUGH_SPACE)
                     {
@@ -1191,7 +1191,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 }
 
                                 InstallationCancelled = true;
-                                M3L.ShowDialog(window, $"{ModBeingInstalled.ModName} requires at least one of the following DLC to be installed:{dlcText}", M3L.GetString(M3L.string_requiredContentMissing), MessageBoxButton.OK, MessageBoxImage.Error);
+                                M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_error_singleRequiredDlcMissing, ModBeingInstalled.ModName, dlcText), M3L.GetString(M3L.string_requiredContentMissing), MessageBoxButton.OK, MessageBoxImage.Error);
                             }
                             break;
                         case ModInstallCompletedStatus.INSTALL_FAILED_COULD_NOT_DELETE_EXISTING_FOLDER:

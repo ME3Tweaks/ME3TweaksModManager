@@ -426,6 +426,11 @@
     <system:String x:Key="string_interp_errorOccuredBuildingInstallationQueues">An error occurred building installation queues: {0}</system:String>
     <!-- 0={Exception message} -->
     <system:String x:Key="string_interp_optionGroupX">Option group: {0}</system:String>
+    <system:String  x:Key="string_installTo">Install to:</system:String>
+    <system:String  x:Key="string_tooltip_targetThatTheModWillBeInstalledTo">Target that the mod will be installed to</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_modinstaller_compressPackages">Compressing packages will reduce the amount of disk space required for most mods&#10;Compressing will increase the time it takes to install a mod</system:String>
+    <system:String x:Key="string_interp_error_singleRequiredDlcMissing">{0} requires at least one of the following DLC to be installed:{1}</system:String>
+    <!-- 0={ModBeingInstalled.ModName} 1={list of dlc names. It starts with a newline, so do not put space between : and bracket symbol} -->
 
     <!-- Welcome panel -->
     <system:String x:Key="string_previewPanelTitle">Welcome to ME3Tweaks Mod Manager</system:String>
@@ -725,6 +730,10 @@
     <system:String  x:Key="string_binkw32DLCBypass">Binkw32 DLC Bypass</system:String>
     <system:String x:Key="string_dialog_restoringSFARWithoutBackup">Restoring SFARs without a backup will only delete unpacked files, as there is no backup file that can be copied in. This will leave the DLC in a broken, unusable state. You need to make a backup from an unmodified version of the game before you can properly restore DLC SFARs.</system:String>
     <system:String x:Key="string_backupNotAvailable">Backup not available</system:String>
+    <system:String  x:Key="string_textures">Textures</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_manageTextures">Textures for the trilogy are installed using ALOT Installer.&#10;Texture mods must be installed last</system:String>
+    <system:String  x:Key="string_manageTextures">Install textures with ALOT Installer</system:String>
+    <system:String  x:Key="string_filesInstalledInSession">Files installed in session:</system:String>
 
     <!-- Log uploader-->
     <system:String x:Key="string_selectALogToView">Select a log to view on log viewing service</system:String>
@@ -1435,6 +1444,8 @@
     <system:String x:Key="string_exportExtract">Export/Extract</system:String>
     <system:String x:Key="string_typeToFilter">Type to filter</system:String>
     <system:String x:Key="string_gettingListOfFilesFromBackup">Getting list of files from backup</system:String>
+    <system:String  x:Key="string_extractAsMixinSource">Extract as Mixin Source</system:String>
+    <!-- This is only shown in debug mode. Mixin is a noun. It means extract the file in a format that can be used as a source file for developing a mixin patch -->
 
     <!-- Backup Nag System -->
     <system:String x:Key="string_interp_XgamesNotBackedUp">{0} games not backed up</system:String>

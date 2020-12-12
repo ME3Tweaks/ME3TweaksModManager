@@ -457,6 +457,10 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_invalidCompatibilityPack = "string_invalidCompatibilityPack";
 		public const string string_interp_errorOccuredBuildingInstallationQueues = "string_interp_errorOccuredBuildingInstallationQueues";
 		public const string string_interp_optionGroupX = "string_interp_optionGroupX";
+		public const string string_installTo = "string_installTo";
+		public const string string_tooltip_targetThatTheModWillBeInstalledTo = "string_tooltip_targetThatTheModWillBeInstalledTo";
+		public const string string_tooltip_modinstaller_compressPackages = "string_tooltip_modinstaller_compressPackages";
+		public const string string_interp_error_singleRequiredDlcMissing = "string_interp_error_singleRequiredDlcMissing";
 		public const string string_previewPanelTitle = "string_previewPanelTitle";
 		public const string string_selectYourLanguage = "string_selectYourLanguage";
 		public const string string_howToChangeLanguage = "string_howToChangeLanguage";
@@ -690,6 +694,10 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_binkw32DLCBypass = "string_binkw32DLCBypass";
 		public const string string_dialog_restoringSFARWithoutBackup = "string_dialog_restoringSFARWithoutBackup";
 		public const string string_backupNotAvailable = "string_backupNotAvailable";
+		public const string string_textures = "string_textures";
+		public const string string_tooltip_manageTextures = "string_tooltip_manageTextures";
+		public const string string_manageTextures = "string_manageTextures";
+		public const string string_filesInstalledInSession = "string_filesInstalledInSession";
 		public const string string_selectALogToView = "string_selectALogToView";
 		public const string string_collectingLogInformation = "string_collectingLogInformation";
 		public const string string_interp_serverRejectedTheUpload = "string_interp_serverRejectedTheUpload";
@@ -1175,6 +1183,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_exportExtract = "string_exportExtract";
 		public const string string_typeToFilter = "string_typeToFilter";
 		public const string string_gettingListOfFilesFromBackup = "string_gettingListOfFilesFromBackup";
+		public const string string_extractAsMixinSource = "string_extractAsMixinSource";
 		public const string string_interp_XgamesNotBackedUp = "string_interp_XgamesNotBackedUp";
 		public const string string_interp_XgameNotBackedUp = "string_interp_XgameNotBackedUp";
 		public const string string_allGamesBackedUp = "string_allGamesBackedUp";
