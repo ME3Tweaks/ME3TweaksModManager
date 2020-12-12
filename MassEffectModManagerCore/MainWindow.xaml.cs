@@ -1688,11 +1688,14 @@ namespace MassEffectModManagerCore
                 ASIManager.ExtractDefaultASIResources();
 
                 Log.Information(@"Initializing ME3ExplorerCore library");
+                #region INIT CORE LIB
                 MEPackageHandler.GlobalSharedCacheEnabled = false; // Do not use the package caching system
                 CoreLib.InitLib(syncContext, x =>
                 {
                     Log.Error($@"Error saving package: {x}");
                 });
+                T2DLocalizationShim.SetupTexture2DLocalizationShim();
+                #endregion
                 //debugMethod();
 
                 PopulateTargets();
@@ -1894,11 +1897,11 @@ namespace MassEffectModManagerCore
                     {
                         //Application.Current.Dispatcher.Invoke(delegate
                         //{
-                            AllLoadedMods.Add(mod);
-                            if (ME1ModsVisible && mod.Game == MEGame.ME1 || ME2ModsVisible && mod.Game == MEGame.ME2 || ME3ModsVisible && mod.Game == MEGame.ME3)
-                            {
-                                VisibleFilteredMods.Add(mod);
-                            }
+                        AllLoadedMods.Add(mod);
+                        if (ME1ModsVisible && mod.Game == MEGame.ME1 || ME2ModsVisible && mod.Game == MEGame.ME2 || ME3ModsVisible && mod.Game == MEGame.ME3)
+                        {
+                            VisibleFilteredMods.Add(mod);
+                        }
                         //});
                     }
                     else

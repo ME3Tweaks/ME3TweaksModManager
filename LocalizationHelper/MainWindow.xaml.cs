@@ -56,7 +56,7 @@ namespace LocalizationHelper
             files.Add("MainWindow.xaml");
             files.Add("MainWindow.xaml.cs");
             files.Add(Path.Combine(modmanagerroot, "modmanager", "TLKTranspiler.cs").Substring(rootLen));
-            files.Add(Path.Combine(modmanagerroot, "gamefileformats","unreal","Texture2D.cs").Substring(rootLen));
+            //files.Add(Path.Combine(modmanagerroot, "gamefileformats","unreal","Texture2D.cs").Substring(rootLen));
 
             files.Sort();
             SourceFiles.ReplaceAll(files);
