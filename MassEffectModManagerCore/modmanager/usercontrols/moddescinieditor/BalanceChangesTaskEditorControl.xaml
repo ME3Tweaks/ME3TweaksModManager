@@ -34,7 +34,7 @@
         </Button>
         <local:DescriptorEditorItemsControl
             ItemsSource="{Binding BalanceChangesJob.ParameterMap}"
-            Description="The newfiles descriptor should only contain the path of your server coalesced file, relative to the moddir subdirectory from the root of the mod."
+            Description="{DynamicResource string_mde_dec_header_balancechanges}"
             Visibility="{Binding BalanceChangesJob, Converter={StaticResource NullVisibilityConverter}}" />
     </StackPanel>
 </local:ModdescEditorControlBase>

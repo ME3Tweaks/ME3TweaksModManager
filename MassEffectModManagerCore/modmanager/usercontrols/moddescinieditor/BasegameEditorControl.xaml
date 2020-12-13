@@ -48,7 +48,7 @@
                     FontWeight="Bold" />
                 <alternates:AlternateFileBuilder
                     x:Name="basegame_alternatefiles_editor"
-                    DirectionsText="Alternate files allow you to specify alternate installation options for this task. These options are presented to the user before installation begins."
+                    DirectionsText="{DynamicResource string_mde_dec_header_basegame}"
                     TaskHeader="BASEGAME" />
             </StackPanel>
         </DockPanel>

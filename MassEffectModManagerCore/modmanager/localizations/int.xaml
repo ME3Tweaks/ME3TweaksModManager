@@ -1916,7 +1916,10 @@
     <system:String x:Key="string_sourceDirectoryPath">Source directory path</system:String>
     <system:String x:Key="string_installedDLCName">Installed DLC name</system:String>
     <system:String x:Key="string_dLCHumanReadableName">DLC human readable name</system:String>
-
-
-
+    <system:String x:Key="string_mde_dec_header_balancechanges">The newfiles descriptor should only contain the path of your server coalesced file, relative to the moddir subdirectory from the root of the mod.</system:String>
+    <system:String x:Key="string_mde_dec_header_basegame">Alternate files allow you to specify alternate installation options for this task. These options are presented to the user before installation begins.</system:String>
+    <system:String x:Key="string_mde_dec_header_customdlc">These values allow you to control when your mod cannot be installed, as well as allow Mod Manager to remove older versions of your mod if the DLC folder name has changed.</system:String>
+    <system:String x:Key="string_mde_dec_header_metadata_modmanager">The ModManager header is the first item read when parsing a mod and is used to configure the mod parser. This editor only supports saving mods targeting the latest version of moddesc that this build supports.</system:String>
+    <system:String x:Key="string_mde_dec_header_metadata_modinfo">The ModInfo header contains most of the information that is displayed to the user in Mod Manager's interface. The more information you give to a user, the less likely they will need to ask you questions about your mod.</system:String>
+    <system:String x:Key="string_mde_dec_header_metadata_updates">The UPDATES header is used for the ME3Tweaks Updater Service. The additionaldeployment items can be used to force non-referenced files to be included when deploying your mod.</system:String>
 </ResourceDictionary>

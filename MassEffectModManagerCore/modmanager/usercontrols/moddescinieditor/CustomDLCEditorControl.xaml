@@ -38,7 +38,7 @@
                 </Button.Content>
             </Button>
             <local:DescriptorEditorItemsControl
-                Description="These values allow you to control when your mod cannot be installed, as well as allow Mod Manager to remove older versions of your mod if the DLC folder name has changed."
+                Description="{DynamicResource string_mde_dec_header_customdlc}"
                 ItemsSource="{Binding CustomDLCJob.ParameterMap}"
                 DockPanel.Dock="Top"
                 x:Name="custdlc_descriptor_editor" />

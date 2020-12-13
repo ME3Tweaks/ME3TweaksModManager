@@ -2,7 +2,6 @@
 using System.Windows;
 using IniParser.Model;
 using MassEffectModManagerCore.modmanager.objects;
-using MassEffectModManagerCore.modmanager.objects.mod.editor;
 using MassEffectModManagerCore.ui;
 using ME3ExplorerCore.Packages;
 
