@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Windows.Media.Imaging;
 using ME3ExplorerCore.Misc;
 using Serilog;
-using SevenZip;
 
 namespace MassEffectModManagerCore.modmanager.objects.mod
 {

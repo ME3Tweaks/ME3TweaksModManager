@@ -37,6 +37,7 @@ using Serilog;
 using Microsoft.WindowsAPICodePack.Taskbar;
 using PropertyChanged;
 using DuplicatingIni = MassEffectModManagerCore.modmanager.gameini.DuplicatingIni;
+using ExportEntry = ME3ExplorerCore.Packages.ExportEntry;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -900,50 +901,79 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
 
                     // Check object is of correct typing?
-                    if (validRef)
+                    if (validRef && op.Value != 0)
                     {
+                        var referencedEntry = op.ResolveToEntry(entry.FileRef);
                         var propInfo = UnrealObjectInfo.GetPropertyInfo(entry.Game, op.Name, containingClassOrStructName, containingExport: entry as ExportEntry);
-                        if (propInfo == null && entry.ClassName == @"Class")
+                        var customClassInfos = new Dictionary<string, ClassInfo>();
+
+                        if (referencedEntry.ClassName == @"Class" && op.Value > 0)
                         {
-                            // Needs dynamically generated
-                            var currentInfo = UnrealObjectInfo.generateClassInfo(entry as ExportEntry);
-                            propInfo = UnrealObjectInfo.GetPropertyInfo(entry.Game, op.Name, containingClassOrStructName, currentInfo, containingExport: entry as ExportEntry);
+                            // Make sure we have info about this class.
+                            var lookupEnt = referencedEntry as ExportEntry;
+                            while (lookupEnt != null && lookupEnt.IsClass && !UnrealObjectInfo.GetClasses(ModBeingDeployed.Game).ContainsKey(lookupEnt.ObjectName))
+                            {
+                                // Needs dynamically generated
+                                var cc = UnrealObjectInfo.generateClassInfo(lookupEnt);
+                                customClassInfos[lookupEnt.ObjectName] = cc;
+                                lookupEnt = lookupEnt.Parent as ExportEntry;
+                            }
+
+                            // If we did not pull it previously, we should try again with our custom info.
+                            if (propInfo == null && customClassInfos.Any())
+                            {
+                                propInfo = UnrealObjectInfo.GetPropertyInfo(entry.Game, op.Name,
+                                    containingClassOrStructName, customClassInfos[referencedEntry.ObjectName],
+                                    containingExport: entry as ExportEntry);
+                            }
                         }
 
                         if (propInfo != null && propInfo.Reference != null)
                         {
-                            var resolvedEntry = op.ResolveToEntry(entry.FileRef);
-
                             // We can't resolve if an object inherits from a class object that's only defined in native.
                             // This is only possible if the refernce is an import and it's importing native class object.
                             // Like Engine.CodecBinkMovie
-                            if (resolvedEntry != null && !resolvedEntry.IsAKnownNativeClass())
+                            if (!referencedEntry.IsAKnownNativeClass())
                             {
-                                if (resolvedEntry.ClassName == @"Class")
+                                if (referencedEntry.ClassName == @"Class")
                                 {
                                     // Inherits
-                                    if (!resolvedEntry.InheritsFrom(propInfo.Reference))
+                                    if (!referencedEntry.InheritsFrom(propInfo.Reference, customClassInfos))
                                     {
                                         if (op.Name.Name != null)
                                         {
-                                            item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningWrongPropertyTypingWrongMessage, prefix, op.Name.Name, op.Value, op.ResolveToEntry(entry.FileRef).FullPath, propInfo.Reference, resolvedEntry.ObjectName));
+                                            item.AddSignificantIssue(M3L.GetString(
+                                                M3L.string_interp_warningWrongPropertyTypingWrongMessage, prefix,
+                                                op.Name.Name, op.Value, op.ResolveToEntry(entry.FileRef).FullPath,
+                                                propInfo.Reference, referencedEntry.ObjectName));
                                         }
                                         else
                                         {
-                                            item.AddSignificantIssue(M3L.GetString(M3L.string_interp_nested_warningWrongClassPropertyTypingWrongMessage, prefix, op.Value, op.ResolveToEntry(entry.FileRef).FullPath, propInfo.Reference, resolvedEntry.ObjectName));
+                                            item.AddSignificantIssue(M3L.GetString(
+                                                M3L
+                                                    .string_interp_nested_warningWrongClassPropertyTypingWrongMessage,
+                                                prefix, op.Value, op.ResolveToEntry(entry.FileRef).FullPath,
+                                                propInfo.Reference, referencedEntry.ObjectName));
                                         }
                                     }
                                 }
-                                else if (!resolvedEntry.IsA(propInfo.Reference))
+                                else if (!referencedEntry.IsA(propInfo.Reference, customClassInfos))
                                 {
                                     // Is instance of
                                     if (op.Name.Name != null)
                                     {
-                                        item.AddSignificantIssue(M3L.GetString(M3L.string_interp_nested_warningWrongObjectPropertyTypingWrongMessage, prefix, op.Name.Name, op.Value, op.ResolveToEntry(entry.FileRef).FullPath, propInfo.Reference, resolvedEntry.ObjectName));
+                                        item.AddSignificantIssue(M3L.GetString(
+                                            M3L.string_interp_warningWrongObjectPropertyTypingWrongMessage,
+                                            prefix, op.Name.Name, op.Value,
+                                            op.ResolveToEntry(entry.FileRef).FullPath, propInfo.Reference,
+                                            referencedEntry.ObjectName));
                                     }
                                     else
                                     {
-                                        item.AddSignificantIssue(M3L.GetString(M3L.string_interp_nested_warningWrongObjectPropertyTypingWrongMessage, prefix, op.Value, op.ResolveToEntry(entry.FileRef).FullPath, propInfo.Reference, resolvedEntry.ObjectName));
+                                        item.AddSignificantIssue(M3L.GetString(
+                                            M3L.string_interp_nested_warningWrongObjectPropertyTypingWrongMessage,
+                                            prefix, op.Value, op.ResolveToEntry(entry.FileRef).FullPath,
+                                            propInfo.Reference, referencedEntry.ObjectName));
                                     }
                                 }
                             }
