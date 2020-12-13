@@ -1865,7 +1865,7 @@
     <system:String x:Key="string_interp_couldNotSaveModdescini">Could not save moddesc.ini: {0}</system:String>
     <!-- 0={Exception message} -->
     <system:String x:Key="string_modLoadedSuccessfully">Mod loaded successfully</system:String>
-    <system:String x:Key="string_moddesciniEdsitor">moddesc.ini Edsitor</system:String>
+    <system:String x:Key="string_moddesciniEdsitor">moddesc.ini Editor</system:String>
     <system:String x:Key="string_openModdesciniDocumentation">Open moddesc.ini documentation</system:String>
     <system:String x:Key="string_serialize">Serialize</system:String>
     <system:String x:Key="string_metadata">Metadata</system:String>
