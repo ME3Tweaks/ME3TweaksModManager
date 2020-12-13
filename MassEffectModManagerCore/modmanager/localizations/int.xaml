@@ -1922,4 +1922,17 @@
     <system:String x:Key="string_mde_dec_header_metadata_modmanager">The ModManager header is the first item read when parsing a mod and is used to configure the mod parser. This editor only supports saving mods targeting the latest version of moddesc that this build supports.</system:String>
     <system:String x:Key="string_mde_dec_header_metadata_modinfo">The ModInfo header contains most of the information that is displayed to the user in Mod Manager's interface. The more information you give to a user, the less likely they will need to ask you questions about your mod.</system:String>
     <system:String x:Key="string_mde_dec_header_metadata_updates">The UPDATES header is used for the ME3Tweaks Updater Service. The additionaldeployment items can be used to force non-referenced files to be included when deploying your mod.</system:String>
+
+    <!-- Nexus File Search -->
+    <system:String x:Key="string_nexusModsFileSearch">NexusMods File Search</system:String>
+    <system:String x:Key="string_description_nexusModsFileSearch">You can search for files contained in mods on NexusMods for the Mass Effect trilogy games with NexusMods File Search. The database is regularly updated and maintained by JonatanTek.</system:String>
+    <system:String x:Key="string_search">Search</system:String>
+    <system:String x:Key="string_searching">Searching...</system:String>
+    <system:String x:Key="string_goToModPage">Go to mod page</system:String>
+
+    <system:String x:Key="string_interp_lastIndexing">Last file indexing: {0}, Last mod indexing: {1}</system:String>
+    <!-- 0={lastFileIndexing} 1={lastModIndexing} -->
+    <!-- The follow items are only for letting this localizer replace the correct strings! Remove them when done and make sure keys are identical to the stripped versions-->
+    <system:String x:Key="string_interp_lastIndexing">Last file indexing: {lastFileIndexing}, Last mod indexing: {lastModIndexing}</system:String>
+
 </ResourceDictionary>

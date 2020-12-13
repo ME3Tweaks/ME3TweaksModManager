@@ -450,7 +450,8 @@ namespace MassEffectModManagerCore
 #elif PRERELEASE
                  //version += " PRERELEASE";
 #endif
-                return $"{version}, Build {BuildNumber}";
+                // TODO CHANGE THIS
+                return $"{version}, Beta Build {BuildNumber}";
             }
         }
 
@@ -464,7 +465,7 @@ namespace MassEffectModManagerCore
 #elif PRERELEASE
                  //version += " PRERELEASE";
 #endif
-                return $"ME3Tweaks Mod Manager {version} (Build {BuildNumber})";
+                return $"ME3Tweaks Mod Manager {version} (Beta Build {BuildNumber})";
             }
         }
 

@@ -3,14 +3,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.ui;
 using ME3ExplorerCore.Helpers;
 using Newtonsoft.Json;
-using PropertyChanged;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -85,7 +83,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     var latestStatus = JsonConvert.DeserializeObject<Dictionary<int, APIStatusResult>>(latestStatusStr);
                     var lastFileIndexing = UnixTimeStampToDateTime(latestStatus[11].value);
                     var lastModIndexing = UnixTimeStampToDateTime(latestStatus[10].value);
-                    StatusText = $"Last file indexing: {lastFileIndexing}, Last mod indexing: {lastModIndexing}";
+                    StatusText = M3L.GetString(M3L.string_interp_lastIndexing, lastFileIndexing, lastModIndexing);
                 }
             });
         }
