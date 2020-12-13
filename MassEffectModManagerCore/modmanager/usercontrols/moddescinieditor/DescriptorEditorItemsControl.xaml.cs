@@ -12,7 +12,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
     /// <summary>
     /// Interaction logic for AlternatesItemsControl.xaml
     /// </summary>
-    [DebuggerDisplay("DescriptorEditorItemsControl Header={HeaderText} ItemCount={GetItemCount()}")]
+    [DebuggerDisplay(@"DescriptorEditorItemsControl Header={HeaderText} ItemCount={GetItemCount()}")]
     public partial class DescriptorEditorItemsControl : UserControl, INotifyPropertyChanged
     {
         public string HeaderText
@@ -22,7 +22,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
         }
 
         public static readonly DependencyProperty HeaderTextProperty =
-            DependencyProperty.Register("HeaderText", typeof(string), typeof(DescriptorEditorItemsControl));
+            DependencyProperty.Register(@"HeaderText", typeof(string), typeof(DescriptorEditorItemsControl));
 
         public string Description
         {
@@ -31,20 +31,19 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
         }
 
         public static readonly DependencyProperty DescriptionProperty =
-            DependencyProperty.Register("Description", typeof(string), typeof(DescriptorEditorItemsControl));
+            DependencyProperty.Register(@"Description", typeof(string), typeof(DescriptorEditorItemsControl));
 
         public ICollection ItemsSource
         {
             get => (ICollection)GetValue(ItemsSourceProperty);
             set
             {
-                Debug.WriteLine("SETTING");
                 SetValue(ItemsSourceProperty, value);
             }
         }
 
         public static readonly DependencyProperty ItemsSourceProperty =
-            DependencyProperty.Register("ItemsSource", typeof(ICollection), typeof(DescriptorEditorItemsControl), new PropertyMetadata(new PropertyChangedCallback(OnItemsSourcePropertyChanged)));
+            DependencyProperty.Register(@"ItemsSource", typeof(ICollection), typeof(DescriptorEditorItemsControl), new PropertyMetadata(new PropertyChangedCallback(OnItemsSourcePropertyChanged)));
 
         private static void OnItemsSourcePropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
@@ -76,7 +75,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
 #if DEBUG
         public string GetItemCount()
         {
-            return ItemsSource != null ? $"{ItemsSource.Count} items" : "ItemsSource is null";
+            return ItemsSource != null ? $@"{ItemsSource.Count} items" : @"ItemsSource is null";
         }
 #endif
 

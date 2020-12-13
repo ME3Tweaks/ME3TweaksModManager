@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Media;
@@ -56,13 +55,13 @@ namespace MassEffectModManagerCore.modmanager.windows
             try
             {
                 Clipboard.SetText(GeneratedIni);
-                StatusMessage = "Copied moddesc.ini contents to clipboard";
+                StatusMessage = M3L.GetString(M3L.string_copiedModdesciniContentsToClipboard);
                 StatusForeground = Settings.DarkTheme ? Brushes.LightGreen : Brushes.DarkGreen;
             }
             catch (Exception e)
             {
                 Log.Error($@"Failed to copy moddesc.ini text to clipboard: {e.Message}");
-                StatusMessage = $"Failed to copy moddesc.ini text to clipboard: {e.Message}";
+                StatusMessage = M3L.GetString(M3L.string_interp_failedToCopyModdescini, e.Message);
                 StatusForeground = Brushes.Red;
             }
         }
@@ -78,18 +77,18 @@ namespace MassEffectModManagerCore.modmanager.windows
                 var existinText = File.ReadAllText(EditingMod.ModDescPath);
                 if (existinText.Equals(GeneratedIni))
                 {
-                    StatusMessage = "Existing moddesc.ini is same as generated one";
+                    StatusMessage = M3L.GetString(M3L.string_moddescIniNotChanged);
                     return;
                 }
 
                 var buDest = Path.Combine(EditingMod.ModPath, $@"backup_moddesc_{DateTime.Now:yy-MM-dd h-mm-ss}.ini");
                 File.Copy(EditingMod.ModDescPath, buDest, true);
                 File.WriteAllText(EditingMod.ModDescPath, GeneratedIni);
-                StatusMessage = $"moddesc.ini has been updated for {EditingMod.ModName}. Reload the library for changes to take effect.";
+                StatusMessage = M3L.GetString(M3L.string_interp_savedModdsecini, EditingMod.ModName);
             }
             catch (Exception e)
             {
-                StatusMessage = $"Could not save moddesc.ini: {e.Message}";
+                StatusMessage = M3L.GetString(M3L.string_interp_couldNotSaveModdescini, e.Message);
             }
         }
 
@@ -158,7 +157,7 @@ namespace MassEffectModManagerCore.modmanager.windows
             if (m.ValidMod)
             {
                 // wow
-                StatusMessage = "Mod loaded successfully";
+                StatusMessage = M3L.GetString(M3L.string_modLoadedSuccessfully);
                 if (Application.Current.MainWindow is MainWindow mw)
                 {
                     mw.VisibleFilteredMods.Add(m);

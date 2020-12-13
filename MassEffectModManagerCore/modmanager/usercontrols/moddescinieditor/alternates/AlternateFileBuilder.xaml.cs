@@ -1,10 +1,9 @@
-﻿using System;
-using System.ComponentModel;
-using System.Diagnostics;
+﻿using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using IniParser.Model;
 using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
 
@@ -99,7 +98,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alte
 
         private void AddAlternateFile()
         {
-            Alternates.Add(new AlternateFile($"Alternate File {Alternates.Count + 1}"));
+            Alternates.Add(new AlternateFile(M3L.GetString(M3L.string_interp_alternateFileX + 1, Alternates.Count + 1)));
         }
 
 

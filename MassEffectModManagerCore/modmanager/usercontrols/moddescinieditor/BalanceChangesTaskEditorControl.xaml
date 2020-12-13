@@ -1,30 +1,40 @@
-﻿<local:ModdescEditorControlBase x:Class="MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.BalanceChangesTaskEditorControl"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor"
-             xmlns:fa="http://schemas.fontawesome.io/icons/"
-             xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
-             mc:Ignorable="d" 
-             DataContext="{Binding RelativeSource={RelativeSource Self}}"
-             d:DesignHeight="450" d:DesignWidth="800">
+﻿<local:ModdescEditorControlBase
+    x:Class="MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.BalanceChangesTaskEditorControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor" xmlns:fa="http://schemas.fontawesome.io/icons/" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+    mc:Ignorable="d"
+    DataContext="{Binding RelativeSource={RelativeSource Self}}"
+    d:DesignHeight="450"
+    d:DesignWidth="800">
     <StackPanel>
-            <TextBlock Text="[BALANCE_CHANGES]" FontWeight="Bold"/>
-            <TextBlock Text="The BALANCE_CHANGES task header allows you to install a balance changes file override, which will replace the version that is normally downloaded at Mass Effect 3 startup. Balance changes only affect multiplayer. Ensure the file is based on the server coalesced, otherwise you will permanently corrupt your online profile with no option to fix it, short of repurchasing the game."
-                       MaxWidth="700"
-                       TextWrapping="Wrap"
-                       HorizontalAlignment="Left"/>
-            <Button Command="{Binding AddBalanceChangesJobCommand}" HorizontalAlignment="Left" DockPanel.Dock="Top" Margin="0,5,0,5">
-                <Button.Content>
-                    <StackPanel Orientation="Horizontal">
-                        <fa:ImageAwesome Icon="Plus" Width="12" Height="12" Margin="0,0,5,0" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>
-                        <TextBlock Text="Add BALANCE_CHANGES task"/>
-                    </StackPanel>
-                </Button.Content>
-            </Button>
-        <local:DescriptorEditorItemsControl ItemsSource="{Binding BalanceChangesJob.ParameterMap}"
-                                                Description="The newfiles descriptor should only contain the path of your server coalesced file, relative to the moddir subdirectory from the root of the mod."
-                                                Visibility="{Binding BalanceChangesJob, Converter={StaticResource NullVisibilityConverter}}"/>
+        <TextBlock
+            Text="[BALANCE_CHANGES]"
+            FontWeight="Bold" />
+        <TextBlock
+            Text="{DynamicResource string_mde_balancechanges}"
+            MaxWidth="700"
+            TextWrapping="Wrap"
+            HorizontalAlignment="Left" />
+        <Button
+            Command="{Binding AddBalanceChangesJobCommand}"
+            HorizontalAlignment="Left"
+            DockPanel.Dock="Top"
+            Margin="0,5,0,5">
+            <Button.Content>
+                <StackPanel
+                    Orientation="Horizontal">
+                    <fa:ImageAwesome
+                        Icon="Plus"
+                        Width="12"
+                        Height="12"
+                        Margin="0,0,5,0"
+                        Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
+                    <TextBlock
+                        Text="{DynamicResource string_mde_addBalanceChangesTask}" />
+                </StackPanel>
+            </Button.Content>
+        </Button>
+        <local:DescriptorEditorItemsControl
+            ItemsSource="{Binding BalanceChangesJob.ParameterMap}"
+            Description="The newfiles descriptor should only contain the path of your server coalesced file, relative to the moddir subdirectory from the root of the mod."
+            Visibility="{Binding BalanceChangesJob, Converter={StaticResource NullVisibilityConverter}}" />
     </StackPanel>
 </local:ModdescEditorControlBase>

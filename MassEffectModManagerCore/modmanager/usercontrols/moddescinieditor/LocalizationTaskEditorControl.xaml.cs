@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Windows;
 using IniParser.Model;
+using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.objects.mod.editor;
@@ -37,7 +38,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
 
         private void AddTLK()
         {
-            Files.Add(new MDParameter(@"string", "TLK filename", ""));
+            Files.Add(new MDParameter(@"string", M3L.GetString(M3L.string_tlkFilename), ""));
         }
 
         private bool CanAddTLK()
@@ -83,12 +84,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
                 LocalizationJob = EditingMod?.GetJob(ModJob.JobHeader.LOCALIZATION);
                 if (LocalizationJob != null)
                 {
-                    SetToLocalizationModText = "Mod already localization mod";
-                    Files.ReplaceAll(LocalizationJob.LocalizationFilesStrRaw.Split(';').Select(x => new MDParameter(@"string", "TLK filename", x)));
+                    SetToLocalizationModText = M3L.GetString(M3L.string_modAlreadyLocalizationMod);
+                    Files.ReplaceAll(LocalizationJob.LocalizationFilesStrRaw.Split(';').Select(x => new MDParameter(@"string", M3L.GetString(M3L.string_tlkFilename), x)));
                 }
                 else
                 {
-                    SetToLocalizationModText = "Set to localization mod";
+                    SetToLocalizationModText = M3L.GetString(M3L.string_setToLocalizationMod);
                     Files.ClearEx();
                 }
             }

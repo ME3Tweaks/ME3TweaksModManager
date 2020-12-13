@@ -30,9 +30,6 @@
                    TextWrapping="Wrap"
                    Margin="0,0,0,5"
                    />
-        <TextBlock Text="ItemsSource is null!" Visibility="{Binding ItemsSource, 
-            RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type moddescinieditor:DescriptorEditorItemsControl}}, 
-            Converter={StaticResource NullVisibilityConverter}, ConverterParameter='Reversed'}" FontWeight="Bold" Foreground="Red"/>
         <ItemsControl ItemsSource="{Binding ItemsSource, 
                                     RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type moddescinieditor:DescriptorEditorItemsControl}}}" 
                         HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"

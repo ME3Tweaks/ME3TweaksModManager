@@ -1353,6 +1353,8 @@
     <system:String x:Key="string_errorDeletingASI">Error deleting ASI</system:String>
 
     <!-- Starter Kit Window-->
+    <system:String x:Key="string_title_starterkit">DLC Mod Starter Kit Generator</system:String>
+    <!-- DLC Mod and Starter Kit are both nouns. This is the title of the starter kit panel that is used to generate a blank DLC mod -->
     <system:String x:Key="string_newDLCModInformation">New DLC mod information</system:String>
     <system:String x:Key="string_modName">Mod Name</system:String>
     <system:String x:Key="string_modDeveloper">Mod Developer</system:String>
@@ -1852,5 +1854,69 @@
     <system:String  x:Key="string_addSelectedModsToDeployment">Add selected mods to deployment</system:String>
     <system:String  x:Key="string_description_addSelectedModsToDeployment">Select mods to add to deployment. You can select multiple mods by holding the Control key or Shift.</system:String>
     <system:String  x:Key="string_addModsToDeployment">Add mods to deployment</system:String>
+
+    <!-- Moddesc Editor -->
+    <system:String x:Key="string_copiedModdesciniContentsToClipboard">Copied moddesc.ini contents to clipboard</system:String>
+    <system:String x:Key="string_interp_failedToCopyModdescini">Failed to copy moddesc.ini text to clipboard: {0}</system:String>
+    <!-- 0={Exception message} -->
+    <system:String x:Key="string_moddescIniNotChanged">Existing moddesc.ini is same as generated one</system:String>
+    <system:String x:Key="string_interp_savedModdsecini">moddesc.ini has been updated for {0}. Reload the library for changes to take effect.</system:String>
+    <!-- 0={Mod name} -->
+    <system:String x:Key="string_interp_couldNotSaveModdescini">Could not save moddesc.ini: {0}</system:String>
+    <!-- 0={Exception message} -->
+    <system:String x:Key="string_modLoadedSuccessfully">Mod loaded successfully</system:String>
+    <system:String x:Key="string_moddesciniEdsitor">moddesc.ini Edsitor</system:String>
+    <system:String x:Key="string_openModdesciniDocumentation">Open moddesc.ini documentation</system:String>
+    <system:String x:Key="string_serialize">Serialize</system:String>
+    <system:String x:Key="string_metadata">Metadata</system:String>
+    <system:String x:Key="string_officialDLC">Official DLC</system:String>
+    <system:String x:Key="string_customDLC">Custom DLC</system:String>
+    <system:String x:Key="string_alternateFilesCustomDLC">Alternate Files (Custom DLC)</system:String>
+    <system:String x:Key="string_alternateDLCCustomDLC">Alternate DLC (Custom DLC)</system:String>
+    <system:String x:Key="string_mE1ConfigFiles">ME1 config files</system:String>
+    <system:String x:Key="string_balanceChanges">Balance changes</system:String>
+    <system:String x:Key="string_localizationModInfo">Localization mod info</system:String>
+    <system:String x:Key="string_resultingModdescini">Resulting moddesc.ini</system:String>
+    <system:String x:Key="string_theGeneratedModdesciniFileIsShownBelowForReview">The generated moddesc.ini file is shown below for review.</system:String>
+    <system:String x:Key="string_saveModdesciniToMod">Save moddesc.ini to mod</system:String>
+    <system:String x:Key="string_copyText">Copy text</system:String>
+    <system:String x:Key="string_mde_alternatedlc">Alternate DLC allows you to define alternate installation options for the CUSTOMDLC task header.</system:String>
+    <system:String x:Key="string_addNewAlternateDLC">Add new Alternate DLC</system:String>
+    <system:String x:Key="string_addNewAlternateFile">Add new Alternate File</system:String>
+    <system:String x:Key="string_interp_alternateFileX">Alternate File {0}</system:String>
+    <system:String x:Key="string_mde_balancechanges">The BALANCE_CHANGES task header allows you to install a balance changes file override, which will replace the version that is normally downloaded at Mass Effect 3 startup. Balance changes only affect multiplayer. Ensure the file is based on the server coalesced, otherwise you will permanently corrupt your online profile with no option to fix it, short of repurchasing the game.</system:String>
+    <system:String x:Key="string_mde_addBalanceChangesTask">Add BALANCE_CHANGES task</system:String>
+    <system:String x:Key="string_mde_addFileToThisMultilist">Add file to this Multilist</system:String>
+    <system:String x:Key="string_selectTask">Select task</system:String>
+    <system:String x:Key="string_selectATaskHeader">Select a task header</system:String>
+    <system:String x:Key="string_chooser_selectOfficialDLCHeader">Select an official DLC to add a task header for. Only headers that are not already added are listed here.</system:String>
+    <system:String x:Key="string_mde_addOfficialDLCTask">Official DLC tasks allow you to install files into official game DLC. Modding official DLC is useful for multiplayer, which can't add DLC without creating additional problems.</system:String>
+    <system:String x:Key="string_addOfficialDLCTask">Add Official DLC task</system:String>
+    <system:String x:Key="string_alternateFiles">Alternate Files</system:String>
+    <system:String x:Key="string_mde_basegametask">The Basegame task allows you to install files into the basegame, including the BIOGame, Binaries (not Win32), and Engine folders. This task is useful for mods that edit files that load before DLC.</system:String>
+    <system:String x:Key="string_addBasegameTask">Add Basegame task</system:String>
+    <system:String x:Key="string_mde_multilists">Multilists are used by alternates to specify a specific list of files, such as adding files from multiple folders to a mod. They don't do anything on their own unless they are referenced by the multilistid number defined in an alternate.</system:String>
+    <system:String x:Key="string_addNewMultilist">Add new Multilist</system:String>
+    <system:String x:Key="string_mde_metadata">The main information that is displayed to the user is contained within these three sections of moddesc.ini. The selections made here will determine how your mod parses.</system:String>
+    <system:String x:Key="string_configFile">Config file</system:String>
+    <system:String x:Key="string_mde_me1Config">The ME1_CONFIG task header allows you to install .ini files into the Documents/BioWare/Mass Effect/Config directory. Be aware that these will overwrite any files there, which may break other mods, such as ME1Controller.</system:String>
+    <system:String x:Key="string_addME1ConfigTask">Add ME1_CONFIG task</system:String>
+    <system:String x:Key="string_addConfigFile">Add config file</system:String>
+    <system:String x:Key="string_tlkFilename">TLK filename</system:String>
+    <system:String x:Key="string_modAlreadyLocalizationMod">Mod already localization mod</system:String>
+    <system:String x:Key="string_setToLocalizationMod">Set to localization mod</system:String>
+    <system:String x:Key="string_mde_localization">The LOCALIZATION task header allows you to install .tlk files to existing mods, to provide localizations for them. The LOCALIZATION header must be used by itself and cannot be used with other task headers. This task can only install TLK files.</system:String>
+    <system:String x:Key="string_targetDLCName">Target DLC name</system:String>
+    <system:String x:Key="string_addTLKFile">Add TLK file</system:String>
+    <system:String x:Key="string_tooltip_typeToSelect">Type to select</system:String>
+    <system:String x:Key="string_mde_customdlc">Custom DLC, also known as DLC mods, are mods that load at the main menu and can override files that are not already loaded. The list of DLC mappings below are always installed with your mod.</system:String>
+    <system:String x:Key="string_addCustomDLC">Add Custom DLC</system:String>
+    <system:String x:Key="string_installedCustomDLCFolders">Installed Custom DLC folders</system:String>
+    <system:String x:Key="string_mde_customdlc2">Items listed here are always installed with your mod.</system:String>
+    <system:String x:Key="string_sourceDirectoryPath">Source directory path</system:String>
+    <system:String x:Key="string_installedDLCName">Installed DLC name</system:String>
+    <system:String x:Key="string_dLCHumanReadableName">DLC human readable name</system:String>
+
+
 
 </ResourceDictionary>

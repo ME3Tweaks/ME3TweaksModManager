@@ -120,25 +120,26 @@ namespace LocalizationHelper
                         //item.Attribute("Header").Value = $"{{DynamicResource {localizations[header]}}}";
                     }
 
-                    if (header != null && !header.StartsWith("{") && isNotLangWord(header) && isNotGameName(header))
+                    if (header != null && !header.StartsWith("{") && isNotLangWord(header) && isNotGameName(header) && isNotJobheader(header) && isNotLocalizableWord(header))
                     {
                         localizations[header] = $"string_{toCamelCase(header)}";
                         //item.Attribute("Header").Value = $"{{DynamicResource {localizations[header]}}}";
                     }
 
-                    if (tooltip != null && !tooltip.StartsWith("{") && isNotLangWord(tooltip) && isNotGameName(tooltip) && isNotJobheader(tooltip))
+                    if (tooltip != null && !tooltip.StartsWith("{") && isNotLangWord(tooltip) && isNotGameName(tooltip) && isNotJobheader(tooltip) && isNotLocalizableWord(tooltip))
                     {
                         localizations[tooltip] = $"string_tooltip_{toCamelCase(tooltip)}";
                         //item.Attribute("ToolTip").Value = $"{{DynamicResource {localizations[tooltip]}}}";
                     }
 
-                    if (content != null && !content.StartsWith("{") && content.Length > 1 && !content.StartsWith("/images/") && isNotLangWord(content) && isNotGameName(content) && isNotJobheader(content))
+                    if (content != null && !content.StartsWith("{") && content.Length > 1 && !content.StartsWith("/images/") && isNotLangWord(content) && isNotLocalizableWord(content) && isNotGameName(content) && isNotJobheader(content))
                     {
                         localizations[content] = $"string_{toCamelCase(content)}";
                         //item.Attribute("Content").Value = $"{{DynamicResource {localizations[content]}}}";
                     }
 
-                    if (watermark != null && !watermark.StartsWith("{") && watermark.Length > 1 && !long.TryParse(watermark, out var _) && isNotLangWord(watermark) && isNotJobheader(watermark) && isNotGameName(watermark)
+                    if (watermark != null && !watermark.StartsWith("{") && watermark.Length > 1 && !long.TryParse(watermark, out var _) && isNotLangWord(watermark) && isNotLocalizableWord(watermark)
+                        && isNotJobheader(watermark) && isNotGameName(watermark)
                         && !watermark.StartsWith("http"))
                     {
                         localizations[watermark] = $"string_{toCamelCase(watermark)}";
@@ -149,6 +150,8 @@ namespace LocalizationHelper
                                      && text.Length > 1
                                      && isNotLangWord(text)
                                      && isNotGameName(text)
+                                     && isNotJobheader(text)
+                                     && isNotLocalizableWord(text)
                                      && text != "BioGame"
                                      && text != "BioParty"
                                      && text != "BioEngine" && text != "DLC_MOD_")
@@ -164,7 +167,7 @@ namespace LocalizationHelper
                 {
                     var newlines = v.Key.Contains("\n");
                     var text = v.Key.Replace("\r\n", "&#10;").Replace("\n", "&#10;");
-                    sb.AppendLine("\t<system:String " + (newlines ? "xml:space=\"preserve\" " : " ") + "x:Key=\"" + v.Value.Substring(0, "string_".Length) + v.Value.Substring("string_".Length, 1).ToLower() + v.Value.Substring("string_".Length + 1) + "\">" + text + "</system:String>");
+                    sb.AppendLine("\t<system:String" + (newlines ? "xml:space=\"preserve\" " : " ") + "x:Key=\"" + v.Value.Substring(0, "string_".Length) + v.Value.Substring("string_".Length, 1).ToLower() + v.Value.Substring("string_".Length + 1) + "\">" + text + "</system:String>");
                 }
 
                 StringsTextBox.Text = sb.ToString();
@@ -797,9 +800,16 @@ namespace LocalizationHelper
 
         private bool isNotLocalizableWord(string str)
         {
-            
             if (str.Equals("ME3Tweaks Mod Manager", StringComparison.InvariantCultureIgnoreCase)) return false;
             if (str.Equals("Mass Effect Ini Modder", StringComparison.InvariantCultureIgnoreCase)) return false;
+            if (str.Equals("Multilists", StringComparison.InvariantCultureIgnoreCase)) return false;
+            if (str.Equals("Multilist", StringComparison.InvariantCultureIgnoreCase)) return false;
+            if (str.Equals("moddir", StringComparison.InvariantCultureIgnoreCase)) return false;
+            if (str.Equals("=>", StringComparison.InvariantCultureIgnoreCase)) return false;
+            if (str.Equals("Faster Legs", StringComparison.InvariantCultureIgnoreCase)) return false;
+            if (str.Equals("GatorZ", StringComparison.InvariantCultureIgnoreCase)) return false;
+            if (str.Equals("OneGreatMod", StringComparison.InvariantCultureIgnoreCase)) return false;
+            if (str.Equals("Faster Legs DLC Module", StringComparison.InvariantCultureIgnoreCase)) return false;
             return true;
         }
 

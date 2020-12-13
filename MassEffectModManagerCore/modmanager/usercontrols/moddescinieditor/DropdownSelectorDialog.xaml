@@ -27,7 +27,7 @@
               ItemsPanel="{StaticResource VSP}"
               SelectedItem="{Binding SelectedItem}"
               IsTextSearchEnabled="True" TextSearch.TextPath="UIndex"
-              ToolTip="Type to select" KeyDown="EntrySelector_ComboBox_KeyDown"/>
+              ToolTip="{DynamicResource string_tooltip_typeToSelect}" KeyDown="EntrySelector_ComboBox_KeyDown"/>
 
         <TextBlock FontSize="14" Text="{Binding DirectionsText2}" TextWrapping="Wrap"/>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">

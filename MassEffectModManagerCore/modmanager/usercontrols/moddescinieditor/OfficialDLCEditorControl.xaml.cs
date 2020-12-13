@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
 using IniParser.Model;
 using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
-using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alternates;
 using MassEffectModManagerCore.ui;
 
@@ -36,7 +33,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
             var currentOfficialDLCJobs = EditingMod.InstallationJobs.Where(x => x.IsOfficialDLCJob(EditingMod.Game)).Select(x => x.Header).ToList();
             var acceptableHeaders = ModJob.GetSupportedOfficialDLCHeaders(EditingMod.Game);
             var selectableOptions = acceptableHeaders.Except(currentOfficialDLCJobs).ToList();
-            var selection = DropdownSelectorDialog.GetSelection(Window.GetWindow(this), "Select task", selectableOptions, "Select a task header", "Select an official DLC to add a task header for. Only headers that are not already added are listed here.");
+            var selection = DropdownSelectorDialog.GetSelection(Window.GetWindow(this), M3L.GetString(M3L.string_selectTask), selectableOptions, M3L.GetString(M3L.string_selectATaskHeader), M3L.GetString(M3L.string_chooser_selectOfficialDLCHeader));
             if (selection is ModJob.JobHeader header)
             {
                 ModJob job = new ModJob(header);

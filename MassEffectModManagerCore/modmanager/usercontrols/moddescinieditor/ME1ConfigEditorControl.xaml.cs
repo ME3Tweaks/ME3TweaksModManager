@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Windows;
 using IniParser.Model;
+using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.objects.mod.editor;
 using MassEffectModManagerCore.ui;
@@ -44,7 +45,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
 
         private void AddConfigFile()
         {
-            Files.Add(new MDParameter(@"string", "Config file", @""));
+            Files.Add(new MDParameter(@"string", M3L.GetString(M3L.string_configFile), @""));
         }
 
         private bool CanAddConfigFile()
@@ -62,7 +63,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
                 {
                     ModDir = ConfigJob.JobDirectory;
                     Files.ReplaceAll(ConfigJob.ConfigFilesRaw.Split(';')
-                        .Select(x => new MDParameter(@"string", "Config file", x)));
+                        .Select(x => new MDParameter(@"string", M3L.GetString(M3L.string_configFile), x)));
                 }
             }
 

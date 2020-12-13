@@ -1,81 +1,131 @@
-﻿<Window x:Class="MassEffectModManagerCore.modmanager.windows.ModDescEditor"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.windows"
-        xmlns:alternates="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alternates"
-        xmlns:moddescinieditor="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor"
-        mc:Ignorable="d"
-        DataContext="{Binding RelativeSource={RelativeSource Self}}"
-        Title="moddesc.ini Edsitor" MinHeight="750" MinWidth="1280"
-        Height="750" Width="1280">
+﻿<Window
+    x:Class="MassEffectModManagerCore.modmanager.windows.ModDescEditor" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.windows" xmlns:alternates="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alternates" xmlns:moddescinieditor="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor"
+    mc:Ignorable="d"
+    DataContext="{Binding RelativeSource={RelativeSource Self}}"
+    Title="{DynamicResource string_moddesciniEdsitor}"
+    MinHeight="750"
+    MinWidth="1280"
+    Height="750"
+    Width="1280">
     <Window.Style>
-        <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
+        <Style
+            TargetType="Window"
+            BasedOn="{StaticResource {x:Type Window}}" />
     </Window.Style>
     <DockPanel>
-        <DockPanel DockPanel.Dock="Bottom" Margin="5">
-            <Button Content="Open moddesc.ini documentation" DockPanel.Dock="Left" Click="OpenModdescDocumenation_Click"/>
-            <TextBlock Text="{Binding StatusMessage}" DockPanel.Dock="Left" 
-                       Foreground="{Binding StatusForeground}"
-                       Margin="5,0,0,0" VerticalAlignment="Center" TextWrapping="Wrap"
-                       MaxWidth="900"/>
-            <Button Content="Close" Click="Close_Click" DockPanel.Dock="Right"/>
-            
-            <Button Content="Serialize" Margin="5,0" Click="SerializeData_Click" HorizontalAlignment="Right"/>
+        <DockPanel
+            DockPanel.Dock="Bottom"
+            Margin="5">
+            <Button
+                Content="{DynamicResource string_openModdesciniDocumentation}"
+                DockPanel.Dock="Left"
+                Click="OpenModdescDocumenation_Click" />
+            <TextBlock
+                Text="{Binding StatusMessage}"
+                DockPanel.Dock="Left"
+                Foreground="{Binding StatusForeground}"
+                Margin="5,0,0,0"
+                VerticalAlignment="Center"
+                TextWrapping="Wrap"
+                MaxWidth="900" />
+            <Button
+                Content="{DynamicResource string_close}"
+                Click="Close_Click"
+                DockPanel.Dock="Right" />
+            <Button
+                Content="{DynamicResource string_serialize}"
+                Margin="5,0"
+                Click="SerializeData_Click"
+                HorizontalAlignment="Right" />
         </DockPanel>
-        <TabControl x:Name="editor_tabcontrol">
-            <TabItem Header="Metadata">
-                <moddescinieditor:MetadataEditorControl x:Name="metadataEditor_control"/>
+        <TabControl
+            x:Name="editor_tabcontrol">
+            <TabItem
+                Header="{DynamicResource string_metadata}">
+                <moddescinieditor:MetadataEditorControl
+                    x:Name="metadataEditor_control" />
             </TabItem>
-            <TabItem Header="Basegame">
-                <moddescinieditor:BasegameEditorControl x:Name="basegame_editor_control"/>
+            <TabItem
+                Header="{DynamicResource string_basegame}">
+                <moddescinieditor:BasegameEditorControl
+                    x:Name="basegame_editor_control" />
             </TabItem>
-            <TabItem Header="Official DLC">
-                <moddescinieditor:OfficialDLCEditorControl x:Name="officialdlc_editor_control"/>
+            <TabItem
+                Header="{DynamicResource string_officialDLC}">
+                <moddescinieditor:OfficialDLCEditorControl
+                    x:Name="officialdlc_editor_control" />
             </TabItem>
-            <TabItem Header="Custom DLC">
-                <moddescinieditor:CustomDLCEditorControl x:Name="customdlcEditor_control"/>
+            <TabItem
+                Header="{DynamicResource string_customDLC}">
+                <moddescinieditor:CustomDLCEditorControl
+                    x:Name="customdlcEditor_control" />
             </TabItem>
-            <TabItem Header="Alternate Files (Custom DLC)">
-                <ScrollViewer HorizontalScrollBarVisibility="Disabled" Margin="-8">
-
-                <alternates:AlternateFileBuilder x:Name="customdlc_alternateFileEditor_control" 
-                                                 TaskHeader="CUSTOMDLC"
-                                                 DirectionsText="Alternate Files (Custom DLC) allows you to define single-item alternate file options for the CUSTOMDLC task header. Typically for the CUSTOMDLC task header, you will want to use the Alternate DLC feature instead."/>
+            <TabItem
+                Header="{DynamicResource string_alternateFilesCustomDLC}">
+                <ScrollViewer
+                    HorizontalScrollBarVisibility="Disabled"
+                    Margin="-8">
+                    <alternates:AlternateFileBuilder
+                        x:Name="customdlc_alternateFileEditor_control"
+                        TaskHeader="CUSTOMDLC"
+                        DirectionsText="Alternate Files (Custom DLC) allows you to define single-item alternate file options for the CUSTOMDLC task header. Typically for the CUSTOMDLC task header, you will want to use the Alternate DLC feature instead." />
                 </ScrollViewer>
             </TabItem>
-
-            <TabItem Header="Alternate DLC (Custom DLC)">
-                <alternates:AlternateDLCBuilder x:Name="customdlc_alternateDlcEditor_control"/>
+            <TabItem
+                Header="{DynamicResource string_alternateDLCCustomDLC}">
+                <alternates:AlternateDLCBuilder
+                    x:Name="customdlc_alternateDlcEditor_control" />
             </TabItem>
             <!-- ME1 only -->
-            <TabItem Header="ME1 config files" 
-                     Visibility="{Binding EditingMod.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='ME1'}">
-                <moddescinieditor:ME1ConfigEditorControl x:Name="me1config_editor_control"/>
+            <TabItem
+                Header="{DynamicResource string_mE1ConfigFiles}"
+                Visibility="{Binding EditingMod.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='ME1'}">
+                <moddescinieditor:ME1ConfigEditorControl
+                    x:Name="me1config_editor_control" />
             </TabItem>
             <!-- ME3 only -->
-            <TabItem Header="Balance changes"
-                     Visibility="{Binding EditingMod.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='ME3'}">
-                <moddescinieditor:BalanceChangesTaskEditorControl x:Name="balancechanges_editor_control"/>
+            <TabItem
+                Header="{DynamicResource string_balanceChanges}"
+                Visibility="{Binding EditingMod.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='ME3'}">
+                <moddescinieditor:BalanceChangesTaskEditorControl
+                    x:Name="balancechanges_editor_control" />
             </TabItem>
             <!-- ME2, 3 only -->
-            <TabItem Header="Localization mod info"
-                     Visibility="{Binding EditingMod.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Not_ME1'}">
-                <moddescinieditor:LocalizationTaskEditorControl x:Name="localization_editor_control"/>
+            <TabItem
+                Header="{DynamicResource string_localizationModInfo}"
+                Visibility="{Binding EditingMod.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Not_ME1'}">
+                <moddescinieditor:LocalizationTaskEditorControl
+                    x:Name="localization_editor_control" />
             </TabItem>
-            
-            <TabItem Header="Resulting moddesc.ini" x:Name="results_tab">
+            <TabItem
+                Header="{DynamicResource string_resultingModdescini}"
+                x:Name="results_tab">
                 <DockPanel>
-                    <TextBlock Text="The generated moddesc.ini file is shown below for review." DockPanel.Dock="Top"/>
-                    <DockPanel Dock="Bottom">
-                        <Button Content="Save moddesc.ini to mod" DockPanel.Dock="Right" Margin="5,0,0,0" HorizontalAlignment="Right" Command="{Binding SaveModdescToModCommand}"/>
-                        <Button Content="Copy text" HorizontalAlignment="Right" Command="{Binding CopyModdescIniTextCommand}"/>
+                    <TextBlock
+                        Text="{DynamicResource string_theGeneratedModdesciniFileIsShownBelowForReview}"
+                        DockPanel.Dock="Top" />
+                    <DockPanel
+                        Dock="Bottom">
+                        <Button
+                            Content="{DynamicResource string_saveModdesciniToMod}"
+                            DockPanel.Dock="Right"
+                            Margin="5,0,0,0"
+                            HorizontalAlignment="Right"
+                            Command="{Binding SaveModdescToModCommand}" />
+                        <Button
+                            Content="{DynamicResource string_copyText}"
+                            HorizontalAlignment="Right"
+                            Command="{Binding CopyModdescIniTextCommand}" />
                     </DockPanel>
-                    <TextBox Text="{Binding GeneratedIni}" IsReadOnly="True" IsReadOnlyCaretVisible="False" TextWrapping="Wrap" VerticalAlignment="Top" TextAlignment="Left"/>
+                    <TextBox
+                        Text="{Binding GeneratedIni}"
+                        IsReadOnly="True"
+                        IsReadOnlyCaretVisible="False"
+                        TextWrapping="Wrap"
+                        VerticalAlignment="Top"
+                        TextAlignment="Left" />
                 </DockPanel>
             </TabItem>
         </TabControl>
     </DockPanel>
-
 </Window>
