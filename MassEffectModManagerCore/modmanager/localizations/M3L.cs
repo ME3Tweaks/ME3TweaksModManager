@@ -1103,6 +1103,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_viewSourceCode = "string_viewSourceCode";
 		public const string string_interp_anErrorOccuredDeletingTheASI = "string_interp_anErrorOccuredDeletingTheASI";
 		public const string string_errorDeletingASI = "string_errorDeletingASI";
+		public const string string_title_starterkit = "string_title_starterkit";
 		public const string string_newDLCModInformation = "string_newDLCModInformation";
 		public const string string_modName = "string_modName";
 		public const string string_modDeveloper = "string_modDeveloper";
@@ -1521,5 +1522,17 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_sourceDirectoryPath = "string_sourceDirectoryPath";
 		public const string string_installedDLCName = "string_installedDLCName";
 		public const string string_dLCHumanReadableName = "string_dLCHumanReadableName";
+		public const string string_mde_dec_header_balancechanges = "string_mde_dec_header_balancechanges";
+		public const string string_mde_dec_header_basegame = "string_mde_dec_header_basegame";
+		public const string string_mde_dec_header_customdlc = "string_mde_dec_header_customdlc";
+		public const string string_mde_dec_header_metadata_modmanager = "string_mde_dec_header_metadata_modmanager";
+		public const string string_mde_dec_header_metadata_modinfo = "string_mde_dec_header_metadata_modinfo";
+		public const string string_mde_dec_header_metadata_updates = "string_mde_dec_header_metadata_updates";
+		public const string string_nexusModsFileSearch = "string_nexusModsFileSearch";
+		public const string string_description_nexusModsFileSearch = "string_description_nexusModsFileSearch";
+		public const string string_search = "string_search";
+		public const string string_searching = "string_searching";
+		public const string string_goToModPage = "string_goToModPage";
+		public const string string_interp_lastIndexing = "string_interp_lastIndexing";
 	}
 }

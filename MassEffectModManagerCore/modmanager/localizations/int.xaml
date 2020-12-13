@@ -1929,10 +1929,7 @@
     <system:String x:Key="string_search">Search</system:String>
     <system:String x:Key="string_searching">Searching...</system:String>
     <system:String x:Key="string_goToModPage">Go to mod page</system:String>
-
     <system:String x:Key="string_interp_lastIndexing">Last file indexing: {0}, Last mod indexing: {1}</system:String>
-    <!-- 0={lastFileIndexing} 1={lastModIndexing} -->
-    <!-- The follow items are only for letting this localizer replace the correct strings! Remove them when done and make sure keys are identical to the stripped versions-->
-    <system:String x:Key="string_interp_lastIndexing">Last file indexing: {lastFileIndexing}, Last mod indexing: {lastModIndexing}</system:String>
+    <!-- 0={date} 1={date} -->
 
 </ResourceDictionary>
