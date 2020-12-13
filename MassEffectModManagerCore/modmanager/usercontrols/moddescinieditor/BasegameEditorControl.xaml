@@ -12,7 +12,7 @@
                 DockPanel.Dock="Top" />
             <TextBlock
                 DockPanel.Dock="Top"
-                Text="{DynamicResource string_theBasegameTaskAllowsYouToInstallFilesIntoTheBasegameIncludingTheBIOGameBinariesNotWin32AndEngineFoldersThisTaskIsUsefulForModsThatEditFilesThatLoadBeforeDLC}"
+                Text="{DynamicResource string_mde_basegametask}"
                 MaxWidth="750"
                 HorizontalAlignment="Left"
                 TextAlignment="Left"

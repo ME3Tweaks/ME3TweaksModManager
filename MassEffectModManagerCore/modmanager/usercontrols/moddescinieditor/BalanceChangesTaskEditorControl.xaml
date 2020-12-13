@@ -4,7 +4,7 @@
     DataContext="{Binding RelativeSource={RelativeSource Self}}"
     d:DesignHeight="450"
     d:DesignWidth="800">
-    <StackPanel>
+    <StackPanel Margin="-4">
         <TextBlock
             Text="[BALANCE_CHANGES]"
             FontWeight="Bold" />

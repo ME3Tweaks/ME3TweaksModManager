@@ -12,7 +12,7 @@
                 Text="[CUSTOMDLC]"
                 DockPanel.Dock="Top" />
             <TextBlock
-                Text="{DynamicResource string_mde+customdlc}"
+                Text="{DynamicResource string_mde_customdlc}"
                 MaxWidth="700"
                 TextAlignment="Left"
                 HorizontalAlignment="Left"
@@ -99,7 +99,8 @@
                             <TextBlock
                                 Grid.Row="1"
                                 Grid.Column="1"
-                                Text="=&gt;" />
+                                Margin="5,0"
+                                Text="-&gt;" />
                             <TextBox
                                 Grid.Row="1"
                                 Grid.Column="2"
