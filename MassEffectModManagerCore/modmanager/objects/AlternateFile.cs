@@ -446,8 +446,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 {@"Condition", Condition},
                 {@"ConditionalDLC", ConditionalDLC},
                 {@"ModOperation", Operation},
-
-                {@"ModAltDLC", AltFile},
+                {@"AltFile", AltFile},
                 {@"ModFile", ModFile},
                 {@"FriendlyName", FriendlyName},
                 {@"Description", Description},
@@ -458,7 +457,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 {@"MultiListId", MultiListId > 0 ? MultiListId.ToString() : null},
                 {@"MultiListRootPath", MultiListRootPath},
                 {@"MultiListTargetPath", MultiListTargetPath},
-                {@"ImageAsset", ImageAssetName},
+                {@"ImageAssetName", ImageAssetName},
                 {@"ImageHeight", ImageHeight > 0 ? ImageHeight.ToString() : null}
             };
 

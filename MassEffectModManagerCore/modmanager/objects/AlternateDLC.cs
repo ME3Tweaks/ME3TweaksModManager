@@ -584,7 +584,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 {@"RequiredFileRelativePaths", RequiredSpecificFiles.Keys.ToList()}, // List of relative paths
                 {@"RequiredFileSizes", RequiredSpecificFiles.Values.ToList()}, // List of relative sizes
                 {@"DLCRequirements", DLCRequirementsForManual},
-                {@"ImageAsset", ImageAssetName},
+                {@"ImageAssetName", ImageAssetName},
                 {@"ImageHeight", ImageHeight > 0 ? ImageHeight.ToString() : null}
             };
 
