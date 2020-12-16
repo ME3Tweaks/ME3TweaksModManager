@@ -10,6 +10,7 @@ using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.ui;
 using ME3ExplorerCore.Helpers;
 using Newtonsoft.Json;
+using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -64,6 +65,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
             catch (Exception e)
             {
+                Log.Error($@"Could not perform search: {e.Message}");
                 QueryInProgress = false;
             }
 
@@ -77,14 +79,21 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             Task.Run(() =>
             {
-                if (APIKeys.HasNexusSearchKey)
+                try
                 {
-                    var latestStatusStr =
-                        OnlineContent.FetchRemoteString($@"{APIEndpoint}status", APIKeys.NexusSearchKey);
-                    var latestStatus = JsonConvert.DeserializeObject<Dictionary<int, APIStatusResult>>(latestStatusStr);
-                    var lastFileIndexing = UnixTimeStampToDateTime(latestStatus[11].value);
-                    var lastModIndexing = UnixTimeStampToDateTime(latestStatus[10].value);
-                    StatusText = M3L.GetString(M3L.string_interp_lastIndexing, lastFileIndexing, lastModIndexing);
+                    if (APIKeys.HasNexusSearchKey)
+                    {
+                        var latestStatusStr =
+                            OnlineContent.FetchRemoteString($@"{APIEndpoint}status", APIKeys.NexusSearchKey);
+                        var latestStatus = JsonConvert.DeserializeObject<Dictionary<string,double>>(latestStatusStr);
+                        var lastFileIndexing = UnixTimeStampToDateTime(latestStatus[@"last_file_indexing"]);
+                        var lastModIndexing = UnixTimeStampToDateTime(latestStatus[@"last_mod_indexing"]);
+                        StatusText = M3L.GetString(M3L.string_interp_lastIndexing, lastFileIndexing, lastModIndexing);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Log.Error($@"Could not get indexing status: {e.Message}");
                 }
             });
         }

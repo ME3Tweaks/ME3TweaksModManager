@@ -7,10 +7,10 @@
     <Authors>Mgamerz</Authors>
     <Company>ME3Tweaks</Company>
     <Product>ME3Tweaks Mod Manager Localizer</Product>
-    <Description>Localizes the ME3Tweaks Mod Manager files from github</Description>
+    <Description>Localizes the ME3Tweaks Mod Manager files from Github</Description>
     <Copyright>2020 ME3Tweaks</Copyright>
     <ApplicationIcon>localizericon.ico</ApplicationIcon>
-    <Version>1.0.7</Version>
+    <Version>1.0.8</Version>
     <AssemblyVersion>1.0.8.0</AssemblyVersion>
     <FileVersion>1.0.8.0</FileVersion>
     <Platforms>x64</Platforms>
@@ -27,6 +27,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Page Remove="MainWindow.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AuthenticodeExaminer" Version="0.3.0" />
     <PackageReference Include="AvalonEdit" Version="6.0.1" />
     <PackageReference Include="Fody" Version="6.3.0">
@@ -38,13 +42,12 @@
     <PackageReference Include="PropertyChanged.Fody" Version="3.3.1" />
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(Configuration)'=='Debug'">
+
     <ProjectReference Include="..\MassEffectModManagerCore\MassEffectModManagerCore.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <TrimmerRootAssembly Include="System.Memory" />
-    <TrimmerRootAssembly Include="System.Net" />
-    <TrimmerRootAssembly Include="System.Linq.Queryable" />
+  <ItemGroup Condition="'$(Configuration)'=='Release'">
+    <None Include="MainWindow.xaml" />
+    <Compile Remove="MainWindow.xaml.cs" />
   </ItemGroup>
 </Project>

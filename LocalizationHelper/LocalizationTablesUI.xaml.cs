@@ -14,7 +14,6 @@ using System.Windows.Input;
 using System.Windows.Threading;
 using System.Xml.Linq;
 using System.Xml.XPath;
-using MassEffectModManagerCore;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using Octokit;
