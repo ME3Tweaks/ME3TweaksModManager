@@ -1023,10 +1023,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 item.ItemText = M3L.GetString(M3L.string_checkingNameAndObjectReferences);
                 var referencedFiles = ModBeingDeployed.GetAllRelativeReferences().Where(x => x.RepresentsPackageFilePath()).Select(x => Path.Combine(ModBeingDeployed.ModPath, x)).ToList();
-
-                referencedFiles = Directory.GetFiles(@"Z:\Mass Effect 3 Builds\PC\Retail", "*.pcc", SearchOption.AllDirectories).Where(x=>x.Contains("BioP_Char")).ToList();
                 int numChecked = 0;
-
 
                 Parallel.ForEach(referencedFiles,
                     new ParallelOptions()
