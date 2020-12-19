@@ -904,11 +904,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     if (validRef && op.Value != 0)
                     {
                         var referencedEntry = op.ResolveToEntry(entry.FileRef);
+                        if (referencedEntry.FullPath.Equals(@"SFXGame.BioDeprecated", StringComparison.InvariantCulture)) return; //This will appear as wrong even though it's technically not
+
                         var propInfo = UnrealObjectInfo.GetPropertyInfo(entry.Game, op.Name, containingClassOrStructName, containingExport: entry as ExportEntry);
                         var customClassInfos = new Dictionary<string, ClassInfo>();
 
                         if (referencedEntry.ClassName == @"Class" && op.Value > 0)
                         {
+
                             // Make sure we have info about this class.
                             var lookupEnt = referencedEntry as ExportEntry;
                             while (lookupEnt != null && lookupEnt.IsClass && !UnrealObjectInfo.GetClasses(ModBeingDeployed.Game).ContainsKey(lookupEnt.ObjectName))
@@ -1020,6 +1023,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 item.ItemText = M3L.GetString(M3L.string_checkingNameAndObjectReferences);
                 var referencedFiles = ModBeingDeployed.GetAllRelativeReferences().Where(x => x.RepresentsPackageFilePath()).Select(x => Path.Combine(ModBeingDeployed.ModPath, x)).ToList();
+
+                referencedFiles = Directory.GetFiles(@"Z:\Mass Effect 3 Builds\PC\Retail", "*.pcc", SearchOption.AllDirectories).Where(x=>x.Contains("BioP_Char")).ToList();
                 int numChecked = 0;
 
 
