@@ -385,7 +385,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                 {
                     Settings.DeveloperMode = true;
                     Analytics.TrackEvent(@"Turned on developer mode after starter kit");
-                    Settings.Save();
+                    //Settings.Save();
                 }
             }
 

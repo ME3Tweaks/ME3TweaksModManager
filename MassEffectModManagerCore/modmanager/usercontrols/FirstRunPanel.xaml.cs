@@ -78,7 +78,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             OnClosing(new DataEventArgs(true));
             Settings.ShowedPreviewPanel = true;
-            Settings.Save();
+            //Settings.Save();
         }
 
         public override void OnPanelVisible()
@@ -115,7 +115,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             mainwindow.SetApplicationLanguage(lang, false);
             SetAuthorized(IsAuthorized);
-            Settings.Save();
+            //Settings.Save();
         }
 
         private void ChangeLang_INT_Clicked(object sender, RoutedEventArgs e)
@@ -153,7 +153,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (Settings.DarkTheme ^ dark)
             {
                 Settings.DarkTheme = !Settings.DarkTheme;
-                Settings.Save();
+                //Settings.Save();
                 mainwindow.SetTheme();
             }
         }

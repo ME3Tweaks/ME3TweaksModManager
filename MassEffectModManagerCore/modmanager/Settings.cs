@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 using IniParser;
 using IniParser.Model;
 using MassEffectModManagerCore.modmanager.nexusmodsintegration;
+using Microsoft.AppCenter.Analytics;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager
@@ -87,6 +90,13 @@ namespace MassEffectModManagerCore.modmanager
         {
             get => _updaterServiceUsername;
             set => SetProperty(ref _updaterServiceUsername, value);
+        }
+
+        private static string _lastSelectedTarget;
+        public static string LastSelectedTarget
+        {
+            get => _lastSelectedTarget;
+            set => SetProperty(ref _lastSelectedTarget, value);
         }
 
         private static int _webclientTimeout = 5; // Defaults to 5
@@ -368,23 +378,23 @@ namespace MassEffectModManagerCore.modmanager
         {
             SAVED,
             FAILED_UNAUTHORIZED,
-            FAILED_OTHER
+            FAILED_OTHER,
+            /// <summary>
+            /// This occurs for some reason for a few users where the file becomes all zeros.
+            /// No idea why though.
+            /// </summary>
+            LOAD_ERROR_BLANK_DATA
         }
 
         /// <summary>
         /// Saves the settings. Note this does not update the Updates/EncryptedPassword value. Returns false if commiting failed
         /// </summary>
-        public static SettingsSaveResult Save()
+        private static SettingsSaveResult Save()
         {
+            Debug.WriteLine("Saving settings");
             try
             {
-                // ... why?
-                //if (!File.Exists(SettingsPath))
-                //{
-                //    File.Create(SettingsPath).Close();
-                //}
-
-                var settingsIni = new FileIniDataParser().ReadFile(SettingsPath);
+                var settingsIni = new IniData();
                 SaveSettingBool(settingsIni, "Logging", "LogModStartup", LogModStartup);
                 SaveSettingBool(settingsIni, "Logging", "LogMixinStartup", LogMixinStartup);
                 SaveSettingBool(settingsIni, "Logging", "LogModMakerCompiler", LogModMakerCompiler);
@@ -441,6 +451,41 @@ namespace MassEffectModManagerCore.modmanager
         private static void SaveSettingDateTime(IniData settingsIni, string section, string key, DateTime value)
         {
             settingsIni[section][key] = value.ToBinary().ToString();
+        }
+
+        /// <summary>
+        /// Tests saving the settings and returns the save result.
+        /// </summary>
+        /// <returns></returns>
+        public static SettingsSaveResult SaveTest()
+        {
+            if (File.Exists(SettingsPath))
+            {
+                try
+                {
+                    var bytes = File.ReadAllBytes(SettingsPath);
+                    if (bytes.Length > 0 && bytes.Sum(x => x) == 0)
+                    {
+                        // all bytes are zero. The ini file has become corrupt. 
+                        // This issue has been observed but not replicated
+                        // Delete the settings.ini
+                        App.SubmitAnalyticTelemetryEvent(@"Corrupted settings.ini detected",
+                            new Dictionary<string, string>()
+                            {
+                                {@"Filesize", bytes.Length.ToString()}
+                            });
+                        Log.Fatal(
+                            @"DETECTED CORRUPT SETTINGS.INI FILE. This file will be deleted and reset to defaults.");
+                        File.Delete(SettingsPath);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Log.Error($@"Unable to test if settings.ini file is corrupted: {e.Message}");
+                }
+            }
+
+            return Save();
         }
     }
 }

@@ -555,21 +555,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             private string dlcFolderPath;
 
             public event PropertyChangedEventHandler PropertyChanged;
-            public string EnableDisableText
-            {
-                get
-                {
-                    return DLCFolderName.StartsWith(@"xDLC") ? M3L.GetString(M3L.string_enable) : M3L.GetString(M3L.string_disable);
-                }
-            }
+            public string EnableDisableText => DLCFolderName.StartsWith(@"xDLC") ? M3L.GetString(M3L.string_enable) : M3L.GetString(M3L.string_disable);
             public string EnableDisableTooltip { get; set; }
             public string ModName { get; private set; }
             public string DLCFolderName { get; private set; }
             public string DLCFolderNameString { get; private set; }
             public string InstalledBy { get; private set; }
             public string Version { get; private set; }
-            public string InstallerInstanceGUID { get; private set; }
             public string InstallerInstanceBuild { get; private set; }
+
+            public ObservableCollectionExtended<string> IncompatibleDLC { get; } = new ObservableCollectionExtended<string>();
+            public ObservableCollectionExtended<string> ChosenInstallOptions { get; } = new ObservableCollectionExtended<string>();
+
             private MEGame game;
             private static readonly SolidColorBrush DisabledBrushLightMode = new SolidColorBrush(Color.FromArgb(0xff, 232, 26, 26));
             private static readonly SolidColorBrush DisabledBrushDarkMode = new SolidColorBrush(Color.FromArgb(0xff, 247, 88, 77));
@@ -594,7 +591,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             public void OnDLCFolderNameChanged()
             {
                 dlcFolderPath = Path.Combine(Directory.GetParent(dlcFolderPath).FullName, DLCFolderName);
-                parseInstalledBy(DLCFolderName.StartsWith('x'), false);
+                parseMetaCmm(DLCFolderName.StartsWith('x'), false);
                 TriggerPropertyChangedFor(nameof(TextColor));
             }
 
@@ -620,7 +617,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             }
 
-            private void parseInstalledBy(bool disabled, bool modNamePrefersTPMI)
+            private void parseMetaCmm(bool disabled, bool modNamePrefersTPMI)
             {
                 DLCFolderNameString = DLCFolderName.TrimStart('x'); //this string is not to show M3L.GetString(M3L.string_disabled)
                 var metaFile = Path.Combine(dlcFolderPath, @"_metacmm.txt");
@@ -647,6 +644,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     else
                     {
                         InstalledBy = M3L.GetString(M3L.string_interp_installedByX, InstallerInstanceBuild);
+                    }
+
+                    // MetaCMM Extended
+                    if (mcmm.OptionsSelectedAtInstallTime != null)
+                    {
+                        ChosenInstallOptions.ReplaceAll(mcmm.OptionsSelectedAtInstallTime);
+                    }
+                    if (mcmm.IncompatibleDLC != null)
+                    {
+                        IncompatibleDLC.ReplaceAll(mcmm.IncompatibleDLC);
                     }
                 }
                 else

@@ -211,7 +211,7 @@ namespace MassEffectModManagerCore
         private void CheckProgramDataWritable()
         {
             Log.Information(@"Checking settings.ini is writable (ProgramData check)...");
-            var settingsResult = Settings.Save();
+            var settingsResult = Settings.SaveTest();
             if (settingsResult == Settings.SettingsSaveResult.FAILED_UNAUTHORIZED)
             {
                 Log.Error(@"No permissions to appdata! Prompting for user to grant consent");
@@ -2324,7 +2324,7 @@ namespace MassEffectModManagerCore
 
         private void ModManagerWindow_Closing(object sender, CancelEventArgs e)
         {
-            Settings.Save();
+            //Settings.Save();
         }
 
         private void FailedMods_LinkClick(object sender, RequestNavigateEventArgs e)
@@ -2544,7 +2544,7 @@ namespace MassEffectModManagerCore
                 if (OnlineContent.CanFetchContentThrottleCheck())
                 {
                     Settings.LastContentCheck = DateTime.Now;
-                    Settings.Save();
+                    //Settings.Save();
                 }
 
                 Log.Information(@"End of content check network thread");
@@ -2795,6 +2795,8 @@ namespace MassEffectModManagerCore
         {
             if (!RepopulatingTargets)
             {
+                Settings.LastSelectedTarget = SelectedGameTarget?.TargetPath;
+                //Settings.Save();
                 if (!SelectedGameTarget.RegistryActive)
                 {
                     UpdateBinkStatus(SelectedGameTarget.Game);
@@ -3231,8 +3233,6 @@ namespace MassEffectModManagerCore
             {
                 //unknown caller. Might just be settings on/off for logging.
             }
-
-            Settings.Save();
         }
 
         internal void SetTheme()
@@ -3392,7 +3392,7 @@ namespace MassEffectModManagerCore
                 {
                     if (forcedDictionary == null)
                     {
-                        Settings.Save(); //save this language option
+                        //Settings.Save(); //save this language option
                     }
                     await AuthToNexusMods(languageUpdateOnly: true); //this call will immediately return
                     FailedMods.RaiseBindableCountChanged();
