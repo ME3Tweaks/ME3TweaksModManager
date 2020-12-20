@@ -115,7 +115,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         Settings.UpdaterServiceUsername = Username;
                         Settings.UpdaterServiceLZMAStoragePath = LZMAStoragePath;
                         Settings.UpdaterServiceManifestStoragePath = ManifestStoragePath;
-                        Settings.Save();
+                        //Settings.Save();
 
                         MemoryStream encryptedStream = new MemoryStream();
                         var entropy = NexusModsUtilities.EncryptStringToStream(Password_TextBox.Password, encryptedStream);

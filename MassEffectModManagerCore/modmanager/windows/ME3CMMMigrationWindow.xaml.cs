@@ -157,7 +157,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                                 Log.Information(@"Migrated Auto inject keybinds for ModMaker (true)");
                             }
 
-                            Settings.Save();
+                            //Settings.Save();
                         }
 
                         //Migrate BIOGAME_DIRECTORIES

@@ -130,7 +130,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void StartCompiler()
         {
             CompileInProgress = true;
-            Settings.Save(); //Persist controller mixin option, keybinds injection
+            //Settings.Save(); //Persist controller mixin option, keybinds injection
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"ModmakerCompiler");
 
             nbw.DoWork += (a, b) =>

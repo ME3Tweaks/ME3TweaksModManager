@@ -385,10 +385,12 @@ namespace MassEffectModManagerCore.modmanager.windows
                 {
                     Settings.DeveloperMode = true;
                     Analytics.TrackEvent(@"Turned on developer mode after starter kit");
-                    Settings.Save();
+                    //Settings.Save();
                 }
             }
 
+            M3L.ShowDialog(Owner,
+                @"Mods will throw a warning when they are being opened for import/install but were not deployed through Mod Manager. Mods that use image features will not load at all if not deployed through Mod Manager. When you're ready to distribute your mod, ensure you deploy it through the Mod Utils menu when in developer mode.", @"Deployment info", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
 
         private bool ValidateInput()
