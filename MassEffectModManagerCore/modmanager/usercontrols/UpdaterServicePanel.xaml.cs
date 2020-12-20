@@ -20,6 +20,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
 using System.Xml;
+using MassEffectModManagerCore.modmanager.objects.mod;
 using ME3ExplorerCore.Helpers;
 using ME3ExplorerCore.Packages;
 using static MassEffectModManagerCore.modmanager.me3tweaks.OnlineContent;
@@ -32,15 +33,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     public partial class UpdaterServicePanel : MMBusyPanelBase
     {
         private bool CancelOperations;
-
-        public objects.mod.Mod mod { get; }
+        public Mod mod { get; }
         public string CurrentActionText { get; private set; }
         public string Username { get; set; }
         public string ChangelogText { get; set; }
         public string ManifestStoragePath { get; set; }
         public string LZMAStoragePath { get; set; }
         public string SettingsSubtext { get; set; }
-        public UpdaterServicePanel(objects.mod.Mod mod)
+        public UpdaterServicePanel(Mod mod)
         {
             DataContext = this;
             this.mod = mod;

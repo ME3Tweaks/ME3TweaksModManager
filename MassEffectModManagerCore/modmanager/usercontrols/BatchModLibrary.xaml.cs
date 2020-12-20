@@ -7,6 +7,7 @@ using System.Linq;
 using System.Windows.Input;
 using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.modmanager.objects;
+using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.modmanager.windows;
 using ME3ExplorerCore.Packages;
 using Microsoft.AppCenter.Analytics;
@@ -19,7 +20,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     public partial class BatchModLibrary : MMBusyPanelBase
     {
         public BatchLibraryInstallQueue SelectedBatchQueue { get; set; }
-        public objects.mod.Mod SelectedModInGroup { get; set; }
+        public Mod SelectedModInGroup { get; set; }
         public ObservableCollectionExtended<BatchLibraryInstallQueue> AvailableBatchQueues { get; } = new ObservableCollectionExtended<BatchLibraryInstallQueue>();
         public ObservableCollectionExtended<GameTarget> InstallationTargetsForGroup { get; } = new ObservableCollectionExtended<GameTarget>();
         public BatchModLibrary()
@@ -32,6 +33,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public ICommand CreateNewGroupCommand { get; private set; }
         public ICommand InstallGroupCommand { get; private set; }
         public ICommand EditGroupCommand { get; private set; }
+        public bool CanCompressPackages => SelectedBatchQueue?.Game >= MEGame.ME2;
 
         private void LoadCommands()
         {
@@ -57,7 +59,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void InstallGroup()
         {
-            SelectedBatchQueue.Target = SelectedGameTarget;
             Analytics.TrackEvent(@"Installing Batch Group", new Dictionary<string, string>()
             {
                 {@"Group name", SelectedBatchQueue.QueueName},
@@ -148,7 +149,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     SelectedModInGroup = SelectedBatchQueue.ModsToInstall.First();
                 }
+
+                if (SelectedBatchQueue.Game == MEGame.ME1) SelectedBatchQueue.InstallCompressed = false;
             }
+            TriggerPropertyChangedFor(nameof(CanCompressPackages));
         }
 
         public string ModDescriptionText { get; set; }
@@ -168,19 +172,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
     public class BatchLibraryInstallQueue : INotifyPropertyChanged
     {
-        /// <summary>
-        /// Target for installation. Only used when installation commences.
-        /// </summary>
-        public GameTarget Target;
         public bool InstallCompressed { get; set; }
         public string BackingFilename { get; set; }
-        public ObservableCollectionExtended<objects.mod.Mod> ModsToInstall { get; } = new ObservableCollectionExtended<objects.mod.Mod>();
+        public ObservableCollectionExtended<Mod> ModsToInstall { get; } = new ObservableCollectionExtended<Mod>();
         public ObservableCollectionExtended<string> ModsMissing { get; } = new ObservableCollectionExtended<string>();
         public MEGame Game { get; private set; }
         public string QueueName { get; private set; }
         public string QueueDescription { get; private set; }
         public event PropertyChangedEventHandler PropertyChanged;
-        public static BatchLibraryInstallQueue ParseInstallQueue(string queueFile, List<objects.mod.Mod> allLoadedMods)
+        public static BatchLibraryInstallQueue ParseInstallQueue(string queueFile, List<Mod> allLoadedMods)
         {
             if (!File.Exists(queueFile)) return null;
             BatchLibraryInstallQueue result = new BatchLibraryInstallQueue();
@@ -213,7 +213,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 //workaround for 103/104 to 105: moddesc path's in biq were stored as full paths instead of relative. me3cmm is relative paths
                 var fullModdescPath = File.Exists(moddescPath) ? moddescPath : Path.Combine(libraryRoot, moddescPath);
 
-                objects.mod.Mod m = allLoadedMods.FirstOrDefault(x => x.ModDescPath.Equals(fullModdescPath, StringComparison.InvariantCultureIgnoreCase));
+                Mod m = allLoadedMods.FirstOrDefault(x => x.ModDescPath.Equals(fullModdescPath, StringComparison.InvariantCultureIgnoreCase));
                 if (m != null)
                 {
                     result.ModsToInstall.Add(m);
@@ -225,6 +225,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 line++;
             }
 
+            result.InstallCompressed = result.Game >= MEGame.ME2 && Settings.PreferCompressingPackages;
             return result;
         }
     }

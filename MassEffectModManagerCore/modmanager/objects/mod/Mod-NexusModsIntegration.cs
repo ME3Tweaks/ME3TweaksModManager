@@ -72,7 +72,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
         /// <param name="newEndorsementStatus"></param>
         /// <param name="endorse"></param>
         /// <param name="currentuserid"></param>
-        public void EndorseMod(Action<objects.mod.Mod, bool> newEndorsementStatus, bool endorse, int currentuserid)
+        public void EndorseMod(Action<Mod, bool> newEndorsementStatus, bool endorse, int currentuserid)
         {
             if (!NexusModsUtilities.HasAPIKey || !CanEndorse) return;
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"ModSpecificEndorsement");

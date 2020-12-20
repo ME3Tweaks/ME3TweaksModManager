@@ -6,6 +6,7 @@ using System.Linq;
 using System.Windows.Input;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.objects;
+using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.ui;
 using ME3ExplorerCore.GameFilesystem;
 using ME3ExplorerCore.Packages;
@@ -30,7 +31,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         }
 
         private AutoTOCMode mode;
-        private objects.mod.Mod modModeMod;
+        private Mod modModeMod;
         private GameTarget gameWideModeTarget;
 
         public int Percent { get; private set; }
@@ -43,7 +44,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             InitializeComponent();
         }
 
-        public AutoTOC(objects.mod.Mod mod)
+        public AutoTOC(Mod mod)
         {
             DataContext = this;
             if (mod.Game != MEGame.ME3) throw new Exception(@"AutoTOC cannot be run on mods not designed for Mass Effect 3.");

@@ -39,10 +39,10 @@ using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
-using Pathoschild.FluentNexus.Models;
 using Serilog;
-using Mod = MassEffectModManagerCore.modmanager.objects.mod.Mod;
 using ME3ExplorerCore.Helpers;
+using Pathoschild.FluentNexus.Models;
+using Mod = MassEffectModManagerCore.modmanager.objects.mod.Mod;
 
 namespace MassEffectModManagerCore
 {
@@ -570,6 +570,7 @@ namespace MassEffectModManagerCore
                 ReleaseBusyControl();
                 if (b.Data is BatchLibraryInstallQueue queue)
                 {
+                    var target = batchLibrary.SelectedGameTarget;
                     //Install queue
 
                     bool continueInstalling = true;
@@ -581,7 +582,7 @@ namespace MassEffectModManagerCore
                         continueInstalling &= successful;
                         if (continueInstalling && queue.ModsToInstall.Count > modIndex)
                         {
-                            ApplyMod(queue.ModsToInstall[modIndex], queue.Target, batchMode: true, installCompressed: queue.InstallCompressed, installCompletedCallback: modInstalled);
+                            ApplyMod(queue.ModsToInstall[modIndex], target, batchMode: true, installCompressed: queue.InstallCompressed, installCompletedCallback: modInstalled);
                             modIndex++;
                         }
                         else if (SelectedGameTarget.Game == MEGame.ME3)
@@ -2548,7 +2549,6 @@ namespace MassEffectModManagerCore
                 if (OnlineContent.CanFetchContentThrottleCheck())
                 {
                     Settings.LastContentCheck = DateTime.Now;
-                    //Settings.Save();
                 }
 
                 Log.Information(@"End of content check network thread");

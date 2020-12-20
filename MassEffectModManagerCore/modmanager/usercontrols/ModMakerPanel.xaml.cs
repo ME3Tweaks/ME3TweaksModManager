@@ -12,11 +12,9 @@ using System.Windows.Input;
 using System.Windows.Media.Animation;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.memoryanalyzer;
-using ME3ExplorerCore.Compression;
+using MassEffectModManagerCore.modmanager.objects.mod;
 using ME3ExplorerCore.Packages;
-using ME3ExplorerCore.Helpers;
 using Microsoft.Win32;
-using SevenZip;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -214,7 +212,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     compiler.SetCompileStarted = CompilationInProgress;
                     compiler.SetModNotFoundCallback = ModNotFound;
                     compiler.NotifySomeDLCIsMissing = NotifySomeDLCIsMissing;
-                    objects.mod.Mod m = compiler.DownloadAndCompileMod(modDelta);
+                    var m = compiler.DownloadAndCompileMod(modDelta);
                     if (m != null && !LocalFileOption)
                     {
                         var sanitizedname = Utilities.SanitizePath(m.ModName);
@@ -230,7 +228,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                 }
                 CompileInProgress = false;
-                if (!KeepOpenWhenThreadFinishes && b.Result is objects.mod.Mod m)
+                if (!KeepOpenWhenThreadFinishes && b.Result is Mod m)
                 {
                     OnClosing(new DataEventArgs(m));
                 }

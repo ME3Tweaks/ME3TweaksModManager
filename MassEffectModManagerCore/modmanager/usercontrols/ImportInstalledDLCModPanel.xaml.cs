@@ -10,6 +10,7 @@ using IniParser.Model;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
+using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.ui;
 using ME3ExplorerCore.Helpers;
 using ME3ExplorerCore.Packages;
@@ -189,7 +190,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             File.WriteAllText(moddescPath, ini.ToString());
 
             //Generate and load mod
-            objects.mod.Mod m = new objects.mod.Mod(moddescPath, MEGame.ME3);
+            var m = new Mod(moddescPath, MEGame.ME3);
             e.Result = m;
             Log.Information(@"Mod import complete.");
             Analytics.TrackEvent(@"Imported already installed mod", new Dictionary<string, string>()

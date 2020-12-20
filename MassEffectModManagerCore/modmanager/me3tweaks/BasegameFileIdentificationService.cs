@@ -1,8 +1,6 @@
 ﻿using MassEffectModManagerCore.modmanager.objects;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using MassEffectModManagerCore.modmanager.objects.mod;
 
 namespace MassEffectModManagerCore.modmanager.me3tweaks
 {
@@ -39,7 +37,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             public string source { get; set; }
             public string game { get; set; }
             public BasegameCloudDBFile() { }
-            public BasegameCloudDBFile(string file, GameTarget gameTarget, objects.mod.Mod modBeingInstalled)
+            public BasegameCloudDBFile(string file, GameTarget gameTarget, Mod modBeingInstalled)
             {
                 this.file = file.Substring(gameTarget.TargetPath.Length + 1);
                 this.hash = Utilities.CalculateMD5(file);

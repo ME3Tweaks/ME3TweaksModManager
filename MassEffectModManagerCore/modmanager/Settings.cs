@@ -206,7 +206,12 @@ namespace MassEffectModManagerCore.modmanager
             set => SetProperty(ref _language, value);
         }
 
-        public static DateTime LastContentCheck { get; internal set; }
+        private static DateTime _lastContentCheck = DateTime.MinValue;
+        public static DateTime LastContentCheck
+        {
+            get => _lastContentCheck;
+            set => SetProperty(ref _lastContentCheck, value);
+        }
 
         private static bool _showedPreviewPanel;
         public static bool ShowedPreviewPanel

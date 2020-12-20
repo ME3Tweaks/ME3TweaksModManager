@@ -16,6 +16,7 @@ using MassEffectModManagerCore;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
+using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.ui;
 using ME3ExplorerCore.Compression;
 using Microsoft.AppCenter.Analytics;
@@ -184,7 +185,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     //compiler.SetModNameCallback = SetModNameOrDownloadText;
                     //compiler.SetCompileStarted = CompilationInProgress;
                     //compiler.SetModNotFoundCallback = ModNotFound;
-                    objects.mod.Mod m = compiler.DownloadAndCompileMod(modDelta, mui.mod.ModPath);
+                    var m = compiler.DownloadAndCompileMod(modDelta, mui.mod.ModPath);
                     if (m != null)
                     {
                         try

@@ -8,6 +8,7 @@ using FontAwesome.WPF;
 using ME3ExplorerCore.Helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
+using MassEffectModManagerCore.modmanager.objects.mod;
 using ME3ExplorerCore.Compression;
 using ME3ExplorerCore.GameFilesystem;
 using ME3ExplorerCore.Misc;
@@ -602,7 +603,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
         /// Returns the list of files that can potentially be three way merged
         /// </summary>
         /// <returns></returns>
-        internal static object GetThreeWayMergeFiles(GameTarget gameTarget, (Dictionary<ModJob, (Dictionary<string, objects.mod.Mod.InstallSourceFile> fileMapping, List<string> dlcFoldersBeingInstalled)> unpackedJobMappings, List<(ModJob job, string sfarPath, Dictionary<string, objects.mod.Mod.InstallSourceFile> sfarInstallationMapping)> sfarJobs) installationQueues)
+        internal static object GetThreeWayMergeFiles(GameTarget gameTarget, (Dictionary<ModJob, (Dictionary<string, Mod.InstallSourceFile> fileMapping, List<string> dlcFoldersBeingInstalled)> unpackedJobMappings, List<(ModJob job, string sfarPath, Dictionary<string, Mod.InstallSourceFile> sfarInstallationMapping)> sfarJobs) installationQueues)
         {
             var bgJob = installationQueues.unpackedJobMappings.FirstOrDefault(x => x.Key.Header == ModJob.JobHeader.BASEGAME);
             if (bgJob.Key != null)

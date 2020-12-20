@@ -14,6 +14,7 @@ using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.memoryanalyzer;
+using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.ui;
 using ME3ExplorerCore.GameFilesystem;
 using ME3ExplorerCore.Packages;
@@ -370,7 +371,7 @@ namespace MassEffectModManagerCore.modmanager.windows
             CreateStarterKitMod(sko, s => { BusyText = s; }, FinishedCallback);
         }
 
-        private void FinishedCallback(objects.mod.Mod obj)
+        private void FinishedCallback(Mod obj)
         {
             IsBusy = false;
             if (Owner is MainWindow w)
@@ -473,7 +474,7 @@ namespace MassEffectModManagerCore.modmanager.windows
             public bool Selected { get; set; }
         }
 
-        public static void CreateStarterKitMod(StarterKitOptions options, Action<string> UITextCallback, Action<objects.mod.Mod> finishedCallback)
+        public static void CreateStarterKitMod(StarterKitOptions options, Action<string> UITextCallback, Action<Mod> finishedCallback)
         {
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"StarterKitThread");
             nbw.DoWork += (sender, args) =>
@@ -626,7 +627,7 @@ namespace MassEffectModManagerCore.modmanager.windows
 
                 var modDescPath = Path.Combine(modPath, @"moddesc.ini");
                 new FileIniDataParser().WriteFile(modDescPath, ini, new UTF8Encoding(false));
-                objects.mod.Mod m = new objects.mod.Mod(modDescPath, skOption.ModGame);
+                Mod m = new Mod(modDescPath, skOption.ModGame);
                 args.Result = m;
             };
             nbw.RunWorkerCompleted += (a, b) =>
@@ -635,7 +636,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                 {
                     Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                 }
-                finishedCallback(b.Result as objects.mod.Mod);
+                finishedCallback(b.Result as Mod);
             };
             nbw.RunWorkerAsync(options);
         }
