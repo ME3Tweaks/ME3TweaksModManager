@@ -379,11 +379,6 @@ namespace MassEffectModManagerCore.modmanager
             SAVED,
             FAILED_UNAUTHORIZED,
             FAILED_OTHER,
-            /// <summary>
-            /// This occurs for some reason for a few users where the file becomes all zeros.
-            /// No idea why though.
-            /// </summary>
-            LOAD_ERROR_BLANK_DATA
         }
 
         /// <summary>
@@ -391,7 +386,7 @@ namespace MassEffectModManagerCore.modmanager
         /// </summary>
         private static SettingsSaveResult Save()
         {
-            Debug.WriteLine("Saving settings");
+            Debug.WriteLine(@"Saving settings");
             try
             {
                 var settingsIni = new IniData();
