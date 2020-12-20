@@ -581,7 +581,7 @@ namespace MassEffectModManagerCore
                         continueInstalling &= successful;
                         if (continueInstalling && queue.ModsToInstall.Count > modIndex)
                         {
-                            ApplyMod(queue.ModsToInstall[modIndex], queue.Target, batchMode: true, installCompletedCallback: modInstalled);
+                            ApplyMod(queue.ModsToInstall[modIndex], queue.Target, batchMode: true, installCompressed: queue.InstallCompressed, installCompletedCallback: modInstalled);
                             modIndex++;
                         }
                         else if (SelectedGameTarget.Game == MEGame.ME3)
@@ -1508,12 +1508,12 @@ namespace MassEffectModManagerCore
         /// <param name="batchMode">Causes ME3 autotoc to skip at end of install</param>
         /// <param name="installCompletedCallback">Callback when mod installation either succeeds for fails</param>
 
-        private void ApplyMod(Mod mod, GameTarget forcedTarget = null, bool batchMode = false, bool installCompressed = false, Action<bool> installCompletedCallback = null)
+        private void ApplyMod(Mod mod, GameTarget forcedTarget = null, bool batchMode = false, bool? installCompressed = null, Action<bool> installCompletedCallback = null)
         {
             if (!Utilities.IsGameRunning(mod.Game))
             {
                 BackgroundTask modInstallTask = backgroundTaskEngine.SubmitBackgroundJob(@"ModInstall", M3L.GetString(M3L.string_interp_installingMod, mod.ModName), M3L.GetString(M3L.string_interp_installedMod, mod.ModName));
-                var modInstaller = new ModInstaller(mod, forcedTarget ?? SelectedGameTarget, installCompressed);
+                var modInstaller = new ModInstaller(mod, forcedTarget ?? SelectedGameTarget, installCompressed, batchMode: batchMode);
                 modInstaller.Close += (a, b) =>
                 {
 

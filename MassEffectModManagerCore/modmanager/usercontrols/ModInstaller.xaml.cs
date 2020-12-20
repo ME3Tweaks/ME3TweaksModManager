@@ -45,19 +45,26 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public bool InstallationSucceeded { get; private set; }
         public bool ModIsInstalling { get; set; }
         public bool AllOptionsAreAutomatic { get; private set; }
-        public ModInstaller(Mod modBeingInstalled, GameTarget selectedGameTarget, bool installCompressed = false)
+
+        /// <summary>
+        /// Initializes the Mod Installer panel.
+        /// </summary>
+        /// <param name="modBeingInstalled">The mod to install</param>
+        /// <param name="selectedGameTarget">The default selected game target</param>
+        /// <param name="installCompressed">If the checkbox for install compressed should be selected. Set to null to use the mod default</param>
+        /// <param name="batchMode"></param>
+        public ModInstaller(Mod modBeingInstalled, GameTarget selectedGameTarget, bool? installCompressed = null, bool batchMode = false)
         {
             MemoryAnalyzer.AddTrackedMemoryItem(@"Mod Installer", new WeakReference(this));
             Log.Information($@">>>>>>> Starting mod installer for mod: {modBeingInstalled.ModName} {modBeingInstalled.ModVersionString} for game {modBeingInstalled.Game}. Install source: {(modBeingInstalled.IsInArchive ? @"Archive" : @"Library (disk)")}"); //do not localize
             LoadCommands();
-            DataContext = this;
             lastPercentUpdateTime = DateTime.Now;
+            this.BatchMode = batchMode;
             this.ModBeingInstalled = modBeingInstalled;
             this.SelectedGameTarget = selectedGameTarget;
             selectedGameTarget.ReloadGameTarget(false); //Reload so we can have consistent state with ALOT on disk
             Action = M3L.GetString(M3L.string_preparingToInstall);
-            CompressInstalledPackages = (installCompressed || modBeingInstalled.PreferCompressed)
-                                        && modBeingInstalled.Game > MEGame.ME1;
+            CompressInstalledPackages = (installCompressed ?? modBeingInstalled.PreferCompressed) && modBeingInstalled.Game > MEGame.ME1;
             InitializeComponent();
 
             if (!ModBeingInstalled.IsInArchive)
@@ -125,7 +132,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 bw.WorkerReportsProgress = true;
                 bw.DoWork += InstallModBackgroundThread;
                 bw.RunWorkerCompleted += ModInstallationCompleted;
-                //bw.ProgressChanged += ModProgressChanged;
                 bw.RunWorkerAsync();
             }
             else
@@ -1467,7 +1473,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 // All available options were chosen already (compression would come from import dialog)
                 BeginInstallingMod();
             }
-            else if (targets.Count == 1 && AlternateOptions.Count == 0 && (Settings.PreferCompressingPackages || ModBeingInstalled.Game == MEGame.ME1))
+            else if ((targets.Count == 1 || BatchMode) && AlternateOptions.Count == 0 && (BatchMode || Settings.PreferCompressingPackages || ModBeingInstalled.Game == MEGame.ME1))
             {
                 // ME1 can't compress. If user has elected to compress packages, and there are no alternates/additional targets, just begin installation
                 CompressInstalledPackages = Settings.PreferCompressingPackages && ModBeingInstalled.Game > MEGame.ME1;

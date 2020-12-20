@@ -2,18 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.windows;
@@ -34,7 +25,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public BatchModLibrary()
         {
             MemoryAnalyzer.AddTrackedMemoryItem(@"Batch Mod Installer Panel", new WeakReference(this));
-            DataContext = this;
             LoadCommands();
             InitializeComponent();
         }
@@ -182,21 +172,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         /// Target for installation. Only used when installation commences.
         /// </summary>
         public GameTarget Target;
-
+        public bool InstallCompressed { get; set; }
         public string BackingFilename { get; set; }
         public ObservableCollectionExtended<objects.mod.Mod> ModsToInstall { get; } = new ObservableCollectionExtended<objects.mod.Mod>();
         public ObservableCollectionExtended<string> ModsMissing { get; } = new ObservableCollectionExtended<string>();
-
         public MEGame Game { get; private set; }
         public string QueueName { get; private set; }
         public string QueueDescription { get; private set; }
-
         public event PropertyChangedEventHandler PropertyChanged;
-
-        public void SaveQueue()
-        {
-
-        }
         public static BatchLibraryInstallQueue ParseInstallQueue(string queueFile, List<objects.mod.Mod> allLoadedMods)
         {
             if (!File.Exists(queueFile)) return null;

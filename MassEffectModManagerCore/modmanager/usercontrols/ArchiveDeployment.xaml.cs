@@ -1015,8 +1015,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
 
             /// <summary>
-            /// Checks
-            /// and references
+            /// Checks object and name references for invalid values and if values are of the incorrect typing.
             /// </summary>
             /// <param name="item"></param>
             private void CheckReferences(DeploymentChecklistItem item)
