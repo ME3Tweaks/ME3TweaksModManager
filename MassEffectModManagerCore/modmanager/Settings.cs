@@ -242,6 +242,7 @@ namespace MassEffectModManagerCore.modmanager
             }
             ShowedPreviewPanel = LoadSettingBool(settingsIni, "ModManager", "ShowedPreviewMessage2", false);
             Language = LoadSettingString(settingsIni, "ModManager", "Language", "int");
+            LastSelectedTarget = LoadSettingString(settingsIni, "ModManager", "LastSelectedTarget", null);
             LastContentCheck = LoadSettingDateTime(settingsIni, "ModManager", "LastContentCheck", DateTime.MinValue);
             BetaMode = LoadSettingBool(settingsIni, "ModManager", "BetaMode", false);
             AutoUpdateLODs2K = LoadSettingBool(settingsIni, "ModManager", "AutoUpdateLODs2K", false);
@@ -402,6 +403,7 @@ namespace MassEffectModManagerCore.modmanager
                 SaveSettingBool(settingsIni, "Logging", "LogModInstallation", LogModInstallation);
                 SaveSettingString(settingsIni, "ModLibrary", "LibraryPath", ModLibraryPath);
                 SaveSettingString(settingsIni, "ModManager", "Language", Language);
+                SaveSettingString(settingsIni, "ModManager", "LastSelectedTarget", LastSelectedTarget);
                 SaveSettingDateTime(settingsIni, "ModManager", "LastContentCheck", LastContentCheck);
                 SaveSettingBool(settingsIni, "ModManager", "BetaMode", BetaMode);
                 SaveSettingBool(settingsIni, "ModManager", "ShowedPreviewMessage2", ShowedPreviewPanel);

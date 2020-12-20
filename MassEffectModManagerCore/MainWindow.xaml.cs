@@ -2168,6 +2168,10 @@ namespace MassEffectModManagerCore
                     SelectedGameTarget = newTarget;
                 }
             }
+            else if (!string.IsNullOrWhiteSpace(Settings.LastSelectedTarget) && InstallationTargets.FirstOrDefaultOut(x => x.TargetPath.Equals(Settings.LastSelectedTarget), out var matchingTarget))
+            {
+                SelectedGameTarget = matchingTarget;
+            }
             else
             {
                 if (InstallationTargets.Count > 0)
@@ -2795,7 +2799,6 @@ namespace MassEffectModManagerCore
         {
             if (!RepopulatingTargets)
             {
-                Settings.LastSelectedTarget = SelectedGameTarget?.TargetPath;
                 //Settings.Save();
                 if (!SelectedGameTarget.RegistryActive)
                 {
@@ -2822,6 +2825,8 @@ namespace MassEffectModManagerCore
                         Log.Warning(@"Win32 exception occurred updating boot target. User maybe pressed no to the UAC dialog?: " + ex.Message);
                     }
                 }
+
+                Settings.LastSelectedTarget = SelectedGameTarget?.TargetPath;
             }
         }
 
