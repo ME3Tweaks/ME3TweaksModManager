@@ -624,7 +624,7 @@
     <!-- 0={Message prefix string} 1={integer} 2={Full object path string} 3={Object type name, like 'SFXDamageType'} 4={Object type name, like 'SFXDamageType'} -->
     <system:String x:Key="string_interp_warningDelegatePropertyIsOutsideOfExportTable">{0} DelegateProperty {1} is outside of export table</system:String>
     <!-- 0={Message prefix string} 1={Property name string} -->
-    <system:String x:Key="string_interp_fatalExportCircularReference">{0}, export {1} has a circular self reference for it' link. The game and the toolset will be unable to handle this condition</system:String>
+    <system:String x:Key="string_interp_fatalExportCircularReference">{0}, export {1} has a circular self reference for it's link. The game and the toolset will be unable to handle this condition</system:String>
     <!-- 0={relativepath} 1={integer} -->
     <system:String x:Key="string_interp_warningGenericExportPrefix">{0}, export {1} {2} ({3})</system:String>
     <!-- 0={relativepath} 1={integer} 2={Object name string} 3={Object class string} -->
