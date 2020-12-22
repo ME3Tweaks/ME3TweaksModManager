@@ -1996,11 +1996,11 @@ namespace MassEffectModManagerCore
                 backgroundTaskEngine.SubmitBackgroundTaskUpdate(bgTask, newStr);
             }
 
-            var allModsInManifest = OnlineContent.CheckForModUpdates(updatableMods, restoreMode, updateCheckProgressCallback);
-            if (allModsInManifest != null)
+            var updateManifestModInfos = OnlineContent.CheckForModUpdates(updatableMods, restoreMode, updateCheckProgressCallback);
+            if (updateManifestModInfos != null)
             {
                 //Calculate CLASSIC Updates
-                var updates = allModsInManifest.Where(x => x.updatecode > 0 && (x.applicableUpdates.Count > 0 || x.filesToDelete.Count > 0)).ToList();
+                var updates = updateManifestModInfos.Where(x => x.updatecode > 0 && (x.applicableUpdates.Count > 0 || x.filesToDelete.Count > 0)).ToList();
                 foreach (var v in updates)
                 {
                     Log.Information($@"Classic mod out of date: {v.mod.ModName} {v.mod.ParsedModVersion}, server version: {v.LocalizedServerVersionString}");
@@ -2009,7 +2009,7 @@ namespace MassEffectModManagerCore
                 //Calculate MODMAKER Updates
                 foreach (var mm in updatableMods.Where(x => x.ModModMakerID > 0))
                 {
-                    var matchingServerMod = allModsInManifest.FirstOrDefault(x => x is OnlineContent.ModMakerModUpdateInfo mmui && mmui.ModMakerId == mm.ModModMakerID);
+                    var matchingServerMod = updateManifestModInfos.FirstOrDefault(x => x is OnlineContent.ModMakerModUpdateInfo mmui && mmui.ModMakerId == mm.ModModMakerID);
                     if (matchingServerMod != null)
                     {
                         var serverVer = Version.Parse(matchingServerMod.versionstr + @".0"); //can't have single digit version
@@ -2033,23 +2033,26 @@ namespace MassEffectModManagerCore
                 //Calculate NEXUSMOD Updates
                 foreach (var mm in updatableMods.Where(x => x.NexusModID > 0 && x.ModClassicUpdateCode == 0)) //check zero as Mgamerz's mods will list me3tweaks with a nexus code still for integrations
                 {
-                    var matchingServerMod = allModsInManifest.FirstOrDefault(x => x is OnlineContent.NexusModUpdateInfo nmui && nmui.NexusModsId == mm.NexusModID && Enum.Parse<MEGame>(@"ME" + nmui.GameId) == mm.Game);
-                    if (matchingServerMod != null)
+                    var matchingUpdateInfoForMod = updateManifestModInfos.OfType<OnlineContent.NexusModUpdateInfo>().FirstOrDefault(x => x.NexusModsId == mm.NexusModID
+                                                                                                                                   && Enum.Parse<MEGame>(@"ME" + x.GameId) == mm.Game
+                                                                                                                                   && updates.All(y => !y.mod.Equals(x.mod)));
+                    if (matchingUpdateInfoForMod != null)
                     {
-                        if (Version.TryParse(matchingServerMod.versionstr, out var serverVer))
+                        if (Version.TryParse(matchingUpdateInfoForMod.versionstr, out var serverVer))
                         {
                             if (serverVer > mm.ParsedModVersion)
                             {
-                                matchingServerMod.mod = mm;
-                                updates.Add(matchingServerMod);
-                                matchingServerMod.SetLocalizedInfo();
+                                // We need to make a clone in the event a mod uses duplicate code, such as Project Variety
+                                OnlineContent.NexusModUpdateInfo clonedInfo = new OnlineContent.NexusModUpdateInfo(matchingUpdateInfoForMod) {mod = mm};
+                                updates.Add(clonedInfo);
+                                clonedInfo.SetLocalizedInfo();
                                 Log.Information($@"NexusMods mod out of date: {mm.ModName} {mm.ParsedModVersion}, server version: {serverVer}");
 
                             }
                         }
                         else
                         {
-                            Log.Error($@"Cannot parse nexusmods version of mod, skipping update check for {mm.ModName}. Server version string is { matchingServerMod.versionstr}");
+                            Log.Error($@"Cannot parse nexusmods version of mod, skipping update check for {mm.ModName}. Server version string is { matchingUpdateInfoForMod.versionstr}");
                         }
                     }
                 }

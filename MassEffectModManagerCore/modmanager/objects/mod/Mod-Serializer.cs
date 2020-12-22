@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using IniParser.Model;
 using MassEffectModManagerCore.modmanager.objects.mod.editor;
 using MassEffectModManagerCore.ui;
@@ -6,7 +7,7 @@ using ME3ExplorerCore.Packages;
 
 namespace MassEffectModManagerCore.modmanager.objects.mod
 {
-    public partial class Mod : IMDParameterMap
+    public partial class Mod : IMDParameterMap, IEquatable<Mod>
     {
         // Class for editing the mod in moddesc.ini editor and related variables
 
@@ -62,6 +63,26 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             };
 
             ParameterMap.AddRange(MDParameter.MapIntoParameterMap(parameterDictionary, @"UPDATES"));
+        }
+
+        public bool Equals(Mod other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return ModPath.Equals(other.ModPath, StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Mod) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return (ModPath != null ? ModPath.GetHashCode() : 0);
         }
     }
 }

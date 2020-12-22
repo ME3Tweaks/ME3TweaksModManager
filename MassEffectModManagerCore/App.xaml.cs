@@ -372,7 +372,9 @@ namespace MassEffectModManagerCore
                     return attachments;
                 };
                 AppCenter.Start(APIKeys.AppCenterKey, typeof(Analytics), typeof(Crashes));
-            }
+            } else {
+                Log.Error(@"This build is not configured correctly for AppCenter!");
+            }           
 #else
             if (!APIKeys.HasAppCenterKey)
             {

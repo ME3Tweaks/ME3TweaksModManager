@@ -174,6 +174,9 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     var matchingMod = modsToCheck.FirstOrDefault(x => x.ModClassicUpdateCode == modUpdateInfo.updatecode);
                     if (matchingMod != null && (forceUpdateCheck || matchingMod.ParsedModVersion < modUpdateInfo.version))
                     {
+                        // The following line is left so we know that it was at one point considered implemented.
+                        // This prevents updating copies of the same mod in the library. Cause it's just kind of a bandwidth waste.
+                        //modsToCheck.Remove(matchingMod); //This makes it so we don't feed in multiple same-mods. For example, nexus check on 3 Project Variety downloads
                         modUpdateInfo.mod = matchingMod;
                         modUpdateInfo.SetLocalizedInfo();
                         string modBasepath = matchingMod.ModPath;
@@ -586,6 +589,23 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         [Localizable(true)]
         public class NexusModUpdateInfo : ModUpdateInfo
         {
+
+            public NexusModUpdateInfo()
+            {
+
+            }
+
+            /// <summary>
+            /// Copy constructor
+            /// </summary>
+            /// <param name="source"></param>
+            public NexusModUpdateInfo(NexusModUpdateInfo source) : base(source)
+            {
+                GameId = source.GameId;
+                NexusModsId = source.NexusModsId;
+                UpdatedTime = source.UpdatedTime;
+            }
+
             public int NexusModsId;
             public int GameId;
             public string UIStatusString { get; set; }
@@ -594,7 +614,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             internal override void SetLocalizedInfo()
             {
                 base.SetLocalizedInfo();
-                var updatedTime = UpdatedTime.ToString(@"d"); //doing it this outside of statement makes it easier for localizer tool
+                var updatedTime = UpdatedTime.ToString(@"d"); //doing this outside of statement makes it easier for localizer tool
                 UIStatusString = M3L.GetString(M3L.string_interp_updatedDateX, updatedTime);
                 DownloadButtonText = M3L.GetString(M3L.string_openNexusModsPage);
                 changelog = M3L.GetString(M3L.string_nexusModsUpdateInstructions);
@@ -603,8 +623,36 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
         [Localizable(true)]
         [DebuggerDisplay("ModUpdateInfo | {mod?.ModName} with {filesToDelete?.Count} FTDelete and {applicableUpdates?.Count} FTDownload")]
-        public class ModUpdateInfo : INotifyPropertyChanged
+        public class ModUpdateInfo : INotifyPropertyChanged, IEquatable<ModUpdateInfo>
         {
+            public ModUpdateInfo()
+            {
+
+            }
+
+            /// <summary>
+            /// BASIC Copy constructor. Does not copy the mod object!
+            /// </summary>
+            /// <param name="source"></param>
+            public ModUpdateInfo(ModUpdateInfo source)
+            {
+                changelog = source.changelog;
+                serverfolder = source.serverfolder;
+                version = source.version;
+                updatecode = source.updatecode;
+                versionstr = source.versionstr;
+            }
+            
+            public bool Equals(ModUpdateInfo other)
+            {
+                return Equals(mod, other.mod);
+            }
+
+            public override int GetHashCode()
+            {
+                return (mod != null ? mod.GetHashCode() : 0);
+            }
+
             public Mod mod { get; set; }
             public List<SourceFile> sourceFiles;
             public List<string> blacklistedFiles;
