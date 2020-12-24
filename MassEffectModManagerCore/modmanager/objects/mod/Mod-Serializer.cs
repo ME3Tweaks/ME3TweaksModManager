@@ -1,40 +1,88 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using IniParser.Model;
+using MassEffectModManagerCore.modmanager.objects.mod.editor;
+using MassEffectModManagerCore.ui;
+using ME3ExplorerCore.Packages;
 
-namespace MassEffectModManagerCore.modmanager
+namespace MassEffectModManagerCore.modmanager.objects.mod
 {
-    public partial class Mod
+    public partial class Mod : IMDParameterMap, IEquatable<Mod>
     {
+        // Class for editing the mod in moddesc.ini editor and related variables
+
         /// <summary>
-        /// Generates the corresponding moddesc.ini text for this mod
+        /// If the mod specified the modcoal flag (MD 2.0 only)
         /// </summary>
-        /// <returns></returns>
-        public string SerializeModdesc()
+        public bool LegacyModCoal { get; set; }
+
+        public ObservableCollectionExtended<MDParameter> ParameterMap { get; } = new ObservableCollectionExtended<MDParameter>();
+
+        public void BuildParameterMap(Mod _)
         {
-            IniData moddessc = new IniData();
-            moddessc[@"ModManager"][@"cmmver"] = ModDescTargetVersion.ToString();
-            if (MinimumSupportedBuild > 0)
+            ParameterMap.ClearEx();
+
+            var parameterDictionary = new Dictionary<string, object>()
             {
-                moddessc[@"ModManager"][@"minbuild"] = MinimumSupportedBuild.ToString();
+                // ModManager
+                {@"cmmver", ModDescTargetVersion},
+                {@"minbuild", MinimumSupportedBuild > 102 ? MinimumSupportedBuild.ToString() : null},
+            };
+            ParameterMap.AddRange(MDParameter.MapIntoParameterMap(parameterDictionary, @"ModManager"));
+
+            // ModInfo
+            parameterDictionary = new Dictionary<string, object>()
+            {
+                {@"game", Game},
+                {@"modname", ModName},
+                {@"moddesc", ModDescription},
+                {@"modver", ParsedModVersion},
+                {@"moddev", ModDeveloper},
+                {@"modsite", ModWebsite == Mod.DefaultWebsite ? "" : ModWebsite},
+                {@"updatecode", ModClassicUpdateCode > 0 ? ModClassicUpdateCode.ToString() : null},
+                {@"nexuscode", NexusModID > 0 ? NexusModID.ToString() : null},
+                {@"requireddlc", RequiredDLC},
+                {@"bannerimagename", BannerImageName},
+            };
+
+            if (Game > MEGame.ME1)
+            {
+                // This flag only makes a difference for ME1
+                parameterDictionary[@"prefercompressed"] = PreferCompressed ? @"True" : null;
             }
 
-            moddessc[@"ModInfo"][@"modname"] = ModName;
-            moddessc[@"ModInfo"][@"game"] = Game.ToString();
-            moddessc[@"ModInfo"][@"moddev"] = ModDeveloper;
-            moddessc[@"ModInfo"][@"modver"] = ModVersionString;
-            moddessc[@"ModInfo"][@"modsite"] = ModWebsite;
-            moddessc[@"ModInfo"][@"moddesc"] = Utilities.ConvertNewlineToBr(ModDescription);
+            ParameterMap.AddRange(MDParameter.MapIntoParameterMap(parameterDictionary, @"ModInfo"));
 
-            foreach (var job in InstallationJobs)
-            {
-                job.Serialize(moddessc);
-            }
+            // UPDATES
+            parameterDictionary = new Dictionary<string, object>()
+                {
+                {@"serverfolder", UpdaterServiceServerFolder},
+                {@"blacklistedfiles", UpdaterServiceBlacklistedFiles},
+                {@"additionaldeploymentfolders", AdditionalDeploymentFolders},
+                {@"additionaldeploymentfiles", AdditionalDeploymentFiles},
+            };
 
+            ParameterMap.AddRange(MDParameter.MapIntoParameterMap(parameterDictionary, @"UPDATES"));
+        }
 
-            return moddessc.ToString();
+        public bool Equals(Mod other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return ModPath.Equals(other.ModPath, StringComparison.InvariantCultureIgnoreCase);
+        }
 
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Mod) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return (ModPath != null ? ModPath.GetHashCode() : 0);
         }
     }
 }

@@ -1,0 +1,25 @@
+﻿<UserControl x:Class="MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alternates.AlternateItemsControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alternates"
+             xmlns:moddescinieditor="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor"
+             xmlns:objects="clr-namespace:MassEffectModManagerCore.modmanager.objects"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <ItemsControl ItemsSource="{Binding Alternates}">
+        <ItemsControl.ItemTemplate>
+            <DataTemplate DataType="{x:Type objects:AlternateOption}">
+                <Expander
+                    x:Name="altExpander"
+                    Header="{Binding FriendlyName}"
+                    Margin="5,3"
+                    PreviewMouseWheel="HandleMouseWheel">
+                    <moddescinieditor:DescriptorEditorItemsControl ItemsSource="{Binding ParameterMap}"
+                                                                   Visibility="{Binding ElementName=altExpander, Path=IsExpanded, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                </Expander>
+            </DataTemplate>
+        </ItemsControl.ItemTemplate>
+    </ItemsControl>
+</UserControl>

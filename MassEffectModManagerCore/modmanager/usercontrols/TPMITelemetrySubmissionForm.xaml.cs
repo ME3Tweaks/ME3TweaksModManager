@@ -1,27 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using Flurl;
 using Flurl.Http;
-using IniParser;
-using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager.gameini;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
+using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.ui;
+using ME3ExplorerCore.GameFilesystem;
+using ME3ExplorerCore.Gammtek.Extensions.Collections.Generic;
+using ME3ExplorerCore.Packages;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -36,7 +29,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public TPMITelemetrySubmissionForm(Mod telemetryMod)
         {
             DataContext = this;
-            this.TelemetryMod = telemetryMod;
+            TelemetryMod = telemetryMod;
             LoadCommands();
             InitializeComponent();
         }
@@ -86,7 +79,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             public string ModName { get; set; }
             public string ModAuthor { get; set; }
             public string ModSite { get; set; }
-            public Mod.MEGame Game { get; set; }
+            public MEGame Game { get; set; }
             public int MountPriority { get; set; }
             public int ModMountTLK1 { get; set; }
             public int MountFlag { get; set; }
@@ -109,7 +102,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             public static readonly string DLC_INFO_TELEMETRY_ENDPOINT = @"https://me3tweaks.com/mods/dlc_mods/telemetry";
 
-            public event PropertyChangedEventHandler PropertyChanged;
+            //Fody uses this property on weaving
+#pragma warning disable 0169
+public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 0169
 
             public void SubmitPackage()
             {
@@ -126,7 +122,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     url = url.SetQueryParam(@"mod_mount_priority", MountPriority);
                     url = url.SetQueryParam(@"mod_mount_tlk1", ModMountTLK1);
                     url = url.SetQueryParam(@"mod_mount_flag", MountFlag);
-                    if (Game == Mod.MEGame.ME2)
+                    if (Game == MEGame.ME2)
                     {
                         url = url.SetQueryParam(@"mod_modulenumber", ModuleNumber);
                     }
@@ -173,11 +169,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 inGameName,
                 TelemetryMod.ModName,
                 TelemetryMod.ModDeveloper,
-                TelemetryMod.ModWebsite,
+                TelemetryMod.ModWebsite == Mod.DefaultWebsite ? "" : TelemetryMod.ModWebsite,
                 TelemetryMod);
         }
 
-        public static TelemetryPackage GetTelemetryPackageForDLC(Mod.MEGame game, string dlcDirectory, string dlcFoldername, string destinationDLCName, string modName, string modAuthor, string modSite, Mod telemetryMod)
+        public static TelemetryPackage GetTelemetryPackageForDLC(MEGame game, string dlcDirectory, string dlcFoldername, string destinationDLCName, string modName, string modAuthor, string modSite, Mod telemetryMod)
         {
             try
             {
@@ -198,7 +194,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 tp.Game = game;
                 switch (game)
                 {
-                    case Mod.MEGame.ME1:
+                    case MEGame.ME1:
                         {
                             var parsedIni = DuplicatingIni.LoadIni(Path.Combine(sourceDir, @"AutoLoad.ini"));
                             tp.MountPriority = int.Parse(parsedIni[@"ME1DLCMOUNT"][@"ModMount"]?.Value);
@@ -207,7 +203,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             //No mount flag right now.
                         }
                         break;
-                    case Mod.MEGame.ME2:
+                    case MEGame.ME2:
                         {
                             var mountFile = Path.Combine(sourceDir, @"CookedPC", @"mount.dlc");
                             MountFile mf = new MountFile(mountFile);
@@ -219,7 +215,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             tp.ModuleNumber = ini[@"Engine.DLCModules"][dlcFoldername]?.Value;
                         }
                         break;
-                    case Mod.MEGame.ME3:
+                    case MEGame.ME3:
                         {
                             var mountFile = Path.Combine(sourceDir, @"CookedPCConsole", @"mount.dlc");
                             MountFile mf = new MountFile(mountFile);

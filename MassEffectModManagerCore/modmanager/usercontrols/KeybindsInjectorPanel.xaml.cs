@@ -1,20 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using ByteSizeLib;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
+using ME3ExplorerCore.Helpers;
+using ME3ExplorerCore.Packages;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -127,7 +118,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"ME3KeybindsInstaller");
             nbw.DoWork += (await, b) =>
             {
-                var coalPath = Path.Combine(BackupService.GetGameBackupPath(Mod.MEGame.ME3), @"BioGame", @"CookedPCConsole", @"Coalesced.bin");
+                var coalPath = Path.Combine(BackupService.GetGameBackupPath(MEGame.ME3), @"BioGame", @"CookedPCConsole", @"Coalesced.bin");
                 if (File.Exists(coalPath))
                 {
                     using FileStream fs = new FileStream(coalPath, FileMode.Open);
@@ -149,7 +140,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private bool CanRestoreKeybinds()
         {
-            return BackupService.GetGameBackupPath(Mod.MEGame.ME3) != null && SelectedME3Target != null && !KeybindsInstallingME3;
+            return BackupService.GetGameBackupPath(MEGame.ME3) != null && SelectedME3Target != null && !KeybindsInstallingME3;
         }
 
         private bool CanClose() => !KeybindsInstallingME3 && !KeybindsInstallingME2 && !KeybindsInstallingME1;
@@ -171,8 +162,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
 
 
-            ME2Targets.ReplaceAll(mainwindow.InstallationTargets.Where(x => x.Game == Mod.MEGame.ME2));
-            ME3Targets.ReplaceAll(mainwindow.InstallationTargets.Where(x => x.Game == Mod.MEGame.ME3));
+            ME2Targets.ReplaceAll(mainwindow.InstallationTargets.Where(x => x.Game == MEGame.ME2));
+            ME3Targets.ReplaceAll(mainwindow.InstallationTargets.Where(x => x.Game == MEGame.ME3));
             SelectedME2Target = ME2Targets.FirstOrDefault();
             SelectedME3Target = ME3Targets.FirstOrDefault();
         }
@@ -189,12 +180,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             public override string ToString() => !Selectable ? filepath : Path.GetFileName(filepath);
         }
 
-        public static string GetDefaultKeybindsOverride(Mod.MEGame game)
+        public static string GetDefaultKeybindsOverride(MEGame game)
         {
             var path = Utilities.GetKeybindsOverrideFolder();
-            if (game == Mod.MEGame.ME1) return Path.Combine(path, @"me1-bioinput.ini");
-            if (game == Mod.MEGame.ME2) return Path.Combine(path, @"me2-bioinput.ini");
-            if (game == Mod.MEGame.ME3) return Path.Combine(path, @"me3-bioinput.xml");
+            if (game == MEGame.ME1) return Path.Combine(path, @"me1-bioinput.ini");
+            if (game == MEGame.ME2) return Path.Combine(path, @"me2-bioinput.ini");
+            if (game == MEGame.ME3) return Path.Combine(path, @"me3-bioinput.xml");
             return null;
         }
     }

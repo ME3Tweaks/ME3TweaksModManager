@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Windows.Controls;
 using System.Windows.Input;
-using MassEffectModManagerCore.GameDirectories;
-using MassEffectModManagerCore.gamefileformats.sfar;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.objects;
+using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.ui;
-using ME3Explorer.Unreal;
+using ME3ExplorerCore.GameFilesystem;
+using ME3ExplorerCore.Packages;
+using ME3ExplorerCore.Unreal;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -40,17 +39,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public AutoTOC(GameTarget target)
         {
-            if (target == null) throw new Exception(@"Null target specified for AutoTOC");
             DataContext = this;
-            this.gameWideModeTarget = target;
+            this.gameWideModeTarget = target ?? throw new Exception(@"Null target specified for AutoTOC");
             InitializeComponent();
         }
 
         public AutoTOC(Mod mod)
         {
-            //TODO: Implement this. Possibly make it static so no UI is used. Meant for mod distribution
             DataContext = this;
-            if (mod.Game != Mod.MEGame.ME3) throw new Exception(@"AutoTOC cannot be run on mods not designed for Mass Effect 3.");
+            if (mod.Game != MEGame.ME3) throw new Exception(@"AutoTOC cannot be run on mods not designed for Mass Effect 3.");
             this.modModeMod = mod;
             InitializeComponent();
 
@@ -59,6 +56,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void RunModAutoTOC()
         {
             //Implement mod-only autotoc, for deployments
+            // TODO actually do this
         }
 
         public static bool RunTOCOnGameTarget(GameTarget target, Action<int> percentDoneCallback = null)
@@ -67,7 +65,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             //get toc target folders, ensuring we clean up the inputs a bit.
             string baseDir = Path.GetFullPath(Path.Combine(target.TargetPath, @"BIOGame"));
-            string dlcDirRoot = MEDirectories.DLCPath(target);
+            string dlcDirRoot = M3Directories.GetDLCPath(target);
             if (!Directory.Exists(dlcDirRoot))
             {
                 Log.Error(@"Specified game directory does not appear to be a Mass Effect 3 root game directory (DLC folder missing).");
@@ -79,7 +77,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             tocTargets.Add(Path.Combine(target.TargetPath, @"BIOGame\Patches\PCConsole\Patch_001.sfar"));
 
             //Debug.WriteLine("Found TOC Targets:");
-            tocTargets.ForEach(x => Debug.WriteLine(x));
+            //tocTargets.ForEach(x => Debug.WriteLine(x));
             //Debug.WriteLine("=====Generating TOC Files=====");
             int done = 0;
 

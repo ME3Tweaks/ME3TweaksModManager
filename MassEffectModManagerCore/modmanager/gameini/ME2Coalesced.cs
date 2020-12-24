@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Text;
-using MassEffectModManagerCore.modmanager.helpers;
+using ME3ExplorerCore.Helpers;
 using MassEffectModManagerCore.modmanager.objects;
 using Serilog;
 
@@ -44,7 +43,7 @@ namespace MassEffectModManagerCore.modmanager.gameini
             catch (Exception e)
             {
                 Log.Error("Cannot open ME2Coalesced file from target: " + e.Message);
-                if (throwExceptionOnError) throw e;
+                if (throwExceptionOnError) throw;
                 return null;
             }
         }

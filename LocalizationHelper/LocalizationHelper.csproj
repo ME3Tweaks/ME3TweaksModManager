@@ -2,17 +2,17 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0-windows8.0</TargetFramework>
     <UseWPF>true</UseWPF>
     <Authors>Mgamerz</Authors>
     <Company>ME3Tweaks</Company>
     <Product>ME3Tweaks Mod Manager Localizer</Product>
-    <Description>Localizes the ME3Tweaks Mod Manager files from github</Description>
+    <Description>Localizes the ME3Tweaks Mod Manager files from Github</Description>
     <Copyright>2020 ME3Tweaks</Copyright>
     <ApplicationIcon>localizericon.ico</ApplicationIcon>
-    <Version>1.0.7</Version>
-    <AssemblyVersion>1.0.7.0</AssemblyVersion>
-    <FileVersion>1.0.7.0</FileVersion>
+    <Version>1.0.8</Version>
+    <AssemblyVersion>1.0.8.0</AssemblyVersion>
+    <FileVersion>1.0.8.0</FileVersion>
     <Platforms>x64</Platforms>
   </PropertyGroup>
 
@@ -29,18 +29,21 @@
   <ItemGroup>
     <PackageReference Include="AuthenticodeExaminer" Version="0.3.0" />
     <PackageReference Include="AvalonEdit" Version="6.0.1" />
-    <PackageReference Include="Fody" Version="6.0.8">
+    <PackageReference Include="Fody" Version="6.3.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="Octokit" Version="0.36.0" />
-    <PackageReference Include="PropertyChanged.Fody" Version="3.2.4" />
+    <PackageReference Include="Octokit" Version="0.48.0" />
+    <PackageReference Include="PropertyChanged.Fody" Version="3.3.1" />
   </ItemGroup>
 
-  <ItemGroup>
-    <TrimmerRootAssembly Include="System.Memory" />
-    <TrimmerRootAssembly Include="System.Net" />
-    <TrimmerRootAssembly Include="System.Linq.Queryable" />
+  <ItemGroup Condition="'$(Configuration)'=='Debug'">
+
+    <ProjectReference Include="..\MassEffectModManagerCore\MassEffectModManagerCore.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)'=='Release'">
+    <None Include="MainWindow.xaml" />
+    <Compile Remove="MainWindow.xaml.cs" />
   </ItemGroup>
 </Project>

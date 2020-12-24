@@ -7,9 +7,10 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
-using ByteSizeLib;
 using CliWrap;
 using CliWrap.EventStream;
+using ME3ExplorerCore.Helpers;
+using ME3ExplorerCore.Packages;
 
 namespace MassEffectModManagerCore.modmanager.helpers
 {
@@ -89,7 +90,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
         /// <param name="applicationStdErr"></param>
         /// <param name="applicationExited"></param>
         /// <param name="cancellationToken"></param>
-        public static void VerifyVanilla(Mod.MEGame game, Action<int> applicationStarted = null,
+        public static void VerifyVanilla(MEGame game, Action<int> applicationStarted = null,
             Action<string, string> ipcCallback = null, Action<string> applicationStdErr = null,
             Action<int> applicationExited = null, CancellationToken cancellationToken = default)
         {
@@ -156,7 +157,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                     case @"CACHE_USAGE":
                         if (DateTime.Now > (lastCacheoutput.AddSeconds(10)))
                         {
-                            Log.Information($@"[AICORE] MEM cache usage: {ByteSize.FromBytes(long.Parse(parm))}");
+                            Log.Information($@"[AICORE] MEM cache usage: {FileSize.FormatSize(long.Parse(parm))}");
                             lastCacheoutput = DateTime.Now;
                         }
                         break;
@@ -249,7 +250,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
         /// <param name="targetGame"></param>
         /// <param name="targetPath"></param>
         /// <returns></returns>
-        public static bool SetGamePath(Mod.MEGame targetGame, string targetPath)
+        public static bool SetGamePath(MEGame targetGame, string targetPath)
         {
             int exitcode = 0;
             string args = $"--set-game-data-path --gameid {targetGame.ToGameNum()} --path \"{targetPath}\""; //do not localize
@@ -267,7 +268,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
         /// <param name="game"></param>
         /// <param name="setting"></param>
         /// <returns></returns>
-        public static bool SetLODs(Mod.MEGame game, LodSetting setting)
+        public static bool SetLODs(MEGame game, LodSetting setting)
         {
             string args = $@"--apply-lods-gfx --gameid {game.ToGameNum()}";
             if (setting.HasFlag(LodSetting.SoftShadows))
@@ -338,7 +339,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
         /// </summary>
         /// <param name="game"></param>
         /// <returns></returns>
-        public static Dictionary<string, string> GetLODs(Mod.MEGame game)
+        public static Dictionary<string, string> GetLODs(MEGame game)
         {
             Dictionary<string, string> lods = new Dictionary<string, string>();
             var args = $@"--print-lods --gameid {game.ToGameNum()} --ipc";
@@ -429,7 +430,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
         }
 
 //#if !WINDOWS
-//        public static bool SetConfigPath(Mod.MEGame game, string itemValue)
+//        public static bool SetConfigPath(MEGame game, string itemValue)
 //        {
 //            int exitcode = 0;
 //            string args = $"--set-game-user-path --gameid {game.ToGameNum()} --path \"{itemValue}\""; //do not localize

@@ -56,28 +56,18 @@ namespace MassEffectModManagerCore.modmanager.objects
         public string PatchDesc { get; set; }
         public string PatchDeveloper { get; set; }
         public int PatchVersion { get; set; }
-        //public string TargetVersion { get; set; }
         public ModJob.JobHeader TargetModule { get; set; }
         public string TargetFile { get; set; }
         public int TargetSize { get; set; }
         public bool IsFinalizer { get; set; }
-        //public string patchurl { get; set; }
         public string FolderName { get; set; }
         public int ME3TweaksID { get; set; }
         public string PatchFilename { get; internal set; }
         public MemoryStream PatchData { get; internal set; }
 
-        //public ICommand ToggleSelectedCommand { get; }
-        public Mixin()
-        {
-            //ToggleSelectedCommand = new GenericCommand(ToggleUISelected);
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        //private void ToggleUISelected()
-        //{
-        //    UISelectedForUse = !UISelectedForUse;
-        //}
+        //Fody uses this property on weaving
+#pragma warning disable 0169
+public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 0169
     }
 }

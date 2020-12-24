@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Shell;
-using MassEffectModManagerCore;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
@@ -35,7 +32,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public ModUpdateInformation(List<OnlineContent.ModUpdateInfo> modsWithUpdates)
         {
-            DataContext = this;
             modsWithUpdates.ForEach(x =>
             {
                 x.ApplyUpdateCommand = new RelayCommand(ApplyUpdateToMod, CanApplyUpdateToMod);
@@ -43,12 +39,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     x.DownloadButtonText = M3L.GetString(M3L.string_requiresBackup);
                 }
-                else
+                else if (x.mod.ModClassicUpdateCode > 0 || x.mod.ModModMakerID > 0)
                 {
                     x.DownloadButtonText = M3L.GetString(M3L.string_downloadUpdate);
                 }
+                else
+                {
+                    x.DownloadButtonText = M3L.GetString(M3L.string_downloadUpdateFromNexusMods);
+                }
             });
-            UpdatableMods.AddRange(modsWithUpdates);
+            UpdatableMods.ReplaceAll(modsWithUpdates);
             LoadCommands();
             InitializeComponent();
         }
@@ -70,14 +70,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             if (obj is OnlineContent.ModMakerModUpdateInfo mui)
             {
-                UpdateModMakerMod(mui);
-
+                UpdateModMakerMod(mui, null);
             }
             else if (obj is OnlineContent.ModUpdateInfo ui)
             {
                 if (ui.updatecode > 0)
                 {
-                    UpdateClassicMod(ui);
+                    UpdateClassicMod(ui, null);
                 }
                 else
                 {
@@ -86,7 +85,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
         }
 
-        private void UpdateModMakerMod(OnlineContent.ModMakerModUpdateInfo mui)
+        private void UpdateModMakerMod(OnlineContent.ModMakerModUpdateInfo mui, Action downloadCompleted)
         {
             //throw new NotImplementedException();
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"ModmakerModUpdaterThread-" + mui.mod.ModName);
@@ -120,7 +119,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         mui.UIStatusString = M3L.GetString(M3L.string_decompressingDelta);
                         // OK
-                        var decompressed = SevenZipHelper.LZMA.DecompressLZMAFile(download.result.ToArray());
+                        var decompressed = StreamingLZMAWrapper.DecompressLZMA(download.result);
                         modDelta = Encoding.UTF8.GetString(decompressed);
                     }
                     else
@@ -160,7 +159,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         Debugger.Break();
                     }
-
                 }
                 void setCurrentTaskString(string str)
                 {
@@ -170,16 +168,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (modDelta != null)
                 {
                     var compiler = new ModMakerCompiler(mui.ModMakerId);
-                    //compiler.SetCurrentMaxCallback = SetCurrentMax;
-                    //compiler.SetCurrentValueCallback = SetCurrentProgressValue;
                     compiler.SetOverallMaxCallback = setOverallMax;
                     compiler.SetOverallValueCallback = setOverallValue;
-                    //compiler.SetCurrentTaskIndeterminateCallback = SetCurrentTaskIndeterminate;
                     compiler.SetCurrentTaskStringCallback = setCurrentTaskString;
-                    //compiler.SetModNameCallback = SetModNameOrDownloadText;
-                    //compiler.SetCompileStarted = CompilationInProgress;
-                    //compiler.SetModNotFoundCallback = ModNotFound;
-                    Mod m = compiler.DownloadAndCompileMod(modDelta);
+                    var m = compiler.DownloadAndCompileMod(modDelta, mui.mod.ModPath);
                     if (m != null)
                     {
                         try
@@ -221,13 +213,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 TaskbarHelper.SetProgressState(TaskbarProgressBarState.NoProgress);
                 OperationInProgress = false;
                 CommandManager.InvalidateRequerySuggested();
+                downloadCompleted?.Invoke();
             };
             TaskbarHelper.SetProgress(0);
             TaskbarHelper.SetProgressState(TaskbarProgressBarState.Normal);
             nbw.RunWorkerAsync();
         }
 
-        private void UpdateClassicMod(OnlineContent.ModUpdateInfo ui)
+        private void UpdateClassicMod(OnlineContent.ModUpdateInfo ui, Action downloadCompleted)
         {
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"ModUpdaterThread-" + ui.mod.ModName);
             nbw.WorkerReportsProgress = true;
@@ -284,6 +277,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 TaskbarHelper.SetProgressState(TaskbarProgressBarState.NoProgress);
                 OperationInProgress = false;
                 CommandManager.InvalidateRequerySuggested();
+                downloadCompleted?.Invoke();
             };
             TaskbarHelper.SetProgress(0);
             TaskbarHelper.SetProgressState(TaskbarProgressBarState.Normal);
@@ -296,7 +290,52 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void LoadCommands()
         {
             CloseCommand = new GenericCommand(CloseDialog, TaskNotRunning);
+            DownloadAllCommand = new GenericCommand(DownloadAll, CanDownloadAll);
         }
+
+        private bool CanDownloadAll() => !OperationInProgress && UpdatableMods.Any(x => x.CanUpdate && (x.mod.ModClassicUpdateCode > 0 || x.mod.ModModMakerID > 0));
+
+        private void DownloadAll()
+        {
+            var updates = UpdatableMods.Where(x => x.CanUpdate && (x.mod.ModClassicUpdateCode > 0 || x.mod.ModModMakerID > 0)).ToList();
+            OperationInProgress = true;
+            CommandManager.InvalidateRequerySuggested();
+
+            Task.Run(() =>
+            {
+                object syncObj = new object();
+
+                void updateDone()
+                {
+                    lock (syncObj)
+                    {
+                        Monitor.Pulse(syncObj);
+                    }
+                }
+
+                foreach (var update in updates)
+                {
+                    if (update is OnlineContent.ModMakerModUpdateInfo mui)
+                    {
+                        UpdateModMakerMod(mui, updateDone);
+                        lock (syncObj)
+                        {
+                            Monitor.Wait(syncObj);
+                        }
+                    }
+                    else if (update.mod.ModClassicUpdateCode > 0)
+                    {
+                        UpdateClassicMod(update, updateDone);
+                        lock (syncObj)
+                        {
+                            Monitor.Wait(syncObj);
+                        }
+                    }
+                }
+            });
+        }
+
+        public GenericCommand DownloadAllCommand { get; set; }
 
         private void CloseDialog()
         {

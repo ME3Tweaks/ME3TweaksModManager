@@ -16,8 +16,10 @@
     <converters:EqualIntVisibilityConverter x:Key="EqualIntVisibilityConverter"/>
     <converters:NullEnabledConverter x:Key="NullEnabledConverter" />
     <converters:BoolEnabledConverter x:Key="BoolToEnabledConverter" />
+    <converters:NotNullToBoolConverter x:Key="NotNullToBoolConverter" />
     <converters:GameToVisibilityConverter x:Key="GameToVisibilityConverter" />
     <helpers:FlightingVisibilityConverter x:Key="FlightingVisibilityConverter"/>
+    <converters:LocalizationConverter x:Key="LocalizationConverter" />
     <DataTemplate x:Key="TargetSelectorTemplate" DataType="{x:Type modmanager:GameTarget}">
         <DockPanel HorizontalAlignment="Stretch">
             <Image DockPanel.Dock="Left" Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16"  Visibility="{Binding Converter={StaticResource GameIconVisibilityConverter}}"/>
@@ -36,6 +38,35 @@
     <Style x:Key="TargetSelectorContainerAccentStyle" TargetType="ComboBoxItem" BasedOn="{StaticResource {x:Static adonisUi:Styles.AccentComboBoxItem}}">
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
         <Setter Property="IsEnabled" Value="{Binding Selectable}" />
+    </Style>
+    <!--Virtualised ItemsControl-->
+    <Style x:Key="ItemsControlVirtualizedStyle" TargetType="ItemsControl">
+        <Setter Property="VirtualizingStackPanel.IsVirtualizing" Value="True"/>
+        <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
+        <Setter Property="ItemsPanel">
+            <Setter.Value>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel />
+                </ItemsPanelTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ItemsControl">
+                    <Border
+                        BorderThickness="{TemplateBinding Border.BorderThickness}"
+                        Padding="{TemplateBinding Control.Padding}"
+                        BorderBrush="{TemplateBinding Border.BorderBrush}"
+                        Background="{TemplateBinding Panel.Background}"
+                        SnapsToDevicePixels="True"
+                    >
+                        <ScrollViewer Padding="{TemplateBinding Control.Padding}" Focusable="False">
+                            <ItemsPresenter SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
+                        </ScrollViewer>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
     <Storyboard x:Key="OpenWebsitePanel" Storyboard.TargetProperty="(FrameworkElement.Height)">
         <DoubleAnimation To="20" Duration="0:0:0.25">

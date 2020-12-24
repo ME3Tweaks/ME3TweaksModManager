@@ -5,15 +5,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Windows;
 using System.Xml.Linq;
-using MassEffectModManagerCore.GameDirectories;
-using MassEffectModManagerCore.modmanager.helpers;
+using ME3ExplorerCore.Helpers;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.objects;
-using MassEffectModManagerCore.modmanager.usercontrols;
+using ME3ExplorerCore.Packages;
 using Microsoft.AppCenter.Analytics;
 using Serilog;
 
@@ -24,7 +20,10 @@ namespace MassEffectModManagerCore.modmanager.asi
     /// </summary>
     public class ASIManager : INotifyPropertyChanged
     {
-        public event PropertyChangedEventHandler PropertyChanged;
+        //Fody uses this property on weaving
+#pragma warning disable 0169
+public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 0169
         public static readonly string CachedASIsFolder = Directory.CreateDirectory(Path.Combine(Utilities.GetAppDataFolder(), @"CachedASIs")).FullName;
 
         public static readonly string ManifestLocation = Path.Combine(CachedASIsFolder, @"manifest.xml");
@@ -130,18 +129,18 @@ namespace MassEffectModManagerCore.modmanager.asi
         /// </summary>
         /// <param name="i"></param>
         /// <returns></returns>
-        private static Mod.MEGame intToGame(int i)
+        private static MEGame intToGame(int i)
         {
             switch (i)
             {
                 case 1:
-                    return Mod.MEGame.ME1;
+                    return MEGame.ME1;
                 case 2:
-                    return Mod.MEGame.ME2;
+                    return MEGame.ME2;
                 case 3:
-                    return Mod.MEGame.ME3;
+                    return MEGame.ME3;
                 default:
-                    return Mod.MEGame.Unknown;
+                    return MEGame.Unknown;
             }
         }
 
@@ -150,18 +149,18 @@ namespace MassEffectModManagerCore.modmanager.asi
         /// </summary>
         /// <param name="asi"></param>
         /// <returns></returns>
-        public static ASIModVersion GetASIVersionByHash(string hash, Mod.MEGame game)
+        public static ASIModVersion GetASIVersionByHash(string hash, MEGame game)
         {
             List<ASIMod> relevantGroups = null;
             switch (game)
             {
-                case Mod.MEGame.ME1:
+                case MEGame.ME1:
                     relevantGroups = MasterME1ASIUpdateGroups;
                     break;
-                case Mod.MEGame.ME2:
+                case MEGame.ME2:
                     relevantGroups = MasterME2ASIUpdateGroups;
                     break;
-                case Mod.MEGame.ME3:
+                case MEGame.ME3:
                     relevantGroups = MasterME3ASIUpdateGroups;
                     break;
                 default:
@@ -213,13 +212,13 @@ namespace MassEffectModManagerCore.modmanager.asi
                 {
                     switch (v.Game)
                     {
-                        case Mod.MEGame.ME1:
+                        case MEGame.ME1:
                             MasterME1ASIUpdateGroups.Add(v);
                             break;
-                        case Mod.MEGame.ME2:
+                        case MEGame.ME2:
                             MasterME2ASIUpdateGroups.Add(v);
                             break;
-                        case Mod.MEGame.ME3:
+                        case MEGame.ME3:
                             MasterME3ASIUpdateGroups.Add(v);
                             break;
                     }
@@ -268,7 +267,7 @@ namespace MassEffectModManagerCore.modmanager.asi
             Log.Information($@"Processing ASI installation request: {asi.Name} v{asi.Version} -> {target.TargetPath}");
             string destinationFilename = $@"{asi.InstalledPrefix}-v{asi.Version}.asi";
             string cachedPath = Path.Combine(CachedASIsFolder, destinationFilename);
-            string destinationDirectory = MEDirectories.ASIPath(target);
+            string destinationDirectory = M3Directories.GetASIPath(target);
             if (!Directory.Exists(destinationDirectory))
             {
                 Log.Information(@"Creating ASI directory in game: " + destinationDirectory);
@@ -437,15 +436,15 @@ namespace MassEffectModManagerCore.modmanager.asi
         /// </summary>
         /// <param name="game"></param>
         /// <returns></returns>
-        public static List<ASIMod> GetASIModsByGame(Mod.MEGame game)
+        public static List<ASIMod> GetASIModsByGame(MEGame game)
         {
             switch (game)
             {
-                case Mod.MEGame.ME1:
+                case MEGame.ME1:
                     return MasterME1ASIUpdateGroups;
-                case Mod.MEGame.ME2:
+                case MEGame.ME2:
                     return MasterME2ASIUpdateGroups;
-                case Mod.MEGame.ME3:
+                case MEGame.ME3:
                     return MasterME3ASIUpdateGroups;
                 default:
                     return null;

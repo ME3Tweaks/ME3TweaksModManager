@@ -165,25 +165,32 @@
                     </ListBox.Resources>
                 </ListBox>
             </DockPanel>
-            <TextBox
-                Grid.Column="2"
-                TextWrapping="Wrap"
-                VerticalScrollBarVisibility="Auto"
-                VerticalContentAlignment="Top"
-                IsReadOnly="True"
-                IsReadOnlyCaretVisible="False"
-                HorizontalContentAlignment="Left">
-                <TextBox.Text>
-                    <PriorityBinding>
-                        <Binding
-                            Path="SelectedMod.DisplayedModDescription"
-                            Mode="OneWay" />
-                        <Binding
-                            Path="NoModSelectedText"
-                            Mode="OneWay" />
-                    </PriorityBinding>
-                </TextBox.Text>
-            </TextBox>
+            <DockPanel
+                Grid.Column="2">
+                <Image
+                       Source="{Binding SelectedMod.BannerBitmap}"  
+                       Visibility="{Binding SelectedMod.BannerBitmap, Converter={StaticResource NullVisibilityConverter}}"
+                       RenderOptions.BitmapScalingMode="HighQuality"
+                       DockPanel.Dock="Top"/>
+                <TextBox
+                    TextWrapping="Wrap"
+                    VerticalScrollBarVisibility="Auto"
+                    VerticalContentAlignment="Top"
+                    IsReadOnly="True"
+                    IsReadOnlyCaretVisible="False"
+                    HorizontalContentAlignment="Left">
+                    <TextBox.Text>
+                        <PriorityBinding>
+                            <Binding
+                                Path="SelectedMod.DisplayedModDescription"
+                                Mode="OneWay" />
+                            <Binding
+                                Path="NoModSelectedText"
+                                Mode="OneWay" />
+                        </PriorityBinding>
+                    </TextBox.Text>
+                </TextBox>
+            </DockPanel>
         </Grid>
     </DockPanel>
 </local:MMBusyPanelBase>

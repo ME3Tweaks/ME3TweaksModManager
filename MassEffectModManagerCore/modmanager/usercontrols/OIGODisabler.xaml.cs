@@ -4,25 +4,17 @@ using System.ComponentModel;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using AuthenticodeExaminer;
-using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
+using ME3ExplorerCore.Helpers;
+using ME3ExplorerCore.Packages;
 using Octokit;
-using Pathoschild.FluentNexus.Models;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -45,7 +37,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public class OIGGame : INotifyPropertyChanged
         {
-            public Mod.MEGame Game { get; private set; }
+            public MEGame Game { get; private set; }
             public string GameIconSource { get; private set; }
             public string GameTitle { get; private set; }
             public string D3D9Status { get; private set; }
@@ -53,22 +45,22 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             public ObservableCollectionExtended<GameTarget> Targets { get; } = new ObservableCollectionExtended<GameTarget>();
             public GameTarget SelectedTarget { get; set; }
             public ICommand ToggleDisablerCommand { get; private set; }
-            public OIGGame(Mod.MEGame game, IEnumerable<GameTarget> targets)
+            public OIGGame(MEGame game, IEnumerable<GameTarget> targets)
             {
                 Game = game;
                 Targets.ReplaceAll(targets);
                 ToggleDisablerCommand = new GenericCommand(ToggleDisabler, CanToggleDisabler);
                 switch (Game)
                 {
-                    case Mod.MEGame.ME1:
+                    case MEGame.ME1:
                         GameTitle = @"Mass Effect";
                         GameIconSource = @"/images/gameicons/ME1_48.ico";
                         break;
-                    case Mod.MEGame.ME2:
+                    case MEGame.ME2:
                         GameTitle = @"Mass Effect 2";
                         GameIconSource = @"/images/gameicons/ME2_48.ico";
                         break;
-                    case Mod.MEGame.ME3:
+                    case MEGame.ME3:
                         GameTitle = @"Mass Effect 3";
                         GameIconSource = @"/images/gameicons/ME3_48.ico";
                         break;
@@ -80,7 +72,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
             }
 
-            public event PropertyChangedEventHandler PropertyChanged;
+            //Fody uses this property on weaving
+#pragma warning disable 0169
+public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 0169
 
             public void OnSelectedTargetChanged()
             {
@@ -91,7 +86,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (SelectedTarget != null)
                 {
-                    var d3d9Path = Path.Combine(MEDirectories.ExecutableDirectory(SelectedTarget), @"d3d9.dll");
+                    var d3d9Path = Path.Combine(M3Directories.GetExecutableDirectory(SelectedTarget), @"d3d9.dll");
                     if (File.Exists(d3d9Path))
                     {
                         // See if it ME3Tweaks disabler or some other tool
@@ -155,7 +150,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     if (!Utilities.IsGameRunning(Game))
                     {
-                        var d3d9Path = Path.Combine(MEDirectories.ExecutableDirectory(SelectedTarget), @"d3d9.dll");
+                        var d3d9Path = Path.Combine(M3Directories.GetExecutableDirectory(SelectedTarget), @"d3d9.dll");
                         if (!File.Exists(d3d9Path))
                         {
                             if (File.Exists(Utilities.GetOriginOverlayDisableFile()))
@@ -261,9 +256,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
-            Games.Add(new OIGGame(Mod.MEGame.ME1, mainwindow.InstallationTargets.Where(x => x.Game == Mod.MEGame.ME1 && !x.IsCustomOption && x.GameSource != null && x.GameSource.Contains(@"Origin"))));
-            Games.Add(new OIGGame(Mod.MEGame.ME2, mainwindow.InstallationTargets.Where(x => x.Game == Mod.MEGame.ME2 && !x.IsCustomOption && x.GameSource != null && x.GameSource.Contains(@"Origin"))));
-            Games.Add(new OIGGame(Mod.MEGame.ME3, mainwindow.InstallationTargets.Where(x => x.Game == Mod.MEGame.ME3 && !x.IsCustomOption && x.GameSource != null && x.GameSource.Contains(@"Origin"))));
+            Games.Add(new OIGGame(MEGame.ME1, mainwindow.InstallationTargets.Where(x => x.Game == MEGame.ME1 && !x.IsCustomOption && x.GameSource != null && x.GameSource.Contains(@"Origin"))));
+            Games.Add(new OIGGame(MEGame.ME2, mainwindow.InstallationTargets.Where(x => x.Game == MEGame.ME2 && !x.IsCustomOption && x.GameSource != null && x.GameSource.Contains(@"Origin"))));
+            Games.Add(new OIGGame(MEGame.ME3, mainwindow.InstallationTargets.Where(x => x.Game == MEGame.ME3 && !x.IsCustomOption && x.GameSource != null && x.GameSource.Contains(@"Origin"))));
         }
     }
 }

@@ -1,20 +1,20 @@
-﻿using ME3Explorer.Packages;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Serilog;
 using System.IO;
+using ME3ExplorerCore.Helpers;
+using ME3ExplorerCore.Packages;
 
 namespace MassEffectModManagerCore.modmanager.helpers
 {
     public static class ThreeWayPackageMerge
     {
-        public static bool AttemptMerge(MEPackage vanillaPackage, MEPackage modifiedVanillaPackage, MEPackage targetPackage)
+        public static bool AttemptMerge(IMEPackage vanillaPackage, IMEPackage modifiedVanillaPackage, IMEPackage targetPackage)
         {
             PackageDelta vanillaToModifiedDelta = PackageDelta.CalculateDelta(vanillaPackage, modifiedVanillaPackage);
             PackageDelta vanillaToTargetDelta = PackageDelta.CalculateDelta(vanillaPackage, targetPackage);
-            string loggingPrefix = targetPackage.FilePath == null ? targetPackage.FileSourceForDebugging : Path.GetFileName(targetPackage.FilePath);
+            string loggingPrefix = File.Exists(targetPackage.FilePath) ? Path.GetFileName(targetPackage.FilePath) : targetPackage.FilePath;
             //Check merge conditions
             var nameConflicts = vanillaToModifiedDelta.NameDeltas.Keys.Intersect(vanillaToTargetDelta.NameDeltas.Keys).ToList();
             var importConflicts = vanillaToModifiedDelta.ImportDeltas.Keys.Intersect(vanillaToTargetDelta.ImportDeltas.Keys).ToList();
@@ -72,7 +72,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 {
                     //add it
                     Log.Information($@"[{loggingPrefix}] Adding name {nameDelta.Value}");
-                    targetPackage.addName(nameDelta.Value);
+                    targetPackage.FindNameOrAdd(nameDelta.Value);
                 }
                 else
                 {
@@ -86,13 +86,13 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 if (exportDelta.Key >= targetPackage.ExportCount)
                 {
                     //add it
-                    Log.Information($@"[{loggingPrefix}] Adding export {exportDelta.Value.GetInstancedFullPath}");
-                    targetPackage.addExport(exportDelta.Value); //not sure if this is possible
+                    Log.Information($@"[{loggingPrefix}] Adding export {exportDelta.Value.InstancedFullPath}");
+                    targetPackage.AddExport(exportDelta.Value); //not sure if this is possible
                 }
                 else
                 {
                     //gonna need this reviewed, not entirely sure this is OK to do
-                    Log.Information($@"[{loggingPrefix}] Updating export {exportDelta.Value.GetInstancedFullPath}");
+                    Log.Information($@"[{loggingPrefix}] Updating export {exportDelta.Value.InstancedFullPath}");
 
                     targetPackage.Exports[exportDelta.Key].Data = exportDelta.Value.Data;
                     targetPackage.Exports[exportDelta.Key].Header = exportDelta.Value.Header;
@@ -104,13 +104,13 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 if (importDelta.Key >= targetPackage.ImportCount)
                 {
                     //add it
-                    Log.Information($@"[{loggingPrefix}] Adding import {importDelta.Value.GetInstancedFullPath}");
+                    Log.Information($@"[{loggingPrefix}] Adding import {importDelta.Value.InstancedFullPath}");
 
-                    targetPackage.addImport(importDelta.Value); //not sure if this is possible
+                    targetPackage.AddImport(importDelta.Value); //not sure if this is possible
                 }
                 else
                 {
-                    Log.Information($@"[{loggingPrefix}] Updating import {importDelta.Value.GetInstancedFullPath}");
+                    Log.Information($@"[{loggingPrefix}] Updating import {importDelta.Value.InstancedFullPath}");
 
                     //gonna need this reviewed, not entirely sure this is OK to do
                     //targetPackage.Imports[importDelta.Key].Data = importDelta.Value.Data;

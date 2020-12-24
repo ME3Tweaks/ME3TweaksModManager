@@ -3,19 +3,15 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.memoryanalyzer;
+using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.modmanager.usercontrols;
 using MassEffectModManagerCore.ui;
+using ME3ExplorerCore.Packages;
 using Microsoft.AppCenter.Analytics;
 
 namespace MassEffectModManagerCore.modmanager.windows
@@ -56,17 +52,17 @@ namespace MassEffectModManagerCore.modmanager.windows
             }
         }
 
-        private void SetGameRadioUI(Mod.MEGame game)
+        private void SetGameRadioUI(MEGame game)
         {
             switch (game)
             {
-                case Mod.MEGame.ME1:
+                case MEGame.ME1:
                     ME1_RadioButton.IsChecked = true;
                     break;
-                case Mod.MEGame.ME2:
+                case MEGame.ME2:
                     ME2_RadioButton.IsChecked = true;
                     break;
-                case Mod.MEGame.ME3:
+                case MEGame.ME3:
                     ME3_RadioButton.IsChecked = true;
                     break;
             }
@@ -238,14 +234,17 @@ namespace MassEffectModManagerCore.modmanager.windows
             Close();
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-        public Mod.MEGame SelectedGame { get; set; }
+        //Fody uses this property on weaving
+#pragma warning disable 0169
+public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 0169
+        public MEGame SelectedGame { get; set; }
         public Mod SelectedInstallGroupMod { get; set; }
         public Mod SelectedAvailableMod { get; set; }
 
         public void OnSelectedGameChanged()
         {
-            if (SelectedGame != Mod.MEGame.Unknown)
+            if (SelectedGame != MEGame.Unknown)
             {
                 VisibleFilteredMods.ReplaceAll(allMods.Where(x => x.Game == SelectedGame));
             }
@@ -257,18 +256,18 @@ namespace MassEffectModManagerCore.modmanager.windows
 
         private void ME1_Clicked(object sender, RoutedEventArgs e)
         {
-            TryChangeGameTo(Mod.MEGame.ME1);
+            TryChangeGameTo(MEGame.ME1);
         }
         private void ME2_Clicked(object sender, RoutedEventArgs e)
         {
-            TryChangeGameTo(Mod.MEGame.ME2);
+            TryChangeGameTo(MEGame.ME2);
         }
         private void ME3_Clicked(object sender, RoutedEventArgs e)
         {
-            TryChangeGameTo(Mod.MEGame.ME3);
+            TryChangeGameTo(MEGame.ME3);
         }
 
-        private void TryChangeGameTo(Mod.MEGame newgame)
+        private void TryChangeGameTo(MEGame newgame)
         {
             if (newgame == SelectedGame) return; //don't care
             if (ModsInGroup.Count > 0 && newgame != SelectedGame)

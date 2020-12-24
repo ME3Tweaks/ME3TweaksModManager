@@ -10,13 +10,13 @@ using System.Windows.Input;
 using Serilog;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.IO;
-using System.Windows.Shell;
-using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager.windows;
 using Microsoft.AppCenter.Analytics;
 using MassEffectModManagerCore.modmanager.localizations;
-using ByteSizeLib;
 using MassEffectModManagerCore.modmanager.me3tweaks;
+using ME3ExplorerCore.GameFilesystem;
+using ME3ExplorerCore.Helpers;
+using ME3ExplorerCore.Packages;
 using Microsoft.AppCenter.Crashes;
 using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Taskbar;
@@ -62,18 +62,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
-            GameBackups.Add(new GameBackup(Mod.MEGame.ME1, targetsList.Where(x => x.Game == Mod.MEGame.ME1), mainwindow));
-            GameBackups.Add(new GameBackup(Mod.MEGame.ME2, targetsList.Where(x => x.Game == Mod.MEGame.ME2), mainwindow));
-            GameBackups.Add(new GameBackup(Mod.MEGame.ME3, targetsList.Where(x => x.Game == Mod.MEGame.ME3), mainwindow));
+            GameBackups.Add(new GameBackup(MEGame.ME1, targetsList.Where(x => x.Game == MEGame.ME1), mainwindow));
+            GameBackups.Add(new GameBackup(MEGame.ME2, targetsList.Where(x => x.Game == MEGame.ME2), mainwindow));
+            GameBackups.Add(new GameBackup(MEGame.ME3, targetsList.Where(x => x.Game == MEGame.ME3), mainwindow));
         }
 
         public class GameBackup : INotifyPropertyChanged
         {
-            private Mod.MEGame Game;
+            private MEGame Game;
             public ObservableCollectionExtended<GameTarget> AvailableBackupSources { get; } = new ObservableCollectionExtended<GameTarget>();
             private MainWindow window;
 
-            public GameBackup(Mod.MEGame game, IEnumerable<GameTarget> availableBackupSources, MainWindow window)
+            public GameBackup(MEGame game, IEnumerable<GameTarget> availableBackupSources, MainWindow window)
             {
                 this.window = window;
                 this.Game = game;
@@ -82,15 +82,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 LoadCommands();
                 switch (Game)
                 {
-                    case Mod.MEGame.ME1:
+                    case MEGame.ME1:
                         GameTitle = @"Mass Effect";
                         GameIconSource = @"/images/gameicons/ME1_48.ico";
                         break;
-                    case Mod.MEGame.ME2:
+                    case MEGame.ME2:
                         GameTitle = @"Mass Effect 2";
                         GameIconSource = @"/images/gameicons/ME2_48.ico";
                         break;
-                    case Mod.MEGame.ME3:
+                    case MEGame.ME3:
                         GameTitle = @"Mass Effect 3";
                         GameIconSource = @"/images/gameicons/ME3_48.ico";
                         break;
@@ -126,12 +126,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
                     switch (Game)
                     {
-                        case Mod.MEGame.ME1:
-                        case Mod.MEGame.ME2:
+                        case MEGame.ME1:
+                        case MEGame.ME2:
                             RegistryHandler.DeleteRegistryKey(Registry.CurrentUser, @"Software\ALOTAddon",
                                 Game + @"VanillaBackupLocation");
                             break;
-                        case Mod.MEGame.ME3:
+                        case MEGame.ME3:
                             RegistryHandler.DeleteRegistryKey(Registry.CurrentUser, @"Software\Mass Effect 3 Mod Manager",
                                 @"VanillaCopyLocation");
                             break;
@@ -252,8 +252,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         if (tpmi != null) return $@"{x} ({tpmi.modname})";
                         return x;
                     }).ToList();
-                    List<string> installedDLC = VanillaDatabaseService.GetInstalledOfficialDLC(targetToBackup);
-                    List<string> allOfficialDLC = MEDirectories.OfficialDLC(targetToBackup.Game);
+                    var installedDLC = VanillaDatabaseService.GetInstalledOfficialDLC(targetToBackup);
+                    var allOfficialDLC = MEDirectories.OfficialDLC(targetToBackup.Game);
 
                     if (installedDLC.Count() < allOfficialDLC.Count())
                     {
@@ -278,7 +278,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     var memTextures = Directory.GetFiles(targetToBackup.TargetPath, @"TexturesMEM*.tfc", SearchOption.AllDirectories);
 
                     if (end) return;
-                    if (isVanilla && isDLCConsistent && !dlcModsInstalled.Any() && !memTextures.Any())
+                    if (isVanilla && isDLCConsistent && !Enumerable.Any(dlcModsInstalled) && !Enumerable.Any(memTextures))
                     {
                         BackupStatus = M3L.GetString(M3L.string_waitingForUserInput);
 
@@ -359,7 +359,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 }
                             }
 
-                            string dlcFolderpath = MEDirectories.DLCPath(targetToBackup) + '\\';
+                            string dlcFolderpath = M3Directories.GetDLCPath(targetToBackup) + '\\';
                             int dlcSubStringLen = dlcFolderpath.Length;
 
                             bool aboutToCopyCallback(string file)
@@ -450,12 +450,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         // Write key
                         switch (Game)
                         {
-                            case Mod.MEGame.ME1:
-                            case Mod.MEGame.ME2:
+                            case MEGame.ME1:
+                            case MEGame.ME2:
                                 Utilities.WriteRegistryKey(App.BACKUP_REGISTRY_KEY, Game + @"VanillaBackupLocation",
                                     backupPath);
                                 break;
-                            case Mod.MEGame.ME3:
+                            case MEGame.ME3:
                                 Utilities.WriteRegistryKey(App.REGISTRY_KEY_ME3CMM, @"VanillaCopyLocation",
                                     backupPath);
                                 break;
@@ -511,7 +511,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 M3L.GetString(M3L.string_inconsistentDLCDetectedUnofficialGame));
                         }
                     }
-                    else if (dlcModsInstalled.Any())
+                    else if (Enumerable.Any(dlcModsInstalled))
                     {
                         Analytics.TrackEvent(@"Created a backup", new Dictionary<string, string>()
                             {
@@ -521,7 +521,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         b.Result = (dlcModsInstalled, M3L.GetString(M3L.string_dlcModsAreInstalled),
                             M3L.GetString(M3L.string_dialogDLCModsWereDetectedCannotBackup));
                     }
-                    else if (memTextures.Any())
+                    else if (Enumerable.Any(memTextures))
                     {
                         Analytics.TrackEvent(@"Created a backup", new Dictionary<string, string>()
                         {
@@ -588,19 +588,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     Utilities.GetDiskFreeSpaceEx(backupPath, out var freeBytes, out var totalBytes,
                         out var totalFreeBytes);
-                    var requiredSpace =
-                        Utilities.GetSizeOfDirectory(targetToBackup.TargetPath) * 1.1; //10% buffer
+                    var requiredSpace = (ulong) (Utilities.GetSizeOfDirectory(targetToBackup.TargetPath) * 1.1); //10% buffer
                     Log.Information(
-                        $@"Backup space check. Backup size: {ByteSize.FromBytes(requiredSpace)}, free space: {ByteSize.FromBytes(freeBytes)}");
+                        $@"Backup space check. Backup size: {FileSize.FormatSize(requiredSpace)}, free space: {FileSize.FormatSize(freeBytes)}");
                     if (freeBytes < requiredSpace)
                     {
                         //Not enough space.
                         Log.Error(
-                            $@"Not enough disk space to create backup at {backupPath}. Required space: {ByteSize.FromBytes(requiredSpace)} Free space: {ByteSize.FromBytes(freeBytes)}");
+                            $@"Not enough disk space to create backup at {backupPath}. Required space: {FileSize.FormatSize(requiredSpace)} Free space: {FileSize.FormatSize(freeBytes)}");
                         M3L.ShowDialog(window,
                             M3L.GetString(M3L.string_dialogInsufficientDiskSpace,
-                                Path.GetPathRoot(backupPath), ByteSize.FromBytes(freeBytes).ToString(),
-                                ByteSize.FromBytes(requiredSpace).ToString()),
+                                Path.GetPathRoot(backupPath), FileSize.FormatSize(freeBytes).ToString(),
+                                FileSize.FormatSize(requiredSpace).ToString()),
                             M3L.GetString(M3L.string_insufficientDiskSpace), MessageBoxButton.OK,
                             MessageBoxImage.Error);
                         return false;
@@ -662,7 +661,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             public string GameIconSource { get; }
             public string GameTitle { get; }
-            public event PropertyChangedEventHandler PropertyChanged;
+            //Fody uses this property on weaving
+#pragma warning disable 0169
+public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 0169
             public GameTarget BackupSourceTarget { get; set; }
             public string BackupLocation { get; set; }
             public string BackupStatus { get; set; }

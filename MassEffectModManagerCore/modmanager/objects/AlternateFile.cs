@@ -4,35 +4,20 @@ using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using MassEffectModManagerCore.GameDirectories;
+using System.Windows.Media.Imaging;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
+using MassEffectModManagerCore.modmanager.objects.mod;
+using MassEffectModManagerCore.modmanager.objects.mod.editor;
+using ME3ExplorerCore.Gammtek.Extensions.Collections.Generic;
+using ME3ExplorerCore.Packages;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.objects
 {
     [DebuggerDisplay(@"AlternateFile | {Condition} {Operation}, ConditionalDLC: {ConditionalDLC}, ModFile: {ModFile}, AltFile: {AltFile}")]
-    public class AlternateFile : AlternateOption
+    public sealed class AlternateFile : AlternateOption
     {
-        private static readonly string[] AllParameters =
-        {
-            @"Condition",
-            @"ConditionalDLC",
-            @"ModOperation",
-            @"FriendlyName",
-            @"ModFile",
-            @"ModAltFile",
-            @"Description",
-            @"CheckedByDefault",
-            @"OptionGroup",
-            @"ApplicableAutoText",
-            @"NotApplicableAutoText",
-            @"MultiListId",
-            @"MultiListRootPath",
-            @"MultiListTargetPath",
-            @"DLCRequirements"
-        };
-
         public enum AltFileOperation
         {
             INVALID_OPERATION,
@@ -58,6 +43,7 @@ namespace MassEffectModManagerCore.modmanager.objects
 
         public override bool IsManual => Condition == AltFileCondition.COND_MANUAL;
         public override bool IsAlways => Condition == AltFileCondition.COND_ALWAYS;
+
         public override bool UIRequired => !IsManual && IsSelected && !IsAlways;
         public override bool UINotApplicable => !IsManual && !IsSelected && !IsAlways;
         public List<string> ConditionalDLC = new List<string>();
@@ -97,21 +83,27 @@ namespace MassEffectModManagerCore.modmanager.objects
         //public const string CONDITION_MANUAL = "COND_MANUAL"; //user must choose alt
         //public const string CONDITION_DLC_PRESENT = "COND_DLC_PRESENT"; //automatically choose alt if DLC listed is present
         //public const string CONDITION_DLC_NOT_PRESENT = "COND_DLC_NOT_PRESENT"; //automatically choose if DLC is not present
-        public bool ValidAlternate;
-        public string LoadFailedReason;
-        public string ApplicableAutoText { get; }
-        public string NotApplicableAutoText { get; }
+
         public override bool UIIsSelectable
         {
             get => (!IsAlways && !UIRequired && !UINotApplicable) || IsManual;
             set { } //you can't set these for altfiles
         }
 
+        /// <summary>
+        /// ONLY FOR USE IN MODDESC.INI EDITOR
+        /// Creates a new, blank Alternate DLC object
+        /// </summary>
+        /// <param name="alternateName"></param>
+        public AlternateFile(string alternateName)
+        {
+            FriendlyName = alternateName;
+            BuildParameterMap(null);
+        }
 
-        public AlternateFile(string alternateFileText, ModJob associatedJob, Mod modForValidating)
+        public AlternateFile(string alternateFileText, ModJob associatedJob, mod.Mod modForValidating)
         {
             var properties = StringStructParser.GetCommaSplitValues(alternateFileText);
-            buildParameterMap(properties);
             if (properties.TryGetValue(@"FriendlyName", out string friendlyName))
             {
                 FriendlyName = friendlyName;
@@ -185,7 +177,6 @@ namespace MassEffectModManagerCore.modmanager.objects
 
             if (Operation != AltFileOperation.OP_NOTHING)
             {
-                int multilistid = -1;
                 if (Operation == AltFileOperation.OP_APPLY_MULTILISTFILES)
                 {
                     if (associatedJob.Header == ModJob.JobHeader.CUSTOMDLC)
@@ -220,10 +211,11 @@ namespace MassEffectModManagerCore.modmanager.objects
                         return;
                     }
 
-                    if (properties.TryGetValue(@"MultiListId", out string multilistidstr) && int.TryParse(multilistidstr, out multilistid))
+                    if (properties.TryGetValue(@"MultiListId", out string multilistidstr) && int.TryParse(multilistidstr, out var multilistid))
                     {
                         if (associatedJob.MultiLists.TryGetValue(multilistid, out var ml))
                         {
+                            MultiListId = multilistid;
                             MultiListSourceFiles = ml;
                         }
                         else
@@ -231,7 +223,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                             Log.Error($@"Alternate File ({FriendlyName}) Multilist ID does not exist as part of the task: multilist" + multilistid);
                             ValidAlternate = false;
                             var id = @"multilist" + multilistid;
-                            LoadFailedReason = M3L.GetString(M3L.string_interp_altfile_multilistMissingFileInMultiList, FriendlyName) + $@" multilist{multilistid}";
+                            LoadFailedReason = M3L.GetString(M3L.string_interp_altfile_multilistMissingFileInMultiList, FriendlyName, associatedJob.Header) + $@" multilist{multilistid}";
                             return;
                         }
                     }
@@ -270,18 +262,18 @@ namespace MassEffectModManagerCore.modmanager.objects
                         MultiListTargetPath = targetpath.TrimStart('\\', '/').Replace('/', '\\');
                     }
 
-                    if (properties.TryGetValue(@"MultiListId", out string multilistidstr) && int.TryParse(multilistidstr, out multilistid))
+                    if (properties.TryGetValue(@"MultiListId", out string multilistidstr) && int.TryParse(multilistidstr, out var multilistid))
                     {
                         if (associatedJob.MultiLists.TryGetValue(multilistid, out var ml))
                         {
+                            MultiListId = multilistid;
                             MultiListSourceFiles = ml;
                         }
                         else
                         {
                             Log.Error($@"Alternate File ({FriendlyName}) Multilist ID does not exist as part of the task: multilist" + multilistid);
                             ValidAlternate = false;
-                            var id = @"multilist" + multilistid;
-                            LoadFailedReason = M3L.GetString(M3L.string_interp_altfile_multilistMissingFileInMultiList, FriendlyName) + $@" multilist{multilistid}";
+                            LoadFailedReason = M3L.GetString(M3L.string_interp_altfile_multilistMissingFileInMultiList, FriendlyName, associatedJob.Header) + $@" multilist{multilistid}";
                             return;
                         }
                     }
@@ -388,9 +380,12 @@ namespace MassEffectModManagerCore.modmanager.objects
                 }
             }
 
-            ApplicableAutoText = properties.TryGetValue(@"ApplicableAutoText", out string applicableText) ? applicableText : M3L.GetString(M3L.string_autoApplied);
+            if (!ReadImageAssetOptions(modForValidating, properties))
+            {
+                return; // Failed in super call
+            }
 
-            NotApplicableAutoText = properties.TryGetValue(@"NotApplicableAutoText", out string notApplicableText) ? notApplicableText : M3L.GetString(M3L.string_notApplicable);
+            ReadAutoApplicableText(properties);
 
             if (modForValidating.ModDescTargetVersion >= 6.0)
             {
@@ -407,24 +402,9 @@ namespace MassEffectModManagerCore.modmanager.objects
             ValidAlternate = true;
         }
 
-        /// <summary>
-        /// Builds the editable parameter map for use in moddesc.ini editor
-        /// </summary>
-        /// <param name="properties"></param>
-        private void buildParameterMap(Dictionary<string, string> properties)
-        {
-            var parms = properties.Select(x => new AlternateOption.Parameter() { Key = x.Key, Value = x.Value }).ToList();
-            foreach (var v in AllParameters)
-            {
-                if (!parms.Any(x => x.Key == v))
-                {
-                    parms.Add(new Parameter(v, ""));
-                }
-            }
-            ParameterMap.ReplaceAll(parms.OrderBy(x => x.Key));
-        }
 
-        public void SetupInitialSelection(GameTarget target)
+
+        public void SetupInitialSelection(GameTarget target, Mod mod)
         {
             IsSelected = CheckedByDefault; //Reset
             if (IsAlways)
@@ -437,7 +417,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 IsSelected = CheckedByDefault;
                 return;
             }
-            var installedDLC = MEDirectories.GetInstalledDLC(target);
+            var installedDLC = M3Directories.GetInstalledDLC(target);
             switch (Condition)
             {
                 case AltFileCondition.COND_DLC_NOT_PRESENT:
@@ -454,6 +434,34 @@ namespace MassEffectModManagerCore.modmanager.objects
                     //    IsSelected = ConditionalDLC.All(i => installedDLC.Contains(i, StringComparer.CurrentCultureIgnoreCase));
                     //    break;
             }
+        }
+
+        /// <summary>
+        /// List of all keys in the altdlc struct that are publicly parsable
+        /// </summary>
+        public override void BuildParameterMap(Mod mod)
+        {
+            var parameterDictionary = new Dictionary<string, object>()
+            {
+                {@"Condition", Condition},
+                {@"ConditionalDLC", ConditionalDLC},
+                {@"ModOperation", Operation},
+                {@"AltFile", AltFile},
+                {@"ModFile", ModFile},
+                {@"FriendlyName", FriendlyName},
+                {@"Description", Description},
+                {@"CheckedByDefault", CheckedByDefault ? @"True" : null}, //don't put checkedbydefault in if it is not set to true.
+                {@"OptionGroup", GroupName},
+                {@"ApplicableAutoText", ApplicableAutoTextRaw},
+                {@"NotApplicableAutoText", NotApplicableAutoTextRaw},
+                {@"MultiListId", MultiListId > 0 ? MultiListId.ToString() : null},
+                {@"MultiListRootPath", MultiListRootPath},
+                {@"MultiListTargetPath", MultiListTargetPath},
+                {@"ImageAssetName", ImageAssetName},
+                {@"ImageHeight", ImageHeight > 0 ? ImageHeight.ToString() : null}
+            };
+
+            ParameterMap.ReplaceAll(MDParameter.MapIntoParameterMap(parameterDictionary));
         }
     }
 }

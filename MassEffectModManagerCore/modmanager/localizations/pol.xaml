@@ -770,7 +770,7 @@
 	<system:String x:Key="string_selectAModOnTheLeftToViewItsDescription">Zaznacz mod z lewej strony aby wyswietlić jego opis</system:String>
 	<system:String x:Key="string_selectModsToImportIntoModManagerLibrary">Wybierz mody, które chcesz zaimportować do biblioteki Mod Managera</system:String>
 	<system:String x:Key="string_noCompatibleModsFoundInArchive">Nie znaleziono kompatybilnych modów w archiwum</system:String>
-	<system:String x:Key="string_executableModsMustBeValidatedByME3Tweaks" xml:space="preserve">Mody oparte o instalacje wykonywalne (.exe) muszą być walidowane przez ME3Tweaks przed ich zaimportowaniem do Mod Managera. Zapobiega to psuciu modów spoza Managera.\n\nTen plik .exe nie został zwalidowany. Sprawdź czy dostępna jest wersja kompatybilna z ME3Tweak Mod Manager lub zapytaj twórcę czy mógłby taką wersję stworzyć.</system:String>
+	<system:String x:Key="string_executableModsMustBeValidatedByME3Tweaks" xml:space="preserve">Mody oparte o instalacje wykonywalne (.exe) muszą być walidowane przez ME3Tweaks przed ich zaimportowaniem do Mod Managera. Zapobiega to psuciu modów spoza Managera.\n\nTen plik .exe nie został zwalidowany. Sprawdź czy dostępna jest wersja kompatybilna z ME3Tweaks Mod Manager lub zapytaj twórcę czy mógłby taką wersję stworzyć.</system:String>
 	<system:String x:Key="string_noCompatibleModsFoundInArchiveExtended">Nie znaleziono kompatybilnych modów w archiwum. Jeśli to mod tekstur, musisz go zainstalować za pomocą ALOT Installer. Jeżeli to znany mod Mod Managera, prosimy o skontaktowanie się z ME3Tweaks na Discord.</system:String>
 	<system:String x:Key="string_interp_scanningX">Skanowanie {0}</system:String>
 	<!-- 0 = filename -->
@@ -1294,7 +1294,7 @@
 	<system:String x:Key="string_generatingMod">Generowanie moda</system:String>
 	<system:String x:Key="string_interp_valueMustBeBetween0AndX">Wartość musi być pomiędzy 0 a {0}</system:String>
 	<!-- 0 = number -->
-	<system:String x:Key="string_dialog_devModeAdvert">Tryb developerski dla ME3Tweak Mod Manager jest obecnie wyłączony. Włącz go aby uzyskać dostęp do narzędzi developerskich w menu, takich jak Przełącznik Oficjalnych DLC, funkcji Wdrażania do 7z, Custom DLC Conflict Detector, Backup File Fetcher i nie tylko. \n\nWłączyć tryb developerski?</system:String>
+	<system:String x:Key="string_dialog_devModeAdvert">Tryb developerski dla ME3Tweaks Mod Manager jest obecnie wyłączony. Włącz go aby uzyskać dostęp do narzędzi developerskich w menu, takich jak Przełącznik Oficjalnych DLC, funkcji Wdrażania do 7z, Custom DLC Conflict Detector, Backup File Fetcher i nie tylko. \n\nWłączyć tryb developerski?</system:String>
 	<system:String x:Key="string_enableDeveloperFeaturesQuestion">Włączyć funkcje developerskie?</system:String>
 
 	<!-- List Dialog -->
@@ -1444,7 +1444,7 @@
 	<system:String x:Key="string_restoringDLC">Przywracanie DLC</system:String>
 	<system:String x:Key="string_uninstallingALOT">Usuwanie ALOT</system:String>
 	<system:String x:Key="string_modding">Modowanie</system:String>
-	<system:String x:Key="string_mE3TweaksModMaker">ME3Tweak ModMaker</system:String>
+	<system:String x:Key="string_mE3TweaksModMaker">ME3Tweaks ModMaker</system:String>
 	<!-- This is a proper noun. Do not change this string (simply copy it to your localization to ensure it is not blank) -->
 	<system:String x:Key="string_mixins">Mixins</system:String>
 	<system:String x:Key="string_mergingMods">Łączenie modów</system:String>
@@ -1498,7 +1498,7 @@
 	<system:String x:Key="string_settingsSaved">Ustawienia zapisane</system:String>
 	<system:String x:Key="string_errorValidatingSettings">Błąd przy walidacji ustawień</system:String>
 	<system:String x:Key="string_modMissingUpdatesDescriptor">Mod musi mieć ustawiony deksryptor serverfolder, dostępne w nagłówku UPDATES</system:String>
-	<system:String x:Key="string_enterYourME3TweaksUpdaterServiceInformation">Wprowadź swoje informacje ME3Tweak Updater Service</system:String>
+	<system:String x:Key="string_enterYourME3TweaksUpdaterServiceInformation">Wprowadź swoje informacje ME3Tweaks Updater Service</system:String>
 	<system:String x:Key="string_pressSaveToValidateSettings">Naciśnij zapisz aby sprawdzić ustawienia</system:String>
 	<system:String x:Key="string_authenticatingToME3Tweaks">Autoryzacja do ME3Tweaks</system:String>
 	<system:String x:Key="string_enterUpdaterServiceSettings">Wprowadź ustawienia Updater Service</system:String>

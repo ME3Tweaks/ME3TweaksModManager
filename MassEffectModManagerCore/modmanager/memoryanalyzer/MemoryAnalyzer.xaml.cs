@@ -1,5 +1,4 @@
-﻿using ByteSizeLib;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -11,8 +10,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.ui;
-using ME3Explorer;
-using PropertyChanged;
+using ME3ExplorerCore.Helpers;
 
 namespace MassEffectModManagerCore.modmanager.memoryanalyzer
 {
@@ -46,7 +44,10 @@ namespace MassEffectModManagerCore.modmanager.memoryanalyzer
 
         readonly DispatcherTimer dispatcherTimer;
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        //Fody uses this property on weaving
+#pragma warning disable 0169
+public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 0169
 
         public MemoryAnalyzer()
         {
@@ -111,14 +112,14 @@ namespace MassEffectModManagerCore.modmanager.memoryanalyzer
             TrackedMemoryObjects.RemoveAll(x => !x.IsAlive() && x.RemainingLifetimeAfterGC < 0);
             InstancedTrackedMemoryObjects.ReplaceAll(TrackedMemoryObjects);
             LastRefreshText = "Last refreshed: " + DateTime.Now;
-            CurrentMemoryUsageText = "Current process allocation: " + ByteSize.FromBytes(System.Diagnostics.Process.GetCurrentProcess().PrivateMemorySize64);
+            CurrentMemoryUsageText = "Current process allocation: " + FileSize.FormatSize(System.Diagnostics.Process.GetCurrentProcess().PrivateMemorySize64);
 
-            LargeInUseStr = ByteSize.FromBytes(MixinHandler.MixinMemoryStreamManager.LargePoolInUseSize).MebiBytes.ToString();
-            LargeFreeStr = ByteSize.FromBytes(MixinHandler.MixinMemoryStreamManager.LargePoolFreeSize).MebiBytes.ToString();
-            SmallInUseStr = ByteSize.FromBytes(MixinHandler.MixinMemoryStreamManager.SmallPoolInUseSize).MebiBytes.ToString();
-            SmallFreeStr = ByteSize.FromBytes(MixinHandler.MixinMemoryStreamManager.SmallPoolFreeSize).MebiBytes.ToString();
-            MaxBufferSize = ByteSize.FromBytes(MixinHandler.MixinMemoryStreamManager.MaximumBufferSize).MebiBytes.ToString();
-            MemoryBlockSize = ByteSize.FromBytes(MixinHandler.MixinMemoryStreamManager.BlockSize).MebiBytes.ToString();
+            LargeInUseStr = FileSize.FormatSize(MixinHandler.MixinMemoryStreamManager.LargePoolInUseSize);
+            LargeFreeStr = FileSize.FormatSize(MixinHandler.MixinMemoryStreamManager.LargePoolFreeSize);
+            SmallInUseStr = FileSize.FormatSize(MixinHandler.MixinMemoryStreamManager.SmallPoolInUseSize);
+            SmallFreeStr = FileSize.FormatSize(MixinHandler.MixinMemoryStreamManager.SmallPoolFreeSize);
+            MaxBufferSize = FileSize.FormatSize(MixinHandler.MixinMemoryStreamManager.MaximumBufferSize);
+            MemoryBlockSize = FileSize.FormatSize(MixinHandler.MixinMemoryStreamManager.BlockSize);
             //foreach (var item in InstancedTrackedMemoryObjects)
             //{
             //    item.RefreshStatus();
@@ -153,7 +154,10 @@ namespace MassEffectModManagerCore.modmanager.memoryanalyzer
             }
             public int RemainingLifetimeAfterGC = 10;
 
-            public event PropertyChangedEventHandler PropertyChanged;
+            //Fody uses this property on weaving
+#pragma warning disable 0169
+public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 0169
 
             public string ReferenceName { get; set; }
 

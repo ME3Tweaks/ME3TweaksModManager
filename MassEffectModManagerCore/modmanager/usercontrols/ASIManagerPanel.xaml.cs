@@ -11,6 +11,7 @@ using System.Windows.Input;
 using MassEffectModManagerCore.modmanager.asi;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
+using ME3ExplorerCore.Packages;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -145,11 +146,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private bool ManifestASIIsSelected() => SelectedASIObject is ASIMod || SelectedASIObject is KnownInstalledASIMod;
 
-        private void RefreshASIStates(Mod.MEGame gameToRefresh = Mod.MEGame.Unknown)
+        private void RefreshASIStates(MEGame gameToRefresh = MEGame.Unknown)
         {
             foreach (var game in Games)
             {
-                if (gameToRefresh == Mod.MEGame.Unknown || gameToRefresh == game.Game)
+                if (gameToRefresh == MEGame.Unknown || gameToRefresh == game.Game)
                     game.RefreshASIStates();
             }
         }
@@ -245,7 +246,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public override void OnPanelVisible()
         {
             //This has to be done here as mainwindow will not be available until this is called
-            Mod.MEGame[] gameEnum = new[] { Mod.MEGame.ME1, Mod.MEGame.ME2, Mod.MEGame.ME3 };
+            MEGame[] gameEnum = new[] { MEGame.ME1, MEGame.ME2, MEGame.ME3 };
             int index = 0;
             foreach (var game in gameEnum)
             {

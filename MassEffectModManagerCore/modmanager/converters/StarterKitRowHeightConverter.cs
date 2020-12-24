@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 using MassEffectModManagerCore.modmanager.windows;
+using ME3ExplorerCore.Packages;
 
 namespace MassEffectModManagerCore.modmanager.converters
 {
@@ -22,9 +23,9 @@ namespace MassEffectModManagerCore.modmanager.converters
                 inverted = splitparms.Any(x => x == "Not");
                 param = splitparms.Last();
             }
-            if (Enum.TryParse(param, out Mod.MEGame parameterGame))
+            if (Enum.TryParse(param, out MEGame parameterGame))
             {
-                if (inverted ^ parameterGame == (Mod.MEGame)value) return StarterKitGeneratorWindow.VisibleRowHeight;
+                if (inverted ^ parameterGame == (MEGame)value) return StarterKitGeneratorWindow.VisibleRowHeight;
             }
 
             return new GridLength(0);

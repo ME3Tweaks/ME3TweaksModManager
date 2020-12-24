@@ -1,19 +1,15 @@
-﻿using MassEffectModManagerCore.modmanager.helpers;
-using MassEffectModManagerCore.modmanager.objects;
+﻿using MassEffectModManagerCore.modmanager.objects;
 using Serilog;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
-using System.Xml.XPath;
 using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using Microsoft.IO;
-using ByteSizeLib;
 using System.Runtime;
 using MassEffectModManagerCore.modmanager.localizations;
 using Microsoft.AppCenter.Crashes;
@@ -52,7 +48,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         /// Gets the list of all ME3Tweaks Mixins
         /// </summary>
         public static List<Mixin> ME3TweaksPackageMixins = new List<Mixin>();
-        
+
         /// <summary>
         /// Gets the list of User Mixins
         /// </summary>
@@ -239,11 +235,11 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         }
 
         [Localizable(true)]
-        public static MemoryStream ApplyMixins(MemoryStream decompressedStream, List<Mixin> mixins, Action notifyApplicationDone = null, Action<string> failedApplicationCallback = null)
+        public static MemoryStream ApplyMixins(MemoryStream decompressedStream, List<Mixin> mixins, bool logMixinApplication = true, Action notifyApplicationDone = null, Action<string> failedApplicationCallback = null)
         {
             foreach (var mixin in mixins)
             {
-                Log.Information($@"Applying mixin: {mixin.PatchName} on {mixin.TargetFile}");
+                CLog.Information($@"Applying mixin: {mixin.PatchName} on {mixin.TargetFile}", logMixinApplication);
                 if (decompressedStream.Length == mixin.TargetSize)
                 {
                     decompressedStream.Position = 0;
@@ -256,7 +252,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     }
                     else
                     {
-                        Log.Information(@"Applied mixin: " + mixin.PatchName);
+                        CLog.Information(@"Applied mixin: " + mixin.PatchName, logMixinApplication);
                         decompressedStream.Dispose();
                         decompressedStream = outStream; //pass through
                     }

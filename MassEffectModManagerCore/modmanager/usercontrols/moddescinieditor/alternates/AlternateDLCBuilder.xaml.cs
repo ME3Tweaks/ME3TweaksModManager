@@ -1,18 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Text;
+﻿using System.ComponentModel;
+using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using IniParser.Model;
+using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.objects;
+using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.ui;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alternates
@@ -20,29 +12,84 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alte
     /// <summary>
     /// Interaction logic for AlternateDLCBuilder.xaml
     /// </summary>
-    public partial class AlternateDLCBuilder : UserControl, INotifyPropertyChanged
+    public partial class AlternateDLCBuilder : ModdescEditorControlBase, INotifyPropertyChanged
     {
-        public Mod EditingMod { get; set; }
+        public ModJob CustomDLCJob { get; set; }
+        /// <summary>
+        /// List of editing Alternate DLCs. These have to be extracted out of the job as they are not bindable in job
+        /// </summary>
+        public ObservableCollectionExtended<AlternateDLC> Alternates { get; } = new ObservableCollectionExtended<AlternateDLC>();
 
-        public void OnEditingModChanged()
+        public override void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
         {
-            if (EditingMod != null)
+            if (!HasLoaded)
             {
-                CustomDLCJob = EditingMod.GetJob(ModJob.JobHeader.CUSTOMDLC);
-            }
-            else
-            {
-                CustomDLCJob = null;
+                CustomDLCJob = EditingMod?.GetJob(ModJob.JobHeader.CUSTOMDLC);
+                if (CustomDLCJob != null)
+                {
+                    Alternates.ReplaceAll(CustomDLCJob.AlternateDLCs);
+                    foreach (var a in Alternates)
+                    {
+                        a.BuildParameterMap(EditingMod);
+                    }
+                }
+                else
+                {
+                    Alternates.ClearEx();
+                }
+
+                HasLoaded = true;
             }
         }
-        public ModJob CustomDLCJob { get; set; }
+
+        public override void Serialize(IniData ini)
+        {
+            if (CustomDLCJob != null && Alternates.Any())
+            {
+                string outStr = "(";
+                bool isFirst = true;
+                foreach (var adlc in Alternates)
+                {
+                    if (isFirst)
+                    {
+                        isFirst = false;
+                    }
+                    else
+                    {
+                        outStr += @",";
+                    }
+                    outStr += StringStructParser.BuildCommaSeparatedSplitValueList(adlc.ParameterMap.Where(x => !string.IsNullOrWhiteSpace(x.Value)).ToDictionary(x => x.Key, x => x.Value));
+                }
+
+                outStr += ")";
+                ini[@"CUSTOMDLC"][@"altdlc"] = outStr;
+            }
+        }
+
         public AlternateDLCBuilder()
         {
-            DataContext = this;
+            LoadCommands();
             InitializeComponent();
         }
 
-        //public ObservableCollectionExtended<AlternateDLC> AlternateDLCs { get; } = new ObservableCollectionExtended<AlternateDLC>();
-        public event PropertyChangedEventHandler PropertyChanged;
+        private void LoadCommands()
+        {
+            AddAlternateDLCCommand = new GenericCommand(AddAlternateDLC, CanAddAlternateDLC);
+        }
+
+        private bool CanAddAlternateDLC() => EditingMod != null && EditingMod.GetJob(ModJob.JobHeader.CUSTOMDLC) != null;
+
+        private void AddAlternateDLC()
+        {
+            Alternates.Add(new AlternateDLC($@"Alternate DLC {Alternates.Count + 1}")); // As this is noun in mod manager terminology it shouldn't be localized, i think
+        }
+
+
+        public GenericCommand AddAlternateDLCCommand { get; set; }
+
+        //Fody uses this property on weaving
+#pragma warning disable 0169
+public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 0169
     }
 }

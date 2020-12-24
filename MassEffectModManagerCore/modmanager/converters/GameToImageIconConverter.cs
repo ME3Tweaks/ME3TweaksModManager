@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Globalization;
 using System.Windows.Data;
+using ME3ExplorerCore.Packages;
 
 namespace MassEffectModManagerCore.modmanager.converters
 {
@@ -10,8 +11,8 @@ namespace MassEffectModManagerCore.modmanager.converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var game = (Mod.MEGame) value;
-            if (game == Mod.MEGame.Unknown) { return null; }
+            var game = (MEGame) value;
+            if (game == MEGame.Unknown) { return null; }
             return "/images/gameicons/" + game.ToString() + "_48.ico";
         }
 

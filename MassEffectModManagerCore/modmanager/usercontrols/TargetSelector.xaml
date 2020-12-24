@@ -1,0 +1,49 @@
+﻿<UserControl x:Class="MassEffectModManagerCore.modmanager.usercontrols.TargetSelector"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols"
+             xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+             xmlns:modmanager="clr-namespace:MassEffectModManagerCore.modmanager.objects"
+             mc:Ignorable="d" 
+             x:Name="_TargetSelector"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <local:ExtendedTextureInfoVisibilityConverter x:Key="ExtendedTextureInfoVisibilityConverter"/>
+        <DataTemplate x:Key="localTargetSelectorTemplate" DataType="{x:Type modmanager:GameTarget}">
+            <DockPanel HorizontalAlignment="Stretch">
+                <Image DockPanel.Dock="Left" Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16"  Visibility="{Binding Converter={StaticResource GameIconVisibilityConverter}}"/>
+                <Image DockPanel.Dock="Left" Source="{Binding TargetBootIcon, TargetNullValue={x:Null}}" Width="12" Height="16" RenderOptions.BitmapScalingMode="HighQuality" Margin="3,0,0,0" Visibility="{Binding Converter={StaticResource BootTargetSourceVisibilityConverter}}"/>
+                <DockPanel ToolTip="{DynamicResource string_thisTargetHasBeenTextureModded}" DockPanel.Dock="Right" Margin="3,0,0,0">
+                    <!-- This is a real hack job -->
+                    <TextBlock Text="{Binding ALOTVersion}" DockPanel.Dock="Right" 
+                               Visibility="{Binding 
+                        Converter={StaticResource ExtendedTextureInfoVisibilityConverter}, 
+                        ConverterParameter={x:Reference _TargetSelector}, 
+                        FallbackValue=Visible}"/>
+                    <Image Source="/modmanager/toolicons/alot_32.png" Width="16" Height="16" RenderOptions.BitmapScalingMode="HighQuality" HorizontalAlignment="Right" Margin="3,0,0,0" VerticalAlignment="Bottom" Visibility="{Binding TextureModded, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}"/>
+                </DockPanel>
+                <TextBlock Text="{Binding TargetPath}" Margin="3,0,0,0" HorizontalAlignment="Stretch"/>
+                
+            </DockPanel>
+        </DataTemplate>
+        <!-- These are referenced in TargetSelector.xaml.cs by string. Do not modify them -->
+        <Style x:Key="TargetSelectorContainerStyle" TargetType="ComboBoxItem" BasedOn="{StaticResource {x:Type ComboBoxItem}}">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="IsEnabled" Value="{Binding Selectable}" />
+        </Style>
+        <Style x:Key="TargetSelectorContainerAccentStyle" TargetType="ComboBoxItem" BasedOn="{StaticResource {x:Static adonisUi:Styles.AccentComboBoxItem}}">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="IsEnabled" Value="{Binding Selectable}" />
+        </Style>
+    </UserControl.Resources>
+    <ComboBox
+        ItemsSource="{Binding AvailableTargets, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:TargetSelector}}}"
+        SelectedItem="{Binding SelectedGameTarget, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:TargetSelector}}}"
+        HorizontalContentAlignment="Stretch"
+        IsEditable="False"
+        Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
+        ItemTemplate="{StaticResource localTargetSelectorTemplate}"
+        ItemContainerStyle="{Binding ContainerStyle, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:TargetSelector}}}" />
+</UserControl>

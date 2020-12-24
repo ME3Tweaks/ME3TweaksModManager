@@ -1,12 +1,12 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<local:MMBusyPanelBase
+﻿<local:MMBusyPanelBase
     x:Class="MassEffectModManagerCore.modmanager.usercontrols.ModUpdateInformation" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:me3Tweaks="clr-namespace:MassEffectModManagerCore.modmanager.me3tweaks"
     mc:Ignorable="d"
     d:DesignHeight="500"
     d:DesignWidth="500"
     MaxHeight="500"
     MinWidth="420"
-    MaxWidth="550">
+    MaxWidth="550"
+    DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <UserControl.Resources>
         <converters:BoolToVisibilityConverter
             x:Key="BoolToVisibilityConverter" />
@@ -22,13 +22,24 @@
             DockPanel.Dock="Top"
             Text="{DynamicResource string_modManagerDetectedModUpdates}"
             TextAlignment="Center" />
-        <Button
-            DockPanel.Dock="Bottom"
-            Content="{DynamicResource string_close}"
-            Command="{Binding CloseCommand}"
-            Padding="7,4"
-            HorizontalAlignment="Right"
-            Margin="5,5,0,5" />
+        <DockPanel
+            Dock="Bottom">
+            <Button
+                DockPanel.Dock="Left"
+                Content="{DynamicResource string_downloadAll}"
+                ToolTip="{DynamicResource string_tooltip_downloadAll}"
+                Command="{Binding DownloadAllCommand}"
+                Padding="7,4"
+                HorizontalAlignment="Left"
+                Margin="0,5,0,5" />
+            <Button
+                DockPanel.Dock="Bottom"
+                Content="{DynamicResource string_close}"
+                Command="{Binding CloseCommand}"
+                Padding="14,4"
+                HorizontalAlignment="Right"
+                Margin="5,5,0,5" />
+        </DockPanel>
         <ItemsControl
             ItemsSource="{Binding UpdatableMods}"
             AlternationCount="{Binding RelativeSource={RelativeSource Self}, Path=Items.Count}">
@@ -104,24 +115,33 @@
                             Text="{Binding changelog}"
                             TextWrapping="Wrap" />
                         <Expander
+                            x:Name="ftl_Expander"
                             Header="{Binding FilesToDownloadUIString}"
                             Margin="5,3"
                             IsEnabled="{Binding HasFilesToDownload}">
                             <TreeView
+                                Visibility="{Binding ElementName=ftl_Expander, Path=IsExpanded, Converter={StaticResource BoolToVisibilityConverter}}"
                                 ItemsSource="{Binding applicableUpdates}"
                                 DisplayMemberPath="relativefilepath"
+                                VirtualizingStackPanel.IsVirtualizing="True"
+                                VirtualizingStackPanel.VirtualizationMode="Recycling"
                                 MaxHeight="300"
                                 Background="Transparent"
                                 BorderThickness="0" />
                         </Expander>
                         <Expander
+                            x:Name="ftd_Expander"
                             Header="{Binding FilesToDeleteUIString}"
                             Margin="5,3"
                             IsEnabled="{Binding HasFilesToDelete}">
                             <TreeView
+                                Visibility="{Binding ElementName=ftd_Expander, Path=IsExpanded, Converter={StaticResource BoolToVisibilityConverter}}"
                                 ItemsSource="{Binding filesToDelete}"
+                                VirtualizingStackPanel.IsVirtualizing="True"
+                                VirtualizingStackPanel.VirtualizationMode="Recycling"
                                 Background="Transparent"
-                                BorderThickness="0" />
+                                BorderThickness="0"
+                                MaxHeight="300" />
                         </Expander>
                         <TextBlock
                             Text="{DynamicResource string_poweredByME3TweaksUpdaterService}"

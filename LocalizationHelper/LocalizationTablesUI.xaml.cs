@@ -11,6 +11,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Threading;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using Microsoft.Win32;
@@ -28,15 +29,49 @@ namespace LocalizationHelper
         public Visibility LoadingVisibility { get; set; } = Visibility.Visible;
         public LocalizationTablesUI()
         {
-            this.Title = "ME3Tweaks Mod Manager Localizer " + Assembly.GetExecutingAssembly().GetName().Version.ToString();
-
-            DataContext = this;
+            Title = $"ME3Tweaks Mod Manager Localizer {Assembly.GetExecutingAssembly().GetName().Version}";
             LoadCommands();
             InitializeComponent();
 
             //Load localizations
             LoadLocalizations();
         }
+
+        public void AutoSave(object? sender, EventArgs eventArgs)
+        {
+            try
+            {
+                string lang = null;
+                if (ShowGerman) lang = "deu";
+                if (ShowRussian) lang = "rus";
+                if (ShowPolish) lang = "pol";
+                if (ShowFrench) lang = "fra";
+                if (ShowSpanish) lang = "esn";
+                if (ShowPortuguese) lang = "bra";
+
+                if (lang == null) return; // Do nothing
+                var sb = CreateXamlDocument();
+
+                var locSavePath = Path.Combine(GetAppDataFolder(), $"{lang}.xaml");
+                File.WriteAllText(locSavePath, sb);
+            }
+            catch
+            {
+                // DO NOT CRASH
+            }
+        }
+
+        internal static string GetAppDataFolder(bool createIfMissing = true)
+        {
+            var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "ME3TweaksModManagerLocalizer");
+            if (createIfMissing && !Directory.Exists(folder))
+            {
+                Directory.CreateDirectory(folder);
+            }
+
+            return folder;
+        }
+
 
         public string PleaseWaitString { get; set; } = "Please wait, starting up";
         public bool ShowGerman { get; set; }
@@ -342,12 +377,19 @@ namespace LocalizationHelper
                     if (b.Error == null && b.Result is List<LocalizationCategory> categories)
                     {
                         LoadingVisibility = Visibility.Collapsed;
-                        LocalizationCategories.ReplaceAll(categories);
+                        LocalizationCategories.ReplaceAll(categories.OrderBy(x => x.CategoryName));
+
+                        autosaveTimer = new DispatcherTimer();
+                        autosaveTimer.Tick += AutoSave;
+                        autosaveTimer.Interval = new TimeSpan(0, 1, 0);
+                        autosaveTimer.Start();
                     }
                 };
             bw.RunWorkerAsync();
         }
 
+
+        public DispatcherTimer autosaveTimer;
         private string oldBranch = null;
         private Dictionary<string, string> dynamicHelpLocalizations = new Dictionary<string, string>();
 
@@ -459,8 +501,10 @@ namespace LocalizationHelper
         public ICommand LoadLocalizedHelpMenuCommand { get; set; }
         public ICommand SaveLocalizedHelpMenuCommand { get; set; }
         public ICommand SaveTutorialLocalizationCommand { get; set; }
+        public ICommand OpenAutosaveDirCommand { get; set; }
         private void LoadCommands()
         {
+            OpenAutosaveDirCommand = new GenericCommand(OpenAutosavesLocation);
             SaveLocalizationCommand = new GenericCommand(SaveLocalization, CanSaveLocalization);
             CopyLocalizationCommand = new GenericCommand(CopyLocalization, CanSaveLocalization);
             LoadLocalizationCommand = new GenericCommand(LoadLocalization, CanSaveLocalization);
@@ -468,6 +512,11 @@ namespace LocalizationHelper
             SaveTutorialLocalizationCommand = new GenericCommand(SaveTutorialLocalization, CanSaveLocalization);
             LoadLocalizedHelpMenuCommand = new GenericCommand(LoadLocalizedHelpMenu, CanSaveLocalization);
             SaveLocalizedHelpMenuCommand = new GenericCommand(SaveLocalizedHelpMenu, CanSaveLocalization);
+        }
+
+        private void OpenAutosavesLocation()
+        {
+            Process.Start("explorer.exe", GetAppDataFolder());
         }
 
         private void SaveLocalizedHelpMenu()

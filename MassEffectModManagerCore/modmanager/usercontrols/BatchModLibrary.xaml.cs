@@ -2,21 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.modmanager.objects;
+using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.modmanager.windows;
+using ME3ExplorerCore.Packages;
 using Microsoft.AppCenter.Analytics;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -33,7 +26,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public BatchModLibrary()
         {
             MemoryAnalyzer.AddTrackedMemoryItem(@"Batch Mod Installer Panel", new WeakReference(this));
-            DataContext = this;
             LoadCommands();
             InitializeComponent();
         }
@@ -41,6 +33,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public ICommand CreateNewGroupCommand { get; private set; }
         public ICommand InstallGroupCommand { get; private set; }
         public ICommand EditGroupCommand { get; private set; }
+        public bool CanCompressPackages => SelectedBatchQueue?.Game >= MEGame.ME2;
 
         private void LoadCommands()
         {
@@ -66,7 +59,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void InstallGroup()
         {
-            SelectedBatchQueue.Target = SelectedGameTarget;
             Analytics.TrackEvent(@"Installing Batch Group", new Dictionary<string, string>()
             {
                 {@"Group name", SelectedBatchQueue.QueueName},
@@ -157,7 +149,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     SelectedModInGroup = SelectedBatchQueue.ModsToInstall.First();
                 }
+
+                if (SelectedBatchQueue.Game == MEGame.ME1) SelectedBatchQueue.InstallCompressed = false;
             }
+            TriggerPropertyChangedFor(nameof(CanCompressPackages));
         }
 
         public string ModDescriptionText { get; set; }
@@ -177,25 +172,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
     public class BatchLibraryInstallQueue : INotifyPropertyChanged
     {
-        /// <summary>
-        /// Target for installation. Only used when installation commences.
-        /// </summary>
-        public GameTarget Target;
-
+        public bool InstallCompressed { get; set; }
         public string BackingFilename { get; set; }
         public ObservableCollectionExtended<Mod> ModsToInstall { get; } = new ObservableCollectionExtended<Mod>();
         public ObservableCollectionExtended<string> ModsMissing { get; } = new ObservableCollectionExtended<string>();
-
-        public Mod.MEGame Game { get; private set; }
+        public MEGame Game { get; private set; }
         public string QueueName { get; private set; }
         public string QueueDescription { get; private set; }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public void SaveQueue()
-        {
-
-        }
+        //Fody uses this property on weaving
+#pragma warning disable 0169
+public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 0169
         public static BatchLibraryInstallQueue ParseInstallQueue(string queueFile, List<Mod> allLoadedMods)
         {
             if (!File.Exists(queueFile)) return null;
@@ -206,7 +193,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (Path.GetExtension(queueFile) == @".biq")
             {
                 //New Mod Manager 6 format
-                if (Enum.TryParse<Mod.MEGame>(lines[line], out var game))
+                if (Enum.TryParse<MEGame>(lines[line], out var game))
                 {
                     result.Game = game;
                     line++;
@@ -215,7 +202,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             else
             {
                 //Old Mod Manager 5 format. This code is only used for transition purposes
-                result.Game = Mod.MEGame.ME3;
+                result.Game = MEGame.ME3;
             }
 
             result.QueueName = lines[line];
@@ -241,6 +228,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 line++;
             }
 
+            result.InstallCompressed = result.Game >= MEGame.ME2 && Settings.PreferCompressingPackages;
             return result;
         }
     }

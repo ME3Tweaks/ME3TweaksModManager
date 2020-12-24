@@ -1,22 +1,21 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Shell;
-using ByteSizeLib;
 using Flurl.Http;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
+using ME3ExplorerCore.Compression;
+using ME3ExplorerCore.Helpers;
+using ME3ExplorerCore.Packages;
 using Microsoft.WindowsAPICodePack.Taskbar;
 using Serilog;
-using SevenZip;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -56,7 +55,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             AvailableLogs.AddRange(logfiles.Select(x => new LogItem(x.FullName)));
             SelectedLog = AvailableLogs.FirstOrDefault();
             var targets = mainwindow.InstallationTargets.Where(x => x.Selectable);
-            DiagnosticTargets.Add(new GameTarget(Mod.MEGame.Unknown, M3L.GetString(M3L.string_selectAGameTargetToGenerateDiagnosticsFor), false));
+            DiagnosticTargets.Add(new GameTarget(MEGame.Unknown, M3L.GetString(M3L.string_selectAGameTargetToGenerateDiagnosticsFor), false));
             DiagnosticTargets.AddRange(targets);
             SelectedDiagnosticTarget = DiagnosticTargets.FirstOrDefault();
             //if (LogSelector_ComboBox.Items.Count > 0)
@@ -126,7 +125,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     nbw.ReportProgress(-1, state);
                 }
                 StringBuilder logUploadText = new StringBuilder();
-                if (SelectedDiagnosticTarget != null && SelectedDiagnosticTarget.Game > Mod.MEGame.Unknown)
+                if (SelectedDiagnosticTarget != null && SelectedDiagnosticTarget.Game > MEGame.Unknown)
                 {
                     Debug.WriteLine(@"Selected game target: " + SelectedDiagnosticTarget.TargetPath);
                     logUploadText.Append("[MODE]diagnostics\n"); //do not localize
@@ -146,7 +145,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (logtext != null)
                 {
                     CollectionStatusMessage = M3L.GetString(M3L.string_compressingForUpload);
-                    var lzmalog = SevenZipHelper.LZMA.CompressToLZMAFile(Encoding.UTF8.GetBytes(logtext));
+                    var lzmalog = LZMA.CompressToLZMAFile(Encoding.UTF8.GetBytes(logtext));
                     try
                     {
                         //this doesn't need to technically be async, but library doesn't have non-async method.
@@ -238,7 +237,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public bool TextureCheck { get; set; } = true;
 
-        private bool CanUploadLog() => !UploadingLog && ((SelectedDiagnosticTarget != null && SelectedDiagnosticTarget.Game > Mod.MEGame.Unknown) || (SelectedLog != null && SelectedLog.Selectable));
+        private bool CanUploadLog() => !UploadingLog && ((SelectedDiagnosticTarget != null && SelectedDiagnosticTarget.Game > MEGame.Unknown) || (SelectedLog != null && SelectedLog.Selectable));
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
@@ -271,7 +270,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             public override string ToString()
             {
                 if (!Selectable) return filepath;
-                return Path.GetFileName(filepath) + @" - " + ByteSize.FromBytes(new FileInfo(filepath).Length);
+                return Path.GetFileName(filepath) + @" - " + FileSize.FormatSize(new FileInfo(filepath).Length);
             }
         }
     }

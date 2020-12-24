@@ -13,6 +13,8 @@ using Serilog;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.memoryanalyzer;
+using ME3ExplorerCore.Helpers;
+using ME3ExplorerCore.Packages;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -155,7 +157,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                     }
                     RestoreAllBasegameInProgress = false;
-                    if (SelectedTarget.Game == Mod.MEGame.ME3)
+                    if (SelectedTarget.Game == MEGame.ME3)
                     {
                         AutoTOC.RunTOCOnGameTarget(SelectedTarget);
                     }
@@ -321,7 +323,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                 SelectedTarget.PopulateDLCMods(true, deleteConfirmationCallback, notifyDeleted);
                 SelectedTarget.PopulateExtras();
-
+                SelectedTarget.PopulateTextureInstallHistory();
                 bool restoreBasegamefileConfirmationCallback(string filepath)
                 {
                     if (Utilities.IsGameRunning(SelectedTarget.Game))
@@ -548,32 +550,27 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             PreviousTarget = SelectedTarget;
         }
 
-        private void TargetChanged(GameTarget oldTarget, GameTarget newTarget)
-        {
-
-        }
-
         public class InstalledDLCMod : INotifyPropertyChanged
         {
             private string dlcFolderPath;
 
-            public event PropertyChangedEventHandler PropertyChanged;
-            public string EnableDisableText
-            {
-                get
-                {
-                    return DLCFolderName.StartsWith(@"xDLC") ? M3L.GetString(M3L.string_enable) : M3L.GetString(M3L.string_disable);
-                }
-            }
+            //Fody uses this property on weaving
+#pragma warning disable 0169
+public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 0169
+            public string EnableDisableText => DLCFolderName.StartsWith(@"xDLC") ? M3L.GetString(M3L.string_enable) : M3L.GetString(M3L.string_disable);
             public string EnableDisableTooltip { get; set; }
             public string ModName { get; private set; }
             public string DLCFolderName { get; private set; }
             public string DLCFolderNameString { get; private set; }
             public string InstalledBy { get; private set; }
             public string Version { get; private set; }
-            public string InstallerInstanceGUID { get; private set; }
             public string InstallerInstanceBuild { get; private set; }
-            private Mod.MEGame game;
+
+            public ObservableCollectionExtended<string> IncompatibleDLC { get; } = new ObservableCollectionExtended<string>();
+            public ObservableCollectionExtended<string> ChosenInstallOptions { get; } = new ObservableCollectionExtended<string>();
+
+            private MEGame game;
             private static readonly SolidColorBrush DisabledBrushLightMode = new SolidColorBrush(Color.FromArgb(0xff, 232, 26, 26));
             private static readonly SolidColorBrush DisabledBrushDarkMode = new SolidColorBrush(Color.FromArgb(0xff, 247, 88, 77));
 
@@ -597,24 +594,25 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             public void OnDLCFolderNameChanged()
             {
                 dlcFolderPath = Path.Combine(Directory.GetParent(dlcFolderPath).FullName, DLCFolderName);
-                parseInstalledBy(DLCFolderName.StartsWith('x'), false);
+                parseMetaCmm(DLCFolderName.StartsWith('x'), false);
                 TriggerPropertyChangedFor(nameof(TextColor));
             }
 
-            public InstalledDLCMod(string dlcFolderPath, Mod.MEGame game, Func<InstalledDLCMod, bool> deleteConfirmationCallback, Action notifyDeleted, bool modNamePrefersTPMI)
+            public InstalledDLCMod(string dlcFolderPath, MEGame game, Func<InstalledDLCMod, bool> deleteConfirmationCallback, Action notifyDeleted, bool modNamePrefersTPMI)
             {
                 this.dlcFolderPath = dlcFolderPath;
                 this.game = game;
-                DLCFolderName = DLCFolderNameString = Path.GetFileName(dlcFolderPath);
-                if (App.ThirdPartyIdentificationService[game.ToString()].TryGetValue(DLCFolderName.TrimStart('x'), out var tpmi))
+                var dlcFolderName = DLCFolderNameString = Path.GetFileName(dlcFolderPath);
+                if (App.ThirdPartyIdentificationService[game.ToString()].TryGetValue(dlcFolderName.TrimStart('x'), out var tpmi))
                 {
                     ModName = tpmi.modname;
                 }
                 else
                 {
-                    ModName = DLCFolderName;
+                    ModName = dlcFolderName;
                 }
-                parseInstalledBy(DLCFolderName.StartsWith('x'), modNamePrefersTPMI);
+
+                DLCFolderName = dlcFolderName;
                 this.deleteConfirmationCallback = deleteConfirmationCallback;
                 this.notifyDeleted = notifyDeleted;
                 DeleteCommand = new RelayCommand(DeleteDLCMod, CanDeleteDLCMod);
@@ -622,7 +620,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             }
 
-            private void parseInstalledBy(bool disabled, bool modNamePrefersTPMI)
+            private void parseMetaCmm(bool disabled, bool modNamePrefersTPMI)
             {
                 DLCFolderNameString = DLCFolderName.TrimStart('x'); //this string is not to show M3L.GetString(M3L.string_disabled)
                 var metaFile = Path.Combine(dlcFolderPath, @"_metacmm.txt");
@@ -631,7 +629,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     InstalledByManagedSolution = true;
                     InstalledBy = M3L.GetString(M3L.string_installedByModManager); //Default value when finding metacmm.
                     MetaCMM mcmm = new MetaCMM(metaFile);
-                    if (mcmm.ModName != ModName)
+                    if (DLCFolderNameString != ModName && mcmm.ModName != ModName)
                     {
                         DLCFolderNameString += $@" ({ModName})";
                         if (!modNamePrefersTPMI || ModName == null)
@@ -649,6 +647,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     else
                     {
                         InstalledBy = M3L.GetString(M3L.string_interp_installedByX, InstallerInstanceBuild);
+                    }
+
+                    // MetaCMM Extended
+                    if (mcmm.OptionsSelectedAtInstallTime != null)
+                    {
+                        ChosenInstallOptions.ReplaceAll(mcmm.OptionsSelectedAtInstallTime);
+                    }
+                    if (mcmm.IncompatibleDLC != null)
+                    {
+                        IncompatibleDLC.ReplaceAll(mcmm.IncompatibleDLC);
                     }
                 }
                 else
@@ -685,9 +693,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyname));
             }
-            private bool CanToggleDLC() => (game == Mod.MEGame.ME3 || DLCFolderName.StartsWith('x')) && !Utilities.IsGameRunning(game);
+            private bool CanToggleDLC() => (game == MEGame.ME3 || DLCFolderName.StartsWith('x')) && !Utilities.IsGameRunning(game);
 
-            public bool EnableDisableVisible => game == Mod.MEGame.ME3 || DLCFolderName.StartsWith('x');
+            public bool EnableDisableVisible => game == MEGame.ME3 || DLCFolderName.StartsWith('x');
             public ICommand DeleteCommand { get; set; }
             public GenericCommand EnableDisableCommand { get; set; }
             private bool CanDeleteDLCMod(object obj) => !Utilities.IsGameRunning(game);
@@ -717,10 +725,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         }
 
 
-        private void OpenALOTInstaller_Click(object sender, RequestNavigateEventArgs e)
-        {
-            ClosePanel(new DataEventArgs(@"ALOTInstaller"));
-        }
 
         private void OpenInExplorer_Click(object sender, RoutedEventArgs e)
         {
@@ -747,6 +751,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void OpenASIManager_Click(object sender, RequestNavigateEventArgs e)
         {
             ClosePanel(new DataEventArgs(@"ASIManager"));
+        }
+
+        private void OpenALOTInstaller_Click(object sender, RoutedEventArgs e)
+        {
+            ClosePanel(new DataEventArgs(@"ALOTInstaller"));
         }
     }
 }

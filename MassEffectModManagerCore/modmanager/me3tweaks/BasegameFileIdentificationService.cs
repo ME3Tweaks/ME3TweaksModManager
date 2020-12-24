@@ -1,8 +1,6 @@
 ﻿using MassEffectModManagerCore.modmanager.objects;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using MassEffectModManagerCore.modmanager.objects.mod;
 
 namespace MassEffectModManagerCore.modmanager.me3tweaks
 {

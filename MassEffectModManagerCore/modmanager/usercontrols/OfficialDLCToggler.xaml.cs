@@ -11,7 +11,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
-using MassEffectModManagerCore.GameDirectories;
+
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
@@ -98,7 +98,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             public bool Enabled { get; set; }
             public string HumanName { get; set; }
             public string ToggleText => Enabled ? M3L.GetString(M3L.string_toggleOff) : M3L.GetString(M3L.string_toggleOn);
-            public event PropertyChangedEventHandler PropertyChanged;
+            //Fody uses this property on weaving
+#pragma warning disable 0169
+public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 0169
 
             public ICommand ToggleCommand { get; }
             public InstalledDLC()
@@ -110,7 +113,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 try
                 {
-                    var dlcFPath = MEDirectories.DLCPath(target);
+                    var dlcFPath = M3Directories.GetDLCPath(target);
                     var currentDLCPath = Path.Combine(dlcFPath, DLCFolderName);
                     string destPath = Path.Combine(dlcFPath, Enabled ? @"x" + UIDLCFolderName : UIDLCFolderName);
                     Directory.Move(currentDLCPath, destPath);

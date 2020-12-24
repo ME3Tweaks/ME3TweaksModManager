@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.usercontrols;
 using SevenZip;
 
-namespace MassEffectModManagerCore.modmanager
+namespace MassEffectModManagerCore.modmanager.objects.mod
 {
     //This file contains deployment to archive related functionality
     public partial class Mod
@@ -70,6 +67,11 @@ namespace MassEffectModManagerCore.modmanager
                             }
                         }
                     }
+                    // Add the referenced image asset
+                    if (dlc.ImageAssetName != null)
+                    {
+                        references.Add(FilesystemInterposer.PathCombine(IsInArchive, ModImageAssetsPath, dlc.ImageAssetName).Substring(ModPath.Length + (ModPath.Length > 1 ? 1 : 0)));
+                    }
                 }
                 foreach (var file in job.AlternateFiles)
                 {
@@ -104,6 +106,12 @@ namespace MassEffectModManagerCore.modmanager
                             }
                         }
                     }
+
+                    // Add the referenced image asset
+                    if (file.ImageAssetName != null)
+                    {
+                        references.Add(FilesystemInterposer.PathCombine(IsInArchive, ModImageAssetsPath, file.ImageAssetName).Substring(ModPath.Length + (ModPath.Length > 1 ? 1 : 0)));
+                    }
                 }
 
                 foreach (var customDLCmapping in job.CustomDLCFolderMapping)
@@ -116,12 +124,52 @@ namespace MassEffectModManagerCore.modmanager
             {
                 references.AddRange(FilesystemInterposer.DirectoryGetFiles(FilesystemInterposer.PathCombine(IsInArchive, ModPath, additionalDeploymentDir), "*", SearchOption.AllDirectories, archive).Select(x => (IsInArchive && ModPath.Length == 0) ? x : x.Substring(ModPath.Length + 1)).ToList());
             }
+
+            // Banner Image
+            if (!string.IsNullOrWhiteSpace(BannerImageName))
+            {
+                references.Add(FilesystemInterposer.PathCombine(IsInArchive, Mod.ModImageAssetFolderName, BannerImageName));
+            }
+
             if (includeModdesc && GetJob(ModJob.JobHeader.ME2_RCWMOD) == null)
             {
                 references.Add(ModDescPath.Substring(ModPath.Length).TrimStart('/', '\\'));
                 //references.Add(ModDescPath.TrimStart('/', '\\'));
             }
             return references.Distinct(StringComparer.InvariantCultureIgnoreCase).ToList();
+        }
+
+        /// <summary>
+        /// Returns all alternate options that are attached to any job.
+        /// </summary>
+        /// <returns></returns>
+        public List<AlternateOption> GetAllAlternates()
+        {
+            List<AlternateOption> alternates = new List<AlternateOption>();
+            foreach (var mj in InstallationJobs)
+            {
+                alternates.AddRange(mj.AlternateFiles);
+                alternates.AddRange(mj.AlternateDLCs);
+            }
+            return alternates;
+        }
+
+        /// <summary>
+        /// Gets a list of all possible DLC folders that can be installed by this mod, if all the alternates were also chosen that could produce a new DLC folder
+        /// </summary>
+        /// <returns></returns>
+        public List<string> GetAllPossibleCustomDLCFolders()
+        {
+            var custDlcJob = GetJob(ModJob.JobHeader.CUSTOMDLC);
+            if (custDlcJob != null)
+            {
+                var folders = custDlcJob.CustomDLCFolderMapping.Values.Select(x => x).ToList();
+                folders.AddRange(custDlcJob.AlternateDLCs.Where(x => x.Operation == AlternateDLC.AltDLCOperation.OP_ADD_CUSTOMDLC)
+                    .Select(x => x.DestinationDLCFolder));
+                return folders;
+            }
+
+            return new List<string>();
         }
     }
 }

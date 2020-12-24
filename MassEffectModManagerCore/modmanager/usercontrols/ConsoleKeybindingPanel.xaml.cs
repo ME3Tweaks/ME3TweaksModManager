@@ -21,6 +21,8 @@ using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
+using ME3ExplorerCore.Helpers;
+using ME3ExplorerCore.Packages;
 using Microsoft.AppCenter.Analytics;
 using Serilog;
 using Path = System.IO.Path;
@@ -178,7 +180,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public static void SetME2ConsoleKeybinds(GameTarget target, string consoleKeyStr, string typeKeyStr)
         {
-            if (target.Game != Mod.MEGame.ME2) throw new Exception(@"Cannot set ME2 keybind for non-ME2 target");
+            if (target.Game != MEGame.ME2) throw new Exception(@"Cannot set ME2 keybind for non-ME2 target");
             var me2c = ME2Coalesced.OpenFromTarget(target);
             var bioinput = me2c.Inis.FirstOrDefault(x => Path.GetFileName(x.Key).Equals(@"BioInput.ini", StringComparison.InvariantCultureIgnoreCase));
             SetIniBasedKeybinds(bioinput.Value, consoleKeyStr, typeKeyStr);
@@ -401,8 +403,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
-            ME2Targets.ReplaceAll(mainwindow.InstallationTargets.Where(x => x.Game == Mod.MEGame.ME2));
-            ME3Targets.ReplaceAll(mainwindow.InstallationTargets.Where(x => x.Game == Mod.MEGame.ME3));
+            ME2Targets.ReplaceAll(mainwindow.InstallationTargets.Where(x => x.Game == MEGame.ME2));
+            ME3Targets.ReplaceAll(mainwindow.InstallationTargets.Where(x => x.Game == MEGame.ME3));
             SelectedME2Target = ME2Targets.FirstOrDefault();
             SelectedME3Target = ME3Targets.FirstOrDefault();
             LoadME1Keys();
@@ -484,7 +486,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void LoadME2Keys(GameTarget target)
         {
-            if (target.Game != Mod.MEGame.ME2) throw new Exception(@"Cannot load ME2 keys from target that is not ME2");
+            if (target.Game != MEGame.ME2) throw new Exception(@"Cannot load ME2 keys from target that is not ME2");
             ME2Coalesced me2c = null;
 
             try
@@ -527,7 +529,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void LoadME3Keys(GameTarget target)
         {
-            if (target.Game != Mod.MEGame.ME3) throw new Exception(@"Cannot load ME3 keys from target that is not ME3");
+            if (target.Game != MEGame.ME3) throw new Exception(@"Cannot load ME3 keys from target that is not ME3");
             try
             {
                 var coalPath = Path.Combine(target.TargetPath, @"BioGame", @"CookedPCConsole", @"Coalesced.bin");

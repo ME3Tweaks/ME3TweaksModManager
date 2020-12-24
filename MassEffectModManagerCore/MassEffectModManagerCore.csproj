@@ -2,16 +2,16 @@
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
 		<PublishTrimmed>false</PublishTrimmed>
-		<PublishReadyToRun>true</PublishReadyToRun>
+		<PublishReadyToRun>false</PublishReadyToRun>
 		<PublishSingleFile>true</PublishSingleFile>
-		<TargetFramework>netcoreapp3.1</TargetFramework>
+		<TargetFrameworks>netcoreapp3.1;net5.0-windows8.0</TargetFrameworks>
 		<RuntimeIdentifier>win10-x64</RuntimeIdentifier>
 		<PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
 		<UseWPF>true</UseWPF>
 		<Platforms>x64</Platforms>
-		<AssemblyVersion>6.1.5.113</AssemblyVersion>
-		<FileVersion>6.1.5.113</FileVersion>
-		<Version>6.1.5.113</Version>
+		<AssemblyVersion>6.2.0.114</AssemblyVersion>
+		<FileVersion>6.2.0.114</FileVersion>
+		<Version>6.2.0.114</Version>
 		<Copyright>ME3Tweaks 2012 - 2020</Copyright>
 		<Authors>Mgamerz</Authors>
 		<PackageId>MassEffectModManagerCore</PackageId>
@@ -23,11 +23,15 @@
 		<AssemblyName>ME3TweaksModManager</AssemblyName>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
+		<UserSecretsId>7b27ce2b-30bb-4b0a-b86c-79c02467be9f</UserSecretsId>
+		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+		<PublishTrimmed>TrFalseue</PublishTrimmed>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
 		<DebugType>embedded</DebugType>
 		<DebugSymbols>true</DebugSymbols>
+		<DefineConstants>DEBUG;TRACE</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -41,10 +45,7 @@
 	</ItemGroup>
 	<ItemGroup>
 		<None Remove="appicon.ico" />
-		<None Remove="bundleddlls\lzo2wrapper.dll" />
-		<None Remove="bundleddlls\sevenzipwrapper.dll" />
-		<None Remove="bundleddlls\zlibwrapper.dll" />
-		<None Remove="images\darktheme.png" />
+	  <None Remove="images\darktheme.png" />
 		<None Remove="images\dvd.png" />
 		<None Remove="images\gameicons\ME1_48.ico" />
 		<None Remove="images\gameicons\ME2_48.ico" />
@@ -60,7 +61,6 @@
 		<None Remove="images\terminal.png" />
 		<None Remove="images\unknown.png" />
 		<None Remove="images\windowicon.png" />
-		<None Remove="modmanager\asi\BalanceChangesReplacer-v2.0.asi" />
 		<None Remove="modmanager\asi\BalanceChangesReplacer-v3.0.asi" />
 		<None Remove="modmanager\asi\manifest.xml" />
 		<None Remove="modmanager\asi\ME1-DLC-ModEnabler-v1.0.asi" />
@@ -134,9 +134,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<EmbeddedResource Include="bundleddlls\lzo2wrapper.dll" />
-		<EmbeddedResource Include="bundleddlls\sevenzipwrapper.dll" />
-		<EmbeddedResource Include="bundleddlls\zlibwrapper.dll" />
 		<EmbeddedResource Include="modmanager\asi\ME1-DLC-ModEnabler-v1.0.asi" />
 		<EmbeddedResource Include="modmanager\asi\ME3Logger_truncating-v1.0.asi" />
 		<EmbeddedResource Include="modmanager\binkw32\me1\binkw23.dll" />
@@ -157,43 +154,38 @@
 		<EmbeddedResource Include="modmanager\starterkit\BlankTlkFile.upk" />
 		<EmbeddedResource Include="modmanager\starterkit\Default.sfar" />
 		<EmbeddedResource Include="modmanager\starterkit\Default_DLC_MOD_StarterKit.bin" />
-		<EmbeddedResource Include="staticfiles\objectinfos\ME1ObjectInfo.json" />
-		<EmbeddedResource Include="staticfiles\objectinfos\ME2ObjectInfo.json" />
-		<EmbeddedResource Include="staticfiles\objectinfos\ME3ObjectInfo.json" />
-		<EmbeddedResource Include="updater\ME3CMM.exe" />
+    <EmbeddedResource Include="updater\ME3CMM.exe" />
 		<EmbeddedResource Include="updater\ME3TweaksUpdater.exe" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="AuthenticodeExaminer" Version="0.3.0" />
-		<PackageReference Include="ByteSize" Version="2.0.0" />
-		<PackageReference Include="CommandLineParser" Version="2.7.82" />
+		<PackageReference Include="CommandLineParser" Version="2.8.0" />
 		<PackageReference Include="ComputerInfo" Version="0.1.0-prerelease" />
-		<PackageReference Include="CliWrap" Version="3.1.0" />
-		<PackageReference Include="Flurl" Version="2.8.2" />
-		<PackageReference Include="Flurl.Http" Version="2.4.2" />
-		<PackageReference Include="Fody" Version="6.2.4">
+		<PackageReference Include="CliWrap" Version="3.2.4" />
+		<PackageReference Include="Flurl" Version="3.0.1" />
+		<PackageReference Include="Flurl.Http" Version="3.0.1" />
+		<PackageReference Include="Fody" Version="6.3.0">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="FontAwesome.WPF" Version="4.7.0.9" />
-		<PackageReference Include="Microsoft.AppCenter" Version="3.4.0" />
-		<PackageReference Include="Microsoft.AppCenter.Analytics" Version="3.4.0" />
-		<PackageReference Include="Microsoft.AppCenter.Crashes" Version="3.4.0" />
-		<PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="1.3.5" />
+		<PackageReference Include="Microsoft.AppCenter" Version="4.0.0" />
+		<PackageReference Include="Microsoft.AppCenter.Analytics" Version="4.0.0" />
+		<PackageReference Include="Microsoft.AppCenter.Crashes" Version="4.0.0" />
+		<PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="1.3.6" />
 		<PackageReference Include="MvvmValidation" Version="3.1.1" />
 		<PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
 		<PackageReference Include="Octokit" Version="0.48.0" />
 		<PackageReference Include="Pathoschild.FluentNexus" Version="1.0.1" />
-		<PackageReference Include="PropertyChanged.Fody" Version="3.2.8" />
-		<PackageReference Include="Serilog" Version="2.9.0" />
+		<PackageReference Include="PropertyChanged.Fody" Version="3.3.1" />
+		<PackageReference Include="Serilog" Version="2.10.0" />
 		<PackageReference Include="Serilog.Sinks.Debug" Version="1.0.1" />
 		<PackageReference Include="Serilog.Sinks.RollingFile.Extension" Version="2.0.2" />
 		<PackageReference Include="SSH.NET" Version="2016.1.0" />
-		<PackageReference Include="WatsonWebsocket" Version="2.1.7.2" />
+		<PackageReference Include="Trinet.Core.IO.Ntfs" Version="4.1.1" />
+		<PackageReference Include="WatsonWebsocket" Version="2.2.0.12" />
 		<PackageReference Include="WindowsAPICodePack-Shell" Version="1.1.1" />
-		<PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.0" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="3.1.0" />
 	</ItemGroup>
 	<ItemGroup>
 		<DotNetCliToolReference Include="Microsoft.Extensions.SecretManager.Tools" Version="2.0.2" />
@@ -201,6 +193,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\AdonisUI.ClassicTheme\AdonisUI.ClassicTheme.csproj" />
 		<ProjectReference Include="..\IniFileParser\IniFileParser.csproj" />
+		<ProjectReference Include="..\ME3Explorer\ME3ExplorerCore\ME3ExplorerCore.csproj" />
 		<ProjectReference Include="..\SevenZip\SevenZip.csproj" />
 		<ProjectReference Include="..\WpfExtendedToolkit-Extended\Src\Xceed.Wpf.Toolkit\DotNetProjects.Wpf.Extended.Toolkit.csproj" />
 	</ItemGroup>
@@ -256,6 +249,10 @@
 		</Page>
 		<Page Update="modmanager\usercontrols\TestArchiveGenerator.xaml">
 			<SubType>Designer</SubType>
+		</Page>
+		<Page Update="modmanager\windows\DeploymentListDialog.xaml">
+		  <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+		  <SubType>Designer</SubType>
 		</Page>
 	</ItemGroup>
 

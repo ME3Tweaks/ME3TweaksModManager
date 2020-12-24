@@ -1,21 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using IniParser.Model;
-using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager.gameini;
 using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.modmanager.objects;
-using Pathoschild.FluentNexus.Models;
+using MassEffectModManagerCore.modmanager.objects.mod;
+using MassEffectModManagerCore.modmanager.objects.mod.editor;
+using MassEffectModManagerCore.ui;
+using ME3ExplorerCore.GameFilesystem;
+using ME3ExplorerCore.Packages;
 using Serilog;
 
-namespace MassEffectModManagerCore.modmanager
+namespace MassEffectModManagerCore.modmanager.objects
 {
     [DebuggerDisplay(@"ModJob for {Header}")]
-    public class ModJob
+    public class ModJob : IMDParameterMap
     {
         public enum JobHeader
         {
@@ -83,7 +86,7 @@ namespace MassEffectModManagerCore.modmanager
         /// </summary>
         public RCWMod RCW { get; set; }
 
-        public static IReadOnlyDictionary<string, JobHeader> ME3OfficialDLCFolderToHeaderMapping = new Dictionary<string, JobHeader>()
+        public static IReadOnlyDictionary<string, JobHeader> ME3OfficialDLCFolderToHeaderMapping = new Dictionary<string, JobHeader>
         {
             { @"DLC_CON_MP1", JobHeader.RESURGENCE },
             { @"DLC_CON_MP2", JobHeader.REBELLION },
@@ -112,7 +115,7 @@ namespace MassEffectModManagerCore.modmanager
         public Dictionary<string, string> FilesToInstall = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
 
         /// <summary>
-        /// CUSTOMDLC folder mapping. The key is the source (mod folder), the value is the destination (dlc directory in game)
+        /// CUSTOMDLC folder mapping. The key is the source (mod folder), the value is the destination (dlc directory in game). This is only used for always installed folders, not alternates
         /// </summary>
         public Dictionary<string, string> CustomDLCFolderMapping = new Dictionary<string, string>();
 
@@ -207,7 +210,7 @@ namespace MassEffectModManagerCore.modmanager
         /// <param name="mod">Mod object this job is for. This object is not saved and is only used to pull the path in and other necessary variables.</param>
         public ModJob(JobHeader jobHeader, Mod mod = null)
         {
-            this.Header = jobHeader;
+            Header = jobHeader;
         }
 
         /// <summary>
@@ -326,13 +329,13 @@ namespace MassEffectModManagerCore.modmanager
         }
 
 
-        private static IReadOnlyDictionary<JobHeader, string> ME1HeadersToDLCNamesMap = new Dictionary<JobHeader, string>()
+        private static IReadOnlyDictionary<JobHeader, string> ME1HeadersToDLCNamesMap = new Dictionary<JobHeader, string>
         {
             [JobHeader.BRING_DOWN_THE_SKY] = @"DLC_UNC",
             [JobHeader.PINNACLE_STATION] = @"DLC_Vegas"
         };
 
-        private static IReadOnlyDictionary<JobHeader, string> ME2HeadersToDLCNamesMap = new Dictionary<JobHeader, string>()
+        private static IReadOnlyDictionary<JobHeader, string> ME2HeadersToDLCNamesMap = new Dictionary<JobHeader, string>
         {
             [JobHeader.AEGIS_PACK] = @"DLC_CER_02",
             [JobHeader.APPEARANCE_PACK_1] = @"DLC_CON_Pack01",
@@ -359,7 +362,7 @@ namespace MassEffectModManagerCore.modmanager
             [JobHeader.ZAEED] = @"DLC_HEN_VT"
         };
 
-        private static IReadOnlyDictionary<JobHeader, string> ME3HeadersToDLCNamesMap = new Dictionary<JobHeader, string>()
+        private static IReadOnlyDictionary<JobHeader, string> ME3HeadersToDLCNamesMap = new Dictionary<JobHeader, string>
         {
             [JobHeader.COLLECTORS_EDITION] = @"DLC_OnlinePassHidCE",
             [JobHeader.RESURGENCE] = @"DLC_CON_MP1",
@@ -382,15 +385,15 @@ namespace MassEffectModManagerCore.modmanager
             [JobHeader.TESTPATCH] = @"DLC_TestPatch" //This is not actually a DLC folder. This is the internal path though that the DLC would use if it worked unpacked.
         };
 
-        internal static IReadOnlyDictionary<JobHeader, string> GetHeadersToDLCNamesMap(Mod.MEGame game)
+        internal static IReadOnlyDictionary<JobHeader, string> GetHeadersToDLCNamesMap(MEGame game)
         {
             switch (game)
             {
-                case Mod.MEGame.ME1:
+                case MEGame.ME1:
                     return ME1HeadersToDLCNamesMap;
-                case Mod.MEGame.ME2:
+                case MEGame.ME2:
                     return ME2HeadersToDLCNamesMap;
-                case Mod.MEGame.ME3:
+                case MEGame.ME3:
                     return ME3HeadersToDLCNamesMap;
                 default:
                     throw new Exception(@"Can't get supported list of headers for unknown game type.");
@@ -413,18 +416,43 @@ namespace MassEffectModManagerCore.modmanager
         /// </summary>
         public List<string> ReadOnlyIndicators = new List<string>();
 
-        internal static JobHeader[] GetSupportedNonCustomDLCHeaders(Mod.MEGame game)
+        /// <summary>
+        /// Gets list of headers that does not include CUSTOMDLC. Includes BASEGAME.
+        /// </summary>
+        /// <param name="game"></param>
+        /// <returns></returns>
+        internal static JobHeader[] GetSupportedNonCustomDLCHeaders(MEGame game)
         {
             switch (game)
             {
-                case Mod.MEGame.ME1:
+                case MEGame.ME1:
                     return ME1SupportedNonCustomDLCJobHeaders;
-                case Mod.MEGame.ME2:
+                case MEGame.ME2:
                     return ME2SupportedNonCustomDLCJobHeaders;
-                case Mod.MEGame.ME3:
+                case MEGame.ME3:
                     return ME3SupportedNonCustomDLCJobHeaders;
                 default:
                     throw new Exception(@"Can't get supported list of headers for unknown game type.");
+            }
+        }
+
+        /// <summary>
+        /// Gets list of official DLC headers for the specified game.
+        /// </summary>
+        /// <param name="game"></param>
+        /// <returns></returns>
+        internal static JobHeader[] GetSupportedOfficialDLCHeaders(MEGame game)
+        {
+            switch (game)
+            {
+                case MEGame.ME1:
+                    return ME1SupportedNonCustomDLCJobHeaders.Except(new[] { JobHeader.BASEGAME }).ToArray();
+                case MEGame.ME2:
+                    return ME2SupportedNonCustomDLCJobHeaders.Except(new[] { JobHeader.BASEGAME }).ToArray();
+                case MEGame.ME3:
+                    return ME3SupportedNonCustomDLCJobHeaders.Except(new[] { JobHeader.BASEGAME }).ToArray();
+                default:
+                    throw new Exception(@"Can't get supported list of dlc headers for unknown game type.");
             }
         }
 
@@ -492,26 +520,48 @@ namespace MassEffectModManagerCore.modmanager
         /// <summary>
         /// Serializes this job into the specified IniData object
         /// </summary>
-        /// <param name="moddessc"></param>
-        public void Serialize(IniData moddessc)
+        /// <param name="ini"></param>
+        public void Serialize(IniData ini, Mod associatedMod)
         {
             var header = Header.ToString();
             if (!string.IsNullOrWhiteSpace(JobDirectory))
             {
-                moddessc[header][@"moddir"] = JobDirectory;
+                ini[header][@"moddir"] = JobDirectory;
             }
 
             if (Header == JobHeader.CUSTOMDLC)
             {
                 if (CustomDLCFolderMapping.Any())
                 {
-                    moddessc[header][@"sourcedirs"] = string.Join(';', CustomDLCFolderMapping.Keys);
-                    moddessc[header][@"destdirs"] = string.Join(';', CustomDLCFolderMapping.Values);
+                    ini[header][@"sourcedirs"] = string.Join(';', CustomDLCFolderMapping.Keys);
+                    ini[header][@"destdirs"] = string.Join(';', CustomDLCFolderMapping.Values);
                 }
+            }
+            else if (IsVanillaJob(this, associatedMod.Game))
+            {
+                foreach (var v in ParameterMap)
+                {
+                    if (!string.IsNullOrWhiteSpace(v.Value))
+                    {
+                        ini[header][v.Key] = v.Value;
+                    }
+                }
+            }
+            else if (Header == JobHeader.BALANCE_CHANGES)
+            {
+
+            }
+            else if (Header == JobHeader.ME1_CONFIG)
+            {
+
+            }
+            else if (Header == JobHeader.LOCALIZATION)
+            {
+
             }
         }
 
-        public static bool IsVanillaJob(ModJob job, Mod.MEGame game)
+        public static bool IsVanillaJob(ModJob job, MEGame game)
         {
             var officialHeaders = GetHeadersToDLCNamesMap(game);
             return officialHeaders.ContainsKey(job.Header) || job.Header == JobHeader.BASEGAME;
@@ -523,7 +573,7 @@ namespace MassEffectModManagerCore.modmanager
         /// <param name="job"></param>
         /// <param name="game"></param>
         /// <returns></returns>
-        public static SiloScopes GetScopedSilos(ModJob job, Mod.MEGame game)
+        public static SiloScopes GetScopedSilos(ModJob job, MEGame game)
         {
             switch (job.Header)
             {
@@ -535,12 +585,12 @@ namespace MassEffectModManagerCore.modmanager
             }
 
             SiloScopes scopes = new SiloScopes();
-            var dlcDir = MEDirectories.DLCPath("", game) + Path.DirectorySeparatorChar;
+            var dlcDir = MEDirectories.GetDLCPath(game, "") + Path.DirectorySeparatorChar;
 
             if (job.Header == JobHeader.BASEGAME)
             {
                 // There are specific directories we allow installation to.
-                if (game == Mod.MEGame.ME3)
+                if (game == MEGame.ME3)
                 {
                     scopes.DisallowedSilos.Add(@"Binaries\\Win32" + Path.DirectorySeparatorChar); //You are not allowed to install files into the game executable directory. ME1/2 unfortuantely share exec with exe dir.
                 }
@@ -554,7 +604,7 @@ namespace MassEffectModManagerCore.modmanager
             else if (GetHeadersToDLCNamesMap(game).TryGetValue(job.Header, out var dlcFoldername))
             {
                 // It's an official DLC
-                var relativeDlcDir = Path.Combine(MEDirectories.DLCPath("", game), dlcFoldername) + Path.DirectorySeparatorChar;
+                var relativeDlcDir = Path.Combine(MEDirectories.GetDLCPath(game, ""), dlcFoldername) + Path.DirectorySeparatorChar;
                 scopes.AllowedSilos.Add(relativeDlcDir); //Silos are folders. We should ensure they end with a slash
             }
             else if (job.Header == JobHeader.CUSTOMDLC)
@@ -602,5 +652,88 @@ namespace MassEffectModManagerCore.modmanager
 
             return true;
         }
+
+        public bool IsOfficialDLCJob(MEGame game) => GetSupportedOfficialDLCHeaders(game).Contains(Header);
+
+        #region Raw values for editor
+        public string NewFilesRaw { get; set; }
+        public string ReplaceFilesRaw { get; set; }
+        public string AddFilesRaw { get; set; }
+        public string AddFilesTargetsRaw { get; set; }
+        public bool GameDirectoryStructureRaw { get; set; }
+        public string LocalizationFilesStrRaw { get; set; }
+        public string BalanceChangesFileRaw { get; set; }
+        public string ConfigFilesRaw { get; set; }
+        #endregion
+
+        public void BuildParameterMap(Mod mod)
+        {
+            Dictionary<string, object> parameterDictionary = new Dictionary<string, object>();
+            if (IsVanillaJob(this, mod.Game))
+            {
+                if (Header == JobHeader.BASEGAME && mod.Game == MEGame.ME3 && mod.LegacyModCoal)
+                {
+                    // moddesc 2 supported this flag. In MM3 it auto converted the
+                    // meaning of this into basegame coalesced job. We 
+                    // should convert it here since there are no raw values 
+                    // cached into raw
+
+                    parameterDictionary[@"moddir"] = @".";
+                    parameterDictionary[@"newfiles"] = @"Coalesced.bin";
+                    parameterDictionary[@"replacefiles"] = @"BIOGame\CookedPCConsole\Coalesced.bin"; 
+
+                    // Technically this doesn't support more on this version of moddesc.
+                    // But since we can't save older moddesc formats we will allow
+                    // additional parameters and not show the modcoal flag in the UI.
+                }
+                else
+                {
+                    parameterDictionary[@"moddir"] = JobDirectory;
+                    parameterDictionary[@"newfiles"] = NewFilesRaw;
+                    parameterDictionary[@"replacefiles"] = ReplaceFilesRaw;
+                }
+
+                if (mod.Game == MEGame.ME3 || Header == JobHeader.BASEGAME)
+                {
+                    // Add files
+                    parameterDictionary[@"addfiles"] = AddFilesRaw;
+                    parameterDictionary[@"addfilestargets"] = AddFilesTargetsRaw;
+                    parameterDictionary[@"addfilesreadonlytargets"] = ReadOnlyIndicators;
+                }
+
+                parameterDictionary[@"gamedirectorystructure"] = GameDirectoryStructureRaw ? @"True" : null;
+                parameterDictionary[@"jobdescription"] = RequirementText;
+            }
+            else if (Header == JobHeader.CUSTOMDLC)
+            {
+                // These are serialized in special way by the editor
+                // Do not put them into the parameter map
+                //parameterDictionary[@"sourcedirs"] = CustomDLCFolderMapping.Keys;
+                //parameterDictionary[@"destdirs"] = CustomDLCFolderMapping.Values;
+
+                parameterDictionary[@"outdatedcustomdlc"] = mod.OutdatedCustomDLC;
+                parameterDictionary[@"incompatiblecustomdlc"] = mod.IncompatibleDLC;
+                // NOT MAPPED: HUMAN READABLE NAMES
+                // CONFIGURED DIRECTLY BY EDITOR UI
+            }
+            else if (Header == JobHeader.LOCALIZATION)
+            {
+                parameterDictionary[@"files"] = FilesToInstall.Values;
+                parameterDictionary[@"dlcname"] = mod.RequiredDLC.FirstOrDefault();
+            }
+            else if (Header == JobHeader.BALANCE_CHANGES)
+            {
+                parameterDictionary[@"moddir"] = JobDirectory;
+                parameterDictionary[@"newfiles"] = FilesToInstall.Values;
+            } else if (Header == JobHeader.ME1_CONFIG)
+            {
+                parameterDictionary[@"moddir"] = JobDirectory;
+                // files raw is handled by ui
+            }
+
+            ParameterMap.ReplaceAll(MDParameter.MapIntoParameterMap(parameterDictionary, Header.ToString()));
+        }
+
+        public ObservableCollectionExtended<MDParameter> ParameterMap { get; } = new ObservableCollectionExtended<MDParameter>();
     }
 }

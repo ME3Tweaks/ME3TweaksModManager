@@ -1,12 +1,8 @@
 {
   "profiles": {
-    "TestDirectoryGenerator": {
+    "ExecutableModParser": {
       "commandName": "Project",
-      "commandLineArgs": "--inputdir \"C:\\users\\mgamerz\\desktop\""
-    },
-    "Laptop for folder Desktop": {
-      "commandName": "Project",
-      "commandLineArgs": "--inputdir \"C:\\users\\mgamerz\\desktop\""
+      "commandLineArgs": "--inputdir \"X:\\CEML\""
     }
   }
 }

@@ -345,3 +345,4 @@ healthchecksdb
 /LocalizationHelper/Deployment
 /MassEffectModManagerCore.Tests/testdata/exemods
 /MassEffectModManagerCore.Tests/testdata/Scratch/MixinTest
+/Stage/WinRelease/netcoreapp3.1

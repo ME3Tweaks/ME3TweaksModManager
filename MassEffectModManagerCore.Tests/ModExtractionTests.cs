@@ -8,8 +8,10 @@ using MassEffectModManagerCore.modmanager;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.usercontrols;
+using ME3ExplorerCore.Packages;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SevenZip;
+using Mod = MassEffectModManagerCore.modmanager.objects.mod.Mod;
 
 namespace MassEffectModManagerCore.Tests
 {
@@ -49,30 +51,30 @@ namespace MassEffectModManagerCore.Tests
 
             #region Get Targets
             List<GameTarget> targets = new List<GameTarget>();
-            var root = GlobalTest.GetTestGameFoldersDirectory(Mod.MEGame.ME1);
+            var root = GlobalTest.GetTestGameFoldersDirectory(MEGame.ME1);
             foreach (var d in Directory.GetDirectories(root))
             {
-                GameTarget gt = new GameTarget(Mod.MEGame.ME1, d, false, false);
+                GameTarget gt = new GameTarget(MEGame.ME1, d, false, false);
                 gt.ValidateTarget();
                 if (gt.IsValid)
                 {
                     targets.Add(gt);
                 }
             }
-            root = GlobalTest.GetTestGameFoldersDirectory(Mod.MEGame.ME2);
+            root = GlobalTest.GetTestGameFoldersDirectory(MEGame.ME2);
             foreach (var d in Directory.GetDirectories(root))
             {
-                GameTarget gt = new GameTarget(Mod.MEGame.ME2, d, false, false);
+                GameTarget gt = new GameTarget(MEGame.ME2, d, false, false);
                 gt.ValidateTarget();
                 if (gt.IsValid)
                 {
                     targets.Add(gt);
                 }
             }
-            root = GlobalTest.GetTestGameFoldersDirectory(Mod.MEGame.ME3);
+            root = GlobalTest.GetTestGameFoldersDirectory(MEGame.ME3);
             foreach (var d in Directory.GetDirectories(root))
             {
-                GameTarget gt = new GameTarget(Mod.MEGame.ME3, d, false, false);
+                GameTarget gt = new GameTarget(MEGame.ME3, d, false, false);
                 gt.ValidateTarget();
                 if (gt.IsValid)
                 {

@@ -38,8 +38,6 @@
     <system:String x:Key="string_ASIModManager">ASI Mod Manager</system:String>
     <system:String x:Key="string_ASIManagerTooltip">Manage ASI mods. For advanced users only.</system:String>
     <system:String x:Key="string_CustomDLCConflictDetector">Custom DLC Conflict Detector</system:String>
-    <system:String x:Key="string_GUICompact">Interface Scaling/Controller mod compatibility pack generator (ME3)</system:String>
-    <system:String x:Key="string_GUICompactTooltip">Scans ME3 mods for interface exports that are part of UI mods and will generate a patch mod if necessary</system:String>
     <system:String x:Key="string_BatchModInstaller">Batch Mod Installer</system:String>
     <system:String x:Key="string_Openmodslibrarydirectory">Open mods library directory</system:String>
     <system:String x:Key="string_Opensthemodlibraryfolder">Opens the mod library folder</system:String>
@@ -220,7 +218,6 @@
     <system:String x:Key="string_finishedCheckingBackups">Finished checking backups</system:String>
     <system:String xml:space="preserve" x:Key="string_dialog_optingIntoBeta">Opting into beta updates will allow Mod Manager to update to builds that have not yet been certified for wide deployment. These builds are not fully tested and may be unstable. Feedback on crashes on these builds is vital for improving ME3Tweaks Mod Manager. If you are not comfortable with unstable software, you should not enable this setting. You will have to manually downgrade if you wish to revert back to a stable version.\n\nEnable Beta Mode?</system:String>
     <system:String x:Key="string_enablingBetaMode">Enabling beta mode</system:String>
-    <system:String x:Key="string_controllerISMCompatibility">Interface Scaling Mod/Controller compatibility</system:String>
     <system:String x:Key="string_importAndManageMods">Import + manage mods</system:String>
     <system:String x:Key="string_libraryManagement">Library management</system:String>
     <system:String x:Key="string_optIntoBetaUpdates">Opt into beta updates</system:String>
@@ -318,10 +315,6 @@
     <system:String  x:Key="string_tooltip_installsCustomKeybindsOfYourDesignIntoTheGame">Installs Custom Keybinds of your design into the game</system:String>
     <system:String  x:Key="string_originIngameOverlayDisabler">Origin in-game overlay disabler</system:String>
     <system:String  x:Key="string_tooltip_oigDisabler">Installs a file that forcibly disables Origin in-game overlay</system:String>
-    <system:String x:Key="string_dialog_cantMakeCompatPackTextureModInstalled">A GUI compatibility pack cannot be generated against a game target that has been texture modded.</system:String>
-    <system:String x:Key="string_cannotGenerateCompatibilityPack">Cannot generate compatibility pack</system:String>
-    <system:String x:Key="string_installTheCompatibilityPackNowQuestion">Install the compatibility pack now?</system:String>
-    <system:String x:Key="string_compatibilityPackGenerated">Compatibility pack generated</system:String>
     <system:String x:Key="string_selectMod">Select mod</system:String>
     <!-- When no mod is selected -->
     <system:String x:Key="string_noTarget">No target</system:String>
@@ -342,6 +335,20 @@
     <system:String x:Key="string_cannotDeployMod">Cannot deploy mod</system:String>
     <system:String x:Key="string_interp_dialog_cannotDeployModNoBackup">No backup for {0} is available. Deploying a mod requires a game backup for the game the mod will install to, so the deployment checks can check against a vanilla game installation.</system:String>
     <!-- 0=ME1/ME2/ME3 -->
+    <system:String x:Key="string_preparingToScanGame">Preparing to scan game</system:String>
+    <system:String x:Key="string_pleaseWait">Please wait</system:String>
+    <system:String x:Key="string_pleaseWait_startup">Mod Manager is starting up, your mod library will be available momentarily.</system:String>
+    <!-- Shown when Mod Manager is starting up, in place of 'no mods loaded!' message -->
+    <system:String  x:Key="string_listFilesThisModCanInstall">List files this mod can install</system:String>
+    <system:String  x:Key="string_tooltip_listFilesThisModCanInstall">Lists all files this mod can potentially install</system:String>
+    <system:String  x:Key="string_editModInfo">Edit mod info</system:String>
+    <system:String  x:Key="string_compressPackagesOnInstall">Compress packages on install</system:String>
+    <system:String  x:Key="string_tooltip_compressPackagesOnInstall">Sets the default option for compressing packages on install to true, which saves disk space at the cost of slightly increased install time.</system:String>
+    <system:String  x:Key="string_nexusFileSearch">NexusMods File Search</system:String>
+    <system:String  x:Key="string_tooltip_nexusFileSearch">Search for files contained in archive downloads on NexusMods</system:String>
+    <system:String x:Key="string_interp_allInstallableFiles">All installable files for {0}</system:String>
+    <!-- 0={mod name} -->
+    <system:String x:Key="string_description_allInstallableFiles">The following files are what this mod can potentially install into the game. Note that some of them may only be installed if certain options are chosen.</system:String>
 
     <!-- Global Styles -->
     <system:String x:Key="string_thisTargetHasBeenTextureModded">This target has been texture modded</system:String>
@@ -373,7 +380,7 @@
     <system:String x:Key="string_dialogNoWritePermissions">Your user account does not have write privileges to the game directory. You can grant your account privileges using the "Grant write access to game directories" option in the tools menu.</system:String>
     <!-- Make sure the Grant Write Privileges matches what shows up in the Main Window strings (string_Grantwriteaccesstogamedirectories)! -->
     <system:String x:Key="string_cannotWriteToGameDirectory">Cannot write to game directory</system:String>
-    <system:String x:Key="string_requiredContentMissing">Required content mismsing</system:String>
+    <system:String x:Key="string_requiredContentMissing">Required content missing</system:String>
     <system:String x:Key="string_dialogRequiredContentMissing">This mod requires the following DLC/mods to be installed prior to installation:{0}</system:String>
     <!-- {0} is a list of DLC in bulleted form. It should always go at the end -->
     <system:String x:Key="string_dialogInstallationSucceededFailedInstallCountCheck">Mod was installed but did not pass installation count verification. This is likely a bug in Mod Manager, please report this to Mgamerz on Discord.</system:String>
@@ -418,12 +425,18 @@
     <system:String x:Key="string_invalidCompatibilityPack">Invalid compatibility pack</system:String>
     <system:String x:Key="string_interp_errorOccuredBuildingInstallationQueues">An error occurred building installation queues: {0}</system:String>
     <!-- 0={Exception message} -->
+    <system:String x:Key="string_interp_optionGroupX">Option group: {0}</system:String>
+    <system:String  x:Key="string_installTo">Install to:</system:String>
+    <system:String  x:Key="string_tooltip_targetThatTheModWillBeInstalledTo">Target that the mod will be installed to</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_modinstaller_compressPackages">Compressing packages will reduce the amount of disk space required for most mods&#10;Compressing will increase the time it takes to install a mod</system:String>
+    <system:String x:Key="string_interp_error_singleRequiredDlcMissing">{0} requires at least one of the following DLC to be installed:{1}</system:String>
+    <!-- 0={ModBeingInstalled.ModName} 1={list of dlc names. It starts with a newline, so do not put space between : and bracket symbol} -->
 
     <!-- Welcome panel -->
     <system:String x:Key="string_previewPanelTitle">Welcome to ME3Tweaks Mod Manager</system:String>
     <system:String x:Key="string_selectYourLanguage">Select your language</system:String>
     <system:String x:Key="string_howToChangeLanguage">You can change your language at any time from the Actions > Options menu. Note that all support is provided in English only.</system:String>
-    <system:String xml:space="preserve" x:Key="string_previewPanelIntro">Import mods into ME3Tweaks Mod Manager by dragging and dropping their mod archive files onto this window after you close this dialog.&#10;&#10;If you have any issues or feedback, please join the ME3Tweaks Discord via the button below.</system:String>
+    <system:String xml:space="preserve" x:Key="string_previewPanelIntro">Welcome to ME3Tweaks Mod Manager, or M3 for short. Import mods into ME3Tweaks Mod Manager by dragging and dropping their mod archive files onto this window after you close this dialog. See what's installed by selecting Manage Target on the top right of the main window.&#10;&#10;If you have any issues or feedback, please join the ME3Tweaks Discord via the button below.</system:String>
     <system:String x:Key="string_joinDiscord">Join the ME3Tweaks Discord</system:String>
     <system:String x:Key="string_close">Close</system:String>
     <!-- Close (as in close dialog) -->
@@ -439,13 +452,19 @@
     <system:String x:Key="string_changeSettingsInActionsMenu">You can change your settings at any time through the Actions menu.</system:String>
     <system:String x:Key="string_nexusModsIntegration">NexusMods Integration</system:String>
     <system:String x:Key="string_nexusModsIntegrationDescription">ME3Tweaks Mod Manager can endorse and unendorse mods on your behalf when you authorize with NexusMods. This way you can show developers your appreciation for their work. Integration with NexusMods is optional and can be managed at the top right of the window.</system:String>
+    <system:String  x:Key="string_startUsingModManager">Start using Mod Manager</system:String>
+    <system:String  x:Key="string_additionalOptions">Additional options</system:String>
+    <system:String  x:Key="string_enableTelemetry">Enable telemetry</system:String>
+    <system:String  x:Key="string_wp_description_telemetry">Mod Manager telemetry is used by developers and modders to identify new mods, fix issues in Mod Manager, and see what users expect of the application.</system:String>
+    <system:String  x:Key="string_developerMode">Enable Developer mode</system:String>
+    <system:String  x:Key="string_wp_description_developermod">Developer mode unlocks developer oriented features, such as mod deployments, official DLC toggler, and more. If you're not a mod developer, do not turn this on.</system:String>
 
     <!-- Deployment panel -->
     <system:String xml:space="preserve" x:Key="string_tooltip_multithreadDeployment">Multi-threaded compression is significantly faster than single threaded, but will use significantly more memory.&#10;If you have a large mod (>600MB) you may want to turn this off if you have less than 16GB of available memory</system:String>
     <system:String x:Key="string_multiThreadedCompression">Multi-threaded compression</system:String>
     <system:String x:Key="string_deploy">Deploy to .7z</system:String>
     <system:String x:Key="string_deploymentChecklist">Deployment checklist</system:String>
-    <system:String x:Key="string_prepareModForDistribution">Prepare mod for distribution</system:String>
+    <system:String x:Key="string_prepareModForDistribution">Deploy mod for distribution</system:String>
     <system:String x:Key="string_compressiongModForDistribution">Compressing mod for distribution</system:String>
     <system:String x:Key="string_verifyModVersion">Verify mod version is correct</system:String>
     <system:String x:Key="string_recommendedVersionFormatNotFollowed">Recommended version format not followed ({0})</system:String>
@@ -502,7 +521,7 @@
     <system:String x:Key="string_checkingTexturesInMod">Checking textures in mod</system:String>
     <system:String x:Key="string_interp_couldNotLoadTextureData">{0} - {1}: Could not load texture data: {2}</system:String>
     <!-- 0 = filepath, 1=export path in-package, 2=error message -->
-    <system:String x:Key="string_noBrokenTexturesWereFound">No broken textures were found</system:String>
+    <system:String x:Key="string_noBrokenTexturesWereFound">No texture issues were detected</system:String>
     <system:String x:Key="string_textureIssuesWereDetected">Texture issues were detected</system:String>
     <system:String x:Key="string_7zipArchiveFile">7-zip archive file</system:String>
     <system:String x:Key="string_deploymentInProgress">Deployment in progress...</system:String>
@@ -568,7 +587,80 @@
     <!-- 0={DLC folder name} -->
     <system:String x:Key="string_interp_missingReferencedTlkStrInMod">Custom DLC {0}'s TLK {1} does not contain the listed TLK string ID {2}, as declared in it's mount.dlc file. Mod TLKs must contain the TLK string referenced by the mount.dlc file.</system:String>
     <!-- 0={DLC folder name} 1={TLK file path} 2={Mount file TLK integer} -->
-
+    <system:String x:Key="string_referencesCheck">References check</system:String>
+    <system:String x:Key="string_interp_dialog_invalidReferencesFound">The following issues were detected when checking package files for invalid name and object references. This may be due to errors in the ME3ExplorerCore build Mod Manager uses, but these issues should be investigated as invalid references will most likely cause the game to crash.</system:String>
+    <system:String x:Key="string_invalidNameAndObjectReferences">Invalid name and object references</system:String>
+    <system:String x:Key="string_checkingNameAndObjectReferences">Checking name and object references</system:String>
+    <system:String x:Key="string_noReferenceIssuesWereDetected">No reference issues were detected</system:String>
+    <system:String x:Key="string_referencesCheckDetectedIssues">References check detected issues</system:String>
+    <system:String x:Key="string_modsNotInThirdPartyIdentificationService">Mod(s) not in Third Party Identification Service</system:String>
+    <system:String x:Key="string_interp_infoModNameTooLong">The mod name '{0}' is more than 40 characters long ({1} characters). Consider shortening the name of this mod so it can be easily read by the user in the mod library.</system:String>
+    <!-- 0={ModName} 1={integer} -->
+    <system:String x:Key="string_interp_fatalMissingNeverstreamFlag">{0} texture {1} {2} is not externally stored, has more than 6 mips, but does not have the NeverStream flag. If texture LODs are raised, this package will crash the game. Set the NeverStream flag to true to correct this issue, or use an external TFC (preferred). Using an external TFC for textures improves game performance.</system:String>
+    <!-- 0={Relative file path} 1={integer} 2={Full texture object path string} -->
+    <system:String x:Key="string_interp_fatalFound4KNorm">{0} texture {1} {2} is a 4K uncompressed normal. Unreal Engine 3 uses uncompressed normals at one mip level below the diff, so the maximum normal size is effectively 2K. The 4K normal will load when texture LODs are set to 4K but will result in wasting 64MB of both process and texture memory, as well as wasting significant amounts of disk space, as this mip will never be usable. Drop the top mip (you can drop mips in ME3Explorer - ME3Tweaks Fork) from this texture to correct this issue.</system:String>
+    <!-- 0={Relative file path} 1={integer} 2={Full texture object path string} -->
+    <system:String x:Key="string_interp_warningPropertyTypingWrongPrefix">{0}, entry {1} {2} ({3}), @ 0x{4}:</system:String>
+    <!-- 0={Relative file path} 1={integer} 2={referenced object name} 3={Class name} 4={Hex number} -->
+    <system:String x:Key="string_interp_warningFoundBrokenPropertyData">{0} Found broken property data! This should be investigated and fixed as this is almost guaranteed to cause game crashes</system:String>
+    <!-- 0={Message prefix string} -->
+    <system:String x:Key="string_interp_warningReferenceNotInExportTable">{0} {1} Export {2} is outside of export table</system:String>
+    <!-- 0={Message prefix string} 1={Export name string} 2={integer} -->
+    <system:String x:Key="string_interp_nested_warningReferenceNoInExportTable">{0} [Nested property] Export {1} is outside of export table</system:String>
+    <!-- 0={Message prefix string} 1={integer} -->
+    <system:String x:Key="string_interp_warningReferenceNotInImportTable">{0} {1} Import {2} is outside of import table</system:String>
+    <!-- 0={Message prefix string} 1={Import name string} 2={integer} -->
+    <system:String x:Key="string_interp_nested_warningReferenceNoInImportTable">{0} [Nested property] Import {1} is outside of import table</system:String>
+    <!-- 0={Message prefix string} 1={integer} -->
+    <system:String x:Key="string_interp_nested_warningTrashedExportReference">{0} [Nested property] Export {1} is a Trashed object</system:String>
+    <!-- 0={Message prefix string} 1={integer} -->
+    <system:String x:Key="string_interp_warningWrongPropertyTypingWrongMessage">{0} {1} references entry {2} {3}, but it appears to be wrong type. Property type expects a class (or subclass) of {4}, but the referenced one is of type {5}</system:String>
+    <!-- 0={Message prefix string} 1={Object property name} 2={integer} 3={Full object path string} 4={Object type name, like 'SFXDamageType'} 5={Object type name, like 'SFXDamageType'} -->
+    <system:String x:Key="string_interp_nested_warningWrongClassPropertyTypingWrongMessage">{0} [Nested Property] references entry {1} {2}, but it appears to be wrong type. Property type expects a class (or subclass) {3}, but the referenced one is of type {4}</system:String>
+    <!-- 0={Message prefix string} 1={integer} 2={Full object path} 3={Object type name, like 'SFXDamageType'} 4={Object type name, like 'SFXDamageType'} -->
+    <system:String x:Key="string_interp_warningWrongObjectPropertyTypingWrongMessage">{0} {1} references entry {2} {3}, but it appears to be wrong type. Property type expects an instance of an object of class (or subclass) {4}, but the referenced one is of type {5}</system:String>
+    <!-- 0={Message prefix string} 1={Object property name} 2={integer} 3={Full object path of referenced object} 4={Object type name, like 'SFXDamageType'} 5={Referenced object property name} -->
+    <system:String x:Key="string_interp_nested_warningWrongObjectPropertyTypingWrongMessage">{0} [Nested Property] references entry {1} {2}, but it appears to be wrong type. Property type expects an instance of an object of class (or subclass) {3}, but the referenced one is of type {4}</system:String>
+    <!-- 0={Message prefix string} 1={integer} 2={Full object path string} 3={Object type name, like 'SFXDamageType'} 4={Object type name, like 'SFXDamageType'} -->
+    <system:String x:Key="string_interp_warningDelegatePropertyIsOutsideOfExportTable">{0} DelegateProperty {1} is outside of export table</system:String>
+    <!-- 0={Message prefix string} 1={Property name string} -->
+    <system:String x:Key="string_interp_fatalExportCircularReference">{0}, export {1} has a circular self reference for its link. The game and the toolset will be unable to handle this condition</system:String>
+    <!-- 0={relativepath} 1={integer} -->
+    <system:String x:Key="string_interp_warningGenericExportPrefix">{0}, export {1} {2} ({3})</system:String>
+    <!-- 0={relativepath} 1={integer} 2={Object name string} 3={Object class string} -->
+    <system:String x:Key="string_interp_warningArchetypeOutsideTables">{0} Archetype {1} is outside of import/export table</system:String>
+    <!-- 0={Message prefix string} 1={integer} -->
+    <system:String x:Key="string_interp_warningSuperclassOutsideTables">{0} Header SuperClass {1} is outside of import/export table</system:String>
+    <!-- 0={Message prefix string} 1={integer} -->
+    <system:String x:Key="string_interp_warningClassOutsideTables">{0} Header Class {1} is outside of import/export table</system:String>
+    <!-- 0={Message prefix string} 1={integer} -->
+    <system:String x:Key="string_interp_warningLinkOutsideTables">{0} Header Link {1} is outside of import/export table</system:String>
+    <!-- 0={Message prefix string} 1={intger} -->
+    <system:String x:Key="string_interp_warningComponentMapItemOutsideTables">{0} Header Component Map item ({1}) is outside of import/export table</system:String>
+    <!-- 0={Message prefix string} 1={integer} -->
+    <system:String x:Key="string_interp_warningExportStackElementOutsideTables">{0} Export Stack[{1}] ({2}) is outside of import/export table</system:String>
+    <!-- 0={Message prefix string} 1={integer}, 2={integer} -->
+    <system:String x:Key="string_interp_fatalImportCircularReference">{0}, import {1} has a circular self reference for its link. The game and the toolset will be unable to handle this condition</system:String>
+    <!-- 0={f} 1={integer} -->
+    <system:String x:Key="string_interp_warningExceptionParsingProperties">{0} Exception occurred while parsing properties: {1}</system:String>
+    <!-- 0={Message prefix string} 1={exception message} -->
+    <system:String x:Key="string_interp_warningTemplateOwnerClassOutsideTables">{0} TemplateOwnerClass (Data offset 0x{1}) ({2}) is outside of import/export table</system:String>
+    <!-- 0={Message prefix string} 1={hex number} 2={integer} -->
+    <system:String x:Key="string_interp_warningBinaryReferenceOutsideTables">{0} Binary reference ({1}) is outside of import/export table</system:String>
+    <!-- 0={Message prefix string} 1={integer} -->
+    <system:String x:Key="string_interp_warningBinaryReferenceTrashed">{0} Binary reference ({1}) is a Trashed object</system:String>
+    <!-- 0={Message prefix string} 1={integer} -->
+    <system:String x:Key="string_interp_warningBinaryNameReferenceOutsideNameTable">{0} Found invalid binary reference for a name</system:String>
+    <!-- 0={Message prefix string} -->
+    <system:String x:Key="string_interp_warningUnableToParseBinary">{0} Unable to parse binary. It may be malformed. Error message: {1}. Note the error message is likely code-context specific and is not useful without running application in debug mode to determine it's context</system:String>
+    <!-- 0={Message prefix string} 1={Exception message} -->
+    <system:String x:Key="string_interp_warningImportLinkOutideOfTables">{0}, import {1} has an invalid link value that is outside of the import/export table: {2}</system:String>
+    <!-- 0={Relative filepath} 1={integer} 2={integer} -->
+    <system:String xml:space="preserve" x:Key="string_interp_dialog_dlcFolderNotInTPMI">The following mods contain DLC folders that are not in the Third Party Mod Identification Service (TPMI). If this mod is about to be released, you should submit telemetry for this mod so it can be identified in various tools such as ALOT Installer/Mod Manager diagnostics, be in the DLC mod database, and be identified by Mod Manager.\n\n{0}\n\nMods are only entered into the database once they have a public mod page.</system:String>
+    <!-- 0={List of mod names} -->
+    <system:String x:Key="string_interp_gamenameValidationTarget">{0} validation target</system:String>
+    <!-- 0={Name of game (Mass Effect, Mass Effect 2, Mass Effect 3)} -->
+    
     <!-- Backup Creator-->
     <system:String x:Key="string_backupsAreShared">Backups are shared across various modding tools including Mass Effect Randomizer, ALOT Installer, and ME3Explorer - ME3Tweaks Fork.</system:String>
     <system:String x:Key="string_backupsMustBeCreatedFresh">Backups must be created from a fresh, unmodified copy of the game. Modified backups are not supported.</system:String>
@@ -647,37 +739,6 @@
     <system:String  x:Key="string_deleteFromLibrary">Delete from library</system:String>
     <system:String  x:Key="string_visitWebsite">Visit website</system:String>
 
-    <!-- GUI Compatibility Generator -->
-    <system:String x:Key="string_preparingToScanGame">Preparing to scan game</system:String>
-    <system:String x:Key="string_pleaseWait">Please wait</system:String>
-    <system:String xml:space="preserve" x:Key="string_dialogWhatGuiCompatPackIsFor">A GUI compatibility mod is used to make SP Controller Support (version 2.34 or lower), Interface Scaling Mod, and Interface Scaling Add-on work with mods that modify the same files or include their own interface files. This is a critical step when using UI mods or you may experience softlocks or incorrect interfaces on screen.\n\nGenerate a GUI compatibility pack ONLY when you have installed all other non-texture mods as it is built against your current installation.\n\nGenerate compatibility pack?</system:String>
-    <system:String x:Key="string_confirmGeneration">Confirm generation</system:String>
-    <system:String x:Key="string_dialogNoUiModsAreInstalled">No UI mods are installed. GUI compatibility generator only works with SP Controller Mod (version 2.34 or lower), Interface Scaling Mod, and Interface Scaling Add-On.</system:String>
-    <system:String x:Key="string_noUiModsAreInstalled">No UI mods installed</system:String>
-    <system:String x:Key="string_preparingCompatGenerator">Preparing compatibility generator</system:String>
-    <system:String x:Key="string_dialogCannotGenerateCompatPackInvalidConfig">Cannot generate a compatibility pack: Both Interface Scaling Mod and SP Controller support are installed. These mods are not compatible with each other. You must use one or the other.</system:String>
-    <system:String x:Key="string_invalidConfiguration">Invalid configuration</system:String>
-    <system:String x:Key="string_downloadingUiLibrary">Downloading UI library</system:String>
-    <system:String x:Key="string_cannotGeneratorCompatPackCouldNotDownload">Cannot generate a compatibility pack: The required UI library could not be downloaded from ME3Tweaks. See the log for more information.</system:String>
-    <system:String x:Key="string_couldNotAcquireUiLibrary">Could not acquire UI library</system:String>
-    <system:String x:Key="string_scanningForGuiExports">Scanning for GUI exports</system:String>
-    <system:String x:Key="string_singularFile">file</system:String>
-    <!-- Singular version of file-->
-    <system:String x:Key="string_pluralFiles">files</system:String>
-    <!-- Plural version of file-->
-    <system:String x:Key="string_interp_XFilesNeedToBePatched">Number of files requiring patches: {0}</system:String>
-    <!-- 0 = number, 1 = singular/plural version of file -->
-    <system:String xml:space="preserve" x:Key="string_interp_compatPackModDescription">User generated compatibility pack made to inject proper interface files into other DLC mods from the game configuration. This pack was built against the following mods and should not be used against any other configuration.\n - {0}\n\nThis compatibility pack was generated at {1}</system:String>
-    <!-- 0 = bulleted dlc list, 1 = date time-->
-    <system:String x:Key="string_guiCompatibilityPack">GUI Compatibility Pack</system:String>
-    <system:String x:Key="string_preparingUiLibrary">Preparing UI library</system:String>
-    <system:String x:Key="string_decompressingData">Decompressing data</system:String>
-    <system:String x:Key="string_patchingFiles">Patching files</system:String>
-    <system:String x:Key="string_interp_patchedXY">Patched {0} {1}</system:String>
-    <!-- 0 = number, 1 = plural files/singular file-->
-    <system:String x:Key="string_noCompatPackRequired">No compatibility pack required</system:String>
-    <system:String x:Key="string_dialogNoCompatPackRequired">The current game configuration does not need a compatibility pack.</system:String>
-
     <!-- Installation Information -->
     <system:String x:Key="string_dialogRestoringFilesWhileAlotIsInstalledNotAllowed">Restoring files on a texture modded target is not allowed as it will introduce invalid texture pointers into the installation. Only full game restores are allowed while a game is texture modded.</system:String>
     <system:String x:Key="string_cannotRestoreSfarFiles">Cannot restore SFAR files</system:String>
@@ -748,6 +809,17 @@
     <system:String  x:Key="string_binkw32DLCBypass">Binkw32 DLC Bypass</system:String>
     <system:String x:Key="string_dialog_restoringSFARWithoutBackup">Restoring SFARs without a backup will only delete unpacked files, as there is no backup file that can be copied in. This will leave the DLC in a broken, unusable state. You need to make a backup from an unmodified version of the game before you can properly restore DLC SFARs.</system:String>
     <system:String x:Key="string_backupNotAvailable">Backup not available</system:String>
+    <system:String  x:Key="string_textures">Textures</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_manageTextures">Textures for the trilogy are installed using ALOT Installer.&#10;Texture mods must be installed last</system:String>
+    <system:String  x:Key="string_manageTextures">Install textures with ALOT Installer</system:String>
+    <system:String  x:Key="string_filesInstalledInSession">Files installed in session:</system:String>
+    <system:String  x:Key="string_interp_textureInstallationDate">Texture installation - {0}</system:String>
+    <!-- 0 = date -->
+    <system:String  x:Key="string_interp_versioningInfoX">Texture installation - {0}</system:String>
+    <!-- 0 = texture version string, like 'ALOT 12.0, MEUITM v3' -->
+    <system:String  x:Key="string_addModToDeployment">Add mod to deployment</system:String>
+    <system:String  x:Key="string_validationTargets">Validation targets</system:String>
+    <system:String  x:Key="string_tooltip_rerunCheckOnMod">Re-run check on mod</system:String>
 
     <!-- Log uploader-->
     <system:String x:Key="string_selectALogToView">Select a log to view on log viewing service</system:String>
@@ -829,12 +901,13 @@
     <!-- 0= loadFailedReason -->
     <system:String xml:space="preserve" x:Key="string_tooltip_importMods">Imports the selected mods into your mod library.&#10;Importing provides additional features in Mod Manager:&#10; - Update checks for mods (if supported)&#10; - Compression on import (if supported)&#10; - Restoring mod from ME3Tweaks (if supported)</system:String>
     <system:String  x:Key="string_tooltip_launchesALOTInstaller">Launches ALOT Installer</system:String>
-    <system:String xml:space="preserve" x:Key="string_tooltip_compressPackages">Compresses package files on import, reducing their file size. This is an experimental feature - if mods experience issues, you should not use this option.&#10;This option is not available for the following scenarios due to complexity:&#10; - Direct installation from archive&#10; - Mass Effect 1 files&#10;&#10;This feature can be disabled by ME3Tweaks when Mod Manager checks into the server</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_compressPackages">Compresses package files on import or install. Increases the amount of time it takes to extract the files, but reduces the amount of disk space required for mods.&#10;This option is not available for the following scenarios due to complexity:&#10; - Mass Effect 1 files&#10; - Executables that must have their filesystem structure automatically altered to work in Mod Manager&#10; - Mods that can use the ME3Tweaks Updater service (this ensures consistent update detection)&#10;&#10;This feature can be disabled by ME3Tweaks when Mod Manager checks into the server</system:String>
     <system:String xml:space="preserve" x:Key="string_tooltip_installModArchiveWindow">Directly installs the mod to the current active target for the relevant game.&#10;This will NOT import it into the mod library</system:String>
 
     <!-- Mod updater -->
     <system:String x:Key="string_modupdatesavailable">Mod updates available</system:String>
     <system:String x:Key="string_downloadUpdate">Download update</system:String>
+    <system:String x:Key="string_downloadUpdateFromNexusMods">Download from NexusMods</system:String>
     <system:String x:Key="string_downloading">Downloading</system:String>
     <system:String xml:space="preserve" x:Key="string_interp_errorOccuredWhileUpdatingXErrorMessage">Error occurred while updating {0}:\n{1}</system:String>
     <!-- 0 = mod name, 1 = error message -->
@@ -854,6 +927,8 @@
     <system:String  x:Key="string_tooltip_poweredByME3TweaksUpdaterService">Mods hosted on the ME3Tweaks Updater Service can be directly updated in Mod Manager</system:String>
     <system:String  x:Key="string_poweredByME3TweaksUpdaterService">Powered by ME3Tweaks Updater Service</system:String>
     <system:String x:Key="string_requiresBackup">Requires backup</system:String>
+    <system:String  x:Key="string_tooltip_downloadAll">Download updates to mods that support direct updates</system:String>
+    <system:String  x:Key="string_downloadAll">Download all</system:String>
 
     <!-- Program updater -->
     <system:String x:Key="string_anUpdateToME3TweaksModManagerIsAvailable">An update to ME3Tweaks Mod Manager is available.</system:String>
@@ -959,6 +1034,16 @@
     <system:String x:Key="string_manuallyEnterAPIKey">Manually enter API key</system:String>
     <system:String x:Key="string_yourAPIKeyWillAppearHere">Your API key will appear here</system:String>
 
+    <!-- Alternates Global -->
+    <system:String x:Key="string_validation_alt_imageAssetArchiveError">Alternate {0} lists image asset {1}, but the asset could not be read from the archive. The log will contain additional information.</system:String>
+    <!-- 0={FriendlyName} 1={ImageAssetName} -->
+    <system:String x:Key="string_validation_alt_imageAssetNotFound">Alternate file {0} lists image asset {1}, but the asset does not exist in the mod's {2} directory.</system:String>
+    <!-- 0={FriendlyName} 1={ImageAssetName} 2={Mod.ModImageAssetFolderName} -->
+    <system:String x:Key="string_validation_alt_imageAssetOutOfRangeHeight">Alternate {0} lists image asset height {1}, but it is not within the valid values range. ImageHeight must be between 1 and 1039 inclusive.</system:String>
+    <!-- 0={FriendlyName} 1={imageHeight} -->
+    <system:String x:Key="string_validation_alt_imageAssetMissingHeight">Alternate {0} specifies an image asset but does not set (or have a valid value for) ImageHeight. ImageHeight is required to be set on alternates that specify an image asset.</system:String>
+    <!-- 0={FriendlyName} -->
+
     <!-- Alternate DLC -->
     <system:String x:Key="string_validation_altdlc_oneAltDlcMissingFriendlyNameCmm6">At least one specified Alternate DLC does not specify a FriendlyName, which is required for mods targeting cmmver >= 6.0.</system:String>
     <system:String x:Key="string_validation_altdlc_unknownCondition">Alternate DLC specifies unknown/unsupported condition:</system:String>
@@ -981,8 +1066,8 @@
     <system:String x:Key="string_notApplicable">Not applicable</system:String>
     <system:String x:Key="string_interp_altdlc_multilistMissingMultiListRootPath">Alternate DLC ({0}) specifies operation OP_ADD_MULTILISTFILES_TO_CUSTOMDLC but does not specify the required item MultiListRootPath.</system:String>
     <!-- 0=FriendlyName -->
-    <system:String x:Key="string_interp_altdlc_multilistMissingMultiListX">Alternate DLC ({0}) Multilist ID does not exist as part of the task: {1}</system:String>
-    <!-- 0=FriendlyName 1=id -->
+    <system:String x:Key="string_interp_altdlc_multilistMissingMultiListX">Alternate DLC ({0}) Multilist ID does not exist as part of the {1} task: {2}</system:String>
+    <!-- 0=FriendlyName 1=task name (RETALIATION, CUSTOMDLC, etc) 2=id -->
     <system:String x:Key="string_interp_altdlc_multilistIdNotIntegerOrMissing">Alternate DLC ({0}) specifies operation OP_ADD_MULTILISTFILES_TO_CUSTOMDLC but does not specify the MultiListId attribute, or it could not be parsed to an integer.</system:String>
     <!-- 0=FriendlyName -->
     <system:String x:Key="string_interp_altdlc_multilistMissingFileInMultilist">Alternate DLC ({0}) specifies a multilist (index {1}) that contains file that does not exist: {2}</system:String>
@@ -1022,8 +1107,8 @@
     <!-- 0=FriendlyName -->
     <system:String x:Key="string_interp_altfile_multilistMissingMultiListTargetPath">Alternate File ({0}) specifies operation OP_APPLY_MULTILISTFILES but does not specify the required item MultiListTargetPath.</system:String>
     <!-- 0=FriendlyName -->
-    <system:String x:Key="string_interp_altfile_multilistMissingFileInMultiList">Alternate File ({0}) Multilist ID does not exist as part of the task:</system:String>
-    <!-- 0=FriendlyName -->
+    <system:String x:Key="string_interp_altfile_multilistMissingFileInMultiList">Alternate File ({0}) Multilist ID does not exist as part of the {1} task:</system:String>
+    <!-- 0=FriendlyName 1=Task header (RECKONING, BASEGAME, etc) -->
     <system:String x:Key="string_interp_altfile_multilistIdNotIntegerOrMissing">Alternate File ({0}) specifies operation OP_APPLY_MULTILISTFILES but does not specify the MultiListId attribute, or it could not be parsed to an integer.</system:String>
     <!-- 0=FriendlyName -->
     <system:String x:Key="string_interp_altfile_opnoinstallmultilistfiles_requires_moddesc61">Alternate File ({0}) specifies operation OP_NOINSTALL_MULTILISTFILES, but this feature is only supported on moddesc version 6.1 or higher.</system:String>
@@ -1034,9 +1119,6 @@
     <!-- 0={FriendlyName} -->
 
     <!-- GameTarget -->
-    <system:String  xml:space="preserve" x:Key="string_interp_ui_alotInstalledVersion">A Lot of Textures (ALOT) is installed\nVersion {0}</system:String>
-    <!-- 0 = ALOT Version -->
-    <system:String  xml:space="preserve" x:Key="string_ui_alotNotInstalled">A Lot of Textures (ALOT)\nNot installed</system:String>
     <system:String x:Key="string_interp_invalidTargetMissingFile">Invalid target: {0} was not found in game directory.</system:String>
     <!-- 0 = filename of file that is not found in game dir but should be there -->
     <system:String x:Key="string_invalidTargetProtectedByCmmvanilla">Invalid target: Marked as backup protected with cmm_vanilla file</system:String>
@@ -1226,6 +1308,10 @@
     <!-- 0={ModName} 1={job.Header} 2={Filepath} This comes up if a mod tries to install a file outside of the list of allowed locations for that task, such as the RETLAITION job trying to install files into the RECKONING DLC. -->
     <system:String x:Key="string_interp_validation_modparsing_securityCheckInsideDisallowedSilo">{0}'s job {1} installs a file to {2}, which is not an allowed location to install files to for this task header. This is a security risk, mods may only install to specific directories, for example the BASEGAME header cannot install files into the DLC directory.</system:String>
     <!-- 0={ModName} 1={job.Header, such as RETALIATION}, 2={Filepath}. This comes up if a mod task tries to install a file into a disallowed location, like a mod using the BASEGAME header to install to DLC. -->
+    <system:String x:Key="string_interp_singleRequiredDLC">Requires at least one of the following DLC to install:</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_bannerImageAssetNotFound">Mod has banner image name of {0}, but this file does not exist under the M3Images directory.</system:String>
+    <!-- 0={Filename} -->
+    <system:String x:Key="string_interp_validation_modparsing_bannerUsedButNotDeployedWithM3">Mod has banner image that is in an archive, but the storage type is not listed as 'Copy'. Mod Manager will not load mods from an archive that use images that were not deployed using Mod Manager.</system:String>
 
 
     <!-- About Panel -->
@@ -1267,6 +1353,8 @@
     <system:String x:Key="string_errorDeletingASI">Error deleting ASI</system:String>
 
     <!-- Starter Kit Window-->
+    <system:String x:Key="string_title_starterkit">DLC Mod Starter Kit Generator</system:String>
+    <!-- DLC Mod and Starter Kit are both nouns. This is the title of the starter kit panel that is used to generate a blank DLC mod -->
     <system:String x:Key="string_newDLCModInformation">New DLC mod information</system:String>
     <system:String x:Key="string_modName">Mod Name</system:String>
     <system:String x:Key="string_modDeveloper">Mod Developer</system:String>
@@ -1386,7 +1474,7 @@
     <system:String x:Key="string_interp_codeX">Code {0}</system:String>
     <!-- 0=ModMaker ID/Code -->
 
-    <!-- Updater Service-->
+    <!-- Mod updates panel -->
     <system:String x:Key="string_interp_decompressedFileNotCorrectSize">Decompressed file ({0}) is not the correct size. Expected: {1}, received: {2}</system:String>
     <!-- 0=sourcefile.relativefilepath 1=sourcefile.size 2=decompressedStream.Length -->
     <system:String x:Key="string_interp_decompressedFileWrongHash">Decompressed file ({0}) has the wrong hash. Expected: {1}, received: {2}</system:String>
@@ -1446,6 +1534,8 @@
     <system:String x:Key="string_exportExtract">Export/Extract</system:String>
     <system:String x:Key="string_typeToFilter">Type to filter</system:String>
     <system:String x:Key="string_gettingListOfFilesFromBackup">Getting list of files from backup</system:String>
+    <system:String  x:Key="string_extractAsMixinSource">Extract as Mixin Source</system:String>
+    <!-- This is only shown in debug mode. Mixin is a noun. It means extract the file in a format that can be used as a source file for developing a mixin patch -->
 
     <!-- Backup Nag System -->
     <system:String x:Key="string_interp_XgamesNotBackedUp">{0} games not backed up</system:String>
@@ -1555,7 +1645,7 @@
     <system:String x:Key="string_lZMAStoragePath">LZMA storage path</system:String>
     <system:String x:Key="string_manifestsStoragePath">Manifests storage path</system:String>
     <system:String x:Key="string_interp_updaterServiceDeltaMessageHeader">The following delta will be applied to the ME3Tweaks Updater Service for {0}:</system:String>
-    <!-- 0=mod.ModName -->
+    <!-- 0=ModName -->
     <system:String x:Key="string_interp_updaterServiceDeltaConfirmationHeader">The following delta will be applied to the ME3Tweaks Updater Service for {0}:</system:String> 
     <!-- 0=Mod name -->
     <system:String xml:space="preserve" x:Key="string_nnFilesToUploadToServern">\n\nFiles to upload to server:\n -</system:String>
@@ -1564,6 +1654,12 @@
     <!-- ensure you do not change any positions of the \n or the -! -->
     <system:String xml:space="preserve" x:Key="string_interp_updaterServiceDeltaConfirmationFooter">\n\nConfirm these are the changes you wish to apply to the ME3Tweaks Updater Service for this mod.</system:String>
     <system:String x:Key="string_confirmChanges">Confirm changes</system:String>
+    <system:String x:Key="string_interp_checkingPackagesBeforeUploadX">Checking packages before upload {0}%</system:String>
+    <!-- 0={Percent number} -->
+    <system:String x:Key="string_uploadAborted_foundCompressedPackage">Upload aborted: Cannot upload packages that are natively compressed</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialog_uploadAborted_foundCompressedPackage">The follow packages are natively compressed and cannot be uploaded. Package files must be saved uncompressed so end user instances of Mod Manager can reliably determine which files need updated. Resave these packages in ME3Explorer - ME3Tweaks Fork to decompress them.\n\n{0}</system:String>
+    <!-- 0=List of packages -->
+    <system:String x:Key="string_cannotUploadMod">Cannot upload mod</system:String>
 
     <!-- Mixin Library -->
     <system:String x:Key="string_selectMixinsToCompile">Select Mixins to compile</system:String>
@@ -1646,8 +1742,7 @@
     <system:String x:Key="string_dialog_cannotImportModTextureMarkersFound">This mod contains files that have been marked as being part of a texture modded installation. Mods that have been modified by a texture mod cannot be imported.</system:String>
     <system:String x:Key="string_cannotImportMod">Cannot import mod</system:String>
 
-
-<!-- ME3CMM Migration -->
+    <!-- ME3CMM Migration -->
     <system:String x:Key="string_migratingMods">Migrating mods</system:String>
     <system:String x:Key="string_migratingSettings">Migrating settings</system:String>
     <system:String x:Key="string_interp_migratingModsXoFY">Migrating mods [{0}/{1}]</system:String>
@@ -1655,6 +1750,7 @@
     <system:String xml:space="preserve" x:Key="string_dialog_me3cmmMigrationCompleted">Migration from Mass Effect 3 Mod Manager to ME3Tweaks Mod Manager completed.\n\nLaunch ME3TweaksModManager.exe from now on instead of ME3CMM.exe.</system:String>
     <system:String x:Key="string_dialog_performMe3cmmCleanup">Cleanup ME3CMM files? This will delete loose files in the data directory, ME3CMM specific folders in the data directory, and ME3CMM.exe.</system:String>
     <system:String x:Key="string_performCleanupQuestion">Perform cleanup?</system:String>
+    <system:String x:Key="string_massEffect3ModManagerMigration">Mass Effect 3 Mod Manager Migration</system:String>
 
     <!-- Official DLC Toggler -->
     <system:String x:Key="string_officialDLCToggler">Official DLC toggler</system:String>
@@ -1667,11 +1763,14 @@
 
     <!-- ALOT Version Info -->
     <system:String x:Key="string_textureModded">Texture modded</system:String>
+    <system:String x:Key="string_interp_modNameByAuthorName">{0} by {1}</system:String>
+    <!-- 0={ModName} 1={AuthorName} -->
 
     <!-- Intro Tutorial -->
     <system:String x:Key="string_next">Next</system:String>
 	<system:String x:Key="string_previous">Previous</system:String>
 	<system:String x:Key="string_skipTutorial">Skip tutorial</system:String>
+    <system:String  x:Key="string_title_quickTutorial">ME3Tweaks Mod Manager Quick Tutorial</system:String>
 
     <!-- TLK Transpiler -->
     <system:String x:Key="string_interp_exceptionOccuredWhileCompilingTLKSubfileTankmaster">Exception occurred while compiling TLK subfile {0}: {1}</system:String>
@@ -1742,7 +1841,7 @@
     <!-- Texture2D -->
     <system:String x:Key="string_error_couldNotFetchTextureData">Could not fetch texture data for texture {0} in file {1}</system:String>
     <!-- Shown when checking textures during deployment. 0 = export object name, so just a long string ID. 1 = filepath-->
-    <system:String x:Key="string_error_me1TextureFileNotFound">Externally referenced texture file not found in game: {0}.</system:String>
+    <system:String x:Key="string_error_me1TextureFileNotFound">Externally referenced texture package not found in game: {0}.</system:String>
     <!-- 0= filepath -->
     <system:String x:Key="string_error_me23TextureTFCNotFound">Externally referenced texture cache not found: {0}.</system:String>
     <!-- 0=filepath -->
@@ -1750,4 +1849,87 @@
     <!-- This technical string is shown when there is error loading texture data. 0=exception message. 1=filepath. 2=string (pccUnc, extLZO...) 3=file offset 0xhhhhhhhh -->
     <system:String xml:space="preserve" x:Key="string_interp_error_textureExceptionInternal">{0}\nStorageType: {1}\n</system:String>
     <!-- 0={exception message} 1={storage type (pccUnc, pccLZO, pccZLib)} -->
+
+    <!-- Mod Selector Dialog -->
+    <system:String  x:Key="string_addSelectedModsToDeployment">Add selected mods to deployment</system:String>
+    <system:String  x:Key="string_description_addSelectedModsToDeployment">Select mods to add to deployment. You can select multiple mods by holding the Control key or Shift.</system:String>
+    <system:String  x:Key="string_addModsToDeployment">Add mods to deployment</system:String>
+
+    <!-- Moddesc Editor -->
+    <system:String x:Key="string_copiedModdesciniContentsToClipboard">Copied moddesc.ini contents to clipboard</system:String>
+    <system:String x:Key="string_interp_failedToCopyModdescini">Failed to copy moddesc.ini text to clipboard: {0}</system:String>
+    <!-- 0={Exception message} -->
+    <system:String x:Key="string_moddescIniNotChanged">Existing moddesc.ini is same as generated one</system:String>
+    <system:String x:Key="string_interp_savedModdsecini">moddesc.ini has been updated for {0}. Reload the library for changes to take effect.</system:String>
+    <!-- 0={Mod name} -->
+    <system:String x:Key="string_interp_couldNotSaveModdescini">Could not save moddesc.ini: {0}</system:String>
+    <!-- 0={Exception message} -->
+    <system:String x:Key="string_modLoadedSuccessfully">Mod loaded successfully</system:String>
+    <system:String x:Key="string_moddesciniEdsitor">moddesc.ini Editor</system:String>
+    <system:String x:Key="string_openModdesciniDocumentation">Open moddesc.ini documentation</system:String>
+    <system:String x:Key="string_serialize">Serialize</system:String>
+    <system:String x:Key="string_metadata">Metadata</system:String>
+    <system:String x:Key="string_officialDLC">Official DLC</system:String>
+    <system:String x:Key="string_customDLC">Custom DLC</system:String>
+    <system:String x:Key="string_alternateFilesCustomDLC">Alternate Files (Custom DLC)</system:String>
+    <system:String x:Key="string_alternateDLCCustomDLC">Alternate DLC (Custom DLC)</system:String>
+    <system:String x:Key="string_mE1ConfigFiles">ME1 config files</system:String>
+    <system:String x:Key="string_balanceChanges">Balance changes</system:String>
+    <system:String x:Key="string_localizationModInfo">Localization mod info</system:String>
+    <system:String x:Key="string_resultingModdescini">Resulting moddesc.ini</system:String>
+    <system:String x:Key="string_theGeneratedModdesciniFileIsShownBelowForReview">The generated moddesc.ini file is shown below for review.</system:String>
+    <system:String x:Key="string_saveModdesciniToMod">Save moddesc.ini to mod</system:String>
+    <system:String x:Key="string_copyText">Copy text</system:String>
+    <system:String x:Key="string_mde_alternatedlc">Alternate DLC allows you to define alternate installation options for the CUSTOMDLC task header.</system:String>
+    <system:String x:Key="string_addNewAlternateDLC">Add new Alternate DLC</system:String>
+    <system:String x:Key="string_addNewAlternateFile">Add new Alternate File</system:String>
+    <system:String x:Key="string_interp_alternateFileX">Alternate File {0}</system:String>
+    <system:String x:Key="string_mde_balancechanges">The BALANCE_CHANGES task header allows you to install a balance changes file override, which will replace the version that is normally downloaded at Mass Effect 3 startup. Balance changes only affect multiplayer. Ensure the file is based on the server coalesced, otherwise you will permanently corrupt your online profile with no option to fix it, short of repurchasing the game.</system:String>
+    <system:String x:Key="string_mde_addBalanceChangesTask">Add BALANCE_CHANGES task</system:String>
+    <system:String x:Key="string_mde_addFileToThisMultilist">Add file to this Multilist</system:String>
+    <system:String x:Key="string_selectTask">Select task</system:String>
+    <system:String x:Key="string_selectATaskHeader">Select a task header</system:String>
+    <system:String x:Key="string_chooser_selectOfficialDLCHeader">Select an official DLC to add a task header for. Only headers that are not already added are listed here.</system:String>
+    <system:String x:Key="string_mde_addOfficialDLCTask">Official DLC tasks allow you to install files into official game DLC. Modding official DLC is useful for multiplayer, which can't add DLC without creating additional problems.</system:String>
+    <system:String x:Key="string_addOfficialDLCTask">Add Official DLC task</system:String>
+    <system:String x:Key="string_alternateFiles">Alternate Files</system:String>
+    <system:String x:Key="string_mde_basegametask">The Basegame task allows you to install files into the basegame, including the BIOGame, Binaries (not Win32), and Engine folders. This task is useful for mods that edit files that load before DLC.</system:String>
+    <system:String x:Key="string_addBasegameTask">Add Basegame task</system:String>
+    <system:String x:Key="string_mde_multilists">Multilists are used by alternates to specify a specific list of files, such as adding files from multiple folders to a mod. They don't do anything on their own unless they are referenced by the multilistid number defined in an alternate.</system:String>
+    <system:String x:Key="string_addNewMultilist">Add new Multilist</system:String>
+    <system:String x:Key="string_mde_metadata">The main information that is displayed to the user is contained within these three sections of moddesc.ini. The selections made here will determine how your mod parses.</system:String>
+    <system:String x:Key="string_configFile">Config file</system:String>
+    <system:String x:Key="string_mde_me1Config">The ME1_CONFIG task header allows you to install .ini files into the Documents/BioWare/Mass Effect/Config directory. Be aware that these will overwrite any files there, which may break other mods, such as ME1Controller.</system:String>
+    <system:String x:Key="string_addME1ConfigTask">Add ME1_CONFIG task</system:String>
+    <system:String x:Key="string_addConfigFile">Add config file</system:String>
+    <system:String x:Key="string_tlkFilename">TLK filename</system:String>
+    <system:String x:Key="string_modAlreadyLocalizationMod">Mod already localization mod</system:String>
+    <system:String x:Key="string_setToLocalizationMod">Set to localization mod</system:String>
+    <system:String x:Key="string_mde_localization">The LOCALIZATION task header allows you to install .tlk files to existing mods, to provide localizations for them. The LOCALIZATION header must be used by itself and cannot be used with other task headers. This task can only install TLK files.</system:String>
+    <system:String x:Key="string_targetDLCName">Target DLC name</system:String>
+    <system:String x:Key="string_addTLKFile">Add TLK file</system:String>
+    <system:String x:Key="string_tooltip_typeToSelect">Type to select</system:String>
+    <system:String x:Key="string_mde_customdlc">Custom DLC, also known as DLC mods, are mods that load at the main menu and can override files that are not already loaded. The list of DLC mappings below are always installed with your mod.</system:String>
+    <system:String x:Key="string_addCustomDLC">Add Custom DLC</system:String>
+    <system:String x:Key="string_installedCustomDLCFolders">Installed Custom DLC folders</system:String>
+    <system:String x:Key="string_mde_customdlc2">Items listed here are always installed with your mod.</system:String>
+    <system:String x:Key="string_sourceDirectoryPath">Source directory path</system:String>
+    <system:String x:Key="string_installedDLCName">Installed DLC name</system:String>
+    <system:String x:Key="string_dLCHumanReadableName">DLC human readable name</system:String>
+    <system:String x:Key="string_mde_dec_header_balancechanges">The newfiles descriptor should only contain the path of your server coalesced file, relative to the moddir subdirectory from the root of the mod.</system:String>
+    <system:String x:Key="string_mde_dec_header_basegame">Alternate files allow you to specify alternate installation options for this task. These options are presented to the user before installation begins.</system:String>
+    <system:String x:Key="string_mde_dec_header_customdlc">These values allow you to control when your mod cannot be installed, as well as allow Mod Manager to remove older versions of your mod if the DLC folder name has changed.</system:String>
+    <system:String x:Key="string_mde_dec_header_metadata_modmanager">The ModManager header is the first item read when parsing a mod and is used to configure the mod parser. This editor only supports saving mods targeting the latest version of moddesc that this build supports.</system:String>
+    <system:String x:Key="string_mde_dec_header_metadata_modinfo">The ModInfo header contains most of the information that is displayed to the user in Mod Manager's interface. The more information you give to a user, the less likely they will need to ask you questions about your mod.</system:String>
+    <system:String x:Key="string_mde_dec_header_metadata_updates">The UPDATES header is used for the ME3Tweaks Updater Service. The additionaldeployment items can be used to force non-referenced files to be included when deploying your mod.</system:String>
+
+    <!-- Nexus File Search -->
+    <system:String x:Key="string_nexusModsFileSearch">NexusMods File Search</system:String>
+    <system:String x:Key="string_description_nexusModsFileSearch">You can search for files contained in mods on NexusMods for the Mass Effect trilogy games with NexusMods File Search. The database is regularly updated and maintained by JonatanRek.</system:String>
+    <system:String x:Key="string_search">Search</system:String>
+    <system:String x:Key="string_searching">Searching...</system:String>
+    <system:String x:Key="string_goToModPage">Go to mod page</system:String>
+    <system:String x:Key="string_interp_lastIndexing">Last file indexing: {0}, Last mod indexing: {1}</system:String>
+    <!-- 0={date} 1={date} -->
+
 </ResourceDictionary>

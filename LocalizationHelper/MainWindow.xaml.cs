@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿#if DEBUG
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,18 +9,10 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Xml;
 using System.Xml.Linq;
+using MassEffectModManagerCore.modmanager.objects;
 using Path = System.IO.Path;
 
 namespace LocalizationHelper
@@ -31,17 +24,8 @@ namespace LocalizationHelper
     {
         public ObservableCollectionExtended<string> SourceFiles { get; } = new ObservableCollectionExtended<string>();
         public string SelectedFile { get; set; }
-
         public MainWindow()
         {
-            //var text = File.ReadAllLines(@"C:\users\mgame\desktop\unrealkeys");
-            //foreach (var line in text)
-            //{
-            //    var unrealStr = line.Substring(0,line.IndexOf(" "));
-
-            //    Debug.WriteLine($"case \"{unrealStr}\":\n\treturn \"{unrealStr}\";");
-            //}
-            //Environment.Exit(0);
             DataContext = this;
             var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName).FullName;
             var modmanagerroot = Path.Combine(solutionroot, "MassEffectModManagerCore");
@@ -74,7 +58,7 @@ namespace LocalizationHelper
             files.Add("MainWindow.xaml");
             files.Add("MainWindow.xaml.cs");
             files.Add(Path.Combine(modmanagerroot, "modmanager", "TLKTranspiler.cs").Substring(rootLen));
-            files.Add(Path.Combine(modmanagerroot, "gamefileformats","unreal","Texture2D.cs").Substring(rootLen));
+            //files.Add(Path.Combine(modmanagerroot, "gamefileformats","unreal","Texture2D.cs").Substring(rootLen));
 
             files.Sort();
             SourceFiles.ReplaceAll(files);
@@ -124,31 +108,39 @@ namespace LocalizationHelper
 
                 foreach (var item in menuitems)
                 {
+                    string title = (string)item.Attribute("Title");
                     string header = (string)item.Attribute("Header");
                     string tooltip = (string)item.Attribute("ToolTip");
                     string content = (string)item.Attribute("Content");
                     string text = (string)item.Attribute("Text");
                     string watermark = (string)item.Attribute("Watermark");
 
-                    if (header != null && !header.StartsWith("{") && isNotLangWord(header) && isNotGameName(header))
+                    if (title != null && !title.StartsWith("{") && isNotLangWord(title) && isNotGameName(title) && isNotJobheader(title) && isNotLocalizableWord(title))
+                    {
+                        localizations[title] = $"string_{toCamelCase(title)}";
+                        //item.Attribute("Header").Value = $"{{DynamicResource {localizations[header]}}}";
+                    }
+
+                    if (header != null && !header.StartsWith("{") && isNotLangWord(header) && isNotGameName(header) && isNotJobheader(header) && isNotLocalizableWord(header))
                     {
                         localizations[header] = $"string_{toCamelCase(header)}";
                         //item.Attribute("Header").Value = $"{{DynamicResource {localizations[header]}}}";
                     }
 
-                    if (tooltip != null && !tooltip.StartsWith("{") && isNotLangWord(tooltip) && isNotGameName(tooltip))
+                    if (tooltip != null && !tooltip.StartsWith("{") && isNotLangWord(tooltip) && isNotGameName(tooltip) && isNotJobheader(tooltip) && isNotLocalizableWord(tooltip))
                     {
                         localizations[tooltip] = $"string_tooltip_{toCamelCase(tooltip)}";
                         //item.Attribute("ToolTip").Value = $"{{DynamicResource {localizations[tooltip]}}}";
                     }
 
-                    if (content != null && !content.StartsWith("{") && content.Length > 1 && !content.StartsWith("/images/") && isNotLangWord(content) && isNotGameName(content))
+                    if (content != null && !content.StartsWith("{") && content.Length > 1 && !content.StartsWith("/images/") && isNotLangWord(content) && isNotLocalizableWord(content) && isNotGameName(content) && isNotJobheader(content))
                     {
                         localizations[content] = $"string_{toCamelCase(content)}";
                         //item.Attribute("Content").Value = $"{{DynamicResource {localizations[content]}}}";
                     }
 
-                    if (watermark != null && !watermark.StartsWith("{") && watermark.Length > 1 && !long.TryParse(watermark, out var _) && isNotLangWord(watermark) && isNotGameName(watermark)
+                    if (watermark != null && !watermark.StartsWith("{") && watermark.Length > 1 && !long.TryParse(watermark, out var _) && isNotLangWord(watermark) && isNotLocalizableWord(watermark)
+                        && isNotJobheader(watermark) && isNotGameName(watermark)
                         && !watermark.StartsWith("http"))
                     {
                         localizations[watermark] = $"string_{toCamelCase(watermark)}";
@@ -159,6 +151,8 @@ namespace LocalizationHelper
                                      && text.Length > 1
                                      && isNotLangWord(text)
                                      && isNotGameName(text)
+                                     && isNotJobheader(text)
+                                     && isNotLocalizableWord(text)
                                      && text != "BioGame"
                                      && text != "BioParty"
                                      && text != "BioEngine" && text != "DLC_MOD_")
@@ -174,7 +168,7 @@ namespace LocalizationHelper
                 {
                     var newlines = v.Key.Contains("\n");
                     var text = v.Key.Replace("\r\n", "&#10;").Replace("\n", "&#10;");
-                    sb.AppendLine("\t<system:String " + (newlines ? "xml:space=\"preserve\" " : " ") + "x:Key=\"" + v.Value.Substring(0, "string_".Length) + v.Value.Substring("string_".Length, 1).ToLower() + v.Value.Substring("string_".Length + 1) + "\">" + text + "</system:String>");
+                    sb.AppendLine("\t<system:String" + (newlines ? "xml:space=\"preserve\" " : " ") + "x:Key=\"" + v.Value.Substring(0, "string_".Length) + v.Value.Substring("string_".Length, 1).ToLower() + v.Value.Substring("string_".Length + 1) + "\">" + text + "</system:String>");
                 }
 
                 StringsTextBox.Text = sb.ToString();
@@ -208,7 +202,7 @@ namespace LocalizationHelper
             foreach (var key in keys)
             {
                 var keyStr = key.Attribute(x + "Key").Value;
-                m3llines.Add($"\t\tpublic static readonly string {keyStr} = \"{keyStr}\";");
+                m3llines.Add($"\t\tpublic const string {keyStr} = \"{keyStr}\";");
                 //Debug.WriteLine(keyStr);
             }
 
@@ -529,7 +523,7 @@ namespace LocalizationHelper
             var M3folder = Path.Combine(solutionroot, "MassEffectModManagerCore");
 
             var file = Path.Combine(M3folder, SelectedFile);
-            string[] attributes = { "Header", "ToolTip", "Content", "Text", "Watermark" };
+            string[] attributes = { "Title", "Header", "ToolTip", "Content", "Text", "Watermark" };
             try
             {
                 XDocument doc = XDocument.Load(file);
@@ -805,6 +799,34 @@ namespace LocalizationHelper
             return true;
         }
 
+        private bool isNotLocalizableWord(string str)
+        {
+            if (str.Equals("ME3Tweaks Mod Manager", StringComparison.InvariantCultureIgnoreCase)) return false;
+            if (str.Equals("Mass Effect Ini Modder", StringComparison.InvariantCultureIgnoreCase)) return false;
+            if (str.Equals("Multilists", StringComparison.InvariantCultureIgnoreCase)) return false;
+            if (str.Equals("Multilist", StringComparison.InvariantCultureIgnoreCase)) return false;
+            if (str.Equals("moddir", StringComparison.InvariantCultureIgnoreCase)) return false;
+            if (str.Equals("=>", StringComparison.InvariantCultureIgnoreCase)) return false;
+            if (str.Equals("Faster Legs", StringComparison.InvariantCultureIgnoreCase)) return false;
+            if (str.Equals("GatorZ", StringComparison.InvariantCultureIgnoreCase)) return false;
+            if (str.Equals("OneGreatMod", StringComparison.InvariantCultureIgnoreCase)) return false;
+            if (str.Equals("Faster Legs DLC Module", StringComparison.InvariantCultureIgnoreCase)) return false;
+            return true;
+        }
+
+        private bool isNotJobheader(string str)
+        {
+            str = str.TrimStart('[');
+            str = str.TrimEnd(']');
+            if (Enum.TryParse<ModJob.JobHeader>(str, out var parsed))
+            {
+                // it's a job header
+                return false;
+            }
+
+            return true;
+        }
+
         private bool isNotLangWord(string str)
         {
             if (str.Equals("Deutsch", StringComparison.InvariantCultureIgnoreCase)) return false;
@@ -883,3 +905,4 @@ namespace LocalizationHelper
         }
     }
 }
+#endif

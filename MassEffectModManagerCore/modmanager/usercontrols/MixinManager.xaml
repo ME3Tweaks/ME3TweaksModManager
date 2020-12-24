@@ -91,13 +91,6 @@
             <GridSplitter Grid.Row="5" Grid.Column="1" HorizontalAlignment="Stretch" />
             <DockPanel Grid.Row="5" Grid.Column="2">
                 <TextBlock DockPanel.Dock="Top" Text="{DynamicResource string_patchDescription}" FontWeight="Bold" />
-                <!--<StackPanel Name="VisitWebsitePanel"  DockPanel.Dock="Bottom" HorizontalAlignment="Center" Height="0">
-                    <TextBlock ToolTip="{Binding SelectedMod.ModWebsite}">
-                        <Hyperlink Command="{Binding OpenWebsiteCommand}" RequestNavigate="RequestNavigate" NavigateUri="{Binding SelectedMod.ModWebsite}">
-                            <TextBlock Text="{Binding SelectedMod.ModName, StringFormat=Visit {0}\'s web site}"/>
-                        </Hyperlink>
-                    </TextBlock>
-                </StackPanel>-->
                 <TextBox IsReadOnly="True" IsReadOnlyCaretVisible="False" Text="{Binding SelectedMixin.UIText, Mode=OneWay}" TextWrapping="Wrap" VerticalContentAlignment="Top" HorizontalContentAlignment="Left" />
             </DockPanel>
         </Grid>

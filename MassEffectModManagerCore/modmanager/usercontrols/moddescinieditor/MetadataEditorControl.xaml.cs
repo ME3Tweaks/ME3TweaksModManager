@@ -1,32 +1,77 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Text;
+﻿using System.ComponentModel;
+using System.Globalization;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Polly.NoOp;
+using IniParser.Model;
+using MassEffectModManagerCore.modmanager.objects;
+using MassEffectModManagerCore.modmanager.objects.mod;
+using MassEffectModManagerCore.modmanager.objects.mod.editor;
+using ME3ExplorerCore.Misc;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
 {
     /// <summary>
     /// Interaction logic for MetadataEditorControl.xaml
     /// </summary>
-    public partial class MetadataEditorControl : UserControl, INotifyPropertyChanged
+    public partial class MetadataEditorControl : ModdescEditorControlBase, INotifyPropertyChanged
     {
-        public Mod EditingMod { get; set; }
         public MetadataEditorControl()
         {
-            DataContext = this;
             InitializeComponent();
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public ObservableCollectionExtended<MDParameter> ModManagerParameterMap { get; } = new ObservableCollectionExtended<MDParameter>();
+        public ObservableCollectionExtended<MDParameter> ModInfoParameterMap { get; } = new ObservableCollectionExtended<MDParameter>();
+        public ObservableCollectionExtended<MDParameter> UPDATESParameterMap { get; } = new ObservableCollectionExtended<MDParameter>();
+
+        public override void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
+        {
+            if (!HasLoaded)
+            {
+                EditingMod.BuildParameterMap(EditingMod);
+                ModManagerParameterMap.ReplaceAll(EditingMod.ParameterMap.Where(x => x.Header == @"ModManager"));
+                ModInfoParameterMap.ReplaceAll(EditingMod.ParameterMap.Where(x => x.Header == @"ModInfo"));
+                UPDATESParameterMap.ReplaceAll(EditingMod.ParameterMap.Where(x => x.Header == @"UPDATES"));
+                HasLoaded = true;
+            }
+        }
+
+        //Fody uses this property on weaving
+#pragma warning disable 0169
+public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 0169
+        public override void Serialize(IniData ini)
+        {
+            foreach (var v in EditingMod.ParameterMap) //references will still be same
+            {
+                if (v.Header == @"ModInfo" && v.Key== @"requireddlc" && EditingMod.GetJob(ModJob.JobHeader.LOCALIZATION) != null)
+                {
+                    // Do not store RequiredDLC in localization mod.
+                    continue;
+                }
+
+                if (v.Key == @"cmmver" && v.Header == @"ModManager")
+                {
+                    // Editor only can write latest version format
+                    v.Value = App.HighestSupportedModDesc.ToString(CultureInfo.InvariantCulture);
+                }
+
+
+                if (!string.IsNullOrWhiteSpace(v.Value))
+                {
+                    if (v.Key == @"moddesc" && v.Header == @"ModInfo")
+                    {
+                        // Convert what's written into moddesc
+                        ini[v.Header][v.Key] = Utilities.ConvertNewlineToBr(v.Value);
+                    }
+                    else
+                    {
+                        ini[v.Header][v.Key] = v.Value;
+
+                    }
+                }
+            }
+        }
     }
 }

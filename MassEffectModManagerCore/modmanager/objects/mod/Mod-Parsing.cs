@@ -7,42 +7,43 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using IniParser.Parser;
-using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager.gameini;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.memoryanalyzer;
-using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
-using ME3Explorer.Packages;
+using ME3ExplorerCore.GameFilesystem;
+using ME3ExplorerCore.Gammtek.Extensions.Collections.Generic;
+using ME3ExplorerCore.Packages;
 using Microsoft.AppCenter.Analytics;
 using Serilog;
 using SevenZip;
 
-namespace MassEffectModManagerCore.modmanager
+namespace MassEffectModManagerCore.modmanager.objects.mod
 {
     [DebuggerDisplay("Mod - {ModName}")] //do not localize
     public partial class Mod : INotifyPropertyChanged
     {
-        public enum MEGame
-        {
-            Unknown = 0,
-            ME1,
-            ME2,
-            ME3
-        }
-
         /// <summary>
         /// The default website value, to indicate one was not set. This value must be set to a valid url or navigation request in UI binding may not work.
         /// </summary>
         public const string DefaultWebsite = @"http://example.com"; //this is required to prevent exceptions when binding the navigateuri
-        public event PropertyChangedEventHandler PropertyChanged;
+        //Fody uses this property on weaving
+#pragma warning disable 0169
+public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 0169
 
         /// <summary>
         /// The numerical ID for a mod on the respective game's NexusMods page. This is automatically parsed from the ModWebsite if this is not explicitly set and the ModWebsite attribute is a nexusmods url.
         /// </summary>
         public int NexusModID { get; set; }
+
+        /// <summary>
+        /// The moddesc.ini value that was set for nexuscode. If one was not set, this value is blank.
+        /// </summary>
+        public string NexusCodeRaw { get; set; }
+
         /// <summary>
         /// Indicates if this is a valid mod or not.
         /// </summary>
@@ -101,14 +102,13 @@ namespace MassEffectModManagerCore.modmanager
         /// </summary>
         public bool PreferCompressed { get; set; }
         /// <summary>
+        /// If the mod requires an AMD processor to install. This is only used for ME1 lighting fix.
+        /// </summary>
+        public bool RequiresAMD { get; set; }
+        /// <summary>
         /// List of files that will always be deleted locally when servicing an update on a client. This has mostly been deprecated for new mods.
         /// </summary>
         public ObservableCollectionExtended<string> UpdaterServiceBlacklistedFiles { get; } = new ObservableCollectionExtended<string>();
-
-        /// <summary>
-        /// List of DLC folder names the controller compatibilty pack was built against. This list is passed through to Metacmm and will be checked on install to prevent improper installation
-        /// </summary>
-        public ObservableCollectionExtended<string> ME3ControllerCompatBuiltAgainst { get; } = new ObservableCollectionExtended<string>();
 
         /// <summary>
         /// If this mod can attempt to check for updates via Nexus. This being true doesn't mean it will - it requires whitelisting.
@@ -263,6 +263,16 @@ namespace MassEffectModManagerCore.modmanager
                     }
                 }
 
+                if (OptionalSingleRequiredDLC.Any())
+                {
+                    sb.AppendLine(M3L.GetString(M3L.string_interp_singleRequiredDLC));
+                    foreach (var reqDLC in OptionalSingleRequiredDLC)
+                    {
+                        string name = ThirdPartyServices.GetThirdPartyModInfo(reqDLC, Game)?.modname ?? reqDLC;
+                        sb.AppendLine($@" - {name}");
+                    }
+                }
+
                 return sb.ToString();
             }
         }
@@ -284,6 +294,10 @@ namespace MassEffectModManagerCore.modmanager
         public int ModClassicUpdateCode { get; set; }
         public string LoadFailedReason { get; set; }
         public List<string> RequiredDLC = new List<string>();
+        /// <summary>
+        /// List of DLC, of which at least one must be installed
+        /// </summary>
+        public List<string> OptionalSingleRequiredDLC = new List<string>();
         private List<string> AdditionalDeploymentFolders = new List<string>();
         private List<string> AdditionalDeploymentFiles = new List<string>();
         public string ModPath { get; private set; }
@@ -538,6 +552,7 @@ namespace MassEffectModManagerCore.modmanager
 
             int.TryParse(iniData[@"ModInfo"][@"nexuscode"], out int nexuscode);
             NexusModID = nexuscode;
+            NexusCodeRaw = iniData[@"ModInfo"][@"nexuscode"];
 
             #region NexusMods ID from URL
 
@@ -606,6 +621,12 @@ namespace MassEffectModManagerCore.modmanager
                 CLog.Information($@"Found prefercompressed descriptor. The mod will default the compress packages flag to {pCompressed} in the mod import panel.",
                     Settings.LogModStartup);
                 PreferCompressed = pCompressed;
+            }
+
+            if (bool.TryParse(iniData[@"ModInfo"][@"amdprocessoronly"], out var bRequiresAMD))
+            {
+                // Only used for ME1 AMD Lighting Fix
+                RequiresAMD = bRequiresAMD;
             }
 
             string game = iniData[@"ModInfo"][@"game"];
@@ -681,9 +702,45 @@ namespace MassEffectModManagerCore.modmanager
                 ModDescTargetVersion = 3.1;
             }
 
-            //This was in Java version - I belevie this was to ensure only tenth version of precision would be used. E.g no moddesc 4.52
+            //This was in Java version - I believe this was to ensure only tenth version of precision would be used. E.g no moddesc 4.52
             ModDescTargetVersion = Math.Round(ModDescTargetVersion * 10) / 10;
             CLog.Information(@"Parsing mod using moddesc target: " + ModDescTargetVersion, Settings.LogModStartup);
+
+            #region Banner Image
+            if (ModDescTargetVersion >= 6.2)
+            {
+                // Requires 6.2. Mods not deployed using M3 will NOT support this as it has special
+                // archive requirements.
+                BannerImageName = iniData[@"ModInfo"][@"bannerimagename"];
+
+                if (!string.IsNullOrWhiteSpace(BannerImageName))
+                {
+                    var fullPath = FilesystemInterposer.PathCombine(Archive != null, ModPath, Mod.ModImageAssetFolderName, BannerImageName);
+                    if (!FilesystemInterposer.FileExists(fullPath, Archive))
+                    {
+                        Log.Error($@"Mod has banner image name of {BannerImageName}, but this file does not exist under the M3Images directory.");
+                        LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_bannerImageAssetNotFound, BannerImageName);
+                        return;
+                    }
+
+                    // File exists
+                    if (Archive != null)
+                    {
+                        // Check archive lists it as Store. If any other format we will not load this mod as it was improperly deployed
+                        var storageType = Archive.GetStorageTypeOfFile(fullPath);
+                        if (storageType != @"Copy")
+                        {
+                            Log.Error($@"Mod has banner image that is in an archive, but the storage type is not listed as 'Copy'. Mod Manager will not load mods from archive that list images that were not deployed using Mod Manager.");
+                            LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_bannerUsedButNotDeployedWithM3);
+                            return;
+                        }
+
+                        // If we are loading from archive we must load it here while the archive stream is still available
+                        LoadBannerImage();
+                    }
+                }
+            }
+            #endregion
 
             #region Header Loops
 
@@ -721,7 +778,7 @@ namespace MassEffectModManagerCore.modmanager
                     string addFilesTargetReadOnlyList = ModDescTargetVersion >= 4.3 ? iniData[headerAsString][@"addfilesreadonlytargets"] : null;
 
 
-                    //Remove files (ModDesc 4.1) - REMOVE IN MODDESC 6
+                    //Remove files (ModDesc 4.1) - REMOVED IN MOD MANAGER 6
 
 
                     //Check that the lists here are at least populated in one category. If none are populated then this job will do effectively nothing.
@@ -756,7 +813,7 @@ namespace MassEffectModManagerCore.modmanager
                     List<string> addFilesSourceSplit = null;
                     List<string> addFilesTargetSplit = null;
                     List<string> addFilesReadOnlySplit = null;
-                    if (Game == Mod.MEGame.ME3 || header == ModJob.JobHeader.BASEGAME)
+                    if (Game == MEGame.ME3 || header == ModJob.JobHeader.BASEGAME)
                     {
 
                         if (addFilesSourceList != null && addFilesTargetList != null)
@@ -819,6 +876,14 @@ namespace MassEffectModManagerCore.modmanager
                     CLog.Information($@"Read job requirement text: {jobRequirement}", Settings.LogModStartup && jobRequirement != null);
 
                     ModJob headerJob = new ModJob(header, this);
+                    // Editor only stuff
+                    headerJob.NewFilesRaw = replaceFilesSourceList;
+                    headerJob.ReplaceFilesRaw = replaceFilesTargetList;
+                    headerJob.AddFilesRaw = addFilesSourceList;
+                    headerJob.AddFilesTargetsRaw = addFilesTargetList;
+                    headerJob.GameDirectoryStructureRaw = directoryMatchesGameStructure;
+
+                    // End editor only stuff
                     headerJob.JobDirectory = jobSubdirectory.Replace('/', '\\');
                     headerJob.RequirementText = jobRequirement;
 
@@ -1185,6 +1250,7 @@ namespace MassEffectModManagerCore.modmanager
                         }
                         CLog.Information($@"Successfully made mod job for {balanceJob.Header}", Settings.LogModStartup);
                         InstallationJobs.Add(balanceJob);
+                        balanceJob.BalanceChangesFileRaw = balanceFile;
                     }
                     else
                     {
@@ -1240,6 +1306,7 @@ namespace MassEffectModManagerCore.modmanager
                         }
                         CLog.Information($@"Successfully made mod job for {ModJob.JobHeader.ME1_CONFIG}", Settings.LogModStartup);
                         InstallationJobs.Add(me1ConfigJob);
+                        me1ConfigJob.ConfigFilesRaw = configfilesStr;
                     }
                 }
 
@@ -1314,7 +1381,6 @@ namespace MassEffectModManagerCore.modmanager
                 // Files check
                 var locFiles = StringStructParser.GetSemicolonSplitList(localizationFilesStr);
                 ModJob localizationJob = new ModJob(ModJob.JobHeader.LOCALIZATION);
-
                 foreach (var f in locFiles)
                 {
                     var filePath = FilesystemInterposer.PathCombine(IsInArchive, ModPath, f);
@@ -1328,17 +1394,27 @@ namespace MassEffectModManagerCore.modmanager
                     var fname = Path.GetFileName(f);
                     if (!fname.EndsWith(@".tlk"))
                     {
-                        Log.Error($@"Referenced localization file is not a .tlk: {f}. LOCALIATION tasks only allow installation of .tlk files.");
+                        Log.Error($@"Referenced localization file is not a .tlk: {f}. LOCALIZATION tasks only allow installation of .tlk files.");
                         LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_invalidLocalizationFileType, f);
                         return;
                     }
 
-                    if (!fname.StartsWith(destDlc + @"_"))
+                    if (Game == MEGame.ME3)
                     {
-                        Log.Error($@"Referenced localization file has incorrect name: {f}. Localization filenames must begin with the name of the DLC, followed by an underscore and then the three letter language code.");
-                        LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_invalidLocalizationFilename, f);
-                        return;
+                        if (!fname.StartsWith(destDlc + @"_"))
+                        {
+                            Log.Error($@"Referenced localization file has incorrect name: {f}. Localization filenames must begin with the name of the DLC, followed by an underscore and then the three letter language code.");
+                            LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_invalidLocalizationFilename, f);
+                            return;
+                        }
                     }
+                    else if (Game == MEGame.ME2)
+                    {
+                        // Read bioengine before install maybe?
+                        // We need to know the module number
+                        // TODO: FIX THIS FOR ME2
+                    }
+
 
                     var failurereason = localizationJob.AddFileToInstall($@"BIOGame/DLC/{destDlc}/{MEDirectories.CookedName(Game)}/{fname}", f, this);
                     if (failurereason != null)
@@ -1349,13 +1425,13 @@ namespace MassEffectModManagerCore.modmanager
                     }
                 }
 
+                localizationJob.LocalizationFilesStrRaw = localizationFilesStr;
                 InstallationJobs.Add(localizationJob);
                 RequiredDLC.Add(destDlc); //Add DLC requirement.
             }
             #endregion
 
             #endregion
-
 
             #region Additional Mod Items
 
@@ -1366,42 +1442,55 @@ namespace MassEffectModManagerCore.modmanager
                 var requiredDlcsSplit = requiredDLCText.Split(';').Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
                 foreach (var reqDLC in requiredDlcsSplit)
                 {
+                    var reqDLCss = reqDLC;
+                    var list = RequiredDLC;
+                    if (ModDescTargetVersion >= 6.2) // This feature requires M3 6.2
+                    {
+                        if (reqDLCss.StartsWith('?'))
+                        {
+                            reqDLCss = reqDLCss.Substring(1); //? means the DLC is optional, but one item prefixed with ? must be installed.
+                            list = OptionalSingleRequiredDLC;
+                        }
+                    }
+
                     switch (Game)
                     {
                         case MEGame.ME1:
-                            if (Enum.TryParse(reqDLC, out ModJob.JobHeader header1) && ModJob.GetHeadersToDLCNamesMap(MEGame.ME1).TryGetValue(header1, out var foldername1))
+                            if (Enum.TryParse(reqDLCss, out ModJob.JobHeader header1) && ModJob.GetHeadersToDLCNamesMap(MEGame.ME1).TryGetValue(header1, out var foldername1))
                             {
-                                RequiredDLC.Add(foldername1);
+                                list.Add(foldername1);
                                 CLog.Information(@"Adding DLC requirement to mod: " + foldername1, Settings.LogModStartup);
                                 continue;
                             }
                             break;
                         case MEGame.ME2:
-                            if (Enum.TryParse(reqDLC, out ModJob.JobHeader header2) && ModJob.GetHeadersToDLCNamesMap(MEGame.ME2).TryGetValue(header2, out var foldername2))
+                            if (Enum.TryParse(reqDLCss, out ModJob.JobHeader header2) && ModJob.GetHeadersToDLCNamesMap(MEGame.ME2).TryGetValue(header2, out var foldername2))
                             {
-                                RequiredDLC.Add(foldername2);
+                                list.Add(foldername2);
                                 CLog.Information(@"Adding DLC requirement to mod: " + foldername2, Settings.LogModStartup);
                                 continue;
                             }
                             break;
                         case MEGame.ME3:
-                            if (Enum.TryParse(reqDLC, out ModJob.JobHeader header3) && ModJob.GetHeadersToDLCNamesMap(MEGame.ME3).TryGetValue(header3, out var foldername3))
+                            if (Enum.TryParse(reqDLCss, out ModJob.JobHeader header3) && ModJob.GetHeadersToDLCNamesMap(MEGame.ME3).TryGetValue(header3, out var foldername3))
                             {
-                                RequiredDLC.Add(foldername3);
+                                list.Add(foldername3);
                                 CLog.Information(@"Adding DLC requirement to mod: " + foldername3, Settings.LogModStartup);
                                 continue;
                             }
                             break;
                     }
 
-                    if (!reqDLC.StartsWith(@"DLC_"))
+
+
+                    if (!reqDLCss.StartsWith(@"DLC_"))
                     {
                         Log.Error(@"Required DLC does not match officially supported header or start with DLC_.");
                         LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_invalidRequiredDLCSpecified, reqDLC);
                         return;
                     }
-                    CLog.Information(@"Adding DLC requirement to mod: " + reqDLC, Settings.LogModStartup);
-                    RequiredDLC.Add(reqDLC);
+                    CLog.Information(@"Adding DLC requirement to mod: " + reqDLCss, Settings.LogModStartup);
+                    list.Add(reqDLCss);
                 }
             }
 
@@ -1546,12 +1635,6 @@ namespace MassEffectModManagerCore.modmanager
             //What tool to launch post-install
             PostInstallToolLaunch = iniData[@"ModInfo"][@"postinstalltool"];
 
-            // Non-public descriptors
-            if (!string.IsNullOrEmpty(iniData[@"ControllerCompat"][@"builtagainst"]))
-            {
-                ME3ControllerCompatBuiltAgainst.ReplaceAll(StringStructParser.GetSemicolonSplitList(iniData[@"ControllerCompat"][@"builtagainst"]));
-            }
-
             // SECURITY CHECK
             #region TASK SILOING CHECK
             // Lordy this is gonna be messy
@@ -1581,12 +1664,12 @@ namespace MassEffectModManagerCore.modmanager
                     {
                         allPossibleTargets.AddRange(job.AlternateFiles.Where(x =>
                             x.Operation == AlternateFile.AltFileOperation.OP_INSTALL ||
-                            x.Operation == AlternateFile.AltFileOperation.OP_SUBSTITUTE).Select(x => Path.Combine(MEDirectories.DLCPath("", Game), x.ModFile)));
+                            x.Operation == AlternateFile.AltFileOperation.OP_SUBSTITUTE).Select(x => Path.Combine(MEDirectories.GetDLCPath(Game, ""), x.ModFile)));
                         allPossibleTargets.AddRange(job.AlternateFiles.Where(x =>
-                            x.Operation == AlternateFile.AltFileOperation.OP_APPLY_MULTILISTFILES).Select(x => Path.Combine(MEDirectories.DLCPath("", Game), x.MultiListTargetPath)));
+                            x.Operation == AlternateFile.AltFileOperation.OP_APPLY_MULTILISTFILES).Select(x => Path.Combine(MEDirectories.GetDLCPath(Game, ""), x.MultiListTargetPath)));
                         allPossibleTargets.AddRange(job.AlternateDLCs.Where(x =>
                             x.Operation == AlternateDLC.AltDLCOperation.OP_ADD_FOLDERFILES_TO_CUSTOMDLC ||
-                            x.Operation == AlternateDLC.AltDLCOperation.OP_ADD_MULTILISTFILES_TO_CUSTOMDLC).Select(x => Path.Combine(MEDirectories.DLCPath("", Game), x.DestinationDLCFolder) + Path.DirectorySeparatorChar));
+                            x.Operation == AlternateDLC.AltDLCOperation.OP_ADD_MULTILISTFILES_TO_CUSTOMDLC).Select(x => Path.Combine(MEDirectories.GetDLCPath(Game, ""), x.DestinationDLCFolder) + Path.DirectorySeparatorChar));
                     }
                     else
                     {
@@ -1597,7 +1680,7 @@ namespace MassEffectModManagerCore.modmanager
                             x.Operation == AlternateFile.AltFileOperation.OP_APPLY_MULTILISTFILES).Select(x => x.MultiListTargetPath));
                         allPossibleTargets.AddRange(job.AlternateDLCs.Where(x =>
                             x.Operation == AlternateDLC.AltDLCOperation.OP_ADD_FOLDERFILES_TO_CUSTOMDLC ||
-                            x.Operation == AlternateDLC.AltDLCOperation.OP_ADD_MULTILISTFILES_TO_CUSTOMDLC).Select(x => Path.Combine(MEDirectories.DLCPath("", Game), x.DestinationDLCFolder) + Path.DirectorySeparatorChar));
+                            x.Operation == AlternateDLC.AltDLCOperation.OP_ADD_MULTILISTFILES_TO_CUSTOMDLC).Select(x => Path.Combine(MEDirectories.GetDLCPath(Game, ""), x.DestinationDLCFolder) + Path.DirectorySeparatorChar));
 
                     }
 

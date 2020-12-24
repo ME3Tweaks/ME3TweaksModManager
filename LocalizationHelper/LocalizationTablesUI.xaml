@@ -5,8 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LocalizationHelper"
         mc:Ignorable="d"
-        Height="450" 
-        Width="1100">
+        DataContext="{Binding RelativeSource={RelativeSource Self}}"
+        Height="550" 
+        Width="1200">
     <TabControl>
         <TabItem Header="Mod Manager">
             <Grid Margin="0,5,0,0">
@@ -69,7 +70,7 @@
                     </DataGrid.Resources>
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Key" Binding="{Binding key}" IsReadOnly="True" Width="Auto"/>
-                        <DataGridCheckBoxColumn Header="Newlines" Binding="{Binding preservewhitespace}" Width="60"  IsReadOnly="True" />
+                        <DataGridCheckBoxColumn Header="Has NL" Binding="{Binding preservewhitespace}" Width="60"  IsReadOnly="True"/>
                         <DataGridTextColumn Header="Notes" Binding="{Binding notes}" MaxWidth="250" IsReadOnly="True">
                             <DataGridTextColumn.ElementStyle>
                                 <Style>
@@ -183,6 +184,7 @@
                     <CheckBox Content="Portuguese" VerticalAlignment="Stretch" VerticalContentAlignment="Center" IsChecked="{Binding ShowPortuguese}" DockPanel.Dock="Left" Margin="5,0,0,0"/>
                     <StatusBarItem HorizontalAlignment="Right">
                         <StackPanel Orientation="Horizontal">
+                            <Button Content="Open autosave dir" HorizontalAlignment="Right" Padding="7,4" VerticalAlignment="Center" Command="{Binding OpenAutosaveDirCommand}" Margin="5,0"/>
                             <Button Content="Copy localization" HorizontalAlignment="Right" Padding="7,4" VerticalAlignment="Center" Command="{Binding CopyLocalizationCommand}" />
                             <Button Content="Load localization" HorizontalAlignment="Right" Padding="7,4" VerticalAlignment="Center" Command="{Binding LoadLocalizationCommand}"  Margin="5,0"/>
                             <Button Content="Save localization" HorizontalAlignment="Right" Padding="7,4" VerticalAlignment="Center" Command="{Binding SaveLocalizationCommand}" />

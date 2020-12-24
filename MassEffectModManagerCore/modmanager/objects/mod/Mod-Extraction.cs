@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -11,19 +9,18 @@ using System.Threading;
 using IniParser;
 using IniParser.Model;
 using IniParser.Parser;
-using MassEffectModManagerCore.gamefileformats.unreal;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.usercontrols;
-using ME3Explorer.Packages;
+using ME3ExplorerCore.Helpers;
+using ME3ExplorerCore.Packages;
 using Microsoft.AppCenter.Crashes;
 using Serilog;
 using SevenZip;
 using SevenZip.EventArguments;
-using Threading;
 
-namespace MassEffectModManagerCore.modmanager
+namespace MassEffectModManagerCore.modmanager.objects.mod
 {
     public partial class Mod
     {
@@ -103,11 +100,11 @@ namespace MassEffectModManagerCore.modmanager
                 if (isExe)
                 {
                     //remap to mod root. Not entirely sure if this needs to be done for sub mods?
-                    referencedFiles = referencedFiles.Select(x => FilesystemInterposer.PathCombine(IsInArchive, ModPath, x)).ToList(); //remap to in-archive paths so they match entry paths
+                    referencedFiles = Enumerable.Select<string, string>(referencedFiles, x => FilesystemInterposer.PathCombine(IsInArchive, ModPath, x)).ToList(); //remap to in-archive paths so they match entry paths
                 }
                 foreach (var info in archiveFile.ArchiveFileData)
                 {
-                    if (!info.IsDirectory && (ModPath == "" || info.FileName.Contains(ModPath)))
+                    if (!info.IsDirectory && (ModPath == "" || info.FileName.Contains((string) ModPath)))
                     {
                         var relativedName = isExe ? info.FileName : info.FileName.Substring(ModPath.Length).TrimStart('\\');
                         if (referencedFiles.Contains(relativedName))
@@ -220,21 +217,21 @@ namespace MassEffectModManagerCore.modmanager
                     Log.Information(@"Mapping extraction target for " + entryInfo.FileName);
 
                     string entryPath = entryInfo.FileName;
-                    if (ExeExtractionTransform != null && ExeExtractionTransform.PatchRedirects.Any(x => x.index == entryInfo.Index))
+                    if (ExeExtractionTransform != null && Enumerable.Any<(int index, string outfile)>(ExeExtractionTransform.PatchRedirects, x => x.index == entryInfo.Index))
                     {
                         Log.Information(@"Extracting vpatch file at index " + entryInfo.Index);
-                        return Path.Combine(Utilities.GetVPatchRedirectsFolder(), ExeExtractionTransform.PatchRedirects.First(x => x.index == entryInfo.Index).outfile);
+                        return Path.Combine(Utilities.GetVPatchRedirectsFolder(), Enumerable.First<(int index, string outfile)>(ExeExtractionTransform.PatchRedirects, x => x.index == entryInfo.Index).outfile);
                     }
 
-                    if (ExeExtractionTransform != null && ExeExtractionTransform.NoExtractIndexes.Any(x => x == entryInfo.Index))
+                    if (ExeExtractionTransform != null && Enumerable.Any<int>(ExeExtractionTransform.NoExtractIndexes, x => x == entryInfo.Index))
                     {
                         Log.Information(@"Extracting file to trash (not used): " + entryPath);
                         return Path.Combine(Utilities.GetTempPath(), @"Trash", @"trashfile");
                     }
 
-                    if (ExeExtractionTransform != null && ExeExtractionTransform.AlternateRedirects.Any(x => x.index == entryInfo.Index))
+                    if (ExeExtractionTransform != null && Enumerable.Any<(int index, string outfile)>(ExeExtractionTransform.AlternateRedirects, x => x.index == entryInfo.Index))
                     {
-                        var outfile = ExeExtractionTransform.AlternateRedirects.First(x => x.index == entryInfo.Index).outfile;
+                        var outfile = Enumerable.First<(int index, string outfile)>(ExeExtractionTransform.AlternateRedirects, x => x.index == entryInfo.Index).outfile;
                         Log.Information($@"Extracting file with redirection: {entryPath} -> {outfile}");
                         return Path.Combine(outputFolderPath, outfile);
                     }
@@ -254,7 +251,7 @@ namespace MassEffectModManagerCore.modmanager
                     compressionQueue = new BlockingCollection<string>();
                 }
 
-                int numberOfPackagesToCompress = referencedFiles.Count(x => x.RepresentsPackageFilePath());
+                int numberOfPackagesToCompress = Enumerable.Count<string>(referencedFiles, x => StringExtensions.RepresentsPackageFilePath(x));
                 int compressedPackageCount = 0;
                 NamedBackgroundWorker compressionThread;
                 if (compressPackages)
@@ -267,32 +264,24 @@ namespace MassEffectModManagerCore.modmanager
                             while (true)
                             {
                                 var package = compressionQueue.Take();
-                                //updateTextCallback?.Invoke(M3L.GetString(M3L.string_interp_compressingX, Path.GetFileName(package)));
-                                FileInfo fileInfo = new FileInfo(package);
-                                var created = fileInfo.CreationTime; //File Creation
-                                var lastmodified = fileInfo.LastWriteTime;//File Modification
-                                
                                 var p = MEPackageHandler.OpenMEPackage(package);
-                                //Check if any compressed textures.
-                                bool shouldNotCompress = false;
-                                foreach (var texture in p.Exports.Where(x => x.IsTexture()))
-                                {
-                                    var storageType = Texture2D.GetTopMipStorageType(texture);
-                                    shouldNotCompress |= storageType == ME3Explorer.Unreal.StorageTypes.pccLZO || storageType == ME3Explorer.Unreal.StorageTypes.pccZlib;
-                                    if (!shouldNotCompress) break;
-                                }
-
+                                bool shouldNotCompress = Game == MEGame.ME1;
                                 if (!shouldNotCompress)
                                 {
+                                    //updateTextCallback?.Invoke(M3L.GetString(M3L.string_interp_compressingX, Path.GetFileName(package)));
+                                    FileInfo fileInfo = new FileInfo(package);
+                                    var created = fileInfo.CreationTime; //File Creation
+                                    var lastmodified = fileInfo.LastWriteTime;//File Modification
+
                                     compressedPackageCallback?.Invoke(M3L.GetString(M3L.string_interp_compressingX, Path.GetFileName(package)), compressedPackageCount, numberOfPackagesToCompress);
                                     Log.Information(@"Compressing package: " + package);
-                                    p.save(true);
+                                    p.Save(compress: true);
                                     File.SetCreationTime(package,created);
                                     File.SetLastWriteTime(package, lastmodified);
                                 }
                                 else
                                 {
-                                    Log.Information(@"Not compressing package due to file containing compressed textures: " + package);
+                                    Log.Information(@"Skipping compression for ME1 package file: " + package);
                                 }
 
 
@@ -370,7 +359,7 @@ namespace MassEffectModManagerCore.modmanager
 
                 if (ExeExtractionTransform != null)
                 {
-                    if (ExeExtractionTransform.VPatches.Any())
+                    if (EnumerableExtensions.Any<ModArchiveImporter.ExeTransform.VPatchDirective>(ExeExtractionTransform.VPatches))
                     {
                         // MEHEM uses Vpatching for its alternates.
                         var vpat = Utilities.GetCachedExecutablePath(@"vpat.exe");

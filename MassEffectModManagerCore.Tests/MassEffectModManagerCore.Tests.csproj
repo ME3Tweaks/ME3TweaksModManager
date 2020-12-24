@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFrameworks>netcoreapp3.1;net5.0-windows8.0</TargetFrameworks>
     <IsPackable>false</IsPackable>
     <Platforms>x64</Platforms>
   </PropertyGroup>
@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MassEffectModManagerCore\MassEffectModManagerCore.csproj" />
+    <ProjectReference Include="..\ME3Explorer\ME3ExplorerCore\ME3ExplorerCore.csproj" />
   </ItemGroup>
 
   <ItemGroup>

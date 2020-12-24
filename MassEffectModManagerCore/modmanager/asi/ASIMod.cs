@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.usercontrols;
+using ME3ExplorerCore.Helpers;
+using ME3ExplorerCore.Packages;
 
 namespace MassEffectModManagerCore.modmanager.asi
 {
@@ -23,7 +25,7 @@ namespace MassEffectModManagerCore.modmanager.asi
         /// <summary>
         /// The game this ASI is applicable to
         /// </summary>
-        public Mod.MEGame Game { get; internal set; }
+        public MEGame Game { get; internal set; }
         /// <summary>
         /// If this ASI is not to be shown in a UI, but exists to help catalog and identify if it is installed
         /// </summary>

@@ -1,24 +1,12 @@
-﻿using MassEffectModManagerCore.GameDirectories;
-using MassEffectModManagerCore.gamefileformats.sfar;
-using MassEffectModManagerCore.modmanager.helpers;
-using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.modmanager.objects;
+﻿using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.ui;
-using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
+using ME3ExplorerCore.Misc;
+using ME3ExplorerCore.Packages;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -63,11 +51,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public override void OnPanelVisible()
         {
 
-            var db = VanillaDatabaseService.LoadDatabaseFor(Mod.MEGame.ME1, false);
+            var db = VanillaDatabaseService.LoadDatabaseFor(MEGame.ME1, false);
             ME1Files.ReplaceAll(getDBItems(db));
-            db = VanillaDatabaseService.LoadDatabaseFor(Mod.MEGame.ME2,false);
+            db = VanillaDatabaseService.LoadDatabaseFor(MEGame.ME2,false);
             ME2Files.ReplaceAll(getDBItems(db));
-            db = VanillaDatabaseService.LoadDatabaseFor(Mod.MEGame.ME3, false);
+            db = VanillaDatabaseService.LoadDatabaseFor(MEGame.ME3, false);
             ME3Files.ReplaceAll(getDBItems(db));
 
             LoadingInProgress = false;
@@ -96,9 +84,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         }
 
 
-        private ObservableCollectionExtended<VanillaEntry> ME1Files { get; } = new ObservableCollectionExtended<VanillaEntry>();
-        private ObservableCollectionExtended<VanillaEntry> ME2Files { get; } = new ObservableCollectionExtended<VanillaEntry>();
-        private ObservableCollectionExtended<VanillaEntry> ME3Files { get; } = new ObservableCollectionExtended<VanillaEntry>();
+        private ui.ObservableCollectionExtended<VanillaEntry> ME1Files { get; } = new ui.ObservableCollectionExtended<VanillaEntry>();
+        private ui.ObservableCollectionExtended<VanillaEntry> ME2Files { get; } = new ui.ObservableCollectionExtended<VanillaEntry>();
+        private ui.ObservableCollectionExtended<VanillaEntry> ME3Files { get; } = new ui.ObservableCollectionExtended<VanillaEntry>();
         public ICollectionView ME1FilesView => CollectionViewSource.GetDefaultView(ME1Files);
         public ICollectionView ME2FilesView => CollectionViewSource.GetDefaultView(ME2Files);
         public ICollectionView ME3FilesView => CollectionViewSource.GetDefaultView(ME3Files);

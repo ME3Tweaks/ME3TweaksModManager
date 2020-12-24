@@ -2,33 +2,42 @@
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using ByteSizeLib;
 using FontAwesome.WPF;
-using MassEffectModManagerCore.GameDirectories;
-using MassEffectModManagerCore.gamefileformats.unreal;
 using MassEffectModManagerCore.modmanager.windows;
-using ME3Explorer.Packages;
-using ME3Explorer.Unreal;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using SevenZip;
 using Brushes = System.Windows.Media.Brushes;
 using Microsoft.Win32;
-using MassEffectModManagerCore.gamefileformats;
-using MassEffectModManagerCore.modmanager.gameini;
 using MassEffectModManagerCore.modmanager.localizations;
+using MassEffectModManagerCore.modmanager.me3tweaks;
+using MassEffectModManagerCore.modmanager.objects.mod;
+using ME3ExplorerCore.GameFilesystem;
+using ME3ExplorerCore.Helpers;
+using ME3ExplorerCore.Gammtek.IO;
+using ME3ExplorerCore.Packages;
+using ME3ExplorerCore.TLK.ME1;
+using ME3ExplorerCore.TLK.ME2ME3;
+using ME3ExplorerCore.Unreal;
+using ME3ExplorerCore.Unreal.BinaryConverters;
+using ME3ExplorerCore.Unreal.Classes;
 using Serilog;
 using Microsoft.WindowsAPICodePack.Taskbar;
+using PropertyChanged;
+using DuplicatingIni = MassEffectModManagerCore.modmanager.gameini.DuplicatingIni;
+using ExportEntry = ME3ExplorerCore.Packages.ExportEntry;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -37,800 +46,1198 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// </summary>
     public partial class ArchiveDeployment : MMBusyPanelBase
     {
-        public Mod ModBeingDeployed { get; }
         public string Header { get; set; } = M3L.GetString(M3L.string_prepareModForDistribution);
         public bool MultithreadedCompression { get; set; } = true;
-        public string DeployButtonText { get; set; } = M3L.GetString(M3L.string_pleaseWait);
-        public ArchiveDeployment(GameTarget validationTarget, Mod mod)
+        public string DeployButtonText { get; set; } = M3L.GetString(M3L.string_pleaseWait); //Initial value
+        public ObservableCollectionExtended<EncompassingModDeploymentCheck> ModsInDeployment { get; } = new ObservableCollectionExtended<EncompassingModDeploymentCheck>();
+
+        // Mod that will be first added to the deployment when the UI is loaded
+        private Mod initialMod;
+
+        public ArchiveDeployment(Mod mod)
         {
-            ValidationTarget = validationTarget;
             Analytics.TrackEvent(@"Started deployment panel for mod", new Dictionary<string, string>()
             {
                 { @"Mod name" , $@"{mod.ModName} {mod.ParsedModVersion}"}
             });
-            DataContext = this;
-            ModBeingDeployed = mod;
-            string versionString = mod.ParsedModVersion != null ? mod.ParsedModVersion.ToString(Utilities.GetDisplayableVersionFieldCount(mod.ParsedModVersion)) : mod.ModVersionString;
-            string versionFormat = mod.ModDescTargetVersion < 6 ? @"X.X" : @"X.X[.X[.X]]";
-            string checklistItemText = mod.ParsedModVersion != null ? M3L.GetString(M3L.string_verifyModVersion) : M3L.GetString(M3L.string_recommendedVersionFormatNotFollowed, versionFormat);
-            DeploymentChecklistItems.Add(new DeploymentChecklistItem() { ItemText = $@"{checklistItemText}: {versionString}", ValidationFunction = ManualValidation });
-            DeploymentChecklistItems.Add(new DeploymentChecklistItem()
-            {
-                ItemText = $@"{M3L.GetString(M3L.string_verifyURLIsCorrect)} {mod.ModWebsite}",
-                ValidationFunction = URLValidation,
-                ErrorsMessage = M3L.GetString(M3L.string_validation_badUrl),
-                ErrorsTitle = M3L.GetString(M3L.string_modUrlErrorsWereFound)
-            });
-            DeploymentChecklistItems.Add(new DeploymentChecklistItem()
-            {
-                ItemText = M3L.GetString(M3L.string_verifyModDescription),
-                ValidationFunction = ManualValidation
-
-            });
-            if (mod.Game == Mod.MEGame.ME3)
-            {
-                DeploymentChecklistItems.Add(new DeploymentChecklistItem()
-                {
-                    ItemText = M3L.GetString(M3L.string_sfarFilesCheck),
-                    ModToValidateAgainst = mod,
-                    ErrorsMessage = M3L.GetString(M3L.string_invalidSfarSize),
-                    ErrorsTitle = M3L.GetString(M3L.string_wrongSfarSizesFound),
-                    ValidationFunction = CheckModSFARs
-                });
-            }
-            var customDLCJob = mod.GetJob(ModJob.JobHeader.CUSTOMDLC);
-            if (customDLCJob != null)
-            {
-                var customDLCFolders = customDLCJob.CustomDLCFolderMapping.Keys.ToList();
-                customDLCFolders.AddRange(customDLCJob.AlternateDLCs.Where(x => x.Operation == AlternateDLC.AltDLCOperation.OP_ADD_CUSTOMDLC).Select(x => x.AlternateDLCFolder));
-
-                if (customDLCFolders.Count > 0)
-                {
-                    DeploymentChecklistItems.Add(new DeploymentChecklistItem()
-                    {
-                        ItemText = M3L.GetString(M3L.string_languageSupportCheck),
-                        ModToValidateAgainst = mod,
-                        ValidationFunction = CheckLocalizations,
-                        ErrorsMessage = M3L.GetString(M3L.string_languageSupportCheckDetectedFollowingIssues),
-                        ErrorsTitle = M3L.GetString(M3L.string_languageSupportIssuesDetectedInMod)
-                    });
-                }
-            }
-            if (mod.Game >= Mod.MEGame.ME2)
-            {
-                DeploymentChecklistItems.Add(new DeploymentChecklistItem()
-                {
-                    ItemText = M3L.GetString(M3L.string_audioCheck),
-                    ModToValidateAgainst = mod,
-                    ValidationFunction = CheckAFCs,
-                    ErrorsMessage = M3L.GetString(M3L.string_audioCheckDetectedErrors),
-                    ErrorsTitle = M3L.GetString(M3L.string_audioIssuesDetectedInMod)
-                });
-            }
-            DeploymentChecklistItems.Add(new DeploymentChecklistItem()
-            {
-                ItemText = M3L.GetString(M3L.string_texturesCheck),
-                ModToValidateAgainst = mod,
-                ErrorsMessage = M3L.GetString(M3L.string_texturesCheckDetectedErrors),
-                ErrorsTitle = M3L.GetString(M3L.string_textureErrorsInMod),
-                ValidationFunction = CheckTextures
-            });
-            DeploymentChecklistItems.Add(new DeploymentChecklistItem()
-            {
-                ItemText = M3L.GetString(M3L.string_miscellaneousChecks),
-                ModToValidateAgainst = mod,
-                ErrorsMessage = M3L.GetString(M3L.string_atLeastOneMiscellaneousCheckFailed),
-                ErrorsTitle = M3L.GetString(M3L.string_detectedMiscellaneousIssues),
-                ValidationFunction = CheckModForMiscellaneousIssues
-            });
+            initialMod = mod;
             LoadCommands();
             InitializeComponent();
 
         }
 
-        private void CheckModForMiscellaneousIssues(DeploymentChecklistItem item)
+        public ConcurrentQueue<EncompassingModDeploymentCheck> PendingChecks { get; } = new ConcurrentQueue<EncompassingModDeploymentCheck>();
+
+        /// <summary>
+        ///  Class that checks a single mod for issues
+        /// </summary>
+        public class EncompassingModDeploymentCheck : INotifyPropertyChanged
         {
-            bool hasError = false;
-            bool blocking = false;
-            item.HasError = false;
-            item.ItemText = M3L.GetString(M3L.string_checkingForMiscellaneousIssues);
-            var referencedFiles = ModBeingDeployed.GetAllRelativeReferences();
+            public ObservableCollectionExtended<DeploymentChecklistItem> DeploymentChecklistItems { get; } = new ObservableCollectionExtended<DeploymentChecklistItem>();
+            public DeploymentValidationTarget DepValidationTarget { get; set; }
+            private GameTarget internalValidationTarget { get; set; }
+            public Mod ModBeingDeployed { get; }
 
-            var metacmms = referencedFiles.Where(x => Path.GetFileName(x) == @"_metacmm.txt").ToList();
+            public ICommand RerunChecksCommand { get; }
 
-            if (metacmms.Any())
+            public void RunChecks()
             {
-                item.HasError = true;
-                foreach (var m in metacmms)
+                CanReRun = false;
+                foreach (var checkItem in DeploymentChecklistItems)
                 {
-                    //Mods cannot include metacmm files
-                    item.Errors.Add(M3L.GetString(M3L.string_interp_modReferencesMetaCmm, m));
-                }
-                blocking = true;
-            }
-
-            // Check for ALOT markers
-            var packageFiles = Utilities.GetPackagesInDirectory(item.ModToValidateAgainst.ModPath, true);
-            foreach (var p in packageFiles)
-            {
-                if (Utilities.HasALOTMarker(p))
-                {
-                    item.Errors.Add(M3L.GetString(M3L.string_interp_error_textureTaggedFileFound, p));
-                    blocking = true;
+                    checkItem.Reset();
                 }
 
-                var package = MEPackageHandler.QuickOpenMEPackage(p);
+                foreach (var checkItem in DeploymentChecklistItems)
                 {
-                    if (package.NameCount == 0)
-                    {
-                        item.Errors.Add(M3L.GetString(M3L.string_interp_packageFileNoNames, p));
-                        blocking = true;
-                    }
+                    checkItem.ExecuteValidationFunction();
+                }
 
-                    if (package.ImportCount == 0)
-                    {
-                        // Is there always an import? I assume from native classes...?
-                        item.Errors.Add(M3L.GetString(M3L.string_interp_packageFileNoImports, p));
-                        blocking = true;
-                    }
+                CanReRun = CanRerunCheck();
+            }
+            private bool CanRerunCheck()
+            {
+                return DeploymentChecklistItems.All(x => x.CheckDone) && DeploymentChecklistItems.Any(x => x.HasMessage);
+            }
 
-                    if (package.ExportCount == 0)
+            public bool CheckCancelled { get; set; }
+
+            public bool CanReRun { get; set; }
+            public EncompassingModDeploymentCheck(Mod mod, DeploymentValidationTarget dvt)
+            {
+                ModBeingDeployed = mod;
+                DepValidationTarget = dvt;
+                internalValidationTarget = dvt.SelectedTarget;
+
+                // Commands
+                RerunChecksCommand = new GenericCommand(RunChecksWrapper, CanRerunCheck);
+
+                string versionString = mod.ParsedModVersion != null ? mod.ParsedModVersion.ToString(Utilities.GetDisplayableVersionFieldCount(mod.ParsedModVersion)) : mod.ModVersionString;
+                string versionFormat = mod.ModDescTargetVersion < 6 ? @"X.X" : @"X.X[.X[.X]]";
+                string checklistItemText = mod.ParsedModVersion != null ? M3L.GetString(M3L.string_verifyModVersion) : M3L.GetString(M3L.string_recommendedVersionFormatNotFollowed, versionFormat);
+                DeploymentChecklistItems.Add(new DeploymentChecklistItem() { ItemText = $@"{checklistItemText}: {versionString}", ValidationFunction = ManualValidation });
+                DeploymentChecklistItems.Add(new DeploymentChecklistItem()
+                {
+                    ItemText = $@"{M3L.GetString(M3L.string_verifyURLIsCorrect)} {mod.ModWebsite}",
+                    ValidationFunction = URLValidation,
+                    DialogMessage = M3L.GetString(M3L.string_validation_badUrl),
+                    DialogTitle = M3L.GetString(M3L.string_modUrlErrorsWereFound)
+                });
+                DeploymentChecklistItems.Add(new DeploymentChecklistItem()
+                {
+                    ItemText = M3L.GetString(M3L.string_verifyModDescription),
+                    ValidationFunction = ManualValidation
+
+                });
+                if (mod.Game == MEGame.ME3)
+                {
+                    DeploymentChecklistItems.Add(new DeploymentChecklistItem()
                     {
-                        item.Errors.Add(M3L.GetString(M3L.string_interp_packageFileNoExports, p));
-                        blocking = true;
+                        ItemText = M3L.GetString(M3L.string_sfarFilesCheck),
+                        ModToValidateAgainst = mod,
+                        DialogMessage = M3L.GetString(M3L.string_invalidSfarSize),
+                        DialogTitle = M3L.GetString(M3L.string_wrongSfarSizesFound),
+                        ValidationFunction = CheckModSFARs
+                    });
+                }
+                var customDLCJob = mod.GetJob(ModJob.JobHeader.CUSTOMDLC);
+                if (customDLCJob != null)
+                {
+                    var customDLCFolders = customDLCJob.CustomDLCFolderMapping.Keys.ToList();
+                    customDLCFolders.AddRange(customDLCJob.AlternateDLCs.Where(x => x.Operation == AlternateDLC.AltDLCOperation.OP_ADD_CUSTOMDLC).Select(x => x.AlternateDLCFolder));
+
+                    if (customDLCFolders.Count > 0)
+                    {
+                        DeploymentChecklistItems.Add(new DeploymentChecklistItem()
+                        {
+                            ItemText = M3L.GetString(M3L.string_languageSupportCheck),
+                            ModToValidateAgainst = mod,
+                            ValidationFunction = CheckLocalizations,
+                            DialogMessage = M3L.GetString(M3L.string_languageSupportCheckDetectedFollowingIssues),
+                            DialogTitle = M3L.GetString(M3L.string_languageSupportIssuesDetectedInMod)
+                        });
                     }
                 }
-            }
 
-            //Check moddesc.ini for things that shouldn't be present - unofficial
-            if (ModBeingDeployed.IsUnofficial)
-            {
-                item.Errors.Add(M3L.GetString(M3L.string_error_foundUnofficialDescriptor));
-                blocking = true;
-            }
-
-            //Check moddesc.ini for things that shouldn't be present - importedby
-            if (ModBeingDeployed.ImportedByBuild > 0)
-            {
-                item.Errors.Add(M3L.GetString(M3L.string_error_foundImportedByDesriptor));
-                blocking = true;
-                DeployButtonText = M3L.GetString(M3L.string_deploymentBlocked);
-            }
-
-            //end setup
-            if (!item.Errors.Any())
-            {
-                item.Foreground = Brushes.Green;
-                item.Icon = FontAwesomeIcon.CheckCircle;
-                item.ItemText = M3L.GetString(M3L.string_noMiscellaneousIssuesDetected);
-                item.ToolTip = M3L.GetString(M3L.string_validationOK);
-            }
-            else
-            {
-                item.ItemText = M3L.GetString(M3L.string_detectedMiscellaneousIssues);
-                item.ToolTip = M3L.GetString(M3L.string_tooltip_deploymentChecksFoundMiscIssues);
-                item.Foreground = Brushes.Red;
-                item.DeploymentBlocking = blocking;
-                item.Icon = FontAwesomeIcon.TimesCircle;
-            }
-
-            item.HasError = item.Errors.Any();
-
-        }
-
-        private void URLValidation(DeploymentChecklistItem obj)
-        {
-            bool OK = Uri.TryCreate(ModBeingDeployed.ModWebsite, UriKind.Absolute, out var uriResult)
-                      && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
-            if (!OK)
-            {
-                obj.HasError = true;
-                obj.Icon = FontAwesomeIcon.TimesCircle;
-                obj.Foreground = Brushes.Red;
-                string url = ModBeingDeployed.ModWebsite ?? @"null";
-                obj.Errors = new List<string>(new[] { M3L.GetString(M3L.string_interp_urlIsNotValid, url) });
-                obj.ItemText = M3L.GetString(M3L.string_emptyOrInvalidModUrl);
-                obj.ToolTip = M3L.GetString(M3L.string_validationFailed);
-
-            }
-            else
-            {
-                if (ModBeingDeployed.ModWebsite == Mod.DefaultWebsite)
+                DeploymentChecklistItems.Add(new DeploymentChecklistItem()
                 {
-                    obj.Icon = FontAwesomeIcon.TimesCircle;
-                    obj.Foreground = Brushes.Red;
-                    obj.ItemText = M3L.GetString(M3L.string_moddescMissingModsite);
-                    obj.Spinning = false;
-                    obj.HasError = true;
-                    obj.Errors.Add(M3L.GetString(M3L.string_noModWebsiteSet));
+                    ItemText = M3L.GetString(M3L.string_referencesCheck),
+                    ModToValidateAgainst = mod,
+                    DialogMessage = M3L.GetString(M3L.string_interp_dialog_invalidReferencesFound),
+                    DialogTitle = M3L.GetString(M3L.string_invalidNameAndObjectReferences),
+                    ValidationFunction = CheckReferences
+                });
+
+                if (mod.Game >= MEGame.ME2)
+                {
+                    DeploymentChecklistItems.Add(new DeploymentChecklistItem()
+                    {
+                        ItemText = M3L.GetString(M3L.string_audioCheck),
+                        ModToValidateAgainst = mod,
+                        ValidationFunction = CheckAFCs,
+                        DialogMessage = M3L.GetString(M3L.string_audioCheckDetectedErrors),
+                        DialogTitle = M3L.GetString(M3L.string_audioIssuesDetectedInMod)
+                    });
                 }
-                else
+                DeploymentChecklistItems.Add(new DeploymentChecklistItem()
                 {
-                    obj.Icon = FontAwesomeIcon.CheckCircle;
-                    obj.Foreground = Brushes.Green;
-                    obj.ItemText = M3L.GetString(M3L.string_interp_modURLOK, ModBeingDeployed.ModWebsite);
-                    obj.ToolTip = M3L.GetString(M3L.string_validationOK);
-                }
+                    ItemText = M3L.GetString(M3L.string_texturesCheck),
+                    ModToValidateAgainst = mod,
+                    DialogMessage = M3L.GetString(M3L.string_texturesCheckDetectedErrors),
+                    DialogTitle = M3L.GetString(M3L.string_textureErrorsInMod),
+                    ValidationFunction = CheckTextures
+                });
+
+                DeploymentChecklistItems.Add(new DeploymentChecklistItem()
+                {
+                    ItemText = M3L.GetString(M3L.string_miscellaneousChecks),
+                    ModToValidateAgainst = mod,
+                    DialogMessage = M3L.GetString(M3L.string_atLeastOneMiscellaneousCheckFailed),
+                    DialogTitle = M3L.GetString(M3L.string_detectedMiscellaneousIssues),
+                    ValidationFunction = CheckModForMiscellaneousIssues
+                });
             }
-        }
 
-        private void CheckLocalizations(DeploymentChecklistItem obj)
-        {
-            var customDLCJob = ModBeingDeployed.GetJob(ModJob.JobHeader.CUSTOMDLC);
-            var customDLCFolders = customDLCJob.CustomDLCFolderMapping.Keys.ToList();
-            customDLCFolders.AddRange(customDLCJob.AlternateDLCs.Where(x => x.Operation == AlternateDLC.AltDLCOperation.OP_ADD_CUSTOMDLC).Select(x => x.AlternateDLCFolder));
-            var languages = StarterKitGeneratorWindow.me3languages;
-            List<string> errors = new List<string>();
-            obj.ItemText = M3L.GetString(M3L.string_languageCheckInProgress);
-            foreach (var customDLC in customDLCFolders)
+            private void RunChecksWrapper()
             {
-                if (_closed) return;
-                if (ModBeingDeployed.Game >= Mod.MEGame.ME2)
+                NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"ModChecksThread");
+                nbw.DoWork += (sender, args) => RunChecks();
+                nbw.RunWorkerAsync();
+            }
+
+            #region CHECK FUNCTIONS
+
+            /// <summary>
+            /// Checks for ALOT markers
+            /// </summary>
+            /// <param name="item"></param>
+            private void CheckModForMiscellaneousIssues(DeploymentChecklistItem item)
+            {
+                item.ItemText = M3L.GetString(M3L.string_checkingForMiscellaneousIssues);
+                var referencedFiles = ModBeingDeployed.GetAllRelativeReferences(false);
+
+                var metacmms = referencedFiles.Where(x => Path.GetFileName(x) == @"_metacmm.txt").ToList();
+
+                if (metacmms.Any())
                 {
-                    var modCookedDir = Path.Combine(ModBeingDeployed.ModPath, customDLC, ModBeingDeployed.Game == Mod.MEGame.ME2 ? @"CookedPC" : @"CookedPCConsole");
-                    var mountFile = Path.Combine(modCookedDir, @"mount.dlc");
-                    if (!File.Exists(mountFile))
+                    foreach (var m in metacmms)
                     {
-                        errors.Add(M3L.GetString(M3L.string_interp_noMountDlcFile, customDLC));
-                        obj.DeploymentBlocking = true;
-                        continue;
-                    }
-
-                    var mount = new MountFile(mountFile);
-
-                    int moduleNum = -1;
-                    if (ModBeingDeployed.Game == Mod.MEGame.ME2)
-                    {
-                        // Look up the module number
-                        var bioengine = Path.Combine(modCookedDir, @"BioEngine.ini");
-                        if (!File.Exists(bioengine))
-                        {
-                            errors.Add(M3L.GetString(M3L.string_interp_me2NoBioEngineFile, customDLC));
-                            obj.DeploymentBlocking = true;
-                            continue;
-                        }
-                        else
-                        {
-                            var ini = DuplicatingIni.LoadIni(Path.Combine(bioengine));
-                            if (!int.TryParse(ini[@"Engine.DLCModules"][customDLC]?.Value, out moduleNum) || moduleNum < 1)
-                            {
-                                errors.Add(M3L.GetString(M3L.string_interp_me2MissingInvalidModuleNum, customDLC));
-                                obj.DeploymentBlocking = true;
-                                continue;
-                            }
-                        }
-                    }
-
-                    var tlkBasePath = ModBeingDeployed.Game == Mod.MEGame.ME2 ? $@"DLC_{moduleNum}" : customDLC;
-                    Dictionary<string, List<TalkFileME1.TLKStringRef>> tlkMappings = new Dictionary<string, List<TalkFileME1.TLKStringRef>>();
-                    foreach (var language in languages)
-                    {
-                        if (_closed) return;
-                        var tlkLangPath = Path.Combine(modCookedDir, tlkBasePath + @"_" + language.filecode + @".tlk");
-                        if (File.Exists(tlkLangPath))
-                        {
-                            //inspect
-                            TalkFileME2ME3 tf = new TalkFileME2ME3();
-                            tf.LoadTlkData(tlkLangPath);
-                            tlkMappings[language.filecode] = tf.StringRefs;
-
-                            //Check string order
-                            var malestringRefsInRightOrder = tf.StringRefs.Take(tf.Header.MaleEntryCount).IsAscending((x, y) => x.StringID.CompareTo(y.StringID)); //male strings
-                            var femalestringRefsInRightOrder = tf.StringRefs.Skip(tf.Header.MaleEntryCount).Take(tf.Header.FemaleEntryCount).IsAscending((x, y) => x.StringID.CompareTo(y.StringID)); //male strings
-                            string gender = M3L.GetString(M3L.string_male);
-                            if (!malestringRefsInRightOrder)
-                            {
-                                //Some TLK strings will not work
-                                errors.Add(M3L.GetString(M3L.string_interp_error_outOfOrderTLK, gender, language.filecode));
-                            }
-
-                            if (!femalestringRefsInRightOrder)
-                            {
-                                gender = M3L.GetString(M3L.string_female);
-                                //Some TLK strings will not work
-                                errors.Add(M3L.GetString(M3L.string_interp_error_outOfOrderTLK, gender, language.filecode));
-                            }
-
-                            // Check to make sure TLK contains the mount file TLK ID
-                            var referencedStr = tf.findDataById(mount.TLKID);
-                            if (referencedStr == null || referencedStr == @"No Data")
-                            {
-                                // TLK STRING REF NOT FOUND
-                                errors.Add(M3L.GetString(M3L.string_interp_missingReferencedTlkStrInMod, customDLC, Path.GetFileName(tlkLangPath), mount.TLKID));
-                                obj.DeploymentBlocking = true;
-                                continue;
-                            }
-                        }
-                        else
-                        {
-                            errors.Add(M3L.GetString(M3L.string_interp_customDLCMissingLocalizedTLK, customDLC, language.filecode));
-                        }
-                    }
-
-                    if (tlkMappings.Count > 1)
-                    {
-                        //find TLK with most entries
-                        //var tlkCounts = tlkMappings.Select(x => (x.Key, x.Value.Count));
-                        double numLoops = Math.Pow(tlkMappings.Count - 1, tlkMappings.Count - 1);
-                        int numDone = 0;
-                        foreach (var mapping1 in tlkMappings)
-                        {
-                            foreach (var mapping2 in tlkMappings)
-                            {
-                                if (mapping1.Equals(mapping2))
-                                {
-                                    continue;
-                                }
-
-                                var differences = mapping1.Value.Select(x => x.StringID).Except(mapping2.Value.Select(x => x.StringID));
-                                foreach (var difference in differences)
-                                {
-                                    var str = mapping1.Value.FirstOrDefault(x => x.StringID == difference)?.Data ?? M3L.GetString(M3L.string_errorFindingString);
-                                    errors.Add(M3L.GetString(M3L.string_interp_tlkDifference, difference.ToString(), mapping1.Key, mapping2.Key, str));
-                                }
-
-                                numDone++;
-                                double percent = (numDone * 100.0) / numLoops;
-                                obj.ItemText = $@"{M3L.GetString(M3L.string_languageCheckInProgress)} {percent:0.00}%";
-                            }
-                        }
-                    }
-                    else if (tlkMappings.Count == 0)
-                    {
-                        errors.Add(M3L.GetString(M3L.string_interp_dlcModHasNoTlkFiles, customDLC));
-                        obj.DeploymentBlocking = true;
+                        //Mods cannot include metacmm files
+                        item.AddBlockingError(M3L.GetString(M3L.string_interp_modReferencesMetaCmm, m));
                     }
                 }
-                else
+
+                // Check for ALOT markers
+                var packageFiles = Utilities.GetPackagesInDirectory(item.ModToValidateAgainst.ModPath, true);
+                foreach (var p in packageFiles)
                 {
-                    // ME1
-                    var parsedIni = DuplicatingIni.LoadIni(Path.Combine(ModBeingDeployed.ModPath, customDLC, @"AutoLoad.ini"));
-
-                    if (int.TryParse(parsedIni[@"GUI"][@"NameStrRef"]?.Value, out var tlkid))
+                    if (Utilities.HasALOTMarker(p))
                     {
-                        var tlkFile = parsedIni[@"Packages"][@"GlobalTalkTable1"]?.Value;
-                        if (tlkFile == null)
-                        {
-                            errors.Add(M3L.GetString(M3L.string_interp_dlcModMissingTlkInAutoloadIni, customDLC));
-                            obj.DeploymentBlocking = true;
-                        }
-                        else
-                        {
-                            // Check TLK exists.
-                            var tlkExportObjName = tlkFile.Split('.').Last();
-                            tlkFile = tlkFile.Substring(0, tlkFile.IndexOf(@".")); //They end with _tlk
-                            var tlkPackagePath = Directory.GetFiles(Path.Combine(ModBeingDeployed.ModPath, customDLC), $@"{tlkFile}.upk", SearchOption.AllDirectories).FirstOrDefault();
-                            if (tlkPackagePath == null)
-                            {
-                                errors.Add(M3L.GetString(M3L.string_interp_dlcModMissingAutoLoadTlkFile, customDLC, tlkFile));
-                                obj.DeploymentBlocking = true;
-                            }
-                            else
-                            {
-                                // Open and inspect TLK package.
-                                var tlkPackage = MEPackageHandler.OpenMEPackage(tlkPackagePath);
-                                var tfExp = tlkPackage.Exports.FirstOrDefault(x => x.ObjectName == tlkExportObjName && x.ClassName == @"BioTlkFile");
-                                if (tfExp == null)
-                                {
-                                    errors.Add(M3L.GetString(M3L.string_interp_dlcModTlkPackageHasNoUsableTlk, customDLC));
-                                    obj.DeploymentBlocking = true;
-                                }
-
-                                TalkFileME1 tf = new TalkFileME1(tfExp);
-                                var str = tf.findDataById(tlkid);
-                                if (str == null || str == @"No Data")
-                                {
-                                    // INVALID
-                                    errors.Add(M3L.GetString(M3L.string_interp_dlcModTlkPackageMissingStringId, customDLC, tlkid));
-                                    obj.DeploymentBlocking = true;
-                                }
-                                else
-                                {
-                                    // Valid
-                                }
-                            }
-                        }
+                        item.AddBlockingError(M3L.GetString(M3L.string_interp_error_textureTaggedFileFound, p));
                     }
-                    else
+
+                    var package = MEPackageHandler.QuickOpenMEPackage(p);
                     {
-                        errors.Add(M3L.GetString(M3L.string_interp_dlcModAutoLoadMissingNameStrRef, customDLC));
-                        obj.DeploymentBlocking = true;
-                    }
-                }
-            }
-
-            if (errors.Count > 0)
-            {
-                obj.HasError = true;
-                obj.Icon = obj.DeploymentBlocking ? FontAwesomeIcon.TimesCircle : FontAwesomeIcon.Warning;
-                obj.Foreground = obj.DeploymentBlocking ? Brushes.Red : Brushes.Orange;
-                obj.Errors = errors;
-                obj.ItemText = M3L.GetString(M3L.string_languageCheckDetectedIssues);
-                obj.ToolTip = M3L.GetString(M3L.string_validationFailed);
-
-            }
-            else
-            {
-                obj.Icon = FontAwesomeIcon.CheckCircle;
-                obj.Foreground = Brushes.Green;
-                obj.ItemText = M3L.GetString(M3L.string_noLanguageIssuesDetected);
-                obj.ToolTip = M3L.GetString(M3L.string_validationOK);
-            }
-        }
-
-        private void CheckModSFARs(DeploymentChecklistItem item)
-        {
-            bool hasError = false;
-            item.HasError = false;
-            item.ItemText = M3L.GetString(M3L.string_checkingSFARFilesSizes);
-            var referencedFiles = ModBeingDeployed.GetAllRelativeReferences().Select(x => Path.Combine(ModBeingDeployed.ModPath, x)).ToList();
-            int numChecked = 0;
-            var errors = new List<string>();
-            bool hasSFARs = false;
-            foreach (var f in referencedFiles)
-            {
-                if (_closed) return;
-                if (Path.GetExtension(f) == @".sfar")
-                {
-                    hasSFARs = true;
-                    if (new FileInfo(f).Length != 32)
-                    {
+                        if (package.NameCount == 0)
                         {
-                            hasError = true;
-                            item.Icon = FontAwesomeIcon.TimesCircle;
-                            item.Foreground = Brushes.Red;
-                            item.Spinning = false;
-                            errors.Add(f.Substring(ModBeingDeployed.ModPath.Length + 1));
-                            item.DeploymentBlocking = true;
+                            item.AddBlockingError(M3L.GetString(M3L.string_interp_packageFileNoNames, p));
+                        }
+
+                        if (package.ImportCount == 0)
+                        {
+                            // Is there always an import? I assume from native classes...?
+                            item.AddBlockingError(M3L.GetString(M3L.string_interp_packageFileNoImports, p));
+                        }
+
+                        if (package.ExportCount == 0)
+                        {
+                            item.AddBlockingError(M3L.GetString(M3L.string_interp_packageFileNoExports, p));
                         }
                     }
                 }
-            }
 
-            if (!hasSFARs)
-            {
-                item.Foreground = Brushes.Green;
-                item.Icon = FontAwesomeIcon.CheckCircle;
-                item.ItemText = M3L.GetString(M3L.string_modDoesNotUseSFARs);
-                item.ToolTip = M3L.GetString(M3L.string_validationOK);
-            }
-            else
-            {
-                if (!hasError)
+                //Check moddesc.ini for things that shouldn't be present - unofficial
+                if (ModBeingDeployed.IsUnofficial)
                 {
-                    item.Foreground = Brushes.Green;
-                    item.Icon = FontAwesomeIcon.CheckCircle;
-                    item.ItemText = M3L.GetString(M3L.string_noSFARSizeIssuesWereDetected);
+                    item.AddBlockingError(M3L.GetString(M3L.string_error_foundUnofficialDescriptor));
+                }
+
+                //Check moddesc.ini for things that shouldn't be present - importedby
+                if (ModBeingDeployed.ImportedByBuild > 0)
+                {
+                    item.AddBlockingError(M3L.GetString(M3L.string_error_foundImportedByDesriptor));
+                }
+
+                // Check mod name length
+                if (ModBeingDeployed.ModName.Length > 40)
+                {
+                    item.AddInfoWarning(M3L.GetString(M3L.string_interp_infoModNameTooLong, ModBeingDeployed.ModName, ModBeingDeployed.ModName.Length));
+                }
+
+                //end setup
+                if (!item.HasAnyMessages())
+                {
+                    item.ItemText = M3L.GetString(M3L.string_noMiscellaneousIssuesDetected);
                     item.ToolTip = M3L.GetString(M3L.string_validationOK);
                 }
                 else
                 {
-                    item.Errors = errors;
-                    item.ItemText = M3L.GetString(M3L.string_someSFARSizesAreTheIncorrectSize);
-                    item.ToolTip = M3L.GetString(M3L.string_validationFailed);
+                    item.ItemText = M3L.GetString(M3L.string_detectedMiscellaneousIssues);
+                    item.ToolTip = M3L.GetString(M3L.string_tooltip_deploymentChecksFoundMiscIssues);
                 }
-
-                item.HasError = hasError;
             }
-        }
 
-        private void ManualValidation(DeploymentChecklistItem item)
-        {
-            item.Foreground = Brushes.Gray;
-            item.Icon = FontAwesomeIcon.CheckCircle;
-            item.ToolTip = M3L.GetString(M3L.string_thisItemMustBeManuallyCheckedByYou);
-        }
-
-        private void CheckAFCs(DeploymentChecklistItem item)
-        {
-            bool hasError = false;
-            item.HasError = false;
-            item.ItemText = M3L.GetString(M3L.string_checkingAudioReferencesInMod);
-            var referencedFiles = ModBeingDeployed.GetAllRelativeReferences().Select(x => Path.Combine(ModBeingDeployed.ModPath, x)).ToList();
-            int numChecked = 0;
-            Predicate<string> predicate = s => Path.GetExtension(s) == @".afc";
-            List<string> gameFiles = MEDirectories.EnumerateGameFiles(ValidationTarget, predicate: predicate);
-
-            var errors = new List<string>();
-            Dictionary<string, MemoryStream> cachedAudio = new Dictionary<string, MemoryStream>();
-
-            foreach (var f in referencedFiles)
+            /// <summary>
+            /// Validates the URL of the mod
+            /// </summary>
+            /// <param name="obj"></param>
+            private void URLValidation(DeploymentChecklistItem obj)
             {
-                if (_closed) return;
-                numChecked++;
-                item.ItemText = $@"{M3L.GetString(M3L.string_checkingAudioReferencesInMod)} [{numChecked}/{referencedFiles.Count}]";
-                if (f.RepresentsPackageFilePath())
+                bool OK = Uri.TryCreate(ModBeingDeployed.ModWebsite, UriKind.Absolute, out var uriResult)
+                          && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+                if (!OK)
                 {
-                    var package = MEPackageHandler.OpenMEPackage(f);
-                    var wwiseStreams = package.Exports.Where(x => x.ClassName == @"WwiseStream" && !x.IsDefaultObject).ToList();
-                    foreach (var wwisestream in wwiseStreams)
+                    string url = ModBeingDeployed.ModWebsite ?? @"null";
+                    obj.AddBlockingError(M3L.GetString(M3L.string_interp_urlIsNotValid, url));
+                    obj.ItemText = M3L.GetString(M3L.string_emptyOrInvalidModUrl);
+                    obj.ToolTip = M3L.GetString(M3L.string_validationFailed);
+                }
+                else
+                {
+                    if (ModBeingDeployed.ModWebsite == Mod.DefaultWebsite)
                     {
-                        if (_closed) return;
-                        //Check each reference.
-                        var afcNameProp = wwisestream.GetProperty<NameProperty>(@"Filename");
-                        if (afcNameProp != null)
-                        {
-                            string afcNameWithExtension = afcNameProp + @".afc";
-                            int audioSize = BitConverter.ToInt32(wwisestream.Data, wwisestream.Data.Length - 8);
-                            int audioOffset = BitConverter.ToInt32(wwisestream.Data, wwisestream.Data.Length - 4);
-
-                            string afcPath = null;
-                            Stream audioStream = null;
-                            var localDirectoryAFCPath = Path.Combine(Path.GetDirectoryName(wwisestream.FileRef.FilePath), afcNameWithExtension);
-                            bool isInOfficialArea = false;
-                            if (File.Exists(localDirectoryAFCPath))
-                            {
-                                //local afc
-                                afcPath = localDirectoryAFCPath;
-                            }
-                            else if (referencedFiles.Any(x => Path.GetFileName(x).Equals(afcNameWithExtension, StringComparison.InvariantCultureIgnoreCase)))
-                            {
-                                //found afc in mod.
-                                //if there is multiple same-named AFCs in the mod, this might fail.
-                                afcPath = Path.Combine(ModBeingDeployed.ModPath, referencedFiles.FirstOrDefault(x => Path.GetFileName(x).Equals(afcNameWithExtension, StringComparison.InvariantCultureIgnoreCase)));
-                                if (!File.Exists(afcPath))
-                                {
-                                    Debugger.Break();
-                                }
-                            }
-                            else
-                            {
-                                //Check game
-                                var fullPath = gameFiles.FirstOrDefault(x => Path.GetFileName(x).Equals(afcNameWithExtension, StringComparison.InvariantCultureIgnoreCase));
-                                if (fullPath != null)
-                                {
-                                    afcPath = fullPath;
-                                    isInOfficialArea = MEDirectories.IsInBasegame(afcPath, ValidationTarget) || MEDirectories.IsInOfficialDLC(afcPath, ValidationTarget);
-                                }
-                                else if (cachedAudio.TryGetValue(afcNameProp.Value.Name, out var cachedAudioStream))
-                                {
-                                    audioStream = cachedAudioStream;
-                                    //isInOfficialArea = true; //cached from vanilla SFAR
-                                }
-                                else if (MEDirectories.OfficialDLC(ValidationTarget.Game).Any(x => afcNameProp.Value.Name.StartsWith(x)))
-                                {
-                                    var dlcName = afcNameProp.Value.Name.Substring(0, afcNameProp.Value.Name.LastIndexOf(@"_", StringComparison.InvariantCultureIgnoreCase));
-                                    var audio = VanillaDatabaseService.FetchFileFromVanillaSFAR(dlcName, afcNameWithExtension /*, ValidationTarget*/);
-                                    if (audio != null)
-                                    {
-                                        cachedAudio[afcNameProp.Value.Name] = audio;
-                                    }
-
-                                    audioStream = audio;
-                                    //isInOfficialArea = true; as this is in a vanilla SFAR we don't test against this since it will be correct.
-                                    continue;
-                                }
-                                else
-                                {
-                                    hasError = true;
-                                    item.Icon = FontAwesomeIcon.TimesCircle;
-                                    item.Foreground = Brushes.Red;
-                                    item.Spinning = false;
-                                    errors.Add(M3L.GetString(M3L.string_interp_couldNotFindReferencedAFC, wwisestream.FileRef.FilePath.Substring(ModBeingDeployed.ModPath.Length + 1), wwisestream.GetInstancedFullPath, afcNameProp.ToString()));
-                                    continue;
-                                }
-                            }
-
-                            if (afcPath != null)
-                            {
-                                audioStream = new FileStream(afcPath, FileMode.Open);
-                            }
-
-                            try
-                            {
-                                audioStream.Seek(audioOffset, SeekOrigin.Begin);
-                                if (audioStream.Position > audioStream.Length - 4)
-                                {
-                                    Log.Warning($@"Found broken audio: {wwisestream.UIndex} {wwisestream.ObjectName} has broken audio, pointer points inside of AFC, but the size ofi t extends beyond the end of the AFC. Package file: {wwisestream.FileRef.FilePath}, referenced AFC: {afcPath} @ 0x{audioOffset:X8}. The AFC is only 0x{audioStream.Length:X8} bytes long.");
-                                    hasError = true;
-                                    item.Icon = FontAwesomeIcon.TimesCircle;
-                                    item.Foreground = Brushes.Red;
-                                    item.Spinning = false;
-                                    errors.Add(M3L.GetString(M3L.string_interp_invalidAudioPointerOutsideAFC, wwisestream.FileRef.FilePath.Substring(ModBeingDeployed.ModPath.Length + 1), wwisestream.UIndex, wwisestream.ObjectName, audioOffset, afcPath, audioStream.Length));
-                                    if (audioStream is FileStream) audioStream.Close();
-                                    continue;
-                                }
-
-                                if (audioStream.ReadStringASCIINull(4) != @"RIFF")
-                                {
-                                    Log.Warning($@"Found broken audio: {wwisestream.UIndex} {wwisestream.ObjectName} has broken audio, pointer points to data that does not start with RIFF, which is the start of audio data. Package file: {wwisestream.FileRef.FilePath}, referenced AFC: {afcPath} @ 0x{audioOffset:X8}.");
-                                    hasError = true;
-                                    item.Icon = FontAwesomeIcon.TimesCircle;
-                                    item.Foreground = Brushes.Red;
-                                    item.Spinning = false;
-                                    errors.Add(M3L.GetString(M3L.string_interp_invalidAudioPointer, Path.GetFileName(wwisestream.FileRef.FilePath), wwisestream.GetInstancedFullPath));
-                                    if (audioStream is FileStream) audioStream.Close();
-                                    continue;
-                                }
-
-                                //attempt to seek audio length.
-                                audioStream.Seek(audioSize + 4, SeekOrigin.Current);
-
-                                //Check if this file is in basegame
-                                if (isInOfficialArea)
-                                {
-                                    //Verify offset is not greater than vanilla size
-                                    var vanillaInfo = VanillaDatabaseService.GetVanillaFileInfo(ValidationTarget, afcPath.Substring(ValidationTarget.TargetPath.Length + 1));
-                                    if (vanillaInfo == null)
-                                    {
-                                        Crashes.TrackError(new Exception($@"Vanilla information was null when performing vanilla file check for {afcPath.Substring(ValidationTarget.TargetPath.Length + 1)}"));
-                                    }
-                                    if (audioOffset >= vanillaInfo[0].size)
-                                    {
-                                        Log.Warning($@"Found broken audio: {wwisestream.UIndex} {wwisestream.ObjectName} has broken audio, pointer points beyond the end of the AFC file. Package file: {wwisestream.FileRef.FilePath}, referenced AFC: {afcPath} @ 0x{audioOffset:X8}.");
-
-                                        hasError = true;
-                                        item.Icon = FontAwesomeIcon.TimesCircle;
-                                        item.Foreground = Brushes.Red;
-                                        item.Spinning = false;
-                                        errors.Add(M3L.GetString(M3L.string_interp_audioStoredInOfficialAFC, wwisestream.FileRef.FilePath, wwisestream.GetInstancedFullPath));
-                                    }
-                                }
-                                if (audioStream is FileStream) audioStream.Close();
-                            }
-                            catch (Exception e)
-                            {
-                                Log.Error($@"Error checking for broken audio: {wwisestream?.UIndex} {wwisestream?.ObjectName}. Package file: {wwisestream?.FileRef?.FilePath?.Substring(ModBeingDeployed.ModPath.Length + 1)}, referenced AFC: {afcPath} @ 0x{audioOffset:X8}. The error was: {e.Message}");
-                                e.LogStackTrace();
-                                hasError = true;
-                                item.Icon = FontAwesomeIcon.TimesCircle;
-                                item.Foreground = Brushes.Red;
-                                item.Spinning = false;
-                                if (audioStream is FileStream) audioStream.Close();
-                                errors.Add(M3L.GetString(M3L.string_errorValidatingAudioReference, wwisestream.FileRef.FilePath.Substring(ModBeingDeployed.ModPath.Length + 1), wwisestream.GetInstancedFullPath, e.Message));
-                                continue;
-                            }
-                        }
+                        obj.AddSignificantIssue(M3L.GetString(M3L.string_noModWebsiteSet));
+                        obj.ItemText = M3L.GetString(M3L.string_moddescMissingModsite);
+                    }
+                    else
+                    {
+                        obj.ItemText = M3L.GetString(M3L.string_interp_modURLOK, ModBeingDeployed.ModWebsite);
+                        obj.ToolTip = M3L.GetString(M3L.string_validationOK);
                     }
                 }
             }
 
-
-            if (!hasError)
+            /// <summary>
+            /// Checks localizations and proper DLC mod setup for TLK
+            /// </summary>
+            /// <param name="obj"></param>
+            private void CheckLocalizations(DeploymentChecklistItem obj)
             {
-                item.Foreground = Brushes.Green;
-                item.Icon = FontAwesomeIcon.CheckCircle;
-                item.ItemText = M3L.GetString(M3L.string_noAudioIssuesWereDetected);
-                item.ToolTip = M3L.GetString(M3L.string_validationOK);
-            }
-            else
-            {
-                item.Errors = errors;
-                item.ItemText = M3L.GetString(M3L.string_audioIssuesWereDetected);
-                item.ToolTip = M3L.GetString(M3L.string_validationFailed);
-            }
-            item.HasError = hasError;
-            cachedAudio.Clear();
-        }
-
-        private void CheckTextures(DeploymentChecklistItem item)
-        {
-            // if (ModBeingDeployed.Game >= Mod.MEGame.ME2)
-            //{
-            bool hasError = false;
-            item.HasError = false;
-            item.ItemText = M3L.GetString(M3L.string_checkingTexturesInMod);
-            var referencedFiles = ModBeingDeployed.GetAllRelativeReferences().Select(x => Path.Combine(ModBeingDeployed.ModPath, x)).ToList();
-            var allTFCs = referencedFiles.Where(x => Path.GetExtension(x) == @".tfc").ToList();
-            int numChecked = 0;
-            GameTarget ValidationTarget = mainwindow.InstallationTargets.FirstOrDefault(x => x.Game == ModBeingDeployed.Game);
-            var errors = new List<string>();
-            foreach (var f in referencedFiles)
-            {
-                if (_closed) return;
-                numChecked++;
-                item.ItemText = $@"{M3L.GetString(M3L.string_checkingTexturesInMod)} [{numChecked}/{referencedFiles.Count}]";
-                if (f.RepresentsPackageFilePath())
+                var customDLCJob = ModBeingDeployed.GetJob(ModJob.JobHeader.CUSTOMDLC);
+                var customDLCFolders = customDLCJob.CustomDLCFolderMapping.Keys.ToList();
+                customDLCFolders.AddRange(customDLCJob.AlternateDLCs.Where(x => x.Operation == AlternateDLC.AltDLCOperation.OP_ADD_CUSTOMDLC).Select(x => x.AlternateDLCFolder));
+                var languages = StarterKitGeneratorWindow.me3languages;
+                obj.ItemText = M3L.GetString(M3L.string_languageCheckInProgress);
+                foreach (var customDLC in customDLCFolders)
                 {
-                    Log.Information(@"Checking file for broken textures: " + f);
-                    var package = MEPackageHandler.OpenMEPackage(f);
-                    var textures = package.Exports.Where(x => x.IsTexture()).ToList();
-                    foreach (var texture in textures)
+                    if (CheckCancelled) return;
+                    if (ModBeingDeployed.Game >= MEGame.ME2)
                     {
-                        if (_closed) return;
-
-                        if (package.Game > Mod.MEGame.ME1)
+                        var modCookedDir = Path.Combine(ModBeingDeployed.ModPath, customDLC, ModBeingDeployed.Game == MEGame.ME2 ? @"CookedPC" : @"CookedPCConsole");
+                        var mountFile = Path.Combine(modCookedDir, @"mount.dlc");
+                        if (!File.Exists(mountFile))
                         {
-                            var cache = texture.GetProperty<NameProperty>(@"TextureFileCacheName");
-                            if (cache != null)
+                            obj.AddBlockingError(M3L.GetString(M3L.string_interp_noMountDlcFile, customDLC));
+                            continue;
+                        }
+
+                        var mount = new MountFile(mountFile);
+
+                        int moduleNum = -1;
+                        if (ModBeingDeployed.Game == MEGame.ME2)
+                        {
+                            // Look up the module number
+                            var bioengine = Path.Combine(modCookedDir, @"BioEngine.ini");
+                            if (!File.Exists(bioengine))
                             {
-                                if (!VanillaDatabaseService.IsBasegameTFCName(cache.Value, ModBeingDeployed.Game))
+                                obj.AddBlockingError(M3L.GetString(M3L.string_interp_me2NoBioEngineFile, customDLC));
+                                continue;
+                            }
+                            else
+                            {
+                                var ini = DuplicatingIni.LoadIni(Path.Combine(bioengine));
+                                if (!int.TryParse(ini[@"Engine.DLCModules"][customDLC]?.Value, out moduleNum) || moduleNum < 1)
                                 {
-                                    //var mips = Texture2D.GetTexture2DMipInfos(texture, cache.Value);
-                                    Texture2D tex = new Texture2D(texture);
-                                    try
-                                    {
-                                        tex.GetImageBytesForMip(tex.GetTopMip(), ValidationTarget, false, allTFCs); //use active target
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        Log.Warning(@"Found broken texture: " + texture.GetInstancedFullPath);
-                                        hasError = true;
-                                        item.Icon = FontAwesomeIcon.TimesCircle;
-                                        item.Foreground = Brushes.Red;
-                                        item.Spinning = false;
-                                        errors.Add(M3L.GetString(M3L.string_interp_couldNotLoadTextureData, texture.FileRef.FilePath, texture.GetInstancedFullPath, e.Message));
-                                    }
+                                    obj.AddBlockingError(M3L.GetString(M3L.string_interp_me2MissingInvalidModuleNum, customDLC));
+                                    continue;
+                                }
+                            }
+                        }
+
+                        var tlkBasePath = ModBeingDeployed.Game == MEGame.ME2 ? $@"DLC_{moduleNum}" : customDLC;
+                        Dictionary<string, List<ME1TalkFile.TLKStringRef>> tlkMappings = new Dictionary<string, List<ME1TalkFile.TLKStringRef>>();
+                        foreach (var language in languages)
+                        {
+                            if (CheckCancelled) return;
+                            var tlkLangPath = Path.Combine(modCookedDir, tlkBasePath + @"_" + language.filecode + @".tlk");
+                            if (File.Exists(tlkLangPath))
+                            {
+                                //inspect
+                                TalkFile tf = new TalkFile();
+                                tf.LoadTlkData(tlkLangPath);
+                                tlkMappings[language.filecode] = tf.StringRefs;
+
+                                //Check string order
+                                var malestringRefsInRightOrder = tf.StringRefs.Take(tf.Header.MaleEntryCount).IsAscending((x, y) => x.StringID.CompareTo(y.StringID)); //male strings
+                                var femalestringRefsInRightOrder = tf.StringRefs.Skip(tf.Header.MaleEntryCount).Take(tf.Header.FemaleEntryCount).IsAscending((x, y) => x.StringID.CompareTo(y.StringID)); //male strings
+                                string gender = M3L.GetString(M3L.string_male);
+                                if (!malestringRefsInRightOrder)
+                                {
+                                    //Some TLK strings will not work
+                                    obj.AddSignificantIssue(M3L.GetString(M3L.string_interp_error_outOfOrderTLK, gender, language.filecode));
                                 }
 
-                                if (cache.Value.Name.Contains(@"CustTextures"))
+                                if (!femalestringRefsInRightOrder)
                                 {
-                                    // ME3Explorer 3.0 or below Texplorer
-                                    hasError = true;
-                                    item.Icon = FontAwesomeIcon.TimesCircle;
-                                    item.Foreground = Brushes.Red;
-                                    item.Spinning = false;
-                                    errors.Add(M3L.GetString(M3L.string_interp_error_foundCustTexturesTFCRef, texture.FileRef.FilePath, texture.GetInstancedFullPath, cache.Value.Name));
+                                    gender = M3L.GetString(M3L.string_female);
+                                    //Some TLK strings will not work
+                                    obj.AddSignificantIssue(M3L.GetString(M3L.string_interp_error_outOfOrderTLK, gender, language.filecode));
                                 }
-                                else if (cache.Value.Name.Contains(@"TexturesMEM"))
-                                {
-                                    // Textures replaced by MEM. This is not allowed in mods as it'll immediately break
-                                    hasError = true;
-                                    item.Icon = FontAwesomeIcon.TimesCircle;
-                                    item.Foreground = Brushes.Red;
-                                    item.Spinning = false;
-                                    item.DeploymentBlocking = true;
-                                    DeployButtonText = M3L.GetString(M3L.string_deploymentBlocked);
-                                    errors.Add(M3L.GetString(M3L.string_interp_error_foundTexturesMEMTFCRef, texture.FileRef.FilePath, texture.GetInstancedFullPath, cache.Value.Name));
 
+                                // Check to make sure TLK contains the mount file TLK ID
+                                var referencedStr = tf.findDataById(mount.TLKID);
+                                if (referencedStr == null || referencedStr == @"No Data")
+                                {
+                                    // TLK STRING REF NOT FOUND
+                                    obj.AddBlockingError(M3L.GetString(M3L.string_interp_missingReferencedTlkStrInMod, customDLC, Path.GetFileName(tlkLangPath), mount.TLKID));
+                                    continue;
+                                }
+                            }
+                            else
+                            {
+                                obj.AddSignificantIssue(M3L.GetString(M3L.string_interp_customDLCMissingLocalizedTLK, customDLC, language.filecode));
+                            }
+                        }
+
+                        if (tlkMappings.Any())
+                        {
+                            double numLoops = Math.Pow(tlkMappings.Count, 2);
+                            int numDone = 0;
+                            foreach (var mapping1 in tlkMappings)
+                            {
+                                foreach (var mapping2 in tlkMappings)
+                                {
+                                    var percent = (int)((numDone * 100.0) / numLoops);
+                                    obj.ItemText = $@"{M3L.GetString(M3L.string_languageCheckInProgress)} {percent}%";
+                                    numDone++;
+
+                                    if (mapping1.Equals(mapping2))
+                                    {
+                                        continue;
+                                    }
+
+                                    var differences = mapping1.Value.Select(x => x.StringID).Except(mapping2.Value.Select(x => x.StringID));
+                                    foreach (var difference in differences)
+                                    {
+                                        var str = mapping1.Value.FirstOrDefault(x => x.StringID == difference)?.Data ?? M3L.GetString(M3L.string_errorFindingString);
+                                        obj.AddSignificantIssue(M3L.GetString(M3L.string_interp_tlkDifference, difference.ToString(), mapping1.Key, mapping2.Key, str));
+                                    }
+                                }
+                            }
+                        }
+                        else if (tlkMappings.Count == 0)
+                        {
+                            obj.AddBlockingError(M3L.GetString(M3L.string_interp_dlcModHasNoTlkFiles, customDLC));
+                        }
+                    }
+                    else
+                    {
+                        // ME1
+                        var parsedIni = DuplicatingIni.LoadIni(Path.Combine(ModBeingDeployed.ModPath, customDLC, @"AutoLoad.ini"));
+
+                        if (int.TryParse(parsedIni[@"GUI"][@"NameStrRef"]?.Value, out var tlkid))
+                        {
+                            var tlkFile = parsedIni[@"Packages"][@"GlobalTalkTable1"]?.Value;
+                            if (tlkFile == null)
+                            {
+                                obj.AddBlockingError(M3L.GetString(M3L.string_interp_dlcModMissingTlkInAutoloadIni, customDLC));
+                            }
+                            else
+                            {
+                                // Check TLK exists.
+                                var tlkExportObjName = tlkFile.Split('.').Last();
+                                tlkFile = tlkFile.Substring(0, tlkFile.IndexOf(@".")); //They end with _tlk
+                                var tlkPackagePath = Directory.GetFiles(Path.Combine(ModBeingDeployed.ModPath, customDLC), $@"{tlkFile}.upk", SearchOption.AllDirectories).FirstOrDefault();
+                                if (tlkPackagePath == null)
+                                {
+                                    obj.AddBlockingError(M3L.GetString(M3L.string_interp_dlcModMissingAutoLoadTlkFile, customDLC, tlkFile));
+                                }
+                                else
+                                {
+                                    // Open and inspect TLK package.
+                                    var tlkPackage = MEPackageHandler.OpenMEPackage(tlkPackagePath);
+                                    var tfExp = tlkPackage.Exports.FirstOrDefault(x => x.ObjectName == tlkExportObjName && x.ClassName == @"BioTlkFile");
+                                    if (tfExp == null)
+                                    {
+                                        obj.AddBlockingError(M3L.GetString(M3L.string_interp_dlcModTlkPackageHasNoUsableTlk, customDLC));
+                                    }
+
+                                    ME1TalkFile tf = new ME1TalkFile(tfExp);
+                                    var str = tf.findDataById(tlkid);
+                                    if (str == null || str == @"No Data")
+                                    {
+                                        // INVALID
+                                        obj.AddBlockingError(M3L.GetString(M3L.string_interp_dlcModTlkPackageMissingStringId, customDLC, tlkid));
+                                    }
+                                    else
+                                    {
+                                        // Valid
+                                    }
                                 }
                             }
                         }
                         else
                         {
-                            Texture2D tex = new Texture2D(texture);
-                            var cachename = tex.GetTopMip().TextureCacheName;
-                            if (cachename != null)
+                            obj.AddBlockingError(M3L.GetString(M3L.string_interp_dlcModAutoLoadMissingNameStrRef, customDLC));
+                        }
+                    }
+                }
+
+                if (obj.HasAnyMessages())
+                {
+                    obj.ItemText = M3L.GetString(M3L.string_languageCheckDetectedIssues);
+                    obj.ToolTip = M3L.GetString(M3L.string_validationFailed);
+                }
+                else
+                {
+                    obj.ItemText = M3L.GetString(M3L.string_noLanguageIssuesDetected);
+                    obj.ToolTip = M3L.GetString(M3L.string_validationOK);
+                }
+            }
+
+            /// <summary>
+            /// Checks SFAR sizes
+            /// </summary>
+            /// <param name="item"></param>
+            private void CheckModSFARs(DeploymentChecklistItem item)
+            {
+                item.ItemText = M3L.GetString(M3L.string_checkingSFARFilesSizes);
+                var referencedFiles = ModBeingDeployed.GetAllRelativeReferences().Select(x => Path.Combine(ModBeingDeployed.ModPath, x)).ToList();
+                int numChecked = 0;
+                bool hasSFARs = false;
+                foreach (var f in referencedFiles)
+                {
+                    if (CheckCancelled) return;
+                    if (Path.GetExtension(f) == @".sfar")
+                    {
+                        hasSFARs = true;
+                        if (new FileInfo(f).Length != 32)
+                        {
                             {
-                                foreach (var mip in tex.Mips)
+                                item.AddBlockingError(f.Substring(ModBeingDeployed.ModPath.Length + 1));
+                            }
+                        }
+                    }
+                }
+
+                if (!hasSFARs)
+                {
+                    item.ItemText = M3L.GetString(M3L.string_modDoesNotUseSFARs);
+                    item.ToolTip = M3L.GetString(M3L.string_validationOK);
+                }
+                else
+                {
+                    if (item.HasAnyMessages())
+                    {
+                        item.ItemText = M3L.GetString(M3L.string_someSFARSizesAreTheIncorrectSize);
+                        item.ToolTip = M3L.GetString(M3L.string_validationFailed);
+                    }
+                    else
+                    {
+                        item.ItemText = M3L.GetString(M3L.string_noSFARSizeIssuesWereDetected);
+                        item.ToolTip = M3L.GetString(M3L.string_validationOK);
+                    }
+                }
+            }
+
+            /// <summary>
+            /// Manually validated items
+            /// </summary>
+            /// <param name="item"></param>
+            private void ManualValidation(DeploymentChecklistItem item)
+            {
+                item.ToolTip = M3L.GetString(M3L.string_thisItemMustBeManuallyCheckedByYou);
+            }
+
+            /// <summary>
+            /// Checks for broken audio
+            /// </summary>
+            /// <param name="item"></param>
+            private void CheckAFCs(DeploymentChecklistItem item)
+            {
+                item.ItemText = M3L.GetString(M3L.string_checkingAudioReferencesInMod);
+                var referencedFiles = ModBeingDeployed.GetAllRelativeReferences().Select(x => Path.Combine(ModBeingDeployed.ModPath, x)).ToList();
+                int numChecked = 0;
+
+                Predicate<string> predicate = s => s.ToLowerInvariant().EndsWith(@".afc", true, null);
+                List<string> gameFiles = M3Directories.EnumerateGameFiles(internalValidationTarget, predicate);
+
+                Dictionary<string, MemoryStream> cachedAudio = new Dictionary<string, MemoryStream>();
+
+                foreach (var f in referencedFiles)
+                {
+                    if (CheckCancelled) return;
+                    numChecked++;
+                    item.ItemText = $@"{M3L.GetString(M3L.string_checkingAudioReferencesInMod)} [{numChecked}/{referencedFiles.Count}]";
+                    if (f.RepresentsPackageFilePath())
+                    {
+                        var relativePath = f.Substring(ModBeingDeployed.ModPath.Length + 1);
+                        Log.Information(@"Checking file for audio issues: " + f);
+                        var package = MEPackageHandler.OpenMEPackage(f);
+                        var wwiseStreams = package.Exports.Where(x => x.ClassName == @"WwiseStream" && !x.IsDefaultObject).ToList();
+                        foreach (var wwisestream in wwiseStreams)
+                        {
+                            if (CheckCancelled) return;
+                            //Check each reference.
+                            var afcNameProp = wwisestream.GetProperty<NameProperty>(@"Filename");
+                            if (afcNameProp != null)
+                            {
+                                string afcNameWithExtension = afcNameProp + @".afc";
+                                int audioSize = BitConverter.ToInt32(wwisestream.Data, wwisestream.Data.Length - 8);
+                                int audioOffset = BitConverter.ToInt32(wwisestream.Data, wwisestream.Data.Length - 4);
+
+                                string afcPath = null;
+                                Stream audioStream = null;
+                                var localDirectoryAFCPath = Path.Combine(Path.GetDirectoryName(wwisestream.FileRef.FilePath), afcNameWithExtension);
+                                bool isInOfficialArea = false;
+                                if (File.Exists(localDirectoryAFCPath))
                                 {
-                                    try
+                                    //local afc
+                                    afcPath = localDirectoryAFCPath;
+                                }
+                                else if (referencedFiles.Any(x => Path.GetFileName(x).Equals(afcNameWithExtension, StringComparison.InvariantCultureIgnoreCase)))
+                                {
+                                    //found afc in mod.
+                                    //if there is multiple same-named AFCs in the mod, this might fail.
+                                    afcPath = Path.Combine(ModBeingDeployed.ModPath, referencedFiles.FirstOrDefault(x => Path.GetFileName(x).Equals(afcNameWithExtension, StringComparison.InvariantCultureIgnoreCase)));
+                                    if (!File.Exists(afcPath))
                                     {
-                                        tex.GetImageBytesForMip(mip, ValidationTarget, false);
+                                        Debugger.Break();
                                     }
-                                    catch (Exception e)
+                                }
+                                else
+                                {
+                                    //Check game
+                                    var fullPath = gameFiles.FirstOrDefault(x => Path.GetFileName(x).Equals(afcNameWithExtension, StringComparison.InvariantCultureIgnoreCase));
+                                    if (fullPath != null)
                                     {
-                                        Log.Warning(@"Found broken texture: " + texture.GetInstancedFullPath);
-                                        hasError = true;
-                                        item.Icon = FontAwesomeIcon.TimesCircle;
-                                        item.Foreground = Brushes.Red;
-                                        item.Spinning = false;
-                                        errors.Add(M3L.GetString(M3L.string_interp_couldNotLoadTextureData, texture.FileRef.FilePath, texture.GetInstancedFullPath, e.Message));
+                                        afcPath = fullPath;
+                                        isInOfficialArea = M3Directories.IsInBasegame(afcPath, internalValidationTarget) || M3Directories.IsInOfficialDLC(afcPath, internalValidationTarget);
+                                    }
+                                    else if (cachedAudio.TryGetValue(afcNameProp.Value.Name, out var cachedAudioStream))
+                                    {
+                                        audioStream = cachedAudioStream;
+                                        //isInOfficialArea = true; //cached from vanilla SFAR
+                                    }
+                                    else if (MEDirectories.OfficialDLC(internalValidationTarget.Game).Any(x => afcNameProp.Value.Name.StartsWith(x)))
+                                    {
+                                        var dlcName = afcNameProp.Value.Name.Substring(0, afcNameProp.Value.Name.LastIndexOf(@"_", StringComparison.InvariantCultureIgnoreCase));
+                                        var audio = VanillaDatabaseService.FetchFileFromVanillaSFAR(dlcName, afcNameWithExtension /*, ValidationTarget*/);
+                                        if (audio != null)
+                                        {
+                                            cachedAudio[afcNameProp.Value.Name] = audio;
+                                        }
+
+                                        audioStream = audio;
+                                        //isInOfficialArea = true; as this is in a vanilla SFAR we don't test against this since it will be correct.
+                                        continue;
+                                    }
+                                    else
+                                    {
+                                        Log.Warning($@"Could not find AFC file {afcNameProp.ToString()}.afc. Export: {wwisestream.UIndex} {wwisestream.ObjectName}");
+                                        item.AddSignificantIssue(M3L.GetString(M3L.string_interp_couldNotFindReferencedAFC, relativePath, wwisestream.InstancedFullPath, afcNameProp.ToString()));
+                                        continue;
+                                    }
+                                }
+
+                                if (afcPath != null)
+                                {
+                                    audioStream = new FileStream(afcPath, FileMode.Open);
+                                }
+
+                                try
+                                {
+                                    audioStream.Seek(audioOffset, SeekOrigin.Begin);
+                                    if (audioStream.Position > audioStream.Length - 4)
+                                    {
+                                        Log.Warning($@"Found broken audio: {wwisestream.UIndex} {wwisestream.ObjectName} has broken audio, pointer points inside of AFC, but the size of it extends beyond the end of the AFC. Package file: {relativePath}, referenced AFC: {afcPath} @ 0x{audioOffset:X8}. The AFC is only 0x{audioStream.Length:X8} bytes long.");
+                                        item.AddSignificantIssue(M3L.GetString(M3L.string_interp_invalidAudioPointerOutsideAFC, relativePath, wwisestream.UIndex, wwisestream.ObjectName, audioOffset, afcPath, audioStream.Length));
+                                        if (audioStream is FileStream) audioStream.Close();
+                                        continue;
+                                    }
+
+                                    if (audioStream.ReadStringASCIINull(4) != @"RIFF")
+                                    {
+                                        Log.Warning($@"Found broken audio: {wwisestream.UIndex} {wwisestream.ObjectName} has broken audio, pointer points to data that does not start with RIFF, which is the start of audio data. Package file: {relativePath}, referenced AFC: {afcPath} @ 0x{audioOffset:X8}.");
+                                        item.AddSignificantIssue(M3L.GetString(M3L.string_interp_invalidAudioPointer, relativePath, wwisestream.InstancedFullPath));
+                                        if (audioStream is FileStream) audioStream.Close();
+                                        continue;
+                                    }
+
+                                    //attempt to seek audio length.
+                                    audioStream.Seek(audioSize + 4, SeekOrigin.Current);
+
+                                    //Check if this file is in basegame
+                                    if (isInOfficialArea)
+                                    {
+                                        //Verify offset is not greater than vanilla size
+                                        var vanillaInfo = VanillaDatabaseService.GetVanillaFileInfo(internalValidationTarget, afcPath.Substring(internalValidationTarget.TargetPath.Length + 1));
+                                        if (vanillaInfo == null)
+                                        {
+                                            Crashes.TrackError(new Exception($@"Vanilla information was null when performing vanilla file check for {afcPath.Substring(internalValidationTarget.TargetPath.Length + 1)}"));
+                                        }
+
+                                        if (audioOffset >= vanillaInfo[0].size)
+                                        {
+                                            Log.Warning($@"Found broken audio: {wwisestream.UIndex} {wwisestream.ObjectName} has broken audio, pointer points beyond the end of the AFC file. Package file: {relativePath}, referenced AFC: {afcPath} @ 0x{audioOffset:X8}.");
+                                            item.AddSignificantIssue(M3L.GetString(M3L.string_interp_audioStoredInOfficialAFC, relativePath, wwisestream.InstancedFullPath));
+                                        }
+                                    }
+
+                                    if (audioStream is FileStream) audioStream.Close();
+                                }
+                                catch (Exception e)
+                                {
+                                    Log.Error($@"Error checking for broken audio: {wwisestream?.UIndex} {wwisestream?.ObjectName}. Package file: {relativePath}, referenced AFC: {afcPath} @ 0x{audioOffset:X8}. The error was: {e.Message}");
+                                    e.LogStackTrace();
+                                    if (audioStream is FileStream) audioStream.Close();
+                                    item.AddSignificantIssue(M3L.GetString(M3L.string_errorValidatingAudioReference, relativePath, wwisestream.InstancedFullPath, e.Message));
+                                    continue;
+                                }
+                            }
+                        }
+                    }
+                }
+
+
+                if (!item.HasAnyMessages())
+                {
+                    item.ItemText = M3L.GetString(M3L.string_noAudioIssuesWereDetected);
+                    item.ToolTip = M3L.GetString(M3L.string_validationOK);
+                }
+                else
+                {
+                    item.ItemText = M3L.GetString(M3L.string_audioIssuesWereDetected);
+                    item.ToolTip = M3L.GetString(M3L.string_validationFailed);
+                }
+
+                cachedAudio.Clear();
+            }
+
+            /// <summary>
+            /// Checks texture references and known bad texture setups
+            /// </summary>
+            /// <param name="item"></param>
+            private void CheckTextures(DeploymentChecklistItem item)
+            {
+                // if (ModBeingDeployed.Game >= MEGame.ME2)
+                //{
+                item.ItemText = M3L.GetString(M3L.string_checkingTexturesInMod);
+                var referencedFiles = ModBeingDeployed.GetAllRelativeReferences().Select(x => Path.Combine(ModBeingDeployed.ModPath, x)).ToList();
+                var allTFCs = referencedFiles.Where(x => Path.GetExtension(x) == @".tfc").ToList();
+                int numChecked = 0;
+                foreach (var f in referencedFiles)
+                {
+                    if (CheckCancelled) return;
+                    numChecked++;
+                    item.ItemText = $@"{M3L.GetString(M3L.string_checkingTexturesInMod)} [{numChecked}/{referencedFiles.Count}]";
+                    if (f.RepresentsPackageFilePath())
+                    {
+                        var relativePath = f.Substring(ModBeingDeployed.ModPath.Length + 1);
+                        Log.Information(@"Checking file for broken textures: " + f);
+                        var package = MEPackageHandler.OpenMEPackage(f);
+                        var textures = package.Exports.Where(x => x.IsTexture() && !x.IsDefaultObject).ToList();
+                        foreach (var texture in textures)
+                        {
+                            if (CheckCancelled) return;
+
+                            if (package.Game > MEGame.ME1)
+                            {
+                                // CHECK NEVERSTREAM
+                                // 1. Has more than six mips.
+                                // 2. Has no external mips.
+                                Texture2D tex = new Texture2D(texture);
+
+                                var topMip = tex.GetTopMip();
+                                if (topMip.storageType == StorageTypes.pccUnc)
+                                {
+                                    // It's an internally stored texture
+                                    if (!tex.NeverStream && tex.Mips.Count(x => x.storageType != StorageTypes.empty) > 6)
+                                    {
+                                        // NEVERSTREAM SHOULD HAVE BEEN SET.
+                                        Log.Error(@"Found texture missing 'NeverStream' attribute " + texture.InstancedFullPath);
+                                        item.AddBlockingError(M3L.GetString(M3L.string_interp_fatalMissingNeverstreamFlag, relativePath, texture.UIndex, texture.InstancedFullPath));
+                                    }
+                                }
+
+                                if (package.Game == MEGame.ME3)
+                                {
+                                    // CHECK FOR 4K NORM
+                                    var compressionSettings = texture.GetProperty<EnumProperty>(@"CompressionSettings");
+                                    if (compressionSettings != null && compressionSettings.Value == @"TC_NormalMapUncompressed")
+                                    {
+                                        var mipTailBaseIdx = texture.GetProperty<IntProperty>(@"MipTailBaseIdx");
+                                        if (mipTailBaseIdx != null && mipTailBaseIdx == 12)
+                                        {
+                                            // It's 4K (2^12)
+                                            Log.Error(@"Found 4K Norm. These are not used by game (they use up to 1 mip below the diff) and waste large amounts of memory. Drop the top mip to correct this issue. " + texture.InstancedFullPath);
+                                            item.AddBlockingError(M3L.GetString(M3L.string_interp_fatalFound4KNorm, relativePath, texture.UIndex, texture.InstancedFullPath));
+                                        }
+                                    }
+                                }
+
+
+
+                                var cache = texture.GetProperty<NameProperty>(@"TextureFileCacheName");
+                                if (cache != null)
+                                {
+                                    if (!VanillaDatabaseService.IsBasegameTFCName(cache.Value, ModBeingDeployed.Game))
+                                    {
+                                        //var mips = Texture2D.GetTexture2DMipInfos(texture, cache.Value);
+                                        try
+                                        {
+                                            tex.GetImageBytesForMip(tex.GetTopMip(), internalValidationTarget.Game, false, internalValidationTarget.TargetPath, allTFCs); //use active target
+                                        }
+                                        catch (Exception e)
+                                        {
+                                            Log.Warning(@"Found broken texture: " + texture.InstancedFullPath);
+                                            item.AddSignificantIssue(M3L.GetString(M3L.string_interp_couldNotLoadTextureData, relativePath, texture.InstancedFullPath, e.Message));
+                                        }
+                                    }
+
+                                    if (cache.Value.Name.Contains(@"CustTextures"))
+                                    {
+                                        // ME3Explorer 3.0 or below Texplorer
+                                        item.AddSignificantIssue(M3L.GetString(M3L.string_interp_error_foundCustTexturesTFCRef, relativePath, texture.InstancedFullPath, cache.Value.Name));
+                                    }
+                                    else if (cache.Value.Name.Contains(@"TexturesMEM"))
+                                    {
+                                        // Textures replaced by MEM. This is not allowed in mods as it'll immediately be broken
+                                        item.AddBlockingError(M3L.GetString(M3L.string_interp_error_foundTexturesMEMTFCRef, relativePath, texture.InstancedFullPath, cache.Value.Name));
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                Texture2D tex = new Texture2D(texture);
+                                var cachename = tex.GetTopMip().TextureCacheName;
+                                if (cachename != null)
+                                {
+                                    foreach (var mip in tex.Mips)
+                                    {
+                                        try
+                                        {
+                                            tex.GetImageBytesForMip(mip, internalValidationTarget.Game, false, internalValidationTarget.TargetPath);
+                                        }
+                                        catch (Exception e)
+                                        {
+                                            Log.Warning(@"Found broken texture: " + texture.InstancedFullPath);
+                                            item.AddSignificantIssue(M3L.GetString(M3L.string_interp_couldNotLoadTextureData, relativePath, texture.InstancedFullPath, e.Message));
+                                        }
                                     }
                                 }
                             }
                         }
                     }
                 }
+
+                if (!item.HasAnyMessages())
+                {
+                    item.ItemText = M3L.GetString(M3L.string_noBrokenTexturesWereFound);
+                    item.ToolTip = M3L.GetString(M3L.string_validationOK);
+                }
+                else
+                {
+                    item.ItemText = M3L.GetString(M3L.string_textureIssuesWereDetected);
+                    item.ToolTip = M3L.GetString(M3L.string_validationFailed);
+                }
             }
 
-            if (!hasError)
+            void recursiveCheckProperty(DeploymentChecklistItem item, string relativePath, string containingClassOrStructName, IEntry entry, Property property)
             {
-                item.Foreground = Brushes.Green;
-                item.Icon = FontAwesomeIcon.CheckCircle;
-                item.ItemText = M3L.GetString(M3L.string_noBrokenTexturesWereFound);
-                item.ToolTip = M3L.GetString(M3L.string_validationOK);
+                var prefix = M3L.GetString(M3L.string_interp_warningPropertyTypingWrongPrefix, relativePath, entry.UIndex, entry.ObjectName.Name, entry.ClassName, property.StartOffset.ToString(@"X6"));
+                if (property is UnknownProperty up)
+                {
+                    item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningFoundBrokenPropertyData, prefix));
+
+                }
+                else if (property is ObjectProperty op)
+                {
+                    bool validRef = true;
+                    if (op.Value > 0 && op.Value > entry.FileRef.ExportCount)
+                    {
+                        //bad
+                        if (op.Name.Name != null)
+                        {
+                            item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningReferenceNotInExportTable, prefix, op.Name.Name, op.Value));
+                            validRef = false;
+                        }
+                        else
+                        {
+                            item.AddSignificantIssue(M3L.GetString(M3L.string_interp_nested_warningReferenceNoInExportTable, prefix, op.Value));
+                            validRef = false;
+                        }
+                    }
+                    else if (op.Value < 0 && Math.Abs(op.Value) > entry.FileRef.ImportCount)
+                    {
+                        //bad
+                        if (op.Name.Name != null)
+                        {
+                            item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningReferenceNotInImportTable, prefix, op.Name.Name, op.Value));
+                            validRef = false;
+
+                        }
+                        else
+                        {
+                            item.AddSignificantIssue(M3L.GetString(M3L.string_interp_nested_warningReferenceNoInImportTable, prefix, op.Value));
+                            validRef = false;
+
+                        }
+                    }
+                    else if (entry.FileRef.GetEntry(op.Value)?.ObjectName.ToString() == @"Trash" || entry.FileRef.GetEntry(op.Value)?.ObjectName.ToString() == @"ME3ExplorerTrashPackage")
+                    {
+                        item.AddSignificantIssue(M3L.GetString(M3L.string_interp_nested_warningTrashedExportReference, prefix, op.Value));
+                        validRef = false;
+                    }
+
+                    // Check object is of correct typing?
+                    if (validRef && op.Value != 0)
+                    {
+                        var referencedEntry = op.ResolveToEntry(entry.FileRef);
+                        if (referencedEntry.FullPath.Equals(@"SFXGame.BioDeprecated", StringComparison.InvariantCulture)) return; //This will appear as wrong even though it's technically not
+
+                        var propInfo = UnrealObjectInfo.GetPropertyInfo(entry.Game, op.Name, containingClassOrStructName, containingExport: entry as ExportEntry);
+                        var customClassInfos = new Dictionary<string, ClassInfo>();
+
+                        if (referencedEntry.ClassName == @"Class" && op.Value > 0)
+                        {
+
+                            // Make sure we have info about this class.
+                            var lookupEnt = referencedEntry as ExportEntry;
+                            while (lookupEnt != null && lookupEnt.IsClass && !UnrealObjectInfo.GetClasses(ModBeingDeployed.Game).ContainsKey(lookupEnt.ObjectName))
+                            {
+                                // Needs dynamically generated
+                                var cc = UnrealObjectInfo.generateClassInfo(lookupEnt);
+                                customClassInfos[lookupEnt.ObjectName] = cc;
+                                lookupEnt = lookupEnt.Parent as ExportEntry;
+                            }
+
+                            // If we did not pull it previously, we should try again with our custom info.
+                            if (propInfo == null && customClassInfos.Any())
+                            {
+                                propInfo = UnrealObjectInfo.GetPropertyInfo(entry.Game, op.Name,
+                                    containingClassOrStructName, customClassInfos[referencedEntry.ObjectName],
+                                    containingExport: entry as ExportEntry);
+                            }
+                        }
+
+                        if (propInfo != null && propInfo.Reference != null)
+                        {
+                            // We can't resolve if an object inherits from a class object that's only defined in native.
+                            // This is only possible if the refernce is an import and it's importing native class object.
+                            // Like Engine.CodecBinkMovie
+                            if (!referencedEntry.IsAKnownNativeClass())
+                            {
+                                if (referencedEntry.ClassName == @"Class")
+                                {
+                                    // Inherits
+                                    if (!referencedEntry.InheritsFrom(propInfo.Reference, customClassInfos))
+                                    {
+                                        if (op.Name.Name != null)
+                                        {
+                                            item.AddSignificantIssue(M3L.GetString(
+                                                M3L.string_interp_warningWrongPropertyTypingWrongMessage, prefix,
+                                                op.Name.Name, op.Value, op.ResolveToEntry(entry.FileRef).FullPath,
+                                                propInfo.Reference, referencedEntry.ObjectName));
+                                        }
+                                        else
+                                        {
+                                            item.AddSignificantIssue(M3L.GetString(
+                                                M3L
+                                                    .string_interp_nested_warningWrongClassPropertyTypingWrongMessage,
+                                                prefix, op.Value, op.ResolveToEntry(entry.FileRef).FullPath,
+                                                propInfo.Reference, referencedEntry.ObjectName));
+                                        }
+                                    }
+                                }
+                                else if (!referencedEntry.IsA(propInfo.Reference, customClassInfos))
+                                {
+                                    // Is instance of
+                                    if (op.Name.Name != null)
+                                    {
+                                        item.AddSignificantIssue(M3L.GetString(
+                                            M3L.string_interp_warningWrongObjectPropertyTypingWrongMessage,
+                                            prefix, op.Name.Name, op.Value,
+                                            op.ResolveToEntry(entry.FileRef).FullPath, propInfo.Reference,
+                                            referencedEntry.ObjectName));
+                                    }
+                                    else
+                                    {
+                                        item.AddSignificantIssue(M3L.GetString(
+                                            M3L.string_interp_nested_warningWrongObjectPropertyTypingWrongMessage,
+                                            prefix, op.Value, op.ResolveToEntry(entry.FileRef).FullPath,
+                                            propInfo.Reference, referencedEntry.ObjectName));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                else if (property is ArrayProperty<ObjectProperty> aop)
+                {
+                    foreach (var p in aop)
+                    {
+                        recursiveCheckProperty(item, relativePath, aop.Name, entry, p);
+                    }
+                }
+                else if (property is StructProperty sp)
+                {
+                    foreach (var p in sp.Properties)
+                    {
+                        recursiveCheckProperty(item, relativePath, sp.StructType, entry, p);
+                    }
+                }
+                else if (property is ArrayProperty<StructProperty> asp)
+                {
+                    foreach (var p in asp)
+                    {
+                        recursiveCheckProperty(item, relativePath, p.StructType, entry, p);
+                    }
+                }
+                else if (property is DelegateProperty dp)
+                {
+                    if (dp.Value.Object != 0 && !entry.FileRef.IsEntry(dp.Value.Object))
+                    {
+                        item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningDelegatePropertyIsOutsideOfExportTable, prefix, dp.Name.Name));
+                    }
+                }
             }
-            else
+
+
+            /// <summary>
+            /// Checks object and name references for invalid values and if values are of the incorrect typing.
+            /// </summary>
+            /// <param name="item"></param>
+            private void CheckReferences(DeploymentChecklistItem item)
             {
-                item.Errors = errors;
-                item.ItemText = M3L.GetString(M3L.string_textureIssuesWereDetected);
-                item.ToolTip = M3L.GetString(M3L.string_validationFailed);
+                item.ItemText = M3L.GetString(M3L.string_checkingNameAndObjectReferences);
+                var referencedFiles = ModBeingDeployed.GetAllRelativeReferences().Where(x => x.RepresentsPackageFilePath()).Select(x => Path.Combine(ModBeingDeployed.ModPath, x)).ToList();
+                int numChecked = 0;
+
+                Parallel.ForEach(referencedFiles,
+                    new ParallelOptions()
+                    {
+                        MaxDegreeOfParallelism = Math.Min(6, Environment.ProcessorCount)
+                    },
+                    f =>
+                    //foreach (var f in referencedFiles)
+                    {
+                        if (CheckCancelled) return;
+                        // Mostly ported from ME3Explorer
+                        var lnumChecked = Interlocked.Increment(ref numChecked);
+                        item.ItemText = M3L.GetString(M3L.string_checkingNameAndObjectReferences) + $@" [{lnumChecked - 1}/{referencedFiles.Count}]";
+
+                        var relativePath = f.Substring(ModBeingDeployed.ModPath.Length + 1);
+                        Log.Information($@"Checking package and name references in {relativePath}");
+                        var package = MEPackageHandler.OpenMEPackage(Path.Combine(item.ModToValidateAgainst.ModPath, f));
+                        foreach (ExportEntry exp in package.Exports)
+                        {
+                            // Has to be done before accessing the name because it will cause infinite crash loop
+                            if (exp.idxLink == exp.UIndex)
+                            {
+                                item.AddBlockingError(M3L.GetString(M3L.string_interp_fatalExportCircularReference, f.Substring(ModBeingDeployed.ModPath.Length + 1), exp.UIndex));
+                                continue;
+                            }
+
+                            var prefix = M3L.GetString(M3L.string_interp_warningGenericExportPrefix, f.Substring(ModBeingDeployed.ModPath.Length + 1), exp.UIndex, exp.ObjectName.Name, exp.ClassName);
+                            try
+                            {
+                                if (exp.idxArchetype != 0 && !package.IsEntry(exp.idxArchetype))
+                                {
+                                    item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningArchetypeOutsideTables, prefix, exp.idxArchetype));
+                                }
+
+                                if (exp.idxSuperClass != 0 && !package.IsEntry(exp.idxSuperClass))
+                                {
+                                    item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningSuperclassOutsideTables, prefix, exp.idxSuperClass));
+                                }
+
+                                if (exp.idxClass != 0 && !package.IsEntry(exp.idxClass))
+                                {
+                                    item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningClassOutsideTables, prefix, exp.idxClass));
+                                }
+
+                                if (exp.idxLink != 0 && !package.IsEntry(exp.idxLink))
+                                {
+                                    item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningLinkOutsideTables, prefix, exp.idxLink));
+                                }
+
+                                if (exp.HasComponentMap)
+                                {
+                                    foreach (var c in exp.ComponentMap)
+                                    {
+                                        if (!package.IsEntry(c.Value))
+                                        {
+                                            // Can components point to 0? I don't think so
+                                            item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningComponentMapItemOutsideTables, prefix, c.Value));
+                                        }
+                                    }
+                                }
+
+                                //find stack references
+                                if (exp.HasStack && exp.Data is byte[] data)
+                                {
+                                    var stack1 = EndianReader.ToInt32(data, 0, exp.FileRef.Endian);
+                                    var stack2 = EndianReader.ToInt32(data, 4, exp.FileRef.Endian);
+                                    if (stack1 != 0 && !package.IsEntry(stack1))
+                                    {
+                                        item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningExportStackElementOutsideTables, prefix, 0, stack1));
+                                    }
+
+                                    if (stack2 != 0 && !package.IsEntry(stack2))
+                                    {
+                                        item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningExportStackElementOutsideTables, prefix, 1, stack2));
+                                    }
+                                }
+                                else if (exp.TemplateOwnerClassIdx is var toci && toci >= 0)
+                                {
+                                    var TemplateOwnerClassIdx = EndianReader.ToInt32(exp.Data, toci, exp.FileRef.Endian);
+                                    if (TemplateOwnerClassIdx != 0 && !package.IsEntry(TemplateOwnerClassIdx))
+                                    {
+                                        item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningTemplateOwnerClassOutsideTables, prefix, toci.ToString(@"X6"), TemplateOwnerClassIdx));
+                                    }
+                                }
+
+                                var props = exp.GetProperties();
+                                foreach (var p in props)
+                                {
+                                    recursiveCheckProperty(item, relativePath, exp.ClassName, exp, p);
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningExceptionParsingProperties, prefix, e.Message));
+                                continue;
+                            }
+
+                            //find binary references
+                            try
+                            {
+                                if (!exp.IsDefaultObject && ObjectBinary.From(exp) is ObjectBinary objBin)
+                                {
+                                    List<(UIndex, string)> indices = objBin.GetUIndexes(exp.FileRef.Game);
+                                    foreach ((UIndex uIndex, string propName) in indices)
+                                    {
+                                        if (uIndex.value != 0 && !exp.FileRef.IsEntry(uIndex.value))
+                                        {
+                                            item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningBinaryReferenceOutsideTables, prefix, uIndex.value));
+                                        }
+                                        else if (exp.FileRef.GetEntry(uIndex.value)?.ObjectName.ToString() == @"Trash")
+                                        {
+                                            item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningBinaryReferenceTrashed, prefix, uIndex.value));
+                                        }
+                                        else if (exp.FileRef.GetEntry(uIndex.value)?.ObjectName.ToString() == @"ME3ExplorerTrashPackage")
+                                        {
+                                            item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningBinaryReferenceTrashed, prefix, uIndex.value));
+                                        }
+                                    }
+
+                                    var nameIndicies = objBin.GetNames(exp.FileRef.Game);
+                                    foreach (var ni in nameIndicies)
+                                    {
+                                        if (ni.Item1 == "")
+                                        {
+                                            item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningBinaryNameReferenceOutsideNameTable, prefix));
+                                        }
+                                    }
+                                }
+                            }
+                            catch (Exception e) /* when (!App.IsDebug)*/
+                            {
+                                item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningUnableToParseBinary, prefix, e.Message));
+                            }
+                        }
+
+                        foreach (ImportEntry imp in package.Imports)
+                        {
+                            if (imp.idxLink != 0 && !package.TryGetEntry(imp.idxLink, out _))
+                            {
+                                item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningImportLinkOutideOfTables, f, imp.UIndex, imp.idxLink));
+                            }
+                            else if (imp.idxLink == imp.UIndex)
+                            {
+                                item.AddBlockingError(M3L.GetString(M3L.string_interp_fatalImportCircularReference, f, imp.UIndex));
+                            }
+                        }
+                    });
+
+                if (!item.HasAnyMessages())
+                {
+                    item.ItemText = M3L.GetString(M3L.string_noReferenceIssuesWereDetected);
+                    item.ToolTip = M3L.GetString(M3L.string_validationOK);
+                }
+                else
+                {
+                    item.ItemText = M3L.GetString(M3L.string_referencesCheckDetectedIssues);
+                    item.ToolTip = M3L.GetString(M3L.string_validationFailed);
+                }
+
+
             }
-            item.HasError = hasError;
+            #endregion
+
+            //Fody uses this property on weaving
+#pragma warning disable 0169
+public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 0169
+
+            /// <summary>
+            /// Sets all checks to the 'abandoned' state, as in they will not run due to previous blocking item
+            /// </summary>
+            public void SetAbandoned()
+            {
+                foreach (var check in DeploymentChecklistItems)
+                {
+                    check.SetAbandoned();
+                }
+            }
         }
 
         public ICommand DeployCommand { get; set; }
         public ICommand CloseCommand { get; set; }
+        public ICommand AddModToDeploymentCommand { get; set; }
         private void LoadCommands()
         {
             DeployCommand = new GenericCommand(StartDeployment, CanDeploy);
             CloseCommand = new GenericCommand(ClosePanel, CanClose);
+            AddModToDeploymentCommand = new GenericCommand(AddModToDeploymentWrapper, CanAddModToDeployment);
         }
+
+        private void AddModToDeploymentWrapper()
+        {
+            var m = mainwindow.AllLoadedMods.Except(ModsInDeployment.Select(x => x.ModBeingDeployed));
+            ModSelectorDialog msd = new ModSelectorDialog(window, m.ToList());
+            var result = msd.ShowDialog();
+            if (result.HasValue && result.Value)
+            {
+                if (!DeploymentBlocked)
+                {
+                    foreach (var v in msd.SelectedMods)
+                    {
+                        AddModToDeployment(v);
+                    }
+                }
+            }
+        }
+
+        private bool CanAddModToDeployment() => ModsInDeployment.All(x => x.DeploymentChecklistItems.All(y => !y.DeploymentBlocking));
 
         private void ClosePanel()
         {
-            _closed = true;
+            foreach (var v in ModsInDeployment)
+            {
+                v.CheckCancelled = true;
+            }
             OnClosing(DataEventArgs.Empty);
         }
 
@@ -843,10 +1250,21 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private static string[] NoCompressExtensions = new[] { @".tfc", @".bik" };
         private void StartDeployment()
         {
+            var premadeName = "";
+            if (ModsInDeployment.Count > 1)
+            {
+                // Multipack
+                premadeName = Utilities.SanitizePath($@"{ModsInDeployment[0].ModBeingDeployed.ModName}_{ModsInDeployment[0].ModBeingDeployed.ModVersionString}_multipack".Replace(@" ", ""), true);
+            }
+            else
+            {
+                premadeName = Utilities.SanitizePath($@"{ModsInDeployment[0].ModBeingDeployed.ModName}_{ModsInDeployment[0].ModBeingDeployed.ModVersionString}".Replace(@" ", ""), true);
+            }
+
             SaveFileDialog d = new SaveFileDialog
             {
                 Filter = $@"{M3L.GetString(M3L.string_7zipArchiveFile)}|*.7z",
-                FileName = Utilities.SanitizePath($@"{ModBeingDeployed.ModName}_{ModBeingDeployed.ModVersionString}".Replace(@" ", ""), true)
+                FileName = premadeName
             };
             var result = d.ShowDialog();
             if (result.HasValue && result.Value)
@@ -873,15 +1291,33 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                     }
-                    else
+                    else if (ModsInDeployment.Count == 1)
                     {
                         Analytics.TrackEvent(@"Deployed mod", new Dictionary<string, string>()
                         {
-                            { @"Mod name" , $@"{ModBeingDeployed.ModName} {ModBeingDeployed.ParsedModVersion}"}
+                            { @"Mod name" , $@"{ModsInDeployment[0].ModBeingDeployed.ModName} {ModsInDeployment[0].ModBeingDeployed.ParsedModVersion}"}
                         });
                     }
+                    else
+                    {
+                        Analytics.TrackEvent(@"Deployed multipack of mods", new Dictionary<string, string>()
+                        {
+                            { @"Included mods" , string.Join(';', ModsInDeployment.Select(x=>$@"{x.ModBeingDeployed.ModName} {x.ModBeingDeployed.ParsedModVersion}"))}
+                        });
+                    }
+
                     DeploymentInProgress = false;
                     CommandManager.InvalidateRequerySuggested();
+
+                    if (b.Error == null && b.Result is List<Mod> modsForTPMISubmission && modsForTPMISubmission.Any())
+                    {
+                        var goToTPMIForm = M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_dialog_dlcFolderNotInTPMI, string.Join('\n', modsForTPMISubmission.Select(x => x.ModName))), M3L.GetString(M3L.string_modsNotInThirdPartyIdentificationService), MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                        if (goToTPMIForm == MessageBoxResult.Yes)
+                        {
+                            OnClosing(new DataEventArgs(modsForTPMISubmission));
+                        }
+                    }
+
                 };
                 TaskbarHelper.SetProgress(0);
                 TaskbarHelper.SetProgressState(TaskbarProgressBarState.Normal);
@@ -892,63 +1328,119 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void Deployment_BackgroundThread(object sender, DoWorkEventArgs e)
         {
-            NamedBackgroundWorker worker = (NamedBackgroundWorker)sender;
-            var referencedFiles = ModBeingDeployed.GetAllRelativeReferences();
-            string archivePath = e.Argument as string;
             //Key is in-archive path, value is on disk path
             var archiveMapping = new Dictionary<string, string>();
-            SortedSet<string> directories = new SortedSet<string>();
-            foreach (var file in referencedFiles)
-            {
-                var path = Path.Combine(ModBeingDeployed.ModPath, file);
-                var directory = Directory.GetParent(path).FullName;
-                if (directory.Length <= ModBeingDeployed.ModPath.Length) continue; //root file or directory.
-                directory = directory.Substring(ModBeingDeployed.ModPath.Length + 1);
+            string archivePath = e.Argument as string;
 
-                //nested folders with no folders
-                var relativeFolders = directory.Split('\\');
-                string buildingFolderList = "";
-                foreach (var relativeFolder in relativeFolders)
+            var modsBeingDeployed = ModsInDeployment.Select(x => x.ModBeingDeployed).ToList();
+            bool isMultiPack = modsBeingDeployed.Count > 1;
+
+            // If there is mods for more than one game we will place files into ME1/ME2/ME3 subdirectories.
+            bool needsGamePrefix = modsBeingDeployed.Select(x => x.Game).Distinct().Count() > 1;
+
+            // Map of Mod => referenced relative file => in archive dir path, relative. Does not include game prefix
+            var modRefMap = new Dictionary<Mod, Dictionary<string, string>>();
+
+            // Get a list of all referenced files by the mods being deployed.
+            foreach (var modBeingDeployed in modsBeingDeployed)
+            {
+                var references = modBeingDeployed.GetAllRelativeReferences(true);
+                if (isMultiPack)
                 {
+                    modRefMap[modBeingDeployed] = references.ToDictionary(x => x, x => $@"{Utilities.SanitizePath(modBeingDeployed.ModName)}\{x}");
+                }
+                else
+                {
+                    modRefMap[modBeingDeployed] = references.ToDictionary(x => x, x => x);
+                }
+            }
+
+            // Build the master mapping by prepending game prefix if necessary
+            // Also create a map that maps the archive paths back to the mod they come from, so 
+            // we can use it to prefix the path of the mod when determining
+            // what files should not be compressed
+            var archiveMappingToSourceMod = new Dictionary<string, Mod>();
+            foreach (var refMap in modRefMap)
+            {
+                foreach (var singleMapping in refMap.Value)
+                {
+
+                    if (needsGamePrefix)
+                    {
+                        var inArchivePath = $@"{refMap.Key.Game}\{singleMapping.Value}";
+                        archiveMapping[inArchivePath] = Path.Combine(refMap.Key.ModPath, singleMapping.Key);
+                        archiveMappingToSourceMod[inArchivePath] = refMap.Key;
+                    }
+                    else
+                    {
+                        archiveMapping[singleMapping.Value] = Path.Combine(refMap.Key.ModPath, singleMapping.Key);
+                        archiveMappingToSourceMod[singleMapping.Value] = refMap.Key;
+                    }
+                }
+            }
+
+            // Add folders and calculate total size in same pass
+            long totalSize = 0;
+            var directories = new SortedSet<string>();
+            foreach (var v in archiveMapping.ToList()) //tolist prevents concurrent modification
+            {
+                totalSize += new FileInfo(v.Value).Length;
+                var relativeFolders = v.Key.Split('\\');
+                string buildingFolderList = "";
+                for (int i = 0; i < relativeFolders.Length - 1; i++)
+                {
+                    var relativeFolder = relativeFolders[i];
                     if (buildingFolderList != "")
                     {
                         buildingFolderList += @"\";
                     }
+
                     buildingFolderList += relativeFolder;
                     if (directories.Add(buildingFolderList))
                     {
+                        // hasn't beed added yet
+                        //Debug.WriteLine($"Add folder {buildingFolderList}");
                         archiveMapping[buildingFolderList] = null;
                     }
                 }
-
             }
 
-            archiveMapping.AddRange(referencedFiles.ToDictionary(x => x, x => Path.Combine(ModBeingDeployed.ModPath, x)));
 
-            var compressor = new SevenZip.SevenZipCompressor();
-            //compressor.CompressionLevel = CompressionLevel.Ultra;
+
+            //var padWidth = archiveMapping.Keys.MaxBy(x => x.Length).Length + 2;
+            //foreach (var v in archiveMapping)
+            //{
+            //    Debug.WriteLine($@"{v.Key.PadRight(padWidth, ' ')} = {v.Value}");
+            //}
+
+            //Debug.WriteLine("DONE");
+
+            // setup the compressor for pass 1
+            var compressor = new SevenZipCompressor();
             compressor.CustomParameters.Add(@"s", @"on");
             if (!MultithreadedCompression)
             {
+                // Single thread
                 compressor.CustomParameters.Add(@"mt", @"off");
             }
             else
             {
-                var foldersize = Utilities.GetSizeOfDirectory(ModBeingDeployed.ModPath);
-                if (foldersize > ByteSize.BytesInGigaByte * 1.25)
+                // Multi thread
+                // Get size of all files in total
+                if (totalSize > FileSize.GibiByte * 1.25)
                 {
-                    //cap threads to prevent huge memory
+                    //cap threads to prevent huge memory usage when compressing big mods
                     var cores = Environment.ProcessorCount;
                     cores = Math.Min(cores, 5);
                     compressor.CustomParameters.Add(@"mt", cores.ToString());
                 }
             }
 
-
             compressor.CustomParameters.Add(@"yx", @"9");
-            //compressor.CustomParameters.Add("x", "9");
-            compressor.CustomParameters.Add(@"d", @"28");
+            compressor.CustomParameters.Add(@"d", @"28"); //Dictionary size 2^28 (256MB)
             string currentDeploymentStep = M3L.GetString(M3L.string_mod);
+
+            DateTime lastPercentUpdateTime = DateTime.Now;
             compressor.Progressing += (a, b) =>
             {
                 //Debug.WriteLine(b.AmountCompleted + "/" + b.TotalAmount);
@@ -960,8 +1452,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     //Don't update UI too often. Once per second is enough.
                     var progValue = ProgressValue * 100.0 / ProgressMax;
                     string percent = progValue.ToString(@"0.00");
-                    worker.ReportProgress(0, progValue / 100.0);
-
                     OperationText = $@"[{currentDeploymentStep}] {M3L.GetString(M3L.string_deploymentInProgress)} {percent}%";
                     lastPercentUpdateTime = now;
                 }
@@ -972,79 +1462,147 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             // Pass 1: Compressed items and empty folders
             // Includes package files and other basic file types
             // Does not include AFC, TFC, or .BIK
+            // Does not include moddesc.ini
+            // Does not include any referenced image files under M3Images
             currentDeploymentStep = M3L.GetString(M3L.string_compressedModItems);
 
-            var compressItems = archiveMapping.Where(x => x.Value == null || !NoCompressExtensions.Contains(Path.GetExtension(x.Value))).ToDictionary(p => p.Key, p => p.Value);
+            var compressItems = archiveMapping.Where(x => x.Value == null || ShouldBeCompressed(x, archiveMappingToSourceMod[x.Key])).ToDictionary(p => p.Key, p => p.Value);
             compressor.CompressFileDictionary(compressItems, archivePath);
+
+
+            // Pass 2: Uncompressed items
             compressor.CustomParameters.Clear(); //remove custom params as it seems to force LZMA
-            compressor.CompressionMode = CompressionMode.Append;
+            compressor.CompressionMode = CompressionMode.Append; //Append to 
             compressor.CompressionLevel = CompressionLevel.None;
 
-            // Pass 2: Uncompressed items that are not moddesc.ini
             currentDeploymentStep = M3L.GetString(M3L.string_uncompressedModItems);
-            var nocompressItems = archiveMapping.Where(x => x.Value != null && NoCompressExtensions.Contains(Path.GetExtension(x.Key))).ToDictionary(p => p.Key, p => p.Value);
+            var nocompressItems = archiveMapping.Where(x => x.Value != null && !ShouldBeCompressed(x, archiveMappingToSourceMod[x.Key])).ToDictionary(p => p.Key, p => p.Value);
+
             compressor.CompressFileDictionary(nocompressItems, archivePath);
 
-            // Pass 3: Moddesc.ini
-            // Appends at end of archive
-            currentDeploymentStep = @"moddesc.ini";
-            compressor.CompressFiles(archivePath, new string[]
-            {
-                Path.Combine(ModBeingDeployed.ModPath, @"moddesc.ini")
-            });
             OperationText = M3L.GetString(M3L.string_deploymentSucceeded);
             Utilities.HighlightInExplorer(archivePath);
+
+            e.Result = GetModsNeedingTPMISubmission(modsBeingDeployed);
+        }
+
+        private List<Mod> GetModsNeedingTPMISubmission(List<Mod> modsBeingDeployed)
+        {
+            List<Mod> modsNeedingSubmission = new List<Mod>();
+            foreach (var v in modsBeingDeployed)
+            {
+                var folders = v.GetAllPossibleCustomDLCFolders();
+                foreach (var f in folders)
+                {
+                    var tpmi = ThirdPartyServices.GetThirdPartyModInfo(f, v.Game);
+                    if (tpmi == null)
+                    {
+                        modsNeedingSubmission.Add(v);
+                        break; // don't need to parse more of this mod
+                    }
+                }
+            }
+
+            return modsNeedingSubmission;
+        }
+
+        /// <summary>
+        /// Determines if a file should be compressed into the archive, or stored uncompressed
+        /// </summary>
+        /// <param name="fileMapping">Mapping of the in-archive path to the source file. If the value is null, it means it's a folder.</param>
+        /// <returns></returns>
+        private bool ShouldBeCompressed(KeyValuePair<string, string> fileMapping, Mod modBeingDeployed)
+        {
+            if (fileMapping.Value == null) return true; //This can't be compressed (it's a folder) but it should be done in the compression pass so it's in the archive to begin with
+            if (NoCompressExtensions.Contains(Path.GetExtension(fileMapping.Value))) return false; //Do not compress these extensions
+            var modRelPath = fileMapping.Value.Substring(modBeingDeployed.ModPath.Length + 1);
+            if (modRelPath.StartsWith(@"M3Images", StringComparison.InvariantCultureIgnoreCase))
+                return false; // Referenced image file should not be compressed.
+            if (modRelPath == @"moddesc.ini")
+                return false; // moddesc.ini should not be compressed.
+            return true;
         }
 
         private bool CanDeploy()
         {
-            return PrecheckCompleted && !DeploymentInProgress &&
-                   !DeploymentChecklistItems.Any(x => x.DeploymentBlocking);
+            return PrecheckCompleted && !DeploymentInProgress && ModsInDeployment.All(x => x.DeploymentChecklistItems.All(x => !x.DeploymentBlocking));
         }
 
-        public ObservableCollectionExtended<DeploymentChecklistItem> DeploymentChecklistItems { get; } = new ObservableCollectionExtended<DeploymentChecklistItem>();
+        public bool CanChangeValidationTarget => !DeploymentInProgress && ModBeingChecked == null;
+
         public bool PrecheckCompleted { get; private set; }
+        [AlsoNotifyFor(nameof(CanChangeValidationTarget))]
         public bool DeploymentInProgress { get; private set; }
         public ulong ProgressMax { get; set; } = 100;
         public ulong ProgressValue { get; set; } = 0;
         public string OperationText { get; set; } = M3L.GetString(M3L.string_checkingModBeforeDeployment);
         //M3L.GetString(M3L.string_verifyAboveItemsBeforeDeployment);
 
-        private DateTime lastPercentUpdateTime;
-        private bool _closed;
-        private GameTarget ValidationTarget;
-
+        /// <summary>
+        /// A single deployment checklist item and state
+        /// </summary>
         public class DeploymentChecklistItem : INotifyPropertyChanged
         {
-            public string ItemText { get; set; }
-            public SolidColorBrush Foreground { get; set; }
-            public FontAwesomeIcon Icon { get; set; }
-            public bool Spinning { get; set; }
-            public bool DeploymentBlocking { get; set; }
-
-            public Action<DeploymentChecklistItem> ValidationFunction;
             public Mod ModToValidateAgainst;
-            internal string ErrorsMessage;
-            internal string ErrorsTitle;
 
-            public event PropertyChangedEventHandler PropertyChanged;
+            // The list of generated warnings, errors, and blocking errors
+            private List<string> BlockingErrors = new List<string>();
+            private List<string> SignificantIssues = new List<string>();
+            private List<string> InfoWarnings = new List<string>();
 
+            // Bindings
+            public string ItemText { get; set; }
+            public SolidColorBrush Foreground { get; private set; }
+            public FontAwesomeIcon Icon { get; private set; }
+            public bool Spinning { get; private set; }
+            public bool DeploymentBlocking { get; private set; }
             public string ToolTip { get; set; }
-            public bool HasError { get; internal set; }
-            public List<string> Errors { get; internal set; } = new List<string>();
+            public Action<DeploymentChecklistItem> ValidationFunction { get; set; }
+            public string DialogMessage { get; set; }
+            public string DialogTitle { get; set; }
+            public bool CheckDone { get; private set; }
 
-            //public DeploymentChecklistItem(string initialDisplayText, Mod m, Action<DeploymentChecklistItem> validationFunction)
-            //{
-            //    this.ItemText = initialDisplayText;
-            //    this.ModToValidateAgainst = m;
-            //    this.ValidationFunction = validationFunction;
-            //    Icon = FontAwesomeIcon.Spinner;
-            //    Spinning = true;
-            //    Foreground = Brushes.Gray;
-            //    ToolTip = "Validation in progress...";
-            //}
+            public bool HasMessage => CheckDone && HasAnyMessages();
+
+            private object syncLock = new object();
+            public void AddBlockingError(string message)
+            {
+                lock (syncLock)
+                {
+                    BlockingErrors.Add(message);
+                }
+
+                DeploymentBlocking = true;
+                //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(HasMessage)));
+            }
+
+            public void AddSignificantIssue(string message)
+            {
+                lock (syncLock)
+                {
+                    SignificantIssues.Add(message);
+                }
+
+                //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(HasMessage)));
+            }
+
+            public void AddInfoWarning(string message)
+            {
+                lock (syncLock)
+                {
+                    InfoWarnings.Add(message);
+                }
+
+                //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(HasMessage)));
+            }
+
 
             public DeploymentChecklistItem()
+            {
+                Initialize();
+            }
+
+            private void Initialize()
             {
                 Icon = FontAwesomeIcon.Spinner;
                 Spinning = true;
@@ -1052,11 +1610,65 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 ToolTip = M3L.GetString(M3L.string_validationInProgress);
             }
 
+            public void SetDone()
+            {
+                CheckDone = true;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(HasMessage)));
+            }
+
             public void ExecuteValidationFunction()
             {
                 Foreground = Application.Current.FindResource(AdonisUI.Brushes.HyperlinkBrush) as SolidColorBrush;
                 ValidationFunction?.Invoke(this);
-                //Debug.WriteLine("Invoke finished");
+                Spinning = false;
+                if (!HasAnyMessages())
+                {
+                    Foreground = Brushes.Green;
+                    Icon = FontAwesomeIcon.CheckCircle;
+                }
+                else if (BlockingErrors.Any())
+                {
+                    Foreground = Brushes.Red;
+                    Icon = FontAwesomeIcon.TimesCircle;
+                }
+                else if (SignificantIssues.Any())
+                {
+                    Foreground = Brushes.Orange;
+                    Icon = FontAwesomeIcon.Warning;
+                }
+                else if (InfoWarnings.Any())
+                {
+                    Foreground = Brushes.DodgerBlue;
+                    Icon = FontAwesomeIcon.InfoCircle;
+                }
+
+                SetDone();
+            }
+
+            //Fody uses this property on weaving
+#pragma warning disable 0169
+public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 0169
+
+            public bool HasAnyMessages() => InfoWarnings.Any() || SignificantIssues.Any() || BlockingErrors.Any();
+
+            public IReadOnlyCollection<string> GetBlockingIssues() => BlockingErrors.AsReadOnly();
+            public IReadOnlyCollection<string> GetSignificantIssues() => SignificantIssues.AsReadOnly();
+            public IReadOnlyCollection<string> GetInfoWarningIssues() => InfoWarnings.AsReadOnly();
+
+            public void Reset()
+            {
+                BlockingErrors.Clear();
+                SignificantIssues.Clear();
+                InfoWarnings.Clear();
+                CheckDone = false;
+                Initialize();
+            }
+
+            public void SetAbandoned()
+            {
+                Foreground = Brushes.Gray;
+                Icon = FontAwesomeIcon.Ban;
                 Spinning = false;
             }
         }
@@ -1065,7 +1677,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             if (sender is Hyperlink hl && hl.DataContext is DeploymentChecklistItem dcli)
             {
-                ListDialog ld = new ListDialog(dcli.Errors, dcli.ErrorsTitle, dcli.ErrorsMessage, Window.GetWindow(hl));
+                // Todo: Make special dialog for this window
+                DeploymentListDialog ld = new DeploymentListDialog(dcli, Window.GetWindow(hl));
                 ld.ShowDialog();
             }
         }
@@ -1080,44 +1693,163 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
-            lastPercentUpdateTime = DateTime.Now;
+            AddModToDeployment(initialMod);
+            initialMod = null;
+        }
+
+        private void StartCheck(EncompassingModDeploymentCheck emc)
+        {
+            ModBeingChecked = emc;
+
+            // Ensure UI vars are set
+            DeployButtonText = M3L.GetString(M3L.string_pleaseWait);
+            PrecheckCompleted = false;
+            ProgressIndeterminate = true;
+            TaskbarHelper.SetProgressState(TaskbarProgressBarState.Indeterminate);
+
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"DeploymentValidation");
             nbw.DoWork += (a, b) =>
             {
                 ProgressIndeterminate = true;
-                foreach (var checkItem in DeploymentChecklistItems)
-                {
-                    checkItem.ExecuteValidationFunction();
-                }
+                emc.RunChecks();
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {
-                MELoadedFiles.InvalidateCaches();
-                TaskbarHelper.SetProgress(0);
-                TaskbarHelper.SetProgressState(TaskbarProgressBarState.NoProgress);
                 if (b.Error != null)
                 {
                     Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                 }
-                PrecheckCompleted = true;
-                ProgressIndeterminate = false;
-                if (DeploymentChecklistItems.Any(x => x.DeploymentBlocking))
+
+                DeploymentBlocked = emc.DeploymentChecklistItems.Any(x => x.DeploymentBlocking);
+                if (DeploymentBlocked)
                 {
+                    // Deployment has been blocked
                     OperationText = M3L.GetString(M3L.string_deploymentBlockedUntilAboveItemsAreFixed);
                     DeployButtonText = M3L.GetString(M3L.string_deploymentBlocked);
+
+                    while (!PendingChecks.IsEmpty)
+                    {
+                        if (PendingChecks.TryDequeue(out var nEmc))
+                        {
+                            nEmc.SetAbandoned();
+                        }
+                    }
+                    EndChecks();
+                }
+                else if (PendingChecks.TryDequeue(out var emc_next))
+                {
+                    // Run the next check
+                    StartCheck(emc_next);
                 }
                 else
                 {
+                    // No more checks and deployment not blocked
                     DeployButtonText = M3L.GetString(M3L.string_deploy);
                     OperationText = M3L.GetString(M3L.string_verifyAboveItemsBeforeDeployment);
+                    EndChecks();
                 }
-                CommandManager.InvalidateRequerySuggested();
             };
-            TaskbarHelper.SetProgressState(TaskbarProgressBarState.Indeterminate);
 
             nbw.RunWorkerAsync();
         }
 
+        public bool DeploymentBlocked { get; set; }
+
+        private void EndChecks()
+        {
+            ModBeingChecked = null;
+            MELoadedFiles.InvalidateCaches();
+            TaskbarHelper.SetProgress(0);
+            TaskbarHelper.SetProgressState(TaskbarProgressBarState.NoProgress);
+            PrecheckCompleted = true;
+            ProgressIndeterminate = false;
+            CommandManager.InvalidateRequerySuggested();
+        }
+
+        [AlsoNotifyFor(nameof(CanChangeValidationTarget))]
+        public EncompassingModDeploymentCheck ModBeingChecked { get; set; }
+
+        public void AddModToDeployment(Mod mod)
+        {
+            var dvt = ValidationTargets.FirstOrDefault(x => x.Game == mod.Game);
+            if (dvt == null)
+            {
+                // No validation targets for this game yet
+                dvt = new DeploymentValidationTarget(this, mod.Game, mainwindow.InstallationTargets.Where(x => x.Game == mod.Game));
+                var sortedTargetList = ValidationTargets.ToList();
+                sortedTargetList.Add(dvt);
+                ValidationTargets.ReplaceAll(sortedTargetList.OrderBy(x => x.Game));
+            }
+
+            var depMod = new EncompassingModDeploymentCheck(mod, dvt);
+            ModsInDeployment.Add(depMod);
+            if (ModBeingChecked != null)
+            {
+                PendingChecks.Enqueue(depMod);
+            }
+            else
+            {
+                StartCheck(depMod);
+            }
+        }
+
         public bool ProgressIndeterminate { get; set; }
+
+        public ObservableCollectionExtended<DeploymentValidationTarget> ValidationTargets { get; } = new ObservableCollectionExtended<DeploymentValidationTarget>();
+
+        /// <summary>
+        /// Object that contains info about the validation targets for a mod. Only one of these can exist per game
+        /// </summary>
+        public class DeploymentValidationTarget : INotifyPropertyChanged
+        {
+            public MEGame Game { get; }
+            public GameTarget SelectedTarget { get; set; }
+            public string HeaderString { get; }
+            public ObservableCollectionExtended<GameTarget> AvailableTargets { get; } = new ObservableCollectionExtended<GameTarget>();
+            public ArchiveDeployment DeploymentHost { get; set; }
+
+            public DeploymentValidationTarget(ArchiveDeployment deploymentHost, MEGame game, IEnumerable<GameTarget> targets)
+            {
+                DeploymentHost = deploymentHost;
+                Game = game;
+                HeaderString = M3L.GetString(M3L.string_interp_gamenameValidationTarget, game.ToGameName());
+                AvailableTargets.ReplaceAll(targets.Where(x => !x.TextureModded));
+                SelectedTarget = AvailableTargets.FirstOrDefault();
+            }
+
+
+            public void OnSelectedTargetChanged(object before, object after)
+            {
+                if (before != null)
+                {
+                    //Target has changed
+                    DeploymentHost.OnValidationTargetChanged((after as GameTarget).Game);
+                }
+            }
+
+            //Fody uses this property on weaving
+#pragma warning disable 0169
+public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 0169
+        }
+
+        // This is not incorrectly named. It's just got not matching value
+        [SuppressPropertyChangedWarnings]
+        private void OnValidationTargetChanged(MEGame game)
+        {
+            foreach (var v in ModsInDeployment.Where(x => x.ModBeingDeployed.Game == game))
+            {
+                PendingChecks.Enqueue(v);
+                foreach (var c in v.DeploymentChecklistItems)
+                {
+                    c.Reset();
+                }
+            }
+
+            if (PendingChecks.TryDequeue(out var mod))
+            {
+                StartCheck(mod);
+            }
+        }
     }
 }

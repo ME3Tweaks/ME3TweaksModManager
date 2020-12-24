@@ -12,6 +12,8 @@ using System.Windows.Input;
 using System.Windows.Media.Animation;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.memoryanalyzer;
+using MassEffectModManagerCore.modmanager.objects.mod;
+using ME3ExplorerCore.Packages;
 using Microsoft.Win32;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -84,7 +86,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             BrowseForModmakerFileCommand = new GenericCommand(BrowseForLocalFile, CanBrowseForLocalFile);
         }
 
-        private bool CanBrowseForLocalFile() => !CompileInProgress && BackupService.GetGameBackupPath(Mod.MEGame.ME3) != null;
+        private bool CanBrowseForLocalFile() => !CompileInProgress && BackupService.GetGameBackupPath(MEGame.ME3) != null;
 
         private void BrowseForLocalFile()
         {
@@ -126,7 +128,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void StartCompiler()
         {
             CompileInProgress = true;
-            Settings.Save(); //Persist controller mixin option, keybinds injection
+            //Settings.Save(); //Persist controller mixin option, keybinds injection
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"ModmakerCompiler");
 
             nbw.DoWork += (a, b) =>
@@ -159,9 +161,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         {
                             DownloadAndModNameText = M3L.GetString(M3L.string_decompressingDelta);
                             // OK
-                            var decompressed = SevenZipHelper.LZMA.DecompressLZMAFile(download.result.ToArray());
-                            modDelta = Encoding.UTF8.GetString(decompressed);
-                            // File.WriteAllText(@"C:\users\mgamerz\desktop\decomp.txt", modDelta);
+                            modDelta = Encoding.UTF8.GetString(StreamingLZMAWrapper.DecompressLZMA(download.result));
                         }
                         else
                         {
@@ -212,7 +212,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     compiler.SetCompileStarted = CompilationInProgress;
                     compiler.SetModNotFoundCallback = ModNotFound;
                     compiler.NotifySomeDLCIsMissing = NotifySomeDLCIsMissing;
-                    Mod m = compiler.DownloadAndCompileMod(modDelta);
+                    var m = compiler.DownloadAndCompileMod(modDelta);
                     if (m != null && !LocalFileOption)
                     {
                         var sanitizedname = Utilities.SanitizePath(m.ModName);
@@ -251,9 +251,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 var missingDLC = string.Join("\n - ", listItems); //do not localize
                 missingDLC = @" - " + missingDLC; //add first -
                 result = M3L.ShowDialog(window,
-             M3L.GetString(M3L.string_interp_modmakerDlcMissing, missingDLC),
-             M3L.GetString(M3L.string_dlcMissing),
-             MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
+M3L.GetString(M3L.string_interp_modmakerDlcMissing, missingDLC),
+M3L.GetString(M3L.string_dlcMissing),
+MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
             });
             return result;
         }
@@ -298,7 +298,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             CurrentTaskMaximum = obj;
         }
 
-        private bool CanStartCompiler() => (LocalFileOption ? File.Exists(LocalFilePath) : int.TryParse(ModMakerCode, out var _)) && !CompileInProgress && BackupService.GetGameBackupPath(Mod.MEGame.ME3) != null;
+        private bool CanStartCompiler() => (LocalFileOption ? File.Exists(LocalFilePath) : int.TryParse(ModMakerCode, out var _)) && !CompileInProgress && BackupService.GetGameBackupPath(MEGame.ME3) != null;
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
@@ -310,8 +310,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override async void OnPanelVisible()
         {
-            CanInjectKeybinds = File.Exists(KeybindsInjectorPanel.GetDefaultKeybindsOverride(Mod.MEGame.ME3));
-            if (BackupService.GetGameBackupPath(Mod.MEGame.ME3) == null)
+            CanInjectKeybinds = File.Exists(KeybindsInjectorPanel.GetDefaultKeybindsOverride(MEGame.ME3));
+            if (BackupService.GetGameBackupPath(MEGame.ME3) == null)
             {
                 M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_dialog_me3tweaksModMakerRequiresBackup), M3L.GetString(M3L.string_noBackupAvailable), MessageBoxButton.OK, MessageBoxImage.Error);
             }

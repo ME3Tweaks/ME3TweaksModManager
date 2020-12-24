@@ -10,7 +10,6 @@ namespace AdonisUI
     public static class Brushes
     {
         public static ComponentResourceKey ForegroundBrush => new ComponentResourceKey(typeof(Brushes), "ForegroundBrush");
-
         public static ComponentResourceKey AccentBrush => new ComponentResourceKey(typeof(Brushes), "AccentBrush");
         public static ComponentResourceKey AccentHighlightBrush => new ComponentResourceKey(typeof(Brushes), "AccentHighlightBrush");
         public static ComponentResourceKey AccentForegroundBrush => new ComponentResourceKey(typeof(Brushes), "AccentForegroundBrush");
@@ -72,6 +71,7 @@ namespace AdonisUI
         public static ComponentResourceKey ErrorBrush => new ComponentResourceKey(typeof(Brushes), "ErrorBrush");
         public static ComponentResourceKey AlertBrush => new ComponentResourceKey(typeof(Brushes), "AlertBrush");
         public static ComponentResourceKey HyperlinkBrush => new ComponentResourceKey(typeof(Brushes), "HyperlinkBrush");
+        public static ComponentResourceKey MenuHeaderBackgroundBrush => new ComponentResourceKey(typeof(Brushes), "MenuHeaderBackgroundBrush");
 
         public static ComponentResourceKey WindowButtonHighlightBrush => new ComponentResourceKey(typeof(Brushes), "WindowButtonHighlightBrush");
         public static ComponentResourceKey WindowButtonInteractionBrush => new ComponentResourceKey(typeof(Brushes), "WindowButtonInteractionBrush");

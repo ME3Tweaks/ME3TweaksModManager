@@ -1,24 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
+using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.ui;
+using ME3ExplorerCore.Packages;
 using Microsoft.Win32;
 using Serilog;
 using SevenZip;
-
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -79,7 +70,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                       });
                     Log.Information(@"Copying moddesc.ini");
                     File.Copy(ModForArchive.ModDescPath, Path.Combine(stagingPath, @"moddesc.ini"), true);
-                    Mod testmod = new Mod(Path.Combine(stagingPath, @"moddesc.ini"), Mod.MEGame.Unknown);
+                    Mod testmod = new Mod(Path.Combine(stagingPath, @"moddesc.ini"), MEGame.Unknown);
                     if (testmod.ValidMod)
                     {
                         ActionText = M3L.GetString(M3L.string_creatingArchive);

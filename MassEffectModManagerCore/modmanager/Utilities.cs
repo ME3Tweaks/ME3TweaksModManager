@@ -11,15 +11,14 @@ using System.Security.Cryptography;
 using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
-using MassEffectModManagerCore;
-using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager;
-using MassEffectModManagerCore.modmanager.asi;
 using MassEffectModManagerCore.modmanager.gameini;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
-using MassEffectModManagerCore.modmanager.usercontrols;
+using ME3ExplorerCore.Helpers;
+using ME3ExplorerCore.GameFilesystem;
+using ME3ExplorerCore.Packages;
 using Microsoft.Win32;
 using Serilog;
 using static MassEffectModManagerCore.modmanager.gameini.DuplicatingIni;
@@ -576,7 +575,7 @@ namespace MassEffectModManagerCore
                     }
                     else
                     {
-                        throw w32e; //rethrow to higher.
+                        throw; //rethrow to higher.
                     }
                 }
             }
@@ -635,11 +634,11 @@ namespace MassEffectModManagerCore
             return result;
         }
 
-        public static string GetModDirectoryForGame(Mod.MEGame game)
+        public static string GetModDirectoryForGame(MEGame game)
         {
-            if (game == Mod.MEGame.ME1) return GetME1ModsDirectory();
-            if (game == Mod.MEGame.ME2) return GetME2ModsDirectory();
-            if (game == Mod.MEGame.ME3) return GetME3ModsDirectory();
+            if (game == MEGame.ME1) return GetME1ModsDirectory();
+            if (game == MEGame.ME2) return GetME2ModsDirectory();
+            if (game == MEGame.ME3) return GetME3ModsDirectory();
             return null;
         }
 
@@ -793,18 +792,18 @@ namespace MassEffectModManagerCore
         /// Determines if a specific game is running. This method only updates every 3 seconds due to the huge overhead it has
         /// </summary>
         /// <returns>True if running, false otherwise</returns>
-        public static bool IsGameRunning(Mod.MEGame gameID)
+        public static bool IsGameRunning(MEGame gameID)
         {
             (bool isRunning, DateTime lastChecked) runningInfo = (false, DateTime.MinValue.AddSeconds(5));
             switch (gameID)
             {
-                case Mod.MEGame.ME1:
+                case MEGame.ME1:
                     runningInfo = me1RunningInfo;
                     break;
-                case Mod.MEGame.ME2:
+                case MEGame.ME2:
                     runningInfo = me2RunningInfo;
                     break;
-                case Mod.MEGame.ME3:
+                case MEGame.ME3:
                     runningInfo = me3RunningInfo;
                     break;
             }
@@ -823,13 +822,13 @@ namespace MassEffectModManagerCore
             runningInfo.lastChecked = DateTime.Now;
             switch (gameID)
             {
-                case Mod.MEGame.ME1:
+                case MEGame.ME1:
                     me1RunningInfo = runningInfo;
                     break;
-                case Mod.MEGame.ME2:
+                case MEGame.ME2:
                     me2RunningInfo = runningInfo;
                     break;
-                case Mod.MEGame.ME3:
+                case MEGame.ME3:
                     me3RunningInfo = runningInfo;
                     break;
             }
@@ -866,11 +865,11 @@ namespace MassEffectModManagerCore
             return assembly.GetManifestResourceStream(assemblyResource);
         }
 
-        internal static string GetGameName(Mod.MEGame game)
+        internal static string GetGameName(MEGame game)
         {
-            if (game == Mod.MEGame.ME1) return "Mass Effect";
-            if (game == Mod.MEGame.ME2) return "Mass Effect 2";
-            if (game == Mod.MEGame.ME3) return "Mass Effect 3";
+            if (game == MEGame.ME1) return "Mass Effect";
+            if (game == MEGame.ME2) return "Mass Effect 2";
+            if (game == MEGame.ME3) return "Mass Effect 3";
             return "Error: Unknown game";
         }
 
@@ -911,8 +910,8 @@ namespace MassEffectModManagerCore
 
         internal static string GetExecutableDirectory(GameTarget target)
         {
-            if (target.Game == Mod.MEGame.ME1 || target.Game == Mod.MEGame.ME2) return Path.Combine(target.TargetPath, "Binaries");
-            if (target.Game == Mod.MEGame.ME3) return Path.Combine(target.TargetPath, "Binaries", "win32");
+            if (target.Game == MEGame.ME1 || target.Game == MEGame.ME2) return Path.Combine(target.TargetPath, "Binaries");
+            if (target.Game == MEGame.ME3) return Path.Combine(target.TargetPath, "Binaries", "win32");
             return null;
         }
 
@@ -943,20 +942,20 @@ namespace MassEffectModManagerCore
 
             try
             {
-                if (target.Game == Mod.MEGame.ME1)
+                if (target.Game == MEGame.ME1)
                 {
                     var obinkPath = Path.Combine(target.TargetPath, "Binaries", "binkw23.dll");
                     Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me1.binkw32.dll", binkPath, true);
                     Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me1.binkw23.dll", obinkPath, true);
                 }
-                else if (target.Game == Mod.MEGame.ME2)
+                else if (target.Game == MEGame.ME2)
                 {
                     var obinkPath = Path.Combine(target.TargetPath, "Binaries", "binkw23.dll");
                     Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me2.binkw32.dll", binkPath, true);
                     Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me2.binkw23.dll", obinkPath, true);
 
                 }
-                else if (target.Game == Mod.MEGame.ME3)
+                else if (target.Game == MEGame.ME3)
                 {
                     var obinkPath = Path.Combine(target.TargetPath, "Binaries", "win32", "binkw23.dll");
                     Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me3.binkw32.dll", binkPath, true);
@@ -990,9 +989,9 @@ namespace MassEffectModManagerCore
         internal static string GetBinkw32File(GameTarget target)
         {
             if (target == null) return null;
-            if (target.Game == Mod.MEGame.ME1) return Path.Combine(target.TargetPath, "Binaries", "binkw32.dll");
-            if (target.Game == Mod.MEGame.ME2) return Path.Combine(target.TargetPath, "Binaries", "binkw32.dll");
-            if (target.Game == Mod.MEGame.ME3) return Path.Combine(target.TargetPath, "Binaries", "win32", "binkw32.dll");
+            if (target.Game == MEGame.ME1) return Path.Combine(target.TargetPath, "Binaries", "binkw32.dll");
+            if (target.Game == MEGame.ME2) return Path.Combine(target.TargetPath, "Binaries", "binkw32.dll");
+            if (target.Game == MEGame.ME3) return Path.Combine(target.TargetPath, "Binaries", "win32", "binkw32.dll");
             return null;
         }
 
@@ -1000,19 +999,19 @@ namespace MassEffectModManagerCore
         {
             if (target == null) return false;
             var binkPath = GetBinkw32File(target);
-            if (target.Game == Mod.MEGame.ME1)
+            if (target.Game == MEGame.ME1)
             {
                 var obinkPath = Path.Combine(target.TargetPath, "Binaries", "binkw23.dll");
                 File.Delete(obinkPath);
                 Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me1.binkw23.dll", binkPath, true);
             }
-            else if (target.Game == Mod.MEGame.ME2)
+            else if (target.Game == MEGame.ME2)
             {
                 var obinkPath = Path.Combine(target.TargetPath, "Binaries", "binkw23.dll");
                 File.Delete(obinkPath);
                 Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me2.binkw23.dll", binkPath, true);
             }
-            else if (target.Game == Mod.MEGame.ME3)
+            else if (target.Game == MEGame.ME3)
             {
                 var obinkPath = Path.Combine(target.TargetPath, "Binaries", "win32", "binkw23.dll");
                 File.Delete(obinkPath);
@@ -1023,34 +1022,47 @@ namespace MassEffectModManagerCore
             return true;
         }
 
-        internal static string GetCachedTargetsFile(Mod.MEGame game)
+        internal static string GetCachedTargetsFile(MEGame game)
         {
             return Path.Combine(GetAppDataFolder(), $"GameTargets{game}.txt");
         }
 
-        internal static List<GameTarget> GetCachedTargets(Mod.MEGame game, List<GameTarget> existingTargets = null)
+        /// <summary>
+        /// Loads cached targets from the cache list
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="existingTargets"></param>
+        /// <returns></returns>
+        internal static List<GameTarget> GetCachedTargets(MEGame game, List<GameTarget> existingTargets = null)
         {
             var cacheFile = GetCachedTargetsFile(game);
             if (File.Exists(cacheFile))
             {
                 OrderedSet<GameTarget> targets = new OrderedSet<GameTarget>();
-                foreach (var file in Utilities.WriteSafeReadAllLines(cacheFile))
+                foreach (var gameDir in Utilities.WriteSafeReadAllLines(cacheFile))
                 {
                     //Validate game directory
-                    if (existingTargets != null && existingTargets.Any(x => x.TargetPath.Equals(file, StringComparison.InvariantCultureIgnoreCase)))
+                    if (existingTargets != null && existingTargets.Any(x => x.TargetPath.Equals(gameDir, StringComparison.InvariantCultureIgnoreCase)))
                     {
                         continue; //don't try to load an existing target
                     }
 
-                    GameTarget target = new GameTarget(game, file, false);
-                    var failureReason = target.ValidateTarget();
-                    if (failureReason == null)
+                    if (Directory.Exists(gameDir))
                     {
-                        targets.Add(target);
+                        GameTarget target = new GameTarget(game, gameDir, false);
+                        var failureReason = target.ValidateTarget();
+                        if (failureReason == null)
+                        {
+                            targets.Add(target);
+                        }
+                        else
+                        {
+                            Log.Error("Cached target for " + target.Game.ToString() + " is invalid: " + failureReason);
+                        }
                     }
                     else
                     {
-                        Log.Error("Cached target for " + target.Game.ToString() + " is invalid: " + failureReason);
+                        Log.Warning($@"Cached target directory does not exist, skipping: {gameDir}");
                     }
                 }
 
@@ -1066,11 +1078,11 @@ namespace MassEffectModManagerCore
         {
             switch (target.Game)
             {
-                case Mod.MEGame.ME1:
+                case MEGame.ME1:
                     return Path.Combine(target.TargetPath, "Binaries", "MassEffectConfig.exe");
-                case Mod.MEGame.ME2:
+                case MEGame.ME2:
                     return Path.Combine(target.TargetPath, "Binaries", "MassEffect2Config.exe");
-                case Mod.MEGame.ME3:
+                case MEGame.ME3:
                     return Path.Combine(target.TargetPath, "Binaries", "MassEffect3Config.exe");
             }
 
@@ -1138,17 +1150,17 @@ namespace MassEffectModManagerCore
             if (target == null) return false;
             string binkPath = null;
             string expectedHash = null;
-            if (target.Game == Mod.MEGame.ME1)
+            if (target.Game == MEGame.ME1)
             {
                 binkPath = Path.Combine(target.TargetPath, "Binaries", "binkw32.dll");
                 expectedHash = ME1ASILoaderHash;
             }
-            else if (target.Game == Mod.MEGame.ME2)
+            else if (target.Game == MEGame.ME2)
             {
                 binkPath = Path.Combine(target.TargetPath, "Binaries", "binkw32.dll");
                 expectedHash = ME2ASILoaderHash;
             }
-            else if (target.Game == Mod.MEGame.ME3)
+            else if (target.Game == MEGame.ME3)
             {
                 binkPath = Path.Combine(target.TargetPath, "Binaries", "win32", "binkw32.dll");
                 expectedHash = ME3ASILoaderHash;
@@ -1195,7 +1207,7 @@ namespace MassEffectModManagerCore
         /// <param name="dlcFolderName">DLC folder name (DLC_CON_MP2)</param>
         /// <param name="game">Game to test against</param>
         /// <returns>True if protected, false otherwise</returns>
-        internal static bool IsProtectedDLCFolder(string dlcFolderName, Mod.MEGame game) => dlcFolderName.Equals("__metadata", StringComparison.InvariantCultureIgnoreCase) && MEDirectories.OfficialDLC(game).Contains(dlcFolderName, StringComparer.InvariantCultureIgnoreCase);
+        internal static bool IsProtectedDLCFolder(string dlcFolderName, MEGame game) => dlcFolderName.Equals("__metadata", StringComparison.InvariantCultureIgnoreCase) && MEDirectories.OfficialDLC(game).Contains(dlcFolderName, StringComparer.InvariantCultureIgnoreCase);
 
 
         /// <summary>
@@ -1312,7 +1324,7 @@ namespace MassEffectModManagerCore
         internal static bool SetLODs(GameTarget target, bool highres, bool limit2k, bool softshadows)
         {
             var game = target.Game;
-            if (game != Mod.MEGame.ME1 && softshadows)
+            if (game != MEGame.ME1 && softshadows)
             {
                 throw new Exception("Cannot use softshadows parameter of SetLODs() with a game that is not ME1");
             }
@@ -1321,9 +1333,9 @@ namespace MassEffectModManagerCore
             
             try
             {
-                string settingspath = MEDirectories.LODConfigFile(game);
+                string settingspath = MEDirectories.GetLODConfigFile(game);
 
-                if (!File.Exists(settingspath) && game == Mod.MEGame.ME1)
+                if (!File.Exists(settingspath) && game == MEGame.ME1)
                 {
                     Log.Error("Cannot raise/lower LODs on file that doesn't exist (ME1 bioengine file must already exist or exe will overwrite it)");
                     return false;
@@ -1335,7 +1347,7 @@ namespace MassEffectModManagerCore
                 }
 
                 bool configFileReadOnly = false;
-                if (game == Mod.MEGame.ME1)
+                if (game == MEGame.ME1)
                 {
                     try
                     {
@@ -1355,12 +1367,12 @@ namespace MassEffectModManagerCore
                 }
 
                 DuplicatingIni ini = DuplicatingIni.LoadIni(settingspath);
-                if (game > Mod.MEGame.ME1)
+                if (game > MEGame.ME1)
                 {
                     #region setting systemsetting for me2/3
 
                     string operation = null;
-                    var iniList = game == Mod.MEGame.ME2 ? ME2HighResLODs : ME3HighResLODs;
+                    var iniList = game == MEGame.ME2 ? ME2HighResLODs : ME3HighResLODs;
                     var section = ini.Sections.FirstOrDefault(x => x.Header == "SystemSettings");
                     if (section == null && highres)
                     {
@@ -1405,7 +1417,7 @@ namespace MassEffectModManagerCore
                     //Update GFx (non LOD) settings
                     if (highres)
                     {
-                        var hqKeys = target.Game == Mod.MEGame.ME2 ? ME2HQGraphicsSettings : ME3HQGraphicsSettings;
+                        var hqKeys = target.Game == MEGame.ME2 ? ME2HQGraphicsSettings : ME3HQGraphicsSettings;
                         var hqSection = ini.GetSection(@"SystemSettings");
                         foreach (var entry in hqKeys)
                         {
@@ -1424,7 +1436,7 @@ namespace MassEffectModManagerCore
                     File.WriteAllText(settingspath, ini.ToString());
                     Log.Information(operation);
                 }
-                else if (game == Mod.MEGame.ME1)
+                else if (game == MEGame.ME1)
                 {
                     var section = ini.Sections.FirstOrDefault(x => x.Header == "TextureLODSettings");
                     if (section == null && highres)
@@ -1823,7 +1835,7 @@ namespace MassEffectModManagerCore
         /// </summary>
         /// <param name="acceptedGames"></param>
         /// <returns></returns>
-        public static string PromptForGameExecutable(Mod.MEGame[] acceptedGames)
+        public static string PromptForGameExecutable(MEGame[] acceptedGames)
         {
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.Title = M3L.GetString(M3L.string_selectGameExecutable);
@@ -1833,13 +1845,13 @@ namespace MassEffectModManagerCore
                 if (executableNames.Length > 0) executableNames += ";";
                 switch (v)
                 {
-                    case Mod.MEGame.ME1:
+                    case MEGame.ME1:
                         executableNames += "MassEffect.exe";
                         break;
-                    case Mod.MEGame.ME2:
+                    case MEGame.ME2:
                         executableNames += "MassEffect2.exe";
                         break;
-                    case Mod.MEGame.ME3:
+                    case MEGame.ME3:
                         executableNames += "MassEffect3.exe";
                         break;
                 }
@@ -1862,11 +1874,11 @@ namespace MassEffectModManagerCore
         /// <param name="game">What game this exe is for</param>
         /// <param name="exe">Executable path</param>
         /// <returns></returns>
-        public static string GetGamePathFromExe(Mod.MEGame game, string exe)
+        public static string GetGamePathFromExe(MEGame game, string exe)
         {
             string result = Path.GetDirectoryName(Path.GetDirectoryName(exe)); //binaries, <GAME>
 
-            if (game == Mod.MEGame.ME3)
+            if (game == MEGame.ME3)
                 result = Path.GetDirectoryName(result); //up one more because of win32 directory.
             return result;
         }

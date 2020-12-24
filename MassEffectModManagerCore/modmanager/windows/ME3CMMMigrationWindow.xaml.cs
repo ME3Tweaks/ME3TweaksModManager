@@ -11,6 +11,7 @@ using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
+using ME3ExplorerCore.Packages;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using Serilog;
@@ -28,14 +29,16 @@ namespace MassEffectModManagerCore.modmanager.windows
         BasicUITask CleaningUpTask = new BasicUITask(M3L.GetString(M3L.string_cleaningUp));
         public ME3CMMMigrationWindow()
         {
-            DataContext = this;
             InitializeComponent();
             Tasks.Add(MigratingModsTask);
             Tasks.Add(MigratingSettings);
             Tasks.Add(CleaningUpTask);
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        //Fody uses this property on weaving
+#pragma warning disable 0169
+public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 0169
 
         private void Migration_ContentRendered(object sender, EventArgs e)
         {
@@ -157,7 +160,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                                 Log.Information(@"Migrated Auto inject keybinds for ModMaker (true)");
                             }
 
-                            Settings.Save();
+                            //Settings.Save();
                         }
 
                         //Migrate BIOGAME_DIRECTORIES
@@ -169,7 +172,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                             {
                                 var gamepath = Directory.GetParent(line).FullName;
                                 Log.Information(@"Validating ME3CMM target: " + gamepath);
-                                GameTarget t = new GameTarget(Mod.MEGame.ME3, gamepath, false);
+                                GameTarget t = new GameTarget(MEGame.ME3, gamepath, false);
                                 var failureReason = t.ValidateTarget();
                                 if (failureReason == null)
                                 {

@@ -4,25 +4,17 @@ using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using ByteSizeLib;
 using IniParser.Model;
-using MassEffectModManagerCore.GameDirectories;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
+using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.ui;
+using ME3ExplorerCore.Helpers;
+using ME3ExplorerCore.Packages;
 using Microsoft.AppCenter.Analytics;
-using Pathoschild.FluentNexus.Models;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -70,7 +62,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
 
             //Check free space.
-            var sourceDir = Path.Combine(MEDirectories.DLCPath(SelectedTarget), SelectedDLCFolder.DLCFolderName);
+            var sourceDir = Path.Combine(M3Directories.GetDLCPath(SelectedTarget), SelectedDLCFolder.DLCFolderName);
             var library = Utilities.GetModDirectoryForGame(SelectedTarget.Game);
             if (Utilities.DriveFreeBytes(library, out var freeBytes))
             {
@@ -79,8 +71,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (sourceSize > (long)freeBytes)
                 {
                     //Not enough space
-                    Log.Error($@"Not enough disk space to import mod. Required space: {ByteSize.FromBytes(sourceSize)}, available space: {ByteSize.FromBytes(freeBytes)}");
-                    M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_interp_insufficientDiskSpaceToImport, Path.GetPathRoot(library), ByteSize.FromBytes(sourceSize), ByteSize.FromBytes(freeBytes)), M3L.GetString(M3L.string_insufficientFreeDiskSpace), MessageBoxButton.OK, MessageBoxImage.Error);
+                    Log.Error($@"Not enough disk space to import mod. Required space: {FileSize.FormatSize(sourceSize)}, available space: {FileSize.FormatSize(freeBytes)}");
+                    M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_interp_insufficientDiskSpaceToImport, Path.GetPathRoot(library), FileSize.FormatSize(sourceSize), FileSize.FormatSize(freeBytes)), M3L.GetString(M3L.string_insufficientFreeDiskSpace), MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
             }
@@ -139,7 +131,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private async void ImportDLCFolder_BackgroundThread(object sender, DoWorkEventArgs e)
         {
             OperationInProgress = true;
-            var sourceDir = Path.Combine(MEDirectories.DLCPath(SelectedTarget), SelectedDLCFolder.DLCFolderName);
+            var sourceDir = Path.Combine(M3Directories.GetDLCPath(SelectedTarget), SelectedDLCFolder.DLCFolderName);
             // Check for MEMI, we will not allow importing files with MEMI
             foreach (var file in Directory.GetFiles(sourceDir, @"*.*", SearchOption.AllDirectories))
             {
@@ -198,7 +190,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             File.WriteAllText(moddescPath, ini.ToString());
 
             //Generate and load mod
-            Mod m = new Mod(moddescPath, Mod.MEGame.ME3);
+            var m = new Mod(moddescPath, MEGame.ME3);
             e.Result = m;
             Log.Information(@"Mod import complete.");
             Analytics.TrackEvent(@"Imported already installed mod", new Dictionary<string, string>()
@@ -214,7 +206,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 try
                 {
                     TPMITelemetrySubmissionForm.TelemetryPackage tp = TPMITelemetrySubmissionForm.GetTelemetryPackageForDLC(SelectedTarget.Game,
-                        MEDirectories.DLCPath(SelectedTarget),
+                        M3Directories.GetDLCPath(SelectedTarget),
                         SelectedDLCFolder.DLCFolderName,
                         SelectedDLCFolder.DLCFolderName, //same as foldername as this is already installed
                         ModNameText,

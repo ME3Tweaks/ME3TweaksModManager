@@ -9,6 +9,8 @@ using System.Threading;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.windows;
+using ME3ExplorerCore.Helpers;
+using ME3ExplorerCore.Misc;
 using Microsoft.AppCenter.Crashes;
 using Newtonsoft.Json;
 using Serilog;
@@ -107,7 +109,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 {
                     var attachments = new List<ErrorAttachmentLog>();
                     string log = LogCollector.CollectLatestLog(true);
-                    if (log != null && log.Length < ByteSizeLib.ByteSize.BytesInMegaByte * 7)
+                    if (log != null && log.Length < FileSize.MebiByte * 7)
                     {
                         attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, @"applog.txt"));
                     }
@@ -186,7 +188,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 {
                     var attachments = new List<ErrorAttachmentLog>();
                     string log = LogCollector.CollectLatestLog(true);
-                    if (log != null && log.Length < ByteSizeLib.ByteSize.BytesInMegaByte * 7)
+                    if (log != null && log.Length < FileSize.MebiByte * 7)
                     {
                         attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, "applog.txt"));
                     }
@@ -249,11 +251,15 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
         }
 
-        public static string FetchRemoteString(string url)
+        public static string FetchRemoteString(string url, string authorizationToken = null)
         {
             try
             {
                 using var wc = new ShortTimeoutWebClient();
+                if (authorizationToken != null)
+                {
+                    wc.Headers.Add("Authorization", authorizationToken);
+                }
                 return wc.DownloadStringAwareOfEncoding(url);
             }
             catch (Exception e)
@@ -308,7 +314,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 {
                     var attachments = new List<ErrorAttachmentLog>();
                     string log = LogCollector.CollectLatestLog(true);
-                    if (log != null && log.Length < ByteSizeLib.ByteSize.BytesInMegaByte * 7)
+                    if (log != null && log.Length < FileSize.MebiByte * 7)
                     {
                         attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, "applog.txt"));
                     }
@@ -371,7 +377,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 {
                     var attachments = new List<ErrorAttachmentLog>();
                     string log = LogCollector.CollectLatestLog(true);
-                    if (log != null && log.Length < ByteSizeLib.ByteSize.BytesInMegaByte * 7)
+                    if (log != null && log.Length < FileSize.MebiByte * 7)
                     {
                         attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, "applog.txt"));
                     }
@@ -535,7 +541,9 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
         public static bool EnsureStaticAssets()
         {
-            (string filename, string md5)[] objectInfoFiles = { ("ME1ObjectInfo.json", "d0b8c1786134b4aecc6a0543d32ddb59"), ("ME2ObjectInfo.json", "1c1f6f6354e7ad6be6ea0a7e473223a8"), ("ME3ObjectInfo.json", "300754261e40b58f27c9cf53b3c62005") };
+            // This is not really used anymore. Just kept around in case new static assets are necessary.
+            // Used to download objectt infos. These are embedded into ME3ExplorerCore.
+            (string filename, string md5)[] objectInfoFiles = { };
             string localBaseDir = Utilities.GetObjectInfoFolder();
 
             try
@@ -710,7 +718,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 {
                     var attachments = new List<ErrorAttachmentLog>();
                     string log = LogCollector.CollectLatestLog(true);
-                    if (log != null && log.Length < ByteSizeLib.ByteSize.BytesInMegaByte * 7)
+                    if (log != null && log.Length < FileSize.MebiByte * 7)
                     {
                         attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, @"applog.txt"));
                     }

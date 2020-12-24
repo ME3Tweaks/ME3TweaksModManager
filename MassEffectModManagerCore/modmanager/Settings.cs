@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 using IniParser;
 using IniParser.Model;
 using MassEffectModManagerCore.modmanager.nexusmodsintegration;
+using Microsoft.AppCenter.Analytics;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager
@@ -87,6 +90,13 @@ namespace MassEffectModManagerCore.modmanager
         {
             get => _updaterServiceUsername;
             set => SetProperty(ref _updaterServiceUsername, value);
+        }
+
+        private static string _lastSelectedTarget;
+        public static string LastSelectedTarget
+        {
+            get => _lastSelectedTarget;
+            set => SetProperty(ref _lastSelectedTarget, value);
         }
 
         private static int _webclientTimeout = 5; // Defaults to 5
@@ -170,6 +180,16 @@ namespace MassEffectModManagerCore.modmanager
             }
         }
 
+        private static bool _preferCompressingPackages = true;
+        public static bool PreferCompressingPackages
+        {
+            get => _preferCompressingPackages;
+            set
+            {
+                SetProperty(ref _preferCompressingPackages, value);
+            }
+        }
+
         private static bool changingLODSetting;
 
         private static string _modLibraryPath;
@@ -186,7 +206,12 @@ namespace MassEffectModManagerCore.modmanager
             set => SetProperty(ref _language, value);
         }
 
-        public static DateTime LastContentCheck { get; internal set; }
+        private static DateTime _lastContentCheck = DateTime.MinValue;
+        public static DateTime LastContentCheck
+        {
+            get => _lastContentCheck;
+            set => SetProperty(ref _lastContentCheck, value);
+        }
 
         private static bool _showedPreviewPanel;
         public static bool ShowedPreviewPanel
@@ -222,10 +247,12 @@ namespace MassEffectModManagerCore.modmanager
             }
             ShowedPreviewPanel = LoadSettingBool(settingsIni, "ModManager", "ShowedPreviewMessage2", false);
             Language = LoadSettingString(settingsIni, "ModManager", "Language", "int");
+            LastSelectedTarget = LoadSettingString(settingsIni, "ModManager", "LastSelectedTarget", null);
             LastContentCheck = LoadSettingDateTime(settingsIni, "ModManager", "LastContentCheck", DateTime.MinValue);
             BetaMode = LoadSettingBool(settingsIni, "ModManager", "BetaMode", false);
             AutoUpdateLODs2K = LoadSettingBool(settingsIni, "ModManager", "AutoUpdateLODs2K", false);
             AutoUpdateLODs4K = LoadSettingBool(settingsIni, "ModManager", "AutoUpdateLODs4K", true);
+            PreferCompressingPackages = LoadSettingBool(settingsIni, "ModManager", "PreferCompressingPackages", false); // 'May set to true in the future.
             WebClientTimeout = LoadSettingInt(settingsIni, "ModManager", "WebclientTimeout", 5);
             ModMakerControllerModOption = LoadSettingBool(settingsIni, "ModMaker", "AutoAddControllerMixins", false);
             ModMakerAutoInjectCustomKeybindsOption = LoadSettingBool(settingsIni, "ModMaker", "AutoInjectCustomKeybinds", false);
@@ -357,23 +384,18 @@ namespace MassEffectModManagerCore.modmanager
         {
             SAVED,
             FAILED_UNAUTHORIZED,
-            FAILED_OTHER
+            FAILED_OTHER,
         }
 
         /// <summary>
         /// Saves the settings. Note this does not update the Updates/EncryptedPassword value. Returns false if commiting failed
         /// </summary>
-        public static SettingsSaveResult Save()
+        private static SettingsSaveResult Save()
         {
+            Debug.WriteLine(@"Saving settings");
             try
             {
-                // ... why?
-                //if (!File.Exists(SettingsPath))
-                //{
-                //    File.Create(SettingsPath).Close();
-                //}
-
-                var settingsIni = new FileIniDataParser().ReadFile(SettingsPath);
+                var settingsIni = new IniData();
                 SaveSettingBool(settingsIni, "Logging", "LogModStartup", LogModStartup);
                 SaveSettingBool(settingsIni, "Logging", "LogMixinStartup", LogMixinStartup);
                 SaveSettingBool(settingsIni, "Logging", "LogModMakerCompiler", LogModMakerCompiler);
@@ -386,11 +408,13 @@ namespace MassEffectModManagerCore.modmanager
                 SaveSettingBool(settingsIni, "Logging", "LogModInstallation", LogModInstallation);
                 SaveSettingString(settingsIni, "ModLibrary", "LibraryPath", ModLibraryPath);
                 SaveSettingString(settingsIni, "ModManager", "Language", Language);
+                SaveSettingString(settingsIni, "ModManager", "LastSelectedTarget", LastSelectedTarget);
                 SaveSettingDateTime(settingsIni, "ModManager", "LastContentCheck", LastContentCheck);
                 SaveSettingBool(settingsIni, "ModManager", "BetaMode", BetaMode);
                 SaveSettingBool(settingsIni, "ModManager", "ShowedPreviewMessage2", ShowedPreviewPanel);
                 SaveSettingBool(settingsIni, "ModManager", "AutoUpdateLODs4K", AutoUpdateLODs4K);
                 SaveSettingBool(settingsIni, "ModManager", "AutoUpdateLODs2K", AutoUpdateLODs2K);
+                SaveSettingBool(settingsIni, "ModManager", "PreferCompressingPackages", PreferCompressingPackages);
                 SaveSettingInt(settingsIni, "ModManager", "WebclientTimeout", WebClientTimeout);
                 SaveSettingBool(settingsIni, "ModMaker", "AutoAddControllerMixins", ModMakerControllerModOption);
                 SaveSettingBool(settingsIni, "ModMaker", "AutoInjectCustomKeybinds", ModMakerAutoInjectCustomKeybindsOption);
@@ -429,6 +453,41 @@ namespace MassEffectModManagerCore.modmanager
         private static void SaveSettingDateTime(IniData settingsIni, string section, string key, DateTime value)
         {
             settingsIni[section][key] = value.ToBinary().ToString();
+        }
+
+        /// <summary>
+        /// Tests saving the settings and returns the save result.
+        /// </summary>
+        /// <returns></returns>
+        public static SettingsSaveResult SaveTest()
+        {
+            if (File.Exists(SettingsPath))
+            {
+                try
+                {
+                    var bytes = File.ReadAllBytes(SettingsPath);
+                    if (bytes.Length > 0 && bytes.Sum(x => x) == 0)
+                    {
+                        // all bytes are zero. The ini file has become corrupt. 
+                        // This issue has been observed but not replicated
+                        // Delete the settings.ini
+                        App.SubmitAnalyticTelemetryEvent(@"Corrupted settings.ini detected",
+                            new Dictionary<string, string>()
+                            {
+                                {@"Filesize", bytes.Length.ToString()}
+                            });
+                        Log.Fatal(
+                            @"DETECTED CORRUPT SETTINGS.INI FILE. This file will be deleted and reset to defaults.");
+                        File.Delete(SettingsPath);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Log.Error($@"Unable to test if settings.ini file is corrupted: {e.Message}");
+                }
+            }
+
+            return Save();
         }
     }
 }

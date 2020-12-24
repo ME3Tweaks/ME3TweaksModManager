@@ -6,7 +6,7 @@
         mc:Ignorable="d"
         WindowStartupLocation="CenterOwner"
         xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
-        Title="List Dialog" Width="640" Height="480">
+        Width="640" Height="480">
     <Window.Style>
         <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
     </Window.Style>

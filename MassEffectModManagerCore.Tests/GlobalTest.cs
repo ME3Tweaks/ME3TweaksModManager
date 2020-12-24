@@ -5,8 +5,11 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 using MassEffectModManagerCore.modmanager;
+using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.objects;
+using ME3ExplorerCore.Packages;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using Serilog;
@@ -26,24 +29,29 @@ namespace MassEffectModManagerCore.Tests
         {
             if (!initialized)
             {
-                Utilities.ExtractInternalFile("MassEffectModManagerCore.bundleddlls.sevenzipwrapper.dll", Path.Combine(Utilities.GetDllDirectory(), "sevenzipwrapper.dll"), false, Assembly.GetAssembly(typeof(GameTarget)));
-                Utilities.ExtractInternalFile("MassEffectModManagerCore.bundleddlls.lzo2wrapper.dll", Path.Combine(Utilities.GetDllDirectory(), "lzo2wrapper.dll"), false, Assembly.GetAssembly(typeof(GameTarget)));
-                Utilities.ExtractInternalFile("MassEffectModManagerCore.bundleddlls.zlibwrapper.dll", Path.Combine(Utilities.GetDllDirectory(), "zlibwrapper.dll"), false, Assembly.GetAssembly(typeof(GameTarget)));
-                SetDllDirectory(Utilities.GetDllDirectory());
+                //Utilities.ExtractInternalFile("MassEffectModManagerCore.bundleddlls.sevenzipwrapper.dll", Path.Combine(Utilities.GetDllDirectory(), "sevenzipwrapper.dll"), false, Assembly.GetAssembly(typeof(GameTarget)));
+                //Utilities.ExtractInternalFile("MassEffectModManagerCore.bundleddlls.lzo2wrapper.dll", Path.Combine(Utilities.GetDllDirectory(), "lzo2wrapper.dll"), false, Assembly.GetAssembly(typeof(GameTarget)));
+                //Utilities.ExtractInternalFile("MassEffectModManagerCore.bundleddlls.zlibwrapper.dll", Path.Combine(Utilities.GetDllDirectory(), "zlibwrapper.dll"), false, Assembly.GetAssembly(typeof(GameTarget)));
+                //SetDllDirectory(Utilities.GetDllDirectory());
+
+                ME3ExplorerCore.CoreLib.InitLib(TaskScheduler.Default, null);
 
                 Analytics.SetEnabledAsync(false);
                 Crashes.SetEnabledAsync(false);
                 Settings.LogModStartup = true;
                 App.BuildNumber = 105; //THIS NEEDS TO BE UPDATED FOR EVERY MOD THAT TARGETS A NEWER RELEASE
-                Log.Logger = new LoggerConfiguration().WriteTo.Console().CreateLogger();
+                Log.Logger = new LoggerConfiguration().WriteTo.Console().WriteTo.Debug().CreateLogger();
                 DeleteScratchDir();
+
+                //BackupService.RefreshBackupStatus(null); // used in mixin testing
+
                 initialized = true;
             }
         }
 
         public static string GetTestModsDirectory() => Path.Combine(FindDirectoryInParentDirectories(TESTDATA_FOLDER_NAME), "mods");
         public static string GetTestGameFoldersDirectory() => Path.Combine(FindDirectoryInParentDirectories(TESTDATA_FOLDER_NAME), "gamedirectories");
-        public static string GetTestGameFoldersDirectory(Mod.MEGame game) => Path.Combine(GetTestGameFoldersDirectory(), game.ToString().ToLowerInvariant());
+        public static string GetTestGameFoldersDirectory(MEGame game) => Path.Combine(GetTestGameFoldersDirectory(), game.ToString().ToLowerInvariant());
         public static string GetScratchDir() => Path.Combine(Directory.GetParent(GetTestModsDirectory()).FullName, "Scratch");
 
         public static void CreateScratchDir() => Directory.CreateDirectory(GetScratchDir());
