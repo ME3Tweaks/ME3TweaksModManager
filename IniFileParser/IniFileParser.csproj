@@ -24,6 +24,6 @@
     <PlatformTarget>x64</PlatformTarget>
     <ReleaseVersion></ReleaseVersion>
     <Platforms>x64</Platforms>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.1</TargetFrameworks>
   </PropertyGroup>
 </Project>

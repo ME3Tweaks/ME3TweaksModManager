@@ -25,7 +25,7 @@
 		<DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
 		<UserSecretsId>7b27ce2b-30bb-4b0a-b86c-79c02467be9f</UserSecretsId>
 		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
-		<PublishTrimmed>TrFalseue</PublishTrimmed>
+		<PublishTrimmed>False</PublishTrimmed>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
