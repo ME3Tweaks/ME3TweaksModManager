@@ -390,8 +390,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                 }
             }
 
-            M3L.ShowDialog(Owner,
-                @"Mods will throw a warning when they are being opened for import/install but were not deployed through Mod Manager. Mods that use image features will not load at all if not deployed through Mod Manager. When you're ready to distribute your mod, ensure you deploy it through the Mod Utils menu when in developer mode.", @"Deployment info", MessageBoxButton.OK, MessageBoxImage.Warning);
+            M3L.ShowDialog(Owner, M3L.GetString(M3L.string_dialog_warnMustBeDeployedForFullFeatures), M3L.GetString(M3L.string_deploymentInfo), MessageBoxButton.OK, MessageBoxImage.Warning);
         }
 
         private bool ValidateInput()
@@ -685,7 +684,7 @@ namespace MassEffectModManagerCore.modmanager.windows
 
         private int GetGameSpecificMountLimit() => MaxMountForGame;
 
-        private void FieldText_Changed(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        private void FieldText_Changed(object sender, TextChangedEventArgs e)
         {
             //Debug.WriteLine("Textchanged");
             var textField = (TextBox)sender;

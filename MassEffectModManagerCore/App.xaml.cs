@@ -348,8 +348,7 @@ namespace MassEffectModManagerCore
 
         internal static void InitAppCenter()
         {
-#if DEBUG
-
+#if !DEBUG
             if (APIKeys.HasAppCenterKey)
             {
                 Crashes.GetErrorAttachments = (ErrorReport report) =>

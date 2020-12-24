@@ -1146,6 +1146,8 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_interp_valueMustBeBetween0AndX = "string_interp_valueMustBeBetween0AndX";
 		public const string string_dialog_devModeAdvert = "string_dialog_devModeAdvert";
 		public const string string_enableDeveloperFeaturesQuestion = "string_enableDeveloperFeaturesQuestion";
+		public const string string_dialog_warnMustBeDeployedForFullFeatures = "string_dialog_warnMustBeDeployedForFullFeatures";
+		public const string string_deploymentInfo = "string_deploymentInfo";
 		public const string string_dialogCouldNotSetDataToClipboard = "string_dialogCouldNotSetDataToClipboard";
 		public const string string_errorCopyingDataToClipboard = "string_errorCopyingDataToClipboard";
 		public const string string_copyItemsToClipboard = "string_copyItemsToClipboard";
@@ -1534,5 +1536,6 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_searching = "string_searching";
 		public const string string_goToModPage = "string_goToModPage";
 		public const string string_interp_lastIndexing = "string_interp_lastIndexing";
+		public const string string_tooltip_runningOnX = "string_tooltip_runningOnX";
 	}
 }

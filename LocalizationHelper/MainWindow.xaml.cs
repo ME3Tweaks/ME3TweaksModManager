@@ -807,6 +807,7 @@ namespace LocalizationHelper
             if (str.Equals("Multilist", StringComparison.InvariantCultureIgnoreCase)) return false;
             if (str.Equals("moddir", StringComparison.InvariantCultureIgnoreCase)) return false;
             if (str.Equals("=>", StringComparison.InvariantCultureIgnoreCase)) return false;
+            if (str.Equals("->", StringComparison.InvariantCultureIgnoreCase)) return false;
             if (str.Equals("Faster Legs", StringComparison.InvariantCultureIgnoreCase)) return false;
             if (str.Equals("GatorZ", StringComparison.InvariantCultureIgnoreCase)) return false;
             if (str.Equals("OneGreatMod", StringComparison.InvariantCultureIgnoreCase)) return false;

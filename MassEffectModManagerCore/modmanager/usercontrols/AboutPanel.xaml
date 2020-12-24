@@ -1,6 +1,7 @@
 ﻿<local:MMBusyPanelBase x:Class="MassEffectModManagerCore.modmanager.usercontrols.AboutPanel" 
                        DataContext="{Binding RelativeSource={RelativeSource Self}}"
-                       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" xmlns:modmanagercore="clr-namespace:MassEffectModManagerCore" mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800">
+                       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" xmlns:modmanagercore="clr-namespace:MassEffectModManagerCore" mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800">
     <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Width="500" MaxHeight="500" Margin="0" Background="#115688">
         <Grid.RowDefinitions>
             <RowDefinition Height="128" />
@@ -15,7 +16,8 @@
         <StackPanel Grid.Column="1" Grid.Row="0" Margin="0,3,0,0">
             <TextBlock Foreground="White" HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="22" Text="ME3Tweaks Mod Manager" FontWeight="Light" />
             <TextBlock Foreground="White" HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="15" FontWeight="Light" 
-                       Text="{Binding Path=(modmanagercore:App.AppVersionAbout), Mode=OneTime, Converter={StaticResource LocalizationConverter}, ConverterParameter='string_interp_versionX'}" />
+                       Text="{Binding Path=(modmanagercore:App.AppVersionAbout), Mode=OneTime, Converter={StaticResource LocalizationConverter}, ConverterParameter='string_interp_versionX'}" 
+                       ToolTip="{Binding NetVersion, Mode=OneTime, Converter={StaticResource LocalizationConverter}, ConverterParameter='string_tooltip_runningOnX'}"/>
             <TextBlock Foreground="White" HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="12" FontWeight="Light" Text="{Binding BuildDate}" />
             <Image HorizontalAlignment="Left" Height="32" VerticalAlignment="Top" Source="/images/me3tweaks.png" Margin="8,0,0,0" Cursor="Hand" MouseDown="Image_ME3Tweaks_Click" ToolTip="{DynamicResource string_tooltip_softwareDevelopedWithLoveByME3Tweaks}" />
             <Button Content="{DynamicResource string_close}" HorizontalAlignment="Left" Margin="8,0,0,0" Click="ClosePanel" />

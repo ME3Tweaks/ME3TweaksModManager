@@ -1,20 +1,9 @@
-﻿using AuthenticodeExaminer;
-using MassEffectModManagerCore.modmanager.helpers;
-using MassEffectModManagerCore.ui;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
+﻿using MassEffectModManagerCore.ui;
+using System.Reflection;
+using System.Runtime.Versioning;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -25,6 +14,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     {
         public bool TelemetryKeyAvailable => APIKeys.HasAppCenterKey;
         public string BuildDate { get; set; }
+        public string NetVersion => Assembly.GetEntryAssembly()?.GetCustomAttribute<TargetFrameworkAttribute>()?.FrameworkName;
         public AboutPanel()
         {
             InitializeComponent();

@@ -1401,6 +1401,8 @@
     <!-- 0 = number -->
     <system:String x:Key="string_dialog_devModeAdvert">Developer Mode for ME3Tweaks Mod Manager is currently turned off. Turn it on to access developer tools in the menus, such as the Official DLC toggler, Deploy to 7z feature, Custom DLC Conflict Detector, Backup File Fetcher, and more.\n\nTurn on Developer Mode?</system:String>
     <system:String x:Key="string_enableDeveloperFeaturesQuestion">Enable developer features?</system:String>
+    <system:String x:Key="string_dialog_warnMustBeDeployedForFullFeatures">Mods will throw a warning when they are being opened for import/install but were not deployed through Mod Manager. Mods that use image features will not load at all if not deployed through Mod Manager. When you're ready to distribute your mod, ensure you deploy it through the Mod Utils menu when in developer mode.</system:String>
+    <system:String x:Key="string_deploymentInfo">Deployment info</system:String>
 
     <!-- List Dialog -->
     <system:String xml:space="preserve" x:Key="string_dialogCouldNotSetDataToClipboard">Could not set data to clipboard:\n</system:String>
@@ -1932,4 +1934,7 @@
     <system:String x:Key="string_interp_lastIndexing">Last file indexing: {0}, Last mod indexing: {1}</system:String>
     <!-- 0={date} 1={date} -->
 
+    <!-- About -->
+    <system:String x:Key="string_tooltip_runningOnX">Running on {0}</system:String>
+    <!-- 0 = netcore3.1, net5-windows8.0, etc. Version string of .NET -->
 </ResourceDictionary>

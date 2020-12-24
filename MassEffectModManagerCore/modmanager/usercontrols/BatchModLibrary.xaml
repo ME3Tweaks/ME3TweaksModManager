@@ -46,7 +46,7 @@
                 </ListBox>
                 <DockPanel DockPanel.Dock="Bottom" Margin="0,4,0,0">
                     <Button Content="{DynamicResource string_installThisGroup}" DockPanel.Dock="Right" Command="{Binding InstallGroupCommand}" />
-                    <CheckBox Content="Compress packages" DockPanel.Dock="Left" Margin="5,0" IsChecked="{Binding SelectedBatchQueue.InstallCompressed}" IsEnabled="{Binding CanCompressPackages}"/>
+                    <CheckBox Content="{DynamicResource string_compressPackages}" DockPanel.Dock="Left" Margin="5,0" IsChecked="{Binding SelectedBatchQueue.InstallCompressed}" IsEnabled="{Binding CanCompressPackages}"/>
                     <local:TargetSelector AvailableTargets="{Binding InstallationTargetsForGroup}" 
                                           SelectedGameTarget="{Binding SelectedGameTarget, Mode=TwoWay}"
                                           IsEnabled="{Binding SelectedBatchQueue, Converter={StaticResource NullEnabledConverter}}" 
