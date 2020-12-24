@@ -104,7 +104,7 @@ namespace MassEffectModManagerCore.modmanager
             }
         }
 
-        public event PropertyChangedEventHandler? PropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 
     public class BackgroundTask

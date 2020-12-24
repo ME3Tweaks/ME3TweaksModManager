@@ -179,10 +179,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public MEGame Game { get; private set; }
         public string QueueName { get; private set; }
         public string QueueDescription { get; private set; }
+        
         //Fody uses this property on weaving
-#pragma warning disable 0169
-public event PropertyChangedEventHandler PropertyChanged;
-#pragma warning restore 0169
+        #pragma warning disable 67
+        public event PropertyChangedEventHandler PropertyChanged;
+        #pragma warning restore 67
         public static BatchLibraryInstallQueue ParseInstallQueue(string queueFile, List<Mod> allLoadedMods)
         {
             if (!File.Exists(queueFile)) return null;

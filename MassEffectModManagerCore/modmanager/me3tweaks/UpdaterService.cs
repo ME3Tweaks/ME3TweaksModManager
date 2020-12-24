@@ -662,9 +662,9 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             public string versionstr { get; set; }
             public Version version;
             //Fody uses this property on weaving
-#pragma warning disable 0169
+#pragma warning disable 67
 public event PropertyChangedEventHandler PropertyChanged;
-#pragma warning restore 0169
+#pragma warning restore 67
             public bool UpdateInProgress { get; set; }
             public ICommand ApplyUpdateCommand { get; set; }
             public long TotalBytesToDownload { get; set; }

@@ -99,9 +99,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             public string HumanName { get; set; }
             public string ToggleText => Enabled ? M3L.GetString(M3L.string_toggleOff) : M3L.GetString(M3L.string_toggleOn);
             //Fody uses this property on weaving
-#pragma warning disable 0169
+#pragma warning disable 67
 public event PropertyChangedEventHandler PropertyChanged;
-#pragma warning restore 0169
+#pragma warning restore 67
 
             public ICommand ToggleCommand { get; }
             public InstalledDLC()

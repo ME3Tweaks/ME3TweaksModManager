@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using PropertyChanged;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
 {
@@ -45,12 +46,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
         public static readonly DependencyProperty ItemsSourceProperty =
             DependencyProperty.Register(@"ItemsSource", typeof(ICollection), typeof(DescriptorEditorItemsControl), new PropertyMetadata(new PropertyChangedCallback(OnItemsSourcePropertyChanged)));
 
+        [SuppressPropertyChangedWarnings]
         private static void OnItemsSourcePropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             var control = sender as DescriptorEditorItemsControl;
             control?.OnItemsSourceChanged((ICollection)e.OldValue, (ICollection)e.NewValue);
         }
 
+        [SuppressPropertyChangedWarnings]
         private void OnItemsSourceChanged(ICollection oldValue, ICollection newValue)
         {
             // Remove handler for oldValue.CollectionChanged
@@ -85,8 +88,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
         }
 
         //Fody uses this property on weaving
-#pragma warning disable 0169
+#pragma warning disable 67
 public event PropertyChangedEventHandler PropertyChanged;
-#pragma warning restore 0169
+#pragma warning restore 67
     }
 }

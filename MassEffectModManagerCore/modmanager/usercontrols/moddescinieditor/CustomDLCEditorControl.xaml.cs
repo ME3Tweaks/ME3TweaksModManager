@@ -131,8 +131,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
         public string DestDLCName { get; set; } = "";
         public string SourcePath { get; set; } = "";
         //Fody uses this property on weaving
-#pragma warning disable 0169
+#pragma warning disable 67
 public event PropertyChangedEventHandler PropertyChanged;
-#pragma warning restore 0169
+#pragma warning restore 67
     }
 }

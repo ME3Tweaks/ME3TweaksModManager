@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using PropertyChanged;
 
 namespace MassEffectModManagerCore.ui
 {
@@ -25,6 +26,7 @@ namespace MassEffectModManagerCore.ui
             NotifyDataErrorInfoAdapter.ErrorsChanged += OnErrorsChanged;
         }
 
+        [SuppressPropertyChangedWarnings]
         private void OnErrorsChanged(object sender, DataErrorsChangedEventArgs e)
         {
             //Debug.WriteLine(@"Error changing");
@@ -55,9 +57,9 @@ namespace MassEffectModManagerCore.ui
 
         #region INotifyPropertyChanged helpers (required to work with validation, can't use fody)
         //Fody uses this property on weaving
-#pragma warning disable 0169
+#pragma warning disable 67
 public event PropertyChangedEventHandler PropertyChanged;
-#pragma warning restore 0169
+#pragma warning restore 67
 
         /// <summary>
         /// Notifies listeners when given property is updated.

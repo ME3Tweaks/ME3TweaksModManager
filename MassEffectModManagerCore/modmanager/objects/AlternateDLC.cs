@@ -66,13 +66,6 @@ namespace MassEffectModManagerCore.modmanager.objects
         public Dictionary<string, long> RequiredSpecificFiles { get; private set; } = new Dictionary<string, long>();
 
         /// <summary>
-        /// Used by COND_SIZED_FILE_PRESENT
-        /// </summary>
-        public bool ValidAlternate;
-
-        public string LoadFailedReason;
-
-        /// <summary>
         /// ONLY FOR USE IN MODDESC.INI EDITOR
         /// Creates a new, blank Alternate DLC object
         /// </summary>
