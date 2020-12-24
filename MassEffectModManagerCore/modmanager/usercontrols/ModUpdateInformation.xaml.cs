@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -9,16 +7,11 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Shell;
-using MassEffectModManagerCore;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
-using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.ui;
-using ME3ExplorerCore.Compression;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.WindowsAPICodePack.Taskbar;
 using Serilog;
@@ -39,7 +32,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public ModUpdateInformation(List<OnlineContent.ModUpdateInfo> modsWithUpdates)
         {
-            DataContext = this;
             modsWithUpdates.ForEach(x =>
             {
                 x.ApplyUpdateCommand = new RelayCommand(ApplyUpdateToMod, CanApplyUpdateToMod);
@@ -176,15 +168,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (modDelta != null)
                 {
                     var compiler = new ModMakerCompiler(mui.ModMakerId);
-                    //compiler.SetCurrentMaxCallback = SetCurrentMax;
-                    //compiler.SetCurrentValueCallback = SetCurrentProgressValue;
                     compiler.SetOverallMaxCallback = setOverallMax;
                     compiler.SetOverallValueCallback = setOverallValue;
-                    //compiler.SetCurrentTaskIndeterminateCallback = SetCurrentTaskIndeterminate;
                     compiler.SetCurrentTaskStringCallback = setCurrentTaskString;
-                    //compiler.SetModNameCallback = SetModNameOrDownloadText;
-                    //compiler.SetCompileStarted = CompilationInProgress;
-                    //compiler.SetModNotFoundCallback = ModNotFound;
                     var m = compiler.DownloadAndCompileMod(modDelta, mui.mod.ModPath);
                     if (m != null)
                     {
