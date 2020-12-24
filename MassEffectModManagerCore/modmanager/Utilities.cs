@@ -575,7 +575,7 @@ namespace MassEffectModManagerCore
                     }
                     else
                     {
-                        throw w32e; //rethrow to higher.
+                        throw; //rethrow to higher.
                     }
                 }
             }

@@ -73,7 +73,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                     catch (Exception e)
                     {
                         Log.Error(@"Error copying file: " + fi + @" -> " + Path.Combine(target.FullName, fi.Name) + @": " + e.Message);
-                        throw e;
+                        throw;
                     }
                 }
 
