@@ -15,11 +15,13 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-
+- checkout: self
+  submodules: true 
+  
 - task: UseDotNet@2
   inputs:
     packageType: 'sdk'
-    version: '3.1.x'
+    version: '5.0.x'
     
 # - task: DotNetCoreCLI@2
 #   displayName: 'dotnet restore'
@@ -33,7 +35,7 @@ steps:
   inputs:
     command: 'build'
     projects: 'MassEffectModManagerCore/MassEffectModManagerCore.csproj'
-    arguments: '-c Release'
+    arguments: '-c WinRelease'
 
 - task: DotNetCoreCLI@2
   inputs:
