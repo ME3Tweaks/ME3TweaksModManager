@@ -12,7 +12,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 {
     public abstract class MMBusyPanelBase : UserControl, INotifyPropertyChanged
     {
-        public event PropertyChangedEventHandler PropertyChanged;
+        //Fody uses this property on weaving
+#pragma warning disable 0169
+public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 0169
 
         protected MMBusyPanelBase()
         {

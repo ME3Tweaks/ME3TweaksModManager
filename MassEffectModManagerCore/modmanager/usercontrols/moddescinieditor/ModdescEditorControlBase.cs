@@ -43,7 +43,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
 
         public abstract void OnLoaded(object sender, RoutedEventArgs e);
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        //Fody uses this property on weaving
+#pragma warning disable 0169
+public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 0169
         public abstract void Serialize(IniData ini);
     }
 }

@@ -105,6 +105,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alte
         public GenericCommand AddAlternateFileCommand { get; set; }
 
         //public ObservableCollectionExtended<AlternateDLC> AlternateDLCs { get; } = new ObservableCollectionExtended<AlternateDLC>();
-        public event PropertyChangedEventHandler PropertyChanged;
+        //Fody uses this property on weaving
+#pragma warning disable 0169
+public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 0169
     }
 }

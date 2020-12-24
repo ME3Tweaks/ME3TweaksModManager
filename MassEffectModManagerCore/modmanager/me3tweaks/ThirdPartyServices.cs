@@ -103,7 +103,10 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             public int MountPriorityInt => string.IsNullOrWhiteSpace(mountpriority) ? 0 : int.Parse(mountpriority);
             public string StarterKitString => $"{MountPriorityInt} - {modname}{(modulenumber != null ? " - Module # " + modulenumber : "")}"; //not worth localizing
 
-            public event PropertyChangedEventHandler PropertyChanged;
+            //Fody uses this property on weaving
+#pragma warning disable 0169
+public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 0169
         }
 
         internal static List<ThirdPartyModInfo> GetThirdPartyModInfosByModuleNumber(int modDLCModuleNumber)

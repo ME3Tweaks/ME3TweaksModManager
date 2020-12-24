@@ -100,7 +100,10 @@ namespace MassEffectModManagerCore.modmanager.windows
 
         public GenericCommand CopyModdescIniTextCommand { get; set; }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        //Fody uses this property on weaving
+#pragma warning disable 0169
+public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 0169
 
         private void Close_Click(object sender, RoutedEventArgs e)
         {

@@ -554,7 +554,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             private string dlcFolderPath;
 
-            public event PropertyChangedEventHandler PropertyChanged;
+            //Fody uses this property on weaving
+#pragma warning disable 0169
+public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 0169
             public string EnableDisableText => DLCFolderName.StartsWith(@"xDLC") ? M3L.GetString(M3L.string_enable) : M3L.GetString(M3L.string_disable);
             public string EnableDisableTooltip { get; set; }
             public string ModName { get; private set; }

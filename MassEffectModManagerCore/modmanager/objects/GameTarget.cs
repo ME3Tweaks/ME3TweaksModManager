@@ -26,7 +26,10 @@ namespace MassEffectModManagerCore.modmanager.objects
     {
         public const uint MEMI_TAG = 0x494D454D;
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        //Fody uses this property on weaving
+#pragma warning disable 0169
+public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 0169
 
         public MEGame Game { get; }
         public string TargetPath { get; }
@@ -683,7 +686,10 @@ namespace MassEffectModManagerCore.modmanager.objects
 
             public string DLCDirectory { get; }
 
-            public event PropertyChangedEventHandler PropertyChanged;
+            //Fody uses this property on weaving
+#pragma warning disable 0169
+public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 0169
 
             public ICommand RestoreCommand { get; }
 
@@ -703,7 +709,10 @@ namespace MassEffectModManagerCore.modmanager.objects
             private Action notifyRestoringCallback;
             private Func<string, bool> restoreBasegamefileConfirmationCallback;
 
-            public event PropertyChangedEventHandler PropertyChanged;
+            //Fody uses this property on weaving
+#pragma warning disable 0169
+public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 0169
 
             public ICommand RestoreCommand { get; }
             public bool Restoring { get; set; }

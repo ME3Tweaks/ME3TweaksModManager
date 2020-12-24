@@ -46,7 +46,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
 
         //public ObservableCollectionExtended<SingleMultilistEditorItem> ml.Files { get; } = new ObservableCollectionExtended<SingleMultilistEditorItem>();
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        //Fody uses this property on weaving
+#pragma warning disable 0169
+public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 0169
     }
 
     public class SingleMultilistEditorItem : INotifyPropertyChanged
@@ -55,6 +58,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
         public int ItemIndex { get; set; }
         // The value of the multilist item
         public string Value { get; set; }
-        public event PropertyChangedEventHandler PropertyChanged;
+        //Fody uses this property on weaving
+#pragma warning disable 0169
+public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 0169
     }
 }

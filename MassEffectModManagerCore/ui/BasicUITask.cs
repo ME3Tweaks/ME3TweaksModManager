@@ -16,7 +16,10 @@ namespace MassEffectModManagerCore.modmanager.windows
         }
 
         public BasicUITask() { }
-        public event PropertyChangedEventHandler PropertyChanged;
+        //Fody uses this property on weaving
+#pragma warning disable 0169
+public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 0169
         public string TaskText { get; set; }
         public bool Spin { get; set; } = false;
         public Brush Foreground { get; set; } = Brushes.Gray;

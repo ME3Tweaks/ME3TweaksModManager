@@ -613,7 +613,10 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             public int updatecode;
             public string versionstr { get; set; }
             public Version version;
-            public event PropertyChangedEventHandler PropertyChanged;
+            //Fody uses this property on weaving
+#pragma warning disable 0169
+public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 0169
             public bool UpdateInProgress { get; set; }
             public ICommand ApplyUpdateCommand { get; set; }
             public long TotalBytesToDownload { get; set; }

@@ -102,7 +102,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             public static readonly string DLC_INFO_TELEMETRY_ENDPOINT = @"https://me3tweaks.com/mods/dlc_mods/telemetry";
 
-            public event PropertyChangedEventHandler PropertyChanged;
+            //Fody uses this property on weaving
+#pragma warning disable 0169
+public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 0169
 
             public void SubmitPackage()
             {

@@ -234,7 +234,10 @@ namespace MassEffectModManagerCore.modmanager.windows
             Close();
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        //Fody uses this property on weaving
+#pragma warning disable 0169
+public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 0169
         public MEGame SelectedGame { get; set; }
         public Mod SelectedInstallGroupMod { get; set; }
         public Mod SelectedAvailableMod { get; set; }

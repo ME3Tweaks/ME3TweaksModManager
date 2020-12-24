@@ -8,7 +8,10 @@ namespace ME3Explorer
 {
     public abstract class NotifyPropertyChangedBase : INotifyPropertyChanged
     {
-        public event PropertyChangedEventHandler PropertyChanged;
+        //Fody uses this property on weaving
+#pragma warning disable 0169
+public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 0169
 
         /// <summary>
         /// Notifies listeners when given property is updated.
@@ -43,7 +46,10 @@ namespace ME3Explorer
         {
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        //Fody uses this property on weaving
+#pragma warning disable 0169
+public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 0169
 
         /// <summary>
         /// Notifies listeners when given property is updated.
@@ -78,7 +84,10 @@ namespace ME3Explorer
         {
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        //Fody uses this property on weaving
+#pragma warning disable 0169
+public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 0169
 
         /// <summary>
         /// Notifies listeners when given property is updated.

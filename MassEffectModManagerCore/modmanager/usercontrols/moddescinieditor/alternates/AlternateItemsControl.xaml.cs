@@ -15,7 +15,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alte
             InitializeComponent();
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        //Fody uses this property on weaving
+#pragma warning disable 0169
+public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 0169
 
         private void HandleMouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
         {

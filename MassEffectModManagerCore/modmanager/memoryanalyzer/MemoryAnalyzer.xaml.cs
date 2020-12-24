@@ -44,7 +44,10 @@ namespace MassEffectModManagerCore.modmanager.memoryanalyzer
 
         readonly DispatcherTimer dispatcherTimer;
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        //Fody uses this property on weaving
+#pragma warning disable 0169
+public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 0169
 
         public MemoryAnalyzer()
         {
@@ -151,7 +154,10 @@ namespace MassEffectModManagerCore.modmanager.memoryanalyzer
             }
             public int RemainingLifetimeAfterGC = 10;
 
-            public event PropertyChangedEventHandler PropertyChanged;
+            //Fody uses this property on weaving
+#pragma warning disable 0169
+public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 0169
 
             public string ReferenceName { get; set; }
 

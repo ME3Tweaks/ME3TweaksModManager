@@ -1186,7 +1186,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
             #endregion
 
-            public event PropertyChangedEventHandler PropertyChanged;
+            //Fody uses this property on weaving
+#pragma warning disable 0169
+public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 0169
 
             /// <summary>
             /// Sets all checks to the 'abandoned' state, as in they will not run due to previous blocking item
@@ -1642,7 +1645,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 SetDone();
             }
 
-            public event PropertyChangedEventHandler PropertyChanged;
+            //Fody uses this property on weaving
+#pragma warning disable 0169
+public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 0169
 
             public bool HasAnyMessages() => InfoWarnings.Any() || SignificantIssues.Any() || BlockingErrors.Any();
 
@@ -1821,7 +1827,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
             }
 
-            public event PropertyChangedEventHandler PropertyChanged;
+            //Fody uses this property on weaving
+#pragma warning disable 0169
+public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 0169
         }
 
         // This is not incorrectly named. It's just got not matching value
