@@ -18,19 +18,15 @@ using MassEffectModManagerCore.modmanager;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using System.Linq;
-using System.Management;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
 using AuthenticodeExaminer;
-using MassEffectModManagerCore.modmanager.asi;
 using MassEffectModManagerCore.modmanager.windows;
-using ME3ExplorerCore;
 using ME3ExplorerCore.Compression;
 using ME3ExplorerCore.Helpers;
 using ME3ExplorerCore.Misc;
 using ME3ExplorerCore.Packages;
-using Microsoft.AppCenter; // do not remove. It's used in release builds
+using Microsoft.AppCenter;
 
 namespace MassEffectModManagerCore
 {
@@ -48,7 +44,7 @@ namespace MassEffectModManagerCore
         /// </summary>
         internal const string BACKUP_REGISTRY_KEY = @"HKEY_CURRENT_USER\Software\ALOTAddon"; //Shared. Do not change
 
-        public static string LogDir = Path.Combine(Utilities.GetAppDataFolder(), "logs");
+        public static string LogDir = Path.Combine(Utilities.GetAppDataFolder(), @"logs");
         private static bool POST_STARTUP = false;
         public const string DISCORD_INVITE_LINK = "https://discord.gg/s8HA6dc";
         public static bool UpgradingFromME3CMM;
@@ -74,15 +70,15 @@ namespace MassEffectModManagerCore
         public const double HighestSupportedModDesc = 6.2;
 
         //Windows 8.1 Update 1
-        public static readonly Version MIN_SUPPORTED_OS = new Version("6.3.9600");
+        public static readonly Version MIN_SUPPORTED_OS = new Version(@"6.3.9600");
 
         internal static readonly string[] SupportedOperatingSystemVersions =
         {
-            "Windows 8.1",
-            "Windows 10 (not EOL versions)"
+            @"Windows 8.1",
+            @"Windows 10 (not EOL versions)"
         };
 
-        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        [DllImport(@"kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         static extern bool SetDllDirectory(string lpPathName);
 
         public static string BuildDate;
@@ -134,7 +130,7 @@ namespace MassEffectModManagerCore
                             if (!File.Exists(updaterExe))
                             {
                                 // Error like this has no need being localized
-                                Xceed.Wpf.Toolkit.MessageBox.Show(null, $@"Updater shim missing!\nThe swapper executable should have been located at:\n{updaterExe}\n\nPlease report this to ME3Tweaks.", @"Error updating", MessageBoxButton.OK, MessageBoxImage.Error);
+                                Xceed.Wpf.Toolkit.MessageBox.Show(null, $"Updater shim missing!\nThe swapper executable should have been located at:\n{updaterExe}\n\nPlease report this to ME3Tweaks.", @"Error updating", MessageBoxButton.OK, MessageBoxImage.Error); //do not localize
                             }
 
                             Application.Current.Dispatcher.Invoke(Application.Current.Shutdown);
@@ -155,7 +151,7 @@ namespace MassEffectModManagerCore
                     }
                     else
                     {
-                        Log.Error("Could not parse command line arguments! Args: " + string.Join(' ', args));
+                        Log.Error(@"Could not parse command line arguments! Args: " + string.Join(' ', args));
                     }
                 }
 
@@ -167,14 +163,14 @@ namespace MassEffectModManagerCore
                     typeof(DependencyObject), new FrameworkPropertyMetadata(20000));
 
 
-                Log.Information("===========================================================================");
+                Log.Information(@"===========================================================================");
                 FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(ExecutableLocation);
                 string version = fvi.FileVersion;
-                Log.Information("ME3Tweaks Mod Manager " + version);
-                Log.Information("Application boot: " + DateTime.UtcNow);
-                Log.Information("Running as " + Environment.UserName);
-                Log.Information("Executable location: " + ExecutableLocation);
-                Log.Information("Operating system: " + RuntimeInformation.OSDescription);
+                Log.Information(@"ME3Tweaks Mod Manager " + version);
+                Log.Information(@"Application boot: " + DateTime.UtcNow);
+                Log.Information(@"Running as " + Environment.UserName);
+                Log.Information(@"Executable location: " + ExecutableLocation);
+                Log.Information(@"Operating system: " + RuntimeInformation.OSDescription);
                 //Get build date
                 var info = new FileInspector(App.ExecutableLocation);
                 var signTime = info.GetSignatures().FirstOrDefault()?.TimestampSignatures.FirstOrDefault()?.TimestampDateTime?.UtcDateTime;
@@ -210,7 +206,7 @@ namespace MassEffectModManagerCore
                 try
                 {
                     var avs = Utilities.GetListOfInstalledAV();
-                    Log.Information("Detected the following antivirus products:");
+                    Log.Information(@"Detected the following antivirus products:");
                     foreach (var av in avs)
                     {
                         Log.Information(" - " + av);
@@ -218,15 +214,15 @@ namespace MassEffectModManagerCore
                 }
                 catch (Exception e)
                 {
-                    Log.Error("Unable to get the list of installed antivirus products: " + e.Message);
+                    Log.Error(@"Unable to get the list of installed antivirus products: " + e.Message);
                 }
 
-                Log.Information("The following backup paths are listed in the registry:");
-                Log.Information("Mass Effect ======");
+                Log.Information(@"The following backup paths are listed in the registry:");
+                Log.Information(@"Mass Effect ======");
                 Log.Information(BackupService.GetGameBackupPath(MEGame.ME1, true, true));
-                Log.Information("Mass Effect 2 ====");
+                Log.Information(@"Mass Effect 2 ====");
                 Log.Information(BackupService.GetGameBackupPath(MEGame.ME2, true, true));
-                Log.Information("Mass Effect 3 ====");
+                Log.Information(@"Mass Effect 3 ====");
                 Log.Information(BackupService.GetGameBackupPath(MEGame.ME3, true, true));
 
                 //Build 104 changed location of settings from AppData to ProgramData.
@@ -242,17 +238,17 @@ namespace MassEffectModManagerCore
                         {
                             CopyDir.CopyAll_ProgressBar(new DirectoryInfo(oldDir), new DirectoryInfo(Utilities.GetAppDataFolder()), aboutToCopyCallback: (a) =>
                             {
-                                Log.Information("Migrating file from AppData to ProgramData: " + a);
+                                Log.Information(@"Migrating file from AppData to ProgramData: " + a);
                                 return true;
                             });
 
-                            Log.Information("Deleting old data directory: " + oldDir);
+                            Log.Information(@"Deleting old data directory: " + oldDir);
                             Utilities.DeleteFilesAndFoldersRecursively(oldDir);
-                            Log.Information("Migration from pre 104 settings to 104+ settings completed");
+                            Log.Information(@"Migration from pre 104 settings to 104+ settings completed");
                         }
                         catch (Exception e)
                         {
-                            Log.Error("Unable to migrate old settings: " + e.Message);
+                            Log.Error(@"Unable to migrate old settings: " + e.Message);
                         }
                     }
                 }
@@ -261,17 +257,23 @@ namespace MassEffectModManagerCore
                 Log.Information("Loading settings");
                 Settings.Load();
 
-                if (!Settings.EnableTelemetry)
+                if (Settings.ShowedPreviewPanel && !Settings.EnableTelemetry)
                 {
                     Log.Warning("Telemetry is disabled :(");
                 }
                 else if (Settings.ShowedPreviewPanel)
                 {
-                    // Telemetry is on. Start appcenter
+                    // Telemetry is on and we've shown the preview panel. Start appcenter
                     InitAppCenter();
                 }
-
-                if (Settings.Language != "int" && SupportedLanguages.Contains(Settings.Language))
+                else
+                {
+                    // We haven't shown the preview panel. Telemetry setting is 'on' but until
+                    // the user has configured their options nothing will be sent.
+                    // If option is not selected the items will be discarded
+                }
+                 
+                if (Settings.Language != @"int" && SupportedLanguages.Contains(Settings.Language))
                 {
                     InitialLanguage = Settings.Language;
                 }
@@ -346,8 +348,7 @@ namespace MassEffectModManagerCore
 
         internal static void InitAppCenter()
         {
-
-#if !DEBUG
+#if DEBUG
 
             if (APIKeys.HasAppCenterKey)
             {
@@ -360,17 +361,18 @@ namespace MassEffectModManagerCore
                     string log = LogCollector.CollectLatestLog(false);
                     if (log.Length < FileSize.MebiByte * 7)
                     {
-                        attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, "crashlog.txt"));
+                        attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, @"crashlog.txt"));
                     }
                     else
                     {
                         //Compress log
                         var compressedLog = LZMA.CompressToLZMAFile(Encoding.UTF8.GetBytes(log));
-                        attachments.Add(ErrorAttachmentLog.AttachmentWithBinary(compressedLog, "crashlog.txt.lzma", "application/x-lzma"));
+                        attachments.Add(ErrorAttachmentLog.AttachmentWithBinary(compressedLog, @"crashlog.txt.lzma", @"application/x-lzma"));
                     }
 
                     return attachments;
                 };
+                Log.Information(@"Initializing AppCenter");
                 AppCenter.Start(APIKeys.AppCenterKey, typeof(Analytics), typeof(Crashes));
             } else {
                 Log.Error(@"This build is not configured correctly for AppCenter!");
@@ -521,8 +523,8 @@ namespace MassEffectModManagerCore
         {
             if (!Crashes.IsEnabledAsync().Result)
             {
-                string errorMessage = @"ME3Tweaks Mod Manager has crashed! This is the exception that caused the crash:\n" + FlattenException(e.Exception);
-                Log.Fatal(errorMessage);
+                Log.Fatal(@"ME3Tweaks Mod Manager has crashed! This is the exception that caused the crash:");
+                Log.Fatal(FlattenException(e.Exception));
             }
         }
 
@@ -534,7 +536,8 @@ namespace MassEffectModManagerCore
         {
             if (!POST_STARTUP)
             {
-                Log.Fatal(@"ME3Tweaks Mod Manager has encountered a fatal startup crash:\n" + FlattenException(e));
+                Log.Fatal(@"ME3Tweaks Mod Manager has encountered a fatal startup crash:");
+                Log.Fatal(FlattenException(e));
             }
         }
 

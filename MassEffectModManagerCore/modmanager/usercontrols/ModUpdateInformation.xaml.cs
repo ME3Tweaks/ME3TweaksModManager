@@ -26,7 +26,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     {
         private bool AnyModUpdated;
 
-        public ObservableCollectionExtended<OnlineContent.ModUpdateInfo> UpdatableMods { get; } = new();
+        public ObservableCollectionExtended<OnlineContent.ModUpdateInfo> UpdatableMods { get; } = new ObservableCollectionExtended<OnlineContent.ModUpdateInfo>();
 
         public bool OperationInProgress { get; set; }
 
