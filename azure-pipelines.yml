@@ -12,7 +12,7 @@ pool:
 variables:
   solution: '**/*.sln'
   buildPlatform: 'x64'
-  buildConfiguration: 'Release'
+  buildConfiguration: 'WinRelease'
 
 steps:
 - checkout: self
@@ -35,7 +35,7 @@ steps:
   inputs:
     command: 'build'
     projects: 'MassEffectModManagerCore/MassEffectModManagerCore.csproj'
-    arguments: '-c WinRelease'
+    arguments: '-c $(BuildConfiguration)'
 
 - task: DotNetCoreCLI@2
   inputs:
