@@ -21,9 +21,9 @@ namespace MassEffectModManagerCore.modmanager.asi
     public class ASIManager : INotifyPropertyChanged
     {
         //Fody uses this property on weaving
-#pragma warning disable 67
+#pragma warning disable
 public event PropertyChangedEventHandler PropertyChanged;
-#pragma warning restore 67
+#pragma warning restore
         public static readonly string CachedASIsFolder = Directory.CreateDirectory(Path.Combine(Utilities.GetAppDataFolder(), @"CachedASIs")).FullName;
 
         public static readonly string ManifestLocation = Path.Combine(CachedASIsFolder, @"manifest.xml");

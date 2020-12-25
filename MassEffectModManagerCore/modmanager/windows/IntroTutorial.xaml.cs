@@ -138,8 +138,8 @@ namespace MassEffectModManagerCore.modmanager.windows
         public GenericCommand SkipTutorialCommand { get; set; }
 
         //Fody uses this property on weaving
-#pragma warning disable 67
+#pragma warning disable
 public event PropertyChangedEventHandler PropertyChanged;
-#pragma warning restore 67
+#pragma warning restore
     }
 }

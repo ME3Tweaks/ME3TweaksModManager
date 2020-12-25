@@ -57,9 +57,9 @@ namespace MassEffectModManagerCore.ui
 
         #region INotifyPropertyChanged helpers (required to work with validation, can't use fody)
         //Fody uses this property on weaving
-#pragma warning disable 67
+#pragma warning disable
 public event PropertyChangedEventHandler PropertyChanged;
-#pragma warning restore 67
+#pragma warning restore
 
         /// <summary>
         /// Notifies listeners when given property is updated.

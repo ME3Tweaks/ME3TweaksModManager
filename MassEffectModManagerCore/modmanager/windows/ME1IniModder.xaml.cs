@@ -144,9 +144,9 @@ namespace MassEffectModManagerCore.modmanager.windows
 
 
         //Fody uses this property on weaving
-#pragma warning disable 67
+#pragma warning disable
 public event PropertyChangedEventHandler PropertyChanged;
-#pragma warning restore 67
+#pragma warning restore
 
         public string GetPropertyMap(string filename)
         {

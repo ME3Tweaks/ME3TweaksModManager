@@ -27,9 +27,9 @@ namespace MassEffectModManagerCore.modmanager.objects
         public const uint MEMI_TAG = 0x494D454D;
 
         //Fody uses this property on weaving
-#pragma warning disable 67
+#pragma warning disable
 public event PropertyChangedEventHandler PropertyChanged;
-#pragma warning restore 67
+#pragma warning restore
 
         public MEGame Game { get; }
         public string TargetPath { get; }
@@ -687,9 +687,9 @@ public event PropertyChangedEventHandler PropertyChanged;
             public string DLCDirectory { get; }
 
             //Fody uses this property on weaving
-#pragma warning disable 67
+#pragma warning disable
 public event PropertyChangedEventHandler PropertyChanged;
-#pragma warning restore 67
+#pragma warning restore
 
             public ICommand RestoreCommand { get; }
 
@@ -710,9 +710,9 @@ public event PropertyChangedEventHandler PropertyChanged;
             private Func<string, bool> restoreBasegamefileConfirmationCallback;
 
             //Fody uses this property on weaving
-#pragma warning disable 67
+#pragma warning disable
 public event PropertyChangedEventHandler PropertyChanged;
-#pragma warning restore 67
+#pragma warning restore
 
             public ICommand RestoreCommand { get; }
             public bool Restoring { get; set; }

@@ -66,8 +66,8 @@ namespace MassEffectModManagerCore.modmanager.objects
         public MemoryStream PatchData { get; internal set; }
 
         //Fody uses this property on weaving
-#pragma warning disable 67
+#pragma warning disable
 public event PropertyChangedEventHandler PropertyChanged;
-#pragma warning restore 67
+#pragma warning restore
     }
 }

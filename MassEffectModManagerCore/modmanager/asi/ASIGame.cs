@@ -15,9 +15,9 @@ namespace MassEffectModManagerCore.modmanager.asi
     public class ASIGame : INotifyPropertyChanged
     {
         //Fody uses this property on weaving
-#pragma warning disable 67
+#pragma warning disable
         public event PropertyChangedEventHandler PropertyChanged;
-#pragma warning restore 67
+#pragma warning restore
         public MEGame Game { get; }
         public ObservableCollectionExtended<GameTarget> GameTargets { get; } = new ObservableCollectionExtended<GameTarget>();
         public ObservableCollectionExtended<object> DisplayedASIMods { get; } = new ObservableCollectionExtended<object>();

@@ -28,9 +28,9 @@ namespace MassEffectIniModder.classes
     public abstract partial class IniPropertyMaster : INotifyPropertyChanged, IDataErrorInfo
     {
         //Fody uses this property on weaving
-#pragma warning disable 67
+#pragma warning disable
 public event PropertyChangedEventHandler PropertyChanged;
-#pragma warning restore 67
+#pragma warning restore
         public string PropertyName { get; set; }
         public string FriendlyPropertyName { get; set; }
         public virtual string OriginalValue { get; set; }

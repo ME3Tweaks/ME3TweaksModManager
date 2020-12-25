@@ -181,9 +181,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public string QueueDescription { get; private set; }
         
         //Fody uses this property on weaving
-        #pragma warning disable 67
+        #pragma warning disable
         public event PropertyChangedEventHandler PropertyChanged;
-        #pragma warning restore 67
+        #pragma warning restore
         public static BatchLibraryInstallQueue ParseInstallQueue(string queueFile, List<Mod> allLoadedMods)
         {
             if (!File.Exists(queueFile)) return null;
