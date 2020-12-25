@@ -1,6 +1,10 @@
 <ResourceDictionary	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 					xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 					xmlns:system="clr-namespace:System;assembly=System.Runtime">
+	<!-- About -->
+	<system:String x:Key="string_tooltip_runningOnX">Работает на {0}</system:String>
+	<!-- 0 = netcore3.1, net5-windows8.0, etc. Version string of .NET -->
+
 	<!-- About Panel -->
 	<system:String x:Key="string_tooltip_hello">Здравствуйте!</system:String>
 	<system:String x:Key="string_tooltip_softwareDevelopedWithLoveByME3Tweaks">Программа была с любовью разработана ME3Tweaks</system:String>
@@ -120,7 +124,7 @@
 	<system:String x:Key="string_installLoader">Установить загрузчик</system:String>
 	<system:String x:Key="string_unknownASIMod">Неизвестный ASI-мод</system:String>
 	<system:String x:Key="string_ASIManager">ASI Manager</system:String>
-	<system:String x:Key="string_ASIManagerTopDescription" xml:space="preserve">ASI-моды - это моды на исходном коде, загружаемые при запуске игры. Они позволяют модифицировать игру путями, недоступными пакетным файлам. ASI-моды не должны входить в состав обычных модов и могут быть включены в моды Mod Manager.&#10;Mod Manager автоматически установит требуемые ASI-моды для модов, изменяющих баланс ME3 и для ME1 DLC-модов.</system:String>
+	<system:String x:Key="string_ASIManagerTopDescription" xml:space="preserve">ASI-моды - это моды на исходном коде, загружаемые при запуске игры. Они позволяют модифицировать игру путями, недоступными пакетным файлам. ASI-моды не должны входить в состав обычных публикаций модов и могут быть включены в моды Mod Manager.&#10;Mod Manager автоматически установит требуемые ASI-моды для модов, изменяющих баланс ME3 и для ME1 DLC-модов.</system:String>
 	<system:String x:Key="string_installingEllipse">Установка...</system:String>
 	<system:String x:Key="string_tooltip_viewSourceCodeForThisASIMod">Посмотреть исходный код данного ASI-мода</system:String>
 	<system:String x:Key="string_viewSourceCode">Посмотреть исходный код</system:String>
@@ -213,7 +217,7 @@
 	<!-- This is a proper noun. Do not change this string (simply copy it to your localization to ensure it is not blank) -->
 	<system:String x:Key="string_mixins">Mixins</system:String>
 	<system:String x:Key="string_mergingMods">Объединение модов</system:String>
-	<system:String x:Key="string_deployingModsTo7z">Конвертация модов в .7z</system:String>
+	<system:String x:Key="string_deployingModsTo7z">Преобразование модов в .7z</system:String>
 
 	<!-- Backup Service -->
 	<system:String x:Key="string_interp_backupStatusStoredAt">Архив по адресу {0}</system:String>
@@ -278,10 +282,10 @@
 	<!-- Deployment panel -->
 	<system:String x:Key="string_tooltip_multithreadDeployment" xml:space="preserve">Многопоточное сжатие значительно быстрее однопоточного, но требует намного больше памяти.&#10;В случае мода большого размера (>600MB) рекомендуется отключить эту функцию, если у вас менее 16GB доступной памяти.</system:String>
 	<system:String x:Key="string_multiThreadedCompression">Многопоточное сжатие</system:String>
-	<system:String x:Key="string_deploy">Конвертировать в .7z</system:String>
-	<system:String x:Key="string_deploymentChecklist">Чек-лист конвертации</system:String>
-	<system:String x:Key="string_prepareModForDistribution">Сконвертировать мод для распространения</system:String>
-	<system:String x:Key="string_compressiongModForDistribution">Сжатие мода для распространения</system:String>
+	<system:String x:Key="string_deploy">Преобразовать в .7z</system:String>
+	<system:String x:Key="string_deploymentChecklist">Чек-лист преобразования</system:String>
+	<system:String x:Key="string_prepareModForDistribution">Преобразовать мод для публикации</system:String>
+	<system:String x:Key="string_compressiongModForDistribution">Сжатие мода для публикации</system:String>
 	<system:String x:Key="string_verifyModVersion">Проверка корректности версии мода</system:String>
 	<system:String x:Key="string_recommendedVersionFormatNotFollowed">Не соблюден рекомендуемый формат версии ({0})</system:String>
 	<!-- 0 = X.X or X.X[.X[.X]] (literal string) -->
@@ -297,13 +301,13 @@
 	<system:String x:Key="string_invalidSfarSize">Размер следующих SFAR не равен 32 байтам, что является единственным поддерживаемым размером SFAR в средствах моддинга Custom DLC.</system:String>
 	<system:String x:Key="string_wrongSfarSizesFound">Найдены ошибки недопустимого размера SFAR в моде</system:String>
 	<system:String x:Key="string_languageSupportCheck">Проверка языковой поддержки</system:String>
-	<system:String x:Key="string_languageSupportCheckDetectedFollowingIssues">Проверка языковой поддержки выявила следующие проблемы. По возможности исследуйте и исправьте их перед конвертацией.</system:String>
+	<system:String x:Key="string_languageSupportCheckDetectedFollowingIssues">Проверка языковой поддержки выявила следующие проблемы. По возможности исследуйте и исправьте их перед преобразованием.</system:String>
 	<system:String x:Key="string_languageSupportIssuesDetectedInMod">В моде обнаружены проблемы языковой поддержки</system:String>
 	<system:String x:Key="string_audioCheck">Проверка аудиофайлов</system:String>
-	<system:String x:Key="string_audioCheckDetectedErrors">Проверка выявила ошибки при попытке определить возможность использования всех задействованных аудиофайлов конечными пользователями. По возможности исследуйте и исправьте их перед конвертацией.</system:String>
+	<system:String x:Key="string_audioCheckDetectedErrors">Проверка выявила ошибки при попытке определить возможность использования всех задействованных аудиофайлов конечными пользователями. По возможности исследуйте и исправьте их перед преобразованием.</system:String>
 	<system:String x:Key="string_audioIssuesDetectedInMod">Обнаружены проблемы с аудиофайлами в данном моде</system:String>
 	<system:String x:Key="string_texturesCheck">Проверка текстур</system:String>
-	<system:String x:Key="string_texturesCheckDetectedErrors">Проверка выявила ошибки при попытке загрузки всех текстур в мод. Исследуйте и исправьте их перед конвертацией.</system:String>
+	<system:String x:Key="string_texturesCheckDetectedErrors">Проверка выявила ошибки при попытке загрузки всех текстур в мод. Исследуйте и исправьте их перед преобразованием.</system:String>
 	<system:String x:Key="string_textureErrorsInMod">Ошибки текстур в моде</system:String>
 	<system:String x:Key="string_interp_urlIsNotValid">URL ({0}) неверен. Исправьте дескриптор modsite в moddesc.ini, чтобы он указывал на страницу вашего мода и таким образом пользователи могли легко найти ваш мод после импорта.</system:String>
 	<!-- 0 = url -->
@@ -340,31 +344,31 @@
 	<system:String x:Key="string_noBrokenTexturesWereFound">Проблем с текстурами не обнаружено</system:String>
 	<system:String x:Key="string_textureIssuesWereDetected">Обнаружены проблемы с текстурами</system:String>
 	<system:String x:Key="string_7zipArchiveFile">Архивный файл 7-zip</system:String>
-	<system:String x:Key="string_deploymentInProgress">Конвертация в процессе...</system:String>
-	<system:String x:Key="string_deploymentSucceeded">Успешная конвертация</system:String>
-	<system:String x:Key="string_verifyAboveItemsBeforeDeployment">Подтвердите указанные пункты перед конвертацией</system:String>
+	<system:String x:Key="string_deploymentInProgress">Преобразование в процессе...</system:String>
+	<system:String x:Key="string_deploymentSucceeded">Успешное преобразование</system:String>
+	<system:String x:Key="string_verifyAboveItemsBeforeDeployment">Подтвердите указанные пункты перед преобразованием</system:String>
 	<system:String x:Key="string_validationInProgress">Валидация в процессе...</system:String>
 	<system:String x:Key="string_languageCheckDetectedIssues">Языковая проверка обнаружила проблемы</system:String>
 	<system:String x:Key="string_mod">Мод</system:String>
-	<system:String x:Key="string_checkingModBeforeDeployment">Проверка мода перед конвертацией...</system:String>
+	<system:String x:Key="string_checkingModBeforeDeployment">Проверка мода перед преобразованием...</system:String>
 	<system:String x:Key="string_miscellaneousChecks">Прочие проверки</system:String>
 	<system:String x:Key="string_atLeastOneMiscellaneousCheckFailed">Как минимум одна из прочих проверок не пройдена</system:String>
 	<system:String x:Key="string_detectedMiscellaneousIssues">Обнаруженные прочие проблемы</system:String>
 	<system:String x:Key="string_checkingForMiscellaneousIssues">Проверка прочих проблем</system:String>
-	<system:String x:Key="string_interp_modReferencesMetaCmm">Мод ссылается на файл с именем _metacmm.txt. Данный файл генерируется Mod Manager при установке модов и не может быть включен в моды. Удалите данный файл перед конвертацией: {0}</system:String>
+	<system:String x:Key="string_interp_modReferencesMetaCmm">Мод ссылается на файл с именем _metacmm.txt. Данный файл генерируется Mod Manager при установке модов и не может быть включен в моды. Удалите данный файл перед преобразованием: {0}</system:String>
 	<!-- 0=filepath -->
 	<system:String x:Key="string_noMiscellaneousIssuesDetected">Прочих проблем не обнаружено</system:String>
-	<system:String x:Key="string_tooltip_deploymentChecksFoundMiscIssues">Проверки конвертации выявили некоторые прочие проблемы, которые должы быть исправлены перед конвертацией</system:String>
-	<system:String x:Key="string_interp_error_textureTaggedFileFound">{0} помечен как содержащий модифицированные текстуры. Данный файл не может распространяться внутри мода. Файлы модов не могут быть использованы, если они были модифицированы посредством Mass Effect Modder или ALOT Installer - используйте Package Editor в ME3Explorer для замены текстур в модах, использующих пакетные файлы. Распространение модов с метками ALOT на файлах приведет к включению модов в черный список ALOT Installer и Mass Effect Modder.</system:String>
+	<system:String x:Key="string_tooltip_deploymentChecksFoundMiscIssues">Проверки выявили некоторые проблемы, которые должы быть исправлены перед преобразованием</system:String>
+	<system:String x:Key="string_interp_error_textureTaggedFileFound">{0} помечен как содержащий модифицированные текстуры. Данный файл не может распространяться внутри мода. Файлы модов не могут быть использованы, если они были модифицированы посредством Mass Effect Modder или ALOT Installer - используйте Package Editor в ME3Explorer для замены текстур в модах, использующих пакетные файлы. Публикация модов с метками ALOT на файлах приведет к включению модов в черный список ALOT Installer и Mass Effect Modder.</system:String>
 	<!-- 0={Filepath} -->
-	<system:String x:Key="string_deploymentBlocked">Конвертация заблокирована.</system:String>
-	<system:String x:Key="string_error_foundUnofficialDescriptor">Файл moddesc.ini для данного мода помечен дескриптором 'unofficial', означающим, что данный мод был ранее импортирован. Неофициально импортированные моды импортируют только данные, но не alternate-объекты и другую важную информацию. Данный дескриптор должен быть удален перед конвертацией.</system:String>
-	<system:String x:Key="string_error_foundImportedByDesriptor">Файл moddesc.ini для данного мода помечен дескриптором 'importedbybild'. Такой дескриптор используется только для модов, импортированных через Third Party Importing Service - как только мод сконвертирован, он считается официальным, и поэтому данный дескриптор должен быть удален перед конвертацией.</system:String>
+	<system:String x:Key="string_deploymentBlocked">Преобразование заблокировано</system:String>
+	<system:String x:Key="string_error_foundUnofficialDescriptor">Файл moddesc.ini для данного мода помечен дескриптором 'unofficial', означающим, что данный мод был ранее импортирован. Неофициально импортированные моды импортируют только данные, но не alternate-объекты и другую важную информацию. Данный дескриптор должен быть удален перед преобразованием.</system:String>
+	<system:String x:Key="string_error_foundImportedByDesriptor">Файл moddesc.ini для данного мода помечен дескриптором 'importedbybild'. Такой дескриптор используется только для модов, импортированных через Third Party Importing Service - как только мод преобразован, он считается официальным, и поэтому данный дескриптор должен быть удален перед преобразованием.</system:String>
 	<system:String x:Key="string_interp_error_foundCustTexturesTFCRef">{0} {1} использует имя TFC {2}. Данное имя TFC используется при замене текстур посредством устаревших инструментов ME3Explorer и является частой причиной поломки текстур. Сократите ваше имя TFC до нового, используя TFC Compactor Tool в ME3Explorer.</system:String>
 	<!-- 0={FilePath} 1={Texture Export Path} 2={Texture Cache Name} -->
-	<system:String x:Key="string_interp_error_foundTexturesMEMTFCRef">{0} {1} использует имя TFC {2}. Данное имя TFC используется MEM при установке текстур и не может быть использовано при конвертации, иначе возникнут конфликты. Сократите ваше имя TFC до нового, используя TFC Compactor Tool в ME3Explorer.</system:String>
+	<system:String x:Key="string_interp_error_foundTexturesMEMTFCRef">{0} {1} использует имя TFC {2}. Данное имя TFC используется MEM при установке текстур и не может быть использовано при преобразовании, иначе возникнут конфликты. Сократите ваше имя TFC до нового, используя TFC Compactor Tool в ME3Explorer.</system:String>
 	<!-- 0={FilePath} 1={Texture Export Path} 2={Texture Cache Name} -->
-	<system:String x:Key="string_deploymentBlockedUntilAboveItemsAreFixed">Конвертация заблокирована до устранения вышеуказанных проблем</system:String>
+	<system:String x:Key="string_deploymentBlockedUntilAboveItemsAreFixed">Преобразование заблокировано до устранения вышеуказанных проблем</system:String>
 	<system:String x:Key="string_male">мужской</system:String>
 	<!-- This item is substituted into a string down below for gender -->
 	<system:String x:Key="string_female">женский</system:String>
@@ -375,15 +379,15 @@
 	<!-- This is a 'status' text to show what's being worked on -->
 	<system:String x:Key="string_uncompressedModItems">Несжатые компоненты мода</system:String>
 	<!-- This is a 'status' text to show what's being worked on -->
-	<system:String x:Key="string_dialog_improperlyDeployedMod" xml:space="preserve">Архив содержит мод, созданный при помощи ME3Tweaks Mod Manager, но сам архив был создан другими средствами. Моды в данном архиве могут поддерживаться не полностью и содержать другие проблемы.\n\nМоды, созданные для ME3Tweaks Mod Manager должны конвертироваться через него.</system:String>
-	<system:String x:Key="string_improperlyDeployedMod">Некорректно сконвертированный мод</system:String>
+	<system:String x:Key="string_dialog_improperlyDeployedMod" xml:space="preserve">Архив содержит мод, созданный при помощи ME3Tweaks Mod Manager, но сам архив был создан другими средствами. Моды в данном архиве могут поддерживаться не полностью и содержать другие проблемы.\n\nМоды, созданные для ME3Tweaks Mod Manager должны проходить преобразование через него. Свяжитесь с разработчиком с просьбой корректно преобразовать мод через Mod Manager.</system:String>
+	<system:String x:Key="string_improperlyDeployedMod">Некорректно преобразованный мод</system:String>
 	<system:String x:Key="string_interp_packageFileNoNames">Пакетный файл {0} не содержит никаких имен. Данный файл недопустим</system:String>
 	<!-- 0=relative file path -->
 	<system:String x:Key="string_interp_packageFileNoImports">Пакетный файл {0} не содержит ни одного import. Данный файл недопустим</system:String>
 	<!-- 0=relativepath -->
 	<system:String x:Key="string_interp_packageFileNoExports">Пакетный файл {0} не содержит ни одного Export. Данный файл недопустим</system:String>
 	<!-- 0=relativefilepath -->
-	<system:String x:Key="string_interp_dlcModHasNoTlkFiles">В DLC-моде ({0}) отсутствуют файлы TLK. Конвертируемые моды должны включать хотя бы один файл TLK, чтобы отображалась строка при ошибке загрузки мода.</system:String>
+	<system:String x:Key="string_interp_dlcModHasNoTlkFiles">В DLC-моде ({0}) отсутствуют файлы TLK. Преобразуемые моды должны включать хотя бы один файл TLK, чтобы отображалась строка при ошибке загрузки мода.</system:String>
 	<!-- 0={filepath} -->
 	<system:String x:Key="string_interp_dlcModMissingTlkInAutoloadIni">В AutoLoad.ini DLC-мода {0} не указан файл TLK. Данный атрибут и соответствующий файл TLK должны присутствовать в каждом моде для возможности работы с ними.</system:String>
 	<!-- 0={filepath} -->
@@ -656,7 +660,7 @@
 	<!-- 0 = date -->
 	<system:String x:Key="string_interp_versioningInfoX">Установка текстур - {0}</system:String>
 	<!-- 0 = texture version string, like 'ALOT 12.0, MEUITM v3' -->
-	<system:String x:Key="string_addModToDeployment">Добавить мод в конвертацию</system:String>
+	<system:String x:Key="string_addModToDeployment">Добавить мод к преобразованию</system:String>
 	<system:String x:Key="string_validationTargets">Цели для валидации</system:String>
 	<system:String x:Key="string_tooltip_rerunCheckOnMod">Перепроверить мод</system:String>
 
@@ -770,7 +774,7 @@
 	<system:String x:Key="string_Installcustomkeybindsintothismod">Установить пользовательские привязки клавиш в данный мод</system:String>
 	<system:String x:Key="string_Developeroptions">Настройки для разработчиков</system:String>
 	<system:String x:Key="string_Moddesceditor">Редактор Moddesc.ini</system:String>
-	<system:String x:Key="string_Deploymodto7zfilefordistribution">Конвертировать мод в 7z для выпуска</system:String>
+	<system:String x:Key="string_Deploymodto7zfilefordistribution">Преобразовать мод в 7z для публикации</system:String>
 	<system:String x:Key="string_Prepareforupdaterservice">Подготовить мод для Updater Service</system:String>
 	<system:String x:Key="string_SubmitmodinformationtoME3Tweaks">Отправить информацию по моду на ME3Tweaks</system:String>
 	<system:String x:Key="string_Openmodfolder">Открыть папку мода</system:String>
@@ -936,7 +940,7 @@
 	<system:String x:Key="string_errorLoadingMixinPackage">Ошибка загрузки Mixin package</system:String>
 	<system:String x:Key="string_checkingBackups">Проверка архивов</system:String>
 	<system:String x:Key="string_finishedCheckingBackups">Проверка архивов завершена</system:String>
-	<system:String x:Key="string_dialog_optingIntoBeta" xml:space="preserve">Включение бета-обновлений позволяет Mod Manager обновляться до версий, пока не сертифицированных для широкого распространения. Эти сборки не проходят полное тестирование и могут быть нестабильны. Обратная связь по вылетам и ошибкам этих сборок очень важна для улучшения ME3Tweaks Mod Manager. Если вам неудобно пользоваться нестабильным ПО, лучше не включать этот режим. Вам придется переустанавливать программу вручную, если вы решите вернуться к стабильной версии.\n\nВключить Бета-Режим?</system:String>
+	<system:String x:Key="string_dialog_optingIntoBeta" xml:space="preserve">Включение бета-обновлений позволяет Mod Manager обновляться до версий, пока не сертифицированных для открытой публикации. Эти сборки не проходят полное тестирование и могут быть нестабильны. Обратная связь по вылетам и ошибкам этих сборок очень важна для улучшения ME3Tweaks Mod Manager. Если вам неудобно пользоваться нестабильным ПО, лучше не включать этот режим. Вам придется переустанавливать программу вручную, если вы решите вернуться к стабильной версии.\n\nВключить Бета-Режим?</system:String>
 	<system:String x:Key="string_enablingBetaMode">Включение бета-режима</system:String>
 	<system:String x:Key="string_importAndManageMods">Импорт + управление модами</system:String>
 	<system:String x:Key="string_libraryManagement">Управление библиотекой</system:String>
@@ -955,7 +959,7 @@
 	<system:String x:Key="string_tooltip_checksForUpdatesToThisMod" xml:space="preserve">Проверяет обновления для данного мода.&#10;Моды, размещенные на NexusMods должны быть подтверждены ME3Tweaks для проверки обновлений</system:String>
 	<system:String x:Key="string_tooltip_forcesUpdateCheck">Выполняет принудительное обновление мода, даже если установлена последняя версия</system:String>
 	<system:String x:Key="string_packageModForRelease">Запаковать мод для выпуска</system:String>
-	<system:String x:Key="string_tooltip_deployTo7z" xml:space="preserve">Подготавливает мод к выпуску, прогоняя его через тесты,&#10;затем сжимает его для быстрой загрузки в Mod Manager</system:String>
+	<system:String x:Key="string_tooltip_deployTo7z" xml:space="preserve">Подготавливает мод к публикации, прогоняя его через тесты,&#10;затем сжимает его для быстрой загрузки в Mod Manager</system:String>
 	<system:String x:Key="string_mE3TweaksUpdaterService">ME3Tweaks Updater Service</system:String>
 	<system:String x:Key="string_tooltip_uploadToUpdaterService">Загружает данный мод в ME3Tweaks Updater Service</system:String>
 	<system:String x:Key="string_editUpdaterServiceSettings">Редактировать настройки Updater Service</system:String>
@@ -994,9 +998,9 @@
 	<system:String x:Key="string_donations">Пожертвования</system:String>
 	<system:String x:Key="string_tooltip_opensTheME3TweaksDonationsInformationPage">Открывает информационную страницу ME3Tweaks Donations</system:String>
 	<system:String x:Key="string_tooltip_modLibrary" xml:space="preserve">Моды, импортированные в библиотеку Mod Manager.&#10;Это список не отражает установленные моды; для просмотра установленных модов нажмите кнопку Настройка Игры</system:String>
-	<system:String x:Key="string_rcwModsCannotBeDeployed">Невозможно сконвертировать файлы .me2mod посредством Mod Manager</system:String>
-	<system:String x:Key="string_rcwModsCannotBeDeployedDescription">Конвертация RCW-модов (.me2mod) недоступна в Mod Manager. Можно распространять непосредственно файлы RCW .me2mod и после импортировать их в Mod Manager.</system:String>
-	<system:String x:Key="string_cannotDeployMe2modFiles">Невозможно сконвертировать файлы .me2mod</system:String>
+	<system:String x:Key="string_rcwModsCannotBeDeployed">Невозможно преобразовать файлы .me2mod посредством Mod Manager</system:String>
+	<system:String x:Key="string_rcwModsCannotBeDeployedDescription">Преобразование RCW-модов (.me2mod) недоступно в Mod Manager. Можно публиковать непосредственно файлы RCW .me2mod и после импортировать их в Mod Manager.</system:String>
+	<system:String x:Key="string_cannotDeployMe2modFiles">Невозможно преобразовать файлы .me2mod</system:String>
 	<system:String x:Key="string_decompilingCoalescedFile">Декомпиляция файла Coalesced</system:String>
 	<system:String x:Key="string_decompiledCoalescedFile">Файл Coalesced декомпилирован</system:String>
 	<system:String x:Key="string_compilingCoalescedFile">Компиляция файла Coalesced</system:String>
@@ -1050,10 +1054,10 @@
 	<!-- This is bolded text that shows up at the top of the mod library list area when there are no mods. Try to keep it short, feel free to adapt to your language. -->
 	<system:String x:Key="string_noModsInLibraryDescription" xml:space="preserve">Здесь будут отображаться моды, импортируемые в Mod Manager. Вы можете импортировать моды, перетаскивая их архивные файлы (.7z/.rar/.zip/.exe/.me2mod) в это окно.&#10;&#10;Моды, установленные через окно импортирования НЕ будут отображаться здесь, поскольку устанавливаются напрямую в игру, а не добавляются в библиотеку. Вы можете посмотреть, что уже установлено, нажав 'Настройка Игры' в правом верхнем углу данного окна.&#10;&#10;Моды, импортированные в библиотеку, легко переустановить, добавить в очередь установки и не только.</system:String>
 	<!-- This is the text shown under the no mods in library header. It shows up when there are no mods imported. Make sure Manage Target lines up with your localization of that term. -->
-	<system:String x:Key="string_interp_dialog_cannotDeployModNoTarget">Установка игры {0} не обнаружена. Конвертация мода требует установленной игры для проверки данных, которые будут недоступны в другой установке.</system:String>
+	<system:String x:Key="string_interp_dialog_cannotDeployModNoTarget">Установленная игра {0} не обнаружена. Преобразование мода требует установленной игры для проверки данных, которые будут недоступны в другой установке.</system:String>
 	<!-- 0=ME1/ME2/ME3 -->
-	<system:String x:Key="string_cannotDeployMod">Невозможно сконвертировать мод</system:String>
-	<system:String x:Key="string_interp_dialog_cannotDeployModNoBackup">Архив {0} недоступен. Конвертация мода требует наличия архива игры в которую будет устанавливаться мод, поэтому проверка проводится относительно оригинальной игры.</system:String>
+	<system:String x:Key="string_cannotDeployMod">Невозможно преобразовать мод</system:String>
+	<system:String x:Key="string_interp_dialog_cannotDeployModNoBackup">Архив {0} недоступен. Преобразование мода требует наличия архива игры в которую будет устанавливаться мод, поэтому проверка проводится относительно оригинальной игры.</system:String>
 	<!-- 0=ME1/ME2/ME3 -->
 	<system:String x:Key="string_preparingToScanGame">Подготовка к сканированию игры</system:String>
 	<system:String x:Key="string_pleaseWait">Пожалуйста, подождите</system:String>
@@ -1300,9 +1304,9 @@
 	<!-- 0={ModBeingInstalled.ModName} 1={list of dlc names. It starts with a newline, so do not put space between : and bracket symbol} -->
 
 	<!-- Mod Selector Dialog -->
-	<system:String x:Key="string_addSelectedModsToDeployment">Добавить выбранные моды в конвертацию</system:String>
-	<system:String x:Key="string_description_addSelectedModsToDeployment">Выбрать моды для добавления в конвертацию. Вы можете выбрать несколько модов, зажав Control или Shift.</system:String>
-	<system:String x:Key="string_addModsToDeployment">Добавить моды в конвертацию</system:String>
+	<system:String x:Key="string_addSelectedModsToDeployment">Добавить выбранные моды к преобразованию</system:String>
+	<system:String x:Key="string_description_addSelectedModsToDeployment">Выбрать моды для добавления к преобразованию. Вы можете выбрать несколько модов, зажав Control или Shift.</system:String>
+	<system:String x:Key="string_addModsToDeployment">Добавить моды к преобразованию</system:String>
 
 	<!-- Mod updater -->
 	<system:String x:Key="string_modupdatesavailable">Доступно обновление мода</system:String>
@@ -1498,7 +1502,7 @@
 	<system:String x:Key="string_interp_singleRequiredDLC">Для установки требуется как минимум одно из следующих DLC:</system:String>
 	<system:String x:Key="string_interp_validation_modparsing_bannerImageAssetNotFound">В моде используется имя изображения баннера {0}, но данный файл отсутствует в директории M3Images.</system:String>
 	<!-- 0={Filename} -->
-	<system:String x:Key="string_interp_validation_modparsing_bannerUsedButNotDeployedWithM3">В качестве изображения баннера в моде используется архив, но тип хранилища не указан как 'Copy'. Mod Manager не загружает моды из архивов, использующих изображения, которые не были сконвертированы через Mod Manager.</system:String>
+	<system:String x:Key="string_interp_validation_modparsing_bannerUsedButNotDeployedWithM3">В качестве изображения баннера в моде используется архив, но тип хранилища не указан как 'Copy'. Mod Manager не загружает моды из архивов, использующих изображения, которые не были преобразованый через Mod Manager.</system:String>
 
 	<!-- Moddesc Editor -->
 	<system:String x:Key="string_copiedModdesciniContentsToClipboard">Содержимое moddesc.ini скопировано в буфер</system:String>
@@ -1566,7 +1570,7 @@
 	<system:String x:Key="string_mde_dec_header_customdlc">Данные значения позволяют настроить условия невозможности установки вашего мода, а также позволить Mod Manager удалять прошлые версии мода, если изменилось имя папки DLC.</system:String>
 	<system:String x:Key="string_mde_dec_header_metadata_modmanager">Заголовок ModManager читается первым при парсине мода и используется для настройки парсера. Данный редактор поддерживает сохранение только для модов, работающих с последней версией moddesc.ini, поддерживаемой данной сборкой.</system:String>
 	<system:String x:Key="string_mde_dec_header_metadata_modinfo">Заголовок ModInfo содержит большинство информации, видимой пользователем в интерфейсе Mod Manager. Чем больше информации вы дадите пользователю, тем меньше вероятность появления в будущем вопросов по вашему моду.</system:String>
-	<system:String x:Key="string_mde_dec_header_metadata_updates">Заголовок UPDATES используется для ME3Tweaks Updater Service. Параметры additionaldeployment могут быть использованы для добавления файлов без ссылок при конвертации вашего мода.</system:String>
+	<system:String x:Key="string_mde_dec_header_metadata_updates">Заголовок UPDATES используется для ME3Tweaks Updater Service. Параметры additionaldeployment могут быть использованы для добавления файлов без ссылок при преобразовании вашего мода.</system:String>
 
 	<!-- Moddescini Editor -->
 	<system:String x:Key="string_toolUnderDevelopment">Данный инструмент находится в разработке и может работать нестабильно. Используйте на свой страх и риск!</system:String>
@@ -1793,8 +1797,10 @@
 	<system:String x:Key="string_generatingMod">Создание мода</system:String>
 	<system:String x:Key="string_interp_valueMustBeBetween0AndX">Значение должно быть между 0 and {0}</system:String>
 	<!-- 0 = number -->
-	<system:String x:Key="string_dialog_devModeAdvert">Режим Разработчика для ME3Tweaks Mod Manager сейчас отключен. Включите его для доступа у инструментам разработчика в меню, таких как Official DLC Toggler, Конвертация в 7z, Custom DLC Conflict Detector, Backup File Fetcher и другим.\n\nВключить Режим Разработчика?</system:String>
+	<system:String x:Key="string_dialog_devModeAdvert">Режим Разработчика для ME3Tweaks Mod Manager сейчас отключен. Включите его для доступа у инструментам разработчика в меню, таких как Official DLC Toggler, Преобразование в 7z, Custom DLC Conflict Detector, Backup File Fetcher и другим.\n\nВключить Режим Разработчика?</system:String>
 	<system:String x:Key="string_enableDeveloperFeaturesQuestion">Активировать функции разработчика?</system:String>
+	<system:String x:Key="string_dialog_warnMustBeDeployedForFullFeatures">Моды выдадут предупреждение, если были открыты для импорта/установки, но не были предварительно преобразованы через Mod Manager. Моды, использующие опции изображений не загрузятся без преобразования через Mod Manager. Когда ваш мод будет готов к публикации, убедитесь, что преобразовали его через меню Утилиты Модов в Режиме Разработчика.</system:String>
+	<system:String x:Key="string_deploymentInfo">Информация о преобразовании</system:String>
 
 	<!-- Telemetry submission form (for mod developers) -->
 	<system:String x:Key="string_submitToME3Tweaks">Оправить на ME3Tweaks</system:String>
@@ -1928,5 +1934,5 @@
 	<system:String x:Key="string_enableTelemetry">Включить телеметрию</system:String>
 	<system:String x:Key="string_wp_description_telemetry">Телеметрия Mod Manager используется разработчиками программы и модов для определения новых модов, исправления ошибок в Mod Manager и понимания ожиданий пользователей от программы.</system:String>
 	<system:String x:Key="string_developerMode">Включить Режим Разработчика</system:String>
-	<system:String x:Key="string_wp_description_developermod">Режим Разработчика разблокирует функции, ориентированные на разработчиков, такие как конвертация модов, Official DLC Toggler, и много другое. Если вы не занимаетесь разработкой, то не включайте его.</system:String>
+	<system:String x:Key="string_wp_description_developermod">Режим Разработчика разблокирует функции, ориентированные на разработчиков, такие как преобразование модов, Official DLC Toggler, и много другое. Если вы не занимаетесь разработкой, то не включайте его.</system:String>
 </ResourceDictionary>
