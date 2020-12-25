@@ -128,7 +128,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             nbw.RunWorkerAsync();
         }
 
-        private async void ImportDLCFolder_BackgroundThread(object sender, DoWorkEventArgs e)
+        private void ImportDLCFolder_BackgroundThread(object sender, DoWorkEventArgs e)
         {
             OperationInProgress = true;
             var sourceDir = Path.Combine(M3Directories.GetDLCPath(SelectedTarget), SelectedDLCFolder.DLCFolderName);

@@ -34,9 +34,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
         public static string MEMPATH;
 
         #region Static Property Changed
-
         public static event PropertyChangedEventHandler StaticPropertyChanged;
-        public static event PropertyChangedEventHandler StaticBackupStateChanged;
 
         /// <summary>
         /// Sets given property and notifies listeners of its change. IGNORES setting the property to same value.
@@ -69,7 +67,6 @@ namespace MassEffectModManagerCore.modmanager.helpers
         /// <returns></returns>
         public static short GetMemVersion()
         {
-            short version = 0;
             // If the current version doesn't support the --version --ipc, we just assume it is 0.
             MEMIPCHandler.RunMEMIPCUntilExit(@"--version --ipc", ipcCallback: (command, param) =>
             {

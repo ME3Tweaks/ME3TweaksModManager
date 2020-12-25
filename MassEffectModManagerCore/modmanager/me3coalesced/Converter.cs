@@ -10,6 +10,7 @@ using System.Xml.Linq;
 using MassEffect3.Coalesce.Xml;
 using MassEffect3.FileFormats;
 using MassEffect3.FileFormats.Coalesced;
+using MassEffectModManagerCore;
 
 namespace MassEffect3.Coalesce
 {
@@ -496,7 +497,7 @@ namespace MassEffect3.Coalesce
 
         private static string GetExePath()
         {
-            return Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            return Path.GetDirectoryName(App.ExecutableLocation);
         }
     }
 }

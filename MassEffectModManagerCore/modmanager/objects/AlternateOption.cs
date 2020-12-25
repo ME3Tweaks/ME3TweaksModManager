@@ -5,6 +5,7 @@ using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.modmanager.objects.mod.editor;
 using MassEffectModManagerCore.ui;
+using PropertyChanged;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.objects
@@ -13,7 +14,7 @@ namespace MassEffectModManagerCore.modmanager.objects
     {
         //Fody uses this property on weaving
 #pragma warning disable
-public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged;
 #pragma warning restore
         public string ApplicableAutoText { get; private set; }
         public string NotApplicableAutoText { get; private set; }
@@ -46,6 +47,7 @@ public event PropertyChangedEventHandler PropertyChanged;
         public bool IsSelected { get; set; }
         public virtual bool UIRequired => !IsManual && !IsAlways && IsSelected;
         public abstract bool UINotApplicable { get; }
+        [SuppressPropertyChangedWarnings]
         public abstract bool UIIsSelectable { get; set; }
         public abstract bool IsAlways { get; }
         public abstract void BuildParameterMap(Mod mod);

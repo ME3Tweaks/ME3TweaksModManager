@@ -104,7 +104,9 @@ namespace MassEffectModManagerCore.modmanager
             }
         }
 
+#pragma warning disable
         public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore
     }
 
     public class BackgroundTask

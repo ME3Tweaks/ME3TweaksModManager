@@ -21,8 +21,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     public partial class AutoTOC : MMBusyPanelBase
     {
         private const string SFAR_SUBPATH = @"CookedPCConsole\Default.sfar";
-        private const long TESTPATCH_16_SIZE = 2455091L;
-        private static Dictionary<string, long> sfarSizeMap;
 
         private enum AutoTOCMode
         {
@@ -30,8 +28,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             MODE_MOD
         }
 
-        private AutoTOCMode mode;
-        private Mod modModeMod;
+        //private AutoTOCMode mode;
+        //private Mod modModeMod;
         private GameTarget gameWideModeTarget;
 
         public int Percent { get; private set; }
@@ -48,7 +46,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             DataContext = this;
             if (mod.Game != MEGame.ME3) throw new Exception(@"AutoTOC cannot be run on mods not designed for Mass Effect 3.");
-            this.modModeMod = mod;
+            //this.modModeMod = mod;
             InitializeComponent();
 
         }
@@ -223,7 +221,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"AutoTOC");
             nbw.DoWork += (a, b) =>
             {
-                if (mode == AutoTOCMode.MODE_GAMEWIDE)
+                //if (mode == AutoTOCMode.MODE_GAMEWIDE)
                 {
                     RunTOCOnGameTarget(gameWideModeTarget, x => Percent = x);
                 }

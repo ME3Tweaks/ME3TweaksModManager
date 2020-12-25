@@ -63,7 +63,6 @@ namespace MassEffectModManagerCore
         public string CurrentDescriptionText { get; set; } = DefaultDescriptionText;
         private static readonly string DefaultDescriptionText = M3L.GetString(M3L.string_selectModOnLeftToGetStarted);
         private readonly string[] SupportedDroppableExtensions = { @".rar", @".zip", @".7z", @".exe", @".tpf", @".mod", @".mem", @".me2mod", @".xml", @".bin", @".tlk" };
-        private bool StartupCompleted;
         public string ApplyModButtonText { get; set; } = M3L.GetString(M3L.string_applyMod);
         public string InstallationTargetText { get; set; } = M3L.GetString(M3L.string_installationTarget);
         public bool ME1ASILoaderInstalled { get; set; }
@@ -83,7 +82,6 @@ namespace MassEffectModManagerCore
         public string ME3ASILoaderText { get; set; }
         public string EndorseM3String { get; set; } = M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
 
-        private int lastHintIndex = -1;
         private int oldFailedBindableCount = 0;
 
         public string NoModSelectedText
@@ -200,9 +198,12 @@ namespace MassEffectModManagerCore
                 {
                     Application.Current.Dispatcher.Invoke(delegate
                     {
-                        Storyboard sb = this.FindResource(@"CloseLoadingSpinner") as Storyboard;
-                        Storyboard.SetTarget(sb, LoadingSpinner_Image);
-                        sb.Begin();
+                        if (closeLoadingSpinner == null)
+                        {
+                            closeLoadingSpinner = FindResource(@"CloseLoadingSpinner") as Storyboard;
+                        }
+                        Storyboard.SetTarget(closeLoadingSpinner, LoadingSpinner_Image);
+                        closeLoadingSpinner.Begin();
                     });
                 }
             );
@@ -1469,7 +1470,6 @@ namespace MassEffectModManagerCore
         public List<string> LoadedTips { get; } = new List<string>();
         public bool ModsLoaded { get; private set; } = false;
         public GameTarget SelectedGameTarget { get; set; }
-        private GameTarget previousGameTarget;
 
         private bool CanReloadMods()
         {
@@ -2378,8 +2378,6 @@ public event PropertyChangedEventHandler PropertyChanged;
                 Log.Information(@"Start of content check network thread. First startup check: " + firstStartupCheck);
 
                 BackgroundTask bgTask;
-                bool success;
-
                 if (firstStartupCheck)
                 {
 
@@ -2602,8 +2600,6 @@ public event PropertyChangedEventHandler PropertyChanged;
                     }
                 };
                 nbw.RunWorkerAsync();
-
-                StartupCompleted = true;
                 CommandManager.InvalidateRequerySuggested(); //refresh bindings that depend on this
 
                 //byte[] bytes = File.ReadAllBytes(@"C:\Users\mgame\Source\Repos\ME3Tweaks\MassEffectModManager\MassEffectModManagerCore\Deployment\Releases\ME3TweaksModManagerExtractor_6.0.0.99.exe");

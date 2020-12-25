@@ -71,7 +71,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
             catch (Exception e)
             {
-                Log.Error(@"There was an exception setting the version/changelog strings.");
+                Log.Error($@"There was an exception parsing the version/changelog strings: {e.Message}");
             }
 
             PrimaryDownloadLink = App.ServerManifest[@"download_link2"];
@@ -94,7 +94,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void LoadCommands()
         {
-            NotNowCommand = new GenericCommand(CloseDialog, TaskNotRunning);
+            NotNowCommand = new GenericCommand(CloseDialog);
             StartUpdateCommand = new GenericCommand(StartUpdate, CanStartUpdate);
             ViewChangelogCommand = new GenericCommand(ViewChangelog, CanViewChangelog);
         }
@@ -406,10 +406,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             return true;
         }
 
-        private bool TaskRunning;
         private string localExecutableHash;
-
-        private bool TaskNotRunning() => !TaskRunning;
 
         private void CloseDialog()
         {

@@ -680,7 +680,7 @@ public event PropertyChangedEventHandler PropertyChanged;
 
             public string RestoreButtonContent { get; set; } = M3L.GetString(M3L.string_restore);
 
-            private Action restoreCompletedCallback, startingRestoreCallback;
+            private Action startingRestoreCallback;
             private readonly GameTarget target;
             private readonly bool Unpacked;
 

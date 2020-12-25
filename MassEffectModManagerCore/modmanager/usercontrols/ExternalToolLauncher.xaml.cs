@@ -458,7 +458,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             }
                             catch (Exception e)
                             {
-                                Log.Error(@"Invalid version number on release: " + latestRelease.TagName);
+                                Log.Error($@"Invalid version number on release {latestRelease.TagName}: {e.Message}");
                             }
                         }
                     }

@@ -145,8 +145,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         break;
                 }
             }
-
+#pragma warning disable
             public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore
         }
 
         private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
