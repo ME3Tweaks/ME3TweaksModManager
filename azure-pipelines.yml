@@ -20,19 +20,19 @@ steps:
   submodules: true 
   
 - task: UseDotNet@2
+  displayName: Install .NET 5.0 SDK
   inputs:
     packageType: 'sdk'
-    version: '5.0.x'
-    
-# - task: DotNetCoreCLI@2
-#   displayName: 'dotnet restore'
-#   inputs:
-#     command: 'restore'
-#     projects: '**/*.csproj'
-#     feedsToUse: 'select'
-#     verbosityRestore: 'Minimal'
+    version: '5.0.x' 
+
+- task: UseDotNet@2
+  displayName: Install .NET Core 3.1 SDK
+  inputs:
+    packageType: 'sdk'
+    version: '3.1.x' 
 
 - task: DotNetCoreCLI@2
+  displayName: Run tests
   inputs:
     command: 'build'
     projects: 'MassEffectModManagerCore/MassEffectModManagerCore.csproj'
@@ -42,7 +42,7 @@ steps:
   inputs:
     command: 'test'
     projects: 'MassEffectModManagerCore.Tests\\MassEffectModManagerCore.Tests.csproj'
-    arguments: '--configuration $(BuildConfiguration) -f $(Framework) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:Include=ME3TweaksModManager'
+    arguments: '--configuration $(BuildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:Include=ME3TweaksModManager'
 
 # Generate the report using ReportGenerator (https://github.com/danielpalme/ReportGenerator)
 # First install the tool on the machine, then run it
