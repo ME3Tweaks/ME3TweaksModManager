@@ -1175,7 +1175,7 @@ namespace MassEffectModManagerCore
         }
 
         /// <summary>
-        /// Gets a string value frmo the registry from the specified key and value name.
+        /// Gets a string value from the registry from the specified key and value name.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="name"></param>
