@@ -67,10 +67,10 @@ public event PropertyChangedEventHandler PropertyChanged;
             this.IsCustomOption = isCustomOption;
             this.TargetPath = targetRootPath.TrimEnd('\\');
             MemoryAnalyzer.AddTrackedMemoryItem($@"{game} GameTarget {TargetPath} - IsCustomOption: {isCustomOption}", new WeakReference(this));
-            ReloadGameTarget(isTest: true);
+            ReloadGameTarget(isTest);
         }
 
-        public void ReloadGameTarget(bool lodUpdateAndLogging = true, bool forceLodUpdate = false, bool isTest = false)
+        public void ReloadGameTarget(bool lodUpdateAndLogging = true, bool forceLodUpdate = false, bool reverseME1Executable = true)
         {
             if (Game != MEGame.Unknown && !IsCustomOption)
             {
@@ -97,7 +97,7 @@ public event PropertyChangedEventHandler PropertyChanged;
                     }
 
                     CLog.Information(@"Getting game source for target " + TargetPath, lodUpdateAndLogging);
-                    var hashCheckResult = VanillaDatabaseService.GetGameSource(this, !isTest);
+                    var hashCheckResult = VanillaDatabaseService.GetGameSource(this, reverseME1Executable);
 
                     GameSource = hashCheckResult.result;
                     ExecutableHash = hashCheckResult.hash;
@@ -680,7 +680,7 @@ public event PropertyChangedEventHandler PropertyChanged;
 
             public string RestoreButtonContent { get; set; } = M3L.GetString(M3L.string_restore);
 
-            private Action restoreCompletedCallback, startingRestoreCallback;
+            private Action startingRestoreCallback;
             private readonly GameTarget target;
             private readonly bool Unpacked;
 

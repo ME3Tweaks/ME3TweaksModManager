@@ -364,7 +364,6 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             #region MEM Setup
             //vars
             string args = null;
-            int? exitcode = null;
 
             //paths
             string oldMemGamePath = null;
@@ -773,9 +772,9 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 #region Blacklisted mods check
                 Log.Information(@"Checking for mods that are known to cause problems in the scene");
 
-                void memExceptionOccured(string operation, string line)
+                void memExceptionOccured(string operation)
                 {
-                    addDiagLine($@"An exception occurred performing operation '{operation}': {line}", Severity.ERROR);
+                    addDiagLine($@"An exception occurred performing an operation: {operation}", Severity.ERROR);
                     addDiagLine(@"Check the Mod Manager application log for more information.", Severity.ERROR);
                     addDiagLine(@"Report this on the ME3Tweaks Discord for further assistance.", Severity.ERROR);
                 }
@@ -785,7 +784,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     updateStatusCallback?.Invoke(@"Checking for blacklisted mods");
                     args = $@"--detect-bad-mods --gameid {gameID} --ipc";
                     var blacklistedMods = new List<string>();
-                    MEMIPCHandler.RunMEMIPCUntilExit(args, ipcCallback: (string command, string param) =>
+                    MEMIPCHandler.RunMEMIPCUntilExit(args, setMEMCrashLog: memExceptionOccured, ipcCallback: (string command, string param) =>
                      {
                          switch (command)
                          {
@@ -832,11 +831,6 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 addDiagLine(@"Installed DLC", Severity.DIAGSECTION);
                 addDiagLine(@"The following DLC is installed:");
 
-                bool metadataPresent = false;
-                bool hasUIMod = false;
-                bool compatPatchInstalled = false;
-                bool hasNonUIDLCMod = false;
-                Dictionary<int, string> priorities = new Dictionary<int, string>();
                 var officialDLC = MEDirectories.OfficialDLC(selectedDiagnosticTarget.Game);
                 foreach (var dlc in installedDLCs)
                 {
@@ -887,14 +881,14 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     SeeIfIncompatibleDLCIsInstalled(selectedDiagnosticTarget, addDiagLine);
                 }
 
-                Log.Information(@"Collecting supercedance list");
+                Log.Information(@"Collecting supersedance list");
 
                 var supercedanceList = M3Directories.GetFileSupercedances(selectedDiagnosticTarget).Where(x => x.Value.Count > 1).ToList();
                 if (Enumerable.Any(supercedanceList))
                 {
                     addDiagLine();
-                    addDiagLine(@"Superceding files", Severity.BOLD);
-                    addDiagLine(@"The following mod files supercede others due to same-named files. This may mean the mods are incompatible, or that these files are compatilibity patches. This information is for developer use only - DO NOT MODIFY YOUR GAME DIRECTORY MANUALLY.");
+                    addDiagLine(@"Superseding files", Severity.BOLD);
+                    addDiagLine(@"The following mod files supersede others due to same-named files. This may mean the mods are incompatible, or that these files are compatibility patches. This information is for developer use only - DO NOT MODIFY YOUR GAME DIRECTORY MANUALLY.");
 
                     bool isFirst = true;
                     addDiagLine(@"Click to view list", Severity.SUB);
@@ -961,7 +955,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                             List<string> removedFiles = new List<string>();
                             List<string> addedFiles = new List<string>();
                             List<string> replacedFiles = new List<string>();
-                            MEMIPCHandler.RunMEMIPCUntilExit(args, ipcCallback: (string command, string param) =>
+                            MEMIPCHandler.RunMEMIPCUntilExit(args, setMEMCrashLog: memExceptionOccured,ipcCallback: (string command, string param) =>
                             {
                                 switch (command)
                                 {
@@ -1147,14 +1141,13 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         updateStatusCallback?.Invoke(M3L.GetString(M3L.string_interp_performingFullTexturesCheckX, param)); //done this way to save a string in localization
                         addDiagLine(@"Full Textures Check", Severity.DIAGSECTION);
                         args = $@"--check-game-data-textures --gameid {gameID} --ipc";
-                        exitcode = null;
                         var emptyMipsNotRemoved = new List<string>();
                         var badTFCReferences = new List<string>();
                         var scanErrors = new List<string>();
                         string lastMissingTFC = null;
                         updateProgressCallback?.Invoke(0);
                         updateTaskbarState?.Invoke(TaskbarProgressBarState.Normal);
-                        MEMIPCHandler.RunMEMIPCUntilExit(args, ipcCallback: (string command, string param) =>
+                        MEMIPCHandler.RunMEMIPCUntilExit(args, setMEMCrashLog: memExceptionOccured, ipcCallback: (string command, string param) =>
                         {
                             switch (command)
                             {
@@ -1292,7 +1285,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     updateStatusCallback?.Invoke(@"Collecting LOD settings");
                     args = $@"--print-lods --gameid {gameID} --ipc";
                     var lods = new Dictionary<string, string>();
-                    MEMIPCHandler.RunMEMIPCUntilExit(args, ipcCallback: (string command, string param) =>
+                    MEMIPCHandler.RunMEMIPCUntilExit(args, setMEMCrashLog: memExceptionOccured, ipcCallback: (string command, string param) =>
                     {
                         switch (command)
                         {
@@ -1652,9 +1645,6 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     //ME2,3 default to blank
                     maxLodSize = int.Parse(StringStructParser.GetCommaSplitValues(textureChar1024.Value)[selectedDiagnosticTarget.Game == MEGame.ME1 ? @"MinLODSize" : @"MaxLODSize"]);
                 }
-
-                // Texture mod installed, HQ LODs
-                var HQLine = @"High quality texture LOD settings appear to be set";
 
                 // Texture mod installed, missing HQ LODs
                 var HQSettingsMissingLine = @"High quality texture LOD settings appear to be missing, but a high resolution texture mod appears to be installed.\n[ERROR]The game will not use these new high quality assets - config file was probably deleted or texture quality settings were changed in game"; //do not localize

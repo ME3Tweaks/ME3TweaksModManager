@@ -78,9 +78,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
             int openingQuotePos = -1; //quotes if any
             int closingQuotePos = -1; //quotes if any
             bool isInQuotes = false;
-
-            int openingParenthesisPos = -1; //parenthesis if any
-            int closingParenthesisPos = -1; //parenthesis if any
+            
             int openParenthesisCount = 0;
             Dictionary<string, string> values = new Dictionary<string, string>();
             for (int i = 0; i < inputString.Length; i++)

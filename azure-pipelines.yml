@@ -13,31 +13,33 @@ variables:
   solution: '**/*.sln'
   buildPlatform: 'x64'
   buildConfiguration: 'WinRelease'
+  framework: 'netcoreapp3.1'
 
 steps:
 - checkout: self
   submodules: true 
   
 - task: UseDotNet@2
+  displayName: Install .NET 5.0 SDK
   inputs:
     packageType: 'sdk'
-    version: '5.0.x'
-    
-# - task: DotNetCoreCLI@2
-#   displayName: 'dotnet restore'
-#   inputs:
-#     command: 'restore'
-#     projects: '**/*.csproj'
-#     feedsToUse: 'select'
-#     verbosityRestore: 'Minimal'
+    version: '5.0.x' 
+
+- task: UseDotNet@2
+  displayName: Install .NET Core 3.1 SDK
+  inputs:
+    packageType: 'sdk'
+    version: '3.1.x' 
 
 - task: DotNetCoreCLI@2
+  displayName: Build M3
   inputs:
     command: 'build'
     projects: 'MassEffectModManagerCore/MassEffectModManagerCore.csproj'
     arguments: '-c $(BuildConfiguration)'
 
 - task: DotNetCoreCLI@2
+  displayName: Test M3
   inputs:
     command: 'test'
     projects: 'MassEffectModManagerCore.Tests\\MassEffectModManagerCore.Tests.csproj'
@@ -48,9 +50,10 @@ steps:
 - script: |
     dotnet tool install -g dotnet-reportgenerator-globaltool
     reportgenerator -reports:MassEffectModManagerCore.Tests/**/coverage.cobertura.xml -targetdir:$(Build.SourcesDirectory)/CodeCoverage -reporttypes:HtmlInline_AzurePipelines;Cobertura
-  displayName: Create Code coverage report
+  displayName: Create code coverage report
 
 - task: PublishCodeCoverageResults@1
+  displayName: Publish code coverage
   inputs:
     codeCoverageTool: Cobertura
     summaryFileLocation: '$(Build.SourcesDirectory)/CodeCoverage/Cobertura.xml'

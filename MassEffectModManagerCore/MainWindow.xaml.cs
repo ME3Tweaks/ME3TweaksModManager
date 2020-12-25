@@ -63,7 +63,6 @@ namespace MassEffectModManagerCore
         public string CurrentDescriptionText { get; set; } = DefaultDescriptionText;
         private static readonly string DefaultDescriptionText = M3L.GetString(M3L.string_selectModOnLeftToGetStarted);
         private readonly string[] SupportedDroppableExtensions = { @".rar", @".zip", @".7z", @".exe", @".tpf", @".mod", @".mem", @".me2mod", @".xml", @".bin", @".tlk" };
-        private bool StartupCompleted;
         public string ApplyModButtonText { get; set; } = M3L.GetString(M3L.string_applyMod);
         public string InstallationTargetText { get; set; } = M3L.GetString(M3L.string_installationTarget);
         public bool ME1ASILoaderInstalled { get; set; }
@@ -83,7 +82,6 @@ namespace MassEffectModManagerCore
         public string ME3ASILoaderText { get; set; }
         public string EndorseM3String { get; set; } = M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
 
-        private int lastHintIndex = -1;
         private int oldFailedBindableCount = 0;
 
         public string NoModSelectedText
@@ -200,9 +198,12 @@ namespace MassEffectModManagerCore
                 {
                     Application.Current.Dispatcher.Invoke(delegate
                     {
-                        Storyboard sb = this.FindResource(@"CloseLoadingSpinner") as Storyboard;
-                        Storyboard.SetTarget(sb, LoadingSpinner_Image);
-                        sb.Begin();
+                        if (closeLoadingSpinner == null)
+                        {
+                            closeLoadingSpinner = FindResource(@"CloseLoadingSpinner") as Storyboard;
+                        }
+                        Storyboard.SetTarget(closeLoadingSpinner, LoadingSpinner_Image);
+                        closeLoadingSpinner.Begin();
                     });
                 }
             );
@@ -1469,7 +1470,6 @@ namespace MassEffectModManagerCore
         public List<string> LoadedTips { get; } = new List<string>();
         public bool ModsLoaded { get; private set; } = false;
         public GameTarget SelectedGameTarget { get; set; }
-        private GameTarget previousGameTarget;
 
         private bool CanReloadMods()
         {
@@ -1651,7 +1651,7 @@ namespace MassEffectModManagerCore
 
         //Fody uses this property on weaving
 #pragma warning disable
-public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged;
 #pragma warning restore
 
 
@@ -2046,7 +2046,7 @@ public event PropertyChangedEventHandler PropertyChanged;
                             if (serverVer > mm.ParsedModVersion)
                             {
                                 // We need to make a clone in the event a mod uses duplicate code, such as Project Variety
-                                OnlineContent.NexusModUpdateInfo clonedInfo = new OnlineContent.NexusModUpdateInfo(matchingUpdateInfoForMod) {mod = mm};
+                                OnlineContent.NexusModUpdateInfo clonedInfo = new OnlineContent.NexusModUpdateInfo(matchingUpdateInfoForMod) { mod = mm };
                                 updates.Add(clonedInfo);
                                 clonedInfo.SetLocalizedInfo();
                                 Log.Information($@"NexusMods mod out of date: {mm.ModName} {mm.ParsedModVersion}, server version: {serverVer}");
@@ -2094,6 +2094,8 @@ public event PropertyChangedEventHandler PropertyChanged;
             MEDirectories.ReloadGamePaths(true); //this is redundant on the first boot but whatever.
             Log.Information(@"Populating game targets");
             List<GameTarget> targets = new List<GameTarget>();
+            bool foundMe1Active = false;
+            bool foundMe2Active = false;
             if (ME3Directory.DefaultGamePath != null && Directory.Exists(ME3Directory.DefaultGamePath))
             {
                 var target = new GameTarget(MEGame.ME3, ME3Directory.DefaultGamePath, true);
@@ -2119,6 +2121,7 @@ public event PropertyChangedEventHandler PropertyChanged;
                     Log.Information(@"Current boot target for ME2: " + target.TargetPath);
                     targets.Add(target);
                     Utilities.AddCachedTarget(target);
+                    foundMe2Active = true;
                 }
                 else
                 {
@@ -2135,6 +2138,7 @@ public event PropertyChangedEventHandler PropertyChanged;
                     Log.Information(@"Current boot target for ME1: " + target.TargetPath);
                     targets.Add(target);
                     Utilities.AddCachedTarget(target);
+                    foundMe1Active = true;
                 }
                 else
                 {
@@ -2142,29 +2146,64 @@ public event PropertyChangedEventHandler PropertyChanged;
                 }
             }
 
-            // TODO: Read and import java version configuration
             var activeTargetCount = targets.Count;
-            Log.Information(@"Loading cached targets");
-            var otherTargetsFileME1 = Utilities.GetCachedTargets(MEGame.ME1, targets);
-            var otherTargetsFileME2 = Utilities.GetCachedTargets(MEGame.ME2, targets);
-            var otherTargetsFileME3 = Utilities.GetCachedTargets(MEGame.ME3, targets);
 
-            if (otherTargetsFileME1.Any() || otherTargetsFileME2.Any() || otherTargetsFileME3.Any())
+
+            // Read steam locations
+            void addSteamTarget(string targetPath, bool foundActiveAlready, MEGame game)
             {
-                targets.AddRange(otherTargetsFileME1);
-                targets.AddRange(otherTargetsFileME2);
-                targets.AddRange(otherTargetsFileME3);
-                InstallationTargets.ReplaceAll(targets.Distinct());
-                if (InstallationTargets.Count > activeTargetCount)
+                if (!string.IsNullOrWhiteSpace(targetPath)
+                    && Directory.Exists(targetPath)
+                    && !targets.Any(x => x.TargetPath.Equals(targetPath, StringComparison.InvariantCultureIgnoreCase)))
                 {
-                    targets.Insert(activeTargetCount, new GameTarget(MEGame.Unknown, $@"==================={M3L.GetString(M3L.string_otherSavedTargets)}===================", false) { Selectable = false });
+                    var target = new GameTarget(game, targetPath, !foundActiveAlready);
+                    var failureReason = target.ValidateTarget();
+                    if (failureReason == null)
+                    {
+                        Log.Information($@"Found Steam game for {game}: " + target.TargetPath);
+                        // Todo: Figure out how to insert at correct index
+                        targets.Add(target);
+                        Utilities.AddCachedTarget(target);
+                    }
+                    else
+                    {
+                        Log.Error($@"Steam version of {game} at {targetPath} is invalid: {failureReason}");
+                    }
                 }
             }
 
-            Application.Current.Dispatcher.Invoke(() =>
+            // ME1
+            addSteamTarget(Utilities.GetRegistrySettingString(
+                @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 17460",
+                @"InstallLocation"), foundMe1Active, MEGame.ME1);
+
+            // ME2
+            addSteamTarget(Utilities.GetRegistrySettingString(
+                @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 24980",
+                @"InstallLocation"), foundMe2Active, MEGame.ME2);
+
+            Log.Information(@"Loading cached targets");
+            targets.AddRange(Utilities.GetCachedTargets(MEGame.ME3, targets));
+            targets.AddRange(Utilities.GetCachedTargets(MEGame.ME2, targets));
+            targets.AddRange(Utilities.GetCachedTargets(MEGame.ME1, targets));
+
+            // ORDER THE TARGETS
+            targets = targets.Distinct().ToList();
+            List<GameTarget> finalList = new List<GameTarget>();
+            finalList.Add(targets.FirstOrDefault(x => x.Game == MEGame.ME3 && x.RegistryActive));
+            finalList.Add(targets.FirstOrDefault(x => x.Game == MEGame.ME2 && x.RegistryActive));
+            finalList.Add(targets.FirstOrDefault(x => x.Game == MEGame.ME1 && x.RegistryActive));
+
+            if (targets.Count > finalList.Count)
             {
-                InstallationTargets.ReplaceAll(targets);
-            });
+                finalList.Add(new GameTarget(MEGame.Unknown, $@"==================={M3L.GetString(M3L.string_otherSavedTargets)}===================", false) { Selectable = false });
+            }
+            
+            finalList.AddRange(targets.Where(x => x.Game == MEGame.ME3 && !x.RegistryActive));
+            finalList.AddRange(targets.Where(x => x.Game == MEGame.ME2 && !x.RegistryActive));
+            finalList.AddRange(targets.Where(x => x.Game == MEGame.ME1 && !x.RegistryActive));
+
+            InstallationTargets.ReplaceAll(finalList);
 
             if (selectedTarget != null)
             {
@@ -2378,8 +2417,6 @@ public event PropertyChangedEventHandler PropertyChanged;
                 Log.Information(@"Start of content check network thread. First startup check: " + firstStartupCheck);
 
                 BackgroundTask bgTask;
-                bool success;
-
                 if (firstStartupCheck)
                 {
 
@@ -2602,8 +2639,6 @@ public event PropertyChangedEventHandler PropertyChanged;
                     }
                 };
                 nbw.RunWorkerAsync();
-
-                StartupCompleted = true;
                 CommandManager.InvalidateRequerySuggested(); //refresh bindings that depend on this
 
                 //byte[] bytes = File.ReadAllBytes(@"C:\Users\mgame\Source\Repos\ME3Tweaks\MassEffectModManager\MassEffectModManagerCore\Deployment\Releases\ME3TweaksModManagerExtractor_6.0.0.99.exe");

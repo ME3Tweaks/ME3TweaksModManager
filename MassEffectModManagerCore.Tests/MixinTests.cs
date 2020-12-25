@@ -6,6 +6,7 @@ using MassEffectModManagerCore.modmanager;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.objects;
+using MassEffectModManagerCore.modmanager.usercontrols;
 using ME3ExplorerCore.Packages;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -36,60 +37,14 @@ namespace MassEffectModManagerCore.Tests
                 var compilingListsPerModule = MixinHandler.GetMixinApplicationList(mixins, failedApplicationCallback);
 
                 //Mixins are ready to be applied
+                var outdir = Path.Combine(Path.Combine(GlobalTest.GetScratchDir(), "MixinTest"));
+                Utilities.DeleteFilesAndFoldersRecursively(outdir);
+                Directory.CreateDirectory(outdir);
                 foreach (var mapping in compilingListsPerModule)
                 {
-                    var dlcFolderName = ModMakerCompiler.ModmakerChunkNameToDLCFoldername(mapping.Key.ToString());
-                    var outdir = Path.Combine(Path.Combine(GlobalTest.GetScratchDir(), "MixinTest"), ModMakerCompiler.HeaderToDefaultFoldername(mapping.Key), @"CookedPCConsole");
-                    Directory.CreateDirectory(outdir);
-                    if (mapping.Key == ModJob.JobHeader.BASEGAME)
-                    {
-                        //basegame
-                        foreach (var file in mapping.Value)
-                        {
-                            try
-                            {
-                                using var packageAsStream = VanillaDatabaseService.FetchBasegameFile(MEGame.ME3, Path.GetFileName(file.Key));
-                                using var decompressedStream = MEPackage.GetDecompressedPackageStream(packageAsStream, true);
-                                using var finalStream = MixinHandler.ApplyMixins(decompressedStream, file.Value, true, null, failedApplicationCallback);
-                                CLog.Information(@"Compressing package to mod directory: " + file.Key, Settings.LogModMakerCompiler);
-                                finalStream.Position = 0;
-                                var package = MEPackageHandler.OpenMEPackageFromStream(finalStream);
-                                var outfile = Path.Combine(outdir, Path.GetFileName(file.Key));
-                                package.Save(outfile, true); // don't compress
-                            }
-                            catch (Exception e)
-                            {
-                                var mixinsStr = string.Join(@", ", file.Value.Select(x => x.PatchName));
-                                failedApplicationCallback($@"{file.Key} Error applying mixin {mixinsStr}: {e.Message}");
-                            }
-                        }
-                    }
-                    else
-                    {
-                        //dlc
-                        var dlcPackage = VanillaDatabaseService.FetchVanillaSFAR(dlcFolderName); //do not have to open file multiple times.
-                        foreach (var file in mapping.Value)
-                        {
-                            try
-                            {
-                                using var packageAsStream = VanillaDatabaseService.FetchFileFromVanillaSFAR(dlcFolderName, file.Key, forcedDLC: dlcPackage);
-                                using var finalStream = MixinHandler.ApplyMixins(packageAsStream, file.Value, true, null, failedApplicationCallback);
-                                CLog.Information(@"Compressing package to mod directory: " + file.Key, Settings.LogModMakerCompiler);
-                                finalStream.Position = 0;
-                                var package = MEPackageHandler.OpenMEPackageFromStream(finalStream);
-                                var outfile = Path.Combine(outdir, Path.GetFileName(file.Key));
-                                package.Save(outfile, true);
-                            }
-                            catch (Exception e)
-                            {
-                                var mixinsStr = string.Join(@", ", file.Value.Select(x => x.PatchName));
-                                failedApplicationCallback($@"{file.Key} Error applying mixin {mixinsStr}: {e.Message}");
-                            }
-
-                            //finalStream.WriteToFile(outfile);
-                        }
-                    }
+                    MixinManager.ApplyMixinsToModule(mapping, outdir, null, failedApplicationCallback);
                 }
+                
                 MixinHandler.FreeME3TweaksPatchData();
                 GlobalTest.DeleteScratchDir();
                 if (failedMixins.Any())

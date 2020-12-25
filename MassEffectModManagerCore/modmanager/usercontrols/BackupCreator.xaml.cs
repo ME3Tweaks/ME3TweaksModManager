@@ -286,7 +286,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         if (!targetToBackup.IsCustomOption)
                         {
                             // Creating a new backup
-                            nbw.ReportProgress(0, TaskDialogProgressBarState.Paused);
+                            nbw.ReportProgress(0, TaskbarProgressBarState.Paused);
 
                             Application.Current.Dispatcher.Invoke(delegate
                             {

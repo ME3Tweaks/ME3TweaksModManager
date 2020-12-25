@@ -187,7 +187,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         }
                         catch (Exception e)
                         {
-                            Log.Error("Error downloading dynamic help asset from endpoint " + fullURL);
+                            Log.Error($"Error downloading dynamic help asset from endpoint {fullURL}: {e.Message}");
                         }
                     }
                 }

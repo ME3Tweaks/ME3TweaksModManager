@@ -513,7 +513,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 item.ItemText = M3L.GetString(M3L.string_checkingSFARFilesSizes);
                 var referencedFiles = ModBeingDeployed.GetAllRelativeReferences().Select(x => Path.Combine(ModBeingDeployed.ModPath, x)).ToList();
-                int numChecked = 0;
                 bool hasSFARs = false;
                 foreach (var f in referencedFiles)
                 {

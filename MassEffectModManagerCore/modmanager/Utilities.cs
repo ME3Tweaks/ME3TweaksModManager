@@ -149,7 +149,7 @@ namespace MassEffectModManagerCore
                 Directory.CreateDirectory(directoryPath);
                 return true;
             }
-            catch (UnauthorizedAccessException uae)
+            catch (UnauthorizedAccessException)
             {
                 //Must have admin rights.
                 Log.Information("We need admin rights to create this directory");
@@ -465,7 +465,7 @@ namespace MassEffectModManagerCore
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return null;
             }
@@ -1105,7 +1105,7 @@ namespace MassEffectModManagerCore
                     {
                         File.WriteAllLines(cachefile, savedTargets);
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         Thread.Sleep(300);
                         try
@@ -1114,7 +1114,7 @@ namespace MassEffectModManagerCore
                         }
                         catch (Exception ex)
                         {
-                            Log.Error("Could not save cached targets on retry: " + e.Message);
+                            Log.Error("Could not save cached targets on retry: " + ex.Message);
                         }
                     }
                 }
@@ -1175,7 +1175,7 @@ namespace MassEffectModManagerCore
         }
 
         /// <summary>
-        /// Gets a string value frmo the registry from the specified key and value name.
+        /// Gets a string value from the registry from the specified key and value name.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="name"></param>

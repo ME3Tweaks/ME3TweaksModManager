@@ -490,7 +490,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         Utilities.DeleteFilesAndFoldersRecursively(path, true);
                     }
-                    catch (UnauthorizedAccessException exd)
+                    catch (UnauthorizedAccessException)
                     {
                         try
                         {

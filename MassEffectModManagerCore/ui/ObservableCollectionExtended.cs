@@ -202,7 +202,7 @@ namespace MassEffectModManagerCore.ui
         /// </summary> 
         public ObservableCollectionExtended() : base()
         {
-            Application.Current.Dispatcher.Invoke(() => { BindingOperations.EnableCollectionSynchronization(this, _syncLock); });
+            Application.Current?.Dispatcher?.Invoke(() => { BindingOperations.EnableCollectionSynchronization(this, _syncLock); });
             CollectionChanged += (a, b) =>
             {
                 BindableCount = Count;
@@ -217,7 +217,7 @@ namespace MassEffectModManagerCore.ui
         /// <exception cref="System.ArgumentNullException">The collection parameter cannot be null.</exception> 
         public ObservableCollectionExtended(IEnumerable<T> collection) : base(collection)
         {
-            Application.Current.Dispatcher.Invoke(() => { BindingOperations.EnableCollectionSynchronization(this, _syncLock); });
+            Application.Current?.Dispatcher?.Invoke(() => { BindingOperations.EnableCollectionSynchronization(this, _syncLock); });
             CollectionChanged += (a, b) =>
             {
                 BindableCount = Count;

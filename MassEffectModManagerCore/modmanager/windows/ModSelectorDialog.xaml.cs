@@ -49,7 +49,9 @@ namespace MassEffectModManagerCore.modmanager.windows
             Close();
         }
 
-
+#pragma warning disable
         public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore
+
     }
 }
