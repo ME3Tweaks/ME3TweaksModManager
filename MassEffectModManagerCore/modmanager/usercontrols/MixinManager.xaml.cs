@@ -189,63 +189,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         : Environment.ProcessorCount
                 }, mapping =>
                 {
-                    var dlcFolderName = ModMakerCompiler.ModmakerChunkNameToDLCFoldername(mapping.Key.ToString());
-                    var outdir = Path.Combine(modpath, ModMakerCompiler.HeaderToDefaultFoldername(mapping.Key), @"CookedPCConsole");
-                    Directory.CreateDirectory(outdir);
-                    if (mapping.Key == ModJob.JobHeader.BASEGAME)
-                    {
-                        //basegame
-                        foreach (var file in mapping.Value)
-                        {
-                            try
-                            {
-                                using var packageAsStream =
-                                    VanillaDatabaseService.FetchBasegameFile(MEGame.ME3,
-                                        Path.GetFileName(file.Key));
-                                //packageAsStream.WriteToFile(@"C:\users\dev\desktop\compressed.pcc");
-                                using var decompressedStream = MEPackage.GetDecompressedPackageStream(packageAsStream, false, true);
-                                using var finalStream = MixinHandler.ApplyMixins(decompressedStream, file.Value, true, completedSingleApplicationCallback, failedApplicationCallback);
-                                CLog.Information(@"Compressing package to mod directory: " + file.Key, Settings.LogModMakerCompiler);
-                                finalStream.Position = 0;
-                                var package = MEPackageHandler.OpenMEPackageFromStream(finalStream);
-                                var outfile = Path.Combine(outdir, Path.GetFileName(file.Key));
-                                package.Save(outfile, false, includeAdditionalPackagesToCook: false, includeDependencyTable: true); // don't compress, use mixin saving rules for basegame files
-                            }
-                            catch (Exception e)
-                            {
-                                var mixinsStr = string.Join(@", ", file.Value.Select(x => x.PatchName));
-                                Log.Error($@"Error in mixin application for file {file.Key}: {e.Message}");
-                                failedApplicationCallback(M3L.GetString(M3L.string_interp_errorApplyingMixinsForFile, mixinsStr, file.Key, e.Message));
-                            }
-                        }
-                    }
-                    else
-                    {
-                        //dlc
-                        var dlcPackage = VanillaDatabaseService.FetchVanillaSFAR(dlcFolderName); //do not have to open file multiple times.
-                        foreach (var file in mapping.Value)
-                        {
-                            try
-                            {
-                                using var packageAsStream = VanillaDatabaseService.FetchFileFromVanillaSFAR(dlcFolderName, file.Key, forcedDLC: dlcPackage);
-                                //as file comes from backup, we don't need to decompress it, it will always be decompressed in sfar
-                                using var finalStream = MixinHandler.ApplyMixins(packageAsStream, file.Value, true, completedSingleApplicationCallback, failedApplicationCallback);
-                                CLog.Information(@"Compressing package to mod directory: " + file.Key, Settings.LogModMakerCompiler);
-                                finalStream.Position = 0;
-                                var package = MEPackageHandler.OpenMEPackageFromStream(finalStream);
-                                var outfile = Path.Combine(outdir, Path.GetFileName(file.Key));
-                                package.Save(outfile, true);
-                            }
-                            catch (Exception e)
-                            {
-                                var mixinsStr = string.Join(@", ", file.Value.Select(x => x.PatchName));
-                                Log.Error($@"Error in mixin application for file {file.Key}: {e.Message}");
-                                failedApplicationCallback(M3L.GetString(M3L.string_interp_errorApplyingMixinsForFile, mixinsStr, file.Key, e.Message));
-                            }
-
-                            //finalStream.WriteToFile(outfile);
-                        }
-                    }
+                    ApplyMixinsToModule(mapping, modpath, completedSingleApplicationCallback, failedApplicationCallback);
                 });
 
                 MixinHandler.FreeME3TweaksPatchData();
@@ -288,6 +232,67 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             };
             CompilePanelButton.IsOpen = false;
             nbw.RunWorkerAsync();
+        }
+
+        public static void ApplyMixinsToModule(KeyValuePair<ModJob.JobHeader, Dictionary<string, List<Mixin>>> mapping, string modpath, Action completedSingleApplicationCallback, Action<string> failedApplicationCallback)
+        {
+            var dlcFolderName = ModMakerCompiler.ModmakerChunkNameToDLCFoldername(mapping.Key.ToString());
+            var outdir = Path.Combine(modpath, ModMakerCompiler.HeaderToDefaultFoldername(mapping.Key), @"CookedPCConsole");
+            Directory.CreateDirectory(outdir);
+            if (mapping.Key == ModJob.JobHeader.BASEGAME)
+            {
+                //basegame
+                foreach (var file in mapping.Value)
+                {
+                    try
+                    {
+                        using var packageAsStream =
+                            VanillaDatabaseService.FetchBasegameFile(MEGame.ME3,
+                                Path.GetFileName(file.Key));
+                        //packageAsStream.WriteToFile(@"C:\users\dev\desktop\compressed.pcc");
+                        using var decompressedStream = MEPackage.GetDecompressedPackageStream(packageAsStream, false, true);
+                        using var finalStream = MixinHandler.ApplyMixins(decompressedStream, file.Value, true, completedSingleApplicationCallback, failedApplicationCallback);
+                        CLog.Information(@"Compressing package to mod directory: " + file.Key, Settings.LogModMakerCompiler);
+                        finalStream.Position = 0;
+                        var package = MEPackageHandler.OpenMEPackageFromStream(finalStream);
+                        var outfile = Path.Combine(outdir, Path.GetFileName(file.Key));
+                        package.Save(outfile, false, includeAdditionalPackagesToCook: false, includeDependencyTable: true); // don't compress, use mixin saving rules for basegame files
+                    }
+                    catch (Exception e)
+                    {
+                        var mixinsStr = string.Join(@", ", file.Value.Select(x => x.PatchName));
+                        Log.Error($@"Error in mixin application for file {file.Key}: {e.Message}");
+                        failedApplicationCallback(M3L.GetString(M3L.string_interp_errorApplyingMixinsForFile, mixinsStr, file.Key, e.Message));
+                    }
+                }
+            }
+            else
+            {
+                //dlc
+                var dlcPackage = VanillaDatabaseService.FetchVanillaSFAR(dlcFolderName); //do not have to open file multiple times.
+                foreach (var file in mapping.Value)
+                {
+                    try
+                    {
+                        using var packageAsStream = VanillaDatabaseService.FetchFileFromVanillaSFAR(dlcFolderName, file.Key, forcedDLC: dlcPackage);
+                        //as file comes from backup, we don't need to decompress it, it will always be decompressed in sfar
+                        using var finalStream = MixinHandler.ApplyMixins(packageAsStream, file.Value, true, completedSingleApplicationCallback, failedApplicationCallback);
+                        CLog.Information(@"Compressing package to mod directory: " + file.Key, Settings.LogModMakerCompiler);
+                        finalStream.Position = 0;
+                        var package = MEPackageHandler.OpenMEPackageFromStream(finalStream);
+                        var outfile = Path.Combine(outdir, Path.GetFileName(file.Key));
+                        package.Save(outfile, true);
+                    }
+                    catch (Exception e)
+                    {
+                        var mixinsStr = string.Join(@", ", file.Value.Select(x => x.PatchName));
+                        Log.Error($@"Error in mixin application for file {file.Key}: {e.Message}");
+                        failedApplicationCallback(M3L.GetString(M3L.string_interp_errorApplyingMixinsForFile, mixinsStr, file.Key, e.Message));
+                    }
+
+                    //finalStream.WriteToFile(outfile);
+                }
+            }
         }
 
         private void CompileIntoGame()
@@ -353,7 +358,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         {
                             using var vanillaPackageAsStream = VanillaDatabaseService.FetchBasegameFile(MEGame.ME3, Path.GetFileName(file.Key));
                             //packageAsStream.WriteToFile(@"C:\users\dev\desktop\compressed.pcc");
-                            using var decompressedStream = MEPackage.GetDecompressedPackageStream(vanillaPackageAsStream, true);
+                            using var decompressedStream = MEPackage.GetDecompressedPackageStream(vanillaPackageAsStream, false, true);
                             decompressedStream.Position = 0;
                             var vanillaPackage = MEPackageHandler.OpenMEPackageFromStream(decompressedStream, $@"Vanilla - {Path.GetFileName(file.Key)}");
                             //decompressedStream.WriteToFile(@"C:\users\dev\desktop\decompressed.pcc");

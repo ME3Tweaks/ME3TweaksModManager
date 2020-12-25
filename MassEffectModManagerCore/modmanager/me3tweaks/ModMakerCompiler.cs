@@ -378,7 +378,10 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         var dlcFolderName = ModmakerChunkNameToDLCFoldername(mapping.Key.ToString());
                         var outdir = Path.Combine(mod.ModPath, HeaderToDefaultFoldername(mapping.Key), @"CookedPCConsole");
                         Directory.CreateDirectory(outdir);
-                        if (mapping.Key == ModJob.JobHeader.BASEGAME)
+                        
+                        MixinManager.ApplyMixinsToModule(mapping, outdir, completedSingleApplicationCallback, null);
+                        
+                        /*if (mapping.Key == ModJob.JobHeader.BASEGAME)
                         {
                             //basegame
                             foreach (var file in mapping.Value)
@@ -412,7 +415,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                 var outfile = Path.Combine(outdir, Path.GetFileName(file.Key));
                                 package.Save(outfile, true, true, true);
                             }
-                        }
+                        }*/
                     });
                 MixinHandler.FreeME3TweaksPatchData();
                 CLog.Information(@"Finished compiling Mixins.", Settings.LogModMakerCompiler);
