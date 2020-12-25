@@ -56,9 +56,9 @@ namespace MassEffectModManagerCore.modmanager.asi
         public ASIMod OwningMod { get; set; }
 
         //Fody uses this property on weaving
-#pragma warning disable
+#pragma warning disable 67
 public event PropertyChangedEventHandler PropertyChanged;
-#pragma warning restore
+#pragma warning restore 67
 
 
     }
