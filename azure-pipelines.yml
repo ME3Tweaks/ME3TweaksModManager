@@ -32,13 +32,14 @@ steps:
     version: '3.1.x' 
 
 - task: DotNetCoreCLI@2
-  displayName: Run tests
+  displayName: Build M3
   inputs:
     command: 'build'
     projects: 'MassEffectModManagerCore/MassEffectModManagerCore.csproj'
     arguments: '-c $(BuildConfiguration)'
 
 - task: DotNetCoreCLI@2
+  displayName: Test M3
   inputs:
     command: 'test'
     projects: 'MassEffectModManagerCore.Tests\\MassEffectModManagerCore.Tests.csproj'
@@ -49,9 +50,10 @@ steps:
 - script: |
     dotnet tool install -g dotnet-reportgenerator-globaltool
     reportgenerator -reports:MassEffectModManagerCore.Tests/**/coverage.cobertura.xml -targetdir:$(Build.SourcesDirectory)/CodeCoverage -reporttypes:HtmlInline_AzurePipelines;Cobertura
-  displayName: Create Code coverage report
+  displayName: Create code coverage report
 
 - task: PublishCodeCoverageResults@1
+  displayName: Publish code coverage
   inputs:
     codeCoverageTool: Cobertura
     summaryFileLocation: '$(Build.SourcesDirectory)/CodeCoverage/Cobertura.xml'
