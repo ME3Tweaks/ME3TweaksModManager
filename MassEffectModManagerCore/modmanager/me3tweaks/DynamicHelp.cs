@@ -30,7 +30,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 catch (Exception e)
                 {
                     var attachments = new List<ErrorAttachmentLog>();
-                    string log = LogCollector.CollectLatestLog(false);
+                    string log = LogCollector.CollectLatestLog(true);
                     if (log.Length < FileSize.MebiByte * 7)
                     {
                         attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, "applog.txt"));
