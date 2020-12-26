@@ -73,10 +73,6 @@
                     </ItemsControl.ItemsPanel>
                 </ItemsControl>
 
-
-                
-
-
                 <TextBlock Text="{DynamicResource string_translators}" Foreground="White" Margin="0,15,0,10" TextAlignment="Center" Grid.Row="6" Grid.ColumnSpan="3" FontWeight="Bold" FontSize="16" />
                 <TextBlock Foreground="White" Grid.Row="7" Grid.Column="0" TextWrapping="Wrap" Text="English" TextAlignment="Center" FontWeight="Bold" />
                 <TextBlock Foreground="White" Grid.Row="7" Grid.Column="1" TextWrapping="Wrap" Text="Russian" TextAlignment="Center" FontWeight="Bold" />
