@@ -345,4 +345,7 @@ healthchecksdb
 /LocalizationHelper/Deployment
 /MassEffectModManagerCore.Tests/testdata/exemods
 /MassEffectModManagerCore.Tests/testdata/Scratch/MixinTest
+/MassEffectModManagerCore.Tests/testdata/Scratch/MixinTest
+/MassEffectModManagerCore.Tests/testdata/gamedirectories/*/*/Binaries/asi
+/MassEffectModManagerCore.Tests/testdata/gamedirectories/*/*/Binaries/Win32/asi
 /Stage/WinRelease/netcoreapp3.1

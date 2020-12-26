@@ -39,6 +39,12 @@ namespace MassEffectModManagerCore.modmanager.helpers
         {
             ME1ExecutableInfo info = new ME1ExecutableInfo();
             var s = new MemoryStream(File.ReadAllBytes(executablePath));
+            if (s.Length == 0)
+            {
+                info.OriginalExecutableHash = @"Empty executable file";
+                return info; // This is a blank executable. Do not operate on it
+            }
+
 
             // Reverse LAA
             s.Seek(0x3C, SeekOrigin.Begin);

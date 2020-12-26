@@ -28,7 +28,7 @@ namespace MassEffectModManagerCore.modmanager.objects
 
         //Fody uses this property on weaving
 #pragma warning disable
-public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged;
 #pragma warning restore
 
         public MEGame Game { get; }
@@ -101,33 +101,46 @@ public event PropertyChangedEventHandler PropertyChanged;
 
                     GameSource = hashCheckResult.result;
                     ExecutableHash = hashCheckResult.hash;
-                    if (GameSource == null)
-                    {
-                        CLog.Error(@"Unknown source or illegitimate installation: " + hashCheckResult.hash, lodUpdateAndLogging);
 
+                    if (ExecutableHash.Length != 32)
+                    {
+                        CLog.Error($@"Issue getting game source: {ExecutableHash}", lodUpdateAndLogging);
                     }
                     else
                     {
-                        if (GameSource.Contains(@"Origin") && Game == MEGame.ME3)
+
+                        if (GameSource == null)
                         {
-                            // Check for steam
-                            if (Directory.Exists(Path.Combine(TargetPath, @"__overlay")))
-                            {
-                                GameSource += @" (Steam version)";
-                            }
+                            // No source is listed
+                            CLog.Error(@"Unknown source or illegitimate installation: " + hashCheckResult.hash,
+                                lodUpdateAndLogging);
                         }
-                        CLog.Information(@"Source: " + GameSource, lodUpdateAndLogging);
-                    }
+                        else
+                        {
+                            if (GameSource.Contains(@"Origin") && Game == MEGame.ME3)
+                            {
+                                // Check for steam
+                                if (Directory.Exists(Path.Combine(TargetPath, @"__overlay")))
+                                {
+                                    GameSource += @" (Steam version)";
+                                }
+                            }
 
-                    IsPolishME1 = Game == MEGame.ME1 && File.Exists(Path.Combine(TargetPath, @"BioGame", @"CookedPC", @"Movies", @"niebieska_pl.bik"));
-                    if (IsPolishME1)
-                    {
-                        CLog.Information(@"ME1 Polish Edition detected", lodUpdateAndLogging);
-                    }
+                            CLog.Information(@"Source: " + GameSource, lodUpdateAndLogging);
+                        }
 
-                    if (RegistryActive && (Settings.AutoUpdateLODs2K || Settings.AutoUpdateLODs4K) && oldTMOption != TextureModded && forceLodUpdate)
-                    {
-                        UpdateLODs(Settings.AutoUpdateLODs2K);
+                        IsPolishME1 = Game == MEGame.ME1 && File.Exists(Path.Combine(TargetPath, @"BioGame",
+                            @"CookedPC", @"Movies", @"niebieska_pl.bik"));
+                        if (IsPolishME1)
+                        {
+                            CLog.Information(@"ME1 Polish Edition detected", lodUpdateAndLogging);
+                        }
+
+                        if (RegistryActive && (Settings.AutoUpdateLODs2K || Settings.AutoUpdateLODs4K) &&
+                            oldTMOption != TextureModded && forceLodUpdate)
+                        {
+                            UpdateLODs(Settings.AutoUpdateLODs2K);
+                        }
                     }
                 }
                 else
@@ -688,7 +701,7 @@ public event PropertyChangedEventHandler PropertyChanged;
 
             //Fody uses this property on weaving
 #pragma warning disable
-public event PropertyChangedEventHandler PropertyChanged;
+            public event PropertyChangedEventHandler PropertyChanged;
 #pragma warning restore
 
             public ICommand RestoreCommand { get; }
@@ -711,7 +724,7 @@ public event PropertyChangedEventHandler PropertyChanged;
 
             //Fody uses this property on weaving
 #pragma warning disable
-public event PropertyChangedEventHandler PropertyChanged;
+            public event PropertyChangedEventHandler PropertyChanged;
 #pragma warning restore
 
             public ICommand RestoreCommand { get; }

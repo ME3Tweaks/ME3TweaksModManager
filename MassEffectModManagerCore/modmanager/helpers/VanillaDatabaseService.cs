@@ -462,20 +462,18 @@ namespace MassEffectModManagerCore.modmanager.helpers
         /// <returns>Game source if supported, null otherwise</returns>
         internal static (string hash, string result) GetGameSource(GameTarget target, bool reverseME1 = true)
         {
+            var exe = M3Directories.GetExecutablePath(target);
+            if (!File.Exists(exe))
+            {
+                return (null, @"Executable Missing!");
+            }
+
             string md5 = null;
             if (target.Game != MEGame.ME1 || !reverseME1)
             {
-                var exe = M3Directories.GetExecutablePath(target);
-                if (File.Exists(exe))
-                {
-                    md5 = Utilities.CalculateMD5(exe);
-                }
-                else
-                {
-                    return ("", @"Executable Missing!");
-                }
-
+                md5 = Utilities.CalculateMD5(exe);
             }
+            
             switch (target.Game)
             {
                 case MEGame.ME1:
