@@ -465,7 +465,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
             var exe = M3Directories.GetExecutablePath(target);
             if (!File.Exists(exe))
             {
-                return (null, @"Executable Missing!");
+                return (@"Executable Missing!", null);
             }
 
             string md5 = null;
