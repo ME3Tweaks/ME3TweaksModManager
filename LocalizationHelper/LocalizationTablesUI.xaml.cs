@@ -37,7 +37,7 @@ namespace LocalizationHelper
             LoadLocalizations();
         }
 
-        public void AutoSave(object? sender, EventArgs eventArgs)
+        public void AutoSave(object sender, EventArgs eventArgs)
         {
             try
             {
@@ -165,7 +165,6 @@ namespace LocalizationHelper
 
 
                 //Parse INT.
-                int currentLine = 3; //Skip header.
                 LocalizationCategory cat = null;
                 int numBlankLines = 0;
                 List<LocalizationCategory> categories = new List<LocalizationCategory>();
@@ -258,7 +257,6 @@ namespace LocalizationHelper
                 PleaseWaitString = $"Fetching Tips Service";
 
                 string tipsEndpoint = "https://me3tweaks.com/modmanager/services/tipsservice";
-                string contents;
                 var wc = new System.Net.WebClient();
                 var tipsJson = wc.DownloadString(tipsEndpoint);
                 var jsonObj = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(tipsJson);
@@ -881,7 +879,9 @@ namespace LocalizationHelper
         public class LocalizationCategory : INotifyPropertyChanged
         {
             public string CategoryName { get; set; }
+#pragma warning disable
             public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore
             public bool HasChangedStrings => LocalizedStringsForSection.Any(x => x.ChangedFromPrevious);
             public ObservableCollectionExtended<LocalizedString> LocalizedStringsForSection { get; } = new ObservableCollectionExtended<LocalizedString>();
         }
@@ -926,12 +926,15 @@ namespace LocalizationHelper
                 }
             }
 
+#pragma warning disable
 
             public event PropertyChangedEventHandler PropertyChanged;
-
+#pragma warning restore
         }
-
+        
+#pragma warning disable
         public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore
 
         public LocalizedString SelectedDataGridItem { get; set; }
 
