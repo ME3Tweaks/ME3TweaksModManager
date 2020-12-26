@@ -1509,7 +1509,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     foreach (var entry in entries)
                     {
                         string str = string.Join("\n", GenerateEventLogString(entry).Split('\n').ToList().Take(17).ToList()); //do not localize
-                        addDiagLine($@"{Utilities.GetGameName(selectedDiagnosticTarget.Game)} Event {entry.TimeGenerated}\n{str}"); // !!! ?
+                        addDiagLine($"{Utilities.GetGameName(selectedDiagnosticTarget.Game)} Event {entry.TimeGenerated}\n{str}"); //do not localize
                     }
 
                 }

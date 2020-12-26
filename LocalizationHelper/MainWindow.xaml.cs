@@ -51,8 +51,8 @@ namespace LocalizationHelper
             //these files are not localized
             files.Remove(Path.Combine(modmanagerroot, "modmanager", "me3tweaks", "JPatch.cs").Substring(rootLen));
             files.Remove(Path.Combine(modmanagerroot, "modmanager", "me3tweaks", "DynamicHelp.cs").Substring(rootLen));
-            files.Remove(Path.Combine(modmanagerroot, "modmanager", "usercontrols", "AboutPanel.xaml.cs").Substring(rootLen));
             files.Remove(Path.Combine(modmanagerroot, "modmanager", "usercontrols", "AboutPanel.xaml").Substring(rootLen));
+            // The .cs file is localized
 
             //Special files
             files.Add("MainWindow.xaml");
@@ -296,12 +296,21 @@ namespace LocalizationHelper
 
                 if (line.Contains("[DebuggerDisplay(")) continue; //skip these lines
                 var commentIndex = line.IndexOf("//");
+                var protocolIndex = line.IndexOf(@"://");
                 var matches = r.Matches(line);
                 foreach (var match in matches)
                 {
                     bool xmlPreserve = false;
                     var matchIndex = line.IndexOf(match.ToString());
-                    if (commentIndex >= 0 && matchIndex > commentIndex) continue; //this is a comment
+                    if (commentIndex >= 0 && matchIndex > commentIndex)
+                    {
+                        // Check it's not http:// in same line
+                        if (protocolIndex >= 0 && protocolIndex != commentIndex - 1)
+                        {
+                            continue; //this is a comment
+                        }
+                        // Otherwise, this is something like http:// as the :// index is // index - 1
+                    }
                     var str = match.ToString();
                     if (str.StartsWith("@") || str.StartsWith("$@")) continue; //skip literals
                     var strname = "string_";
