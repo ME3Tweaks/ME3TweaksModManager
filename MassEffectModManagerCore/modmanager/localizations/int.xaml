@@ -1323,8 +1323,31 @@
     <system:String x:Key="string_specialThanks">Special thanks</system:String>
     <system:String x:Key="string_youTheEndUser">You, the end user, for making this software worth developing</system:String>
     <system:String x:Key="string_license">License</system:String>
+    <system:String xml:space="preserve" x:Key="string_library_adonisui">Library for dark/white themes in WPF\nME3Tweaks Mod Manager uses a customized version of this library</system:String>
+    <system:String xml:space="preserve" x:Key="string_library_sevenzipsharp">Compression and decompression library for 7z\nME3Tweaks Mod Manager uses a customized version of this library</system:String>
+    <system:String xml:space="preserve" x:Key="string_library_iniparser">Library for parsing ini files\nME3Tweaks Mod Manager uses a customized version of this library</system:String>
+    <system:String x:Key="string_library_flurl">Modern asynchronous HTTP client library</system:String>
+    <system:String x:Key="string_library_fody">IL weaver system that removes huge amount of boilerplate code</system:String>
+    <system:String x:Key="string_library_fontawesome">Vector icon pack</system:String>
+    <system:String x:Key="string_library_appcenter">Telemetry library for use with Microsoft Azure</system:String>
+    <system:String x:Key="string_library_mvvmvalidation">Lightweight validation framework</system:String>
+    <system:String x:Key="string_library_newtonsoft">Flexible JSON parser for C#</system:String>
+    <system:String x:Key="string_library_octokit">GitHub API client</system:String>
+    <system:String x:Key="string_library_serilog">Highly extensible logger</system:String>
+    <system:String xml:space="preserve" x:Key="string_library_wpftoolkitextended">Additional useful WPF controls\nME3Tweaks Mod Manager uses a customized version of this library</system:String>
+    <system:String x:Key="string_library_me3explorercore">Mass Effect trilogy modding toolset backend</system:String>
+    <system:String x:Key="string_library_cliwrap">Async wrapper for interacting with command line applications</system:String>
+    <system:String x:Key="string_library_commandlineparser">Extensive command line argument parser</system:String>
+    <system:String x:Key="string_library_computerinfo">Small library for easily fetching CPU, OS, and memory information</system:String>
+    <system:String x:Key="string_library_fluentnexus">Modern async HTTP client for the Nexus Mods API</system:String>
+    <system:String x:Key="string_library_recyclablememorystream">Library for a recyclable pool of memory buffers</system:String>
+    <system:String x:Key="string_library_sshnet">Library for handling SSH connections</system:String>
+    <system:String x:Key="string_library_watsonwebsocket">Library for handling websocket connections</system:String>
+    <system:String x:Key="string_library_authenticodeexaminer">Manages inspecting Authenticode file signatures</system:String>
+    <system:String x:Key="string_library_ntfsstreams">Library for reading NTFS alternate data streams</system:String>
 
-    <!-- ASI Manager Panel -->
+
+<!-- ASI Manager Panel -->
     <system:String x:Key="string_outdatedVersionInstalled">Outdated version installed</system:String>
     <system:String xml:space="preserve" x:Key="string_interp_byXVersionY">By {0} | Version {1}</system:String>
     <!-- 0 = author, 1 = version number -->

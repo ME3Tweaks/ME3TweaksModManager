@@ -146,6 +146,7 @@ namespace MassEffectModManagerCore
             }
 
             LoadCommands();
+            SetTheme();
             InitializeComponent();
             languageMenuItems = new Dictionary<string, MenuItem>()
             {
@@ -153,6 +154,7 @@ namespace MassEffectModManagerCore
                 {@"rus", LanguageRUS_MenuItem},
                 {@"pol", LanguagePOL_MenuItem},
                 {@"deu", LanguageDEU_MenuItem},
+                {@"bra", LanguageBRA_MenuItem},
                 //{@"fra", LanguageFRA_MenuItem}
                 //{@"esn", LanguageESN_MenuItem}
             };
@@ -165,7 +167,6 @@ namespace MassEffectModManagerCore
 
             CheckProgramDataWritable();
             AttachListeners();
-            SetTheme();
             //Must be done after UI has initialized
             //if (InstallationTargets.Count > 0)
             //{

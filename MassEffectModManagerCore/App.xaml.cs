@@ -355,9 +355,10 @@ namespace MassEffectModManagerCore
                 {
                     var attachments = new List<ErrorAttachmentLog>();
                     // Attach some text.
-                    string errorMessage = @"ME3Tweaks Mod Manager has crashed! This is the exception that caused the crash:\n" + report.StackTrace;
+                    string errorMessage = "ME3Tweaks Mod Manager has crashed! This is the exception that caused the crash:";
+                    Log.Fatal(report.StackTrace);
                     Log.Fatal(errorMessage);
-                    string log = LogCollector.CollectLatestLog(false);
+                    string log = LogCollector.CollectLatestLog(true);
                     if (log.Length < FileSize.MebiByte * 7)
                     {
                         attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, @"crashlog.txt"));
@@ -368,7 +369,6 @@ namespace MassEffectModManagerCore
                         var compressedLog = LZMA.CompressToLZMAFile(Encoding.UTF8.GetBytes(log));
                         attachments.Add(ErrorAttachmentLog.AttachmentWithBinary(compressedLog, @"crashlog.txt.lzma", @"application/x-lzma"));
                     }
-
                     return attachments;
                 };
                 Log.Information(@"Initializing AppCenter");
