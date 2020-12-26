@@ -2198,7 +2198,7 @@ namespace MassEffectModManagerCore
             {
                 finalList.Add(new GameTarget(MEGame.Unknown, $@"==================={M3L.GetString(M3L.string_otherSavedTargets)}===================", false) { Selectable = false });
             }
-            
+
             finalList.AddRange(targets.Where(x => x.Game == MEGame.ME3 && !x.RegistryActive));
             finalList.AddRange(targets.Where(x => x.Game == MEGame.ME2 && !x.RegistryActive));
             finalList.AddRange(targets.Where(x => x.Game == MEGame.ME1 && !x.RegistryActive));
@@ -2603,7 +2603,7 @@ namespace MassEffectModManagerCore
                 {
                     Log.Error(@"Exception occurred in NetworkFetch thread: " + b.Error.Message);
                 }
-                if (b.Result is int i)
+                else if (b.Result is int i)
                 {
                     if (i != 0)
                     {
