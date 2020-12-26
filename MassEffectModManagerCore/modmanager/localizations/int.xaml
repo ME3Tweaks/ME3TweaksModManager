@@ -881,7 +881,7 @@
     <!-- 0 = noun (mod name, etc) -->
     <system:String x:Key="string_insufficientDiskSpaceToExtractSelectedMods">Insufficient disk space to extract selected mods</system:String>
     <system:String xml:space="preserve" x:Key="string_interp_dialogNotEnoughFreeSpaceToExtract">There is not enough space on the disk to import the selected mods into your mod library.\nRequired space: {0}\nAvailable space: {1}</system:String>
-    <!-- 0=ByteSize.FromBytes(requiredSpace) 1=ByteSize.FromBytes(freeSpace) -->
+    <!-- 0=Required space amount 1=Free space amount -->
     <system:String x:Key="string_insufficientDiskSpace">Insufficient disk space</system:String>
     <system:String x:Key="string_archiveError">Archive error</system:String>
     <system:String x:Key="string_couldNotInspectArchive7zException">Could not inspect archive due to an exception thrown by 7z. The archive may be corrupt.</system:String>

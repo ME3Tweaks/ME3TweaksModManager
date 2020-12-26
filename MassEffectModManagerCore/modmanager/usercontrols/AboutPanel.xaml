@@ -1,7 +1,10 @@
 ﻿<local:MMBusyPanelBase x:Class="MassEffectModManagerCore.modmanager.usercontrols.AboutPanel" 
                        DataContext="{Binding RelativeSource={RelativeSource Self}}"
                        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
-                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" xmlns:modmanagercore="clr-namespace:MassEffectModManagerCore" mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800">
+                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" xmlns:modmanagercore="clr-namespace:MassEffectModManagerCore"
+                       xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+                       xmlns:ui="clr-namespace:MassEffectModManagerCore.ui"
+                       mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800">
     <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Width="500" MaxHeight="500" Margin="0" Background="#115688">
         <Grid.RowDefinitions>
             <RowDefinition Height="128" />
@@ -51,76 +54,29 @@
                     <ColumnDefinition Width="1*" />
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="{DynamicResource string_libraries}" Foreground="White" TextAlignment="Center" Grid.ColumnSpan="3" FontWeight="Bold" FontSize="16" Margin="0,0,0,10" />
-                <TextBlock ToolTip="Compression and decompression library&#xA;ME3Tweaks Mod Manager uses a customized version of this library" Grid.Row="1" TextAlignment="Center">
-          <Hyperlink RequestNavigate="Navigate_Click" NavigateUri="https://github.com/squid-box/SevenZipSharp" Foreground="#FF87CEFA">
-            <TextBlock Text="SevenZipSharp" />
-          </Hyperlink>
-        </TextBlock>
-                <TextBlock ToolTip="Library for dark/white themes in WPF&#xA;ME3Tweaks Mod Manager uses a customized version of this library" Grid.Row="1" Grid.Column="1" TextAlignment="Center">
-          <Hyperlink RequestNavigate="Navigate_Click" NavigateUri="https://github.com/benruehl/adonis-ui" Foreground="#FF87CEFA">
-            <TextBlock Text="AdonisUI" />
-          </Hyperlink>
-        </TextBlock>
-                <TextBlock ToolTip="Library for parsing INI files in C#&#xA;ME3Tweaks Mod Manager uses a customized version of this library" Grid.Row="1" Grid.Column="2" TextAlignment="Center">
-          <Hyperlink RequestNavigate="Navigate_Click" NavigateUri="https://github.com/rickyah/ini-parser" Foreground="#FF87CEFA">
-            <TextBlock Text="ini-parser" />
-          </Hyperlink>
-        </TextBlock>
-                <TextBlock ToolTip="Utility library for converting byte sizes" Grid.Row="2" TextAlignment="Center">
-          <Hyperlink RequestNavigate="Navigate_Click" NavigateUri="https://github.com/omar/ByteSize" Foreground="#FF87CEFA">
-            <TextBlock Text="ByteSize" />
-          </Hyperlink>
-        </TextBlock>
-                <TextBlock ToolTip="Modern asynchronous HTTP client library" Grid.Row="2" Grid.Column="1" TextAlignment="Center">
-          <Hyperlink RequestNavigate="Navigate_Click" NavigateUri="https://flurl.dev/" Foreground="#FF87CEFA">
-            <TextBlock Text="Flurl" />
-          </Hyperlink>
-        </TextBlock>
-                <TextBlock ToolTip="IL weaver system that removes huge amounts of boilerplate" Grid.Row="2" Grid.Column="2" TextAlignment="Center">
-          <Hyperlink RequestNavigate="Navigate_Click" NavigateUri="https://github.com/Fody/Fody" Foreground="#FF87CEFA">
-            <TextBlock Text="Fody" />
-          </Hyperlink>
-        </TextBlock>
-                <TextBlock ToolTip="Vector icon pack" Grid.Row="3" TextAlignment="Center">
-          <Hyperlink RequestNavigate="Navigate_Click" NavigateUri="https://github.com/charri/Font-Awesome-WPF" Foreground="#FF87CEFA">
-            <TextBlock Text="FontAwesome.WPF" />
-          </Hyperlink>
-        </TextBlock>
-                <TextBlock ToolTip="Telemetry library for use with Microsoft Azure" Grid.Row="3" Grid.Column="1" TextAlignment="Center">
-          <Hyperlink RequestNavigate="Navigate_Click" NavigateUri="https://appcenter.ms" Foreground="#FF87CEFA">
-            <TextBlock Text="AppCenter" />
-          </Hyperlink>
-        </TextBlock>
-                <TextBlock ToolTip="Lightweight validation framework" Grid.Row="3" Grid.Column="2" TextAlignment="Center">
-          <Hyperlink RequestNavigate="Navigate_Click" NavigateUri="https://github.com/pglazkov/MvvmValidation" Foreground="#FF87CEFA">
-            <TextBlock Text="MvvmValidation" />
-          </Hyperlink>
-        </TextBlock>
-                <TextBlock ToolTip="Fast and flexible json parser" Grid.Row="4" TextAlignment="Center">
-          <Hyperlink RequestNavigate="Navigate_Click" NavigateUri="https://www.newtonsoft.com/json" Foreground="#FF87CEFA">
-            <TextBlock Text="Newtonsoft.Json" />
-          </Hyperlink>
-        </TextBlock>
-                <TextBlock ToolTip="GitHub API client" Grid.Row="4" Grid.Column="1" TextAlignment="Center">
-          <Hyperlink RequestNavigate="Navigate_Click" NavigateUri="https://github.com/octokit/octokit.net" Foreground="#FF87CEFA">
-            <TextBlock Text="Octokit" />
-          </Hyperlink>
-        </TextBlock>
-                <TextBlock ToolTip="Highly extensible logger" Grid.Row="4" Grid.Column="2" TextAlignment="Center" Foreground="#FF87CEFA">
-          <Hyperlink RequestNavigate="Navigate_Click" NavigateUri="https://serilog.net/" Foreground="#FF87CEFA">
-            <TextBlock Text="Serilog" />
-          </Hyperlink>
-        </TextBlock>
-                <TextBlock ToolTip="Additional useful WPF controls&#xA;ME3Tweaks Mod Manager uses a customized version of this library" Grid.Row="5" Grid.Column="0" TextAlignment="Center">
-          <Hyperlink RequestNavigate="Navigate_Click" NavigateUri="https://github.com/dotnetprojects/WpfExtendedToolkit" Foreground="#FF87CEFA">
-            <TextBlock Text="WPF Extended Toolkit" />
-          </Hyperlink>
-        </TextBlock>
-        <TextBlock ToolTip="Mass Effect trilogy package handling and file handlers" Grid.Row="5" Grid.Column="1" TextAlignment="Center">
-          <Hyperlink RequestNavigate="Navigate_Click" NavigateUri="https://github.com/ME3Tweaks/ME3Explorer" Foreground="#FF87CEFA">
-            <TextBlock Text="ME3Explorer" />
-          </Hyperlink>
-        </TextBlock>
+
+                <ItemsControl Grid.Row="1" Grid.ColumnSpan="3" ItemsSource="{Binding Libraries}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type local:AboutPanel+LibraryCredit}">
+                            <TextBlock ToolTip="{Binding Tooltip}" 
+                                       Foreground="#FF87CEFA" Width="150" TextAlignment="Center">
+                                <Hyperlink RequestNavigate="Navigate_Click" NavigateUri="{Binding URL}" Foreground="#FF87CEFA">
+                                    <TextBlock Text="{Binding UIString}" />
+                                </Hyperlink>
+                            </TextBlock>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <ui:AlignableWrapPanel HorizontalAlignment="Center" HorizontalContentAlignment="Left"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+
+
+                
+
+
                 <TextBlock Text="{DynamicResource string_translators}" Foreground="White" Margin="0,15,0,10" TextAlignment="Center" Grid.Row="6" Grid.ColumnSpan="3" FontWeight="Bold" FontSize="16" />
                 <TextBlock Foreground="White" Grid.Row="7" Grid.Column="0" TextWrapping="Wrap" Text="English" TextAlignment="Center" FontWeight="Bold" />
                 <TextBlock Foreground="White" Grid.Row="7" Grid.Column="1" TextWrapping="Wrap" Text="Russian" TextAlignment="Center" FontWeight="Bold" />
@@ -132,7 +88,7 @@
                 <TextBlock Foreground="White" Grid.Row="9" Grid.Column="0" TextWrapping="Wrap" Text="Polish" TextAlignment="Center" FontWeight="Bold" Margin="0,5,0,0" />
                 <TextBlock Foreground="White" Grid.Row="9" Grid.Column="2" TextWrapping="Wrap" Text="Portuguese" TextAlignment="Center" FontWeight="Bold" Margin="0,5,0,0" />
                 <!--<TextBlock Foreground="White" Grid.Row="10" Grid.Column="0" TextWrapping="Wrap" Text="HHL" TextAlignment="Center" />-->
-                <TextBlock Foreground="White" Grid.Row="10" Grid.Column="0" TextWrapping="Wrap" Text="circl3&#10;Sonashii" TextAlignment="Center" />
+                <TextBlock Foreground="White" Grid.Row="10" Grid.Column="0" TextWrapping="Wrap" Text="circl3&#10;Sonashii&#10;ConfidenTi" TextAlignment="Center" />
                 <TextBlock Foreground="White" Grid.Row="10" Grid.Column="2" TextWrapping="Wrap" Text="Shaka" TextAlignment="Center" />
                 <TextBlock Text="{DynamicResource string_specialThanks}" Foreground="White" Margin="0,15,0,10" TextAlignment="Center" Grid.Row="11" Grid.ColumnSpan="3" FontWeight="Bold" FontSize="16" />
                 <TextBlock Foreground="White" Grid.Row="12" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Kinkojiro" TextAlignment="Center" FontWeight="Bold" />
