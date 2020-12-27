@@ -22,7 +22,7 @@ ME3Tweaks ModMaker mods are compiled against the the most recently supported ver
 ### Using the ME3Tweaks Mod Updater Service
 M3 has a mod updating mechanism for mods that allows all users to update their mods (that are registered and serviced on ME3Tweaks) without having to manually have the user download and import the mod. I have surveyed some end users and many say this is one of the best features of M3.
 
-If you want to use this service, you can contact me on the ME3Tweaks Discord and we can discuss using the service for your mod. All mods that are on the updater service must be M3 mods (because it's the only way they can do so) and will be listed on the mods page. The main download does not need to be hosted on ME3Tweaks. This service is free as long as your mod is a reasonable size (and my web host doesn't complain).
+If you want to use this service, you can contact me on the ME3Tweaks Discord and we can discuss using the service for your mod. All mods that are on the updater service must be M3 mods (because it's the only way they can do so), and will be listed on the mods page of ME3Tweaks. Package files in your mod must be decompressed or the updater service will reject them (the files are compressed on upload - native package compression must not be used). The main download does not need to be hosted on ME3Tweaks. This service is free as long as your mod is a reasonable size (and my web host doesn't complain).
 
 
 ### moddesc.ini parser strictness
@@ -52,9 +52,10 @@ moddesc.ini files have 4 main components:
 
 ![Moddesc](https://i.imgur.com/xCMVcLn.png)
 
-### [ModManager] Header
+## [ModManager] Header
 The [ModManager] header is a required header for all moddesc.ini files. It supports a few descriptors that are used to change how the moddesc.ini parser works.
 
+### [ModManager] Descriptors
 | Descriptor | Data type | Purpose                                                                                                                                                                                                                                                                                                                                                                                                                        | Required | Supported versions |
 |------------|-----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|--------------------|
 | cmmver     | Float     | This descriptor is set to a specific version to tell Mod Manager how to parse the file, and what features may or may not be used by the parser. You may see this referred to as **moddesc version**. You assign this value to ensure forwards compatibility, in the event I have to change how moddesc parsing works - I will always strive to ensure a version targeting a previous version will remain usable in the future. | Yes      | 2.0+               |
@@ -106,10 +107,10 @@ The [ModInfo] Header is used for the description, version, and other information
 | prefercompressed | Boolean | Indicates if the mod should automatically tick the 'Compress packages' checkbox in the mod importer window. Package compression will slow down extraction but will save disk space for the end user. This setting only applies to mods for ME2 and ME3, and the value is ignored if the mod uses the ME3Tweaks Updater Service, as all Updater Service mods files must be uncompressed so the hash checks work properly.                                                                                                                                                                                                   | No                                           | 6.1+               |
 | bannerimagename | String (Filename) | Indicates the filename of the file located under M3Images to use as the banner. See [Mod images](modimages.md) for information on how to add images to your mod that will be shown at install time.                                                                                                                                                                                                | No                                           | 6.2+               |
 
-### [UPDATES] Header
+## [UPDATES] Header
 The UPDATES header is used when deploying your mod as well as information about how it is stored on the ME3Tweaks Updater service, if you choose to use it.
 
-#### [UPDATES] Supported Descriptors
+### [UDPATES] Descriptors
 |Descriptor|Value|Purpose & Notes|Required|Supported Versions|
 |--- |--- |--- |--- |--- |
 |serverfolder|Unquoted String|Path to your server storage area. Typically this is 3rdparty/<username>/modname. This is only used when generating the manifest.|Required for Updater Service, Not used for Deployment|All|
