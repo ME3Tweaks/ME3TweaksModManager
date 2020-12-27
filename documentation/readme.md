@@ -1,19 +1,24 @@
 ![Documentation Image](images/documentation_header.png)
 
-This documentation is current as of Build 111.
+This documentation is current as of Build 113.
 
 ME3Tweaks Mod Manager (which will be written as M3 from now on in this document) allows users to organize mods as well as install them into the each game of the Mass Effect Trilogy. It is designed to be friendly for users and powerful for developers - for example, as a developer, you do not need to worry about users not installing the binkw32 bypass or running AutoTOC - M3 takes care of this all in the background for users. You can focus on developing your mods and my program will take care of the user side of things.
 
 **The documentation in this article is specific to M3** and should not be applied to Mass Effect 3 Mod Manager, as it does not support moddesc version 6 or higher, though some of the information will be relevant to both.
 
-## Table of contents
- - [moddesc.ini - the definition of an M3 mod](moddesc.ini.md)
+## Documentation pages
  - [moddesc.ini: Data types](datatypes.md)
+   - Describes headers, descriptors, and other data types that are used in moddesc.ini files
+- [moddesc.ini - the definition of an M3 mod](moddesc.ini.md)
+   - Includes information on moddesc.ini versioning, how a mod is defined, mod restrictions, as well as descriptors for \[ModManager], \[ModInfo], and \[UPDATES]
  - [moddesc.ini: Official DLC and Basegame Headers](officialdlc_and_basegame.md)
+   - Contains all the options available for use on mods targeting replacing files in the BASEGAME and Official DLC headers
  - [moddesc.ini: CUSTOMDLC Header (DLC mods)](customdlc.md)
+   - Contains all the options available for Custom DLC mods, which are the most common type of mod in the trilogy
  - [moddesc.ini: Automatic and alternative mod installations using alternates](alternates.md)
+   - Contains all the options available for use in alternative installations, such as automatic patch installs
  - [moddesc.ini: Localization mods](localizations.md)
-
+   - Contains information about how to make a localization TLK mod for ME2 and ME3 mods
 
 ## Why use M3? Why not just use a zip or an exe installer?
 I've dealt with end-users for years and worked with many to help fix issues with problems arising to incorrect installation of mods. It is very easy to think like a developer and say well you just do X Y and Z, in that order. Many end users simply don't read or _do not understand_ what developers have written because a lot of documentation is written by people who assume that end users are familiar with the modding scene.
