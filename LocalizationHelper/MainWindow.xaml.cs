@@ -96,7 +96,9 @@ namespace LocalizationHelper
             }
         }
 
+#pragma warning disable
         public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore
 
         private void PullStringsFromXaml(object sender, RoutedEventArgs e)
         {
@@ -177,7 +179,7 @@ namespace LocalizationHelper
                     StringsTextBox.Text = "No strings needing localized in " + SelectedFile;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }
@@ -564,7 +566,7 @@ namespace LocalizationHelper
 
                 ResultTextBox.Text = Beautify(xmldoc);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }
@@ -789,7 +791,7 @@ namespace LocalizationHelper
                             Debug.WriteLine("\t<system:String x:Key=\"" + v.Value.Substring(0, "string_".Length) + v.Value.Substring("string_".Length, 1).ToLower() + v.Value.Substring("string_".Length + 1) + "\">" + v.Key + "</system:String>");
                         }
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         Debug.WriteLine("EXCEPTION!");
                     }

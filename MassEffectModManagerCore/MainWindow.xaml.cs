@@ -146,6 +146,7 @@ namespace MassEffectModManagerCore
             }
 
             LoadCommands();
+            SetTheme();
             InitializeComponent();
             languageMenuItems = new Dictionary<string, MenuItem>()
             {
@@ -153,6 +154,7 @@ namespace MassEffectModManagerCore
                 {@"rus", LanguageRUS_MenuItem},
                 {@"pol", LanguagePOL_MenuItem},
                 {@"deu", LanguageDEU_MenuItem},
+                {@"bra", LanguageBRA_MenuItem},
                 //{@"fra", LanguageFRA_MenuItem}
                 //{@"esn", LanguageESN_MenuItem}
             };
@@ -165,7 +167,6 @@ namespace MassEffectModManagerCore
 
             CheckProgramDataWritable();
             AttachListeners();
-            SetTheme();
             //Must be done after UI has initialized
             //if (InstallationTargets.Count > 0)
             //{
@@ -2146,9 +2147,6 @@ namespace MassEffectModManagerCore
                 }
             }
 
-            var activeTargetCount = targets.Count;
-
-
             // Read steam locations
             void addSteamTarget(string targetPath, bool foundActiveAlready, MEGame game)
             {
@@ -2190,13 +2188,16 @@ namespace MassEffectModManagerCore
             // ORDER THE TARGETS
             targets = targets.Distinct().ToList();
             List<GameTarget> finalList = new List<GameTarget>();
-            finalList.Add(targets.FirstOrDefault(x => x.Game == MEGame.ME3 && x.RegistryActive));
-            finalList.Add(targets.FirstOrDefault(x => x.Game == MEGame.ME2 && x.RegistryActive));
-            finalList.Add(targets.FirstOrDefault(x => x.Game == MEGame.ME1 && x.RegistryActive));
+            GameTarget aTarget = targets.FirstOrDefault(x => x.Game == MEGame.ME3 && x.RegistryActive);
+            if (aTarget != null) finalList.Add(aTarget);
+            aTarget = targets.FirstOrDefault(x => x.Game == MEGame.ME2 && x.RegistryActive);
+            if (aTarget != null) finalList.Add(aTarget);
+            aTarget = targets.FirstOrDefault(x => x.Game == MEGame.ME1 && x.RegistryActive);
+            if (aTarget != null) finalList.Add(aTarget);
 
             if (targets.Count > finalList.Count)
             {
-                finalList.Add(new GameTarget(MEGame.Unknown, $@"==================={M3L.GetString(M3L.string_otherSavedTargets)}===================", false) { Selectable = false });
+                finalList.Add(new GameTarget(MEGame.Unknown, $@"==================={M3L.GetString(M3L.string_otherSavedTargets)}===================", false) { Selectable = false, IsCustomOption = true });
             }
 
             finalList.AddRange(targets.Where(x => x.Game == MEGame.ME3 && !x.RegistryActive));
@@ -2214,7 +2215,7 @@ namespace MassEffectModManagerCore
                     SelectedGameTarget = newTarget;
                 }
             }
-            else if (!string.IsNullOrWhiteSpace(Settings.LastSelectedTarget) && InstallationTargets.FirstOrDefaultOut(x => x.TargetPath.Equals(Settings.LastSelectedTarget), out var matchingTarget))
+            else if (!string.IsNullOrWhiteSpace(Settings.LastSelectedTarget) && InstallationTargets.FirstOrDefaultOut(x => !x.IsCustomOption && x.TargetPath.Equals(Settings.LastSelectedTarget), out var matchingTarget))
             {
                 SelectedGameTarget = matchingTarget;
             }
@@ -2838,7 +2839,7 @@ namespace MassEffectModManagerCore
 
         public void OnSelectedGameTargetChanged()
         {
-            if (!RepopulatingTargets)
+            if (!RepopulatingTargets && SelectedGameTarget != null)
             {
                 //Settings.Save();
                 if (!SelectedGameTarget.RegistryActive)
