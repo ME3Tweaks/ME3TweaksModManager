@@ -18,7 +18,7 @@ namespace MassEffectModManagerCore.modmanager.converters
         {
             if (parameter is string locKey)
             {
-                return M3L.GetString(locKey, (string) value);
+                return M3L.GetString(locKey, value?.ToString());
             }
 
             return null;
