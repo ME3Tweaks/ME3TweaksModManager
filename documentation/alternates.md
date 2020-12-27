@@ -46,7 +46,9 @@ The altfiles descriptor allows you to substitute, add, or remove files from your
 |DLCRequirements|Semicolon Separated List (String)|Defines a list of DLC folders that must be installed in order for this option to be selectable by the user. This variable only does something when `Condition` is `COND_MANUAL`. You should ensure this value is not also selected with `CheckedByDefault`, as it may make an unselectable checkbox/radiobutton become checked without the ability for the user to uncheck it. You can use this variable to disable manual options that are not applicable to the user.|No|
 
 ## altdlc specification
-altdlc allows you to add a folder of files to a CustomDLC based on the installed game state. You can alternatively add an entire Custom DLC folder to the game using this specification. This is useful for automatically applying compatibility packs if your mod has known incompatibilities with another, as you can detect that and automatically reconfigure your mod to work around it. You can also have manual options to allow users to add their own developer-provided options, like lower resolution asset files.
+altdlc allows you to add a folder of files to a CustomDLC based on the installed game state. You can alternatively add an entire Custom DLC folder to the game using this specification, or using multilists you can cherry pick files from multiple folders to add to your DLC folder. The altdlc descriptor is mainly used for for automatically applying compatibility packs if your mod has known incompatibilities with another, as you can detect that and automatically reconfigure your mod to work around it. You can also have manual options to allow users to add their own developer-provided options, like lower resolution asset files.
+
+The altdlc descriptor only works on the CUSTOMDLC job.
 
 ### altdlc struct variables
 | Variable Name | Value | Purpose & Notes | Required | Supported cmmver |
