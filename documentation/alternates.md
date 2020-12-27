@@ -13,7 +13,7 @@ When to use altdlc:
 
 
 ## Variables common to both altfiles and altdlc
-The altfiles and altdlc structs share some common variables that work in both, and are described in the below table. Items that differ between altfiles and altdlc are listed in their respective sections below.
+The altfiles and altdlc structs share some common variables that work in both, and are described in the below table. For constructing a struct for your altfile/altdlc, please see their respective section further down this document.
 
 | Variable Name         | Value          | Purpose & Notes                                                                                                                                                                                                                                                                                                                                     | Required                | Supported cmmver |
 |-----------------------|----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------|------------------|
