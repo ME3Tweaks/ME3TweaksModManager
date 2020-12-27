@@ -1156,18 +1156,18 @@ namespace MassEffectModManagerCore
             var game = Utilities.GetGameName(SelectedGameTarget.Game);
 
             BackgroundTask gameLaunch = backgroundTaskEngine.SubmitBackgroundJob(@"GameLaunch", M3L.GetString(M3L.string_interp_launching, game), M3L.GetString(M3L.string_interp_launched, game));
-            Task.Delay(TimeSpan.FromMilliseconds(4000))
-                .ContinueWith(task => backgroundTaskEngine.SubmitJobCompletion(gameLaunch));
+
             try
             {
-                if (Settings.AutoUpdateLODs4K || Settings.AutoUpdateLODs2K)
-                {
-                    SelectedGameTarget.UpdateLODs(Settings.AutoUpdateLODs2K);
-                }
-                Utilities.RunProcess(M3Directories.GetExecutablePath(SelectedGameTarget), (string)null, false, true);
+                Task.Run(() => GameLauncher.LaunchGame(SelectedGameTarget))
+                    .ContinueWith(x =>
+                    {
+                        backgroundTaskEngine.SubmitJobCompletion(gameLaunch);
+                    });
             }
             catch (Exception e)
             {
+                backgroundTaskEngine.SubmitJobCompletion(gameLaunch); // This ensures message is cleared out of queue
                 if (e is Win32Exception w32e)
                 {
                     if (w32e.NativeErrorCode == 1223)
@@ -1176,7 +1176,6 @@ namespace MassEffectModManagerCore
                         return; //we don't care.
                     }
                 }
-
                 Log.Error(@"Error launching game: " + e.Message);
             }
 

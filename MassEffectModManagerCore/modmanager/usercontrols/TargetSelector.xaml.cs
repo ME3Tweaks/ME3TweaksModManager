@@ -58,7 +58,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         /// </summary>
         public static readonly DependencyProperty SelectedGameTargetProperty =
             DependencyProperty.Register(@"SelectedGameTarget", typeof(GameTarget),
-                typeof(TargetSelector));
+                typeof(TargetSelector), new FrameworkPropertyMetadata(
+                    null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
         #endregion
 

@@ -10,6 +10,7 @@
                        xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
                        xmlns:asi="clr-namespace:MassEffectModManagerCore.modmanager.asi"
                        xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters"
+                       DataContext="{Binding RelativeSource={RelativeSource Self}}"
                        mc:Ignorable="d" Height="500" Width="730">
     <UserControl.Resources>
         <DataTemplate DataType="{x:Type asi:ASIMod}">
@@ -90,7 +91,7 @@
                     </Border>
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="3,5">
                         <Button Margin="3,0" Padding="7,5" Content="{DynamicResource string_viewSourceCode}" Command="{Binding SourceCodeCommand}" ToolTip="{DynamicResource string_tooltip_viewSourceCodeForThisASIMod}" />
-                        <Button Margin="3,0" Padding="7,5" Content="{Binding InstallButtonText}" Command="{Binding InstallUninstallCommand}" ToolTip="{Binding InstallButtonToolTip}" />
+                        <Button Margin="3,0" Padding="7,5" Content="{Binding InstallButtonText}" Command="{Binding InstallUninstallCommand}" />
                     </StackPanel>
                     <StackPanel>
                         <TextBlock Margin="0,10,0,0" Text="{Binding SelectedASIName}" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Top" FontWeight="Bold" />
@@ -110,7 +111,7 @@
                 </DataTemplate>
             </TabControl.ItemTemplate>
             <TabControl.ContentTemplate>
-                <DataTemplate>
+                <DataTemplate DataType="{x:Type asi:ASIGame}">
                     <Grid Margin="0">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
@@ -121,7 +122,12 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
-                        <ComboBox Grid.Row="1" IsEnabled="{Binding InstallInProgress, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ASIManagerPanel}}, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" ItemsSource="{Binding GameTargets}" SelectedItem="{Binding SelectedTarget}" HorizontalContentAlignment="Stretch" ItemTemplate="{StaticResource TargetSelectorTemplate}" ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}" />
+                        <local:TargetSelector Grid.Row="1" 
+                                        IsEnabled="{Binding InstallInProgress, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ASIManagerPanel}}, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" 
+                                        AvailableTargets="{Binding GameTargets}" 
+                                        SelectedGameTarget="{Binding SelectedTarget}" 
+                                        HorizontalContentAlignment="Stretch" 
+                                        ShowTextureInfo="False"/>
                         <DockPanel Grid.Row="2" Margin="0,5">
                             <Button Content="{Binding InstallLoaderText}" Command="{Binding InstallLoaderCommand}" DockPanel.Dock="Right"/>
                             <TextBlock Text="{Binding ASILoaderText}" VerticalAlignment="Center" TextWrapping="Wrap" />

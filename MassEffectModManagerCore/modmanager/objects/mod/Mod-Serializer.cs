@@ -45,9 +45,23 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 {@"bannerimagename", BannerImageName},
             };
 
+
+            // NON PUBLIC OPTIONS
+            if (RequiresAMD)
+            {
+                parameterDictionary[@"amdprocessoronly"] = RequiresAMD;
+            }
+            
+            if (!string.IsNullOrWhiteSpace(PostInstallToolLaunch))
+            {
+                // This is a non-public property but is used by one mod
+                parameterDictionary[@"postinstalltool"] = PostInstallToolLaunch;
+            }
+            // END NON PUBLIC OPTIONS
+            
             if (Game > MEGame.ME1)
             {
-                // This flag only makes a difference for ME1
+                // This flag only makes a difference for ME2/3
                 parameterDictionary[@"prefercompressed"] = PreferCompressed ? @"True" : null;
             }
 

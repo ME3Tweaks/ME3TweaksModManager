@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -476,18 +477,28 @@ namespace MassEffectModManagerCore
             return Directory.CreateDirectory(Path.Combine(GetTempPath(), "UpdaterServiceStaging")).FullName;
         }
 
-        public static int RunProcess(string exe, string args, bool waitForProcess = false, bool allowReattemptAsAdmin = false, bool requireAdmin = false, bool noWindow = true)
+        /// <summary>
+        /// Runs a process and does not wait for it.
+        /// </summary>
+        /// <param name="exe"></param>
+        /// <returns></returns>
+        public static int RunProcess(string exe)
         {
-            return RunProcess(exe, null, args, waitForProcess: waitForProcess, allowReattemptAsAdmin: allowReattemptAsAdmin, requireAdmin: requireAdmin, noWindow: noWindow);
+            return RunProcess(exe, null, null, false, false, false, false, null, null);
         }
 
-        public static int RunProcess(string exe, List<string> args, bool waitForProcess = false, bool allowReattemptAsAdmin = false, bool requireAdmin = false, bool noWindow = true)
+        public static int RunProcess(string exe, string args, bool waitForProcess = false, bool allowReattemptAsAdmin = false, bool requireAdmin = false, bool noWindow = true, Dictionary<string, string> environmentVariables = null, string workingDir = null)
         {
-            return RunProcess(exe, args, null, waitForProcess: waitForProcess, allowReattemptAsAdmin: allowReattemptAsAdmin, requireAdmin: requireAdmin, noWindow: noWindow);
+            return RunProcess(exe, null, args, waitForProcess: waitForProcess, allowReattemptAsAdmin: allowReattemptAsAdmin, requireAdmin: requireAdmin, noWindow: noWindow, environmentVariables: environmentVariables, workingDir: workingDir);
+        }
+
+        public static int RunProcess(string exe, List<string> args, bool waitForProcess = false, bool allowReattemptAsAdmin = false, bool requireAdmin = false, bool noWindow = true, Dictionary<string, string> environmentVariables = null, string workingDir = null)
+        {
+            return RunProcess(exe, args, null, waitForProcess: waitForProcess, allowReattemptAsAdmin: allowReattemptAsAdmin, requireAdmin: requireAdmin, noWindow: noWindow, environmentVariables: environmentVariables, workingDir: workingDir);
         }
 
 
-        private static int RunProcess(string exe, List<string> argsL, string argsS, bool waitForProcess, bool allowReattemptAsAdmin, bool requireAdmin, bool noWindow)
+        private static int RunProcess(string exe, List<string> argsL, string argsS, bool waitForProcess, bool allowReattemptAsAdmin, bool requireAdmin, bool noWindow, Dictionary<string, string> environmentVariables, string workingDir = null)
         {
             var argsStr = argsS;
             if (argsStr == null && argsL != null)
@@ -514,10 +525,18 @@ namespace MassEffectModManagerCore
                 using (Process p = new Process())
                 {
                     p.StartInfo.FileName = exe;
-                    p.StartInfo.UseShellExecute = true;
+                    p.StartInfo.UseShellExecute = environmentVariables == null || !environmentVariables.Any();
                     p.StartInfo.CreateNoWindow = noWindow;
+                    p.StartInfo.WorkingDirectory = workingDir ?? Directory.GetParent(exe).FullName;
                     p.StartInfo.Arguments = argsStr;
                     p.StartInfo.Verb = "runas";
+                    if (environmentVariables != null)
+                    {
+                        foreach (var ev in environmentVariables)
+                        {
+                            p.StartInfo.EnvironmentVariables.Add(ev.Key, ev.Value);
+                        }
+                    }
                     p.Start();
                     if (waitForProcess)
                     {
@@ -536,9 +555,17 @@ namespace MassEffectModManagerCore
                     using (Process p = new Process())
                     {
                         p.StartInfo.FileName = exe;
-                        p.StartInfo.UseShellExecute = true;
+                        p.StartInfo.UseShellExecute = environmentVariables == null || !environmentVariables.Any();
                         p.StartInfo.CreateNoWindow = noWindow;
+                        p.StartInfo.WorkingDirectory = workingDir ?? Directory.GetParent(exe).FullName;
                         p.StartInfo.Arguments = argsStr;
+                        if (environmentVariables != null)
+                        {
+                            foreach (var ev in environmentVariables)
+                            {
+                                p.StartInfo.EnvironmentVariables.Add(ev.Key, ev.Value);
+                            }
+                        }
                         p.Start();
                         if (waitForProcess)
                         {
@@ -559,10 +586,18 @@ namespace MassEffectModManagerCore
                         using (Process p = new Process())
                         {
                             p.StartInfo.FileName = exe;
-                            p.StartInfo.UseShellExecute = true;
+                            p.StartInfo.UseShellExecute = environmentVariables == null || !environmentVariables.Any();
                             p.StartInfo.CreateNoWindow = noWindow;
+                            p.StartInfo.WorkingDirectory = workingDir ?? Directory.GetParent(exe).FullName;
                             p.StartInfo.Arguments = argsStr;
                             p.StartInfo.Verb = "runas";
+                            if (environmentVariables != null)
+                            {
+                                foreach (var ev in environmentVariables)
+                                {
+                                    p.StartInfo.EnvironmentVariables.Add(ev.Key, ev.Value);
+                                }
+                            }
                             p.Start();
                             if (waitForProcess)
                             {
@@ -834,6 +869,16 @@ namespace MassEffectModManagerCore
             }
 
             return runningInfo.isRunning;
+        }
+
+        /// <summary>
+        /// Checks if a process is running. This should not be used in bindings, as it's a very expensive call!
+        /// </summary>
+        /// <param name="processName"></param>
+        /// <returns></returns>
+        public static bool IsProcessRunning(string processName)
+        {
+            return Process.GetProcesses().Any(x => x.ProcessName.Equals(processName, StringComparison.InvariantCultureIgnoreCase));
         }
 
         internal static string GetAppDataFolder(bool createIfMissing = true)
@@ -1185,6 +1230,17 @@ namespace MassEffectModManagerCore
             return (string)Registry.GetValue(key, name, null);
         }
 
+        /// <summary>
+        /// Gets a DWORD value from the registry from the specified key and value name.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="name"></param>
+        /// <returns>The value if read, or the specified default value (or -1 if the default value is not specified)</returns>
+        public static int GetRegistrySettingInt(string key, string name, int? defaultValue = null)
+        {
+            return (int)Registry.GetValue(key, name, defaultValue ?? -1);
+        }
+
 
         /// <summary>
         /// Looks up the user's ALOT Installer texture library directory. If the user has not set one or run ALOT Installer, this will not be populated.
@@ -1330,7 +1386,7 @@ namespace MassEffectModManagerCore
             }
 
             Log.Information($@"Settings LODS for {target.Game}, highres: {highres}, 2K: {limit2k}, SS: {softshadows}");
-            
+
             try
             {
                 string settingspath = MEDirectories.GetLODConfigFile(game);
