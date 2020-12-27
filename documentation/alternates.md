@@ -49,6 +49,8 @@ The altfiles descriptor allows you to substitute, add, or remove files from your
 Attributes have been put onto newlines for readabilty.
 
 ```
+[BASEGAME]
+...
 altfiles=((Condition=COND_MANUAL,
 ModOperation=OP_SUBSTITUTE,
 ModFile=\BIOGame\CookedPCConsole\Startup.pcc,
