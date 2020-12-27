@@ -14,6 +14,28 @@
 	<system:String x:Key="string_specialThanks">Отдельная благодарность</system:String>
 	<system:String x:Key="string_youTheEndUser">Вам, конечному пользователю, ради кого и разрабатывается данная программа</system:String>
 	<system:String x:Key="string_license">Лицензия</system:String>
+	<system:String x:Key="string_library_adonisui" xml:space="preserve">Библиотека для темных/светлых тем в WPF\nME3Tweaks Mod Manager использует кастомизированную версию данной библиотеки</system:String>
+	<system:String x:Key="string_library_sevenzipsharp" xml:space="preserve">Библиотека сжатия и распаковки для 7z\nME3Tweaks Mod Manager использует кастомизированную версию данной библиотеки</system:String>
+	<system:String x:Key="string_library_iniparser" xml:space="preserve">Библиотека для парсинга файлов INI\nME3Tweaks Mod Manager использует кастомизированную версию данной библиотеки</system:String>
+	<system:String x:Key="string_library_flurl">Библиотека современного асинхронного HTTP-клиента</system:String>
+	<system:String x:Key="string_library_fody">Система IL Weaving, устраняющая значительную часть шаблонного кода</system:String>
+	<system:String x:Key="string_library_fontawesome">Набор векторных иконок</system:String>
+	<system:String x:Key="string_library_appcenter">Библиотека телеметрии для использования с Microsoft Azure</system:String>
+	<system:String x:Key="string_library_mvvmvalidation">Облегченный фреймворк валидации</system:String>
+	<system:String x:Key="string_library_newtonsoft">Гибкий парсер JSON для С#</system:String>
+	<system:String x:Key="string_library_octokit">Клиент GitHub API</system:String>
+	<system:String x:Key="string_library_serilog">Расширяемый логгер</system:String>
+	<system:String x:Key="string_library_wpftoolkitextended" xml:space="preserve">Дополнительные полезные контролы WPF\nME3Tweaks Mod Manager использует кастомизированную версию данной библиотеки</system:String>
+	<system:String x:Key="string_library_me3explorercore">Бэкэнд инструментов моддинга трилогии Mass Effect</system:String>
+	<system:String x:Key="string_library_cliwrap">Асинхронный враппер для взаимодействия с приложениями командной строки</system:String>
+	<system:String x:Key="string_library_commandlineparser">Расширяемый парсер аргументов командной строки</system:String>
+	<system:String x:Key="string_library_computerinfo">Небольшая библиотека для легкой выгрузки информации о CPU, ОС и пямяти</system:String>
+	<system:String x:Key="string_library_fluentnexus">Современный асинхронный HTTP-клиент для Nexus Mods API</system:String>
+	<system:String x:Key="string_library_recyclablememorystream">Библиотека для рециркулируемого пула буферов памяти</system:String>
+	<system:String x:Key="string_library_sshnet">Библиотека для обработки соединений SSH</system:String>
+	<system:String x:Key="string_library_watsonwebsocket">Библиотека для обработки соединений WebSocket</system:String>
+	<system:String x:Key="string_library_authenticodeexaminer">Управляет проверкой Authenticode-подписей файлов</system:String>
+	<system:String x:Key="string_library_ntfsstreams">Библиотека для чтения альтернативных потоков данных NTFS</system:String>
 
 	<!-- ALOT Version Info -->
 	<system:String x:Key="string_textureModded">Текстура модифицирована</system:String>
@@ -1201,7 +1223,7 @@
 	<!-- 0 = noun (mod name, etc) -->
 	<system:String x:Key="string_insufficientDiskSpaceToExtractSelectedMods">Недостаточно места на диске для распаковки выбранных модов</system:String>
 	<system:String x:Key="string_interp_dialogNotEnoughFreeSpaceToExtract" xml:space="preserve">На вашем диске недостаточно места для импорта выбранных модов в библиотеку.\nТребуется: {0}\nДоступно: {1}</system:String>
-	<!-- 0=ByteSize.FromBytes(requiredSpace) 1=ByteSize.FromBytes(freeSpace) -->
+	<!-- 0=Required space amount 1=Free space amount -->
 	<system:String x:Key="string_insufficientDiskSpace">Недостаточно места на диске</system:String>
 	<system:String x:Key="string_archiveError">Ошибка архива</system:String>
 	<system:String x:Key="string_couldNotInspectArchive7zException">Невозможно проверить архив из-за ошибки, выдаваемой 7z. Архив может быть поврежден.</system:String>
