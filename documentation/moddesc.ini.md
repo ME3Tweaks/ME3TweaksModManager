@@ -25,7 +25,6 @@ M3 has a mod updating mechanism for mods that allows all users to update their m
 If you want to use this service, you can contact me on the ME3Tweaks Discord and we can discuss using the service for your mod. All mods that are on the updater service must be M3 mods (because it's the only way they can do so) and will be listed on the mods page. The main download does not need to be hosted on ME3Tweaks. This service is free as long as your mod is a reasonable size (and my web host doesn't complain).
 
 
-
 ### moddesc.ini parser strictness
 In M3, the parser for a moddesc.ini file is more strict than it was for ME3CMM. A few examples of things that will cause a mod to fail parsing include:
  - A line without a `=` on it that is not a `;comment`, that is not a header, or is not blank. 
@@ -62,13 +61,10 @@ The [ModManager] header is a required header for all moddesc.ini files. It suppo
 | importedby | Integer   | As a mod developer you should never set this value. This is a compatibility shim for mods imported into M3 before Build 103 to indicate they should force target Mass Effect 3. After Build 103 was created, the 'game' descriptor was forced to always be present, and this flag indicates that it should use ME3 for those mods.                                                                                             | No       | 6.0 (Build 103+)   |
 | minbuild   | Integer   | This descriptor is used to specify that a mod is only allowed to load on a specific build. For example, if a mod depends on features only present in Build 104, minbuild can be used to ensure users on Build 103 or lower cannot attempt to load the mod.                                                                                                                                                                     | No       | 6.0 (Build 104+)   |
 
-#### ME3 Mods
-If you are building a mod for ME3, the lowest version I suggest using is 5.0, as this is the last 32-bit mod manager version. Otherwise use whatever the latest version is, as deployment support typically is built around the latest version.
+#### What cmmver should I pick?
+You typically will want to simply target the latest version. The moddesc.ini editor built into Mod Manager will cannot save against older versions of moddesc, and the majority of users will be on the latest version due to the built in update prompts in Mod Manager.
 
-#### ME1, ME2 Mods
-If you are building a mod for ME1 or ME2 you must target a minimum of moddesc version 6, which is the first version that M3 supported. ME3CMM does not support ME1 or ME2, and will reject mods with a cmmver of 6.
-
-Valid values are listed below with the main highlights of that release:
+Valid values for cmmver are listed below with the main highlights of that release:
 
 #### Moddesc features by version
 | cmmver Version | Games supported | Release date | Release Highlights                                                                                                                                                   |
@@ -86,6 +82,7 @@ Valid values are listed below with the main highlights of that release:
 | 5.1            | ME3             | 2018         | Last ME3CMM version. Supports the additionaldeploymentfolders descriptor to allow inclusion of additional folders that are not specifically installed                |
 | 6.0            | ME1/ME2/ME3     | 2019         | First M3 version. In development. Supports customization of alternate auto/not-applicable text, multi-dlc metacmm names, game directory structured automapping of source folders and more. Plans to have multi-alternates (multiple alt operations in a single alternate) and basegame-only file delta application (for things like sfxgame) are scheduled but not implemented yet.                                                                     |
 | 6.1            | ME1/ME2/ME3             | 2020         | Supports installation of 'localization' mods, which are TLK files for existing mods (ME2/ME3)                                                                                          |
+| 6.2            | ME1/ME2/ME3             | 2021         | Supports banner images for the mod and alternate installation options, support for required 'single' dlc (for example, depending on CEM Lite or Full)                           |
 
 
 If a cmmver descriptor is not set, the default 1.0 value will be used, which has almost no features.
@@ -107,7 +104,7 @@ The [ModInfo] Header is used for the description, version, and other information
 | nexuscode   | Integer                                          | Allows you to define your NexusMods mod ID specifically. If you are using a proper NexusMods URL as your modsite, this value is already set. This is for mods that do not use a NexusMods URL as their modsite (such as ME3Tweaks mods). If you are using a proper NexusMods URL or don't have a modsite value set, this value is ignored.                                                              | No                                           | 6.0+               |
 | requireddlc | Unquoted Semicolon Separated List (DLC folder names) | Specifies a list of DLC folders that must exist in order for this mod to allow installation. For example, Spectre Expansion Mod requires Expanded Galaxy Mod, so it sets this value to `DLC_MOD_EGM`. If the mod also required MEHEM, it would be `DLC_MOD_EGM;DLC_CON_MEHEM`.                                                                                                                                                                                                    | No                                           | 5.0+               |
 | prefercompressed | Boolean | Indicates if the mod should automatically tick the 'Compress packages' checkbox in the mod importer window. Package compression will slow down extraction but will save disk space for the end user. This setting only applies to mods for ME2 and ME3, and the value is ignored if the mod uses the ME3Tweaks Updater Service, as all Updater Service mods files must be uncompressed so the hash checks work properly.                                                                                                                                                                                                   | No                                           | 6.1+               |
-
+| bannerimagename | String (Filename) | Indicates the filename of the file located under M3Images to use as the banner. See [Mod images](modimages.md) for information on how to add images to your mod that will be shown at install time.                                                                                                                                                                                                | No                                           | 6.2+               |
 
 ### [UPDATES] Header
 The UPDATES header is used when deploying your mod as well as information about how it is stored on the ME3Tweaks Updater service, if you choose to use it.
