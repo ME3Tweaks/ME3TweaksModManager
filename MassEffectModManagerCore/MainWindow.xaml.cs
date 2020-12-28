@@ -62,7 +62,7 @@ namespace MassEffectModManagerCore
 
         public string CurrentDescriptionText { get; set; } = DefaultDescriptionText;
         private static readonly string DefaultDescriptionText = M3L.GetString(M3L.string_selectModOnLeftToGetStarted);
-        private readonly string[] SupportedDroppableExtensions = { @".rar", @".zip", @".7z", @".exe", @".tpf", @".mod", @".mem", @".me2mod", @".xml", @".bin", @".tlk" };
+        private readonly string[] SupportedDroppableExtensions = { @".rar", @".zip", @".7z", @".exe", @".tpf", @".mod", @".mem", @".me2mod", @".xml", @".bin", @".tlk", @".par" };
         public string ApplyModButtonText { get; set; } = M3L.GetString(M3L.string_applyMod);
         public string InstallationTargetText { get; set; } = M3L.GetString(M3L.string_installationTarget);
         public bool ME1ASILoaderInstalled { get; set; }
@@ -1295,7 +1295,8 @@ namespace MassEffectModManagerCore
                 args.Add(@"/t");
                 args.Add(@"REG_SZ");
                 args.Add(@"/d");
-                args.Add(target.TargetPath);
+                args.Add($"{target.TargetPath.TrimEnd('\\')}\\\\"); // do not localize
+                // ^ Strip ending slash. Then append it to make sure there is ending slash. Reg will interpret final \ as an escape, so we do \\ (as documented on ss64)
                 args.Add(@"/f");
 
                 return Utilities.RunProcess(exe, args, waitForProcess: true, requireAdmin: true);
@@ -3148,6 +3149,14 @@ namespace MassEffectModManagerCore
                             };
                             nbw.RunWorkerAsync();
 
+                        }
+                        break;
+                    case @".par":
+                        {
+#if DEBUG
+                            var contents = PARTools.DecodePAR(File.ReadAllBytes(files[0]));
+                            Debug.WriteLine(contents);
+#endif
                         }
                         break;
                 }

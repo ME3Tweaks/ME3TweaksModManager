@@ -586,18 +586,18 @@ namespace MassEffectModManagerCore
                         using (Process p = new Process())
                         {
                             p.StartInfo.FileName = exe;
-                            p.StartInfo.UseShellExecute = environmentVariables == null || !environmentVariables.Any();
+                            p.StartInfo.UseShellExecute = true; // If we are running as admin, we cannot shell execute without a wrapper
                             p.StartInfo.CreateNoWindow = noWindow;
                             p.StartInfo.WorkingDirectory = workingDir ?? Directory.GetParent(exe).FullName;
                             p.StartInfo.Arguments = argsStr;
                             p.StartInfo.Verb = "runas";
-                            if (environmentVariables != null)
-                            {
-                                foreach (var ev in environmentVariables)
-                                {
-                                    p.StartInfo.EnvironmentVariables.Add(ev.Key, ev.Value);
-                                }
-                            }
+                            //if (environmentVariables != null)
+                            //{
+                            //    foreach (var ev in environmentVariables)
+                            //    {
+                            //        p.StartInfo.EnvironmentVariables.Add(ev.Key, ev.Value);
+                            //    }
+                            //}
                             p.Start();
                             if (waitForProcess)
                             {

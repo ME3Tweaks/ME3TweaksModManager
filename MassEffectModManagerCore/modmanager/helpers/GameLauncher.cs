@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using MassEffectModManagerCore.modmanager.objects;
+using ME3ExplorerCore.Helpers;
 using ME3ExplorerCore.Packages;
 using Serilog;
 
@@ -26,47 +28,81 @@ namespace MassEffectModManagerCore.modmanager.helpers
             var exe = M3Directories.GetExecutablePath(target);
             var exeDir = M3Directories.GetExecutableDirectory(target);
             var environmentVars = new Dictionary<string, string>();
-            if (target.GameSource != null && target.GameSource.Contains(@"Steam"))
+            if (target.GameSource != null)
             {
-                var steamInstallPath = Utilities.GetRegistrySettingString(@"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Valve\Steam", @"InstallPath");
-                if (steamInstallPath != null && Directory.Exists(steamInstallPath))
+
+                // IS GAME STEAM BASED?
+                if (target.GameSource.Contains(@"Steam"))
                 {
-                    environmentVars[@"SteamPath"] = steamInstallPath;
-
-                    // Ensure steam is running and ready
-                    var steamExe = Path.Combine(steamInstallPath, @"steam.exe");
-                    EnsureSteamRunning(steamExe); // Can block up for some time!
-                }
-
-                int gameId = 0;
-                switch (target.Game)
-                {
-                    case MEGame.ME1:
-                        gameId = 17460;
-                        break;
-                    case MEGame.ME2:
-                        gameId = 24980;
-                        break;
-                    case MEGame.ME3:
-                        gameId = 1238020;
-                        break;
-                }
-
-                environmentVars[@"SteamAppId"] = gameId.ToString();
-                environmentVars[@"SteamGameId"] = gameId.ToString();
-                environmentVars[@"SteamOverlayGameId"] = gameId.ToString();
-
-                // Make steam_appid.txt next to exe. It can help launch game if steam.exe is already running
-                var steamappidfile = Path.Combine(exeDir, @"steam_appid.txt");
-                if (!File.Exists(steamappidfile))
-                {
-                    try
+                    var steamInstallPath =
+                        Utilities.GetRegistrySettingString(@"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Valve\Steam",
+                            @"InstallPath");
+                    if (steamInstallPath != null && Directory.Exists(steamInstallPath))
                     {
-                        File.WriteAllText(steamappidfile, gameId.ToString());
+                        environmentVars[@"SteamPath"] = steamInstallPath;
+
+                        // Ensure steam is running and ready
+                        var steamExe = Path.Combine(steamInstallPath, @"steam.exe");
+                        EnsureSteamRunning(steamExe); // Can block up for some time!
                     }
-                    catch (Exception e)
+
+                    int gameId = 0;
+                    switch (target.Game)
                     {
-                        Log.Error($@"Could not install steam_appid.txt: {e.Message}");
+                        case MEGame.ME1:
+                            gameId = 17460;
+                            break;
+                        case MEGame.ME2:
+                            gameId = 24980;
+                            break;
+                        case MEGame.ME3:
+                            gameId = 1238020;
+                            break;
+                    }
+
+                    environmentVars[@"SteamAppId"] = gameId.ToString();
+                    environmentVars[@"SteamGameId"] = gameId.ToString();
+                    environmentVars[@"SteamOverlayGameId"] = gameId.ToString();
+
+                    // Make steam_appid.txt next to exe. It can help launch game if steam.exe is already running
+                    var steamappidfile = Path.Combine(exeDir, @"steam_appid.txt");
+                    if (!File.Exists(steamappidfile))
+                    {
+                        try
+                        {
+                            File.WriteAllText(steamappidfile, gameId.ToString());
+                        }
+                        catch (Exception e)
+                        {
+                            Log.Error($@"Could not install steam_appid.txt: {e.Message}");
+                        }
+                    }
+                }
+                else if (target.GameSource.Contains(@"Origin") && target.RegistryActive) // Must be registry active or origin will run the wrong game.
+                {
+                    // ME2 seems to have lots of problems directly running due to it's licensing system
+                    // We should try to run it through Origin to avoid this problem
+
+                    var parFile = Path.Combine(exeDir, Path.GetFileNameWithoutExtension(exe) + @".par");
+                    if (target.Game == MEGame.ME2 && File.Exists(parFile))
+                    {
+                        var fInfo = new FileInfo(exe);
+                        if (fInfo.Length < 5 * FileSize.MebiByte)
+                        {
+                            // Does this executable need swapped? MassEffect2.exe does not seem to reliably run through Origin and just exits early for some reason
+
+                        }
+                        var parContents = PARTools.DecodePAR(File.ReadAllBytes(parFile));
+                        var contentIds = parContents[@"Base"].GetValue(@"ContentId")?.Value;
+
+                        if (!string.IsNullOrWhiteSpace(contentIds))
+                        {
+                            exe = $@"origin://launchgame/{contentIds}";
+                        }
+                        //if (Settings.LaunchThroughOrigin)
+                        //{
+
+                        //}
                     }
                 }
             }
@@ -115,7 +151,8 @@ namespace MassEffectModManagerCore.modmanager.helpers
                     Log.Information($@"Steam not running. Launching now.");
                     startingUpSteam = true;
                     Utilities.RunProcess(steamExe);
-                } else if (startingUpSteam)
+                }
+                else if (startingUpSteam)
                 {
                     Log.Information($@"Waiting for steam process to startup ({numRetries} retries left)");
                 }

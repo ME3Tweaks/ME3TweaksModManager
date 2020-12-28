@@ -22,7 +22,21 @@ namespace MassEffectModManagerCore.modmanager
         public static string GetBioGamePath(GameTarget target) => MEDirectories.GetBioGamePath(target.Game, target.TargetPath);
         public static string GetDLCPath(GameTarget target) => MEDirectories.GetDLCPath(target.Game, target.TargetPath);
         public static string GetCookedPath(GameTarget target) => MEDirectories.GetCookedPath(target.Game, target.TargetPath);
-        public static string GetExecutablePath(GameTarget target) => MEDirectories.GetExecutablePath(target.Game, target.TargetPath);
+
+        public static string GetExecutablePath(GameTarget target, bool preferRealGameExe = false)
+        {
+            if (target.Game == MEGame.ME2 && preferRealGameExe)
+            {
+                // Prefer ME2Game.exe if it exists
+                var executableFolder = GetExecutableDirectory(target);
+                var exeReal = Path.Combine(executableFolder, @"ME2Game.exe");
+                if (File.Exists(exeReal))
+                {
+                    return exeReal;
+                }
+            }
+            return MEDirectories.GetExecutablePath(target.Game, target.TargetPath);
+        }
         public static string GetExecutableDirectory(GameTarget target) => MEDirectories.GetExecutableFolderPath(target.Game, target.TargetPath);
         public static string GetLODConfigFile(GameTarget target) => MEDirectories.GetLODConfigFile(target.Game);
         public static string GetTextureMarkerPath(GameTarget target) => MEDirectories.GetTextureModMarkerPath(target.Game, target.TargetPath);
