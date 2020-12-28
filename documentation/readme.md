@@ -1,6 +1,6 @@
 ![Documentation Image](images/documentation_header.png)
 
-This documentation is current as of Build 113.
+This documentation is current as of Build 114.
 
 ME3Tweaks Mod Manager (which will be written as M3 from now on in this document) allows users to organize mods as well as install them into the each game of the Mass Effect Trilogy. It is designed to be friendly for users and powerful for developers - for example, as a developer, you do not need to worry about users not installing the binkw32 bypass or running AutoTOC - M3 takes care of this all in the background for users. You can focus on developing your mods and my program will take care of the user side of things.
 
@@ -20,7 +20,7 @@ ME3Tweaks Mod Manager (which will be written as M3 from now on in this document)
  - [moddesc.ini: Localization mods](localizations.md)
    - Contains information about how to make a localization TLK mod for ME2 and ME3 mods
 
-As of Mod Manager 6.2, there is a built-in moddesc editor that can be used on existing mods. Right click your mod while in developer mod and select `moddesc.ini editor`. Currently this only works on mods that are loaded, and cannot be used for brand new mods.
+As of Mod Manager 6.2, there is a built-in moddesc editor that can be used on existing mods. Right click your mod while in developer mode and select `moddesc.ini editor`. Currently this only works on mods that are loaded, and cannot be used for brand new mods.
 
 ## Why use M3? Why not just use a zip or an exe installer?
 I've dealt with end-users for years and worked with many to help fix issues with problems arising to incorrect installation of mods. It is very easy to think like a developer and say well you just do X Y and Z, in that order. Many end users simply don't read or _do not understand_ what developers have written because a lot of documentation is written by people who assume that end users are familiar with the modding scene.
