@@ -19,7 +19,7 @@ ME3Tweaks Mod Manager starting with version 6.2 supports Mod Banner Images. Thes
 
 ![M3Images](images/banner_example.png)
 
-Banner images must have an aspect ratio of `580x47`, which is the default displayable size at 100% DPI scaling. Images should account for higher DPI displays, so I recommend shipping for 200% DPI scaling, so use `1160x64`. Images with different aspect ratios will be rejected and make the mod fail to load.
+Banner images must have an aspect ratio of `580x47`, which is the default displayable size at 100% DPI scaling. Images should account for higher DPI displays, so I recommend shipping for 200% DPI scaling, so use `1160x94`. Images with different aspect ratios will be rejected and make the mod fail to load.
 
 The banner image is specified under the `ModInfo` header, using the descriptor `bannerimagename`. You specify the name of the image file under the M3Images directory.
 
