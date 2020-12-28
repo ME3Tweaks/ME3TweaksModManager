@@ -1,7 +1,7 @@
 ![Documentation Image](images/documentation_header.png)
 
 # Images in Mod Manager
-Mod Manager 6.2 introduced support for images in mods. For a long time, there were no images in Mod Manager due to the extra complexity of dealing with image formats and the difficulty of extending the codebase further in Mod Manager 5. With the rewrite of Mod Manager 6, it was more feasible to add images, but installing mods from archive added significant technical challenges that prevented adding images to mods.
+Mod Manager 6.2 introduced support for images in mods. For a long time, there were no images in Mod Manager due to the extra complexity of dealing with image formats and the difficulty of extending the codebase further in Mod Manager 5. With the rewrite of Mod Manager 6, it was more feasible to add images, but installing mods from archive added significant technical challenges that prevented adding images to mods. With Mod Manager 6.2, images can now be used in different areas of the application.
 
 Mods targeting `cmmver` 6.2 and higher can add images under the `M3Images` directory at the root of their mod. Images in these folders will be packaged with your mod as long as they are referenced and will be shown to users. All images that Mod Manager will use **must** be stored under the M3Images directory.
 
@@ -55,3 +55,8 @@ ImageHeight=221))
 ```
 
 You may be asking, why not just use the native size? This is to force developers to think about user screen real estate. Showing a 4K image on a user's 1600x900 display, taking over the entire display, leads to a bad experience. I recommend only shipping images large enough to get your point across. Trim out unnecessary parts of images and scale them down to a size that is reasonable. In the above alternate image, it has a height of 221 and a width of 720, which is about the maximum width I would recommend for images. As these images are only to convey information to the user, they do not need to worry about DPI scaling.
+
+## Image considerations
+Every image you add is loaded into memory when the mod is installed from archive. If your mod has 50 alternates, each with an image, and the user installs your mod from archive, this means 50 images (plus the banner image) are all loaded into memory. Images are stored uncompressed in the mod archive so they can be quickly loaded - this also means the mod archive size will increase. I suggest using JPG images for alternate images to help reduce the filesize and memory footprint of your mod.
+
+Banner images in the mod library are always loaded once the mod is shown for the first time. A large mod banner may consume lots of memory for little benefit.
