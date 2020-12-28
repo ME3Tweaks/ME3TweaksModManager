@@ -56,6 +56,13 @@ namespace MassEffectModManagerCore.modmanager
             set => SetProperty(ref _logModUpdater, value);
         }
 
+        private static bool _launchGamesThroughOrigin = false; //Affects only ME1/ME2. ME3 always uses origin.
+        public static bool LaunchGamesThroughOrigin
+        {
+            get => _launchGamesThroughOrigin;
+            set => SetProperty(ref _launchGamesThroughOrigin, value);
+        }
+
         private static bool _enableTelemetry = true;
         public static bool EnableTelemetry
         {

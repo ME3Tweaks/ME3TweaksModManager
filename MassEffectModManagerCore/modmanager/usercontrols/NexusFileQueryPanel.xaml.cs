@@ -49,7 +49,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void PerformSearch()
         {
-            var searchUrl = $@"{APIEndpoint}search/{Uri.EscapeDataString(SearchTerm)}";
+            var searchGames = new List<string>();
+            if (SearchME1) searchGames.Add("masseffect");
+            if (SearchME2) searchGames.Add("masseffect2");
+            if (SearchME3) searchGames.Add("masseffect3");
+            var searchUrl = $@"{APIEndpoint}search/{searchGames.StringJoin("/")}/{Uri.EscapeDataString(SearchTerm)}";
             Debug.WriteLine(searchUrl);
             QueryInProgress = true;
             try
@@ -161,6 +165,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private class SearchTopLevelResult
         {
+            public int mod_count { get; set; }
+            public string searched_file { get; set; }
+            public string file_name { get; set; } // Why?
+            public List<string> games { get; set; }
             public List<SearchedItemResult> mod_ids { get; set; }
         }
     }

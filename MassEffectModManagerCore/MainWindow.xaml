@@ -367,6 +367,15 @@
                             ToolTip="{DynamicResource string_tooltip_autoLods4K}"
                             IsCheckable="True" />
                         <MenuItem
+                            Name="LaunchThroughOrigin_MenuItem"
+                            Header="Launch Origin-based games through Origin"
+                            StaysOpenOnClick="True"
+                            Click="ChangeSetting_Clicked"
+                            Visibility="{Binding Converter={StaticResource FlightingVisibilityConverter}, ConverterParameter='launchthroughoriginfeature'}"
+                            IsChecked="{Binding Path=(modmanager:Settings.LaunchGamesThroughOrigin)}"
+                            ToolTip="Launches Origin-based games through the Origin client, ensuring licensing and playtime is tracked. This only affects ME1/ME2 Origin versions, as ME3 requires it"
+                            IsCheckable="True" />
+                        <MenuItem
                             Name="PreferCompressingPackages_MenuItem"
                             Visibility="Visible"
                             Header="{DynamicResource string_compressPackagesOnInstall}"
@@ -1026,7 +1035,7 @@
                     <MenuItem
                         Header="{DynamicResource string_nexusFileSearch}"
                         Command="{Binding NexusModsFileSearchCommand}"
-                        Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}"
+                        Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource FlightingVisibilityConverter}, ConverterParameter='nexusfilesearch'}"
                         ToolTip="{DynamicResource string_tooltip_nexusFileSearch}">
                         <MenuItem.Icon>
                             <fa:ImageAwesome

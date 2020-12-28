@@ -78,7 +78,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                         }
                     }
                 }
-                else if (target.GameSource.Contains(@"Origin") && target.RegistryActive) // Must be registry active or origin will run the wrong game.
+                else if (target.GameSource.Contains(@"Origin") && target.RegistryActive && target.Game < MEGame.ME3 && Settings.LaunchGamesThroughOrigin) // Must be registry active or origin will run the wrong game.
                 {
                     // ME2 seems to have lots of problems directly running due to it's licensing system
                     // We should try to run it through Origin to avoid this problem
@@ -99,15 +99,11 @@ namespace MassEffectModManagerCore.modmanager.helpers
                         {
                             exe = $@"origin://launchgame/{contentIds}";
                         }
-                        //if (Settings.LaunchThroughOrigin)
-                        //{
-
-                        //}
                     }
                 }
             }
 
-            Utilities.RunProcess(exe, (string)null, false, true, false, false, environmentVars);
+            Utilities.RunProcess(exe, (string)null, true, true, false, false, environmentVars);
             Thread.Sleep(3500); // Keep task alive for a bit
         }
 
