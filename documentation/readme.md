@@ -20,6 +20,8 @@ ME3Tweaks Mod Manager (which will be written as M3 from now on in this document)
  - [moddesc.ini: Localization mods](localizations.md)
    - Contains information about how to make a localization TLK mod for ME2 and ME3 mods
 
+As of Mod Manager 6.2, there is a built-in moddesc editor that can be used on existing mods. Right click your mod while in developer mod and select `moddesc.ini editor`. Currently this only works on mods that are loaded, and cannot be used for brand new mods.
+
 ## Why use M3? Why not just use a zip or an exe installer?
 I've dealt with end-users for years and worked with many to help fix issues with problems arising to incorrect installation of mods. It is very easy to think like a developer and say well you just do X Y and Z, in that order. Many end users simply don't read or _do not understand_ what developers have written because a lot of documentation is written by people who assume that end users are familiar with the modding scene.
 
