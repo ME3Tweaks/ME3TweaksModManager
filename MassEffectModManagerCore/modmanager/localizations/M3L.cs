@@ -401,6 +401,8 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_tooltip_nexusFileSearch = "string_tooltip_nexusFileSearch";
 		public const string string_interp_allInstallableFiles = "string_interp_allInstallableFiles";
 		public const string string_description_allInstallableFiles = "string_description_allInstallableFiles";
+		public const string string_setting_launchThroughOrigin = "string_setting_launchThroughOrigin";
+		public const string string_setting_tooltip_launchThroughOrigin = "string_setting_tooltip_launchThroughOrigin";
 		public const string string_thisTargetHasBeenTextureModded = "string_thisTargetHasBeenTextureModded";
 		public const string string_preparingToInstall = "string_preparingToInstall";
 		public const string string_interp_devModeAlotInstalledWarning = "string_interp_devModeAlotInstalledWarning";
@@ -1101,6 +1103,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_library_watsonwebsocket = "string_library_watsonwebsocket";
 		public const string string_library_authenticodeexaminer = "string_library_authenticodeexaminer";
 		public const string string_library_ntfsstreams = "string_library_ntfsstreams";
+		public const string string_tooltip_runningOnX = "string_tooltip_runningOnX";
 		public const string string_outdatedVersionInstalled = "string_outdatedVersionInstalled";
 		public const string string_interp_byXVersionY = "string_interp_byXVersionY";
 		public const string string_installedOutdated = "string_installedOutdated";
@@ -1552,12 +1555,14 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_mde_dec_header_metadata_modmanager = "string_mde_dec_header_metadata_modmanager";
 		public const string string_mde_dec_header_metadata_modinfo = "string_mde_dec_header_metadata_modinfo";
 		public const string string_mde_dec_header_metadata_updates = "string_mde_dec_header_metadata_updates";
+		public const string string_multilists = "string_multilists";
 		public const string string_nexusModsFileSearch = "string_nexusModsFileSearch";
 		public const string string_description_nexusModsFileSearch = "string_description_nexusModsFileSearch";
 		public const string string_search = "string_search";
 		public const string string_searching = "string_searching";
 		public const string string_goToModPage = "string_goToModPage";
 		public const string string_interp_lastIndexing = "string_interp_lastIndexing";
-		public const string string_tooltip_runningOnX = "string_tooltip_runningOnX";
+		public const string string_interp_resultsCount = "string_interp_resultsCount";
+		public const string string_interp_resultsCount = "string_interp_resultsCount";
 	}
 }

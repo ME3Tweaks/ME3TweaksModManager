@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Documents;
 using System.Windows.Input;
 using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.objects.nexusfiledb;
 using MassEffectModManagerCore.ui;
-using ME3ExplorerCore.Helpers;
-using Newtonsoft.Json;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -25,7 +21,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         /// The API endpoint for searching. Append an encoded filename to search.
         /// </summary>
         public string SearchTerm { get; set; }
-        public bool QueryInProgress { get; set; }
+        public bool QueryInProgress { get; set; } = true; // Defaults to true on open.
+        public string BusyStatusText { get; set; } = M3L.GetString(M3L.string_pleaseWait);
         public string StatusText { get; set; }
         public bool SearchME1 { get; set; }
         public bool SearchME2 { get; set; }
@@ -65,7 +62,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     if (!LoadedDatabases.TryGetValue(domain, out var db))
                     {
                         db = GameDatabase.LoadDatabase(domain);
-                        LoadedDatabases[domain] = db;
+                        if (db != null)
+                        {
+                            LoadedDatabases[domain] = db;
+                        }
                     }
 
                     // Check if the name exists in filenames. If it doesn't, it will never find it
@@ -87,7 +87,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
                 }
 
-                StatusText = $"{Results.Count} result(s)";
+                StatusText = M3L.GetString(M3L.string_interp_resultsCount, Results.Count);
                 QueryInProgress = false;
             }
             catch (Exception e)
@@ -103,25 +103,21 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
-            //Task.Run(() =>
-            //{
-            //    try
-            //    {
-            //        if (APIKeys.HasNexusSearchKey)
-            //        {
-            //            var latestStatusStr =
-            //                OnlineContent.FetchRemoteString($@"{APIEndpoint}status", APIKeys.NexusSearchKey);
-            //            var latestStatus = JsonConvert.DeserializeObject<Dictionary<string, double>>(latestStatusStr);
-            //            var lastFileIndexing = UnixTimeStampToDateTime(latestStatus[@"last_file_indexing"]);
-            //            var lastModIndexing = UnixTimeStampToDateTime(latestStatus[@"last_mod_indexing"]);
-            //            StatusText = M3L.GetString(M3L.string_interp_lastIndexing, lastFileIndexing, lastModIndexing);
-            //        }
-            //    }
-            //    catch (Exception e)
-            //    {
-            //        Log.Error($@"Could not get indexing status: {e.Message}");
-            //    }
-            //});
+            Task.Run(() =>
+            {
+                try
+                {
+                    GameDatabase.EnsureDatabaseFile(true);
+                }
+                catch (Exception e)
+                {
+                    Log.Error($@"Could not ensure the nexus database: {e.Message}");
+                }
+
+                // No longer busy
+                QueryInProgress = false;
+                BusyStatusText = M3L.GetString(M3L.string_searching);
+            });
         }
 
 
@@ -183,8 +179,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             public string ModFileTitle => AssociatedDB.NameTable[FileInfo.NameID];
 
             public NMFileInfo FileInfo => AssociatedDB.ModFileInfos[Instance.FileID];
-            
-            
+
+
 #pragma warning disable
             public event PropertyChangedEventHandler PropertyChanged;
 #pragma warning restore

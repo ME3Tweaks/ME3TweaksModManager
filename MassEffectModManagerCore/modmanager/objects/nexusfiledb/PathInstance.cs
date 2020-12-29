@@ -4,13 +4,13 @@ namespace MassEffectModManagerCore.modmanager.objects.nexusfiledb
 {
     public class PathInstance
     {
-        [JsonProperty("pathid")]
+        [JsonProperty(@"pathid")]
         public int PathId { get; set; }
 
-        [JsonProperty("nameid")]
+        [JsonProperty(@"nameid")]
         public int NameId { get; set; }
 
-        [JsonProperty("parentpathid")]
+        [JsonProperty(@"parentpathid")]
         public int ParentPathId { get; set; }
 
         public string GetFullPath(GameDatabase assocDB, string appendedText = null)
@@ -23,7 +23,7 @@ namespace MassEffectModManagerCore.modmanager.objects.nexusfiledb
             {
                 appendedText = assocDB.NameTable[NameId];
             }
-            
+
             if (ParentPathId == 0) return appendedText;
             return assocDB.Paths[ParentPathId].GetFullPath(assocDB, appendedText);
         }

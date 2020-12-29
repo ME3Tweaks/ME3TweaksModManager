@@ -6,14 +6,14 @@ namespace MassEffectModManagerCore.modmanager.objects.nexusfiledb
 {
     public class NMFileInfo
     {
-        [JsonProperty("upload_date")]
+        [JsonProperty(@"upload_date")]
         [JsonConverter(typeof(UnixDateTimeConverter))]
         public DateTimeOffset UploadDate { get; set; }
 
-        [JsonProperty("version")]
+        [JsonProperty(@"version")]
         public string Version { get; set; }
-        
-        [JsonProperty("nameid")]
+
+        [JsonProperty(@"nameid")]
         public int NameID { get; set; }
     }
 }

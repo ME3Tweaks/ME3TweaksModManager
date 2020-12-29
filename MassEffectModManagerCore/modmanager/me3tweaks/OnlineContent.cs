@@ -21,14 +21,14 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
     partial class OnlineContent
     {
         private static readonly string StartupManifestURL = "https://me3tweaks.com/modmanager/updatecheck?currentversion=" + App.BuildNumber + "&M3=true";
-        private static readonly string StartupManifestBackupURL = "https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/master/MassEffectModManagerCore/staticfiles/startupmanifest.json";
+        private const string StartupManifestBackupURL = "https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/master/MassEffectModManagerCore/staticfiles/startupmanifest.json";
         private const string ThirdPartyIdentificationServiceURL = "https://me3tweaks.com/modmanager/services/thirdpartyidentificationservice?highprioritysupport=true&allgames=true";
         private const string StaticFilesBaseURL_Github = "https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/master/MassEffectModManagerCore/staticfiles/";
         private const string StaticFilesBaseURL_ME3Tweaks = "https://me3tweaks.com/modmanager/tools/staticfiles/";
         private const string ThirdPartyImportingServiceURL = "https://me3tweaks.com/modmanager/services/thirdpartyimportingservice?allgames=true";
         private const string BasegameFileIdentificationServiceURL = "https://me3tweaks.com/modmanager/services/basegamefileidentificationservice";
         private const string BasegameFileIdentificationServiceBackupURL = "https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/master/MassEffectModManagerCore/staticfiles/basegamefileidentificationservice.json";
-        
+
         private const string ThirdPartyModDescURL = "https://me3tweaks.com/mods/dlc_mods/importingmoddesc/";
         private const string ExeTransformBaseURL = "https://me3tweaks.com/mods/dlc_mods/importingexetransforms/";
         private const string ModInfoRelayEndpoint = "https://me3tweaks.com/modmanager/services/relayservice";
@@ -92,6 +92,28 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             return new Dictionary<string, string>();
         }
 
+        public static (MemoryStream download, string errorMessage) DownloadStaticAsset(string assetName)
+        {
+            (MemoryStream, string) result = (null, @"Could not download file: No attempt was made, or errors occurred!");
+            foreach (var staticurl in StaticFilesBaseEndpoints)
+            {
+                try
+                {
+                    using var wc = new ShortTimeoutWebClient();
+                    {
+                        var fullURL = staticurl + assetName;
+                        result = DownloadToMemory(fullURL, logDownload: true);
+                        if (result.Item2 == null) return result;
+                    }
+                }
+                catch (Exception e)
+                {
+                    Log.Error($@"Could not download {assetName} from endpoint {staticurl}: {e.Message}");
+                }
+            }
+
+            return result;
+        }
 
         public static Dictionary<string, CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>> FetchBasegameFileIdentificationServiceManifest(bool overrideThrottling = false)
         {

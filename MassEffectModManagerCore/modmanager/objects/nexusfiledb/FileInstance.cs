@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using MassEffectModManagerCore.modmanager.usercontrols;
+﻿using System.Diagnostics;
 using Newtonsoft.Json;
 
 namespace MassEffectModManagerCore.modmanager.objects.nexusfiledb
@@ -14,19 +9,19 @@ namespace MassEffectModManagerCore.modmanager.objects.nexusfiledb
         /// <summary>
         /// The id of the parent path
         /// </summary>
-        [JsonProperty("parentpathid")]
+        [JsonProperty(@"parentpathid")]
         public int ParentPathID { get; set; }
 
         /// <summary>
         /// The ID of the mod.
         /// </summary>
-        [JsonProperty("mod_id")]
+        [JsonProperty(@"mod_id")]
         public int ModID { get; set; }
 
         /// <summary>
         /// The nexusmods file id that contains this specific file
         /// </summary>
-        [JsonProperty("file_id")]
+        [JsonProperty(@"file_id")]
         public int FileID { get; set; }
 
         [JsonIgnore]
@@ -35,13 +30,16 @@ namespace MassEffectModManagerCore.modmanager.objects.nexusfiledb
         [JsonIgnore]
         public string modfilename { get; set; }
 
-        [JsonProperty("filenameid")]
+        [JsonProperty(@"filenameid")]
         public int FilenameId { get; set; }
 
-        [JsonProperty("modnameid")]
+        [JsonProperty(@"modnameid")]
         public int ModNameId { get; set; }
 
-        [JsonProperty("size")]
+        [JsonProperty(@"size")]
         public string Size { get; set; }
+        
+        [JsonProperty(@"fullfilepath")]
+        public string DebugFullName { get; set; }
     }
 }
