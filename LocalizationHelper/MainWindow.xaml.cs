@@ -307,7 +307,7 @@ namespace LocalizationHelper
                     if (commentIndex >= 0 && matchIndex > commentIndex)
                     {
                         // Check it's not http:// in same line
-                        if (protocolIndex >= 0 && protocolIndex != commentIndex - 1)
+                        if ((protocolIndex >= 0 && protocolIndex != commentIndex - 1) || (commentIndex >= 0 && protocolIndex == -1))
                         {
                             continue; //this is a comment
                         }
@@ -563,7 +563,13 @@ namespace LocalizationHelper
                 xmldoc.PreserveWhitespace = true;
                 xmldoc.XmlResolver = null;
                 xmldoc.LoadXml(doc.ToString());
-
+                foreach (XmlNode node in xmldoc)
+                {
+                    if (node.NodeType == XmlNodeType.XmlDeclaration)
+                    {
+                        xmldoc.RemoveChild(node);
+                    }
+                }
                 ResultTextBox.Text = Beautify(xmldoc);
             }
             catch (Exception)
@@ -814,7 +820,6 @@ namespace LocalizationHelper
         {
             if (str.Equals("ME3Tweaks Mod Manager", StringComparison.InvariantCultureIgnoreCase)) return false;
             if (str.Equals("Mass Effect Ini Modder", StringComparison.InvariantCultureIgnoreCase)) return false;
-            if (str.Equals("Multilists", StringComparison.InvariantCultureIgnoreCase)) return false;
             if (str.Equals("Multilist", StringComparison.InvariantCultureIgnoreCase)) return false;
             if (str.Equals("moddir", StringComparison.InvariantCultureIgnoreCase)) return false;
             if (str.Equals("=>", StringComparison.InvariantCultureIgnoreCase)) return false;

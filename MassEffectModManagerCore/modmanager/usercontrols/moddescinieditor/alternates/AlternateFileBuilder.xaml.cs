@@ -98,7 +98,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alte
 
         private void AddAlternateFile()
         {
-            Alternates.Add(new AlternateFile(M3L.GetString(M3L.string_interp_alternateFileX + 1, Alternates.Count + 1)));
+            Alternates.Add(new AlternateFile(M3L.GetString(M3L.string_interp_alternateFileX, Alternates.Count + 1)));
         }
 
 

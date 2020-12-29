@@ -368,12 +368,12 @@
                             IsCheckable="True" />
                         <MenuItem
                             Name="LaunchThroughOrigin_MenuItem"
-                            Header="Launch Origin-based games through Origin"
+                            Header="{DynamicResource string_setting_launchThroughOrigin}"
                             StaysOpenOnClick="True"
                             Click="ChangeSetting_Clicked"
                             Visibility="{Binding Converter={StaticResource FlightingVisibilityConverter}, ConverterParameter='launchthroughoriginfeature'}"
                             IsChecked="{Binding Path=(modmanager:Settings.LaunchGamesThroughOrigin)}"
-                            ToolTip="Launches Origin-based games through the Origin client, ensuring licensing and playtime is tracked. This only affects ME1/ME2 Origin versions, as ME3 requires it"
+                            ToolTip="{DynamicResource string_setting_tooltip_launchThroughOrigin}"
                             IsCheckable="True" />
                         <MenuItem
                             Name="PreferCompressingPackages_MenuItem"
@@ -1717,13 +1717,13 @@
                         Height="0">
                         <TextBlock
                             ToolTip="{Binding SelectedMod.ModWebsite}">
-                            <Hyperlink
-                                            RequestNavigate="RequestNavigate"
-                                            NavigateUri="{Binding SelectedMod.ModWebsite}">
-                                <TextBlock
-                                            Text="{Binding VisitWebsiteText}" />
-                            </Hyperlink>
-                        </TextBlock>
+              <Hyperlink
+                                RequestNavigate="RequestNavigate"
+                                NavigateUri="{Binding SelectedMod.ModWebsite}">
+                <TextBlock
+                                    Text="{Binding VisitWebsiteText}" />
+              </Hyperlink>
+            </TextBlock>
                     </StackPanel>
                     <Image
                         Source="{Binding SelectedMod.BannerBitmap}"

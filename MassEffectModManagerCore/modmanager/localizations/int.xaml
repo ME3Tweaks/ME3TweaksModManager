@@ -349,8 +349,11 @@
     <system:String x:Key="string_interp_allInstallableFiles">All installable files for {0}</system:String>
     <!-- 0={mod name} -->
     <system:String x:Key="string_description_allInstallableFiles">The following files are what this mod can potentially install into the game. Note that some of them may only be installed if certain options are chosen.</system:String>
+    <system:String x:Key="string_setting_launchThroughOrigin">Launch Origin-based games through Origin</system:String>
+    <system:String x:Key="string_setting_tooltip_launchThroughOrigin">Launches Origin-based games through the Origin client, ensuring licensing and playtime is tracked. This only affects ME1/ME2 Origin versions, as ME3 requires it</system:String>
 
-    <!-- Global Styles -->
+
+<!-- Global Styles -->
     <system:String x:Key="string_thisTargetHasBeenTextureModded">This target has been texture modded</system:String>
 
     <!-- Mod Installer Panel -->
@@ -1682,7 +1685,7 @@
     <system:String x:Key="string_interp_checkingPackagesBeforeUploadX">Checking packages before upload {0}%</system:String>
     <!-- 0={Percent number} -->
     <system:String x:Key="string_uploadAborted_foundCompressedPackage">Upload aborted: Cannot upload packages that are natively compressed</system:String>
-    <system:String xml:space="preserve" x:Key="string_dialog_uploadAborted_foundCompressedPackage">The follow packages are natively compressed and cannot be uploaded. Package files must be saved uncompressed so end user instances of Mod Manager can reliably determine which files need updated. Resave these packages in ME3Explorer - ME3Tweaks Fork to decompress them.\n\n{0}</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialog_uploadAborted_foundCompressedPackage">The following packages are natively compressed and cannot be uploaded. Package files must be saved uncompressed so end user instances of Mod Manager can reliably determine which files need updating. Resave these packages in ME3Explorer - ME3Tweaks Fork to decompress them.\n\n{0}</system:String>
     <!-- 0=List of packages -->
     <system:String x:Key="string_cannotUploadMod">Cannot upload mod</system:String>
 
@@ -1947,6 +1950,7 @@
     <system:String x:Key="string_mde_dec_header_metadata_modmanager">The ModManager header is the first item read when parsing a mod and is used to configure the mod parser. This editor only supports saving mods targeting the latest version of moddesc that this build supports.</system:String>
     <system:String x:Key="string_mde_dec_header_metadata_modinfo">The ModInfo header contains most of the information that is displayed to the user in Mod Manager's interface. The more information you give to a user, the less likely they will need to ask you questions about your mod.</system:String>
     <system:String x:Key="string_mde_dec_header_metadata_updates">The UPDATES header is used for the ME3Tweaks Updater Service. The additionaldeployment items can be used to force non-referenced files to be included when deploying your mod.</system:String>
+    <system:String x:Key="string_multilists">Multilists</system:String>
 
     <!-- Nexus File Search -->
     <system:String x:Key="string_nexusModsFileSearch">NexusMods File Search</system:String>
