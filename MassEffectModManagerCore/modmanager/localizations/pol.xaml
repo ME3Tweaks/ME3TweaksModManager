@@ -1,10 +1,6 @@
 <ResourceDictionary	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 					xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 					xmlns:system="clr-namespace:System;assembly=System.Runtime">
-	<!-- About -->
-	<system:String x:Key="string_tooltip_runningOnX">Działa na {0}</system:String>
-	<!-- 0 = netcore3.1, net5-windows8.0, etc. Version string of .NET -->
-
 	<!-- About Panel -->
 	<system:String x:Key="string_tooltip_hello">Cześć!</system:String>
 	<system:String x:Key="string_tooltip_softwareDevelopedWithLoveByME3Tweaks">Oprogramowanie stworzone z pasją przez ME3Tweaks</system:String>
@@ -14,6 +10,30 @@
 	<system:String x:Key="string_specialThanks">Specjalne podziękowania</system:String>
 	<system:String x:Key="string_youTheEndUser">Dla Ciebie, użytkownika, za uczynienie tego oprogramowania wartym opracowania.</system:String>
 	<system:String x:Key="string_license">Licencja</system:String>
+	<system:String x:Key="string_library_adonisui" xml:space="preserve">Biblioteka dla czarnego/białego motywu w WPF\nME3Tweaks Mod Manager używa tej biblioteki w zmodyfikowanej wersji.</system:String>
+	<system:String x:Key="string_library_sevenzipsharp" xml:space="preserve">Biblioteka do kompresji oraz dekompresji dla 7z\nME3Tweaks Mod Manager używa tej biblioteki w zmodyfikowanej wersji.</system:String>
+	<system:String x:Key="string_library_iniparser" xml:space="preserve">Biblioteka do parsowania plików ini\nME3Tweaks Mod Manager używa tej biblioteki w zmodyfikowanej wersji.</system:String>
+	<system:String x:Key="string_library_flurl">Biblioteka dla nowoczesnego asynchronicznego klienta HTTP</system:String>
+	<system:String x:Key="string_library_fody">IL weaver system pozbywa się sporej ilości nakładających się linijek kodu</system:String>
+	<system:String x:Key="string_library_fontawesome">Paczka wektorowych ikon</system:String>
+	<system:String x:Key="string_library_appcenter">Biblioteka do telemetri dla Microsoft Azure</system:String>
+	<system:String x:Key="string_library_mvvmvalidation">Lekka wersja framework'a do walidacji</system:String>
+	<system:String x:Key="string_library_newtonsoft">Wszechstronny parser JSON dla C#</system:String>
+	<system:String x:Key="string_library_octokit">Klient API GitHub</system:String>
+	<system:String x:Key="string_library_serilog">Wysoce elastyczny rejestrator</system:String>
+	<system:String x:Key="string_library_wpftoolkitextended" xml:space="preserve">Dodatkowe, użyteczne opcje WPF \nME3Tweaks Mod Manager używa tej biblioteki w zmodyfikowanej wersji.</system:String>
+	<system:String x:Key="string_library_me3explorercore">Backend zestawu narzędziowego dla trylogii Mass Effect</system:String>
+	<system:String x:Key="string_library_cliwrap">Asynchroniczny wrapper do interakcji z wierszem poleceń dla aplikacji</system:String>
+	<system:String x:Key="string_library_commandlineparser">Rozbudowany wiersz poleceń dla parser'a argumentów</system:String>
+	<system:String x:Key="string_library_computerinfo">Mała biblioteka do fetching'u (zbierania informacji) CPU, OS oraz pamięci RAM</system:String>
+	<system:String x:Key="string_library_fluentnexus">Nowoczesny asynchroniczncy HTTP klient dla Nexus Mods API</system:String>
+	<system:String x:Key="string_library_recyclablememorystream">Biblioteka do zarządzania opróżniem buforu pamięci operacyjnej</system:String>
+	<system:String x:Key="string_library_sshnet">Biblioteka do obsługi połączeń SSH</system:String>
+	<system:String x:Key="string_library_watsonwebsocket">Biblioteka do obsługi połączeń typu WebSocket</system:String>
+	<system:String x:Key="string_library_authenticodeexaminer">Zarządza sprawdzaniem sygnatur typu 'Authenticode' plików</system:String>
+	<system:String x:Key="string_library_ntfsstreams">Biblioteka do odczytu alternatywnych strumieni danych NTFS</system:String>
+	<system:String x:Key="string_tooltip_runningOnX">Działa na {0}</system:String>
+	<!-- 0 = netcore3.1, net5-windows8.0, etc. Version string of .NET -->
 
 	<!-- ALOT Version Info -->
 	<system:String x:Key="string_textureModded">Tekstury zmodowane</system:String>
@@ -1200,7 +1220,7 @@
 	<!-- 0 = noun (mod name, etc) -->
 	<system:String x:Key="string_insufficientDiskSpaceToExtractSelectedMods">Niewystarczająca wolna ilość pamięci na dysku aby rozpakować wybrane mody</system:String>
 	<system:String x:Key="string_interp_dialogNotEnoughFreeSpaceToExtract" xml:space="preserve">Niewystarczająca wolna ilość pamięci na dysku aby zaimportować wybrane mody do Twojej biblioteki.\nWymagana ilość pamięci: {0}\nDostępna ilość pamięci: {1}</system:String>
-	<!-- 0=ByteSize.FromBytes(requiredSpace) 1=ByteSize.FromBytes(freeSpace) -->
+	<!-- 0=Required space amount 1=Free space amount -->
 	<system:String x:Key="string_insufficientDiskSpace">Niewystarczająca ilość pamięci</system:String>
 	<system:String x:Key="string_archiveError">Błąd archiwum</system:String>
 	<system:String x:Key="string_couldNotInspectArchive7zException">Nie udało się sprawdzić archiwum z powodu błędu w 7z. Plik może być uszkodzony.</system:String>
@@ -1632,12 +1652,14 @@
 
 	<!-- Nexus File Search -->
 	<system:String x:Key="string_nexusModsFileSearch">Wyszukiwarka NexusMods</system:String>
-	<system:String x:Key="string_description_nexusModsFileSearch">Możesz wyszukać plików zawartych w modyfikacjach na NexusMods dla gier trylogii Mass Effect przy pomocy Wyszukiwarki NexusMods. Baza danych jest regularnie aktualizowana przez ME3Tweaks.</system:String>
+	<system:String x:Key="string_description_nexusModsFileSearch">Możesz wyszukać plików zawartych w modyfikacjach na NexusMods dla gier trylogii Mass Effect przy pomocy Wyszukiwarki NexusMods. Baza danych jest regularnie aktualizowana przez JonatanRek.</system:String>
 	<system:String x:Key="string_search">Wyszukaj</system:String>
 	<system:String x:Key="string_searching">Wyszukiwanie...</system:String>
 	<system:String x:Key="string_goToModPage">Wejdź na stronę modyfikacji</system:String>
 	<system:String x:Key="string_interp_lastIndexing">Ostatnie indeksowanie pliku: {0}, Ostatnie indeksowanie modyfikacji: {1}</system:String>
 	<!-- 0={date} 1={date} -->
+	<system:String x:Key="string_interp_resultsCount">{0} Wynik(ów)</system:String>
+	<!-- 0={Number of results in a search. Adjust this string as necessary to fit your language's pluralization methods.} -->
 
 	<!-- NexusMods Login Panel -->
 	<system:String x:Key="string_authenticateToNexusMods">Łączenie z NexusMods</system:String>
