@@ -1348,9 +1348,10 @@
     <system:String x:Key="string_library_watsonwebsocket">Library for handling websocket connections</system:String>
     <system:String x:Key="string_library_authenticodeexaminer">Manages inspecting Authenticode file signatures</system:String>
     <system:String x:Key="string_library_ntfsstreams">Library for reading NTFS alternate data streams</system:String>
+    <system:String x:Key="string_tooltip_runningOnX">Running on {0}</system:String>
+    <!-- 0 = netcore3.1, net5-windows8.0, etc. Version string of .NET -->
 
-
-<!-- ASI Manager Panel -->
+    <!-- ASI Manager Panel -->
     <system:String x:Key="string_outdatedVersionInstalled">Outdated version installed</system:String>
     <system:String xml:space="preserve" x:Key="string_interp_byXVersionY">By {0} | Version {1}</system:String>
     <!-- 0 = author, 1 = version number -->
@@ -1961,7 +1962,4 @@
     <system:String x:Key="string_interp_lastIndexing">Last file indexing: {0}, Last mod indexing: {1}</system:String>
     <!-- 0={date} 1={date} -->
 
-    <!-- About -->
-    <system:String x:Key="string_tooltip_runningOnX">Running on {0}</system:String>
-    <!-- 0 = netcore3.1, net5-windows8.0, etc. Version string of .NET -->
 </ResourceDictionary>
