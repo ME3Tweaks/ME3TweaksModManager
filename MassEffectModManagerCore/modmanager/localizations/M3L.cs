@@ -1563,6 +1563,5 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_goToModPage = "string_goToModPage";
 		public const string string_interp_lastIndexing = "string_interp_lastIndexing";
 		public const string string_interp_resultsCount = "string_interp_resultsCount";
-		public const string string_interp_resultsCount = "string_interp_resultsCount";
 	}
 }
