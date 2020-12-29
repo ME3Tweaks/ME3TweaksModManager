@@ -1662,6 +1662,8 @@
 	<system:String x:Key="string_goToModPage">Mod-Webseite aufrufen</system:String>
 	<system:String x:Key="string_interp_lastIndexing">Letzte Dateiindizierung: {0}, Letzte Modindizierung: {1}</system:String>
 	<!-- 0={date} 1={date} -->
+	<system:String x:Key="string_interp_resultsCount">{0} Ergebnis(se)</system:String>
+	<!-- 0={Number of results in a search. Adjust this string as necessary to fit your language's pluralization methods.} -->
 
 	<!-- NexusMods Login Panel -->
 	<system:String x:Key="string_authenticateToNexusMods">Mit NexusMods authentifizieren</system:String>
