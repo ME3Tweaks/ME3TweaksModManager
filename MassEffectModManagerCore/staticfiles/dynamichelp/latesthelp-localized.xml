@@ -214,7 +214,7 @@
     <helpitem title="Multiplayer Discord" url="https://discord.gg/YhX5zfX" tooltip="Chat Server, um andere Mass Effect 3 MP- und Mass Effect Andromeda MP-Spieler zu finden"/>
     <helpitem title="ME3Tweaks Mod Manager ist in der Entwicklung" modaltitle="Warnung: Bauarbeiten" icon="INFO">ME3Tweaks Mod Manager ist aktuell in der Vorschau-Phase. Viele Funktionen aus Mass Effect 3 Mod Manager werden übernommen, doch bis dahin dauert es noch. Bitte berichte etwaige Abstürze im ME3Tweaks Discord (Englisch).</helpitem>
 
-    <list title="Mods bekommen">
+    <list title="Mods beziehen">
       <!--<helpitem title="ME3Tweaks ModMaker Gallery" url="https://me3tweaks.com/modmaker/gallery" tooltip="Browse mods developed on ME3Tweaks ModMaker"/>-->
       <helpitem title="Liste der von ME3Tweaks vorgeschlagenen Mods" url="https://me3tweaks.com/mods" tooltip="Stöbere durch von ME3Tweaks vorgeschlagene Mods"/>
       <helpitem title="NexusMods (ME1)" url="http://www.nexusmods.com/masseffect/" tooltip="Stöbere durch Mods für Mass Effect auf NexusMods"/>
