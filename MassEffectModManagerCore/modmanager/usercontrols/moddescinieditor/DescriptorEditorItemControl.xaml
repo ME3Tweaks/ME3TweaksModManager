@@ -8,6 +8,8 @@
              xmlns:moddescinieditor="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor"
              mc:Ignorable="d" 
              xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
+             xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:ui="clr-namespace:MassEffectModManagerCore.ui"
              d:DesignHeight="450" d:DesignWidth="800">
     <DockPanel>
         <TextBlock DockPanel.Dock="Top"
@@ -43,6 +45,9 @@
                     </DockPanel>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
+            <b:Interaction.Behaviors>
+                <ui:IgnoreMouseWheelBehavior />
+            </b:Interaction.Behaviors>
         </ItemsControl>
     </DockPanel>
 </UserControl>

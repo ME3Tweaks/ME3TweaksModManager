@@ -1656,7 +1656,7 @@
 
 	<!-- Nexus File Search -->
 	<system:String x:Key="string_nexusModsFileSearch">NexusMods Dateisuche</system:String>
-	<system:String x:Key="string_description_nexusModsFileSearch">Mit der NexusMods Dateisuche kannst du nach Dateien suchen, die in Mods für die Mass Effect Spieletrilogie auf NexusMods enthalten sind. Die Datenbank wird von JonatanRek regelmäßig aktualisiert und gepflegt.</system:String>
+	<system:String x:Key="string_description_nexusModsFileSearch">Mit der NexusMods Dateisuche kannst du nach Dateien suchen, die in Mods für die Mass Effect Spieletrilogie auf NexusMods enthalten sind. Die Datenbank wird von ME3Tweaks regelmäßig aktualisiert und gepflegt.</system:String>
 	<system:String x:Key="string_search">Suchen</system:String>
 	<system:String x:Key="string_searching">Wird gesucht...</system:String>
 	<system:String x:Key="string_goToModPage">Mod-Webseite aufrufen</system:String>

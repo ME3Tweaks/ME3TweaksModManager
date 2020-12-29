@@ -21,6 +21,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using AuthenticodeExaminer;
+using MassEffectModManagerCore.modmanager.objects.nexusfiledb;
 using MassEffectModManagerCore.modmanager.windows;
 using ME3ExplorerCore.Compression;
 using ME3ExplorerCore.Helpers;
@@ -93,7 +94,6 @@ namespace MassEffectModManagerCore
             Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 
             var settingsExist = File.Exists(Settings.SettingsPath); //for init language
-
             try
             {
                 string exeFolder = Directory.GetParent(ExecutableLocation).FullName;

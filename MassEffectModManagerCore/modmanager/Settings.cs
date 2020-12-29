@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -37,9 +38,20 @@ namespace MassEffectModManagerCore.modmanager
             if (EqualityComparer<T>.Default.Equals(field, value)) return false;
             field = value;
             StaticPropertyChanged?.Invoke(null, new PropertyChangedEventArgs(propertyName));
-            if (Loaded) Save();
+            if (Loaded)
+            {
+                LogSettingChanging(propertyName, value);
+                Save();
+            }
             return true;
         }
+
+        private static void LogSettingChanging(string propertyName, object value)
+        {
+            if (Loaded && propertyName == nameof(LastSelectedTarget)) return; // This wil just generate a bunch of mostly useless logs. So only log the first one
+            Log.Information($@"Setting changing: {propertyName} -> {value}");
+        }
+
         #endregion
         private static bool _logModStartup = false;
         public static bool LogModStartup
@@ -287,6 +299,10 @@ namespace MassEffectModManagerCore.modmanager
             if (ini == null) return defaultValue;
             if (bool.TryParse(ini[section][key], out var boolValue))
             {
+                if (boolValue != defaultValue)
+                {
+                    LogSettingChanging(key, boolValue);
+                }
                 return boolValue;
             }
             else
@@ -305,6 +321,10 @@ namespace MassEffectModManagerCore.modmanager
             }
             else
             {
+                if (ini[section][key] != defaultValue)
+                {
+                    LogSettingChanging(key, ini[section][key]);
+                }
                 return ini[section][key];
             }
         }
@@ -318,7 +338,12 @@ namespace MassEffectModManagerCore.modmanager
             {
                 if (long.TryParse(ini[section][key], out var dateLong))
                 {
-                    return DateTime.FromBinary(dateLong);
+                    var dt = DateTime.FromBinary(dateLong);
+                    if (!dt.Equals(defaultValue))
+                    {
+                        LogSettingChanging(key, dt);
+                    }
+                    return dt;
                 }
             }
             catch (Exception)
@@ -333,6 +358,7 @@ namespace MassEffectModManagerCore.modmanager
 
             if (int.TryParse(ini[section][key], out var intValue))
             {
+                if (intValue != defaultValue) { LogSettingChanging(key, intValue); }
                 return intValue;
             }
             else

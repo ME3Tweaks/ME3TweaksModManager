@@ -1655,7 +1655,7 @@
 
 	<!-- Nexus File Search -->
 	<system:String x:Key="string_nexusModsFileSearch">Поиск Файлов NexusMods</system:String>
-	<system:String x:Key="string_description_nexusModsFileSearch">Вы можете искать файлы из модов для игр трилогии Mass Effect на NexusMods используя Поиск Файлов NexusMods. База данных регулярно обновляется и поддерживается JonatanTek.</system:String>
+	<system:String x:Key="string_description_nexusModsFileSearch">Вы можете искать файлы из модов для игр трилогии Mass Effect на NexusMods используя Поиск Файлов NexusMods. База данных регулярно обновляется и поддерживается ME3Tweaks.</system:String>
 	<system:String x:Key="string_search">Искать</system:String>
 	<system:String x:Key="string_searching">Поиск...</system:String>
 	<system:String x:Key="string_goToModPage">Страница мода</system:String>

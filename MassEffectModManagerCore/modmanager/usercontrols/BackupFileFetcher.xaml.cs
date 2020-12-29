@@ -41,7 +41,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
 #else
         public bool ShowMixinSourceOption => false;
-        public bool ExtractAsMixinSource => false;
+        public bool ExtractAsMixinSource {get => false; set { }}
 #endif
 
         private void LoadCommands()

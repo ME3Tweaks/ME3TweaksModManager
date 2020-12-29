@@ -1632,7 +1632,7 @@
 
 	<!-- Nexus File Search -->
 	<system:String x:Key="string_nexusModsFileSearch">Wyszukiwarka NexusMods</system:String>
-	<system:String x:Key="string_description_nexusModsFileSearch">Możesz wyszukać plików zawartych w modyfikacjach na NexusMods dla gier trylogii Mass Effect przy pomocy Wyszukiwarki NexusMods. Baza danych jest regularnie aktualizowana przez JonatanRek.</system:String>
+	<system:String x:Key="string_description_nexusModsFileSearch">Możesz wyszukać plików zawartych w modyfikacjach na NexusMods dla gier trylogii Mass Effect przy pomocy Wyszukiwarki NexusMods. Baza danych jest regularnie aktualizowana przez ME3Tweaks.</system:String>
 	<system:String x:Key="string_search">Wyszukaj</system:String>
 	<system:String x:Key="string_searching">Wyszukiwanie...</system:String>
 	<system:String x:Key="string_goToModPage">Wejdź na stronę modyfikacji</system:String>

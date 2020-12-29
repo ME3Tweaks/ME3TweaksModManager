@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Documents;
 using System.Windows.Input;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
+using MassEffectModManagerCore.modmanager.objects.nexusfiledb;
 using MassEffectModManagerCore.ui;
 using ME3ExplorerCore.Helpers;
 using Newtonsoft.Json;
@@ -22,7 +24,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         /// <summary>
         /// The API endpoint for searching. Append an encoded filename to search.
         /// </summary>
-        public string APIEndpoint = @"https://api.jonatanrek.cz/NEXUS/api/";
         public string SearchTerm { get; set; }
         public bool QueryInProgress { get; set; }
         public string StatusText { get; set; }
@@ -47,32 +48,53 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private bool CanSearch() => HasAPIToken && !QueryInProgress && !string.IsNullOrWhiteSpace(SearchTerm) && (SearchME1 || SearchME2 || SearchME3);
 
+        private Dictionary<string, GameDatabase> LoadedDatabases = new Dictionary<string, GameDatabase>();
+
         private void PerformSearch()
         {
+            Results.ClearEx();
             var searchGames = new List<string>();
-            if (SearchME1) searchGames.Add("masseffect");
-            if (SearchME2) searchGames.Add("masseffect2");
-            if (SearchME3) searchGames.Add("masseffect3");
-            var searchUrl = $@"{APIEndpoint}search/{searchGames.StringJoin("/")}/{Uri.EscapeDataString(SearchTerm)}";
-            Debug.WriteLine(searchUrl);
+            if (SearchME1) searchGames.Add(@"masseffect");
+            if (SearchME2) searchGames.Add(@"masseffect2");
+            if (SearchME3) searchGames.Add(@"masseffect3");
             QueryInProgress = true;
             try
             {
-
-                Task.Run(() => OnlineContent.FetchRemoteString(searchUrl, authorizationToken: APIKeys.NexusSearchKey)).ContinueWithOnUIThread(result =>
+                foreach (var domain in searchGames)
                 {
-                    var i = result.Result;
-                    var x = JsonConvert.DeserializeObject<SearchTopLevelResult>(i);
-                    Results.ReplaceAll(x.mod_ids);
-                    QueryInProgress = false;
-                });
+                    if (!LoadedDatabases.TryGetValue(domain, out var db))
+                    {
+                        db = GameDatabase.LoadDatabase(domain);
+                        LoadedDatabases[domain] = db;
+                    }
+
+                    // Check if the name exists in filenames. If it doesn't, it will never find it
+
+                    var match = db.NameTable.FirstOrDefault(x =>
+                        x.Value.Equals(SearchTerm, StringComparison.InvariantCultureIgnoreCase));
+
+                    if (match.Key != 0)
+                    {
+                        // Found
+                        var instances = db.FileInstances[match.Key];
+                        Results.AddRange(instances.Select(x => new SearchedItemResult()
+                        {
+                            Instance = x,
+                            Domain = domain,
+                            Filename = db.NameTable[x.FilenameId],
+                            AssociatedDB = db
+                        }));
+                    }
+                }
+
+                StatusText = $"{Results.Count} result(s)";
+                QueryInProgress = false;
             }
             catch (Exception e)
             {
                 Log.Error($@"Could not perform search: {e.Message}");
                 QueryInProgress = false;
             }
-
         }
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
@@ -81,34 +103,27 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
-            Task.Run(() =>
-            {
-                try
-                {
-                    if (APIKeys.HasNexusSearchKey)
-                    {
-                        var latestStatusStr =
-                            OnlineContent.FetchRemoteString($@"{APIEndpoint}status", APIKeys.NexusSearchKey);
-                        var latestStatus = JsonConvert.DeserializeObject<Dictionary<string,double>>(latestStatusStr);
-                        var lastFileIndexing = UnixTimeStampToDateTime(latestStatus[@"last_file_indexing"]);
-                        var lastModIndexing = UnixTimeStampToDateTime(latestStatus[@"last_mod_indexing"]);
-                        StatusText = M3L.GetString(M3L.string_interp_lastIndexing, lastFileIndexing, lastModIndexing);
-                    }
-                }
-                catch (Exception e)
-                {
-                    Log.Error($@"Could not get indexing status: {e.Message}");
-                }
-            });
+            //Task.Run(() =>
+            //{
+            //    try
+            //    {
+            //        if (APIKeys.HasNexusSearchKey)
+            //        {
+            //            var latestStatusStr =
+            //                OnlineContent.FetchRemoteString($@"{APIEndpoint}status", APIKeys.NexusSearchKey);
+            //            var latestStatus = JsonConvert.DeserializeObject<Dictionary<string, double>>(latestStatusStr);
+            //            var lastFileIndexing = UnixTimeStampToDateTime(latestStatus[@"last_file_indexing"]);
+            //            var lastModIndexing = UnixTimeStampToDateTime(latestStatus[@"last_mod_indexing"]);
+            //            StatusText = M3L.GetString(M3L.string_interp_lastIndexing, lastFileIndexing, lastModIndexing);
+            //        }
+            //    }
+            //    catch (Exception e)
+            //    {
+            //        Log.Error($@"Could not get indexing status: {e.Message}");
+            //    }
+            //});
         }
 
-        private DateTime UnixTimeStampToDateTime(double unixTimeStamp)
-        {
-            // Unix timestamp is seconds past epoch
-            System.DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
-            dtDateTime = dtDateTime.AddSeconds(unixTimeStamp).ToLocalTime();
-            return dtDateTime;
-        }
 
         private void ClosePanel(object sender, System.Windows.RoutedEventArgs e)
         {
@@ -123,32 +138,53 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public class SearchedItemResult : INotifyPropertyChanged
         {
-            public int file_id { get; set; }
-            public int file_size { get; set; }
-            public int mod_id { get; set; }
-            public string size_unit { get; set; }
-            public string mod_name { get; set; }
-            public string mod_game { get; set; }
-            public string file_master_title { get; set; }
-            public string file_master_file { get; set; }
+            public FileInstance Instance { get; internal set; }
+            public string Domain { get; internal set; }
+            public string Filename { get; internal set; }
+            public GameDatabase AssociatedDB { get; internal set; }
 
-            public string GameIconSource { get; private set; }
-
-            public void Onmod_gameChanged()
+            public string GameIconSource
             {
-                switch (mod_game)
+                get
                 {
-                    case @"masseffect":
-                        GameIconSource = @"/images/gameicons/ME1_48.ico";
-                        break;
-                    case @"masseffect2":
-                        GameIconSource = @"/images/gameicons/ME2_48.ico";
-                        break;
-                    case @"masseffect3":
-                        GameIconSource = @"/images/gameicons/ME3_48.ico";
-                        break;
+                    switch (Domain)
+                    {
+                        case @"masseffect":
+                            return @"/images/gameicons/ME1_48.ico";
+                        case @"masseffect2":
+                            return @"/images/gameicons/ME2_48.ico";
+                        case @"masseffect3":
+                            return @"/images/gameicons/ME3_48.ico";
+                    }
+
+                    return null;
                 }
             }
+
+            /// <summary>
+            /// The full file path in the archive
+            /// </summary>
+            public string FullPath
+            {
+                get
+                {
+                    if (Instance.ParentPathID == 0) return Filename;
+                    return AssociatedDB.Paths[Instance.ParentPathID].GetFullPath(AssociatedDB, Filename);
+                }
+            }
+
+            /// <summary>
+            /// The name of the mod page that has this instance
+            /// </summary>
+            public string ModName => AssociatedDB.NameTable[Instance.ModNameId];
+            /// <summary>
+            /// The title of the file on NexusMods that contains this instance within it
+            /// </summary>
+            public string ModFileTitle => AssociatedDB.NameTable[FileInfo.NameID];
+
+            public NMFileInfo FileInfo => AssociatedDB.ModFileInfos[Instance.FileID];
+            
+            
 #pragma warning disable
             public event PropertyChangedEventHandler PropertyChanged;
 #pragma warning restore
@@ -158,7 +194,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             if (sender is Hyperlink hl && hl.DataContext is SearchedItemResult sir)
             {
-                var outboundUrl = $@"https://nexusmods.com/{sir.mod_game}/mods/{sir.mod_id}?tab=files";
+                var outboundUrl = $@"https://nexusmods.com/{sir.Domain}/mods/{sir.Instance.ModID}?tab=files";
                 Utilities.OpenWebpage(outboundUrl);
             }
         }

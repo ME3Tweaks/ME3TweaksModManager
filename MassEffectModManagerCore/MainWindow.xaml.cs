@@ -471,7 +471,7 @@ namespace MassEffectModManagerCore
             ShowBusyControl(oigDisabler);
         }
 
-        private bool CanOpenModdescEditor() => SelectedMod != null && Settings.DeveloperMode && Settings.BetaMode;
+        private bool CanOpenModdescEditor() => SelectedMod != null && Settings.DeveloperMode;
 
         private void OpenModDescEditor()
         {
