@@ -1035,7 +1035,7 @@
                     <MenuItem
                         Header="{DynamicResource string_nexusFileSearch}"
                         Command="{Binding NexusModsFileSearchCommand}"
-                        Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource FlightingVisibilityConverter}, ConverterParameter='nexusfilesearch'}"
+                        Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}"
                         ToolTip="{DynamicResource string_tooltip_nexusFileSearch}">
                         <MenuItem.Icon>
                             <fa:ImageAwesome
