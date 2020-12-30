@@ -90,7 +90,7 @@ namespace MassEffectModManagerCore.modmanager
         {
             //make dictionary from basegame files
             var fileListMapping = new CaseInsensitiveDictionary<List<string>>();
-            var directories = MELoadedFiles.GetEnabledDLCFolders(target.Game, target.TargetPath).OrderBy(dir => MELoadedFiles.GetMountPriority(dir, target.Game));
+            var directories = MELoadedFiles.GetEnabledDLCFolders(target.Game, target.TargetPath).OrderBy(dir => MELoadedFiles.GetMountPriority(dir, target.Game)).ToList();
             foreach (string directory in directories)
             {
                 var dlc = Path.GetFileName(directory);
