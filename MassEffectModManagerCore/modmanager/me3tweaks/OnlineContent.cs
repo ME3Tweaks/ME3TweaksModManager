@@ -25,6 +25,9 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         private const string ThirdPartyIdentificationServiceURL = "https://me3tweaks.com/modmanager/services/thirdpartyidentificationservice?highprioritysupport=true&allgames=true";
         private const string StaticFilesBaseURL_Github = "https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/master/MassEffectModManagerCore/staticfiles/";
         private const string StaticFilesBaseURL_ME3Tweaks = "https://me3tweaks.com/modmanager/tools/staticfiles/";
+
+        private const string ME3TweaksStaticFilesBaseURL_Github = "https://github.com/ME3Tweaks/ME3TweaksAssets/releases/download/";
+
         private const string ThirdPartyImportingServiceURL = "https://me3tweaks.com/modmanager/services/thirdpartyimportingservice?allgames=true";
         private const string BasegameFileIdentificationServiceURL = "https://me3tweaks.com/modmanager/services/basegamefileidentificationservice";
         private const string BasegameFileIdentificationServiceBackupURL = "https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/master/MassEffectModManagerCore/staticfiles/basegamefileidentificationservice.json";
@@ -48,6 +51,15 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         public static string[] StaticFilesBaseEndpoints =
         {
             StaticFilesBaseURL_Github,
+            StaticFilesBaseURL_ME3Tweaks
+        };
+
+        /// <summary>
+        /// List of static files endpoints in order of preference. These endpoints are for the ME3TweaksStaticAssets and are not mirroed from github onto me3tweaks.
+        /// </summary>
+        public static string[] ME3TweaksStaticFilesBaseEndpoints =
+        {
+            ME3TweaksStaticFilesBaseURL_Github,
             StaticFilesBaseURL_ME3Tweaks
         };
 
@@ -102,6 +114,34 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     using var wc = new ShortTimeoutWebClient();
                     {
                         var fullURL = staticurl + assetName;
+                        result = DownloadToMemory(fullURL, logDownload: true);
+                        if (result.Item2 == null) return result;
+                    }
+                }
+                catch (Exception e)
+                {
+                    Log.Error($@"Could not download {assetName} from endpoint {staticurl}: {e.Message}");
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Downloads a static asset that is mirrored onto the ME3Tweaks Assets repo. This is not the same as the github version of staticfiles.
+        /// </summary>
+        /// <param name="assetName">The asset filename. Do not include any path information.</param>
+        /// <returns></returns>
+        public static (MemoryStream download, string errorMessage) DownloadME3TweaksStaticAsset(string assetName)
+        {
+            (MemoryStream, string) result = (null, @"Could not download file: No attempt was made, or errors occurred!");
+            foreach (var staticurl in ME3TweaksStaticFilesBaseEndpoints)
+            {
+                try
+                {
+                    using var wc = new ShortTimeoutWebClient();
+                    {
+                        var fullURL = staticurl + Path.GetFileNameWithoutExtension(assetName) + "/" + assetName;
                         result = DownloadToMemory(fullURL, logDownload: true);
                         if (result.Item2 == null) return result;
                     }

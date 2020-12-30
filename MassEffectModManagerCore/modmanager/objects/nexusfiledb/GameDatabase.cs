@@ -44,7 +44,7 @@ namespace MassEffectModManagerCore.modmanager.objects.nexusfiledb
 
         private static void DownloadDB(string nexusDBPath)
         {
-            var downloadResult = OnlineContent.DownloadStaticAsset(@"nexusfiledb.zip");
+            var downloadResult = OnlineContent.DownloadME3TweaksStaticAsset(@"nexusfiledb.zip");
             if (downloadResult.errorMessage == null)
             {
                 downloadResult.download.WriteToFile(nexusDBPath);

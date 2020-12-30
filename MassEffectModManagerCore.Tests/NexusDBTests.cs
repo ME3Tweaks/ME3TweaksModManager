@@ -13,7 +13,7 @@ namespace MassEffectModManagerCore.Tests
         public void TestNexusDB()
         {
             // Fetch the latest DB
-            var downloadResult = OnlineContent.DownloadStaticAsset(@"nexusfiledb.zip");
+            var downloadResult = OnlineContent.DownloadME3TweaksStaticAsset(@"nexusfiledb.zip");
             if (downloadResult.errorMessage != null)
             {
                 Assert.Fail($@"Nexus DB could not be downloaded: {downloadResult.errorMessage}");
