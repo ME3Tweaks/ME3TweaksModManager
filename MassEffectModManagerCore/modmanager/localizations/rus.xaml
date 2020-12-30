@@ -1,10 +1,6 @@
 <ResourceDictionary	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 					xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 					xmlns:system="clr-namespace:System;assembly=System.Runtime">
-	<!-- About -->
-	<system:String x:Key="string_tooltip_runningOnX">Работает на {0}</system:String>
-	<!-- 0 = netcore3.1, net5-windows8.0, etc. Version string of .NET -->
-
 	<!-- About Panel -->
 	<system:String x:Key="string_tooltip_hello">Здравствуйте!</system:String>
 	<system:String x:Key="string_tooltip_softwareDevelopedWithLoveByME3Tweaks">Программа была с любовью разработана ME3Tweaks</system:String>
@@ -36,6 +32,8 @@
 	<system:String x:Key="string_library_watsonwebsocket">Библиотека для обработки соединений WebSocket</system:String>
 	<system:String x:Key="string_library_authenticodeexaminer">Управляет проверкой Authenticode-подписей файлов</system:String>
 	<system:String x:Key="string_library_ntfsstreams">Библиотека для чтения альтернативных потоков данных NTFS</system:String>
+	<system:String x:Key="string_tooltip_runningOnX">Работает на {0}</system:String>
+	<!-- 0 = netcore3.1, net5-windows8.0, etc. Version string of .NET -->
 
 	<!-- ALOT Version Info -->
 	<system:String x:Key="string_textureModded">Текстура модифицирована</system:String>
@@ -1095,6 +1093,8 @@
 	<system:String x:Key="string_interp_allInstallableFiles">Все файлы, устанавливаемые {0}</system:String>
 	<!-- 0={mod name} -->
 	<system:String x:Key="string_description_allInstallableFiles">Следующие файлы могут быть потенциально установлены модом в игру. Учтите, что некоторые из них могут быть установлены только при выборе определенных опций.</system:String>
+	<system:String x:Key="string_setting_launchThroughOrigin">Запуск Origin-игр через Origin</system:String>
+	<system:String x:Key="string_setting_tooltip_launchThroughOrigin">Запускает Origin-игры через клиент Origin, для подтверждения лицензии и игрового времени. Это влияет только ME1/ME2 Origin версии, для ME3 это обязательно.</system:String>
 
 	<!-- Mass Effect Ini Modder (UI) -->
 	<system:String x:Key="string_dialog_missingConfigFileForMEIM">Файл настроек Mass Effect {0}.ini отсутствует. Он должен находиться в {1}. Пожалуйста, хотя бы однократно запустите игру, чтобы сгенерировать файлы по умолчанию.</system:String>
@@ -1593,6 +1593,7 @@
 	<system:String x:Key="string_mde_dec_header_metadata_modmanager">Заголовок ModManager читается первым при парсине мода и используется для настройки парсера. Данный редактор поддерживает сохранение только для модов, работающих с последней версией moddesc.ini, поддерживаемой данной сборкой.</system:String>
 	<system:String x:Key="string_mde_dec_header_metadata_modinfo">Заголовок ModInfo содержит большинство информации, видимой пользователем в интерфейсе Mod Manager. Чем больше информации вы дадите пользователю, тем меньше вероятность появления в будущем вопросов по вашему моду.</system:String>
 	<system:String x:Key="string_mde_dec_header_metadata_updates">Заголовок UPDATES используется для ME3Tweaks Updater Service. Параметры additionaldeployment могут быть использованы для добавления файлов без ссылок при преобразовании вашего мода.</system:String>
+	<system:String x:Key="string_multilists">Multilists</system:String>
 
 	<!-- Moddescini Editor -->
 	<system:String x:Key="string_toolUnderDevelopment">Данный инструмент находится в разработке и может работать нестабильно. Используйте на свой страх и риск!</system:String>
@@ -1661,6 +1662,8 @@
 	<system:String x:Key="string_goToModPage">Страница мода</system:String>
 	<system:String x:Key="string_interp_lastIndexing">Последняя индексация файлов: {0}, Последняя индексация модов: {1}</system:String>
 	<!-- 0={date} 1={date} -->
+	<system:String x:Key="string_interp_resultsCount">Результатов - {0}</system:String>
+	<!-- 0={Number of results in a search. Adjust this string as necessary to fit your language's pluralization methods.} -->
 
 	<!-- NexusMods Login Panel -->
 	<system:String x:Key="string_authenticateToNexusMods">Авторизоваться на NexusMods</system:String>
