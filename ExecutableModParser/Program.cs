@@ -15,17 +15,17 @@ namespace ExecutableModParser
         private static string SourceDir;
         static void Main(string[] args)
         {
-            //BuildTransform();
-            //return;
+            BuildTransform();
+            return;
             
             //ParseArguments(args);
-            SourceDir = @"X:\MEHEM_TO_CEM";
+            SourceDir = @"B:\ExeMods\ShorterDreams";
             if (SourceDir != null)
             {
                 ParseSourceDir();
                 return;
             }
-            SourceEXE = @"Z:\exemods\MEHEMv0.5_to_CEM_v1_4_1.exe";
+            SourceEXE = @"C:\Users\Mgame\Desktop\SD_v0_1_3.exe";
             //ParseArguments(args);
             //if (SourceEXE == null)
             //{
@@ -65,8 +65,8 @@ namespace ExecutableModParser
 
         private static void BuildTransform()
         {
-            var destTransformFS = @"X:\m3modlibrary\ME3\Citadel Epilogue Mod - Lite";
-            var inputExe = @"X:\CEML\CEM_Lite_ver_1_4_1.exe";
+            var destTransformFS = @"X:\m3modlibrary\ME3\Shorter Dreams";
+            var inputExe = @"B:\ExeMods\SD_v0_1_3.exe";
 
             // Build file info for transformFS
             var tfs = Directory.GetFiles(destTransformFS, "*.*", SearchOption.AllDirectories);
@@ -208,8 +208,10 @@ namespace ExecutableModParser
 
         private static bool IsTrashFile(string fname)
         {
+            if (fname.StartsWith("$PLUGINS")) return true;
             if (fname.EndsWith(".dll")) return true;
             if (fname.EndsWith(".bmp")) return true;
+            if (fname.EndsWith("test.xml")) return true;
             if (fname.EndsWith(".ini")) return true;
             if (fname.EndsWith("PCConsoleTOC.bin")) return true;
             if (fname.EndsWith(".exe")) return true;

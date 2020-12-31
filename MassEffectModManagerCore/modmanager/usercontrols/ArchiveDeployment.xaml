@@ -4,7 +4,8 @@
     d:DesignHeight="450"
     d:DesignWidth="800"
     DataContext="{Binding RelativeSource={RelativeSource Self}}"
-    MinWidth="450">
+    MinWidth="450"
+    MaxWidth="700">
     <StackPanel>
         <TextBlock
             FontSize="20"
@@ -29,8 +30,15 @@
             </Button.Content>
         </Button>
         <Expander
+            
             Header="{DynamicResource string_validationTargets}">
-            <ItemsControl
+            <DockPanel>
+                <TextBlock Text="Validation targets are used to validate the configuration of your mod against other mods that your mod may depend on, such as compatibility patches referencing textures in another mod. Install these mods to the target so Mod Manager can check these references. Validation targets cannot be texture modded." 
+                           DockPanel.Dock="Top"
+                           Margin="0,5"
+                           MaxWidth="500"
+                           TextWrapping="Wrap"/>
+                <ItemsControl
                 ItemsSource="{Binding ValidationTargets}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate
@@ -41,14 +49,15 @@
                                 FontWeight="Bold"
                                 DockPanel.Dock="Top" />
                             <local:TargetSelector
-                                IsEnabled="{Binding CanChangeValidationTarget,                                  RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ArchiveDeployment}}}"
+                                IsEnabled="{Binding CanChangeValidationTarget, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ArchiveDeployment}}}"
                                 SelectedGameTarget="{Binding SelectedTarget, Mode=TwoWay}"
                                 AvailableTargets="{Binding AvailableTargets}" />
                         </DockPanel>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
-        </Expander>
+            </DockPanel>
+            </Expander>
         <ScrollViewer
             MaxHeight="300">
             <ItemsControl

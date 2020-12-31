@@ -1187,7 +1187,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             //Fody uses this property on weaving
 #pragma warning disable
-public event PropertyChangedEventHandler PropertyChanged;
+            public event PropertyChangedEventHandler PropertyChanged;
 #pragma warning restore
 
             /// <summary>
@@ -1229,7 +1229,7 @@ public event PropertyChangedEventHandler PropertyChanged;
             }
         }
 
-        private bool CanAddModToDeployment() => ModsInDeployment.All(x => x.DeploymentChecklistItems.All(y => !y.DeploymentBlocking));
+        private bool CanAddModToDeployment() => !DeploymentBlocked && ModsInDeployment.All(x => x.DeploymentChecklistItems.All(y => !y.DeploymentBlocking));
 
         private void ClosePanel()
         {
@@ -1524,7 +1524,7 @@ public event PropertyChangedEventHandler PropertyChanged;
 
         private bool CanDeploy()
         {
-            return PrecheckCompleted && !DeploymentInProgress && ModsInDeployment.All(x => x.DeploymentChecklistItems.All(x => !x.DeploymentBlocking));
+            return PrecheckCompleted && !DeploymentInProgress && !DeploymentBlocked && ModsInDeployment.All(x => x.DeploymentChecklistItems.All(x => !x.DeploymentBlocking));
         }
 
         public bool CanChangeValidationTarget => !DeploymentInProgress && ModBeingChecked == null;
@@ -1646,7 +1646,7 @@ public event PropertyChangedEventHandler PropertyChanged;
 
             //Fody uses this property on weaving
 #pragma warning disable
-public event PropertyChangedEventHandler PropertyChanged;
+            public event PropertyChangedEventHandler PropertyChanged;
 #pragma warning restore
 
             public bool HasAnyMessages() => InfoWarnings.Any() || SignificantIssues.Any() || BlockingErrors.Any();
@@ -1698,6 +1698,25 @@ public event PropertyChangedEventHandler PropertyChanged;
 
         private void StartCheck(EncompassingModDeploymentCheck emc)
         {
+            if (emc.DepValidationTarget.SelectedTarget == null)
+            {
+                // There's no selected target! There might not be one available.
+                emc.SetAbandoned();
+                DeploymentBlocked = true;
+                DeployButtonText = M3L.GetString(M3L.string_deploymentBlocked);
+                OperationText = $"No validation target available for {emc.DepValidationTarget.Game}!";
+                while (!PendingChecks.IsEmpty)
+                {
+                    if (PendingChecks.TryDequeue(out var nEmc))
+                    {
+                        nEmc.SetAbandoned();
+                    }
+                }
+                EndChecks();
+                return;
+            }
+
+
             ModBeingChecked = emc;
 
             // Ensure UI vars are set
@@ -1709,7 +1728,7 @@ public event PropertyChangedEventHandler PropertyChanged;
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"DeploymentValidation");
             nbw.DoWork += (a, b) =>
             {
-                ProgressIndeterminate = true;
+               ProgressIndeterminate = true;
                 emc.RunChecks();
             };
             nbw.RunWorkerCompleted += (a, b) =>
@@ -1812,7 +1831,7 @@ public event PropertyChangedEventHandler PropertyChanged;
                 DeploymentHost = deploymentHost;
                 Game = game;
                 HeaderString = M3L.GetString(M3L.string_interp_gamenameValidationTarget, game.ToGameName());
-                AvailableTargets.ReplaceAll(targets.Where(x => !x.TextureModded));
+                AvailableTargets.ReplaceAll(targets.Where(x => !x.TextureModded && x.Game == MEGame.UDK)); //TEST ONLY MAKE SURE TO REVERT
                 SelectedTarget = AvailableTargets.FirstOrDefault();
             }
 
@@ -1828,7 +1847,7 @@ public event PropertyChangedEventHandler PropertyChanged;
 
             //Fody uses this property on weaving
 #pragma warning disable
-public event PropertyChangedEventHandler PropertyChanged;
+            public event PropertyChangedEventHandler PropertyChanged;
 #pragma warning restore
         }
 
