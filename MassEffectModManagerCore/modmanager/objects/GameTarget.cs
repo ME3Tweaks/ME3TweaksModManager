@@ -1032,8 +1032,9 @@ namespace MassEffectModManagerCore.modmanager.objects
             }
         }
 
-        public bool HasModifiedMPSFAR() => ModifiedSFARFiles.Any(x => x.IsMPSFAR);
-        public bool HasModifiedSPSFAR() => ModifiedSFARFiles.Any(x => x.IsSPSFAR);
+        // We set it to false on RestoringSFAR because ModifiedSFARFiles will be modified. A race condition may occur.
+        public bool HasModifiedMPSFAR() => !RestoringSFAR && ModifiedSFARFiles.Any(x => x.IsMPSFAR);
+        public bool HasModifiedSPSFAR() => !RestoringSFAR && ModifiedSFARFiles.Any(x => x.IsSPSFAR);
 
 
         public class InstalledExtraFile
