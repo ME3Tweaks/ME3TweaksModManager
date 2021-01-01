@@ -828,10 +828,10 @@ namespace MassEffectModManagerCore.modmanager.objects
 
         public void PopulateTextureInstallHistory()
         {
-            TextureInstallHistory.ReplaceAll(GetALOTInstallationHistory());
+            TextureInstallHistory.ReplaceAll(GetTextureModInstallationHistory());
         }
 
-        public List<TextureModInstallationInfo> GetALOTInstallationHistory()
+        public List<TextureModInstallationInfo> GetTextureModInstallationHistory()
         {
             var alotInfos = new List<TextureModInstallationInfo>();
             int startPos = -1;

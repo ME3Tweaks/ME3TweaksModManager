@@ -209,7 +209,7 @@ namespace MassEffectModManagerCore.ui
                 OnPropertyChanged(nameof(Any));
             };
         }
-
+        
         /// <summary> 
         /// Initializes a new instance of the System.Collections.ObjectModel.ObservableCollection(Of T) class that contains elements copied from the specified collection. 
         /// </summary> 
