@@ -481,7 +481,7 @@
 	<system:String x:Key="string_interp_warningExportStackElementOutsideTables">{0} Export Stack[{1}] ({2}) находится за пределами таблицы Import/Export</system:String>
 	<!-- 0={Message prefix string} 1={integer}, 2={integer} -->
 	<system:String x:Key="string_interp_fatalImportCircularReference">{0}, Import {1} ссылается сам на себя. Игра и инструменты не смогут обработать данное условие</system:String>
-	<!-- 0={f} 1={integer} -->
+	<!-- 0={Message prefix string} 1={integer} -->
 	<system:String x:Key="string_interp_warningExceptionParsingProperties">{0} Возникло исключение при парсинге свойств: {1}</system:String>
 	<!-- 0={Message prefix string} 1={exception message} -->
 	<system:String x:Key="string_interp_warningTemplateOwnerClassOutsideTables">{0} TemplateOwnerClass (Смещение данных 0x{1}) ({2}) находится за пределами таблицы Import/Export</system:String>
@@ -498,8 +498,11 @@
 	<!-- 0={Relative filepath} 1={integer} 2={integer} -->
 	<system:String x:Key="string_interp_dialog_dlcFolderNotInTPMI" xml:space="preserve">Следующие моды содержат папки DLC не входящие в Third Party Mod Identification Service (TPMI). Если мод готовится к выпуску, нужно подключить телеметрию для данного мода, чтобы он мог быть идентифицирован различными инструментами, такими как диагностика ALOT Installer/Mod Manager, быть в базе данных DLC-модов и определяться Mod Mananer.\n\n{0}\n\nМоды добавляются в базу только если у них есть открытая страница мода.</system:String>
 	<!-- 0={List of mod names} -->
-	<system:String x:Key="string_interp_gamenameValidationTarget">{0} цель для валидации</system:String>
+	<system:String x:Key="string_interp_gamenameValidationTarget">{0} цель валидации</system:String>
 	<!-- 0={Name of game (Mass Effect, Mass Effect 2, Mass Effect 3)} -->
+	<system:String x:Key="string_deploymentValidationTargetDesc">Цели валидации используются при проверке согласованности конфигурации вашего мода с прочими, от которых он может зависеть, например патчи совместимости, ссылающиеся на текстуры в другом моде. Установите данные моды в целевую игру, чтобы Mod Manager мог проверить такие ссылки. Цели валидации не допускают модификации текстур.</system:String>
+	<system:String x:Key="string_interp_noValidationTarget">Нет доступной цели валидации для {0}!</system:String>
+	<!-- 0={ME1/ME2/ME3} -->
 
 	<!-- External tool launcher -->
 	<system:String x:Key="string_interp_downloadingX">Скачивание {0}</system:String>
