@@ -71,7 +71,7 @@ BEGIN
             VALUE "FileDescription", "ME3CMM to M3 bridge"
             VALUE "FileVersion", "1.0.0.0"
             VALUE "InternalName", "ME3CMM.exe"
-            VALUE "LegalCopyright", "Copyright (C) 2020 ME3Tweaks"
+            VALUE "LegalCopyright", "Copyright (C) 2021 ME3Tweaks"
             VALUE "OriginalFilename", "ME3CMM.exe"
             VALUE "ProductName", "ME3CMM to M3 bridge"
             VALUE "ProductVersion", "1.0.0.0"
