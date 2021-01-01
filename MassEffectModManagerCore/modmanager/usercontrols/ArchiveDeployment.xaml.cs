@@ -1704,7 +1704,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 emc.SetAbandoned();
                 DeploymentBlocked = true;
                 DeployButtonText = M3L.GetString(M3L.string_deploymentBlocked);
-                OperationText = $"No validation target available for {emc.DepValidationTarget.Game}!";
+                OperationText = M3L.GetString(M3L.string_interp_noValidationTarget, emc.DepValidationTarget.Game);
                 while (!PendingChecks.IsEmpty)
                 {
                     if (PendingChecks.TryDequeue(out var nEmc))
@@ -1728,7 +1728,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"DeploymentValidation");
             nbw.DoWork += (a, b) =>
             {
-               ProgressIndeterminate = true;
+                ProgressIndeterminate = true;
                 emc.RunChecks();
             };
             nbw.RunWorkerCompleted += (a, b) =>

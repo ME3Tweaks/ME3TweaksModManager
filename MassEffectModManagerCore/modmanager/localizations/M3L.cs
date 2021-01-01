@@ -622,6 +622,9 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_interp_warningImportLinkOutideOfTables = "string_interp_warningImportLinkOutideOfTables";
 		public const string string_interp_dialog_dlcFolderNotInTPMI = "string_interp_dialog_dlcFolderNotInTPMI";
 		public const string string_interp_gamenameValidationTarget = "string_interp_gamenameValidationTarget";
+		public const string string_deploymentValidationTargetDesc = "string_deploymentValidationTargetDesc";
+		public const string string_interp_noValidationTarget = "string_interp_noValidationTarget";
+		public const string string_interp_noValidationTarget = "string_interp_noValidationTarget";
 		public const string string_backupsAreShared = "string_backupsAreShared";
 		public const string string_backupsMustBeCreatedFresh = "string_backupsMustBeCreatedFresh";
 		public const string string_backUp = "string_backUp";

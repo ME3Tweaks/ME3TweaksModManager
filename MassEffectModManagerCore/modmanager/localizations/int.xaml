@@ -352,8 +352,7 @@
     <system:String x:Key="string_setting_launchThroughOrigin">Launch Origin-based games through Origin</system:String>
     <system:String x:Key="string_setting_tooltip_launchThroughOrigin">Launches Origin-based games through the Origin client, ensuring licensing and playtime is tracked. This only affects ME1/ME2 Origin versions, as ME3 requires it</system:String>
 
-
-<!-- Global Styles -->
+    <!-- Global Styles -->
     <system:String x:Key="string_thisTargetHasBeenTextureModded">This target has been texture modded</system:String>
 
     <!-- Mod Installer Panel -->
@@ -663,7 +662,15 @@
     <!-- 0={List of mod names} -->
     <system:String x:Key="string_interp_gamenameValidationTarget">{0} validation target</system:String>
     <!-- 0={Name of game (Mass Effect, Mass Effect 2, Mass Effect 3)} -->
-    
+
+    <system:String x:Key="string_deploymentValidationTargetDesc">Validation targets are used to validate the configuration of your mod against other mods that your mod may depend on, such as compatibility patches referencing textures in another mod. Install these mods to the target so Mod Manager can check these references. Validation targets cannot be texture modded.</system:String>
+    <system:String x:Key="string_interp_noValidationTarget">No validation target available for {0}!</system:String>
+    <!-- 0={ME1/ME2/ME3} -->
+    <!-- The follow items are only for letting this localizer replace the correct strings! Remove them when done and make sure keys are identical to the stripped versions-->
+    <system:String x:Key="string_interp_noValidationTarget">No validation target available for {emc.DepValidationTarget.Game}!</system:String>
+
+
+
     <!-- Backup Creator-->
     <system:String x:Key="string_backupsAreShared">Backups are shared across various modding tools including Mass Effect Randomizer, ALOT Installer, and ME3Explorer - ME3Tweaks Fork.</system:String>
     <system:String x:Key="string_backupsMustBeCreatedFresh">Backups must be created from a fresh, unmodified copy of the game. Modified backups are not supported.</system:String>

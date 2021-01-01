@@ -30,34 +30,34 @@
             </Button.Content>
         </Button>
         <Expander
-            
             Header="{DynamicResource string_validationTargets}">
             <DockPanel>
-                <TextBlock Text="Validation targets are used to validate the configuration of your mod against other mods that your mod may depend on, such as compatibility patches referencing textures in another mod. Install these mods to the target so Mod Manager can check these references. Validation targets cannot be texture modded." 
-                           DockPanel.Dock="Top"
-                           Margin="0,5"
-                           MaxWidth="500"
-                           TextWrapping="Wrap"/>
+                <TextBlock
+                    Text="{DynamicResource string_deploymentValidationTargetDesc}"
+                    DockPanel.Dock="Top"
+                    Margin="0,5"
+                    MaxWidth="500"
+                    TextWrapping="Wrap" />
                 <ItemsControl
-                ItemsSource="{Binding ValidationTargets}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate
-                        DataType="{x:Type local:ArchiveDeployment+DeploymentValidationTarget}">
-                        <DockPanel>
-                            <TextBlock
-                                Text="{Binding HeaderString}"
-                                FontWeight="Bold"
-                                DockPanel.Dock="Top" />
-                            <local:TargetSelector
-                                IsEnabled="{Binding CanChangeValidationTarget, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ArchiveDeployment}}}"
-                                SelectedGameTarget="{Binding SelectedTarget, Mode=TwoWay}"
-                                AvailableTargets="{Binding AvailableTargets}" />
-                        </DockPanel>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+                    ItemsSource="{Binding ValidationTargets}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate
+                            DataType="{x:Type local:ArchiveDeployment+DeploymentValidationTarget}">
+                            <DockPanel>
+                                <TextBlock
+                                    Text="{Binding HeaderString}"
+                                    FontWeight="Bold"
+                                    DockPanel.Dock="Top" />
+                                <local:TargetSelector
+                                    IsEnabled="{Binding CanChangeValidationTarget, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ArchiveDeployment}}}"
+                                    SelectedGameTarget="{Binding SelectedTarget, Mode=TwoWay}"
+                                    AvailableTargets="{Binding AvailableTargets}" />
+                            </DockPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
             </DockPanel>
-            </Expander>
+        </Expander>
         <ScrollViewer
             MaxHeight="300">
             <ItemsControl
