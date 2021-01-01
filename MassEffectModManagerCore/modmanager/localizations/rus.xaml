@@ -720,6 +720,7 @@
 	<system:String x:Key="string_collectingME1ApplicationLogs">Сбор логов ME1</system:String>
 	<system:String x:Key="string_collectingEventLogs">Сбор логов событий</system:String>
 	<system:String x:Key="string_collectingME3SessionLog">Сбор лога сессии ME3</system:String>
+	<system:String x:Key="string_gettingTextureInfo">Получение информации об установке текстурного мода</system:String>
 
 	<!-- Log uploader -->
 	<system:String x:Key="string_selectALogToView">Выберите лог для анализа с помощью сервиса просмотра логов</system:String>
