@@ -662,7 +662,6 @@
     <!-- 0={List of mod names} -->
     <system:String x:Key="string_interp_gamenameValidationTarget">{0} validation target</system:String>
     <!-- 0={Name of game (Mass Effect, Mass Effect 2, Mass Effect 3)} -->
-
     <system:String x:Key="string_deploymentValidationTargetDesc">Validation targets are used to validate the configuration of your mod against other mods that your mod may depend on, such as compatibility patches referencing textures in another mod. Install these mods to the target so Mod Manager can check these references. Validation targets cannot be texture modded.</system:String>
     <system:String x:Key="string_interp_noValidationTarget">No validation target available for {0}!</system:String>
     <!-- 0={ME1/ME2/ME3} -->
