@@ -1464,6 +1464,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_collectingME1ApplicationLogs = "string_collectingME1ApplicationLogs";
 		public const string string_collectingEventLogs = "string_collectingEventLogs";
 		public const string string_collectingME3SessionLog = "string_collectingME3SessionLog";
+		public const string string_gettingTextureInfo = "string_gettingTextureInfo";
 		public const string string_overlayDisablerInstalled = "string_overlayDisablerInstalled";
 		public const string string_uninstallDisabler = "string_uninstallDisabler";
 		public const string string_otherD3d9dllInstalledOverlayDisabled = "string_otherD3d9dllInstalledOverlayDisabled";

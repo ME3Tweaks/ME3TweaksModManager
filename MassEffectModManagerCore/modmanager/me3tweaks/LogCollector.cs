@@ -336,7 +336,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 updateStatusCallback?.Invoke(M3L.GetString(M3L.string_collectingGameInformation));
                 addDiagLine(@"Basic game information", Severity.DIAGSECTION);
                 addDiagLine($@"Game is installed at {gamePath}");
-                
+
                 Log.Information(@"Reloading target for most up to date information");
                 selectedDiagnosticTarget.ReloadGameTarget(false); //reload vars
                 TextureModInstallationInfo avi = selectedDiagnosticTarget.GetInstalledALOTInfo();
@@ -583,7 +583,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 #region Texture mod information
 
                 Log.Information(@"Getting texture mod installation info");
-                updateStatusCallback?.Invoke("Getting texture mod installation info");
+                updateStatusCallback?.Invoke(M3L.GetString(M3L.string_gettingTextureInfo));
                 addDiagLine(@"Current texture mod information", Severity.DIAGSECTION);
 
                 var textureHistory = selectedDiagnosticTarget.GetTextureModInstallationHistory();
@@ -785,7 +785,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     if (exitcode != 0)
                     {
                         addDiagLine(
-                            $"MassEffectModderNoGuiexited incompatible mod detection check with code {exitcode}",
+                            $@"MassEffectModderNoGuiexited exited incompatible mod detection check with code {exitcode}",
                             Severity.ERROR);
                     }
 
@@ -956,12 +956,12 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                 switch (command)
                                 {
                                     case @"ERROR_REMOVED_FILE":
-                                            //.Add($" - File removed after textures were installed: {param}");
-                                            removedFiles.Add(param);
+                                        //.Add($" - File removed after textures were installed: {param}");
+                                        removedFiles.Add(param);
                                         break;
                                     case @"ERROR_ADDED_FILE":
-                                            //addedFiles.Add($"File was added after textures were installed" + param + " " + File.GetCreationTimeUtc(Path.Combine(gamePath, param));
-                                            addedFiles.Add(param);
+                                        //addedFiles.Add($"File was added after textures were installed" + param + " " + File.GetCreationTimeUtc(Path.Combine(gamePath, param));
+                                        addedFiles.Add(param);
                                         break;
                                     case @"ERROR_VANILLA_MOD_FILE":
                                         if (!addedFiles.Contains(param))
@@ -978,7 +978,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                             if (exitcode != 0)
                             {
                                 addDiagLine(
-                                    $"MassEffectModderNoGuiexited texture map consistency check with code {exitcode}",
+                                    $@"MassEffectModderNoGuiexited exited texture map consistency check with code {exitcode}",
                                     Severity.ERROR);
                             }
 
@@ -1104,7 +1104,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
                         if (exitcode != 0)
                         {
-                            addDiagLine($"MassEffectModderNoGui exited full textures check with code {exitcode}", Severity.ERROR);
+                            addDiagLine($@"MassEffectModderNoGui exited full textures check with code {exitcode}", Severity.ERROR);
                         }
 
                         updateProgressCallback?.Invoke(0);
@@ -1149,8 +1149,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                             addDiagLine(@"Texture check failed");
                             if (memCrashText != null)
                             {
-                                addDiagLine("MassEffectModder crashed with info:");
-                                addDiagLines(memCrashText.Split("\n"), Severity.ERROR);
+                                addDiagLine(@"MassEffectModder crashed with info:");
+                                addDiagLines(memCrashText.Split("\n"), Severity.ERROR); //do not localize
                             }
                         }
                         else
@@ -1172,7 +1172,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     }
                     else
                     {
-                        addDiagLine($"MassEffectModderNoGui exited --print-lods with error. See application log for more info.", Severity.ERROR);
+                        addDiagLine(@"MassEffectModderNoGui exited --print-lods with error. See application log for more info.", Severity.ERROR);
                     }
 
                     #endregion
@@ -1412,7 +1412,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         int lineNum = 0;
                         foreach (string line in log)
                         {
-                            addDiagLine(line, line.Contains("I/O failure", StringComparison.InvariantCultureIgnoreCase) ? Severity.FATAL : Severity.INFO);
+                            addDiagLine(line, line.Contains(@"I/O failure", StringComparison.InvariantCultureIgnoreCase) ? Severity.FATAL : Severity.INFO);
                             lineNum++;
                             if (lineNum > 100)
                             {
@@ -1422,7 +1422,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
                         if (lineNum > 200)
                         {
-                            addDiagLine("... log truncated ...");
+                            addDiagLine(@"... log truncated ...");
                         }
                     }
                 }

@@ -1840,8 +1840,9 @@
     <system:String x:Key="string_collectingME1ApplicationLogs">Collecting ME1 application logs</system:String>
     <system:String x:Key="string_collectingEventLogs">Collecting event logs</system:String>
     <system:String x:Key="string_collectingME3SessionLog">Collecting ME3 session log</system:String>
+    <system:String x:Key="string_gettingTextureInfo">Getting texture mod installation info</system:String>
 
-    <!-- Origin in-game overlay disabler-->
+<!-- Origin in-game overlay disabler-->
     <system:String x:Key="string_overlayDisablerInstalled">Overlay disabler installed</system:String>
     <system:String x:Key="string_uninstallDisabler">Uninstall disabler</system:String>
     <system:String x:Key="string_otherD3d9dllInstalledOverlayDisabled">Other d3d9.dll installed, overlay disabled</system:String>
