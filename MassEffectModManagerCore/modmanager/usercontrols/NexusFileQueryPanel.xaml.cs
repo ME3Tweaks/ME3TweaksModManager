@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Documents;
 using System.Windows.Input;
+using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
+using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.objects.nexusfiledb;
 using MassEffectModManagerCore.ui;
+using ME3ExplorerCore.Packages;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -67,7 +71,27 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
 
                     // Check if the name exists in filenames. If it doesn't, it will never find it
+#if DEBUG
+                    var dlcNames = db.NameTable.Values.Where(x => x.StartsWith(@"DLC_") && Path.GetExtension(x) == string.Empty && !x.Contains(" ") && ThirdPartyServices.GetThirdPartyModInfo(x, MEGame.ME3) == null).Select(x => x.Trim()).Distinct().ToList();
+                    var xx = new List<string>();
+                    foreach (var i in db.FileInstances.Values)
+                    {
+                        foreach (var f in i)
+                        {
+                            if (f.ParentPathID > 0)
+                            {
+                                var path = db.Paths[f.ParentPathID].GetFullPath(db);
+                                if (path.ContainsAny(dlcNames, StringComparison.Ordinal))
+                                {
+                                    xx.Add(db.NameTable[db.ModFileInfos[f.FileID].NameID]);
+                                }
 
+                            }
+                        }
+                    }
+                    File.WriteAllLines(@"D:\NexusIndexer\dlcNames.txt", dlcNames);
+                    File.WriteAllLines(@"D:\NexusIndexer\mods.txt", xx);
+#endif
                     var match = db.NameTable.FirstOrDefault(x =>
                         x.Value.Equals(SearchTerm, StringComparison.InvariantCultureIgnoreCase));
 
