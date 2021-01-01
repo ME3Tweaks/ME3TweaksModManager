@@ -99,17 +99,20 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             if (!string.IsNullOrEmpty(BannerImageName))
             {
                 var bitmap = LoadModImageAsset(BannerImageName);
-                var aspectRatio = bitmap.Width / bitmap.Height;
-                var aspectRatioDiff = RequiredBannerAspectRatio - aspectRatio;
-                if (Math.Abs(aspectRatioDiff) > RequiredAspectRatioTolerance)
+                if (bitmap != null)
                 {
-                    // Must have specific aspect ratio.limes
-                    Log.Error($@"{ModName}'s banner image is not the correct aspect ratio. Aspect ratio should be 580x47. The banner won't be displayed.");
-                    RemoveAssetFromCache(BannerImageName);
-                }
-                else
-                {
-                    BannerBitmap = bitmap;
+                    var aspectRatio = bitmap.Width / bitmap.Height;
+                    var aspectRatioDiff = RequiredBannerAspectRatio - aspectRatio;
+                    if (Math.Abs(aspectRatioDiff) > RequiredAspectRatioTolerance)
+                    {
+                        // Must have specific aspect ratio.limes
+                        Log.Error($@"{ModName}'s banner image is not the correct aspect ratio. Aspect ratio should be 580x47. The banner won't be displayed.");
+                        RemoveAssetFromCache(BannerImageName);
+                    }
+                    else
+                    {
+                        BannerBitmap = bitmap;
+                    }
                 }
             }
         }

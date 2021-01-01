@@ -2251,9 +2251,9 @@ namespace MassEffectModManagerCore
                     }
                 }
 
-                if (SelectedMod.BannerBitmap == null && SelectedMod.BannerImageName != null)
+                if (SelectedMod.BannerBitmap == null)
                 {
-                    SelectedMod.LoadBannerImage();
+                    SelectedMod.LoadBannerImage(); // Method will check if it's null
                 }
 
                 VisitWebsiteText = SelectedMod.ModWebsite != Mod.DefaultWebsite ? M3L.GetString(M3L.string_interp_visitSelectedModWebSite, SelectedMod.ModName) : "";
