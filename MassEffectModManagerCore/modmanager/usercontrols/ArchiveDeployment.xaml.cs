@@ -1831,7 +1831,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 DeploymentHost = deploymentHost;
                 Game = game;
                 HeaderString = M3L.GetString(M3L.string_interp_gamenameValidationTarget, game.ToGameName());
-                AvailableTargets.ReplaceAll(targets.Where(x => !x.TextureModded && x.Game == MEGame.UDK)); //TEST ONLY MAKE SURE TO REVERT
+                AvailableTargets.ReplaceAll(targets.Where(x => !x.TextureModded));
                 SelectedTarget = AvailableTargets.FirstOrDefault();
             }
 
