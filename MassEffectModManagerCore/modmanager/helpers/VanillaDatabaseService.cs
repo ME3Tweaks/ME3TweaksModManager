@@ -58,7 +58,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
             if (backupPath == null && target == null) return null; //can't fetch
 
             string sfar;
-            if (dlcName == @"DLC_TestPatch") //might need changed
+            if (dlcName == @"DLC_TestPatch" || dlcName == @"TESTPATCH") //DLC name, job header (as shown in BFF)
             {
                 //testpatch
                 sfar = ME3Directory.GetTestPatchSFARPath(backupPath ?? target.TargetPath);
