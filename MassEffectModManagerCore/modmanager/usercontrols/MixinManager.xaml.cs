@@ -18,6 +18,7 @@ using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.modmanager.windows;
 using ME3ExplorerCore.GameFilesystem;
+using ME3ExplorerCore.Helpers;
 using ME3ExplorerCore.Packages;
 using ME3ExplorerCore.Unreal;
 
@@ -156,7 +157,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     failedApplications.Add(str);
                 }
                 var compilingListsPerModule = MixinHandler.GetMixinApplicationList(mixins, failedApplicationCallback);
-                if (failedApplications.Any())
+                if (Enumerable.Any(failedApplications))
                 {
                     //Error building list
                     modpath = null;
@@ -277,11 +278,24 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         using var packageAsStream = VanillaDatabaseService.FetchFileFromVanillaSFAR(dlcFolderName, file.Key, forcedDLC: dlcPackage);
                         //as file comes from backup, we don't need to decompress it, it will always be decompressed in sfar
                         using var finalStream = MixinHandler.ApplyMixins(packageAsStream, file.Value, true, completedSingleApplicationCallback, failedApplicationCallback);
-                        CLog.Information(@"Compressing package to mod directory: " + file.Key, Settings.LogModMakerCompiler);
-                        finalStream.Position = 0;
-                        var package = MEPackageHandler.OpenMEPackageFromStream(finalStream);
+
                         var outfile = Path.Combine(outdir, Path.GetFileName(file.Key));
-                        package.Save(outfile, true);
+
+                        if (mapping.Key != ModJob.JobHeader.TESTPATCH)
+                        {
+                            // TestPatch is never unpacked. So there is not really point to 
+                            // compressing it's rather small files. The other DLC jobs likely will be packed still, but this will save some disk space.
+
+                            CLog.Information(@"Compressing package to mod directory: {outfile}", Settings.LogModMakerCompiler);
+                            finalStream.Position = 0;
+                            var package = MEPackageHandler.OpenMEPackageFromStream(finalStream);
+                            package.Save(outfile, true);
+                        }
+                        else
+                        {
+                            Log.Information($@"Writing patched file to disk: {outfile}");
+                            finalStream.WriteToFile(outfile);
+                        }
                     }
                     catch (Exception e)
                     {
@@ -319,7 +333,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     failedApplications.Add(str);
                 }
                 var compilingListsPerModule = MixinHandler.GetMixinApplicationList(mixins, failedApplicationCallback);
-                if (failedApplications.Any())
+                if (Enumerable.Any(failedApplications))
                 {
                     //Error building list
                     Log.Information(@"Aborting mixin install due to incompatible selection of mixins");
