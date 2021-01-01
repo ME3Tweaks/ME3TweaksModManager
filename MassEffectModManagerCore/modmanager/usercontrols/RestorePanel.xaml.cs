@@ -227,26 +227,29 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     //It's a DLC!
                                     string dlcname = fileBeingCopied.Substring(dlcSubStringLen);
                                     int index = dlcname.IndexOf('\\');
-                                    try
+                                    if (index > 0) //Files directly in the DLC directory won't have path sep
                                     {
-                                        dlcname = dlcname.Substring(0, index);
-                                        if (MEDirectories.OfficialDLCNames(RestoreTarget.Game).TryGetValue(dlcname, out var hrName))
+                                        try
                                         {
-                                            BackupStatusLine2 = M3L.GetString(M3L.string_interp_restoringX, hrName);
+                                            dlcname = dlcname.Substring(0, index);
+                                            if (MEDirectories.OfficialDLCNames(RestoreTarget.Game).TryGetValue(dlcname, out var hrName))
+                                            {
+                                                BackupStatusLine2 = M3L.GetString(M3L.string_interp_restoringX, hrName);
+                                            }
+                                            else
+                                            {
+                                                BackupStatusLine2 = M3L.GetString(M3L.string_interp_restoringX, dlcname);
+                                            }
                                         }
-                                        else
+                                        catch (Exception e)
                                         {
-                                            BackupStatusLine2 = M3L.GetString(M3L.string_interp_restoringX, dlcname);
+                                            Crashes.TrackError(e, new Dictionary<string, string>()
+                                            {
+                                                {@"Source", @"Restore UI display callback"},
+                                                {@"Value", fileBeingCopied},
+                                                {@"DLC Folder path", dlcFolderpath}
+                                            });
                                         }
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        Crashes.TrackError(e, new Dictionary<string, string>()
-                                        {
-                                            {@"Source", @"Restore UI display callback"},
-                                            {@"Value", fileBeingCopied},
-                                            {@"DLC Folder path", dlcFolderpath}
-                                        });
                                     }
                                 }
                                 else
