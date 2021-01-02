@@ -2314,6 +2314,8 @@ namespace MassEffectModManagerCore
                 SetWebsitePanelVisibility(false);
                 CurrentDescriptionText = DefaultDescriptionText;
             }
+
+            CanApplyMod(); // This sets the text. Good design MG
         }
 
         private void UpdatedEndorsementString()
@@ -3420,7 +3422,7 @@ namespace MassEffectModManagerCore
                 }
 
                 //Set language.
-                await Task.Run(() => OnlineContent.InternalSetLanguage(lang, forcedDictionary, startup));
+                Task.Run(async () => { await OnlineContent.InternalSetLanguage(lang, forcedDictionary, startup); }).Wait();
 
                 App.CurrentLanguage = Settings.Language = lang;
                 SetTipsForLanguage();

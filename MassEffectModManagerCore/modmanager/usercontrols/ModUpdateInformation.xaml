@@ -43,8 +43,7 @@
         <ItemsControl
             Margin="0"
             ItemsSource="{Binding UpdatableMods}"
-            AlternationCount="{Binding RelativeSource={RelativeSource Self}, Path=Items.Count}"
-            ScrollViewer.VerticalScrollBarVisibility="Auto">
+            AlternationCount="{Binding RelativeSource={RelativeSource Self}, Path=Items.Count}">
             <ItemsControl.Resources>
                 <DataTemplate
                     DataType="{x:Type me3Tweaks:OnlineContent+ModUpdateInfo}">
@@ -331,7 +330,7 @@
                     <ScrollViewer
                         x:Name="ScrollViewer"
                         Padding="{TemplateBinding Padding}"
-                        VerticalScrollBarVisibility="Visible">
+                        VerticalScrollBarVisibility="Auto">
                         <ItemsPresenter />
                     </ScrollViewer>
                 </ControlTemplate>

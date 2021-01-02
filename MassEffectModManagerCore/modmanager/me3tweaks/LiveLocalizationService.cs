@@ -51,7 +51,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         /// </summary>
         /// <param name="lang"></param>
         /// <param name="forcedDictionary"></param>
-        public static void InternalSetLanguage(string lang, ResourceDictionary forcedDictionary, bool localAssetsOnly = false)
+        public static Task InternalSetLanguage(string lang, ResourceDictionary forcedDictionary, bool localAssetsOnly = false)
         {
             string uriSource = null;
             if (forcedDictionary == null)
@@ -89,6 +89,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 Source = new Uri(uriSource, UriKind.Absolute)
             };
             Application.Current.Resources.MergedDictionaries.Add(resourceDictionary);
+            return Task.CompletedTask;
         }
 
         private static bool DownloadLocalization(string lang)
