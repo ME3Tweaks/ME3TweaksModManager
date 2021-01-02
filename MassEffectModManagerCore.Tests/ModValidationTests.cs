@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using MassEffectModManagerCore.modmanager;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.objects;
@@ -105,10 +106,27 @@ namespace MassEffectModManagerCore.Tests
                 var realArchiveInfo = GlobalTest.ParseRealArchiveAttributes(archive);
                 Console.WriteLine($"Inspecting archive: { archive}");
                 ModArchiveImporter.InspectArchive(archive, addModCallback, failedModCallback, logMessageCallback, forcedMD5: realArchiveInfo.md5, forcedSize: realArchiveInfo.size);
-                Assert.AreEqual(realArchiveInfo.nummodsexpected, modsFoundInArchive.Count(x=>x.ValidMod), $"{archive} did not parse correct amount of mods.");
+                Assert.AreEqual(realArchiveInfo.nummodsexpected, modsFoundInArchive.Count(x => x.ValidMod), $"{archive} did not parse correct amount of mods.");
+
+                foreach (var v in modsFoundInArchive)
+                {
+                    var cookedName = v.Game == MEGame.ME3 ? @"CookedPCConsole" : "CookedPC";
+                    // Check nothing has FilesToInstall containing two 'CookedPCConsole' items in the string. 
+                    // This is fun edge case due to TESTPATCH having two names DLC_TestPatch and TESTPATCH
+
+                    foreach (var mj in v.InstallationJobs)
+                    {
+                        foreach (var fti in mj.FilesToInstall)
+                        {
+                            var numAppearances = Regex.Matches(fti.Key, cookedName).Count;
+                            if (numAppearances > 1)
+                            {
+                                Assert.Fail($@"Found more than 1 instance of {cookedName} in FilesToInstall targetpath item {fti.Key}! This indicates queue building was wrong. Mod: {v.ModName}, file {archive}");
+                            }
+                        }
+                    }
+                }
             }
         }
-
-
     }
 }

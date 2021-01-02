@@ -29,9 +29,9 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
         /// The default website value, to indicate one was not set. This value must be set to a valid url or navigation request in UI binding may not work.
         /// </summary>
         public const string DefaultWebsite = @"http://example.com"; //this is required to prevent exceptions when binding the navigateuri
-        //Fody uses this property on weaving
+                                                                    //Fody uses this property on weaving
 #pragma warning disable
-public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged;
 #pragma warning restore
 
         /// <summary>

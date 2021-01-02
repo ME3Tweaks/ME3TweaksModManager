@@ -41,6 +41,7 @@
                 Margin="5,5,0,5" />
         </DockPanel>
         <ItemsControl
+            Margin="0"
             ItemsSource="{Binding UpdatableMods}"
             AlternationCount="{Binding RelativeSource={RelativeSource Self}, Path=Items.Count}">
             <ItemsControl.Resources>
@@ -329,7 +330,7 @@
                     <ScrollViewer
                         x:Name="ScrollViewer"
                         Padding="{TemplateBinding Padding}"
-                        VerticalScrollBarVisibility="Visible">
+                        VerticalScrollBarVisibility="Auto">
                         <ItemsPresenter />
                     </ScrollViewer>
                 </ControlTemplate>
