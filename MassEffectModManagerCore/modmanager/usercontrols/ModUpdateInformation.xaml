@@ -41,8 +41,10 @@
                 Margin="5,5,0,5" />
         </DockPanel>
         <ItemsControl
+            Margin="0"
             ItemsSource="{Binding UpdatableMods}"
-            AlternationCount="{Binding RelativeSource={RelativeSource Self}, Path=Items.Count}">
+            AlternationCount="{Binding RelativeSource={RelativeSource Self}, Path=Items.Count}"
+            ScrollViewer.VerticalScrollBarVisibility="Auto">
             <ItemsControl.Resources>
                 <DataTemplate
                     DataType="{x:Type me3Tweaks:OnlineContent+ModUpdateInfo}">

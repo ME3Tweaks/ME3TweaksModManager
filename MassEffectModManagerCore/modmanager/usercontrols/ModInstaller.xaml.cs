@@ -1016,6 +1016,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 else
                 {
+                    if (sfarJob.job.Header == ModJob.JobHeader.TESTPATCH)
+                    {
+                        Log.Fatal(@"Installing a NEW file into TESTPATCH! This will break the game. This should be immediately reported to Mgamerz on Discord.");
+                        Crashes.TrackError(new Exception(@"Installing a NEW file into TESTPATCH!"), new Dictionary<string, string>()
+                        {
+                            {@"Mod name", mod.ModName}
+                        });
+                    }
                     dlc.AddFileQuick(sourcePath, entryPath);
                     CLog.Information(@"Added new file to SFAR: " + entry.Key, Settings.LogModInstallation);
                 }

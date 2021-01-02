@@ -375,11 +375,11 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                             : Environment.ProcessorCount
                     }, mapping =>
                     {
-                        var dlcFolderName = ModmakerChunkNameToDLCFoldername(mapping.Key.ToString());
-                        var outdir = Path.Combine(mod.ModPath, HeaderToDefaultFoldername(mapping.Key), @"CookedPCConsole");
-                        Directory.CreateDirectory(outdir);
+                        //var dlcFolderName = ModmakerChunkNameToDLCFoldername(mapping.Key.ToString());
+                        //var outdir = Path.Combine(mod.ModPath, HeaderToDefaultFoldername(mapping.Key), @"CookedPCConsole");
+                        //Directory.CreateDirectory(outdir);
                         
-                        MixinManager.ApplyMixinsToModule(mapping, outdir, completedSingleApplicationCallback, null);
+                        MixinManager.ApplyMixinsToModule(mapping, mod.ModPath, completedSingleApplicationCallback, null);
                         
                         /*if (mapping.Key == ModJob.JobHeader.BASEGAME)
                         {

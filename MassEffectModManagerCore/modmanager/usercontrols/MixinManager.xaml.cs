@@ -292,7 +292,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             // TestPatch is never unpacked. So there is not really point to 
                             // compressing it's rather small files. The other DLC jobs likely will be packed still, but this will save some disk space.
 
-                            CLog.Information(@"Compressing package to mod directory: {outfile}", Settings.LogModMakerCompiler);
+                            CLog.Information($@"Compressing package to mod directory: {outfile}", Settings.LogModMakerCompiler);
                             finalStream.Position = 0;
                             var package = MEPackageHandler.OpenMEPackageFromStream(finalStream);
                             package.Save(outfile, true);
