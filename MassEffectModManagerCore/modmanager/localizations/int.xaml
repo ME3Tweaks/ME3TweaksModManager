@@ -351,8 +351,10 @@
     <system:String x:Key="string_description_allInstallableFiles">The following files are what this mod can potentially install into the game. Note that some of them may only be installed if certain options are chosen.</system:String>
     <system:String x:Key="string_setting_launchThroughOrigin">Launch Origin-based games through Origin</system:String>
     <system:String x:Key="string_setting_tooltip_launchThroughOrigin">Launches Origin-based games through the Origin client, ensuring licensing and playtime is tracked. This only affects ME1/ME2 Origin versions, as ME3 requires it</system:String>
+    <system:String x:Key="string_loadingTargets">Loading targets</system:String>
+    <!-- Shown when app is booting up and game targets are being inspected -->
 
-    <!-- Global Styles -->
+    <!-- Global Styles --> 
     <system:String x:Key="string_thisTargetHasBeenTextureModded">This target has been texture modded</system:String>
 
     <!-- Mod Installer Panel -->

@@ -106,15 +106,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 var path = db.Paths[f.ParentPathID].GetFullPath(db);
                                 if (path.ContainsAny(dlcNames, StringComparison.Ordinal))
                                 {
-                                    var finfo = $"https://nexusmods.com/masseffect3/mods/{f.ModID}";
+                                    var finfo = $"https://nexusmods.com/masseffect/mods/{f.ModID}";
                                     xx.Add(db.NameTable[db.ModFileInfos[f.FileID].NameID] + " " + finfo);
                                 }
 
                             }
                         }
                     }
-                    File.WriteAllLines(@"D:\NexusIndexer\dlcNames.txt", dlcNames);
-                    File.WriteAllLines(@"D:\NexusIndexer\mods.txt", xx);
+                    File.WriteAllLines(@"D:\dlcNames.txt", dlcNames);
+                    File.WriteAllLines(@"D:\mods.txt", xx);
 #endif
                     var match = db.NameTable.FirstOrDefault(x =>
                         x.Value.Equals(SearchTerm, StringComparison.InvariantCultureIgnoreCase));

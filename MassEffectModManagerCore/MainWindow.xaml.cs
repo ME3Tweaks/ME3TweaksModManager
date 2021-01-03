@@ -1702,7 +1702,7 @@ namespace MassEffectModManagerCore
                 T2DLocalizationShim.SetupTexture2DLocalizationShim();
                 #endregion
                 //debugMethod();
-
+                CurrentOperationText = M3L.GetString(M3L.string_loadingTargets);
                 PopulateTargets();
             }).ContinueWithOnUIThread(x =>
             {
@@ -2184,6 +2184,9 @@ namespace MassEffectModManagerCore
             targets.AddRange(Utilities.GetCachedTargets(MEGame.ME3, targets));
             targets.AddRange(Utilities.GetCachedTargets(MEGame.ME2, targets));
             targets.AddRange(Utilities.GetCachedTargets(MEGame.ME1, targets));
+
+            // Load the targets
+
 
             // ORDER THE TARGETS
             targets = targets.Distinct().ToList();

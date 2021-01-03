@@ -403,6 +403,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_description_allInstallableFiles = "string_description_allInstallableFiles";
 		public const string string_setting_launchThroughOrigin = "string_setting_launchThroughOrigin";
 		public const string string_setting_tooltip_launchThroughOrigin = "string_setting_tooltip_launchThroughOrigin";
+		public const string string_loadingTargets = "string_loadingTargets";
 		public const string string_thisTargetHasBeenTextureModded = "string_thisTargetHasBeenTextureModded";
 		public const string string_preparingToInstall = "string_preparingToInstall";
 		public const string string_interp_devModeAlotInstalledWarning = "string_interp_devModeAlotInstalledWarning";

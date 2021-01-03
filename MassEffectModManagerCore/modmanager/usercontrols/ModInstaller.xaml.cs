@@ -1018,6 +1018,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     if (sfarJob.job.Header == ModJob.JobHeader.TESTPATCH)
                     {
+                        Debugger.Break();
                         Log.Fatal(@"Installing a NEW file into TESTPATCH! This will break the game. This should be immediately reported to Mgamerz on Discord.");
                         Crashes.TrackError(new Exception(@"Installing a NEW file into TESTPATCH!"), new Dictionary<string, string>()
                         {

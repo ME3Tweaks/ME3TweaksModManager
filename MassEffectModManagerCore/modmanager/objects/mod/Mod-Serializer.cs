@@ -83,6 +83,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
+            if (ModPath == null) return false; // RCW mods will not set a mod path
             return ModPath.Equals(other.ModPath, StringComparison.InvariantCultureIgnoreCase);
         }
 
