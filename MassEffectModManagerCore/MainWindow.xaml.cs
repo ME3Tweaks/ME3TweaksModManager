@@ -1685,7 +1685,7 @@ namespace MassEffectModManagerCore
             nbw.RunWorkerAsync();
 
             var syncContext = TaskScheduler.FromCurrentSynchronizationContext();
-            CoreLib.SetSynchronizationContext(syncContext);
+            ME3ExplorerCoreLib.SetSynchronizationContext(syncContext);
             IsEnabled = false;
             Task.Run(() =>
             {
@@ -1695,7 +1695,7 @@ namespace MassEffectModManagerCore
                 Log.Information(@"Initializing ME3ExplorerCore library");
                 #region INIT CORE LIB
                 MEPackageHandler.GlobalSharedCacheEnabled = false; // Do not use the package caching system
-                CoreLib.InitLib(syncContext, x =>
+                ME3ExplorerCoreLib.InitLib(syncContext, x =>
                 {
                     Log.Error($@"Error saving package: {x}");
                 });
