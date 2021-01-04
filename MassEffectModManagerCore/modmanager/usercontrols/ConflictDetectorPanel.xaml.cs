@@ -21,7 +21,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public ConflictDetectorPanel()
         {
             MemoryAnalyzer.AddTrackedMemoryItem(@"Custom DLC Conflict Detector Panel", new WeakReference(this));
-            DataContext = this;
             LoadCommands();
             InitializeComponent();
         }

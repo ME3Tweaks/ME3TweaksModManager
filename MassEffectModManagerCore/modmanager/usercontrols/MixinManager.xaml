@@ -1,7 +1,6 @@
-﻿<local:MMBusyPanelBase x:Class="MassEffectModManagerCore.modmanager.usercontrols.MixinManager" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" mc:Ignorable="d" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:fa="http://schemas.fontawesome.io/icons/" d:DesignHeight="450" d:DesignWidth="800" Width="700" Height="500">
-    <UserControl.Resources>
-        <converters:GameToImageIconConverter x:Key="GameToImageIconConverter" />
-    </UserControl.Resources>
+﻿<local:MMBusyPanelBase x:Class="MassEffectModManagerCore.modmanager.usercontrols.MixinManager"
+                       DataContext="{Binding RelativeSource={RelativeSource Self}}"
+                       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" mc:Ignorable="d" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:fa="http://schemas.fontawesome.io/icons/" d:DesignHeight="450" d:DesignWidth="800" Width="700" Height="500">
     <DockPanel MaxWidth="700">
         <DockPanel DockPanel.Dock="Bottom" Margin="0,5,0,0">
             <Button MinWidth="70" Content="{DynamicResource string_close}" Margin="5,0,0,0" Command="{Binding CloseCommand}" Padding="7,4" DockPanel.Dock="Right" />
@@ -19,11 +18,11 @@
                             
                             <!-- Install into game -->
                             <TextBlock Text="{DynamicResource string_directlyInstallIntoGame}" FontWeight="Bold"/>
-                            <ComboBox Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" 
+                            <local:TargetSelector 
                                       IsEnabled="{Binding OperationInProgress, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" 
-                                      ItemsSource="{Binding AvailableInstallTargets}" SelectedItem="{Binding SelectedInstallTarget}" 
-                                      HorizontalContentAlignment="Stretch"  ItemTemplate="{StaticResource TargetSelectorTemplate}" 
-                                      ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}"/>
+                                      AvailableTargets="{Binding AvailableInstallTargets}" 
+                                      SelectedGameTarget="{Binding SelectedInstallTarget}" 
+                                      HorizontalContentAlignment="Stretch"/>
 
                             <Button Content="{DynamicResource string_compileIntoExistingMod}" HorizontalAlignment="Right" ToolTip="{DynamicResource string_tooltip_appliesMixinsToAMod}" Command="{Binding InstallIntoGameCommand}"/>
                         </StackPanel>

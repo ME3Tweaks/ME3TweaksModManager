@@ -1,8 +1,10 @@
-﻿<local:MMBusyPanelBase x:Class="MassEffectModManagerCore.modmanager.usercontrols.ImportInstalledDLCModPanel" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800" Width="500">
+﻿<local:MMBusyPanelBase x:Class="MassEffectModManagerCore.modmanager.usercontrols.ImportInstalledDLCModPanel" DataContext="{Binding RelativeSource={RelativeSource Self}}"  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800" Width="500">
     <DockPanel>
         <TextBlock Text="{DynamicResource string_importAnInstalledDLCMod}" FontWeight="Bold" FontSize="20" DockPanel.Dock="Top" TextAlignment="Center" />
         <TextBlock Text="{DynamicResource string_description_importFromGameToModManager}" TextWrapping="Wrap" DockPanel.Dock="Top" TextAlignment="Center" Margin="0,0,0,5" />
-        <ComboBox ItemsSource="{Binding InstallationTargets}" HorizontalContentAlignment="Stretch" IsEditable="False" SelectedItem="{Binding SelectedTarget}" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" ToolTip="{DynamicResource string_tooltip_currentTarget}" ItemTemplate="{StaticResource TargetSelectorTemplate}" ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}" DockPanel.Dock="Top" />
+        <local:TargetSelector AvailableTargets="{Binding InstallationTargets}" HorizontalContentAlignment="Stretch" SelectedGameTarget="{Binding SelectedTarget}" 
+                              ToolTip="{DynamicResource string_tooltip_currentTarget}" 
+                              DockPanel.Dock="Top" />
         <Grid DockPanel.Dock="Bottom" Margin="0,5,0,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />

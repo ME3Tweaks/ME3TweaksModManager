@@ -37,7 +37,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private List<GameTarget> targetsList;
         public BackupCreator(List<GameTarget> targetsList, GameTarget selectedTarget, Window window)
         {
-            DataContext = this;
             this.targetsList = targetsList;
             LoadCommands();
             InitializeComponent();

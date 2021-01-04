@@ -1,22 +1,10 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<local:MMBusyPanelBase
+﻿<local:MMBusyPanelBase
     x:Class="MassEffectModManagerCore.modmanager.usercontrols.BackupCreator" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:ui="clr-namespace:MassEffectModManagerCore.ui"
     mc:Ignorable="d"
     d:DesignHeight="450"
-    d:DesignWidth="400"
+    d:DesignWidth="600"
+    DataContext="{Binding RelativeSource={RelativeSource Self}}"
     Width="500">
-    <UserControl.Resources>
-        <converters:GameToImageIconConverter
-            x:Key="GameToImageIconConverter" />
-        <converters:BoolEnabledConverter
-            x:Key="BoolEnabledConverter" />
-        <converters:BoolToVisibilityConverter
-            x:Key="BoolToVisibilityConverter" />
-        <converters:NullEnabledConverter
-            x:Key="NullEnabledConverter" />
-        <converters:BootTargetSourceVisibilityConverter
-            x:Key="OriginBootTargetVisibilityConverter" />
-    </UserControl.Resources>
     <StackPanel>
         <TextBlock
             Text="{DynamicResource string_Backup}"
@@ -92,18 +80,12 @@
                             Grid.Row="2"
                             Text="{Binding BackupStatusLine2}"
                             TextWrapping="Wrap"/>
-                        <ComboBox
-                            Grid.Column="0"
-                            Grid.Row="3"
-                            Grid.ColumnSpan="2"
+                        <local:TargetSelector Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2"
                             IsEnabled="{Binding BackupInProgress, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}"
-                            Name="InstallationTargetsME3_ComboBox"
-                            ItemsSource="{Binding AvailableBackupSources}"
-                            SelectedItem="{Binding BackupSourceTarget}"
+                            AvailableTargets="{Binding AvailableBackupSources}"
+                            SelectedGameTarget="{Binding BackupSourceTarget}"
                             HorizontalContentAlignment="Stretch"
-                            Visibility="{Binding BackupOptionsVisible, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}"
-                            ItemTemplate="{StaticResource TargetSelectorTemplate}"
-                            ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}" />
+                            Visibility="{Binding BackupOptionsVisible, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}"/>
                         <Button
                             Content="{DynamicResource string_backUp}"
                             Padding="3,0"

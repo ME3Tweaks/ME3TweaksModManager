@@ -59,11 +59,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private bool CanRestoreMPSFARs()
         {
-            return !Utilities.IsGameRunning(SelectedTarget.Game) && SelectedTarget.HasModifiedMPSFAR() && !SFARBeingRestored;
+            return IsPanelOpen && !Utilities.IsGameRunning(SelectedTarget.Game) && SelectedTarget.HasModifiedMPSFAR() && !SFARBeingRestored;
         }
         private bool CanRestoreSPSFARs()
         {
-            return !Utilities.IsGameRunning(SelectedTarget.Game) && SelectedTarget.HasModifiedSPSFAR() && !SFARBeingRestored;
+            return IsPanelOpen && !Utilities.IsGameRunning(SelectedTarget.Game) && SelectedTarget.HasModifiedSPSFAR() && !SFARBeingRestored;
         }
 
         private bool CanRemoveTarget() => SelectedTarget != null && !SelectedTarget.RegistryActive;
@@ -91,7 +91,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private bool CanRestoreAllBasegame()
         {
-            return !Utilities.IsGameRunning(SelectedTarget.Game) && SelectedTarget.ModifiedBasegameFiles.Count > 0 && !RestoreAllBasegameInProgress && BackupService.GetGameBackupPath(SelectedTarget.Game) != null; //check if ifles being restored
+            return IsPanelOpen && !Utilities.IsGameRunning(SelectedTarget.Game) && SelectedTarget?.ModifiedBasegameFiles.Count > 0 && !RestoreAllBasegameInProgress && BackupService.GetGameBackupPath(SelectedTarget.Game) != null; //check if ifles being restored
         }
 
         public string ModifiedFilesFilterText { get; set; }
@@ -279,7 +279,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private bool CanRestoreAllSFARs()
         {
-            return !Utilities.IsGameRunning(SelectedTarget.Game) && SelectedTarget.ModifiedSFARFiles.Count > 0 && !SFARBeingRestored;
+            return IsPanelOpen && !Utilities.IsGameRunning(SelectedTarget.Game) && SelectedTarget.ModifiedSFARFiles.Count > 0 && !SFARBeingRestored;
         }
 
         /// <summary>

@@ -6,11 +6,12 @@
              xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols"
              xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
              mc:Ignorable="d" 
+             DataContext="{Binding RelativeSource={RelativeSource Self}}"
              Height="500" Width="550">
     <DockPanel MaxHeight="520">
         <TextBlock DockPanel.Dock="Top" Text="{DynamicResource string_officialDLCToggler}" FontSize="24" FontWeight="Bold" TextAlignment="Center" />
         <TextBlock DockPanel.Dock="Top" Text="{DynamicResource string_officialDLCTogglerDescription}" TextAlignment="Center" TextWrapping="Wrap"/>
-        <ComboBox DockPanel.Dock="Top" ItemsSource="{Binding AvailableTargets}" SelectedItem="{Binding SelectedTarget}" Margin="0,5" HorizontalContentAlignment="Stretch" ItemTemplate="{StaticResource TargetSelectorTemplate}" ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}" />
+        <local:TargetSelector DockPanel.Dock="Top" AvailableTargets="{Binding AvailableTargets}" SelectedGameTarget="{Binding SelectedTarget}" Margin="0,5" HorizontalContentAlignment="Stretch" />
         <TextBlock Visibility="{Binding SelectedTarget.Game, ConverterParameter='Not_ME3', Converter={StaticResource GameToVisibilityConverter}}" DockPanel.Dock="Top" TextWrapping="Wrap"
                    Text="{DynamicResource string_officialDLCTogglerME1ME2Warning}" />
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="0,5,0,0">

@@ -33,7 +33,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public RestorePanel(List<GameTarget> targetsList, GameTarget selectedTarget)
         {
-            DataContext = this;
             this.targetsList = targetsList;
             LoadCommands();
             InitializeComponent();
@@ -415,7 +414,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             public string GameTitle { get; }
             //Fody uses this property on weaving
 #pragma warning disable
-public event PropertyChangedEventHandler PropertyChanged;
+            public event PropertyChangedEventHandler PropertyChanged;
 #pragma warning restore
             public GameTarget RestoreTarget { get; set; }
             public string BackupLocation { get; set; }

@@ -340,7 +340,7 @@
                 <RadioButton
                     Name="ME1_RadioButton"
                     Click="RadioButton_Click"
-                    Content="/images/gameicons/ME1_48.ico"
+                    Content="{StaticResource me1gameicon}"
                     Style="{StaticResource GameIcon}"
                     BorderBrush="Red"
                     Width="24"
@@ -348,7 +348,7 @@
                 <RadioButton
                     Name="ME2_RadioButton"
                     Click="RadioButton_Click"
-                    Content="/images/gameicons/ME2_48.ico"
+                    Content="{StaticResource me2gameicon}"
                     Style="{StaticResource GameIcon}"
                     BorderBrush="Orange"
                     Width="24"
@@ -357,7 +357,7 @@
                 <RadioButton
                     Name="ME3_RadioButton"
                     Click="RadioButton_Click"
-                    Content="/images/gameicons/ME3_48.ico"
+                    Content="{StaticResource me3gameicon}"
                     Style="{StaticResource GameIcon}"
                     BorderBrush="Green"
                     Width="24"

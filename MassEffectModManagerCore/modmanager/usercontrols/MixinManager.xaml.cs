@@ -7,7 +7,6 @@ using System.IO;
 using System.Windows;
 using System.Windows.Input;
 using System.Linq;
-
 using Serilog;
 using System.Threading.Tasks;
 using System.Globalization;
@@ -44,7 +43,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public MixinManager()
         {
             MemoryAnalyzer.AddTrackedMemoryItem(@"Mixin Library Panel", new WeakReference(this));
-            DataContext = this;
             MixinHandler.LoadME3TweaksPackage();
             AvailableOfficialMixins.ReplaceAll(MixinHandler.ME3TweaksPackageMixins.OrderBy(x => x.PatchName));
 

@@ -108,7 +108,7 @@
                         <StackPanel
                             Orientation="Horizontal">
                             <Image
-                                Source="/images/gameicons/ME1_48.ico"
+                                Source="{StaticResource me1gameicon}"
                                 Width="16"
                                 Height="16"
                                 Margin="0,0,5,0" />
@@ -134,7 +134,7 @@
                         <StackPanel
                             Orientation="Horizontal">
                             <Image
-                                Source="/images/gameicons/ME2_48.ico"
+                                Source="{StaticResource me2gameicon}"
                                 Width="16"
                                 Height="16"
                                 Margin="0,0,5,0" />
@@ -160,7 +160,7 @@
                         <StackPanel
                             Orientation="Horizontal">
                             <Image
-                                Source="/images/gameicons/ME3_48.ico"
+                                Source="{StaticResource me3gameicon}"
                                 Width="16"
                                 Height="16"
                                 Margin="0,0,5,0" />

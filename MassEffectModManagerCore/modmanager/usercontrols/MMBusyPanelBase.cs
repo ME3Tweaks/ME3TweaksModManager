@@ -14,7 +14,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     {
         //Fody uses this property on weaving
 #pragma warning disable
-public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged;
 #pragma warning restore
 
         protected MMBusyPanelBase()
@@ -56,5 +56,10 @@ public event PropertyChangedEventHandler PropertyChanged;
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyname));
         }
+
+        /// <summary>
+        /// If the panel is still open. This can be used to prevent command from firing on closure.
+        /// </summary>
+        public bool IsPanelOpen => DataContext != null;
     }
 }

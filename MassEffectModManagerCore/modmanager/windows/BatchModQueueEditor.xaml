@@ -31,17 +31,17 @@
             <TextBlock Text="{DynamicResource string_game}" FontWeight="Bold" Grid.ColumnSpan="3" />
             <RadioButton Grid.Column="0" Grid.Row="1" Click="ME1_Clicked" Name="ME1_RadioButton">
                 <StackPanel Orientation="Horizontal">
-                    <Image Source="/images/gameicons/ME1_48.ico" Width="32" Height="32" Margin="0,0,5,0" />
+                    <Image Source="{StaticResource me1gameicon}" Width="32" Height="32" Margin="0,0,5,0" />
                 </StackPanel>
             </RadioButton>
             <RadioButton Grid.Row="1" Grid.Column="1" Margin="5,0" Click="ME2_Clicked" Name="ME2_RadioButton">
                 <StackPanel Orientation="Horizontal">
-                    <Image Source="/images/gameicons/ME2_48.ico" Width="32" Height="32" Margin="0,0,5,0" />
+                    <Image Source="{StaticResource me2gameicon}" Width="32" Height="32" Margin="0,0,5,0" />
                 </StackPanel>
             </RadioButton>
             <RadioButton Grid.Row="1" Grid.Column="2" Click="ME3_Clicked" Name="ME3_RadioButton">
                 <StackPanel Orientation="Horizontal">
-                    <Image Source="/images/gameicons/ME3_48.ico" Width="32" Height="32" Margin="0,0,5,0" />
+                    <Image Source="{StaticResource me3gameicon}" Width="32" Height="32" Margin="0,0,5,0" />
                 </StackPanel>
             </RadioButton>
             <TextBlock Text="{DynamicResource string_availableModsForGroup}" FontWeight="Bold" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,10,0,0" />

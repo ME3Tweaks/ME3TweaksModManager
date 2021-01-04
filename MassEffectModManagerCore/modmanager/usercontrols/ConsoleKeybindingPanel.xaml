@@ -4,6 +4,7 @@
                        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
                        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
                        xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" 
+                       DataContext="{Binding RelativeSource={RelativeSource Self}}"
                        xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800" Width="600">
     <StackPanel>
         <TextBlock Text="{DynamicResource string_consoleKeyKeybinder}" FontSize="20" FontWeight="Bold" TextAlignment="Center" DockPanel.Dock="Top" />
@@ -29,7 +30,7 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" Source="/images/gameicons/ME1_48.ico" Width="48" VerticalAlignment="Top" Height="48" HorizontalAlignment="Left" />
+            <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" Source="{StaticResource me1gameicon}" Width="48" VerticalAlignment="Top" Height="48" HorizontalAlignment="Left" />
             <TextBlock Grid.Column="1" Grid.Row="0" FontWeight="Bold" Text="Mass Effect" />
             <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding ME1FullConsoleKeyText}" />
             <TextBlock Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="2" Text="{Binding ME1MiniConsoleKeyText}" />
@@ -54,10 +55,12 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" Source="/images/gameicons/ME2_48.ico" Width="48" VerticalAlignment="Top" Height="48" HorizontalAlignment="Left" />
+            <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" Source="{StaticResource me2gameicon}" Width="48" VerticalAlignment="Top" Height="48" HorizontalAlignment="Left" />
             <TextBlock Grid.Column="1" Grid.Row="0" FontWeight="Bold" Text="Mass Effect 2" />
             <TextBlock Grid.Column="1" Grid.Row="1" Text="{DynamicResource string_massEffect2ConsoleKeysAreDefinedPerGame}" />
-            <ComboBox Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="2" ItemsSource="{Binding ME2Targets}" SelectedItem="{Binding SelectedME2Target}" HorizontalContentAlignment="Stretch" ItemTemplate="{StaticResource TargetSelectorTemplate}" ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}" IsEnabled="{Binding UIEnabled}" />
+            <local:TargetSelector Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="2" AvailableTargets="{Binding ME2Targets}" SelectedGameTarget="{Binding SelectedME2Target}" 
+                                  HorizontalContentAlignment="Stretch" 
+                                  IsEnabled="{Binding UIEnabled}" />
             <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding ME2FullConsoleKeyText}" />
             <TextBlock Grid.Column="1" Grid.Row="4" Grid.ColumnSpan="2" Text="{Binding ME2MiniConsoleKeyText}" />
             <StackPanel Orientation="Horizontal" Grid.Row="5" Grid.Column="1" Visibility="{Binding SelectedME2Target, Converter={StaticResource NullVisibilityConverter}}">
@@ -81,10 +84,11 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" Source="/images/gameicons/ME3_48.ico" Width="48" VerticalAlignment="Top" Height="48" HorizontalAlignment="Left" />
+            <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" Source="{StaticResource me3gameicon}" Width="48" VerticalAlignment="Top" Height="48" HorizontalAlignment="Left" />
             <TextBlock Grid.Column="1" Grid.Row="0" FontWeight="Bold" Text="Mass Effect 3" />
             <TextBlock Grid.Column="1" Grid.Row="1" Text="{DynamicResource string_massEffect3ConsoleKeysAreDefinedPerGame}" />
-            <ComboBox Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="2" ItemsSource="{Binding ME3Targets}" SelectedItem="{Binding SelectedME3Target}" HorizontalContentAlignment="Stretch" ItemTemplate="{StaticResource TargetSelectorTemplate}" ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}" IsEnabled="{Binding UIEnabled}" />
+            <local:TargetSelector Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="2" AvailableTargets="{Binding ME3Targets}" SelectedGameTarget="{Binding SelectedME3Target}" 
+                            IsEnabled="{Binding UIEnabled}" />
             <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding ME3FullConsoleKeyText}" />
             <TextBlock Grid.Column="1" Grid.Row="4" Grid.ColumnSpan="2" Text="{Binding ME3MiniConsoleKeyText}" />
             <StackPanel Orientation="Horizontal" Grid.Row="5" Grid.Column="1" Visibility="{Binding SelectedME3Target, Converter={StaticResource NullVisibilityConverter}}">

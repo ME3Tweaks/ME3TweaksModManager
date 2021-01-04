@@ -20,15 +20,12 @@
             TextWrapping="Wrap"
             MaxWidth="550"
             TextAlignment="Center" />
-        <ComboBox
-            Name="InstallationTargets_ComboBox"
-            ItemsSource="{Binding InstallationTargets}"
+        <local:TargetSelector
+            AvailableTargets="{Binding InstallationTargets}"
             IsEnabled="{Binding SFARBeingRestored, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}"
-            SelectedItem="{Binding SelectedTarget}"
+            SelectedGameTarget="{Binding SelectedTarget}"
             Margin="0,5"
-            HorizontalContentAlignment="Stretch"
-            ItemTemplate="{StaticResource TargetSelectorTemplate}"
-            ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}" />
+            HorizontalContentAlignment="Stretch"/>
         <TabControl
             DataContext="{Binding SelectedTarget}"
             Padding="0"

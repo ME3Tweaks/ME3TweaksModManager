@@ -14,14 +14,14 @@
                 <TextBlock Text="Mass Effect" FontWeight="Bold" DockPanel.Dock="Bottom" HorizontalAlignment="Center" />
                 <fa:ImageAwesome DockPanel.Dock="Bottom" Icon="CheckCircle" Width="16" Height="16" Foreground="ForestGreen" Visibility="{Binding Path=(helpers:BackupService.ME1BackedUp), Converter={StaticResource BoolToVisibilityConverter}}" Margin="0,3,0,0"/>
                 <fa:ImageAwesome DockPanel.Dock="Bottom" Icon="{Binding Path=(helpers:BackupService.ME1ActivityIcon)}" Width="16" Height="16" SpinDuration="1" Spin="{Binding Path=(helpers:BackupService.ME1BackupActivity)}" Foreground="Red" Visibility="{Binding Path=(helpers:BackupService.ME1BackedUp), Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}" Margin="0,3,0,0"/>
-                <Image DockPanel.Dock="Top" Source="/images/gameicons/ME1_48.ico" Height="32" />
+                <Image DockPanel.Dock="Top" Source="{StaticResource me1gameicon}" Height="32" />
             </DockPanel>
             <DockPanel LastChildFill="False" Margin="7,0" Visibility="{Binding ME2Installed,Converter={StaticResource BoolToVisibilityConverter}}">
                 <TextBlock DockPanel.Dock="Bottom" Text="{Binding Path=(helpers:BackupService.ME2BackupStatus)}" ToolTip="{Binding Path=(helpers:BackupService.ME2BackupStatusTooltip)}" HorizontalAlignment="Center"  MaxWidth="170" TextWrapping="Wrap" TextAlignment="Center" />
                 <TextBlock Text="Mass Effect 2"   FontWeight="Bold" DockPanel.Dock="Bottom" HorizontalAlignment="Center" />
                 <fa:ImageAwesome DockPanel.Dock="Bottom" Icon="CheckCircle" Width="16" Height="16" Foreground="ForestGreen" Visibility="{Binding Path=(helpers:BackupService.ME2BackedUp), Converter={StaticResource BoolToVisibilityConverter}}"  Margin="0,3,0,0"/>
                 <fa:ImageAwesome DockPanel.Dock="Bottom" Icon="{Binding Path=(helpers:BackupService.ME2ActivityIcon)}" Width="16" Height="16" SpinDuration="1" Spin="{Binding Path=(helpers:BackupService.ME2BackupActivity)}" Foreground="Red" Visibility="{Binding Path=(helpers:BackupService.ME2BackedUp), Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}" Margin="0,3,0,0"/>
-                <Image DockPanel.Dock="Top" Source="/images/gameicons/ME2_48.ico" Height="32" />
+                <Image DockPanel.Dock="Top" Source="{StaticResource me2gameicon}" Height="32" />
             </DockPanel>
             <DockPanel LastChildFill="False" Margin="7,0" Visibility="{Binding ME3Installed,Converter={StaticResource BoolToVisibilityConverter}}">
                 <TextBlock DockPanel.Dock="Bottom" Text="{Binding Path=(helpers:BackupService.ME3BackupStatus)}" ToolTip="{Binding Path=(helpers:BackupService.ME3BackupStatusTooltip)}" HorizontalAlignment="Center" MaxWidth="170" TextWrapping="Wrap" TextAlignment="Center" />

@@ -1,6 +1,7 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<local:MMBusyPanelBase
-    x:Class="MassEffectModManagerCore.modmanager.usercontrols.OIGODisabler" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+﻿<local:MMBusyPanelBase
+    x:Class="MassEffectModManagerCore.modmanager.usercontrols.OIGODisabler" 
+    DataContext="{Binding RelativeSource={RelativeSource Self}}"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
     mc:Ignorable="d"
     d:DesignHeight="450"
     d:DesignWidth="800"
@@ -66,16 +67,13 @@
                             Grid.Column="1"
                             Grid.Row="1"
                             Text="{Binding D3D9Status}" />
-                        <ComboBox
+                        <local:TargetSelector
                             Grid.Column="0"
                             Grid.Row="3"
                             Grid.ColumnSpan="2"
-                            ItemsSource="{Binding Targets}"
-                            SelectedItem="{Binding SelectedTarget}"
+                            AvailableTargets="{Binding Targets}"
+                            SelectedGameTarget="{Binding SelectedTarget}"
                             HorizontalContentAlignment="Stretch"
-                            ItemTemplate="{StaticResource TargetSelectorTemplate}"
-                            ItemContainerStyle="{StaticResource TargetSelectorContainerStyle}"
-                            IsEnabled="{Binding Targets.Any}"
                             Visibility="{Binding Targets.Any, Converter={StaticResource BoolToVisibilityConverter}}" />
                         <Button
                             Content="{Binding DisablerButtonText}"

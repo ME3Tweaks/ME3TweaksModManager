@@ -28,7 +28,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     {
         public OfficialDLCToggler()
         {
-            DataContext = this;
             LoadCommands();
             InitializeComponent();
         }

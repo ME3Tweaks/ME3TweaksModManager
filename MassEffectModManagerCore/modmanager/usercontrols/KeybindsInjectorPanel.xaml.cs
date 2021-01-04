@@ -35,7 +35,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public KeybindsInjectorPanel()
         {
-            DataContext = this;
             LoadCommands();
             InitializeComponent();
         }

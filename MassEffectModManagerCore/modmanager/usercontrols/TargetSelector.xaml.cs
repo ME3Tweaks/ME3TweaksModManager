@@ -54,7 +54,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         }
 
         /// <summary>
-        /// Identified the Label dependency property
+        /// Which target is selected
         /// </summary>
         public static readonly DependencyProperty SelectedGameTargetProperty =
             DependencyProperty.Register(@"SelectedGameTarget", typeof(GameTarget),
@@ -85,20 +85,26 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         #region Theme DP
 
+        public enum TargetSelectorTheme
+        {
+            Normal,
+            Accent
+        }
+
         /// <summary>
         /// Sets if this selector should show the texture info or not. Typically in space constrained scenarios this can be hidden
         /// </summary>
-        public string Theme
+        public TargetSelectorTheme Theme
         {
-            get => (string)GetValue(ThemeProperty);
+            get => (TargetSelectorTheme)GetValue(ThemeProperty);
             set
             {
                 SetValue(ThemeProperty, value);
-                if (value == @"Normal")
+                if (value == TargetSelectorTheme.Normal)
                 {
                     ContainerStyle = (Style)FindResource(@"TargetSelectorContainerStyle");
                 }
-                else if (value == @"Accent")
+                else if (value == TargetSelectorTheme.Accent)
                 {
                     ContainerStyle = (Style)FindResource(@"TargetSelectorContainerAccentStyle");
                 }
@@ -110,11 +116,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         }
 
         /// <summary>
-        /// Identified the Label dependency property
+        /// The theme of the TargetSelector. Normal is default, Accent makes it blue.
         /// </summary>
         public static readonly DependencyProperty ThemeProperty =
-            DependencyProperty.Register(@"Theme", typeof(string),
-                typeof(TargetSelector), new PropertyMetadata(@"Normal"));
+            DependencyProperty.Register(@"Theme", typeof(TargetSelectorTheme),
+                typeof(TargetSelector), new PropertyMetadata(TargetSelectorTheme.Normal));
 
         #endregion
 
@@ -126,7 +132,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         //Fody uses this property on weaving
 #pragma warning disable
-public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged;
 #pragma warning restore
     }
 
