@@ -100,7 +100,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 Log.Information(@"Archive scan thread exited");
                 if (b.Error != null)
                 {
-                    Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
+                    Log.Error($@"Exception occurred in {nbw.Name} thread:");
+                    Log.Error(b.Error.StackTrace);
                 }
 
                 if (CompressedMods.Count > 0)
@@ -264,38 +265,49 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             // Telemetry data to help find source of mods
             // This should only run if we need to somehow look up source, like if mod is not in TPMI
-            FileInfo fi = new FileInfo(archive);
-            if (fi.AlternateDataStreamExists(@"Zone.Identifier"))
+            try
             {
-                var s = fi.GetAlternateDataStream(@"Zone.Identifier", FileMode.Open);
-                string fullText = string.Empty;
-                using var reader = s.OpenText();
-                fullText = string.Format(reader.ReadToEnd());
-                // The Zone Identifier is an ini file
-                try
+                // note: This currently doesn't do anything as it just parses it out. It doesn't actually send anything or use the results of it
+                if (Settings.EnableTelemetry)
                 {
-                    DuplicatingIni ini = DuplicatingIni.ParseIni(fullText);
-                    var zoneId = ini[@"ZoneTransfer"][@"ZoneId"]?.Value;
-                    if (zoneId == @"3")
+                    FileInfo fi = new FileInfo(archive);
+                    if (fi.AlternateDataStreamExists(@"Zone.Identifier"))
                     {
-                        // File came from internet
-                        // Get the download url. We can identify which mod on nexus this is by it's CDN scheme
-                        var hostUrl = ini[@"ZoneTransfer"][@"HostUrl"]?.Value;
-                        if (hostUrl != null)
+                        var s = fi.GetAlternateDataStream(@"Zone.Identifier", FileMode.Open);
+                        string fullText = string.Empty;
+                        using var reader = s.OpenText();
+                        fullText = string.Format(reader.ReadToEnd());
+                        // The Zone Identifier is an ini file
+                        try
                         {
-                            // Grab the pre-calculated MD5.
-                            // Make sure to NOT read any other parameters - they contain sensitive info!
-                            var uri = new Uri(hostUrl);
-                            var downloadLinkSanitized = $@"{uri.Scheme}://{uri.Authority}{uri.AbsolutePath}";
+                            DuplicatingIni ini = DuplicatingIni.ParseIni(fullText);
+                            var zoneId = ini[@"ZoneTransfer"][@"ZoneId"]?.Value;
+                            if (zoneId == @"3")
+                            {
+                                // File came from internet
+                                // Get the download url. We can identify which mod on nexus this is by it's CDN scheme
+                                var hostUrl = ini[@"ZoneTransfer"][@"HostUrl"]?.Value;
+                                if (hostUrl != null)
+                                {
+                                    // Grab the pre-calculated MD5.
+                                    // Make sure to NOT read any other parameters - they contain sensitive info!
+                                    var uri = new Uri(hostUrl);
+                                    var downloadLinkSanitized = $@"{uri.Scheme}://{uri.Authority}{uri.AbsolutePath}";
 
-                            var parameters = HttpUtility.ParseQueryString(uri.Query);
-                            string nexusMd5 = parameters[@"md5"];
+                                    var parameters = HttpUtility.ParseQueryString(uri.Query);
+                                    string nexusMd5 = parameters[@"md5"];
+                                }
+                            }
+                        }
+                        catch
+                        {
                         }
                     }
                 }
-                catch
-                {
-                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error($@"Error doing preinspection, it will be skipped. Error: {ex.Message}");
             }
 
             void ActionTextUpdateCallback(string newText)
