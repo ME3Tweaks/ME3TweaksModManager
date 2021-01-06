@@ -1099,6 +1099,8 @@
 	<system:String x:Key="string_description_allInstallableFiles">Следующие файлы могут быть потенциально установлены модом в игру. Учтите, что некоторые из них могут быть установлены только при выборе определенных опций.</system:String>
 	<system:String x:Key="string_setting_launchThroughOrigin">Запуск Origin-игр через Origin</system:String>
 	<system:String x:Key="string_setting_tooltip_launchThroughOrigin">Запускает Origin-игры через клиент Origin, для подтверждения лицензии и игрового времени. Это влияет только ME1/ME2 Origin версии, для ME3 это обязательно.</system:String>
+	<system:String x:Key="string_loadingTargets">Загрузка списка игр</system:String>
+	<!-- Shown when app is booting up and game targets are being inspected -->
 
 	<!-- Mass Effect Ini Modder (UI) -->
 	<system:String x:Key="string_dialog_missingConfigFileForMEIM">Файл настроек Mass Effect {0}.ini отсутствует. Он должен находиться в {1}. Пожалуйста, хотя бы однократно запустите игру, чтобы сгенерировать файлы по умолчанию.</system:String>
