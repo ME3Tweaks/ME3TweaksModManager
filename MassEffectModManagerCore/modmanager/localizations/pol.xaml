@@ -8,7 +8,7 @@
 	<system:String x:Key="string_translators">Tłumacze</system:String>
 	<system:String x:Key="string_NA">Nie dotyczy</system:String>
 	<system:String x:Key="string_specialThanks">Specjalne podziękowania</system:String>
-	<system:String x:Key="string_youTheEndUser">Dla Ciebie, użytkownika, za uczynienie tego oprogramowania wartym opracowania.</system:String>
+	<system:String x:Key="string_youTheEndUser">Dla Ciebie, użytkowniku, za uczynienie tego oprogramowania wartym opracowania.</system:String>
 	<system:String x:Key="string_license">Licencja</system:String>
 	<system:String x:Key="string_library_adonisui" xml:space="preserve">Biblioteka dla czarnego/białego motywu w WPF\nME3Tweaks Mod Manager używa tej biblioteki w zmodyfikowanej wersji.</system:String>
 	<system:String x:Key="string_library_sevenzipsharp" xml:space="preserve">Biblioteka do kompresji oraz dekompresji dla 7z\nME3Tweaks Mod Manager używa tej biblioteki w zmodyfikowanej wersji.</system:String>
@@ -481,7 +481,7 @@
 	<system:String x:Key="string_interp_warningExportStackElementOutsideTables">{0} Exporta Stack [{1}] ({2})znajduję się poza tablicą import/export</system:String>
 	<!-- 0={Message prefix string} 1={integer}, 2={integer} -->
 	<system:String x:Key="string_interp_fatalImportCircularReference">{0}, import {1} posiada zapętlone odniesienie do własnego odnośnika. Zestaw Narzędzi oraz gra nie będą w stanie obsłużyć tego wyjątku.</system:String>
-	<!-- 0={f} 1={integer} -->
+	<!-- 0={Message prefix string} 1={integer} -->
 	<system:String x:Key="string_interp_warningExceptionParsingProperties">{0} Wystąpił wyjątek podczas parsowania właściwości: {1}</system:String>
 	<!-- 0={Message prefix string} 1={exception message} -->
 	<system:String x:Key="string_interp_warningTemplateOwnerClassOutsideTables">{0} TemplateOwnerClass (Danych offset'u 0x{1}) ({2}) znajduję się poza tablicą import/export</system:String>
@@ -500,6 +500,9 @@
 	<!-- 0={List of mod names} -->
 	<system:String x:Key="string_interp_gamenameValidationTarget">{0} Walidacja ścieżki</system:String>
 	<!-- 0={Name of game (Mass Effect, Mass Effect 2, Mass Effect 3)} -->
+	<system:String x:Key="string_deploymentValidationTargetDesc">Walidacja ścieżki jest wykorzystywana do zweryfikowania konfiguracji twojej modyfikacji względem innych modyfikacji, takich jak łatki kompatybilności dot. tekstur. Zainstaluj odpowiednie modyfikacje w tej ścieżce, dzięki czemu Mod Manager może sprawdzić te odniesienia. Ścieżka poddana walidacji nie może posiada zainstalonych modyfikacji tekstur (ALOT)</system:String>
+	<system:String x:Key="string_interp_noValidationTarget">Brak ścieżki do walidacji dla {0}!</system:String>
+	<!-- 0={ME1/ME2/ME3} -->
 
 	<!-- External tool launcher -->
 	<system:String x:Key="string_interp_downloadingX">Pobieranie {0}</system:String>
@@ -720,6 +723,7 @@
 	<system:String x:Key="string_collectingME1ApplicationLogs">Zbieranie logów aplikacji ME1</system:String>
 	<system:String x:Key="string_collectingEventLogs">Zbieranie logów wydarzeń</system:String>
 	<system:String x:Key="string_collectingME3SessionLog">Zbieranie logów sesji ME3</system:String>
+	<system:String x:Key="string_gettingTextureInfo">Zbieranie informacji o instalacji tekstur</system:String>
 
 	<!-- Log uploader -->
 	<system:String x:Key="string_selectALogToView">Wybierz log aby wyświetlić go w log viewer</system:String>
@@ -766,10 +770,10 @@
 	<system:String x:Key="string_LogMixinStartup">Loguj uruchamianie Mixin</system:String>
 	<system:String x:Key="string_LogModInstallation">Loguj informacje o instalowanych modach</system:String>
 	<system:String x:Key="string_LogModMakerCompiler">Loguj działania kompilatora ModMaker</system:String>
-	<system:String x:Key="string_LogModUpdater">Zapisuj logi z działania aktualizatora modów</system:String>
+	<system:String x:Key="string_LogModUpdater">Zapisuj logi z działania aktualizatora modyfikacji</system:String>
 	<system:String x:Key="string_Checkforcontentupdates">Sprawdź dostępność aktualizacji</system:String>
 	<system:String x:Key="string_ChecksME3Tweaksforupdatestovariousservices">Sprawdź ME3Tweaks.com pod kątem aktualizacji różnych usług</system:String>
-	<system:String x:Key="string_Reloadsmodsfromthemodlibrary">Odśwież bibliotekę modów</system:String>
+	<system:String x:Key="string_Reloadsmodsfromthemodlibrary">Odśwież bibliotekę modyfikacji</system:String>
 	<system:String x:Key="string_tooltip_reloadModsFromLibrary">Aktualizuje listę dostępnych modów w bibliotece</system:String>
 	<system:String x:Key="string_Exit">Zamknij</system:String>
 	<system:String x:Key="string_ModManagement">Zarządzanie Modami</system:String>
@@ -936,10 +940,10 @@
 	<system:String x:Key="string_gameExecutable">Plik .exe gry</system:String>
 	<system:String x:Key="string_interp_dialogCannotInstallBinkWhileGameRunning">Nie można modyfikować plików binkw32 podczas działania {0}.</system:String>
 	<!-- 0 = Name of game (Mass Effect (2/3)) -->
-	<system:String x:Key="string_tooltip_launchCurrentlySelectedTarget" xml:space="preserve">Uruchom aktualnie wybraną ścieżkę.&#10;Jeśli jest to kopia z Origin, gra może zostać ponownie uruchomiona do ścieżki Origin</system:String>
+	<system:String x:Key="string_tooltip_launchCurrentlySelectedTarget" xml:space="preserve">Uruchom aktualnie wybraną ścieżkę.&#10;Jeśli jest to kopia z Origin, gra może zostać ponownie uruchomiona ze ścieżki Origin</system:String>
 	<system:String x:Key="string_tooltip_applyThisModToTheGame">Zastosuj ten mod do gry</system:String>
 	<system:String x:Key="string_tooltip_currentTarget">Aktualny modowana ścieżka</system:String>
-	<system:String x:Key="string_tooltip_filterME1">Kliknij, aby przełączyć pokazywanie modów dla Mass Effect</system:String>
+	<system:String x:Key="string_tooltip_filterME1">Kliknij, aby przełączyć pokazywanie modów dla Mass Effect 1</system:String>
 	<system:String x:Key="string_tooltip_filterME2">Kliknij, aby przełączyć pokazywanie modów dla Mass Effect 2</system:String>
 	<system:String x:Key="string_tooltip_filterME3">Kliknij, aby przełączyć pokazywanie modów dla Mass Effect 3</system:String>
 	<system:String x:Key="string_tooltip_someModsFailed">Nie udało się załadować niektórych modów, kliknij, aby zobaczyć dlaczego</system:String>
@@ -1004,7 +1008,7 @@
 	<system:String x:Key="string_showBackupNag">Pokaż przypomnienie kopii zapasowej</system:String>
 	<system:String x:Key="string_tooltip_endorseM3OnNexus">Poprzyj ME3Tweaks Mod Manager na stronie Nexus</system:String>
 	<system:String x:Key="string_tooltip_manageNexusModsIntegration">Zarządzaj integracją NexusMods</system:String>
-	<system:String x:Key="string_interp_visitSelectedModWebSite">Odwiedź {0} stronę</system:String>
+	<system:String x:Key="string_interp_visitSelectedModWebSite">Odwiedź stronę {0}</system:String>
 	<!-- 0=SelectedMod.ModName -->
 	<system:String x:Key="string_openModdesciniFile">Otwórz plik moddesc.ini</system:String>
 	<system:String x:Key="string_autoUpdateLODs2K">Automatycznie aktualizuj LODs (2k, dobra jakość)</system:String>
@@ -1092,6 +1096,10 @@
 	<system:String x:Key="string_interp_allInstallableFiles">Wszystkie pliki do zainstalowania dla {0}</system:String>
 	<!-- 0={mod name} -->
 	<system:String x:Key="string_description_allInstallableFiles">Poniższe pliki mogą zostać zainstalowane w folderze gry. Zauważ, że niektóre z nich zostaną zainstalowany tylko w sytuacji zaznaczenia konkretnych opcji wyboru.</system:String>
+	<system:String x:Key="string_setting_launchThroughOrigin">Uruchom grę w wersji Origin przy pomocy Origin</system:String>
+	<system:String x:Key="string_setting_tooltip_launchThroughOrigin">Uruchamia grę w wersji Origin za pomocą klienta Origin, zapewniając śledzenie licencji oraz czasu gry. Dotyczy to tylko ME1 oraz ME2, ponieważ ME3 wymaga tego domyślnie.</system:String>
+	<system:String x:Key="string_loadingTargets">Wczytywanie plików</system:String>
+	<!-- Shown when app is booting up and game targets are being inspected -->
 
 	<!-- Mass Effect Ini Modder (UI) -->
 	<system:String x:Key="string_dialog_missingConfigFileForMEIM">Plik Config Mass Effect {0}.ini nie został znaleziony. Powinien być zlokalizowany w katalogu {1}. Prosimy uruchomić grę przynajmniej raz w celu wygenerowania domyślnych plików.</system:String>
@@ -1399,7 +1407,7 @@
 	<system:String x:Key="string_interp_modparsing_addCustomDLCs">Dodaj Niestandardowe DLC: {0}</system:String>
 	<!-- 0 = list of dlc foldernames -->
 	<system:String x:Key="string_modparsing_configCanChangeIfOtherDLCFound">Konfiguracja tego moda może się zmienić jeżeli którykolwiek z wymienionych modów będzie zainstalowany wcześniej:</system:String>
-	<system:String x:Key="string_modparsing_requiresTheFollowingDLCToInstall">Wymaga następującego DLC w celu zainstalowania:</system:String>
+	<system:String x:Key="string_modparsing_requiresTheFollowingDLCToInstall">Wymaga następujące DLC do zainstalowania:</system:String>
 	<system:String x:Key="string_modparsing_defaultRCWDescription" xml:space="preserve">Mod RCW, który dodaje zmiany w ME2 Coalesced.ini\n\nMody RCW są dodawane bezpośrednio do pliku Coalesced.ini - nie jest tworzony na podstawie bazowej wersji. To oznacza, że zastosowanie moda dwukrotnie może mieć niezamierzone efekty uboczne, z powodu stworzenia duplikatów kluczy.</system:String>
 	<system:String x:Key="string_interp_validation_modparsing_errorOccuredParsingArchiveModdescini">Wystąpił błąd podczas parsowania moddesc.ini {0}: {1}</system:String>
 	<!-- 0 = moddescpath 1 = error message -->
@@ -1590,6 +1598,7 @@
 	<system:String x:Key="string_mde_dec_header_metadata_modmanager">Nagłówek "ModManager" jest pierwszym elementem odczytywanym podczas przetwarzania modyfikacji. Ten edytor wspiera tylko zapis modyfikacji oznaczonych jako najnowsze wersje moddesc dla konkretnych wersji.</system:String>
 	<system:String x:Key="string_mde_dec_header_metadata_modinfo">Nagłówek "ModInfo" zawiera większość informacji wyświetlanych dla użytkownika w interfejsie Mod Managera. Im więcej informacji umieścisz w tym nagłówku, tym rzadziej użytkowniku będą musieli zadawać pytania dot. twojej modyfikacji</system:String>
 	<system:String x:Key="string_mde_dec_header_metadata_updates">Nagłówek "UPDATES" wykorzystywany jest przez Usługę Aktualizacji ME3Tweaks. Dodatkowe elementy wdrażania mogą zostać wymusić plik bez odniesienia podczas wdrażanie twojej modyfikacji</system:String>
+	<system:String x:Key="string_multilists">Multilisty</system:String>
 
 	<!-- Moddescini Editor -->
 	<system:String x:Key="string_toolUnderDevelopment">To narzędzie jest w budowie i może nie działać poprawnie. Korzystaj na własną odpowiedzialnośc!</system:String>
