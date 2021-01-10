@@ -481,7 +481,7 @@
 	<system:String x:Key="string_interp_warningExportStackElementOutsideTables">{0} Exporta Stack [{1}] ({2}) está fora da tabela importação/exportação</system:String>
 	<!-- 0={Message prefix string} 1={integer}, 2={integer} -->
 	<system:String x:Key="string_interp_fatalImportCircularReference">{0}, import {1} tem uma auto referência circular para este link. O jogo e as ferramentas não poderão lidar com esta condição.</system:String>
-	<!-- 0={f} 1={integer} -->
+	<!-- 0={Message prefix string} 1={integer} -->
 	<system:String x:Key="string_interp_warningExceptionParsingProperties">{0} Ocorreu uma exceção ao analisar as propriedades: {1}</system:String>
 	<!-- 0={Message prefix string} 1={exception message} -->
 	<system:String x:Key="string_interp_warningTemplateOwnerClassOutsideTables">{0} TemplateOwnerClass (Data offset 0x{1}) ({2}) está fora da tabela import/export</system:String>
@@ -500,6 +500,9 @@
 	<!-- 0={List of mod names} -->
 	<system:String x:Key="string_interp_gamenameValidationTarget">Validação de destino {0}</system:String>
 	<!-- 0={Name of game (Mass Effect, Mass Effect 2, Mass Effect 3)} -->
+	<system:String x:Key="string_deploymentValidationTargetDesc">Destinos de validação são usados para validar a configuração de seu Mod junto aos outros Mods do quais o seu possa vir a depender, como patches de compatibilidade referenciando texturas em outro Mod. Instale esses Mods no destino para que o Gerenciador de Mods possa checar essas referências. Destinos de validação não pode ter suas texturas alteradas.</system:String>
+	<system:String x:Key="string_interp_noValidationTarget">Sem destino de validação disponível para {0}</system:String>
+	<!-- 0={ME1/ME2/ME3} -->
 
 	<!-- External tool launcher -->
 	<system:String x:Key="string_interp_downloadingX">Baixando {0}</system:String>
@@ -720,6 +723,7 @@
 	<system:String x:Key="string_collectingME1ApplicationLogs">Coletando relatórios de aplicativo ME1</system:String>
 	<system:String x:Key="string_collectingEventLogs">Coletando relatórios de eventos</system:String>
 	<system:String x:Key="string_collectingME3SessionLog">Coletando relatório de sessão ME3</system:String>
+	<system:String x:Key="string_gettingTextureInfo">Adquirindo informações de instalação do Mod de textura</system:String>
 
 	<!-- Log uploader -->
 	<system:String x:Key="string_selectALogToView">Selecione um relatório para examinar</system:String>
@@ -1095,6 +1099,8 @@
 	<system:String x:Key="string_description_allInstallableFiles">Os seguintes arquivos pode ser instalados no jogo. Note que alguns deles só poderão ser instalados caso certas opções sejam selecionadas.</system:String>
 	<system:String x:Key="string_setting_launchThroughOrigin">Inicia jogos baseados no Origin através do Origin</system:String>
 	<system:String x:Key="string_setting_tooltip_launchThroughOrigin">Inicia jogos baseados no Origin através do cliente Origin, assegurando que licenciamento e tempo de jogo sejam registrados. Isto só afeta as versões Origin de ME1/ME2, já que é requerido por ME3</system:String>
+	<system:String x:Key="string_loadingTargets">Carregando destinos</system:String>
+	<!-- Shown when app is booting up and game targets are being inspected -->
 
 	<!-- Mass Effect Ini Modder (UI) -->
 	<system:String x:Key="string_dialog_missingConfigFileForMEIM">O arquivo de configuração do Mass Effect {0}.ini está ausente. Deveria estar localizado em {1}. Por favor execute o jogo pelo menos uma vez para gerar os arquivos padrão.</system:String>
