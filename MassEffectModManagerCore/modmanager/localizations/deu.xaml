@@ -1099,6 +1099,8 @@
 	<system:String x:Key="string_description_allInstallableFiles">Die folgenden Dateien können von diesem Mod möglicherweise in das Spiel installiert werden. Beachte, dass manche Dateien nur installiert werden könnten, wenn bestimmte Optionen ausgewählt werden.</system:String>
 	<system:String x:Key="string_setting_launchThroughOrigin">Origin-basierte Spiele mit Origin starten</system:String>
 	<system:String x:Key="string_setting_tooltip_launchThroughOrigin">Startet Origin-basierte Spiele durch den Origin-Client, damit die Lizenz aktiv und Spielzeit verfolgt wird. Dies betrifft nur die ME1/ME2 Origin-Versionen, da ME3 Origin voraussetzt.</system:String>
+	<system:String x:Key="string_loadingTargets">Ziele werden geladen</system:String>
+	<!-- Shown when app is booting up and game targets are being inspected -->
 
 	<!-- Mass Effect Ini Modder (UI) -->
 	<system:String x:Key="string_dialog_missingConfigFileForMEIM">Mass Effect Config-Datei {0}.ini fehlt. Sie sollte sich in {1} befinden. Bitte starte das Spiel mindestens ein Mal, um die Standard-Dateien zu generieren.</system:String>
