@@ -410,4 +410,16 @@
       <downloadlink>https://github.com/ME3Tweaks/ME2-ASI-Plugins/releases/download/v2.0-StreamingLevelsHUD/StreamingLevelsHUD-v2.0.asi</downloadlink>
     </asimod>
   </updategroup>
+  <updategroup groupid="26" game="2" hidden="0">
+    <asimod>
+      <name>Death Counter LS</name>
+      <installedname>DeathCounterLS</installedname>
+      <author>Mgamerz</author>
+      <description>This ASI increments the number in a text file ever time the game over HUD is shown on screen. The file it produces is named 'deathcount.txt' and is placed next to the game executable. The count persists across sessions and can be used by things like OBS to show the death count.</description>
+      <version>1</version>
+      <hash>435fbda22dd4352118e592c1147248c7</hash>
+      <sourcecode>https://github.com/ME3Tweaks/ME2-ASI-Plugins/tree/master/DeathCounterLS</sourcecode>
+      <downloadlink>https://github.com/ME3Tweaks/ME2-ASI-Plugins/releases/download/v1.0-DeathCounterLS/DeathCounterLS-v1.0.asi</downloadlink>
+    </asimod>
+  </updategroup>
 </ASIManifest>
