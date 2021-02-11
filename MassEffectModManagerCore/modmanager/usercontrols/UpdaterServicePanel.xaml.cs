@@ -332,7 +332,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             ABORTED_BY_USER,
             BAD_SERVER_HASHES_AFTER_VALIDATION,
             UPLOAD_OK,
-            CANT_UPLOAD_NATIVE_COMPRESSED_PACKAGES
+            CANT_UPLOAD_NATIVE_COMPRESSED_PACKAGES,
+            ERROR_UPLOADING_FILE
         }
 
         private UploadModResult UploadMod(Action<double> progressCallback = null, Action<TaskbarProgressBarState> setTaskbarProgressState = null)
@@ -796,23 +797,39 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         Log.Information(@"Uploading file " + fullPath + @" to " + serverFilePath);
                         long amountUploadedBeforeChunk = amountUploaded;
                         using Stream fileStream = new FileStream(fullPath, FileMode.Open);
-                        sftp.UploadFile(fileStream, serverFilePath, true, (x) =>
+                        try
                         {
-                            if (CancelOperations)
+                            sftp.UploadFile(fileStream, serverFilePath, true, (x) =>
                             {
-                                CurrentActionText = M3L.GetString(M3L.string_abortingUpload);
-                                return;
-                            }
+                                if (CancelOperations)
+                                {
+                                    CurrentActionText = M3L.GetString(M3L.string_abortingUpload);
+                                    return;
+                                }
 
-                            amountUploaded = amountUploadedBeforeChunk + (long)x;
-                            var uploadedHR = FileSize.FormatSize(amountUploaded);
-                            var totalUploadHR = FileSize.FormatSize(amountToUpload);
-                            if (amountToUpload > 0)
+                                amountUploaded = amountUploadedBeforeChunk + (long)x;
+                                var uploadedHR = FileSize.FormatSize(amountUploaded);
+                                var totalUploadHR = FileSize.FormatSize(amountToUpload);
+                                if (amountToUpload > 0)
+                                {
+                                    progressCallback?.Invoke(amountUploaded * 1.0 / amountToUpload);
+                                }
+
+                                CurrentActionText = M3L.GetString(M3L.string_interp_uploadingFilesToServerXY, uploadedHR, totalUploadHR);
+                            });
+                        }
+                        catch (Exception e)
+                        {
+                            Log.Error($@"Error uploading file {fullPath} to server: {e.Message}");
+                            CurrentActionText = $"Upload failed: {e.Message}";
+                            // Abort
+                            Application.Current.Dispatcher.InvokeAsync(() =>
                             {
-                                progressCallback?.Invoke(amountUploaded * 1.0 / amountToUpload);
-                            }
-                            CurrentActionText = M3L.GetString(M3L.string_interp_uploadingFilesToServerXY, uploadedHR, totalUploadHR);
-                        });
+                                M3L.ShowDialog(mainwindow, $"Uploading {fullPath} to the ME3Tweaks Updater Service failed: {e.Message}. The mod may be partially uploaded, you will need to try again to ensure a successful upload, as the files are out of sync with the online manifest. If issues continue, please contact Mgamerz.",
+                                    "Upload failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                            });
+                            return UploadModResult.ERROR_UPLOADING_FILE;
+                        }
                     }
                     setTaskbarProgressState?.Invoke(TaskbarProgressBarState.Indeterminate);
 
@@ -832,8 +849,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         sftp.DeleteFile(fullPath);
                         numdone++;
                     }
-
-
 
                     //Upload manifest
                     using var manifestStream = finalManifestText.ToStream();

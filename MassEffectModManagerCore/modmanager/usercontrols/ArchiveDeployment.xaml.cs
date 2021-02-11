@@ -179,6 +179,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         DialogTitle = M3L.GetString(M3L.string_audioIssuesDetectedInMod)
                     });
                 }
+
                 DeploymentChecklistItems.Add(new DeploymentChecklistItem()
                 {
                     ItemText = M3L.GetString(M3L.string_texturesCheck),
