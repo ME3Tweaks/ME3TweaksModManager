@@ -422,4 +422,16 @@
       <downloadlink>https://github.com/ME3Tweaks/ME2-ASI-Plugins/releases/download/v1.0-DeathCounterLS/DeathCounterLS-v1.0.asi</downloadlink>
     </asimod>
   </updategroup>
+  <updategroup groupid="27" game="2" hidden="0">
+    <asimod>
+      <name>SeqAct_Log Enabler</name>
+      <installedname>SeqAct_Log-Enabler</installedname>
+      <author>SirCxyrtyx</author>
+      <description>Will print the contents of SeqVars attached to SeqAct_Logs to the screen. Useful for debugging sequences.</description>
+      <version>1</version>
+      <hash>9f25d1dcc331079b95dd4b2ec2bc96e1</hash>
+      <sourcecode>https://github.com/ME3Tweaks/ME2-ASI-Plugins/tree/v1.0-SeqAct_LogEnabler/SeqActLogEnabler</sourcecode>
+      <downloadlink>https://github.com/ME3Tweaks/ME2-ASI-Plugins/releases/download/v1.0-SeqAct_LogEnabler/SeqActLogEnabler-v1.0.asi</downloadlink>
+    </asimod>
+  </updategroup>
 </ASIManifest>
