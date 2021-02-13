@@ -638,6 +638,7 @@ public event PropertyChangedEventHandler PropertyChanged;
                         }
                     }
 
+                    ModName = mcmm.ModName;
                     Version = mcmm.Version;
                     InstallerInstanceBuild = mcmm.InstalledBy;
                     if (int.TryParse(InstallerInstanceBuild, out var _))

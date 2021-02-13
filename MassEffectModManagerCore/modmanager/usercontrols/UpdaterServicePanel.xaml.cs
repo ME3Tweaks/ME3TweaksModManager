@@ -807,7 +807,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     return;
                                 }
 
-                                amountUploaded = amountUploadedBeforeChunk + (long)x;
+                                amountUploaded = amountUploadedBeforeChunk + (long) x;
                                 var uploadedHR = FileSize.FormatSize(amountUploaded);
                                 var totalUploadHR = FileSize.FormatSize(amountToUpload);
                                 if (amountToUpload > 0)

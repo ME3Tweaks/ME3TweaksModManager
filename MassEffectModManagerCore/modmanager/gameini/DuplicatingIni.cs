@@ -136,7 +136,7 @@ namespace MassEffectModManagerCore.modmanager.gameini
 
             public IniEntry GetValue(string key)
             {
-                return Entries.FirstOrDefault(x => x.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase));
+                return Entries.FirstOrDefault(x => x.Key != null && x.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase));
             }
 
             public IniEntry this[string keyname]
