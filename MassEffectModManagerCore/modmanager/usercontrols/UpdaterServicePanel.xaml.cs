@@ -717,11 +717,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             long amountUploaded = 0, amountToUpload = 1;
             //Confirm changes
-            if (Enumerable.Any(filesToDeleteOffServer) || Enumerable.Any(filesToUploadToServer))
+            if (filesToDeleteOffServer.Any() || filesToUploadToServer.Any())
             {
                 var text = M3L.GetString(M3L.string_interp_updaterServiceDeltaConfirmationHeader, mod.ModName);
-                if (Enumerable.Any(filesToUploadToServer)) text += M3L.GetString(M3L.string_nnFilesToUploadToServern) + @" " + string.Join('\n' + @" - ", filesToUploadToServer); //weird stuff to deal with localizer
-                if (Enumerable.Any(filesToDeleteOffServer)) text += M3L.GetString(M3L.string_nnFilesToDeleteOffServern) + @" " + string.Join('\n' + @" - ", filesToDeleteOffServer); //weird stuff to deal with localizer
+                if (filesToUploadToServer.Any()) text += M3L.GetString(M3L.string_nnFilesToUploadToServern) + @" " + string.Join('\n' + @" - ", filesToUploadToServer); //weird stuff to deal with localizer
+                if (filesToDeleteOffServer.Any()) text += M3L.GetString(M3L.string_nnFilesToDeleteOffServern) + @" " + string.Join('\n' + @" - ", filesToDeleteOffServer); //weird stuff to deal with localizer
                 text += M3L.GetString(M3L.string_interp_updaterServiceDeltaConfirmationFooter);
                 bool performUpload = false;
                 Log.Information(@"Prompting user to accept server delta");
@@ -807,7 +807,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     return;
                                 }
 
-                                amountUploaded = amountUploadedBeforeChunk + (long) x;
+                                amountUploaded = amountUploadedBeforeChunk + (long)x;
                                 var uploadedHR = FileSize.FormatSize(amountUploaded);
                                 var totalUploadHR = FileSize.FormatSize(amountToUpload);
                                 if (amountToUpload > 0)
@@ -873,7 +873,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 Log.Information(@"Verifying hashes on server for new files");
                 var newServerhashes = getServerHashes(sshClient, serverFolderName, serverModPath);
                 var badHashes = verifyHashes(manifestFiles, newServerhashes);
-                if (Enumerable.Any(badHashes))
+                if (badHashes.Any())
                 {
                     CurrentActionText = M3L.GetString(M3L.string_someHashesOnServerAreIncorrectContactMgamerz);
                     return UploadModResult.BAD_SERVER_HASHES_AFTER_VALIDATION;
@@ -884,8 +884,25 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     return UploadModResult.UPLOAD_OK;
                 }
             }
+            else
+            {
+                //Upload manifest
+                Log.Information(@"Hashes on server match local already");
+                // This ensures version on server is same as expected.
+                using var manifestStream = finalManifestText.ToStream();
+                var serverManifestPath = $@"{ManifestStoragePath}/{serverFolderName}.xml";
+                Log.Information(@"Uploading manifest to server: " + serverManifestPath);
+                sftp.UploadFile(manifestStream, serverManifestPath, true, (x) =>
+                {
+                    var uploadedAmountHR = FileSize.FormatSize(amountUploaded);
+                    var uploadAmountTotalHR = FileSize.FormatSize(amountToUpload);
+                    CurrentActionText = M3L.GetString(M3L.string_uploadingUpdateManifestToServer) + $@"{uploadedAmountHR}/{uploadAmountTotalHR}";
+                });
+                CurrentActionText = "Manifest updated on server";
+                return UploadModResult.UPLOAD_OK;
+            }
 
-            return UploadModResult.ABORTED_BY_USER;
+            //return UploadModResult.ABORTED_BY_USER;
         }
 
         private void AbortUpload()

@@ -369,12 +369,11 @@ namespace MassEffectModManagerCore.modmanager
 
         public static void SaveUpdaterServiceEncryptedValues(string entropy, string encryptedPW)
         {
-            if (!File.Exists(SettingsPath))
+            IniData settingsIni = new IniData();
+            if (File.Exists(SettingsPath))
             {
-                File.Create(SettingsPath).Close();
+                settingsIni = new FileIniDataParser().ReadFile(SettingsPath);
             }
-
-            var settingsIni = new FileIniDataParser().ReadFile(SettingsPath);
             SaveSettingString(settingsIni, "UpdaterService", "Entropy", entropy);
             SaveSettingString(settingsIni, "UpdaterService", "EncryptedPassword", encryptedPW);
             try
@@ -389,12 +388,13 @@ namespace MassEffectModManagerCore.modmanager
 
         public static string DecryptUpdaterServicePassword()
         {
-            if (!File.Exists(SettingsPath))
+
+            IniData settingsIni = new IniData();
+            if (File.Exists(SettingsPath))
             {
-                File.Create(SettingsPath).Close();
+                settingsIni = new FileIniDataParser().ReadFile(SettingsPath);
             }
 
-            var settingsIni = new FileIniDataParser().ReadFile(SettingsPath);
             var entropy = LoadSettingString(settingsIni, "UpdaterService", "Entropy", null);
             var encryptedPW = LoadSettingString(settingsIni, "UpdaterService", "EncryptedPassword", null);
 
@@ -429,12 +429,19 @@ namespace MassEffectModManagerCore.modmanager
             try
             {
                 var settingsIni = new IniData();
+                if (File.Exists(SettingsPath))
+                {
+                    settingsIni = new FileIniDataParser().ReadFile(SettingsPath); // Read file in so we don't lose any settings
+                }
+
                 SaveSettingBool(settingsIni, "Logging", "LogModStartup", LogModStartup);
                 SaveSettingBool(settingsIni, "Logging", "LogMixinStartup", LogMixinStartup);
                 SaveSettingBool(settingsIni, "Logging", "LogModMakerCompiler", LogModMakerCompiler);
                 SaveSettingBool(settingsIni, "Logging", "EnableTelemetry", EnableTelemetry);
                 SaveSettingString(settingsIni, "UpdaterService", "Username", UpdaterServiceUsername);
                 SaveSettingString(settingsIni, "UpdaterService", "LZMAStoragePath", UpdaterServiceLZMAStoragePath);
+                SaveSettingString(settingsIni, "UpdaterService", "ManifestStoragePath", UpdaterServiceManifestStoragePath);
+                SaveSettingString(settingsIni, "UpdaterService", "ManifestStoragePath", UpdaterServiceManifestStoragePath);
                 SaveSettingString(settingsIni, "UpdaterService", "ManifestStoragePath", UpdaterServiceManifestStoragePath);
                 SaveSettingBool(settingsIni, "UI", "DeveloperMode", DeveloperMode);
                 SaveSettingBool(settingsIni, "UI", "DarkTheme", DarkTheme);
