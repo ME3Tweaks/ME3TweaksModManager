@@ -505,7 +505,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                     autoload[@"ME1DLCMOUNT"][@"ModName"] = skOption.ModName;
                     autoload[@"ME1DLCMOUNT"][@"ModMount"] = skOption.ModMountPriority.ToString();
                     Log.Information(@"Saving autoload.ini for ME1 mod");
-                    new FileIniDataParser().WriteFile(Path.Combine(contentDirectory, @"AutoLoad.ini"), autoload);
+                    new FileIniDataParser().WriteFile(Path.Combine(contentDirectory, @"AutoLoad.ini"), autoload, new UTF8Encoding(false));
 
                     //TLK
                     var dialogdir = Directory.CreateDirectory(Path.Combine(cookedDir, @"Packages", @"Dialog")).FullName;

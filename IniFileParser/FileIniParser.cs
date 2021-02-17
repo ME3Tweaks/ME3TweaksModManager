@@ -111,7 +111,7 @@ namespace IniParser
         }
                              
         /// <summary>
-        ///     Writes INI data to a text file.
+        ///     Writes INI data to a text file. Ensure you pass in an encoding if you don't want UTF-8 with a BOM!
         /// </summary>
         /// <param name="filePath">
         ///     Path to the file.
