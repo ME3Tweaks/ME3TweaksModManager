@@ -715,16 +715,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     return @"Semicolon";
                 case @"Quote":
                     return @"Quote";
-                case @"LeftShift":
-                    return @"LeftShift";
+                //case @"LeftShift":
+                //    return @"LeftShift";
                 case @"Comma":
                     return @"Comma";
                 case @"Period":
                     return @"Period";
                 case @"Slash":
                     return @"Slash";
-                case @"RightShift":
-                    return @"RightShift";
+                //case @"RightShift":
+                //    return @"RightShift";
                 case @"LeftControl":
                     return @"LeftControl";
                 case @"LeftAlt":
@@ -787,6 +787,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     return @"NumPadZero";
                 case @"Decimal":
                     return @"Decimal";
+                case @"Oem3":
+                    return "Tilde"; //?
                 default:
                     Debug.WriteLine(@"Unknown key: " + key);
                     break;
