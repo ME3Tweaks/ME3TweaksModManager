@@ -268,7 +268,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         Application.Current.Dispatcher.Invoke(delegate
                         {
                             var res = M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_interp_devModeAlotInstalledWarning, ModBeingInstalled.ModName), M3L.GetString(M3L.string_brokenTexturesWarning), MessageBoxButton.YesNo, MessageBoxImage.Error, MessageBoxResult.No);
-                            cancel = res == MessageBoxResult.No;
+                            cancel = res != MessageBoxResult.Yes;
                         });
                         if (cancel)
                         {
