@@ -103,7 +103,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 }
             }
 
-            Utilities.RunProcess(exe, (string)null, true, true, false, false, environmentVars);
+            Utilities.RunProcess(exe, (string)null, false, true, false, false, environmentVars);
             Thread.Sleep(3500); // Keep task alive for a bit
         }
 
