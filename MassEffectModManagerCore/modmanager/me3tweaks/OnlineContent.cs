@@ -555,9 +555,10 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
         public static bool EnsureCriticalFiles()
         {
-            //7-zip
             try
             {
+                /*
+                //7-zip
                 string sevenZDLL = Utilities.Get7zDllPath();
                 if (!File.Exists(sevenZDLL) || Utilities.CalculateMD5(sevenZDLL) != "72491c7b87a7c2dd350b727444f13bb4")
                 {
@@ -590,7 +591,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 {
                     Log.Fatal("Unable to load 7z dll! File doesn't exist: " + sevenZDLL);
                     return false;
-                }
+                }*/
             }
             catch (Exception e)
             {

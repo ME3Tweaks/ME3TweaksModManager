@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media.Animation;
 using IniParser.Model;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
@@ -38,6 +39,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public string ModNameText { get; set; }
 
         public bool OperationInProgress { get; set; }
+        public bool ListEnabled { get; set; } = true;
         public bool CurrentModInTPMI { get; set; } = true; // until an item is selected, don't show the uncataloged item
         public ICommand ImportSelectedDLCFolderCommand { get; set; }
         public ICommand CloseCommand { get; set; }
@@ -250,6 +252,33 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 CurrentModInTPMI = true; //Hide UI
             }
+        }
+
+        public void OnCurrentModInTPMIChanged()
+        {
+            Application.Current.Dispatcher.Invoke(delegate
+            {
+                Storyboard animation = null;
+                if (!CurrentModInTPMI)
+                {
+                    animation = FindResource(@"ShowInfoPanel") as Storyboard;
+                }
+                else
+                {
+                    animation = FindResource(@"CloseInfoPanel") as Storyboard;
+                }
+
+                if (animation != null)
+                {
+                    Storyboard.SetTarget(animation, TPMI_Panel);
+                    animation.Completed += (sender, args) =>
+                    {
+                        ListEnabled = true;
+                    };
+                    ListEnabled = false;
+                    animation.Begin();
+                }
+            });
         }
 
         public void OnSelectedTargetChanged()

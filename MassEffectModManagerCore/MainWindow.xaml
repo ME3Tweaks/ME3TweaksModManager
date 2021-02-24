@@ -1658,6 +1658,13 @@
                                                             Property="Text"
                                                             Value="{DynamicResource string_pleaseWait}" />
                                                     </DataTrigger>
+                                                    <DataTrigger
+                                                        Binding="{Binding AllGamesHidden}"
+                                                        Value="True">
+                                                        <Setter
+                                                            Property="Text"
+                                                            Value="{DynamicResource string_allGamesHiddenTitle}" />
+                                                    </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
                                         </TextBlock.Style>
@@ -1677,6 +1684,13 @@
                                                         <Setter
                                                             Property="Text"
                                                             Value="{DynamicResource string_pleaseWait_startup}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger
+                                                        Binding="{Binding AllGamesHidden}"
+                                                        Value="True">
+                                                        <Setter
+                                                            Property="Text"
+                                                            Value="{DynamicResource string_allGamesHiddenDescription}" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>

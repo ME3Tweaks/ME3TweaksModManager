@@ -1,4 +1,20 @@
-﻿<local:MMBusyPanelBase x:Class="MassEffectModManagerCore.modmanager.usercontrols.ImportInstalledDLCModPanel" DataContext="{Binding RelativeSource={RelativeSource Self}}"  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800" Width="500">
+﻿<local:MMBusyPanelBase x:Class="MassEffectModManagerCore.modmanager.usercontrols.ImportInstalledDLCModPanel" 
+                       DataContext="{Binding RelativeSource={RelativeSource Self}}"  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800" Width="500">
+    <UserControl.Resources>
+        <Storyboard x:Key="ShowInfoPanel"
+                Storyboard.TargetProperty="(FrameworkElement.Height)">
+                <DoubleAnimation
+                    To="180"
+                    Duration="0:0:0.15" />
+            </Storyboard>
+        <Storyboard x:Key="CloseInfoPanel">
+                <DoubleAnimation
+                    To="0"
+                    Duration="0:0:0.15"
+                    Storyboard.TargetProperty="(FrameworkElement.Height)" />
+            </Storyboard>
+            
+    </UserControl.Resources>
     <DockPanel>
         <TextBlock Text="{DynamicResource string_importAnInstalledDLCMod}" FontWeight="Bold" FontSize="20" DockPanel.Dock="Top" TextAlignment="Center" />
         <TextBlock Text="{DynamicResource string_description_importFromGameToModManager}" TextWrapping="Wrap" DockPanel.Dock="Top" TextAlignment="Center" Margin="0,0,0,5" />
@@ -22,7 +38,9 @@
             <TextBlock Text="{DynamicResource string_thisInstallationHasBeenTextureModded}" FontWeight="Bold" Foreground="Red" />
             <TextBlock Text="{DynamicResource string_cannotImportModsFromTextureModdedTarget}" TextWrapping="Wrap" DockPanel.Dock="Bottom" Foreground="Red" />
         </StackPanel>
-        <StackPanel DockPanel.Dock="Bottom" Visibility="{Binding CurrentModInTPMI, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}">
+        <StackPanel DockPanel.Dock="Bottom" Name="TPMI_Panel" Height="0">
+            <!-- Visibility="{Binding CurrentModInTPMI, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}" -->
+            
             <TextBlock Text="{DynamicResource string_thisModHasNotBeenCatalogedByME3TweaksYet}" FontWeight="Bold" />
             <TextBlock Text="{DynamicResource string_pleaseEnterModInfoForTPMI}" TextWrapping="Wrap" DockPanel.Dock="Bottom" />
             <TextBlock Text="{DynamicResource string_modName}" FontWeight="Bold" />
@@ -31,7 +49,7 @@
             <xctk:WatermarkTextBox Watermark="{DynamicResource string_dlcImportingNexusModsWatermark}" Text="{Binding ModSiteText, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding OperationInProgress, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" />
         </StackPanel>
         <ProgressBar Height="10" DockPanel.Dock="Bottom" Value="{Binding ProgressBarValue}" Maximum="{Binding ProgressBarMax}" IsIndeterminate="False" />
-        <ListBox ItemsSource="{Binding InstalledDLCModsForGame}" Height="150" BorderThickness="1" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" SelectedItem="{Binding SelectedDLCFolder}">
+        <ListBox ItemsSource="{Binding InstalledDLCModsForGame}" IsEnabled="{Binding ListEnabled}" Height="150" BorderThickness="1" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" SelectedItem="{Binding SelectedDLCFolder}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <DockPanel HorizontalAlignment="Stretch" IsEnabled="{Binding InstalledByManagedSolution, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}">

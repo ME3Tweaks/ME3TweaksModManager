@@ -327,6 +327,8 @@
     <system:String x:Key="string_updatedLocalization">Updated localization</system:String>
     <system:String x:Key="string_errorUpdatingLocalization">Error updating localization</system:String>
     <system:String  x:Key="string_noModsInTheLibraryHeader">No mods in the library!</system:String>
+    <system:String  x:Key="string_allGamesHiddenTitle">No games selected for display</system:String>
+    <system:String  x:Key="string_allGamesHiddenDescription">No games are selected to show mods for. Click on a game above to enable showing mods for that game.</system:String>
     <!-- This is bolded text that shows up at the top of the mod library list area when there are no mods. Try to keep it short, feel free to adapt to your language.-->
     <system:String xml:space="preserve" x:Key="string_noModsInLibraryDescription">Mods you import into Mod Manager will be listed here. You can import mods by dragging and dropping their downloaded archives (.7z/.rar/.zip/.exe/.me2mod) onto this window.&#10;&#10;Mods that are directly installed from the importer window will NOT be shown here, as they are installed into the game, not imported into the library. You can see what's installed by clicking 'Manage Target' in the top right of this window.&#10;&#10;Mods that are imported into the mod library are easy to reinstall, can be added to batch install queues, and more.</system:String>
     <!-- This is the text shown under the no mods in library header. It shows up when there are no mods imported. Make sure Manage Target lines up with your localization of that term. -->

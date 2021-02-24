@@ -9,9 +9,9 @@
 		<PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
 		<UseWPF>true</UseWPF>
 		<Platforms>x64</Platforms>
-		<AssemblyVersion>6.2.0.114</AssemblyVersion>
-		<FileVersion>6.2.0.114</FileVersion>
-		<Version>6.2.0.114</Version>
+		<AssemblyVersion>6.2.1.115</AssemblyVersion>
+		<FileVersion>6.2.1.115</FileVersion>
+		<Version>6.2.1.115</Version>
 		<Copyright>ME3Tweaks 2012 - 2021</Copyright>
 		<Authors>Mgamerz</Authors>
 		<PackageId>MassEffectModManagerCore</PackageId>
@@ -258,5 +258,11 @@
 		  <SubType>Designer</SubType>
 		</Page>
 	</ItemGroup>
+  <ItemGroup>
+    <ContentWithTargetPath Include="modmanager\native\7z64.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>7z64.dll</TargetPath>
+    </ContentWithTargetPath>
+  </ItemGroup>
 
 </Project>

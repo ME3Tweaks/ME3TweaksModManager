@@ -112,6 +112,11 @@ namespace MassEffectModManagerCore
         /// The backend libraries and game targets have initially loaded
         /// </summary>
         public bool StartedUp { get; set; }
+
+        /// <summary>
+        /// If the visiblility controls have nothing enabled
+        /// </summary>
+        public bool AllGamesHidden { get; set; } = false;
         /// <summary>
         /// The currently selected mod
         /// </summary>
@@ -3363,7 +3368,7 @@ namespace MassEffectModManagerCore
                 allMods.RemoveAll(x => x.Game == MEGame.ME2);
             if (!ME3ModsVisible)
                 allMods.RemoveAll(x => x.Game == MEGame.ME3);
-
+            AllGamesHidden = !ME1ModsVisible && !ME2ModsVisible && !ME3ModsVisible;
             VisibleFilteredMods.ReplaceAll(allMods);
             VisibleFilteredMods.Sort(x => x.ModName);
         }

@@ -88,7 +88,7 @@ namespace MassEffectModManagerCore
         public App() : base()
         {
             ExecutableLocation = Process.GetCurrentProcess().MainModule.FileName;
-            SetDllDirectory(Utilities.GetDllDirectory()); // Used by 7z.dll
+            //SetDllDirectory(Utilities.GetDllDirectory()); // Used by 7z.dll
 
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
