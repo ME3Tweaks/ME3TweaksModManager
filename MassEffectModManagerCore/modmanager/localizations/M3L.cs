@@ -385,6 +385,8 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_updatedLocalization = "string_updatedLocalization";
 		public const string string_errorUpdatingLocalization = "string_errorUpdatingLocalization";
 		public const string string_noModsInTheLibraryHeader = "string_noModsInTheLibraryHeader";
+		public const string string_allGamesHiddenTitle = "string_allGamesHiddenTitle";
+		public const string string_allGamesHiddenDescription = "string_allGamesHiddenDescription";
 		public const string string_noModsInLibraryDescription = "string_noModsInLibraryDescription";
 		public const string string_interp_dialog_cannotDeployModNoTarget = "string_interp_dialog_cannotDeployModNoTarget";
 		public const string string_cannotDeployMod = "string_cannotDeployMod";
@@ -1364,6 +1366,10 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_uploadAborted_foundCompressedPackage = "string_uploadAborted_foundCompressedPackage";
 		public const string string_dialog_uploadAborted_foundCompressedPackage = "string_dialog_uploadAborted_foundCompressedPackage";
 		public const string string_cannotUploadMod = "string_cannotUploadMod";
+		public const string string_interp_uploadFailedX = "string_interp_uploadFailedX";
+		public const string string_interp_dialog_updaterServiceUploadFailed = "string_interp_dialog_updaterServiceUploadFailed";
+		public const string string_uploadFailed = "string_uploadFailed";
+		public const string string_manifestUpdatedOnServer = "string_manifestUpdatedOnServer";
 		public const string string_selectMixinsToCompile = "string_selectMixinsToCompile";
 		public const string string_noGameBackupOfME3IsAvailableMixinsCannotBeUsedWithoutABackup = "string_noGameBackupOfME3IsAvailableMixinsCannotBeUsedWithoutABackup";
 		public const string string_interp_dialogCreatingNewModWithExistingName = "string_interp_dialogCreatingNewModWithExistingName";
