@@ -821,12 +821,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         catch (Exception e)
                         {
                             Log.Error($@"Error uploading file {fullPath} to server: {e.Message}");
-                            CurrentActionText = $"Upload failed: {e.Message}";
+                            CurrentActionText = M3L.GetString(M3L.string_interp_uploadFailedX, e.Message);
                             // Abort
                             Application.Current.Dispatcher.InvokeAsync(() =>
                             {
-                                M3L.ShowDialog(mainwindow, $"Uploading {fullPath} to the ME3Tweaks Updater Service failed: {e.Message}. The mod may be partially uploaded, you will need to try again to ensure a successful upload, as the files are out of sync with the online manifest. If issues continue, please contact Mgamerz.",
-                                    "Upload failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                                M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_interp_dialog_updaterServiceUploadFailed, fullPath, e.Message),
+                                    M3L.GetString(M3L.string_uploadFailed), MessageBoxButton.OK, MessageBoxImage.Error);
                             });
                             return UploadModResult.ERROR_UPLOADING_FILE;
                         }
@@ -898,7 +898,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     var uploadAmountTotalHR = FileSize.FormatSize(amountToUpload);
                     CurrentActionText = M3L.GetString(M3L.string_uploadingUpdateManifestToServer) + $@"{uploadedAmountHR}/{uploadAmountTotalHR}";
                 });
-                CurrentActionText = "Manifest updated on server";
+                CurrentActionText = M3L.GetString(M3L.string_manifestUpdatedOnServer);
                 return UploadModResult.UPLOAD_OK;
             }
 

@@ -75,24 +75,24 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                     var ignoredItems = new List<string>()
                     {
-                        "DLC_MOD_FMRM_Patches",
-                        "DLC_MOD_FJRM_Patches",
-                        "DLC_ASH_MiniSkirt_Mods",
-                        "DLC_Explorer",
-                        "DLC_LIA_RA4_MeshOnly",
-                        "DLC_ASH_Shorts_Mod",
-                        "DLC_ASH_Alt_Mods",
-                        "DLC_ASH_Socks_Mod",
-                        "DLC_ASH_Topless_Mod",
-                        "DLC_GAR_FRM_Altered_Face_Legs_Mod",
-                        "DLC_GAR_GFC_Altered_Face_Legs_Mod",
-                        "DLC_LIA_NKDSlippers_Mod",
-                        "DLC_LIA_NKDSnickers_Mod",
-                        "DLC_GAR_GFC_New_Version",
-                        "DLC_GAR_GFC_Old_Version",
-                        "DLC_GAR_FRM_Textures",
-                        "DLC_MIR_Shorts_Mod",
-                        "DLC_MOD_IT_RUS",
+                        @"DLC_MOD_FMRM_Patches",
+                        @"DLC_MOD_FJRM_Patches",
+                        @"DLC_ASH_MiniSkirt_Mods",
+                        @"DLC_Explorer",
+                        @"DLC_LIA_RA4_MeshOnly",
+                        @"DLC_ASH_Shorts_Mod",
+                        @"DLC_ASH_Alt_Mods",
+                        @"DLC_ASH_Socks_Mod",
+                        @"DLC_ASH_Topless_Mod",
+                        @"DLC_GAR_FRM_Altered_Face_Legs_Mod",
+                        @"DLC_GAR_GFC_Altered_Face_Legs_Mod",
+                        @"DLC_LIA_NKDSlippers_Mod",
+                        @"DLC_LIA_NKDSnickers_Mod",
+                        @"DLC_GAR_GFC_New_Version",
+                        @"DLC_GAR_GFC_Old_Version",
+                        @"DLC_GAR_FRM_Textures",
+                        @"DLC_MIR_Shorts_Mod",
+                        @"DLC_MOD_IT_RUS",
 
                     };
                     var dlcNames = db.NameTable.Values.Where(x => !ignoredItems.Contains(x) && x.StartsWith(@"DLC_") && Path.GetExtension(x) == string.Empty && !x.Contains(" ") && ThirdPartyServices.GetThirdPartyModInfo(x, MEGame.ME3) == null).Select(x => x.Trim()).Distinct().ToList();
@@ -106,7 +106,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 var path = db.Paths[f.ParentPathID].GetFullPath(db);
                                 if (path.ContainsAny(dlcNames, StringComparison.Ordinal))
                                 {
-                                    var finfo = $"https://nexusmods.com/masseffect/mods/{f.ModID}";
+                                    var finfo = $@"https://nexusmods.com/masseffect/mods/{f.ModID}";
                                     xx.Add(db.NameTable[db.ModFileInfos[f.FileID].NameID] + " " + finfo);
                                 }
 
@@ -236,7 +236,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             if (sender is Hyperlink hl && hl.DataContext is SearchedItemResult sir)
             {
-                var outboundUrl = $@"https://nexusmods.com/{sir.Domain}/mods/{sir.Instance.ModID}?tab=files";
+                var outboundUrl = $@"https://nexusmods.com/{sir.Domain}/mods/{sir.Instance.ModID}?tab=files"; // do not localize
                 Utilities.OpenWebpage(outboundUrl);
             }
         }

@@ -1695,6 +1695,15 @@
     <system:String xml:space="preserve" x:Key="string_dialog_uploadAborted_foundCompressedPackage">The following packages are natively compressed and cannot be uploaded. Package files must be saved uncompressed so end user instances of Mod Manager can reliably determine which files need updating. Resave these packages in ME3Explorer - ME3Tweaks Fork to decompress them.\n\n{0}</system:String>
     <!-- 0=List of packages -->
     <system:String x:Key="string_cannotUploadMod">Cannot upload mod</system:String>
+    <system:String x:Key="string_interp_uploadFailedX">Upload failed: {0}</system:String>
+    <!-- 0={e.Message} -->
+    <system:String x:Key="string_interp_dialog_updaterServiceUploadFailed">Uploading {0} to the ME3Tweaks Updater Service failed: {1}. The mod may be partially uploaded, you will need to try again to ensure a successful upload, as the files are out of sync with the online manifest. If issues continue, please contact Mgamerz.</system:String>
+    <!-- 0={fullPath} 1={e.Message} -->
+    <system:String x:Key="string_uploadFailed">Upload failed</system:String>
+    <system:String x:Key="string_manifestUpdatedOnServer">Manifest updated on server</system:String>
+
+
+
 
     <!-- Mixin Library -->
     <system:String x:Key="string_selectMixinsToCompile">Select Mixins to compile</system:String>
