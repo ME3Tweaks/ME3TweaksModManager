@@ -1702,9 +1702,6 @@
     <system:String x:Key="string_uploadFailed">Upload failed</system:String>
     <system:String x:Key="string_manifestUpdatedOnServer">Manifest updated on server</system:String>
 
-
-
-
     <!-- Mixin Library -->
     <system:String x:Key="string_selectMixinsToCompile">Select Mixins to compile</system:String>
     <system:String x:Key="string_noGameBackupOfME3IsAvailableMixinsCannotBeUsedWithoutABackup">No game backup of ME3 is available. Mixins cannot be used without a backup.</system:String>
