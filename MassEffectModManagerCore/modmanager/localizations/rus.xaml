@@ -762,7 +762,7 @@
 	<system:String x:Key="string_Setmodlibrarypath">Задать путь к библиотеке модов</system:String>
 	<system:String x:Key="string_Developermode">Режим разработчика</system:String>
 	<system:String x:Key="string_EnableDeveloperOrientedFeatures">Активирует дополнительные функции для разработчиков</system:String>
-	<system:String x:Key="string_Darktheme">Ночной режим</system:String>
+	<system:String x:Key="string_Darktheme">Темная тема</system:String>
 	<system:String x:Key="string_SwitchUItodarktheme">Переключает интерфейс на ночной режим</system:String>
 	<system:String x:Key="string_Logging">Логирование</system:String>
 	<system:String x:Key="string_Enabletelemetry">Включить телеметрию</system:String>
@@ -1075,6 +1075,8 @@
 	<system:String x:Key="string_updatedLocalization">Локализация обновлена</system:String>
 	<system:String x:Key="string_errorUpdatingLocalization">Ошибка обновления локализации</system:String>
 	<system:String x:Key="string_noModsInTheLibraryHeader">В библиотеке отсутствуют моды!</system:String>
+	<system:String x:Key="string_allGamesHiddenTitle">Не выбраны игры для отображения</system:String>
+	<system:String x:Key="string_allGamesHiddenDescription">Нет выбранных игр для отображения списка модов. Нажмите на игру выше для включения отображения модов данной игры.</system:String>
 	<!-- This is bolded text that shows up at the top of the mod library list area when there are no mods. Try to keep it short, feel free to adapt to your language. -->
 	<system:String x:Key="string_noModsInLibraryDescription" xml:space="preserve">Здесь будут отображаться моды, импортируемые в Mod Manager. Вы можете импортировать моды, перетаскивая их архивные файлы (.7z/.rar/.zip/.exe/.me2mod) в это окно.&#10;&#10;Моды, установленные через окно импортирования НЕ будут отображаться здесь, поскольку устанавливаются напрямую в игру, а не добавляются в библиотеку. Вы можете посмотреть, что уже установлено, нажав 'Настройка Игры' в правом верхнем углу данного окна.&#10;&#10;Моды, импортированные в библиотеку, легко переустановить, добавить в очередь установки и не только.</system:String>
 	<!-- This is the text shown under the no mods in library header. It shows up when there are no mods imported. Make sure Manage Target lines up with your localization of that term. -->
@@ -1936,6 +1938,12 @@
 	<system:String x:Key="string_dialog_uploadAborted_foundCompressedPackage" xml:space="preserve">Следующие пакетные файлы изначально сжаты и не могут быть загружены. Пакетные файлы должны сохраняться в несжатом виде, чтобы локальный Mod Manager мог надежно определять файлы, требующие обновления. Пересохраните данные пакетные файлы в ME3Explorer - ME3Tweaks Fork для их распаковки.\n\n{0}</system:String>
 	<!-- 0=List of packages -->
 	<system:String x:Key="string_cannotUploadMod">Невозможно загрузить мод</system:String>
+	<system:String x:Key="string_interp_uploadFailedX">Загрузка не удалась: {0}</system:String>
+	<!-- 0={e.Message} -->
+	<system:String x:Key="string_interp_dialog_updaterServiceUploadFailed">Загрузка {0} в ME3Tweaks Updater Service не удалась: {1}. Мод мог был частично загружен, повторите попытку, чтобы убедиться в надежности загрузки, так как файлы не синхронизированы с онлайн-манифестом. Если проблемы продолжаться, обратитесь к Mgamerz.</system:String>
+	<!-- 0={fullPath} 1={e.Message} -->
+	<system:String x:Key="string_uploadFailed">Загрузка не удалась</system:String>
+	<system:String x:Key="string_manifestUpdatedOnServer">Манифест обновлен на сервере</system:String>
 
 	<!-- Vanilla Database Service -->
 	<system:String x:Key="string_checkingBackup">Проверка архива</system:String>
