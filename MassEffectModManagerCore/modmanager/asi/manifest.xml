@@ -400,7 +400,7 @@
       <downloadlink>https://github.com/ME3Tweaks/ME2-ASI-Plugins/releases/download/v1.0-StreamingLevelsHUD/StreamingLevelsHUD-v1.0.asi</downloadlink>
     </asimod>
     <asimod>
-      <name>Stream Levels HUD</name>
+      <name>Streaming Levels HUD</name>
       <installedname>StreamingLevelsHUD</installedname>
       <author>Mgamerz</author>
       <description>This ASI draws the list of streaming levels on the top left of the screen, as well as their current loaded state. It additionally shows the amount of memory the process is currently using, as well as as the maximum. When the amount nears the crashing point (3.5GiB), it turns, yellow, red, then begins to flash red.</description>
