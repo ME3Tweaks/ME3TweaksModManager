@@ -36,6 +36,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public const string MEM = @"Mass Effect Modder";
         public const string MEM_CMD = @"Mass Effect Modder No Gui";
         public const string MER = @"Mass Effect Randomizer";
+        public const string ME2R = @"Mass Effect 2 Randomizer";
         private string tool;
 
         public static List<string> ToolsCheckedForUpdatesInThisSession = new List<string>();
@@ -53,6 +54,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     case ALOTInstaller:
                         return @"/modmanager/toolicons/alot_big.png";
                     case MER:
+                    case ME2R:
                         return @"/modmanager/toolicons/masseffectrandomizer_big.png";
                     case ME3Explorer:
                     case ME3Explorer_Beta:
@@ -295,6 +297,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 case MER:
                     toolGithubOwner = @"ME3Tweaks";
                     toolGithubRepoName = @"MassEffectRandomizer";
+                    break;
+                case ME2R:
+                    toolGithubOwner = @"ME3Tweaks";
+                    toolGithubRepoName = @"MassEffect2Randomizer";
                     break;
                 case ME3Explorer:
                     toolGithubOwner = @"ME3Tweaks";
@@ -597,6 +603,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private static string toolNameToExeName(string toolname)
         {
             if (toolname == ME3Explorer_Beta) return @"ME3Explorer.exe";
+            if (toolname == ME2R) return @"ME2Randomizer.exe";
             return toolname.Replace(@" ", @"") + @".exe";
         }
 
@@ -607,6 +614,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             EGMSettings,
             MEM,
             MER,
+            ME2R,
             ALOTInstaller,
         };
         internal static bool IsSupportedToolID(string toolId) => SupportedToolIDs.Contains(toolId);

@@ -1062,7 +1062,7 @@ namespace MassEffectModManagerCore
                 {
                     if (result == @"ALOTInstaller")
                     {
-                        BootALOTInstallerPassthrough(ExternalToolLauncher.ALOTInstaller);
+                        BootToolPathPassthrough(ExternalToolLauncher.ALOTInstaller);
                     }
                 }
             };
@@ -1108,7 +1108,7 @@ namespace MassEffectModManagerCore
                     }
                     if (result == @"ALOTInstaller")
                     {
-                        BootALOTInstallerPassthrough(ExternalToolLauncher.ALOTInstaller);
+                        BootToolPathPassthrough(ExternalToolLauncher.ALOTInstaller);
                     }
 
                     if (result == @"ReloadTargets")
@@ -1121,10 +1121,10 @@ namespace MassEffectModManagerCore
         }
 
         /// <summary>
-        /// Boots ALOT Installer, using the specified tool name. Passes through the current active targets in M3, if they are supported.
+        /// Boots the specified tool ID, passes through the current active targets in M3, if they are supported.
         /// </summary>
-        /// <param name="alotInstallerToolName"></param>
-        private void BootALOTInstallerPassthrough(string alotInstallerToolName)
+        /// <param name="toolname"></param>
+        private void BootToolPathPassthrough(string toolname)
         {
             var arguments = "";
             var me1Target = GetCurrentTarget(MEGame.ME1);
@@ -1142,7 +1142,7 @@ namespace MassEffectModManagerCore
             {
                 arguments += $"--me3path \"{me3Target.TargetPath}\" "; //do not localize
             }
-            LaunchExternalTool(alotInstallerToolName, arguments);
+            LaunchExternalTool(toolname, arguments);
         }
 
         private bool CanShowInstallInfo()
@@ -2804,11 +2804,20 @@ namespace MassEffectModManagerCore
         private void LaunchExternalTool_Clicked(object sender, RoutedEventArgs e)
         {
             string tool = null;
+
+            // ME3Tweaks passthrough boot
             if (sender == ALOTInstaller_MenuItem)
             {
-                BootALOTInstallerPassthrough(ExternalToolLauncher.ALOTInstaller);
+                BootToolPathPassthrough(ExternalToolLauncher.ALOTInstaller);
                 return;
             }
+            if (sender == MassEffect2Randomizer_MenuItem)
+            {
+                BootToolPathPassthrough(ExternalToolLauncher.ME2R);
+                return;
+            }
+
+            // Generic boot
             if (sender == MassEffectRandomizer_MenuItem) tool = ExternalToolLauncher.MER;
             if (sender == ME3Explorer_MenuItem) tool = ExternalToolLauncher.ME3Explorer;
             if (sender == ME3ExplorerBeta_MenuItem) tool = ExternalToolLauncher.ME3Explorer_Beta;

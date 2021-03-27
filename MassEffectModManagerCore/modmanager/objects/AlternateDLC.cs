@@ -210,7 +210,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         if (job.MultiLists.TryGetValue(multilistid, out var ml))
                         {
                             MultiListId = multilistid;
-                            MultiListSourceFiles = ml;
+                            MultiListSourceFiles = ml.Select(x => x.TrimStart('\\', '/')).ToArray();
                         }
                         else
                         {

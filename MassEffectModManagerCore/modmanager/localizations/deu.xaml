@@ -135,7 +135,7 @@
 	<system:String x:Key="string_notInstalled">Nicht installiert</system:String>
 	<system:String x:Key="string_installASI">ASI installieren</system:String>
 	<system:String x:Key="string_unknownASIDescription">Unbekannter ASI-Mod. Du solltest mit diesem ASI vorsichtig umgehen, da sie böswilligen Code enthalten könnte.</system:String>
-	<system:String x:Key="string_SSINotPresentInManifest">ASI nicht in manifest enthalten</system:String>
+	<system:String x:Key="string_SSINotPresentInManifest">ASI nicht in Manifest enthalten</system:String>
 	<system:String x:Key="string_selectAnASIToViewOptions">Wähle einen ASI, um Optionen anzuzeigen</system:String>
 	<system:String x:Key="string_noASISelected">Kein ASI ausgewählt</system:String>
 	<system:String x:Key="string_aSILoaderInstalledASIModsWillLoad">ASI-Loader installiert. ASI-Mods werden geladen</system:String>
@@ -1075,6 +1075,8 @@
 	<system:String x:Key="string_updatedLocalization">Lokalisierung wurde aktualisiert</system:String>
 	<system:String x:Key="string_errorUpdatingLocalization">Fehler beim Aktualisieren der Lokalisierung</system:String>
 	<system:String x:Key="string_noModsInTheLibraryHeader">Keine Mods in der Bibliothek!</system:String>
+	<system:String x:Key="string_allGamesHiddenTitle">Keine Spiele zur Anzeige ausgewählt</system:String>
+	<system:String x:Key="string_allGamesHiddenDescription">Kein Spiel ist zum Anzeigen ausgewählt. Klicke oben auf ein Spiel, um Mods für dieses Spiel zu zeigen.</system:String>
 	<!-- This is bolded text that shows up at the top of the mod library list area when there are no mods. Try to keep it short, feel free to adapt to your language. -->
 	<system:String x:Key="string_noModsInLibraryDescription" xml:space="preserve">Diese Liste zeigt dir alle Mods, die du in Mod Manager importiert hast. Du kannst Mods importieren, indem du die heruntergeladene Archivdatei (.7z/.rar/.zip/.exe/.me2mod) auf dieses Fenster ziehst und loslässt.&#10;&#10;Mods die direkt vom Importieren-Fenster installiert werden, werden hier nicht angezeigt, da sie direkt in das Spiel installiert werden ohne in die Bibliothek importiert zu werden. Du kannst dir die Installierten Mods anzeigen lassen indem du auf 'Ziel verwalten' oben rechts in diesem Fenster klickst.&#10;&#10;Mods in der Mod-Bibliothek können leicht nochmal oder automatisch in Gruppen installiert werden, automatisch aktualisiert werden, und mehr.</system:String>
 	<!-- This is the text shown under the no mods in library header. It shows up when there are no mods imported. Make sure Manage Target lines up with your localization of that term. -->
@@ -1936,6 +1938,12 @@
 	<system:String x:Key="string_dialog_uploadAborted_foundCompressedPackage" xml:space="preserve">Die folgenden Pakete sind nativ komprimiert und können nicht hochgeladen werden. Paketdateien müssen unkomprimiert gespeichert werden, damit Endbenutzerinstanzen von Mod Manager verlässlich bestimmen kann, welche Dateien aktualisiert werden müssen. Speichere diese Pakete neu mit ME3Explorer - ME3Tweaks Fork, um sie zu dekomprimieren.\n\n{0}</system:String>
 	<!-- 0=List of packages -->
 	<system:String x:Key="string_cannotUploadMod">Mod kann nicht hochgeladen werden</system:String>
+	<system:String x:Key="string_interp_uploadFailedX">Hochladen fehlgeschlagen: {0}</system:String>
+	<!-- 0={e.Message} -->
+	<system:String x:Key="string_interp_dialog_updaterServiceUploadFailed">Hochladen von {0} zum ME3Tweaks Aktualisierungsdienst ist fehlgeschlagen: {1}. Der Mod ist möglicherweise in Teilen hochgeladen; du solltest es nocheinmal versuchen um erfolgreiches Hochladen sicherzustellen, da die Dateien nun nicht mit dem Online Manifest übereinstimmen. Wenn das Problem bestehen bleibt, kontaktiere bitte Mgamerz.</system:String>
+	<!-- 0={fullPath} 1={e.Message} -->
+	<system:String x:Key="string_uploadFailed">Hochladen fehlgeschlagen</system:String>
+	<system:String x:Key="string_manifestUpdatedOnServer">Manifest auf Server aktualisiert</system:String>
 
 	<!-- Vanilla Database Service -->
 	<system:String x:Key="string_checkingBackup">Backup wird überprüft</system:String>

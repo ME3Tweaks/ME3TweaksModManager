@@ -1075,6 +1075,8 @@
 	<system:String x:Key="string_updatedLocalization">Localização atualizada</system:String>
 	<system:String x:Key="string_errorUpdatingLocalization">Erro ao atualizar localização</system:String>
 	<system:String x:Key="string_noModsInTheLibraryHeader">Não há Mods na Biblioteca!</system:String>
+	<system:String x:Key="string_allGamesHiddenTitle">Nenhum jogo selecionado para exibir</system:String>
+	<system:String x:Key="string_allGamesHiddenDescription">Nenhum jogo foi selecionado para exibição de Mods. Clique em um jogo acima para habilitar a exibição de seus Mods.</system:String>
 	<!-- This is bolded text that shows up at the top of the mod library list area when there are no mods. Try to keep it short, feel free to adapt to your language. -->
 	<system:String x:Key="string_noModsInLibraryDescription" xml:space="preserve">Mods importados para o Gerenciador de Mods serão listados aqui. É possível importar Mods ao arrastar e soltar os arquivos baixados (.7z/.rar/.zip/.exe/.me2mod) nesta janela.&#10;&#10;Mods instalados diretamente pela janela do importador NÃO serão exibidos aqui, já que estarão instalados no jogo, e não importados na Biblioteca. É possível verificar as instalações clicando em "Gerenciar Destino" no canto superior direito desta janela.&#10;&#10;Mods importados para a Biblioteca são fáceis de reinstalar, podem ser adicionados a filas de instalação e mais.</system:String>
 	<!-- This is the text shown under the no mods in library header. It shows up when there are no mods imported. Make sure Manage Target lines up with your localization of that term. -->
@@ -1936,6 +1938,12 @@
 	<system:String x:Key="string_dialog_uploadAborted_foundCompressedPackage" xml:space="preserve">Os seguintes pacotes foram comprimidos nativamente e não podem se carregados. Arquivos de pacote deve ser salvos sem compressão para que Usuários Finais do Gerenciador de Mods possam determinar quais arquivos precisam ser atualizados. Salve estes arquivos novamente no Fork ME3Explorer - ME3Tweaks para descomprimí-los.\n\n{0}</system:String>
 	<!-- 0=List of packages -->
 	<system:String x:Key="string_cannotUploadMod">Impossível carregar Mod</system:String>
+	<system:String x:Key="string_interp_uploadFailedX">Upload falhou: {0}</system:String>
+	<!-- 0={e.Message} -->
+	<system:String x:Key="string_interp_dialog_updaterServiceUploadFailed">O carregamento de {0} para o Serviço de Atualização de ME3Tweaks falhou: {1}. O Mod pode ter sido carregado parcialmente, é necessário tentar novamente para assegurar um carregamento bem sucedido, já que os  arquivos estão fora de sincronia com o manifesto online. Se persistirem os problemas, por favor contate Mgamerz.</system:String>
+	<!-- 0={fullPath} 1={e.Message} -->
+	<system:String x:Key="string_uploadFailed">Carregamento falhou.</system:String>
+	<system:String x:Key="string_manifestUpdatedOnServer">Manifesto carregado no servidor</system:String>
 
 	<!-- Vanilla Database Service -->
 	<system:String x:Key="string_checkingBackup">Verificando backup</system:String>

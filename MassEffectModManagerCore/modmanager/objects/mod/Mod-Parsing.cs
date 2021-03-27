@@ -967,23 +967,6 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         }
                     }
 
-                    //Build additions (vars will be null if these aren't supported by target version)
-                    if (addFilesSourceSplit != null && !directoryMatchesGameStructure)
-                    {
-                        for (int i = 0; i < addFilesSourceSplit.Count; i++)
-                        {
-                            string destFile = addFilesTargetSplit[i];
-                            CLog.Information($@"Adding file to installation queue (addition): {addFilesSourceSplit[i]} => {destFile}", Settings.LogModStartup);
-                            string failurereason = headerJob.AddAdditionalFileToInstall(destFile, addFilesSourceSplit[i], this); //add files are layered on top
-                            if (failurereason != null)
-                            {
-                                Log.Error($@"Error occurred while parsing the add files lists for {headerAsString}: {failurereason}");
-                                LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_genericFailedToParseAddFilesLists, headerAsString, failurereason);
-                                return;
-                            }
-                        }
-                    }
-
                     if (addFilesReadOnlySplit != null && !directoryMatchesGameStructure)
                     {
                         for (int i = 0; i < addFilesReadOnlySplit.Count; i++)
