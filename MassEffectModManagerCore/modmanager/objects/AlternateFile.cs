@@ -216,7 +216,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         if (associatedJob.MultiLists.TryGetValue(multilistid, out var ml))
                         {
                             MultiListId = multilistid;
-                            MultiListSourceFiles = ml;
+                            MultiListSourceFiles = ml.Select(x=>x.TrimStart('\\', '/')).ToArray();
                         }
                         else
                         {
@@ -338,11 +338,11 @@ namespace MassEffectModManagerCore.modmanager.objects
                     //these both are the same these days i guess, I honestly can't remember which one I wanted to use
                     if (properties.TryGetValue(@"AltFile", out string altfile))
                     {
-                        AltFile = altfile;
+                        AltFile = altfile.TrimStart('\\','/');
                     }
                     else if (AltFile == null && properties.TryGetValue(@"ModAltFile", out string maltfile))
                     {
-                        AltFile = maltfile;
+                        AltFile = maltfile.TrimStart('\\', '/'); ;
                     }
 
                     properties.TryGetValue(@"SubstituteFile", out SubstituteFile); //Only used in 4.5. In 5.0 and above this became AltFile.
@@ -350,7 +350,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     //workaround for 4.5
                     if (modForValidating.ModDescTargetVersion == 4.5 && Operation == AltFileOperation.OP_SUBSTITUTE && SubstituteFile != null)
                     {
-                        AltFile = SubstituteFile;
+                        AltFile = SubstituteFile; // not trimming start to avoid logic change
                     }
 
                     if (!string.IsNullOrEmpty(AltFile))

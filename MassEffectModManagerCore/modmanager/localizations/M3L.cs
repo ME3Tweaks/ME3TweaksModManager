@@ -147,6 +147,8 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_Texturebrowserandinstaller = "string_Texturebrowserandinstaller";
 		public const string string_MassEffectRandomizer = "string_MassEffectRandomizer";
 		public const string string_RandomizerforthefirstMassEffectgame = "string_RandomizerforthefirstMassEffectgame";
+		public const string string_me2r = "string_me2r";
+		public const string string_tooltip_me2r = "string_tooltip_me2r";
 		public const string string_ME3ExplorerME3TweaksFork = "string_ME3ExplorerME3TweaksFork";
 		public const string string_ME3ExplorerME3TweaksForkBeta = "string_ME3ExplorerME3TweaksForkBeta";
 		public const string string_ME3ExplorerME3TweaksForkTooltip = "string_ME3ExplorerME3TweaksForkTooltip";
@@ -627,6 +629,11 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_interp_gamenameValidationTarget = "string_interp_gamenameValidationTarget";
 		public const string string_deploymentValidationTargetDesc = "string_deploymentValidationTargetDesc";
 		public const string string_interp_noValidationTarget = "string_interp_noValidationTarget";
+		public const string string_errorOccurredCheckingReferences = "string_errorOccurredCheckingReferences";
+		public const string string_interp_warningExceptionOccurredDuringRefChecks = "string_interp_warningExceptionOccurredDuringRefChecks";
+		public const string string_dialog_7zDeploymentInProgress = "string_dialog_7zDeploymentInProgress";
+		public const string string_cancellingDeployment = "string_cancellingDeployment";
+		public const string string_dialog_DeploymentChecksInProgress = "string_dialog_DeploymentChecksInProgress";
 		public const string string_backupsAreShared = "string_backupsAreShared";
 		public const string string_backupsMustBeCreatedFresh = "string_backupsMustBeCreatedFresh";
 		public const string string_backUp = "string_backUp";

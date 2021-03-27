@@ -481,15 +481,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
                 }
 
-                SelectedTarget.PopulateModifiedBasegameFiles(restoreBasegamefileConfirmationCallback,
+                SelectedTarget?.PopulateModifiedBasegameFiles(restoreBasegamefileConfirmationCallback,
                     restoreSfarConfirmationCallback,
                     notifyStartingSfarRestoreCallback,
                     notifyStartingBasegameFileRestoreCallback,
                     notifyRestoredCallback);
                 SFARBeingRestored = false;
 
-                SelectedTarget.PopulateASIInfo();
-                SelectedTarget.PopulateBinkInfo();
+                SelectedTarget?.PopulateASIInfo();
+                SelectedTarget?.PopulateBinkInfo();
 
                 if (SelectedTarget != null && !SelectedTarget.TextureModded)
                 {

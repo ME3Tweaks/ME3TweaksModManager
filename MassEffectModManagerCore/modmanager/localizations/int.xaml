@@ -77,6 +77,8 @@
     <system:String x:Key="string_Texturebrowserandinstaller">Texture browser and installer</system:String>
     <system:String x:Key="string_MassEffectRandomizer">Mass Effect Randomizer</system:String>
     <system:String x:Key="string_RandomizerforthefirstMassEffectgame">Randomizer for the first Mass Effect game</system:String>
+    <system:String x:Key="string_me2r">Mass Effect 2 Randomizer</system:String>
+    <system:String x:Key="string_tooltip_me2r">Randomizer for Mass Effect 2</system:String>
     <system:String x:Key="string_ME3ExplorerME3TweaksFork">ME3Explorer - ME3Tweaks Fork (Stable)</system:String>
     <system:String x:Key="string_ME3ExplorerME3TweaksForkBeta">ME3Explorer - ME3Tweaks Fork (Nightly)</system:String>
     <system:String x:Key="string_ME3ExplorerME3TweaksForkTooltip" xml:space="preserve">Toolset for developing Mass Effect trilogy mods.&#10;This is the stable version, which is typically a few months old</system:String>
@@ -669,6 +671,12 @@
     <system:String x:Key="string_deploymentValidationTargetDesc">Validation targets are used to validate the configuration of your mod against other mods that your mod may depend on, such as compatibility patches referencing textures in another mod. Install these mods to the target so Mod Manager can check these references. Validation targets cannot be texture modded.</system:String>
     <system:String x:Key="string_interp_noValidationTarget">No validation target available for {0}!</system:String>
     <!-- 0={ME1/ME2/ME3} -->
+    <system:String x:Key="string_errorOccurredCheckingReferences">Error occurred checking references during deployment</system:String>
+    <system:String x:Key="string_interp_warningExceptionOccurredDuringRefChecks">Exception occurred checking references, this may be an issue in Mod Manager code or in mod: {0}</system:String>
+    <!-- 0={Exception message} -->
+    <system:String x:Key="string_dialog_7zDeploymentInProgress">A deployment to 7z is currently in progress. Cancel the deployment?</system:String>
+    <system:String x:Key="string_cancellingDeployment">Cancelling deployment</system:String>
+    <system:String x:Key="string_dialog_DeploymentChecksInProgress">Mods are currently being checked before deployment. Cancel the deployment?</system:String>
 
     <!-- Backup Creator-->
     <system:String x:Key="string_backupsAreShared">Backups are shared across various modding tools including Mass Effect Randomizer, ALOT Installer, and ME3Explorer - ME3Tweaks Fork.</system:String>

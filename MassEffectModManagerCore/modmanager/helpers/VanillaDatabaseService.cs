@@ -337,7 +337,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                     {
                         var localFileInfo = new FileInfo(file);
                         bool sfar = Path.GetExtension(file) == @".sfar";
-                        bool correctSize = false;
+                        bool correctSize;
                         if (sfar && localFileInfo.Length == 32)
                         {
                             correctSize = false; //We don't treat 32byte as "correct" for vanilla purposes.
@@ -357,7 +357,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                     }
                     else
                     {
-                        //Debug.WriteLine("File not in Vanilla DB: " + file);
+                        Debug.WriteLine("File not in Vanilla DB: " + file);
                     }
                 }
             }
