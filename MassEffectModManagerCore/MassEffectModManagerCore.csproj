@@ -9,9 +9,9 @@
 		<PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
 		<UseWPF>true</UseWPF>
 		<Platforms>x64</Platforms>
-		<AssemblyVersion>6.2.1.115</AssemblyVersion>
-		<FileVersion>6.2.1.115</FileVersion>
-		<Version>6.2.1.115</Version>
+		<AssemblyVersion>6.2.2.116</AssemblyVersion>
+		<FileVersion>6.2.2.116</FileVersion>
+		<Version>6.2.2.116</Version>
 		<Copyright>ME3Tweaks 2012 - 2021</Copyright>
 		<Authors>Mgamerz</Authors>
 		<PackageId>MassEffectModManagerCore</PackageId>
