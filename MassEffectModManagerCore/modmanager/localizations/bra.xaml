@@ -503,6 +503,12 @@
 	<system:String x:Key="string_deploymentValidationTargetDesc">Destinos de validação são usados para validar a configuração de seu Mod junto aos outros Mods do quais o seu possa vir a depender, como patches de compatibilidade referenciando texturas em outro Mod. Instale esses Mods no destino para que o Gerenciador de Mods possa checar essas referências. Destinos de validação não pode ter suas texturas alteradas.</system:String>
 	<system:String x:Key="string_interp_noValidationTarget">Sem destino de validação disponível para {0}</system:String>
 	<!-- 0={ME1/ME2/ME3} -->
+	<system:String x:Key="string_errorOccurredCheckingReferences">Ocorreu um erro na checagem de referências  durante a distribuição.</system:String>
+	<system:String x:Key="string_interp_warningExceptionOccurredDuringRefChecks">Ocorreu uma exceção na checagem de referências, pode ser uma questão com o código do Gerenciador de Mods ou no Mod: {0}</system:String>
+	<!-- 0={Exception message} -->
+	<system:String x:Key="string_dialog_7zDeploymentInProgress">Criação de arquivo 7z em progresso. Cancelar criação?</system:String>
+	<system:String x:Key="string_cancellingDeployment">Cancelando criação</system:String>
+	<system:String x:Key="string_dialog_DeploymentChecksInProgress">Os Mods estão sendo checados antes da distribuição. Cancelar distribuição?</system:String>
 
 	<!-- External tool launcher -->
 	<system:String x:Key="string_interp_downloadingX">Baixando {0}</system:String>
