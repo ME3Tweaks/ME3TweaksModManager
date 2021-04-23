@@ -86,10 +86,12 @@ namespace MassEffectModManagerCore
         public void OnInstanceInvoked(string[] args)
         {
             // Another exe was launched
+            Debug.WriteLine($"Instance args: {string.Join(" ", args)}");
             Dispatcher?.Invoke(() =>
             {
                 if (Current.MainWindow is MainWindow mw)
                 {
+                    mw.HandleInstanceArguments(args);
                     mw.Activate();
                 }
             });

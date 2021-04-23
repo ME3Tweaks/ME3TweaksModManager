@@ -4,14 +4,14 @@
 		<PublishTrimmed>false</PublishTrimmed>
 		<PublishReadyToRun>false</PublishReadyToRun>
 		<PublishSingleFile>true</PublishSingleFile>
-		<TargetFrameworks>netcoreapp3.1;net5.0-windows8.0</TargetFrameworks>
+		<TargetFrameworks>net5.0-windows8.0</TargetFrameworks>
 		<RuntimeIdentifier>win10-x64</RuntimeIdentifier>
 		<PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
 		<UseWPF>true</UseWPF>
 		<Platforms>x64</Platforms>
-		<AssemblyVersion>6.2.2.116</AssemblyVersion>
-		<FileVersion>6.2.2.116</FileVersion>
-		<Version>6.2.2.116</Version>
+		<AssemblyVersion>6.2.3.117</AssemblyVersion>
+		<FileVersion>6.2.3.117</FileVersion>
+		<Version>6.2.3.117</Version>
 		<Copyright>ME3Tweaks 2012 - 2021</Copyright>
 		<Authors>Mgamerz</Authors>
 		<PackageId>MassEffectModManagerCore</PackageId>
