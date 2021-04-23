@@ -21,18 +21,16 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using AuthenticodeExaminer;
-using MassEffectModManagerCore.modmanager.objects.nexusfiledb;
 using MassEffectModManagerCore.modmanager.windows;
-using ME3ExplorerCore.Compression;
 using ME3ExplorerCore.Helpers;
 using ME3ExplorerCore.Misc;
 using ME3ExplorerCore.Packages;
-using Microsoft.AppCenter;
+using SingleInstanceCore;
 
 namespace MassEffectModManagerCore
 {
     [Localizable(false)]
-    public partial class App : Application
+    public partial class App : Application, ISingleInstance
     {
         public static bool AppDataExistedAtBoot = Directory.Exists(Utilities.GetAppDataFolder(false)); //alphabetically this must come first in App!
         /// <summary>
@@ -84,6 +82,19 @@ namespace MassEffectModManagerCore
 
         public static string BuildDate;
         public static bool IsSigned;
+
+        public void OnInstanceInvoked(string[] args)
+        {
+            // Another exe was launched
+            Dispatcher?.Invoke(() =>
+            {
+                if (Current.MainWindow is MainWindow mw)
+                {
+                    mw.Activate();
+                }
+            });
+
+        }
 
         public App() : base()
         {
@@ -156,6 +167,17 @@ namespace MassEffectModManagerCore
                 }
 
                 #endregion
+
+                // Single instance occurs AFTER command line params as to not break the updater which requires simultaneous boot
+                bool isFirstInstance = SingleInstance<App>.InitializeAsFirstInstance("ME3TweaksModManager6");
+                if (!isFirstInstance)
+                {
+                    //If it's not the first instance, arguments are automatically passed to the first instance
+                    //OnInstanceInvoked will be raised on the first instance
+
+                    // Kill this new loading instance.
+                    Current.Shutdown();
+                }
 
 
                 this.Dispatcher.UnhandledException += OnDispatcherUnhandledException;
@@ -272,7 +294,7 @@ namespace MassEffectModManagerCore
                     // the user has configured their options nothing will be sent.
                     // If option is not selected the items will be discarded
                 }
-                 
+
                 if (Settings.Language != @"int" && SupportedLanguages.Contains(Settings.Language))
                 {
                     InitialLanguage = Settings.Language;
@@ -567,6 +589,9 @@ namespace MassEffectModManagerCore
                 Log.Information(@"Application exiting normally");
                 Log.CloseAndFlush();
             }
+
+            // Clean up single instance
+            SingleInstance<App>.Cleanup();
         }
 
         private void App_OnStartup(object sender, StartupEventArgs e)
