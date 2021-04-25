@@ -503,6 +503,12 @@
 	<system:String x:Key="string_deploymentValidationTargetDesc">Цели валидации используются при проверке согласованности конфигурации вашего мода с прочими, от которых он может зависеть, например патчи совместимости, ссылающиеся на текстуры в другом моде. Установите данные моды в целевую игру, чтобы Mod Manager мог проверить такие ссылки. Цели валидации не допускают модификации текстур.</system:String>
 	<system:String x:Key="string_interp_noValidationTarget">Нет доступной цели валидации для {0}!</system:String>
 	<!-- 0={ME1/ME2/ME3} -->
+	<system:String x:Key="string_errorOccurredCheckingReferences">Возникла ошибка при проверке ссылок во время преобразования</system:String>
+	<system:String x:Key="string_interp_warningExceptionOccurredDuringRefChecks">Возникло исключение при проверке ссылок, это может быть ошибка в Mod Manager или в моде: {0}</system:String>
+	<!-- 0={Exception message} -->
+	<system:String x:Key="string_dialog_7zDeploymentInProgress">Преобразование в 7z находится в процессе. Отменить преобразование?</system:String>
+	<system:String x:Key="string_cancellingDeployment">Отмена преобразования</system:String>
+	<system:String x:Key="string_dialog_DeploymentChecksInProgress">Моды проходят проверку перед преобразованием. Отменить преобразование?</system:String>
 
 	<!-- External tool launcher -->
 	<system:String x:Key="string_interp_downloadingX">Скачивание {0}</system:String>
@@ -825,6 +831,8 @@
 	<system:String x:Key="string_Texturebrowserandinstaller">Браузер и установщик текстур</system:String>
 	<system:String x:Key="string_MassEffectRandomizer">Mass Effect Randomizer</system:String>
 	<system:String x:Key="string_RandomizerforthefirstMassEffectgame">Randomizer для первой части Mass Effect</system:String>
+	<system:String x:Key="string_me2r">Mass Effect 2 Randomizer</system:String>
+	<system:String x:Key="string_tooltip_me2r">Randomizer для Mass Effect 2</system:String>
 	<system:String x:Key="string_ME3ExplorerME3TweaksFork">ME3Explorer - ME3Tweaks Fork (Стабильная сборка)</system:String>
 	<system:String x:Key="string_ME3ExplorerME3TweaksForkBeta">ME3Explorer - ME3Tweaks Fork (Ночная сборка)</system:String>
 	<system:String x:Key="string_ME3ExplorerME3TweaksForkTooltip" xml:space="preserve">Набор инструментов разработки модов для трилогии Mass Effect</system:String>

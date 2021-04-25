@@ -275,6 +275,18 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
 
         }
 
+        /// <summary>
+        /// Gets a list of download links for the specified file
+        /// </summary>
+        /// <param name="domain"></param>
+        /// <param name="modid"></param>
+        /// <param name="fileid"></param>
+        /// <returns></returns>
+        public static async Task<ModFileDownloadLink[]> GetDownloadLinkForFile(string domain, int modid, int fileid, string nxmkey, int expiry)
+        {
+            return await NexusModsUtilities.GetClient().ModFiles.GetDownloadLinks(domain, modid, fileid, nxmkey, expiry);
+        }
+
         public static async Task<string> SetupNexusLogin(Action<string> updateStatus)
         {
             // open a web socket to receive the api key
