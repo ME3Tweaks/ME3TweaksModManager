@@ -26,6 +26,8 @@ using ME3ExplorerCore.Helpers;
 using ME3ExplorerCore.Misc;
 using ME3ExplorerCore.Packages;
 using SingleInstanceCore;
+using ME3ExplorerCore.Compression;
+using Microsoft.AppCenter;
 
 namespace MassEffectModManagerCore
 {
