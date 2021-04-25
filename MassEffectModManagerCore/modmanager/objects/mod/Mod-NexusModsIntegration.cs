@@ -72,7 +72,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
         /// <param name="newEndorsementStatus"></param>
         /// <param name="endorse"></param>
         /// <param name="currentuserid"></param>
-        public void EndorseMod(Action<Mod, bool> newEndorsementStatus, bool endorse, int currentuserid)
+        public void EndorseMod(Action<Mod, bool, string> endorsementResultCallback, bool endorse, int currentuserid)
         {
             if (!NexusModsUtilities.HasAPIKey || !CanEndorse) return;
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"ModSpecificEndorsement");
@@ -83,6 +83,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 if (Game == MEGame.ME2) gamename += @"2";
                 if (Game == MEGame.ME3) gamename += @"3";
                 string telemetryOverride = null;
+                string endorsementFailedReason = null;
                 try
                 {
                     if (endorse)
@@ -96,8 +97,23 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 }
                 catch (Exception e)
                 {
+                    if (e.InnerException != null)
+                    {
+                        if (e.InnerException.Message == "NOT_DOWNLOADED_MOD")
+                        {
+                            // User did not download this mod from NexusMods
+                            endorsementFailedReason = "You cannot endorse a mod that you have not downloaded from NexusMods.";
+                        }
+                        else if (e.InnerException.Message == "TOO_SOON_AFTER_DOWNLOAD")
+                        {
+                            endorsementFailedReason = "You cannot endorse a mod until at least 15 minutes after downloading it.";
+                        }
+                    }
+                    else
+                    {
+                        telemetryOverride = e.ToString();
+                    }
                     Log.Error(@"Error endorsing/unendorsing: " + e.ToString());
-                    telemetryOverride = e.ToString();
                 }
 
                 checkedEndorsementStatus = false;
@@ -107,14 +123,24 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     {@"Endorsed", endorse.ToString() },
                     {@"Succeeded", telemetryOverride ?? (endorse == IsEndorsed).ToString() }
                 });
-
+                b.Result = endorsementFailedReason;
             };
-            nbw.RunWorkerCompleted += (a, b) => {
+            nbw.RunWorkerCompleted += (a, b) =>
+            {
                 if (b.Error != null)
                 {
                     Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                 }
-                newEndorsementStatus.Invoke(this, IsEndorsed); };
+                else if (b.Result is string endorsementFailedReason)
+                {
+                    endorsementResultCallback.Invoke(this, IsEndorsed, endorsementFailedReason);
+                }
+                else
+                {
+                    endorsementResultCallback.Invoke(this, IsEndorsed, null);
+
+                }
+            };
             nbw.RunWorkerAsync();
         }
     }
