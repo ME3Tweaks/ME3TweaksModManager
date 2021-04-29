@@ -14,7 +14,12 @@
             <TextBlock Text="{DynamicResource string_nexusModsDirections}" TextWrapping="Wrap" />
             <TextBlock Text="{DynamicResource string_caution}" FontWeight="Bold" Margin="0,10,0,0" />
             <TextBlock Text="{DynamicResource string_doNotShareAPIKeyWarning}" TextWrapping="Wrap" />
-            <Button Content="Setup Download with Manager" Command="{Binding SetupDWM}" Grid.Column="0" Grid.Row="2" Margin="0,5,0,0" HorizontalAlignment="Left" Grid.ColumnSpan="2" />
+            <Button Content="{Binding DLMSetupText}" Command="{Binding SetupWithDLMCommand}" Grid.Column="0" Grid.Row="2" Margin="0,5,0,0" HorizontalAlignment="Left" Grid.ColumnSpan="2" />
+            <ProgressBar IsIndeterminate="{Binding DLMProgressIndeterminate, Mode=OneWay}" 
+                         Value="{Binding DLMProgressValue, Mode=OneWay}" 
+                         Maximum="{Binding DLMProgressMax, Mode=OneWay}"
+                         Height="10"
+                         Visibility="{Binding SettingUpNXM, Converter={StaticResource BoolToVisibilityConverter}}"/>
             <Separator DockPanel.Dock="Top" Margin="0,10"/>
             <Grid>
                 <Grid.ColumnDefinitions>

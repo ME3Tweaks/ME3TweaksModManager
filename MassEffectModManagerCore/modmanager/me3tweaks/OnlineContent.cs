@@ -104,7 +104,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             return new Dictionary<string, string>();
         }
 
-        public static (MemoryStream download, string errorMessage) DownloadStaticAsset(string assetName)
+        public static (MemoryStream download, string errorMessage) DownloadStaticAsset(string assetName, Action<long, long> progressCallback = null)
         {
             (MemoryStream, string) result = (null, @"Could not download file: No attempt was made, or errors occurred!");
             foreach (var staticurl in StaticFilesBaseEndpoints)
@@ -114,7 +114,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     using var wc = new ShortTimeoutWebClient();
                     {
                         var fullURL = staticurl + assetName;
-                        result = DownloadToMemory(fullURL, logDownload: true);
+                        result = DownloadToMemory(fullURL, logDownload: true, progressCallback: progressCallback);
                         if (result.Item2 == null) return result;
                     }
                 }

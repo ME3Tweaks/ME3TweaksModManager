@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using FontAwesome.WPF;
@@ -66,9 +67,45 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             SetupWithDLMCommand = new GenericCommand(SetupDLM, CanUnlinkWithNexus);
         }
 
+        public long DLMProgressMax { get; private set; } = 1;
+        public long DLMProgressValue { get; private set; } = 0;
+        public bool DLMProgressIndeterminate { get; private set; } = true;
+        public string DLMSetupText { get; private set; } = "Setup Download with Manager";
         private void SetupDLM()
         {
-            NexusModsUtilities.
+            SettingUpNXM = true;
+            Task.Run(() =>
+            {
+                NexusModsUtilities.SetupNXMHandling(nxmProgressDelegate, nxmFinishedDelegate);
+            });
+        }
+
+        private void nxmFinishedDelegate(string obj)
+        {
+            SettingUpNXM = false;
+            if (obj != null)
+            {
+                M3L.ShowDialog(window, obj, "Failed to setup Download with Manager", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            else
+            {
+                DLMSetupText = "Download with Manager configured";
+            }
+
+        }
+
+        private void nxmProgressDelegate(long done, long total, string message)
+        {
+            DLMProgressIndeterminate = total < 0;
+            if (!DLMProgressIndeterminate)
+            {
+                DLMProgressMax = total;
+                DLMProgressValue = done;
+            }
+            if (DLMSetupText != null)
+            {
+                DLMSetupText = message;
+            }
         }
 
 
@@ -86,6 +123,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public FontAwesomeIcon ActiveIcon { get; set; }
         public bool SpinIcon { get; set; }
         public bool VisibleIcon { get; set; }
+        public bool SettingUpNXM { get; set; }
+
         public void OnIsAuthorizedChanged() => VisibleIcon = IsAuthorized;
 
         public void OnManualModeChanged()
@@ -186,7 +225,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             mainwindow.RefreshNexusStatus();
         }
 
-        private bool CanUnlinkWithNexus() => IsAuthorized;
+        private bool CanUnlinkWithNexus() => !SettingUpNXM && IsAuthorized;
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {

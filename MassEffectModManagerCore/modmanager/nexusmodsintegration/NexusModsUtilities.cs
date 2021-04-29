@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.me3tweaks;
 using ME3ExplorerCore.Misc;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.Win32;
@@ -18,6 +19,7 @@ using Pathoschild.FluentNexus;
 using Pathoschild.FluentNexus.Models;
 using Pathoschild.Http.Client;
 using Serilog;
+using SevenZip;
 using WatsonWebsocket;
 
 namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
@@ -289,7 +291,7 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
             return await NexusModsUtilities.GetClient().ModFiles.GetDownloadLinks(domain, modid, fileid, nxmkey, expiry);
         }
 
-        public static async string SetupNXMHandling()
+        public static string SetupNXMHandling(Action<long, long, string> notifyProgress, Action<string> notifyFinished)
         {
             var value = Registry.GetValue(@"HKEY_CURRENT_USER\SOFTWARE\Classes\nxm\shell\open\command", "", null); // Get's 'Default'
             if (value is string path)
@@ -302,6 +304,28 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
                     SetupM3InNXMHandler(nxmIniPath);
                 }
             }
+            else
+            {
+                // It's not setup. We will set up a copy of it
+                var outpath = Utilities.GetCachedExecutablePath("nxmhandler");
+
+                void onDownloadProgress(long done, long total)
+                {
+                    notifyProgress?.Invoke(done, total, "Downloading nxmhandler");
+                }
+
+                var archiveResult = OnlineContent.DownloadStaticAsset("nxmhandler.7z", onDownloadProgress);
+                if (archiveResult.errorMessage == null)
+                {
+                    notifyProgress?.Invoke(0, -1, "Extracting nxmhandler");
+                    var nxma = new SevenZipExtractor(archiveResult.download);
+                    nxma.ExtractArchive(outpath);
+                    SetupM3InNXMHandler(Path.Comb);
+                }
+            }
+
+            notifyFinished?.Invoke(null);
+            return null;
         }
 
         private static void SetupM3InNXMHandler(string nxmIniPath)
