@@ -503,6 +503,12 @@
 	<system:String x:Key="string_deploymentValidationTargetDesc">Überprüfungsziele werden benutzt, um deine Konfiguration deines Mods gegen andere Mods zu prüfen, von denen dein Mod abhängig sein könnte, zum Beispiel Kompatibilitätspatches, die Texturen eines anderen Mods referenzieren. Installiere diese Mods in das Ziel, damit Mad Manager diese Referenzen prüfen kann. In Überprüfungszielen dürfen keine Texturmods installiert sein.</system:String>
 	<system:String x:Key="string_interp_noValidationTarget">Keine Überprüfungsziele für {0} verfügbar!</system:String>
 	<!-- 0={ME1/ME2/ME3} -->
+	<system:String x:Key="string_errorOccurredCheckingReferences">Beim Prüfen der Referenzen während des Exports ist ein Fehler aufgetreten</system:String>
+	<system:String x:Key="string_interp_warningExceptionOccurredDuringRefChecks">Beim Prüfen der Referenzen ist ein Fehler aufgetreten, das kann ein Fehler in Mod Manager oder im Mod sein: {0}</system:String>
+	<!-- 0={Exception message} -->
+	<system:String x:Key="string_dialog_7zDeploymentInProgress">Ein Exportvorgang nach 7z im Gange. Veröffentlichung abbrechen?</system:String>
+	<system:String x:Key="string_cancellingDeployment">Veröffentlichung wird abgebrochen</system:String>
+	<system:String x:Key="string_dialog_DeploymentChecksInProgress">Mods werden aktuell als Vorbereitung auf die Veröffentlichung überprüft. Veröffentlichung abbrechen?</system:String>
 
 	<!-- External tool launcher -->
 	<system:String x:Key="string_interp_downloadingX">Lade {0} herunter</system:String>

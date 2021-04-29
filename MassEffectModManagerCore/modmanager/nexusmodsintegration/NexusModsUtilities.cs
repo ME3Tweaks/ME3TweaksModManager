@@ -11,7 +11,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using MassEffectModManagerCore.modmanager.helpers;
+using ME3ExplorerCore.Misc;
 using Microsoft.AppCenter.Analytics;
+using Microsoft.Win32;
 using Pathoschild.FluentNexus;
 using Pathoschild.FluentNexus.Models;
 using Pathoschild.Http.Client;
@@ -272,6 +274,78 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
 
             // Return the length that was written to the stream. 
             return outBuffer;
+
+        }
+
+        /// <summary>
+        /// Gets a list of download links for the specified file
+        /// </summary>
+        /// <param name="domain"></param>
+        /// <param name="modid"></param>
+        /// <param name="fileid"></param>
+        /// <returns></returns>
+        public static async Task<ModFileDownloadLink[]> GetDownloadLinkForFile(string domain, int modid, int fileid, string nxmkey, int expiry)
+        {
+            return await NexusModsUtilities.GetClient().ModFiles.GetDownloadLinks(domain, modid, fileid, nxmkey, expiry);
+        }
+
+        public static async string SetupNXMHandling()
+        {
+            var value = Registry.GetValue(@"HKEY_CURRENT_USER\SOFTWARE\Classes\nxm\shell\open\command", "", null); // Get's 'Default'
+            if (value is string path)
+            {
+                string nxmIniPath = Path.Combine(Directory.GetParent(path).FullName, "nxmhandler.ini");
+                // are we already using nxmhandler?
+                if (Path.GetFileName(path).Equals("nxmhandler.exe", StringComparison.InvariantCultureIgnoreCase) && File.Exists(nxmIniPath))
+                {
+                    // Setup for nxmhandler already, we just need to adjust it to add M3
+                    SetupM3InNXMHandler(nxmIniPath);
+                }
+            }
+        }
+
+        private static void SetupM3InNXMHandler(string nxmIniPath)
+        {
+            DuplicatingIni ini = DuplicatingIni.LoadIni(nxmIniPath);
+            var handlers = ini.GetOrAddSection("handlers");
+            var numCurrentHandlersStr = handlers.GetValue("size")?.Value;
+            int.TryParse(numCurrentHandlersStr, out var numCurrentHandlers);
+
+            // Find if M3 has been registered for me/me2/me3
+            bool updated = false;
+            for (int i = 1; i <= numCurrentHandlers; i++)
+            {
+                var games = handlers.GetValue($@"{i}\games");
+                if (games == null)
+                {
+                    // ???
+                    // Is ini configured incorrectly?
+                }
+                else
+                {
+                    if (games.Value == "masseffect,masseffect2,masseffect3")
+                    {
+                        // We need to update this one
+                        handlers.SetSingleEntry($@"{i}\executable", App.ExecutableLocation);
+                        handlers.SetSingleEntry($@"{i}\arguments", "");
+                        updated = true;
+                    }
+                }
+            }
+
+            if (!updated)
+            {
+                // Add ours
+                numCurrentHandlers++;
+                handlers.SetSingleEntry($@"size", numCurrentHandlers);
+                handlers.SetSingleEntry($@"{numCurrentHandlers}\games", App.ExecutableLocation);
+                handlers.SetSingleEntry($@"{numCurrentHandlers}\executable", App.ExecutableLocation);
+                handlers.SetSingleEntry($@"{numCurrentHandlers}\arguments", "");
+            }
+
+            File.WriteAllText(nxmIniPath, ini.ToString());
+
+            // Register nxm protocol
 
         }
 

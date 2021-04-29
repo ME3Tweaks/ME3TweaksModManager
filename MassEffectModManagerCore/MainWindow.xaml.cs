@@ -80,6 +80,21 @@ namespace MassEffectModManagerCore
         public string ME1ASILoaderText { get; set; }
         public string ME2ASILoaderText { get; set; }
         public string ME3ASILoaderText { get; set; }
+
+        /// <summary>
+        /// Single-instance arguments
+        /// </summary>
+        /// <param name="args"></param>
+        internal async void HandleInstanceArguments(string[] args)
+        {
+            // Check for single file.
+            if (args.Length > 1 && args[1].StartsWith("nxm://"))
+            {
+                var results = await ModDownload.FromNXMLink(args[1]);
+                Debug.WriteLine("ph");
+            }
+        }
+
         public string EndorseM3String { get; set; } = M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
 
         private int oldFailedBindableCount = 0;
@@ -760,12 +775,16 @@ namespace MassEffectModManagerCore
             }
         }
 
-        private void EndorsementCallback(Mod m, bool newStatus)
+        private void EndorsementCallback(Mod m, bool isModNowEndorsed, string endorsementFailedMessage)
         {
             IsEndorsingMod = false;
             if (SelectedMod == m)
             {
                 UpdatedEndorsementString();
+            }
+            if (endorsementFailedMessage != null)
+            {
+                M3L.ShowDialog(this,endorsementFailedMessage, "Could not endorse file", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
