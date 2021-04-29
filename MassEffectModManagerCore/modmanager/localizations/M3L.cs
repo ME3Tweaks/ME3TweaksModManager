@@ -190,7 +190,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_endorseMod = "string_endorseMod";
 		public const string string_modEndorsed = "string_modEndorsed";
 		public const string string_loginToNexusMods = "string_loginToNexusMods";
-		public const string string_endorsementsEnabled = "string_endorsementsEnabled";
+		public const string string_nexusLoggedIn = "string_nexusLoggedIn";
 		public const string string_endorsing = "string_endorsing";
 		public const string string_unendorsing = "string_unendorsing";
 		public const string string_dialogConsoleEnabled = "string_dialogConsoleEnabled";

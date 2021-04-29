@@ -120,7 +120,7 @@
     <system:String x:Key="string_endorseMod">Endorse mod</system:String>
     <system:String x:Key="string_modEndorsed">&#x1F44D; Mod endorsed</system:String>
     <system:String x:Key="string_loginToNexusMods">Login to NexusMods</system:String>
-    <system:String x:Key="string_endorsementsEnabled">Endorsements enabled</system:String>
+    <system:String x:Key="string_nexusLoggedIn">Logged in</system:String>
     <system:String x:Key="string_endorsing">Endorsing</system:String>
     <system:String x:Key="string_unendorsing">Unendorsing</system:String>
     <system:String xml:space="preserve" x:Key="string_dialogConsoleEnabled">Console enabled.\nPress ~ to open the full size console.\nPress TAB to open the mini console.</system:String>
@@ -1041,9 +1041,9 @@
     <system:String xml:space="preserve" x:Key="string_interp_nexusModsReturnedAnErrorX">NexusMods returned an error:\n{0}</system:String>
     <!-- 0 = error message-->
     <system:String x:Key="string_errorAuthenticatingToNexusMods">Error authenticating to NexusMods</system:String>
-    <system:String x:Key="string_nexusModsLoginHeader">ME3Tweaks Mod Manager can integrate with NexusMods to allow you to endorse mods, letting the developer know you appreciate their work.</system:String>
+    <system:String x:Key="string_nexusModsLoginHeader">ME3Tweaks Mod Manager has built-in support for NexusMods features such as endorsements, update detection, and 'Download with Manager'. You must login to NexusMods with ME3Tweaks Mod Manager to use these features.</system:String>
     <system:String x:Key="string_directions">Directions</system:String>
-    <system:String x:Key="string_nexusModsDirections">You can have Mod Manager automatically fetch an API key by logging into your NexusMods account. Click "Authenticate with NexusMods" below and authorize ME3Tweaks Mod Manager. You can manually authorize by pasting your NexusMods API key in after checking "Manually enter API key".</system:String>
+    <system:String x:Key="string_nexusModsDirections">Sign into NexusMods by clicking the "Authenicate with NexusMods" button below. Alternatively, you can manually authorize by pasting your NexusMods API key in after checking "Manually enter API key". Your API key can be found on your account settings on NexusMods.</system:String>
     <system:String x:Key="string_caution">Caution</system:String>
     <system:String x:Key="string_doNotShareAPIKeyWarning">Do not share your API key with anyone (including screenshots)! An API key will allow anyone to perform certain actions on your behalf and should be guarded in the same manner as a password.</system:String>
     <system:String x:Key="string_unlinkModManagerFromNexusMods">Unlink Mod Manager from NexusMods</system:String>

@@ -866,7 +866,7 @@
 	<system:String x:Key="string_endorseMod">Poprzyj mod</system:String>
 	<system:String x:Key="string_modEndorsed">&#x1F44D; Mod poparty</system:String>
 	<system:String x:Key="string_loginToNexusMods">Zaloguj do NexusMods</system:String>
-	<system:String x:Key="string_endorsementsEnabled">Poparcia włączone</system:String>
+	<system:String x:Key="string_nexusLoggedIn">Poparcia włączone</system:String>
 	<system:String x:Key="string_endorsing">Popieranie</system:String>
 	<system:String x:Key="string_unendorsing">Cofanie Poparcia</system:String>
 	<system:String x:Key="string_dialogConsoleEnabled" xml:space="preserve">Włączona konsola.\nNaciśnij ~ aby otworzyć pełnowymiarową konsolę.\nNaciśnij TAB, aby otworzyć mini konsolę.</system:String>

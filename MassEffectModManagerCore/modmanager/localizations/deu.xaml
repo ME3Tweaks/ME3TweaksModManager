@@ -866,7 +866,7 @@
 	<system:String x:Key="string_endorseMod">Empfiehl diesen Mod</system:String>
 	<system:String x:Key="string_modEndorsed">&#x1F44D; Du empfiehlst diesen Mod</system:String>
 	<system:String x:Key="string_loginToNexusMods">Bei NexusMods einloggen</system:String>
-	<system:String x:Key="string_endorsementsEnabled">Empfehlungen aktiviert</system:String>
+	<system:String x:Key="string_nexusLoggedIn">Empfehlungen aktiviert</system:String>
 	<system:String x:Key="string_endorsing">Empfehle</system:String>
 	<system:String x:Key="string_unendorsing">Ziehe Empfehlung zurück</system:String>
 	<system:String x:Key="string_dialogConsoleEnabled" xml:space="preserve">Konsole freigeschaltet\nDrücke ^ im Spiel, um die maximierte Konsole zu öffnen.\nDrücke TAB, um die Mini-Konsole zu öffnen.</system:String>

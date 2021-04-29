@@ -253,7 +253,7 @@ namespace MassEffectModManagerCore
         {
             if (NexusModsUtilities.HasAPIKey)
             {
-                NexusLoginInfoString = M3L.GetString(M3L.string_endorsementsEnabled);
+                NexusLoginInfoString = M3L.GetString(M3L.string_nexusLoggedIn);
                 if (!languageUpdateOnly)
                 {
                     var loggedIn = await AuthToNexusMods();

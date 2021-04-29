@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
@@ -17,9 +18,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// <summary>
     /// Interaction logic for NexusModsLogin.xaml
     /// </summary>
-    public partial class NexusModsLogin : MMBusyPanelBase
+    public partial class NexusModsLogin : MMBusyPanelBase, INotifyPropertyChanged
     {
-        public string APIKeyText { get; set; }
+        public string APIKeyText { get; private set; }
+        public void OnAPIKeyTextChanged()
+        {
+            APIBox.Password = APIKeyText;
+        }
+
         public bool IsAuthorized { get; set; }
         public string AuthorizeToNexusText { get; set; }
         public NexusModsLogin()
@@ -48,6 +54,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public GenericCommand AuthorizeCommand { get; set; }
         public GenericCommand UnlinkCommand { get; set; }
         public GenericCommand CloseCommand { get; set; }
+        public GenericCommand SetupWithDLMCommand { get; set; }
+
         public bool IsAuthorizing { get; private set; }
 
         private void LoadCommands()
@@ -55,7 +63,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             AuthorizeCommand = new GenericCommand(AuthorizeWithNexus, CanAuthorizeWithNexus);
             UnlinkCommand = new GenericCommand(UnlinkFromNexus, CanUnlinkWithNexus);
             CloseCommand = new GenericCommand(ClosePanel, CanClose);
+            SetupWithDLMCommand = new GenericCommand(SetupDLM, CanUnlinkWithNexus);
         }
+
+        private void SetupDLM()
+        {
+            NexusModsUtilities.
+        }
+
 
         private bool CanClose() => !IsAuthorizing;
 

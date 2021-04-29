@@ -866,7 +866,7 @@
 	<system:String x:Key="string_endorseMod">Recomendar Mods</system:String>
 	<system:String x:Key="string_modEndorsed">&#x1F44D; Mod recomendado</system:String>
 	<system:String x:Key="string_loginToNexusMods">Login no NexusMods.com</system:String>
-	<system:String x:Key="string_endorsementsEnabled">Recomendações ativadas</system:String>
+	<system:String x:Key="string_nexusLoggedIn">Recomendações ativadas</system:String>
 	<system:String x:Key="string_endorsing">Recomendando</system:String>
 	<system:String x:Key="string_unendorsing">Retirando recomendação</system:String>
 	<system:String x:Key="string_dialogConsoleEnabled" xml:space="preserve">Console ativado\nPressione ~ para abrir o console completo.\nPressione TAB, para abrir o mini console</system:String>

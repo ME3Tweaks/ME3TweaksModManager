@@ -866,7 +866,7 @@
 	<system:String x:Key="string_endorseMod">Одобрить мод</system:String>
 	<system:String x:Key="string_modEndorsed">&#x1F44D; Мод одобрен</system:String>
 	<system:String x:Key="string_loginToNexusMods">Войти в NexusMods</system:String>
-	<system:String x:Key="string_endorsementsEnabled">Одобрения включены</system:String>
+	<system:String x:Key="string_nexusLoggedIn">Одобрения включены</system:String>
 	<system:String x:Key="string_endorsing">Оправка одобрения</system:String>
 	<system:String x:Key="string_unendorsing">Отмена одобрения</system:String>
 	<system:String x:Key="string_dialogConsoleEnabled" xml:space="preserve">Консоль включена.\nНажмите ~ для открытия полноразмерной консоли.\nНажмите TAB для открытия мини-консоли.</system:String>
