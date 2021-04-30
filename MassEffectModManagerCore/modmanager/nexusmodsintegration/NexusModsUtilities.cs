@@ -295,6 +295,7 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
 
         public static string SetupNXMHandling(Action<long, long, string> notifyProgress, Action<string> notifyFinished)
         {
+            bool installNewCopy = true;
             var value = Registry.GetValue(@"HKEY_CURRENT_USER\SOFTWARE\Classes\nxm\shell\open\command", "", null); // Get's 'Default'
             if (value is string path)
             {
@@ -305,9 +306,11 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
                 {
                     // Setup for nxmhandler already, we just need to adjust it to add M3
                     SetupM3InNXMHandler(nxmIniPath);
+                    installNewCopy = false;
                 }
             }
-            else
+            
+            if (installNewCopy)
             {
                 // It's not setup. We will set up a copy of it
                 var outpath = Utilities.GetCachedExecutablePath("nxmhandler");

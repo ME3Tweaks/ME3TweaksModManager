@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using IniParser.Model;
 using MassEffectModManagerCore.modmanager.objects.mod.editor;
 using MassEffectModManagerCore.ui;
 using ME3ExplorerCore.Packages;

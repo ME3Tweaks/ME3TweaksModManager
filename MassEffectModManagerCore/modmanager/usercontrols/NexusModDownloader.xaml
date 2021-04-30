@@ -6,14 +6,28 @@
              xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols"
              mc:Ignorable="d" 
              DataContext="{Binding RelativeSource={RelativeSource Self}}"
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800"
+             Width="500"
+             Height="400">
     <DockPanel>
-        <TextBlock Text="Mod Downloader"/>
+        <TextBlock Text="Mod Downloader" FontSize="20" FontWeight="Bold" TextAlignment="Center" DockPanel.Dock="Top"/>
         <ItemsControl ItemsSource="{Binding Downloads}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <DockPanel>
-                        <ProgressBar/>
+                        <StackPanel Visibility="{Binding Initialized, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" 
+                                    DockPanel.Dock="Top">
+                            <TextBlock Text="{Binding ModFile.Name}" FontWeight="Bold" DockPanel.Dock="Top"/>
+                            <TextBlock Text="{Binding DownloadStatus}" DockPanel.Dock="Top"/>
+                        </StackPanel>
+                        <StackPanel Visibility="{Binding Initialized, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not', Mode=OneWay}"
+                                    DockPanel.Dock="Top">
+                            <TextBlock Text="Initializing" FontWeight="Bold" DockPanel.Dock="Top"/>
+                            <TextBlock Text="Please wait" DockPanel.Dock="Top"/>
+                        </StackPanel>
+                        <ProgressBar Height="7" IsIndeterminate="{Binding ProgressIndeterminate, Mode=OneWay}" 
+                                     Value="{Binding ProgressValue, Mode=OneWay}" 
+                                     Maximum="{Binding ProgressMaximum, Mode=OneWay}"/>
                     </DockPanel>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>

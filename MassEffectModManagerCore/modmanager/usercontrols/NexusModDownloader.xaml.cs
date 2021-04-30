@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -23,8 +24,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     public partial class NexusModDownloader : MMBusyPanelBase
     {
         public ObservableCollectionExtended<ModDownload> Downloads { get; } = new ObservableCollectionExtended<ModDownload>();
-        public NexusModDownloader()
+        public NexusModDownloader(string initialNxmLink)
         {
+            AddDownload(initialNxmLink);
             InitializeComponent();
         }
 
@@ -40,9 +42,34 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public void AddDownload(string nxmLink)
         {
+            Log.Information($"Queueing nxmlink {nxmLink}");
             var dl = new ModDownload(nxmLink);
+            dl.OnInitialized += ModInitialized;
+            dl.OnModDownloaded += ModDownloaded;
             Downloads.Add(dl);
             dl.Initialize();
+        }
+
+        private void ModDownloaded(object? sender, DataEventArgs e)
+        {
+            if (sender is ModDownload md)
+            {
+                md.OnModDownloaded -= ModDownloaded;
+            }
+        }
+
+        private void ModInitialized(object? sender, EventArgs e)
+        {
+            if (sender is ModDownload initializedItem)
+            {
+                Log.Information($"Mod has initialized: {initializedItem.ModFile.Name}");
+                var nextDownload = Downloads.FirstOrDefault(x => !x.Downloaded);
+                if (nextDownload != null)
+                {
+                    nextDownload.StartDownload();
+                }
+
+            }
         }
     }
 }

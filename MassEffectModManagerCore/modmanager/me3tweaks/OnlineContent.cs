@@ -704,18 +704,58 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         /// <param name="hash">Hash check value (md5). Leave null if no hash check</param>
         /// <returns></returns>
 
-        public static (MemoryStream result, string errorMessage) DownloadToMemory(string url, Action<long, long> progressCallback = null, string hash = null, bool logDownload = false)
+        public static (MemoryStream result, string errorMessage) DownloadToMemory(string url, Action<long, long> progressCallback = null, string hash = null, bool logDownload = false, Stream destStreamOverride = null)
+        {
+            var resultV = DownloadToStreamInternal(url, progressCallback, hash, logDownload);
+            return (resultV.result as MemoryStream, resultV.errorMessage);
+        }
+
+        /// <summary>
+        /// Downloads a URL to the specified stream. If not stream is specifed, the stream returned is a MemoryStream. This is a blocking call and must be done on a background thread.
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="progressCallback"></param>
+        /// <param name="hash"></param>
+        /// <param name="logDownload"></param>
+        /// <param name="destStreamOverride"></param>
+        /// <returns></returns>
+        public static (Stream result, string errorMessage) DownloadToStream(string url, Action<long, long> progressCallback = null, string hash = null, bool logDownload = false, Stream destStreamOverride = null)
+        {
+            return DownloadToStreamInternal(url, progressCallback, hash, logDownload, destStreamOverride);
+        }
+
+        private static (Stream result, string errorMessage) DownloadToStreamInternal(string url, Action<long, long> progressCallback = null, string hash = null, bool logDownload = false, Stream destStreamOverride = null)
         {
             using var wc = new ShortTimeoutWebClient();
             string downloadError = null;
-            MemoryStream responseStream = null;
-            wc.DownloadProgressChanged += (a, args) => { progressCallback?.Invoke(args.BytesReceived, args.TotalBytesToReceive); };
-            wc.DownloadDataCompleted += (a, args) =>
+            string destType = destStreamOverride != null ? @"stream" : @"memory";
+            Stream responseStream = destStreamOverride ?? new MemoryStream();
+
+            var syncObject = new Object();
+            lock (syncObject)
             {
-                downloadError = args.Error?.Message;
-                if (downloadError == null)
+                if (logDownload)
                 {
-                    responseStream = new MemoryStream(args.Result);
+                    Log.Information($@"Downloading to {destType}: " + url);
+                }
+                else
+                {
+                    Debug.WriteLine($"Downloading to {destType}: " + url);
+                }
+
+                try
+                {
+                    using var remoteStream = wc.OpenRead(new Uri(url));
+                    long.TryParse(wc.ResponseHeaders["Content-Length"], out var totalSize);
+                    var buffer = new byte[4096];
+                    int bytesReceived;
+                    while ((bytesReceived = remoteStream.Read(buffer, 0, buffer.Length)) != 0)
+                    {
+                        responseStream.Write(buffer, 0, bytesReceived);
+                        progressCallback?.Invoke(responseStream.Position, totalSize); // Progress
+                    }
+
+                    // Check hash
                     if (hash != null)
                     {
                         var md5 = Utilities.CalculateMD5(responseStream);
@@ -727,26 +767,10 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         }
                     }
                 }
-                lock (args.UserState)
+                catch (Exception e)
                 {
-                    //releases blocked thread
-                    Monitor.Pulse(args.UserState);
+                    downloadError = e.Message;
                 }
-            };
-            var syncObject = new Object();
-            lock (syncObject)
-            {
-                if (logDownload)
-                {
-                    Log.Information(@"Downloading to memory: " + url);
-                }
-                else
-                {
-                    Debug.WriteLine("Downloading to memory: " + url);
-                }
-                wc.DownloadDataAsync(new Uri(url), syncObject);
-                //This will block the thread until download completes
-                Monitor.Wait(syncObject);
             }
 
             return (responseStream, downloadError);

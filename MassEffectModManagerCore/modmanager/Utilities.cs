@@ -1963,5 +1963,10 @@ namespace MassEffectModManagerCore
         {
             return Directory.CreateDirectory(Path.Combine(GetME3TweaksServicesCache(), "livelocalization")).FullName;
         }
+
+        public static string GetModDownloadCacheDirectory()
+        {
+            return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "downloadedmodscache")).FullName;
+        }
     }
 }
