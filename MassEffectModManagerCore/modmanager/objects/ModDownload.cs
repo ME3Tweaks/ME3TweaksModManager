@@ -35,6 +35,10 @@ namespace MassEffectModManagerCore.modmanager.objects
         /// If this mod has been downloaded
         /// </summary>
         public bool Downloaded { get; set; }
+        /// <summary>
+        /// The downloaded stream data
+        /// </summary>
+        public Stream DownloadedStream { get; private set; }
 
         /// <summary>
         /// Invoked when the mod has initialized
@@ -54,19 +58,18 @@ namespace MassEffectModManagerCore.modmanager.objects
         {
             Task.Run(() =>
             {
-                Stream downloadStream = null;
                 if (ProgressMaximum < 100 * FileSize.MebiByte)
                 {
-                    downloadStream = new MemoryStream();
+                    DownloadedStream = new MemoryStream();
                 }
                 else
                 {
-                    downloadStream = new FileStream(Path.Combine(Utilities.GetModDownloadCacheDirectory(), ModFile.FileName), FileMode.Create);
+                    DownloadedStream = new FileStream(Path.Combine(Utilities.GetModDownloadCacheDirectory(), ModFile.FileName), FileMode.Create);
                 }
 
-                OnlineContent.DownloadToStream(DownloadLinks[0].Uri.ToString(), OnDownloadProgress, null, true, downloadStream);
+                OnlineContent.DownloadToStream(DownloadLinks[0].Uri.ToString(), OnDownloadProgress, null, true, DownloadedStream);
                 Downloaded = true;
-                OnModDownloaded?.Invoke(this, new DataEventArgs(downloadStream));
+                OnModDownloaded?.Invoke(this, new DataEventArgs(DownloadedStream));
             });
         }
 

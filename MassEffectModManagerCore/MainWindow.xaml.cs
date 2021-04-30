@@ -88,11 +88,22 @@ namespace MassEffectModManagerCore
         internal void HandleInstanceArguments(string[] args)
         {
             // Check for single file.
-            if (args.Length > 1 && args[1].StartsWith("nxm://"))
+            if (args.Length > 1 && args[1].StartsWith(@"nxm://"))
             {
                 var mDownloader = new NexusModDownloader(args[1]);
-                mDownloader.Close += (a, b) => { ReleaseBusyControl(); };
-                ShowBusyControl(mDownloader); 
+                mDownloader.Close += (a, b) =>
+                {
+                    ReleaseBusyControl();
+                    if (b.Data is List<ModDownload> items)
+                    {
+                        foreach (var ii in items)
+                        {
+                            ii.DownloadedStream.Position = 0;
+                            openModImportUI(ii.ModFile.FileName, ii.DownloadedStream);
+                        }
+                    }
+                };
+                ShowBusyControl(mDownloader);
             }
         }
 
@@ -785,7 +796,7 @@ namespace MassEffectModManagerCore
             }
             if (endorsementFailedMessage != null)
             {
-                M3L.ShowDialog(this,endorsementFailedMessage, "Could not endorse file", MessageBoxButton.OK, MessageBoxImage.Error);
+                M3L.ShowDialog(this, endorsementFailedMessage, "Could not endorse file", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -3202,10 +3213,10 @@ namespace MassEffectModManagerCore
             }
         }
 
-        private void openModImportUI(string archiveFile)
+        private void openModImportUI(string archiveFile, Stream archiveStream = null)
         {
             Log.Information(@"Opening Mod Archive Importer for file " + archiveFile);
-            var modInspector = new ModArchiveImporter(archiveFile);
+            var modInspector = new ModArchiveImporter(archiveFile, archiveStream);
             modInspector.Close += (a, b) =>
             {
 

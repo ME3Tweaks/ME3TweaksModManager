@@ -27,8 +27,28 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public NexusModDownloader(string initialNxmLink)
         {
             AddDownload(initialNxmLink);
+            LoadCommands();
             InitializeComponent();
         }
+
+
+        private void LoadCommands()
+        {
+            StartModInstallCommand = new GenericCommand(StartModInstalls, CanStartModInstalls);
+        }
+
+        private bool CanStartModInstalls()
+        {
+            // TODO: IMPROVE
+            return Downloads.Any(x => x.Downloaded);
+        }
+
+        private void StartModInstalls()
+        {
+            OnClosing(new DataEventArgs(Downloads.Where(x => x.Downloaded).ToList()));
+        }
+
+        public GenericCommand StartModInstallCommand { get; set; }
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {

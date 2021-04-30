@@ -81,30 +81,41 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
         /// <param name="testRun"></param>
         public void ExtractFromArchive(string archivePath, string outputFolderPath, bool compressPackages,
             Action<string> updateTextCallback = null, Action<DetailedProgressEventArgs> extractingCallback = null, Action<string, int, int> compressedPackageCallback = null,
-            bool testRun = false)
+            bool testRun = false, Stream archiveStream = null)
         {
             if (!IsInArchive) throw new Exception(@"Cannot extract a mod that is not part of an archive.");
             if (!File.Exists(archivePath))
             {
                 throw new Exception(M3L.GetString(M3L.string_interp_theArchiveFileArchivePathIsNoLongerAvailable, archivePath));
             }
+
             compressPackages &= Game >= MEGame.ME2;
+
+            SevenZipExtractor archive;
             var isExe = archivePath.EndsWith(@".exe", StringComparison.InvariantCultureIgnoreCase);
 
-            var archiveFile = isExe ? new SevenZipExtractor(archivePath, InArchiveFormat.Nsis) : new SevenZipExtractor(archivePath);
-            using (archiveFile)
+            if (archiveStream != null)
+            {
+                archive = isExe ? new SevenZipExtractor(archiveStream, InArchiveFormat.Nsis) : new SevenZipExtractor(archiveStream);
+            }
+            else
+            {
+                archive = isExe ? new SevenZipExtractor(archivePath, InArchiveFormat.Nsis) : new SevenZipExtractor(archivePath);
+            }
+
+            using (archive)
             {
                 var fileIndicesToExtract = new List<int>();
                 var filePathsToExtractTESTONLY = new List<string>();
-                var referencedFiles = GetAllRelativeReferences(!IsVirtualized, archiveFile);
+                var referencedFiles = GetAllRelativeReferences(!IsVirtualized, archive);
                 if (isExe)
                 {
                     //remap to mod root. Not entirely sure if this needs to be done for sub mods?
                     referencedFiles = Enumerable.Select<string, string>(referencedFiles, x => FilesystemInterposer.PathCombine(IsInArchive, ModPath, x)).ToList(); //remap to in-archive paths so they match entry paths
                 }
-                foreach (var info in archiveFile.ArchiveFileData)
+                foreach (var info in archive.ArchiveFileData)
                 {
-                    if (!info.IsDirectory && (ModPath == "" || info.FileName.Contains((string) ModPath)))
+                    if (!info.IsDirectory && (ModPath == "" || info.FileName.Contains((string)ModPath)))
                     {
                         var relativedName = isExe ? info.FileName : info.FileName.Substring(ModPath.Length).TrimStart('\\');
                         if (referencedFiles.Contains(relativedName))
@@ -115,103 +126,8 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         }
                     }
                 }
-                #region old
-                /*
-            bool fileAdded = false;
-            //moddesc.ini
-            if (info.FileName == ModDescPath)
-            {
-                //Debug.WriteLine("Add file to extraction list: " + info.FileName);
-                fileIndicesToExtract.Add(info.Index);
-                continue;
-            }
-
-            //Check each job
-            foreach (ModJob job in InstallationJobs)
-            {
-                if (job.Header == ModJob.JobHeader.CUSTOMDLC)
-                {
-                    #region Extract Custom DLC
-                    foreach (var localCustomDLCFolder in job.CustomDLCFolderMapping.Keys)
-                    {
-                        if (info.FileName.StartsWith(FilesystemInterposer.PathCombine(IsInArchive, ModPath, localCustomDLCFolder)))
-                        {
-                            //Debug.WriteLine("Add file to extraction list: " + info.FileName);
-                            fileIndicesToExtract.Add(info.Index);
-                            fileAdded = true;
-                            break;
-                        }
-                    }
-
-                    if (fileAdded) break;
-
-                    //Alternate files
-                    foreach (var alt in job.AlternateFiles)
-                    {
-                        if (alt.AltFile != null && info.FileName.Equals(FilesystemInterposer.PathCombine(IsInArchive, ModPath, alt.AltFile), StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            //Debug.WriteLine("Add alternate file to extraction list: " + info.FileName);
-                            fileIndicesToExtract.Add(info.Index);
-                            fileAdded = true;
-                            break;
-                        }
-                    }
-
-                    if (fileAdded) break;
-
-                    //Alternate DLC
-                    foreach (var alt in job.AlternateDLCs)
-                    {
-                        if (info.FileName.StartsWith(FilesystemInterposer.PathCombine(IsInArchive, ModPath, alt.AlternateDLCFolder), StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            //Debug.WriteLine("Add alternate dlc file to extraction list: " + info.FileName);
-                            fileIndicesToExtract.Add(info.Index);
-                            fileAdded = true;
-                            break;
-                        }
-                    }
-
-                    if (fileAdded) break;
-
-                    #endregion
-                }
-                else
-                {
-                    #region Official headers
-
-                    foreach (var inSubDirFile in job.FilesToInstall.Values)
-                    {
-                        var inArchivePath = FilesystemInterposer.PathCombine(IsInArchive, ModPath, job.JobDirectory, inSubDirFile); //keep relative if unpacked mod, otherwise use full in-archive path for extraction
-                        if (info.FileName.Equals(inArchivePath, StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            //Debug.WriteLine("Add file to extraction list: " + info.FileName);
-                            fileIndicesToExtract.Add(info.Index);
-                            fileAdded = true;
-                            break;
-                        }
-                    }
-
-                    if (fileAdded) break;
-                    //Alternate files
-                    foreach (var alt in job.AlternateFiles)
-                    {
-                        if (alt.AltFile != null && info.FileName.Equals(FilesystemInterposer.PathCombine(IsInArchive, ModPath, alt.AltFile), StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            //Debug.WriteLine("Add alternate file to extraction list: " + info.FileName);
-                            fileIndicesToExtract.Add(info.Index);
-                            fileAdded = true;
-                            break;
-                        }
-                    }
-
-                    if (fileAdded) break;
-
-                    #endregion
-                }
-            }
-        }*/
-                #endregion
-                archiveFile.Progressing += (sender, args) => { extractingCallback?.Invoke(args); };
+          
+                archive.Progressing += (sender, args) => { extractingCallback?.Invoke(args); };
                 string outputFilePathMapping(ArchiveFileInfo entryInfo)
                 {
                     Log.Information(@"Mapping extraction target for " + entryInfo.FileName);
@@ -276,7 +192,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                                     compressedPackageCallback?.Invoke(M3L.GetString(M3L.string_interp_compressingX, Path.GetFileName(package)), compressedPackageCount, numberOfPackagesToCompress);
                                     Log.Information(@"Compressing package: " + package);
                                     p.Save(compress: true);
-                                    File.SetCreationTime(package,created);
+                                    File.SetCreationTime(package, created);
                                     File.SetLastWriteTime(package, lastmodified);
                                 }
                                 else
@@ -300,7 +216,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     };
                     compressionThread.RunWorkerAsync();
                 }
-                archiveFile.FileExtractionFinished += (sender, args) =>
+                archive.FileExtractionFinished += (sender, args) =>
                 {
                     if (compressPackages)
                     {
@@ -317,7 +233,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 if (!testRun)
                 {
                     Log.Information(@"Extracting files...");
-                    archiveFile.ExtractFiles(outputFolderPath, outputFilePathMapping, fileIndicesToExtract.ToArray());
+                    archive.ExtractFiles(outputFolderPath, outputFilePathMapping, fileIndicesToExtract.ToArray());
                 }
                 else
                 {

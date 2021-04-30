@@ -9,8 +9,10 @@
              d:DesignHeight="450" d:DesignWidth="800"
              Width="500"
              Height="400">
-    <DockPanel>
+    <DockPanel Margin="5">
         <TextBlock Text="Mod Downloader" FontSize="20" FontWeight="Bold" TextAlignment="Center" DockPanel.Dock="Top"/>
+        <Button Content="Continue to mod install" DockPanel.Dock="Bottom" HorizontalAlignment="Right" 
+                Command="{Binding StartModInstallCommand}"/>
         <ItemsControl ItemsSource="{Binding Downloads}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>

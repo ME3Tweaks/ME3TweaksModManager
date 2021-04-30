@@ -58,7 +58,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public Mod SelectedMod { get; private set; }
 
+
         private string ArchiveFilePath;
+        /// <summary>
+        /// Stream containing the archive
+        /// </summary>
+        public Stream ArchiveStream { get; set; }
 
         public string ScanningFile { get; private set; } = M3L.GetString(M3L.string_pleaseWait);
         public string ActionText { get; private set; }
@@ -71,20 +76,22 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public bool CanCompressPackages => CompressedMods.Any(x => x.Game >= MEGame.ME2) && CompressedMods.All(x => x.ExeExtractionTransform == null && x.ModClassicUpdateCode == 0) && App.AllowCompressingPackagesOnImport && ArchiveScanned && !TaskRunning;
 
         public ObservableCollectionExtended<Mod> CompressedMods { get; } = new ObservableCollectionExtended<Mod>();
-        public ModArchiveImporter(string file)
+        public ModArchiveImporter(string file, Stream archiveStream = null)
         {
             MemoryAnalyzer.AddTrackedMemoryItem($@"Mod Archive Importer ({Path.GetFileName(file)})", new WeakReference(this));
+            ArchiveFilePath = file;
+            ArchiveStream = archiveStream;
             DataContext = this;
             LoadCommands();
-            ArchiveFilePath = file;
             InitializeComponent();
         }
+
 
         /// <summary>
         /// Begins inspection of archive file. This method will spawn a background thread that will
         /// run asynchronously.
         /// </summary>
-        /// <param name="filepath">Path to the archive file</param>
+        /// <param name="filepath">Path to the archive file. If the filepath is virtual, just pass the filename instead.</param>
         private void InspectArchiveFile(string filepath)
         {
             ScanningFile = Path.GetFileName(filepath);
@@ -221,7 +228,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
 
             //Embedded executables.
-            var archiveSize = new FileInfo(archive).Length;
+            var archiveSize = ArchiveStream != null ? ArchiveStream.Length : new FileInfo(archive).Length;
             var knownModsOfThisSize = ThirdPartyServices.GetImportingInfosBySize(archiveSize);
             string pathOverride = null;
             if (knownModsOfThisSize.Count > 0 && knownModsOfThisSize.Any(x => x.zippedexepath != null))
@@ -319,7 +326,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 TextureFilesImported = true;
             }
-            InspectArchive(pathOverride ?? archive, AddCompressedModCallback, CompressedModFailedCallback, ActionTextUpdateCallback, ShowALOTLauncher);
+            InspectArchive(pathOverride ?? archive, AddCompressedModCallback, CompressedModFailedCallback, ActionTextUpdateCallback, ShowALOTLauncher, archiveStream: ArchiveStream);
         }
 
         //this should be private but no way to test it private for now...
@@ -332,12 +339,21 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         /// <param name="currentOperationTextCallback">Callback to tell caller what's going on'</param>
         /// <param name="forcedOverrideData">Override data about archive. Used for testing only</param>
         public static void InspectArchive(string filepath, Action<Mod> addCompressedModCallback = null, Action<Mod> failedToLoadModeCallback = null, Action<string> currentOperationTextCallback = null,
-            Action showALOTLauncher = null, string forcedMD5 = null, int forcedSize = -1)
+            Action showALOTLauncher = null, string forcedMD5 = null, int forcedSize = -1, Stream archiveStream = null)
         {
             string relayVersionResponse = @"-1";
             List<Mod> internalModList = new List<Mod>(); //internal mod list is for this function only so we don't need a callback to get our list since results are returned immediately
             var isExe = filepath.EndsWith(@".exe");
-            var archiveFile = isExe ? new SevenZipExtractor(filepath, InArchiveFormat.Nsis) : new SevenZipExtractor(filepath);
+            SevenZipExtractor archiveFile = null;
+            if (archiveStream != null)
+            {
+                archiveStream.Position = 0;
+                archiveFile = isExe ? new SevenZipExtractor(archiveStream, InArchiveFormat.Nsis) : new SevenZipExtractor(archiveStream);
+            }
+            else
+            {
+                archiveFile = isExe ? new SevenZipExtractor(filepath, InArchiveFormat.Nsis) : new SevenZipExtractor(filepath);
+            }
             using (archiveFile)
             {
 #if DEBUG
@@ -402,7 +418,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
 
                 // Used for TPIS information lookup
-                long archiveSize = forcedSize > 0 ? forcedSize : new FileInfo(filepath).Length;
+                long archiveSize = forcedSize > 0 ? forcedSize : archiveStream != null ? archiveStream.Length : new FileInfo(filepath).Length;
 
                 if (moddesciniEntries.Count > 0)
                 {
@@ -882,7 +898,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     try
                     {
-                        mod.ExtractFromArchive(ArchiveFilePath, sanitizedPath, CompressPackages, TextUpdateCallback, ExtractionProgressCallback, CompressedPackageCallback);
+                        mod.ExtractFromArchive(ArchiveFilePath, sanitizedPath, CompressPackages, TextUpdateCallback, ExtractionProgressCallback, CompressedPackageCallback, false, ArchiveStream);
                     }
                     catch (Exception ex)
                     {
