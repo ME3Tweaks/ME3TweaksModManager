@@ -454,4 +454,16 @@
       <downloadlink>https://github.com/ME3Tweaks/ME2-ASI-Plugins/releases/download/v1.0-SeqAct_LogEnabler/SeqActLogEnabler-v1.0.asi</downloadlink>
     </asimod>
   </updategroup>
+  <updategroup groupid="28" game="2" hidden="0">
+    <asimod>
+      <name>Combolution Support</name>
+      <installedname>CombolutionSupport</installedname>
+      <author>55tumbl</author>
+      <description>This ASI enables the full functionality of the DLC mod Combolutions. It also allows to switch between the Shared and Individual Cooldown systems (with adjusted cooldown durations), using the console commands "cooldown_s" and "cooldown_i", respectively.</description>
+      <version>1</version>
+      <hash>5128e70acee1515e397295da1b2c348c</hash>
+      <sourcecode>https://github.com/ME3Tweaks/ME2-ASI-Plugins/tree/v1.0-CombolutionSupport/CombolutionSupport</sourcecode>
+      <downloadlink>https://github.com/ME3Tweaks/ME2-ASI-Plugins/releases/download/v1.0-CombolutionSupport/CombolutionSupport-v1.asi</downloadlink>
+    </asimod>
+  </updategroup>
 </ASIManifest>
