@@ -82,16 +82,17 @@ namespace MassEffectModManagerCore
         public string ME3ASILoaderText { get; set; }
 
         /// <summary>
-        /// Single-instance arguments
+        /// Single-instance argument handling
         /// </summary>
         /// <param name="args"></param>
-        internal async void HandleInstanceArguments(string[] args)
+        internal void HandleInstanceArguments(string[] args)
         {
             // Check for single file.
             if (args.Length > 1 && args[1].StartsWith("nxm://"))
             {
-                var results = await ModDownload.FromNXMLink(args[1]);
-                Debug.WriteLine("ph");
+                var mDownloader = new NexusModDownloader(args[1]);
+                mDownloader.Close += (a, b) => { ReleaseBusyControl(); };
+                ShowBusyControl(mDownloader); 
             }
         }
 

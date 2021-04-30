@@ -286,8 +286,10 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
         /// <param name="modid"></param>
         /// <param name="fileid"></param>
         /// <returns></returns>
-        public static async Task<ModFileDownloadLink[]> GetDownloadLinkForFile(string domain, int modid, int fileid, string nxmkey, int expiry)
+        public static async Task<ModFileDownloadLink[]> GetDownloadLinkForFile(string domain, int modid, int fileid, string nxmkey = null, int expiry = 0)
         {
+            if (nxmkey == null)
+                return await NexusModsUtilities.GetClient().ModFiles.GetDownloadLinks(domain, modid, fileid);
             return await NexusModsUtilities.GetClient().ModFiles.GetDownloadLinks(domain, modid, fileid, nxmkey, expiry);
         }
 
@@ -296,6 +298,7 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
             var value = Registry.GetValue(@"HKEY_CURRENT_USER\SOFTWARE\Classes\nxm\shell\open\command", "", null); // Get's 'Default'
             if (value is string path)
             {
+                path = path.Replace(" \"%1\"", "").Trim('\"');
                 string nxmIniPath = Path.Combine(Directory.GetParent(path).FullName, "nxmhandler.ini");
                 // are we already using nxmhandler?
                 if (Path.GetFileName(path).Equals("nxmhandler.exe", StringComparison.InvariantCultureIgnoreCase) && File.Exists(nxmIniPath))
@@ -320,7 +323,16 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
                     notifyProgress?.Invoke(0, -1, "Extracting nxmhandler");
                     var nxma = new SevenZipExtractor(archiveResult.download);
                     nxma.ExtractArchive(outpath);
-                    SetupM3InNXMHandler(Path.Comb);
+
+                    // Register it
+                    using var subkey = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\Classes\nxm\shell\open\command");
+                    subkey.SetValue("", $"\"{ Path.Combine(outpath, "nxmhandler.exe")}\" \"%1\"");
+
+                    var protocolKey = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Classes\nxm", true);
+                    protocolKey.SetValue("URL Protocol", "");
+                    protocolKey.SetValue("", "URL:NXM Protocol");
+
+                    SetupM3InNXMHandler(Path.Combine(outpath, "nxmhandler.ini"));
                 }
             }
 
@@ -347,7 +359,7 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
                 }
                 else
                 {
-                    if (games.Value == "masseffect,masseffect2,masseffect3")
+                    if (games.Value == "other")
                     {
                         // We need to update this one
                         handlers.SetSingleEntry($@"{i}\executable", App.ExecutableLocation);
@@ -362,8 +374,8 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
                 // Add ours
                 numCurrentHandlers++;
                 handlers.SetSingleEntry($@"size", numCurrentHandlers);
-                handlers.SetSingleEntry($@"{numCurrentHandlers}\games", App.ExecutableLocation);
-                handlers.SetSingleEntry($@"{numCurrentHandlers}\executable", App.ExecutableLocation);
+                handlers.SetSingleEntry($@"{numCurrentHandlers}\games", "other");
+                handlers.SetSingleEntry($@"{numCurrentHandlers}\executable", App.ExecutableLocation.Replace("\\", "\\\\"));
                 handlers.SetSingleEntry($@"{numCurrentHandlers}\arguments", "");
             }
 
