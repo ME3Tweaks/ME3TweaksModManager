@@ -17,6 +17,7 @@ using System.Windows.Navigation;
 using System.Xml;
 using System.Xml.Linq;
 using AdonisUI;
+using CommandLine;
 using MassEffect3.Coalesce;
 using MassEffectModManagerCore.modmanager;
 using MassEffectModManagerCore.modmanager.asi;
@@ -87,24 +88,41 @@ namespace MassEffectModManagerCore
         /// <param name="args"></param>
         internal void HandleInstanceArguments(string[] args)
         {
-            // Check for single file.
-            if (args.Length > 1 && args[1].StartsWith(@"nxm://"))
+
+            var fs = File.OpenRead(@"X:\Downloads\ME2 Vignette Remover 1.0-148-1-0-1585528603(1).7z");
+            MemoryAnalyzer.AddTrackedMemoryItem($@"NXM Archive Stream {"TEST"}", new WeakReference(fs));
+            openModImportUI("ME2VigRemover.7z", fs);
+            return;
+
+
+            // Fix pass through in debug mode which uses a .dll arg
+            if (args.Any() && args[0].EndsWith(@".dll"))
             {
-                var mDownloader = new NexusModDownloader(args[1]);
-                mDownloader.Close += (a, b) =>
-                {
-                    ReleaseBusyControl();
-                    if (b.Data is List<ModDownload> items)
-                    {
-                        foreach (var ii in items)
-                        {
-                            ii.DownloadedStream.Position = 0;
-                            openModImportUI(ii.ModFile.FileName, ii.DownloadedStream);
-                        }
-                    }
-                };
-                ShowBusyControl(mDownloader);
+                args = args.Skip(1).Take(args.Length - 1).ToArray();
             }
+            var result = Parser.Default.ParseArguments<Options>(args);
+            if (result is Parsed<Options> parsedCommandLineArgs && parsedCommandLineArgs.Value.NXMLink != null)
+            {
+                showNXMDownloader(parsedCommandLineArgs.Value.NXMLink);
+            }
+        }
+
+        private void showNXMDownloader(string nxmLink)
+        {
+            var mDownloader = new NexusModDownloader(nxmLink);
+            mDownloader.Close += (a, b) =>
+            {
+                ReleaseBusyControl();
+                if (b.Data is List<ModDownload> items)
+                {
+                    foreach (var ii in items)
+                    {
+                        ii.DownloadedStream.Position = 0;
+                        openModImportUI(ii.ModFile.FileName, ii.DownloadedStream);
+                    }
+                }
+            };
+            ShowBusyControl(mDownloader);
         }
 
         public string EndorseM3String { get; set; } = M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
@@ -167,6 +185,10 @@ namespace MassEffectModManagerCore
         //private ModLoader modLoadSer;
         public MainWindow()
         {
+            if (Environment.GetCommandLineArgs().Length > 1)
+            {
+                MessageBox.Show(string.Join(' ', Environment.GetCommandLineArgs()));
+            }
             if (App.UpgradingFromME3CMM/* || true*/)
             {
                 App.Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
@@ -2661,6 +2683,12 @@ namespace MassEffectModManagerCore
                     {
                         ContentCheckInProgress = false;
                     }
+                }
+
+                if (firstStartupCheck && App.PendingNXMLink != null)
+                {
+                    showNXMDownloader(App.PendingNXMLink);
+                    App.PendingNXMLink = null;
                 }
 
                 NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"BackupCheck");

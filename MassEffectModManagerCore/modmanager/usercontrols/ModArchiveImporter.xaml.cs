@@ -275,7 +275,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             try
             {
                 // note: This currently doesn't do anything as it just parses it out. It doesn't actually send anything or use the results of it
-                if (Settings.EnableTelemetry)
+                if (Settings.EnableTelemetry && archive != null)
                 {
                     FileInfo fi = new FileInfo(archive);
                     if (fi.AlternateDataStreamExists(@"Zone.Identifier"))
@@ -345,8 +345,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             List<Mod> internalModList = new List<Mod>(); //internal mod list is for this function only so we don't need a callback to get our list since results are returned immediately
             var isExe = filepath.EndsWith(@".exe");
             SevenZipExtractor archiveFile = null;
+
+            bool closeStreamOnComplete = true;
             if (archiveStream != null)
             {
+                closeStreamOnComplete = false;
                 archiveStream.Position = 0;
                 archiveFile = isExe ? new SevenZipExtractor(archiveStream, InArchiveFormat.Nsis) : new SevenZipExtractor(archiveStream);
             }
@@ -354,307 +357,316 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 archiveFile = isExe ? new SevenZipExtractor(filepath, InArchiveFormat.Nsis) : new SevenZipExtractor(filepath);
             }
-            using (archiveFile)
-            {
 #if DEBUG
-                foreach (var v in archiveFile.ArchiveFileData)
-                {
-                    Debug.WriteLine($@"{v.FileName} | Index {v.Index} | Size {v.Size} | Last Modified {v.LastWriteTime}");
-                }
+            foreach (var v in archiveFile.ArchiveFileData)
+            {
+                Debug.WriteLine($@"{v.FileName} | Index {v.Index} | Size {v.Size} | Last Modified {v.LastWriteTime}");
+            }
 #endif
-                var moddesciniEntries = new List<ArchiveFileInfo>();
-                var sfarEntries = new List<ArchiveFileInfo>(); //ME3 DLC
-                var bioengineEntries = new List<ArchiveFileInfo>(); //ME2 DLC
-                var me2mods = new List<ArchiveFileInfo>(); //ME2 RCW Mods
-                var textureModEntries = new List<ArchiveFileInfo>(); //TPF MEM MOD files
-                bool isAlotFile = false;
-                try
+            var moddesciniEntries = new List<ArchiveFileInfo>();
+            var sfarEntries = new List<ArchiveFileInfo>(); //ME3 DLC
+            var bioengineEntries = new List<ArchiveFileInfo>(); //ME2 DLC
+            var me2mods = new List<ArchiveFileInfo>(); //ME2 RCW Mods
+            var textureModEntries = new List<ArchiveFileInfo>(); //TPF MEM MOD files
+            bool isAlotFile = false;
+            try
+            {
+                foreach (var entry in archiveFile.ArchiveFileData)
                 {
-                    foreach (var entry in archiveFile.ArchiveFileData)
+                    if (!entry.IsDirectory)
                     {
-                        if (!entry.IsDirectory)
+                        string fname = Path.GetFileName(entry.FileName);
+                        if (fname.Equals(@"ALOTInstaller.exe", StringComparison.InvariantCultureIgnoreCase))
                         {
-                            string fname = Path.GetFileName(entry.FileName);
-                            if (fname.Equals(@"ALOTInstaller.exe", StringComparison.InvariantCultureIgnoreCase))
-                            {
-                                isAlotFile = true;
-                            }
-                            else if (fname.Equals(@"moddesc.ini", StringComparison.InvariantCultureIgnoreCase))
-                            {
-                                moddesciniEntries.Add(entry);
-                            }
-                            else if (fname.Equals(@"Default.sfar", StringComparison.InvariantCultureIgnoreCase))
-                            {
-                                //for unofficial lookups
-                                sfarEntries.Add(entry);
-                            }
-                            else if (fname.Equals(@"BIOEngine.ini", StringComparison.InvariantCultureIgnoreCase))
-                            {
-                                //for unofficial lookups [NOT USED]
-                                bioengineEntries.Add(entry);
-                            }
-                            else if (Path.GetExtension(fname) == @".me2mod")
-                            {
-                                me2mods.Add(entry);
-                            }
-                            else if (Path.GetExtension(fname) == @".mem" || Path.GetExtension(fname) == @".tpf" || Path.GetExtension(fname) == @".mod")
-                            {
-                                //for forwarding to ALOT Installer
-                                textureModEntries.Add(entry);
-                            }
+                            isAlotFile = true;
+                        }
+                        else if (fname.Equals(@"moddesc.ini", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            moddesciniEntries.Add(entry);
+                        }
+                        else if (fname.Equals(@"Default.sfar", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            //for unofficial lookups
+                            sfarEntries.Add(entry);
+                        }
+                        else if (fname.Equals(@"BIOEngine.ini", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            //for unofficial lookups [NOT USED]
+                            bioengineEntries.Add(entry);
+                        }
+                        else if (Path.GetExtension(fname) == @".me2mod")
+                        {
+                            me2mods.Add(entry);
+                        }
+                        else if (Path.GetExtension(fname) == @".mem" || Path.GetExtension(fname) == @".tpf" || Path.GetExtension(fname) == @".mod")
+                        {
+                            //for forwarding to ALOT Installer
+                            textureModEntries.Add(entry);
                         }
                     }
                 }
-                catch (SevenZipArchiveException svae)
+            }
+            catch (SevenZipArchiveException svae)
+            {
+                //error reading archive!
+                Mod failed = new Mod(false);
+                failed.ModName = M3L.GetString(M3L.string_archiveError);
+                failed.LoadFailedReason = M3L.GetString(M3L.string_couldNotInspectArchive7zException);
+                Log.Error($@"Unable to inspect archive {filepath}: SevenZipException occurred! It may be corrupt. The specific error was: {svae.Message}");
+                failedToLoadModeCallback?.Invoke(failed);
+                addCompressedModCallback?.Invoke(failed);
+                if (closeStreamOnComplete)
                 {
-                    //error reading archive!
-                    Mod failed = new Mod(false);
-                    failed.ModName = M3L.GetString(M3L.string_archiveError);
-                    failed.LoadFailedReason = M3L.GetString(M3L.string_couldNotInspectArchive7zException);
-                    Log.Error($@"Unable to inspect archive {filepath}: SevenZipException occurred! It may be corrupt. The specific error was: {svae.Message}");
-                    failedToLoadModeCallback?.Invoke(failed);
-                    addCompressedModCallback?.Invoke(failed);
-                    return;
+                    archiveStream?.Close();
                 }
+                return;
+            }
 
-                // Used for TPIS information lookup
-                long archiveSize = forcedSize > 0 ? forcedSize : archiveStream != null ? archiveStream.Length : new FileInfo(filepath).Length;
+            // Used for TPIS information lookup
+            long archiveSize = forcedSize > 0 ? forcedSize : archiveStream != null ? archiveStream.Length : new FileInfo(filepath).Length;
 
-                if (moddesciniEntries.Count > 0)
+            if (moddesciniEntries.Count > 0)
+            {
+                foreach (var entry in moddesciniEntries)
                 {
-                    foreach (var entry in moddesciniEntries)
+                    currentOperationTextCallback?.Invoke(M3L.GetString(M3L.string_interp_readingX, entry.FileName));
+                    Mod m = new Mod(entry, archiveFile);
+                    if (!m.ValidMod)
                     {
-                        currentOperationTextCallback?.Invoke(M3L.GetString(M3L.string_interp_readingX, entry.FileName));
-                        Mod m = new Mod(entry, archiveFile);
-                        if (!m.ValidMod)
-                        {
-                            failedToLoadModeCallback?.Invoke(m);
-                            m.SelectedForImport = false;
-                        }
+                        failedToLoadModeCallback?.Invoke(m);
+                        m.SelectedForImport = false;
+                    }
 
+                    addCompressedModCallback?.Invoke(m);
+                    internalModList.Add(m);
+                }
+            }
+            else if (me2mods.Count > 0)
+            {
+                //found some .me2mod files.
+                foreach (var entry in me2mods)
+                {
+                    currentOperationTextCallback?.Invoke(M3L.GetString(M3L.string_interp_readingX, entry.FileName));
+                    MemoryStream ms = new MemoryStream();
+                    archiveFile.ExtractFile(entry.Index, ms);
+                    ms.Position = 0;
+                    StreamReader reader = new StreamReader(ms);
+                    string text = reader.ReadToEnd();
+                    var rcwModsForFile = RCWMod.ParseRCWMods(Path.GetFileNameWithoutExtension(entry.FileName), text);
+                    foreach (var rcw in rcwModsForFile)
+                    {
+                        Mod m = new Mod(rcw);
                         addCompressedModCallback?.Invoke(m);
                         internalModList.Add(m);
                     }
                 }
-                else if (me2mods.Count > 0)
+            }
+            else if (Enumerable.Any(textureModEntries) && isAlotFile)
+            {
+                if (isAlotFile)
                 {
-                    //found some .me2mod files.
-                    foreach (var entry in me2mods)
+                    //is alot installer
+                    Log.Information(@"This file contains texture files and ALOTInstaller.exe - this is an ALOT main file");
+                    var textureLibraryPath = Utilities.GetALOTInstallerTextureLibraryDirectory();
+                    if (textureLibraryPath != null)
                     {
-                        currentOperationTextCallback?.Invoke(M3L.GetString(M3L.string_interp_readingX, entry.FileName));
-                        MemoryStream ms = new MemoryStream();
-                        archiveFile.ExtractFile(entry.Index, ms);
-                        ms.Position = 0;
-                        StreamReader reader = new StreamReader(ms);
-                        string text = reader.ReadToEnd();
-                        var rcwModsForFile = RCWMod.ParseRCWMods(Path.GetFileNameWithoutExtension(entry.FileName), text);
-                        foreach (var rcw in rcwModsForFile)
+                        //we have destination
+                        var destPath = Path.Combine(textureLibraryPath, Path.GetFileName(filepath));
+                        if (!File.Exists(destPath))
                         {
-                            Mod m = new Mod(rcw);
-                            addCompressedModCallback?.Invoke(m);
-                            internalModList.Add(m);
+                            Log.Information(M3L.GetString(M3L.string_thisFileIsNotInTheTextureLibraryMovingItToTheTextureLibrary));
+                            currentOperationTextCallback?.Invoke(M3L.GetString(M3L.string_movingALOTFileToTextureLibraryPleaseWait));
+                            archiveFile.Dispose();
+                            File.Move(filepath, destPath, true);
+                            showALOTLauncher?.Invoke();
                         }
                     }
                 }
-                else if (Enumerable.Any(textureModEntries) && isAlotFile)
+                //todo: Parse 
+                //else
+                //{
+                //    //found some texture-mod only files
+                //    foreach (var entry in textureModEntries)
+                //    {
+                //        currentOperationTextCallback?.Invoke(M3L.GetString(M3L.string_interp_readingX, entry.FileName));
+                //        MemoryStream ms = new MemoryStream();
+                //        archiveFile.ExtractFile(entry.Index, ms);
+                //        ms.Position = 0;
+                //        StreamReader reader = new StreamReader(ms);
+                //        string text = reader.ReadToEnd();
+                //        var rcwModsForFile = RCWMod.ParseRCWMods(Path.GetFileNameWithoutExtension(entry.FileName), text);
+                //        foreach (var rcw in rcwModsForFile)
+                //        {
+                //            Mod m = new Mod(rcw);
+                //            addCompressedModCallback?.Invoke(m);
+                //            internalModList.Add(m);
+                //        }
+                //    }
+                //}
+            }
+            else
+            {
+                Log.Information(@"Querying third party importing service for information about this file: " + filepath);
+                currentOperationTextCallback?.Invoke(M3L.GetString(M3L.string_queryingThirdPartyImportingService));
+                var md5 = forcedMD5 ?? Utilities.CalculateMD5(filepath);
+                var potentialImportinInfos = ThirdPartyServices.GetImportingInfosBySize(archiveSize);
+                var importingInfo = potentialImportinInfos.FirstOrDefault(x => x.md5 == md5);
+
+                if (importingInfo == null && isExe)
                 {
-                    if (isAlotFile)
+                    Log.Error(@"EXE-based mods must be validated by ME3Tweaks before they can be imported into M3. This is to prevent breaking third party mods.");
+                    return;
+                }
+
+                ExeTransform transform = null;
+                if (importingInfo?.exetransform != null)
+                {
+                    Log.Information(@"TPIS lists exe transform for this mod: " + importingInfo.exetransform);
+                    transform = new ExeTransform(OnlineContent.FetchExeTransform(importingInfo.exetransform));
+                }
+
+                string custommoddesc = null;
+                if (importingInfo?.servermoddescname != null)
+                {
+                    //Partially supported unofficial third party mod
+                    //Mod has a custom written moddesc.ini stored on ME3Tweaks
+                    Log.Information(@"Fetching premade moddesc.ini from ME3Tweaks for this mod archive");
+                    string loadFailedReason = null;
+                    try
                     {
-                        //is alot installer
-                        Log.Information(@"This file contains texture files and ALOTInstaller.exe - this is an ALOT main file");
-                        var textureLibraryPath = Utilities.GetALOTInstallerTextureLibraryDirectory();
-                        if (textureLibraryPath != null)
-                        {
-                            //we have destination
-                            var destPath = Path.Combine(textureLibraryPath, Path.GetFileName(filepath));
-                            if (!File.Exists(destPath))
-                            {
-                                Log.Information(M3L.GetString(M3L.string_thisFileIsNotInTheTextureLibraryMovingItToTheTextureLibrary));
-                                currentOperationTextCallback?.Invoke(M3L.GetString(M3L.string_movingALOTFileToTextureLibraryPleaseWait));
-                                archiveFile.Dispose();
-                                File.Move(filepath, destPath, true);
-                                showALOTLauncher?.Invoke();
-                            }
-                        }
+                        custommoddesc = OnlineContent.FetchThirdPartyModdesc(importingInfo.servermoddescname ?? transform.PostTransformModdesc);
                     }
-                    //todo: Parse 
-                    //else
+                    catch (Exception e)
+                    {
+                        loadFailedReason = e.Message;
+                        Log.Error(@"Error fetching moddesc from server: " + e.Message);
+                    }
+
+                    //if (!isExe)
                     //{
-                    //    //found some texture-mod only files
-                    //    foreach (var entry in textureModEntries)
-                    //    {
-                    //        currentOperationTextCallback?.Invoke(M3L.GetString(M3L.string_interp_readingX, entry.FileName));
-                    //        MemoryStream ms = new MemoryStream();
-                    //        archiveFile.ExtractFile(entry.Index, ms);
-                    //        ms.Position = 0;
-                    //        StreamReader reader = new StreamReader(ms);
-                    //        string text = reader.ReadToEnd();
-                    //        var rcwModsForFile = RCWMod.ParseRCWMods(Path.GetFileNameWithoutExtension(entry.FileName), text);
-                    //        foreach (var rcw in rcwModsForFile)
-                    //        {
-                    //            Mod m = new Mod(rcw);
-                    //            addCompressedModCallback?.Invoke(m);
-                    //            internalModList.Add(m);
-                    //        }
-                    //    }
-                    //}
-                }
-                else
-                {
-                    Log.Information(@"Querying third party importing service for information about this file: " + filepath);
-                    currentOperationTextCallback?.Invoke(M3L.GetString(M3L.string_queryingThirdPartyImportingService));
-                    var md5 = forcedMD5 ?? Utilities.CalculateMD5(filepath);
-                    var potentialImportinInfos = ThirdPartyServices.GetImportingInfosBySize(archiveSize);
-                    var importingInfo = potentialImportinInfos.FirstOrDefault(x => x.md5 == md5);
-
-                    if (importingInfo == null && isExe)
+                    Mod virutalCustomMod = new Mod(custommoddesc, "", archiveFile); //Load virtual mod
+                    if (virutalCustomMod.ValidMod)
                     {
-                        Log.Error(@"EXE-based mods must be validated by ME3Tweaks before they can be imported into M3. This is to prevent breaking third party mods.");
-                        return;
+                        Log.Information(@"Mod loaded from server moddesc.");
+                        addCompressedModCallback?.Invoke(virutalCustomMod);
+                        internalModList.Add(virutalCustomMod);
+                        return; //Don't do further parsing as this is custom written
                     }
-
-                    ExeTransform transform = null;
-                    if (importingInfo?.exetransform != null)
+                    else
                     {
-                        Log.Information(@"TPIS lists exe transform for this mod: " + importingInfo.exetransform);
-                        transform = new ExeTransform(OnlineContent.FetchExeTransform(importingInfo.exetransform));
-                    }
-
-                    string custommoddesc = null;
-                    if (importingInfo?.servermoddescname != null)
-                    {
-                        //Partially supported unofficial third party mod
-                        //Mod has a custom written moddesc.ini stored on ME3Tweaks
-                        Log.Information(@"Fetching premade moddesc.ini from ME3Tweaks for this mod archive");
-                        string loadFailedReason = null;
-                        try
+                        if (loadFailedReason != null)
                         {
-                            custommoddesc = OnlineContent.FetchThirdPartyModdesc(importingInfo.servermoddescname ?? transform.PostTransformModdesc);
-                        }
-                        catch (Exception e)
-                        {
-                            loadFailedReason = e.Message;
-                            Log.Error(@"Error fetching moddesc from server: " + e.Message);
-                        }
-
-                        //if (!isExe)
-                        //{
-                        Mod virutalCustomMod = new Mod(custommoddesc, "", archiveFile); //Load virtual mod
-                        if (virutalCustomMod.ValidMod)
-                        {
-                            Log.Information(@"Mod loaded from server moddesc.");
-                            addCompressedModCallback?.Invoke(virutalCustomMod);
-                            internalModList.Add(virutalCustomMod);
-                            return; //Don't do further parsing as this is custom written
+                            virutalCustomMod.LoadFailedReason = M3L.GetString(
+                                M3L.string_interp_failedToFetchModdesciniFileFromServerReasonLoadFailedReason,
+                                loadFailedReason);
                         }
                         else
                         {
-                            if (loadFailedReason != null)
-                            {
-                                virutalCustomMod.LoadFailedReason = M3L.GetString(
-                                    M3L.string_interp_failedToFetchModdesciniFileFromServerReasonLoadFailedReason,
-                                    loadFailedReason);
-                            }
-                            else
-                            {
-                                Log.Error(@"Server moddesc was not valid for this mod. This shouldn't occur. Please report to Mgamerz.");
-                                Analytics.TrackEvent(@"Invalid servermoddesc detected", new Dictionary<string, string>()
+                            Log.Error(@"Server moddesc was not valid for this mod. This shouldn't occur. Please report to Mgamerz.");
+                            Analytics.TrackEvent(@"Invalid servermoddesc detected", new Dictionary<string, string>()
                                 {
                                     {@"moddesc.ini name", importingInfo.servermoddescname ?? transform.PostTransformModdesc}
                                 });
-                            }
-
-                            return;
                         }
-                        //} else
-                        //{
-                        //    Log.Information(@"Fetched premade moddesc.ini from server. We will fake the mod for the user");
-                        //}
-                    }
-
-
-
-                    //Fully unofficial third party mod.
-
-                    //ME3
-                    foreach (var sfarEntry in sfarEntries)
-                    {
-                        var vMod = AttemptLoadVirtualMod(sfarEntry, archiveFile, MEGame.ME3, md5);
-                        if (vMod != null)
+                        if (closeStreamOnComplete)
                         {
-                            addCompressedModCallback?.Invoke(vMod);
-                            internalModList.Add(vMod);
-                            vMod.ExeExtractionTransform = transform;
+                            archiveStream?.Close();
                         }
+                        return;
                     }
-
-                    //TODO: ME2 ?
-                    //foreach (var entry in bioengineEntries)
+                    //} else
                     //{
-                    //    var vMod = AttemptLoadVirtualMod(entry, archiveFile, MEGame.ME2, md5);
-                    //    if (vMod.ValidMod)
-                    //    {
-                    //        addCompressedModCallback?.Invoke(vMod);
-                    //        internalModList.Add(vMod);
-                    //    }
+                    //    Log.Information(@"Fetched premade moddesc.ini from server. We will fake the mod for the user");
                     //}
+                }
 
-                    //TODO: ME1 ?
 
-                    if (importingInfo?.version != null)
+
+                //Fully unofficial third party mod.
+
+                //ME3
+                foreach (var sfarEntry in sfarEntries)
+                {
+                    var vMod = AttemptLoadVirtualMod(sfarEntry, archiveFile, MEGame.ME3, md5);
+                    if (vMod != null)
                     {
+                        addCompressedModCallback?.Invoke(vMod);
+                        internalModList.Add(vMod);
+                        vMod.ExeExtractionTransform = transform;
+                    }
+                }
+
+                //TODO: ME2 ?
+                //foreach (var entry in bioengineEntries)
+                //{
+                //    var vMod = AttemptLoadVirtualMod(entry, archiveFile, MEGame.ME2, md5);
+                //    if (vMod.ValidMod)
+                //    {
+                //        addCompressedModCallback?.Invoke(vMod);
+                //        internalModList.Add(vMod);
+                //    }
+                //}
+
+                //TODO: ME1 ?
+
+                if (importingInfo?.version != null)
+                {
+                    foreach (Mod compressedMod in internalModList)
+                    {
+                        compressedMod.ModVersionString = importingInfo.version;
+                        Version.TryParse(importingInfo.version, out var parsedValue);
+                        compressedMod.ParsedModVersion = parsedValue;
+                    }
+                }
+                else if (relayVersionResponse == @"-1")
+                {
+                    //If no version information, check ME3Tweaks to see if it's been added recently
+                    //see if server has information on version number
+                    currentOperationTextCallback?.Invoke(M3L.GetString(M3L.string_gettingAdditionalInformationAboutFileFromME3Tweaks));
+                    Log.Information(@"Querying ME3Tweaks for additional information for this file...");
+                    var modInfo = OnlineContent.QueryModRelay(md5, archiveSize);
+                    //todo: make this work offline.
+                    if (modInfo != null && modInfo.TryGetValue(@"version", out string value))
+                    {
+                        Log.Information(@"ME3Tweaks reports version number for this file is: " + value);
                         foreach (Mod compressedMod in internalModList)
                         {
-                            compressedMod.ModVersionString = importingInfo.version;
-                            Version.TryParse(importingInfo.version, out var parsedValue);
+                            compressedMod.ModVersionString = value;
+                            Version.TryParse(value, out var parsedValue);
                             compressedMod.ParsedModVersion = parsedValue;
                         }
+                        relayVersionResponse = value;
                     }
-                    else if (relayVersionResponse == @"-1")
+                    else
                     {
-                        //If no version information, check ME3Tweaks to see if it's been added recently
-                        //see if server has information on version number
-                        currentOperationTextCallback?.Invoke(M3L.GetString(M3L.string_gettingAdditionalInformationAboutFileFromME3Tweaks));
-                        Log.Information(@"Querying ME3Tweaks for additional information for this file...");
-                        var modInfo = OnlineContent.QueryModRelay(md5, archiveSize);
-                        //todo: make this work offline.
-                        if (modInfo != null && modInfo.TryGetValue(@"version", out string value))
-                        {
-                            Log.Information(@"ME3Tweaks reports version number for this file is: " + value);
-                            foreach (Mod compressedMod in internalModList)
-                            {
-                                compressedMod.ModVersionString = value;
-                                Version.TryParse(value, out var parsedValue);
-                                compressedMod.ParsedModVersion = parsedValue;
-                            }
-                            relayVersionResponse = value;
-                        }
-                        else
-                        {
-                            Log.Information(@"ME3Tweaks does not have additional version information for this file.");
-                            Analytics.TrackEvent(@"Non Mod Manager Mod Dropped", new Dictionary<string, string>()
+                        Log.Information(@"ME3Tweaks does not have additional version information for this file.");
+                        Analytics.TrackEvent(@"Non Mod Manager Mod Dropped", new Dictionary<string, string>()
                             {
                                 {@"Filename", Path.GetFileName(filepath)},
                                 {@"MD5", md5}
                             });
-                            foreach (Mod compressedMod in internalModList)
-                            {
-                                compressedMod.ModVersionString = M3L.GetString(M3L.string_unknown);
-                            }
+                        foreach (Mod compressedMod in internalModList)
+                        {
+                            compressedMod.ModVersionString = M3L.GetString(M3L.string_unknown);
                         }
                     }
+                }
 
-                    else
-                    {
-                        //Try straight up TPMI import?
-                        Log.Warning($@"No importing information is available for file with hash {md5}. No mods could be found.");
-                        Analytics.TrackEvent(@"Non Mod Manager Mod Dropped", new Dictionary<string, string>()
+                else
+                {
+                    //Try straight up TPMI import?
+                    Log.Warning($@"No importing information is available for file with hash {md5}. No mods could be found.");
+                    Analytics.TrackEvent(@"Non Mod Manager Mod Dropped", new Dictionary<string, string>()
                         {
                             {@"Filename", Path.GetFileName(filepath)},
                             {@"MD5", md5}
                         });
-                    }
                 }
+            }
+
+            if (closeStreamOnComplete)
+            {
+                archiveStream?.Close();
             }
 
         }
@@ -727,6 +739,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
             }
             return null;
+        }
+
+        protected override void OnClosing(DataEventArgs args)
+        {
+            ArchiveStream?.Dispose();
+            base.OnClosing(args);
         }
 
         private void BeginImportingMods()

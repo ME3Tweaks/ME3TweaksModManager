@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Runtime;
 using System.Windows;
@@ -46,7 +47,7 @@ namespace MassEffectModManagerCore.modmanager.memoryanalyzer
 
         //Fody uses this property on weaving
 #pragma warning disable
-public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged;
 #pragma warning restore
 
         public MemoryAnalyzer()
@@ -156,7 +157,7 @@ public event PropertyChangedEventHandler PropertyChanged;
 
             //Fody uses this property on weaving
 #pragma warning disable
-public event PropertyChangedEventHandler PropertyChanged;
+            public event PropertyChangedEventHandler PropertyChanged;
 #pragma warning restore
 
             public string ReferenceName { get; set; }
@@ -170,6 +171,10 @@ public event PropertyChangedEventHandler PropertyChanged;
                         if (Reference.Target is FrameworkElement w)
                         {
                             return w.IsLoaded ? "In Memory, Open" : "In Memory, Closed";
+                        }
+                        else if (Reference.Target is Stream s)
+                        {
+                            return s.CanRead ? "In Memory, Open" : "In Memory, Disposed";
                         }
                         return "In Memory";
                     }

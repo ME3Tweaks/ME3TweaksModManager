@@ -365,8 +365,8 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
                     if (games.Value == "other")
                     {
                         // We need to update this one
-                        handlers.SetSingleEntry($@"{i}\executable", App.ExecutableLocation);
-                        handlers.SetSingleEntry($@"{i}\arguments", "");
+                        handlers.SetSingleEntry($@"{i}\executable", App.ExecutableLocation.Replace("\\", "\\\\"));
+                        handlers.SetSingleEntry($@"{i}\arguments", "--nxmlink");
                         updated = true;
                     }
                 }
@@ -379,7 +379,7 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
                 handlers.SetSingleEntry($@"size", numCurrentHandlers);
                 handlers.SetSingleEntry($@"{numCurrentHandlers}\games", "other");
                 handlers.SetSingleEntry($@"{numCurrentHandlers}\executable", App.ExecutableLocation.Replace("\\", "\\\\"));
-                handlers.SetSingleEntry($@"{numCurrentHandlers}\arguments", "");
+                handlers.SetSingleEntry($@"{numCurrentHandlers}\arguments", "--nxmlink");
             }
 
             File.WriteAllText(nxmIniPath, ini.ToString());

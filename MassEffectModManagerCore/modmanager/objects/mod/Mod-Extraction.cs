@@ -84,7 +84,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             bool testRun = false, Stream archiveStream = null)
         {
             if (!IsInArchive) throw new Exception(@"Cannot extract a mod that is not part of an archive.");
-            if (!File.Exists(archivePath))
+            if (archiveStream == null && !File.Exists(archivePath))
             {
                 throw new Exception(M3L.GetString(M3L.string_interp_theArchiveFileArchivePathIsNoLongerAvailable, archivePath));
             }
@@ -94,258 +94,272 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             SevenZipExtractor archive;
             var isExe = archivePath.EndsWith(@".exe", StringComparison.InvariantCultureIgnoreCase);
 
+            bool closeStreamOnFinish = true;
             if (archiveStream != null)
             {
                 archive = isExe ? new SevenZipExtractor(archiveStream, InArchiveFormat.Nsis) : new SevenZipExtractor(archiveStream);
+                closeStreamOnFinish = false;
             }
             else
             {
                 archive = isExe ? new SevenZipExtractor(archivePath, InArchiveFormat.Nsis) : new SevenZipExtractor(archivePath);
             }
 
-            using (archive)
+            var fileIndicesToExtract = new List<int>();
+            var filePathsToExtractTESTONLY = new List<string>();
+            var referencedFiles = GetAllRelativeReferences(!IsVirtualized, archive);
+            if (isExe)
             {
-                var fileIndicesToExtract = new List<int>();
-                var filePathsToExtractTESTONLY = new List<string>();
-                var referencedFiles = GetAllRelativeReferences(!IsVirtualized, archive);
-                if (isExe)
+                //remap to mod root. Not entirely sure if this needs to be done for sub mods?
+                referencedFiles = Enumerable.Select<string, string>(referencedFiles, x => FilesystemInterposer.PathCombine(IsInArchive, ModPath, x)).ToList(); //remap to in-archive paths so they match entry paths
+            }
+            foreach (var info in archive.ArchiveFileData)
+            {
+                if (!info.IsDirectory && (ModPath == "" || info.FileName.Contains((string)ModPath)))
                 {
-                    //remap to mod root. Not entirely sure if this needs to be done for sub mods?
-                    referencedFiles = Enumerable.Select<string, string>(referencedFiles, x => FilesystemInterposer.PathCombine(IsInArchive, ModPath, x)).ToList(); //remap to in-archive paths so they match entry paths
-                }
-                foreach (var info in archive.ArchiveFileData)
-                {
-                    if (!info.IsDirectory && (ModPath == "" || info.FileName.Contains((string)ModPath)))
+                    var relativedName = isExe ? info.FileName : info.FileName.Substring(ModPath.Length).TrimStart('\\');
+                    if (referencedFiles.Contains(relativedName))
                     {
-                        var relativedName = isExe ? info.FileName : info.FileName.Substring(ModPath.Length).TrimStart('\\');
-                        if (referencedFiles.Contains(relativedName))
+                        Log.Information(@"Adding file to extraction list: " + info.FileName);
+                        fileIndicesToExtract.Add(info.Index);
+                        filePathsToExtractTESTONLY.Add(relativedName);
+                    }
+                }
+            }
+
+            void archiveExtractionProgress(object? sender, DetailedProgressEventArgs args)
+            {
+                extractingCallback?.Invoke(args);
+            }
+
+            archive.Progressing += archiveExtractionProgress;
+            string outputFilePathMapping(ArchiveFileInfo entryInfo)
+            {
+                Log.Information(@"Mapping extraction target for " + entryInfo.FileName);
+
+                string entryPath = entryInfo.FileName;
+                if (ExeExtractionTransform != null && Enumerable.Any<(int index, string outfile)>(ExeExtractionTransform.PatchRedirects, x => x.index == entryInfo.Index))
+                {
+                    Log.Information(@"Extracting vpatch file at index " + entryInfo.Index);
+                    return Path.Combine(Utilities.GetVPatchRedirectsFolder(), Enumerable.First<(int index, string outfile)>(ExeExtractionTransform.PatchRedirects, x => x.index == entryInfo.Index).outfile);
+                }
+
+                if (ExeExtractionTransform != null && Enumerable.Any<int>(ExeExtractionTransform.NoExtractIndexes, x => x == entryInfo.Index))
+                {
+                    Log.Information(@"Extracting file to trash (not used): " + entryPath);
+                    return Path.Combine(Utilities.GetTempPath(), @"Trash", @"trashfile");
+                }
+
+                if (ExeExtractionTransform != null && Enumerable.Any<(int index, string outfile)>(ExeExtractionTransform.AlternateRedirects, x => x.index == entryInfo.Index))
+                {
+                    var outfile = Enumerable.First<(int index, string outfile)>(ExeExtractionTransform.AlternateRedirects, x => x.index == entryInfo.Index).outfile;
+                    Log.Information($@"Extracting file with redirection: {entryPath} -> {outfile}");
+                    return Path.Combine(outputFolderPath, outfile);
+                }
+
+                //Archive path might start with a \. Substring may return value that start with a \
+                var subModPath = entryPath /*.TrimStart('\\')*/.Substring(ModPath.Length).TrimStart('\\');
+                var path = Path.Combine(outputFolderPath, subModPath);
+
+
+                //Debug.WriteLine("remapping output: " + entryPath + " -> " + path);
+                return path;
+
+            }
+
+            if (compressPackages)
+            {
+                compressionQueue = new BlockingCollection<string>();
+            }
+
+            int numberOfPackagesToCompress = Enumerable.Count<string>(referencedFiles, x => StringExtensions.RepresentsPackageFilePath(x));
+            int compressedPackageCount = 0;
+            NamedBackgroundWorker compressionThread;
+            if (compressPackages)
+            {
+                compressionThread = new NamedBackgroundWorker(@"ImportingCompressionThread");
+                compressionThread.DoWork += (a, b) =>
+                {
+                    try
+                    {
+                        while (true)
                         {
-                            Log.Information(@"Adding file to extraction list: " + info.FileName);
-                            fileIndicesToExtract.Add(info.Index);
-                            filePathsToExtractTESTONLY.Add(relativedName);
-                        }
-                    }
-                }
-          
-                archive.Progressing += (sender, args) => { extractingCallback?.Invoke(args); };
-                string outputFilePathMapping(ArchiveFileInfo entryInfo)
-                {
-                    Log.Information(@"Mapping extraction target for " + entryInfo.FileName);
-
-                    string entryPath = entryInfo.FileName;
-                    if (ExeExtractionTransform != null && Enumerable.Any<(int index, string outfile)>(ExeExtractionTransform.PatchRedirects, x => x.index == entryInfo.Index))
-                    {
-                        Log.Information(@"Extracting vpatch file at index " + entryInfo.Index);
-                        return Path.Combine(Utilities.GetVPatchRedirectsFolder(), Enumerable.First<(int index, string outfile)>(ExeExtractionTransform.PatchRedirects, x => x.index == entryInfo.Index).outfile);
-                    }
-
-                    if (ExeExtractionTransform != null && Enumerable.Any<int>(ExeExtractionTransform.NoExtractIndexes, x => x == entryInfo.Index))
-                    {
-                        Log.Information(@"Extracting file to trash (not used): " + entryPath);
-                        return Path.Combine(Utilities.GetTempPath(), @"Trash", @"trashfile");
-                    }
-
-                    if (ExeExtractionTransform != null && Enumerable.Any<(int index, string outfile)>(ExeExtractionTransform.AlternateRedirects, x => x.index == entryInfo.Index))
-                    {
-                        var outfile = Enumerable.First<(int index, string outfile)>(ExeExtractionTransform.AlternateRedirects, x => x.index == entryInfo.Index).outfile;
-                        Log.Information($@"Extracting file with redirection: {entryPath} -> {outfile}");
-                        return Path.Combine(outputFolderPath, outfile);
-                    }
-
-                    //Archive path might start with a \. Substring may return value that start with a \
-                    var subModPath = entryPath /*.TrimStart('\\')*/.Substring(ModPath.Length).TrimStart('\\');
-                    var path = Path.Combine(outputFolderPath, subModPath);
-
-
-                    //Debug.WriteLine("remapping output: " + entryPath + " -> " + path);
-                    return path;
-
-                }
-
-                if (compressPackages)
-                {
-                    compressionQueue = new BlockingCollection<string>();
-                }
-
-                int numberOfPackagesToCompress = Enumerable.Count<string>(referencedFiles, x => StringExtensions.RepresentsPackageFilePath(x));
-                int compressedPackageCount = 0;
-                NamedBackgroundWorker compressionThread;
-                if (compressPackages)
-                {
-                    compressionThread = new NamedBackgroundWorker(@"ImportingCompressionThread");
-                    compressionThread.DoWork += (a, b) =>
-                    {
-                        try
-                        {
-                            while (true)
+                            var package = compressionQueue.Take();
+                            var p = MEPackageHandler.OpenMEPackage(package);
+                            bool shouldNotCompress = Game == MEGame.ME1;
+                            if (!shouldNotCompress)
                             {
-                                var package = compressionQueue.Take();
-                                var p = MEPackageHandler.OpenMEPackage(package);
-                                bool shouldNotCompress = Game == MEGame.ME1;
-                                if (!shouldNotCompress)
-                                {
-                                    //updateTextCallback?.Invoke(M3L.GetString(M3L.string_interp_compressingX, Path.GetFileName(package)));
-                                    FileInfo fileInfo = new FileInfo(package);
-                                    var created = fileInfo.CreationTime; //File Creation
-                                    var lastmodified = fileInfo.LastWriteTime;//File Modification
+                                //updateTextCallback?.Invoke(M3L.GetString(M3L.string_interp_compressingX, Path.GetFileName(package)));
+                                FileInfo fileInfo = new FileInfo(package);
+                                var created = fileInfo.CreationTime; //File Creation
+                                var lastmodified = fileInfo.LastWriteTime;//File Modification
 
-                                    compressedPackageCallback?.Invoke(M3L.GetString(M3L.string_interp_compressingX, Path.GetFileName(package)), compressedPackageCount, numberOfPackagesToCompress);
-                                    Log.Information(@"Compressing package: " + package);
-                                    p.Save(compress: true);
-                                    File.SetCreationTime(package, created);
-                                    File.SetLastWriteTime(package, lastmodified);
-                                }
-                                else
-                                {
-                                    Log.Information(@"Skipping compression for ME1 package file: " + package);
-                                }
-
-
-                                Interlocked.Increment(ref compressedPackageCount);
-                                compressedPackageCallback?.Invoke(M3L.GetString(M3L.string_interp_compressedX, Path.GetFileName(package)), compressedPackageCount, numberOfPackagesToCompress);
+                                compressedPackageCallback?.Invoke(M3L.GetString(M3L.string_interp_compressingX, Path.GetFileName(package)), compressedPackageCount, numberOfPackagesToCompress);
+                                Log.Information(@"Compressing package: " + package);
+                                p.Save(compress: true);
+                                File.SetCreationTime(package, created);
+                                File.SetLastWriteTime(package, lastmodified);
                             }
-                        }
-                        catch (InvalidOperationException)
-                        {
-                            //Done.
-                            lock (compressionCompletedSignaler)
+                            else
                             {
-                                Monitor.Pulse(compressionCompletedSignaler);
+                                Log.Information(@"Skipping compression for ME1 package file: " + package);
                             }
-                        }
-                    };
-                    compressionThread.RunWorkerAsync();
-                }
-                archive.FileExtractionFinished += (sender, args) =>
-                {
-                    if (compressPackages)
-                    {
 
-                        var fToCompress = outputFilePathMapping(args.FileInfo);
-                        if (fToCompress.RepresentsPackageFilePath())
+
+                            Interlocked.Increment(ref compressedPackageCount);
+                            compressedPackageCallback?.Invoke(M3L.GetString(M3L.string_interp_compressedX, Path.GetFileName(package)), compressedPackageCount, numberOfPackagesToCompress);
+                        }
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        //Done.
+                        lock (compressionCompletedSignaler)
                         {
-                            //Debug.WriteLine("Adding to blocking queue");
-                            compressionQueue.TryAdd(fToCompress);
+                            Monitor.Pulse(compressionCompletedSignaler);
                         }
                     }
                 };
+                compressionThread.RunWorkerAsync();
+            }
 
+            void compressPackage(object? sender, FileInfoEventArgs args)
+            {
+                if (compressPackages)
+                {
+
+                    var fToCompress = outputFilePathMapping(args.FileInfo);
+                    if (fToCompress.RepresentsPackageFilePath())
+                    {
+                        //Debug.WriteLine("Adding to blocking queue");
+                        compressionQueue.TryAdd(fToCompress);
+                    }
+                }
+            }
+            archive.FileExtractionFinished += compressPackage;
+
+            if (!testRun)
+            {
+                Log.Information(@"Extracting files...");
+                archive.ExtractFiles(outputFolderPath, outputFilePathMapping, fileIndicesToExtract.ToArray());
+            }
+            else
+            {
+                // test run mode
+                // exes can have duplicate filenames but different indexes so we must check for those here.
+                if (fileIndicesToExtract.Count != referencedFiles.Count && filePathsToExtractTESTONLY.Distinct().ToList().Count != referencedFiles.Count)
+                {
+                    throw new Exception(@"The amount of referenced files does not match the amount of files that are going to be extracted!");
+                }
+            }
+            Log.Information(@"File extraction completed.");
+            archive.Progressing -= archiveExtractionProgress;
+
+            compressionQueue?.CompleteAdding();
+            if (compressPackages && numberOfPackagesToCompress > 0 && numberOfPackagesToCompress > compressedPackageCount)
+            {
+                Log.Information(@"Waiting for compression of packages to complete.");
+                while (!compressionQueue.IsCompleted)
+                {
+                    lock (compressionCompletedSignaler)
+                    {
+                        Monitor.Wait(compressionCompletedSignaler);
+                    }
+                }
+
+                Log.Information(@"Package compression has completed.");
+            }
+
+            archive.FileExtractionFinished -= compressPackage;
+
+            ModPath = outputFolderPath;
+            if (IsVirtualized)
+            {
+                var parser = new IniDataParser().Parse(VirtualizedIniText);
+                parser[@"ModInfo"][@"modver"] = ModVersionString; //In event relay service resolved this
                 if (!testRun)
                 {
-                    Log.Information(@"Extracting files...");
-                    archive.ExtractFiles(outputFolderPath, outputFilePathMapping, fileIndicesToExtract.ToArray());
+                    File.WriteAllText(Path.Combine(ModPath, @"moddesc.ini"), parser.ToString());
                 }
-                else
-                {
-                    // test run mode
-                    // exes can have duplicate filenames but different indexes so we must check for those here.
-                    if (fileIndicesToExtract.Count != referencedFiles.Count && filePathsToExtractTESTONLY.Distinct().ToList().Count != referencedFiles.Count)
-                    {
-                        throw new Exception(@"The amount of referenced files does not match the amount of files that are going to be extracted!");
-                    }
-                }
-                Log.Information(@"File extraction completed.");
+                IsVirtualized = false; //no longer virtualized
+            }
 
-
-                compressionQueue?.CompleteAdding();
-                if (compressPackages && numberOfPackagesToCompress > 0 && numberOfPackagesToCompress > compressedPackageCount)
+            if (ExeExtractionTransform != null)
+            {
+                if (EnumerableExtensions.Any<ModArchiveImporter.ExeTransform.VPatchDirective>(ExeExtractionTransform.VPatches))
                 {
-                    Log.Information(@"Waiting for compression of packages to complete.");
-                    while (!compressionQueue.IsCompleted)
-                    {
-                        lock (compressionCompletedSignaler)
-                        {
-                            Monitor.Wait(compressionCompletedSignaler);
-                        }
-                    }
-
-                    Log.Information(@"Package compression has completed.");
-                }
-                ModPath = outputFolderPath;
-                if (IsVirtualized)
-                {
-                    var parser = new IniDataParser().Parse(VirtualizedIniText);
-                    parser[@"ModInfo"][@"modver"] = ModVersionString; //In event relay service resolved this
+                    // MEHEM uses Vpatching for its alternates.
+                    var vpat = Utilities.GetCachedExecutablePath(@"vpat.exe");
                     if (!testRun)
                     {
-                        File.WriteAllText(Path.Combine(ModPath, @"moddesc.ini"), parser.ToString());
+                        Utilities.ExtractInternalFile(@"MassEffectModManagerCore.modmanager.executables.vpat.exe", vpat, true);
                     }
-                    IsVirtualized = false; //no longer virtualized
+                    //Handle VPatching
+                    foreach (var transform in ExeExtractionTransform.VPatches)
+                    {
+                        var patchfile = Path.Combine(Utilities.GetVPatchRedirectsFolder(), transform.patchfile);
+                        var inputfile = Path.Combine(ModPath, transform.inputfile);
+                        var outputfile = Path.Combine(ModPath, transform.outputfile);
+
+                        var args = $"\"{patchfile}\" \"{inputfile}\" \"{outputfile}\""; //do not localize
+                        if (!testRun)
+                        {
+                            Directory.CreateDirectory(Directory.GetParent(outputfile).FullName); //ensure output directory exists as vpatch will not make one.
+                        }
+                        Log.Information($@"VPatching file into alternate: {inputfile} to {outputfile}");
+                        updateTextCallback?.Invoke(M3L.GetString(M3L.string_interp_vPatchingIntoAlternate, Path.GetFileName(inputfile)));
+                        if (!testRun)
+                        {
+                            Utilities.RunProcess(vpat, args, true, false, false, true);
+                        }
+                    }
                 }
 
-                if (ExeExtractionTransform != null)
+                //Handle copyfile
+                foreach (var copyfile in ExeExtractionTransform.CopyFiles)
                 {
-                    if (EnumerableExtensions.Any<ModArchiveImporter.ExeTransform.VPatchDirective>(ExeExtractionTransform.VPatches))
+                    string srcfile = Path.Combine(ModPath, copyfile.inputfile);
+                    string destfile = Path.Combine(ModPath, copyfile.outputfile);
+                    Log.Information($@"Applying transform copyfile: {srcfile} -> {destfile}");
+                    if (!testRun)
                     {
-                        // MEHEM uses Vpatching for its alternates.
-                        var vpat = Utilities.GetCachedExecutablePath(@"vpat.exe");
-                        if (!testRun)
-                        {
-                            Utilities.ExtractInternalFile(@"MassEffectModManagerCore.modmanager.executables.vpat.exe", vpat, true);
-                        }
-                        //Handle VPatching
-                        foreach (var transform in ExeExtractionTransform.VPatches)
-                        {
-                            var patchfile = Path.Combine(Utilities.GetVPatchRedirectsFolder(), transform.patchfile);
-                            var inputfile = Path.Combine(ModPath, transform.inputfile);
-                            var outputfile = Path.Combine(ModPath, transform.outputfile);
-
-                            var args = $"\"{patchfile}\" \"{inputfile}\" \"{outputfile}\""; //do not localize
-                            if (!testRun)
-                            {
-                                Directory.CreateDirectory(Directory.GetParent(outputfile).FullName); //ensure output directory exists as vpatch will not make one.
-                            }
-                            Log.Information($@"VPatching file into alternate: {inputfile} to {outputfile}");
-                            updateTextCallback?.Invoke(M3L.GetString(M3L.string_interp_vPatchingIntoAlternate, Path.GetFileName(inputfile)));
-                            if (!testRun)
-                            {
-                                Utilities.RunProcess(vpat, args, true, false, false, true);
-                            }
-                        }
-                    }
-
-                    //Handle copyfile
-                    foreach (var copyfile in ExeExtractionTransform.CopyFiles)
-                    {
-                        string srcfile = Path.Combine(ModPath, copyfile.inputfile);
-                        string destfile = Path.Combine(ModPath, copyfile.outputfile);
-                        Log.Information($@"Applying transform copyfile: {srcfile} -> {destfile}");
-                        if (!testRun)
-                        {
-                            File.Copy(srcfile, destfile, true);
-                        }
-                    }
-
-                    if (ExeExtractionTransform.PostTransformModdesc != null)
-                    {
-                        //fetch online moddesc for this mod.
-                        Log.Information(@"Fetching post-transform third party moddesc.");
-                        var moddesc = OnlineContent.FetchThirdPartyModdesc(ExeExtractionTransform.PostTransformModdesc);
-                        if (!testRun)
-                        {
-                            File.WriteAllText(Path.Combine(ModPath, @"moddesc.ini"), moddesc);
-                        }
+                        File.Copy(srcfile, destfile, true);
                     }
                 }
 
-                //int packagesCompressed = 0;
-                //if (compressPackages)
-                //{
-                //    var packages = Utilities.GetPackagesInDirectory(ModPath, true);
-                //    extractingCallback?.Invoke(new ProgressEventArgs((byte)(packagesCompressed * 100.0 / packages.Count), 0));
-                //    foreach (var package in packages)
-                //    {
-                //        updateTextCallback?.Invoke(M3L.GetString(M3L.string_interp_compressingX, Path.GetFileName(package)));
-                //        Log.Information("Compressing package: " + package);
-                //        var p = MEPackageHandler.OpenMEPackage(package);
-                //        p.save(true);
+                if (ExeExtractionTransform.PostTransformModdesc != null)
+                {
+                    //fetch online moddesc for this mod.
+                    Log.Information(@"Fetching post-transform third party moddesc.");
+                    var moddesc = OnlineContent.FetchThirdPartyModdesc(ExeExtractionTransform.PostTransformModdesc);
+                    if (!testRun)
+                    {
+                        File.WriteAllText(Path.Combine(ModPath, @"moddesc.ini"), moddesc);
+                    }
+                }
+            }
 
-                //        packagesCompressed++;
-                //        extractingCallback?.Invoke(new ProgressEventArgs((byte)(packagesCompressed * 100.0 / packages.Count), 0));
-                //    }
-                //}
+            //int packagesCompressed = 0;
+            //if (compressPackages)
+            //{
+            //    var packages = Utilities.GetPackagesInDirectory(ModPath, true);
+            //    extractingCallback?.Invoke(new ProgressEventArgs((byte)(packagesCompressed * 100.0 / packages.Count), 0));
+            //    foreach (var package in packages)
+            //    {
+            //        updateTextCallback?.Invoke(M3L.GetString(M3L.string_interp_compressingX, Path.GetFileName(package)));
+            //        Log.Information("Compressing package: " + package);
+            //        var p = MEPackageHandler.OpenMEPackage(package);
+            //        p.save(true);
+
+            //        packagesCompressed++;
+            //        extractingCallback?.Invoke(new ProgressEventArgs((byte)(packagesCompressed * 100.0 / packages.Count), 0));
+            //    }
+            //}
+            if (closeStreamOnFinish)
+            {
+                archiveStream?.Close();
             }
         }
+
 
 
         public void ExtractRCWModToM3LibraryMod(string modpath)

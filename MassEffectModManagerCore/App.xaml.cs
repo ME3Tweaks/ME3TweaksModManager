@@ -21,6 +21,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using AuthenticodeExaminer;
+using CommandLine.Text;
 using MassEffectModManagerCore.modmanager.windows;
 using ME3ExplorerCore.Helpers;
 using ME3ExplorerCore.Misc;
@@ -49,6 +50,7 @@ namespace MassEffectModManagerCore
         private static bool POST_STARTUP = false;
         public const string DISCORD_INVITE_LINK = "https://discord.gg/s8HA6dc";
         public static bool UpgradingFromME3CMM;
+        public static string PendingNXMLink;
         public static Visibility IsDebugVisibility => IsDebug ? Visibility.Visible : Visibility.Collapsed;
 
         public static Visibility DebugOnlyVisibility
@@ -163,6 +165,11 @@ namespace MassEffectModManagerCore
                         }
 
                         UpgradingFromME3CMM = parsedCommandLineArgs.Value.UpgradingFromME3CMM;
+
+                        if (parsedCommandLineArgs.Value.NXMLink != null)
+                        {
+                            PendingNXMLink = parsedCommandLineArgs.Value.NXMLink;
+                        }
                     }
                     else
                     {
@@ -173,7 +180,7 @@ namespace MassEffectModManagerCore
                 #endregion
 
                 // Single instance occurs AFTER command line params as to not break the updater which requires simultaneous boot
-                bool isFirstInstance = SingleInstance<App>.InitializeAsFirstInstance("ME3TweaksModManager6");
+                bool isFirstInstance = SingleInstance<App>.InitializeAsFirstInstance(@"ME3TweaksModManager6"); // do not change this string
                 if (!isFirstInstance)
                 {
                     //If it's not the first instance, arguments are automatically passed to the first instance
@@ -629,5 +636,8 @@ namespace MassEffectModManagerCore
         [Option(@"upgrade-from-me3cmm",
             HelpText = @"Indicates that this is an upgrade from ME3CMM, and that a migration should take place.")]
         public bool UpgradingFromME3CMM { get; set; }
+
+        [Option(@"nxmlink", HelpText = "Preps Mod Manager for handling an nxm:// link")]
+        public string NXMLink { get; set; }
     }
 }
