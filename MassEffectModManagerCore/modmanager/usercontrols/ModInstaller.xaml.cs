@@ -743,7 +743,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
 
             //Install supporting ASI files if necessary
-
             Action = M3L.GetString(M3L.string_installingSupportFiles);
             PercentVisibility = Visibility.Collapsed;
             if (ModBeingInstalled.Game == MEGame.ME1)
@@ -1522,6 +1521,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 ao.ReleaseLoadedImageAsset();
             }
             AlternateOptions.ClearEx(); //remove collection of items
+
+            if (ModBeingInstalled.Archive != null)
+            {
+                ModBeingInstalled.Archive.Dispose();
+                ModBeingInstalled.Archive = null;
+            }
+
             base.OnClosing(DataEventArgs.Empty);
         }
 

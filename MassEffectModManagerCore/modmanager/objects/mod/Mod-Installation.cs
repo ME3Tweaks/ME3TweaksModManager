@@ -20,7 +20,15 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
         /// <returns></returns>
         public (Dictionary<ModJob, (Dictionary<string, InstallSourceFile> unpackedJobMapping, List<string> dlcFoldersBeingInstalled)>, List<(ModJob job, string sfarPath, Dictionary<string, InstallSourceFile>)>) GetInstallationQueues(GameTarget gameTarget)
         {
-            if (IsInArchive) Archive = new SevenZipExtractor(ArchivePath); //load archive file for inspection
+            if (IsInArchive)
+            {
+                if (Archive.IsDisposed())
+                {
+                    Debug.WriteLine("HI");
+                }
+                if (Archive == null)
+                    Archive = new SevenZipExtractor(ArchivePath); //load archive file for inspection
+            }
             var gameDLCPath = M3Directories.GetDLCPath(gameTarget);
             var customDLCMapping = Enumerable.FirstOrDefault<ModJob>(InstallationJobs, x => x.Header == ModJob.JobHeader.CUSTOMDLC)?.CustomDLCFolderMapping;
             if (customDLCMapping != null)

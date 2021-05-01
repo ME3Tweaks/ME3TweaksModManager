@@ -744,7 +744,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         protected override void OnClosing(DataEventArgs args)
         {
-            ArchiveStream?.Dispose();
+            if (ArchiveStream is FileStream fs)
+            {
+                // Memorystream does not need disposed
+                fs.Dispose();
+            }
             base.OnClosing(args);
         }
 

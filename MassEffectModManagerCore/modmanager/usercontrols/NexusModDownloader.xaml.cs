@@ -34,21 +34,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void LoadCommands()
         {
-            StartModInstallCommand = new GenericCommand(StartModInstalls, CanStartModInstalls);
+            CancelDownloadCommand = new GenericCommand(CancelDownload);
         }
 
-        private bool CanStartModInstalls()
+        private void CancelDownload()
         {
-            // TODO: IMPROVE
-            return Downloads.Any(x => x.Downloaded);
+
         }
 
-        private void StartModInstalls()
-        {
-            OnClosing(new DataEventArgs(Downloads.Where(x => x.Downloaded).ToList()));
-        }
-
-        public GenericCommand StartModInstallCommand { get; set; }
+        public GenericCommand CancelDownloadCommand { get; set; }
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
@@ -75,6 +69,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (sender is ModDownload md)
             {
                 md.OnModDownloaded -= ModDownloaded;
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    OnClosing(new DataEventArgs(new List<ModDownload>(new[] { md })));
+                });
             }
         }
 
@@ -88,7 +86,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     nextDownload.StartDownload();
                 }
-
             }
         }
     }
