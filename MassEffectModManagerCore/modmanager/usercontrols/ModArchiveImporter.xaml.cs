@@ -352,6 +352,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 closeStreamOnComplete = false;
                 archiveStream.Position = 0;
                 archiveFile = isExe ? new SevenZipExtractor(archiveStream, InArchiveFormat.Nsis) : new SevenZipExtractor(archiveStream);
+                archiveFile.SetFilename(filepath);
             }
             else
             {

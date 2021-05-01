@@ -146,7 +146,7 @@ namespace MassEffectModManagerCore
         }
 
         public string FailedModsString { get; set; }
-        public string NexusLoginInfoString { get; set; } = M3L.GetString(M3L.string_loginToNexusMods);
+        public string NexusLoginInfoString { get; set; } // BLANK TO START = M3L.GetString(M3L.string_loginToNexusMods);
 
         /// <summary>
         /// User controls that are queued for displaying when the previous one has closed.
@@ -302,7 +302,6 @@ namespace MassEffectModManagerCore
         {
             if (NexusModsUtilities.HasAPIKey)
             {
-                NexusLoginInfoString = M3L.GetString(M3L.string_nexusLoggedIn);
                 if (!languageUpdateOnly)
                 {
                     var loggedIn = await AuthToNexusMods();
@@ -311,6 +310,12 @@ namespace MassEffectModManagerCore
                         Log.Error(@"Error authorizing to NexusMods, did not get response from server or issue occurred while checking credentials. Setting not authorized");
                         SetNexusNotAuthorizedUI();
                     }
+                }
+
+                if (NexusModsUtilities.UserInfo != null)
+                {
+                    NexusLoginInfoString = NexusModsUtilities.UserInfo.Name;
+                    //M3L.GetString(M3L.string_nexusLoggedIn);
                 }
 
                 //prevent reseting ui to not authorized
@@ -323,8 +328,6 @@ namespace MassEffectModManagerCore
         private void SetNexusNotAuthorizedUI()
         {
             NexusLoginInfoString = M3L.GetString(M3L.string_loginToNexusMods);
-            NexusUsername = null;
-            NexusUserID = 0;
             ME1NexusEndorsed = ME2NexusEndorsed = ME3NexusEndorsed = false;
             EndorseM3String = M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
         }
@@ -333,7 +336,7 @@ namespace MassEffectModManagerCore
         {
             if (languageUpdateOnly)
             {
-                if (NexusUsername != null)
+                if (NexusModsUtilities.UserInfo != null)
                 {
                     EndorseM3String = (ME1NexusEndorsed || ME2NexusEndorsed || ME3NexusEndorsed) ? M3L.GetString(M3L.string_endorsedME3TweaksModManagerOnNexusMods) : M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
                 }
@@ -349,19 +352,17 @@ namespace MassEffectModManagerCore
             if (userInfo != null)
             {
                 Log.Information(@"Authenticated to NexusMods");
-                NexusUsername = userInfo.Name;
-                NexusUserID = userInfo.UserID;
 
                 //ME1
-                var me1Status = await NexusModsUtilities.GetEndorsementStatusForFile(@"masseffect", 149, NexusUserID);
+                var me1Status = await NexusModsUtilities.GetEndorsementStatusForFile(@"masseffect", 149);
                 ME1NexusEndorsed = me1Status ?? false;
 
                 //ME2
-                var me2Status = await NexusModsUtilities.GetEndorsementStatusForFile(@"masseffect2", 248, NexusUserID);
+                var me2Status = await NexusModsUtilities.GetEndorsementStatusForFile(@"masseffect2", 248);
                 ME2NexusEndorsed = me2Status ?? false;
 
                 //ME3
-                var me3Status = await NexusModsUtilities.GetEndorsementStatusForFile(@"masseffect3", 373, NexusUserID);
+                var me3Status = await NexusModsUtilities.GetEndorsementStatusForFile(@"masseffect3", 373);
                 ME3NexusEndorsed = me3Status ?? false;
 
                 EndorseM3String = (ME1NexusEndorsed || ME2NexusEndorsed || ME3NexusEndorsed) ? M3L.GetString(M3L.string_endorsedME3TweaksModManagerOnNexusMods) : M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
@@ -509,7 +510,14 @@ namespace MassEffectModManagerCore
         private void OpenNexusSearch()
         {
             var nexusSearchPanel = new NexusFileQueryPanel();
-            nexusSearchPanel.Close += (a, b) => { ReleaseBusyControl(); };
+            nexusSearchPanel.Close += (a, b) =>
+            {
+                ReleaseBusyControl();
+                if (b.Data is string nxmlink && nxmlink.StartsWith("nxm://"))
+                {
+                    showNXMDownloader(nxmlink);
+                }
+            };
             ShowBusyControl(nexusSearchPanel);
         }
 
@@ -713,7 +721,7 @@ namespace MassEffectModManagerCore
 
         private bool CanEndorseM3()
         {
-            return NexusUserID != 0 && (!ME1NexusEndorsed && !ME2NexusEndorsed && !ME3NexusEndorsed);
+            return NexusModsUtilities.UserInfo != null && (!ME1NexusEndorsed && !ME2NexusEndorsed && !ME3NexusEndorsed);
         }
 
         private void EndorseM3()
@@ -721,7 +729,7 @@ namespace MassEffectModManagerCore
             if (!ME1NexusEndorsed)
             {
                 Log.Information(@"Endorsing M3 (ME1)");
-                NexusModsUtilities.EndorseFile(@"masseffect", true, 149, NexusUserID, (newStatus) =>
+                NexusModsUtilities.EndorseFile(@"masseffect", true, 149, (newStatus) =>
                 {
                     ME1NexusEndorsed = newStatus;
                     EndorseM3String = (ME1NexusEndorsed || ME2NexusEndorsed || ME3NexusEndorsed) ? M3L.GetString(M3L.string_endorsedME3TweaksModManagerOnNexusMods) : M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
@@ -731,7 +739,7 @@ namespace MassEffectModManagerCore
             if (!ME2NexusEndorsed)
             {
                 Log.Information(@"Endorsing M3 (ME2)");
-                NexusModsUtilities.EndorseFile(@"masseffect2", true, 248, NexusUserID, (newStatus) =>
+                NexusModsUtilities.EndorseFile(@"masseffect2", true, 248, (newStatus) =>
                 {
                     ME2NexusEndorsed = newStatus;
                     EndorseM3String = (ME1NexusEndorsed || ME2NexusEndorsed || ME3NexusEndorsed) ? M3L.GetString(M3L.string_endorsedME3TweaksModManagerOnNexusMods) : M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
@@ -741,7 +749,7 @@ namespace MassEffectModManagerCore
             if (!ME3NexusEndorsed)
             {
                 Log.Information(@"Endorsing M3 (ME3)");
-                NexusModsUtilities.EndorseFile(@"masseffect3", true, 373, NexusUserID, (newStatus) =>
+                NexusModsUtilities.EndorseFile(@"masseffect3", true, 373, (newStatus) =>
                 {
                     ME3NexusEndorsed = newStatus;
                     EndorseM3String = (ME1NexusEndorsed || ME2NexusEndorsed || ME3NexusEndorsed) ? M3L.GetString(M3L.string_endorsedME3TweaksModManagerOnNexusMods) : M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
@@ -794,7 +802,7 @@ namespace MassEffectModManagerCore
                 Log.Information(@"Endorsing mod: " + SelectedMod.ModName);
                 CurrentModEndorsementStatus = M3L.GetString(M3L.string_endorsing);
                 IsEndorsingMod = true;
-                SelectedMod.EndorseMod(EndorsementCallback, true, NexusUserID);
+                SelectedMod.EndorseMod(EndorsementCallback, true);
             }
         }
 
@@ -805,7 +813,7 @@ namespace MassEffectModManagerCore
                 Log.Information(@"Unendorsing mod: " + SelectedMod.ModName);
                 CurrentModEndorsementStatus = M3L.GetString(M3L.string_unendorsing);
                 IsEndorsingMod = true;
-                SelectedMod.EndorseMod(EndorsementCallback, false, NexusUserID);
+                SelectedMod.EndorseMod(EndorsementCallback, false);
             }
         }
 
@@ -2331,7 +2339,7 @@ namespace MassEffectModManagerCore
                         {
                             CurrentModEndorsementStatus = M3L.GetString(M3L.string_gettingEndorsementStatus);
 
-                            var endorsed = await SelectedMod.GetEndorsementStatus(NexusUserID);
+                            var endorsed = await SelectedMod.GetEndorsementStatus();
                             if (endorsed != null)
                             {
                                 if (SelectedMod != null)
@@ -2960,8 +2968,6 @@ namespace MassEffectModManagerCore
 
         public string CurrentModEndorsementStatus { get; private set; } = M3L.GetString(M3L.string_endorseMod);
         public bool IsEndorsingMod { get; private set; }
-        public string NexusUsername { get; set; }
-        public int NexusUserID { get; set; }
 
         public bool CanOpenMEIM()
         {

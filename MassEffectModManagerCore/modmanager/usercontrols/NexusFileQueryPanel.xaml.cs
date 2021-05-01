@@ -9,6 +9,7 @@ using System.Windows.Input;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
+using MassEffectModManagerCore.modmanager.nexusmodsintegration;
 using MassEffectModManagerCore.modmanager.objects.nexusfiledb;
 using MassEffectModManagerCore.ui;
 using ME3ExplorerCore.Packages;
@@ -31,18 +32,45 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public bool SearchME1 { get; set; }
         public bool SearchME2 { get; set; }
         public bool SearchME3 { get; set; }
+        public void OnSearchME1Changed() { UpdateFilters(); }
+
+        private void UpdateFilters()
+        {
+            var newNames = new List<string>();
+            IEnumerable<string> getFilenamesForGame(string domain)
+            {
+                return LoadedDatabases[domain].FileInstances.Select(x => LoadedDatabases[domain].NameTable[x.Key]);
+            }
+            if (SearchME1) { newNames.AddRange(getFilenamesForGame("masseffect")); }
+            if (SearchME2) { newNames.AddRange(getFilenamesForGame("masseffect2")); }
+            if (SearchME3) { newNames.AddRange(getFilenamesForGame("masseffect3")); }
+
+            newNames = newNames.Distinct().OrderBy(x => x).ToList();
+            AllSearchableNames.ReplaceAll(newNames);
+        }
+
+        public void OnSearchME2Changed() { UpdateFilters(); }
+        public void OnSearchME3Changed() { UpdateFilters(); }
+
+
+        public ObservableCollectionExtended<string> AllSearchableNames { get; } = new ObservableCollectionExtended<string>();
+
         public NexusFileQueryPanel()
         {
             LoadCommands();
             InitializeComponent();
         }
 
+        public RelayCommand DownloadModCommand { get; private set; }
+        public GenericCommand SearchCommand { get; set; }
+
         private void LoadCommands()
         {
+            DownloadModCommand = new RelayCommand(DownloadMod, CanDownloadMod);
             SearchCommand = new GenericCommand(PerformSearch, CanSearch);
         }
 
-        public GenericCommand SearchCommand { get; set; }
+
         public ObservableCollectionExtended<SearchedItemResult> Results { get; } = new ObservableCollectionExtended<SearchedItemResult>();
 
         private bool CanSearch() => !QueryInProgress && !string.IsNullOrWhiteSpace(SearchTerm) && (SearchME1 || SearchME2 || SearchME3);
@@ -61,15 +89,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 foreach (var domain in searchGames)
                 {
-                    if (!LoadedDatabases.TryGetValue(domain, out var db))
-                    {
-                        db = GameDatabase.LoadDatabase(domain);
-                        if (db != null)
-                        {
-                            LoadedDatabases[domain] = db;
-                        }
-                    }
-
+                    var db = LoadedDatabases[domain];
                     // Check if the name exists in filenames. If it doesn't, it will never find it
 #if DEBUG
 
@@ -147,6 +167,19 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
         }
 
+        private bool CanDownloadMod(object obj) => NexusModsUtilities.UserInfo != null && NexusModsUtilities.UserInfo.IsPremium;
+
+        private void DownloadMod(object obj)
+        {
+            if (obj is SearchedItemResult sir)
+            {
+                string nxmlink = $"nxm://{sir.Domain}/mods/{sir.Instance.ModID}/files/{sir.Instance.FileID}";
+                OnClosing(new DataEventArgs(nxmlink));
+            }
+        }
+
+        private string[] alldomains = { "masseffect", "masseffect2", "masseffect3" };
+
         public override void OnPanelVisible()
         {
             Task.Run(() =>
@@ -154,14 +187,27 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 try
                 {
                     GameDatabase.EnsureDatabaseFile(true);
+
+                // Load DBs
+                foreach (var domain in alldomains)
+                    {
+                        if (!LoadedDatabases.TryGetValue(domain, out var db))
+                        {
+                            db = GameDatabase.LoadDatabase(domain);
+                            if (db != null)
+                            {
+                                LoadedDatabases[domain] = db;
+                            }
+                        }
+                    }
                 }
                 catch (Exception e)
                 {
                     Log.Error($@"Could not ensure the nexus database: {e.Message}");
                 }
 
-                // No longer busy
-                QueryInProgress = false;
+            // No longer busy
+            QueryInProgress = false;
                 BusyStatusText = M3L.GetString(M3L.string_searching);
             });
         }

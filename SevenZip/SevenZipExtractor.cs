@@ -50,6 +50,15 @@ namespace SevenZip
         /// </summary>
         private bool _asynchronousDisposeLock;
 
+        /// <summary>
+        /// M3: Sets the internal filename, which allows you to use streamed versions reliably even if there is no backing filepath
+        /// </summary>
+        /// <param name="filename"></param>
+        public void SetFilename(string filename)
+        {
+            _fileName = filename;
+        }
+
         #region Constructors
         /// <summary>
         /// General initialization function.

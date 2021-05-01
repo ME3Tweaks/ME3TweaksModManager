@@ -5,6 +5,7 @@ using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.nexusmodsintegration;
 using ME3ExplorerCore.Packages;
 using Microsoft.AppCenter.Analytics;
+using Pathoschild.FluentNexus.Models;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.objects.mod
@@ -17,7 +18,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
         public bool CanEndorse { get; set; }
         //public string EndorsementStatus { get; set; } = "Endorse mod";
 
-        public async Task<bool?> GetEndorsementStatus(int currentuserid)
+        public async Task<bool?> GetEndorsementStatus()
         {
             if (!NexusModsUtilities.HasAPIKey) return false;
             if (checkedEndorsementStatus) return IsEndorsed;
@@ -28,7 +29,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 if (Game == MEGame.ME2) gamename += @"2";
                 if (Game == MEGame.ME3) gamename += @"3";
                 var modinfo = await client.Mods.GetMod(gamename, NexusModID);
-                if (modinfo.User.MemberID == currentuserid)
+                if (modinfo.User.MemberID == NexusModsUtilities.UserInfo.UserID)
                 {
                     IsEndorsed = false;
                     CanEndorse = false;
@@ -71,13 +72,17 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
         /// <param name="newEndorsementStatus"></param>
         /// <param name="endorse"></param>
         /// <param name="currentuserid"></param>
-        public void EndorseMod(Action<Mod, bool, string> endorsementResultCallback, bool endorse, int currentuserid)
+        public void EndorseMod(Action<Mod, bool, string> endorsementResultCallback, bool endorse)
         {
-            if (!NexusModsUtilities.HasAPIKey || !CanEndorse) return;
+            if (NexusModsUtilities.UserInfo == null || !CanEndorse) return;
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"ModSpecificEndorsement");
             nbw.DoWork += (a, b) =>
             {
                 var client = NexusModsUtilities.GetClient();
+
+                var mf = client.ModFiles.GetModFiles("masseffect", 1).Result;
+
+
                 string gamename = @"masseffect";
                 if (Game == MEGame.ME2) gamename += @"2";
                 if (Game == MEGame.ME3) gamename += @"3";
@@ -116,7 +121,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 }
 
                 checkedEndorsementStatus = false;
-                IsEndorsed = GetEndorsementStatus(currentuserid).Result ?? false;
+                IsEndorsed = GetEndorsementStatus().Result ?? false;
                 Analytics.TrackEvent(@"Set endorsement for mod", new Dictionary<string, string>
                 {
                     {@"Endorsed", endorse.ToString() },

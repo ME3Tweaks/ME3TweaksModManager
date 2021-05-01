@@ -45,14 +45,21 @@
                     Content="Mass Effect 3"
                     IsChecked="{Binding SearchME3}" />
             </StackPanel>
-            <TextBox
-                Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}">
-                <TextBox.InputBindings>
+            <ComboBox
+                Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}"
+                ItemsSource="{Binding AllSearchableNames}"
+                IsEditable="True">
+                <ComboBox.InputBindings>
                     <KeyBinding
                         Key="Enter"
                         Command="{Binding SearchCommand}" />
-                </TextBox.InputBindings>
-            </TextBox>
+                </ComboBox.InputBindings>
+                <ComboBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel />
+                    </ItemsPanelTemplate>
+                </ComboBox.ItemsPanel>
+            </ComboBox>
         </DockPanel>
         <DockPanel
             Margin="0,5,0,0"
@@ -94,20 +101,36 @@
                 <ItemsControl
                     Style="{StaticResource ItemsControlVirtualizedStyle}"
                     ItemsSource="{Binding Results}"
+                    AlternationCount="2"
+                    Name="ResultsItemControl"
                     Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate
                             DataType="{x:Type local:NexusFileQueryPanel+SearchedItemResult}">
-                            <DockPanel
-                                Margin="0,2">
-                                <Image
+                            <Grid Name="ResultContainer">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="52"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" ToolTip="Download this mod">
+                                    <Image
                                     Source="{Binding GameIconSource}"
                                     Width="48"
-                                    Margin="0,0,4,0"
                                     VerticalAlignment="Top"
-                                    Height="48"
-                                    DockPanel.Dock="Left" />
-                                <TextBlock
+                                     />
+                                    <Button Cursor="Hand"
+                                            Background="Transparent"
+                                            BorderThickness="0"
+                                            Command="{Binding DownloadModCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:NexusFileQueryPanel}}}" 
+                                            CommandParameter="{Binding}">
+                                        <fa:ImageAwesome Icon="Download" Width="12"  />
+                                    </Button>
+                                </StackPanel>
+                                <DockPanel
+                                Grid.Column="1"
+                                Margin="0,2">
+
+                                    <TextBlock
                                     FontWeight="Bold"
                                     Padding="0"
                                     Margin="0,-2,0,0"
@@ -118,34 +141,44 @@
                                         <TextBlock
                                             Text="{Binding ModName}" />
                                     </Hyperlink>
-                                </TextBlock>
-                                <TextBlock 
+                                                                        </TextBlock>
+                                    <TextBlock 
                                     ToolTip="{Binding Instance.FileID}"
                                     DockPanel.Dock="Top">
-                                    <TextBlock.Text>
-                                        <MultiBinding
+                                        <TextBlock.Text>
+                                            <MultiBinding
                                         StringFormat="{}{0} (Version {1}, uploaded {2:d})">
-                                            <Binding
+                                                <Binding
                                             Path="ModFileTitle" />
-                                            <Binding
+                                                <Binding
                                             Path="FileInfo.Version" />
-                                            <Binding
+                                                <Binding
                                             Path="FileInfo.UploadDate" />
-                                        </MultiBinding>
-                                    </TextBlock.Text>
-                                </TextBlock>
-                                <TextBlock>
-                                    <TextBlock.Text>
-                                        <MultiBinding
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
+                                    <TextBlock Text="{Binding FileInfo.Description}" DockPanel.Dock="Top" TextWrapping="Wrap"/>
+                                    <TextBlock>
+                                        <TextBlock.Text>
+                                            <MultiBinding
                                             StringFormat="{}{0} - {1}">
-                                            <Binding
+                                                <Binding
                                                 Path="FullPath" />
-                                            <Binding
+                                                <Binding
                                                 Path="Instance.Size" />
-                                        </MultiBinding>
-                                    </TextBlock.Text>
-                                </TextBlock>
-                            </DockPanel>
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
+                                </DockPanel>
+                            </Grid>
+                            <DataTemplate.Triggers>
+                                <!--<Trigger Property="ItemsControl.AlternationIndex" Value="0">
+                                    <Setter Property="Background" Value="{x:Static adonisUi:Brushes.Layer1BackgroundBrush}" TargetName="ResultContainer"/>
+                                </Trigger>-->
+                                <Trigger Property="ItemsControl.AlternationIndex" Value="1">
+                                    <Setter Property="Background" Value="#22000000" TargetName="ResultContainer"/>
+                                </Trigger>
+                            </DataTemplate.Triggers>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                     <b:Interaction.Behaviors>

@@ -27,6 +27,11 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
     [Localizable(false)]
     public class NexusModsUtilities
     {
+        /// <summary>
+        /// User information for the authenticated NexusMods user
+        /// </summary>
+        public static User UserInfo { get; private set; }
+
 
         private static byte[] CreateRandomEntropy()
         {
@@ -73,7 +78,7 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
                 if (userinfo.Name != null)
                 {
                     Log.Information("NexusMods API call returned valid data. API key is valid");
-
+                    UserInfo = userinfo;
                     //Authorized OK.
 
                     //Track how many users authenticate to nexusmods, but don't track who.
@@ -90,8 +95,13 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
 
         public static bool HasAPIKey => File.Exists(Path.Combine(Utilities.GetNexusModsCache(), "nexusmodsapikey"));
 
+        /// <summary>
+        /// Wipes the nexus keys from storage and removes the UserInfo variable
+        /// </summary>
+        /// <returns></returns>
         public static bool WipeKeys()
         {
+            UserInfo = null;
             var keyPath = Path.Combine(Utilities.GetNexusModsCache(), "nexusmodsapikey");
             var entropyf = Path.Combine(Utilities.GetNexusModsCache(), "entropy");
             if (File.Exists(keyPath)) File.Delete(keyPath);
@@ -125,14 +135,14 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
             return new NexusClient(key, "ME3Tweaks Mod Manager", App.BuildNumber.ToString());
         }
 
-        public static async Task<bool?> GetEndorsementStatusForFile(string gamedomain, int fileid, int currentuserid)
+        public static async Task<bool?> GetEndorsementStatusForFile(string gamedomain, int fileid)
         {
-            if (!NexusModsUtilities.HasAPIKey) return false;
+            if (UserInfo == null) return false;
             var client = NexusModsUtilities.GetClient();
             try
             {
                 var modinfo = await client.Mods.GetMod(gamedomain, fileid);
-                if (modinfo.User.MemberID == currentuserid)
+                if (modinfo.User.MemberID == UserInfo.UserID)
                 {
                     return null; //cannot endorse your own mods
                 }
@@ -166,9 +176,9 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
         /// <param name="endorse"></param>
         /// <param name="fileid"></param>
         /// <param name="currentuserid"></param>
-        public static void EndorseFile(string gamedomain, bool endorse, int fileid, int currentuserid, Action<bool> newEndorsementStatusCallback = null)
+        public static void EndorseFile(string gamedomain, bool endorse, int fileid, Action<bool> newEndorsementStatusCallback = null)
         {
-            if (!NexusModsUtilities.HasAPIKey) return;
+            if (NexusModsUtilities.UserInfo == null) return;
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"EndorseMod");
             nbw.DoWork += (a, b) =>
             {
@@ -192,7 +202,7 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
                     telemetryOverride = e.ToString();
                 }
 
-                var newStatus = GetEndorsementStatusForFile(gamedomain, fileid, currentuserid).Result;
+                var newStatus = GetEndorsementStatusForFile(gamedomain, fileid).Result;
 
                 Analytics.TrackEvent(@"Set endorsement for mod", new Dictionary<string, string>
                 {
@@ -309,7 +319,7 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
                     installNewCopy = false;
                 }
             }
-            
+
             if (installNewCopy)
             {
                 // It's not setup. We will set up a copy of it

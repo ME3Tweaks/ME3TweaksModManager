@@ -190,8 +190,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             using FileStream fs = new FileStream(System.IO.Path.Combine(Utilities.GetNexusModsCache(), @"nexusmodsapikey"), FileMode.Create);
                             File.WriteAllBytes(System.IO.Path.Combine(Utilities.GetNexusModsCache(), @"entropy"), NexusModsUtilities.EncryptStringToStream(apiKeyReceived, fs));
                             fs.Close();
-                            mainwindow.NexusUsername = authInfo.Name;
-                            mainwindow.NexusUserID = authInfo.UserID;
                             SetAuthorized(true);
                             mainwindow.RefreshNexusStatus();
                             AuthorizedToNexusUsername = authInfo.Name;
@@ -200,8 +198,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         else
                         {
                             Log.Error(@"Error authenticating to nexusmods, no userinfo was returned, possible network issue");
-                            mainwindow.NexusUsername = null;
-                            mainwindow.NexusUserID = 0;
                             SetAuthorized(false);
                             mainwindow.RefreshNexusStatus();
                         }
@@ -245,9 +241,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             IsAuthorized = authorized;
             string authenticatedString = M3L.GetString(M3L.string_authenticateToNexusMods);
-            if (authorized && mainwindow.NexusUsername != null)
+            if (authorized && NexusModsUtilities.UserInfo != null)
             {
-                authenticatedString = M3L.GetString(M3L.string_interp_authenticatedAsX, mainwindow.NexusUsername);
+                authenticatedString = M3L.GetString(M3L.string_interp_authenticatedAsX, NexusModsUtilities.UserInfo.Name);
             }
             VisibleIcon = authorized;
             if (authorized)
