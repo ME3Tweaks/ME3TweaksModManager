@@ -40,10 +40,10 @@
         }
 
         /// <summary>
-        /// Returns if this archive backing stream is disposed and is no longer usable
+        /// M3 TEST METHOD: Returns if this archive backing stream is disposed and is no longer usable
         /// </summary>
         /// <returns></returns>
-        public bool IsDisposed() => _disposed || !_inStream.CanRead;
+        public bool IsDisposed() => _disposed || (_inStream != null && !_inStream.CanRead);
 
         internal override void SaveContext()
         {
