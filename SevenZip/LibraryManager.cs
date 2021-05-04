@@ -40,8 +40,25 @@ namespace SevenZip
             //    return ConfigurationManager.AppSettings["7zLocation"];
             //}
 
-            if (string.IsNullOrEmpty(Assembly.GetExecutingAssembly().Location)) return null;
-            return Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), Environment.Is64BitProcess ? "7z64.dll" : "7z.dll");
+            var dllname = Environment.Is64BitProcess ? "7z64.dll" : "7z.dll";
+            StringBuilder sb = new StringBuilder();
+            var t = AppContext.GetData("NATIVE_DLL_SEARCH_DIRECTORIES");
+            if (t is string str)
+            {
+                var paths = str.Split(';');
+                foreach (var path in paths)
+                {
+                    if (string.IsNullOrWhiteSpace(path)) continue;
+                    var tpath = Path.Combine(path, dllname);
+                    sb.AppendLine(tpath);
+                    if (File.Exists(tpath))
+                        return tpath;
+                }
+            }
+
+            // NOT FOUND - THIS ONLY WORKS FOR .NET 5
+            File.WriteAllText(@"C:\users\mgamerz\desktop\out.txt", sb.ToString());
+            return Path.Combine(AppContext.BaseDirectory, dllname);
         }
 
         /// <summary>
@@ -111,13 +128,20 @@ namespace SevenZip
 
                 if (_modulePtr == IntPtr.Zero)
                 {
+                    // M3: Remove this so it uses native lookup methods
+                    //StringBuilder sb = new StringBuilder();
+                    //sb.AppendLine($"Launched from {Environment.CurrentDirectory}");
+                    //sb.AppendLine($"Physical location {AppDomain.CurrentDomain.BaseDirectory}");
+                    //sb.AppendLine($"AppContext.BaseDir {AppContext.BaseDirectory}");
+                    //sb.AppendLine($"Runtime Call {Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName)}");
+                    //File.WriteAllText(@"C:\users\mgamerz\desktop\out.txt", sb.ToString());
                     if (!File.Exists(_libraryFileName))
                     {
-                        throw new SevenZipLibraryException("DLL file does not exist.");
+                        throw new SevenZipLibraryException($"7z DLL file does not exist: {_libraryFileName}");
                     }
                     if ((_modulePtr = NativeMethods.LoadLibrary(_libraryFileName)) == IntPtr.Zero)
                     {
-                        throw new SevenZipLibraryException($"failed to load library from \"{_libraryFileName}\".");
+                        throw new SevenZipLibraryException($"failed to load library \"{_libraryFileName}\".");
                     }
                     if (NativeMethods.GetProcAddress(_modulePtr, "GetHandlerProperty") == IntPtr.Zero)
                     {
@@ -334,62 +358,62 @@ namespace SevenZip
             //sp.Demand();
 
             lock (_syncRoot)
-			{
-                if (_modulePtr != IntPtr.Zero)
             {
-                if (format is InArchiveFormat archiveFormat)
+                if (_modulePtr != IntPtr.Zero)
                 {
-                    if (_inArchives != null && _inArchives.ContainsKey(user) &&
-                        _inArchives[user].ContainsKey(archiveFormat) &&
-                        _inArchives[user][archiveFormat] != null)
+                    if (format is InArchiveFormat archiveFormat)
                     {
-                        try
-                        {                            
-                            Marshal.ReleaseComObject(_inArchives[user][archiveFormat]);
-                        }
-                        catch (InvalidComObjectException) {}
-                        _inArchives[user].Remove(archiveFormat);
-                        _totalUsers--;
-                        if (_inArchives[user].Count == 0)
+                        if (_inArchives != null && _inArchives.ContainsKey(user) &&
+                            _inArchives[user].ContainsKey(archiveFormat) &&
+                            _inArchives[user][archiveFormat] != null)
                         {
-                            _inArchives.Remove(user);
+                            try
+                            {
+                                Marshal.ReleaseComObject(_inArchives[user][archiveFormat]);
+                            }
+                            catch (InvalidComObjectException) { }
+                            _inArchives[user].Remove(archiveFormat);
+                            _totalUsers--;
+                            if (_inArchives[user].Count == 0)
+                            {
+                                _inArchives.Remove(user);
+                            }
                         }
                     }
-                }
 
-                if (format is OutArchiveFormat outArchiveFormat)
-                {
-                    if (_outArchives != null && _outArchives.ContainsKey(user) &&
-                        _outArchives[user].ContainsKey(outArchiveFormat) &&
-                        _outArchives[user][outArchiveFormat] != null)
+                    if (format is OutArchiveFormat outArchiveFormat)
                     {
-                        try
+                        if (_outArchives != null && _outArchives.ContainsKey(user) &&
+                            _outArchives[user].ContainsKey(outArchiveFormat) &&
+                            _outArchives[user][outArchiveFormat] != null)
                         {
-                            Marshal.ReleaseComObject(_outArchives[user][outArchiveFormat]);
-                        }
-                        catch (InvalidComObjectException) {}
-                        _outArchives[user].Remove(outArchiveFormat);
-                        _totalUsers--;
-                        if (_outArchives[user].Count == 0)
-                        {
-                            _outArchives.Remove(user);
+                            try
+                            {
+                                Marshal.ReleaseComObject(_outArchives[user][outArchiveFormat]);
+                            }
+                            catch (InvalidComObjectException) { }
+                            _outArchives[user].Remove(outArchiveFormat);
+                            _totalUsers--;
+                            if (_outArchives[user].Count == 0)
+                            {
+                                _outArchives.Remove(user);
+                            }
                         }
                     }
-                }
 
-                if ((_inArchives == null || _inArchives.Count == 0) && (_outArchives == null || _outArchives.Count == 0))
-                {
-                    _inArchives = null;
-                    _outArchives = null;
-
-                    if (_totalUsers == 0)
+                    if ((_inArchives == null || _inArchives.Count == 0) && (_outArchives == null || _outArchives.Count == 0))
                     {
-                        NativeMethods.FreeLibrary(_modulePtr);
-                        _modulePtr = IntPtr.Zero;
+                        _inArchives = null;
+                        _outArchives = null;
+
+                        if (_totalUsers == 0)
+                        {
+                            NativeMethods.FreeLibrary(_modulePtr);
+                            _modulePtr = IntPtr.Zero;
+                        }
                     }
                 }
             }
-			}
         }
 
         /// <summary>
@@ -439,7 +463,7 @@ namespace SevenZip
                         throw new SevenZipLibraryException("Your 7-zip library does not support this archive type.");
                     }
 
-                    InitUserInFormat(user, format);									
+                    InitUserInFormat(user, format);
                     _inArchives[user][format] = result as IInArchive;
                 }
 
@@ -492,7 +516,7 @@ namespace SevenZip
 
         public static void SetLibraryPath(string libraryPath)
         {
-            if (_modulePtr != IntPtr.Zero && !Path.GetFullPath(libraryPath).Equals( 
+            if (_modulePtr != IntPtr.Zero && !Path.GetFullPath(libraryPath).Equals(
                 Path.GetFullPath(_libraryFileName), StringComparison.OrdinalIgnoreCase))
             {
                 throw new SevenZipLibraryException(

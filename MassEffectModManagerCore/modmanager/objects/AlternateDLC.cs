@@ -306,26 +306,35 @@ namespace MassEffectModManagerCore.modmanager.objects
             if (dlcReqs != null)
             {
                 var reqList = new List<string>();
-                foreach (var req in dlcReqs)
+                foreach (var originalReq in dlcReqs)
                 {
-
-                    //official headers
-                    if (Enum.TryParse(req, out ModJob.JobHeader header) && ModJob.GetHeadersToDLCNamesMap(modForValidating.Game).TryGetValue(header, out var foldername))
+                    var testreq = originalReq;
+                    string prefix = "";
+                    if (modForValidating.ModDescTargetVersion >= 6.3)
                     {
-                        reqList.Add(foldername);
+                        if (testreq.StartsWith("-") || testreq.StartsWith("+"))
+                        {
+                            prefix = testreq[0].ToString();
+                        } 
+                        testreq = testreq.TrimStart('-', '+');
+                    }
+                    //official headers
+                    if (Enum.TryParse(testreq, out ModJob.JobHeader header) && ModJob.GetHeadersToDLCNamesMap(modForValidating.Game).TryGetValue(header, out var foldername))
+                    {
+                        reqList.Add(prefix + foldername);
                         continue;
                     }
 
                     //dlc mods
-                    if (!req.StartsWith(@"DLC_"))
+                    if (!originalReq.StartsWith(@"DLC_"))
                     {
-                        Log.Error($@"An item in Alternate DLC's ({FriendlyName}) DLCRequirements doesn't start with DLC_ or is not official header. Bad value: {req}");
-                        LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altdlc_dlcRequirementInvalid, FriendlyName, req);
+                        Log.Error($@"An item in Alternate DLC's ({FriendlyName}) DLCRequirements doesn't start with DLC_ or is not official header. Bad value: {originalReq}");
+                        LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altdlc_dlcRequirementInvalid, FriendlyName, originalReq);
                         return;
                     }
                     else
                     {
-                        reqList.Add(req);
+                        reqList.Add(originalReq);
                     }
                 }
 
