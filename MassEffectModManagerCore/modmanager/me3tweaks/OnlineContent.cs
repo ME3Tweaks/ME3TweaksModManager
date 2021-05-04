@@ -17,33 +17,32 @@ using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.me3tweaks
 {
-    //Localizable(false) //Leave this here for localizer tool!
     partial class OnlineContent
     {
-        private static readonly string StartupManifestURL = "https://me3tweaks.com/modmanager/updatecheck?currentversion=" + App.BuildNumber + "&M3=true";
-        private const string StartupManifestBackupURL = "https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/master/MassEffectModManagerCore/staticfiles/startupmanifest.json";
-        private const string ThirdPartyIdentificationServiceURL = "https://me3tweaks.com/modmanager/services/thirdpartyidentificationservice?highprioritysupport=true&allgames=true";
-        private const string StaticFilesBaseURL_Github = "https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/master/MassEffectModManagerCore/staticfiles/";
-        private const string StaticFilesBaseURL_ME3Tweaks = "https://me3tweaks.com/modmanager/tools/staticfiles/";
+        private static readonly string StartupManifestURL = @"https://me3tweaks.com/modmanager/updatecheck?currentversion=" + App.BuildNumber + @"&M3=true";
+        private const string StartupManifestBackupURL = @"https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/master/MassEffectModManagerCore/staticfiles/startupmanifest.json";
+        private const string ThirdPartyIdentificationServiceURL = @"https://me3tweaks.com/modmanager/services/thirdpartyidentificationservice?highprioritysupport=true&allgames=true";
+        private const string StaticFilesBaseURL_Github = @"https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/master/MassEffectModManagerCore/staticfiles/";
+        private const string StaticFilesBaseURL_ME3Tweaks = @"https://me3tweaks.com/modmanager/tools/staticfiles/";
 
-        private const string ME3TweaksStaticFilesBaseURL_Github = "https://github.com/ME3Tweaks/ME3TweaksAssets/releases/download/";
+        private const string ME3TweaksStaticFilesBaseURL_Github = @"https://github.com/ME3Tweaks/ME3TweaksAssets/releases/download/";
 
-        private const string ThirdPartyImportingServiceURL = "https://me3tweaks.com/modmanager/services/thirdpartyimportingservice?allgames=true";
-        private const string BasegameFileIdentificationServiceURL = "https://me3tweaks.com/modmanager/services/basegamefileidentificationservice";
-        private const string BasegameFileIdentificationServiceBackupURL = "https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/master/MassEffectModManagerCore/staticfiles/basegamefileidentificationservice.json";
+        private const string ThirdPartyImportingServiceURL = @"https://me3tweaks.com/modmanager/services/thirdpartyimportingservice?allgames=true";
+        private const string BasegameFileIdentificationServiceURL = @"https://me3tweaks.com/modmanager/services/basegamefileidentificationservice";
+        private const string BasegameFileIdentificationServiceBackupURL = @"https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/master/MassEffectModManagerCore/staticfiles/basegamefileidentificationservice.json";
 
-        private const string ThirdPartyModDescURL = "https://me3tweaks.com/mods/dlc_mods/importingmoddesc/";
-        private const string ExeTransformBaseURL = "https://me3tweaks.com/mods/dlc_mods/importingexetransforms/";
-        private const string ModInfoRelayEndpoint = "https://me3tweaks.com/modmanager/services/relayservice";
-        private const string TipsServiceURL = "https://me3tweaks.com/modmanager/services/tipsservice";
-        private const string ModMakerTopModsEndpoint = "https://me3tweaks.com/modmaker/api/topmods";
-        private const string LocalizationEndpoint = "https://me3tweaks.com/modmanager/services/livelocalizationservice";
+        private const string ThirdPartyModDescURL = @"https://me3tweaks.com/mods/dlc_mods/importingmoddesc/";
+        private const string ExeTransformBaseURL = @"https://me3tweaks.com/mods/dlc_mods/importingexetransforms/";
+        private const string ModInfoRelayEndpoint = @"https://me3tweaks.com/modmanager/services/relayservice";
+        private const string TipsServiceURL = @"https://me3tweaks.com/modmanager/services/tipsservice";
+        private const string ModMakerTopModsEndpoint = @"https://me3tweaks.com/modmaker/api/topmods";
+        private const string LocalizationEndpoint = @"https://me3tweaks.com/modmanager/services/livelocalizationservice";
 
-        private const string TutorialServiceURL = "https://me3tweaks.com/modmanager/services/tutorialservice";
-        private const string TutorialServiceBackupURL = "https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/master/MassEffectModManagerCore/staticfiles/tutorialservice.json";
+        private const string TutorialServiceURL = @"https://me3tweaks.com/modmanager/services/tutorialservice";
+        private const string TutorialServiceBackupURL = @"https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/master/MassEffectModManagerCore/staticfiles/tutorialservice.json";
 
 
-        public static readonly string ModmakerModsEndpoint = "https://me3tweaks.com/modmaker/download.php?id=";
+        public static readonly string ModmakerModsEndpoint = @"https://me3tweaks.com/modmaker/download.php?id=";
 
         /// <summary>
         /// List of static files endpoints in order of preference
@@ -84,7 +83,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 string host = myUri.Host;
 
                 var fetchUrl = staticurl;
-                if (betamode && host == @"me3tweaks.com") fetchUrl += "&beta=true"; //only me3tweaks source supports beta. fallback will always just use whatever was live when it synced
+                if (betamode && host == @"me3tweaks.com") fetchUrl += @"&beta=true"; //only me3tweaks source supports beta. fallback will always just use whatever was live when it synced
 
                 try
                 {
@@ -203,13 +202,13 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     catch (Exception e)
                     {
                         //Unable to fetch latest help.
-                        Log.Error($"Error fetching online basegame file identification service from endpoint {host}: {e.Message}");
+                        Log.Error($@"Error fetching online basegame file identification service from endpoint {host}: {e.Message}");
                     }
                 }
 
                 if (cached == null)
                 {
-                    Log.Error("Unable to load basegame file identification service and local file doesn't exist. Returning a blank copy.");
+                    Log.Error(@"Unable to load basegame file identification service and local file doesn't exist. Returning a blank copy.");
                     Dictionary<string, CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>> d = new Dictionary<string, CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>>
                     {
                         ["ME1"] = new CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>(),
@@ -227,12 +226,12 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
             catch (Exception e)
             {
-                Log.Error("Could not parse cached basegame file identification service file. Returning blank BFIS data instead. Reason: " + e.Message);
+                Log.Error(@"Could not parse cached basegame file identification service file. Returning blank BFIS data instead. Reason: " + e.Message);
                 return new Dictionary<string, CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>>
                 {
-                    ["ME1"] = new CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>(),
-                    ["ME2"] = new CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>(),
-                    ["ME3"] = new CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>()
+                    [@"ME1"] = new CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>(),
+                    [@"ME2"] = new CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>(),
+                    [@"ME3"] = new CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>()
                 };
             }
         }
@@ -252,13 +251,13 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     string log = LogCollector.CollectLatestLog(true);
                     if (log != null && log.Length < FileSize.MebiByte * 7)
                     {
-                        attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, "applog.txt"));
+                        attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, @"applog.txt"));
                     }
                     Crashes.TrackError(e, new Dictionary<string, string>()
                     {
-                        {"Error type", "Error reading cached online content" },
-                        {"Service", "Third Party Identification Service" },
-                        {"Message", e.Message }
+                        {@"Error type", @"Error reading cached online content" },
+                        {@"Service", @"Third Party Identification Service" },
+                        {@"Message", e.Message }
                     }, attachments.ToArray());
                 }
             }
@@ -277,20 +276,20 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 catch (Exception e)
                 {
                     //Unable to fetch latest help.
-                    Log.Error("Error fetching online third party identification service: " + e.Message);
+                    Log.Error(@"Error fetching online third party identification service: " + e.Message);
 
                     if (cached != null)
                     {
-                        Log.Warning("Using cached third party identification service  file instead");
+                        Log.Warning(@"Using cached third party identification service  file instead");
                     }
                     else
                     {
-                        Log.Error("Unable to load third party identification service and local file doesn't exist. Returning a blank copy.");
+                        Log.Error(@"Unable to load third party identification service and local file doesn't exist. Returning a blank copy.");
                         Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>> d = new Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>>
                         {
-                            ["ME1"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>(),
-                            ["ME2"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>(),
-                            ["ME3"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>()
+                            [@"ME1"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>(),
+                            [@"ME2"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>(),
+                            [@"ME3"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>()
                         };
                         return d;
                     }
@@ -303,12 +302,12 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
             catch (Exception e)
             {
-                Log.Error("Could not parse cached third party identification service file. Returning blank TPMI data instead. Reason: " + e.Message);
+                Log.Error(@"Could not parse cached third party identification service file. Returning blank TPMI data instead. Reason: " + e.Message);
                 return new Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>>
                 {
-                    ["ME1"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>(),
-                    ["ME2"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>(),
-                    ["ME3"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>()
+                    [@"ME1"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>(),
+                    [@"ME2"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>(),
+                    [@"ME3"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>()
                 };
             }
         }
@@ -320,13 +319,13 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 using var wc = new ShortTimeoutWebClient();
                 if (authorizationToken != null)
                 {
-                    wc.Headers.Add("Authorization", authorizationToken);
+                    wc.Headers.Add(@"Authorization", authorizationToken);
                 }
                 return wc.DownloadStringAwareOfEncoding(url);
             }
             catch (Exception e)
             {
-                Log.Error("Error downloading string: " + e.Message);
+                Log.Error(@"Error downloading string: " + e.Message);
                 return null;
             }
         }
@@ -349,7 +348,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 }
                 catch (Exception e)
                 {
-                    Log.Error("Error converting top mods response to json: " + e.Message);
+                    Log.Error(@"Error converting top mods response to json: " + e.Message);
                 }
             }
 
@@ -378,13 +377,13 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     string log = LogCollector.CollectLatestLog(true);
                     if (log != null && log.Length < FileSize.MebiByte * 7)
                     {
-                        attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, "applog.txt"));
+                        attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, @"applog.txt"));
                     }
                     Crashes.TrackError(e, new Dictionary<string, string>()
                     {
-                        {"Error type", "Error reading cached online content" },
-                        {"Service", "Tips Service" },
-                        {"Message", e.Message }
+                        {@"Error type", @"Error reading cached online content" },
+                        {@"Service", @"Tips Service" },
+                        {@"Message", e.Message }
                     }, attachments.ToArray());
                 }
             }
@@ -402,14 +401,14 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 catch (Exception e)
                 {
                     //Unable to fetch latest help.
-                    Log.Error("Error fetching latest tips service file: " + e.Message);
+                    Log.Error(@"Error fetching latest tips service file: " + e.Message);
                     if (cached != null)
                     {
-                        Log.Warning("Using cached tips service file instead");
+                        Log.Warning(@"Using cached tips service file instead");
                     }
                     else
                     {
-                        Log.Error("Unable to fetch latest tips service file from server and local file doesn't exist. Returning a blank copy.");
+                        Log.Error(@"Unable to fetch latest tips service file from server and local file doesn't exist. Returning a blank copy.");
                         return new Dictionary<string, List<string>>();
                     }
                 }
@@ -421,7 +420,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
             catch (Exception e)
             {
-                Log.Error("Unable to parse cached tips service file: " + e.Message);
+                Log.Error(@"Unable to parse cached tips service file: " + e.Message);
                 return new Dictionary<string, List<string>>();
             }
         }
@@ -441,13 +440,13 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     string log = LogCollector.CollectLatestLog(true);
                     if (log != null && log.Length < FileSize.MebiByte * 7)
                     {
-                        attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, "applog.txt"));
+                        attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, @"applog.txt"));
                     }
                     Crashes.TrackError(e, new Dictionary<string, string>()
                     {
-                        {"Error type", "Error reading cached online content" },
-                        {"Service", "Third Party Importing Service" },
-                        {"Message", e.Message }
+                        {@"Error type", @"Error reading cached online content" },
+                        {@"Service", @"Third Party Importing Service" },
+                        {@"Message", e.Message }
                     }, attachments.ToArray());
                 }
             }
@@ -465,15 +464,15 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 catch (Exception e)
                 {
                     //Unable to fetch latest help.
-                    Log.Error("Error fetching latest importing service file: " + e.Message);
+                    Log.Error(@"Error fetching latest importing service file: " + e.Message);
 
                     if (cached != null)
                     {
-                        Log.Warning("Using cached third party importing service file instead");
+                        Log.Warning(@"Using cached third party importing service file instead");
                     }
                     else
                     {
-                        Log.Error("Unable to fetch latest third party importing service file from server and local file doesn't exist. Returning a blank copy.");
+                        Log.Error(@"Unable to fetch latest third party importing service file from server and local file doesn't exist. Returning a blank copy.");
                         return new Dictionary<long, List<ThirdPartyServices.ThirdPartyImportingInfo>>();
                     }
                 }
@@ -484,7 +483,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
             catch (Exception e)
             {
-                Log.Error("Unable to parse cached importing service file: " + e.Message);
+                Log.Error(@"Unable to parse cached importing service file: " + e.Message);
                 return new Dictionary<long, List<ThirdPartyServices.ThirdPartyImportingInfo>>();
             }
         }
@@ -506,8 +505,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         Uri myUri = new Uri(endpoint);
                         string host = myUri.Host;
 
-                        var fullurl = endpoint + "tutorial/" + step.imagename;
-                        Log.Information($"Downloading {step.imagename} from endpoint {host}");
+                        var fullurl = endpoint + @"tutorial/" + step.imagename;
+                        Log.Information($@"Downloading {step.imagename} from endpoint {host}");
                         var downloadedImage = OnlineContent.DownloadToMemory(fullurl, null, step.imagemd5);
                         if (downloadedImage.errorMessage == null)
                         {
@@ -595,76 +594,76 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
             catch (Exception e)
             {
-                Log.Error("Exception ensuring critical files: " + App.FlattenException(e));
+                Log.Error(@"Exception ensuring critical files: " + App.FlattenException(e));
                 return false;
             }
 
             return true;
         }
 
-        public static bool EnsureStaticAssets()
-        {
-            // This is not really used anymore. Just kept around in case new static assets are necessary.
-            // Used to download objectt infos. These are embedded into ME3ExplorerCore.
-            (string filename, string md5)[] objectInfoFiles = { };
-            string localBaseDir = Utilities.GetObjectInfoFolder();
+        //public static bool EnsureStaticAssets()
+        //{
+        //    // This is not really used anymore. Just kept around in case new static assets are necessary.
+        //    // Used to download objectt infos. These are embedded into ME3ExplorerCore.
+        //    (string filename, string md5)[] objectInfoFiles = { };
+        //    string localBaseDir = Utilities.GetObjectInfoFolder();
 
-            try
-            {
-                bool downloadOK = false;
+        //    try
+        //    {
+        //        bool downloadOK = false;
 
-                foreach (var info in objectInfoFiles)
-                {
-                    var localPath = Path.Combine(localBaseDir, info.filename);
-                    bool download = !File.Exists(localPath);
-                    if (!download)
-                    {
-                        var calcedMd5 = Utilities.CalculateMD5(localPath);
-                        download = calcedMd5 != info.md5;
-                        if (download) Log.Warning($@"Invalid hash for local asset {info.filename}: got {calcedMd5}, expected {info.md5}. Redownloading");
-                    }
-                    else
-                    {
-                        Log.Information($"Local asset missing: {info.filename}, downloading");
-                    }
+        //        foreach (var info in objectInfoFiles)
+        //        {
+        //            var localPath = Path.Combine(localBaseDir, info.filename);
+        //            bool download = !File.Exists(localPath);
+        //            if (!download)
+        //            {
+        //                var calcedMd5 = Utilities.CalculateMD5(localPath);
+        //                download = calcedMd5 != info.md5;
+        //                if (download) Log.Warning($@"Invalid hash for local asset {info.filename}: got {calcedMd5}, expected {info.md5}. Redownloading");
+        //            }
+        //            else
+        //            {
+        //                Log.Information($@"Local asset missing: {info.filename}, downloading");
+        //            }
 
-                    if (download)
-                    {
-                        foreach (var staticurl in StaticFilesBaseEndpoints)
-                        {
-                            var fullURL = staticurl + "objectinfos/" + info.filename;
+        //            if (download)
+        //            {
+        //                foreach (var staticurl in StaticFilesBaseEndpoints)
+        //                {
+        //                    var fullURL = staticurl + @"objectinfos/" + info.filename;
 
-                            try
-                            {
-                                using var wc = new ShortTimeoutWebClient();
-                                Log.Information("Downloading static asset: " + fullURL);
-                                wc.DownloadFile(fullURL, localPath);
-                                downloadOK = true;
-                                break;
-                            }
-                            catch (Exception e)
-                            {
-                                Log.Error($"Could not download {info} from endpoint {fullURL} {e.Message}");
-                            }
-                        }
-                    }
-                    else downloadOK = true; //say we're OK
-                }
+        //                    try
+        //                    {
+        //                        using var wc = new ShortTimeoutWebClient();
+        //                        Log.Information("Downloading static asset: " + fullURL);
+        //                        wc.DownloadFile(fullURL, localPath);
+        //                        downloadOK = true;
+        //                        break;
+        //                    }
+        //                    catch (Exception e)
+        //                    {
+        //                        Log.Error($"Could not download {info} from endpoint {fullURL} {e.Message}");
+        //                    }
+        //                }
+        //            }
+        //            else downloadOK = true; //say we're OK
+        //        }
 
-                if (!downloadOK)
-                {
-                    throw new Exception("At least one static asset failed to download. Mod Manager will not properly function without these assets. See logs for more information");
-                }
-            }
-            catch (Exception e)
-            {
-                Log.Error("Exception trying to ensure static assets: " + e.Message);
-                Crashes.TrackError(new Exception(@"Could not download static supporting files: " + e.Message));
-                return false;
-            }
+        //        if (!downloadOK)
+        //        {
+        //            throw new Exception("At least one static asset failed to download. Mod Manager will not properly function without these assets. See logs for more information");
+        //        }
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Log.Error("Exception trying to ensure static assets: " + e.Message);
+        //        Crashes.TrackError(new Exception(@"Could not download static supporting files: " + e.Message));
+        //        return false;
+        //    }
 
-            return true;
-        }
+        //    return true;
+        //}
 
         public static (MemoryStream result, string errorMessage) FetchString(string url)
         {
@@ -687,7 +686,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             var syncObject = new Object();
             lock (syncObject)
             {
-                Debug.WriteLine("Download file to memory: " + url);
+                Debug.WriteLine(@"Download file to memory: " + url);
                 wc.DownloadDataAsync(new Uri(url), syncObject);
                 //This will block the thread until download completes
                 Monitor.Wait(syncObject);
@@ -704,9 +703,9 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         /// <param name="hash">Hash check value (md5). Leave null if no hash check</param>
         /// <returns></returns>
 
-        public static (MemoryStream result, string errorMessage) DownloadToMemory(string url, Action<long, long> progressCallback = null, string hash = null, bool logDownload = false, Stream destStreamOverride = null)
+        public static (MemoryStream result, string errorMessage) DownloadToMemory(string url, Action<long, long> progressCallback = null, string hash = null, bool logDownload = false, Stream destStreamOverride = null, CancellationToken cancellationToken = default)
         {
-            var resultV = DownloadToStreamInternal(url, progressCallback, hash, logDownload);
+            var resultV = DownloadToStreamInternal(url, progressCallback, hash, logDownload, cancellationToken: cancellationToken);
             return (resultV.result as MemoryStream, resultV.errorMessage);
         }
 
@@ -719,12 +718,17 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         /// <param name="logDownload"></param>
         /// <param name="destStreamOverride"></param>
         /// <returns></returns>
-        public static (Stream result, string errorMessage) DownloadToStream(string url, Action<long, long> progressCallback = null, string hash = null, bool logDownload = false, Stream destStreamOverride = null)
+        public static (Stream result, string errorMessage) DownloadToStream(string url, Action<long, long> progressCallback = null, string hash = null, bool logDownload = false, Stream destStreamOverride = null, CancellationToken cancellationToken = default)
         {
-            return DownloadToStreamInternal(url, progressCallback, hash, logDownload, destStreamOverride);
+            return DownloadToStreamInternal(url, progressCallback, hash, logDownload, destStreamOverride, cancellationToken);
         }
 
-        private static (Stream result, string errorMessage) DownloadToStreamInternal(string url, Action<long, long> progressCallback = null, string hash = null, bool logDownload = false, Stream destStreamOverride = null)
+        private static (Stream result, string errorMessage) DownloadToStreamInternal(string url, 
+            Action<long, long> progressCallback = null, 
+            string hash = null, 
+            bool logDownload = false, 
+            Stream destStreamOverride = null,
+            CancellationToken cancellationToken = default)
         {
             using var wc = new ShortTimeoutWebClient();
             string downloadError = null;
@@ -740,17 +744,22 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 }
                 else
                 {
-                    Debug.WriteLine($"Downloading to {destType}: " + url);
+                    Debug.WriteLine($@"Downloading to {destType}: " + url);
                 }
 
                 try
                 {
                     using var remoteStream = wc.OpenRead(new Uri(url));
-                    long.TryParse(wc.ResponseHeaders["Content-Length"], out var totalSize);
+                    long.TryParse(wc.ResponseHeaders[@"Content-Length"], out var totalSize);
                     var buffer = new byte[4096];
                     int bytesReceived;
                     while ((bytesReceived = remoteStream.Read(buffer, 0, buffer.Length)) != 0)
                     {
+                        if (cancellationToken.IsCancellationRequested)
+                        {
+                            downloadError = "The download was canceled";
+                            return (responseStream, downloadError);
+                        }
                         responseStream.Write(buffer, 0, bytesReceived);
                         progressCallback?.Invoke(responseStream.Position, totalSize); // Progress
                     }

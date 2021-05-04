@@ -10,8 +10,9 @@
              Width="500">
     <DockPanel Margin="5">
         <TextBlock Text="Mod Downloader" FontSize="20" FontWeight="Bold" TextAlignment="Center" DockPanel.Dock="Top"/>
-        <Button Content="Cancel download" DockPanel.Dock="Bottom" HorizontalAlignment="Right" 
-                Command="{Binding CancelDownloadCommand}"/>
+        <Button Content="{Binding CancelButtonText}" DockPanel.Dock="Bottom" HorizontalAlignment="Right" 
+                Command="{Binding CancelDownloadCommand}"
+                Margin="0,5,0,0"/>
         <ItemsControl ItemsSource="{Binding Downloads}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>

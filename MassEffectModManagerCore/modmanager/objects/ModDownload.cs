@@ -5,11 +5,13 @@ using System.ComponentModel;
 using System.Web;
 using System;
 using System.IO;
-using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using MassEffectModManagerCore.modmanager.me3tweaks;
+using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.ui;
 using ME3ExplorerCore.Helpers;
+using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.objects
 {
@@ -19,7 +21,6 @@ namespace MassEffectModManagerCore.modmanager.objects
     public class ModDownload : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-
         public string NXMLink { get; set; }
         public List<ModFileDownloadLink> DownloadLinks { get; } = new List<ModFileDownloadLink>();
         public ModFile ModFile { get; private set; }
@@ -48,26 +49,45 @@ namespace MassEffectModManagerCore.modmanager.objects
         /// Invoked when a mod download has completed
         /// </summary>
         public event EventHandler<DataEventArgs> OnModDownloaded;
+        /// <summary>
+        /// Invoked when a mod download has an error
+        /// </summary>
+        public event EventHandler<string> OnModDownloadError;
 
         public ModDownload(string nxmlink)
         {
             NXMLink = nxmlink;
         }
 
-        public void StartDownload()
+        public void StartDownload(CancellationToken cancellationToken)
         {
             Task.Run(() =>
             {
                 if (ProgressMaximum < 100 * FileSize.MebiByte)
                 {
                     DownloadedStream = new MemoryStream();
+                    MemoryAnalyzer.AddTrackedMemoryItem("NXM Download MemoryStream", new WeakReference(DownloadedStream));
                 }
                 else
                 {
                     DownloadedStream = new FileStream(Path.Combine(Utilities.GetModDownloadCacheDirectory(), ModFile.FileName), FileMode.Create);
+                    MemoryAnalyzer.AddTrackedMemoryItem("NXM Download FileStream", new WeakReference(DownloadedStream));
                 }
 
-                OnlineContent.DownloadToStream(DownloadLinks[0].Uri.ToString(), OnDownloadProgress, null, true, DownloadedStream);
+                var downloadResult = OnlineContent.DownloadToStream(DownloadLinks[0].Uri.ToString(), OnDownloadProgress, null, true, DownloadedStream, cancellationToken);
+                if (downloadResult.errorMessage != null)
+                {
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        // Aborted download.
+                    }
+                    else
+                    {
+                        Log.Error($@"Download failed: {downloadResult.errorMessage}");
+                        OnModDownloadError?.Invoke(this, downloadResult.errorMessage);
+                    }
+                    // Download didn't work!
+                }
                 Downloaded = true;
                 OnModDownloaded?.Invoke(this, new DataEventArgs(DownloadedStream));
             });
@@ -78,7 +98,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             ProgressValue = done;
             ProgressMaximum = total;
             ProgressIndeterminate = false;
-            DownloadStatus = $"{FileSize.FormatSize(ProgressValue)}/{FileSize.FormatSize(ProgressMaximum)}";
+            DownloadStatus = $@"{FileSize.FormatSize(ProgressValue)}/{FileSize.FormatSize(ProgressMaximum)}";
         }
 
         /// <summary>
@@ -87,43 +107,60 @@ namespace MassEffectModManagerCore.modmanager.objects
         /// </summary>
         public void Initialize()
         {
+            Log.Information($@"Initializing {NXMLink}");
             Task.Run(() =>
             {
-                DownloadLinks.Clear();
-
-                var nxmlink = NXMLink.Substring(6);
-                var queryPos = NXMLink.IndexOf('?');
-
-                var info = queryPos > 0 ? nxmlink.Substring(0, queryPos) : nxmlink;
-                var infos = info.Split('/');
-                var domain = infos[0];
-                var modid = int.Parse(infos[2]);
-                var fileid = int.Parse(infos[4]);
-
-                if (queryPos > 0)
+                try
                 {
-                    // download with manager
+                    DownloadLinks.Clear();
 
+                    var nxmlink = NXMLink.Substring(6);
+                    var queryPos = NXMLink.IndexOf('?');
 
-                    string querystring = nxmlink.Substring(queryPos);
-                    var parameters = HttpUtility.ParseQueryString(querystring);
+                    var info = queryPos > 0 ? nxmlink.Substring(0, queryPos) : nxmlink;
+                    var infos = info.Split('/');
+                    var domain = infos[0];
+                    var modid = int.Parse(infos[2]);
+                    var fileid = int.Parse(infos[4]);
+                    ModFile = NexusModsUtilities.GetClient().ModFiles.GetModFile(domain, modid, fileid).Result;
+                    if (ModFile != null && ModFile.Category != FileCategory.Deleted)
+                    {
+                        if (queryPos > 0)
+                        {
+                            // download with manager
+                            string querystring = nxmlink.Substring(queryPos);
+                            var parameters = HttpUtility.ParseQueryString(querystring);
 
-                    // Check if parameters are correct!
-                    DownloadLinks.AddRange(NexusModsUtilities.GetDownloadLinkForFile(domain, modid, fileid, parameters["key"], int.Parse(parameters["expires"])).Result);
+                            // Check if parameters are correct!
+                            DownloadLinks.AddRange(NexusModsUtilities.GetDownloadLinkForFile(domain, modid, fileid, parameters["key"], int.Parse(parameters["expires"])).Result);
+                        }
+                        else
+                        {
+                            // premium?
+                            DownloadLinks.AddRange(NexusModsUtilities.GetDownloadLinkForFile(domain, modid, fileid)?.Result);
+                        }
 
+                        ProgressMaximum = ModFile.Size * 1024; // Bytes
+                        Initialized = true;
+                        Log.Error($@"ModDownload has initialized: {ModFile.FileName}");
+                        OnInitialized?.Invoke(this, null);
+                    }
+                    else
+                    {
+                        Log.Error($@"Cannot download {ModFile.FileName}: File deleted from NexusMods");
+                        Initialized = true;
+                        ProgressIndeterminate = false;
+                        OnModDownloadError?.Invoke(this, "Cannot download file: Deleted from NexusMods");
+                    }
                 }
-                else
+                catch (Exception e)
                 {
-                    // premium?
-                    DownloadLinks.AddRange(NexusModsUtilities.GetDownloadLinkForFile(domain, modid, fileid)?.Result);
+                    Log.Error($@"Error downloading {ModFile.FileName}: {e.Message}");
+                    Initialized = true;
+                    ProgressIndeterminate = false;
+                    OnModDownloadError?.Invoke(this, $"Error downloading mod: {e.Message}");
                 }
-
-                ModFile = NexusModsUtilities.GetClient().ModFiles.GetModFile(domain, modid, fileid).Result;
-                ProgressMaximum = ModFile.Size * 1024; // Bytes
-                Initialized = true;
-                OnInitialized?.Invoke(this, null);
             });
         }
-
     }
 }

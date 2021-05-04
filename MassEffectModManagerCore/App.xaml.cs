@@ -486,6 +486,7 @@ namespace MassEffectModManagerCore
 #elif PRERELEASE
                  //version += " PRERELEASE";
 #endif
+                version += " PRERELEASE";
                 // TODO CHANGE THIS
                 return $"{version}, Build {BuildNumber}";
             }

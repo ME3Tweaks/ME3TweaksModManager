@@ -13,7 +13,7 @@ namespace MassEffectModManagerCore.modmanager.objects.nexusfiledb
 {
     public class GameDatabase
     {
-
+        private static bool EnsureCheckedThisSession = false;
         /// <summary>
         /// Checks the local DB file against the hash listed in the manifest. Downloads if it is outdated.
         /// Should be run on a background thread

@@ -3,17 +3,10 @@ using MassEffectModManagerCore.ui;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using MassEffectModManagerCore.modmanager.localizations;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -23,6 +16,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// </summary>
     public partial class NexusModDownloader : MMBusyPanelBase
     {
+        private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         public ObservableCollectionExtended<ModDownload> Downloads { get; } = new ObservableCollectionExtended<ModDownload>();
         public NexusModDownloader(string initialNxmLink)
         {
@@ -39,10 +33,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void CancelDownload()
         {
-
+            cancellationTokenSource.Cancel();
         }
 
         public GenericCommand CancelDownloadCommand { get; set; }
+
+        public string CancelButtonText { get; set; } = "Cancel download";
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
@@ -56,12 +52,30 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public void AddDownload(string nxmLink)
         {
-            Log.Information($"Queueing nxmlink {nxmLink}");
+            Log.Information($@"Queueing nxmlink {nxmLink}");
             var dl = new ModDownload(nxmLink);
             dl.OnInitialized += ModInitialized;
             dl.OnModDownloaded += ModDownloaded;
+            dl.OnModDownloadError += DownloadError;
+
             Downloads.Add(dl);
             dl.Initialize();
+        }
+
+        protected override void OnClosing(DataEventArgs dataEventArgs)
+        {
+            base.OnClosing(dataEventArgs);
+            foreach (var md in Downloads)
+            {
+                md.OnInitialized -= ModInitialized;
+                md.OnModDownloaded -= ModDownloaded;
+                md.OnModDownloadError -= DownloadError;
+                if (cancellationTokenSource.IsCancellationRequested)
+                {
+                    md.DownloadedStream?.Close();
+                }
+            }
+            Downloads.Clear(); // Ensure we have no references in event this window doesn't clean up for some reason (memory analyzer shows it is not reliable unless another window appears)
         }
 
         private void ModDownloaded(object? sender, DataEventArgs e)
@@ -71,7 +85,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 md.OnModDownloaded -= ModDownloaded;
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    OnClosing(new DataEventArgs(new List<ModDownload>(new[] { md })));
+                    if (cancellationTokenSource.IsCancellationRequested)
+                    {
+                        // Canceled
+                        OnClosing(DataEventArgs.Empty);
+                    }
+                    else
+                    {
+                        OnClosing(new DataEventArgs(new List<ModDownload>(new[] { md }))); //maybe someday i'll support download queue or something.
+                    }
                 });
             }
         }
@@ -80,13 +102,19 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             if (sender is ModDownload initializedItem)
             {
-                Log.Information($"Mod has initialized: {initializedItem.ModFile.Name}");
+                Log.Information($@"Mod has initialized: {initializedItem.ModFile.Name}");
                 var nextDownload = Downloads.FirstOrDefault(x => !x.Downloaded);
-                if (nextDownload != null)
-                {
-                    nextDownload.StartDownload();
-                }
+                nextDownload?.StartDownload(cancellationTokenSource.Token);
             }
+        }
+
+        private void DownloadError(object? sender, string e)
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                M3L.ShowDialog(window, e, "Download error", MessageBoxButton.OK, MessageBoxImage.Error);
+                OnClosing(DataEventArgs.Empty);
+            });
         }
     }
 }
