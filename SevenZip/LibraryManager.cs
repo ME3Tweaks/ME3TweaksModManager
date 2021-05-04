@@ -57,7 +57,6 @@ namespace SevenZip
             }
 
             // NOT FOUND - THIS ONLY WORKS FOR .NET 5
-            File.WriteAllText(@"C:\users\mgamerz\desktop\out.txt", sb.ToString());
             return Path.Combine(AppContext.BaseDirectory, dllname);
         }
 
