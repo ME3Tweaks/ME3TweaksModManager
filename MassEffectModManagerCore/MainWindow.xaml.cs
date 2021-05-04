@@ -2659,6 +2659,23 @@ namespace MassEffectModManagerCore
                     bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"WritePermissions", M3L.GetString(M3L.string_checkingWritePermissions), M3L.GetString(M3L.string_checkedUserWritePermissions));
                     CheckTargetPermissions(true);
                     backgroundTaskEngine.SubmitJobCompletion(bgTask);
+
+                    bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"NXMHandlerSetup", "Setting up nxm:// handler", "Set up nxmhandler");
+                    NexusModsUtilities.SetupNXMHandling((done, total, message) =>
+                    {
+                        if (total > 0)
+                        {
+                            backgroundTaskEngine.SubmitBackgroundTaskUpdate(bgTask, $"Downloading nxmhandler {Math.Round(done * 100.0f / total)}%");
+                        }
+                        else
+                        {
+                            backgroundTaskEngine.SubmitBackgroundTaskUpdate(bgTask, message);
+
+                        }
+                    }, (result) =>
+                    {
+                        backgroundTaskEngine.SubmitJobCompletion(bgTask);
+                    });
                 }
 
                 if (OnlineContent.CanFetchContentThrottleCheck())

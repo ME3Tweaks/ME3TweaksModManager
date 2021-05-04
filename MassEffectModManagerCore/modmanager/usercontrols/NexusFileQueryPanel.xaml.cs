@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
 using MassEffectModManagerCore.modmanager.helpers;
@@ -13,6 +14,7 @@ using MassEffectModManagerCore.modmanager.nexusmodsintegration;
 using MassEffectModManagerCore.modmanager.objects.nexusfiledb;
 using MassEffectModManagerCore.ui;
 using ME3ExplorerCore.Packages;
+using Pathoschild.FluentNexus.Models;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -73,94 +75,116 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public ObservableCollectionExtended<SearchedItemResult> Results { get; } = new ObservableCollectionExtended<SearchedItemResult>();
 
-        private bool CanSearch() => !QueryInProgress && !string.IsNullOrWhiteSpace(SearchTerm) && (SearchME1 || SearchME2 || SearchME3);
+        public ObservableCollectionExtended<FileCategory> FileCategories { get; } = new ObservableCollectionExtended<FileCategory>(Enum.GetValues<FileCategory>());
+        public ObservableCollectionExtended<FileCategory> SelectedFileCategories { get; } = new ObservableCollectionExtended<FileCategory>(Enum.GetValues<FileCategory>()); // all by default
+
+        private bool CanSearch() => !QueryInProgress && !string.IsNullOrWhiteSpace(SearchTerm) && (SearchME1 || SearchME2 || SearchME3) && HasCategory();
+
+        private bool HasCategory()
+        {
+            if (CategoryOptionsCBL != null)
+            {
+                return CategoryOptionsCBL.GetSelectedItems().OfType<FileCategory>().Any();
+            }
+
+            return false;
+        }
 
         private Dictionary<string, GameDatabase> LoadedDatabases = new Dictionary<string, GameDatabase>();
 
         private void PerformSearch()
         {
             Results.ClearEx();
+            var categories = CategoryOptionsCBL.GetSelectedItems().OfType<FileCategory>().ToList();
             var searchGames = new List<string>();
             if (SearchME1) searchGames.Add(@"masseffect");
             if (SearchME2) searchGames.Add(@"masseffect2");
             if (SearchME3) searchGames.Add(@"masseffect3");
             QueryInProgress = true;
-            try
+            Task.Run(() =>
             {
-                foreach (var domain in searchGames)
+
+                try
                 {
-                    var db = LoadedDatabases[domain];
-                    // Check if the name exists in filenames. If it doesn't, it will never find it
+                    foreach (var domain in searchGames)
+                    {
+                        var db = LoadedDatabases[domain];
+                        // Check if the name exists in filenames. If it doesn't, it will never find it
 #if DEBUG
-
-                    var ignoredItems = new List<string>()
-                    {
-                        @"DLC_MOD_FMRM_Patches",
-                        @"DLC_MOD_FJRM_Patches",
-                        @"DLC_ASH_MiniSkirt_Mods",
-                        @"DLC_Explorer",
-                        @"DLC_LIA_RA4_MeshOnly",
-                        @"DLC_ASH_Shorts_Mod",
-                        @"DLC_ASH_Alt_Mods",
-                        @"DLC_ASH_Socks_Mod",
-                        @"DLC_ASH_Topless_Mod",
-                        @"DLC_GAR_FRM_Altered_Face_Legs_Mod",
-                        @"DLC_GAR_GFC_Altered_Face_Legs_Mod",
-                        @"DLC_LIA_NKDSlippers_Mod",
-                        @"DLC_LIA_NKDSnickers_Mod",
-                        @"DLC_GAR_GFC_New_Version",
-                        @"DLC_GAR_GFC_Old_Version",
-                        @"DLC_GAR_FRM_Textures",
-                        @"DLC_MIR_Shorts_Mod",
-                        @"DLC_MOD_IT_RUS",
-
-                    };
-                    var dlcNames = db.NameTable.Values.Where(x => !ignoredItems.Contains(x) && x.StartsWith(@"DLC_") && Path.GetExtension(x) == string.Empty && !x.Contains(" ") && ThirdPartyServices.GetThirdPartyModInfo(x, MEGame.ME3) == null).Select(x => x.Trim()).Distinct().ToList();
-                    var xx = new List<string>();
-                    foreach (var i in db.FileInstances.Values)
-                    {
-                        foreach (var f in i)
+                        /*
+                        var ignoredItems = new List<string>()
                         {
-                            if (f.ParentPathID > 0)
+                            @"DLC_MOD_FMRM_Patches",
+                            @"DLC_MOD_FJRM_Patches",
+                            @"DLC_ASH_MiniSkirt_Mods",
+                            @"DLC_Explorer",
+                            @"DLC_LIA_RA4_MeshOnly",
+                            @"DLC_ASH_Shorts_Mod",
+                            @"DLC_ASH_Alt_Mods",
+                            @"DLC_ASH_Socks_Mod",
+                            @"DLC_ASH_Topless_Mod",
+                            @"DLC_GAR_FRM_Altered_Face_Legs_Mod",
+                            @"DLC_GAR_GFC_Altered_Face_Legs_Mod",
+                            @"DLC_LIA_NKDSlippers_Mod",
+                            @"DLC_LIA_NKDSnickers_Mod",
+                            @"DLC_GAR_GFC_New_Version",
+                            @"DLC_GAR_GFC_Old_Version",
+                            @"DLC_GAR_FRM_Textures",
+                            @"DLC_MIR_Shorts_Mod",
+                            @"DLC_MOD_IT_RUS",
+    
+                        };
+                        var dlcNames = db.NameTable.Values.Where(x => !ignoredItems.Contains(x) && x.StartsWith(@"DLC_") && Path.GetExtension(x) == string.Empty && !x.Contains(" ") && ThirdPartyServices.GetThirdPartyModInfo(x, MEGame.ME3) == null).Select(x => x.Trim()).Distinct().ToList();
+                        var xx = new List<string>();
+                        foreach (var i in db.FileInstances.Values)
+                        {
+                            foreach (var f in i)
                             {
-                                var path = db.Paths[f.ParentPathID].GetFullPath(db);
-                                if (path.ContainsAny(dlcNames, StringComparison.Ordinal))
+                                if (f.ParentPathID > 0)
                                 {
-                                    var finfo = $@"https://nexusmods.com/masseffect/mods/{f.ModID}";
-                                    xx.Add(db.NameTable[db.ModFileInfos[f.FileID].NameID] + " " + finfo);
+                                    var path = db.Paths[f.ParentPathID].GetFullPath(db);
+                                    if (path.ContainsAny(dlcNames, StringComparison.Ordinal))
+                                    {
+                                        var finfo = $@"https://nexusmods.com/masseffect/mods/{f.ModID}";
+                                        xx.Add(db.NameTable[db.ModFileInfos[f.FileID].NameID] + " " + finfo);
+                                    }
+    
                                 }
-
                             }
                         }
-                    }
-                    File.WriteAllLines(@"D:\dlcNames.txt", dlcNames);
-                    File.WriteAllLines(@"D:\mods.txt", xx);
+                        File.WriteAllLines(@"D:\dlcNames.txt", dlcNames);
+                        File.WriteAllLines(@"D:\mods.txt", xx);*/
 #endif
-                    var match = db.NameTable.FirstOrDefault(x =>
-                        x.Value.Equals(SearchTerm, StringComparison.InvariantCultureIgnoreCase));
+                        var match = db.NameTable.FirstOrDefault(x =>
+                            x.Value.Equals(SearchTerm, StringComparison.InvariantCultureIgnoreCase));
 
-                    if (match.Key != 0)
-                    {
-                        // Found
-                        var instances = db.FileInstances[match.Key];
-                        Results.AddRange(instances.Select(x => new SearchedItemResult()
+                        if (match.Key != 0)
                         {
-                            Instance = x,
-                            Domain = domain,
-                            Filename = db.NameTable[x.FilenameId],
-                            AssociatedDB = db
-                        }));
+                            // Found
+                            var instances = db.FileInstances[match.Key].Where(x => categories.Contains(db.ModFileInfos[x.FileID].Category));
+                            //Application.Current.Dispatcher.Invoke(() =>
+                            //{
+                                Results.AddRange(instances.Select(x => new SearchedItemResult()
+                                {
+                                    Instance = x,
+                                    Domain = domain,
+                                    Filename = db.NameTable[x.FilenameId],
+                                    AssociatedDB = db
+                                }));
+                            //});
+                        }
                     }
-                }
 
-                StatusText = M3L.GetString(M3L.string_interp_resultsCount, Results.Count);
-                QueryInProgress = false;
-            }
-            catch (Exception e)
-            {
-                Log.Error($@"Could not perform search: {e.Message}");
-                QueryInProgress = false;
-            }
+                    StatusText = M3L.GetString(M3L.string_interp_resultsCount, Results.Count);
+                    QueryInProgress = false;
+                }
+                catch (Exception e)
+                {
+                    Log.Error($@"Could not perform search: {e.Message}");
+                    QueryInProgress = false;
+                }
+            });
+
         }
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
@@ -182,14 +206,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
+            CategoryOptionsCBL.SetSelectedItems(Enum.GetValues<FileCategory>().Where(x => x != FileCategory.Deleted).OfType<object>());
             Task.Run(() =>
             {
                 try
                 {
                     GameDatabase.EnsureDatabaseFile(true);
 
-                // Load DBs
-                foreach (var domain in alldomains)
+                    // Load DBs
+                    foreach (var domain in alldomains)
                     {
                         if (!LoadedDatabases.TryGetValue(domain, out var db))
                         {
@@ -206,8 +231,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     Log.Error($@"Could not ensure the nexus database: {e.Message}");
                 }
 
-            // No longer busy
-            QueryInProgress = false;
+                // No longer busy
+                QueryInProgress = false;
                 BusyStatusText = M3L.GetString(M3L.string_searching);
             });
         }
@@ -272,6 +297,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             public NMFileInfo FileInfo => AssociatedDB.ModFileInfos[Instance.FileID];
 
+            public string DownloadModText => NexusModsUtilities.UserInfo != null && NexusModsUtilities.UserInfo.IsPremium ? "Download this mod" : "You must be a NexusMods Premium user to download directly within Mod Manager";
 
 #pragma warning disable
             public event PropertyChangedEventHandler PropertyChanged;

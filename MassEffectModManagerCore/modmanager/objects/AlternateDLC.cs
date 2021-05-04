@@ -215,7 +215,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                             Log.Error($@"Alternate DLC ({FriendlyName}) Multilist ID does not exist as part of the {job.Header} task: multilist" + multilistid);
                             ValidAlternate = false;
                             var id = @"multilist" + multilistid;
-                            LoadFailedReason = M3L.GetString(M3L.string_interp_altdlc_multilistMissingMultiListX, FriendlyName, job.Header,id);
+                            LoadFailedReason = M3L.GetString(M3L.string_interp_altdlc_multilistMissingMultiListX, FriendlyName, job.Header, id);
                             return;
                         }
                     }
@@ -454,7 +454,19 @@ namespace MassEffectModManagerCore.modmanager.objects
                 if (DLCRequirementsForManual != null)
                 {
                     var dlc = M3Directories.GetInstalledDLC(target);
-                    UIIsSelectable = dlc.ContainsAll(DLCRequirementsForManual, StringComparer.InvariantCultureIgnoreCase);
+
+                    if (mod.ModDescTargetVersion >= 6.3)
+                    {
+                        var requiredDLC = DLCRequirementsForManual.Where(x => !x.StartsWith(@"-") || x.StartsWith(@"+")); // none or + means 'must exist'
+                        var notPresentDLCRequired = DLCRequirementsForManual.Where(x => x.StartsWith(@"-"));
+                        UIIsSelectable = dlc.ContainsAll(requiredDLC, StringComparer.InvariantCultureIgnoreCase) && dlc.ContainsNone(notPresentDLCRequired, StringComparer.InvariantCultureIgnoreCase);
+                    }
+                    else
+                    {
+                        // Previous logic. Left here to ensure nothing changes.
+                        UIIsSelectable = dlc.ContainsAll(DLCRequirementsForManual, StringComparer.InvariantCultureIgnoreCase);
+                    }
+
                     if (!UIIsSelectable && mod.ModDescTargetVersion >= 6.2)
                     {
                         // Mod Manager 6.2: If requirements are not met this option is forcibly not checked.

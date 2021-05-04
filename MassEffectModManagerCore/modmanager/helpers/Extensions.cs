@@ -1183,6 +1183,10 @@ namespace MassEffectModManagerCore.modmanager.helpers
         {
             return values.All(value => source.Contains(value, comparer));
         }
+        public static bool ContainsNone<T>(this IEnumerable<T> source, IEnumerable<T> values, IEqualityComparer<T> comparer = null)
+        {
+            return !values.Any(value => source.Contains(value, comparer));
+        }
         //  }
 
         //  public static class ListExtensions

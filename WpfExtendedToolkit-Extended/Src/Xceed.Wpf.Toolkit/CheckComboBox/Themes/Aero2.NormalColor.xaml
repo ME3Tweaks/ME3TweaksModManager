@@ -20,7 +20,8 @@
                     xmlns:prim="clr-namespace:Xceed.Wpf.Toolkit.Primitives"
                     xmlns:conv="clr-namespace:Xceed.Wpf.Toolkit.Core.Converters"
                     xmlns:themes="clr-namespace:Xceed.Wpf.Toolkit.Themes"
-                    xmlns:chrome="clr-namespace:Xceed.Wpf.Toolkit.Chromes">
+                    xmlns:chrome="clr-namespace:Xceed.Wpf.Toolkit.Chromes"
+                    xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI">
 
   <conv:InverseBoolConverter x:Key="InverseBoolConverter" />
   <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
@@ -115,14 +116,11 @@
   </Style>
 
   <Style TargetType="{x:Type local:CheckComboBox}">
-    <Setter Property="Foreground"
-            Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}" />
-    <Setter Property="Background"
-            Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" />
-    <Setter Property="BorderBrush"
-            Value="{DynamicResource {x:Static themes:ResourceKeys.ControlNormalBorderKey}}" />
-    <Setter Property="BorderThickness"
-            Value="1" />
+      <Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>
+      <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer1BorderBrush}}"/>
+      <Setter Property="BorderThickness" Value="{DynamicResource {x:Static adonisUi:Dimensions.BorderThickness}}"/>
+
     <Setter Property="ScrollViewer.HorizontalScrollBarVisibility"
             Value="Auto" />
     <Setter Property="ScrollViewer.VerticalScrollBarVisibility"
@@ -152,12 +150,12 @@
                    PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}"
                    Placement="Bottom">
               <Grid MinWidth="{Binding ActualWidth, ElementName=MainGrid}">
-                <Border x:Name="DropDownBorder"
+                                <Border x:Name="DropDownBorder"
                         MaxHeight="{Binding MaxDropDownHeight,  RelativeSource={RelativeSource TemplatedParent}}"
-                        BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}"
-                        BorderThickness="1"
-                        Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}">
-                  <ScrollViewer x:Name="DropDownScrollViewer">
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        Background="{TemplateBinding Background}">
+                    <ScrollViewer x:Name="DropDownScrollViewer">
                     <Grid RenderOptions.ClearTypeHint="Enabled">
                       <Canvas HorizontalAlignment="Left"
                               Height="0"
@@ -186,9 +184,8 @@
                      BorderBrush="{TemplateBinding BorderBrush}"
                      BorderThickness="{TemplateBinding BorderThickness}" />
             <ToggleButton x:Name="PART_DropDownButton"
+                          Background="Transparent"
                           Content="{Binding Text, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
-                          BorderBrush="{TemplateBinding BorderBrush}"
-                          Background="{TemplateBinding Background}"
                           Focusable="False"
                           IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
                           Style="{StaticResource ComboBoxToggleButton}"
@@ -204,13 +201,12 @@
     <Style.Triggers>
       <Trigger Property="IsMouseOver"
                Value="True">
-        <Setter Property="BorderBrush"
-                Value="{DynamicResource {x:Static themes:ResourceKeys.ControlMouseOverBorderKey}}" />
-      </Trigger>
+          <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer4HighlightBrush}}"/>
+          <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer4HighlightBorderBrush}}"/>
+            </Trigger>
       <Trigger Property="IsKeyboardFocusWithin"
                Value="True">
-        <Setter Property="BorderBrush"
-                Value="{DynamicResource {x:Static themes:ResourceKeys.ControlSelectedBorderKey}}" />
+          <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}"/>
       </Trigger>
     </Style.Triggers>
   </Style>
