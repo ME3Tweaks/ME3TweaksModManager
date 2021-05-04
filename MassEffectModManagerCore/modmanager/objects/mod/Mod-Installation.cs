@@ -22,11 +22,13 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
         {
             if (IsInArchive)
             {
+#if DEBUG
                 if (Archive.IsDisposed())
                 {
-                    Debug.WriteLine("HI");
+                    Debug.WriteLine("ARCHIVE IS DISPOSED");
                 }
-                if (Archive == null)
+#endif
+                if (Archive == null || (Archive.IsDisposed() && ArchivePath != null && File.Exists(ArchivePath)))
                     Archive = new SevenZipExtractor(ArchivePath); //load archive file for inspection
             }
             var gameDLCPath = M3Directories.GetDLCPath(gameTarget);
