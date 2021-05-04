@@ -24,7 +24,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public string APIKeyText { get; private set; }
         public void OnAPIKeyTextChanged()
         {
-            APIBox.Password = APIKeyText;
+            // must be on ui thread
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                APIBox.Password = APIKeyText;
+            });
         }
 
         public bool IsAuthorized { get; set; }

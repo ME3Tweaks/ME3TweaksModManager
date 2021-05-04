@@ -720,9 +720,9 @@ namespace SevenZip
 
         #region IDisposable Members
 
-        private void CommonDispose()
+        private void CommonDispose(bool disposeStreams = true)
         {
-            if (_opened)
+            if (_opened && disposeStreams)
             {
                 try
                 {
@@ -738,7 +738,7 @@ namespace SevenZip
             _archiveProperties = null;
             _archiveFileInfoCollection = null;
 
-            if (_inStream != null)
+            if (_inStream != null && disposeStreams)
             {
                 _inStream.Dispose();
                 _inStream = null;
@@ -753,7 +753,7 @@ namespace SevenZip
                 catch (ObjectDisposedException) { }
                 _openCallback = null;
             }
-            if (_archiveStream != null)
+            if (_archiveStream != null && disposeStreams)
             {
                 if (_archiveStream is IDisposable)
                 {
@@ -770,6 +770,24 @@ namespace SevenZip
                 }
             }
             SevenZipLibraryManager.FreeLibrary(this, _format);
+        }
+
+        /// <summary>
+        /// Marks this SevenZipExtractor as no longer in use. This does not dispose the base stream.
+        /// </summary>
+        public void DisposeObjectOnly()
+        {
+            if (_asynchronousDisposeLock)
+            {
+                throw new InvalidOperationException("SevenZipExtractor instance must not be disposed " +
+                    "while making an asynchronous method call.");
+            }
+            if (!_disposed)
+            {
+                CommonDispose(false);
+            }
+            _disposed = true;
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>

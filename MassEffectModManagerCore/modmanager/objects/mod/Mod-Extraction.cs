@@ -356,7 +356,11 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             //}
             if (closeStreamOnFinish)
             {
-                archiveStream?.Close();
+                archive?.Dispose();
+            }
+            else
+            {
+                archive?.DisposeObjectOnly();
             }
         }
 

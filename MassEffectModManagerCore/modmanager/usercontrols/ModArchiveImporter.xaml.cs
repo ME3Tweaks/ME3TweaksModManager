@@ -418,7 +418,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 addCompressedModCallback?.Invoke(failed);
                 if (closeStreamOnComplete)
                 {
-                    archiveStream?.Close();
+                    archiveFile?.Dispose();
+                } else
+                {
+                    archiveFile?.DisposeObjectOnly();
+
                 }
                 return;
             }
@@ -571,7 +575,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         }
                         if (closeStreamOnComplete)
                         {
-                            archiveStream?.Close();
+                            archiveFile?.Dispose();
+                        } else
+                        {
+                            archiveFile?.DisposeObjectOnly();
                         }
                         return;
                     }
@@ -667,9 +674,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             if (closeStreamOnComplete)
             {
-                archiveStream?.Close();
+                archiveFile?.Dispose();
             }
-
+            else
+            {
+                archiveFile?.DisposeObjectOnly();
+            }
         }
 
 

@@ -88,6 +88,14 @@ namespace MassEffectModManagerCore.modmanager
             set => SetProperty(ref _betaMode, value);
         }
 
+        private static bool _configureNXMHandlerOnBoot = true;
+
+        public static bool ConfigureNXMHandlerOnBoot
+        {
+            get => _configureNXMHandlerOnBoot;
+            set => SetProperty(ref _configureNXMHandlerOnBoot, value);
+        }
+
         private static bool _modMakerAutoInjectCustomKeybindsOption = false;
 
         public static bool ModMakerAutoInjectCustomKeybindsOption
@@ -291,6 +299,8 @@ namespace MassEffectModManagerCore.modmanager
 
             DeveloperMode = LoadSettingBool(settingsIni, "UI", "DeveloperMode", false);
             DarkTheme = LoadSettingBool(settingsIni, "UI", "DarkTheme", false);
+
+            ConfigureNXMHandlerOnBoot = LoadSettingBool(settingsIni, "ModManager", "ConfigureNXMHandlerOnBoot", true);
             Loaded = true;
         }
 
@@ -456,6 +466,8 @@ namespace MassEffectModManagerCore.modmanager
                 SaveSettingBool(settingsIni, "ModManager", "AutoUpdateLODs2K", AutoUpdateLODs2K);
                 SaveSettingBool(settingsIni, "ModManager", "PreferCompressingPackages", PreferCompressingPackages);
                 SaveSettingInt(settingsIni, "ModManager", "WebclientTimeout", WebClientTimeout);
+                SaveSettingBool(settingsIni, "ModManager","ConfigureNXMHandlerOnBoot", ConfigureNXMHandlerOnBoot);
+
                 SaveSettingBool(settingsIni, "ModMaker", "AutoAddControllerMixins", ModMakerControllerModOption);
                 SaveSettingBool(settingsIni, "ModMaker", "AutoInjectCustomKeybinds", ModMakerAutoInjectCustomKeybindsOption);
 

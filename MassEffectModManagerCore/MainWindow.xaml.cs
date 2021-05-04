@@ -88,13 +88,6 @@ namespace MassEffectModManagerCore
         /// <param name="args"></param>
         internal void HandleInstanceArguments(string[] args)
         {
-
-            var fs = File.OpenRead(@"X:\Downloads\ME2 Vignette Remover 1.0-148-1-0-1585528603(1).7z");
-            MemoryAnalyzer.AddTrackedMemoryItem($@"NXM Archive Stream {"TEST"}", new WeakReference(fs));
-            openModImportUI("ME2VigRemover.7z", fs);
-            return;
-
-
             // Fix pass through in debug mode which uses a .dll arg
             if (args.Any() && args[0].EndsWith(@".dll"))
             {
@@ -109,6 +102,15 @@ namespace MassEffectModManagerCore
 
         private void showNXMDownloader(string nxmLink)
         {
+            if (NexusModsUtilities.UserInfo == null)
+            {
+                // Not logged in
+                Activate(); //bring to front
+                M3L.ShowDialog(this, "ME3Tweaks Mod Manager must be linked with your NexusMods account in order to directly download from NexusMods. Press OK to open the NexusMods sign-in page to link the application.", "Not signed in", MessageBoxButton.OK, MessageBoxImage.Error);
+                ShowNexusPanel();
+                return;
+            }
+
             var mDownloader = new NexusModDownloader(nxmLink);
             mDownloader.Close += (a, b) =>
             {

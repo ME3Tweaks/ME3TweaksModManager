@@ -77,6 +77,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 var downloadResult = OnlineContent.DownloadToStream(DownloadLinks[0].Uri.ToString(), OnDownloadProgress, null, true, DownloadedStream, cancellationToken);
                 if (downloadResult.errorMessage != null)
                 {
+                    DownloadedStream?.Dispose();
                     if (cancellationToken.IsCancellationRequested)
                     {
                         // Aborted download.
@@ -137,6 +138,14 @@ namespace MassEffectModManagerCore.modmanager.objects
                         else
                         {
                             // premium?
+                            if (!NexusModsUtilities.UserInfo.IsPremium)
+                            {
+                                Log.Error($@"Cannot download {ModFile.FileName}: User is not premium, but this link is not generated from NexusMods");
+                                Initialized = true;
+                                ProgressIndeterminate = false;
+                                OnModDownloadError?.Invoke(this, "Cannot download file: You must be a premium subscriber to NexusMods to use direct download links.");
+                                return;
+                            }
                             DownloadLinks.AddRange(NexusModsUtilities.GetDownloadLinkForFile(domain, modid, fileid)?.Result);
                         }
 
