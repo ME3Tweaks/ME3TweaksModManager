@@ -1,35 +1,57 @@
-﻿<local:MMBusyPanelBase x:Class="MassEffectModManagerCore.modmanager.usercontrols.NexusModDownloader"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols"
-             mc:Ignorable="d" 
-             DataContext="{Binding RelativeSource={RelativeSource Self}}"
-             d:DesignHeight="450" d:DesignWidth="800"
-             Width="500">
-    <DockPanel Margin="5">
-        <TextBlock Text="Mod Downloader" FontSize="20" FontWeight="Bold" TextAlignment="Center" DockPanel.Dock="Top"/>
-        <Button Content="{Binding CancelButtonText}" DockPanel.Dock="Bottom" HorizontalAlignment="Right" 
-                Command="{Binding CancelDownloadCommand}"
-                Margin="0,5,0,0"/>
-        <ItemsControl ItemsSource="{Binding Downloads}">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<local:MMBusyPanelBase
+    x:Class="MassEffectModManagerCore.modmanager.usercontrols.NexusModDownloader" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols"
+    mc:Ignorable="d"
+    DataContext="{Binding RelativeSource={RelativeSource Self}}"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    Width="500">
+    <DockPanel
+        Margin="5">
+        <TextBlock
+            Text="{DynamicResource string_modDownloader}"
+            FontSize="20"
+            FontWeight="Bold"
+            TextAlignment="Center"
+            DockPanel.Dock="Top" />
+        <Button
+            Content="{Binding CancelButtonText}"
+            DockPanel.Dock="Bottom"
+            HorizontalAlignment="Right"
+            Command="{Binding CancelDownloadCommand}"
+            Margin="0,5,0,0" />
+        <ItemsControl
+            ItemsSource="{Binding Downloads}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <DockPanel>
-                        <StackPanel Visibility="{Binding Initialized, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" 
-                                    DockPanel.Dock="Top">
-                            <TextBlock Text="{Binding ModFile.Name}" FontWeight="Bold" DockPanel.Dock="Top"/>
-                            <TextBlock Text="{Binding DownloadStatus}" DockPanel.Dock="Top"/>
+                        <StackPanel
+                            Visibility="{Binding Initialized, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}"
+                            DockPanel.Dock="Top">
+                            <TextBlock
+                                Text="{Binding ModFile.Name}"
+                                FontWeight="Bold"
+                                DockPanel.Dock="Top" />
+                            <TextBlock
+                                Text="{Binding DownloadStatus}"
+                                DockPanel.Dock="Top" />
                         </StackPanel>
-                        <StackPanel Visibility="{Binding Initialized, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not', Mode=OneWay}"
-                                    DockPanel.Dock="Top">
-                            <TextBlock Text="Initializing" FontWeight="Bold" DockPanel.Dock="Top"/>
-                            <TextBlock Text="Please wait" DockPanel.Dock="Top"/>
+                        <StackPanel
+                            Visibility="{Binding Initialized, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not', Mode=OneWay}"
+                            DockPanel.Dock="Top">
+                            <TextBlock
+                                Text="{DynamicResource string_initializing}"
+                                FontWeight="Bold"
+                                DockPanel.Dock="Top" />
+                            <TextBlock
+                                Text="{DynamicResource string_pleaseWait}"
+                                DockPanel.Dock="Top" />
                         </StackPanel>
-                        <ProgressBar Height="7" IsIndeterminate="{Binding ProgressIndeterminate, Mode=OneWay}" 
-                                     Value="{Binding ProgressValue, Mode=OneWay}" 
-                                     Maximum="{Binding ProgressMaximum, Mode=OneWay}"/>
+                        <ProgressBar
+                            Height="7"
+                            IsIndeterminate="{Binding ProgressIndeterminate, Mode=OneWay}"
+                            Value="{Binding ProgressValue, Mode=OneWay}"
+                            Maximum="{Binding ProgressMaximum, Mode=OneWay}" />
                     </DockPanel>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>

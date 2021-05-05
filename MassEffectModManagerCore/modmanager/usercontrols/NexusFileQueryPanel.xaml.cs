@@ -43,9 +43,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 return LoadedDatabases[domain].FileInstances.Select(x => LoadedDatabases[domain].NameTable[x.Key]);
             }
-            if (SearchME1) { newNames.AddRange(getFilenamesForGame("masseffect")); }
-            if (SearchME2) { newNames.AddRange(getFilenamesForGame("masseffect2")); }
-            if (SearchME3) { newNames.AddRange(getFilenamesForGame("masseffect3")); }
+            if (SearchME1) { newNames.AddRange(getFilenamesForGame(@"masseffect")); }
+            if (SearchME2) { newNames.AddRange(getFilenamesForGame(@"masseffect2")); }
+            if (SearchME3) { newNames.AddRange(getFilenamesForGame(@"masseffect3")); }
 
             newNames = newNames.Distinct().OrderBy(x => x).ToList();
             AllSearchableNames.ReplaceAll(newNames);
@@ -164,13 +164,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             var instances = db.FileInstances[match.Key].Where(x => categories.Contains(db.ModFileInfos[x.FileID].Category));
                             //Application.Current.Dispatcher.Invoke(() =>
                             //{
-                                Results.AddRange(instances.Select(x => new SearchedItemResult()
-                                {
-                                    Instance = x,
-                                    Domain = domain,
-                                    Filename = db.NameTable[x.FilenameId],
-                                    AssociatedDB = db
-                                }));
+                            Results.AddRange(instances.Select(x => new SearchedItemResult()
+                            {
+                                Instance = x,
+                                Domain = domain,
+                                Filename = db.NameTable[x.FilenameId],
+                                AssociatedDB = db
+                            }));
                             //});
                         }
                     }
@@ -197,12 +197,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             if (obj is SearchedItemResult sir)
             {
-                string nxmlink = $"nxm://{sir.Domain}/mods/{sir.Instance.ModID}/files/{sir.Instance.FileID}";
+                string nxmlink = $@"nxm://{sir.Domain}/mods/{sir.Instance.ModID}/files/{sir.Instance.FileID}";
                 OnClosing(new DataEventArgs(nxmlink));
             }
         }
 
-        private string[] alldomains = { "masseffect", "masseffect2", "masseffect3" };
+        private string[] alldomains = { @"masseffect", @"masseffect2", @"masseffect3" };
 
         public override void OnPanelVisible()
         {
@@ -297,7 +297,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             public NMFileInfo FileInfo => AssociatedDB.ModFileInfos[Instance.FileID];
 
-            public string DownloadModText => NexusModsUtilities.UserInfo != null && NexusModsUtilities.UserInfo.IsPremium ? "Download this mod" : "You must be a NexusMods Premium user to download directly within Mod Manager";
+            public string DownloadModText => NexusModsUtilities.UserInfo != null && NexusModsUtilities.UserInfo.IsPremium ? M3L.GetString(M3L.string_tooltip_downloadThisMod) : M3L.GetString(M3L.string_tooltip_premiumRequiredForDownload);
 
 #pragma warning disable
             public event PropertyChangedEventHandler PropertyChanged;

@@ -138,7 +138,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                             // On 6.3 trigger failure on this mod to help ensure users design mod properly
                             Log.Error($@"{modForValidating.ModName} has Alternate DLC {friendlyName} that has a value for ConditionalDLC on Condition COND_MANUAL. COND_MANUAL does not use ConditionalDLC, use DLCRequirements instead.");
                             ValidAlternate = false;
-                            LoadFailedReason = $"Alternate DLC {friendlyName} that has a value for ConditionalDLC on Condition COND_MANUAL. COND_MANUAL does not use ConditionalDLC, use DLCRequirements instead.";
+                            LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altdlc_condManualWithConditionalDLC, friendlyName);
                             return;
                         }
                         else
@@ -484,7 +484,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     if (mod.ModDescTargetVersion >= 6.3)
                     {
                         var requiredDLC = DLCRequirementsForManual.Where(x => !x.StartsWith(@"-") || x.StartsWith(@"+")).Select(x => x.TrimStart('+')); // none or + means 'must exist'
-                        var notPresentDLCRequired = DLCRequirementsForManual.Where(x => x.StartsWith(@"-")).Select(x=>x.TrimStart('-'));
+                        var notPresentDLCRequired = DLCRequirementsForManual.Where(x => x.StartsWith(@"-")).Select(x => x.TrimStart('-'));
                         UIIsSelectable = dlc.ContainsAll(requiredDLC, StringComparer.InvariantCultureIgnoreCase) && dlc.ContainsNone(notPresentDLCRequired, StringComparer.InvariantCultureIgnoreCase);
                     }
                     else

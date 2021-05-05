@@ -25,7 +25,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
 #if DEBUG
                 if (Archive.IsDisposed())
                 {
-                    Debug.WriteLine("ARCHIVE IS DISPOSED");
+                    Debug.WriteLine(@">>> ARCHIVE IS DISPOSED");
                 }
 #endif
                 if (Archive == null || (Archive.IsDisposed() && ArchivePath != null && File.Exists(ArchivePath)))

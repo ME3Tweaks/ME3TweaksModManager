@@ -12,6 +12,7 @@ using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.ui;
 using ME3ExplorerCore.Helpers;
 using Serilog;
+using MassEffectModManagerCore.modmanager.localizations;
 
 namespace MassEffectModManagerCore.modmanager.objects
 {
@@ -66,12 +67,12 @@ namespace MassEffectModManagerCore.modmanager.objects
                 if (ProgressMaximum < 100 * FileSize.MebiByte)
                 {
                     DownloadedStream = new MemoryStream();
-                    MemoryAnalyzer.AddTrackedMemoryItem("NXM Download MemoryStream", new WeakReference(DownloadedStream));
+                    MemoryAnalyzer.AddTrackedMemoryItem(@"NXM Download MemoryStream", new WeakReference(DownloadedStream));
                 }
                 else
                 {
                     DownloadedStream = new FileStream(Path.Combine(Utilities.GetModDownloadCacheDirectory(), ModFile.FileName), FileMode.Create);
-                    MemoryAnalyzer.AddTrackedMemoryItem("NXM Download FileStream", new WeakReference(DownloadedStream));
+                    MemoryAnalyzer.AddTrackedMemoryItem(@"NXM Download FileStream", new WeakReference(DownloadedStream));
                 }
 
                 var downloadResult = OnlineContent.DownloadToStream(DownloadLinks[0].Uri.ToString(), OnDownloadProgress, null, true, DownloadedStream, cancellationToken);
@@ -133,7 +134,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                             var parameters = HttpUtility.ParseQueryString(querystring);
 
                             // Check if parameters are correct!
-                            DownloadLinks.AddRange(NexusModsUtilities.GetDownloadLinkForFile(domain, modid, fileid, parameters["key"], int.Parse(parameters["expires"])).Result);
+                            DownloadLinks.AddRange(NexusModsUtilities.GetDownloadLinkForFile(domain, modid, fileid, parameters[@"key"], int.Parse(parameters[@"expires"])).Result);
                         }
                         else
                         {
@@ -143,7 +144,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                                 Log.Error($@"Cannot download {ModFile.FileName}: User is not premium, but this link is not generated from NexusMods");
                                 Initialized = true;
                                 ProgressIndeterminate = false;
-                                OnModDownloadError?.Invoke(this, "Cannot download file: You must be a premium subscriber to NexusMods to use direct download links.");
+                                OnModDownloadError?.Invoke(this, M3L.GetString(M3L.string_dialog_mustBePremiumUserToDownload));
                                 return;
                             }
                             DownloadLinks.AddRange(NexusModsUtilities.GetDownloadLinkForFile(domain, modid, fileid)?.Result);
@@ -159,7 +160,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         Log.Error($@"Cannot download {ModFile.FileName}: File deleted from NexusMods");
                         Initialized = true;
                         ProgressIndeterminate = false;
-                        OnModDownloadError?.Invoke(this, "Cannot download file: Deleted from NexusMods");
+                        OnModDownloadError?.Invoke(this, M3L.GetString(M3L.string_dialog_cannotDownloadDeletedFile));
                     }
                 }
                 catch (Exception e)
@@ -167,7 +168,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     Log.Error($@"Error downloading {ModFile.FileName}: {e.Message}");
                     Initialized = true;
                     ProgressIndeterminate = false;
-                    OnModDownloadError?.Invoke(this, $"Error downloading mod: {e.Message}");
+                    OnModDownloadError?.Invoke(this, M3L.GetString(M3L.string_interp_errorDownloadingModX, e.Message));
                 }
             });
         }

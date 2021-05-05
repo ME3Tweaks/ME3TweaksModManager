@@ -79,10 +79,6 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             nbw.DoWork += (a, b) =>
             {
                 var client = NexusModsUtilities.GetClient();
-
-                var mf = client.ModFiles.GetModFiles("masseffect", 1).Result;
-
-
                 string gamename = @"masseffect";
                 if (Game == MEGame.ME2) gamename += @"2";
                 if (Game == MEGame.ME3) gamename += @"3";
@@ -103,14 +99,14 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 {
                     if (e.InnerException != null)
                     {
-                        if (e.InnerException.Message == "NOT_DOWNLOADED_MOD")
+                        if (e.InnerException.Message == @"NOT_DOWNLOADED_MOD")
                         {
                             // User did not download this mod from NexusMods
-                            endorsementFailedReason = "You cannot endorse a mod that you have not downloaded from NexusMods.";
+                            endorsementFailedReason = M3L.GetString(M3L.string_dialog_cannotEndorseNonDownloadedMod);
                         }
-                        else if (e.InnerException.Message == "TOO_SOON_AFTER_DOWNLOAD")
+                        else if (e.InnerException.Message == @"TOO_SOON_AFTER_DOWNLOAD")
                         {
-                            endorsementFailedReason = "You cannot endorse a mod until at least 15 minutes after downloading it.";
+                            endorsementFailedReason = M3L.GetString(M3L.string_dialog_cannotEndorseUntil15min);
                         }
                     }
                     else

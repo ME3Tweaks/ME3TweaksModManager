@@ -357,6 +357,15 @@
     <system:String x:Key="string_setting_tooltip_launchThroughOrigin">Launches Origin-based games through the Origin client, ensuring licensing and playtime is tracked. This only affects ME1/ME2 Origin versions, as ME3 requires it</system:String>
     <system:String x:Key="string_loadingTargets">Loading targets</system:String>
     <!-- Shown when app is booting up and game targets are being inspected -->
+    <system:String x:Key="string_configureNxmHandlerOnBoot">Configure nxm:// handler on boot</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_configureNxmHandlerOnBoot">Configures the NexusMods nxm:// handler, so 'Download with Manager' on NexusMods boots ME3Tweaks Mod Manager.&#10;If turned off, you can re-enable it manually in the NexusMods panel</system:String>
+    <system:String x:Key="string_dialog_nexusLoginRequiredForDownload">ME3Tweaks Mod Manager must be linked with your NexusMods account in order to directly download from NexusMods. Press OK to open the NexusMods sign-in page to link the application.</system:String>
+    <system:String x:Key="string_notSignedIn">Not signed in</system:String>
+    <system:String x:Key="string_couldNotEndorseFile">Could not endorse file</system:String>
+    <system:String x:Key="string_configuringNxmhandler">Configuring nxmhandler</system:String>
+    <system:String x:Key="string_configuredNxmhandler">Configured nxmhandler</system:String>
+    <system:String x:Key="string_interp_downloadingNxmhandlerX">Downloading nxmhandler {0}%</system:String>
+    <!-- 0={percentage} -->
 
     <!-- Global Styles --> 
     <system:String x:Key="string_thisTargetHasBeenTextureModded">This target has been texture modded</system:String>
@@ -1050,6 +1059,9 @@
     <system:String x:Key="string_pasteYourAPIKeyHere">Paste your API key here</system:String>
     <system:String x:Key="string_manuallyEnterAPIKey">Manually enter API key</system:String>
     <system:String x:Key="string_yourAPIKeyWillAppearHere">Your API key will appear here</system:String>
+    <system:String x:Key="string_setupDownloadWithManager">Setup Download with Manager</system:String>
+    <system:String x:Key="string_failedToSetupDownloadWithManager">Failed to setup Download with Manager</system:String>
+    <system:String x:Key="string_downloadWithManagerConfigured">Download with Manager configured</system:String>
 
     <!-- Alternates Global -->
     <system:String x:Key="string_validation_alt_imageAssetArchiveError">Alternate {0} lists image asset {1}, but the asset could not be read from the archive. The log will contain additional information.</system:String>
@@ -1105,6 +1117,8 @@
     <!-- 0={FriendlyName} -->
     <system:String x:Key="string_interp_validation_altdlc_dlcRequirementInvalid">An item in Alternate DLC's ({0}) DLCRequirements list doesn't start with DLC_ or is not official header. Bad value: {1}</system:String>
     <!-- 0=FriendlyName -->
+    <system:String x:Key="string_interp_validation_altdlc_condManualWithConditionalDLC">Alternate DLC {0} that has a value for ConditionalDLC on Condition COND_MANUAL. COND_MANUAL does not use ConditionalDLC, use DLCRequirements instead.</system:String>
+    <!-- 0={friendlyName} -->
 
     <!-- Alternate File -->
     <system:String x:Key="string_validation_altfile_oneAltDlcMissingFriendlyNameCmm6">At least one specified Alternate File does not specify a FriendlyName, which is required for mods targeting cmmver >= 6.0.</system:String>
@@ -1153,6 +1167,9 @@
     <system:String x:Key="string_bypassNotInstalledASIAndDLCModsWillBeUnableToLoad">Bypass not installed. ASI and DLC mods will be unable to load</system:String>
     <system:String x:Key="string_bypassInstalledASIModsWillBeAbleToLoad">Bypass installed. ASI mods will be able to load</system:String>
     <system:String x:Key="string_bypassNotInstalledASIModsWillBeUnableToLoad">Bypass not installed. ASI mods will be unable to load</system:String>
+    <system:String x:Key="string_interp_unsupportedME1Version">Unsupported executable version: {exeInfo.FileVersion}. The only supported version of MassEffect.exe is 1.2.20608.0</system:String>
+    <system:String x:Key="string_interp_unsupportedME2Version">Unsupported executable version: {exeInfo.FileVersion}. The only supported version of MassEffect2.exe is 1.2.1604.0</system:String>
+    <system:String x:Key="string_interp_unsupportedME3Version">Unsupported executable version: {exeInfo.FileVersion}. The only supported version of MassEffect3.exe is 1.5.5427.124</system:String>
 
     <!-- ModJob -->
     <system:String x:Key="string_interp_validation_modjob_replacementFileSpecifiedByJobDoesntExist">Failed to add replacement file to mod job: {0} does not exist but is specified by the job.</system:String>
@@ -1516,6 +1533,9 @@
     <!-- 0= ModMaker Mod Revision -->
     <system:String x:Key="string_interp_codeX">Code {0}</system:String>
     <!-- 0=ModMaker ID/Code -->
+    <system:String x:Key="string_theDownloadWasCanceled">The download was canceled</system:String>
+    <system:String x:Key="string_interp_onlineContentHashWrong">Hash of downloaded item ({0}) does not match expected hash. Expected: {1}, got: {2}</system:String>
+    <!-- 0={url} 1={expected hash} 2={calculated hash} -->
 
     <!-- Mod updates panel -->
     <system:String x:Key="string_interp_decompressedFileNotCorrectSize">Decompressed file ({0}) is not the correct size. Expected: {1}, received: {2}</system:String>
@@ -1984,6 +2004,22 @@
     <!-- 0={date} 1={date} -->
     <system:String x:Key="string_interp_resultsCount">{0} result(s)</system:String>
     <!-- 0={Number of results in a search. Adjust this string as necessary to fit your language's pluralization methods.} -->
+    <system:String x:Key="string_tooltip_downloadThisMod">Download this mod</system:String>
+    <system:String x:Key="string_tooltip_premiumRequiredForDownload">You must be a NexusMods Premium user to download directly within Mod Manager</system:String>
 
+    <!-- Mod-NexusModsIntegration -->
+    <system:String x:Key="string_dialog_cannotEndorseNonDownloadedMod">You cannot endorse a mod that you have not downloaded from NexusMods.</system:String> 
+    <system:String x:Key="string_dialog_cannotEndorseUntil15min">You cannot endorse a mod until at least 15 minutes after downloading it.</system:String> 
 
+    <!-- Mod Download -->
+    <system:String x:Key="string_dialog_mustBePremiumUserToDownload">Cannot download file: You must be a premium subscriber to NexusMods to use direct download links.</system:String>
+    <system:String x:Key="string_dialog_cannotDownloadDeletedFile">Cannot download file: Deleted from NexusMods</system:String>
+    <system:String x:Key="string_interp_errorDownloadingModX">Error downloading mod: {0}</system:String>
+    <!-- 0={Error message} -->
+    
+    <!-- Mod Downloader -->
+    <system:String x:Key="string_modDownloader">Mod Downloader</system:String>
+    <system:String x:Key="string_initializing">Initializing</system:String>
+    <system:String x:Key="string_cancelDownload">Cancel download</system:String>
+    <system:String x:Key="string_downloadError">Download error</system:String>
 </ResourceDictionary>

@@ -483,24 +483,24 @@ namespace MassEffectModManagerCore.modmanager.objects
                 MassEffect3.exe 1.5.5427.124
                 */
                 case MEGame.ME1:
-                    if (exeInfo.FileVersion != "1.2.20608.0")
+                    if (exeInfo.FileVersion != @"1.2.20608.0")
                     {
                         // NOT SUPPORTED
-                        return $"Unsupported executable version: {exeInfo.FileVersion}. The only supported version of MassEffect.exe is 1.2.20608.0";
+                        return M3L.GetString(M3L.string_interp_unsupportedME1Version, exeInfo.FileVersion);
                     }
                     break;
                 case MEGame.ME2:
-                    if (exeInfo.FileVersion != "1.2.1604.0" && exeInfo.FileVersion != "01604.00") // Steam and Origin exes have different FileVersion for some reason
+                    if (exeInfo.FileVersion != @"1.2.1604.0" && exeInfo.FileVersion != @"01604.00") // Steam and Origin exes have different FileVersion for some reason
                     {
                         // NOT SUPPORTED
-                        return $"Unsupported executable version: {exeInfo.FileVersion}. The only supported version of MassEffect2.exe is 1.2.1604.0";
+                        return M3L.GetString(M3L.string_interp_unsupportedME2Version, exeInfo.FileVersion);
                     }
                     break;
                 case MEGame.ME3:
-                    if (exeInfo.FileVersion != "05427.124") // not really sure what's going on here
+                    if (exeInfo.FileVersion != @"05427.124") // not really sure what's going on here
                     {
                         // NOT SUPPORTED
-                        return $"Unsupported executable version: {exeInfo.FileVersion}. The only supported version of MassEffect3.exe is 1.5.5427.124";
+                        return M3L.GetString(M3L.string_interp_unsupportedME3Version, exeInfo.FileVersion);
                     }
                     break;
             }

@@ -74,7 +74,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public long DLMProgressMax { get; private set; } = 1;
         public long DLMProgressValue { get; private set; } = 0;
         public bool DLMProgressIndeterminate { get; private set; } = true;
-        public string DLMSetupText { get; private set; } = "Setup Download with Manager";
+        public string DLMSetupText { get; private set; } = M3L.GetString(M3L.string_setupDownloadWithManager);
         private void SetupDLM()
         {
             SettingUpNXM = true;
@@ -89,11 +89,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             SettingUpNXM = false;
             if (obj != null)
             {
-                M3L.ShowDialog(window, obj, "Failed to setup Download with Manager", MessageBoxButton.OK, MessageBoxImage.Error);
+                M3L.ShowDialog(window, obj, M3L.GetString(M3L.string_failedToSetupDownloadWithManager), MessageBoxButton.OK, MessageBoxImage.Error);
             }
             else
             {
-                DLMSetupText = "Download with Manager configured";
+                DLMSetupText = M3L.GetString(M3L.string_downloadWithManagerConfigured);
             }
 
         }

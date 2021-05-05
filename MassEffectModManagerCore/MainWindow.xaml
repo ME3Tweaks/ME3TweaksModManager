@@ -1,6 +1,6 @@
-﻿<Window
-    x:Class="MassEffectModManagerCore.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local="clr-namespace:MassEffectModManagerCore" xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:fa="http://schemas.fontawesome.io/icons/" xmlns:modmanager="clr-namespace:MassEffectModManagerCore.modmanager"
-    xmlns:usercontrols="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols"
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Window
+    x:Class="MassEffectModManagerCore.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local="clr-namespace:MassEffectModManagerCore" xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:fa="http://schemas.fontawesome.io/icons/" xmlns:modmanager="clr-namespace:MassEffectModManagerCore.modmanager" xmlns:usercontrols="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols"
     mc:Ignorable="d"
     Closing="ModManagerWindow_Closing"
     ContentRendered="ModManager_ContentRendered"
@@ -397,11 +397,11 @@
                         <MenuItem
                             Name="AutoConfigNXM_MenuItem"
                             Visibility="Visible"
-                            Header="Configure nxm:// handler on boot"
+                            Header="{DynamicResource string_configureNxmHandlerOnBoot}"
                             StaysOpenOnClick="True"
                             Click="ChangeSetting_Clicked"
                             IsChecked="{Binding Path=(modmanager:Settings.ConfigureNXMHandlerOnBoot)}"
-                            ToolTip="Configures the NexusMods nxm:// handler, so 'Download with Manager' on NexusMods boots ME3Tweaks Mod Manager.&#10;If turned off, you can re-enable it manually in the NexusMods panel."
+                            ToolTip="{DynamicResource string_tooltip_configureNxmHandlerOnBoot}"
                             IsCheckable="True" />
                         <MenuItem
                             Header="{DynamicResource string_Language}">
@@ -780,7 +780,7 @@
                                     Source="{StaticResource me3gameicon}"
                                     Width="16"
                                     HorizontalAlignment="Center"
-                                    RenderOptions.BitmapScalingMode="HighQuality"/>
+                                    RenderOptions.BitmapScalingMode="HighQuality" />
                             </MenuItem.Icon>
                         </MenuItem>
                     </MenuItem>
@@ -1404,7 +1404,7 @@
                         Grid.ColumnSpan="3"
                         Margin="10,0,0,0"
                         HorizontalContentAlignment="Stretch"
-                        ToolTip="{DynamicResource string_tooltip_currentTarget}"/>
+                        ToolTip="{DynamicResource string_tooltip_currentTarget}" />
                     <Button
                         Content="{DynamicResource string_addTarget}"
                         Command="{Binding AddTargetCommand}"

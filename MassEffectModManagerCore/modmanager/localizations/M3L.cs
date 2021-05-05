@@ -408,6 +408,14 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_setting_launchThroughOrigin = "string_setting_launchThroughOrigin";
 		public const string string_setting_tooltip_launchThroughOrigin = "string_setting_tooltip_launchThroughOrigin";
 		public const string string_loadingTargets = "string_loadingTargets";
+		public const string string_configureNxmHandlerOnBoot = "string_configureNxmHandlerOnBoot";
+		public const string string_tooltip_configureNxmHandlerOnBoot = "string_tooltip_configureNxmHandlerOnBoot";
+		public const string string_dialog_nexusLoginRequiredForDownload = "string_dialog_nexusLoginRequiredForDownload";
+		public const string string_notSignedIn = "string_notSignedIn";
+		public const string string_couldNotEndorseFile = "string_couldNotEndorseFile";
+		public const string string_configuringNxmhandler = "string_configuringNxmhandler";
+		public const string string_configuredNxmhandler = "string_configuredNxmhandler";
+		public const string string_interp_downloadingNxmhandlerX = "string_interp_downloadingNxmhandlerX";
 		public const string string_thisTargetHasBeenTextureModded = "string_thisTargetHasBeenTextureModded";
 		public const string string_preparingToInstall = "string_preparingToInstall";
 		public const string string_interp_devModeAlotInstalledWarning = "string_interp_devModeAlotInstalledWarning";
@@ -931,6 +939,9 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_pasteYourAPIKeyHere = "string_pasteYourAPIKeyHere";
 		public const string string_manuallyEnterAPIKey = "string_manuallyEnterAPIKey";
 		public const string string_yourAPIKeyWillAppearHere = "string_yourAPIKeyWillAppearHere";
+		public const string string_setupDownloadWithManager = "string_setupDownloadWithManager";
+		public const string string_failedToSetupDownloadWithManager = "string_failedToSetupDownloadWithManager";
+		public const string string_downloadWithManagerConfigured = "string_downloadWithManagerConfigured";
 		public const string string_validation_alt_imageAssetArchiveError = "string_validation_alt_imageAssetArchiveError";
 		public const string string_validation_alt_imageAssetNotFound = "string_validation_alt_imageAssetNotFound";
 		public const string string_validation_alt_imageAssetOutOfRangeHeight = "string_validation_alt_imageAssetOutOfRangeHeight";
@@ -959,6 +970,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_interp_validation_altdlc_specificSizedFileMustBeLargerThanZero = "string_interp_validation_altdlc_specificSizedFileMustBeLargerThanZero";
 		public const string string_interp_validation_altdlc_specificSizedFilesMissingRequiredParams = "string_interp_validation_altdlc_specificSizedFilesMissingRequiredParams";
 		public const string string_interp_validation_altdlc_dlcRequirementInvalid = "string_interp_validation_altdlc_dlcRequirementInvalid";
+		public const string string_interp_validation_altdlc_condManualWithConditionalDLC = "string_interp_validation_altdlc_condManualWithConditionalDLC";
 		public const string string_validation_altfile_oneAltDlcMissingFriendlyNameCmm6 = "string_validation_altfile_oneAltDlcMissingFriendlyNameCmm6";
 		public const string string_validation_altfile_unknownCondition = "string_validation_altfile_unknownCondition";
 		public const string string_validation_altfile_unknownOperation = "string_validation_altfile_unknownOperation";
@@ -989,6 +1001,9 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_bypassNotInstalledASIAndDLCModsWillBeUnableToLoad = "string_bypassNotInstalledASIAndDLCModsWillBeUnableToLoad";
 		public const string string_bypassInstalledASIModsWillBeAbleToLoad = "string_bypassInstalledASIModsWillBeAbleToLoad";
 		public const string string_bypassNotInstalledASIModsWillBeUnableToLoad = "string_bypassNotInstalledASIModsWillBeUnableToLoad";
+		public const string string_interp_unsupportedME1Version = "string_interp_unsupportedME1Version";
+		public const string string_interp_unsupportedME2Version = "string_interp_unsupportedME2Version";
+		public const string string_interp_unsupportedME3Version = "string_interp_unsupportedME3Version";
 		public const string string_interp_validation_modjob_replacementFileSpecifiedByJobDoesntExist = "string_interp_validation_modjob_replacementFileSpecifiedByJobDoesntExist";
 		public const string string_validation_modjob_exeFilesNotAllowed = "string_validation_modjob_exeFilesNotAllowed";
 		public const string string_validation_modjob_dllFilesNotAllowed = "string_validation_modjob_dllFilesNotAllowed";
@@ -1236,6 +1251,8 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_injectCustomKeybindsIfAvailable = "string_injectCustomKeybindsIfAvailable";
 		public const string string_interp_revisionX = "string_interp_revisionX";
 		public const string string_interp_codeX = "string_interp_codeX";
+		public const string string_theDownloadWasCanceled = "string_theDownloadWasCanceled";
+		public const string string_interp_onlineContentHashWrong = "string_interp_onlineContentHashWrong";
 		public const string string_interp_decompressedFileNotCorrectSize = "string_interp_decompressedFileNotCorrectSize";
 		public const string string_interp_decompressedFileWrongHash = "string_interp_decompressedFileWrongHash";
 		public const string string_applying = "string_applying";
@@ -1580,5 +1597,14 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_goToModPage = "string_goToModPage";
 		public const string string_interp_lastIndexing = "string_interp_lastIndexing";
 		public const string string_interp_resultsCount = "string_interp_resultsCount";
+		public const string string_dialog_cannotEndorseNonDownloadedMod = "string_dialog_cannotEndorseNonDownloadedMod";
+		public const string string_dialog_cannotEndorseUntil15min = "string_dialog_cannotEndorseUntil15min";
+		public const string string_dialog_mustBePremiumUserToDownload = "string_dialog_mustBePremiumUserToDownload";
+		public const string string_dialog_cannotDownloadDeletedFile = "string_dialog_cannotDownloadDeletedFile";
+		public const string string_interp_errorDownloadingModX = "string_interp_errorDownloadingModX";
+		public const string string_modDownloader = "string_modDownloader";
+		public const string string_initializing = "string_initializing";
+		public const string string_cancelDownload = "string_cancelDownload";
+		public const string string_downloadError = "string_downloadError";
 	}
 }

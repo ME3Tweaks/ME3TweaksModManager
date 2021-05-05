@@ -211,14 +211,14 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     Log.Error(@"Unable to load basegame file identification service and local file doesn't exist. Returning a blank copy.");
                     Dictionary<string, CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>> d = new Dictionary<string, CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>>
                     {
-                        ["ME1"] = new CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>(),
-                        ["ME2"] = new CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>(),
-                        ["ME3"] = new CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>()
+                        [@"ME1"] = new CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>(),
+                        [@"ME2"] = new CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>(),
+                        [@"ME3"] = new CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>()
                     };
                     return d;
                 }
             }
-            Log.Information("Using cached BGFIS instead");
+            Log.Information(@"Using cached BGFIS instead");
 
             try
             {
@@ -533,7 +533,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         public static Dictionary<string, string> QueryModRelay(string md5, long size)
         {
             //Todo: Finish implementing relay service
-            string finalRelayURL = $"{ModInfoRelayEndpoint}?modmanagerversion={App.BuildNumber}&md5={md5.ToLowerInvariant()}&size={size}";
+            string finalRelayURL = $@"{ModInfoRelayEndpoint}?modmanagerversion={App.BuildNumber}&md5={md5.ToLowerInvariant()}&size={size}";
             try
             {
                 using (var wc = new ShortTimeoutWebClient())
@@ -546,7 +546,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
             catch (Exception e)
             {
-                Log.Error("Error querying relay service from ME3Tweaks: " + App.FlattenException(e));
+                Log.Error(@"Error querying relay service from ME3Tweaks: " + App.FlattenException(e));
             }
 
             return null;
@@ -559,7 +559,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 /*
                 //7-zip
                 string sevenZDLL = Utilities.Get7zDllPath();
-                if (!File.Exists(sevenZDLL) || Utilities.CalculateMD5(sevenZDLL) != "72491c7b87a7c2dd350b727444f13bb4")
+                if (!File.Exists(sevenZDLL) || Utilities.CalculateMD5(sevenZDLL) != @"72491c7b87a7c2dd350b727444f13bb4")
                 {
                     foreach (var staticurl in StaticFilesBaseEndpoints)
                     {
@@ -567,28 +567,28 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         {
                             using var wc = new ShortTimeoutWebClient();
                             {
-                                var fullURL = staticurl + "7z.dll";
-                                Log.Information("Downloading 7z.dll: " + fullURL);
+                                var fullURL = staticurl + @"7z.dll";
+                                Log.Information(@"Downloading 7z.dll: " + fullURL);
                                 wc.DownloadFile(fullURL, sevenZDLL);
                                 break; //No more loops
                             }
                         }
                         catch (Exception e)
                         {
-                            Log.Error($"Could not download 7z.dll from endpoint {staticurl} {e.Message}");
+                            Log.Error($@"Could not download 7z.dll from endpoint {staticurl} {e.Message}");
                         }
                     }
                 }
 
                 if (File.Exists(sevenZDLL))
                 {
-                    Log.Information("Setting 7z dll path: " + sevenZDLL);
+                    Log.Information(@"Setting 7z dll path: " + sevenZDLL);
                     var p = Path.GetFullPath(sevenZDLL);
                     SevenZip.SevenZipBase.SetLibraryPath(sevenZDLL);
                 }
                 else
                 {
-                    Log.Fatal("Unable to load 7z dll! File doesn't exist: " + sevenZDLL);
+                    Log.Fatal(@"Unable to load 7z dll! File doesn't exist: " + sevenZDLL);
                     return false;
                 }*/
             }
@@ -723,10 +723,10 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             return DownloadToStreamInternal(url, progressCallback, hash, logDownload, destStreamOverride, cancellationToken);
         }
 
-        private static (Stream result, string errorMessage) DownloadToStreamInternal(string url, 
-            Action<long, long> progressCallback = null, 
-            string hash = null, 
-            bool logDownload = false, 
+        private static (Stream result, string errorMessage) DownloadToStreamInternal(string url,
+            Action<long, long> progressCallback = null,
+            string hash = null,
+            bool logDownload = false,
             Stream destStreamOverride = null,
             CancellationToken cancellationToken = default)
         {
@@ -757,7 +757,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     {
                         if (cancellationToken.IsCancellationRequested)
                         {
-                            downloadError = "The download was canceled";
+                            downloadError = M3L.GetString(M3L.string_theDownloadWasCanceled);
                             return (responseStream, downloadError);
                         }
                         responseStream.Write(buffer, 0, bytesReceived);
@@ -772,7 +772,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         if (md5 != hash)
                         {
                             responseStream = null;
-                            downloadError = $"Hash of downloaded item ({url}) does not match expected hash. Expected: {hash}, got: {md5}"; //needs localized
+                            downloadError = M3L.GetString(M3L.string_interp_onlineContentHashWrong, url, hash, md5); //needs localized
                         }
                     }
                 }

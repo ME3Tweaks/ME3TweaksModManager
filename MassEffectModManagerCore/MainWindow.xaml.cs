@@ -106,7 +106,7 @@ namespace MassEffectModManagerCore
             {
                 // Not logged in
                 Activate(); //bring to front
-                M3L.ShowDialog(this, "ME3Tweaks Mod Manager must be linked with your NexusMods account in order to directly download from NexusMods. Press OK to open the NexusMods sign-in page to link the application.", "Not signed in", MessageBoxButton.OK, MessageBoxImage.Error);
+                M3L.ShowDialog(this, M3L.GetString(M3L.string_dialog_nexusLoginRequiredForDownload), M3L.GetString(M3L.string_notSignedIn), MessageBoxButton.OK, MessageBoxImage.Error);
                 ShowNexusPanel();
                 return;
             }
@@ -515,7 +515,7 @@ namespace MassEffectModManagerCore
             nexusSearchPanel.Close += (a, b) =>
             {
                 ReleaseBusyControl();
-                if (b.Data is string nxmlink && nxmlink.StartsWith("nxm://"))
+                if (b.Data is string nxmlink && nxmlink.StartsWith(@"nxm://"))
                 {
                     showNXMDownloader(nxmlink);
                 }
@@ -828,7 +828,7 @@ namespace MassEffectModManagerCore
             }
             if (endorsementFailedMessage != null)
             {
-                M3L.ShowDialog(this, endorsementFailedMessage, "Could not endorse file", MessageBoxButton.OK, MessageBoxImage.Error);
+                M3L.ShowDialog(this, endorsementFailedMessage, M3L.GetString(M3L.string_couldNotEndorseFile), MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -2662,12 +2662,12 @@ namespace MassEffectModManagerCore
                     CheckTargetPermissions(true);
                     backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
-                    bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"NXMHandlerSetup", "Setting up nxm:// handler", "Set up nxmhandler");
+                    bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"NXMHandlerSetup", M3L.GetString(M3L.string_configuringNxmhandler), M3L.GetString(M3L.string_configuredNxmhandler));
                     NexusModsUtilities.SetupNXMHandling((done, total, message) =>
                     {
                         if (total > 0)
                         {
-                            backgroundTaskEngine.SubmitBackgroundTaskUpdate(bgTask, $"Downloading nxmhandler {Math.Round(done * 100.0f / total)}%");
+                            backgroundTaskEngine.SubmitBackgroundTaskUpdate(bgTask, M3L.GetString(M3L.string_interp_downloadingNxmhandlerX, Math.Round(done * 100.0f / total)));
                         }
                         else
                         {

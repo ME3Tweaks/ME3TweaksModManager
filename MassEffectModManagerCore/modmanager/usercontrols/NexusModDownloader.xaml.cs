@@ -38,7 +38,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public GenericCommand CancelDownloadCommand { get; set; }
 
-        public string CancelButtonText { get; set; } = "Cancel download";
+        public string CancelButtonText { get; set; } = M3L.GetString(M3L.string_cancelDownload);
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
@@ -112,7 +112,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
-                M3L.ShowDialog(window, e, "Download error", MessageBoxButton.OK, MessageBoxImage.Error);
+                M3L.ShowDialog(window, e, M3L.GetString(M3L.string_downloadError), MessageBoxButton.OK, MessageBoxImage.Error);
                 OnClosing(DataEventArgs.Empty);
             });
         }
