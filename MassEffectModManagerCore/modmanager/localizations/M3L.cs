@@ -1597,6 +1597,8 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_goToModPage = "string_goToModPage";
 		public const string string_interp_lastIndexing = "string_interp_lastIndexing";
 		public const string string_interp_resultsCount = "string_interp_resultsCount";
+		public const string string_tooltip_downloadThisMod = "string_tooltip_downloadThisMod";
+		public const string string_tooltip_premiumRequiredForDownload = "string_tooltip_premiumRequiredForDownload";
 		public const string string_dialog_cannotEndorseNonDownloadedMod = "string_dialog_cannotEndorseNonDownloadedMod";
 		public const string string_dialog_cannotEndorseUntil15min = "string_dialog_cannotEndorseUntil15min";
 		public const string string_dialog_mustBePremiumUserToDownload = "string_dialog_mustBePremiumUserToDownload";
