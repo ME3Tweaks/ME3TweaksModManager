@@ -395,6 +395,15 @@
                             ToolTip="{DynamicResource string_SwitchUItodarktheme}"
                             IsCheckable="True" />
                         <MenuItem
+                            Name="AutoConfigNXM_MenuItem"
+                            Visibility="Visible"
+                            Header="Configure nxm:// handler on boot"
+                            StaysOpenOnClick="True"
+                            Click="ChangeSetting_Clicked"
+                            IsChecked="{Binding Path=(modmanager:Settings.ConfigureNXMHandlerOnBoot)}"
+                            ToolTip="Configures the NexusMods nxm:// handler, so 'Download with Manager' on NexusMods boots ME3Tweaks Mod Manager.&#10;If turned off, you can re-enable it manually in the NexusMods panel."
+                            IsCheckable="True" />
+                        <MenuItem
                             Header="{DynamicResource string_Language}">
                             <MenuItem.Icon>
                                 <Image
