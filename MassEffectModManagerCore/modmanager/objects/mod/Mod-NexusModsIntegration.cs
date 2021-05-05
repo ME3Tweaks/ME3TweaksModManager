@@ -20,7 +20,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
 
         public async Task<bool?> GetEndorsementStatus()
         {
-            if (!NexusModsUtilities.HasAPIKey) return false;
+            if (!NexusModsUtilities.HasAPIKey || NexusModsUtilities.UserInfo == null) return false;
             if (checkedEndorsementStatus) return IsEndorsed;
             try
             {
