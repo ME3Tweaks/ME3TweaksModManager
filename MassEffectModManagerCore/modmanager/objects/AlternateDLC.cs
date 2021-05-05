@@ -131,7 +131,24 @@ namespace MassEffectModManagerCore.modmanager.objects
                 var conditionalList = StringStructParser.GetSemicolonSplitList(conditionalDlc);
                 foreach (var dlc in conditionalList)
                 {
-                    if (Condition == AltDLCCondition.COND_SPECIFIC_DLC_SETUP)
+                    if (Condition == AltDLCCondition.COND_MANUAL)
+                    {
+                        if (modForValidating.ModDescTargetVersion >= 6.3)
+                        {
+                            // On 6.3 trigger failure on this mod to help ensure users design mod properly
+                            Log.Error($@"{modForValidating.ModName} has Alternate DLC {friendlyName} that has a value for ConditionalDLC on Condition COND_MANUAL. COND_MANUAL does not use ConditionalDLC, use DLCRequirements instead.");
+                            ValidAlternate = false;
+                            LoadFailedReason = $"Alternate DLC {friendlyName} that has a value for ConditionalDLC on Condition COND_MANUAL. COND_MANUAL does not use ConditionalDLC, use DLCRequirements instead.";
+                            return;
+                        }
+                        else
+                        {
+                            Log.Warning($@"{modForValidating.ModName} has AlternateDLC {friendlyName} that has a value for ConditionalDLC on Condition COND_MANUAL. COND_MANUAL does not use ConditionalDLC, use DLCRequirements instead. On mods targetting moddesc 6.3 and above, this will trigger a load failure for a mod.");
+                        }
+
+                        break;
+                    }
+                    else if (Condition == AltDLCCondition.COND_SPECIFIC_DLC_SETUP)
                     {
 
                         //check +/-
@@ -315,7 +332,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         if (testreq.StartsWith("-") || testreq.StartsWith("+"))
                         {
                             prefix = testreq[0].ToString();
-                        } 
+                        }
                         testreq = testreq.TrimStart('-', '+');
                     }
                     //official headers
@@ -326,7 +343,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     }
 
                     //dlc mods
-                    if (!originalReq.StartsWith(@"DLC_"))
+                    if (!testreq.StartsWith(@"DLC_"))
                     {
                         Log.Error($@"An item in Alternate DLC's ({FriendlyName}) DLCRequirements doesn't start with DLC_ or is not official header. Bad value: {originalReq}");
                         LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altdlc_dlcRequirementInvalid, FriendlyName, originalReq);

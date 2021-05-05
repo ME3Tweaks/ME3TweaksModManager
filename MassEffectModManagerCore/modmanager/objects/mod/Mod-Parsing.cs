@@ -228,10 +228,21 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 {
                     foreach (var altdlc in InstallationJob.AlternateDLCs)
                     {
-                        foreach (var conditionaldlc in altdlc.ConditionalDLC)
+                        if (altdlc.Condition != AlternateDLC.AltDLCCondition.COND_MANUAL)
                         {
-                            autoConfigs.Add(conditionaldlc.TrimStart('-', '+'));
+                            foreach (var conditionaldlc in altdlc.ConditionalDLC) // Conditional DLC are not available for COND_MANUAL
+                            {
+                                autoConfigs.Add(conditionaldlc.TrimStart('-', '+'));
+                            }
                         }
+                        else if (altdlc.Condition == AlternateDLC.AltDLCCondition.COND_MANUAL && altdlc.DLCRequirementsForManual != null && altdlc.DLCRequirementsForManual.Any())
+                        {
+                            foreach (var manualTrigger in altdlc.DLCRequirementsForManual)
+                            {
+                                autoConfigs.Add(manualTrigger.TrimStart('-', '+'));
+                            }
+                        }
+
                     }
                     foreach (var altfile in InstallationJob.AlternateFiles)
                     {
