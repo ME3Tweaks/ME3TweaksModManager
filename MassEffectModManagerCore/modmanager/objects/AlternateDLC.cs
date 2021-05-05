@@ -483,8 +483,8 @@ namespace MassEffectModManagerCore.modmanager.objects
 
                     if (mod.ModDescTargetVersion >= 6.3)
                     {
-                        var requiredDLC = DLCRequirementsForManual.Where(x => !x.StartsWith(@"-") || x.StartsWith(@"+")); // none or + means 'must exist'
-                        var notPresentDLCRequired = DLCRequirementsForManual.Where(x => x.StartsWith(@"-"));
+                        var requiredDLC = DLCRequirementsForManual.Where(x => !x.StartsWith(@"-") || x.StartsWith(@"+")).Select(x => x.TrimStart('+')); // none or + means 'must exist'
+                        var notPresentDLCRequired = DLCRequirementsForManual.Where(x => x.StartsWith(@"-")).Select(x=>x.TrimStart('-'));
                         UIIsSelectable = dlc.ContainsAll(requiredDLC, StringComparer.InvariantCultureIgnoreCase) && dlc.ContainsNone(notPresentDLCRequired, StringComparer.InvariantCultureIgnoreCase);
                     }
                     else
