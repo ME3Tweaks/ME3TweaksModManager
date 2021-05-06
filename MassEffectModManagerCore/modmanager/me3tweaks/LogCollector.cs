@@ -578,6 +578,14 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     vidCardIndex++;
                 }
 
+                // Antivirus
+                var avs = Utilities.GetListOfInstalledAV();
+                addDiagLine("Antivirus products", Severity.BOLD);
+                addDiagLine("The following antivirus products were detected:");
+                foreach (var av in avs)
+                {
+                    addDiagLine($@"- {av}");
+                }
                 #endregion
 
                 #region Texture mod information
