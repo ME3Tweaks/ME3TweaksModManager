@@ -1167,9 +1167,9 @@
     <system:String x:Key="string_bypassNotInstalledASIAndDLCModsWillBeUnableToLoad">Bypass not installed. ASI and DLC mods will be unable to load</system:String>
     <system:String x:Key="string_bypassInstalledASIModsWillBeAbleToLoad">Bypass installed. ASI mods will be able to load</system:String>
     <system:String x:Key="string_bypassNotInstalledASIModsWillBeUnableToLoad">Bypass not installed. ASI mods will be unable to load</system:String>
-    <system:String x:Key="string_interp_unsupportedME1Version">Unsupported executable version: {exeInfo.FileVersion}. The only supported version of MassEffect.exe is 1.2.20608.0</system:String>
-    <system:String x:Key="string_interp_unsupportedME2Version">Unsupported executable version: {exeInfo.FileVersion}. The only supported version of MassEffect2.exe is 1.2.1604.0</system:String>
-    <system:String x:Key="string_interp_unsupportedME3Version">Unsupported executable version: {exeInfo.FileVersion}. The only supported version of MassEffect3.exe is 1.5.5427.124</system:String>
+    <system:String x:Key="string_interp_unsupportedME1Version">Unsupported executable version: {0}. The only supported version of MassEffect.exe is 1.2.20608.0</system:String>
+    <system:String x:Key="string_interp_unsupportedME2Version">Unsupported executable version: {0}. The only supported version of MassEffect2.exe is 1.2.1604.0</system:String>
+    <system:String x:Key="string_interp_unsupportedME3Version">Unsupported executable version: {0}. The only supported version of MassEffect3.exe is 1.5.5427.124</system:String>
 
     <!-- ModJob -->
     <system:String x:Key="string_interp_validation_modjob_replacementFileSpecifiedByJobDoesntExist">Failed to add replacement file to mod job: {0} does not exist but is specified by the job.</system:String>

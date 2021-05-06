@@ -187,10 +187,6 @@ namespace MassEffectModManagerCore
         //private ModLoader modLoadSer;
         public MainWindow()
         {
-            if (Environment.GetCommandLineArgs().Length > 1)
-            {
-                MessageBox.Show(string.Join(' ', Environment.GetCommandLineArgs()));
-            }
             if (App.UpgradingFromME3CMM/* || true*/)
             {
                 App.Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
