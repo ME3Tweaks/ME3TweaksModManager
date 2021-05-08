@@ -15,6 +15,8 @@ using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using ME3ExplorerCore.Helpers;
 using ME3ExplorerCore.Packages;
+using static MassEffectModManagerCore.modmanager.me3tweaks.ThirdPartyServices;
+using MassEffectModManagerCore.modmanager.me3tweaks;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -30,7 +32,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public ObservableCollectionExtended<InstalledDLCMod> DLCModsInstalled { get; } = new ObservableCollectionExtended<InstalledDLCMod>();
         public bool SFARBeingRestored { get; private set; }
         public bool BasegameFilesBeingRestored { get; private set; }
-
+        public bool ShowInstalledOptions { get; private set; }
         public InstallationInformation(List<GameTarget> targetsList, GameTarget selectedTarget)
         {
             MemoryAnalyzer.AddTrackedMemoryItem(@"Installation Information Panel", new WeakReference(this));
@@ -481,11 +483,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
                 }
 
-                SelectedTarget?.PopulateModifiedBasegameFiles(restoreBasegamefileConfirmationCallback,
-                    restoreSfarConfirmationCallback,
-                    notifyStartingSfarRestoreCallback,
-                    notifyStartingBasegameFileRestoreCallback,
-                    notifyRestoredCallback);
+                if (SelectedTarget != null && !SelectedTarget.TextureModded)
+                {
+                    // Only populate basegame files if not texture modded.
+                    // All texture modded games will have all basegame files modified and tagged
+                    SelectedTarget?.PopulateModifiedBasegameFiles(restoreBasegamefileConfirmationCallback,
+                        restoreSfarConfirmationCallback,
+                        notifyStartingSfarRestoreCallback,
+                        notifyStartingBasegameFileRestoreCallback,
+                        notifyRestoredCallback);
+                }
+
                 SFARBeingRestored = false;
 
                 SelectedTarget?.PopulateASIInfo();
@@ -550,13 +558,29 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             PreviousTarget = SelectedTarget;
         }
 
+        public class InstalledOfficialDLC : INotifyPropertyChanged
+        {
+            public InstalledOfficialDLC(string foldername, bool installed, MEGame game)
+            {
+                FolderName = foldername;
+                Installed = installed;
+                HumanName = ThirdPartyServices.GetThirdPartyModInfo(FolderName, game)?.modname ?? foldername;
+            }
+
+            public string FolderName { get; set; }
+            public bool Installed { get; set; }
+            public string HumanName { get; set; }
+
+            public event PropertyChangedEventHandler PropertyChanged;
+        }
+
         public class InstalledDLCMod : INotifyPropertyChanged
         {
             private string dlcFolderPath;
 
             //Fody uses this property on weaving
 #pragma warning disable
-public event PropertyChangedEventHandler PropertyChanged;
+            public event PropertyChangedEventHandler PropertyChanged;
 #pragma warning restore
             public string EnableDisableText => DLCFolderName.StartsWith(@"xDLC") ? M3L.GetString(M3L.string_enable) : M3L.GetString(M3L.string_disable);
             public string EnableDisableTooltip { get; set; }
@@ -757,6 +781,14 @@ public event PropertyChangedEventHandler PropertyChanged;
         private void OpenALOTInstaller_Click(object sender, RoutedEventArgs e)
         {
             ClosePanel(new DataEventArgs(@"ALOTInstaller"));
+        }
+
+        public string ShowInstalledOptionsText { get; private set; } = "Show installed options";
+
+        private void ToggleShowingInstallOptions_Click(object sender, RoutedEventArgs e)
+        {
+            ShowInstalledOptions = !ShowInstalledOptions;
+            ShowInstalledOptionsText = ShowInstalledOptions ? "Hide installed options" : "Show installed options";
         }
     }
 }

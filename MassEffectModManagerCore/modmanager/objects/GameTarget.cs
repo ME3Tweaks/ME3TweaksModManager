@@ -18,6 +18,7 @@ using ME3ExplorerCore.GameFilesystem;
 using Serilog;
 using ME3ExplorerCore.Helpers;
 using ME3ExplorerCore.Packages;
+using static MassEffectModManagerCore.modmanager.usercontrols.InstallationInformation;
 
 namespace MassEffectModManagerCore.modmanager.objects
 {
@@ -392,16 +393,28 @@ namespace MassEffectModManagerCore.modmanager.objects
         }
 
         public ObservableCollectionExtended<InstallationInformation.InstalledDLCMod> UIInstalledDLCMods { get; } = new ObservableCollectionExtended<InstallationInformation.InstalledDLCMod>();
+        public ObservableCollectionExtended<InstalledOfficialDLC> UIInstalledOfficialDLC { get; } = new ObservableCollectionExtended<InstalledOfficialDLC>();
 
         public void PopulateDLCMods(bool includeDisabled, Func<InstallationInformation.InstalledDLCMod, bool> deleteConfirmationCallback = null, Action notifyDeleted = null, bool modNamePrefersTPMI = false)
         {
             var dlcDir = M3Directories.GetDLCPath(this);
-            var installedMods = M3Directories.GetInstalledDLC(this, includeDisabled).Where(x => !MEDirectories.OfficialDLC(Game).Contains(x.TrimStart('x'), StringComparer.InvariantCultureIgnoreCase));
+            var allOfficialDLCforGame = MEDirectories.OfficialDLC(Game);
+            var installedDLC = M3Directories.GetInstalledDLC(this, includeDisabled);
+            var installedMods = installedDLC.Where(x => !allOfficialDLCforGame.Contains(x.TrimStart('x'), StringComparer.InvariantCultureIgnoreCase));
+
+            // Also populate official DLC
+            var installedOfficialDLC = installedDLC.Where(x => allOfficialDLCforGame.Contains(x, StringComparer.InvariantCultureIgnoreCase));
+            var notInstalledOfficialDLC = allOfficialDLCforGame.Where(x => !installedOfficialDLC.Contains(x));
+
+            var officialDLC = installedOfficialDLC.Select(x => new InstalledOfficialDLC(x, true, Game)).ToList();
+            officialDLC.AddRange(notInstalledOfficialDLC.Select(x => new InstalledOfficialDLC(x, false, Game)));
+            officialDLC = officialDLC.OrderBy(x => x.HumanName).ToList();
+
             //Must run on UI thread
             Application.Current.Dispatcher.Invoke(delegate
             {
-                UIInstalledDLCMods.ClearEx();
-                UIInstalledDLCMods.AddRange(installedMods.Select(x => new InstallationInformation.InstalledDLCMod(Path.Combine(dlcDir, x), Game, deleteConfirmationCallback, notifyDeleted, modNamePrefersTPMI)).ToList().OrderBy(x => x.ModName));
+                UIInstalledDLCMods.ReplaceAll(installedMods.Select(x => new InstallationInformation.InstalledDLCMod(Path.Combine(dlcDir, x), Game, deleteConfirmationCallback, notifyDeleted, modNamePrefersTPMI)).ToList().OrderBy(x => x.ModName));
+                UIInstalledOfficialDLC.ReplaceAll(officialDLC);
             });
         }
 

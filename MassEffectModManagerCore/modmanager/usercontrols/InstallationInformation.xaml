@@ -1,151 +1,61 @@
-﻿<local:MMBusyPanelBase
-    x:Class="MassEffectModManagerCore.modmanager.usercontrols.InstallationInformation" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters"
-    mc:Ignorable="d"
-    MinWidth="600"
-    MaxHeight="500" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:objects="clr-namespace:MassEffectModManagerCore.modmanager.objects"
-    d:DesignHeight="550"
-    DataContext="{Binding RelativeSource={RelativeSource Self}}"
-    d:DesignWidth="800">
-    <UserControl.Resources></UserControl.Resources>
-    <StackPanel
-        MaxWidth="690"
-        MaxHeight="520">
-        <TextBlock
-            Text="{DynamicResource string_installationInformation}"
-            FontSize="24"
-            FontWeight="Bold"
-            TextAlignment="Center" />
-        <TextBlock
-            Text="{DynamicResource string_installationInformationSubheader}"
-            TextWrapping="Wrap"
-            MaxWidth="550"
-            TextAlignment="Center" />
-        <local:TargetSelector
-            AvailableTargets="{Binding InstallationTargets}"
-            IsEnabled="{Binding SFARBeingRestored, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}"
-            SelectedGameTarget="{Binding SelectedTarget}"
-            Margin="0,5"
-            HorizontalContentAlignment="Stretch"/>
-        <TabControl
-            DataContext="{Binding SelectedTarget}"
-            Padding="0"
-            BorderThickness="1"
-            Margin="0">
-            <TabItem
-                Header="{DynamicResource string_installedDLCmods}"
-                Padding="0">
-                <DockPanel
-                    Height="300"
-                    Margin="-8">
-                    <ScrollViewer
-                        Padding="0">
-                        <ItemsControl
-                            ItemsSource="{Binding UIInstalledDLCMods}"
-                            HorizontalContentAlignment="Stretch"
-                            HorizontalAlignment="Stretch"
-                            AlternationCount="2"
-                            Padding="0">
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<local:MMBusyPanelBase xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:objects="clr-namespace:MassEffectModManagerCore.modmanager.objects" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" x:Class="MassEffectModManagerCore.modmanager.usercontrols.InstallationInformation" mc:Ignorable="d" MinWidth="600" MaxHeight="500" d:DesignHeight="550" DataContext="{Binding RelativeSource={RelativeSource Self}}" d:DesignWidth="800">
+    <UserControl.Resources />
+    <StackPanel MaxWidth="690" MaxHeight="520">
+        <TextBlock Text="{DynamicResource string_installationInformation}" FontSize="24" FontWeight="Bold" TextAlignment="Center" />
+        <TextBlock Text="{DynamicResource string_installationInformationSubheader}" TextWrapping="Wrap" MaxWidth="550" TextAlignment="Center" />
+        <local:TargetSelector AvailableTargets="{Binding InstallationTargets}" IsEnabled="{Binding SFARBeingRestored, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" SelectedGameTarget="{Binding SelectedTarget}" Margin="0,5" HorizontalContentAlignment="Stretch" />
+        <TabControl DataContext="{Binding SelectedTarget}" Padding="0" BorderThickness="1" Margin="0">
+            <TabItem Header="{DynamicResource string_installedDLCmods}" Padding="0">
+                <DockPanel Height="300" Margin="-8">
+                    <DockPanel DockPanel.Dock="Bottom" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}">
+                        <Button Content="{Binding ShowInstalledOptionsText, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:InstallationInformation}}}" HorizontalAlignment="Right" Margin="4" Padding="7,3" Click="ToggleShowingInstallOptions_Click"/>
+                    </DockPanel>
+                    <ScrollViewer Padding="0">
+                        <ItemsControl ItemsSource="{Binding UIInstalledDLCMods}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" AlternationCount="2" Padding="0">
                             <ItemsControl.ItemTemplate>
-                                <DataTemplate
-                                    DataType="{x:Type local:InstallationInformation+InstalledDLCMod}">
+                                <DataTemplate DataType="{x:Type local:InstallationInformation+InstalledDLCMod}">
                                     <DockPanel>
                                         <DockPanel.Resources>
-                                            <Style
-                                                TargetType="{x:Type DockPanel}">
+                                            <Style TargetType="{x:Type DockPanel}">
                                                 <Style.Triggers>
-                                                    <Trigger
-                                                        Property="IsMouseOver"
-                                                        Value="True">
-                                                        <Setter
-                                                            Property="Background"
-                                                            Value="{DynamicResource {x:Static adonisUi:Brushes.HoverBackgroundBrush}}" />
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.HoverBackgroundBrush}}" />
                                                     </Trigger>
-                                                    <Trigger
-                                                        Property="IsEnabled"
-                                                        Value="False">
-                                                        <Setter
-                                                            Property="TextBlock.Foreground"
-                                                            Value="Pink" />
+                                                    <Trigger Property="IsEnabled" Value="False">
+                                                        <Setter Property="TextBlock.Foreground" Value="Pink" />
                                                     </Trigger>
                                                 </Style.Triggers>
                                             </Style>
                                         </DockPanel.Resources>
-                                        <Grid
-                                            Margin="3">
+                                        <StackPanel DockPanel.Dock="Bottom" Margin="5,0,3,3" 
+                                                    Visibility="{Binding ShowInstalledOptions, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:InstallationInformation}}, Converter={StaticResource BoolToVisibilityConverter}}">
+                                            <TextBlock Text="{Binding ChosenInstallOptions.BindableCount, Converter={StaticResource LocalizationConverter}, ConverterParameter='string_interp_xChosenOptions'}" FontWeight="Bold"/>
+                                            <ItemsControl ItemsSource="{Binding ChosenInstallOptions}"/>
+                                        </StackPanel>
+                                        <Grid Margin="3">
                                             <Grid.RowDefinitions>
-                                                <RowDefinition
-                                                    Height="Auto" />
-                                                <RowDefinition
-                                                    Height="Auto" />
-                                                <RowDefinition
-                                                    Height="Auto" />
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="Auto" />
                                             </Grid.RowDefinitions>
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition
-                                                    Width="Auto" />
-                                                <ColumnDefinition
-                                                    Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
                                             </Grid.ColumnDefinitions>
-                                            <TextBlock
-                                                Grid.Row="0"
-                                                Grid.Column="0"
-                                                Foreground="{Binding TextColor}"
-                                                FontWeight="SemiBold"
-                                                FontSize="13"
-                                                VerticalAlignment="Center"
-                                                Padding="0,0,0,0">
+                                            <TextBlock Grid.Row="0" Grid.Column="0" Foreground="{Binding TextColor}" FontWeight="SemiBold" FontSize="13" VerticalAlignment="Center" Padding="0,0,0,0">
                                                 <TextBlock.Text>
-                                                    <MultiBinding
-                                                        StringFormat="{}{0} {1}">
-                                                        <Binding
-                                                            Path="ModName" />
-                                                        <Binding
-                                                            Path="Version" />
+                                                    <MultiBinding StringFormat="{}{0} {1}">
+                                                        <Binding Path="ModName" />
+                                                        <Binding Path="Version" />
                                                     </MultiBinding>
                                                 </TextBlock.Text>
                                             </TextBlock>
-                                            <TextBlock
-                                                Grid.Row="1"
-                                                Grid.Column="0"
-                                                Foreground="{Binding TextColor}"
-                                                Text="{Binding DLCFolderNameString}"
-                                                TextAlignment="Left"
-                                                IsEnabled="False"
-                                                FontSize="10"
-                                                VerticalAlignment="Center" />
-                                            <TextBlock
-                                                Grid.Row="1"
-                                                Grid.Column="1"
-                                                Foreground="{Binding TextColor}"
-                                                Text="{Binding InstalledBy}"
-                                                TextAlignment="Right"
-                                                IsEnabled="False"
-                                                FontSize="10"
-                                                VerticalAlignment="Center" />
-                                            <DockPanel
-                                                Background="Transparent"
-                                                Grid.Row="0"
-                                                Grid.Column="1">
-                                                <Button
-                                                    Content="{DynamicResource string_delete}"
-                                                    Foreground="{Binding TextColor}"
-                                                    Command="{Binding DeleteCommand}"
-                                                    CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type TabControl}}, Path=DataContext}"
-                                                    HorizontalAlignment="Right"
-                                                    DockPanel.Dock="Right"
-                                                    Padding="7,2"
-                                                    Margin="5,0,0,0"
-                                                    ToolTip="{DynamicResource string_tooltip_deleteDLC}" />
-                                                <Button
-                                                    Content="{Binding EnableDisableText}"
-                                                    Foreground="{Binding TextColor}"
-                                                    Command="{Binding EnableDisableCommand}"
-                                                    CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type TabControl}}, Path=DataContext}"
-                                                    HorizontalAlignment="Right"
-                                                    Padding="7,2"
-                                                    Margin="5,0,0,0"
-                                                    Visibility="{Binding EnableDisableVisible, Converter={StaticResource BoolToVisibilityConverter}}"
-                                                    ToolTip="{Binding EnableDisableTooltip}" />
+                                            <TextBlock Grid.Row="1" Grid.Column="0" Foreground="{Binding TextColor}" Text="{Binding DLCFolderNameString}" TextAlignment="Left" IsEnabled="False" FontSize="10" VerticalAlignment="Center" />
+                                            <TextBlock Grid.Row="1" Grid.Column="1" Foreground="{Binding TextColor}" Text="{Binding InstalledBy}" TextAlignment="Right" IsEnabled="False" FontSize="10" VerticalAlignment="Center" />
+                                            <DockPanel Background="Transparent" Grid.Row="0" Grid.Column="1">
+                                                <Button Content="{DynamicResource string_delete}" Foreground="{Binding TextColor}" Command="{Binding DeleteCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type TabControl}}, Path=DataContext}" HorizontalAlignment="Right" DockPanel.Dock="Right" Padding="7,2" Margin="5,0,0,0" ToolTip="{DynamicResource string_tooltip_deleteDLC}" />
+                                                <Button Content="{Binding EnableDisableText}" Foreground="{Binding TextColor}" Command="{Binding EnableDisableCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type TabControl}}, Path=DataContext}" HorizontalAlignment="Right" Padding="7,2" Margin="5,0,0,0" Visibility="{Binding EnableDisableVisible, Converter={StaticResource BoolToVisibilityConverter}}" ToolTip="{Binding EnableDisableTooltip}" />
                                             </DockPanel>
                                         </Grid>
                                     </DockPanel>
@@ -155,227 +65,108 @@
                     </ScrollViewer>
                 </DockPanel>
             </TabItem>
-            <TabItem
-                Header="{DynamicResource string_modifiedBasegameFiles}"
-                Margin="0"
-                Padding="0">
-                <DockPanel
-                    Height="300"
-                    Margin="-8">
-                    <DockPanel
-                        DockPanel.Dock="Bottom"
-                        LastChildFill="False"
-                        Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}">
-                        <xctk:WatermarkTextBox
-                            Watermark="{DynamicResource string_typeToFilter}"
-                            Width="170"
-                            DockPanel.Dock="Left"
-                            VerticalAlignment="Center"
-                            Margin="5,0"
-                            Text="{Binding ModifiedFilesFilterText, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, UpdateSourceTrigger=PropertyChanged}" />
-                        <Button
-                            DockPanel.Dock="Right"
-                            Margin="4"
-                            Padding="7,3"
-                            Content="{DynamicResource string_restoreallmodifiedbasegamefiles}"
-                            Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type UserControl}}, Path=RestoreAllModifiedBasegame}"
-                            ToolTip="{DynamicResource string_willAttemptToRestoreAllModifiedBasegameUnpackedFiles}" />
+            <TabItem Header="{DynamicResource string_modifiedBasegameFiles}" Margin="0" Padding="0">
+                <DockPanel Height="300" Margin="-8">
+                    <DockPanel DockPanel.Dock="Bottom" LastChildFill="False" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}">
+                        <xctk:WatermarkTextBox Watermark="{DynamicResource string_typeToFilter}" Width="170" DockPanel.Dock="Left" VerticalAlignment="Center" Margin="5,0" Text="{Binding ModifiedFilesFilterText, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, UpdateSourceTrigger=PropertyChanged}" />
+                        <Button DockPanel.Dock="Right" Margin="4" Padding="7,3" Content="{DynamicResource string_restoreallmodifiedbasegamefiles}" Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type UserControl}}, Path=RestoreAllModifiedBasegame}" ToolTip="{DynamicResource string_willAttemptToRestoreAllModifiedBasegameUnpackedFiles}" />
                     </DockPanel>
-                    <ItemsControl
-                        ItemsSource="{Binding ModifiedBasegameFilesView}"
-                        HorizontalContentAlignment="Stretch"
-                        HorizontalAlignment="Stretch"
-                        AlternationCount="2"
-                        VirtualizingStackPanel.IsVirtualizing="True"
-                        ScrollViewer.CanContentScroll="True">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <DockPanel>
-                                    <DockPanel.Resources>
-                                        <Style
-                                            TargetType="{x:Type DockPanel}">
-                                            <Style.Triggers>
-                                                <Trigger
-                                                    Property="IsMouseOver"
-                                                    Value="True">
-                                                    <Setter
-                                                        Property="Background"
-                                                        Value="{DynamicResource {x:Static adonisUi:Brushes.HoverBackgroundBrush}}" />
-                                                </Trigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </DockPanel.Resources>
-                                    <Grid
-                                        Margin="0,1">
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition
-                                                Height="Auto" />
-                                            <RowDefinition
-                                                Height="Auto" />
-                                        </Grid.RowDefinitions>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition
-                                                Width="*" />
-                                            <ColumnDefinition
-                                                Width="Auto" />
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock
-                                            Grid.Row="0"
-                                            Grid.Column="0"
-                                            FontSize="12"
-                                            Text="{Binding FilePath}"
-                                            VerticalAlignment="Center"
-                                            HorizontalAlignment="Stretch"
-                                            Background="Transparent" />
-                                        <TextBlock
-                                            Grid.Row="1"
-                                            Grid.Column="0"
-                                            FontSize="10"
-                                            FontStyle="Italic"
-                                            Text="{Binding ModificationSource}"
-                                            VerticalAlignment="Center"
-                                            HorizontalAlignment="Stretch"
-                                            Background="Transparent"
-                                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.SlightlyDimmedForegroundBrush}}"
-                                            Visibility="{Binding ModificationSource, Converter={StaticResource NullVisibilityConverter}}" />
-                                        <Button
-                                            Grid.Row="0"
-                                            Grid.RowSpan="2"
-                                            Grid.Column="1"
-                                            Content="{Binding RestoreButtonText}"
-                                            HorizontalAlignment="Right"
-                                            Padding="5,2"
-                                            Command="{Binding RestoreCommand}" />
-                                    </Grid>
-                                </DockPanel>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                        <ItemsControl.Template>
-                            <ControlTemplate>
-                                <ScrollViewer
-                                    x:Name="ScrollViewer"
-                                    Padding="2">
-                                    <ItemsPresenter />
-                                </ScrollViewer>
-                            </ControlTemplate>
-                        </ItemsControl.Template>
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <VirtualizingStackPanel />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                    </ItemsControl>
+                    <Grid>
+                        <TextBlock Text="Cannot show modified basegame files on a texture modded target as all files will be modified"
+                                   Visibility="{Binding TextureModded, Converter={StaticResource BoolToVisibilityConverter}}"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   Width="300"
+                                   TextWrapping="Wrap"
+                                   TextAlignment="Center"/>
+                        <ItemsControl ItemsSource="{Binding ModifiedBasegameFilesView}" 
+                                      Visibility="{Binding TextureModded, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}"
+                                      HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" AlternationCount="2" VirtualizingStackPanel.IsVirtualizing="True" ScrollViewer.CanContentScroll="True">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <DockPanel>
+                                        <DockPanel.Resources>
+                                            <Style TargetType="{x:Type DockPanel}">
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.HoverBackgroundBrush}}" />
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </DockPanel.Resources>
+                                        <Grid Margin="0,1">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="Auto" />
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Row="0" Grid.Column="0" FontSize="12" Text="{Binding FilePath}" VerticalAlignment="Center" HorizontalAlignment="Stretch" Background="Transparent" />
+                                            <TextBlock Grid.Row="1" Grid.Column="0" FontSize="10" FontStyle="Italic" Text="{Binding ModificationSource}" VerticalAlignment="Center" HorizontalAlignment="Stretch" Background="Transparent" Foreground="{DynamicResource {x:Static adonisUi:Brushes.SlightlyDimmedForegroundBrush}}" Visibility="{Binding ModificationSource, Converter={StaticResource NullVisibilityConverter}}" />
+                                            <Button Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" Content="{Binding RestoreButtonText}" HorizontalAlignment="Right" Padding="5,2" Command="{Binding RestoreCommand}" />
+                                        </Grid>
+                                    </DockPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                            <ItemsControl.Template>
+                                <ControlTemplate>
+                                    <ScrollViewer x:Name="ScrollViewer" Padding="2">
+                                        <ItemsPresenter />
+                                    </ScrollViewer>
+                                </ControlTemplate>
+                            </ItemsControl.Template>
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <VirtualizingStackPanel />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                    </Grid>
                 </DockPanel>
             </TabItem>
-            <TabItem
-                Header="{DynamicResource string_modifiedDLCarchivesSFAR}"
-                Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='ME3'}"
-                Margin="0"
-                Padding="0">
-                <DockPanel
-                    Height="300"
-                    Margin="-8">
-                    <DockPanel
-                        DockPanel.Dock="Bottom"
-                        LastChildFill="False"
-                        Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}">
-                        <Button
-                            DockPanel.Dock="Right"
-                            Margin="4"
-                            Padding="7,3"
-                            Content="{DynamicResource string_restoreAllModifiedSFARs}"
-                            Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=RestoreAllModifiedSFARs}"
-                            ToolTip="{DynamicResource string_willAttemptToRestoreAllModifiedSFARs}" />
-                        <Button
-                            DockPanel.Dock="Right"
-                            Margin="4"
-                            Padding="7,3"
-                            Content="{DynamicResource string_restoreSPModifiedSFARs}"
-                            Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=RestoreSPModifiedSFARs}"
-                            ToolTip="{DynamicResource string_willAttemptToRestoreSPModifiedSFARs}" />
-                        <Button
-                            DockPanel.Dock="Right"
-                            Margin="4"
-                            Padding="7,3"
-                            Content="{DynamicResource string_restoreMPModifiedSFARs}"
-                            Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=RestoreMPModifiedSFARs}"
-                            ToolTip="{DynamicResource string_willAttemptToRestoreMPModifiedSFARs}" />
+            <TabItem Header="{DynamicResource string_modifiedDLCarchivesSFAR}" Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='ME3'}" Margin="0" Padding="0">
+                <DockPanel Height="300" Margin="-8">
+                    <DockPanel DockPanel.Dock="Bottom" LastChildFill="False" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}">
+                        <Button DockPanel.Dock="Right" Margin="4" Padding="7,3" Content="{DynamicResource string_restoreAllModifiedSFARs}" Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=RestoreAllModifiedSFARs}" ToolTip="{DynamicResource string_willAttemptToRestoreAllModifiedSFARs}" />
+                        <Button DockPanel.Dock="Right" Margin="4" Padding="7,3" Content="{DynamicResource string_restoreSPModifiedSFARs}" Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=RestoreSPModifiedSFARs}" ToolTip="{DynamicResource string_willAttemptToRestoreSPModifiedSFARs}" />
+                        <Button DockPanel.Dock="Right" Margin="4" Padding="7,3" Content="{DynamicResource string_restoreMPModifiedSFARs}" Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=RestoreMPModifiedSFARs}" ToolTip="{DynamicResource string_willAttemptToRestoreMPModifiedSFARs}" />
                     </DockPanel>
-                    <ItemsControl
-                        ItemsSource="{Binding ModifiedSFARFiles}"
-                        HorizontalContentAlignment="Stretch"
-                        HorizontalAlignment="Stretch"
-                        AlternationCount="2">
+                    <ItemsControl ItemsSource="{Binding ModifiedSFARFiles}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" AlternationCount="2">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <DockPanel>
                                     <DockPanel.Resources>
-                                        <Style
-                                            TargetType="{x:Type DockPanel}">
+                                        <Style TargetType="{x:Type DockPanel}">
                                             <Style.Triggers>
-                                                <Trigger
-                                                    Property="IsMouseOver"
-                                                    Value="True">
-                                                    <Setter
-                                                        Property="Background"
-                                                        Value="{DynamicResource {x:Static adonisUi:Brushes.HoverBackgroundBrush}}" />
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.HoverBackgroundBrush}}" />
                                                 </Trigger>
                                             </Style.Triggers>
                                         </Style>
                                     </DockPanel.Resources>
-                                    <Grid
-                                        Margin="0,1">
+                                    <Grid Margin="0,1">
                                         <Grid.RowDefinitions>
-                                            <RowDefinition
-                                                Height="Auto" />
-                                            <RowDefinition
-                                                Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition
-                                                Width="*" />
-                                            <ColumnDefinition
-                                                Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
-                                        <StackPanel
-                                            Orientation="Horizontal"
-                                            Grid.Row="0"
-                                            Grid.Column="0"
-                                            Background="Transparent">
-                                            <TextBlock
-                                                FontSize="12"
-                                                Text="{Binding UIString}" />
-                                            <TextBlock
-                                                Margin="5,0"
-                                                FontWeight="Bold"
-                                                Text="{DynamicResource string_inconsistencyDetected}"
-                                                FontSize="12"
-                                                Foreground="Red"
-                                                Visibility="{Binding Inconsistent, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                        <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0" Background="Transparent">
+                                            <TextBlock FontSize="12" Text="{Binding UIString}" />
+                                            <TextBlock Margin="5,0" FontWeight="Bold" Text="{DynamicResource string_inconsistencyDetected}" FontSize="12" Foreground="Red" Visibility="{Binding Inconsistent, Converter={StaticResource BoolToVisibilityConverter}}" />
                                         </StackPanel>
-                                        <TextBlock
-                                            Grid.Row="1"
-                                            Grid.Column="0"
-                                            FontSize="10"
-                                            Foreground="Gray"
-                                            Text="{Binding FilePath}" />
-                                        <Button
-                                            Grid.Row="0"
-                                            Grid.Column="1"
-                                            Grid.RowSpan="2"
-                                            Content="{Binding RestoreButtonContent}"
-                                            HorizontalAlignment="Right"
-                                            Padding="3,0"
-                                            Command="{Binding RestoreCommand}" />
+                                        <TextBlock Grid.Row="1" Grid.Column="0" FontSize="10" Foreground="Gray" Text="{Binding FilePath}" />
+                                        <Button Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Content="{Binding RestoreButtonContent}" HorizontalAlignment="Right" Padding="3,0" Command="{Binding RestoreCommand}" />
                                     </Grid>
                                 </DockPanel>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                         <ItemsControl.Template>
                             <ControlTemplate>
-                                <ScrollViewer
-                                    x:Name="ScrollViewer"
-                                    Padding="2">
+                                <ScrollViewer x:Name="ScrollViewer" Padding="2">
                                     <ItemsPresenter />
                                 </ScrollViewer>
                             </ControlTemplate>
@@ -383,88 +174,70 @@
                     </ItemsControl>
                 </DockPanel>
             </TabItem>
-            <TabItem
-                Header="{DynamicResource string_textures}"
-                Margin="0"
-                Padding="0">
-                <DockPanel
-                    Height="300"
-                    Margin="-8">
-                    <DockPanel
-                        DockPanel.Dock="Bottom"
-                        Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}">
-                        <Button
-                            HorizontalAlignment="Right"
-                            Margin="4"
-                            Padding="7,3"
-                            ToolTip="{DynamicResource string_tooltip_manageTextures}"
-                            Click="OpenALOTInstaller_Click">
+            <TabItem Header="Official DLC" Margin="0" Padding="0">
+                <DockPanel Height="300" Margin="-8">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding UIInstalledOfficialDLC}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="{x:Type local:InstallationInformation+InstalledOfficialDLC}">
+                                    <DockPanel Margin="5,0,5,0">
+                                        <DockPanel.Resources>
+                                            <Style TargetType="{x:Type DockPanel}">
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.HoverBackgroundBrush}}" />
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </DockPanel.Resources>
+                                        <TextBlock Text="{DynamicResource string_installed}" DockPanel.Dock="Right" Visibility="{Binding Installed, Converter={StaticResource BoolToVisibilityConverter}}" FontWeight="Bold"/>
+                                        <TextBlock Text="{DynamicResource string_notInstalled}" DockPanel.Dock="Right" FontStyle="Italic" Visibility="{Binding Installed, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}" Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}"/>
+                                        <TextBlock Text="{Binding HumanName}" ToolTip="{Binding FolderName}" />
+                                    </DockPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </DockPanel>
+            </TabItem>
+            <TabItem Header="{DynamicResource string_textures}" Margin="0" Padding="0">
+                <DockPanel Height="300" Margin="-8">
+                    <DockPanel DockPanel.Dock="Bottom" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}">
+                        <Button HorizontalAlignment="Right" Margin="4" Padding="7,3" ToolTip="{DynamicResource string_tooltip_manageTextures}" Click="OpenALOTInstaller_Click">
                             <Button.Content>
                                 <DockPanel>
-                                    <TextBlock
-                                        Text="{DynamicResource string_manageTextures}"
-                                        DockPanel.Dock="Left"
-                                        Margin="0,0,5,0" />
-                                    <Image
-                                        Source="/modmanager/toolicons/alot_32.png"
-                                        Height="16" />
+                                    <TextBlock Text="{DynamicResource string_manageTextures}" DockPanel.Dock="Left" Margin="0,0,5,0" />
+                                    <Image Source="/modmanager/toolicons/alot_32.png" Height="16" />
                                 </DockPanel>
                             </Button.Content>
                         </Button>
                     </DockPanel>
-                    <ScrollViewer
-                        VerticalScrollBarVisibility="Auto">
-                        <DockPanel
-                            HorizontalAlignment="Stretch">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <DockPanel HorizontalAlignment="Stretch">
                             <!--<TextBlock Text="Mod Manager does not handle texture mods, but textures installed through ALOT Installer are shown here. Once texture mods are installed, Mod Manager will not operate on that installation." 
                                TextWrapping="Wrap"/>-->
-                            <ItemsControl
-                                ItemsSource="{Binding TextureInstallHistory}">
+                            <ItemsControl ItemsSource="{Binding TextureInstallHistory}">
                                 <ItemsControl.ItemTemplate>
-                                    <DataTemplate
-                                        DataType="{x:Type objects:TextureModInstallationInfo}">
-                                        <DockPanel
-                                            Margin="0,0,0,10">
-                                            <TextBlock
-                                                Text="{Binding InstallationTimestamp, 
-                                                Converter={StaticResource LocalizationConverter}, ConverterParameter='string_interp_textureInstallationDate'}"
-                                                FontWeight="Bold"
-                                                DockPanel.Dock="Top" />
-                                            <TextBlock
-                                                Text="{Binding
-                                                Converter={StaticResource LocalizationConverter}, ConverterParameter='string_interp_versioningInfoX'}"
-                                                DockPanel.Dock="Top" />
-                                            <TextBlock
-                                                Text="{DynamicResource string_filesInstalledInSession}"
-                                                DockPanel.Dock="Top" />
-                                            <ItemsControl
-                                                ItemsSource="{Binding InstalledTextureMods}">
+                                    <DataTemplate DataType="{x:Type objects:TextureModInstallationInfo}">
+                                        <DockPanel Margin="0,0,0,10">
+                                            <TextBlock Text="{Binding InstallationTimestamp,                                                  Converter={StaticResource LocalizationConverter}, ConverterParameter='string_interp_textureInstallationDate'}" FontWeight="Bold" DockPanel.Dock="Top" />
+                                            <TextBlock Text="{Binding                                                 Converter={StaticResource LocalizationConverter}, ConverterParameter='string_interp_versioningInfoX'}" DockPanel.Dock="Top" />
+                                            <TextBlock Text="{DynamicResource string_filesInstalledInSession}" DockPanel.Dock="Top" />
+                                            <ItemsControl ItemsSource="{Binding InstalledTextureMods}">
                                                 <ItemsControl.ItemTemplate>
-                                                    <DataTemplate
-                                                        DataType="{x:Type objects:TextureModInstallationInfo+InstalledTextureMod}">
-                                                        <DockPanel
-                                                            Margin="5,0,5,0">
+                                                    <DataTemplate DataType="{x:Type objects:TextureModInstallationInfo+InstalledTextureMod}">
+                                                        <DockPanel Margin="5,0,5,0">
                                                             <DockPanel.Resources>
-                                                                <Style
-                                                                    TargetType="{x:Type DockPanel}">
+                                                                <Style TargetType="{x:Type DockPanel}">
                                                                     <Style.Triggers>
-                                                                        <Trigger
-                                                                            Property="IsMouseOver"
-                                                                            Value="True">
-                                                                            <Setter
-                                                                                Property="Background"
-                                                                                Value="{DynamicResource {x:Static adonisUi:Brushes.HoverBackgroundBrush}}" />
+                                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                                            <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.HoverBackgroundBrush}}" />
                                                                         </Trigger>
                                                                     </Style.Triggers>
                                                                 </Style>
                                                             </DockPanel.Resources>
-                                                            <TextBlock
-                                                                DockPanel.Dock="Right"
-                                                                Text="{Binding ModType}"
-                                                                FontStyle="Italic"
-                                                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
-                                                            <TextBlock
-                                                                Text="{Binding UIName}" />
+                                                            <TextBlock DockPanel.Dock="Right" Text="{Binding ModType}" FontStyle="Italic" Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
+                                                            <TextBlock Text="{Binding UIName}" />
                                                         </DockPanel>
                                                     </DataTemplate>
                                                 </ItemsControl.ItemTemplate>
@@ -477,84 +250,40 @@
                     </ScrollViewer>
                 </DockPanel>
             </TabItem>
-            <TabItem
-                Header="{DynamicResource string_other}"
-                Margin="0"
-                Padding="0">
-                <StackPanel
-                    Height="300"
-                    Margin="-8">
-                    <TextBlock
-                        Margin="4,4,4,0"
-                        Text="{DynamicResource string_extraDllsFound}"
-                        FontSize="14"
-                        FontWeight="Bold" />
-                    <TextBlock
-                        Text="{DynamicResource string_noExtraDllsWereFound}"
-                        Visibility="{Binding ExtraFiles.Any, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}"
-                        Margin="8,0" />
-                    <ItemsControl
-                        ItemsSource="{Binding ExtraFiles}"
-                        HorizontalContentAlignment="Stretch"
-                        HorizontalAlignment="Stretch"
-                        AlternationCount="2"
-                        VirtualizingStackPanel.IsVirtualizing="True"
-                        ScrollViewer.CanContentScroll="True">
+            <TabItem Header="{DynamicResource string_other}" Margin="0" Padding="0">
+                <StackPanel Height="300" Margin="-8">
+                    <TextBlock Margin="4,4,4,0" Text="{DynamicResource string_extraDllsFound}" FontSize="14" FontWeight="Bold" />
+                    <TextBlock Text="{DynamicResource string_noExtraDllsWereFound}" Visibility="{Binding ExtraFiles.Any, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}" Margin="8,0" />
+                    <ItemsControl ItemsSource="{Binding ExtraFiles}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" AlternationCount="2" VirtualizingStackPanel.IsVirtualizing="True" ScrollViewer.CanContentScroll="True">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <DockPanel>
                                     <DockPanel.Resources>
-                                        <Style
-                                            TargetType="{x:Type DockPanel}">
+                                        <Style TargetType="{x:Type DockPanel}">
                                             <Style.Triggers>
-                                                <Trigger
-                                                    Property="IsMouseOver"
-                                                    Value="True">
-                                                    <Setter
-                                                        Property="Background"
-                                                        Value="{DynamicResource {x:Static adonisUi:Brushes.HoverBackgroundBrush}}" />
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.HoverBackgroundBrush}}" />
                                                 </Trigger>
                                             </Style.Triggers>
                                         </Style>
                                     </DockPanel.Resources>
-                                    <Grid
-                                        Margin="0,1">
+                                    <Grid Margin="0,1">
                                         <Grid.RowDefinitions>
-                                            <RowDefinition
-                                                Height="Auto" />
+                                            <RowDefinition Height="Auto" />
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition
-                                                Width="*" />
-                                            <ColumnDefinition
-                                                Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock
-                                            Grid.Row="0"
-                                            Grid.Column="0"
-                                            FontSize="12"
-                                            Text="{Binding DisplayName}"
-                                            VerticalAlignment="Center"
-                                            HorizontalAlignment="Stretch"
-                                            Background="Transparent"
-                                            Margin="8,0,0,0" />
-                                        <Button
-                                            Grid.Row="0"
-                                            Grid.RowSpan="2"
-                                            Grid.Column="1"
-                                            Content="{DynamicResource string_delete}"
-                                            HorizontalAlignment="Right"
-                                            Padding="5,2"
-                                            Command="{Binding DeleteCommand}" />
+                                        <TextBlock Grid.Row="0" Grid.Column="0" FontSize="12" Text="{Binding DisplayName}" VerticalAlignment="Center" HorizontalAlignment="Stretch" Background="Transparent" Margin="8,0,0,0" />
+                                        <Button Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" Content="{DynamicResource string_delete}" HorizontalAlignment="Right" Padding="5,2" Command="{Binding DeleteCommand}" />
                                     </Grid>
                                 </DockPanel>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                         <ItemsControl.Template>
                             <ControlTemplate>
-                                <ScrollViewer
-                                    x:Name="ScrollViewer"
-                                    Padding="2">
+                                <ScrollViewer x:Name="ScrollViewer" Padding="2">
                                     <ItemsPresenter />
                                 </ScrollViewer>
                             </ControlTemplate>
@@ -565,73 +294,26 @@
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                     </ItemsControl>
-                    <TextBlock
-                        Text="{DynamicResource string_installedASIs}"
-                        FontSize="14"
-                        FontWeight="Bold"
-                        Margin="4,0,0,0" />
-                    <TextBlock
-                        Text="{Binding NumASIModsInstalledText}"
-                        Margin="8,0,0,0" />
-                    <TextBlock
-                        ToolTip="{DynamicResource string_tooltip_clickToOpenASIManager}"
-                        Margin="8,0,0,0">
-            <Hyperlink
-                            RequestNavigate="OpenASIManager_Click"
-                            NavigateUri="internal://trigger">
-              <TextBlock
-                                Text="{DynamicResource string_manageASIsWithASIManager}" />
-            </Hyperlink>
-          </TextBlock>
-                    <TextBlock
-                        Text="{DynamicResource string_binkw32DLCBypass}"
-                        FontSize="14"
-                        FontWeight="Bold"
-                        Margin="4,0,0,0" />
-                    <TextBlock
-                        Text="{Binding Binkw32StatusText}"
-                        Margin="8,0,0,0" />
+                    <TextBlock Text="{DynamicResource string_installedASIs}" FontSize="14" FontWeight="Bold" Margin="4,0,0,0" />
+                    <TextBlock Text="{Binding NumASIModsInstalledText}" Margin="8,0,0,0" />
+                    <TextBlock ToolTip="{DynamicResource string_tooltip_clickToOpenASIManager}" Margin="8,0,0,0">
+                  <Hyperlink RequestNavigate="OpenASIManager_Click" NavigateUri="internal://trigger">
+                     <TextBlock Text="{DynamicResource string_manageASIsWithASIManager}" />
+                  </Hyperlink>
+               </TextBlock>
+                    <TextBlock Text="{DynamicResource string_binkw32DLCBypass}" FontSize="14" FontWeight="Bold" Margin="4,0,0,0" />
+                    <TextBlock Text="{Binding Binkw32StatusText}" Margin="8,0,0,0" />
                 </StackPanel>
             </TabItem>
         </TabControl>
         <DockPanel>
-            <DockPanel
-                Dock="Right"
-                HorizontalAlignment="Right">
-                <StackPanel
-                    Orientation="Horizontal"
-                    DockPanel.Dock="Bottom"
-                    HorizontalAlignment="Right">
-                    <Button
-                        Content="{DynamicResource string_removeTargetFromM3}"
-                        Padding="5"
-                        Margin="3,0"
-                        VerticalAlignment="Bottom"
-                        Command="{Binding RemoveTargetCommand}"
-                        HorizontalAlignment="Right"
-                        ToolTip="{Binding SelectedTarget.RemoveTargetTooltipText}" />
-                    <Button
-                        Content="{DynamicResource string_openInExplorer}"
-                        ToolTip="{DynamicResource string_tooltip_openTargetInExplorer}"
-                        Padding="5"
-                        VerticalAlignment="Bottom"
-                        Click="OpenInExplorer_Click"
-                        HorizontalAlignment="Right" />
-                    <Button
-                        Content="{DynamicResource string_close}"
-                        Padding="9,5"
-                        Margin="3,0,0,0"
-                        VerticalAlignment="Bottom"
-                        Command="{Binding CloseCommand}"
-                        HorizontalAlignment="Right" />
+            <DockPanel Dock="Right" HorizontalAlignment="Right">
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right">
+                    <Button Content="{DynamicResource string_removeTargetFromM3}" Padding="5" Margin="3,0" VerticalAlignment="Bottom" Command="{Binding RemoveTargetCommand}" HorizontalAlignment="Right" ToolTip="{Binding SelectedTarget.RemoveTargetTooltipText}" />
+                    <Button Content="{DynamicResource string_openInExplorer}" ToolTip="{DynamicResource string_tooltip_openTargetInExplorer}" Padding="5" VerticalAlignment="Bottom" Click="OpenInExplorer_Click" HorizontalAlignment="Right" />
+                    <Button Content="{DynamicResource string_close}" Padding="9,5" Margin="3,0,0,0" VerticalAlignment="Bottom" Command="{Binding CloseCommand}" HorizontalAlignment="Right" />
                 </StackPanel>
-                <TextBlock
-                    Text="{Binding BackupLocationString}"
-                    DockPanel.Dock="Top"
-                    HorizontalAlignment="Right"
-                    TextAlignment="Right"
-                    Foreground="Gray"
-                    VerticalAlignment="Center" />
+                <TextBlock Text="{Binding BackupLocationString}" DockPanel.Dock="Top" HorizontalAlignment="Right" TextAlignment="Right" Foreground="Gray" VerticalAlignment="Center" />
             </DockPanel>
         </DockPanel>
     </StackPanel>
