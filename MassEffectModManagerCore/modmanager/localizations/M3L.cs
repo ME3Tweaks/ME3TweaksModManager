@@ -772,7 +772,6 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_validationTargets = "string_validationTargets";
 		public const string string_tooltip_rerunCheckOnMod = "string_tooltip_rerunCheckOnMod";
 		public const string string_cannotShowModifiedBasegameFilesTextureModded = "string_cannotShowModifiedBasegameFilesTextureModded";
-		public const string string_officialDLC = "string_officialDLC";
 		public const string string_showInstalledOptions = "string_showInstalledOptions";
 		public const string string_hideInstalledOptions = "string_hideInstalledOptions";
 		public const string string_selectALogToView = "string_selectALogToView";
