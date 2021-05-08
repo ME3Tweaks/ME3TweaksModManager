@@ -771,6 +771,10 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_addModToDeployment = "string_addModToDeployment";
 		public const string string_validationTargets = "string_validationTargets";
 		public const string string_tooltip_rerunCheckOnMod = "string_tooltip_rerunCheckOnMod";
+		public const string string_cannotShowModifiedBasegameFilesTextureModded = "string_cannotShowModifiedBasegameFilesTextureModded";
+		public const string string_officialDLC = "string_officialDLC";
+		public const string string_showInstalledOptions = "string_showInstalledOptions";
+		public const string string_hideInstalledOptions = "string_hideInstalledOptions";
 		public const string string_selectALogToView = "string_selectALogToView";
 		public const string string_collectingLogInformation = "string_collectingLogInformation";
 		public const string string_interp_serverRejectedTheUpload = "string_interp_serverRejectedTheUpload";
@@ -836,6 +840,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_tooltip_launchesALOTInstaller = "string_tooltip_launchesALOTInstaller";
 		public const string string_tooltip_compressPackages = "string_tooltip_compressPackages";
 		public const string string_tooltip_installModArchiveWindow = "string_tooltip_installModArchiveWindow";
+		public const string string_interp_xChosenOptions = "string_interp_xChosenOptions";
 		public const string string_modupdatesavailable = "string_modupdatesavailable";
 		public const string string_downloadUpdate = "string_downloadUpdate";
 		public const string string_downloadUpdateFromNexusMods = "string_downloadUpdateFromNexusMods";

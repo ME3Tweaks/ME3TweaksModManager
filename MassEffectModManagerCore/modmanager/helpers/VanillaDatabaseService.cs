@@ -357,7 +357,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                     }
                     else
                     {
-                        Debug.WriteLine("File not in Vanilla DB: " + file);
+                        Debug.WriteLine(@"File not in Vanilla DB: " + file);
                     }
                 }
             }

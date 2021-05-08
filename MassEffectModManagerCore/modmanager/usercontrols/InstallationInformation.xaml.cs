@@ -783,12 +783,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             ClosePanel(new DataEventArgs(@"ALOTInstaller"));
         }
 
-        public string ShowInstalledOptionsText { get; private set; } = "Show installed options";
+        public string ShowInstalledOptionsText { get; private set; } = M3L.GetString(M3L.string_showInstalledOptions);
 
         private void ToggleShowingInstallOptions_Click(object sender, RoutedEventArgs e)
         {
             ShowInstalledOptions = !ShowInstalledOptions;
-            ShowInstalledOptionsText = ShowInstalledOptions ? "Hide installed options" : "Show installed options";
+            ShowInstalledOptionsText = ShowInstalledOptions ? M3L.GetString(M3L.string_hideInstalledOptions) : M3L.GetString(M3L.string_showInstalledOptions);
         }
     }
 }

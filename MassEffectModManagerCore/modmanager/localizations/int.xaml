@@ -846,6 +846,10 @@
     <system:String  x:Key="string_addModToDeployment">Add mod to deployment</system:String>
     <system:String  x:Key="string_validationTargets">Validation targets</system:String>
     <system:String  x:Key="string_tooltip_rerunCheckOnMod">Re-run check on mod</system:String>
+    <system:String x:Key="string_cannotShowModifiedBasegameFilesTextureModded">Cannot show modified basegame files on a texture modded target as all files will be modified</system:String>
+    <system:String x:Key="string_officialDLC">Official DLC</system:String>
+    <system:String x:Key="string_showInstalledOptions">Show installed options</system:String>
+    <system:String x:Key="string_hideInstalledOptions">Hide installed options</system:String>
 
     <!-- Log uploader-->
     <system:String x:Key="string_selectALogToView">Select a log to view on log viewing service</system:String>
