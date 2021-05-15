@@ -9,8 +9,8 @@ using System.Threading;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.windows;
-using ME3ExplorerCore.Helpers;
-using ME3ExplorerCore.Misc;
+using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Misc;
 using Microsoft.AppCenter.Crashes;
 using Newtonsoft.Json;
 using Serilog;
@@ -604,7 +604,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         //public static bool EnsureStaticAssets()
         //{
         //    // This is not really used anymore. Just kept around in case new static assets are necessary.
-        //    // Used to download objectt infos. These are embedded into ME3ExplorerCore.
+        //    // Used to download objectt infos. These are embedded into LegendaryExplorerCore.
         //    (string filename, string md5)[] objectInfoFiles = { };
         //    string localBaseDir = Utilities.GetObjectInfoFolder();
 

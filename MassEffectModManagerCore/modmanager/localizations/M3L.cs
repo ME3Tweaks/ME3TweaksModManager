@@ -1124,7 +1124,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_library_octokit = "string_library_octokit";
 		public const string string_library_serilog = "string_library_serilog";
 		public const string string_library_wpftoolkitextended = "string_library_wpftoolkitextended";
-		public const string string_library_me3explorercore = "string_library_me3explorercore";
+		public const string string_library_LegendaryExplorerCore = "string_library_LegendaryExplorerCore";
 		public const string string_library_cliwrap = "string_library_cliwrap";
 		public const string string_library_commandlineparser = "string_library_commandlineparser";
 		public const string string_library_computerinfo = "string_library_computerinfo";

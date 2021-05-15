@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.ui;
-using ME3ExplorerCore.Helpers;
+using LegendaryExplorerCore.Helpers;
 using Serilog;
 using MassEffectModManagerCore.modmanager.localizations;
 

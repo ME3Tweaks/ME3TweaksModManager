@@ -6,15 +6,15 @@ using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.modmanager.windows;
 using MassEffectModManagerCore.ui;
-using ME3ExplorerCore.GameFilesystem;
-using ME3ExplorerCore.Gammtek.IO;
-using ME3ExplorerCore.Helpers;
-using ME3ExplorerCore.Packages;
-using ME3ExplorerCore.TLK.ME1;
-using ME3ExplorerCore.TLK.ME2ME3;
-using ME3ExplorerCore.Unreal;
-using ME3ExplorerCore.Unreal.BinaryConverters;
-using ME3ExplorerCore.Unreal.Classes;
+using LegendaryExplorerCore.GameFilesystem;
+using LegendaryExplorerCore.Gammtek.IO;
+using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Packages;
+using LegendaryExplorerCore.TLK.ME1;
+using LegendaryExplorerCore.TLK.ME2ME3;
+using LegendaryExplorerCore.Unreal;
+using LegendaryExplorerCore.Unreal.BinaryConverters;
+using LegendaryExplorerCore.Unreal.Classes;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using Microsoft.Win32;
@@ -37,7 +37,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using Brushes = System.Windows.Media.Brushes;
 using DuplicatingIni = MassEffectModManagerCore.modmanager.gameini.DuplicatingIni;
-using ExportEntry = ME3ExplorerCore.Packages.ExportEntry;
+using ExportEntry = LegendaryExplorerCore.Packages.ExportEntry;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -795,7 +795,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                         //var mips = Texture2D.GetTexture2DMipInfos(texture, cache.Value);
                                         try
                                         {
-                                            tex.GetImageBytesForMip(tex.GetTopMip(), internalValidationTarget.Game, false, internalValidationTarget.TargetPath, allTFCs); //use active target
+                                            tex.GetImageBytesForMip(tex.GetTopMip(), internalValidationTarget.Game, false, out _, internalValidationTarget.TargetPath, allTFCs); //use active target
                                         }
                                         catch (Exception e)
                                         {
@@ -826,7 +826,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     {
                                         try
                                         {
-                                            tex.GetImageBytesForMip(mip, internalValidationTarget.Game, false, internalValidationTarget.TargetPath);
+                                            tex.GetImageBytesForMip(mip, internalValidationTarget.Game, false, out _, internalValidationTarget.TargetPath);
                                         }
                                         catch (Exception e)
                                         {

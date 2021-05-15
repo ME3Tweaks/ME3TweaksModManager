@@ -6,10 +6,10 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Xml.Linq;
-using ME3ExplorerCore.Helpers;
+using LegendaryExplorerCore.Helpers;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.objects;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.Packages;
 using Microsoft.AppCenter.Analytics;
 using Serilog;
 

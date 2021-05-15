@@ -12,8 +12,8 @@ using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
-using ME3ExplorerCore.Helpers;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Packages;
 using Octokit;
 using Serilog;
 

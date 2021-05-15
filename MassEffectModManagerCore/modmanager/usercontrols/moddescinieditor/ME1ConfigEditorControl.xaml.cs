@@ -6,8 +6,8 @@ using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.objects.mod.editor;
 using MassEffectModManagerCore.ui;
-using ME3ExplorerCore.Helpers;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Packages;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
 {

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 using MassEffectModManagerCore.modmanager.windows;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.Packages;
 
 namespace MassEffectModManagerCore.modmanager.converters
 {

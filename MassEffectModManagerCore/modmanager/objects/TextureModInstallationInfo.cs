@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using MassEffectModManagerCore.modmanager.localizations;
-using ME3ExplorerCore.Helpers;
+using LegendaryExplorerCore.Helpers;
 
 namespace MassEffectModManagerCore.modmanager.objects
 {

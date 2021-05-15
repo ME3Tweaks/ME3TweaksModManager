@@ -5,7 +5,7 @@ using System.Windows.Input;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.Packages;
 
 namespace MassEffectModManagerCore.modmanager.asi
 {

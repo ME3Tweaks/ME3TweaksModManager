@@ -31,17 +31,17 @@ using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.usercontrols;
 using MassEffectModManagerCore.modmanager.windows;
 using MassEffectModManagerCore.ui;
-using ME3ExplorerCore;
-using ME3ExplorerCore.GameFilesystem;
-using ME3ExplorerCore.Gammtek.Extensions.Collections.Generic;
-using ME3ExplorerCore.Packages;
-using ME3ExplorerCore.TLK.ME2ME3;
+using LegendaryExplorerCore;
+using LegendaryExplorerCore.GameFilesystem;
+using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
+using LegendaryExplorerCore.Packages;
+using LegendaryExplorerCore.TLK.ME2ME3;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Serilog;
-using ME3ExplorerCore.Helpers;
+using LegendaryExplorerCore.Helpers;
 using Pathoschild.FluentNexus.Models;
 using Mod = MassEffectModManagerCore.modmanager.objects.mod.Mod;
 
@@ -1749,17 +1749,17 @@ namespace MassEffectModManagerCore
             nbw.RunWorkerAsync();
 
             var syncContext = TaskScheduler.FromCurrentSynchronizationContext();
-            ME3ExplorerCoreLib.SetSynchronizationContext(syncContext);
+            LegendaryExplorerCoreLib.SetSynchronizationContext(syncContext);
             IsEnabled = false;
             Task.Run(() =>
             {
                 Log.Information(@"Ensuring default ASI assets are present");
                 ASIManager.ExtractDefaultASIResources();
 
-                Log.Information(@"Initializing ME3ExplorerCore library");
+                Log.Information(@"Initializing LegendaryExplorerCore library");
                 #region INIT CORE LIB
                 MEPackageHandler.GlobalSharedCacheEnabled = false; // Do not use the package caching system
-                ME3ExplorerCoreLib.InitLib(syncContext, x =>
+                LegendaryExplorerCoreLib.InitLib(syncContext, x =>
                 {
                     Log.Error($@"Error saving package: {x}");
                 });

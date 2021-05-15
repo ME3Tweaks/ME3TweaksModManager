@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 using MassEffectModManagerCore.modmanager.objects;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.Packages;
 
 namespace MassEffectModManagerCore.modmanager.converters
 {

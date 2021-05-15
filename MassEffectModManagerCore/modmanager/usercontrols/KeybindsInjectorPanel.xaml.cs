@@ -4,8 +4,8 @@ using System.Windows.Input;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
-using ME3ExplorerCore.Helpers;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Packages;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using ME3ExplorerCore.GameFilesystem;
-using ME3ExplorerCore.Misc;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.GameFilesystem;
+using LegendaryExplorerCore.Misc;
+using LegendaryExplorerCore.Packages;
 using Serilog;
 using SevenZip;
 

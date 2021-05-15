@@ -3,7 +3,7 @@ using System.Windows;
 using IniParser.Model;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.Packages;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
 {

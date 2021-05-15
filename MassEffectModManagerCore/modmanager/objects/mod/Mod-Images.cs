@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Media.Imaging;
-using ME3ExplorerCore.Misc;
+using LegendaryExplorerCore.Misc;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.objects.mod

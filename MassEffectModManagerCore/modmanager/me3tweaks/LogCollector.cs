@@ -21,11 +21,11 @@ using NickStrupat;
 using System.Windows.Shell;
 using ALOTInstallerCore.Helpers;
 using MassEffectModManagerCore.modmanager.asi;
-using ME3ExplorerCore.GameFilesystem;
-using ME3ExplorerCore.Helpers;
-using ME3ExplorerCore.Unreal;
+using LegendaryExplorerCore.GameFilesystem;
+using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Unreal;
 using Microsoft.WindowsAPICodePack.Taskbar;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.Packages;
 
 namespace MassEffectModManagerCore.modmanager.me3tweaks
 {

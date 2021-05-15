@@ -8,9 +8,9 @@ using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.ui;
-using ME3ExplorerCore.GameFilesystem;
-using ME3ExplorerCore.Packages;
-using ME3ExplorerCore.Unreal;
+using LegendaryExplorerCore.GameFilesystem;
+using LegendaryExplorerCore.Packages;
+using LegendaryExplorerCore.Unreal;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols

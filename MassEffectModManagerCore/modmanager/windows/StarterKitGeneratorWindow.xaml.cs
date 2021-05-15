@@ -16,9 +16,9 @@ using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.ui;
-using ME3ExplorerCore.GameFilesystem;
-using ME3ExplorerCore.Packages;
-using ME3ExplorerCore.TLK.ME1;
+using LegendaryExplorerCore.GameFilesystem;
+using LegendaryExplorerCore.Packages;
+using LegendaryExplorerCore.TLK.ME1;
 using Microsoft.AppCenter.Analytics;
 using MvvmValidation;
 using Serilog;
@@ -173,7 +173,7 @@ namespace MassEffectModManagerCore.modmanager.windows
             ME3MountFlags.Add(new UIMountFlag(EMountFileFlag.ME3_SPOnly_NoSaveFileDependency, @"0x08 - SP only | No file dependency on DLC"));
             ME3MountFlags.Add(new UIMountFlag(EMountFileFlag.ME3_SPOnly_SaveFileDependency, @"0x09 - SP only | Save file dependency on DLC"));
             ME3MountFlags.Add(new UIMountFlag(EMountFileFlag.ME3_SPMP_SaveFileDependency, @"0x1C - SP & MP | No save file dependency on DLC"));
-            ME3MountFlags.Add(new UIMountFlag(EMountFileFlag.ME3_MPOnly_Patch, @"0x0C - MP only | Loads in MP (PATCH)"));
+            ME3MountFlags.Add(new UIMountFlag(EMountFileFlag.ME3_Patch, @"0x0C - MP only | Loads in MP (PATCH)"));
             ME3MountFlags.Add(new UIMountFlag(EMountFileFlag.ME3_MPOnly_1, @"0x14 - MP only | Loads in MP"));
             ME3MountFlags.Add(new UIMountFlag(EMountFileFlag.ME3_MPOnly_2, @"0x34 - MP only | Loads in MP"));
             PreviewTPMI.IsPreview = true;
@@ -535,7 +535,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                 {
                     //ME2, ME3
                     MountFile mf = new MountFile();
-                    mf.IsME2 = skOption.ModGame == MEGame.ME2;
+                    mf.Game = skOption.ModGame;
                     mf.MountFlag = skOption.ModMountFlag;
                     mf.ME2Only_DLCFolderName = dlcFolderName;
                     mf.ME2Only_DLCHumanName = skOption.ModName;
@@ -607,7 +607,7 @@ namespace MassEffectModManagerCore.modmanager.windows
 
                         var tlk = Path.Combine(cookedDir, $@"{tlkFilePrefix}_{lang.filecode}.tlk");
                         Log.Information(@"Saving TLK file: " + tlk);
-                        ME3ExplorerCore.TLK.ME2ME3.HuffmanCompression.SaveToTlkFile(tlk, strs);
+                        LegendaryExplorerCore.TLK.ME2ME3.HuffmanCompression.SaveToTlkFile(tlk, strs);
                     }
                 }
 

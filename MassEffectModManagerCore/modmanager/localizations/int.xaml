@@ -605,7 +605,7 @@
     <system:String x:Key="string_interp_missingReferencedTlkStrInMod">Custom DLC {0}'s TLK {1} does not contain the listed TLK string ID {2}, as declared in it's mount.dlc file. Mod TLKs must contain the TLK string referenced by the mount.dlc file.</system:String>
     <!-- 0={DLC folder name} 1={TLK file path} 2={Mount file TLK integer} -->
     <system:String x:Key="string_referencesCheck">References check</system:String>
-    <system:String x:Key="string_interp_dialog_invalidReferencesFound">The following issues were detected when checking package files for invalid name and object references. This may be due to errors in the ME3ExplorerCore build Mod Manager uses, but these issues should be investigated as invalid references will most likely cause the game to crash.</system:String>
+    <system:String x:Key="string_interp_dialog_invalidReferencesFound">The following issues were detected when checking package files for invalid name and object references. This may be due to errors in the LegendaryExplorerCore build Mod Manager uses, but these issues should be investigated as invalid references will most likely cause the game to crash.</system:String>
     <system:String x:Key="string_invalidNameAndObjectReferences">Invalid name and object references</system:String>
     <system:String x:Key="string_checkingNameAndObjectReferences">Checking name and object references</system:String>
     <system:String x:Key="string_noReferenceIssuesWereDetected">No reference issues were detected</system:String>
@@ -1375,7 +1375,7 @@
     <system:String x:Key="string_library_octokit">GitHub API client</system:String>
     <system:String x:Key="string_library_serilog">Highly extensible logger</system:String>
     <system:String xml:space="preserve" x:Key="string_library_wpftoolkitextended">Additional useful WPF controls\nME3Tweaks Mod Manager uses a customized version of this library</system:String>
-    <system:String x:Key="string_library_me3explorercore">Mass Effect trilogy modding toolset backend</system:String>
+    <system:String x:Key="string_library_LegendaryExplorerCore">Mass Effect trilogy modding toolset backend</system:String>
     <system:String x:Key="string_library_cliwrap">Async wrapper for interacting with command line applications</system:String>
     <system:String x:Key="string_library_commandlineparser">Extensive command line argument parser</system:String>
     <system:String x:Key="string_library_computerinfo">Small library for easily fetching CPU, OS, and memory information</system:String>

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using ME3ExplorerCore.Helpers;
+using LegendaryExplorerCore.Helpers;
 using MassEffectModManagerCore.modmanager.objects;
 using Serilog;
 

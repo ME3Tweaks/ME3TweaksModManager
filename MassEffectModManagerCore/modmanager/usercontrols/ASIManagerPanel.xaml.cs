@@ -11,7 +11,7 @@ using System.Windows.Input;
 using MassEffectModManagerCore.modmanager.asi;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.Packages;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {

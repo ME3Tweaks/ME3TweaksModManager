@@ -5,8 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using MassEffectModManagerCore.modmanager.objects;
-using ME3ExplorerCore.Helpers;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Packages;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.helpers

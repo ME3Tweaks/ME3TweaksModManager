@@ -4,7 +4,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using MassEffectModManagerCore.modmanager.me3tweaks;
-using ME3ExplorerCore.Helpers;
+using LegendaryExplorerCore.Helpers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 

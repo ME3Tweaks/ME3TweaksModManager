@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.me3tweaks;
-using ME3ExplorerCore.Misc;
+using LegendaryExplorerCore.Misc;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.Win32;
 using Pathoschild.FluentNexus;

@@ -9,8 +9,8 @@ using System.Text;
 using System.Threading;
 using CliWrap;
 using CliWrap.EventStream;
-using ME3ExplorerCore.Helpers;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Packages;
 
 namespace MassEffectModManagerCore.modmanager.helpers
 {

@@ -10,8 +10,8 @@ using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.modmanager.objects.mod.editor;
 using MassEffectModManagerCore.ui;
-using ME3ExplorerCore.GameFilesystem;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.GameFilesystem;
+using LegendaryExplorerCore.Packages;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.objects

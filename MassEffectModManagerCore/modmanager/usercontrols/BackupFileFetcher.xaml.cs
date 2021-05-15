@@ -11,10 +11,10 @@ using System.IO;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
-using ME3ExplorerCore.GameFilesystem;
-using ME3ExplorerCore.Helpers;
-using ME3ExplorerCore.Packages;
-using ME3ExplorerCore.Unreal;
+using LegendaryExplorerCore.GameFilesystem;
+using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Packages;
+using LegendaryExplorerCore.Unreal;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols

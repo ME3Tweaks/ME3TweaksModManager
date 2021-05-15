@@ -11,9 +11,9 @@ using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
-using ME3ExplorerCore.Compression;
-using ME3ExplorerCore.Helpers;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.Compression;
+using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Packages;
 using Microsoft.WindowsAPICodePack.Taskbar;
 using Serilog;
 

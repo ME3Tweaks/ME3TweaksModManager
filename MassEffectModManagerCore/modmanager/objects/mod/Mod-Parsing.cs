@@ -13,9 +13,9 @@ using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.ui;
-using ME3ExplorerCore.GameFilesystem;
-using ME3ExplorerCore.Gammtek.Extensions.Collections.Generic;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.GameFilesystem;
+using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
+using LegendaryExplorerCore.Packages;
 using Microsoft.AppCenter.Analytics;
 using Serilog;
 using SevenZip;
@@ -60,6 +60,10 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
         /// What game this mod can install to.
         /// </summary>
         public MEGame Game { get; set; }
+        /// <summary>
+        /// If this mod actually targets the LE launcher
+        /// </summary>
+        public bool TargetsLELauncher { get; set; }
         /// <summary>
         /// Flag if the moddesc.ini is stored properly in the archive file when the archive was loaded. Can be used to detect if mod was actually
         /// properly deployed, or if developer decided to skip M3 deployment, which shouldn't be done. Only used when loading mod from archive.
@@ -582,6 +586,9 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         if (Game == MEGame.ME2 || Game == MEGame.ME3)
                         {
                             nexusId = nexusId.Substring(1); //number
+                        } else if (Game.IsLEGame())
+                        {
+                            nexusId =
                         }
 
                         nexusId = nexusId.Substring(6)
@@ -660,6 +667,20 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 case @"ME1":
                     Game = MEGame.ME1;
                     break;
+                // LEGENDARY
+                case "LE1":
+                    Game = MEGame.LE1;
+                    break;
+                case "LE2":
+                    Game = MEGame.LE2;
+                    break;
+                case "LE3":
+                    Game = MEGame.LE3;
+                    break;
+                case "LELAUNCHER":
+                    Game = MEGame.Unknown;
+                    TargetsLELauncher = true;
+                    break;
                 default:
                     //Check if this is in ME3 game directory. If it's null, it might be a legacy mod
                     if (game == null)
@@ -680,6 +701,13 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             if (ModDescTargetVersion < 6 && Game != MEGame.ME3)
             {
                 Log.Error($@"{ModName} is designed for {game}. ModDesc versions (cmmver descriptor under ModManager section) under 6.0 do not support ME1 or ME2.");
+                LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_cmm6RequiredForME12, game, ModDescTargetVersion.ToString(CultureInfo.InvariantCulture));
+                return;
+            }
+
+            if (ModDescTargetVersion < 7 && Game.IsLEGame() || TargetsLELauncher)
+            {
+                Log.Error($@"{ModName} is designed for {game}. ModDesc versions (cmmver descriptor under ModManager section) under 7.0 cannot target Legendary Edition games.");
                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_cmm6RequiredForME12, game, ModDescTargetVersion.ToString(CultureInfo.InvariantCulture));
                 return;
             }

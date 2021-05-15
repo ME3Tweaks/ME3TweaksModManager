@@ -11,7 +11,7 @@ using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.modmanager.usercontrols;
 using MassEffectModManagerCore.ui;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.Packages;
 using Microsoft.AppCenter.Analytics;
 
 namespace MassEffectModManagerCore.modmanager.windows

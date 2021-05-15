@@ -22,7 +22,7 @@
 	<system:String x:Key="string_library_octokit">GitHub API-Client</system:String>
 	<system:String x:Key="string_library_serilog">Höchst erweiterbarer Logger</system:String>
 	<system:String x:Key="string_library_wpftoolkitextended" xml:space="preserve">Zusätzliche nützliche WPF-Kontrollen\nME3Tweaks Mod Manager benutzt eine angepasste Version dieser Bibliothek</system:String>
-	<system:String x:Key="string_library_me3explorercore">Mass Effect Trilogie Modding-Werkzeuge Backend</system:String>
+	<system:String x:Key="string_library_LegendaryExplorerCore">Mass Effect Trilogie Modding-Werkzeuge Backend</system:String>
 	<system:String x:Key="string_library_cliwrap">Async Wrapper zur interaktion mit Kommandozeilenprogrammen</system:String>
 	<system:String x:Key="string_library_commandlineparser">Umfangreicher Kommandozeilenargumentparser</system:String>
 	<system:String x:Key="string_library_computerinfo">Kleine Bibliothek, um einfach CPU, Betriebssystem und Speicherinformationen zu sammeln</system:String>
@@ -428,7 +428,7 @@
 	<system:String x:Key="string_interp_missingReferencedTlkStrInMod">Die TLK {1} von Custom DLC {0} enthält die in mount.dlc angegebene TLK string ID {2} nicht.</system:String>
 	<!-- 0={DLC folder name} 1={TLK file path} 2={Mount file TLK integer} -->
 	<system:String x:Key="string_referencesCheck">Referenzenprüfung</system:String>
-	<system:String x:Key="string_interp_dialog_invalidReferencesFound">Die folgenden Probleme wurden beim Überprüfen der Paketdateien auf ungültige Namen- und Objektreferenzen gefunden. Die Ursache dafür können Fehler im von Mod Manager verwendeten ME3ExplorerCore-Build sein, dennoch sollten diese Probleme überprüft werden, da ungültige Referenzen wahrscheinlich das Spiel abstürzen lassen.</system:String>
+	<system:String x:Key="string_interp_dialog_invalidReferencesFound">Die folgenden Probleme wurden beim Überprüfen der Paketdateien auf ungültige Namen- und Objektreferenzen gefunden. Die Ursache dafür können Fehler im von Mod Manager verwendeten LegendaryExplorerCore-Build sein, dennoch sollten diese Probleme überprüft werden, da ungültige Referenzen wahrscheinlich das Spiel abstürzen lassen.</system:String>
 	<system:String x:Key="string_invalidNameAndObjectReferences">Ungültige Namen- und Objektreferenzen</system:String>
 	<system:String x:Key="string_checkingNameAndObjectReferences">Namen- und Objektreferenzen werden geprüft</system:String>
 	<system:String x:Key="string_noReferenceIssuesWereDetected">Keine Referenzprobleme wurden gefunden</system:String>

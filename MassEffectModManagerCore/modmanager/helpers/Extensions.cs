@@ -10,7 +10,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Media;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.Packages;
 using Serilog;
 using SevenZip;
 

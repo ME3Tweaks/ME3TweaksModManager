@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Serilog;
 using System.IO;
-using ME3ExplorerCore.Helpers;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Packages;
 
 namespace MassEffectModManagerCore.modmanager.helpers
 {

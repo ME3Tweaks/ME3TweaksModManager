@@ -17,8 +17,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor;
-using ME3ExplorerCore.Gammtek.Extensions.Collections.Generic;
-using ME3ExplorerCore.Misc;
+using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
+using LegendaryExplorerCore.Misc;
 using PropertyChanged;
 using WinCopies.Util;
 

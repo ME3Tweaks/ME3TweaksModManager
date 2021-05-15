@@ -5,15 +5,15 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using FontAwesome.WPF;
-using ME3ExplorerCore.Helpers;
+using LegendaryExplorerCore.Helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.objects.mod;
-using ME3ExplorerCore.Compression;
-using ME3ExplorerCore.GameFilesystem;
-using ME3ExplorerCore.Misc;
-using ME3ExplorerCore.Packages;
-using ME3ExplorerCore.Unreal;
+using LegendaryExplorerCore.Compression;
+using LegendaryExplorerCore.GameFilesystem;
+using LegendaryExplorerCore.Misc;
+using LegendaryExplorerCore.Packages;
+using LegendaryExplorerCore.Unreal;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.helpers

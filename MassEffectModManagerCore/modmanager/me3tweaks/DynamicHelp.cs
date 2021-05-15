@@ -5,7 +5,7 @@ using System.IO;
 using System.Xml;
 
 using MassEffectModManagerCore.modmanager.helpers;
-using ME3ExplorerCore.Helpers;
+using LegendaryExplorerCore.Helpers;
 using Microsoft.AppCenter.Crashes;
 using Serilog;
 

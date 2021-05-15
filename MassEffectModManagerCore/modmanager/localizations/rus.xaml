@@ -22,7 +22,7 @@
 	<system:String x:Key="string_library_octokit">Клиент GitHub API</system:String>
 	<system:String x:Key="string_library_serilog">Расширяемый логгер</system:String>
 	<system:String x:Key="string_library_wpftoolkitextended" xml:space="preserve">Дополнительные полезные контролы WPF\nME3Tweaks Mod Manager использует кастомизированную версию данной библиотеки</system:String>
-	<system:String x:Key="string_library_me3explorercore">Бэкэнд инструментов моддинга трилогии Mass Effect</system:String>
+	<system:String x:Key="string_library_LegendaryExplorerCore">Бэкэнд инструментов моддинга трилогии Mass Effect</system:String>
 	<system:String x:Key="string_library_cliwrap">Асинхронный враппер для взаимодействия с приложениями командной строки</system:String>
 	<system:String x:Key="string_library_commandlineparser">Расширяемый парсер аргументов командной строки</system:String>
 	<system:String x:Key="string_library_computerinfo">Небольшая библиотека для легкой выгрузки информации о CPU, ОС и пямяти</system:String>
@@ -428,7 +428,7 @@
 	<system:String x:Key="string_interp_missingReferencedTlkStrInMod">TLK {1} в Custom DLC {0} не содержит строку с ID {2}, объявленную в файле mount.dlc. TLK модов должны содержать строки, указанные в файле mount.dlc.</system:String>
 	<!-- 0={DLC folder name} 1={TLK file path} 2={Mount file TLK integer} -->
 	<system:String x:Key="string_referencesCheck">Проверка ссылок</system:String>
-	<system:String x:Key="string_interp_dialog_invalidReferencesFound">Следующие проблемы были обнаружен при проверке пакетных файлов на недопустимые имена и ссылки на объекты. Это может быть следствием ошибки сборки ME3ExplorerCore, используемой Mod Manager, но данные проблемы должны быть исследованы, поскольку недопустимые ссылки с большой вероятностью вызовут падение игры.</system:String>
+	<system:String x:Key="string_interp_dialog_invalidReferencesFound">Следующие проблемы были обнаружен при проверке пакетных файлов на недопустимые имена и ссылки на объекты. Это может быть следствием ошибки сборки LegendaryExplorerCore, используемой Mod Manager, но данные проблемы должны быть исследованы, поскольку недопустимые ссылки с большой вероятностью вызовут падение игры.</system:String>
 	<system:String x:Key="string_invalidNameAndObjectReferences">Недопустимые имена и ссылки на объекты</system:String>
 	<system:String x:Key="string_checkingNameAndObjectReferences">Проверка имен и ссылок на объекты</system:String>
 	<system:String x:Key="string_noReferenceIssuesWereDetected">Проблем со ссылками не обнаружено</system:String>

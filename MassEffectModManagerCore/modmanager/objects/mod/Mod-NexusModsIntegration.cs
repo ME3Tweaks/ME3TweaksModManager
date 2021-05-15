@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.nexusmodsintegration;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.Packages;
 using Microsoft.AppCenter.Analytics;
 using Pathoschild.FluentNexus.Models;
 using Serilog;

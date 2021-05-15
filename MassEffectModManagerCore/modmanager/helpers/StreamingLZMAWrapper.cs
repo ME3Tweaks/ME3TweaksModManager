@@ -4,14 +4,14 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ME3ExplorerCore.Compression;
-using ME3ExplorerCore.Helpers;
+using LegendaryExplorerCore.Compression;
+using LegendaryExplorerCore.Helpers;
 using SevenZip;
 
 namespace MassEffectModManagerCore.modmanager.helpers
 {
     /// <summary>
-    /// Wrapper class that can decompress an LZMA stream. Works with Streaming and NonStreaming LZMA (ME3ExplorerCore can only do LZMA)
+    /// Wrapper class that can decompress an LZMA stream. Works with Streaming and NonStreaming LZMA (LegendaryExplorerCore can only do LZMA)
     /// </summary>
     public static class StreamingLZMAWrapper
     {

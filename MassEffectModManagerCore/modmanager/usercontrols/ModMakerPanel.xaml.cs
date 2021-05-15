@@ -13,7 +13,7 @@ using System.Windows.Media.Animation;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.modmanager.objects.mod;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.Packages;
 using Microsoft.Win32;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols

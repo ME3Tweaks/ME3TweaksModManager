@@ -2,7 +2,7 @@
 using IniParser.Model;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.objects;
-using ME3ExplorerCore.Helpers;
+using LegendaryExplorerCore.Helpers;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -17,9 +17,9 @@ using System.Xml.XPath;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.modmanager.usercontrols;
-using ME3ExplorerCore.GameFilesystem;
-using ME3ExplorerCore.Packages;
-using ME3ExplorerCore.TLK.ME2ME3;
+using LegendaryExplorerCore.GameFilesystem;
+using LegendaryExplorerCore.Packages;
+using LegendaryExplorerCore.TLK.ME2ME3;
 using Microsoft.AppCenter.Analytics;
 
 namespace MassEffectModManagerCore.modmanager.me3tweaks

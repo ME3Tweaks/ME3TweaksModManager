@@ -4,7 +4,7 @@ using System.Linq;
 using System.Windows;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.ui;
-using ME3ExplorerCore.Gammtek.Extensions.Collections.Generic;
+using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 
 namespace MassEffectModManagerCore.modmanager.windows
 {

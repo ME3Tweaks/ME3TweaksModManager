@@ -13,7 +13,7 @@ using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.nexusmodsintegration;
 using MassEffectModManagerCore.modmanager.objects.nexusfiledb;
 using MassEffectModManagerCore.ui;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.Packages;
 using Pathoschild.FluentNexus.Models;
 using Serilog;
 

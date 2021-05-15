@@ -7,7 +7,7 @@ using IniParser.Model;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.modmanager.objects.mod.editor;
-using ME3ExplorerCore.Misc;
+using LegendaryExplorerCore.Misc;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
 {

@@ -9,7 +9,7 @@ using FontAwesome.WPF;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.Packages;
 using Octokit;
 using Serilog;
 using Application = System.Windows.Application;

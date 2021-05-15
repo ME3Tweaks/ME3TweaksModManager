@@ -6,8 +6,8 @@ using System.Linq;
 using System.Text;
 using MassEffect3.FileFormats.Coalesced;
 using MassEffect3.FileFormats.Huffman;
-using ME3ExplorerCore.Gammtek.Extensions.IO;
-using ME3ExplorerCore.Helpers;
+using LegendaryExplorerCore.Gammtek.Extensions.IO;
+using LegendaryExplorerCore.Helpers;
 using Decoder = MassEffect3.FileFormats.Huffman.Decoder;
 using Encoder = MassEffect3.FileFormats.Huffman.Encoder;
 

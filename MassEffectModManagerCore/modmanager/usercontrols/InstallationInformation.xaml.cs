@@ -13,8 +13,8 @@ using Serilog;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.memoryanalyzer;
-using ME3ExplorerCore.Helpers;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Packages;
 using static MassEffectModManagerCore.modmanager.me3tweaks.ThirdPartyServices;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 

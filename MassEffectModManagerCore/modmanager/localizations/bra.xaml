@@ -22,7 +22,7 @@
 	<system:String x:Key="string_library_octokit">API do cliente GitHub</system:String>
 	<system:String x:Key="string_library_serilog">Raltor altamente extensível</system:String>
 	<system:String x:Key="string_library_wpftoolkitextended" xml:space="preserve">Controles WPF úteis adicionais\nO Gerenciador de Mods ME3Tweaks utiliza uma versão personalizada desta biblioteca</system:String>
-	<system:String x:Key="string_library_me3explorercore">Processo interno do conjunto de ferramentas de modificação da trilogia Mass Effect</system:String>
+	<system:String x:Key="string_library_LegendaryExplorerCore">Processo interno do conjunto de ferramentas de modificação da trilogia Mass Effect</system:String>
 	<system:String x:Key="string_library_cliwrap">Wrapper assíncrono para interação com aplicações de linha de comando</system:String>
 	<system:String x:Key="string_library_commandlineparser">Extenso analisador de argumentos de linha de comando</system:String>
 	<system:String x:Key="string_library_computerinfo">Pequena biblioteca para buscar informações de CPU, Sitema Operacional e memória</system:String>
@@ -428,7 +428,7 @@
 	<system:String x:Key="string_interp_missingReferencedTlkStrInMod">O arquivo TLK {1} do DLC Personalizado {0} não contéma string ID {2} listada, como declarada em seu arquivo mount.dlc. TLKs de de Mods devem ter sua string ID referenciada por seu arquivo mount.dlc.</system:String>
 	<!-- 0={DLC folder name} 1={TLK file path} 2={Mount file TLK integer} -->
 	<system:String x:Key="string_referencesCheck">Verificação de referências</system:String>
-	<system:String x:Key="string_interp_dialog_invalidReferencesFound">As seguintes questões foram encontradas ao verificar os arquivos de pacote nomes e referências inválidas. Isto pode ocorrer devido a erros na versão do ME3ExplorerCore que o Gerrenciador de Mods utiliza, porém essas questões devem ser investigadas pois referências inválidas causarão falhas no jogo.</system:String>
+	<system:String x:Key="string_interp_dialog_invalidReferencesFound">As seguintes questões foram encontradas ao verificar os arquivos de pacote nomes e referências inválidas. Isto pode ocorrer devido a erros na versão do LegendaryExplorerCore que o Gerrenciador de Mods utiliza, porém essas questões devem ser investigadas pois referências inválidas causarão falhas no jogo.</system:String>
 	<system:String x:Key="string_invalidNameAndObjectReferences">Nomes e referências a objetos inválidos</system:String>
 	<system:String x:Key="string_checkingNameAndObjectReferences">Verificando nomes e referências a objetos</system:String>
 	<system:String x:Key="string_noReferenceIssuesWereDetected">Nenhum problema de referência detectado</system:String>

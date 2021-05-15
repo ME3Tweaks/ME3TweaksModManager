@@ -23,11 +23,11 @@ using System.Security.Cryptography.X509Certificates;
 using AuthenticodeExaminer;
 using CommandLine.Text;
 using MassEffectModManagerCore.modmanager.windows;
-using ME3ExplorerCore.Helpers;
-using ME3ExplorerCore.Misc;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Misc;
+using LegendaryExplorerCore.Packages;
 using SingleInstanceCore;
-using ME3ExplorerCore.Compression;
+using LegendaryExplorerCore.Compression;
 using Microsoft.AppCenter;
 
 namespace MassEffectModManagerCore

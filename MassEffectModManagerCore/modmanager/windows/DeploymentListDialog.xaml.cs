@@ -5,7 +5,7 @@ using System.Linq;
 using System.Windows;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.usercontrols;
-using ME3ExplorerCore.Misc;
+using LegendaryExplorerCore.Misc;
 
 
 namespace MassEffectModManagerCore.modmanager.windows
