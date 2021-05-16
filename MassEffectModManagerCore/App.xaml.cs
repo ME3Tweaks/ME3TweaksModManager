@@ -39,12 +39,16 @@ namespace MassEffectModManagerCore
         /// <summary>
         /// Registry key for legacy Mass Effect 3 Mod Manager. Used to store the ME3 backup directory
         /// </summary>
-        internal const string REGISTRY_KEY_ME3CMM = @"HKEY_CURRENT_USER\Software\Mass Effect 3 Mod Manager";
+        //internal const string REGISTRY_KEY_ME3CMM = @"HKEY_CURRENT_USER\Software\Mass Effect 3 Mod Manager";
+        /// <summary>
+        /// ME3Tweaks Shared Registry Key
+        /// </summary>
+        internal const string REGISTRY_KEY_ME3TWEAKS = @"HKEY_CURRENT_USER\Software\ME3Tweaks";
 
         /// <summary>
         /// ALOT Addon Registry Key, used for ME1 and ME2 backups
         /// </summary>
-        internal const string BACKUP_REGISTRY_KEY = @"HKEY_CURRENT_USER\Software\ALOTAddon"; //Shared. Do not change
+        //internal const string BACKUP_REGISTRY_KEY = @"HKEY_CURRENT_USER\Software\ALOTAddon"; //Shared. Do not change
 
         public static string LogDir = Path.Combine(Utilities.GetAppDataFolder(), @"logs");
         private static bool POST_STARTUP = false;
@@ -256,6 +260,12 @@ namespace MassEffectModManagerCore
                 Log.Information(BackupService.GetGameBackupPath(MEGame.ME2, true, true));
                 Log.Information(@"Mass Effect 3 ====");
                 Log.Information(BackupService.GetGameBackupPath(MEGame.ME3, true, true));
+                Log.Information(@"Mass Effect LE ======");
+                Log.Information(BackupService.GetGameBackupPath(MEGame.LE1, true, true));
+                Log.Information(@"Mass Effect 2 LE ====");
+                Log.Information(BackupService.GetGameBackupPath(MEGame.LE2, true, true));
+                Log.Information(@"Mass Effect 3 LE ====");
+                Log.Information(BackupService.GetGameBackupPath(MEGame.LE3, true, true));
 
                 //Build 104 changed location of settings from AppData to ProgramData.
                 if (!AppDataExistedAtBoot)

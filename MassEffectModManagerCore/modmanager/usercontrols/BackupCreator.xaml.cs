@@ -61,6 +61,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
+            GameBackups.Add(new GameBackup(MEGame.LE1, targetsList.Where(x => x.Game == MEGame.LE1), mainwindow));
+            GameBackups.Add(new GameBackup(MEGame.LE2, targetsList.Where(x => x.Game == MEGame.LE2), mainwindow));
+            GameBackups.Add(new GameBackup(MEGame.LE3, targetsList.Where(x => x.Game == MEGame.LE3), mainwindow));
             GameBackups.Add(new GameBackup(MEGame.ME1, targetsList.Where(x => x.Game == MEGame.ME1), mainwindow));
             GameBackups.Add(new GameBackup(MEGame.ME2, targetsList.Where(x => x.Game == MEGame.ME2), mainwindow));
             GameBackups.Add(new GameBackup(MEGame.ME3, targetsList.Where(x => x.Game == MEGame.ME3), mainwindow));
@@ -82,18 +85,27 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 switch (Game)
                 {
                     case MEGame.ME1:
-                        GameTitle = @"Mass Effect";
                         GameIconSource = @"/images/gameicons/ME1_48.ico";
                         break;
                     case MEGame.ME2:
-                        GameTitle = @"Mass Effect 2";
                         GameIconSource = @"/images/gameicons/ME2_48.ico";
                         break;
                     case MEGame.ME3:
-                        GameTitle = @"Mass Effect 3";
                         GameIconSource = @"/images/gameicons/ME3_48.ico";
                         break;
+                    case MEGame.LE1:
+                        GameIconSource = @"/images/gameicons/LE1_48.ico";
+                        break;
+                    case MEGame.LE2:
+                        GameIconSource = @"/images/gameicons/LE2_48.ico";
+                        break;
+                    case MEGame.LE3:
+                        GameIconSource = @"/images/gameicons/LE3_48.ico";
+                        break;
+
                 }
+
+                GameTitle = Game.ToGameName();
 
                 ResetBackupStatus();
             }
@@ -133,6 +145,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         case MEGame.ME3:
                             RegistryHandler.DeleteRegistryKey(Registry.CurrentUser, @"Software\Mass Effect 3 Mod Manager",
                                 @"VanillaCopyLocation");
+                            break;
+                        case MEGame.LE1:
+                        case MEGame.LE2:
+                        case MEGame.LE3:
+                            RegistryHandler.DeleteRegistryKey(Registry.CurrentUser, @"Software\ME3Tweaks",
+                                Game + @"VanillaBackupLocation");
                             break;
                     }
                     BackupService.RefreshBackupStatus(window, Game);
@@ -447,18 +465,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         }
 
                         // Write key
-                        switch (Game)
-                        {
-                            case MEGame.ME1:
-                            case MEGame.ME2:
-                                Utilities.WriteRegistryKey(App.BACKUP_REGISTRY_KEY, Game + @"VanillaBackupLocation",
-                                    backupPath);
-                                break;
-                            case MEGame.ME3:
-                                Utilities.WriteRegistryKey(App.REGISTRY_KEY_ME3CMM, @"VanillaCopyLocation",
-                                    backupPath);
-                                break;
-                        }
+                        Utilities.WriteRegistryKey(App.REGISTRY_KEY_ME3TWEAKS, $@"{Game}VanillaBackupLocation", backupPath);
+
 
                         var cmmvanilla = Path.Combine(backupPath, @"cmm_vanilla");
                         if (!File.Exists(cmmvanilla))
@@ -587,7 +595,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     Utilities.GetDiskFreeSpaceEx(backupPath, out var freeBytes, out var totalBytes,
                         out var totalFreeBytes);
-                    var requiredSpace = (ulong) (Utilities.GetSizeOfDirectory(targetToBackup.TargetPath) * 1.1); //10% buffer
+                    var requiredSpace = (ulong)(Utilities.GetSizeOfDirectory(targetToBackup.TargetPath) * 1.1); //10% buffer
                     Log.Information(
                         $@"Backup space check. Backup size: {FileSize.FormatSize(requiredSpace)}, free space: {FileSize.FormatSize(freeBytes)}");
                     if (freeBytes < requiredSpace)
@@ -662,7 +670,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             public string GameTitle { get; }
             //Fody uses this property on weaving
 #pragma warning disable
-public event PropertyChangedEventHandler PropertyChanged;
+            public event PropertyChangedEventHandler PropertyChanged;
 #pragma warning restore
             public GameTarget BackupSourceTarget { get; set; }
             public string BackupLocation { get; set; }

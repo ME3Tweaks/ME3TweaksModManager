@@ -15,6 +15,7 @@
         <TextBlock
             Text="{DynamicResource string_backupsAreUsedToRestoreYourGame}"
             TextWrapping="Wrap" />
+        <ScrollViewer MaxHeight="300">
         <ItemsControl
             ItemsSource="{Binding GameBackups}">
             <ItemsControl.ItemContainerStyle>
@@ -107,6 +108,8 @@
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
+        </ScrollViewer>
+
         <TextBlock
             Text="{DynamicResource string_backupsAreShared}"
             TextWrapping="Wrap"

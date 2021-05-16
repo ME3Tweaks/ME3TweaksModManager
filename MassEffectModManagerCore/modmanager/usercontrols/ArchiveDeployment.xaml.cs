@@ -35,6 +35,7 @@ using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using LegendaryExplorerCore.Unreal.ObjectInfo;
 using Brushes = System.Windows.Media.Brushes;
 using DuplicatingIni = MassEffectModManagerCore.modmanager.gameini.DuplicatingIni;
 using ExportEntry = LegendaryExplorerCore.Packages.ExportEntry;
@@ -905,7 +906,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         var referencedEntry = op.ResolveToEntry(entry.FileRef);
                         if (referencedEntry.FullPath.Equals(@"SFXGame.BioDeprecated", StringComparison.InvariantCulture)) return; //This will appear as wrong even though it's technically not
 
-                        var propInfo = UnrealObjectInfo.GetPropertyInfo(entry.Game, op.Name, containingClassOrStructName, containingExport: entry as ExportEntry);
+                        var propInfo = GlobalUnrealObjectInfo.GetPropertyInfo(entry.Game, op.Name, containingClassOrStructName, containingExport: entry as ExportEntry);
                         var customClassInfos = new Dictionary<string, ClassInfo>();
 
                         if (referencedEntry.ClassName == @"Class" && op.Value > 0)
@@ -913,10 +914,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                             // Make sure we have info about this class.
                             var lookupEnt = referencedEntry as ExportEntry;
-                            while (lookupEnt != null && lookupEnt.IsClass && !UnrealObjectInfo.GetClasses(ModBeingDeployed.Game).ContainsKey(lookupEnt.ObjectName))
+                            while (lookupEnt != null && lookupEnt.IsClass && !GlobalUnrealObjectInfo.GetClasses(ModBeingDeployed.Game).ContainsKey(lookupEnt.ObjectName))
                             {
                                 // Needs dynamically generated
-                                var cc = UnrealObjectInfo.generateClassInfo(lookupEnt);
+                                var cc = GlobalUnrealObjectInfo.generateClassInfo(lookupEnt);
                                 customClassInfos[lookupEnt.ObjectName] = cc;
                                 lookupEnt = lookupEnt.Parent as ExportEntry;
                             }
@@ -924,7 +925,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             // If we did not pull it previously, we should try again with our custom info.
                             if (propInfo == null && customClassInfos.Any())
                             {
-                                propInfo = UnrealObjectInfo.GetPropertyInfo(entry.Game, op.Name,
+                                propInfo = GlobalUnrealObjectInfo.GetPropertyInfo(entry.Game, op.Name,
                                     containingClassOrStructName, customClassInfos[referencedEntry.ObjectName],
                                     containingExport: entry as ExportEntry);
                             }

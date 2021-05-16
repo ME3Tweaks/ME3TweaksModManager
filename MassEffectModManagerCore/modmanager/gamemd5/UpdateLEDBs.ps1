@@ -1,0 +1,3 @@
+Invoke-WebRequest https://github.com/MassEffectModder/MassEffectModder/raw/master/MassEffectModder/MassEffectModder/Resources/MD5EntriesME1.bin -OutFile le1.bin
+Invoke-WebRequest https://github.com/MassEffectModder/MassEffectModder/raw/master/MassEffectModder/MassEffectModder/Resources/MD5EntriesME2.bin -OutFile le2.bin
+Invoke-WebRequest https://github.com/MassEffectModder/MassEffectModder/raw/master/MassEffectModder/MassEffectModder/Resources/MD5EntriesME3.bin -OutFile le3.bin

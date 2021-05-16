@@ -38,6 +38,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public string FilterTextME1 { get; set; }
         public string FilterTextME2 { get; set; }
         public string FilterTextME3 { get; set; }
+        public string FilterTextLE1 { get; set; }
+        public string FilterTextLE2 { get; set; }
+        public string FilterTextLE3 { get; set; }
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
@@ -58,10 +61,20 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             db = VanillaDatabaseService.LoadDatabaseFor(MEGame.ME3, false);
             ME3Files.ReplaceAll(getDBItems(db));
 
+            db = VanillaDatabaseService.LoadDatabaseFor(MEGame.LE1, false);
+            LE1Files.ReplaceAll(getDBItems(db));
+            db = VanillaDatabaseService.LoadDatabaseFor(MEGame.LE2, false);
+            LE2Files.ReplaceAll(getDBItems(db));
+            db = VanillaDatabaseService.LoadDatabaseFor(MEGame.LE3, false);
+            LE3Files.ReplaceAll(getDBItems(db));
+
             LoadingInProgress = false;
             ME1FilesView.Filter = FilterBackupFilesME1;
             ME2FilesView.Filter = FilterBackupFilesME2;
             ME3FilesView.Filter = FilterBackupFilesME3;
+            LE1FilesView.Filter = FilterBackupFilesLE1;
+            LE2FilesView.Filter = FilterBackupFilesLE2;
+            LE3FilesView.Filter = FilterBackupFilesLE3;
 
         }
 
@@ -90,11 +103,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public ICollectionView ME1FilesView => CollectionViewSource.GetDefaultView(ME1Files);
         public ICollectionView ME2FilesView => CollectionViewSource.GetDefaultView(ME2Files);
         public ICollectionView ME3FilesView => CollectionViewSource.GetDefaultView(ME3Files);
-        public int SelectedGameIndex { get; set; }
 
-        public VanillaEntry SelectedME1File { get; set; }
-        public VanillaEntry SelectedME2File { get; set; }
-        public VanillaEntry SelectedME3File { get; set; }
+        private ui.ObservableCollectionExtended<VanillaEntry> LE1Files { get; } = new ui.ObservableCollectionExtended<VanillaEntry>();
+        private ui.ObservableCollectionExtended<VanillaEntry> LE2Files { get; } = new ui.ObservableCollectionExtended<VanillaEntry>();
+        private ui.ObservableCollectionExtended<VanillaEntry> LE3Files { get; } = new ui.ObservableCollectionExtended<VanillaEntry>();
+        public ICollectionView LE1FilesView => CollectionViewSource.GetDefaultView(LE1Files);
+        public ICollectionView LE2FilesView => CollectionViewSource.GetDefaultView(LE2Files);
+        public ICollectionView LE3FilesView => CollectionViewSource.GetDefaultView(LE3Files);
 
         //These are separate methods because I don t want to have to do a looped if statement 6000 times for me3 for example.
         private bool FilterBackupFilesME1(object obj)
@@ -124,6 +139,37 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             return true;
         }
 
+        private bool FilterBackupFilesLE1(object obj)
+        {
+            if (!string.IsNullOrWhiteSpace(FilterTextLE1) && obj is VanillaEntry bobj)
+            {
+                return bobj.Filepath.Contains(FilterTextLE1, StringComparison.InvariantCultureIgnoreCase);
+            }
+            return true;
+        }
+
+        private bool FilterBackupFilesLE2(object obj)
+        {
+            if (!string.IsNullOrWhiteSpace(FilterTextLE2) && obj is VanillaEntry bobj)
+            {
+                return bobj.Filepath.Contains(FilterTextLE2, StringComparison.InvariantCultureIgnoreCase);
+            }
+            return true;
+        }
+
+        private bool FilterBackupFilesLE3(object obj)
+        {
+            if (!string.IsNullOrWhiteSpace(FilterTextLE3) && obj is VanillaEntry bobj)
+            {
+                return bobj.Filepath.Contains(FilterTextLE3, StringComparison.InvariantCultureIgnoreCase);
+            }
+            return true;
+        }
+
+
+
+
+
         public void OnFilterTextME1Changed()
         {
             ME1FilesView.Refresh();
@@ -135,6 +181,19 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public void OnFilterTextME3Changed()
         {
             ME3FilesView.Refresh();
+        }
+
+        public void OnFilterTextLE1Changed()
+        {
+            LE1FilesView.Refresh();
+        }
+        public void OnFilterTextLE2Changed()
+        {
+            LE2FilesView.Refresh();
+        }
+        public void OnFilterTextLE3Changed()
+        {
+            LE3FilesView.Refresh();
         }
 
         public class VanillaEntry

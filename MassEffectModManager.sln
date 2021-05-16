@@ -38,7 +38,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ME3CMMShim", "ME3CMMShim\ME
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExecutableModParser", "ExecutableModParser\ExecutableModParser.csproj", "{9190323F-10A5-466B-9055-4697E734C039}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LegendaryExplorerCore", "ME3Explorer\LegendaryExplorerCore\LegendaryExplorerCore.csproj", "{4696DBA3-7801-4CE8-845F-1C03F75D58AC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LegendaryExplorerCore", "ME3Explorer\LegendaryExplorer\LegendaryExplorerCore\LegendaryExplorerCore.csproj", "{4696DBA3-7801-4CE8-845F-1C03F75D58AC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

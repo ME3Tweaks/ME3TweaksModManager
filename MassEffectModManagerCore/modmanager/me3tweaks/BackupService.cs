@@ -132,7 +132,95 @@ namespace MassEffectModManagerCore.modmanager.helpers
             private set => SetProperty(ref _me3ActivityIcon, value);
         }
 
-        public static bool AnyGameMissingBackup => (!ME1BackedUp && ME1Installed) || (!ME2BackedUp && ME2Installed) || (!ME3BackedUp && ME3Installed);
+        private static bool _le1Installed;
+        public static bool LE1Installed
+        {
+            get => _me1Installed;
+            private set => SetProperty(ref _le1Installed, value);
+        }
+
+        private static bool _le2Installed;
+        public static bool LE2Installed
+        {
+            get => _le2Installed;
+            private set => SetProperty(ref _le2Installed, value);
+        }
+
+        private static bool _le3Installed;
+        public static bool LE3Installed
+        {
+            get => _le3Installed;
+            private set => SetProperty(ref _le3Installed, value);
+        }
+
+
+        //Todo: Maybe cache this so we aren't doing so many reads. Not sure how often this gets hit since it is used in some commands
+
+        private static bool _le1BackedUp;
+        public static bool LE1BackedUp
+        {
+            get => GetGameBackupPath(MEGame.LE1, true) != null;
+            private set => SetProperty(ref _le1BackedUp, value);
+        }
+
+        private static bool _le2BackedUp;
+        public static bool LE2BackedUp
+        {
+            get => GetGameBackupPath(MEGame.LE2, true) != null;
+            private set => SetProperty(ref _le2BackedUp, value);
+        }
+
+        private static bool _le3BackedUp;
+        public static bool LE3BackedUp
+        {
+            get => GetGameBackupPath(MEGame.LE3, true) != null;
+            private set => SetProperty(ref _le3BackedUp, value);
+        }
+
+        private static bool _le1BackupActivity;
+        public static bool LE1BackupActivity
+        {
+            get => _le1BackupActivity;
+            private set => SetProperty(ref _le1BackupActivity, value);
+        }
+
+        private static bool _le2BackupActivity;
+        public static bool LE2BackupActivity
+        {
+            get => _le2BackupActivity;
+            private set => SetProperty(ref _le2BackupActivity, value);
+        }
+
+        private static bool _le3BackupActivity;
+        public static bool LE3BackupActivity
+        {
+            get => _le3BackupActivity;
+            private set => SetProperty(ref _le3BackupActivity, value);
+        }
+
+        private static FontAwesomeIcon _le1ActivityIcon = FontAwesomeIcon.TimesCircle;
+        public static FontAwesomeIcon LE1ActivityIcon
+        {
+            get => _le1ActivityIcon;
+            private set => SetProperty(ref _le1ActivityIcon, value);
+        }
+
+        private static FontAwesomeIcon _le2ActivityIcon = FontAwesomeIcon.TimesCircle;
+        public static FontAwesomeIcon LE2ActivityIcon
+        {
+            get => _le2ActivityIcon;
+            private set => SetProperty(ref _le2ActivityIcon, value);
+        }
+
+        private static FontAwesomeIcon _le3ActivityIcon = FontAwesomeIcon.TimesCircle;
+        public static FontAwesomeIcon LE3ActivityIcon
+        {
+            get => _le3ActivityIcon;
+            private set => SetProperty(ref _le3ActivityIcon, value);
+        }
+
+        public static bool AnyGameMissingBackup => (!ME1BackedUp && ME1Installed) || (!ME2BackedUp && ME2Installed) || (!ME3BackedUp && ME3Installed)
+                                                   || (LE1Installed && (LE1BackedUp || !LE2BackedUp || !LE3BackedUp));
 
 
         /// <summary>
@@ -160,6 +248,21 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 {
                     RefreshBackupStatus(MEGame.ME3, window == null || window.InstallationTargets.Any(x => x.Game == MEGame.ME3), ME3BackedUp,
                         msg => ME3BackupStatus = msg, msg => ME3BackupStatusTooltip = msg);
+                }
+                if (game == MEGame.LE1 || game == MEGame.Unknown)
+                {
+                    RefreshBackupStatus(MEGame.LE1, window == null || window.InstallationTargets.Any(x => x.Game == MEGame.LE1), LE1BackedUp,
+                        msg => LE1BackupStatus = msg, msg => LE1BackupStatusTooltip = msg);
+                }
+                if (game == MEGame.LE2 || game == MEGame.Unknown)
+                {
+                    RefreshBackupStatus(MEGame.LE2, window == null || window.InstallationTargets.Any(x => x.Game == MEGame.LE2), LE2BackedUp,
+                        msg => LE2BackupStatus = msg, msg => LE2BackupStatusTooltip = msg);
+                }
+                if (game == MEGame.LE3 || game == MEGame.Unknown)
+                {
+                    RefreshBackupStatus(MEGame.LE3, window == null || window.InstallationTargets.Any(x => x.Game == MEGame.LE3), LE3BackedUp,
+                        msg => LE3BackupStatus = msg, msg => LE3BackupStatusTooltip = msg);
                 }
             });
         }
@@ -249,6 +352,48 @@ namespace MassEffectModManagerCore.modmanager.helpers
             private set => SetProperty(ref _me3BackupStatusTooltip, value);
         }
 
+        private static string _le1BackupStatus;
+        public static string LE1BackupStatus
+        {
+            get => _le1BackupStatus;
+            private set => SetProperty(ref _le1BackupStatus, value);
+        }
+
+        private static string _le2BackupStatus;
+        public static string LE2BackupStatus
+        {
+            get => _le2BackupStatus;
+            private set => SetProperty(ref _le2BackupStatus, value);
+        }
+
+        private static string _le3BackupStatus;
+        public static string LE3BackupStatus
+        {
+            get => _le3BackupStatus;
+            private set => SetProperty(ref _le3BackupStatus, value);
+        }
+
+        private static string _le1BackupStatusTooltip;
+        public static string LE1BackupStatusTooltip
+        {
+            get => _le1BackupStatusTooltip;
+            private set => SetProperty(ref _le1BackupStatusTooltip, value);
+        }
+
+        private static string _le2BackupStatusTooltip;
+        public static string LE2BackupStatusTooltip
+        {
+            get => _le2BackupStatusTooltip;
+            private set => SetProperty(ref _le2BackupStatusTooltip, value);
+        }
+
+        private static string _le3BackupStatusTooltip;
+        public static string LE3BackupStatusTooltip
+        {
+            get => _le3BackupStatusTooltip;
+            private set => SetProperty(ref _le3BackupStatusTooltip, value);
+        }
+
         /// <summary>
         /// Fetches the backup status string for the specific game. The status must be refreshed before the values will be initially set
         /// </summary>
@@ -261,6 +406,9 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 case MEGame.ME1: return ME1BackupStatus;
                 case MEGame.ME2: return ME2BackupStatus;
                 case MEGame.ME3: return ME3BackupStatus;
+                case MEGame.LE1: return LE1BackupStatus;
+                case MEGame.LE2: return LE2BackupStatus;
+                case MEGame.LE3: return LE3BackupStatus;
             }
 
             return null;
@@ -278,6 +426,9 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 case MEGame.ME1: return ME1BackupStatusTooltip;
                 case MEGame.ME2: return ME2BackupStatusTooltip;
                 case MEGame.ME3: return ME3BackupStatusTooltip;
+                case MEGame.LE1: return LE1BackupStatusTooltip;
+                case MEGame.LE2: return LE2BackupStatusTooltip;
+                case MEGame.LE3: return LE3BackupStatusTooltip;
             }
 
             return null;
@@ -305,6 +456,18 @@ namespace MassEffectModManagerCore.modmanager.helpers
                     ME3BackupStatus = status;
                     ME3BackupStatusTooltip = tooltip;
                     break;
+                case MEGame.LE1:
+                    LE1BackupStatus = status;
+                    LE1BackupStatusTooltip = tooltip;
+                    break;
+                case MEGame.LE2:
+                    LE2BackupStatus = status;
+                    LE2BackupStatusTooltip = tooltip;
+                    break;
+                case MEGame.LE3:
+                    LE3BackupStatus = status;
+                    LE3BackupStatusTooltip = tooltip;
+                    break;
             }
         }
 
@@ -320,6 +483,15 @@ namespace MassEffectModManagerCore.modmanager.helpers
                     break;
                 case MEGame.ME3:
                     ME3BackupActivity = p1;
+                    break;
+                case MEGame.LE1:
+                    LE1BackupActivity = p1;
+                    break;
+                case MEGame.LE2:
+                    LE2BackupActivity = p1;
+                    break;
+                case MEGame.LE3:
+                    LE3BackupActivity = p1;
                     break;
             }
 
@@ -338,6 +510,15 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 case MEGame.ME3:
                     ME3ActivityIcon = p1;
                     break;
+                case MEGame.LE1:
+                    LE1ActivityIcon = p1;
+                    break;
+                case MEGame.LE2:
+                    LE2ActivityIcon = p1;
+                    break;
+                case MEGame.LE3:
+                    LE3ActivityIcon = p1;
+                    break;
             }
         }
 
@@ -351,22 +532,8 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 return GameBackupPathCache[game];
             }
 
-            string path;
-            switch (game)
-            {
-                case MEGame.ME1:
-                    path = Utilities.GetRegistrySettingString(App.BACKUP_REGISTRY_KEY, @"ME1VanillaBackupLocation");
-                    break;
-                case MEGame.ME2:
-                    path = Utilities.GetRegistrySettingString(App.BACKUP_REGISTRY_KEY, @"ME2VanillaBackupLocation");
-                    break;
-                case MEGame.ME3:
-                    //Check for backup via registry - Use Mod Manager's game backup key to find backup.
-                    path = Utilities.GetRegistrySettingString(App.REGISTRY_KEY_ME3CMM, @"VanillaCopyLocation");
-                    break;
-                default:
-                    return null;
-            }
+            string path = Utilities.GetRegistrySettingString(App.REGISTRY_KEY_ME3TWEAKS, $@"{game}VanillaBackupLocation");
+
 
             if (forceReturnPath) return path; // do not check it
 
@@ -434,6 +601,15 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 case MEGame.ME3:
                     ME3BackedUp = b;
                     break;
+                case MEGame.LE1:
+                    LE1BackedUp = b;
+                    break;
+                case MEGame.LE2:
+                    LE2BackedUp = b;
+                    break;
+                case MEGame.LE3:
+                    LE3BackedUp = b;
+                    break;
             }
             StaticPropertyChanged?.Invoke(null, new PropertyChangedEventArgs(nameof(AnyGameMissingBackup)));
             StaticBackupStateChanged?.Invoke(null, null);
@@ -444,6 +620,9 @@ namespace MassEffectModManagerCore.modmanager.helpers
             ME1Installed = installationTargets.Any(x => x.Game == MEGame.ME1);
             ME2Installed = installationTargets.Any(x => x.Game == MEGame.ME2);
             ME3Installed = installationTargets.Any(x => x.Game == MEGame.ME3);
+            LE1Installed = installationTargets.Any(x => x.Game == MEGame.LE1);
+            LE2Installed = installationTargets.Any(x => x.Game == MEGame.LE2);
+            LE3Installed = installationTargets.Any(x => x.Game == MEGame.LE3);
             StaticPropertyChanged?.Invoke(null, new PropertyChangedEventArgs(nameof(AnyGameMissingBackup)));
             StaticBackupStateChanged?.Invoke(null, null);
         }

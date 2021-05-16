@@ -77,7 +77,10 @@ namespace MassEffectModManagerCore.modmanager.objects
             COLLECTORS_EDITION,
             TESTPATCH,
 
-            LOCALIZATION //For ME2/3 Localization TLKs
+            LOCALIZATION, //For ME2/3 Localization TLKs
+
+            // LEGENDARY
+            LELAUNCHER,
         }
 
         /// <summary>
@@ -188,6 +191,13 @@ namespace MassEffectModManagerCore.modmanager.objects
             JobHeader.TESTPATCH
         };
 
+        /// <summary>
+        /// List of LE games-only supported headers. These games always have all the official DLC and as such do not support anything but BASEGAME
+        /// </summary>
+        internal static readonly JobHeader[] LESupportedNonCustomDLCJobHeaders =
+        {
+            JobHeader.BASEGAME,
+        };
 
         /// <summary>
         /// ModDesc.ini Header that this mod job targets
@@ -384,6 +394,11 @@ namespace MassEffectModManagerCore.modmanager.objects
             [JobHeader.TESTPATCH] = @"DLC_TestPatch" //This is not actually a DLC folder. This is the internal path though that the DLC would use if it worked unpacked.
         };
 
+        /// <summary>
+        /// There are no supported headers since all DLC is assumed to be installed already
+        /// </summary>
+        private static IReadOnlyDictionary<JobHeader, string> LEHeadersToDLCNamesMap = new Dictionary<JobHeader, string> { };
+
         internal static IReadOnlyDictionary<JobHeader, string> GetHeadersToDLCNamesMap(MEGame game)
         {
             switch (game)
@@ -394,6 +409,11 @@ namespace MassEffectModManagerCore.modmanager.objects
                     return ME2HeadersToDLCNamesMap;
                 case MEGame.ME3:
                     return ME3HeadersToDLCNamesMap;
+                case MEGame.LE1:
+                case MEGame.LE2:
+                case MEGame.LE3:
+                    // Maybe add Unknown? (Unknown in M3 = LELauncher)
+                    return LEHeadersToDLCNamesMap;
                 default:
                     throw new Exception(@"Can't get supported list of headers for unknown game type.");
             }
@@ -430,6 +450,10 @@ namespace MassEffectModManagerCore.modmanager.objects
                     return ME2SupportedNonCustomDLCJobHeaders;
                 case MEGame.ME3:
                     return ME3SupportedNonCustomDLCJobHeaders;
+                case MEGame.LE1:
+                case MEGame.LE2:
+                case MEGame.LE3:
+                    return LESupportedNonCustomDLCJobHeaders;
                 default:
                     throw new Exception(@"Can't get supported list of headers for unknown game type.");
             }
@@ -450,6 +474,10 @@ namespace MassEffectModManagerCore.modmanager.objects
                     return ME2SupportedNonCustomDLCJobHeaders.Except(new[] { JobHeader.BASEGAME }).ToArray();
                 case MEGame.ME3:
                     return ME3SupportedNonCustomDLCJobHeaders.Except(new[] { JobHeader.BASEGAME }).ToArray();
+                case MEGame.LE1:
+                case MEGame.LE2:
+                case MEGame.LE3:
+                    return new JobHeader[] { }; // LE does not support any DLC headers
                 default:
                     throw new Exception(@"Can't get supported list of dlc headers for unknown game type.");
             }
@@ -591,7 +619,12 @@ namespace MassEffectModManagerCore.modmanager.objects
                 // There are specific directories we allow installation to.
                 if (game == MEGame.ME3)
                 {
-                    scopes.DisallowedSilos.Add(@"Binaries\\Win32" + Path.DirectorySeparatorChar); //You are not allowed to install files into the game executable directory. ME1/2 unfortuantely share exec with exe dir.
+                    scopes.DisallowedSilos.Add(@"Binaries\\Win32" + Path.DirectorySeparatorChar); //You are not allowed to install files into the game executable directory.
+                }
+
+                if (game.IsLEGame())
+                {
+                    scopes.DisallowedSilos.Add(@"Binaries\\Win64" + Path.DirectorySeparatorChar); //You are not allowed to install files into the game executable directory.
                 }
 
                 scopes.AllowedSilos.Add(@"Binaries" + Path.DirectorySeparatorChar); //Exec files
@@ -679,7 +712,7 @@ namespace MassEffectModManagerCore.modmanager.objects
 
                     parameterDictionary[@"moddir"] = @".";
                     parameterDictionary[@"newfiles"] = @"Coalesced.bin";
-                    parameterDictionary[@"replacefiles"] = @"BIOGame\CookedPCConsole\Coalesced.bin"; 
+                    parameterDictionary[@"replacefiles"] = @"BIOGame\CookedPCConsole\Coalesced.bin";
 
                     // Technically this doesn't support more on this version of moddesc.
                     // But since we can't save older moddesc formats we will allow
@@ -724,7 +757,8 @@ namespace MassEffectModManagerCore.modmanager.objects
             {
                 parameterDictionary[@"moddir"] = JobDirectory;
                 parameterDictionary[@"newfiles"] = FilesToInstall.Values;
-            } else if (Header == JobHeader.ME1_CONFIG)
+            }
+            else if (Header == JobHeader.ME1_CONFIG)
             {
                 parameterDictionary[@"moddir"] = JobDirectory;
                 // files raw is handled by ui

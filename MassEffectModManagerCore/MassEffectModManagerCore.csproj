@@ -9,14 +9,12 @@
 		<PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
 		<UseWPF>true</UseWPF>
 		<Platforms>x64</Platforms>
-		<AssemblyVersion>6.3.0.117</AssemblyVersion>
-		<FileVersion>6.3.0.117</FileVersion>
-		<Version>6.3.0.117</Version>
+		<Version>7.0.0.130</Version>
 		<Copyright>ME3Tweaks 2012 - 2021</Copyright>
 		<Authors>Mgamerz</Authors>
 		<PackageId>MassEffectModManagerCore</PackageId>
 		<Product>ME3Tweaks Mod Manager</Product>
-		<Description>Mod Manager for the original Mass Effect Trilogy</Description>
+		<Description>Mod Manager for the original Mass Effect Trilogy and Legendary Edition</Description>
 		<Company>ME3Tweaks</Company>
 		<StartupObject>MassEffectModManagerCore.App</StartupObject>
 		<ApplicationIcon>appicon.ico</ApplicationIcon>
@@ -142,10 +140,7 @@
 		<EmbeddedResource Include="modmanager\binkw32\me2\binkw32.dll" />
 		<EmbeddedResource Include="modmanager\binkw32\me3\binkw23.dll" />
 		<EmbeddedResource Include="modmanager\binkw32\me3\binkw32.dll" />
-		<EmbeddedResource Include="modmanager\gamemd5\me1.bin" />
-		<EmbeddedResource Include="modmanager\gamemd5\me1pl.bin" />
-		<EmbeddedResource Include="modmanager\gamemd5\me2.bin" />
-		<EmbeddedResource Include="modmanager\gamemd5\me3.bin" />
+		<EmbeddedResource Include="modmanager\gamemd5\*.bin" />
 		<EmbeddedResource Include="modmanager\me3tweaks\LiveIni.bin" />
 		<EmbeddedResource Include="modmanager\me3tweaks\PermissionsGranter.exe" />
 		<EmbeddedResource Include="modmanager\meim\propertymaps\BioEngine.xml" />
@@ -197,39 +192,18 @@
 	<ItemGroup>
 		<ProjectReference Include="..\AdonisUI.ClassicTheme\AdonisUI.ClassicTheme.csproj" />
 		<ProjectReference Include="..\IniFileParser\IniFileParser.csproj" />
-		<ProjectReference Include="..\ME3Explorer\LegendaryExplorerCore\LegendaryExplorerCore.csproj" />
+		<ProjectReference Include="..\ME3Explorer\LegendaryExplorer\LegendaryExplorerCore\LegendaryExplorerCore.csproj" />
 		<ProjectReference Include="..\SevenZip\SevenZip.csproj" />
 		<ProjectReference Include="..\WpfExtendedToolkit-Extended\Src\Xceed.Wpf.Toolkit\DotNetProjects.Wpf.Extended.Toolkit.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<Resource Include="images\gameicons\ME1_48.ico" />
-		<Resource Include="images\gameicons\ME2_48.ico" />
-		<Resource Include="images\gameicons\ME3_48.ico" />
-		<Resource Include="images\gameicons\Unknown_48.ico" />
+		<Resource Include="images\gameicons\*.ico" />
 		<Resource Include="images\origin.png" />
 		<EmbeddedResource Include="modmanager\executables\vpat.exe" />
-		<Resource Include="modmanager\localizations\icons\english.png" />
-		<Resource Include="modmanager\localizations\icons\french.png" />
-		<Resource Include="modmanager\localizations\icons\german.png" />
-		<Resource Include="modmanager\localizations\icons\languageselector.png" />
-		<Resource Include="modmanager\localizations\icons\polish.png" />
-		<Resource Include="modmanager\localizations\icons\portuguese.png" />
-		<Resource Include="modmanager\localizations\icons\russian.png" />
-		<Resource Include="modmanager\localizations\icons\spanish.png" />
+		<Resource Include="modmanager\localizations\icons\*.png" />
 		<Resource Include="modmanager\nexusmodsintegration\nexusmods_icon.png" />
-		<Resource Include="modmanager\toolicons\alot_32.png" />
-		<Resource Include="modmanager\toolicons\alot_big.png" />
-		<Resource Include="modmanager\toolicons\egmsettings_32.png" />
-		<Resource Include="modmanager\toolicons\egmsettings_big.png" />
-		<Resource Include="modmanager\toolicons\masseffectinimodder_32.png" />
-		<Resource Include="modmanager\toolicons\masseffectmodder_32.png" />
-		<Resource Include="modmanager\toolicons\masseffectmodder_big.png" />
-		<Resource Include="modmanager\toolicons\masseffectrandomizer_32.png" />
-		<Resource Include="modmanager\toolicons\masseffectrandomizer_big.png" />
-		<Resource Include="modmanager\toolicons\me3explorer_32.png" />
-		<Resource Include="modmanager\toolicons\masseffectinimodder_big.png" />
-		<Resource Include="modmanager\toolicons\me3explorer_big.png" />
+		<Resource Include="modmanager\toolicons\*.png" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -264,6 +238,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>7z64.dll</TargetPath>
     </ContentWithTargetPath>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="modmanager\binkw64\" />
   </ItemGroup>
 
 </Project>

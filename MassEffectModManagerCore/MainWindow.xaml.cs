@@ -1382,7 +1382,7 @@ namespace MassEffectModManagerCore
                 var target = GetCurrentTarget(game);
                 if (target != null && !Utilities.IsGameRunning(game))
                 {
-                    return File.Exists(Utilities.GetBinkw32File(target));
+                    return File.Exists(Utilities.GetBinkFile(target));
                 }
             }
 
@@ -1470,15 +1470,32 @@ namespace MassEffectModManagerCore
             Log.Information(@"User is adding new modding target");
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.Title = M3L.GetString(M3L.string_selectGameExecutable);
-            string filter = $@"{M3L.GetString(M3L.string_gameExecutable)}|MassEffect.exe;MassEffect2.exe;MassEffect3.exe"; //only partially localizable.
+            string filter = $@"{M3L.GetString(M3L.string_gameExecutable)}|MassEffect.exe;MassEffect2.exe;MassEffect3.exe;MassEffect1.exe"; //only partially localizable.
             ofd.Filter = filter;
             if (ofd.ShowDialog() == true)
             {
                 MEGame gameSelected = MEGame.Unknown;
+                var fileInfo = new FileInfo(ofd.FileName);
                 var filename = Path.GetFileName(ofd.FileName);
                 if (filename.Equals(@"MassEffect3.exe", StringComparison.InvariantCultureIgnoreCase)) gameSelected = MEGame.ME3;
                 if (filename.Equals(@"MassEffect2.exe", StringComparison.InvariantCultureIgnoreCase)) gameSelected = MEGame.ME2;
-                if (filename.Equals(@"MassEffect.exe", StringComparison.InvariantCultureIgnoreCase)) gameSelected = MEGame.ME1;
+
+                if (gameSelected != MEGame.Unknown)
+                {
+                    // Check for LE versions
+                    if (fileInfo.Length > FileSize.MebiByte * 100)
+                    {
+                        if (gameSelected == MEGame.ME2) gameSelected = MEGame.LE2;
+                        if (gameSelected == MEGame.ME3) gameSelected = MEGame.LE3;
+                    }
+                }
+                else
+                {
+
+                    // Has unique name
+                    if (filename.Equals(@"MassEffect.exe", StringComparison.InvariantCultureIgnoreCase)) gameSelected = MEGame.ME1;
+                    if (filename.Equals(@"MassEffect1.exe", StringComparison.InvariantCultureIgnoreCase)) gameSelected = MEGame.LE1;
+                }
 
                 if (gameSelected != MEGame.Unknown)
                 {
@@ -2211,6 +2228,29 @@ namespace MassEffectModManagerCore
                 }
             }
 
+            if (!string.IsNullOrWhiteSpace(LegendaryExplorerCoreLibSettings.Instance?.LEDirectory) && Directory.Exists(LegendaryExplorerCoreLibSettings.Instance.LEDirectory))
+            {
+                // Load LE targets
+                void loadLETarget(MEGame game, string defaultPath)
+                {
+                    var target = new GameTarget(game, defaultPath, true);
+                    var failureReason = target.ValidateTarget();
+                    if (failureReason == null)
+                    {
+                        Log.Information($@"Current boot target for {game}: {target.TargetPath}");
+                        targets.Add(target);
+                    }
+                    else
+                    {
+                        Log.Error($@"Current boot target for {game} is invalid: " + failureReason);
+                    }
+                }
+
+                loadLETarget(MEGame.LE1, LE1Directory.DefaultGamePath);
+                loadLETarget(MEGame.LE2, LE2Directory.DefaultGamePath);
+                loadLETarget(MEGame.LE3, LE3Directory.DefaultGamePath);
+            }
+
             // Read steam locations
             void addSteamTarget(string targetPath, bool foundActiveAlready, MEGame game)
             {
@@ -2255,7 +2295,17 @@ namespace MassEffectModManagerCore
             // ORDER THE TARGETS
             targets = targets.Distinct().ToList();
             List<GameTarget> finalList = new List<GameTarget>();
-            GameTarget aTarget = targets.FirstOrDefault(x => x.Game == MEGame.ME3 && x.RegistryActive);
+
+            //LE
+            GameTarget aTarget = targets.FirstOrDefault(x => x.Game == MEGame.LE3 && x.RegistryActive);
+            if (aTarget != null) finalList.Add(aTarget);
+            aTarget = targets.FirstOrDefault(x => x.Game == MEGame.LE2 && x.RegistryActive);
+            if (aTarget != null) finalList.Add(aTarget);
+            aTarget = targets.FirstOrDefault(x => x.Game == MEGame.LE1 && x.RegistryActive);
+            if (aTarget != null) finalList.Add(aTarget);
+
+            // OT
+            aTarget = targets.FirstOrDefault(x => x.Game == MEGame.ME3 && x.RegistryActive);
             if (aTarget != null) finalList.Add(aTarget);
             aTarget = targets.FirstOrDefault(x => x.Game == MEGame.ME2 && x.RegistryActive);
             if (aTarget != null) finalList.Add(aTarget);
@@ -2266,6 +2316,11 @@ namespace MassEffectModManagerCore
             {
                 finalList.Add(new GameTarget(MEGame.Unknown, $@"==================={M3L.GetString(M3L.string_otherSavedTargets)}===================", false) { Selectable = false, IsCustomOption = true });
             }
+
+            finalList.AddRange(targets.Where(x => x.Game == MEGame.LE3 && !x.RegistryActive));
+            finalList.AddRange(targets.Where(x => x.Game == MEGame.LE2 && !x.RegistryActive));
+            finalList.AddRange(targets.Where(x => x.Game == MEGame.LE1 && !x.RegistryActive));
+
 
             finalList.AddRange(targets.Where(x => x.Game == MEGame.ME3 && !x.RegistryActive));
             finalList.AddRange(targets.Where(x => x.Game == MEGame.ME2 && !x.RegistryActive));

@@ -116,6 +116,9 @@ namespace MassEffectModManagerCore.modmanager.helpers
             if (game == MEGame.ME1) return @"Mass Effect";
             if (game == MEGame.ME2) return @"Mass Effect 2";
             if (game == MEGame.ME3) return @"Mass Effect 3";
+            if (game == MEGame.LE1) return @"Mass Effect (Legendary Edition)";
+            if (game == MEGame.LE2) return @"Mass Effect 2 (Legendary Edition)";
+            if (game == MEGame.LE3) return @"Mass Effect 3 (Legendary Edition)";
             return @"UNKNOWN GAME";
         }
 

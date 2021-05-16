@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -12,19 +11,18 @@ using System.Security.Cryptography;
 using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
-using MassEffectModManagerCore.modmanager;
+using LegendaryExplorerCore.GameFilesystem;
+using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Packages;
 using MassEffectModManagerCore.modmanager.gameini;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
-using LegendaryExplorerCore.Helpers;
-using LegendaryExplorerCore.GameFilesystem;
-using LegendaryExplorerCore.Packages;
 using Microsoft.Win32;
 using Serilog;
 using static MassEffectModManagerCore.modmanager.gameini.DuplicatingIni;
 
-namespace MassEffectModManagerCore
+namespace MassEffectModManagerCore.modmanager
 {
     [Localizable(false)]
     public static class Utilities
@@ -688,6 +686,9 @@ namespace MassEffectModManagerCore
             Directory.CreateDirectory(GetME3ModsDirectory());
             Directory.CreateDirectory(GetME2ModsDirectory());
             Directory.CreateDirectory(GetME1ModsDirectory());
+            Directory.CreateDirectory(GetLE1ModsDirectory());
+            Directory.CreateDirectory(GetLE2ModsDirectory());
+            Directory.CreateDirectory(GetLE3ModsDirectory());
         }
 
         internal static string GetME3TweaksServicesCache()
@@ -788,6 +789,10 @@ namespace MassEffectModManagerCore
 
         public static string GetME3ModsDirectory() => Path.Combine(GetModsDirectory(), "ME3");
         public static string GetME2ModsDirectory() => Path.Combine(GetModsDirectory(), "ME2");
+        public static string GetME1ModsDirectory() => Path.Combine(GetModsDirectory(), "ME1");
+        public static string GetLE3ModsDirectory() => Path.Combine(GetModsDirectory(), "LE3");
+        public static string GetLE2ModsDirectory() => Path.Combine(GetModsDirectory(), "LE2");
+        public static string GetLE1ModsDirectory() => Path.Combine(GetModsDirectory(), "LE1");
 
         /// <summary>
         /// Returns location where we will store the 7z.dll. Does not check for existence
@@ -798,7 +803,6 @@ namespace MassEffectModManagerCore
             return Path.Combine(GetDllDirectory(), "7z.dll");
         }
 
-        public static string GetME1ModsDirectory() => Path.Combine(GetModsDirectory(), "ME1");
 
         public static void OpenWebpage(string uri)
         {
@@ -817,10 +821,13 @@ namespace MassEffectModManagerCore
             }
         }
 
-
+        // ME2 and ME3 have same exe names.
+        private static (bool isRunning, DateTime lastChecked) le1RunningInfo = (false, DateTime.MinValue.AddSeconds(5));
         private static (bool isRunning, DateTime lastChecked) me1RunningInfo = (false, DateTime.MinValue.AddSeconds(5));
         private static (bool isRunning, DateTime lastChecked) me2RunningInfo = (false, DateTime.MinValue.AddSeconds(5));
         private static (bool isRunning, DateTime lastChecked) me3RunningInfo = (false, DateTime.MinValue.AddSeconds(5));
+
+
         private static int TIME_BETWEEN_PROCESS_CHECKS = 5;
 
         /// <summary>
@@ -835,9 +842,14 @@ namespace MassEffectModManagerCore
                 case MEGame.ME1:
                     runningInfo = me1RunningInfo;
                     break;
+                case MEGame.LE1:
+                    runningInfo = le1RunningInfo;
+                    break;
+                case MEGame.LE2:
                 case MEGame.ME2:
                     runningInfo = me2RunningInfo;
                     break;
+                case MEGame.LE3:
                 case MEGame.ME3:
                     runningInfo = me3RunningInfo;
                     break;
@@ -860,10 +872,15 @@ namespace MassEffectModManagerCore
                 case MEGame.ME1:
                     me1RunningInfo = runningInfo;
                     break;
+                case MEGame.LE1:
+                    le1RunningInfo = runningInfo;
+                    break;
                 case MEGame.ME2:
+                case MEGame.LE2:
                     me2RunningInfo = runningInfo;
                     break;
                 case MEGame.ME3:
+                case MEGame.LE3:
                     me3RunningInfo = runningInfo;
                     break;
             }
@@ -915,6 +932,9 @@ namespace MassEffectModManagerCore
             if (game == MEGame.ME1) return "Mass Effect";
             if (game == MEGame.ME2) return "Mass Effect 2";
             if (game == MEGame.ME3) return "Mass Effect 3";
+            if (game == MEGame.LE1) return "Mass Effect (Legendary Edition)";
+            if (game == MEGame.LE2) return "Mass Effect 2 (Legendary Edition)";
+            if (game == MEGame.LE3) return "Mass Effect 3 (Legendary Edition)";
             return "Error: Unknown game";
         }
 
@@ -953,13 +973,6 @@ namespace MassEffectModManagerCore
             return destination;
         }
 
-        internal static string GetExecutableDirectory(GameTarget target)
-        {
-            if (target.Game == MEGame.ME1 || target.Game == MEGame.ME2) return Path.Combine(target.TargetPath, "Binaries");
-            if (target.Game == MEGame.ME3) return Path.Combine(target.TargetPath, "Binaries", "win32");
-            return null;
-        }
-
         internal static List<string> GetListOfInstalledAV()
         {
             List<string> av = new List<string>();
@@ -982,7 +995,7 @@ namespace MassEffectModManagerCore
         internal static bool InstallBinkBypass(GameTarget target)
         {
             if (target == null) return false;
-            var binkPath = GetBinkw32File(target);
+            var binkPath = GetBinkFile(target);
             Log.Information($"Installing Binkw32 bypass for {target.Game} to {binkPath}");
 
             try
@@ -1005,6 +1018,13 @@ namespace MassEffectModManagerCore
                     var obinkPath = Path.Combine(target.TargetPath, "Binaries", "win32", "binkw23.dll");
                     Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me3.binkw32.dll", binkPath, true);
                     Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me3.binkw23.dll", obinkPath, true);
+                }
+                // TODO: IMPLEMENT
+                else if (target.Game.IsLEGame())
+                {
+                    var obinkPath = Path.Combine(target.TargetPath, "Binaries", "Win64", "binkw23.dll");
+                    //Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me1.binkw32.dll", binkPath, true);
+                    //Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me1.binkw23.dll", obinkPath, true);
                 }
                 else
                 {
@@ -1031,19 +1051,19 @@ namespace MassEffectModManagerCore
             return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "Temp")).FullName;
         }
 
-        internal static string GetBinkw32File(GameTarget target)
+        internal static string GetBinkFile(GameTarget target)
         {
             if (target == null) return null;
-            if (target.Game == MEGame.ME1) return Path.Combine(target.TargetPath, "Binaries", "binkw32.dll");
-            if (target.Game == MEGame.ME2) return Path.Combine(target.TargetPath, "Binaries", "binkw32.dll");
+            if (target.Game == MEGame.ME1 || target.Game == MEGame.ME2) return Path.Combine(target.TargetPath, "Binaries", "binkw32.dll");
             if (target.Game == MEGame.ME3) return Path.Combine(target.TargetPath, "Binaries", "win32", "binkw32.dll");
+            if (target.Game.IsLEGame()) return Path.Combine(target.TargetPath, "Binaries", "Win64", "bink2w64.dll");
             return null;
         }
 
         internal static bool UninstallBinkBypass(GameTarget target)
         {
             if (target == null) return false;
-            var binkPath = GetBinkw32File(target);
+            var binkPath = GetBinkFile(target);
             if (target.Game == MEGame.ME1)
             {
                 var obinkPath = Path.Combine(target.TargetPath, "Binaries", "binkw23.dll");
@@ -1060,8 +1080,14 @@ namespace MassEffectModManagerCore
             {
                 var obinkPath = Path.Combine(target.TargetPath, "Binaries", "win32", "binkw23.dll");
                 File.Delete(obinkPath);
-
                 Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me3.binkw23.dll", binkPath, true);
+            }
+            else if (target.Game.IsLEGame())
+            {
+                var obinkPath = Path.Combine(target.TargetPath, "Binaries", "Win64", "bink2w64_original.dll");
+                File.Delete(obinkPath);
+                Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw64.bink2w64.dll", binkPath, true);
+
             }
 
             return true;
@@ -1072,15 +1098,22 @@ namespace MassEffectModManagerCore
             return Path.Combine(GetAppDataFolder(), $"GameTargets{game}.txt");
         }
 
+        internal static string GetCachedLETargetsFile()
+        {
+            return Path.Combine(GetAppDataFolder(), "GameTargetsLE.txt");
+        }
+
+
         /// <summary>
         /// Loads cached targets from the cache list
         /// </summary>
         /// <param name="game"></param>
         /// <param name="existingTargets"></param>
+        /// <param name="legendaryLoad">If this should load in legendary mode, which loads 3 targets per directory</para>
         /// <returns></returns>
-        internal static List<GameTarget> GetCachedTargets(MEGame game, List<GameTarget> existingTargets = null)
+        internal static List<GameTarget> GetCachedTargets(MEGame game, List<GameTarget> existingTargets = null, bool legendaryLoad = false)
         {
-            var cacheFile = GetCachedTargetsFile(game);
+            var cacheFile = legendaryLoad ? GetCachedLETargetsFile() : GetCachedTargetsFile(game);
             if (File.Exists(cacheFile))
             {
                 OrderedSet<GameTarget> targets = new OrderedSet<GameTarget>();
@@ -1130,8 +1163,43 @@ namespace MassEffectModManagerCore
                 case MEGame.ME3:
                     return Path.Combine(target.TargetPath, "Binaries", "MassEffect3Config.exe");
             }
-
+            // LE games do not have configs.
             return null;
+        }
+
+        internal static void AddCachedLETarget(string leRoot)
+        {
+            var cachefile = GetCachedLETargetsFile();
+            bool creatingFile = !File.Exists(cachefile);
+            var savedTargets = creatingFile ? new List<string>() : Utilities.WriteSafeReadAllLines(cachefile).ToList();
+            try
+            {
+                if (!savedTargets.Contains(leRoot, StringComparer.InvariantCultureIgnoreCase))
+                {
+                    savedTargets.Add(leRoot);
+                    Log.Information($"Saving new entry into targets cache for Legendary Edition: " + leRoot);
+                    try
+                    {
+                        File.WriteAllLines(cachefile, savedTargets);
+                    }
+                    catch (Exception)
+                    {
+                        Thread.Sleep(300);
+                        try
+                        {
+                            File.WriteAllLines(cachefile, savedTargets);
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Error("Could not save cached targets on retry: " + ex.Message);
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Error("Unable to read/add cached LE target: " + e.Message);
+            }
         }
 
         internal static void AddCachedTarget(GameTarget target)
@@ -1170,6 +1238,20 @@ namespace MassEffectModManagerCore
             }
         }
 
+        internal static void RemoveLECachedTarget(string targetRoot)
+        {
+            var cachefile = GetCachedLETargetsFile();
+            if (!File.Exists(cachefile)) return; //can't do anything.
+            var savedTargets = Utilities.WriteSafeReadAllLines(cachefile).ToList();
+            var path = Path.GetFullPath(targetRoot); //standardize
+
+            int numRemoved = savedTargets.RemoveAll(x => string.Equals(path, x, StringComparison.InvariantCultureIgnoreCase));
+            if (numRemoved > 0)
+            {
+                Log.Information("Removed " + numRemoved + " LE targets matching name " + path);
+                File.WriteAllLines(cachefile, savedTargets);
+            }
+        }
 
         internal static void RemoveCachedTarget(GameTarget target)
         {
@@ -1189,27 +1271,21 @@ namespace MassEffectModManagerCore
         private const string ME1ASILoaderHash = "30660f25ab7f7435b9f3e1a08422411a";
         private const string ME2ASILoaderHash = "a5318e756893f6232284202c1196da13";
         private const string ME3ASILoaderHash = "1acccbdae34e29ca7a50951999ed80d5";
+        private const string LE1ASILoaderHash = "00000000000000000000000000000000"; // UPDATE WHEN WE HAVE ASI LOADERS IMPLEMENTED..
+        private const string LE2ASILoaderHash = "00000000000000000000000000000000"; // UPDATE WHEN WE HAVE ASI LOADERS IMPLEMENTED..
+        private const string LE3ASILoaderHash = "00000000000000000000000000000000"; // UPDATE WHEN WE HAVE ASI LOADERS IMPLEMENTED..
 
         internal static bool CheckIfBinkw32ASIIsInstalled(GameTarget target)
         {
             if (target == null) return false;
-            string binkPath = null;
+            string binkPath = GetBinkFile(target);
             string expectedHash = null;
-            if (target.Game == MEGame.ME1)
-            {
-                binkPath = Path.Combine(target.TargetPath, "Binaries", "binkw32.dll");
-                expectedHash = ME1ASILoaderHash;
-            }
-            else if (target.Game == MEGame.ME2)
-            {
-                binkPath = Path.Combine(target.TargetPath, "Binaries", "binkw32.dll");
-                expectedHash = ME2ASILoaderHash;
-            }
-            else if (target.Game == MEGame.ME3)
-            {
-                binkPath = Path.Combine(target.TargetPath, "Binaries", "win32", "binkw32.dll");
-                expectedHash = ME3ASILoaderHash;
-            }
+            if (target.Game == MEGame.ME1) expectedHash = ME1ASILoaderHash;
+            else if (target.Game == MEGame.ME2) expectedHash = ME2ASILoaderHash;
+            else if (target.Game == MEGame.ME3) expectedHash = ME3ASILoaderHash;
+            else if (target.Game == MEGame.LE1) expectedHash = LE1ASILoaderHash;
+            else if (target.Game == MEGame.LE2) expectedHash = LE2ASILoaderHash;
+            else if (target.Game == MEGame.LE3) expectedHash = LE3ASILoaderHash;
 
             if (File.Exists(binkPath))
             {
@@ -1385,6 +1461,12 @@ namespace MassEffectModManagerCore
                 throw new Exception("Cannot use softshadows parameter of SetLODs() with a game that is not ME1");
             }
 
+            if (target.Game.IsLEGame())
+            {
+                Log.Information(@"Settings LODs for Legendary Edition is not currently supported");
+                return true; // fake saying we did it
+            }
+
             Log.Information($@"Settings LODS for {target.Game}, highres: {highres}, 2K: {limit2k}, SS: {softshadows}");
 
             try
@@ -1423,12 +1505,12 @@ namespace MassEffectModManagerCore
                 }
 
                 DuplicatingIni ini = DuplicatingIni.LoadIni(settingspath);
-                if (game > MEGame.ME1)
+                if (game > MEGame.ME1 && game.IsOTGame())
                 {
                     #region setting systemsetting for me2/3
 
                     string operation = null;
-                    var iniList = game == MEGame.ME2 ? ME2HighResLODs : ME3HighResLODs;
+                    var iniList = game == MEGame.ME2 ? (limit2k ? ME2_2KLODs : ME2HighResLODs) : (limit2k ? ME3_2KLODs : ME3HighResLODs);
                     var section = ini.Sections.FirstOrDefault(x => x.Header == "SystemSettings");
                     if (section == null && highres)
                     {
@@ -1805,34 +1887,66 @@ namespace MassEffectModManagerCore
             new IniEntry("DetailMode=2")
         };
 
+
+        private static List<IniEntry> ME2_2KLODs = new List<IniEntry>()
+        {
+            //under GamerSettings.ini [SystemSettings]
+            new IniEntry("TEXTUREGROUP_World=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_WorldNormalMap=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_AmbientLightMap=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_LightAndShadowMap=(MinLODSize=1024,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_RenderTarget=(MinLODSize=2048,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_Environment_64=(MinLODSize=128,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_Environment_128=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_Environment_256=(MinLODSize=512,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_Environment_512=(MinLODSize=1024,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_Environment_1024=(MinLODSize=2048,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_VFX_64=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_VFX_128=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_VFX_256=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_VFX_512=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_VFX_1024=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_APL_128=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_APL_256=(MinLODSize=512,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_APL_512=(MinLODSize=1024,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_APL_1024=(MinLODSize=2048,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_UI=(MinLODSize=64,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_Promotional=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_Character_1024=(MinLODSize=2048,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_Character_Diff=(MinLODSize=512,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_Character_Norm=(MinLODSize=512,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_Character_Spec=(MinLODSize=512,MaxLODSize=2048,LODBias=0)")
+        };
+
+
         private static List<IniEntry> ME2HighResLODs = new List<IniEntry>()
         {
             //under GamerSettings.ini [SystemSettings]
             new IniEntry("TEXTUREGROUP_World=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_WorldNormalMap=(MinLODSize=256,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_AmbientLightMap=(MinLODSize=32,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_LightAndShadowMap=(MinLODSize=1024,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_RenderTarget=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Environment_64=(MinLODSize=128,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Environment_128=(MinLODSize=256,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Environment_256=(MinLODSize=512,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Environment_512=(MinLODSize=1024,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Environment_1024=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_VFX_64=(MinLODSize=32,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_VFX_128=(MinLODSize=32,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_VFX_256=(MinLODSize=32,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_VFX_512=(MinLODSize=32,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_VFX_1024=(MinLODSize=32,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_APL_128=(MinLODSize=256,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_APL_256=(MinLODSize=512,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_APL_512=(MinLODSize=1024,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_APL_1024=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_UI=(MinLODSize=64,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Promotional=(MinLODSize=256,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Character_1024=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Character_Diff=(MinLODSize=512,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Character_Norm=(MinLODSize=512,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Character_Spec=(MinLODSize=512,MaxLODSize=4096,LODBias=0)")
+            new IniEntry("TEXTUREGROUP_WorldNormalMap=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_AmbientLightMap=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_LightAndShadowMap=(MinLODSize=1024,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_RenderTarget=(MinLODSize=2048,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_Environment_64=(MinLODSize=128,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_Environment_128=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_Environment_256=(MinLODSize=512,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_Environment_512=(MinLODSize=1024,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_Environment_1024=(MinLODSize=2048,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_VFX_64=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_VFX_128=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_VFX_256=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_VFX_512=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_VFX_1024=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_APL_128=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_APL_256=(MinLODSize=512,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_APL_512=(MinLODSize=1024,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_APL_1024=(MinLODSize=2048,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_UI=(MinLODSize=64,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_Promotional=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_Character_1024=(MinLODSize=2048,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_Character_Diff=(MinLODSize=512,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_Character_Norm=(MinLODSize=512,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_Character_Spec=(MinLODSize=512,MaxLODSize=2048,LODBias=0)")
         };
 
         private static List<IniEntry> ME3HQGraphicsSettings = new List<IniEntry>()
@@ -1851,6 +1965,37 @@ namespace MassEffectModManagerCore
             new IniEntry("ParticleLODBias=-1"),
             new IniEntry("SkeletalMeshLODBias=-1"),
             new IniEntry("DetailMode=2")
+        };
+
+        private static List<IniEntry> ME3_2KLODs = new List<IniEntry>()
+        {
+            //under GamerSettings.ini [SystemSettings]
+            new IniEntry("TEXTUREGROUP_World=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_WorldSpecular=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_WorldNormalMap=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_AmbientLightMap=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_ShadowMap=(MinLODSize=1024,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_RenderTarget=(MinLODSize=2048,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_Environment_64=(MinLODSize=128,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_Environment_128=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_Environment_256=(MinLODSize=512,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_Environment_512=(MinLODSize=1024,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_Environment_1024=(MinLODSize=2048,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_VFX_64=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_VFX_128=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_VFX_256=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_VFX_512=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_VFX_1024=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_APL_128=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_APL_256=(MinLODSize=512,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_APL_512=(MinLODSize=1024,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_APL_1024=(MinLODSize=2048,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_UI=(MinLODSize=64,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_Promotional=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_Character_1024=(MinLODSize=2048,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_Character_Diff=(MinLODSize=512,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_Character_Norm=(MinLODSize=512,MaxLODSize=2048,LODBias=0)"),
+            new IniEntry("TEXTUREGROUP_Character_Spec=(MinLODSize=512,MaxLODSize=2048,LODBias=0)")
         };
 
         private static List<IniEntry> ME3HighResLODs = new List<IniEntry>()
@@ -1904,9 +2049,14 @@ namespace MassEffectModManagerCore
                     case MEGame.ME1:
                         executableNames += "MassEffect.exe";
                         break;
+                    case MEGame.LE1:
+                        executableNames += "MassEffect1.exe";
+                        break;
+                    case MEGame.LE2:
                     case MEGame.ME2:
                         executableNames += "MassEffect2.exe";
                         break;
+                    case MEGame.LE3:
                     case MEGame.ME3:
                         executableNames += "MassEffect3.exe";
                         break;
@@ -1934,8 +2084,8 @@ namespace MassEffectModManagerCore
         {
             string result = Path.GetDirectoryName(Path.GetDirectoryName(exe)); //binaries, <GAME>
 
-            if (game == MEGame.ME3)
-                result = Path.GetDirectoryName(result); //up one more because of win32 directory.
+            if (game == MEGame.ME3 || game.IsLEGame())
+                result = Path.GetDirectoryName(result); //up one more because of win32/win64 directory.
             return result;
         }
 

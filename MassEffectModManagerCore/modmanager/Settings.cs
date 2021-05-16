@@ -254,6 +254,13 @@ namespace MassEffectModManagerCore.modmanager
             set => SetProperty(ref _logModMakerCompiler, value);
         }
 
+        private static bool _skipLELauncher = true;
+        public static bool SkipLELauncher
+        {
+            get => _skipLELauncher;
+            set => SetProperty(ref _skipLELauncher, value);
+        }
+
         public static readonly string SettingsPath = Path.Combine(Utilities.GetAppDataFolder(), "settings.ini");
 
         public static void Load()
@@ -301,6 +308,10 @@ namespace MassEffectModManagerCore.modmanager
             DarkTheme = LoadSettingBool(settingsIni, "UI", "DarkTheme", false);
 
             ConfigureNXMHandlerOnBoot = LoadSettingBool(settingsIni, "ModManager", "ConfigureNXMHandlerOnBoot", true);
+
+            // LEGENDARY
+            SkipLELauncher = LoadSettingBool(settingsIni, "ModManager", "SkipLELauncher", true);
+
             Loaded = true;
         }
 
@@ -466,7 +477,8 @@ namespace MassEffectModManagerCore.modmanager
                 SaveSettingBool(settingsIni, "ModManager", "AutoUpdateLODs2K", AutoUpdateLODs2K);
                 SaveSettingBool(settingsIni, "ModManager", "PreferCompressingPackages", PreferCompressingPackages);
                 SaveSettingInt(settingsIni, "ModManager", "WebclientTimeout", WebClientTimeout);
-                SaveSettingBool(settingsIni, "ModManager","ConfigureNXMHandlerOnBoot", ConfigureNXMHandlerOnBoot);
+                SaveSettingBool(settingsIni, "ModManager", "ConfigureNXMHandlerOnBoot", ConfigureNXMHandlerOnBoot);
+                SaveSettingBool(settingsIni, "ModManager", "SkipLELauncher", SkipLELauncher);
 
                 SaveSettingBool(settingsIni, "ModMaker", "AutoAddControllerMixins", ModMakerControllerModOption);
                 SaveSettingBool(settingsIni, "ModMaker", "AutoInjectCustomKeybinds", ModMakerAutoInjectCustomKeybindsOption);

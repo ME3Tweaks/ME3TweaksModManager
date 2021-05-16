@@ -118,10 +118,11 @@ namespace MassEffectModManagerCore.modmanager.objects
                         }
                         else
                         {
-                            if (GameSource.Contains(@"Origin") && Game == MEGame.ME3)
+                            if (GameSource.Contains(@"Origin") && (Game == MEGame.ME3 || Game.IsLEGame()))
                             {
                                 // Check for steam
-                                if (Directory.Exists(Path.Combine(TargetPath, @"__overlay")))
+                                var testPath = Game.IsLEGame() ? Directory.GetParent(Directory.GetParent(TargetPath).FullName).FullName : TargetPath;
+                                if (Directory.Exists(Path.Combine(testPath, @"__overlay")))
                                 {
                                     GameSource += @" (Steam version)";
                                 }
@@ -154,6 +155,9 @@ namespace MassEffectModManagerCore.modmanager.objects
 
         public void UpdateLODs(bool twoK)
         {
+            if (Game.IsLEGame())
+                return; // Do not update LE LODs for now.
+
             if (!TextureModded)
             {
                 Utilities.SetLODs(this, false, false, false);
@@ -175,7 +179,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         }
                     }
                 }
-                else
+                else if (Game.IsOTGame())
                 {
                     //me2/3
                     Utilities.SetLODs(this, true, twoK, false);
@@ -474,6 +478,40 @@ namespace MassEffectModManagerCore.modmanager.objects
                         Path.Combine(TargetPath, @"BioGame", @"CookedPCConsole", @"citwrd_rp1_bailey_m_D_Int.afc")
                     };
                     break;
+                case MEGame.LE1:
+                    validationFiles = new[]
+                    {
+                        Path.Combine(TargetPath, @"Binaries", @"Win64", @"MassEffect1.exe"),
+                        Path.Combine(TargetPath, @"BioGame", @"CookedPCConsole", @"Textures5.tfc"),
+                        Path.Combine(TargetPath, @"BioGame", @"CookedPCConsole", @"Startup_INT.pcc"),
+                        Path.Combine(TargetPath, @"BioGame", @"CookedPCConsole", @"Coalesced_INT.bin"),
+                        Path.Combine(TargetPath, @"BioGame", @"CookedPCConsole", @"Textures.tfc"),
+                        Path.Combine(TargetPath, @"BioGame", @"CookedPCConsole", @"PlotManagerAutoDLC_UNC.pcc")
+                    };
+                    break;
+                case MEGame.LE2:
+                    validationFiles = new[]
+                    {
+                        Path.Combine(TargetPath, @"Binaries", @"Win64", @"MassEffect2.exe"),
+                        Path.Combine(TargetPath, @"BioGame", @"PCConsoleTOC.bin"),
+                        Path.Combine(TargetPath, @"BioGame", @"CookedPCConsole", @"Startup_INT.pcc"),
+                        Path.Combine(TargetPath, @"BioGame", @"CookedPCConsole", @"Coalesced_INT.bin"),
+                        Path.Combine(TargetPath, @"BioGame", @"CookedPCConsole", @"BioD_QuaTlL_505LifeBoat_LOC_INT.pcc"),
+                        Path.Combine(TargetPath, @"BioGame", @"CookedPCConsole", @"cithub_ad_low_a_S_DEU.afc"),
+                        Path.Combine(TargetPath, @"BioGame", @"DLC", @"DLC_METR_Patch01", @"CookedPCConsole", @"BioA_Nor_103aGalaxyMap.pcc")
+                    };
+                    break;
+                case MEGame.LE3:
+                    validationFiles = new[]
+                    {
+                        Path.Combine(TargetPath, @"Binaries", @"Win64", @"MassEffect3.exe"),
+                        Path.Combine(TargetPath, @"BioGame", @"CookedPCConsole", @"Textures1.tfc"),
+                        Path.Combine(TargetPath, @"BioGame", @"CookedPCConsole", @"Startup.pcc"),
+                        Path.Combine(TargetPath, @"BioGame", @"DLC", @"DLC_CON_PRO3", @"CookedPCConsole", @"DLC_CON_PRO3_INT.tlk"),
+                        Path.Combine(TargetPath, @"BioGame", @"DLC", @"DLC_CON_END", @"CookedPCConsole", @"BioD_End001_910RaceToConduit.pcc"),
+                        Path.Combine(TargetPath, @"BioGame", @"CookedPCConsole", @"citwrd_rp1_bailey_m_D_Int.afc")
+                    };
+                    break;
             }
 
             if (validationFiles == null) return null; //Invalid game.
@@ -516,6 +554,8 @@ namespace MassEffectModManagerCore.modmanager.objects
                         return M3L.GetString(M3L.string_interp_unsupportedME3Version, exeInfo.FileVersion);
                     }
                     break;
+
+                // No check for Legendary Edition games right now
             }
 
             if (!ignoreCmmVanilla)

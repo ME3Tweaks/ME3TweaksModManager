@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using LegendaryExplorerCore.Helpers;
 using SevenZip;
-using Utilities = MassEffectModManagerCore.Utilities;
+using Utilities = MassEffectModManagerCore.modmanager.Utilities;
 
 namespace ExecutableModParser
 {

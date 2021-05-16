@@ -70,6 +70,25 @@
                 HorizontalAlignment="Left"
                 Text="{Binding FilterTextME3, UpdateSourceTrigger=PropertyChanged}"
                 Visibility="{Binding SelectedGameIndex, Converter={StaticResource EqualIntVisibilityConverter}, ConverterParameter='2'}" />
+            <xctk:WatermarkTextBox
+                Watermark="{DynamicResource string_typeToFilter}"
+                Width="200"
+                HorizontalAlignment="Left"
+                Text="{Binding FilterTextLE1, UpdateSourceTrigger=PropertyChanged}"
+                Visibility="{Binding SelectedGameIndex, Converter={StaticResource EqualIntVisibilityConverter}, ConverterParameter='3'}" />
+            <xctk:WatermarkTextBox
+                Watermark="{DynamicResource string_typeToFilter}"
+                Width="200"
+                HorizontalAlignment="Left"
+                Text="{Binding FilterTextLE2, UpdateSourceTrigger=PropertyChanged}"
+                Visibility="{Binding SelectedGameIndex, Converter={StaticResource EqualIntVisibilityConverter}, ConverterParameter='4'}" />
+            <xctk:WatermarkTextBox
+                Watermark="{DynamicResource string_typeToFilter}"
+                Width="200"
+                HorizontalAlignment="Left"
+                Text="{Binding FilterTextLE3, UpdateSourceTrigger=PropertyChanged}"
+                Visibility="{Binding SelectedGameIndex, Converter={StaticResource EqualIntVisibilityConverter}, ConverterParameter='5'}" />
+
         </DockPanel>
         <Grid
             VerticalAlignment="Stretch">
@@ -147,6 +166,84 @@
                             ItemsSource="{Binding ME3FilesView}"
                             IsTextSearchEnabled="True"
                             SelectedItem="{Binding SelectedME3File}"
+                            TextSearch.TextPath="Filename"
+                            HorizontalAlignment="Stretch"
+                            ItemTemplate="{StaticResource FileTemplate}"
+                            ItemContainerStyle="{StaticResource FileContainerStyle}"
+                            VirtualizingStackPanel.VirtualizationMode="Recycling" />
+                    </DockPanel>
+                </TabItem>
+                <!-- ME1 -->
+                <TabItem>
+                    <TabItem.Header>
+                        <StackPanel
+                            Orientation="Horizontal">
+                            <Image
+                                Source="{StaticResource le1gameicon}"
+                                Width="16"
+                                Height="16"
+                                Margin="0,0,5,0" />
+                            <TextBlock
+                                Text="Mass Effect LE" />
+                        </StackPanel>
+                    </TabItem.Header>
+                    <DockPanel>
+                        <ListBox
+                            ItemsSource="{Binding LE1FilesView}"
+                            IsTextSearchEnabled="True"
+                            SelectedItem="{Binding SelectedLE1File}"
+                            TextSearch.TextPath="Filename"
+                            HorizontalAlignment="Stretch"
+                            ItemTemplate="{StaticResource FileTemplate}"
+                            ItemContainerStyle="{StaticResource FileContainerStyle}"
+                            VirtualizingStackPanel.VirtualizationMode="Recycling" />
+                    </DockPanel>
+                </TabItem>
+                <!-- ME2 -->
+                <TabItem>
+                    <TabItem.Header>
+                        <StackPanel
+                            Orientation="Horizontal">
+                            <Image
+                                Source="{StaticResource le2gameicon}"
+                                Width="16"
+                                Height="16"
+                                Margin="0,0,5,0" />
+                            <TextBlock
+                                Text="Mass Effect 2 LE" />
+                        </StackPanel>
+                    </TabItem.Header>
+                    <DockPanel>
+                        <ListBox
+                            ItemsSource="{Binding LE2FilesView}"
+                            IsTextSearchEnabled="True"
+                            SelectedItem="{Binding SelectedLE2File}"
+                            TextSearch.TextPath="Filename"
+                            HorizontalAlignment="Stretch"
+                            ItemTemplate="{StaticResource FileTemplate}"
+                            ItemContainerStyle="{StaticResource FileContainerStyle}"
+                            VirtualizingStackPanel.VirtualizationMode="Recycling" />
+                    </DockPanel>
+                </TabItem>
+                <!-- LE3 -->
+                <TabItem>
+                    <TabItem.Header>
+                        <StackPanel
+                            Orientation="Horizontal">
+                            <Image
+                                Source="{StaticResource le3gameicon}"
+                                Width="16"
+                                Height="16"
+                                Margin="0,0,5,0" />
+                            <TextBlock
+                                Text="Mass Effect 3 LE" />
+                        </StackPanel>
+                    </TabItem.Header>
+                    <DockPanel>
+                        <ListBox
+                            ItemsSource="{Binding LE3FilesView}"
+                            IsTextSearchEnabled="True"
+                            SelectedItem="{Binding SelectedLE3File}"
                             TextSearch.TextPath="Filename"
                             HorizontalAlignment="Stretch"
                             ItemTemplate="{StaticResource FileTemplate}"

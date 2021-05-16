@@ -15,6 +15,9 @@ namespace MassEffectModManagerCore.modmanager.converters
         private static BitmapImage me1Icon;
         private static BitmapImage me2Icon;
         private static BitmapImage me3Icon;
+        private static BitmapImage le1Icon;
+        private static BitmapImage le2Icon;
+        private static BitmapImage le3Icon;
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             init();
@@ -27,6 +30,12 @@ namespace MassEffectModManagerCore.modmanager.converters
                     return me2Icon;
                 case MEGame.ME3:
                     return me3Icon;
+                case MEGame.LE1:
+                    return le1Icon;
+                case MEGame.LE2:
+                    return le2Icon;
+                case MEGame.LE3:
+                    return le3Icon;
                 default:
                     return null;
             }
@@ -39,6 +48,9 @@ namespace MassEffectModManagerCore.modmanager.converters
             me1Icon = (BitmapImage)Application.Current.Resources[@"me1gameicon"];
             me2Icon = (BitmapImage)Application.Current.Resources[@"me2gameicon"];
             me3Icon = (BitmapImage)Application.Current.Resources[@"me3gameicon"];
+            le1Icon = (BitmapImage)Application.Current.Resources[@"le1gameicon"];
+            le2Icon = (BitmapImage)Application.Current.Resources[@"le2gameicon"];
+            le3Icon = (BitmapImage)Application.Current.Resources[@"le3gameicon"];
             initialized = true;
         }
 

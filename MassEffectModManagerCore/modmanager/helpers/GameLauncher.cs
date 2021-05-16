@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using LegendaryExplorerCore;
+using LegendaryExplorerCore.GameFilesystem;
 using MassEffectModManagerCore.modmanager.objects;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Packages;
@@ -34,9 +36,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 // IS GAME STEAM BASED?
                 if (target.GameSource.Contains(@"Steam"))
                 {
-                    var steamInstallPath =
-                        Utilities.GetRegistrySettingString(@"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Valve\Steam",
-                            @"InstallPath");
+                    var steamInstallPath = Utilities.GetRegistrySettingString(@"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Valve\Steam", @"InstallPath");
                     if (steamInstallPath != null && Directory.Exists(steamInstallPath))
                     {
                         environmentVars[@"SteamPath"] = steamInstallPath;
@@ -57,6 +57,11 @@ namespace MassEffectModManagerCore.modmanager.helpers
                             break;
                         case MEGame.ME3:
                             gameId = 1238020;
+                            break;
+                        case MEGame.LE1:
+                        case MEGame.LE2:
+                        case MEGame.LE3:
+                            gameId = 1328670;
                             break;
                     }
 
@@ -101,6 +106,13 @@ namespace MassEffectModManagerCore.modmanager.helpers
                         }
                     }
                 }
+            }
+
+            if (Settings.SkipLELauncher && target.Game.IsLEGame())
+            {
+                var sourceFile = Path.Combine(Utilities.GetAppDataFolder(), $@"C:\ProgramData\ME3TweaksModManager\LELauncherTools\GameBoot\{target.Game}\LauncherUI.swf");
+                var destFile = Path.Combine(LEDirectory.GetLauncherPath(), @"Content", @"LauncherUI.swf");
+                File.Copy(sourceFile, destFile, true);
             }
 
             Utilities.RunProcess(exe, (string)null, false, true, false, false, environmentVars);

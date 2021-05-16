@@ -586,9 +586,10 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         if (Game == MEGame.ME2 || Game == MEGame.ME3)
                         {
                             nexusId = nexusId.Substring(1); //number
-                        } else if (Game.IsLEGame())
+                        }
+                        else if (Game.IsLEGame())
                         {
-                            nexusId =
+                            nexusId = nexusId.Substring(26); // masseffectlegendaryedition
                         }
 
                         nexusId = nexusId.Substring(6)
@@ -698,14 +699,14 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     break;
             }
 
-            if (ModDescTargetVersion < 6 && Game != MEGame.ME3)
+            if (ModDescTargetVersion < 6 && Game.IsOTGame() && Game != MEGame.ME3)
             {
                 Log.Error($@"{ModName} is designed for {game}. ModDesc versions (cmmver descriptor under ModManager section) under 6.0 do not support ME1 or ME2.");
                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_cmm6RequiredForME12, game, ModDescTargetVersion.ToString(CultureInfo.InvariantCulture));
                 return;
             }
 
-            if (ModDescTargetVersion < 7 && Game.IsLEGame() || TargetsLELauncher)
+            if (ModDescTargetVersion < 7 && (Game.IsLEGame() || TargetsLELauncher))
             {
                 Log.Error($@"{ModName} is designed for {game}. ModDesc versions (cmmver descriptor under ModManager section) under 7.0 cannot target Legendary Edition games.");
                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_cmm6RequiredForME12, game, ModDescTargetVersion.ToString(CultureInfo.InvariantCulture));
@@ -725,6 +726,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 return;
             }
 
+            // Older versions of mod manager rounded the version numbers, this corrects them
             if (ModDescTargetVersion >= 2.0 && ModDescTargetVersion < 3) //Mod Manager 2 (2013)
             {
                 ModDescTargetVersion = 2.0;
@@ -743,7 +745,9 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
 
             //This was in Java version - I believe this was to ensure only tenth version of precision would be used. E.g no moddesc 4.52
             ModDescTargetVersion = Math.Round(ModDescTargetVersion * 10) / 10;
-            CLog.Information(@"Parsing mod using moddesc target: " + ModDescTargetVersion, Settings.LogModStartup);
+            CLog.Information(@"Parsing mod using moddesc version: " + ModDescTargetVersion, Settings.LogModStartup);
+            
+            // End of version rounding
 
             #region Banner Image
             if (ModDescTargetVersion >= 6.2)

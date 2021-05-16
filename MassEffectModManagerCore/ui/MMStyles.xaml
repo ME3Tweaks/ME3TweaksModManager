@@ -87,4 +87,7 @@
     <BitmapImage x:Key="me1gameicon" UriSource="pack://application:,,,/images/gameicons/ME1_48.ico"/>
     <BitmapImage x:Key="me2gameicon" UriSource="pack://application:,,,/images/gameicons/ME2_48.ico"/>
     <BitmapImage x:Key="me3gameicon" UriSource="pack://application:,,,/images/gameicons/ME3_48.ico"/>
+    <BitmapImage x:Key="le1gameicon" UriSource="pack://application:,,,/images/gameicons/LE1_48.ico"/>
+    <BitmapImage x:Key="le2gameicon" UriSource="pack://application:,,,/images/gameicons/LE2_48.ico"/>
+    <BitmapImage x:Key="le3gameicon" UriSource="pack://application:,,,/images/gameicons/LE3_48.ico"/>
 </ResourceDictionary>
