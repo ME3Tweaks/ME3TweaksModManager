@@ -419,7 +419,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (closeStreamOnComplete)
                 {
                     archiveFile?.Dispose();
-                } else
+                }
+                else
                 {
                     archiveFile?.DisposeObjectOnly();
 
@@ -513,7 +514,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 Log.Information(@"Querying third party importing service for information about this file: " + filepath);
                 currentOperationTextCallback?.Invoke(M3L.GetString(M3L.string_queryingThirdPartyImportingService));
-                var md5 = forcedMD5 ?? Utilities.CalculateMD5(filepath);
+                var md5 = forcedMD5 ?? (archiveStream != null ? Utilities.CalculateMD5(archiveStream) : Utilities.CalculateMD5(filepath));
                 var potentialImportinInfos = ThirdPartyServices.GetImportingInfosBySize(archiveSize);
                 var importingInfo = potentialImportinInfos.FirstOrDefault(x => x.md5 == md5);
 
@@ -576,7 +577,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         if (closeStreamOnComplete)
                         {
                             archiveFile?.Dispose();
-                        } else
+                        }
+                        else
                         {
                             archiveFile?.DisposeObjectOnly();
                         }
