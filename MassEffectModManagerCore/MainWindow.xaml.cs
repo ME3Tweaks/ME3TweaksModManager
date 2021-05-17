@@ -72,10 +72,14 @@ namespace MassEffectModManagerCore
         public bool ME1ModsVisible { get; set; } = true;
         public bool ME2ModsVisible { get; set; } = true;
         public bool ME3ModsVisible { get; set; } = true;
+        public bool LE1ModsVisible { get; set; } = true;
+        public bool LE2ModsVisible { get; set; } = true;
+        public bool LE3ModsVisible { get; set; } = true;
 
         public bool ME1NexusEndorsed { get; set; }
         public bool ME2NexusEndorsed { get; set; }
         public bool ME3NexusEndorsed { get; set; }
+        public bool LENexusEndorsed { get; set; }
 
         public string VisitWebsiteText { get; set; }
         public string ME1ASILoaderText { get; set; }
@@ -435,6 +439,7 @@ namespace MassEffectModManagerCore
         public ICommand RestoreModFromME3TweaksCommand { get; set; }
         public ICommand GrantWriteAccessCommand { get; set; }
         public ICommand AutoTOCCommand { get; set; }
+        public ICommand AutoTOCLECommand { get; set; }
         public ICommand ConsoleKeyKeybinderCommand { get; set; }
         public ICommand LoginToNexusCommand { get; set; }
         public GenericCommand EndorseSelectedModCommand { get; set; }
@@ -471,7 +476,7 @@ namespace MassEffectModManagerCore
             SelectedModCheckForUpdatesCommand = new GenericCommand(CheckSelectedModForUpdate, SelectedModIsME3TweaksUpdatable);
             RestoreModFromME3TweaksCommand = new GenericCommand(RestoreSelectedMod, SelectedModIsME3TweaksUpdatable);
             GrantWriteAccessCommand = new GenericCommand(() => CheckTargetPermissions(true, true), HasAtLeastOneTarget);
-            AutoTOCCommand = new GenericCommand(RunAutoTOCOnTarget, HasME3Target);
+            AutoTOCCommand = new RelayCommand(RunAutoTOCOnGame, HasGameTarget);
             ConsoleKeyKeybinderCommand = new GenericCommand(OpenConsoleKeyKeybinder, CanOpenConsoleKeyKeybinder);
             LoginToNexusCommand = new GenericCommand(ShowNexusPanel, CanShowNexusPanel);
             EndorseSelectedModCommand = new GenericCommand(EndorseWrapper, CanEndorseMod);
@@ -503,6 +508,15 @@ namespace MassEffectModManagerCore
             OpenTutorialCommand = new GenericCommand(OpenTutorial, () => App.TutorialService != null && App.TutorialService.Any());
             OpenASIManagerCommand = new GenericCommand(OpenASIManager, NetworkThreadNotRunning);
             NexusModsFileSearchCommand = new GenericCommand(OpenNexusSearch); // no conditions for this
+        }
+
+        private bool HasGameTarget(object obj)
+        {
+            if (obj is MEGame game)
+            {
+                return InstallationTargets.Any(x => x.Game == game);
+            }
+            return false;
         }
 
         private void OpenNexusSearch()
@@ -923,6 +937,8 @@ namespace MassEffectModManagerCore
         {
             return InstallationTargets.Any(x => x.Game == MEGame.ME3);
         }
+
+        private bool HasLETarget() => InstallationTargets.Any(x => x.Game.IsLEGame());
 
         private void CheckSelectedModForUpdate()
         {
@@ -1618,7 +1634,7 @@ namespace MassEffectModManagerCore
                     }
 
                     //Run AutoTOC if ME3 and not batch mode
-                    if (!modInstaller.InstallationCancelled && SelectedGameTarget.Game == MEGame.ME3 && !batchMode)
+                    if (!modInstaller.InstallationCancelled && (SelectedGameTarget.Game == MEGame.ME3 || SelectedGameTarget.Game.IsLEGame()) && !batchMode)
                     {
                         var autoTocUI = new AutoTOC(SelectedGameTarget);
                         autoTocUI.Close += (a1, b1) =>
@@ -1971,10 +1987,14 @@ namespace MassEffectModManagerCore
                 ModsLoaded = false;
                 var uiTask = backgroundTaskEngine.SubmitBackgroundJob(@"ModLoader", M3L.GetString(M3L.string_loadingMods), M3L.GetString(M3L.string_loadedMods));
                 Log.Information(@"Loading mods from mod library: " + Utilities.GetModsDirectory());
+
+                var le3modDescsToLoad = Directory.GetDirectories(Utilities.GetLE3ModsDirectory()).Select(x => (game: MEGame.LE3, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
+                var le2modDescsToLoad = Directory.GetDirectories(Utilities.GetLE2ModsDirectory()).Select(x => (game: MEGame.LE2, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
+                var le1modDescsToLoad = Directory.GetDirectories(Utilities.GetLE1ModsDirectory()).Select(x => (game: MEGame.LE1, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
                 var me3modDescsToLoad = Directory.GetDirectories(Utilities.GetME3ModsDirectory()).Select(x => (game: MEGame.ME3, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
                 var me2modDescsToLoad = Directory.GetDirectories(Utilities.GetME2ModsDirectory()).Select(x => (game: MEGame.ME2, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
                 var me1modDescsToLoad = Directory.GetDirectories(Utilities.GetME1ModsDirectory()).Select(x => (game: MEGame.ME1, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
-                var modDescsToLoad = me3modDescsToLoad.Concat(me2modDescsToLoad).Concat(me1modDescsToLoad);
+                var modDescsToLoad = le3modDescsToLoad.Concat(le2modDescsToLoad).Concat(le1modDescsToLoad).Concat(me3modDescsToLoad).Concat(me2modDescsToLoad).Concat(me1modDescsToLoad);
 
                 foreach (var moddesc in modDescsToLoad)
                 {
@@ -1984,7 +2004,8 @@ namespace MassEffectModManagerCore
                         //Application.Current.Dispatcher.Invoke(delegate
                         //{
                         AllLoadedMods.Add(mod);
-                        if (ME1ModsVisible && mod.Game == MEGame.ME1 || ME2ModsVisible && mod.Game == MEGame.ME2 || ME3ModsVisible && mod.Game == MEGame.ME3)
+                        if (ME1ModsVisible && mod.Game == MEGame.ME1 || ME2ModsVisible && mod.Game == MEGame.ME2 || ME3ModsVisible && mod.Game == MEGame.ME3
+                            || LE1ModsVisible && mod.Game == MEGame.LE1 || LE2ModsVisible && mod.Game == MEGame.LE2 || LE3ModsVisible && mod.Game == MEGame.LE3)
                         {
                             VisibleFilteredMods.Add(mod);
                         }
@@ -3375,23 +3396,28 @@ namespace MassEffectModManagerCore
             e.Handled = true;
         }
 
-        private void RunAutoTOCOnTarget()
+
+
+        private void RunAutoTOCOnGame(object obj)
         {
-            var target = GetCurrentTarget(MEGame.ME3);
-            if (target != null)
+            if (obj is MEGame game)
             {
-                var task = backgroundTaskEngine.SubmitBackgroundJob(@"AutoTOC", M3L.GetString(M3L.string_runningAutoTOC), M3L.GetString(M3L.string_ranAutoTOC));
-                var autoTocUI = new AutoTOC(target);
-                autoTocUI.Close += (a, b) =>
+                var target = GetCurrentTarget(game);
+                if (target != null)
                 {
-                    backgroundTaskEngine.SubmitJobCompletion(task);
-                    ReleaseBusyControl();
-                };
-                ShowBusyControl(autoTocUI);
-            }
-            else
-            {
-                Log.Error(@"AutoTOC game target was null! This shouldn't be possible");
+                    var task = backgroundTaskEngine.SubmitBackgroundJob(@"AutoTOC", M3L.GetString(M3L.string_runningAutoTOC), M3L.GetString(M3L.string_ranAutoTOC));
+                    var autoTocUI = new AutoTOC(target);
+                    autoTocUI.Close += (a, b) =>
+                    {
+                        backgroundTaskEngine.SubmitJobCompletion(task);
+                        ReleaseBusyControl();
+                    };
+                    ShowBusyControl(autoTocUI);
+                }
+                else
+                {
+                    Log.Error(@"AutoTOC game target was null! This shouldn't be possible");
+                }
             }
         }
 
@@ -3573,8 +3599,8 @@ namespace MassEffectModManagerCore
                     item.Value.IsChecked = item.Key == lang;
                 }
 
-                //Set language.
-                Task.Run(async () => { await OnlineContent.InternalSetLanguage(lang, forcedDictionary, startup); }).Wait();
+                    //Set language.
+                    Task.Run(async () => { await OnlineContent.InternalSetLanguage(lang, forcedDictionary, startup); }).Wait();
 
                 App.CurrentLanguage = Settings.Language = lang;
                 SetTipsForLanguage();
@@ -3591,8 +3617,8 @@ namespace MassEffectModManagerCore
 
                 if (SelectedMod != null)
                 {
-                    // This will force strings to update
-                    var sm = SelectedMod;
+                        // This will force strings to update
+                        var sm = SelectedMod;
                     SelectedMod = null;
                     SelectedMod = sm;
                 }
@@ -3601,8 +3627,8 @@ namespace MassEffectModManagerCore
                 {
                     if (forcedDictionary == null)
                     {
-                        //Settings.Save(); //save this language option
-                    }
+                            //Settings.Save(); //save this language option
+                        }
                     await AuthToNexusMods(languageUpdateOnly: true); //this call will immediately return
                     FailedMods.RaiseBindableCountChanged();
                     CurrentOperationText = M3L.GetString(M3L.string_setLanguageToX);

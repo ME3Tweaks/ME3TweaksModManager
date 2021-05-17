@@ -754,7 +754,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 //None right now
             }
-            else
+            else if (ModBeingInstalled.Game == MEGame.ME3)
             {
                 if (ModBeingInstalled.GetJob(ModJob.JobHeader.BALANCE_CHANGES) != null)
                 {

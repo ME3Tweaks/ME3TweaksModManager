@@ -669,16 +669,16 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     Game = MEGame.ME1;
                     break;
                 // LEGENDARY
-                case "LE1":
+                case @"LE1":
                     Game = MEGame.LE1;
                     break;
-                case "LE2":
+                case @"LE2":
                     Game = MEGame.LE2;
                     break;
-                case "LE3":
+                case @"LE3":
                     Game = MEGame.LE3;
                     break;
-                case "LELAUNCHER":
+                case @"LELAUNCHER":
                     Game = MEGame.Unknown;
                     TargetsLELauncher = true;
                     break;
@@ -709,7 +709,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             if (ModDescTargetVersion < 7 && (Game.IsLEGame() || TargetsLELauncher))
             {
                 Log.Error($@"{ModName} is designed for {game}. ModDesc versions (cmmver descriptor under ModManager section) under 7.0 cannot target Legendary Edition games.");
-                LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_cmm6RequiredForME12, game, ModDescTargetVersion.ToString(CultureInfo.InvariantCulture));
+                LoadFailedReason = $"{ModName} is designed for {Game.ToGameName()}. ModDesc versions (cmmver descriptor under ModManager section) under 7.0 cannot target Legendary Edition games.";
                 return;
             }
 
