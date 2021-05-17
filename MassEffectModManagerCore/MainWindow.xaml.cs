@@ -2765,6 +2765,7 @@ namespace MassEffectModManagerCore
                 if (b.Error != null)
                 {
                     Log.Error(@"Exception occurred in NetworkFetch thread: " + b.Error.Message);
+                    Log.Error(b.Error.StackTrace);
                 }
                 else if (b.Result is int i)
                 {
