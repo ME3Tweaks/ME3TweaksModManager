@@ -123,7 +123,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     DownloadLinks.Clear();
 
                     var nxmlink = NXMLink.Substring(6);
-                    var queryPos = NXMLink.IndexOf('?');
+                    var queryPos = nxmlink.IndexOf('?');
 
                     var info = queryPos > 0 ? nxmlink.Substring(0, queryPos) : nxmlink;
                     var infos = info.Split('/');
