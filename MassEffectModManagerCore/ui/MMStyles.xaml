@@ -4,7 +4,8 @@
                     xmlns:modmanager="clr-namespace:MassEffectModManagerCore.modmanager.objects"
                     xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" 
                     xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters"
-                    xmlns:helpers="clr-namespace:MassEffectModManagerCore.modmanager.helpers">
+                    xmlns:helpers="clr-namespace:MassEffectModManagerCore.modmanager.helpers"
+                    xmlns:system="clr-namespace:System;assembly=System.Runtime">
     <converters:GameToImageIconConverter x:Key="GameToImageIconConverter"/>
     <converters:BootTargetSourceVisibilityConverter x:Key="BootTargetSourceVisibilityConverter"/>
     <converters:GameIconVisibilityConverter x:Key="GameIconVisibilityConverter"/>
@@ -90,4 +91,12 @@
     <BitmapImage x:Key="le1gameicon" UriSource="pack://application:,,,/images/gameicons/LE1_48.ico"/>
     <BitmapImage x:Key="le2gameicon" UriSource="pack://application:,,,/images/gameicons/LE2_48.ico"/>
     <BitmapImage x:Key="le3gameicon" UriSource="pack://application:,,,/images/gameicons/LE3_48.ico"/>
+
+
+    <system:String x:Key="me1gameiconpath">/images/gameicons/ME1_48.ico</system:String>
+    <system:String x:Key="me2gameiconpath">/images/gameicons/ME2_48.ico</system:String>
+    <system:String x:Key="me3gameiconpath">/images/gameicons/ME3_48.ico</system:String>
+    <system:String x:Key="le1gameiconpath">/images/gameicons/LE1_48.ico</system:String>
+    <system:String x:Key="le2gameiconpath">/images/gameicons/LE2_48.ico</system:String>
+    <system:String x:Key="le3gameiconpath">/images/gameicons/LE3_48.ico</system:String>
 </ResourceDictionary>

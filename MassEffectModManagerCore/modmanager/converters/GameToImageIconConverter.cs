@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media.Imaging;
 using LegendaryExplorerCore.Packages;
+using MassEffectModManagerCore.ui;
 using WinCopies.Util;
 
 namespace MassEffectModManagerCore.modmanager.converters
@@ -12,30 +13,35 @@ namespace MassEffectModManagerCore.modmanager.converters
     [Localizable(false)]
     public class GameToImageIconConverter : IValueConverter
     {
-        private static BitmapImage me1Icon;
-        private static BitmapImage me2Icon;
-        private static BitmapImage me3Icon;
-        private static BitmapImage le1Icon;
-        private static BitmapImage le2Icon;
-        private static BitmapImage le3Icon;
+        private static string me1IconPath;
+        private static string me2IconPath;
+        private static string me3IconPath;
+        private static string le1IconPath;
+        private static string le2IconPath;
+        private static string le3IconPath;
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             init();
+            float size = 48;
+            if (parameter is float sizeF)
+            {
+                size = sizeF;
+            }
             var game = (MEGame)value;
             switch (game)
             {
                 case MEGame.ME1:
-                    return me1Icon;
+                    return MippedIconExtension.StaticConvert(me1IconPath, size);
                 case MEGame.ME2:
-                    return me2Icon;
+                    return MippedIconExtension.StaticConvert(me2IconPath, size);
                 case MEGame.ME3:
-                    return me3Icon;
+                    return MippedIconExtension.StaticConvert(me3IconPath, size);
                 case MEGame.LE1:
-                    return le1Icon;
+                    return MippedIconExtension.StaticConvert(le1IconPath, size);
                 case MEGame.LE2:
-                    return le2Icon;
+                    return MippedIconExtension.StaticConvert(le2IconPath, size);
                 case MEGame.LE3:
-                    return le3Icon;
+                    return MippedIconExtension.StaticConvert(le3IconPath, size);
                 default:
                     return null;
             }
@@ -45,27 +51,13 @@ namespace MassEffectModManagerCore.modmanager.converters
         private void init()
         {
             if (initialized) return;
-            me1Icon = (BitmapImage)Application.Current.Resources[@"me1gameicon"];
-            me2Icon = (BitmapImage)Application.Current.Resources[@"me2gameicon"];
-            me3Icon = (BitmapImage)Application.Current.Resources[@"me3gameicon"];
-            le1Icon = (BitmapImage)Application.Current.Resources[@"le1gameicon"];
-            le2Icon = (BitmapImage)Application.Current.Resources[@"le2gameicon"];
-            le3Icon = (BitmapImage)Application.Current.Resources[@"le3gameicon"];
+            me1IconPath = (string)Application.Current.Resources[@"me1gameiconpath"];
+            me2IconPath = (string)Application.Current.Resources[@"me2gameiconpath"];
+            me3IconPath = (string)Application.Current.Resources[@"me3gameiconpath"];
+            le1IconPath = (string)Application.Current.Resources[@"le1gameiconpath"];
+            le2IconPath = (string)Application.Current.Resources[@"le2gameiconpath"];
+            le3IconPath = (string)Application.Current.Resources[@"le3gameiconpath"];
             initialized = true;
-        }
-
-        private object FindMergedResource(string mergedFilename, string key)
-        {
-            foreach (var dictionary in Application.Current.Resources.MergedDictionaries)
-            {
-                var dictUri = dictionary.Source.ToString();
-                if (dictUri.EndsWith(mergedFilename))
-                {
-                    return dictionary[key];
-                }
-            }
-
-            return null;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
