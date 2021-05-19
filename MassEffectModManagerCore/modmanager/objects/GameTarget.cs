@@ -555,7 +555,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     }
                     break;
 
-                // No check for Legendary Edition games right now
+                // No check for Legendary Edition games right now until patch cycle ends
             }
 
             if (!ignoreCmmVanilla)

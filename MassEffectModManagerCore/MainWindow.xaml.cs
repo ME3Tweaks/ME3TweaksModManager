@@ -1491,7 +1491,6 @@ namespace MassEffectModManagerCore
             if (ofd.ShowDialog() == true)
             {
                 MEGame gameSelected = MEGame.Unknown;
-                var fileInfo = new FileInfo(ofd.FileName);
                 var filename = Path.GetFileName(ofd.FileName);
                 if (filename.Equals(@"MassEffect3.exe", StringComparison.InvariantCultureIgnoreCase)) gameSelected = MEGame.ME3;
                 if (filename.Equals(@"MassEffect2.exe", StringComparison.InvariantCultureIgnoreCase)) gameSelected = MEGame.ME2;
@@ -1499,8 +1498,10 @@ namespace MassEffectModManagerCore
                 if (gameSelected != MEGame.Unknown)
                 {
                     // Check for LE versions
-                    if (fileInfo.Length > FileSize.MebiByte * 100)
+                    var version = FileVersionInfo.GetVersionInfo(ofd.FileName);
+                    if (version.FileMajorPart >= 2)
                     {
+                        // LE1 can't be selected this way as it has unique exe name.
                         if (gameSelected == MEGame.ME2) gameSelected = MEGame.LE2;
                         if (gameSelected == MEGame.ME3) gameSelected = MEGame.LE3;
                     }
@@ -1517,8 +1518,8 @@ namespace MassEffectModManagerCore
                 {
                     string result = Path.GetDirectoryName(Path.GetDirectoryName(ofd.FileName));
 
-                    if (gameSelected == MEGame.ME3)
-                        result = Path.GetDirectoryName(result); //up one more because of win32 directory.
+                    if (gameSelected == MEGame.ME3 || gameSelected.IsLEGame())
+                        result = Path.GetDirectoryName(result); //up one more because of win32/64 directory.
                                                                 //Test for cmmvanilla
                     if (File.Exists(Path.Combine(result, @"cmmvanilla")))
                     {
@@ -1537,7 +1538,14 @@ namespace MassEffectModManagerCore
                             {@"Result", @"Success"},
                             {@"Supported", pendingTarget.Supported.ToString()}
                         });
-                        Utilities.AddCachedTarget(pendingTarget);
+                        if (pendingTarget.Game.IsLEGame())
+                        {
+                            Utilities.AddCachedLETarget(Directory.GetParent(pendingTarget.TargetPath).Parent.FullName);
+                        }
+                        else
+                        {
+                            Utilities.AddCachedTarget(pendingTarget);
+                        }
                         PopulateTargets(pendingTarget);
                     }
                     else
@@ -2305,14 +2313,26 @@ namespace MassEffectModManagerCore
                 @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 24980",
                 @"InstallLocation"), foundMe2Active, MEGame.ME2);
 
+            // Legendary Edition
+            var legendarySteamLoc = Utilities.GetRegistrySettingString(
+                @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 1328670",
+                @"InstallLocation");
+            if (!string.IsNullOrWhiteSpace(legendarySteamLoc))
+            {
+                addSteamTarget(Path.Combine(legendarySteamLoc, @"Game", @"ME1"), false, MEGame.LE1);
+                addSteamTarget(Path.Combine(legendarySteamLoc, @"Game", @"ME2"), false, MEGame.LE2);
+                addSteamTarget(Path.Combine(legendarySteamLoc, @"Game", @"ME3"), false, MEGame.LE3);
+
+            }
+
             Log.Information(@"Loading cached targets");
             targets.AddRange(Utilities.GetCachedTargets(MEGame.ME3, targets));
             targets.AddRange(Utilities.GetCachedTargets(MEGame.ME2, targets));
             targets.AddRange(Utilities.GetCachedTargets(MEGame.ME1, targets));
 
-            // Load the targets
-
-
+            // Load LE cached tarets
+            targets.AddRange(Utilities.GetCachedTargets(MEGame.LE1, targets, true)); // Kind of a hack, legendary load flag loads all targets for LE
+            
             // ORDER THE TARGETS
             targets = targets.Distinct().ToList();
             List<GameTarget> finalList = new List<GameTarget>();

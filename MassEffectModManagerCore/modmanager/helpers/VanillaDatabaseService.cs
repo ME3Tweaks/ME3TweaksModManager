@@ -570,16 +570,19 @@ namespace MassEffectModManagerCore.modmanager.helpers
         private static Dictionary<string, string> SUPPORTED_HASHES_LE1 = new Dictionary<string, string>
         {
             [@"f4331d60672509b342da12bc42b4622f"] = @"Origin 2.0.0.47902",
+            [@"ade71fcaa13224e383a848b90db807f2"] = @"Origin 2.0.0.48204",
         };
 
         private static Dictionary<string, string> SUPPORTED_HASHES_LE2 = new Dictionary<string, string>
         {
             [@"3b4dd0078a122476126c3b5c6665db16"] = @"Origin 2.0.0.47902",
+            [@"fcb4c06b21853ece31a1897e136df45c"] = @"Origin 2.0.0.48204",
         };
 
         private static Dictionary<string, string> SUPPORTED_HASHES_LE3 = new Dictionary<string, string>
         {
-            [@"a64622ed97309563a5597adbed4055ca"] = @"Origin 2.0.0.47902thank",
+            [@"a64622ed97309563a5597adbed4055ca"] = @"Origin 2.0.0.47902",
+            [@"c55689e54c921739532beb033f0f0ebf"] = @"Origin 2.0.0.48204",
         };
 
         /// <summary>
