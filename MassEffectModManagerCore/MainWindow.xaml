@@ -913,6 +913,40 @@
                             IsChecked="{Binding ME3ASILoaderInstalled}"
                             ToolTip="{DynamicResource string_tooltip_me23ASILoader}"
                             StaysOpenOnClick="True" />
+
+                        <MenuItem
+                            Header="Mass Effect (Legendary Edition)"
+                            Style="{StaticResource MenuItemHeaderStyle}" />
+                        <MenuItem
+                            Command="{Binding Binkw32Command}"
+                            CommandParameter="LE1"
+                            Header="{Binding LE1ASILoaderText}"
+                            IsChecked="{Binding LE1ASILoaderInstalled}"
+                            ToolTip="PLACEHOLDER"
+                            StaysOpenOnClick="True" />
+                        <Separator />
+                        <MenuItem
+                            Header="Mass Effect 2 (Legendary Edition)"
+                            Style="{StaticResource MenuItemHeaderStyle}" />
+                        <MenuItem
+                            Command="{Binding Binkw32Command}"
+                            CommandParameter="LE2"
+                            Header="{Binding LE2ASILoaderText}"
+                            IsChecked="{Binding LE2ASILoaderInstalled}"
+                            ToolTip="PLACEHOLDER"
+                            StaysOpenOnClick="True" />
+                        <Separator />
+                        <MenuItem
+                            Header="Mass Effect 3 (Legendary Edition)"
+                            Style="{StaticResource MenuItemHeaderStyle}" />
+                        <MenuItem
+                            Command="{Binding Binkw32Command}"
+                            CommandParameter="LE3"
+                            Header="{Binding LE3ASILoaderText}"
+                            IsChecked="{Binding LE3ASILoaderInstalled}"
+                            ToolTip="PLACEHOLDER"
+                            StaysOpenOnClick="True" />
+
                     </MenuItem>
                     <MenuItem
                         Header="{DynamicResource string_Grantwriteaccesstogamedirectories}"
@@ -1365,9 +1399,9 @@
                         Orientation="Horizontal">
                         <Image
                             Name="BottomBarGameID_Image"
-                            Source="{Binding SelectedGameTarget.Game, Converter={StaticResource GameToImageIconConverter}, ConverterParameter=48f}"
-                            Width="25"
-                            Height="25"
+                            Source="{Binding SelectedGameTarget.Game, Converter={StaticResource GameToImageIconConverter}, ConverterParameter=24f}"
+                            Width="24"
+                            Height="24"
                             Margin="5,0" />
                         <Button
                             MinWidth="70"

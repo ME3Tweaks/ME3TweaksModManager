@@ -1088,7 +1088,7 @@ namespace MassEffectModManagerCore.modmanager
             {
                 var obinkPath = Path.Combine(target.TargetPath, "Binaries", "Win64", "bink2w64_original.dll");
                 File.Delete(obinkPath);
-                Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw64.bink2w64.dll", binkPath, true);
+                Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw64.bink2w64_original.dll", binkPath, true);
 
             }
 
@@ -1273,9 +1273,7 @@ namespace MassEffectModManagerCore.modmanager
         private const string ME1ASILoaderHash = "30660f25ab7f7435b9f3e1a08422411a";
         private const string ME2ASILoaderHash = "a5318e756893f6232284202c1196da13";
         private const string ME3ASILoaderHash = "1acccbdae34e29ca7a50951999ed80d5";
-        private const string LE1ASILoaderHash = "00000000000000000000000000000000"; // UPDATE WHEN WE HAVE ASI LOADERS IMPLEMENTED..
-        private const string LE2ASILoaderHash = "00000000000000000000000000000000"; // UPDATE WHEN WE HAVE ASI LOADERS IMPLEMENTED..
-        private const string LE3ASILoaderHash = "00000000000000000000000000000000"; // UPDATE WHEN WE HAVE ASI LOADERS IMPLEMENTED..
+        private const string LEASILoaderHash = "24b090d89013c9db9b15aeee8b0def12"; // Will need changed as game is updated
 
         internal static bool CheckIfBinkw32ASIIsInstalled(GameTarget target)
         {
@@ -1285,9 +1283,7 @@ namespace MassEffectModManagerCore.modmanager
             if (target.Game == MEGame.ME1) expectedHash = ME1ASILoaderHash;
             else if (target.Game == MEGame.ME2) expectedHash = ME2ASILoaderHash;
             else if (target.Game == MEGame.ME3) expectedHash = ME3ASILoaderHash;
-            else if (target.Game == MEGame.LE1) expectedHash = LE1ASILoaderHash;
-            else if (target.Game == MEGame.LE2) expectedHash = LE2ASILoaderHash;
-            else if (target.Game == MEGame.LE3) expectedHash = LE3ASILoaderHash;
+            else if (target.Game.IsLEGame()) expectedHash = LEASILoaderHash;
 
             if (File.Exists(binkPath))
             {

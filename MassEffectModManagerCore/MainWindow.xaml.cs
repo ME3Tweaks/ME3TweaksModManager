@@ -69,6 +69,9 @@ namespace MassEffectModManagerCore
         public bool ME1ASILoaderInstalled { get; set; }
         public bool ME2ASILoaderInstalled { get; set; }
         public bool ME3ASILoaderInstalled { get; set; }
+        public bool LE1ASILoaderInstalled { get; set; }
+        public bool LE2ASILoaderInstalled { get; set; }
+        public bool LE3ASILoaderInstalled { get; set; }
         public bool ME1ModsVisible { get; set; } = true;
         public bool ME2ModsVisible { get; set; } = true;
         public bool ME3ModsVisible { get; set; } = true;
@@ -85,6 +88,9 @@ namespace MassEffectModManagerCore
         public string ME1ASILoaderText { get; set; }
         public string ME2ASILoaderText { get; set; }
         public string ME3ASILoaderText { get; set; }
+        public string LE1ASILoaderText { get; set; }
+        public string LE2ASILoaderText { get; set; }
+        public string LE3ASILoaderText { get; set; }
 
         /// <summary>
         /// Single-instance argument handling
@@ -1429,6 +1435,15 @@ namespace MassEffectModManagerCore
                     case MEGame.ME3:
                         install = !ME3ASILoaderInstalled;
                         break;
+                    case MEGame.LE1:
+                        install = !LE1ASILoaderInstalled;
+                        break;
+                    case MEGame.LE2:
+                        install = !LE2ASILoaderInstalled;
+                        break;
+                    case MEGame.LE3:
+                        install = !LE3ASILoaderInstalled;
+                        break;
                 }
 
                 if (install)
@@ -1902,6 +1917,18 @@ namespace MassEffectModManagerCore
                         ME3ASILoaderInstalled = false;
                         ME3ASILoaderText = M3L.GetString(M3L.string_gameNotInstalled);
                         break;
+                    case MEGame.LE1:
+                        LE1ASILoaderInstalled = false;
+                        LE1ASILoaderText = M3L.GetString(M3L.string_gameNotInstalled);
+                        break;
+                    case MEGame.LE2:
+                        LE2ASILoaderInstalled = false;
+                        LE2ASILoaderText = M3L.GetString(M3L.string_gameNotInstalled);
+                        break;
+                    case MEGame.LE3:
+                        LE3ASILoaderInstalled = false;
+                        LE3ASILoaderText = M3L.GetString(M3L.string_gameNotInstalled);
+                        break;
                 }
 
                 return; //don't check or anything
@@ -1925,6 +1952,18 @@ namespace MassEffectModManagerCore
                 case MEGame.ME3:
                     ME3ASILoaderInstalled = Utilities.CheckIfBinkw32ASIIsInstalled(target);
                     ME3ASILoaderText = ME3ASILoaderInstalled ? binkInstalledText : binkNotInstalledText;
+                    break;
+                case MEGame.LE1:
+                    LE1ASILoaderInstalled = Utilities.CheckIfBinkw32ASIIsInstalled(target);
+                    LE1ASILoaderText = LE1ASILoaderInstalled ? binkME1InstalledText : binkME1NotInstalledText;
+                    break;
+                case MEGame.LE2:
+                    LE2ASILoaderInstalled = Utilities.CheckIfBinkw32ASIIsInstalled(target);
+                    LE2ASILoaderText = LE2ASILoaderInstalled ? binkInstalledText : binkNotInstalledText;
+                    break;
+                case MEGame.LE3:
+                    LE3ASILoaderInstalled = Utilities.CheckIfBinkw32ASIIsInstalled(target);
+                    LE3ASILoaderText = LE3ASILoaderInstalled ? binkInstalledText : binkNotInstalledText;
                     break;
             }
         }
@@ -2589,6 +2628,9 @@ namespace MassEffectModManagerCore
                     UpdateBinkStatus(MEGame.ME1);
                     UpdateBinkStatus(MEGame.ME2);
                     UpdateBinkStatus(MEGame.ME3);
+                    UpdateBinkStatus(MEGame.LE1);
+                    UpdateBinkStatus(MEGame.LE2);
+                    UpdateBinkStatus(MEGame.LE3);
                     bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"EnsureCriticalFiles", M3L.GetString(M3L.string_downloadingRequiredFiles), M3L.GetString(M3L.string_requiredFilesDownloaded));
                     if (!OnlineContent.EnsureCriticalFiles())
                     {

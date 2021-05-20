@@ -61,7 +61,7 @@
                             Grid.Column="0"
                             Grid.Row="0"
                             Grid.RowSpan="3"
-                            Source="{Binding GameIconSource}"
+                            Source="{Binding Game, Mode=OneWay, Converter={StaticResource GameToImageIconConverter}, ConverterParameter='48'}"
                             Width="48"
                             VerticalAlignment="Top"
                             Height="48"

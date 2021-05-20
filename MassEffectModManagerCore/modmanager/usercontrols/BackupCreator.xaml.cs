@@ -71,7 +71,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public class GameBackup : INotifyPropertyChanged
         {
-            private MEGame Game;
+            public MEGame Game { get; }
             public ObservableCollectionExtended<GameTarget> AvailableBackupSources { get; } = new ObservableCollectionExtended<GameTarget>();
             private MainWindow window;
 

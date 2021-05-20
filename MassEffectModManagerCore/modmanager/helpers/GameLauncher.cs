@@ -110,9 +110,13 @@ namespace MassEffectModManagerCore.modmanager.helpers
 
             if (Settings.SkipLELauncher && target.Game.IsLEGame())
             {
-                var sourceFile = Path.Combine(Utilities.GetAppDataFolder(), $@"C:\ProgramData\ME3TweaksModManager\LELauncherTools\GameBoot\{target.Game}\LauncherUI.swf");
+                var sourceFile = Path.Combine(Utilities.GetAppDataFolder(),
+                    $@"C:\ProgramData\ME3TweaksModManager\LELauncherTools\GameBoot\{target.Game}\LauncherUI.swf");
                 var destFile = Path.Combine(LEDirectory.GetLauncherPath(), @"Content", @"LauncherUI.swf");
-                File.Copy(sourceFile, destFile, true);
+                if (File.Exists(sourceFile))
+                {
+                    File.Copy(sourceFile, destFile, true);
+                }
             }
 
             Utilities.RunProcess(exe, (string)null, false, true, false, false, environmentVars);
