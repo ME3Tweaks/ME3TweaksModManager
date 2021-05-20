@@ -1022,12 +1022,11 @@ namespace MassEffectModManagerCore.modmanager
                     Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me3.binkw32.dll", binkPath, true);
                     Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me3.binkw23.dll", obinkPath, true);
                 }
-                // TODO: IMPLEMENT
                 else if (target.Game.IsLEGame())
                 {
-                    var obinkPath = Path.Combine(target.TargetPath, "Binaries", "Win64", "binkw23.dll");
-                    //Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me1.binkw32.dll", binkPath, true);
-                    //Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me1.binkw23.dll", obinkPath, true);
+                    var obinkPath = Path.Combine(target.TargetPath, "Binaries", "Win64", "bink2w64_original.dll"); // Where the original bink should go
+                    Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw64.bink2w64.dll", binkPath, true);  // Bypass proxy
+                    Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw64.bink2w64_original.dll", obinkPath, true); // 
                 }
                 else
                 {

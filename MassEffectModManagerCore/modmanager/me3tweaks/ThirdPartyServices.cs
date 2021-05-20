@@ -109,10 +109,10 @@ public event PropertyChangedEventHandler PropertyChanged;
 #pragma warning restore
         }
 
-        internal static List<ThirdPartyModInfo> GetThirdPartyModInfosByModuleNumber(int modDLCModuleNumber)
+        internal static List<ThirdPartyModInfo> GetThirdPartyModInfosByModuleNumber(int modDLCModuleNumber, MEGame game)
         {
             if (App.ThirdPartyIdentificationService == null) return new List<ThirdPartyModInfo>(); //Not loaded
-            var me2Values = App.ThirdPartyIdentificationService["ME2"];
+            var me2Values = App.ThirdPartyIdentificationService[game.ToString()];
             return me2Values.Where(x => x.Value.modulenumber == modDLCModuleNumber.ToString()).Select(x => x.Value).ToList();
         }
 

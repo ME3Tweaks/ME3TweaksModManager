@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media.Imaging;
 using LegendaryExplorerCore.Packages;
+using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.ui;
 using WinCopies.Util;
 
@@ -27,7 +28,10 @@ namespace MassEffectModManagerCore.modmanager.converters
             {
                 size = sizeF;
             }
-            var game = (MEGame)value;
+
+            MEGame game = MEGame.Unknown;
+            if (value is MEGameSelector sel) game = sel.Game;
+            else if (value is MEGame mel) game = mel;
             switch (game)
             {
                 case MEGame.ME1:

@@ -1,12 +1,16 @@
 ﻿<ui:ValidatableWindowBase
     x:Class="MassEffectModManagerCore.modmanager.windows.StarterKitGeneratorWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.windows" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters" xmlns:ui="clr-namespace:MassEffectModManagerCore.ui" xmlns:me3tweaks="clr-namespace:MassEffectModManagerCore.modmanager.me3tweaks" xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+    xmlns:packages="clr-namespace:LegendaryExplorerCore.Packages;assembly=LegendaryExplorerCore"
+    xmlns:helpers="clr-namespace:MassEffectModManagerCore.modmanager.helpers"
+    xmlns:generic="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols.generic"
     Background="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}"
     WindowStartupLocation="CenterOwner"
     Title="{DynamicResource string_title_starterkit}"
     Height="650"
     MinHeight="650"
     MinWidth="875"
-    Width="875">
+    DataContext="{Binding RelativeSource={RelativeSource Self}}"
+    Width="1175">
     <Window.Style>
         <Style
             TargetType="Window"
@@ -276,14 +280,12 @@
                 Watermark="3900"
                 Text="{Binding ModMountPriority, Mode=TwoWay, ValidatesOnDataErrors=True}"
                 TextChanged="FieldText_Changed" />
-            <ComboBox
+            <generic:CheckBoxComboBox
+                x:Name="MountSelector"
                 Grid.Row="10"
                 Grid.Column="2"
-                ItemsSource="{Binding DisplayedMountFlags}"
-                DisplayMemberPath="DisplayString"
-                SelectedValuePath="Selected"
-                SelectedItem="{Binding ModMountFlag, Mode=TwoWay}"
-                IsSynchronizedWithCurrentItem="True" />
+                ItemJoinString=" "
+                ItemsSource="{Binding DisplayedMountFlags, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:StarterKitGeneratorWindow}}}"/>
             <xctk:WatermarkTextBox
                 Name="ModDescription_TextBox"
                 Grid.Row="11"
@@ -309,42 +311,45 @@
                 Orientation="Horizontal"
                 Grid.Column="1"
                 Grid.Row="14">
-                <StackPanel.Resources>
-                    <Style
-                        x:Key="GameIcon"
-                        TargetType="RadioButton">
-                        <Style.Triggers>
-                            <Trigger
-                                Property="IsChecked"
-                                Value="False">
-                                <Setter
-                                    Property="Opacity"
-                                    Value="0.25" />
-                            </Trigger>
-                        </Style.Triggers>
-                        <Setter
-                            Property="BorderThickness"
-                            Value="1" />
-                        <Setter
-                            Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate
-                                    TargetType="RadioButton">
-                                    <Image
-                                        Source="{Binding Path=Content, RelativeSource={RelativeSource TemplatedParent}}" />
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </StackPanel.Resources>
-                <RadioButton
+                <ItemsControl ItemsSource="{Binding Games}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="helpers:MEGameSelector">
+                            <Button Click="GameIcon_Click" Padding="2" Margin="2,0">
+                                <Button.Style>
+                                    <Style TargetType="Button"  BasedOn="{StaticResource {x:Type Button}}">
+                                        <Setter Property="Opacity" Value="1"/>
+                                        <Style.Triggers>
+                                            <DataTrigger
+                                                Binding="{Binding IsSelected}"
+                                                Value="False">
+                                                <Setter
+                                                    Property="Opacity"
+                                                    Value=".5" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                                <Image Width="24" Source="{Binding Path=., Converter={StaticResource GameToImageIconConverter}, ConverterParameter=24f}"/>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <!-- <RadioButton
                     Name="ME1_RadioButton"
                     Click="RadioButton_Click"
-                    Content="{StaticResource me1gameicon}"
                     Style="{StaticResource GameIcon}"
                     BorderBrush="Red"
                     Width="24"
-                    Height="24" />
+                    Height="24" >
+                    <RadioButton.Content>
+<Image Source="{Binding Game, Converter= Size=24}"/>
+                    </RadioButton.Content>
+                </RadioButton>
                 <RadioButton
                     Name="ME2_RadioButton"
                     Click="RadioButton_Click"
@@ -362,6 +367,31 @@
                     BorderBrush="Green"
                     Width="24"
                     Height="24" />
+                <RadioButton
+                    Name="LE1_RadioButton"
+                    Click="RadioButton_Click"
+                    Content="{StaticResource le1gameicon}"
+                    Style="{StaticResource GameIcon}"
+                    BorderBrush="Red"
+                    Width="24"
+                    Height="24" />
+                <RadioButton
+                    Name="LE2_RadioButton"
+                    Click="RadioButton_Click"
+                    Content="{StaticResource le2gameicon}"
+                    Style="{StaticResource GameIcon}"
+                    BorderBrush="Orange"
+                    Width="24"
+                    Height="24"
+                    Margin="5,0" />
+                <RadioButton
+                    Name="LE3_RadioButton"
+                    Click="RadioButton_Click"
+                    Content="{StaticResource le3gameicon}"
+                    Style="{StaticResource GameIcon}"
+                    BorderBrush="Green"
+                    Width="24"
+                    Height="24" />-->
             </StackPanel>
             <TextBlock
                 Text="{DynamicResource string_existingKnownDLC}"
@@ -379,7 +409,6 @@
                     BorderThickness="1"
                     Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
                     ItemsSource="{Binding CustomDLCMountsForGame}"
-                    SelectedItem="{Binding SelectedModMount, Mode=TwoWay}"
                     SelectedValuePath="IsSelected"
                     HorizontalContentAlignment="Stretch"
                     HorizontalAlignment="Stretch">

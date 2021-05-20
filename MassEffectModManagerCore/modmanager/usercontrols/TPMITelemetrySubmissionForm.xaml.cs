@@ -104,7 +104,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             //Fody uses this property on weaving
 #pragma warning disable
-public event PropertyChangedEventHandler PropertyChanged;
+            public event PropertyChangedEventHandler PropertyChanged;
 #pragma warning restore
 
             public void SubmitPackage()
@@ -203,26 +203,31 @@ public event PropertyChangedEventHandler PropertyChanged;
                             //No mount flag right now.
                         }
                         break;
+                    case MEGame.LE1:
+                        throw new Exception(@"Not implemented yet!");
+                        break;
                     case MEGame.ME2:
+                    case MEGame.LE2:
                         {
-                            var mountFile = Path.Combine(sourceDir, @"CookedPC", @"mount.dlc");
+                            var mountFile = Path.Combine(sourceDir, game.CookedDirName(), @"mount.dlc");
                             MountFile mf = new MountFile(mountFile);
                             tp.ModMountTLK1 = mf.TLKID;
                             tp.MountPriority = mf.MountPriority;
-                            tp.MountFlag = (int)mf.MountFlag;
-                            tp.MountFlagHR = mf.MountFlag.ToString();
-                            var ini = DuplicatingIni.LoadIni(Path.Combine(sourceDir, @"CookedPC", @"BIOEngine.ini"));
+                            tp.MountFlag = (int)mf.MountFlags.FlagValue;
+                            tp.MountFlagHR = mf.MountFlags.ToHumanReadableString();
+                            var ini = DuplicatingIni.LoadIni(Path.Combine(sourceDir, game.CookedDirName(), @"BIOEngine.ini"));
                             tp.ModuleNumber = ini[@"Engine.DLCModules"][dlcFoldername]?.Value;
                         }
                         break;
                     case MEGame.ME3:
+                    case MEGame.LE3:
                         {
                             var mountFile = Path.Combine(sourceDir, @"CookedPCConsole", @"mount.dlc");
                             MountFile mf = new MountFile(mountFile);
                             tp.ModMountTLK1 = mf.TLKID;
                             tp.MountPriority = mf.MountPriority;
-                            tp.MountFlag = (int)mf.MountFlag;
-                            tp.MountFlagHR = mf.MountFlag.ToString();
+                            tp.MountFlag = mf.MountFlags.FlagValue;
+                            tp.MountFlagHR = mf.MountFlags.ToHumanReadableString();
                         }
                         break;
                 }

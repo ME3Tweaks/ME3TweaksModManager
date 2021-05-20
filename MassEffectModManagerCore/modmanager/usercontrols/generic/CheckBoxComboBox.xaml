@@ -9,13 +9,12 @@
              DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <UserControl.Resources>
         <DataTemplate x:Key="CBCBDropdownTemplate" DataType="{x:Type local:CheckBoxComboBox+CBCBPair}">
-            <CheckBox Checked="CheckChanged" Unchecked="CheckChanged" 
-                      IsChecked="{Binding IsChecked}" 
+            <CheckBox IsChecked="{Binding IsChecked}" 
                       Content="{Binding}"
                       PreviewMouseDown="CB_PreviewMouseDown"/>
         </DataTemplate>
         <DataTemplate x:Key="CBCBSelectedTemplate">
-            <TextBlock Text="{Binding SelectedItemsString, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:CheckBoxComboBox}}}"/>
+            <TextBlock Text="{Binding SelectedItemsString, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:CheckBoxComboBox}}, UpdateSourceTrigger=PropertyChanged}"/>
         </DataTemplate>
     </UserControl.Resources>
     <ComboBox 

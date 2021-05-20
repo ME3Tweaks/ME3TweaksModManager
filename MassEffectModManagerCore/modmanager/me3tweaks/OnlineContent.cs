@@ -290,7 +290,10 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         {
                             [@"ME1"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>(),
                             [@"ME2"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>(),
-                            [@"ME3"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>()
+                            [@"ME3"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>(),
+                            [@"LE1"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>(),
+                            [@"LE2"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>(),
+                            [@"LE3"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>()
                         };
                         return d;
                     }

@@ -29,17 +29,28 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.generic
     /// </summary>
     public partial class CheckBoxComboBox : UserControl, INotifyPropertyChanged
     {
-        public class CBCBPair
+        public class CBCBPair : INotifyPropertyChanged
         {
-            public CBCBPair(object item, bool isChecked)
+
+            public CBCBPair(object item, bool isChecked, Action<CBCBPair> checkChangedDelegate)
             {
                 Item = item;
                 IsChecked = isChecked;
+                _checkChangedDelegate = checkChangedDelegate;
             }
 
             public object Item { get; set; }
             public bool IsChecked { get; set; }
+            private readonly Action<CBCBPair> _checkChangedDelegate;
+
+            private void OnIsCheckedChanged()
+            {
+                _checkChangedDelegate?.Invoke(this);
+            }
             public override string ToString() => Item?.ToString();
+#pragma warning disable
+            public event PropertyChangedEventHandler? PropertyChanged;
+#pragma warning restore
         }
 
         #region Dependency Properties
@@ -51,7 +62,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.generic
         }
 
         public static readonly DependencyProperty NoItemsSelectedTextProperty =
-            DependencyProperty.Register(@"NoItemsSelectedText", typeof(string), typeof(CheckBoxComboBox), new PropertyMetadata());
+            DependencyProperty.Register(@"NoItemsSelectedText", typeof(string), typeof(CheckBoxComboBox), new PropertyMetadata("No items selected"));
 
         #endregion
 
@@ -64,6 +75,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.generic
 
         public static readonly DependencyProperty DefaultCheckStateProperty =
             DependencyProperty.Register(@"DefaultCheckState", typeof(bool), typeof(CheckBoxComboBox), new PropertyMetadata(false));
+
+        #endregion
+
+        #region ItemJoinString
+        public string ItemJoinString
+        {
+            get => (string)GetValue(ItemJoinStringProperty);
+            set => SetValue(ItemJoinStringProperty, value);
+        }
+
+        public static readonly DependencyProperty ItemJoinStringProperty =
+            DependencyProperty.Register(@"ItemJoinString", typeof(string), typeof(CheckBoxComboBox), new PropertyMetadata(","));
 
         #endregion
 
@@ -100,19 +123,38 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.generic
             }
 
             // ICollection doesn't have linq support so just kinda old school it
+            SetInternalItems(newValue);
+            CBSelector.SelectedItem = InternalItemsSource.FirstOrDefault();
+        }
+
+        private void SetInternalItems(ICollection newItems)
+        {
             List<CBCBPair> pairs = new List<CBCBPair>();
-            foreach (var v in newValue)
+            foreach (var v in newItems)
             {
-                pairs.Add(new CBCBPair(v, DefaultCheckState));
+                pairs.Add(new CBCBPair(v, DefaultCheckState, CheckChanged));
             }
 
             InternalItemsSource.ReplaceAll(pairs);
-            CBSelector.SelectedItem = pairs.FirstOrDefault();
+            UpdateSelectedItemString();
+        }
+
+        private void CheckChanged(CBCBPair itemChanging)
+        {
+            UpdateSelectedItemString();
         }
 
         private void newValueINotifyCollectionChanged_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
-
+            if (e.Action == NotifyCollectionChangedAction.Reset)
+            {
+                SetInternalItems(sender as ICollection);
+            }
+            else if (e.Action == NotifyCollectionChangedAction.Add)
+            {
+                InternalItemsSource.Insert(e.NewStartingIndex, new CBCBPair(e.NewItems[0], DefaultCheckState, CheckChanged));
+                UpdateSelectedItemString();
+            }
         }
         #endregion
 
@@ -120,13 +162,28 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.generic
 
         #region Properties
 
-        // Maybe make 'JoinString' property?
-        public string SelectedItemsString { get; set; }
+        public string SelectedItemsString
+        {
+            get;
+            set;
+        }
+
+        public void OnSelectedItemsStringChanged()
+        {
+            // Total hack. No idea how tf this binding works
+            var index = CBSelector.SelectedIndex;
+            var count = InternalItemsSource.Count;
+            if (count > 1)
+            {
+                CBSelector.SelectedIndex = index == 0 ? 1 : 0;
+            }
+        }
+
         private void UpdateSelectedItemString()
         {
             var selectedItems = InternalItemsSource.Where(x => x.IsChecked).ToList();
             if (selectedItems.Any())
-                SelectedItemsString = string.Join(',', selectedItems.Select(x => x.ToString()));
+                SelectedItemsString = string.Join(ItemJoinString, selectedItems.Select(x => x.ToString()));
             else
                 SelectedItemsString = NoItemsSelectedText;
         }
@@ -169,20 +226,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.generic
         {
             if (sender is CheckBox cb)
             {
-                //if (cb.IsChecked.HasValue && cb.IsChecked.Value)
-                //{
-                //    SelectedItems.Add(cb.DataContext);
-                //}
-                //else
-                //{
-                //    SelectedItems.Remove(cb.DataContext);
-                //}
                 UpdateSelectedItemString();
             }
         }
 
 #pragma warning disable
         public event PropertyChangedEventHandler? PropertyChanged;
+#pragma warning restore
 
         private void CB_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -200,7 +250,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.generic
                 e.Handled = true;
             }
         }
-#pragma warning restore
         public IEnumerable<object> GetSelectedItems()
         {
             return InternalItemsSource.Where(x => x.IsChecked).Select(x => x.Item);

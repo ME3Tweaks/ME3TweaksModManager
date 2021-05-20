@@ -61,8 +61,8 @@ namespace MassEffectModManagerCore.modmanager.gameini
             foreach (var file in Inis)
             {
                 //Console.WriteLine("Coalescing " + Path.GetFileName(file));
-                outStream.WriteUnrealStringASCII(file.Key);
-                outStream.WriteUnrealStringASCII(file.Value.ToString());
+                outStream.WriteStringLatin1(file.Key);
+                outStream.WriteStringLatin1(file.Value.ToString());
             }
             File.WriteAllBytes(outfile, outStream.ToArray());
             return true;
