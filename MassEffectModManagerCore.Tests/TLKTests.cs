@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.IO;
-using ME3ExplorerCore.TLK.ME2ME3;
+using LegendaryExplorerCore.TLK.ME2ME3;
 
 namespace MassEffectModManagerCore.Tests
 {
@@ -21,7 +21,7 @@ namespace MassEffectModManagerCore.Tests
             {
                 TalkFile talkFileMe2 = new TalkFile();
                 talkFileMe2.LoadTlkData(tlk);
-                var tlkStream = ME3ExplorerCore.TLK.ME2ME3.HuffmanCompression.SaveToTlkStream(talkFileMe2.StringRefs);
+                var tlkStream = LegendaryExplorerCore.TLK.ME2ME3.HuffmanCompression.SaveToTlkStream(talkFileMe2.StringRefs);
                 var reloadedTlk = new TalkFile();
                 tlkStream.Position = 0;
                 reloadedTlk.LoadTlkDataFromStream(tlkStream);

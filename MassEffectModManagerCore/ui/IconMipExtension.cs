@@ -48,9 +48,9 @@ namespace MassEffectModManagerCore.ui
                 return predecoded;
             }
 
-            {var decoder = BitmapDecoder.Create(new Uri(source),
+            var decoder = BitmapDecoder.Create(new Uri(source),
                 BitmapCreateOptions.DelayCreation,
-                BitmapCacheOption.OnDemand);}
+                BitmapCacheOption.OnDemand);
 
             var result = decoder.Frames.FirstOrDefault(f => f.Width == size);
             if (result == default(BitmapFrame))

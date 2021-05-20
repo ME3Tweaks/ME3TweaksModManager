@@ -4,7 +4,7 @@ using System.IO;
 using System.Text;
 using MassEffectModManagerCore.modmanager;
 using MassEffectModManagerCore.modmanager.objects;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.Packages;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MassEffectModManagerCore.Tests
