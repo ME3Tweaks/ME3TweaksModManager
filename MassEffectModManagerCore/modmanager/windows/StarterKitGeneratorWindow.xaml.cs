@@ -173,8 +173,8 @@ namespace MassEffectModManagerCore.modmanager.windows
         {
             MemoryAnalyzer.AddTrackedMemoryItem(@"Starter Kit Window", new WeakReference(this));
             Log.Information(@"Opening Starter Kit window");
-            DataContext = this;
 
+            PendingGame = Game;
 
             var flagset2 = Enum.GetValues<EME2MountFileFlag>();
             ME2MountFlags.ReplaceAll(flagset2.Select(x => new MountFlag((int)x, true)));
@@ -203,12 +203,9 @@ namespace MassEffectModManagerCore.modmanager.windows
             //#endif
             InitializeComponent();
             Games = MEGameSelector.GetGameSelectors();
-            if (Games.Any())
-            {
-                Games.FirstOrDefault(x => x.Game == Game).IsSelected = true;
-            }
-            SetGame(Game);
         }
+
+        public MEGame? PendingGame { get; set; }
 
         private void SetupValidation()
         {
@@ -260,7 +257,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                 //Debug.WriteLine("MDFN " + ModDLCFolderName);
                 if (string.IsNullOrWhiteSpace(ModDLCFolderName))
                     return RuleResult.Invalid(M3L.GetString(M3L.string_dLCFolderNameCannotBeEmpty));
-                Regex reg = new Regex("[A-Za-z0-9_]+$"); //do not localize
+                Regex reg = new Regex("^[A-Za-z0-9_]+$"); //do not localize
                 if (!reg.IsMatch(ModDLCFolderName))
                 {
                     return RuleResult.Invalid(M3L.GetString(M3L.string_dLCFolderNameCanOnlyConsistOf));
@@ -325,8 +322,9 @@ namespace MassEffectModManagerCore.modmanager.windows
                 if (result == MessageBoxResult.No) return;
             }
 
-            var mountFlags = DisplayedMountFlags.Where(x => x.IsUISelected);
+
             MountFlag mf = new MountFlag(0, Game.IsGame2());
+            var mountFlags = MountSelector.GetSelectedItems().OfType<MountFlag>();
             foreach (var f in mountFlags)
             {
                 mf.SetFlagBit(f.FlagValue);
@@ -699,11 +697,26 @@ namespace MassEffectModManagerCore.modmanager.windows
                 Validator.Validate(nameof(ModName));
             else if (textField == ModInternalTLK_TextBox)
                 Validator.Validate(nameof(ModInternalTLKID));
+            //else if (textField == ModSuffix_TextBox)
+            //    Validator.Validate(nameof(ModDLCFolderName));
         }
 
         private void ss(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void StarterKit_ContentRendered(object sender, EventArgs e)
+        {
+            if (PendingGame != null)
+            {
+                if (Games.Any())
+                {
+                    Games.FirstOrDefault(x => x.Game == PendingGame).IsSelected = true;
+                }
+                SetGame(PendingGame.Value);
+                PendingGame = null;
+            }
         }
     }
 }

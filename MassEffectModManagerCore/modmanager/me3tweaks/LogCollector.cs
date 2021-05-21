@@ -1282,7 +1282,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         Log.Information($@"Checking TOC file {toc}");
 
                         TOCBinFile tbf = new TOCBinFile(toc);
-                        foreach (TOCBinFile.Entry ent in tbf.Entries)
+                        foreach (TOCBinFile.Entry ent in tbf.GetAllEntries())
                         {
                             //Console.WriteLine(index + "\t0x" + ent.offset.ToString("X6") + "\t" + ent.size + "\t" + ent.name);
                             string filepath = Path.Combine(gamePath, ent.name);

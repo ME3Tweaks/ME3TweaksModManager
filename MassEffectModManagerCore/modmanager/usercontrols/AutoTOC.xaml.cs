@@ -61,12 +61,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             Log.Information(@"Autotocing game: " + target.TargetPath);
 
-            if (target.Game.IsLEGame())
-            {
+            //if (target.Game.IsLEGame())
+            //{
                 TOCCreator.CreateTOCForGame(target.Game, percentDoneCallback, target.TargetPath);
                 return true;
-            }
-
+            //}
+            /*
             //get toc target folders, ensuring we clean up the inputs a bit.
             string baseDir = Path.GetFullPath(Path.Combine(target.TargetPath, @"BIOGame"));
             string dlcDirRoot = M3Directories.GetDLCPath(target);
@@ -150,36 +150,36 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 done++;
                 percentDoneCallback?.Invoke((int)Math.Floor(done * 100.0 / tocTargets.Count));
             }
-            return true;
+            return true;*/
         }
 
-        public static void CreateUnpackedTOC(string dlcDirectory)
-        {
-            Log.Information(@"Creating unpacked toc for " + dlcDirectory);
-            //#if DEBUG
-            //            if (dlcDirectory.Contains(@"DLC_CON_END") || dlcDirectory.Contains(@"DLC_EXP_Pack002"))
-            //            {
-            //                Debugger.Break();
-            //                throw new Exception(@"ASSERT ERROR: CREATING UNPACKED TOC FOR OFFICIAL DLC!");
-            //            }
-            //#endif
-            var watch = System.Diagnostics.Stopwatch.StartNew();
-            MemoryStream ms = TOCCreator.CreateTOCForDirectory(dlcDirectory);
-            if (ms != null)
-            {
-                string tocPath = Path.Combine(dlcDirectory, @"PCConsoleTOC.bin");
-                File.WriteAllBytes(tocPath, ms.ToArray());
-                ms.Close();
-                watch.Stop();
-                var elapsedMs = watch.ElapsedMilliseconds;
-                Log.Information($@"{Path.GetFileName(dlcDirectory)} - {dlcDirectory} Ran Unpacked TOC, took {elapsedMs}ms");
-            }
-            else
-            {
-                Log.Warning(@"Did not create TOC for " + dlcDirectory);
-                watch.Stop();
-            }
-        }
+        //public static void CreateUnpackedTOC(string dlcDirectory)
+        //{
+        //    Log.Information(@"Creating unpacked toc for " + dlcDirectory);
+        //    #if DEBUG
+        //                if (dlcDirectory.Contains(@"DLC_CON_END") || dlcDirectory.Contains(@"DLC_EXP_Pack002"))
+        //                {
+        //                    Debugger.Break();
+        //                    throw new Exception(@"ASSERT ERROR: CREATING UNPACKED TOC FOR OFFICIAL DLC!");
+        //                }
+        //    #endif
+        //    var watch = System.Diagnostics.Stopwatch.StartNew();
+        //    MemoryStream ms = TOCCreator.CreateTOCForDirectory(dlcDirectory);
+        //    if (ms != null)
+        //    {
+        //        string tocPath = Path.Combine(dlcDirectory, @"PCConsoleTOC.bin");
+        //        File.WriteAllBytes(tocPath, ms.ToArray());
+        //        ms.Close();
+        //        watch.Stop();
+        //        var elapsedMs = watch.ElapsedMilliseconds;
+        //        Log.Information($@"{Path.GetFileName(dlcDirectory)} - {dlcDirectory} Ran Unpacked TOC, took {elapsedMs}ms");
+        //    }
+        //    else
+        //    {
+        //        Log.Warning(@"Did not create TOC for " + dlcDirectory);
+        //        watch.Stop();
+        //    }
+        //}
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {

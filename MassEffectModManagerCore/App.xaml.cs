@@ -28,6 +28,7 @@ using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using SingleInstanceCore;
 using LegendaryExplorerCore.Compression;
+using LegendaryExplorerCore.Unreal;
 using Microsoft.AppCenter;
 
 namespace MassEffectModManagerCore
@@ -109,7 +110,7 @@ namespace MassEffectModManagerCore
         public App() : base()
         {
             ExecutableLocation = Process.GetCurrentProcess().MainModule.FileName;
-            
+
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 
@@ -197,6 +198,20 @@ namespace MassEffectModManagerCore
                 this.Dispatcher.UnhandledException += OnDispatcherUnhandledException;
                 ToolTipService.ShowDurationProperty.OverrideMetadata(
                     typeof(DependencyObject), new FrameworkPropertyMetadata(20000));
+
+                var launcherDir = @"B:\SteamLibrary\steamapps\common\Mass Effect Legendary Edition\Game\Launcher\Content";
+                var allFiles = Directory.GetFiles(launcherDir, "*.*", SearchOption.AllDirectories);
+                SortedSet<string> exts = new SortedSet<string>();
+                foreach (var f in allFiles)
+                {
+                    exts.Add(Path.GetExtension(f));
+                }
+
+                foreach (var ext in exts)
+                {
+                    Debug.Write($"@\"{ext}\", ");
+                }
+                Debug.WriteLine("");
 
 
                 Log.Information(@"===========================================================================");

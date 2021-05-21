@@ -1545,6 +1545,190 @@
                                 Foreground="{DynamicResource {x:Static adonisUi:Brushes.HyperlinkBrush}}" />
                         </Button>
                         <Button
+                            Content="LE3"
+                            DockPanel.Dock="Right"
+                            Click="ToggleLE3Visibility_Click"
+                            ToolTip="{DynamicResource string_tooltip_filterLE3}">
+                            <Button.Style>
+                                <Style
+                                    TargetType="Button"
+                                    BasedOn="{StaticResource {x:Static adonisUi:Styles.AccentButton}}">
+                                    <Style.Triggers>
+                                        <DataTrigger
+                                            Binding="{Binding ME3ModsVisible}"
+                                            Value="False">
+                                            <Setter
+                                                Property="Background"
+                                                Value="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" />
+                                            <Setter
+                                                Property="Foreground"
+                                                Value="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
+                                            <Setter
+                                                Property="BorderBrush"
+                                                Value="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
+                                            <Setter
+                                                Property="BorderThickness"
+                                                Value="1" />
+                                        </DataTrigger>
+                                        <DataTrigger
+                                            Binding="{Binding LE3ModsVisible}"
+                                            Value="True">
+                                            <Setter
+                                                Property="Background"
+                                                Value="{DynamicResource {x:Static adonisUi:Brushes.AccentHighlightBrush}}" />
+                                            <Setter
+                                                Property="Foreground"
+                                                Value="White" />
+                                            <Setter
+                                                Property="BorderBrush"
+                                                Value="{DynamicResource {x:Static adonisUi:Brushes.HyperlinkBrush}}" />
+                                            <Setter
+                                                Property="BorderThickness"
+                                                Value="2,2,2,1" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                        <Button
+                            Content="LE2"
+                            DockPanel.Dock="Right"
+                            Click="ToggleLE2Visibility_Click"
+                            ToolTip="{DynamicResource string_tooltip_filterLE2}">
+                            <Button.Style>
+                                <Style
+                                    TargetType="Button"
+                                    BasedOn="{StaticResource {x:Static adonisUi:Styles.AccentButton}}">
+                                    <Style.Triggers>
+                                        <DataTrigger
+                                            Binding="{Binding LE2ModsVisible}"
+                                            Value="False">
+                                            <Setter
+                                                Property="Background"
+                                                Value="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" />
+                                            <Setter
+                                                Property="Foreground"
+                                                Value="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
+                                            <Setter
+                                                Property="BorderBrush"
+                                                Value="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
+                                            <Setter
+                                                Property="BorderThickness"
+                                                Value="1" />
+                                        </DataTrigger>
+                                        <DataTrigger
+                                            Binding="{Binding LE2ModsVisible}"
+                                            Value="True">
+                                            <Setter
+                                                Property="Background"
+                                                Value="{DynamicResource {x:Static adonisUi:Brushes.AccentHighlightBrush}}" />
+                                            <Setter
+                                                Property="Foreground"
+                                                Value="White" />
+                                            <Setter
+                                                Property="BorderBrush"
+                                                Value="{DynamicResource {x:Static adonisUi:Brushes.HyperlinkBrush}}" />
+                                            <Setter
+                                                Property="BorderThickness"
+                                                Value="2,2,2,1" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                        <Button
+                            Content="LE1"
+                            DockPanel.Dock="Right"
+                            Click="ToggleLE1Visibility_Click"
+                            ToolTip="{DynamicResource string_tooltip_filterLE1}">
+                            <Button.Style>
+                                <Style
+                                    TargetType="Button"
+                                    BasedOn="{StaticResource {x:Static adonisUi:Styles.AccentButton}}">
+                                    <Style.Triggers>
+                                        <DataTrigger
+                                            Binding="{Binding LE1ModsVisible}"
+                                            Value="False">
+                                            <Setter
+                                                Property="Background"
+                                                Value="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" />
+                                            <Setter
+                                                Property="Foreground"
+                                                Value="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
+                                            <Setter
+                                                Property="BorderBrush"
+                                                Value="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
+                                            <Setter
+                                                Property="BorderThickness"
+                                                Value="1" />
+                                        </DataTrigger>
+                                        <DataTrigger
+                                            Binding="{Binding LE1ModsVisible}"
+                                            Value="True">
+                                            <Setter
+                                                Property="Background"
+                                                Value="{DynamicResource {x:Static adonisUi:Brushes.AccentHighlightBrush}}" />
+                                            <Setter
+                                                Property="Foreground"
+                                                Value="White" />
+                                            <Setter
+                                                Property="BorderBrush"
+                                                Value="{DynamicResource {x:Static adonisUi:Brushes.HyperlinkBrush}}" />
+                                            <Setter
+                                                Property="BorderThickness"
+                                                Value="2,2,2,1" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                        <Button
+                            Content="LEL"
+                            DockPanel.Dock="Right"
+                            Click="ToggleLELauncherVisibility_Click"
+                            ToolTip="{DynamicResource string_tooltip_filterLELauncher}">
+                            <Button.Style>
+                                <Style
+                                    TargetType="Button"
+                                    BasedOn="{StaticResource {x:Static adonisUi:Styles.AccentButton}}">
+                                    <Style.Triggers>
+                                        <DataTrigger
+                                            Binding="{Binding LELauncherModsVisible}"
+                                            Value="False">
+                                            <Setter
+                                                Property="Background"
+                                                Value="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" />
+                                            <Setter
+                                                Property="Foreground"
+                                                Value="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
+                                            <Setter
+                                                Property="BorderBrush"
+                                                Value="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
+                                            <Setter
+                                                Property="BorderThickness"
+                                                Value="1" />
+                                        </DataTrigger>
+                                        <DataTrigger
+                                            Binding="{Binding LELauncherModsVisible}"
+                                            Value="True">
+                                            <Setter
+                                                Property="Background"
+                                                Value="{DynamicResource {x:Static adonisUi:Brushes.AccentHighlightBrush}}" />
+                                            <Setter
+                                                Property="Foreground"
+                                                Value="White" />
+                                            <Setter
+                                                Property="BorderBrush"
+                                                Value="{DynamicResource {x:Static adonisUi:Brushes.HyperlinkBrush}}" />
+                                            <Setter
+                                                Property="BorderThickness"
+                                                Value="2,2,2,1" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                        <Button
                             Content="ME3"
                             DockPanel.Dock="Right"
                             Click="ToggleME3Visibility_Click"

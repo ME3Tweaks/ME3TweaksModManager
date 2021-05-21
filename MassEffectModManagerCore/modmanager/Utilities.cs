@@ -796,6 +796,7 @@ namespace MassEffectModManagerCore.modmanager
         public static string GetLE3ModsDirectory() => Path.Combine(GetModsDirectory(), "LE3");
         public static string GetLE2ModsDirectory() => Path.Combine(GetModsDirectory(), "LE2");
         public static string GetLE1ModsDirectory() => Path.Combine(GetModsDirectory(), "LE1");
+        public static string GetLELauncherModsDirectory() => Path.Combine(GetModsDirectory(), "LELAUNCHER");
 
         /// <summary>
         /// Returns location where we will store the 7z.dll. Does not check for existence

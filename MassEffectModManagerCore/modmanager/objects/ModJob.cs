@@ -200,6 +200,14 @@ namespace MassEffectModManagerCore.modmanager.objects
         };
 
         /// <summary>
+        /// LELAUNCHER only supports LELAUNCHER header
+        /// </summary>
+        internal static readonly JobHeader[] LELauncherSupportedNonCustomDLCJobHeaders =
+        {
+            JobHeader.LELAUNCHER,
+        };
+
+        /// <summary>
         /// ModDesc.ini Header that this mod job targets
         /// </summary>
         public JobHeader Header { get; private set; }
@@ -412,6 +420,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 case MEGame.LE1:
                 case MEGame.LE2:
                 case MEGame.LE3:
+                case MEGame.Unknown:
                     // Maybe add Unknown? (Unknown in M3 = LELauncher)
                     return LEHeadersToDLCNamesMap;
                 default:
@@ -454,6 +463,8 @@ namespace MassEffectModManagerCore.modmanager.objects
                 case MEGame.LE2:
                 case MEGame.LE3:
                     return LESupportedNonCustomDLCJobHeaders;
+                case MEGame.Unknown:
+                    return LELauncherSupportedNonCustomDLCJobHeaders;
                 default:
                     throw new Exception(@"Can't get supported list of headers for unknown game type.");
             }

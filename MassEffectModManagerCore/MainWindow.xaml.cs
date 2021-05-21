@@ -78,6 +78,7 @@ namespace MassEffectModManagerCore
         public bool LE1ModsVisible { get; set; } = true;
         public bool LE2ModsVisible { get; set; } = true;
         public bool LE3ModsVisible { get; set; } = true;
+        public bool LELauncherModsVisible { get; set; } = true;
 
         public bool ME1NexusEndorsed { get; set; }
         public bool ME2NexusEndorsed { get; set; }
@@ -2041,7 +2042,12 @@ namespace MassEffectModManagerCore
                 var me3modDescsToLoad = Directory.GetDirectories(Utilities.GetME3ModsDirectory()).Select(x => (game: MEGame.ME3, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
                 var me2modDescsToLoad = Directory.GetDirectories(Utilities.GetME2ModsDirectory()).Select(x => (game: MEGame.ME2, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
                 var me1modDescsToLoad = Directory.GetDirectories(Utilities.GetME1ModsDirectory()).Select(x => (game: MEGame.ME1, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
-                var modDescsToLoad = le3modDescsToLoad.Concat(le2modDescsToLoad).Concat(le1modDescsToLoad).Concat(me3modDescsToLoad).Concat(me2modDescsToLoad).Concat(me1modDescsToLoad);
+
+                // LE Launcher
+                var leLaunchermodDescsToLoad = Directory.GetDirectories(Utilities.GetLELauncherModsDirectory()).Select(x => (game: MEGame.Unknown, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
+                //var modDescsToLoad = leLaunchermodDescsToLoad.ToList();
+                
+                var modDescsToLoad = le3modDescsToLoad.Concat(le2modDescsToLoad).Concat(le1modDescsToLoad).Concat(me3modDescsToLoad).Concat(me2modDescsToLoad).Concat(me1modDescsToLoad).Concat(leLaunchermodDescsToLoad);
 
                 foreach (var moddesc in modDescsToLoad)
                 {
@@ -2052,7 +2058,8 @@ namespace MassEffectModManagerCore
                         //{
                         AllLoadedMods.Add(mod);
                         if (ME1ModsVisible && mod.Game == MEGame.ME1 || ME2ModsVisible && mod.Game == MEGame.ME2 || ME3ModsVisible && mod.Game == MEGame.ME3
-                            || LE1ModsVisible && mod.Game == MEGame.LE1 || LE2ModsVisible && mod.Game == MEGame.LE2 || LE3ModsVisible && mod.Game == MEGame.LE3)
+                            || LE1ModsVisible && mod.Game == MEGame.LE1 || LE2ModsVisible && mod.Game == MEGame.LE2 || LE3ModsVisible && mod.Game == MEGame.LE3
+                            || LELauncherModsVisible && mod.Game == MEGame.Unknown)
                         {
                             VisibleFilteredMods.Add(mod);
                         }
@@ -3577,6 +3584,30 @@ namespace MassEffectModManagerCore
 #endif
         }
 
+        private void ToggleLE1Visibility_Click(object sender, RoutedEventArgs e)
+        {
+            LE1ModsVisible = !LE1ModsVisible;
+            FilterMods();
+        }
+
+        private void ToggleLE2Visibility_Click(object sender, RoutedEventArgs e)
+        {
+            LE2ModsVisible = !LE2ModsVisible;
+            FilterMods();
+        }
+
+        private void ToggleLE3Visibility_Click(object sender, RoutedEventArgs e)
+        {
+            LE3ModsVisible = !LE3ModsVisible;
+            FilterMods();
+        }
+
+        private void ToggleLELauncherVisibility_Click(object sender, RoutedEventArgs e)
+        {
+            LELauncherModsVisible = !LELauncherModsVisible;
+            FilterMods();
+        }
+
         private void ToggleME3Visibility_Click(object sender, RoutedEventArgs e)
         {
             ME3ModsVisible = !ME3ModsVisible;
@@ -3827,10 +3858,10 @@ namespace MassEffectModManagerCore
             previewPanel.Close += (a, b) =>
             {
                 ReleaseBusyControl();
-                if (b.Data is bool loadMods)
-                {
-                    LoadMods();
-                }
+                //if (b.Data is bool loadMods)
+                //{
+                //    LoadMods();
+                //}
             };
             ShowBusyControl(previewPanel);
         }

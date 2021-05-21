@@ -10,7 +10,8 @@
     MinHeight="650"
     MinWidth="875"
     DataContext="{Binding RelativeSource={RelativeSource Self}}"
-    Width="1175">
+    Width="1175"
+    ContentRendered="StarterKit_ContentRendered">
     <Window.Style>
         <Style
             TargetType="Window"

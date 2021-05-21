@@ -167,8 +167,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
             var installationJobs = ModBeingInstalled.InstallationJobs;
             var gameDLCPath = M3Directories.GetDLCPath(SelectedGameTarget);
-
-            Directory.CreateDirectory(gameDLCPath); //me1/me2 missing dlc might not have this folder
+            if (gameDLCPath != null)
+            {
+                Directory.CreateDirectory(gameDLCPath); //me1/me2 missing dlc might not have this folder
+            }
 
             //Check we can install
             var missingRequiredDLC = ModBeingInstalled.ValidateRequiredModulesAreInstalled(SelectedGameTarget);

@@ -746,7 +746,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             //This was in Java version - I believe this was to ensure only tenth version of precision would be used. E.g no moddesc 4.52
             ModDescTargetVersion = Math.Round(ModDescTargetVersion * 10) / 10;
             CLog.Information(@"Parsing mod using moddesc version: " + ModDescTargetVersion, Settings.LogModStartup);
-            
+
             // End of version rounding
 
             #region Banner Image
@@ -805,6 +805,13 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     CLog.Information(@"Found INI header with moddir specified: " + headerAsString, Settings.LogModStartup);
                     CLog.Information(@"Subdirectory (moddir): " + jobSubdirectory, Settings.LogModStartup);
                     //string fullSubPath = FilesystemInterposer.PathCombine(IsInArchive, ModPath, jobSubdirectory);
+
+                    if (TargetsLELauncher)
+                    {
+                        // Special load
+                        LoadLauncherMod(jobSubdirectory);
+                        return;
+                    }
 
                     bool directoryMatchesGameStructure = false;
                     if (ModDescTargetVersion >= 6.0) bool.TryParse(iniData[headerAsString][@"gamedirectorystructure"], out directoryMatchesGameStructure);
@@ -1769,6 +1776,50 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             }
 
             CLog.Information($@"---MOD--------END OF {ModName} STARTUP-----------", Settings.LogModStartup);
+        }
+
+        /// <summary>
+        /// Prepares the LELAUNCHER mod job and finalizes loading of the mod.
+        /// </summary>
+        /// <param name="jobSubdirectory"></param>
+        private void LoadLauncherMod(string jobSubDir)
+        {
+            int jobDirLength = jobSubDir == @"." ? 0 : jobSubDir.Length;
+            ModJob job = new ModJob(ModJob.JobHeader.LELAUNCHER, this);
+
+            var sourceDirectory = FilesystemInterposer.PathCombine(IsInArchive, ModPath, jobSubDir).Replace('/', '\\');
+            if (FilesystemInterposer.DirectoryExists(sourceDirectory, Archive))
+            {
+                var files = FilesystemInterposer.DirectoryGetFiles(sourceDirectory, @"*.*", SearchOption.AllDirectories, Archive).Select(x => x.Substring((ModPath.Length > 0 ? (ModPath.Length + 1) : 0) + jobDirLength).TrimStart('\\')).ToList();
+                foreach (var file in files)
+                {
+                    if (IsLauncherFiletypeAllowed(file))
+                    {
+                        job.AddPreparsedFileToInstall($@"Content/{file}", file, this);
+                    }
+                    else
+                    {
+                        Log.Error($@"The LELAUNCHER header only supports the following file extensions: {string.Join(", ",AllowedLauncherFileTypes)} An unsupported filetype was found: {file}");
+                        LoadFailedReason = $"The LELAUNCHER header only supports the following file extensions: {string.Join(", ", AllowedLauncherFileTypes)} An unsupported filetype was found: {file}";
+                        ValidMod = false;
+                    }
+                }
+            }
+
+            InstallationJobs.Add(job);
+            ValidMod = true;
+        }
+
+        private static string[] AllowedLauncherFileTypes = new[]
+        {
+            @".bik", @".cfg", @".chn", @".cht", @".deu", @".esn", @".fra", @".int", @".ita", @".jpn", @".kor", @".pol", @".rus", @".swd", @".swf", @".tmp", @".wav",
+        };
+
+        private bool IsLauncherFiletypeAllowed(string filename)
+        {
+            var extension = Path.GetExtension(filename);
+            if (string.IsNullOrEmpty(extension)) return false;
+            return AllowedLauncherFileTypes.Contains(extension);
         }
 
         private static readonly string[] allowedConfigFilesME1 = { @"BIOCredits.ini", @"BioEditor.ini", @"BIOEngine.ini", @"BIOGame.ini", @"BIOGuiResources.ini", @"BIOInput.ini", @"BIOParty.in", @"BIOQA.ini" };
