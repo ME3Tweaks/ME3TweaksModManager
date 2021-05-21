@@ -534,6 +534,9 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 case MEGame.LE3:
                     SUPPORTED_HASHES_LE3.TryGetValue(md5, out var le3result);
                     return (md5, le3result);
+                case MEGame.Unknown:
+                    SUPPORTED_HASHES_LEL.TryGetValue(md5, out var lelresult);
+                    return (md5, lelresult);
                 default:
                     throw new Exception(@"Cannot vanilla check against game that is not ME1/ME2/ME3 LE1/LE2/LE3");
             }
@@ -569,8 +572,8 @@ namespace MassEffectModManagerCore.modmanager.helpers
 
         private static Dictionary<string, string> SUPPORTED_HASHES_LE1 = new Dictionary<string, string>
         {
-            [@"f4331d60672509b342da12bc42b4622f"] = @"Origin 2.0.0.47902",
-            [@"ade71fcaa13224e383a848b90db807f2"] = @"Origin 2.0.0.48204",
+            [@"f4331d60672509b342da12bc42b4622f"] = @"Origin 2.0.0.47902", // May 14 Launch Version
+            [@"ade71fcaa13224e383a848b90db807f2"] = @"Origin 2.0.0.48204", // May 17
         };
 
         private static Dictionary<string, string> SUPPORTED_HASHES_LE2 = new Dictionary<string, string>
@@ -585,6 +588,12 @@ namespace MassEffectModManagerCore.modmanager.helpers
             [@"c55689e54c921739532beb033f0f0ebf"] = @"Origin 2.0.0.48204",
         };
 
+        private static Dictionary<string, string> SUPPORTED_HASHES_LEL = new Dictionary<string, string>
+        {
+            [@"e03dd006f2d4f56f46a8f6c014230ba8"] = @"Origin 2.0.0.47902",
+            [@"a50a5ab69a0de8356ddd8ab69f8ecdc2"] = @"Origin 2.0.0.48204",
+        };
+        
         /// <summary>
         /// Checks the existing listed backup and tags it with cmm_vanilla if determined to be vanilla. This is because ALOT Installer allows modified backups where as Mod Manager will not
         /// </summary>

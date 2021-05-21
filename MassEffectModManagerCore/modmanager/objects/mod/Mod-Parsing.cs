@@ -1785,8 +1785,8 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
         private void LoadLauncherMod(string jobSubDir)
         {
             int jobDirLength = jobSubDir == @"." ? 0 : jobSubDir.Length;
-            ModJob job = new ModJob(ModJob.JobHeader.LELAUNCHER, this);
-
+            ModJob headerJob = new ModJob(ModJob.JobHeader.LELAUNCHER, this);
+            headerJob.JobDirectory = jobSubDir.Replace('/', '\\');
             var sourceDirectory = FilesystemInterposer.PathCombine(IsInArchive, ModPath, jobSubDir).Replace('/', '\\');
             if (FilesystemInterposer.DirectoryExists(sourceDirectory, Archive))
             {
@@ -1795,7 +1795,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 {
                     if (IsLauncherFiletypeAllowed(file))
                     {
-                        job.AddPreparsedFileToInstall($@"Content/{file}", file, this);
+                        headerJob.AddPreparsedFileToInstall($@"Content/{file}", file, this);
                     }
                     else
                     {
@@ -1806,7 +1806,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 }
             }
 
-            InstallationJobs.Add(job);
+            InstallationJobs.Add(headerJob);
             ValidMod = true;
         }
 

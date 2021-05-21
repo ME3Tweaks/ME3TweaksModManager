@@ -2046,7 +2046,7 @@ namespace MassEffectModManagerCore
                 // LE Launcher
                 var leLaunchermodDescsToLoad = Directory.GetDirectories(Utilities.GetLELauncherModsDirectory()).Select(x => (game: MEGame.Unknown, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
                 //var modDescsToLoad = leLaunchermodDescsToLoad.ToList();
-                
+
                 var modDescsToLoad = le3modDescsToLoad.Concat(le2modDescsToLoad).Concat(le1modDescsToLoad).Concat(me3modDescsToLoad).Concat(me2modDescsToLoad).Concat(me1modDescsToLoad).Concat(leLaunchermodDescsToLoad);
 
                 foreach (var moddesc in modDescsToLoad)
@@ -2321,6 +2321,7 @@ namespace MassEffectModManagerCore
                     }
                 }
 
+                loadLETarget(MEGame.Unknown, LEDirectory.LauncherPath);
                 loadLETarget(MEGame.LE1, LE1Directory.DefaultGamePath);
                 loadLETarget(MEGame.LE2, LE2Directory.DefaultGamePath);
                 loadLETarget(MEGame.LE3, LE3Directory.DefaultGamePath);
@@ -2378,7 +2379,7 @@ namespace MassEffectModManagerCore
 
             // Load LE cached tarets
             targets.AddRange(Utilities.GetCachedTargets(MEGame.LE1, targets, true)); // Kind of a hack, legendary load flag loads all targets for LE
-            
+
             // ORDER THE TARGETS
             targets = targets.Distinct().ToList();
             List<GameTarget> finalList = new List<GameTarget>();
@@ -2390,6 +2391,9 @@ namespace MassEffectModManagerCore
             if (aTarget != null) finalList.Add(aTarget);
             aTarget = targets.FirstOrDefault(x => x.Game == MEGame.LE1 && x.RegistryActive);
             if (aTarget != null) finalList.Add(aTarget);
+            aTarget = targets.FirstOrDefault(x => x.Game == MEGame.Unknown && !x.IsCustomOption && x.RegistryActive);
+            if (aTarget != null) finalList.Add(aTarget);
+
 
             // OT
             aTarget = targets.FirstOrDefault(x => x.Game == MEGame.ME3 && x.RegistryActive);
@@ -2401,12 +2405,13 @@ namespace MassEffectModManagerCore
 
             if (targets.Count > finalList.Count)
             {
-                finalList.Add(new GameTarget(MEGame.Unknown, $@"==================={M3L.GetString(M3L.string_otherSavedTargets)}===================", false) { Selectable = false, IsCustomOption = true });
+                finalList.Add(new GameTarget(MEGame.Unknown, $@"==================={M3L.GetString(M3L.string_otherSavedTargets)}===================", false, true) { Selectable = false });
             }
 
             finalList.AddRange(targets.Where(x => x.Game == MEGame.LE3 && !x.RegistryActive));
             finalList.AddRange(targets.Where(x => x.Game == MEGame.LE2 && !x.RegistryActive));
             finalList.AddRange(targets.Where(x => x.Game == MEGame.LE1 && !x.RegistryActive));
+            finalList.AddRange(targets.Where(x => x.Game == MEGame.Unknown && !x.IsCustomOption && !x.RegistryActive));
 
 
             finalList.AddRange(targets.Where(x => x.Game == MEGame.ME3 && !x.RegistryActive));
@@ -3635,6 +3640,14 @@ namespace MassEffectModManagerCore
                 allMods.RemoveAll(x => x.Game == MEGame.ME2);
             if (!ME3ModsVisible)
                 allMods.RemoveAll(x => x.Game == MEGame.ME3);
+            if (!LE1ModsVisible)
+                allMods.RemoveAll(x => x.Game == MEGame.LE1);
+            if (!LE2ModsVisible)
+                allMods.RemoveAll(x => x.Game == MEGame.LE2);
+            if (!LE3ModsVisible)
+                allMods.RemoveAll(x => x.Game == MEGame.LE3);
+            if (!LELauncherModsVisible)
+                allMods.RemoveAll(x => x.Game == MEGame.Unknown);
             AllGamesHidden = !ME1ModsVisible && !ME2ModsVisible && !ME3ModsVisible;
             VisibleFilteredMods.ReplaceAll(allMods);
             VisibleFilteredMods.Sort(x => x.ModName);
@@ -3696,8 +3709,8 @@ namespace MassEffectModManagerCore
                     item.Value.IsChecked = item.Key == lang;
                 }
 
-                    //Set language.
-                    Task.Run(async () => { await OnlineContent.InternalSetLanguage(lang, forcedDictionary, startup); }).Wait();
+                //Set language.
+                Task.Run(async () => { await OnlineContent.InternalSetLanguage(lang, forcedDictionary, startup); }).Wait();
 
                 App.CurrentLanguage = Settings.Language = lang;
                 SetTipsForLanguage();
@@ -3714,8 +3727,8 @@ namespace MassEffectModManagerCore
 
                 if (SelectedMod != null)
                 {
-                        // This will force strings to update
-                        var sm = SelectedMod;
+                    // This will force strings to update
+                    var sm = SelectedMod;
                     SelectedMod = null;
                     SelectedMod = sm;
                 }
@@ -3724,8 +3737,8 @@ namespace MassEffectModManagerCore
                 {
                     if (forcedDictionary == null)
                     {
-                            //Settings.Save(); //save this language option
-                        }
+                        //Settings.Save(); //save this language option
+                    }
                     await AuthToNexusMods(languageUpdateOnly: true); //this call will immediately return
                     FailedMods.RaiseBindableCountChanged();
                     CurrentOperationText = M3L.GetString(M3L.string_setLanguageToX);

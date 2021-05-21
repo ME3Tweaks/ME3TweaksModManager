@@ -73,30 +73,11 @@ namespace MassEffectModManagerCore.modmanager.objects
 
         public void ReloadGameTarget(bool lodUpdateAndLogging = true, bool forceLodUpdate = false, bool reverseME1Executable = true)
         {
-            if (Game != MEGame.Unknown && !IsCustomOption)
+            // Unknown = 
+            if (!IsCustomOption)
             {
                 if (Directory.Exists(TargetPath))
                 {
-                    var oldTMOption = TextureModded;
-                    var alotInfo = GetInstalledALOTInfo();
-                    if (alotInfo != null)
-                    {
-                        TextureModded = true;
-                        ALOTVersion = alotInfo.ToString();
-                        if (alotInfo.MEUITMVER > 0)
-                        {
-                            MEUITMInstalled = true;
-                            MEUITMVersion = alotInfo.MEUITMVER;
-                        }
-                    }
-                    else
-                    {
-                        TextureModded = false;
-                        ALOTVersion = null;
-                        MEUITMInstalled = false;
-                        MEUITMVersion = 0;
-                    }
-
                     CLog.Information(@"Getting game source for target " + TargetPath, lodUpdateAndLogging);
                     var hashCheckResult = VanillaDatabaseService.GetGameSource(this, reverseME1Executable);
 
@@ -130,9 +111,32 @@ namespace MassEffectModManagerCore.modmanager.objects
 
                             CLog.Information(@"Source: " + GameSource, lodUpdateAndLogging);
                         }
+                    }
 
-                        IsPolishME1 = Game == MEGame.ME1 && File.Exists(Path.Combine(TargetPath, @"BioGame",
-                            @"CookedPC", @"Movies", @"niebieska_pl.bik"));
+                    if (Game != MEGame.Unknown)
+                    {
+                        // Actual game
+                        var oldTMOption = TextureModded;
+                        var alotInfo = GetInstalledALOTInfo();
+                        if (alotInfo != null)
+                        {
+                            TextureModded = true;
+                            ALOTVersion = alotInfo.ToString();
+                            if (alotInfo.MEUITMVER > 0)
+                            {
+                                MEUITMInstalled = true;
+                                MEUITMVersion = alotInfo.MEUITMVER;
+                            }
+                        }
+                        else
+                        {
+                            TextureModded = false;
+                            ALOTVersion = null;
+                            MEUITMInstalled = false;
+                            MEUITMVersion = 0;
+                        }
+
+                        IsPolishME1 = Game == MEGame.ME1 && File.Exists(Path.Combine(TargetPath, @"BioGame", @"CookedPC", @"Movies", @"niebieska_pl.bik"));
                         if (IsPolishME1)
                         {
                             CLog.Information(@"ME1 Polish Edition detected", lodUpdateAndLogging);
@@ -144,12 +148,22 @@ namespace MassEffectModManagerCore.modmanager.objects
                             UpdateLODs(Settings.AutoUpdateLODs2K);
                         }
                     }
+                    else
+                    {
+                        // LELAUNCHER
+                        IsValid = true; //set to false if target becomes invalid
+                    }
                 }
                 else
                 {
                     Log.Error($@"Target is invalid: {TargetPath} does not exist (or is not accessible)");
-                    IsValid = false; //set to false if target becomes invalid
+                    IsValid = false;
                 }
+            }
+            else
+            {
+                // Custom Option
+                IsValid = true;
             }
         }
 
@@ -424,6 +438,10 @@ namespace MassEffectModManagerCore.modmanager.objects
 
         public bool IsTargetWritable()
         {
+            if (Game == MEGame.Unknown)
+            {
+                return Utilities.IsDirectoryWritable(TargetPath) && Utilities.IsDirectoryWritable(Path.Combine(TargetPath, @"Content"));
+            }
             return Utilities.IsDirectoryWritable(TargetPath) && Utilities.IsDirectoryWritable(Path.Combine(TargetPath, @"Binaries"));
         }
 
@@ -512,6 +530,17 @@ namespace MassEffectModManagerCore.modmanager.objects
                         Path.Combine(TargetPath, @"BioGame", @"CookedPCConsole", @"citwrd_rp1_bailey_m_D_Int.afc")
                     };
                     break;
+                case MEGame.Unknown: // LELAUNCHER
+                    validationFiles = new[]
+                    {
+                        Path.Combine(TargetPath, @"MassEffectLauncher.exe"),
+                        Path.Combine(TargetPath, @"Content", @"EulaUI.swf"),
+                        Path.Combine(TargetPath, @"Content", @"click.wav"),
+                        Path.Combine(TargetPath, @"Content", @"LauncherUI.swf"),
+                        Path.Combine(TargetPath, @"Content", @"Xbox_ControllerIcons.swf"),
+                        Path.Combine(TargetPath, @"Content", @"Sounds","mus_gui_menu_looping_quad.wav"),
+                    };
+                    break;
             }
 
             if (validationFiles == null) return null; //Invalid game.
@@ -555,7 +584,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     }
                     break;
 
-                // No check for Legendary Edition games right now until patch cycle ends
+                    // No check for Legendary Edition games right now until patch cycle ends
             }
 
             if (!ignoreCmmVanilla)

@@ -1361,82 +1361,85 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 return;
             }
 
-            //Detect incompatible DLC
-            var dlcMods = VanillaDatabaseService.GetInstalledDLCMods(SelectedGameTarget);
-            if (ModBeingInstalled.IncompatibleDLC.Any())
+            if (ModBeingInstalled.Game != MEGame.Unknown)
             {
-                //Check for incompatible DLC.
-                List<string> incompatibleDLC = new List<string>();
-                foreach (var incompat in ModBeingInstalled.IncompatibleDLC)
+                //Detect incompatible DLC
+                var dlcMods = VanillaDatabaseService.GetInstalledDLCMods(SelectedGameTarget);
+                if (ModBeingInstalled.IncompatibleDLC.Any())
                 {
-                    if (dlcMods.Contains(incompat, StringComparer.InvariantCultureIgnoreCase))
+                    //Check for incompatible DLC.
+                    List<string> incompatibleDLC = new List<string>();
+                    foreach (var incompat in ModBeingInstalled.IncompatibleDLC)
                     {
-                        var tpmi = ThirdPartyServices.GetThirdPartyModInfo(incompat, ModBeingInstalled.Game);
-                        if (tpmi != null)
+                        if (dlcMods.Contains(incompat, StringComparer.InvariantCultureIgnoreCase))
                         {
-                            incompatibleDLC.Add($@" - {incompat} ({tpmi.modname})");
+                            var tpmi = ThirdPartyServices.GetThirdPartyModInfo(incompat, ModBeingInstalled.Game);
+                            if (tpmi != null)
+                            {
+                                incompatibleDLC.Add($@" - {incompat} ({tpmi.modname})");
+                            }
+                            else
+                            {
+                                incompatibleDLC.Add(@" - " + incompat);
+                            }
+                        }
+                    }
+
+                    if (incompatibleDLC.Count > 0)
+                    {
+                        string message = M3L.GetString(M3L.string_dialogIncompatibleDLCDetectedHeader, ModBeingInstalled.ModName);
+                        message += string.Join('\n', incompatibleDLC);
+                        message += M3L.GetString(M3L.string_dialogIncompatibleDLCDetectedFooter, ModBeingInstalled.ModName);
+                        M3L.ShowDialog(window, message, M3L.GetString(M3L.string_incompatibleDLCDetected), MessageBoxButton.OK, MessageBoxImage.Error);
+
+                        if (initialSetup)
+                        {
+                            InstallationCancelled = true;
+                            OnClosing(DataEventArgs.Empty);
                         }
                         else
                         {
-                            incompatibleDLC.Add(@" - " + incompat);
+                            PreventInstallUntilTargetChange = true;
                         }
-                    }
-                }
 
-                if (incompatibleDLC.Count > 0)
-                {
-                    string message = M3L.GetString(M3L.string_dialogIncompatibleDLCDetectedHeader, ModBeingInstalled.ModName);
-                    message += string.Join('\n', incompatibleDLC);
-                    message += M3L.GetString(M3L.string_dialogIncompatibleDLCDetectedFooter, ModBeingInstalled.ModName);
-                    M3L.ShowDialog(window, message, M3L.GetString(M3L.string_incompatibleDLCDetected), MessageBoxButton.OK, MessageBoxImage.Error);
-
-                    if (initialSetup)
-                    {
-                        InstallationCancelled = true;
-                        OnClosing(DataEventArgs.Empty);
-                    }
-                    else
-                    {
-                        PreventInstallUntilTargetChange = true;
-                    }
-
-                    return;
-                }
-            }
-
-            //Detect outdated DLC
-            if (ModBeingInstalled.OutdatedCustomDLC.Count > 0)
-            {
-                //Check for incompatible DLC.
-                List<string> outdatedDLC = new List<string>();
-                foreach (var outdatedItem in ModBeingInstalled.OutdatedCustomDLC)
-                {
-                    if (dlcMods.Contains(outdatedItem, StringComparer.InvariantCultureIgnoreCase))
-                    {
-                        var tpmi = ThirdPartyServices.GetThirdPartyModInfo(outdatedItem, ModBeingInstalled.Game);
-                        if (tpmi != null)
-                        {
-                            outdatedDLC.Add($@" - {outdatedItem} ({tpmi.modname})");
-                        }
-                        else
-                        {
-                            outdatedDLC.Add(@" - " + outdatedItem);
-                        }
-                    }
-                }
-
-                if (outdatedDLC.Count > 0)
-                {
-                    string message = M3L.GetString(M3L.string_dialogOutdatedDLCHeader, ModBeingInstalled.ModName);
-                    message += string.Join('\n', outdatedDLC);
-                    message += M3L.GetString(M3L.string_dialogOutdatedDLCFooter, ModBeingInstalled.ModName);
-                    InstallationCancelled = true;
-                    var result = M3L.ShowDialog(window, message, M3L.GetString(M3L.string_outdatedDLCDetected), MessageBoxButton.YesNo, MessageBoxImage.Warning);
-                    if (result == MessageBoxResult.No)
-                    {
-                        InstallationCancelled = true;
-                        OnClosing(DataEventArgs.Empty);
                         return;
+                    }
+                }
+
+                //Detect outdated DLC
+                if (ModBeingInstalled.OutdatedCustomDLC.Count > 0)
+                {
+                    //Check for incompatible DLC.
+                    List<string> outdatedDLC = new List<string>();
+                    foreach (var outdatedItem in ModBeingInstalled.OutdatedCustomDLC)
+                    {
+                        if (dlcMods.Contains(outdatedItem, StringComparer.InvariantCultureIgnoreCase))
+                        {
+                            var tpmi = ThirdPartyServices.GetThirdPartyModInfo(outdatedItem, ModBeingInstalled.Game);
+                            if (tpmi != null)
+                            {
+                                outdatedDLC.Add($@" - {outdatedItem} ({tpmi.modname})");
+                            }
+                            else
+                            {
+                                outdatedDLC.Add(@" - " + outdatedItem);
+                            }
+                        }
+                    }
+
+                    if (outdatedDLC.Count > 0)
+                    {
+                        string message = M3L.GetString(M3L.string_dialogOutdatedDLCHeader, ModBeingInstalled.ModName);
+                        message += string.Join('\n', outdatedDLC);
+                        message += M3L.GetString(M3L.string_dialogOutdatedDLCFooter, ModBeingInstalled.ModName);
+                        InstallationCancelled = true;
+                        var result = M3L.ShowDialog(window, message, M3L.GetString(M3L.string_outdatedDLCDetected), MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                        if (result == MessageBoxResult.No)
+                        {
+                            InstallationCancelled = true;
+                            OnClosing(DataEventArgs.Empty);
+                            return;
+                        }
                     }
                 }
             }

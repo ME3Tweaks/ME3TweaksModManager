@@ -35,6 +35,11 @@ namespace MassEffectModManagerCore.modmanager
                     return exeReal;
                 }
             }
+            else if (target.Game == MEGame.Unknown)
+            {
+                // LE LAUNCHER
+                return Path.Combine(target.TargetPath, @"MassEffectLauncher.exe");
+            }
             return MEDirectories.GetExecutablePath(target.Game, target.TargetPath);
         }
         public static string GetExecutableDirectory(GameTarget target) => MEDirectories.GetExecutableFolderPath(target.Game, target.TargetPath);
@@ -135,6 +140,7 @@ namespace MassEffectModManagerCore.modmanager
             if (header == ModJob.JobHeader.BASEGAME) return true; //Don't check basegame
             if (header == ModJob.JobHeader.CUSTOMDLC) return true; //Don't check custom dlc
             if (header == ModJob.JobHeader.LOCALIZATION) return true; //Don't check localization
+            if (header == ModJob.JobHeader.LELAUNCHER) return true; //Don't check launcher
 
             if (header == ModJob.JobHeader.TESTPATCH)
             {

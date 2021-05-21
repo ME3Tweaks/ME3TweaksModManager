@@ -134,7 +134,7 @@
     <system:String x:Key="string_installationAborted">Installation aborted</system:String>
     <system:String x:Key="string_cannotInstallMod">Cannot install mod</system:String>
     <system:String x:Key="string_dialogUACPreConsent">Some game directories/registry keys are not writable by your user account. ME3Tweaks Mod Manager can grant write access to these directories for you for easier modding. Grant write access to these folders?</system:String>
-    <system:String x:Key="string_someTargetsKeysWriteProtected">Some targets/keys write-protected"</system:String>
+    <system:String x:Key="string_someTargetsKeysWriteProtected">Some targets/keys write-protected</system:String>
     <system:String x:Key="string_targetsWritable">Targets writable</system:String>
     <system:String x:Key="string_allTargetsWritable">All game directory roots appear to be writable.</system:String>
     <system:String x:Key="string_errorCreatingModLibrary">Error creating mod library</system:String>

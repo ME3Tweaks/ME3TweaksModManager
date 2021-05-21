@@ -28,6 +28,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     Debug.WriteLine(@">>> ARCHIVE IS DISPOSED");
                 }
 #endif
+                // Reopen archive if we need to
                 if (File.Exists(ArchivePath) && (Archive == null || Archive.IsDisposed()))
                     Archive = new SevenZipExtractor(ArchivePath); //load archive file for inspection
                 else if (Archive != null && Archive.GetBackingStream() is SevenZip.ArchiveEmulationStreamProxy aesp && aesp.Source is MemoryStream ms)
@@ -193,7 +194,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     buildInstallationQueue(job, installationMapping, false);
                     #endregion
                 }
-                else if (job.Header == ModJob.JobHeader.BASEGAME || job.Header == ModJob.JobHeader.BALANCE_CHANGES || job.Header == ModJob.JobHeader.ME1_CONFIG)
+                else if (job.Header is ModJob.JobHeader.BASEGAME or ModJob.JobHeader.BALANCE_CHANGES or ModJob.JobHeader.ME1_CONFIG)
                 {
                     #region Installation: BASEGAME, BALANCE CHANGES, ME1 CONFIG
                     var installationMapping = new CaseInsensitiveDictionary<InstallSourceFile>();
@@ -234,7 +235,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     }
                     #endregion
                 }
-                else if (Game == MEGame.ME2 || Game == MEGame.ME1)
+                else if (Game is MEGame.ME2 or MEGame.ME1)
                 {
                     #region Installation: DLC Unpacked (ME1/ME2 ONLY)
                     //Unpacked
@@ -249,6 +250,14 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         Log.Warning($@"DLC not installed, skipping: {job.Header}");
                     }
 
+                    #endregion
+                }
+                else if (job.Header == ModJob.JobHeader.LELAUNCHER && Game == MEGame.Unknown)
+                {
+                    #region Installation: LELAUNCHER
+                    var installationMapping = new CaseInsensitiveDictionary<InstallSourceFile>();
+                    unpackedJobInstallationMapping[job] = (installationMapping, new List<string>());
+                    buildInstallationQueue(job, installationMapping, false);
                     #endregion
                 }
                 else
