@@ -15,7 +15,7 @@ namespace MassEffectModManagerCore.modmanager.converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (parameter is string gameStr)
+            if (value is MEGame game && parameter is string gameStr)
             {
                 bool inverted = false;
                 if (gameStr.IndexOf('_') > 0)
@@ -26,7 +26,23 @@ namespace MassEffectModManagerCore.modmanager.converters
                 }
                 if (Enum.TryParse(gameStr, out MEGame parameterGame))
                 {
-                    if (inverted ^ parameterGame == (MEGame)value) return Visibility.Visible;
+                    if (inverted ^ parameterGame == game) return Visibility.Visible;
+                }
+                else if (gameStr.StartsWith("Game"))
+                {
+                    var gameId = gameStr[^1];
+                    switch (gameId)
+                    {
+                        case '1':
+                            if (inverted ^ game.IsGame1()) return Visibility.Visible;
+                            break;
+                        case '2':
+                            if (inverted ^ game.IsGame2()) return Visibility.Visible;
+                            break;
+                        case '3':
+                            if (inverted ^ game.IsGame3()) return Visibility.Visible;
+                            break;
+                    }
                 }
             }
             return Visibility.Collapsed;

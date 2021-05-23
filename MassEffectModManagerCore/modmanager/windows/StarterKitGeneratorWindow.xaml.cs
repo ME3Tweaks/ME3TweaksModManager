@@ -280,7 +280,7 @@ namespace MassEffectModManagerCore.modmanager.windows
             });
             Validator.AddRule(nameof(ModDLCModuleNumber), () =>
             {
-                if (Game != MEGame.ME2) return RuleResult.Valid();
+                if (Game.IsGame2()) return RuleResult.Valid();
                 if (ModDLCModuleNumber <= 0 || ModDLCModuleNumber >= ushort.MaxValue)
                 {
                     return RuleResult.Invalid(M3L.GetString(M3L.string_interp_valueMustBeBetween0AndX, ushort.MaxValue.ToString()));
@@ -300,7 +300,7 @@ namespace MassEffectModManagerCore.modmanager.windows
 
         private void PrecheckStarterKitValues()
         {
-            if (Game is MEGame.ME2 or MEGame.LE2)
+            if (Game.IsGame2())
             {
                 //Check Engine Number.
                 var sameModuleNumberItems = ThirdPartyServices.GetThirdPartyModInfosByModuleNumber(ModDLCModuleNumber, Game);
