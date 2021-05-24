@@ -1289,7 +1289,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         /// File extensnions that will be stored uncompressed in archive as they already have well compressed data and may be of a large size
         /// (which increases the solid block size)
         /// </summary>
-        private static string[] NoCompressExtensions = new[] { @".tfc", @".bik" };
+        private static string[] NoCompressExtensions = new[] { @".tfc", @".bik", @".m3m" };
         private void StartDeployment()
         {
             var premadeName = "";

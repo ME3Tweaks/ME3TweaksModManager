@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Packages.CloningImportingAndRelinking;
 using LegendaryExplorerCore.Unreal;
+using LegendaryExplorerCore.Helpers;
 using Newtonsoft.Json;
 using Serilog;
 
@@ -15,15 +16,17 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
 {
     public class MergeFileChange1
     {
-        [JsonProperty]
-        public string EntryName { get; set; }
-
+        [JsonProperty("entryname")] public string EntryName { get; set; }
         [JsonProperty("propertyupdates")] public List<PropertyUpdate1> PropertyUpdates { get; set; }
         [JsonProperty("assetupdate")] public AssetUpdate1 AssetUpdate { get; set; }
 
+        [JsonIgnore] public MergeFile1 Parent;
+        [JsonIgnore] public MergeMod1 OwningMM => Parent.OwningMM;
 
-        public void ApplyChanges(IMEPackage package, MergeMod1 mergeMod)
+        public void ApplyChanges(IMEPackage package, Mod installingMod)
         {
+            // APPLY PROPERTY UPDATES
+            Log.Information($@"Merging changes into {package.FilePath}");
             if (PropertyUpdates != null)
             {
                 foreach (var pu in PropertyUpdates)
@@ -32,13 +35,22 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
                     if (export == null)
                         throw new Exception($"Could not find export in package {package.FilePath}: {EntryName}! Cannot merge");
 
+                    Log.Information($@"Applying property changes to {export.FileRef.FilePath} {export.InstancedFullPath}");
                     var props = export.GetProperties();
                     pu.ApplyUpdate(package, props);
                     export.WriteProperties(props);
                 }
             }
 
-            AssetUpdate?.ApplyUpdate(package, EntryName, mergeMod);
+            // APPLY ASSET UPDATE
+            AssetUpdate?.ApplyUpdate(package, EntryName, installingMod);
+        }
+
+        public void SetupParent(MergeFile1 parent)
+        {
+            Parent = parent;
+            if (AssetUpdate != null)
+                AssetUpdate.Parent = this;
         }
     }
 
@@ -92,13 +104,22 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
 
     public class AssetUpdate1
     {
-        [JsonProperty("assetindex")]
-        public int AssetIndex { get; set; }
+        /// <summary>
+        /// Name of asset file
+        /// </summary>
+        [JsonProperty("assetname")]
+        public string AssetName { get; set; }
 
+        /// <summary>
+        /// Entry in the asset to use as porting source
+        /// </summary>
         [JsonProperty("entryname")]
         public string EntryName { get; set; }
 
-        public bool ApplyUpdate(IMEPackage package, string destEntryName, MergeMod1 mergeMod1)
+        [JsonIgnore] public MergeFileChange1 Parent;
+        [JsonIgnore] public MergeMod1 OwningMM => Parent.OwningMM;
+
+        public bool ApplyUpdate(IMEPackage package, string destEntryName, Mod installingMod)
         {
             var destEntry = package.FindExport(destEntryName);
             if (destEntry == null)
@@ -106,11 +127,25 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
                 throw new Exception($"Cannot find AssetUpdate1 entry in target package {package.FilePath}: {EntryName}. Merge aborted");
             }
 
-            using var sourcePackage = MEPackageHandler.OpenMEPackageFromStream(new MemoryStream(mergeMod1.Assets[AssetIndex].AssetBinary));
+            Stream binaryStream;
+            if (OwningMM.Assets[AssetName].AssetBinary != null)
+            {
+                binaryStream = new MemoryStream(OwningMM.Assets[AssetName].AssetBinary);
+            }
+            else
+            {
+                var sourcePath = FilesystemInterposer.PathCombine(installingMod.IsInArchive, installingMod.ModPath, Mod.MergeModFolderName, OwningMM.MergeModFilename);
+                using var fileS = File.OpenRead(sourcePath);
+                fileS.Seek(OwningMM.Assets[AssetName].FileOffset, SeekOrigin.Begin);
+                binaryStream = fileS.
+                    ReadToMemoryStream(OwningMM.Assets[AssetName].FileSize);
+            }
+
+            using var sourcePackage = MEPackageHandler.OpenMEPackageFromStream(binaryStream);
             var sourceEntry = sourcePackage.FindExport(EntryName);
             if (sourceEntry == null)
             {
-                throw new Exception($"Cannot find AssetUpdate1 entry in source asset package {mergeMod1.Assets[AssetIndex].FileName}: {EntryName}. Merge aborted");
+                throw new Exception($"Cannot find AssetUpdate1 entry in source asset package {OwningMM.Assets[AssetName].FileName}: {EntryName}. Merge aborted");
             }
 
             var resultst = EntryImporter.ImportAndRelinkEntries(EntryImporter.PortingOption.ReplaceSingular, sourceEntry, destEntry.FileRef, destEntry, true, out _, errorOccuredCallback: x => throw new Exception($"Error merging assets: {x}"));

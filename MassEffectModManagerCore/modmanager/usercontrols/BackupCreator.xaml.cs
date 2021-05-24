@@ -20,6 +20,7 @@ using LegendaryExplorerCore.Packages;
 using Microsoft.AppCenter.Crashes;
 using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Taskbar;
+using PropertyChanged;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -135,25 +136,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             File.Delete(cmmVanilla);
                         }
                     }
-                    switch (Game)
-                    {
-                        case MEGame.ME1:
-                        case MEGame.ME2:
-                            RegistryHandler.DeleteRegistryKey(Registry.CurrentUser, @"Software\ALOTAddon",
-                                Game + @"VanillaBackupLocation");
-                            break;
-                        case MEGame.ME3:
-                            RegistryHandler.DeleteRegistryKey(Registry.CurrentUser, @"Software\Mass Effect 3 Mod Manager",
-                                @"VanillaCopyLocation");
-                            break;
-                        case MEGame.LE1:
-                        case MEGame.LE2:
-                        case MEGame.LE3:
-                            RegistryHandler.DeleteRegistryKey(Registry.CurrentUser, @"Software\ME3Tweaks",
-                                Game + @"VanillaBackupLocation");
-                            break;
-                    }
-                    BackupService.RefreshBackupStatus(window, Game);
+
+                    BackupService.RemoveBackupPath(Game);
+                    ResetBackupStatus();
                 }
             }
 
@@ -673,6 +658,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             public event PropertyChangedEventHandler PropertyChanged;
 #pragma warning restore
             public GameTarget BackupSourceTarget { get; set; }
+            [AlsoNotifyFor(nameof(BackupOptionsVisible))]
             public string BackupLocation { get; set; }
             public string BackupStatus { get; set; }
             public string BackupStatusLine2 { get; set; }

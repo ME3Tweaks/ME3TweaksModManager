@@ -242,6 +242,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 bool installsPackageFile = false;
                 foreach (var jobMappings in installationQueues.unpackedJobMappings)
                 {
+                    installsPackageFile |= jobMappings.Key.MergeMods.Any(); // merge mods will modify packages
                     installsPackageFile |= jobMappings.Value.fileMapping.Keys.Any(x => x.EndsWith(@".pcc", StringComparison.InvariantCultureIgnoreCase));
                     installsPackageFile |= jobMappings.Value.fileMapping.Keys.Any(x => x.EndsWith(@".u", StringComparison.InvariantCultureIgnoreCase));
                     installsPackageFile |= jobMappings.Value.fileMapping.Keys.Any(x => x.EndsWith(@".upk", StringComparison.InvariantCultureIgnoreCase));
@@ -262,6 +263,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                 if (installsPackageFile)
                 {
+                    // Todo: ME3, LE warn only
+                    // ME1/ME2 trigger abort
+
                     if (Settings.DeveloperMode)
                     {
                         Log.Warning(@"ALOT is installed and user is attempting to install a mod (in developer mode). Prompting user to cancel installation");
@@ -314,10 +318,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             Dictionary<int, string> fullPathMappingArchive = new Dictionary<int, string>();
             SortedSet<string> customDLCsBeingInstalled = new SortedSet<string>();
             List<string> mappedReadOnlyTargets = new List<string>();
-
-            //THREE WAY MERGE
-            //var threeWayMergeFiles = VanillaDatabaseService.GetThreeWayMergeFiles(gameTarget, installationQueues);
-
 
             foreach (var unpackedQueue in installationQueues.unpackedJobMappings)
             {
@@ -680,7 +680,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
             }
 
-            //Write MetaCMM
+            //Write MetaCMM for Custom DLC
             List<string> addedDLCFolders = new List<string>();
             foreach (var v in installationQueues.unpackedJobMappings)
             {
@@ -721,6 +721,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 InstallIntoSFAR(sfarJob, ModBeingInstalled, FileInstalledIntoSFARCallback, ModBeingInstalled.IsInArchive ? sfarStagingDirectory : null);
             }
+
+            //Stage: Merge Mods
+            foreach (var mergeMod in installationJobs.SelectMany(x => x.MergeMods))
+            {
+                mergeMod.ApplyMergeMod(ModBeingInstalled, SelectedGameTarget);
+            }
+
 
             //Main installation step has completed
             Log.Information(@"Main stage of mod installation has completed");

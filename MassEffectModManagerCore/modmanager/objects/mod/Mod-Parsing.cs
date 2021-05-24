@@ -16,6 +16,7 @@ using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Packages;
+using MassEffectModManagerCore.modmanager.objects.mod.merge;
 using Microsoft.AppCenter.Analytics;
 using Serilog;
 using SevenZip;
@@ -29,7 +30,13 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
         /// The default website value, to indicate one was not set. This value must be set to a valid url or navigation request in UI binding may not work.
         /// </summary>
         public const string DefaultWebsite = @"http://example.com"; //this is required to prevent exceptions when binding the navigateuri
-                                                                    //Fody uses this property on weaving
+
+        /// <summary>
+        /// MergeMods folder. Do not change
+        /// </summary>
+        public const string MergeModFolderName = @"MergeMods";
+
+        //Fody uses this property on weaving
 #pragma warning disable
         public event PropertyChangedEventHandler PropertyChanged;
 #pragma warning restore
@@ -109,6 +116,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
         /// If the mod requires an AMD processor to install. This is only used for ME1 lighting fix.
         /// </summary>
         public bool RequiresAMD { get; set; }
+
         /// <summary>
         /// List of files that will always be deleted locally when servicing an update on a client. This has mostly been deprecated for new mods.
         /// </summary>
@@ -827,12 +835,15 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     //Add files Read-Only (ModDesc 4.3)
                     string addFilesTargetReadOnlyList = ModDescTargetVersion >= 4.3 ? iniData[headerAsString][@"addfilesreadonlytargets"] : null;
 
-
                     //Remove files (ModDesc 4.1) - REMOVED IN MOD MANAGER 6
+
+                    //MergeMods: Mod Manager 7.0 (parsed below so it passes the task does something check)
+                    string mergeModsList = (ModDescTargetVersion >= 7.0 && header == ModJob.JobHeader.BASEGAME) ? iniData[headerAsString][@"mergemods"] : null;
+
 
 
                     //Check that the lists here are at least populated in one category. If none are populated then this job will do effectively nothing.
-                    bool taskDoesSomething = (replaceFilesSourceList != null && replaceFilesTargetList != null) || (addFilesSourceList != null && addFilesTargetList != null);
+                    bool taskDoesSomething = (replaceFilesSourceList != null && replaceFilesTargetList != null) || (addFilesSourceList != null && addFilesTargetList != null) || mergeModsList != null;
 
                     if (!taskDoesSomething)
                     {
@@ -859,7 +870,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         CLog.Information($@"Parsing replacefiles/newfiles on {headerAsString}. Found {replaceFilesTargetSplit.Count} items in lists", Settings.LogModStartup);
                     }
 
-                    //Don't support add/remove files on anything except ME3, unless basegame.
+                    //Don't support add/remove files on anything except ME3 (due to legacy implementation), unless basegame.
                     List<string> addFilesSourceSplit = null;
                     List<string> addFilesTargetSplit = null;
                     List<string> addFilesReadOnlySplit = null;
@@ -1044,6 +1055,39 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                             if (multilist == null) break; //no more to parse
                             headerJob.MultiLists[i] = multilist.Split(';');
                             i++;
+                        }
+                    }
+
+                    // Mod Manager 7: Merge Mods
+                    if (!string.IsNullOrWhiteSpace(mergeModsList))
+                    {
+                        var mergeSplit = mergeModsList.Split(';');
+                        foreach (var mergeItem in mergeSplit)
+                        {
+                            // Security checks
+                            var mergeItemSanitized = mergeItem.TrimStart('/', '\\');
+                            if (mergeItemSanitized.Contains(@".."))
+                            {
+                                // This entry may be malicious, do not load
+                                Log.Error($@"{ModName} has a merge mod listed under header {headerAsString} which contains a '..' in the name. '..' is not allowed in names.");
+                                LoadFailedReason = $"{ModName} has a merge mod listed under header {headerAsString} which contains a '..' in the name. '..' is not allowed in names.";
+                                return;
+                            }
+
+
+                            var fullPath = FilesystemInterposer.PathCombine(Archive != null, ModPath, Mod.MergeModFolderName, mergeItem);
+                            if (!FilesystemInterposer.FileExists(fullPath, Archive))
+                            {
+                                Log.Error($@"{ModName} has a merge mod listed under header {headerAsString} which does not exist in the {Mod.MergeModFolderName} folder: {mergeItemSanitized}.");
+                                LoadFailedReason = $"{ModName} has a merge mod listed under header {headerAsString} which does not exist in the {Mod.MergeModFolderName} folder: {mergeItemSanitized}.";
+                                return;
+                            }
+
+                            var mergeMod = LoadMergeMod(fullPath);
+                            if (mergeMod == null)
+                                return; // Load failed, handled in LoadMergeMod()
+                            CLog.Information($@"Loaded merge mod {fullPath}", Settings.LogMixinStartup);
+                            headerJob.MergeMods.Add(mergeMod);
                         }
                     }
 
@@ -1799,7 +1843,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     }
                     else
                     {
-                        Log.Error($@"The LELAUNCHER header only supports the following file extensions: {string.Join(", ",AllowedLauncherFileTypes)} An unsupported filetype was found: {file}");
+                        Log.Error($@"The LELAUNCHER header only supports the following file extensions: {string.Join(", ", AllowedLauncherFileTypes)} An unsupported filetype was found: {file}");
                         LoadFailedReason = $"The LELAUNCHER header only supports the following file extensions: {string.Join(", ", AllowedLauncherFileTypes)} An unsupported filetype was found: {file}";
                         ValidMod = false;
                     }

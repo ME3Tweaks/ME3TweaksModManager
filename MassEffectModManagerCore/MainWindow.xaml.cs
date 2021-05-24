@@ -3884,17 +3884,17 @@ namespace MassEffectModManagerCore
         private void TestMMV1_click(object sender, RoutedEventArgs e)
         {
             // SERIALIZER
-            MergeModLoader.SerializeTest(1);
+            var testfile = MergeModLoader.SerializeTest(1);
 
 
 
 
             // LOADER
-            using FileStream fs = File.OpenRead(@"C:\Users\Mgame\Desktop\MMV1.m3m");
-            var mergeMod = MergeModLoader.LoadMergeMod(fs);
+            using FileStream fs = File.OpenRead(testfile);
+            var mergeMod = MergeModLoader.LoadMergeMod(fs, "MMVV1.m3m", false);
 
             var le2t = GetCurrentTarget(MEGame.LE2);
-            mergeMod.ApplyMergeMod(le2t);
+            mergeMod.ApplyMergeMod(null, le2t);
         }
 
         private void ListAllInstallableFiles_Click(object sender, RoutedEventArgs e)

@@ -12,6 +12,7 @@ using MassEffectModManagerCore.modmanager.objects.mod.editor;
 using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Packages;
+using MassEffectModManagerCore.modmanager.objects.mod.merge;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.objects
@@ -87,6 +88,10 @@ namespace MassEffectModManagerCore.modmanager.objects
         /// RCWMod file. ONLY USED WITH RCWMOD HEADER.
         /// </summary>
         public RCWMod RCW { get; set; }
+        /// <summary>
+        /// List of Merge Mods this job can install. Only apply to BASEGAME job
+        /// </summary>
+        public List<IMergeMod> MergeMods { get; set; } = new();
 
         public static IReadOnlyDictionary<string, JobHeader> ME3OfficialDLCFolderToHeaderMapping = new Dictionary<string, JobHeader>
         {
