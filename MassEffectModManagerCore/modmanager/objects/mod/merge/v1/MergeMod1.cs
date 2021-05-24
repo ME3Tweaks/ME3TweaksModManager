@@ -113,12 +113,13 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
             {
                 foreach (var mc in fc.MergeChanges)
                 {
-                    if (mc.AssetUpdate.AssetName != null)
+                    if (mc.AssetUpdate?.AssetName != null)
                     {
                         if (!File.Exists(Path.Combine(sourceDir, mc.AssetUpdate.AssetName)))
                         {
                             throw new Exception($"Asset does not exist in folder: {mc.AssetUpdate.AssetName}");
                         }
+
                         assets.Add(mc.AssetUpdate.AssetName);
                     }
                 }

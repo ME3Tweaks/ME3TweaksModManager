@@ -88,12 +88,16 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
             switch (PropertyType)
             {
                 case "FloatProperty":
-                    var fp = operatingCollection.GetProp<FloatProperty>(propKeys.Last());
-                    fp.Value = float.Parse(PropertyValue, CultureInfo.InvariantCulture);
+                    FloatProperty fp = new FloatProperty(float.Parse(PropertyValue, CultureInfo.InvariantCulture), propKeys.Last());
+                    operatingCollection.AddOrReplaceProp(fp);
                     break;
                 case "IntProperty":
-                    var ip = operatingCollection.GetProp<FloatProperty>(propKeys.Last());
-                    ip.Value = int.Parse(PropertyValue, CultureInfo.InvariantCulture);
+                    IntProperty ip = new IntProperty(int.Parse(PropertyValue), propKeys.Last());
+                    operatingCollection.AddOrReplaceProp(ip);
+                    break;
+                case "BoolProperty":
+                    BoolProperty bp = new BoolProperty(bool.Parse(PropertyValue), propKeys.Last());
+                    operatingCollection.AddOrReplaceProp(bp);
                     break;
                 default:
                     throw new Exception($"Unsupported property type for updating: {PropertyType}");

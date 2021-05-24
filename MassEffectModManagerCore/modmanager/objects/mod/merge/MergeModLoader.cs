@@ -30,16 +30,16 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge
         }
 
 #if DEBUG
-        public static string SerializeTest(int version)
+        public static string SerializeManifest(string inputfile, int version)
         {
-            var outfile = @"X:\m3modlibrary\LE2\No Mini Games\MergeMods\nominigames.m3m";
+            var outfile = Path.Combine(Directory.GetParent(inputfile).FullName, Path.GetFileNameWithoutExtension(inputfile) + ".m3m");
             using FileStream fs = File.Open(outfile, FileMode.Create, FileAccess.ReadWrite);
             fs.WriteStringLatin1(MERGEMOD_MAGIC);
-            fs.WriteByte((byte) version);
+            fs.WriteByte((byte)version);
             switch (version)
             {
                 case 1:
-                    MergeMod1.SerializeTest(fs, @"C:\Users\mgame\Desktop\MERGE\NoMiniGames\nominigames.json");
+                    MergeMod1.SerializeTest(fs, inputfile);
                     break;
             }
 
