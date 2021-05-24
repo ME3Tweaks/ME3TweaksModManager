@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -32,6 +33,7 @@ namespace MassEffectModManagerCore.modmanager.windows
     /// </summary>
     public partial class StarterKitGeneratorWindow : ValidatableWindowBase
     {
+        public static (string filecode, string langcode)[] le1languages = { (@"INT", @"en-us"), (@"ES", @"es-es"), (@"DE", @"de-de"), (@"RA", @"ru-ru"), (@"FR", @"fr-fr"), (@"IT", @"it-it"), (@"PLPC", @"pl-pl"), (@"JPN", @"jp-jp") };
         public static (string filecode, string langcode)[] lelanguages = { (@"INT", @"en-us"), (@"ESN", @"es-es"), (@"DEU", @"de-de"), (@"RUS", @"ru-ru"), (@"FRA", @"fr-fr"), (@"ITA", @"it-it"), (@"POL", @"pl-pl"), (@"JPN", @"jp-jp") };
         public static (string filecode, string langcode)[] me3languages = { (@"INT", @"en-us"), (@"ESN", @"es-es"), (@"DEU", @"de-de"), (@"RUS", @"ru-ru"), (@"FRA", @"fr-fr"), (@"ITA", @"it-it"), (@"POL", @"pl-pl"), (@"JPN", @"jp-jp") };
         public static (string filecode, string langcode)[] me2languages = { (@"INT", @"en-us"), (@"ESN", @"es-es"), (@"DEU", @"de-de"), (@"RUS", @"ru-ru"), (@"FRA", @"fr-fr"), (@"ITA", @"it-it"), (@"POL", @"pl-pl"), (@"HUN", @"hu-hu"), (@"CZE", @"cs-cz") };
@@ -280,7 +282,7 @@ namespace MassEffectModManagerCore.modmanager.windows
             });
             Validator.AddRule(nameof(ModDLCModuleNumber), () =>
             {
-                if (Game != MEGame.ME2) return RuleResult.Valid();
+                if (Game.IsGame2()) return RuleResult.Valid();
                 if (ModDLCModuleNumber <= 0 || ModDLCModuleNumber >= ushort.MaxValue)
                 {
                     return RuleResult.Invalid(M3L.GetString(M3L.string_interp_valueMustBeBetween0AndX, ushort.MaxValue.ToString()));
@@ -300,7 +302,7 @@ namespace MassEffectModManagerCore.modmanager.windows
 
         private void PrecheckStarterKitValues()
         {
-            if (Game is MEGame.ME2 or MEGame.LE2)
+            if (Game.IsGame2())
             {
                 //Check Engine Number.
                 var sameModuleNumberItems = ThirdPartyServices.GetThirdPartyModInfosByModuleNumber(ModDLCModuleNumber, Game);
@@ -717,6 +719,16 @@ namespace MassEffectModManagerCore.modmanager.windows
                 SetGame(PendingGame.Value);
                 PendingGame = null;
             }
+        }
+
+        public static string[] GetLanguagesForGame(MEGame game)
+        {
+            if (game is MEGame.ME1) return new[] { @"INT" };
+            if (game is MEGame.LE1) return le1languages.Select(x => x.filecode).ToArray();
+            if (game.IsGame3()) return me3languages.Select(x=>x.filecode).ToArray();
+            if (game.IsGame2()) return me2languages.Select(x=>x.filecode).ToArray();
+
+            return new string[] { };
         }
     }
 }

@@ -125,7 +125,7 @@
                     Height="{Binding Path=(local:StarterKitGeneratorWindow.VisibleRowHeight), Mode=OneWay}" />
                 <!-- DLC Module Number (ME2 Only) -->
                 <RowDefinition
-                    Height="{Binding Game, Converter={StaticResource StarterKitRowHeightConverter}, ConverterParameter='ME2'}" />
+                    Height="{Binding Game, Converter={StaticResource StarterKitRowHeightConverter}, ConverterParameter='Game2'}" />
                 <!-- Mount Priority -->
                 <RowDefinition
                     Height="{Binding Path=(local:StarterKitGeneratorWindow.VisibleRowHeight), Mode=OneWay}" />
@@ -272,7 +272,7 @@
                 Grid.Column="2"
                 Watermark="150"
                 Text="{Binding ModDLCModuleNumber, Mode=TwoWay, ValidatesOnDataErrors=True}"
-                Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='ME2'}"
+                Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Game2'}"
                 TextChanged="FieldText_Changed" />
             <xctk:WatermarkTextBox
                 Name="ModMountPriority_TextBox"

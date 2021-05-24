@@ -113,10 +113,14 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         references.Add(FilesystemInterposer.PathCombine(IsInArchive, ModImageAssetsPath, file.ImageAssetName).Substring(ModPath.Length + (ModPath.Length > 1 ? 1 : 0)));
                     }
                 }
-
                 foreach (var customDLCmapping in job.CustomDLCFolderMapping)
                 {
                     references.AddRange(FilesystemInterposer.DirectoryGetFiles(FilesystemInterposer.PathCombine(IsInArchive, ModPath, customDLCmapping.Key), "*", SearchOption.AllDirectories, archive).Select(x => (IsInArchive && ModPath.Length == 0) ? x : x.Substring(ModPath.Length + 1)).ToList());
+                }
+
+                foreach (var mm in job.MergeMods)
+                {
+                    references.Add($@"{Mod.MergeModFolderName}\{mm.MergeModFilename}");
                 }
             }
             references.AddRange(AdditionalDeploymentFiles);

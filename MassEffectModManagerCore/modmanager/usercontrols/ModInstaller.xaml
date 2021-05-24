@@ -66,9 +66,16 @@
                     Margin="5,4,5,0"
                     Click="InstallCancel_Click"
                     ToolTip="{DynamicResource string_abortInstallingMod}" />
+                <!-- Dirty hack so we don't have to extend GameToVisibilityConverter -->
                 <CheckBox
                     Content="{DynamicResource string_compressPackages}"
-                    Visibility="{Binding ModBeingInstalled.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Not_ME1'}"
+                    Visibility="{Binding ModBeingInstalled.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='ME2'}"
+                    ToolTip="{DynamicResource string_tooltip_modinstaller_compressPackages}"
+                    IsChecked="{Binding CompressInstalledPackages}"
+                    Margin="0,4,0,0" />
+                <CheckBox
+                    Content="{DynamicResource string_compressPackages}"
+                    Visibility="{Binding ModBeingInstalled.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='ME3'}"
                     ToolTip="{DynamicResource string_tooltip_modinstaller_compressPackages}"
                     IsChecked="{Binding CompressInstalledPackages}"
                     Margin="0,4,0,0" />

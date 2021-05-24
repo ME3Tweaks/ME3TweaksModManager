@@ -42,6 +42,8 @@ using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Serilog;
 using LegendaryExplorerCore.Helpers;
+using MassEffectModManagerCore.modmanager.objects.mod.merge;
+using MassEffectModManagerCore.modmanager.objects.mod.merge.v1;
 using Pathoschild.FluentNexus.Models;
 using Mod = MassEffectModManagerCore.modmanager.objects.mod.Mod;
 
@@ -63,7 +65,13 @@ namespace MassEffectModManagerCore
 
         public string CurrentDescriptionText { get; set; } = DefaultDescriptionText;
         private static readonly string DefaultDescriptionText = M3L.GetString(M3L.string_selectModOnLeftToGetStarted);
-        private readonly string[] SupportedDroppableExtensions = { @".rar", @".zip", @".7z", @".exe", @".tpf", @".mod", @".mem", @".me2mod", @".xml", @".bin", @".tlk", @".par" };
+        private readonly string[] SupportedDroppableExtensions =
+        {
+            @".rar", @".zip", @".7z", @".exe", @".tpf", @".mod", @".mem", @".me2mod", @".xml", @".bin", @".tlk", @".par",
+#if DEBUG
+            @".json" // M3M Manifest
+#endif
+        };
         public string ApplyModButtonText { get; set; } = M3L.GetString(M3L.string_applyMod);
         public string InstallationTargetText { get; set; } = M3L.GetString(M3L.string_installationTarget);
         public bool ME1ASILoaderInstalled { get; set; }
@@ -3206,7 +3214,7 @@ namespace MassEffectModManagerCore
                                 nbw.DoWork += (a, b) =>
                                 {
                                     var dest = Path.Combine(Directory.GetParent(files[0]).FullName, Path.GetFileNameWithoutExtension(files[0]));
-                                    Log.Information($@"Deompiling coalesced file: {files[0]} -> {dest}");
+                                    Log.Information($@"Decompiling coalesced file: {files[0]} -> {dest}");
                                     Converter.ConvertToXML(files[0], dest);
                                     Log.Information(@"Decompiled coalesced file");
                                 };
@@ -3221,7 +3229,6 @@ namespace MassEffectModManagerCore
                                 nbw.RunWorkerAsync();
                             }
                         }
-
                         break;
                     case @".xml":
                         //Check if it's ModMaker sideload, coalesced manifest, or TLK
@@ -3410,6 +3417,18 @@ namespace MassEffectModManagerCore
                             Debug.WriteLine(contents);
 #endif
                         }
+                        break;
+                    case @".json":
+                        try
+                        {
+                            MergeModLoader.SerializeManifest(files[0], 1);
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Error($"Error compiling m3m mod file: {ex.Message}");
+                            M3L.ShowDialog(this, $"Error compiling m3m mod file: {ex.Message}", "Error compiling m3m", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+
                         break;
                 }
             }
@@ -3878,6 +3897,22 @@ namespace MassEffectModManagerCore
             ShowBusyControl(previewPanel);
         }
 
+        private void TestMMV1_click(object sender, RoutedEventArgs e)
+        {
+            // SERIALIZER
+            //var testfile = MergeModLoader.SerializeManifest(,1);
+
+
+
+
+            //// LOADER
+            //using FileStream fs = File.OpenRead(testfile);
+            //var mergeMod = MergeModLoader.LoadMergeMod(fs, "MMVV1.m3m", false);
+
+            //var le2t = GetCurrentTarget(MEGame.LE2);
+            //mergeMod.ApplyMergeMod(null, le2t);
+        }
+
         private void ListAllInstallableFiles_Click(object sender, RoutedEventArgs e)
         {
             if (SelectedMod != null)
@@ -3885,7 +3920,6 @@ namespace MassEffectModManagerCore
                 var files = SelectedMod.GetAllInstallableFiles();
                 ListDialog l = new ListDialog(files, M3L.GetString(M3L.string_interp_allInstallableFiles, SelectedMod.ModName), M3L.GetString(M3L.string_description_allInstallableFiles), this);
                 l.Show();
-
             }
         }
     }

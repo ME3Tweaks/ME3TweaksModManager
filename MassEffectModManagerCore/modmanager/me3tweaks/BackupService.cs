@@ -10,7 +10,9 @@ using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore.Packages;
+using Microsoft.Win32;
 using Octokit;
+using Pathoschild.FluentNexus.Models;
 using Serilog;
 using Application = System.Windows.Application;
 
@@ -233,33 +235,33 @@ namespace MassEffectModManagerCore.modmanager.helpers
             Application.Current.Dispatcher.Invoke(delegate
             {
 
-                if (game == MEGame.ME1 || game == MEGame.Unknown)
+                if (game is MEGame.ME1 or MEGame.Unknown)
                 {
                     RefreshBackupStatus(MEGame.ME1, window == null || window.InstallationTargets.Any(x => x.Game == MEGame.ME1),
                         ME1BackedUp, msg => ME1BackupStatus = msg, msg => ME1BackupStatusTooltip = msg);
                 }
 
-                if (game == MEGame.ME2 || game == MEGame.Unknown)
+                if (game is MEGame.ME2 or MEGame.Unknown)
                 {
                     RefreshBackupStatus(MEGame.ME2, window == null || window.InstallationTargets.Any(x => x.Game == MEGame.ME2),
                         ME2BackedUp, msg => ME2BackupStatus = msg, msg => ME2BackupStatusTooltip = msg);
                 }
-                if (game == MEGame.ME3 || game == MEGame.Unknown)
+                if (game is MEGame.ME3 or MEGame.Unknown)
                 {
                     RefreshBackupStatus(MEGame.ME3, window == null || window.InstallationTargets.Any(x => x.Game == MEGame.ME3), ME3BackedUp,
                         msg => ME3BackupStatus = msg, msg => ME3BackupStatusTooltip = msg);
                 }
-                if (game == MEGame.LE1 || game == MEGame.Unknown)
+                if (game is MEGame.LE1 or MEGame.Unknown)
                 {
                     RefreshBackupStatus(MEGame.LE1, window == null || window.InstallationTargets.Any(x => x.Game == MEGame.LE1), LE1BackedUp,
                         msg => LE1BackupStatus = msg, msg => LE1BackupStatusTooltip = msg);
                 }
-                if (game == MEGame.LE2 || game == MEGame.Unknown)
+                if (game is MEGame.LE2 or MEGame.Unknown)
                 {
                     RefreshBackupStatus(MEGame.LE2, window == null || window.InstallationTargets.Any(x => x.Game == MEGame.LE2), LE2BackedUp,
                         msg => LE2BackupStatus = msg, msg => LE2BackupStatusTooltip = msg);
                 }
-                if (game == MEGame.LE3 || game == MEGame.Unknown)
+                if (game is MEGame.LE3 or MEGame.Unknown)
                 {
                     RefreshBackupStatus(MEGame.LE3, window == null || window.InstallationTargets.Any(x => x.Game == MEGame.LE3), LE3BackedUp,
                         msg => LE3BackupStatus = msg, msg => LE3BackupStatusTooltip = msg);
@@ -625,6 +627,15 @@ namespace MassEffectModManagerCore.modmanager.helpers
             LE3Installed = installationTargets.Any(x => x.Game == MEGame.LE3);
             StaticPropertyChanged?.Invoke(null, new PropertyChangedEventArgs(nameof(AnyGameMissingBackup)));
             StaticBackupStateChanged?.Invoke(null, null);
+        }
+
+        /// <summary>
+        /// Deletes the registry key used to store the backup location
+        /// </summary>
+        /// <param name="game"></param>
+        public static void RemoveBackupPath(MEGame game)
+        {
+            RegistryHandler.DeleteRegistryKey(Registry.CurrentUser, @"Software\ME3Tweaks", game + @"VanillaBackupLocation");
         }
     }
 }

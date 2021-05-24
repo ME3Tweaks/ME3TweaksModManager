@@ -199,21 +199,6 @@ namespace MassEffectModManagerCore
                 ToolTipService.ShowDurationProperty.OverrideMetadata(
                     typeof(DependencyObject), new FrameworkPropertyMetadata(20000));
 
-                //var launcherDir = @"B:\SteamLibrary\steamapps\common\Mass Effect Legendary Edition\Game\Launcher\Content";
-                //var allFiles = Directory.GetFiles(launcherDir, "*.*", SearchOption.AllDirectories);
-                //SortedSet<string> exts = new SortedSet<string>();
-                //foreach (var f in allFiles)
-                //{
-                //    exts.Add(Path.GetExtension(f));
-                //}
-
-                //foreach (var ext in exts)
-                //{
-                //    Debug.Write($"@\"{ext}\", ");
-                //}
-                //Debug.WriteLine("");
-
-
                 Log.Information(@"===========================================================================");
                 FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(ExecutableLocation);
                 string version = fvi.FileVersion;

@@ -1229,6 +1229,10 @@
                         Click="StripCurrentTargetALOTMarker_Click"
                         Visibility="{x:Static local:App.DebugOnlyVisibility}" />
                     <MenuItem
+                        Header="MMV1 DEBUG"
+                        Click="TestMMV1_click"
+                        Visibility="{x:Static local:App.DebugOnlyVisibility}" />
+                    <MenuItem
                         Header="{DynamicResource string_requiresNothing}"
                         Style="{StaticResource MenuItemHeaderStyle}"
                         Visibility="{x:Static local:App.DebugOnlyVisibility}" />
