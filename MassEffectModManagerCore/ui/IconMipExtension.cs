@@ -55,7 +55,21 @@ namespace MassEffectModManagerCore.ui
             var result = decoder.Frames.FirstOrDefault(f => f.Width == size);
             if (result == default(BitmapFrame))
             {
-                result = decoder.Frames.OrderBy(f => f.Width).First();
+                var smallestDiff = double.MaxValue;
+                BitmapFrame closestFrame = null;
+
+                // Find closest mip
+                foreach (var bmf in decoder.Frames)
+                {
+                    var diff = Math.Abs(size - bmf.Width);
+                    if (diff < smallestDiff)
+                    {
+                        smallestDiff = diff;
+                        closestFrame = bmf;
+                    }
+                }
+
+                result = closestFrame;
             }
 
             // Cache into memory

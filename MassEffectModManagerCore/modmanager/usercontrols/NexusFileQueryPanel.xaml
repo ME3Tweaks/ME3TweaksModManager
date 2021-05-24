@@ -49,6 +49,10 @@
                     DockPanel.Dock="Left"
                     Content="Mass Effect 3"
                     IsChecked="{Binding SearchME3}" />
+                <CheckBox
+                    DockPanel.Dock="Left"
+                    Content="Mass Effect LE"
+                    IsChecked="{Binding SearchLE}" />
                 <generic:CheckBoxComboBox
                     x:Name="CategoryOptionsCBL"
                     HorizontalAlignment="Right" 
