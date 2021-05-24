@@ -1239,7 +1239,6 @@ namespace MassEffectModManagerCore
 
         private void StartGame()
         {
-            SelectedGameTarget.ReloadGameTarget(false);
             var game = Utilities.GetGameName(SelectedGameTarget.Game);
 
             BackgroundTask gameLaunch = backgroundTaskEngine.SubmitBackgroundJob(@"GameLaunch", M3L.GetString(M3L.string_interp_launching, game), M3L.GetString(M3L.string_interp_launched, game));

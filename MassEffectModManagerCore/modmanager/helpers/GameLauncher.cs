@@ -21,8 +21,10 @@ namespace MassEffectModManagerCore.modmanager.helpers
         /// <param name="target"></param>
         public static void LaunchGame(GameTarget target)
         {
+            target.ReloadGameTarget(false);
+
             // Update LODs for target
-            if (Settings.AutoUpdateLODs4K || Settings.AutoUpdateLODs2K)
+            if (target.SupportsLODUpdates() && (Settings.AutoUpdateLODs4K || Settings.AutoUpdateLODs2K))
             {
                 target.UpdateLODs(Settings.AutoUpdateLODs2K);
             }
@@ -110,8 +112,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
 
             if (Settings.SkipLELauncher && target.Game.IsLEGame())
             {
-                var sourceFile = Path.Combine(Utilities.GetAppDataFolder(),
-                    $@"C:\ProgramData\ME3TweaksModManager\LELauncherTools\GameBoot\{target.Game}\LauncherUI.swf");
+                var sourceFile = Path.Combine(Utilities.GetAppDataFolder(), $@"C:\ProgramData\ME3TweaksModManager\LELauncherTools\GameBoot\{target.Game}\LauncherUI.swf");
                 var destFile = Path.Combine(LEDirectory.GetLauncherPath(), @"Content", @"LauncherUI.swf");
                 if (File.Exists(sourceFile))
                 {
