@@ -1144,7 +1144,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                             {
                                                 item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningBinaryReferenceTrashed, prefix, uIndex.value));
                                             }
-                                            else if (exp.FileRef.GetEntry(uIndex.value)?.ObjectName.ToString() == @"ME3ExplorerTrashPackage")
+                                            else if (exp.FileRef.GetEntry(uIndex.value)?.ObjectName.ToString() == UnrealPackageFile.TrashPackageName)
                                             {
                                                 item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningBinaryReferenceTrashed, prefix, uIndex.value));
                                             }

@@ -75,7 +75,13 @@ namespace MassEffectModManagerCore.modmanager.objects
                     MemoryAnalyzer.AddTrackedMemoryItem(@"NXM Download FileStream", new WeakReference(DownloadedStream));
                 }
 
-                var downloadResult = OnlineContent.DownloadToStream(DownloadLinks[0].Uri.ToString(), OnDownloadProgress, null, true, DownloadedStream, cancellationToken);
+                var downloadUri = DownloadLinks[0].Uri;
+                var queryParms = downloadUri.ToString().Substring(downloadUri.ToString().IndexOf('?') + 1);
+                var parameters = HttpUtility.ParseQueryString(queryParms);
+                
+                // Enable when we figure out what 'md5' is
+                //var downloadResult = OnlineContent.DownloadToStream(downloadUri.ToString(), OnDownloadProgress, parameters[@"md5"], true, DownloadedStream, cancellationToken);
+                var downloadResult = OnlineContent.DownloadToStream(downloadUri.ToString(), OnDownloadProgress, null, true, DownloadedStream, cancellationToken);
                 if (downloadResult.errorMessage != null)
                 {
                     DownloadedStream?.Dispose();
@@ -117,7 +123,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     DownloadLinks.Clear();
 
                     var nxmlink = NXMLink.Substring(6);
-                    var queryPos = NXMLink.IndexOf('?');
+                    var queryPos = nxmlink.IndexOf('?');
 
                     var info = queryPos > 0 ? nxmlink.Substring(0, queryPos) : nxmlink;
                     var infos = info.Split('/');

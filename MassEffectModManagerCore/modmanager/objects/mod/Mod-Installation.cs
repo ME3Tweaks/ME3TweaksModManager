@@ -28,8 +28,14 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     Debug.WriteLine(@">>> ARCHIVE IS DISPOSED");
                 }
 #endif
-                if (Archive == null || (Archive.IsDisposed() && ArchivePath != null && File.Exists(ArchivePath)))
+                if (File.Exists(ArchivePath) && (Archive == null || Archive.IsDisposed()))
                     Archive = new SevenZipExtractor(ArchivePath); //load archive file for inspection
+                else if (Archive != null && Archive.GetBackingStream() is SevenZip.ArchiveEmulationStreamProxy aesp && aesp.Source is MemoryStream ms)
+                {
+                    var isExe = ArchivePath.EndsWith(@".exe", StringComparison.InvariantCultureIgnoreCase);
+                    Archive = isExe ? new SevenZipExtractor(ms, InArchiveFormat.Nsis) : new SevenZipExtractor(ms);
+                    MemoryAnalyzer.AddTrackedMemoryItem($@"Re-opened SVE archive for {ModName}", new WeakReference(Archive));
+                }
             }
             var gameDLCPath = M3Directories.GetDLCPath(gameTarget);
             var customDLCMapping = Enumerable.FirstOrDefault<ModJob>(InstallationJobs, x => x.Header == ModJob.JobHeader.CUSTOMDLC)?.CustomDLCFolderMapping;

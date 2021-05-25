@@ -17,10 +17,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     public partial class NexusModDownloader : MMBusyPanelBase
     {
         private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        private readonly string pendingLink;
         public ObservableCollectionExtended<ModDownload> Downloads { get; } = new ObservableCollectionExtended<ModDownload>();
         public NexusModDownloader(string initialNxmLink)
         {
-            AddDownload(initialNxmLink);
+            pendingLink = initialNxmLink;
             LoadCommands();
             InitializeComponent();
         }
@@ -47,7 +48,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
-
+            AddDownload(pendingLink);
         }
 
         public void AddDownload(string nxmLink)
