@@ -34,7 +34,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public bool SearchME1 { get; set; }
         public bool SearchME2 { get; set; }
         public bool SearchME3 { get; set; }
-        public void OnSearchME1Changed() { UpdateFilters(); }
+        public bool SearchLE { get; set; }
 
         private void UpdateFilters()
         {
@@ -46,14 +46,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (SearchME1) { newNames.AddRange(getFilenamesForGame(@"masseffect")); }
             if (SearchME2) { newNames.AddRange(getFilenamesForGame(@"masseffect2")); }
             if (SearchME3) { newNames.AddRange(getFilenamesForGame(@"masseffect3")); }
+            if (SearchLE) { newNames.AddRange(getFilenamesForGame(@"masseffectlegendaryedition")); }
 
             newNames = newNames.Distinct().OrderBy(x => x).ToList();
             AllSearchableNames.ReplaceAll(newNames);
         }
-
+        
+        public void OnSearchME1Changed() { UpdateFilters(); }
         public void OnSearchME2Changed() { UpdateFilters(); }
         public void OnSearchME3Changed() { UpdateFilters(); }
-
+        public void OnSearchLEChanged() { UpdateFilters(); }
 
         public ObservableCollectionExtended<string> AllSearchableNames { get; } = new ObservableCollectionExtended<string>();
 
@@ -100,6 +102,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (SearchME1) searchGames.Add(@"masseffect");
             if (SearchME2) searchGames.Add(@"masseffect2");
             if (SearchME3) searchGames.Add(@"masseffect3");
+            if (SearchLE) searchGames.Add(@"masseffectlegendaryedition");
             QueryInProgress = true;
             Task.Run(() =>
             {
@@ -202,7 +205,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
         }
 
-        private string[] alldomains = { @"masseffect", @"masseffect2", @"masseffect3" };
+        private string[] alldomains = { @"masseffect", @"masseffect2", @"masseffect3", @"masseffectlegendaryedition" };
 
         public override void OnPanelVisible()
         {
@@ -268,6 +271,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             return @"/images/gameicons/ME2_48.ico";
                         case @"masseffect3":
                             return @"/images/gameicons/ME3_48.ico";
+                        case @"masseffectlegendaryedition":
+                            return @"/images/gameicons/LEL_Icon.ico";
                     }
 
                     return null;

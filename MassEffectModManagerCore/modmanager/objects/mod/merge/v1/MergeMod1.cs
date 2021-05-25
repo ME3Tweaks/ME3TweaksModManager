@@ -18,12 +18,12 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
     /// </summary>
     public class MergeMod1 : IMergeMod
     {
-        private const string MMV1_ASSETMAGIC = "MMV1";
+        private const string MMV1_ASSETMAGIC = @"MMV1";
         [JsonIgnore]
         public string MergeModFilename { get; set; }
 
         [JsonProperty("game")]
-        public MEGame Game; // Only used for sanity check
+        public MEGame Game { get; set; } // Only used for sanity check
 
         [JsonProperty("files")]
         public List<MergeFile1> FilesToMergeInto;
@@ -37,7 +37,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
             // Version and magic will already be read by main value
             var manifest = mergeFileStream.ReadUnrealString();
             var mm = JsonConvert.DeserializeObject<MergeMod1>(manifest);
-            MemoryAnalyzer.AddTrackedMemoryItem($"MergeMod1 {mergeModName}", new WeakReference(mm)); 
+            MemoryAnalyzer.AddTrackedMemoryItem($"MergeMod1 {mergeModName}", new WeakReference(mm));
             mm.MergeModFilename = mergeModName;
 
             // setup links
@@ -80,18 +80,22 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
             return mm;
         }
 
-        public bool ApplyMergeMod(Mod associatedMod, GameTarget target)
+        public bool ApplyMergeMod(Mod associatedMod, GameTarget target, ref int numTotalDone, int numTotalMerges, Action<int, int> mergeProgressDelegate = null)
         {
             Log.Information($@"Applying {MergeModFilename}");
             var loadedFiles = MELoadedFiles.GetFilesLoadedInGame(target.Game, true, gameRootOverride: target.TargetPath);
 
+            int numDone = 0;
             foreach (var mf in FilesToMergeInto)
             {
-                mf.ApplyChanges(loadedFiles, associatedMod);
+                mf.ApplyChanges(loadedFiles, associatedMod, ref numTotalDone, numTotalMerges, mergeProgressDelegate);
+                numDone++;
             }
 
             return true;
         }
+
+        public int GetMergeCount() => FilesToMergeInto.Sum(x=>x.GetMergeCount());
 
         public static void SerializeTest(Stream outStream, string manifestFile)
         {

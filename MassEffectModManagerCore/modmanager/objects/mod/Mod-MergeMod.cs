@@ -61,6 +61,13 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 }
             }
 
+            if (mm.Game != Game)
+            {
+                Log.Error($@"Merge mod {mm.MergeModFilename} lists applicable game as {mm.Game}, but the mod loading this merge mod is for {Game}. The mod and merge mod target games must match.");
+                LoadFailedReason = $"Merge mod {mm.MergeModFilename} lists applicable game as {mm.Game}, but the mod loading this merge mod is for {Game}. The mod and merge mod target games must match.";
+                return null;
+            }
+
             return mm;
         }
     }

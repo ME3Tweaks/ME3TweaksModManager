@@ -724,9 +724,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
 
             //Stage: Merge Mods
-            foreach (var mergeMod in installationJobs.SelectMany(x => x.MergeMods))
+            var allMMs = installationJobs.SelectMany(x => x.MergeMods).ToList();
+            var totalMerges = allMMs.Sum(x => x.GetMergeCount());
+            int doneMerges = 0;
+
+            void mergeProgressUpdate(int localDone, int localTotal)
             {
-                mergeMod.ApplyMergeMod(ModBeingInstalled, SelectedGameTarget);
+                //doneMerges++;
+                Percent = (int)(doneMerges * 100.0 / totalMerges);
+            }
+            foreach (var mergeMod in allMMs)
+            {
+                mergeMod.ApplyMergeMod(ModBeingInstalled, SelectedGameTarget, ref doneMerges, totalMerges, mergeProgressUpdate);
             }
 
 

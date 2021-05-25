@@ -692,6 +692,7 @@ namespace MassEffectModManagerCore.modmanager
             Directory.CreateDirectory(GetLE1ModsDirectory());
             Directory.CreateDirectory(GetLE2ModsDirectory());
             Directory.CreateDirectory(GetLE3ModsDirectory());
+            Directory.CreateDirectory(GetLELauncherModsDirectory());
         }
 
         internal static string GetME3TweaksServicesCache()

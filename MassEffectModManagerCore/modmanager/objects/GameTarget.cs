@@ -415,6 +415,7 @@ namespace MassEffectModManagerCore.modmanager.objects
 
         public void PopulateDLCMods(bool includeDisabled, Func<InstallationInformation.InstalledDLCMod, bool> deleteConfirmationCallback = null, Action notifyDeleted = null, bool modNamePrefersTPMI = false)
         {
+            if (Game == MEGame.Unknown) return; // LE Launcher doesn't have DLC mods
             var dlcDir = M3Directories.GetDLCPath(this);
             var allOfficialDLCforGame = MEDirectories.OfficialDLC(Game);
             var installedDLC = M3Directories.GetInstalledDLC(this, includeDisabled);
@@ -1297,5 +1298,7 @@ namespace MassEffectModManagerCore.modmanager.objects
 
             return installedASIs;
         }
+
+        public bool SupportsLODUpdates() => Game is MEGame.ME1 or MEGame.ME2 or MEGame.ME3; // update to remove ME3 in future
     }
 }
