@@ -84,6 +84,8 @@
 	<!-- 0={FriendlyName} -->
 	<system:String x:Key="string_interp_validation_altdlc_dlcRequirementInvalid">Параметр списка DLCRequirements в Alternate DLC ({0}) не начинается с DLC_ или не является официальным заголовком. Недопустимое значение: {1}</system:String>
 	<!-- 0=FriendlyName -->
+	<system:String x:Key="string_interp_validation_altdlc_condManualWithConditionalDLC">Alternate DLC {0} содежит значение для ConditionalDLC в условии COND_MANUAL. ConditionalDLC не применяется в COND_MANUAL, вместо этого используйте DLCRequirements.</system:String>
+	<!-- 0={friendlyName} -->
 
 	<!-- Alternate File -->
 	<system:String x:Key="string_validation_altfile_oneAltDlcMissingFriendlyNameCmm6">Как минимум в одном определенном Alternate File не указан параметр FriendlyName, который требуется модам, предназначенным для cmmver >= 6.0.</system:String>
@@ -552,6 +554,9 @@
 	<system:String x:Key="string_bypassNotInstalledASIAndDLCModsWillBeUnableToLoad">Байпас не установлен. ASI и DLC-моды не смогут быть загружены</system:String>
 	<system:String x:Key="string_bypassInstalledASIModsWillBeAbleToLoad">Байпас установлен. ASI-моды смогут быть загружены</system:String>
 	<system:String x:Key="string_bypassNotInstalledASIModsWillBeUnableToLoad">Байпас не установлен. ASI-моды не смогут быть загружены</system:String>
+	<system:String x:Key="string_interp_unsupportedME1Version">Неподдерживаемая версия exe-файла: {0}. Поддерживается только версия MassEffect.exe 1.2.20608.0</system:String>
+	<system:String x:Key="string_interp_unsupportedME2Version">Неподдерживаемая версия exe-файла: {0}. Поддерживается только версия MassEffect2.exe 1.2.1604.0</system:String>
+	<system:String x:Key="string_interp_unsupportedME3Version">Неподдерживаемая версия exe-файла: {0}. Поддерживается только версия MassEffect3.exe 1.5.5427.124</system:String>
 
 	<!-- Global Styles -->
 	<system:String x:Key="string_thisTargetHasBeenTextureModded">Эта игра содержит модифицированные текстуры</system:String>
@@ -692,6 +697,9 @@
 	<system:String x:Key="string_addModToDeployment">Добавить мод к преобразованию</system:String>
 	<system:String x:Key="string_validationTargets">Цели для валидации</system:String>
 	<system:String x:Key="string_tooltip_rerunCheckOnMod">Перепроверить мод</system:String>
+	<system:String x:Key="string_cannotShowModifiedBasegameFilesTextureModded">Невозможно отобразить модифицированные файлы базовой игры в игре с измененными текстурами, поскольку тогда все файлы будут модифицированы</system:String>
+	<system:String x:Key="string_showInstalledOptions">Показать установленные опции</system:String>
+	<system:String x:Key="string_hideInstalledOptions">Скрть установленные опции</system:String>
 
 	<!-- Intro Tutorial -->
 	<system:String x:Key="string_next">Далее</system:String>
@@ -874,7 +882,7 @@
 	<system:String x:Key="string_endorseMod">Одобрить мод</system:String>
 	<system:String x:Key="string_modEndorsed">&#x1F44D; Мод одобрен</system:String>
 	<system:String x:Key="string_loginToNexusMods">Войти в NexusMods</system:String>
-	<system:String x:Key="string_nexusLoggedIn">Одобрения включены</system:String>
+	<system:String x:Key="string_nexusLoggedIn">Вход выполнен</system:String>
 	<system:String x:Key="string_endorsing">Оправка одобрения</system:String>
 	<system:String x:Key="string_unendorsing">Отмена одобрения</system:String>
 	<system:String x:Key="string_dialogConsoleEnabled" xml:space="preserve">Консоль включена.\nНажмите ~ для открытия полноразмерной консоли.\nНажмите TAB для открытия мини-консоли.</system:String>
@@ -1111,6 +1119,15 @@
 	<system:String x:Key="string_setting_tooltip_launchThroughOrigin">Запускает Origin-игры через клиент Origin, для подтверждения лицензии и игрового времени. Это влияет только ME1/ME2 Origin версии, для ME3 это обязательно.</system:String>
 	<system:String x:Key="string_loadingTargets">Загрузка списка игр</system:String>
 	<!-- Shown when app is booting up and game targets are being inspected -->
+	<system:String x:Key="string_configureNxmHandlerOnBoot">Настройка обработчика nxm:// при загрузке</system:String>
+	<system:String x:Key="string_tooltip_configureNxmHandlerOnBoot" xml:space="preserve">Настравивает обработчик nxm:// NexusMods, чтобы "Загрузка через Manager" на NexusMods загружала ME3Tweaks Mod Manager.&#10;При отключении можно включить повторно в панели NexusMods</system:String>
+	<system:String x:Key="string_dialog_nexusLoginRequiredForDownload">ME3Tweaks Mod Manager должен быть привязан к вашему аккаунту NexusMods для прямой загрузки с NexusMods. Нажмите OK для перехода на страницу авторизации NexusMods и привязки программы.</system:String>
+	<system:String x:Key="string_notSignedIn">Вход не выполнен</system:String>
+	<system:String x:Key="string_couldNotEndorseFile">Невозможно одобрить файл</system:String>
+	<system:String x:Key="string_configuringNxmhandler">Настройка nxmhandler</system:String>
+	<system:String x:Key="string_configuredNxmhandler">Nxmhandler настроен</system:String>
+	<system:String x:Key="string_interp_downloadingNxmhandlerX">Загрузка nxmhandler {0}%</system:String>
+	<!-- 0={percentage} -->
 
 	<!-- Mass Effect Ini Modder (UI) -->
 	<system:String x:Key="string_dialog_missingConfigFileForMEIM">Файл настроек Mass Effect {0}.ini отсутствует. Он должен находиться в {1}. Пожалуйста, хотя бы однократно запустите игру, чтобы сгенерировать файлы по умолчанию.</system:String>
@@ -1261,6 +1278,22 @@
 	<system:String x:Key="string_tooltip_launchesALOTInstaller">Запускает ALOT Installer</system:String>
 	<system:String x:Key="string_tooltip_compressPackages" xml:space="preserve">Сжимает пакетные файлы при импорте или установке. Увеличивает время извлечения файлов, но уменьшает занимаемое модами место на диске.&#10;Эта опция недоступна для следующих сценариев из-за сложности:&#10; - Файлы Mass Effect 1&#10; - Исполняемые файлы, которым требуется изменять свою файловую структуру для работы в Mod Manager&#10; - Моды, которые могут использовать ME3Tweaks Updater Service (для постоянной проверки обновлений)&#10;&#10;Эта функция может быть отключена ME3Tweaks когда Mod Manager связывается с сервером</system:String>
 	<system:String x:Key="string_tooltip_installModArchiveWindow" xml:space="preserve">Устанавливает мод напрямую в текущую активную целевую игру соответствующего типа.&#10;Мод при этом НЕ будет импортирован в библиотеку</system:String>
+	<system:String x:Key="string_interp_xChosenOptions">Выбрано опций: {0}</system:String>
+	<!-- 0 = number of chosen installation options (the options that come up on mod install). Can be 0 -->
+
+	<!-- Mod Download -->
+	<system:String x:Key="string_dialog_mustBePremiumUserToDownload">Невозможно скачать файл: Необходимо иметь премиум-подписку NexusMods для использования прямых ссылок.</system:String>
+	<system:String x:Key="string_dialog_cannotDownloadDeletedFile">Невозможно скачать файл: Удалено с NexusMods</system:String>
+	<system:String x:Key="string_interp_errorDownloadingModX">Ошибка загрузки мода: {0}</system:String>
+	<!-- 0={Error message} -->
+	<system:String x:Key="string_interp_dialog_modNotForThisModManager" xml:space="preserve">Данный мод предназначен для '{0}', который не поддерживается ME3Tweaks Mod Manager. Вероятно, ожидалось использование другого менеджера модов, но в связи с тем как инструменты используют протокол nxm://, может запуститься неверное приложение.\n\nЗапустите менеджер модов, с помощью которого вы желаете загрузить данный мод по ссылкам nxm://. После открытия, попробуйте загрузить мод снова.</system:String>
+	<!-- 0={domain, like 'masseffect'} -->
+
+	<!-- Mod Downloader -->
+	<system:String x:Key="string_modDownloader">Mod Downloader</system:String>
+	<system:String x:Key="string_initializing">Инициализация</system:String>
+	<system:String x:Key="string_cancelDownload">Отмена загрузки</system:String>
+	<system:String x:Key="string_downloadError">Ошибка загрузки</system:String>
 
 	<!-- Mod Installer Panel -->
 	<system:String x:Key="string_preparingToInstall">Подготовка к установке</system:String>
@@ -1400,6 +1433,10 @@
 	<!-- 0 = filename. VPatching is a program name (vpatch so probably should not be translated. It transforms one file into another (patch) -->
 	<system:String x:Key="string_interp_theArchiveFileArchivePathIsNoLongerAvailable">Файл архива {0} более недоступен.</system:String>
 	<!-- 0={archivePath} -->
+
+	<!-- Mod-NexusModsIntegration -->
+	<system:String x:Key="string_dialog_cannotEndorseNonDownloadedMod">Невозможно одобрить мод, не загруженный с NexusMods</system:String>
+	<system:String x:Key="string_dialog_cannotEndorseUntil15min">Невозможно одобрить мод ранее 15 минут после загрузки.</system:String>
 
 	<!-- Mod-Parsing -->
 	<system:String x:Key="string_interp_modparsing_modVersion">Версия мода: {0}</system:String>
@@ -1680,6 +1717,8 @@
 	<!-- 0={date} 1={date} -->
 	<system:String x:Key="string_interp_resultsCount">Результатов - {0}</system:String>
 	<!-- 0={Number of results in a search. Adjust this string as necessary to fit your language's pluralization methods.} -->
+	<system:String x:Key="string_tooltip_downloadThisMod">Загрузить данный мод</system:String>
+	<system:String x:Key="string_tooltip_premiumRequiredForDownload">Вы должны быть пользователем NexusMods Premium для прямой загрузки внутри Mod Manager</system:String>
 
 	<!-- NexusMods Login Panel -->
 	<system:String x:Key="string_authenticateToNexusMods">Авторизоваться на NexusMods</system:String>
@@ -1690,15 +1729,18 @@
 	<system:String x:Key="string_interp_nexusModsReturnedAnErrorX" xml:space="preserve">NexusMods вернул ошибку:\n{0}</system:String>
 	<!-- 0 = error message -->
 	<system:String x:Key="string_errorAuthenticatingToNexusMods">Ошибка авторизации на NexusMods</system:String>
-	<system:String x:Key="string_nexusModsLoginHeader">ME3Tweaks Mod Manager может интегрироваться с NexusMods, позволяя вам одобрять моды и давая знать разработчикам о том, что вы цените их работу.</system:String>
+	<system:String x:Key="string_nexusModsLoginHeader">ME3Tweaks Mod Manager имеет встроенную поддержку функций NexusMods, например, одобрение модов, отслеживание обновлений и "Загрузка через Manager". Вам требуется авторизоваться в NexusMods через ME3Tweaks Mod Manager для использования данных функций.</system:String>
 	<system:String x:Key="string_directions">Указания</system:String>
-	<system:String x:Key="string_nexusModsDirections">Вы можете автоматически загрузить API-ключ в Mod Manager, зайдя в ваш аккаунт NexusMods. Нажмите "Авторизоваться на NexusMods" ниже и авторизуйте ME3Tweaks Mod Manager. Вы можете авторизоваться вручную, вставив ваш API-ключ NexusMods после выбора "Ввести API-ключ вручную".</system:String>
+	<system:String x:Key="string_nexusModsDirections">Выполните вход в NexusMods, нажав "Авторизоваться на NexusMods" внизу.  авторизуйте ME3Tweaks Mod Manager. Альтернативно, вы можете авторизоваться вручную, вставив ваш API-ключ NexusMods после выбора "Ввести API-ключ вручную". Ваш API-ключ можно найти в настройках аккаунта NexusMods.</system:String>
 	<system:String x:Key="string_caution">Внимание</system:String>
 	<system:String x:Key="string_doNotShareAPIKeyWarning">Не показывайте никому свой API-ключ (даже на скриншотах)! API-ключ позволяет любому человеку выполнять определенные действия от вашего имени и должен быть защищен так же надежно, как и пароль.</system:String>
 	<system:String x:Key="string_unlinkModManagerFromNexusMods">Отключить Mod Manager от NexusMods</system:String>
 	<system:String x:Key="string_pasteYourAPIKeyHere">Вставьте сюда ваш API-ключ</system:String>
 	<system:String x:Key="string_manuallyEnterAPIKey">Ввести API-ключ вручную</system:String>
 	<system:String x:Key="string_yourAPIKeyWillAppearHere">Ваш API-ключ появится здесь</system:String>
+	<system:String x:Key="string_setupDownloadWithManager">Настройка Загрузки через Manager</system:String>
+	<system:String x:Key="string_failedToSetupDownloadWithManager">Не удалось настроить Загрузку через Manager</system:String>
+	<system:String x:Key="string_downloadWithManagerConfigured">Загрузка через Manager настроена</system:String>
 
 	<!-- Official DLC Toggler -->
 	<system:String x:Key="string_officialDLCToggler">Official DLC Toggler</system:String>
@@ -1714,6 +1756,9 @@
 	<!-- 0= ModMaker Mod Revision -->
 	<system:String x:Key="string_interp_codeX">Код {0}</system:String>
 	<!-- 0=ModMaker ID/Code -->
+	<system:String x:Key="string_theDownloadWasCanceled">Загрузка была отменена</system:String>
+	<system:String x:Key="string_interp_onlineContentHashWrong">Хэш загруженного элемента ({0}) не соответствует ожидаемому. Ожидалось: {1}, получено {2}.</system:String>
+	<!-- 0={url} 1={expected hash} 2={calculated hash} -->
 
 	<!-- Origin in-game overlay disabler -->
 	<system:String x:Key="string_overlayDisablerInstalled">Выключатель оверлея установлен</system:String>
