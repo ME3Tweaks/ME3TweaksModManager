@@ -148,56 +148,65 @@ namespace MassEffectModManagerCore.modmanager.objects
 
                     if (!NexusModsUtilities.AllSupportedNexusDomains.Contains(domain))
                     {
-
                         Log.Error($@"Cannot download file from unsupported domain: {domain}. Open your preferred mod manager from that game first");
                         Initialized = true;
                         ProgressIndeterminate = false;
-                        OnModDownloadError?.Invoke(this, $"This mod is for '{domain}', which is not supported by ME3Tweaks Mod Manager. It is likely that you were expecting a different mod manager to be used, but due to the design of how tools use the nxm:// protocol, the wrong application may open.\n\nOpen the mod manager you wish to use to handle this mod download, and it should register itself as the download manager for nxm:// links. Once it is opened, try your download again.");
+                        OnModDownloadError?.Invoke(this,
+                            M3L.GetString(M3L.string_interp_dialog_modNotForThisModManager, domain));
                         return;
                     }
 
                     ModFile = NexusModsUtilities.GetClient().ModFiles.GetModFile(domain, modid, fileid).Result;
-                    if (ModFile != null && ModFile.Category != FileCategory.Deleted)
+                    if (ModFile != null)
                     {
-                        if (queryPos > 0)
+                        if (ModFile.Category != FileCategory.Deleted)
                         {
-                            // download with manager
-                            string querystring = nxmlink.Substring(queryPos);
-                            var parameters = HttpUtility.ParseQueryString(querystring);
+                            if (queryPos > 0)
+                            {
+                                // download with manager
+                                string querystring = nxmlink.Substring(queryPos);
+                                var parameters = HttpUtility.ParseQueryString(querystring);
 
-                            // Check if parameters are correct!
-                            DownloadLinks.AddRange(NexusModsUtilities.GetDownloadLinkForFile(domain, modid, fileid, parameters[@"key"], int.Parse(parameters[@"expires"])).Result);
+                                // Check if parameters are correct!
+                                DownloadLinks.AddRange(NexusModsUtilities.GetDownloadLinkForFile(domain, modid, fileid,
+                                    parameters[@"key"], int.Parse(parameters[@"expires"])).Result);
+                            }
+                            else
+                            {
+                                // premium?
+                                if (!NexusModsUtilities.UserInfo.IsPremium)
+                                {
+                                    Log.Error(
+                                        $@"Cannot download {ModFile.FileName}: User is not premium, but this link is not generated from NexusMods");
+                                    Initialized = true;
+                                    ProgressIndeterminate = false;
+                                    OnModDownloadError?.Invoke(this,
+                                        M3L.GetString(M3L.string_dialog_mustBePremiumUserToDownload));
+                                    return;
+                                }
+
+                                DownloadLinks.AddRange(NexusModsUtilities.GetDownloadLinkForFile(domain, modid, fileid)
+                                    ?.Result);
+                            }
+
+                            ProgressMaximum = ModFile.Size * 1024; // Bytes
+                            Initialized = true;
+                            Log.Error($@"ModDownload has initialized: {ModFile.FileName}");
+                            OnInitialized?.Invoke(this, null);
                         }
                         else
                         {
-                            // premium?
-                            if (!NexusModsUtilities.UserInfo.IsPremium)
-                            {
-                                Log.Error($@"Cannot download {ModFile.FileName}: User is not premium, but this link is not generated from NexusMods");
-                                Initialized = true;
-                                ProgressIndeterminate = false;
-                                OnModDownloadError?.Invoke(this, M3L.GetString(M3L.string_dialog_mustBePremiumUserToDownload));
-                                return;
-                            }
-                            DownloadLinks.AddRange(NexusModsUtilities.GetDownloadLinkForFile(domain, modid, fileid)?.Result);
+                            Log.Error($@"Cannot download {ModFile.FileName}: File deleted from NexusMods");
+                            Initialized = true;
+                            ProgressIndeterminate = false;
+                            OnModDownloadError?.Invoke(this,
+                                M3L.GetString(M3L.string_dialog_cannotDownloadDeletedFile));
                         }
-
-                        ProgressMaximum = ModFile.Size * 1024; // Bytes
-                        Initialized = true;
-                        Log.Error($@"ModDownload has initialized: {ModFile.FileName}");
-                        OnInitialized?.Invoke(this, null);
-                    }
-                    else
-                    {
-                        Log.Error($@"Cannot download {ModFile.FileName}: File deleted from NexusMods");
-                        Initialized = true;
-                        ProgressIndeterminate = false;
-                        OnModDownloadError?.Invoke(this, M3L.GetString(M3L.string_dialog_cannotDownloadDeletedFile));
                     }
                 }
                 catch (Exception e)
                 {
-                    Log.Error($@"Error downloading {ModFile.FileName}: {e.Message}");
+                    Log.Error($@"Error downloading {ModFile?.FileName}: {e.Message}");
                     Initialized = true;
                     ProgressIndeterminate = false;
                     OnModDownloadError?.Invoke(this, M3L.GetString(M3L.string_interp_errorDownloadingModX, e.Message));

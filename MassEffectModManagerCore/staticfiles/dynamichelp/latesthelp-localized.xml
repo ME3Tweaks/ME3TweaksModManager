@@ -2,10 +2,11 @@
 <localizations>
   <helpmenu lang="int">
     <helpitem title="ME3Tweaks Discord" url="https://discord.gg/s8HA6dc" tooltip="Chat server for quick support with ME3Tweaks products and services" />
+    <helpitem title="Public Modding Discord" url="https://discord.gg/su8XjdUQPw" tooltip="Server for general Mass Effect modding" />
     <helpitem title="N7 Squad multiplayer Discord" url="https://discord.com/invite/TMaMVhV" tooltip="Chat server for finding other players of Mass Effect 3 multiplayer" />
     <helpitem title="Mgamerz' Twitter" url="https://twitter.com/Mgamerz" tooltip="Mgamerz's twitter, fun and interesting modding tidbits" />
+    <helpitem title="LEGENDARY EDITION INFO" modaltitle="Legendary Edition support" modalicon="INFO">ME3Tweaks Mod Manager versions below 7.0 do not support Mass Effect: Legendary Edition games. Join the ME3Tweaks Discord or follow Mgamerz on Twitter to see updates about the development of ME3Tweaks Mod Manager 7.0.</helpitem>
     <list title="Get Mods">
-      <!--<helpitem title="ME3Tweaks ModMaker Gallery" url="https://me3tweaks.com/modmaker/gallery" tooltip="Browse mods developed on ME3Tweaks ModMaker"/>-->
       <helpitem title="ME3Tweaks Curated Mod List" url="https://me3tweaks.com/mods" tooltip="Browse mods curated by ME3Tweaks" />
       <helpitem title="NexusMods (ME1)" url="http://www.nexusmods.com/masseffect/" tooltip="Browse mods developed for Mass Effect on NexusMods" />
       <helpitem title="NexusMods (ME2)" url="http://www.nexusmods.com/masseffect2/" tooltip="Browse mods developed for Mass Effect 2 on NexusMods" />
@@ -13,7 +14,6 @@
     </list>
     <list title="How to">
       <helpitem title="Add a mod" modaltitle="Adding mods to Mod Manager" icon="INFO">To add a mod to Mod Manager, drag and drop its zip/rar/7z/exe/me2mod file onto Mod Manager's main interface.&lt;br&gt;&lt;br&gt;To download and add a ModMaker mod enter its code into the Mod Management &gt; Import Mod &gt; Download ModMaker Mod window.</helpitem>
-      <!--<helpitem title="Make a mod" url="https://me3tweaks.com/modmanager/documentation/moddesc"/>-->
       <helpitem title="Remove a mod" modaltitle="Removing mods from the library" modalicon="INFO">To remove a mod from the mod library (not the game), delete its folder from the mods/&lt;game&gt; directory, or select it and go to the Mod Utils menu and select Delete mod.</helpitem>
       <helpitem title="Install a mod" modaltitle="Installing a mod" modalicon="INFO">Select a mod on the left and click Apply Mod to install the mod into the game. If the mod has optional items defined, they will be presented to you before install.</helpitem>
       <helpitem title="Uninstall a mod" modaltitle="Uninstalling mods" modalicon="INFO">You can remove DLC mods via the 'Manage Target' button on the main screen of Mod Manager. You can remove Custom DLC mods (also known as DLC mods), as well as restore individual files or SFARs (DLC archives for ME3).</helpitem>
@@ -26,9 +26,13 @@
       <helpitem title="Restored game files but a DLC is still not authorizing" modalicon="INFO" modaltitle="DLC still not authorizing">If a mod you installed has Custom DLC (mod that is installed into game's DLC folder), some options in Mod Manager do not remove them. If you attempted to restore your game but still get issues with authorizing a DLC, go to 'Manage Target' and delete any DLC folders listed in the 'Installed DLC mods' tab.</helpitem>
     </list>
     <list title="Changelogs">
-      <helpitem title="ME3Tweaks Mod Manager 6.2.1 (Build 115)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/213" />
-      <helpitem title="ME3Tweaks Mod Manager 6.2 (Build 114)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.2.0.114" />
-      <list title="Older changelogs" sort="low">
+      <helpitem title="ME3Tweaks Mod Manager 6.3 (Build 117)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.3.0.117" />
+       <list title="Older changelogs" sort="low">
+        <list title="Mod Manager 6.2">
+          <helpitem title="ME3Tweaks Mod Manager 6.2.2 (Build 116)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.2.2.116" />
+          <helpitem title="ME3Tweaks Mod Manager 6.2.1 (Build 115)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.2.1.115" />
+          <helpitem title="ME3Tweaks Mod Manager 6.2 (Build 114)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.2.0.114" />
+        </list>
         <list title="Mod Manager 6.1">
           <helpitem title="ME3Tweaks Mod Manager 6.1.5 (Build 113)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.1.5.113" />
           <helpitem title="ME3Tweaks Mod Manager 6.1.4 (Build 112)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.1.4.112" />
@@ -137,9 +141,13 @@
       <helpitem title="Файлы игры восстановлены, но DLC все равно не авторизуются" modalicon="INFO" modaltitle="DLC по-прежнему не авторизуются">Если вы установили Custom DLC (моды, устанавливаемые в папку DLC), некоторые опции в Mod Manager не смогут их удалить. Если вы выполнили восстановление игры, но проблема авторизации DLC осталась, в панели по клику 'Настройка Игры' удалите все папки DLC, указанные в списке на вкладке 'Установленные DLC-моды'.</helpitem>
     </list>
     <list title="История изменений">
-      <helpitem title="ME3Tweaks Mod Manager 6.2.1 (Build 115)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/213" />
-      <helpitem title="ME3Tweaks Mod Manager 6.2 (Build 114)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.2.0.114" />
+      <helpitem title="ME3Tweaks Mod Manager 6.3 (Build 117)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.3.0.117" />
       <list title="Изменения прошлых версий" sort="low">
+        <list title="Mod Manager 6.2">
+          <helpitem title="ME3Tweaks Mod Manager 6.2.2 (Build 116)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.2.2.116" />
+          <helpitem title="ME3Tweaks Mod Manager 6.2.1 (Build 115)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.2.1.115" />
+          <helpitem title="ME3Tweaks Mod Manager 6.2 (Build 114)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.2.0.114" />
+        </list>
         <list title="Mod Manager 6.1">
           <helpitem title="ME3Tweaks Mod Manager 6.1.5 (Build 113)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.1.5.113" />
           <helpitem title="ME3Tweaks Mod Manager 6.1.4 (Build 112)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.1.4.112" />
@@ -249,9 +257,13 @@
       <helpitem title="Spiel-Dateien wiederhergestellt aber DLC kann immer noch nicht autorisiert werden" modalicon="INFO" modaltitle="DLC kann immer noch nicht autorisiert werden">Wenn ein Mod den du installiert hast Custom DLC enthält (Mod, der in den DLC Ordner des Spiels installiert wird), wird er von einigen Optionen in Mod Manager nicht entfernt. Wenn du versucht hast dein Spiel wiederherzustellen, aber immer noch Probleme mit dem Autorisieren von DLC hast, gehe auf 'Ziel-Info' und lösche alle DLC-Ordner im 'Installierte DLC-Mods' Tab.</helpitem>
     </list>
     <list title="Änderungsprotokolle">
-      <helpitem title="ME3Tweaks Mod Manager 6.2.1 (Build 115)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/213" />
-      <helpitem title="ME3Tweaks Mod Manager 6.2 (Build 114)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.2.0.114" />
+      <helpitem title="ME3Tweaks Mod Manager 6.3 (Build 117)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.3.0.117" />
       <list title="Ältere Änderungsprotokolle" sort="low">
+        <list title="Mod Manager 6.2">
+          <helpitem title="ME3Tweaks Mod Manager 6.2.2 (Build 116)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.2.2.116" />
+          <helpitem title="ME3Tweaks Mod Manager 6.2.1 (Build 115)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.2.1.115" />
+          <helpitem title="ME3Tweaks Mod Manager 6.2 (Build 114)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.2.0.114" />
+        </list>
         <list title="Mod Manager 6.1">
           <helpitem title="ME3Tweaks Mod Manager 6.1.5 (Build 113)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.1.5.113" />
           <helpitem title="ME3Tweaks Mod Manager 6.1.4 (Build 112)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.1.4.112" />
@@ -359,9 +371,13 @@
       <helpitem title="Przywróciłem pliki gry, ale DLC w dalszym ciągu nie przechodzi autoryzacji" modalicon="INFO" modaltitle="DLC nie przechodzi autoryzacji">Jeżeli mod, który zainstalowałeś zawiera Custom DLC (mod, któy jest instalowany do folderu DLC w katalogu gry), niektóre opcje Mod Managera ich nie usuwają. Jeżeli po przywróceniu kopii zapasowej dalej występują problemy z autoryzacją DLC, przejdź do 'Target Info' i usuń wszystkie foldery DLC widniejące na liście 'Installed DLC mods' tab.</helpitem>
     </list>
     <list title="Dziennik zmian">
-      <helpitem title="ME3Tweaks Mod Manager 6.2.1 (Build 115)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/213" />
-      <helpitem title="ME3Tweaks Mod Manager 6.2 (Build 114)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.2.0.114" />
+      <helpitem title="ME3Tweaks Mod Manager 6.3 (Build 117)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.3.0.117" />
       <list title="Starsze dzienniki zmian" sort="low">
+        <list title="Mod Manager 6.2">
+          <helpitem title="ME3Tweaks Mod Manager 6.2.2 (Build 116)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.2.2.116" />
+          <helpitem title="ME3Tweaks Mod Manager 6.2.1 (Build 115)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.2.1.115" />
+          <helpitem title="ME3Tweaks Mod Manager 6.2 (Build 114)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.2.0.114" />
+        </list>
         <list title="Mod Manager 6.1">
           <helpitem title="ME3Tweaks Mod Manager 6.1.5 (Build 113)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.1.5.113" />
           <helpitem title="ME3Tweaks Mod Manager 6.1.4 (Build 112)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.1.4.112" />
@@ -469,9 +485,13 @@
       <helpitem title="Restored game files but a DLC is still not authorizing" modalicon="INFO" modaltitle="DLC still not authorizing">If a mod you installed has Custom DLC (mod that is installed into game's DLC folder), some options in Mod Manager do not remove them. If you attempted to restore your game but still get issues with authorizing a DLC, go to 'Manage Target' and delete any DLC folders listed in the 'Installed DLC mods' tab.</helpitem>
     </list>
     <list title="Changelogs">
-      <helpitem title="ME3Tweaks Mod Manager 6.2.1 (Build 115)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/213" />
-      <helpitem title="ME3Tweaks Mod Manager 6.2 (Build 114)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.2.0.114" />
+      <helpitem title="ME3Tweaks Mod Manager 6.3 (Build 117)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.3.0.117" />
       <list title="Older changelogs" sort="low">
+        <list title="Mod Manager 6.2">
+          <helpitem title="ME3Tweaks Mod Manager 6.2.2 (Build 116)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.2.2.116" />
+          <helpitem title="ME3Tweaks Mod Manager 6.2.1 (Build 115)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.2.1.115" />
+          <helpitem title="ME3Tweaks Mod Manager 6.2 (Build 114)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.2.0.114" />
+        </list>
         <list title="Mod Manager 6.1">
           <helpitem title="ME3Tweaks Mod Manager 6.1.5 (Build 113)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.1.5.113" />
           <helpitem title="ME3Tweaks Mod Manager 6.1.4 (Build 112)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.1.4.112" />
@@ -579,9 +599,13 @@
       <helpitem title="Restored game files but a DLC is still not authorizing" modalicon="INFO" modaltitle="DLC still not authorizing">If a mod you installed has Custom DLC (mod that is installed into game's DLC folder), some options in Mod Manager do not remove them. If you attempted to restore your game but still get issues with authorizing a DLC, go to 'Manage Target' and delete any DLC folders listed in the 'Installed DLC mods' tab.</helpitem>
     </list>
     <list title="Changelogs">
-      <helpitem title="ME3Tweaks Mod Manager 6.2.1 (Build 115)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/213" />
-      <helpitem title="ME3Tweaks Mod Manager 6.2 (Build 114)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.2.0.114" />
+      <helpitem title="ME3Tweaks Mod Manager 6.3 (Build 117)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.3.0.117" />
       <list title="Older changelogs" sort="low">
+        <list title="Mod Manager 6.2">
+          <helpitem title="ME3Tweaks Mod Manager 6.2.2 (Build 116)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.2.2.116" />
+          <helpitem title="ME3Tweaks Mod Manager 6.2.1 (Build 115)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.2.1.115" />
+          <helpitem title="ME3Tweaks Mod Manager 6.2 (Build 114)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.2.0.114" />
+        </list>
         <list title="Mod Manager 6.1">
           <helpitem title="ME3Tweaks Mod Manager 6.1.5 (Build 113)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.1.5.113" />
           <helpitem title="ME3Tweaks Mod Manager 6.1.4 (Build 112)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.1.4.112" />
@@ -689,9 +713,13 @@
       <helpitem title="Restaurei o jogo mas um DLC ainda falha ao autorizar" modalicon="INFO" modaltitle="DLC ainda falha ao autorizar">Se um Mod que instalou tem um DLC Personalizado (um Mod que instalado na pasta de DLCs do jogo), algumas opções do Gerenciador de Mods não podem removê-lo. Se tentou restaurar um jogo mas ainda tem problemas autorizando DLCs, vá a 'Gerenciar Destino' e exclua qualquer DLC listado na aba 'Mods de DLC Instalados'.</helpitem>
     </list>
     <list title="Relatórios">
-      <helpitem title="ME3Tweaks Mod Manager 6.2.1 (Build 115)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/213" />
-      <helpitem title="ME3Tweaks Mod Manager 6.2 (Build 114)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.2.0.114" />
+      <helpitem title="ME3Tweaks Mod Manager 6.3 (Build 117)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.3.0.117" />
       <list title="Relatórios antigos" sort="low">
+        <list title="Mod Manager 6.2">
+          <helpitem title="ME3Tweaks Mod Manager 6.2.2 (Build 116)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.2.2.116" />
+          <helpitem title="ME3Tweaks Mod Manager 6.2.1 (Build 115)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.2.1.115" />
+          <helpitem title="ME3Tweaks Mod Manager 6.2 (Build 114)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.2.0.114" />
+        </list>
         <list title="Mod Manager 6.1">
           <helpitem title="ME3Tweaks Mod Manager 6.1.5 (Build 113)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.1.5.113" />
           <helpitem title="ME3Tweaks Mod Manager 6.1.4 (Build 112)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.1.4.112" />
