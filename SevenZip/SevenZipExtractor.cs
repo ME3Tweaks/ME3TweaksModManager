@@ -1473,5 +1473,14 @@ namespace SevenZip
         }
 
         #endregion
+
+        /// <summary>
+        /// M3: Return backing stream. Use only for re-opening archive that was disposed
+        /// </summary>
+        /// <returns></returns>
+        public Stream GetBackingStream()
+        {
+            return _inStream;
+        }
     }
 }

@@ -3,10 +3,12 @@
     using System;
     using System.IO;
 
+    //M3: Make class public
+
     /// <summary>
     /// The Stream extension class to emulate the archive part of a stream.
     /// </summary>
-    internal class ArchiveEmulationStreamProxy : Stream, IDisposable
+    public class ArchiveEmulationStreamProxy : Stream, IDisposable
     {
         /// <summary>
         /// Gets the file offset.

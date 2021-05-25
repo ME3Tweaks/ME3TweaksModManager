@@ -38,7 +38,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ME3CMMShim", "ME3CMMShim\ME
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExecutableModParser", "ExecutableModParser\ExecutableModParser.csproj", "{9190323F-10A5-466B-9055-4697E734C039}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ME3ExplorerCore", "ME3Explorer\ME3ExplorerCore\ME3ExplorerCore.csproj", "{577D2B6D-638F-43E3-A135-259A575132FA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ME3ExplorerCore", "ME3Explorer\ME3Explorer\ME3ExplorerCore\ME3ExplorerCore.csproj", "{577D2B6D-638F-43E3-A135-259A575132FA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

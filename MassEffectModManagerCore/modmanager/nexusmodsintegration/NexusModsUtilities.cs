@@ -27,6 +27,10 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
     [Localizable(false)]
     public class NexusModsUtilities
     {
+
+        public static readonly string[] AllSupportedNexusDomains = { @"masseffect", @"masseffect2", @"masseffect3" };
+
+
         /// <summary>
         /// User information for the authenticated NexusMods user
         /// </summary>
@@ -310,13 +314,16 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
             if (value is string path)
             {
                 path = path.Replace(" \"%1\"", "").Trim('\"');
-                string nxmIniPath = Path.Combine(Directory.GetParent(path).FullName, "nxmhandler.ini");
-                // are we already using nxmhandler?
-                if (Path.GetFileName(path).Equals("nxmhandler.exe", StringComparison.InvariantCultureIgnoreCase) && File.Exists(nxmIniPath))
+                if (!string.IsNullOrWhiteSpace(path))
                 {
-                    // Setup for nxmhandler already, we just need to adjust it to add M3
-                    SetupM3InNXMHandler(nxmIniPath);
-                    installNewCopy = false;
+                    string nxmIniPath = Path.Combine(Directory.GetParent(path).FullName, "nxmhandler.ini");
+                    // are we already using nxmhandler?
+                    if (Path.GetFileName(path).Equals("nxmhandler.exe", StringComparison.InvariantCultureIgnoreCase) && File.Exists(nxmIniPath))
+                    {
+                        // Setup for nxmhandler already, we just need to adjust it to add M3
+                        SetupM3InNXMHandler(nxmIniPath);
+                        installNewCopy = false;
+                    }
                 }
             }
 

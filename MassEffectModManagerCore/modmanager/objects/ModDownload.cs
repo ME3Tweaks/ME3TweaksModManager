@@ -8,11 +8,14 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using MassEffectModManagerCore.modmanager.me3tweaks;
-using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.ui;
 using ME3ExplorerCore.Helpers;
 using Serilog;
 using MassEffectModManagerCore.modmanager.localizations;
+using ME3ExplorerCore.Misc;
+using Microsoft.AppCenter.Analytics;
+using WinCopies.Util;
+using MemoryAnalyzer = MassEffectModManagerCore.modmanager.memoryanalyzer.MemoryAnalyzer;
 
 namespace MassEffectModManagerCore.modmanager.objects
 {
@@ -25,6 +28,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         public string NXMLink { get; set; }
         public List<ModFileDownloadLink> DownloadLinks { get; } = new List<ModFileDownloadLink>();
         public ModFile ModFile { get; private set; }
+        private string domain;
         /// <summary>
         /// If this mod has been initialized
         /// </summary>
@@ -75,7 +79,9 @@ namespace MassEffectModManagerCore.modmanager.objects
                     MemoryAnalyzer.AddTrackedMemoryItem(@"NXM Download FileStream", new WeakReference(DownloadedStream));
                 }
 
-                var downloadResult = OnlineContent.DownloadToStream(DownloadLinks[0].Uri.ToString(), OnDownloadProgress, null, true, DownloadedStream, cancellationToken);
+                var downloadUri = DownloadLinks[0].Uri;
+
+                var downloadResult = OnlineContent.DownloadToStream(downloadUri.ToString(), OnDownloadProgress, null, true, DownloadedStream, cancellationToken);
                 if (downloadResult.errorMessage != null)
                 {
                     DownloadedStream?.Dispose();
@@ -89,6 +95,21 @@ namespace MassEffectModManagerCore.modmanager.objects
                         OnModDownloadError?.Invoke(this, downloadResult.errorMessage);
                     }
                     // Download didn't work!
+                    Analytics.TrackEvent(@"NXM Download", new Dictionary<string, string>()
+                    {
+                        {@"Domain", domain},
+                        {@"File", ModFile?.Name},
+                        {@"Result", $@"Failed, {downloadResult.errorMessage}"},
+                    });
+                }
+                else
+                {
+                    Analytics.TrackEvent(@"NXM Download", new Dictionary<string, string>()
+                    {
+                        {@"Domain", domain},
+                        {@"File", ModFile?.Name},
+                        {@"Result", @"Success"},
+                    });
                 }
                 Downloaded = true;
                 OnModDownloaded?.Invoke(this, new DataEventArgs(DownloadedStream));
@@ -117,13 +138,24 @@ namespace MassEffectModManagerCore.modmanager.objects
                     DownloadLinks.Clear();
 
                     var nxmlink = NXMLink.Substring(6);
-                    var queryPos = NXMLink.IndexOf('?');
+                    var queryPos = nxmlink.IndexOf('?');
 
                     var info = queryPos > 0 ? nxmlink.Substring(0, queryPos) : nxmlink;
                     var infos = info.Split('/');
-                    var domain = infos[0];
+                    domain = infos[0];
                     var modid = int.Parse(infos[2]);
                     var fileid = int.Parse(infos[4]);
+
+                    if (!NexusModsUtilities.AllSupportedNexusDomains.Contains(domain))
+                    {
+
+                        Log.Error($@"Cannot download file from unsupported domain: {domain}. Open your preferred mod manager from that game first");
+                        Initialized = true;
+                        ProgressIndeterminate = false;
+                        OnModDownloadError?.Invoke(this, $"This mod is for '{domain}', which is not supported by ME3Tweaks Mod Manager. It is likely that you were expecting a different mod manager to be used, but due to the design of how tools use the nxm:// protocol, the wrong application may open.\n\nOpen the mod manager you wish to use to handle this mod download, and it should register itself as the download manager for nxm:// links. Once it is opened, try your download again.");
+                        return;
+                    }
+
                     ModFile = NexusModsUtilities.GetClient().ModFiles.GetModFile(domain, modid, fileid).Result;
                     if (ModFile != null && ModFile.Category != FileCategory.Deleted)
                     {

@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using System.Security.Cryptography;
 using System.Threading;
 
 using MassEffectModManagerCore.modmanager.helpers;
@@ -767,7 +768,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     // Check hash
                     if (hash != null)
                     {
-                        var md5 = Utilities.CalculateMD5(responseStream);
+                        var md5 = MD5.Create().ComputeHashAsync(responseStream, cancellationToken, x => progressCallback?.Invoke(x, 100)).Result;
                         responseStream.Position = 0;
                         if (md5 != hash)
                         {

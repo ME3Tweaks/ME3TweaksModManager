@@ -6,10 +6,15 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Net;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using MassEffectModManagerCore.modmanager.helpers;
+using ME3ExplorerCore.Gammtek.Extensions;
 using ME3ExplorerCore.Packages;
 using Serilog;
 using SevenZip;
@@ -24,6 +29,49 @@ namespace MassEffectModManagerCore.modmanager.helpers
     public static class Extensions
     {
         private static readonly char[] InvalidPathingChars;
+
+        /// <summary>
+        /// Computes a hash asynchronously.
+        /// </summary>
+        /// <param name="hashAlgorithm"></param>
+        /// <param name="stream"></param>
+        /// <param name="cancellationToken"></param>
+        /// <param name="progress"></param>
+        /// <param name="bufferSize"></param>
+        /// <returns></returns>
+        public static async Task<string> ComputeHashAsync(
+            this HashAlgorithm hashAlgorithm, Stream stream,
+            CancellationToken cancellationToken = default(CancellationToken),
+            Action<long> progress = null,
+            int bufferSize = 1024 * 1024 * 4) // 4MB buffer
+        {
+            byte[] readAheadBuffer, buffer;
+            int readAheadBytesRead, bytesRead;
+            long size, totalBytesRead = 0;
+            size = stream.Length;
+            readAheadBuffer = new byte[bufferSize];
+            readAheadBytesRead = await stream.ReadAsync(readAheadBuffer, 0,
+                readAheadBuffer.Length, cancellationToken);
+            totalBytesRead += readAheadBytesRead;
+            do
+            {
+                bytesRead = readAheadBytesRead;
+                buffer = readAheadBuffer;
+                readAheadBuffer = new byte[bufferSize];
+                readAheadBytesRead = await stream.ReadAsync(readAheadBuffer, 0,
+                    readAheadBuffer.Length, cancellationToken);
+                totalBytesRead += readAheadBytesRead;
+
+                if (readAheadBytesRead == 0)
+                    hashAlgorithm.TransformFinalBlock(buffer, 0, bytesRead);
+                else
+                    hashAlgorithm.TransformBlock(buffer, 0, bytesRead, buffer, 0);
+                progress?.Invoke(totalBytesRead);
+                if (cancellationToken.IsCancellationRequested)
+                    cancellationToken.ThrowIfCancellationRequested();
+            } while (readAheadBytesRead != 0);
+            return BitConverter.ToString(hashAlgorithm.Hash).Replace("-", string.Empty).ToLower();
+        }
 
         static Extensions()
         {
@@ -77,8 +125,8 @@ namespace MassEffectModManagerCore.modmanager.helpers
             {
                 foundItem = result;
                 return true;
-            } 
-            
+            }
+
             foundItem = default(T);
             return false;
         }
