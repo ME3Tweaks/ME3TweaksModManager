@@ -202,7 +202,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
         }
 
-        private string[] alldomains = { @"masseffect", @"masseffect2", @"masseffect3" };
 
         public override void OnPanelVisible()
         {
@@ -214,7 +213,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     GameDatabase.EnsureDatabaseFile(true);
 
                     // Load DBs
-                    foreach (var domain in alldomains)
+                    foreach (var domain in NexusModsUtilities.AllSupportedNexusDomains)
                     {
                         if (!LoadedDatabases.TryGetValue(domain, out var db))
                         {

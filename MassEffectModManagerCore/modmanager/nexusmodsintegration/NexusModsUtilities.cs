@@ -27,6 +27,10 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
     [Localizable(false)]
     public class NexusModsUtilities
     {
+
+        public static readonly string[] AllSupportedNexusDomains = { @"masseffect", @"masseffect2", @"masseffect3" };
+
+
         /// <summary>
         /// User information for the authenticated NexusMods user
         /// </summary>
