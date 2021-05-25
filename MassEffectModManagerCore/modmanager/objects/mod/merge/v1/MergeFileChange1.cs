@@ -99,6 +99,31 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
                     BoolProperty bp = new BoolProperty(bool.Parse(PropertyValue), propKeys.Last());
                     operatingCollection.AddOrReplaceProp(bp);
                     break;
+                case "NameProperty":
+                    var index = 0;
+                    var baseName = PropertyValue;
+                    var indexIndex = PropertyValue.IndexOf(@"|", StringComparison.InvariantCultureIgnoreCase);
+                    if (indexIndex > 0)
+                    {
+                        baseName = baseName.Substring(0, indexIndex);
+                        index = int.Parse(baseName.Substring(indexIndex + 1));
+                    }
+
+                    NameProperty np = new NameProperty(new NameReference(baseName, index), PropertyName);
+                    operatingCollection.AddOrReplaceProp(np);
+                    break;
+                case "ObjectProperty":
+                    // This does not support porting in, only relinking existing items
+                    ObjectProperty op = new ObjectProperty(0, PropertyName);
+                    if (PropertyValue != null)
+                    {
+                        var entry = package.FindEntry(PropertyValue);
+                        if (entry == null)
+                            throw new Exception($"Failed to update ObjectProperty {PropertyName} to {PropertyValue}: {PropertyValue} does not exist in package {package.FilePath}");
+                        op.Value = entry.UIndex;
+                    }
+                    operatingCollection.AddOrReplaceProp(op);
+                    break;
                 default:
                     throw new Exception($"Unsupported property type for updating: {PropertyType}");
             }

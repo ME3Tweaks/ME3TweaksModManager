@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -38,7 +39,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
             }
         }
 
-        public void ApplyChanges(CaseInsensitiveDictionary<string> loadedFiles, Mod associatedMod)
+        public void ApplyChanges(CaseInsensitiveDictionary<string> loadedFiles, Mod associatedMod, ref int numMergesCompleted, int numTotalMerges, Action<int, int> mergeProgressDelegate = null)
         {
             List<string> targetFiles = new List<string>();
             if (ApplyToAllLocalizations)
@@ -49,42 +50,72 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
                 var localizations = StarterKitGeneratorWindow.GetLanguagesForGame(associatedMod?.Game ?? MEGame.LE2);
 #else
                 var localizations = StarterKitGeneratorWindow.GetLanguagesForGame(associatedMod.Game);
-
 #endif
+
                 // Ensure end name is not present on base
                 foreach (var l in localizations)
                 {
-                    if (targetnameBase.EndsWith($"_{l}", StringComparison.InvariantCultureIgnoreCase))
-                        targetnameBase = targetnameBase.Substring(0,targetnameBase.Length - 4);
+                    if (targetnameBase.EndsWith($@"_{l}", StringComparison.InvariantCultureIgnoreCase))
+                        targetnameBase = targetnameBase.Substring(0, targetnameBase.Length - 4);
                 }
 
                 foreach (var l in localizations)
                 {
-                    targetFiles.Add($"{targetnameBase}_{l}{targetExtension}");
+                    var targetname = $@"{targetnameBase}_{l}{targetExtension}";
+                    if (loadedFiles.TryGetValue(targetname, out var fullpath))
+                    {
+                        targetFiles.Add(fullpath);
+                    }
+                    else
+                    {
+                        Log.Warning($@"File not found in game: {targetname}, skipping...");
+                        numMergesCompleted++;
+                        mergeProgressDelegate?.Invoke(numMergesCompleted, numMergesCompleted);
+                    }
                 }
             }
             else
             {
-                targetFiles.Add(FileName);
+                if (loadedFiles.TryGetValue(FileName, out var fullpath))
+                {
+                    targetFiles.Add(fullpath);
+                }
+                else
+                {
+                    Log.Warning($@"File not found in game: {FileName}, skipping...");
+                    numMergesCompleted++;
+                    mergeProgressDelegate?.Invoke(numMergesCompleted, numMergesCompleted);
+                }
             }
 
             foreach (var f in targetFiles)
             {
-                if (loadedFiles.TryGetValue(f, out var fullpath))
+#if DEBUG
+                Stopwatch sw = Stopwatch.StartNew();
+#endif
+                var package = MEPackageHandler.OpenMEPackage(f);
+#if DEBUG
+                Debug.WriteLine($@"Opening package {f} took {sw.ElapsedMilliseconds} ms");
+#endif
+                foreach (var pc in MergeChanges)
                 {
-                    var package = MEPackageHandler.OpenMEPackage(fullpath);
-                    foreach (var pc in MergeChanges)
-                    {
-                        pc.ApplyChanges(package, associatedMod);
-                    }
-                    Log.Information($@"Saving package {package.FilePath}");
-                    package.Save(compress: true);
+                    pc.ApplyChanges(package, associatedMod);
                 }
-                else
-                {
-                    Log.Warning($@"File not found in game: {f}, skipping...");
-                }
+                Log.Information($@"Saving package {package.FilePath}");
+
+#if DEBUG
+                sw.Restart();
+#endif
+                package.Save(compress: true);
+#if DEBUG
+                Debug.WriteLine($@"Saving package {f} took {sw.ElapsedMilliseconds} ms");
+#endif
+
+                numMergesCompleted++;
+                mergeProgressDelegate?.Invoke(numMergesCompleted, numTotalMerges);
             }
         }
+
+        public int GetMergeCount() => ApplyToAllLocalizations ? StarterKitGeneratorWindow.GetLanguagesForGame(OwningMM.Game).Length : 1;
     }
 }
