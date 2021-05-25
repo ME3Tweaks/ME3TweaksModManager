@@ -159,6 +159,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private async void InstallModBackgroundThread(object sender, DoWorkEventArgs e)
         {
+            var sw = Stopwatch.StartNew();
             bool testrun = false; //change to true to test
             Log.Information(@"Mod Installer Background thread starting");
             if (!Settings.LogModInstallation)
@@ -794,7 +795,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
 
             Log.Information(@"<<<<<<< Finishing modinstaller");
-
+            sw.Stop();
+            Debug.WriteLine($"Elapsed: {sw.ElapsedMilliseconds}");
             //Submit basegame telemetry in async way
             if (basegameFilesInstalled.Any() /*&& !Settings.DeveloperMode*/) //no dev mode as it could expose files user is working on.
             {
