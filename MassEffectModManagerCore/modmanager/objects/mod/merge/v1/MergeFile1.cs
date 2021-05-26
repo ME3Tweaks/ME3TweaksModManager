@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
+using LegendaryExplorerCore.Packages.CloningImportingAndRelinking;
 using MassEffectModManagerCore.modmanager.windows;
 using Newtonsoft.Json;
 using Serilog;
@@ -117,5 +118,20 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
         }
 
         public int GetMergeCount() => ApplyToAllLocalizations ? StarterKitGeneratorWindow.GetLanguagesForGame(OwningMM.Game).Length : 1;
+
+
+        /// <summary>
+        /// Validates this MergeFile. Throws an exception if the validation fails.
+        /// </summary>
+        public void Validate()
+        {
+            if (FileName == null) throw new Exception("'filename' cannot be null for a merge file!");
+            var safeFiles = EntryImporter.FilesSafeToImportFrom(OwningMM.Game);
+            if (!safeFiles.Any(x=>FileName.StartsWith(Path.GetFileNameWithoutExtension(x), StringComparison.InvariantCultureIgnoreCase)))
+            {
+                // Does this catch DLC startups?
+                throw new Exception($"Cannot merge into non-startup file: {FileName}");
+            }
+        }
     }
 }

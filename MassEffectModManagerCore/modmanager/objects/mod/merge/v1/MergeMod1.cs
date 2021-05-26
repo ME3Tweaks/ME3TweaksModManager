@@ -44,6 +44,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
             foreach (var ff in mm.FilesToMergeInto)
             {
                 ff.SetupParent(mm);
+                ff.Validate();
             }
 
             var assetCount = mergeFileStream.ReadInt32();
