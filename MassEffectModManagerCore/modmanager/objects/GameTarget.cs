@@ -950,6 +950,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         public List<TextureModInstallationInfo> GetTextureModInstallationHistory()
         {
             var alotInfos = new List<TextureModInstallationInfo>();
+            if (Game == MEGame.Unknown) return alotInfos;
             int startPos = -1;
             while (GetInstalledALOTInfo(startPos, false) != null)
             {

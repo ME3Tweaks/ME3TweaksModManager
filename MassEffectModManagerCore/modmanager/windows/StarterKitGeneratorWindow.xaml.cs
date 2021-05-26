@@ -11,6 +11,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using IniParser;
 using IniParser.Model;
+using LegendaryExplorerCore.Coalesced;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
@@ -550,11 +551,11 @@ namespace MassEffectModManagerCore.modmanager.windows
 
                         //Generate Coalesced.bin for mod
                         var memory = Utilities.ExtractInternalFileToStream(@"MassEffectModManagerCore.modmanager.starterkit.Default_DLC_MOD_StarterKit.bin");
-                        var files = MassEffect3.Coalesce.Converter.DecompileToMemory(memory);
+                        var files = CoalescedConverter.DecompileToMemory(memory);
                         //Modify coal files for this mod.
                         files[@"BioEngine.xml"] = files[@"BioEngine.xml"].Replace(@"StarterKit", skOption.ModDLCFolderName); //update bioengine
 
-                        var newMemory = MassEffect3.Coalesce.Converter.CompileFromMemory(files);
+                        var newMemory = CoalescedConverter.CompileFromMemory(files);
                         var outpath = Path.Combine(cookedDir, $@"Default_{dlcFolderName}.bin");
                         Log.Information(@"Saving new starterkit coalesced file");
                         File.WriteAllBytes(outpath, newMemory.ToArray());
@@ -574,7 +575,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                         bioEngineIni[@"Engine.DLCModules"][dlcFolderName] = skOption.ModModuleNumber.ToString();
 
                         bioEngineIni[@"DLCInfo"][@"Version"] = 0.ToString(); //unknown
-                        bioEngineIni[@"DLCInfo"][@"Flags"] = ((int)skOption.ModMountFlag.FlagValue).ToString(); //unknown
+                        bioEngineIni[@"DLCInfo"][@"Flags"] = ((int)skOption.ModMountFlag.FlagValue).ToString();
                         bioEngineIni[@"DLCInfo"][@"Name"] = skOption.ModInternalTLKID.ToString();
                         Log.Information(@"Saving BioEngine file");
                         new FileIniDataParser().WriteFile(Path.Combine(cookedDir, @"BIOEngine.ini"), bioEngineIni, new UTF8Encoding(false));

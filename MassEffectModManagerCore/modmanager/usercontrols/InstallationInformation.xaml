@@ -1,16 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<local:MMBusyPanelBase xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:objects="clr-namespace:MassEffectModManagerCore.modmanager.objects" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+<local:MMBusyPanelBase xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" 
+                       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters" 
+                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:objects="clr-namespace:MassEffectModManagerCore.modmanager.objects" 
+                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
     x:Class="MassEffectModManagerCore.modmanager.usercontrols.InstallationInformation"
     mc:Ignorable="d"
-    MinWidth="600"
-    MaxHeight="500"
     d:DesignHeight="550"
     DataContext="{Binding RelativeSource={RelativeSource Self}}"
     d:DesignWidth="800">
     <UserControl.Resources />
-    <StackPanel
-        MaxWidth="690"
-        MaxHeight="520">
+    <StackPanel>
         <TextBlock
             Text="{DynamicResource string_installationInformation}"
             FontSize="24"

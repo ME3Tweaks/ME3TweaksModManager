@@ -11,10 +11,10 @@
     Drop="Window_Drop"
     DragOver="Window_DragOver"
     Title="ME3Tweaks Mod Manager"
-    Height="630"
-    Width="850"
+    Height="730"
+    Width="950"
     MinHeight="630"
-    MinWidth="700"
+    MinWidth="800"
     DataContext="{Binding RelativeSource={RelativeSource Self}}"
     Name="MainWindow_Ref">
     <Window.Style>

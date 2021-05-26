@@ -14,6 +14,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.XPath;
+using LegendaryExplorerCore.Coalesced;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.modmanager.usercontrols;
@@ -485,7 +486,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 if (File.Exists(coalPath))
                 {
                     using FileStream fs = new FileStream(coalPath, FileMode.Open);
-                    coalescedFilemapping = MassEffect3.Coalesce.Converter.DecompileToMemory(fs);
+                    coalescedFilemapping = CoalescedConverter.DecompileToMemory(fs);
                 }
                 else
                 {
@@ -496,7 +497,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             else if (chunkName == @"BALANCE_CHANGES")
             {
                 var serverCoalesced = Utilities.ExtractInternalFileToStream(@"MassEffectModManagerCore.modmanager.me3tweaks.LiveIni.bin");
-                coalescedFilemapping = MassEffect3.Coalesce.Converter.DecompileToMemory(serverCoalesced);
+                coalescedFilemapping = CoalescedConverter.DecompileToMemory(serverCoalesced);
                 coalescedFilename = @"ServerCoalesced.bin";
             }
             else
@@ -506,7 +507,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 coalescedFilename = $@"Default_{dlcFolderName}.bin";
                 if (coalescedData != null)
                 {
-                    coalescedFilemapping = MassEffect3.Coalesce.Converter.DecompileToMemory(coalescedData);
+                    coalescedFilemapping = CoalescedConverter.DecompileToMemory(coalescedData);
                 }
                 else
                 {
@@ -534,7 +535,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 }
 
                 CLog.Information($@"{loggingPrefix} Recompiling coalesced file", Settings.LogModMakerCompiler);
-                var newFileStream = MassEffect3.Coalesce.Converter.CompileFromMemory(coalescedFilemapping);
+                var newFileStream = CoalescedConverter.CompileFromMemory(coalescedFilemapping);
 
 
                 var outFolder = Path.Combine(mod.ModPath, chunkName, @"CookedPCConsole");

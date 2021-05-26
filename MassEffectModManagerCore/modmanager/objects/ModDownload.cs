@@ -6,6 +6,7 @@ using System.Web;
 using System;
 using System.IO;
 using System.Threading;
+using System.Linq;
 using System.Threading.Tasks;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.ui;
@@ -14,7 +15,6 @@ using Serilog;
 using MassEffectModManagerCore.modmanager.localizations;
 using LegendaryExplorerCore.Misc;
 using Microsoft.AppCenter.Analytics;
-using WinCopies.Util;
 using MemoryAnalyzer = MassEffectModManagerCore.modmanager.memoryanalyzer.MemoryAnalyzer;
 
 namespace MassEffectModManagerCore.modmanager.objects

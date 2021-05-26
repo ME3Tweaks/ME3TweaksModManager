@@ -26,6 +26,7 @@ using LegendaryExplorerCore.Packages;
 using Microsoft.AppCenter.Analytics;
 using Serilog;
 using Path = System.IO.Path;
+using LegendaryExplorerCore.Coalesced;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -265,7 +266,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (File.Exists(coalPath))
             {
                 using FileStream fs = new FileStream(coalPath, FileMode.Open);
-                coalescedFilemapping = MassEffect3.Coalesce.Converter.DecompileToMemory(fs);
+                coalescedFilemapping = CoalescedConverter.DecompileToMemory(fs);
             }
             else
             {
@@ -302,7 +303,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
 
             coalescedFilemapping[@"BioInput.xml"] = coalFileDoc.ToString();
-            var recompiled = MassEffect3.Coalesce.Converter.CompileFromMemory(coalescedFilemapping);
+            var recompiled = CoalescedConverter.CompileFromMemory(coalescedFilemapping);
             recompiled.WriteToFile(coalPath);
             AutoTOC.RunTOCOnGameTarget(target);
         }
@@ -537,7 +538,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (File.Exists(coalPath))
                 {
                     using FileStream fs = new FileStream(coalPath, FileMode.Open);
-                    coalescedFilemapping = MassEffect3.Coalesce.Converter.DecompileToMemory(fs);
+                    coalescedFilemapping = CoalescedConverter.DecompileToMemory(fs);
                 }
                 else
                 {

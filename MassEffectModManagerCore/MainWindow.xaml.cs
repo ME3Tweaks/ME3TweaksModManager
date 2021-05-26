@@ -18,7 +18,6 @@ using System.Xml;
 using System.Xml.Linq;
 using AdonisUI;
 using CommandLine;
-using MassEffect3.Coalesce;
 using MassEffectModManagerCore.modmanager;
 using MassEffectModManagerCore.modmanager.asi;
 using MassEffectModManagerCore.modmanager.gameini;
@@ -32,6 +31,7 @@ using MassEffectModManagerCore.modmanager.usercontrols;
 using MassEffectModManagerCore.modmanager.windows;
 using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore;
+using LegendaryExplorerCore.Coalesced;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Packages;
@@ -3215,7 +3215,7 @@ namespace MassEffectModManagerCore
                                 {
                                     var dest = Path.Combine(Directory.GetParent(files[0]).FullName, Path.GetFileNameWithoutExtension(files[0]));
                                     Log.Information($@"Decompiling coalesced file: {files[0]} -> {dest}");
-                                    Converter.ConvertToXML(files[0], dest);
+                                    CoalescedConverter.ConvertToXML(files[0], dest);
                                     Log.Information(@"Decompiled coalesced file");
                                 };
                                 nbw.RunWorkerCompleted += (a, b) =>
@@ -3281,7 +3281,7 @@ namespace MassEffectModManagerCore
                                         Log.Information($@"Compiling coalesced file: {files[0]} -> {dest}");
                                         try
                                         {
-                                            Converter.ConvertToBin(files[0], dest);
+                                            CoalescedConverter.ConvertToBin(files[0], dest);
                                             Log.Information(@"Compiled coalesced file");
                                         }
                                         catch (Exception e)

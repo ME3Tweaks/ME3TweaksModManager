@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
 using System.Windows.Input;
+using LegendaryExplorerCore.Coalesced;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
@@ -103,10 +104,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (File.Exists(coalPath))
             {
                 using FileStream fs = new FileStream(coalPath, FileMode.Open);
-                var coalescedFilemapping = MassEffect3.Coalesce.Converter.DecompileToMemory(fs);
+                var coalescedFilemapping = CoalescedConverter.DecompileToMemory(fs);
                 fs.Close(); //release
                 coalescedFilemapping[@"BioInput.xml"] = bioInputXml;
-                var outStream = MassEffect3.Coalesce.Converter.CompileFromMemory(coalescedFilemapping);
+                var outStream = CoalescedConverter.CompileFromMemory(coalescedFilemapping);
                 outStream.WriteToFile(coalPath);
             }
         }
@@ -121,7 +122,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (File.Exists(coalPath))
                 {
                     using FileStream fs = new FileStream(coalPath, FileMode.Open);
-                    var coalescedFilemapping = MassEffect3.Coalesce.Converter.DecompileToMemory(fs);
+                    var coalescedFilemapping = CoalescedConverter.DecompileToMemory(fs);
                     InstallME3Keybinds(coalescedFilemapping[@"BioInput.xml"], SelectedME3Target);
                 }
             };

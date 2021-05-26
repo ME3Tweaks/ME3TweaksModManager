@@ -30,6 +30,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
         public static CaseInsensitiveDictionary<List<(int size, string md5)>> LE1VanillaDatabase = new CaseInsensitiveDictionary<List<(int size, string md5)>>();
         public static CaseInsensitiveDictionary<List<(int size, string md5)>> LE2VanillaDatabase = new CaseInsensitiveDictionary<List<(int size, string md5)>>();
         public static CaseInsensitiveDictionary<List<(int size, string md5)>> LE3VanillaDatabase = new CaseInsensitiveDictionary<List<(int size, string md5)>>();
+        public static CaseInsensitiveDictionary<List<(int size, string md5)>> LELauncherVanillaDatabase = new CaseInsensitiveDictionary<List<(int size, string md5)>>();
 
 
         public static CaseInsensitiveDictionary<List<(int size, string md5)>> LoadDatabaseFor(MEGame game, bool isMe1PL = false)
@@ -67,6 +68,11 @@ namespace MassEffectModManagerCore.modmanager.helpers
                     var le3stream = Utilities.ExtractInternalFileToStream($@"{assetPrefix}.bin");
                     ParseDatabase(le3stream, LE3VanillaDatabase, true);
                     return LE3VanillaDatabase;
+                case MEGame.Unknown:
+                    if (LELauncherVanillaDatabase.Count > 0) return LE3VanillaDatabase;
+                    var lelstream = Utilities.ExtractInternalFileToStream(@"lel.bin");
+                    ParseDatabase(lelstream, LELauncherVanillaDatabase, true);
+                    return LELauncherVanillaDatabase;
             }
 
             return null;
@@ -358,6 +364,10 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 case MEGame.LE3:
                     if (LE3VanillaDatabase.Count == 0) LoadDatabaseFor(MEGame.LE3);
                     vanillaDB = LE3VanillaDatabase;
+                    break;
+                case MEGame.Unknown:
+                    if (LELauncherVanillaDatabase.Count == 0) LoadDatabaseFor(MEGame.Unknown);
+                    vanillaDB = LELauncherVanillaDatabase;
                     break;
                 default:
                     throw new Exception(@"Cannot vanilla check against game that is not ME1/ME2/ME3");
