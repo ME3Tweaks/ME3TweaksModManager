@@ -768,6 +768,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     // Check hash
                     if (hash != null)
                     {
+                        responseStream.Position = 0;
                         var md5 = MD5.Create().ComputeHashAsync(responseStream, cancellationToken, x => progressCallback?.Invoke(x, 100)).Result;
                         responseStream.Position = 0;
                         if (md5 != hash)
