@@ -7,7 +7,6 @@ using System.Windows.Media.Imaging;
 using LegendaryExplorerCore.Packages;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.ui;
-using WinCopies.Util;
 
 namespace MassEffectModManagerCore.modmanager.converters
 {
