@@ -1608,6 +1608,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_dialog_mustBePremiumUserToDownload = "string_dialog_mustBePremiumUserToDownload";
 		public const string string_dialog_cannotDownloadDeletedFile = "string_dialog_cannotDownloadDeletedFile";
 		public const string string_interp_errorDownloadingModX = "string_interp_errorDownloadingModX";
+		public const string string_interp_dialog_modNotForThisModManager = "string_interp_dialog_modNotForThisModManager";
 		public const string string_modDownloader = "string_modDownloader";
 		public const string string_initializing = "string_initializing";
 		public const string string_cancelDownload = "string_cancelDownload";
