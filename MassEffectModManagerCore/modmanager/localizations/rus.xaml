@@ -1286,6 +1286,8 @@
 	<system:String x:Key="string_dialog_cannotDownloadDeletedFile">Невозможно скачать файл: Удалено с NexusMods</system:String>
 	<system:String x:Key="string_interp_errorDownloadingModX">Ошибка загрузки мода: {0}</system:String>
 	<!-- 0={Error message} -->
+	<system:String x:Key="string_interp_dialog_modNotForThisModManager" xml:space="preserve">Данный мод предназначен для '{0}', который не поддерживается ME3Tweaks Mod Manager. Вероятно, ожидалось использование другого менеджера модов, но в связи с тем как инструменты используют протокол nxm://, может запуститься неверное приложение.\n\nЗапустите менеджер модов, с помощью которого вы желаете загрузить данный мод по ссылкам nxm://. После открытия, попробуйте загрузить мод снова.</system:String>
+	<!-- 0={domain, like 'masseffect'} -->
 
 	<!-- Mod Downloader -->
 	<system:String x:Key="string_modDownloader">Mod Downloader</system:String>
