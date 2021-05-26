@@ -5,7 +5,6 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media.Imaging;
 using ME3ExplorerCore.Packages;
-using WinCopies.Util;
 
 namespace MassEffectModManagerCore.modmanager.converters
 {

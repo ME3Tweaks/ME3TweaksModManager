@@ -20,7 +20,6 @@ using MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor;
 using ME3ExplorerCore.Gammtek.Extensions.Collections.Generic;
 using ME3ExplorerCore.Misc;
 using PropertyChanged;
-using WinCopies.Util;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols.generic
 {
