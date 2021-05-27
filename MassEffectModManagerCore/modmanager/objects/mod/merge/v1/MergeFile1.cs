@@ -89,6 +89,8 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
                 }
             }
 
+
+            MergeAssetCache1 mac = new MergeAssetCache1();
             foreach (var f in targetFiles)
             {
 #if DEBUG
@@ -100,7 +102,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
 #endif
                 foreach (var pc in MergeChanges)
                 {
-                    pc.ApplyChanges(package, associatedMod);
+                    pc.ApplyChanges(package, mac, associatedMod);
                 }
                 Log.Information($@"Saving package {package.FilePath}");
 

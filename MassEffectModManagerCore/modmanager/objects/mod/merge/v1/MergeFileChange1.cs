@@ -9,6 +9,8 @@ using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Packages.CloningImportingAndRelinking;
 using LegendaryExplorerCore.Unreal;
 using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.UnrealScript;
+using LegendaryExplorerCore.UnrealScript.Compiling.Errors;
 using Newtonsoft.Json;
 using Serilog;
 
@@ -19,22 +21,23 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
         [JsonProperty("entryname")] public string EntryName { get; set; }
         [JsonProperty("propertyupdates")] public List<PropertyUpdate1> PropertyUpdates { get; set; }
         [JsonProperty("assetupdate")] public AssetUpdate1 AssetUpdate { get; set; }
+        [JsonProperty("scriptupdate")] public ScriptUpdate1 ScriptUpdate { get; set; }
 
         [JsonIgnore] public MergeFile1 Parent;
         [JsonIgnore] public MergeMod1 OwningMM => Parent.OwningMM;
 
-        public void ApplyChanges(IMEPackage package, Mod installingMod)
+        public void ApplyChanges(IMEPackage package, MergeAssetCache1 assetsCache, Mod installingMod)
         {
             // APPLY PROPERTY UPDATES
             Log.Information($@"Merging changes into {package.FilePath}");
+            var export = package.FindExport(EntryName);
+            if (export == null)
+                throw new Exception($"Could not find export in package {package.FilePath}: {EntryName}! Cannot apply MergeFileChange1.");
+
             if (PropertyUpdates != null)
             {
                 foreach (var pu in PropertyUpdates)
                 {
-                    var export = package.FindExport(EntryName);
-                    if (export == null)
-                        throw new Exception($"Could not find export in package {package.FilePath}: {EntryName}! Cannot merge");
-
                     Log.Information($@"Applying property changes to {export.FileRef.FilePath} {export.InstancedFullPath}");
                     var props = export.GetProperties();
                     pu.ApplyUpdate(package, props);
@@ -43,7 +46,10 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
             }
 
             // APPLY ASSET UPDATE
-            AssetUpdate?.ApplyUpdate(package, EntryName, installingMod);
+            AssetUpdate?.ApplyUpdate(package, export, installingMod);
+
+            // APPLY SCRIPT UDPATE
+            ScriptUpdate?.ApplyUpdate(package, export, assetsCache, installingMod);
         }
 
         public void SetupParent(MergeFile1 parent)
@@ -148,14 +154,8 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
         [JsonIgnore] public MergeFileChange1 Parent;
         [JsonIgnore] public MergeMod1 OwningMM => Parent.OwningMM;
 
-        public bool ApplyUpdate(IMEPackage package, string destEntryName, Mod installingMod)
+        public bool ApplyUpdate(IMEPackage package, ExportEntry targetExport, Mod installingMod)
         {
-            var destEntry = package.FindExport(destEntryName);
-            if (destEntry == null)
-            {
-                throw new Exception($"Cannot find AssetUpdate1 entry in target package {package.FilePath}: {EntryName}. Merge aborted");
-            }
-
             Stream binaryStream;
             if (OwningMM.Assets[AssetName].AssetBinary != null)
             {
@@ -177,10 +177,60 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
                 throw new Exception($"Cannot find AssetUpdate1 entry in source asset package {OwningMM.Assets[AssetName].FileName}: {EntryName}. Merge aborted");
             }
 
-            var resultst = EntryImporter.ImportAndRelinkEntries(EntryImporter.PortingOption.ReplaceSingular, sourceEntry, destEntry.FileRef, destEntry, true, out _, errorOccuredCallback: x => throw new Exception($"Error merging assets: {x}"));
+            var resultst = EntryImporter.ImportAndRelinkEntries(EntryImporter.PortingOption.ReplaceSingular, sourceEntry, targetExport.FileRef, targetExport, true, out _, errorOccuredCallback: x => throw new Exception($"Error merging assets: {x}"));
             if (resultst.Any())
             {
                 throw new Exception("Errors occurred merging!");
+            }
+
+            return true;
+        }
+    }
+
+
+    public class ScriptUpdate1
+    {
+        /// <summary>
+        /// Name of text file containing the script
+        /// </summary>
+        [JsonProperty("scriptfilename")]
+        public string ScriptFileName { get; set; }
+
+        [JsonProperty("scripttext")]
+        public string ScriptText { get; set; }
+
+        [JsonIgnore] public MergeFileChange1 Parent;
+        [JsonIgnore] public MergeMod1 OwningMM => Parent.OwningMM;
+
+        public bool ApplyUpdate(IMEPackage package, ExportEntry targetExport, MergeAssetCache1 assetsCache, Mod installingMod)
+        {
+            FileLib fl;
+            if (!assetsCache.FileLibs.TryGetValue(package.FilePath, out fl))
+            {
+                fl = new FileLib(package);
+                bool initialized = fl.Initialize().Result;
+                if (!initialized)
+                {
+                    throw new Exception(
+                        $@"FileLib for script update could not initialize, cannot merge script to {targetExport.InstancedFullPath}");
+                }
+
+                assetsCache.FileLibs[package.FilePath] = fl;
+            }
+
+
+            (_, MessageLog log) = UnrealScriptCompiler.CompileFunction(targetExport, ScriptText, fl);
+            if (log.AllErrors.Any())
+            {
+                Log.Error($@"Error compiling function {targetExport.InstancedFullPath}:");
+                foreach (var l in log.AllErrors)
+                {
+                    Log.Error(l.Message);
+                }
+
+                // Is this right? [0]?
+                throw new Exception($"Error compiling function {targetExport}: {log.AllErrors[0].Message}");
+                return false;
             }
 
             return true;

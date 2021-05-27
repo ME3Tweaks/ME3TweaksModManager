@@ -102,10 +102,6 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
         {
 
             var sourceDir = Directory.GetParent(manifestFile).FullName;
-            // FIRST PERSON MODE LE2
-            //outStream.WriteUnrealStringUnicode(File.ReadAllText(@"C:\Users\Mgame\Desktop\fps_le2.json")); // manifest
-
-            // NO MINI GAMES LE2
 
             var manifestText = File.ReadAllText(manifestFile);
             var mm = JsonConvert.DeserializeObject<MergeMod1>(manifestText);
@@ -126,6 +122,17 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
                         }
 
                         assets.Add(mc.AssetUpdate.AssetName);
+                    }
+
+                    if (mc.ScriptUpdate?.ScriptFileName != null)
+                    {
+                        var scriptDiskFile = Path.Combine(sourceDir, mc.ScriptUpdate.ScriptFileName);
+                        if (!File.Exists(scriptDiskFile))
+                        {
+                            throw new Exception($"Script does not exist in folder: {mc.ScriptUpdate.ScriptFileName}");
+                        }
+
+                        mc.ScriptUpdate.ScriptText = File.ReadAllText(scriptDiskFile);
                     }
                 }
             }
