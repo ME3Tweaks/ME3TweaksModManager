@@ -1233,6 +1233,10 @@
                         Click="TestMMV1_click"
                         Visibility="{x:Static local:App.DebugOnlyVisibility}" />
                     <MenuItem
+                        Header="Build MD5 DB"
+                        Click="MD5DB_Gen_Click"
+                        Visibility="{x:Static local:App.DebugOnlyVisibility}" />
+                    <MenuItem
                         Header="{DynamicResource string_requiresNothing}"
                         Style="{StaticResource MenuItemHeaderStyle}"
                         Visibility="{x:Static local:App.DebugOnlyVisibility}" />

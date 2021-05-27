@@ -11,7 +11,9 @@
                        xmlns:asi="clr-namespace:MassEffectModManagerCore.modmanager.asi"
                        xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters"
                        DataContext="{Binding RelativeSource={RelativeSource Self}}"
-                       mc:Ignorable="d" Height="500" Width="730">
+                       mc:Ignorable="d"
+                       Width="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter=0.9, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualWidth}"
+                       Height="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter=0.8, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualHeight}">
     <UserControl.Resources>
         <DataTemplate DataType="{x:Type asi:ASIMod}">
             <Grid Margin="3" HorizontalAlignment="Stretch">
@@ -138,25 +140,6 @@
                                  HorizontalContentAlignment="Stretch" 
                                  SelectedItem="{Binding SelectedASI}"
                                  SelectionChanged="ASIManagerLists_SelectedChanged">
-
-                            <!--<ListBox.ItemContainerStyle>
-                                <Style BasedOn="{StaticResource ListBoxItemStyle}" TargetType="{x:Type ListBoxItem}">
-                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                                    <Setter Property="Padding" Value="0"/>
-                                    <Style.Triggers>
-                                        <MultiDataTrigger>
-                                            <MultiDataTrigger.Conditions>
-                                                <Condition Binding="{Binding Converter={StaticResource DataTypeConverter}}" Value="{x:Type asi:ASIMod}" />
-                                            </MultiDataTrigger.Conditions>
-                                            <Setter Property="Template" Value="{StaticResource ASIModTemplate}"/>
-                                        </MultiDataTrigger>
-                                        <DataTrigger Binding="{Binding Selected}" Value="True">
-                                            <Setter Property="Background" Value="{StaticResource {x:Static adonisUi:Brushes.AccentBrush}}"></Setter>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </ListBox.ItemContainerStyle>-->
-
                         </ListBox>
                     </Grid>
                 </DataTemplate>

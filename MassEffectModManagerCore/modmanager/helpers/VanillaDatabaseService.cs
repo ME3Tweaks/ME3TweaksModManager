@@ -36,6 +36,9 @@ namespace MassEffectModManagerCore.modmanager.helpers
         public static CaseInsensitiveDictionary<List<(int size, string md5)>> LoadDatabaseFor(MEGame game, bool isMe1PL = false)
         {
             string assetPrefix = $@"MassEffectModManagerCore.modmanager.gamemd5.{game.ToString().ToLower()}";
+            if (game == MEGame.Unknown)
+                assetPrefix = $@"MassEffectModManagerCore.modmanager.gamemd5.lel";
+
             switch (game)
             {
                 case MEGame.ME1:
@@ -69,9 +72,9 @@ namespace MassEffectModManagerCore.modmanager.helpers
                     ParseDatabase(le3stream, LE3VanillaDatabase, true);
                     return LE3VanillaDatabase;
                 case MEGame.Unknown:
-                    if (LELauncherVanillaDatabase.Count > 0) return LE3VanillaDatabase;
-                    var lelstream = Utilities.ExtractInternalFileToStream(@"lel.bin");
-                    ParseDatabase(lelstream, LELauncherVanillaDatabase, true);
+                    if (LELauncherVanillaDatabase.Count > 0) return LELauncherVanillaDatabase;
+                    var lelstream = Utilities.ExtractInternalFileToStream($@"{assetPrefix}.bin");
+                    ParseDatabase(lelstream, LELauncherVanillaDatabase);
                     return LELauncherVanillaDatabase;
             }
 

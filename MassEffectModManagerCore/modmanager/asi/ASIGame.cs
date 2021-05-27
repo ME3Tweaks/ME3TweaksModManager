@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Input;
+using LegendaryExplorerCore.Gammtek.Extensions;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
@@ -36,7 +37,7 @@ namespace MassEffectModManagerCore.modmanager.asi
 
         public bool LoaderInstalled { get; set; }
         public bool IsEnabled { get; set; }
-        public string GameName => Utilities.GetGameName(Game);
+        public string GameName => Game.ToGameName(true);
 
         public ICommand InstallLoaderCommand { get; }
         public ASIGame(MEGame game, List<GameTarget> targets)

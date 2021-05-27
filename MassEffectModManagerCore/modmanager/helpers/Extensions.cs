@@ -149,24 +149,24 @@ namespace MassEffectModManagerCore.modmanager.helpers
             }
         }
 
-        public static int ToGameNum(this MEGame game)
-        {
-            if (game == MEGame.ME1) return 1;
-            if (game == MEGame.ME2) return 2;
-            if (game == MEGame.ME3) return 3;
-            return 0;
-        }
+        //public static int ToGameNum(this MEGame game)
+        //{
+        //    if (game == MEGame.ME1) return 1;
+        //    if (game == MEGame.ME2) return 2;
+        //    if (game == MEGame.ME3) return 3;
+        //    return 0;
+        //}
 
-        public static string ToGameName(this MEGame game)
-        {
-            if (game == MEGame.ME1) return @"Mass Effect";
-            if (game == MEGame.ME2) return @"Mass Effect 2";
-            if (game == MEGame.ME3) return @"Mass Effect 3";
-            if (game == MEGame.LE1) return @"Mass Effect (Legendary Edition)";
-            if (game == MEGame.LE2) return @"Mass Effect 2 (Legendary Edition)";
-            if (game == MEGame.LE3) return @"Mass Effect 3 (Legendary Edition)";
-            return @"UNKNOWN GAME";
-        }
+        //public static string ToGameName(this MEGame game)
+        //{
+        //    if (game == MEGame.ME1) return @"Mass Effect";
+        //    if (game == MEGame.ME2) return @"Mass Effect 2";
+        //    if (game == MEGame.ME3) return @"Mass Effect 3";
+        //    if (game == MEGame.LE1) return @"Mass Effect (Legendary Edition)";
+        //    if (game == MEGame.LE2) return @"Mass Effect 2 (Legendary Edition)";
+        //    if (game == MEGame.LE3) return @"Mass Effect 3 (Legendary Edition)";
+        //    return @"UNKNOWN GAME";
+        //}
 
         public static string GetStorageTypeOfFile(this SevenZipExtractor archive, string fileName)
         {

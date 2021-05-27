@@ -42,6 +42,7 @@ using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Serilog;
 using LegendaryExplorerCore.Helpers;
+using MassEffectModManagerCore.modmanager.gamemd5;
 using MassEffectModManagerCore.modmanager.objects.mod.merge;
 using MassEffectModManagerCore.modmanager.objects.mod.merge.v1;
 using Pathoschild.FluentNexus.Models;
@@ -3921,6 +3922,12 @@ namespace MassEffectModManagerCore
                 ListDialog l = new ListDialog(files, M3L.GetString(M3L.string_interp_allInstallableFiles, SelectedMod.ModName), M3L.GetString(M3L.string_description_allInstallableFiles), this);
                 l.Show();
             }
+        }
+
+        private void MD5DB_Gen_Click(object sender, RoutedEventArgs e)
+        {
+            MD5Gen.GenerateMD5Map(@"D:\Steam\steamapps\common\Mass Effect Legendary Edition\Game\Launcher", "lel.bin");
+            Debug.WriteLine("Done");
         }
     }
 }

@@ -22,6 +22,7 @@ using System.Windows.Shell;
 using ALOTInstallerCore.Helpers;
 using MassEffectModManagerCore.modmanager.asi;
 using LegendaryExplorerCore.GameFilesystem;
+using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Unreal;
 using Microsoft.WindowsAPICodePack.Taskbar;

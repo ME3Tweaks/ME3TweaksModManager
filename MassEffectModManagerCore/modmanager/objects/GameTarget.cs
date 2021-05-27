@@ -1238,6 +1238,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         public string NumASIModsInstalledText { get; private set; }
         public void PopulateASIInfo()
         {
+            if (Game == MEGame.Unknown) return;
             var installedASIs = GetInstalledASIs();
             if (installedASIs.Any())
             {

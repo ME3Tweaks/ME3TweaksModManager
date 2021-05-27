@@ -21,6 +21,7 @@
     <converters:GameToVisibilityConverter x:Key="GameToVisibilityConverter" />
     <helpers:FlightingVisibilityConverter x:Key="FlightingVisibilityConverter"/>
     <converters:LocalizationConverter x:Key="LocalizationConverter" />
+    <converters:SizePercentageConverter x:Key="SizePercentageConverter" />
     <DataTemplate x:Key="TargetSelectorTemplate" DataType="{x:Type modmanager:GameTarget}">
         <DockPanel HorizontalAlignment="Stretch">
             <Image DockPanel.Dock="Left" Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16"  Visibility="{Binding Converter={StaticResource GameIconVisibilityConverter}}"/>

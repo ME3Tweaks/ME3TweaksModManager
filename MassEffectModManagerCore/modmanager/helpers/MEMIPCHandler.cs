@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using CliWrap;
 using CliWrap.EventStream;
+using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Packages;
 
