@@ -70,6 +70,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     if (existingInfos.All(x => x.hash != entry.hash))
                     {
                         // new info
+                        entry.file = null; // Do not serialize this
+                        entry.game = null; // Do not serialize this
                         existingInfos.Add(entry);
                         updated = true;
                     }
@@ -79,7 +81,11 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             // Serialize it back to disk
             if (updated)
             {
-                var outText = JsonConvert.SerializeObject(LocalBasegameFileIdentificationService);
+#if DEBUG
+                var outText = JsonConvert.SerializeObject(LocalBasegameFileIdentificationService, Formatting.Indented, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore });
+#else
+                var outText = JsonConvert.SerializeObject(LocalBasegameFileIdentificationService, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore });
+#endif
                 try
                 {
                     File.WriteAllText(Utilities.GetLocalBasegameIdentificationServiceFile(), outText);
@@ -146,12 +152,14 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             public string hash { get; set; }
             public string source { get; set; }
             public string game { get; set; }
+            public int size { get; set; }
             public BasegameCloudDBFile() { }
-            public BasegameCloudDBFile(string file, GameTarget gameTarget, Mod modBeingInstalled, string md5 = null)
+            public BasegameCloudDBFile(string file, int size, GameTarget gameTarget, Mod modBeingInstalled, string md5 = null)
             {
                 this.file = file.Substring(gameTarget.TargetPath.Length + 1);
                 this.hash = md5 ?? Utilities.CalculateMD5(file);
                 this.game = gameTarget.Game.ToGameNum().ToString();
+                this.size = size;
                 this.source = modBeingInstalled.ModName + @" " + modBeingInstalled.ModVersionString;
             }
         }
