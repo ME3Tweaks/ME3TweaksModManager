@@ -81,6 +81,8 @@
     <system:String x:Key="string_tooltip_me2r">Randomizer for Mass Effect 2</system:String>
     <system:String x:Key="string_ME3ExplorerME3TweaksFork">ME3Explorer - ME3Tweaks Fork (Stable)</system:String>
     <system:String x:Key="string_ME3ExplorerME3TweaksForkBeta">ME3Explorer - ME3Tweaks Fork (Nightly)</system:String>
+    <system:String x:Key="string_LegendaryExploreStable">Legendary Explorer (Stable)</system:String>
+    <system:String x:Key="string_LegendaryExplorerBeta">Legendary Explorer (Nightly)</system:String>
     <system:String x:Key="string_ME3ExplorerME3TweaksForkTooltip" xml:space="preserve">Toolset for developing Mass Effect trilogy mods.&#10;This is the stable version, which is typically a few months old</system:String>
     <system:String x:Key="string_ME3ExplorerME3TweaksForkBetaTooltip" xml:space="preserve">Toolset for developing Mass Effect trilogy mods.&#10;This is the nightly version, which means it's built fresh every time one of the developers commits code.&#10;This version will be less stable and may have significant bugs.&#10;Active developers are encouraged to use this version and join the ME3Tweaks Discord</system:String>
     <system:String x:Key="string_BackupRestore">Backup &amp; Restore</system:String>
@@ -529,7 +531,7 @@
     <system:String x:Key="string_interp_couldNotFindReferencedAFC">{0} - {1}: Could not find referenced audio file cache: {2}</system:String>
     <!-- 0 = filepath, 1=export path in-package, 2=AFC cache name (like wwise_biosnd_end002) -->
     <system:String x:Key="string_interp_invalidAudioPointer">{0} - {1}: Invalid audio pointer, does not point to RIFF header</system:String>
-    <system:String x:Key="string_interp_audioStoredInOfficialAFC">{0} - {1}: This audio is in a basegame/DLC AFC but is not vanilla audio. End-users will not have this audio available. Use AFC compactor in ME3Explorer to pull this audio locally into an AFC for this mod.</system:String>
+    <system:String x:Key="string_interp_audioStoredInOfficialAFC">{0} - {1}: This audio is in a basegame/DLC AFC but is not vanilla audio. End-users will not have this audio available. Use AFC compactor in Legendary Explorer to pull this audio locally into an AFC for this mod.</system:String>
     <!-- 0 = filepath, 1=export path in-package -->
     <system:String x:Key="string_errorValidatingAudioReference">{0} - {1}: Error validating audio reference: {2}</system:String>
     <!-- 0 = filepath, 1=export path in-package, 2=error message -->
@@ -556,7 +558,7 @@
     <!-- 0=filepath -->
     <system:String x:Key="string_noMiscellaneousIssuesDetected">No miscellaneous issues detected</system:String>
     <system:String x:Key="string_tooltip_deploymentChecksFoundMiscIssues">Deployment checks found some miscellaneous issues that should be fixed before deployment</system:String>
-    <system:String x:Key="string_interp_error_textureTaggedFileFound">{0} has the texture modded marker tagged on it. This file cannot be distributed in a mod. Mod files cannot be used if they have been modified with Mass Effect Modder or ALOT Installer - use Package Editor in ME3Explorer to replace textures for mods that use package files. Distributing mods with ALOT markers on the files will lead to the mod being blacklisted in ALOT Installer and Mass Effect Modder.</system:String>
+    <system:String x:Key="string_interp_error_textureTaggedFileFound">{0} has the texture modded marker tagged on it. This file cannot be distributed in a mod. Mod files cannot be used if they have been modified with Mass Effect Modder or ALOT Installer - use Package Editor in Legendary Explorer to replace textures for mods that use package files. Distributing mods with ALOT markers on the files will lead to the mod being blacklisted in ALOT Installer and Mass Effect Modder.</system:String>
     <!-- 0={Filepath} -->
     <system:String x:Key="string_deploymentBlocked">Deployment blocked</system:String>
     <system:String x:Key="string_error_foundUnofficialDescriptor">The moddesc.ini for this mod is marked with the 'unofficial' descriptor, which means this mod was previously imported. Unofficially imported mods only import the data and not the alternates and other important information. This descriptor must be removed before deployment.</system:String>
@@ -615,7 +617,7 @@
     <!-- 0={ModName} 1={integer} -->
     <system:String x:Key="string_interp_fatalMissingNeverstreamFlag">{0} texture {1} {2} is not externally stored, has more than 6 mips, but does not have the NeverStream flag. If texture LODs are raised, this package will crash the game. Set the NeverStream flag to true to correct this issue, or use an external TFC (preferred). Using an external TFC for textures improves game performance.</system:String>
     <!-- 0={Relative file path} 1={integer} 2={Full texture object path string} -->
-    <system:String x:Key="string_interp_fatalFound4KNorm">{0} texture {1} {2} is a 4K uncompressed normal. Unreal Engine 3 uses uncompressed normals at one mip level below the diff, so the maximum normal size is effectively 2K. The 4K normal will load when texture LODs are set to 4K but will result in wasting 64MB of both process and texture memory, as well as wasting significant amounts of disk space, as this mip will never be usable. Drop the top mip (you can drop mips in ME3Explorer - ME3Tweaks Fork) from this texture to correct this issue.</system:String>
+    <system:String x:Key="string_interp_fatalFound4KNorm">{0} texture {1} {2} is a 4K uncompressed normal. Unreal Engine 3 uses uncompressed normals at one mip level below the diff, so the maximum normal size is effectively 2K. The 4K normal will load when texture LODs are set to 4K but will result in wasting 64MB of both process and texture memory, as well as wasting significant amounts of disk space, as this mip will never be usable. Drop the top mip (you can drop mips in Legendary Explorer) from this texture to correct this issue.</system:String>
     <!-- 0={Relative file path} 1={integer} 2={Full texture object path string} -->
     <system:String x:Key="string_interp_warningPropertyTypingWrongPrefix">{0}, entry {1} {2} ({3}), @ 0x{4}:</system:String>
     <!-- 0={Relative file path} 1={integer} 2={referenced object name} 3={Class name} 4={Hex number} -->
@@ -688,10 +690,10 @@
     <system:String x:Key="string_dialog_DeploymentChecksInProgress">Mods are currently being checked before deployment. Cancel the deployment?</system:String>
 
     <!-- Backup Creator-->
-    <system:String x:Key="string_backupsAreShared">Backups are shared across various modding tools including Mass Effect Randomizer, ALOT Installer, and ME3Explorer - ME3Tweaks Fork.</system:String>
+    <system:String x:Key="string_backupsAreShared">Backups are shared across various modding tools including Mass Effect Randomizer, ALOT Installer, and Legendary Explorer.</system:String>
     <system:String x:Key="string_backupsMustBeCreatedFresh">Backups must be created from a fresh, unmodified copy of the game. Modified backups are not supported.</system:String>
     <system:String x:Key="string_backUp">Back up</system:String>
-    <system:String xml:space="preserve" x:Key="string_backupsAreUsedToRestoreYourGame">Backups are used to restore your game files and are an important step in the modding process. To unlink a backup, move or delete the backup folder. To restore from backup, use the Restore option in the Backup &amp; Restore menu, or click the Manage Target button from the main window.&#10;&#10;Backups are also used for as a file source for certain operations. Some advanced features require a backup as an unmodified file must be available.</system:String>
+    <system:String xml:space="preserve" x:Key="string_backupsAreUsedToRestoreYourGame">Backups are used to restore your game files and are an important step in the modding process. To unlink a backup and make modding tools forget about it, click the 'Unlink backup' button. To restore from backup, use the Restore option in the Backup &amp; Restore menu, or click the Manage Target button from the main window.&#10;&#10;Backups are also used for as a file source for certain operations. Some advanced features require a backup as an unmodified file must be available.</system:String>
     <system:String x:Key="string_interp_cannotBackupGameWhileRunning">Cannot backup {0} while it is running.</system:String>
     <!-- 0 = game name-->
     <system:String x:Key="string_validatingBackupSource">Validating backup source</system:String>
@@ -737,7 +739,7 @@
     <system:String x:Key="string_dialog_foundLeftoverTextureFiles">Additional files from a previous texture installation were found. A backup cannot be taken with leftover texture files in the game directory. This is a sign the game directory was not fully deleted when restoring the game to vanilla.\n\nYou should delete your entire game directory, install the game fresh, and then take the backup.</system:String>
     <system:String  x:Key="string_tooltip_unlinkBackupButton">Converts the backup to a regular installation and makes modding tools no longer think there is a backup for this game</system:String>
     <system:String  x:Key="string_unlinkBackup">Unlink backup</system:String>
-    <system:String xml:space="preserve" x:Key="string_dialog_unlinkingBackup">Unlinking your backup for {0} will make modding programs, including ME3Explorer, ALOT Installer, and ME3Tweaks Mod Manager unable to find a backup for this game. These programs use this backup for various features. Unlinking a backup will not delete your existing backup. You can link to another existing backup once you've unlinked this one.\n\nBackup Path: {1}\n\nUnlink your backup for {0}?</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialog_unlinkingBackup">Unlinking your backup for {0} will make modding programs, including Legendary Explorer, ALOT Installer, and ME3Tweaks Mod Manager unable to find a backup for this game. These programs use this backup for various features. Unlinking a backup will not delete your existing backup. You can link to another existing backup once you've unlinked this one.\n\nBackup Path: {1}\n\nUnlink your backup for {0}?</system:String>
     <!-- 0=game name (e.g. Mass Effect 2) 1=Backup file path -->
     <system:String x:Key="string_unlinkingBackup">Unlinking backup</system:String>
 
@@ -1726,7 +1728,7 @@
     <system:String x:Key="string_interp_checkingPackagesBeforeUploadX">Checking packages before upload {0}%</system:String>
     <!-- 0={Percent number} -->
     <system:String x:Key="string_uploadAborted_foundCompressedPackage">Upload aborted: Cannot upload packages that are natively compressed</system:String>
-    <system:String xml:space="preserve" x:Key="string_dialog_uploadAborted_foundCompressedPackage">The following packages are natively compressed and cannot be uploaded. Package files must be saved uncompressed so end user instances of Mod Manager can reliably determine which files need updating. Resave these packages in ME3Explorer - ME3Tweaks Fork to decompress them.\n\n{0}</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialog_uploadAborted_foundCompressedPackage">The following packages are natively compressed and cannot be uploaded. Package files must be saved uncompressed so end user instances of Mod Manager can reliably determine which files need updating. Resave these packages in Legendary Explorer to decompress them.\n\n{0}</system:String>
     <!-- 0=List of packages -->
     <system:String x:Key="string_cannotUploadMod">Cannot upload mod</system:String>
     <system:String x:Key="string_interp_uploadFailedX">Upload failed: {0}</system:String>

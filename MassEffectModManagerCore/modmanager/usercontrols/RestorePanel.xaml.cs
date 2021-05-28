@@ -11,6 +11,7 @@ using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore.GameFilesystem;
+using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Packages;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
@@ -68,13 +69,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             GameRestoreControllers.Add(new GameRestoreObject(MEGame.ME1, targetsList.Where(x => x.Game == MEGame.ME1), mainwindow));
             GameRestoreControllers.Add(new GameRestoreObject(MEGame.ME2, targetsList.Where(x => x.Game == MEGame.ME2), mainwindow));
             GameRestoreControllers.Add(new GameRestoreObject(MEGame.ME3, targetsList.Where(x => x.Game == MEGame.ME3), mainwindow));
+            GameRestoreControllers.Add(new GameRestoreObject(MEGame.LE1, targetsList.Where(x => x.Game == MEGame.LE1), mainwindow));
+            GameRestoreControllers.Add(new GameRestoreObject(MEGame.LE2, targetsList.Where(x => x.Game == MEGame.LE2), mainwindow));
+            GameRestoreControllers.Add(new GameRestoreObject(MEGame.LE3, targetsList.Where(x => x.Game == MEGame.LE3), mainwindow));
         }
 
         public class GameRestoreObject : INotifyPropertyChanged
         {
             public bool RefreshTargets;
 
-            private MEGame Game;
+            public MEGame Game { get; }
 
             public bool CanOpenDropdown => !RestoreInProgress && BackupLocation != null;
 
@@ -88,22 +92,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 this.AvailableBackupSources.AddRange(availableBackupSources);
                 AvailableBackupSources.Add(new GameTarget(Game, M3L.GetString(M3L.string_restoreToCustomLocation), false, true));
                 LoadCommands();
-                switch (Game)
-                {
-                    case MEGame.ME1:
-                        GameTitle = @"Mass Effect";
-                        GameIconSource = @"/images/gameicons/ME1_48.ico";
-                        break;
-                    case MEGame.ME2:
-                        GameTitle = @"Mass Effect 2";
-                        GameIconSource = @"/images/gameicons/ME2_48.ico";
-                        break;
-                    case MEGame.ME3:
-                        GameTitle = @"Mass Effect 3";
-                        GameIconSource = @"/images/gameicons/ME3_48.ico";
-                        break;
-                }
-
+                GameTitle = Game.ToGameName();
                 ResetRestoreStatus();
             }
 

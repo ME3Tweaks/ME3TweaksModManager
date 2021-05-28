@@ -3,9 +3,9 @@
     mc:Ignorable="d"
     d:DesignHeight="450"
     d:DesignWidth="800"
-    Height="400"
     DataContext="{Binding RelativeSource={RelativeSource Self}}"
-    Width="500">
+    Width="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.9_400_900', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualWidth}"
+    Height="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.8_400', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualHeight}">
     <UserControl.Resources>
         <DataTemplate
             x:Key="FileTemplate">
