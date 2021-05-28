@@ -3,9 +3,8 @@
     mc:Ignorable="d"
     d:DesignHeight="500"
     d:DesignWidth="500"
-    MaxHeight="500"
-    MinWidth="420"
-    MaxWidth="550"
+    Width="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.8_500_900', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualWidth}"
+    Height="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.7_500', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualHeight}"
     DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <UserControl.Resources>
         <converters:BoolToVisibilityConverter
@@ -17,11 +16,12 @@
             Text="{DynamicResource string_modupdatesavailable}"
             FontWeight="Bold"
             TextAlignment="Center"
-            FontSize="20" />
+            FontSize="20"/>
         <TextBlock
             DockPanel.Dock="Top"
             Text="{DynamicResource string_modManagerDetectedModUpdates}"
-            TextAlignment="Center" />
+            TextAlignment="Center"
+            Margin="0,0,0,5"/>
         <DockPanel
             Dock="Bottom">
             <Button

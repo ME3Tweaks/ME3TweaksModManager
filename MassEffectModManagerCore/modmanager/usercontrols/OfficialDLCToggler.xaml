@@ -7,8 +7,9 @@
              xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
              mc:Ignorable="d" 
              DataContext="{Binding RelativeSource={RelativeSource Self}}"
-             Height="500" Width="550">
-    <DockPanel MaxHeight="520">
+             Width="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.8_500_1400', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualWidth}"
+             Height="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.7_550', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualHeight}">
+    <DockPanel>
         <TextBlock DockPanel.Dock="Top" Text="{DynamicResource string_officialDLCToggler}" FontSize="24" FontWeight="Bold" TextAlignment="Center" />
         <TextBlock DockPanel.Dock="Top" Text="{DynamicResource string_officialDLCTogglerDescription}" TextAlignment="Center" TextWrapping="Wrap"/>
         <local:TargetSelector DockPanel.Dock="Top" AvailableTargets="{Binding AvailableTargets}" SelectedGameTarget="{Binding SelectedTarget}" Margin="0,5" HorizontalContentAlignment="Stretch" />
