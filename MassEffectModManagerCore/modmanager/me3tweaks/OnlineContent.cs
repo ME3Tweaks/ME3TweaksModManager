@@ -209,13 +209,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 if (cached == null)
                 {
                     Log.Error(@"Unable to load basegame file identification service and local file doesn't exist. Returning a blank copy.");
-                    Dictionary<string, CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>> d = new Dictionary<string, CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>>
-                    {
-                        [@"ME1"] = new CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>(),
-                        [@"ME2"] = new CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>(),
-                        [@"ME3"] = new CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>()
-                    };
-                    return d;
+                    return getBlankBGFIDB();
                 }
             }
             Log.Information(@"Using cached BGFIS instead");
@@ -227,13 +221,24 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             catch (Exception e)
             {
                 Log.Error(@"Could not parse cached basegame file identification service file. Returning blank BFIS data instead. Reason: " + e.Message);
-                return new Dictionary<string, CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>>
-                {
-                    [@"ME1"] = new CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>(),
-                    [@"ME2"] = new CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>(),
-                    [@"ME3"] = new CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>()
-                };
+                return getBlankBGFIDB();
             }
+        }
+        /// <summary>
+        /// Returns a blank Basegame Identification Database
+        /// </summary>
+        /// <returns></returns>
+        public static Dictionary<string, CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>> getBlankBGFIDB()
+        {
+            return new Dictionary<string, CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>>
+            {
+                [@"ME1"] = new CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>(),
+                [@"ME2"] = new CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>(),
+                [@"ME3"] = new CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>(),
+                [@"LE1"] = new CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>(),
+                [@"LE2"] = new CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>(),
+                [@"LE3"] = new CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>(),
+            };
         }
 
         public static Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>> FetchThirdPartyIdentificationManifest(bool overrideThrottling = false)
@@ -285,16 +290,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     else
                     {
                         Log.Error(@"Unable to load third party identification service and local file doesn't exist. Returning a blank copy.");
-                        Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>> d = new Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>>
-                        {
-                            [@"ME1"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>(),
-                            [@"ME2"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>(),
-                            [@"ME3"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>(),
-                            [@"LE1"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>(),
-                            [@"LE2"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>(),
-                            [@"LE3"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>()
-                        };
-                        return d;
+                        return getBlankTPIS();
                     }
                 }
             }
@@ -306,13 +302,21 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             catch (Exception e)
             {
                 Log.Error(@"Could not parse cached third party identification service file. Returning blank TPMI data instead. Reason: " + e.Message);
-                return new Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>>
-                {
-                    [@"ME1"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>(),
-                    [@"ME2"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>(),
-                    [@"ME3"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>()
-                };
+                return getBlankTPIS();
             }
+        }
+
+        private static Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>> getBlankTPIS()
+        {
+            return new Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>>
+            {
+                [@"ME1"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>(),
+                [@"ME2"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>(),
+                [@"ME3"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>(),
+                [@"LE1"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>(),
+                [@"LE2"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>(),
+                [@"LE3"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>()
+            };
         }
 
         public static string FetchRemoteString(string url, string authorizationToken = null)
@@ -603,70 +607,6 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
             return true;
         }
-
-        //public static bool EnsureStaticAssets()
-        //{
-        //    // This is not really used anymore. Just kept around in case new static assets are necessary.
-        //    // Used to download objectt infos. These are embedded into LegendaryExplorerCore.
-        //    (string filename, string md5)[] objectInfoFiles = { };
-        //    string localBaseDir = Utilities.GetObjectInfoFolder();
-
-        //    try
-        //    {
-        //        bool downloadOK = false;
-
-        //        foreach (var info in objectInfoFiles)
-        //        {
-        //            var localPath = Path.Combine(localBaseDir, info.filename);
-        //            bool download = !File.Exists(localPath);
-        //            if (!download)
-        //            {
-        //                var calcedMd5 = Utilities.CalculateMD5(localPath);
-        //                download = calcedMd5 != info.md5;
-        //                if (download) Log.Warning($@"Invalid hash for local asset {info.filename}: got {calcedMd5}, expected {info.md5}. Redownloading");
-        //            }
-        //            else
-        //            {
-        //                Log.Information($@"Local asset missing: {info.filename}, downloading");
-        //            }
-
-        //            if (download)
-        //            {
-        //                foreach (var staticurl in StaticFilesBaseEndpoints)
-        //                {
-        //                    var fullURL = staticurl + @"objectinfos/" + info.filename;
-
-        //                    try
-        //                    {
-        //                        using var wc = new ShortTimeoutWebClient();
-        //                        Log.Information("Downloading static asset: " + fullURL);
-        //                        wc.DownloadFile(fullURL, localPath);
-        //                        downloadOK = true;
-        //                        break;
-        //                    }
-        //                    catch (Exception e)
-        //                    {
-        //                        Log.Error($"Could not download {info} from endpoint {fullURL} {e.Message}");
-        //                    }
-        //                }
-        //            }
-        //            else downloadOK = true; //say we're OK
-        //        }
-
-        //        if (!downloadOK)
-        //        {
-        //            throw new Exception("At least one static asset failed to download. Mod Manager will not properly function without these assets. See logs for more information");
-        //        }
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Log.Error("Exception trying to ensure static assets: " + e.Message);
-        //        Crashes.TrackError(new Exception(@"Could not download static supporting files: " + e.Message));
-        //        return false;
-        //    }
-
-        //    return true;
-        //}
 
         public static (MemoryStream result, string errorMessage) FetchString(string url)
         {

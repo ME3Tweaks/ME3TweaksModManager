@@ -37,7 +37,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
             // Version and magic will already be read by main value
             var manifest = mergeFileStream.ReadUnrealString();
             var mm = JsonConvert.DeserializeObject<MergeMod1>(manifest);
-            MemoryAnalyzer.AddTrackedMemoryItem($"MergeMod1 {mergeModName}", new WeakReference(mm));
+            MemoryAnalyzer.AddTrackedMemoryItem($@"MergeMod1 {mergeModName}", new WeakReference(mm));
             mm.MergeModFilename = mergeModName;
 
             // setup links
@@ -81,7 +81,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
             return mm;
         }
 
-        public bool ApplyMergeMod(Mod associatedMod, GameTarget target, ref int numTotalDone, int numTotalMerges, Action<int, int> mergeProgressDelegate = null)
+        public bool ApplyMergeMod(Mod associatedMod, GameTarget target, ref int numTotalDone, int numTotalMerges, Action<int, int, string, string> mergeProgressDelegate = null)
         {
             Log.Information($@"Applying {MergeModFilename}");
             var loadedFiles = MELoadedFiles.GetFilesLoadedInGame(target.Game, true, gameRootOverride: target.TargetPath);
@@ -96,7 +96,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
             return true;
         }
 
-        public int GetMergeCount() => FilesToMergeInto.Sum(x=>x.GetMergeCount());
+        public int GetMergeCount() => FilesToMergeInto.Sum(x => x.GetMergeCount());
 
         public static void SerializeTest(Stream outStream, string manifestFile)
         {

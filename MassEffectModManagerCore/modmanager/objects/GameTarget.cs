@@ -11,14 +11,15 @@ using MassEffectModManagerCore.modmanager.asi;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
-using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.modmanager.usercontrols;
 using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore.GameFilesystem;
 using Serilog;
 using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using static MassEffectModManagerCore.modmanager.usercontrols.InstallationInformation;
+using MemoryAnalyzer = MassEffectModManagerCore.modmanager.memoryanalyzer.MemoryAnalyzer;
 
 namespace MassEffectModManagerCore.modmanager.objects
 {
@@ -347,8 +348,8 @@ namespace MassEffectModManagerCore.modmanager.objects
             return M3Directories.GetTextureMarkerPath(this);
         }
 
-        public ObservableCollectionExtended<ModifiedFileObject> ModifiedBasegameFiles { get; } = new ObservableCollectionExtended<ModifiedFileObject>();
-        public ObservableCollectionExtended<SFARObject> ModifiedSFARFiles { get; } = new ObservableCollectionExtended<SFARObject>();
+        public ui.ObservableCollectionExtended<ModifiedFileObject> ModifiedBasegameFiles { get; } = new ui.ObservableCollectionExtended<ModifiedFileObject>();
+        public ui.ObservableCollectionExtended<SFARObject> ModifiedSFARFiles { get; } = new ui.ObservableCollectionExtended<SFARObject>();
         public ICollectionView ModifiedBasegameFilesView => CollectionViewSource.GetDefaultView(ModifiedBasegameFiles);
 
         public void PopulateModifiedBasegameFiles(Func<string, bool> restoreBasegamefileConfirmationCallback,
@@ -410,8 +411,8 @@ namespace MassEffectModManagerCore.modmanager.objects
             });
         }
 
-        public ObservableCollectionExtended<InstallationInformation.InstalledDLCMod> UIInstalledDLCMods { get; } = new ObservableCollectionExtended<InstallationInformation.InstalledDLCMod>();
-        public ObservableCollectionExtended<InstalledOfficialDLC> UIInstalledOfficialDLC { get; } = new ObservableCollectionExtended<InstalledOfficialDLC>();
+        public ui.ObservableCollectionExtended<InstallationInformation.InstalledDLCMod> UIInstalledDLCMods { get; } = new ui.ObservableCollectionExtended<InstallationInformation.InstalledDLCMod>();
+        public ui.ObservableCollectionExtended<InstalledOfficialDLC> UIInstalledOfficialDLC { get; } = new ui.ObservableCollectionExtended<InstalledOfficialDLC>();
 
         public void PopulateDLCMods(bool includeDisabled, Func<InstallationInformation.InstalledDLCMod, bool> deleteConfirmationCallback = null, Action notifyDeleted = null, bool modNamePrefersTPMI = false)
         {
@@ -940,7 +941,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             }
         }
 
-        public ObservableCollectionExtended<TextureModInstallationInfo> TextureInstallHistory { get; } = new ObservableCollectionExtended<TextureModInstallationInfo>();
+        public ui.ObservableCollectionExtended<TextureModInstallationInfo> TextureInstallHistory { get; } = new ui.ObservableCollectionExtended<TextureModInstallationInfo>();
 
         public void PopulateTextureInstallHistory()
         {
@@ -1209,7 +1210,7 @@ namespace MassEffectModManagerCore.modmanager.objects
 
             public string FilePath { get; set; }
         }
-        public ObservableCollectionExtended<InstalledExtraFile> ExtraFiles { get; } = new ObservableCollectionExtended<InstalledExtraFile>();
+        public ui.ObservableCollectionExtended<InstalledExtraFile> ExtraFiles { get; } = new ui.ObservableCollectionExtended<InstalledExtraFile>();
         /// <summary>
         /// Populates list of 'extra' items for the game. This includes things like dlls, and for ME1, config files
         /// </summary>
@@ -1302,5 +1303,6 @@ namespace MassEffectModManagerCore.modmanager.objects
         }
 
         public bool SupportsLODUpdates() => Game is MEGame.ME1 or MEGame.ME2 or MEGame.ME3; // update to remove ME3 in future
+
     }
 }

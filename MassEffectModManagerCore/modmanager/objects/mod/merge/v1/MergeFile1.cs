@@ -40,7 +40,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
             }
         }
 
-        public void ApplyChanges(CaseInsensitiveDictionary<string> loadedFiles, Mod associatedMod, ref int numMergesCompleted, int numTotalMerges, Action<int, int> mergeProgressDelegate = null)
+        public void ApplyChanges(CaseInsensitiveDictionary<string> loadedFiles, Mod associatedMod, ref int numMergesCompleted, int numTotalMerges, Action<int, int, string, string> mergeProgressDelegate = null)
         {
             List<string> targetFiles = new List<string>();
             if (ApplyToAllLocalizations)
@@ -71,7 +71,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
                     {
                         Log.Warning($@"File not found in game: {targetname}, skipping...");
                         numMergesCompleted++;
-                        mergeProgressDelegate?.Invoke(numMergesCompleted, numMergesCompleted);
+                        mergeProgressDelegate?.Invoke(numMergesCompleted, numMergesCompleted, null, null);
                     }
                 }
             }
@@ -85,7 +85,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
                 {
                     Log.Warning($@"File not found in game: {FileName}, skipping...");
                     numMergesCompleted++;
-                    mergeProgressDelegate?.Invoke(numMergesCompleted, numMergesCompleted);
+                    mergeProgressDelegate?.Invoke(numMergesCompleted, numMergesCompleted, null, null);
                 }
             }
 
@@ -96,7 +96,11 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
 #if DEBUG
                 Stopwatch sw = Stopwatch.StartNew();
 #endif
-                var package = MEPackageHandler.OpenMEPackage(f);
+                // Open as memorystream as we need to hash this file for tracking
+                using MemoryStream ms = new MemoryStream(File.ReadAllBytes(f));
+                
+                var existingMD5 = Utilities.CalculateMD5(ms);
+                var package = MEPackageHandler.OpenMEPackageFromStream(ms, f);
 #if DEBUG
                 Debug.WriteLine($@"Opening package {f} took {sw.ElapsedMilliseconds} ms");
 #endif
@@ -109,13 +113,13 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
 #if DEBUG
                 sw.Restart();
 #endif
-                package.Save(compress: true);
+                package.Save(savePath: f, compress: true);
 #if DEBUG
                 Debug.WriteLine($@"Saving package {f} took {sw.ElapsedMilliseconds} ms");
 #endif
 
                 numMergesCompleted++;
-                mergeProgressDelegate?.Invoke(numMergesCompleted, numTotalMerges);
+                mergeProgressDelegate?.Invoke(numMergesCompleted, numTotalMerges, existingMD5, f);
             }
         }
 
@@ -129,7 +133,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
         {
             if (FileName == null) throw new Exception("'filename' cannot be null for a merge file!");
             var safeFiles = EntryImporter.FilesSafeToImportFrom(OwningMM.Game);
-            if (!safeFiles.Any(x=>FileName.StartsWith(Path.GetFileNameWithoutExtension(x), StringComparison.InvariantCultureIgnoreCase)))
+            if (!safeFiles.Any(x => FileName.StartsWith(Path.GetFileNameWithoutExtension(x), StringComparison.InvariantCultureIgnoreCase)))
             {
                 // Does this catch DLC startups?
                 throw new Exception($"Cannot merge into non-startup file: {FileName}");

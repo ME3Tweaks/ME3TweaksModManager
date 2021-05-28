@@ -520,7 +520,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
             }
 
+            bool bgTrackingLocalOnly = ModBeingInstalled.ModModMakerID != 0; // only locally track modmaker mods
             var basegameFilesInstalled = new List<string>();
+            var mergeModBasegameEntries = new List<BasegameFileIdentificationService.BasegameCloudDBFile>();
             void FileInstalledIntoSFARCallback(Dictionary<string, Mod.InstallSourceFile> sfarMapping, string targetPath)
             {
                 numdone++;
@@ -548,23 +550,20 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 Action = M3L.GetString(M3L.string_installing);
 
 
-                //BASEGAME FILE TELEMETRY
-                if (Settings.EnableTelemetry && ModBeingInstalled.ModModMakerID == 0)
+                //BASEGAME FILE TRACKING
+                // ME3 is SFAR DLC so we don't track those. Track if it path has 'DLC' directory and the path of file being installed contains an official DLC directory in it
+                // There is probably better way to do this
+                var shouldTrack = SelectedGameTarget.Game != MEGame.ME3 && targetPath.Contains(@"\DLC\", StringComparison.InvariantCultureIgnoreCase)
+                                                                        && targetPath.ContainsAny(MEDirectories.OfficialDLC(SelectedGameTarget.Game).Select(x => $@"\{x}\"), StringComparison.InvariantCultureIgnoreCase);
+                if ((shouldTrack || !targetPath.Contains(@"DLC", StringComparison.InvariantCultureIgnoreCase)) //Only track basegame files, or all official directories if ME1/ME2
+                    && targetPath.Contains(SelectedGameTarget.TargetPath) // Must be within the game directory (no config files)
+                    && !Path.GetFileName(targetPath).Equals(@"PCConsoleTOC.bin", StringComparison.InvariantCultureIgnoreCase)) //no pcconsoletoc
                 {
-                    // ME3 is SFAR DLC so we don't track those. Track if it path has 'DLC' directory and the path of file being installed contains an official DLC directory in it
-                    // There is probably better way to do this
-                    var shouldTrack = SelectedGameTarget.Game != MEGame.ME3 && targetPath.Contains(@"\DLC\", StringComparison.InvariantCultureIgnoreCase)
-                                                                            && targetPath.ContainsAny(MEDirectories.OfficialDLC(SelectedGameTarget.Game).Select(x => $@"\{x}\"), StringComparison.InvariantCultureIgnoreCase);
-                    if ((shouldTrack || !targetPath.Contains(@"DLC", StringComparison.InvariantCultureIgnoreCase)) //Only track basegame files, or all official directories if ME1/ME2
-                        && targetPath.Contains(SelectedGameTarget.TargetPath) // Must be within the game directory (no config files)
-                        && !Path.GetFileName(targetPath).Equals(@"PCConsoleTOC.bin", StringComparison.InvariantCultureIgnoreCase)) //no pcconsoletoc
-                    {
-                        //not installing to DLC
-                        basegameFilesInstalled.Add(targetPath);
-                    }
+                    //not installing to DLC
+                    basegameFilesInstalled.Add(targetPath);
                 }
 
-                if (ModBeingInstalled.Game > MEGame.ME1 && CompressInstalledPackages && File.Exists(targetPath) && targetPath.RepresentsPackageFilePath())
+                if (ModBeingInstalled.Game is MEGame.ME2 or MEGame.ME3 && CompressInstalledPackages && File.Exists(targetPath) && targetPath.RepresentsPackageFilePath())
                 {
                     var package = MEPackageHandler.QuickOpenMEPackage(targetPath);
                     if (!package.IsCompressed)
@@ -646,16 +645,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     FileInfo dest = new FileInfo(fullPathMappingArchive[args.FileInfo.Index]);
                     if (dest.IsReadOnly)
                         dest.IsReadOnly = false;
-                    if (Settings.EnableTelemetry)
+
+                    if (!fullPathMappingArchive[args.FileInfo.Index].Contains(@"DLC", StringComparison.InvariantCultureIgnoreCase)
+                     && fullPathMappingArchive[args.FileInfo.Index].Contains(SelectedGameTarget.TargetPath) &&
+                       !Path.GetFileName(fullPathMappingArchive[args.FileInfo.Index]).Equals(@"PCConsoleTOC.bin", StringComparison.InvariantCultureIgnoreCase))
                     {
-                        if (!fullPathMappingArchive[args.FileInfo.Index].Contains(@"DLC", StringComparison.InvariantCultureIgnoreCase)
-                         && fullPathMappingArchive[args.FileInfo.Index].Contains(SelectedGameTarget.TargetPath) &&
-                           !Path.GetFileName(fullPathMappingArchive[args.FileInfo.Index]).Equals(@"PCConsoleTOC.bin", StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            //not installing to DLC
-                            basegameFilesInstalled.Add(fullPathMappingArchive[args.FileInfo.Index]);
-                        }
+                        //not installing to DLC
+                        basegameFilesInstalled.Add(fullPathMappingArchive[args.FileInfo.Index]);
                     }
+
                     //Debug.WriteLine($"{args.FileInfo.FileName} as file { numdone}");
                     //Debug.WriteLine(numdone);
                 };
@@ -689,7 +687,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
             foreach (var addedDLCFolder in addedDLCFolders)
             {
-                Log.Information(@"Writing metacmm file for " + addedDLCFolder);
+                Log.Information(@"Writing _metacmm file for " + addedDLCFolder);
                 var metacmm = Path.Combine(addedDLCFolder, @"_metacmm.txt");
                 ModBeingInstalled.HumanReadableCustomDLCNames.TryGetValue(Path.GetFileName(addedDLCFolder), out var assignedDLCName);
                 var metaOutLines = new List<string>();
@@ -728,10 +726,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             var totalMerges = allMMs.Sum(x => x.GetMergeCount());
             int doneMerges = 0;
 
-            void mergeProgressUpdate(int localDone, int localTotal)
+            void mergeProgressUpdate(int localDone, int localTotal, string originalmd5, string file)
             {
                 //doneMerges++;
                 Percent = (int)(doneMerges * 100.0 / totalMerges);
+                if (file != null)
+                {
+                    if (file.Contains(@"BioGame\CookedPC", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        // It's basegame
+                        mergeModBasegameEntries.Add(new BasegameFileIdentificationService.BasegameCloudDBFile(file, SelectedGameTarget, ModBeingInstalled, originalmd5));
+                    }
+                }
             }
             foreach (var mergeMod in allMMs)
             {
@@ -805,30 +811,33 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             Log.Information(@"<<<<<<< Finishing modinstaller");
             sw.Stop();
-            Debug.WriteLine($"Elapsed: {sw.ElapsedMilliseconds}");
-            //Submit basegame telemetry in async way
-            if (basegameFilesInstalled.Any() /*&& !Settings.DeveloperMode*/) //no dev mode as it could expose files user is working on.
+            Debug.WriteLine($@"Elapsed: {sw.ElapsedMilliseconds}");
+            //Submit basegame tracking in async way
+            if (basegameFilesInstalled.Any() || mergeModBasegameEntries.Any())
             {
-                //BackgroundWorker bw = new NamedBackgroundWorker("BASEGAMECLOUDDB_TELEMETRY");
-                //bw.DoWork += (a, b) =>
-                //{
                 try
                 {
-                    var files = new List<BasegameFileIdentificationService.BasegameCloudDBFile>();
+                    var files = new List<BasegameFileIdentificationService.BasegameCloudDBFile>(basegameFilesInstalled.Count + mergeModBasegameEntries.Count);
+                    files.AddRange(mergeModBasegameEntries);
                     foreach (var file in basegameFilesInstalled)
                     {
-                        files.Add(new BasegameFileIdentificationService.BasegameCloudDBFile(file, SelectedGameTarget, ModBeingInstalled));
+                        var entry = new BasegameFileIdentificationService.BasegameCloudDBFile(file, SelectedGameTarget, ModBeingInstalled);
+                        files.Add(entry);
                     }
-                    string output = JsonConvert.SerializeObject(files);
+                    BasegameFileIdentificationService.AddLocalBasegameIdentificationEntries(files);
 
-                    await @"https://me3tweaks.com/modmanager/services/basegamefileid".PostStringAsync(output);
+                    if (Settings.EnableTelemetry && !bgTrackingLocalOnly)
+                    {
+                        // Submit for global telemetry
+                        string output = JsonConvert.SerializeObject(files);
+                        await @"https://me3tweaks.com/modmanager/services/basegamefileid".PostStringAsync(output);
+                    }
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(@"Error uploading basegame telemetry: " + ex.Message);
+                    Log.Error(@"Error tracking basegame files: " + ex.Message);
+                    Log.Error(ex.StackTrace);
                 }
-                //};
-                //bw.RunWorkerAsync();
             }
         }
 

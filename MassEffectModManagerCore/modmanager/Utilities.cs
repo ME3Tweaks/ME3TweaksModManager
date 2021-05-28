@@ -730,6 +730,7 @@ namespace MassEffectModManagerCore.modmanager
                 using var md5 = MD5.Create();
                 stream.Position = 0;
                 var hash = md5.ComputeHash(stream);
+                stream.Position = 0; // reset stream
                 return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
             }
             catch (Exception e)
@@ -2118,5 +2119,26 @@ namespace MassEffectModManagerCore.modmanager
         {
             return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "downloadedmodscache")).FullName;
         }
+
+        public static string GetLocalBasegameIdentificationServiceFile()
+        {
+            return Path.Combine(GetME3TweaksServicesCache(), "localbasegamefileidentificationservice.json");
+        }
+
+        public static MEGame GetGameFromNumber(string gameNum)
+        {
+            return GetGameFromNumber(int.Parse(gameNum));
+        }
+
+        public static MEGame GetGameFromNumber(int number) => number switch
+        {
+            1 => MEGame.ME1,
+            2 => MEGame.ME2,
+            3 => MEGame.ME3,
+            4 => MEGame.LE1,
+            5 => MEGame.LE2,
+            6 => MEGame.LE3,
+            _ => MEGame.Unknown
+        };
     }
 }

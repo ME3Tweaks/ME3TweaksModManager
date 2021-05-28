@@ -14,7 +14,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge
         /// Name of the merge mod file, relative to the root of the MergeMods folder in the mod directory
         /// </summary>
         public string MergeModFilename { get; set; }
-        
+
         /// <summary>
         /// Game this merge mod is for
         /// </summary>
@@ -26,7 +26,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge
         /// <param name="associatedMod">The mod that is installing this merge mod</param>
         /// <param name="target">The target to be applied to</param>
         /// <returns></returns>
-        public bool ApplyMergeMod(Mod associatedMod, GameTarget target, ref int numMergesDoneTotal, int numTotalMerges, Action<int,int> mergeProgressDelegate = null);
+        public bool ApplyMergeMod(Mod associatedMod, GameTarget target, ref int numMergesDoneTotal, int numTotalMerges, Action<int, int, string, string> mergeProgressDelegate = null);
         /// <summary>
         /// Get the number of total merge operations this mod can apply
         /// </summary>
