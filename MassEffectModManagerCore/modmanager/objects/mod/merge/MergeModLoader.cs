@@ -46,5 +46,12 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge
             return outfile;
         }
 #endif
+        public static void DecompileM3M(string file)
+        {
+            using var fs = File.OpenRead(file);
+            var mm = LoadMergeMod(fs, file, true);
+            mm.ExtractToFolder(Directory.GetParent(file).FullName);
+
+        }
     }
 }

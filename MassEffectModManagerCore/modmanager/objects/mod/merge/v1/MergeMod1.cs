@@ -97,6 +97,33 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
         }
 
         public int GetMergeCount() => FilesToMergeInto.Sum(x => x.GetMergeCount());
+        public void ExtractToFolder(string outputfolder)
+        {
+            // scripts and assets
+            foreach (var mc in FilesToMergeInto.SelectMany(x => x.MergeChanges))
+            {
+                if (mc.ScriptUpdate != null)
+                {
+                    File.WriteAllText(Path.Combine(outputfolder, mc.ScriptUpdate.ScriptFileName), mc.ScriptUpdate.ScriptText);
+                    mc.ScriptUpdate.ScriptText = null;
+                }
+
+                if (mc.AssetUpdate != null)
+                {
+                    File.WriteAllBytes(Path.Combine(outputfolder, mc.AssetUpdate.AssetName), Assets[mc.AssetUpdate.AssetName].AssetBinary);
+                }
+            }
+
+            // assets
+            Assets = null;
+
+            // json
+            File.WriteAllText(Path.Combine(outputfolder, $@"{Path.GetFileNameWithoutExtension(MergeModFilename)}.json"),
+                JsonConvert.SerializeObject(this, Formatting.Indented, new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore
+                }));
+        }
 
         public static void SerializeTest(Stream outStream, string manifestFile)
         {

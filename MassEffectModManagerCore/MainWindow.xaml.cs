@@ -68,10 +68,7 @@ namespace MassEffectModManagerCore
         private static readonly string DefaultDescriptionText = M3L.GetString(M3L.string_selectModOnLeftToGetStarted);
         private readonly string[] SupportedDroppableExtensions =
         {
-            @".rar", @".zip", @".7z", @".exe", @".tpf", @".mod", @".mem", @".me2mod", @".xml", @".bin", @".tlk", @".par",
-#if DEBUG
-            @".json" // M3M Manifest
-#endif
+            @".rar", @".zip", @".7z", @".exe", @".tpf", @".mod", @".mem", @".me2mod", @".xml", @".bin", @".tlk", @".par", @".m3m", @".json"
         };
         public string ApplyModButtonText { get; set; } = M3L.GetString(M3L.string_applyMod);
         public string InstallationTargetText { get; set; } = M3L.GetString(M3L.string_installationTarget);
@@ -3426,7 +3423,19 @@ namespace MassEffectModManagerCore
                         }
                         catch (Exception ex)
                         {
-                            Log.Error($"Error compiling m3m mod file: {ex.Message}");
+                            Log.Error($@"Error compiling m3m mod file: {ex.Message}");
+                            M3L.ShowDialog(this, $"Error compiling m3m mod file: {ex.Message}", "Error compiling m3m", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+
+                        break;
+                    case @".m3m":
+                        try
+                        {
+                            MergeModLoader.DecompileM3M(files[0]);
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Error($@"Error decompiling m3m mod file: {ex.Message}");
                             M3L.ShowDialog(this, $"Error compiling m3m mod file: {ex.Message}", "Error compiling m3m", MessageBoxButton.OK, MessageBoxImage.Error);
                         }
 

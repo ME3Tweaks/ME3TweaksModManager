@@ -735,7 +735,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     if (file.Contains(@"BioGame\CookedPC", StringComparison.InvariantCultureIgnoreCase))
                     {
                         // It's basegame
-                        mergeModBasegameEntries.Add(new BasegameFileIdentificationService.BasegameCloudDBFile(file, SelectedGameTarget, ModBeingInstalled, originalmd5));
+                        var mm = new BasegameFileIdentificationService.BasegameCloudDBFile(file, SelectedGameTarget, ModBeingInstalled, originalmd5);
+                        var existingInfo = BasegameFileIdentificationService.GetBasegameFileSource(SelectedGameTarget, file, originalmd5);
+                        if (existingInfo != null)
+                        {
+                            mm.source = $@"{existingInfo.source} + {ModBeingInstalled.ModName}";
+                        }
+                        mergeModBasegameEntries.Add(mm);
                     }
                 }
             }

@@ -32,5 +32,11 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge
         /// </summary>
         /// <returns></returns>
         public int GetMergeCount();
+
+        /// <summary>
+        /// Extracts this m3m file to the specified folder
+        /// </summary>
+        /// <param name="outputfolder"></param>
+        public void ExtractToFolder(string outputfolder);
     }
 }

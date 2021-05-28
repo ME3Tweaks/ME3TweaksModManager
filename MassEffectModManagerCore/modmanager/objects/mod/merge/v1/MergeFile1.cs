@@ -108,18 +108,26 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
                 {
                     pc.ApplyChanges(package, mac, associatedMod);
                 }
-                Log.Information($@"Saving package {package.FilePath}");
 
+                var track = package.IsModified;
+                if (package.IsModified)
+                {
+                    Log.Information($@"Saving package {package.FilePath}");
 #if DEBUG
-                sw.Restart();
+                    sw.Restart();
 #endif
-                package.Save(savePath: f, compress: true);
+                    package.Save(savePath: f, compress: true);
 #if DEBUG
-                Debug.WriteLine($@"Saving package {f} took {sw.ElapsedMilliseconds} ms");
+                    Debug.WriteLine($@"Saving package {f} took {sw.ElapsedMilliseconds} ms");
 #endif
+                }
+                else
+                {
+                    Log.Information($@"Package {package.FilePath} was not modified. This change is likely already installed, not saving package");
+                }
 
                 numMergesCompleted++;
-                mergeProgressDelegate?.Invoke(numMergesCompleted, numTotalMerges, existingMD5, f);
+                mergeProgressDelegate?.Invoke(numMergesCompleted, numTotalMerges, track ? existingMD5 : null, track ? f : null);
             }
         }
 
