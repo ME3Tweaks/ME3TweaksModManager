@@ -188,7 +188,7 @@
     <system:String xml:space="preserve" x:Key="string_interp_dialog_installingTextureMod">{0} files can be installed with ALOT Installer or Mass Effect Modder (MEM), both available in the tools menu.\n\nWARNING: These types of mods change game file pointers. They must be installed AFTER all other DLC/content mods. Installing content/DLC mods after will cause various issues in the game. Once these types of mods are installed, ME3Tweaks Mod Manager will refuse to install further mods without a restore of the game.</system:String>
     <system:String x:Key="string_interp_minorUpdateAvailableMessage">An updated version of ME3Tweaks Mod Manager Build {0} is available. Minor updates commonly fix small bugs in the program that do not merit a full re-release.</system:String>
     <system:String xml:space="preserve" x:Key="string_interp_dialogUnableToCreateModLibraryNoPermissions">Unable to create mod library directory: {0}\nChoose a mod directory that you have write permissions to.</system:String>
-    <system:String x:Key="string_interp_dialogCannotInstallModsWhileGameRunning">Cannot install mods while {0} is running.</system:String>
+    <system:String x:Key="string_interp_dialogCannotInstallModsWhileGameRunning">Cannot install mods while {0} is running. Note that Mass Effect 2 and 3 share executable names with their Legendary Edition/Original Trilogy counterparts, so those versions must also be closed.</system:String>
     <system:String x:Key="string_interp_failedToInstallMod">Failed to install {0}</system:String>
     <system:String x:Key="string_interp_installingMod">Installing {0}</system:String>
     <system:String x:Key="string_interp_installedMod">Installed {0}</system:String>
@@ -729,8 +729,7 @@
     <system:String x:Key="string_interp_dialog_linkFailedInvalidTarget">The selected installation cannot be linked to for a backup due to validation errors: {0}.</system:String>
     <!-- 0=Validation failure reason -->
     <system:String x:Key="string_invalidGameCopy">Invalid game copy</system:String>
-    <system:String x:Key="string_interp_dialog_linkFailedSubdirectoryOfGameDocumentsFolder">The Documents/BioWare/{0} directory (and its descendants) cannot be used as a backup location, as the game can load files from it. Please choose another directory.</system:String>
-    <!-- 0=Game name (Mass Effect, Mass Effect 3, etc)-->
+    <system:String x:Key="string_interp_dialog_linkFailedSubdirectoryOfGameDocumentsFolder">The Documents/BioWare/ directory (and its descendants) cannot be used as a backup location, as the game can load files from it. Please choose another directory.</system:String>
     <system:String x:Key="string_locationNotAllowedForBackup">Location not allowed for backup</system:String>
     <system:String x:Key="string_dialog_userAccountDoesntHaveWritePermissionsBackup">Your user account doesn't have write permissions to the selected destination directory. Choose a different directory.</system:String>
     <system:String x:Key="string_dialog_linkTargetWontBeModdable">The game copy you link to will not be available for modding. Ensure this is a backup copy of the game and not your main installation, or you will be unable to mod your game.</system:String>

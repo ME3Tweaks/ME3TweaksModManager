@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
 using IniParser.Model;
+using LegendaryExplorerCore.Gammtek.Extensions;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
@@ -180,7 +181,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             ini[@"ModInfo"][@"game"] = SelectedTarget.Game.ToString();
             ini[@"ModInfo"][@"modname"] = ModNameText;
             ini[@"ModInfo"][@"moddev"] = M3L.GetString(M3L.string_importedFromGame);
-            ini[@"ModInfo"][@"moddesc"] = M3L.GetString(M3L.string_defaultDescriptionForImportedMod, Utilities.GetGameName(SelectedTarget.Game), DateTime.Now);
+            ini[@"ModInfo"][@"moddesc"] = M3L.GetString(M3L.string_defaultDescriptionForImportedMod, SelectedTarget.Game.ToGameName(), DateTime.Now);
             ini[@"ModInfo"][@"modver"] = M3L.GetString(M3L.string_unknown);
             ini[@"ModInfo"][@"unofficial"] = @"true";
             ini[@"ModInfo"][@"importedby"] = App.BuildNumber.ToString();

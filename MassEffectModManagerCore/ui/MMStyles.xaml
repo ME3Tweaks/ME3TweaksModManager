@@ -102,4 +102,5 @@
     <system:String x:Key="le2gameiconpath">/images/gameicons/LE2_Icon.ico</system:String>
     <system:String x:Key="le3gameiconpath">/images/gameicons/LE3_Icon.ico</system:String>
     <system:String x:Key="lelaunchergameiconpath">/images/gameicons/LEL_Icon.ico</system:String>
+    <system:String x:Key="unknowngameiconpath">/images/gameicons/Unknown_48.ico</system:String>
 </ResourceDictionary>

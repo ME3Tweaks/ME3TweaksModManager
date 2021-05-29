@@ -23,7 +23,6 @@ namespace MassEffectModManagerCore.modmanager
 
         private static bool Loaded = false;
         public static event PropertyChangedEventHandler StaticPropertyChanged;
-
         /// <summary>
         /// Sets given property and notifies listeners of its change. IGNORES setting the property to same value.
         /// Should be called in property setters.
@@ -74,6 +73,36 @@ namespace MassEffectModManagerCore.modmanager
             get => _launchGamesThroughOrigin;
             set => SetProperty(ref _launchGamesThroughOrigin, value);
         }
+
+        private static bool _generationSettingOT = true; 
+        public static bool GenerationSettingOT
+        {
+            get => _generationSettingOT;
+            set
+            {
+                if (GenerationSettingLE || value)
+                {
+                    SetProperty(ref _generationSettingOT, value);
+                }
+                // Do not allow turning both options off
+            } 
+        }
+
+        private static bool _generationSettingLE = true;
+        public static bool GenerationSettingLE
+        {
+            get => _generationSettingLE;
+            set
+            {
+                if (GenerationSettingOT || value)
+                {
+                    SetProperty(ref _generationSettingLE, value);
+                }
+                // Do not allow turning both options off
+            }
+        }
+
+
 
         private static bool _enableTelemetry = true;
         public static bool EnableTelemetry
@@ -311,6 +340,8 @@ namespace MassEffectModManagerCore.modmanager
 
             // LEGENDARY
             SkipLELauncher = LoadSettingBool(settingsIni, "ModManager", "SkipLELauncher", true);
+            GenerationSettingLE = LoadSettingBool(settingsIni, "ModManager", "GenerationSettingLE", true);
+            GenerationSettingOT = LoadSettingBool(settingsIni, "ModManager", "GenerationSettingOT", true);
 
             Loaded = true;
         }
@@ -479,6 +510,8 @@ namespace MassEffectModManagerCore.modmanager
                 SaveSettingInt(settingsIni, "ModManager", "WebclientTimeout", WebClientTimeout);
                 SaveSettingBool(settingsIni, "ModManager", "ConfigureNXMHandlerOnBoot", ConfigureNXMHandlerOnBoot);
                 SaveSettingBool(settingsIni, "ModManager", "SkipLELauncher", SkipLELauncher);
+                SaveSettingBool(settingsIni, "ModManager", "GenerationSettingOT", GenerationSettingOT);
+                SaveSettingBool(settingsIni, "ModManager", "GenerationSettingLE", GenerationSettingLE);
 
                 SaveSettingBool(settingsIni, "ModMaker", "AutoAddControllerMixins", ModMakerControllerModOption);
                 SaveSettingBool(settingsIni, "ModMaker", "AutoInjectCustomKeybinds", ModMakerAutoInjectCustomKeybindsOption);

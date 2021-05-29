@@ -252,7 +252,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
 
                     #endregion
                 }
-                else if (job.Header == ModJob.JobHeader.LELAUNCHER && Game == MEGame.Unknown)
+                else if (job.Header == ModJob.JobHeader.LELAUNCHER && Game == MEGame.LELauncher)
                 {
                     #region Installation: LELAUNCHER
                     var installationMapping = new CaseInsensitiveDictionary<InstallSourceFile>();

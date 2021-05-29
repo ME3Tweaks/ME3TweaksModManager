@@ -18,6 +18,7 @@ using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore.GameFilesystem;
+using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Unreal;
@@ -150,7 +151,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             var hasBackup = BackupService.GetGameBackupPath(ModBeingInstalled.Game);
             if (hasBackup == null)
             {
-                var installAnyways = M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_interp_dialog_noBackupForXInstallingY, Utilities.GetGameName(ModBeingInstalled.Game), ModBeingInstalled.ModName), M3L.GetString(M3L.string_noBackup), MessageBoxButton.YesNo, MessageBoxImage.Error);
+                var installAnyways = M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_interp_dialog_noBackupForXInstallingY, ModBeingInstalled.Game.ToGameName(), ModBeingInstalled.ModName), M3L.GetString(M3L.string_noBackup), MessageBoxButton.YesNo, MessageBoxImage.Error);
                 return installAnyways == MessageBoxResult.Yes;
             }
 
@@ -1394,7 +1395,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 return;
             }
 
-            if (ModBeingInstalled.Game != MEGame.Unknown)
+            if (ModBeingInstalled.Game != MEGame.LELauncher)
             {
                 //Detect incompatible DLC
                 var dlcMods = VanillaDatabaseService.GetInstalledDLCMods(SelectedGameTarget);

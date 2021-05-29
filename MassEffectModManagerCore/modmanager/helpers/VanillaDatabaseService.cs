@@ -11,6 +11,7 @@ using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using LegendaryExplorerCore.Compression;
 using LegendaryExplorerCore.GameFilesystem;
+using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Unreal;
@@ -36,7 +37,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
         public static CaseInsensitiveDictionary<List<(int size, string md5)>> LoadDatabaseFor(MEGame game, bool isMe1PL = false)
         {
             string assetPrefix = $@"MassEffectModManagerCore.modmanager.gamemd5.{game.ToString().ToLower()}";
-            if (game == MEGame.Unknown)
+            if (game == MEGame.LELauncher)
                 assetPrefix = $@"MassEffectModManagerCore.modmanager.gamemd5.lel";
 
             switch (game)
@@ -71,7 +72,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                     var le3stream = Utilities.ExtractInternalFileToStream($@"{assetPrefix}.bin");
                     ParseDatabase(le3stream, LE3VanillaDatabase, true);
                     return LE3VanillaDatabase;
-                case MEGame.Unknown:
+                case MEGame.LELauncher:
                     if (LELauncherVanillaDatabase.Count > 0) return LELauncherVanillaDatabase;
                     var lelstream = Utilities.ExtractInternalFileToStream($@"{assetPrefix}.bin");
                     ParseDatabase(lelstream, LELauncherVanillaDatabase);
@@ -368,8 +369,8 @@ namespace MassEffectModManagerCore.modmanager.helpers
                     if (LE3VanillaDatabase.Count == 0) LoadDatabaseFor(MEGame.LE3);
                     vanillaDB = LE3VanillaDatabase;
                     break;
-                case MEGame.Unknown:
-                    if (LELauncherVanillaDatabase.Count == 0) LoadDatabaseFor(MEGame.Unknown);
+                case MEGame.LELauncher:
+                    if (LELauncherVanillaDatabase.Count == 0) LoadDatabaseFor(MEGame.LELauncher);
                     vanillaDB = LELauncherVanillaDatabase;
                     break;
                 default:
@@ -547,7 +548,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 case MEGame.LE3:
                     SUPPORTED_HASHES_LE3.TryGetValue(md5, out var le3result);
                     return (md5, le3result);
-                case MEGame.Unknown:
+                case MEGame.LELauncher:
                     SUPPORTED_HASHES_LEL.TryGetValue(md5, out var lelresult);
                     return (md5, lelresult);
                 default:
@@ -613,7 +614,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
         /// <param name="game"></param>
         internal static void CheckAndTagBackup(MEGame game)
         {
-            Log.Information(@"Validating backup for " + Utilities.GetGameName(game));
+            Log.Information(@"Validating backup for " + game.ToGameName());
             var targetPath = BackupService.GetGameBackupPath(game, false);
             Log.Information(@"Backup location: " + targetPath);
             BackupService.SetStatus(game, M3L.GetString(M3L.string_checkingBackup), M3L.GetString(M3L.string_pleaseWait));

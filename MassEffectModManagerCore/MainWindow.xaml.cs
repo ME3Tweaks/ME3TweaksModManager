@@ -33,6 +33,7 @@ using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore;
 using LegendaryExplorerCore.Coalesced;
 using LegendaryExplorerCore.GameFilesystem;
+using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.TLK.ME2ME3;
@@ -1245,7 +1246,7 @@ namespace MassEffectModManagerCore
 
         private void StartGame()
         {
-            var game = Utilities.GetGameName(SelectedGameTarget.Game);
+            var game = SelectedGameTarget.Game.ToGameName();
 
             BackgroundTask gameLaunch = backgroundTaskEngine.SubmitBackgroundJob(@"GameLaunch", M3L.GetString(M3L.string_interp_launching, game), M3L.GetString(M3L.string_interp_launched, game));
 
@@ -1425,7 +1426,7 @@ namespace MassEffectModManagerCore
                 if (target == null) return; //can't toggle this
                 if (Utilities.IsGameRunning(game))
                 {
-                    M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_dialogCannotInstallBinkWhileGameRunning, Utilities.GetGameName(game)), M3L.GetString(M3L.string_gameRunning), MessageBoxButton.OK, MessageBoxImage.Error);
+                    M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_dialogCannotInstallBinkWhileGameRunning, game.ToGameName()), M3L.GetString(M3L.string_gameRunning), MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
 
@@ -1702,8 +1703,8 @@ namespace MassEffectModManagerCore
             }
             else
             {
-                Log.Error($@"Blocking install of {mod.ModName} because {Utilities.GetGameName(mod.Game)} is running.");
-                M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_dialogCannotInstallModsWhileGameRunning, Utilities.GetGameName(mod.Game)), M3L.GetString(M3L.string_cannotInstallMod), MessageBoxButton.OK, MessageBoxImage.Error);
+                Log.Error($@"Blocking install of {mod.ModName} because {mod.Game.ToGameName()} is running.");
+                M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_dialogCannotInstallModsWhileGameRunning, mod.Game.ToGameName()), M3L.GetString(M3L.string_cannotInstallMod), MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -1715,31 +1716,8 @@ namespace MassEffectModManagerCore
         private void CheckTargetPermissions(bool promptForConsent = true, bool showDialogEvenIfNone = false)
         {
             var targetsNeedingUpdate = InstallationTargets.Where(x => x.Selectable && !x.IsTargetWritable()).ToList();
-            bool me1AGEIAKeyNotWritable = false;
-            //if (InstallationTargets.Any(x => x.Game == MEGame.ME1))
-            //{
-            //    //Check AGEIA
-            //    try
-            //    {
-            //        var key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\AGEIA Technologies", true);
-            //        if (key != null)
-            //        {
-            //            key.Close();
-            //        }
-            //        else
-            //        {
-            //            Log.Information(@"ME1 AGEIA Technologies key is not present or is not writable.");
-            //            me1AGEIAKeyNotWritable = true;
-            //        }
-            //    }
-            //    catch (SecurityException)
-            //    {
-            //        Log.Information(@"ME1 AGEIA Technologies key is not writable.");
-            //        me1AGEIAKeyNotWritable = true;
-            //    }
-            //}
 
-            if (targetsNeedingUpdate.Count > 0 || me1AGEIAKeyNotWritable)
+            if (targetsNeedingUpdate.Count > 0)
             {
                 if (promptForConsent)
                 {
@@ -1751,7 +1729,7 @@ namespace MassEffectModManagerCore
                         Analytics.TrackEvent(@"Granting write permissions", new Dictionary<string, string>() { { @"Granted?", @"Yes" } });
                         try
                         {
-                            Utilities.EnableWritePermissionsToFolders(targetsNeedingUpdate.Select(x => x.TargetPath).ToList(), me1AGEIAKeyNotWritable);
+                            Utilities.EnableWritePermissionsToFolders(targetsNeedingUpdate.Select(x => x.TargetPath).ToList());
                         }
                         catch (Exception e)
                         {
@@ -1767,7 +1745,7 @@ namespace MassEffectModManagerCore
                 else
                 {
                     Analytics.TrackEvent(@"Granting write permissions", new Dictionary<string, string>() { { @"Granted?", @"Implicit" } });
-                    Utilities.EnableWritePermissionsToFolders(targetsNeedingUpdate.Select(x => x.TargetPath).ToList(), me1AGEIAKeyNotWritable);
+                    Utilities.EnableWritePermissionsToFolders(targetsNeedingUpdate.Select(x => x.TargetPath).ToList());
                 }
             }
             else if (showDialogEvenIfNone)
@@ -2049,7 +2027,7 @@ namespace MassEffectModManagerCore
                 var me1modDescsToLoad = Directory.GetDirectories(Utilities.GetME1ModsDirectory()).Select(x => (game: MEGame.ME1, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
 
                 // LE Launcher
-                var leLaunchermodDescsToLoad = Directory.GetDirectories(Utilities.GetLELauncherModsDirectory()).Select(x => (game: MEGame.Unknown, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
+                var leLaunchermodDescsToLoad = Directory.GetDirectories(Utilities.GetLELauncherModsDirectory()).Select(x => (game: MEGame.LELauncher, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
                 //var modDescsToLoad = leLaunchermodDescsToLoad.ToList();
 
                 var modDescsToLoad = le3modDescsToLoad.Concat(le2modDescsToLoad).Concat(le1modDescsToLoad).Concat(me3modDescsToLoad).Concat(me2modDescsToLoad).Concat(me1modDescsToLoad).Concat(leLaunchermodDescsToLoad);
@@ -2064,7 +2042,7 @@ namespace MassEffectModManagerCore
                         AllLoadedMods.Add(mod);
                         if (ME1ModsVisible && mod.Game == MEGame.ME1 || ME2ModsVisible && mod.Game == MEGame.ME2 || ME3ModsVisible && mod.Game == MEGame.ME3
                             || LE1ModsVisible && mod.Game == MEGame.LE1 || LE2ModsVisible && mod.Game == MEGame.LE2 || LE3ModsVisible && mod.Game == MEGame.LE3
-                            || LELauncherModsVisible && mod.Game == MEGame.Unknown)
+                            || LELauncherModsVisible && mod.Game == MEGame.LELauncher)
                         {
                             VisibleFilteredMods.Add(mod);
                         }
@@ -2326,7 +2304,7 @@ namespace MassEffectModManagerCore
                     }
                 }
 
-                loadLETarget(MEGame.Unknown, LEDirectory.LauncherPath);
+                loadLETarget(MEGame.LELauncher, LEDirectory.LauncherPath);
                 loadLETarget(MEGame.LE1, LE1Directory.DefaultGamePath);
                 loadLETarget(MEGame.LE2, LE2Directory.DefaultGamePath);
                 loadLETarget(MEGame.LE3, LE3Directory.DefaultGamePath);
@@ -2396,7 +2374,7 @@ namespace MassEffectModManagerCore
             if (aTarget != null) finalList.Add(aTarget);
             aTarget = targets.FirstOrDefault(x => x.Game == MEGame.LE1 && x.RegistryActive);
             if (aTarget != null) finalList.Add(aTarget);
-            aTarget = targets.FirstOrDefault(x => x.Game == MEGame.Unknown && !x.IsCustomOption && x.RegistryActive);
+            aTarget = targets.FirstOrDefault(x => x.Game == MEGame.LELauncher && x.RegistryActive);
             if (aTarget != null) finalList.Add(aTarget);
 
 
@@ -2416,7 +2394,7 @@ namespace MassEffectModManagerCore
             finalList.AddRange(targets.Where(x => x.Game == MEGame.LE3 && !x.RegistryActive));
             finalList.AddRange(targets.Where(x => x.Game == MEGame.LE2 && !x.RegistryActive));
             finalList.AddRange(targets.Where(x => x.Game == MEGame.LE1 && !x.RegistryActive));
-            finalList.AddRange(targets.Where(x => x.Game == MEGame.Unknown && !x.IsCustomOption && !x.RegistryActive));
+            finalList.AddRange(targets.Where(x => x.Game == MEGame.LELauncher && !x.RegistryActive));
 
 
             finalList.AddRange(targets.Where(x => x.Game == MEGame.ME3 && !x.RegistryActive));
@@ -3467,7 +3445,7 @@ namespace MassEffectModManagerCore
                     }
                     else
                     {
-                        M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_cannotInstallModGameNotInstalled, Utilities.GetGameName(compressedModToInstall.Game)), M3L.GetString(M3L.string_gameNotInstalled), MessageBoxButton.OK, MessageBoxImage.Error);
+                        M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_cannotInstallModGameNotInstalled, compressedModToInstall.Game.ToGameName()), M3L.GetString(M3L.string_gameNotInstalled), MessageBoxButton.OK, MessageBoxImage.Error);
                         ReleaseBusyControl();
                     }
                 }
@@ -3675,7 +3653,7 @@ namespace MassEffectModManagerCore
             if (!LE3ModsVisible)
                 allMods.RemoveAll(x => x.Game == MEGame.LE3);
             if (!LELauncherModsVisible)
-                allMods.RemoveAll(x => x.Game == MEGame.Unknown);
+                allMods.RemoveAll(x => x.Game == MEGame.LELauncher);
             AllGamesHidden = !ME1ModsVisible && !ME2ModsVisible && !ME3ModsVisible;
             VisibleFilteredMods.ReplaceAll(allMods);
             VisibleFilteredMods.Sort(x => x.ModName);

@@ -20,6 +20,7 @@ using MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Misc;
 using PropertyChanged;
+using CheckBoxSelectionPair = MassEffectModManagerCore.ui.CheckBoxSelectionPair;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols.generic
 {
@@ -28,29 +29,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.generic
     /// </summary>
     public partial class CheckBoxComboBox : UserControl, INotifyPropertyChanged
     {
-        public class CBCBPair : INotifyPropertyChanged
-        {
-
-            public CBCBPair(object item, bool isChecked, Action<CBCBPair> checkChangedDelegate)
-            {
-                Item = item;
-                IsChecked = isChecked;
-                _checkChangedDelegate = checkChangedDelegate;
-            }
-
-            public object Item { get; set; }
-            public bool IsChecked { get; set; }
-            private readonly Action<CBCBPair> _checkChangedDelegate;
-
-            private void OnIsCheckedChanged()
-            {
-                _checkChangedDelegate?.Invoke(this);
-            }
-            public override string ToString() => Item?.ToString();
-#pragma warning disable
-            public event PropertyChangedEventHandler? PropertyChanged;
-#pragma warning restore
-        }
 
         #region Dependency Properties
         #region NoItemsSelectedText
@@ -128,17 +106,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.generic
 
         private void SetInternalItems(ICollection newItems)
         {
-            List<CBCBPair> pairs = new List<CBCBPair>();
+            List<CheckBoxSelectionPair> pairs = new List<CheckBoxSelectionPair>();
             foreach (var v in newItems)
             {
-                pairs.Add(new CBCBPair(v, DefaultCheckState, CheckChanged));
+                pairs.Add(new CheckBoxSelectionPair(v, DefaultCheckState, CheckChanged));
             }
 
             InternalItemsSource.ReplaceAll(pairs);
             UpdateSelectedItemString();
         }
 
-        private void CheckChanged(CBCBPair itemChanging)
+        private void CheckChanged(CheckBoxSelectionPair itemChanging)
         {
             UpdateSelectedItemString();
         }
@@ -151,7 +129,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.generic
             }
             else if (e.Action == NotifyCollectionChangedAction.Add)
             {
-                InternalItemsSource.Insert(e.NewStartingIndex, new CBCBPair(e.NewItems[0], DefaultCheckState, CheckChanged));
+                InternalItemsSource.Insert(e.NewStartingIndex, new CheckBoxSelectionPair(e.NewItems[0], DefaultCheckState, CheckChanged));
                 UpdateSelectedItemString();
             }
         }
@@ -189,7 +167,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.generic
         #endregion
 
 
-        public ObservableCollectionExtended<CBCBPair> InternalItemsSource { get; } = new ObservableCollectionExtended<CBCBPair>();
+        public ObservableCollectionExtended<CheckBoxSelectionPair> InternalItemsSource { get; } = new ObservableCollectionExtended<CheckBoxSelectionPair>();
 
         /// <summary>
         /// Sets the list of selected items

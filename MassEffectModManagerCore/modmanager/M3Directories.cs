@@ -35,7 +35,7 @@ namespace MassEffectModManagerCore.modmanager
                     return exeReal;
                 }
             }
-            else if (target.Game == MEGame.Unknown)
+            else if (target.Game == MEGame.LELauncher)
             {
                 // LE LAUNCHER
                 return Path.Combine(target.TargetPath, @"MassEffectLauncher.exe");
@@ -45,7 +45,7 @@ namespace MassEffectModManagerCore.modmanager
 
         public static string GetExecutableDirectory(GameTarget target)
         {
-            if (target.Game == MEGame.Unknown) return target.TargetPath; // LELauncher
+            if (target.Game == MEGame.LELauncher) return target.TargetPath; // LELauncher
             return MEDirectories.GetExecutableFolderPath(target.Game, target.TargetPath);
         }
         public static string GetLODConfigFile(GameTarget target) => MEDirectories.GetLODConfigFile(target.Game);
@@ -56,10 +56,12 @@ namespace MassEffectModManagerCore.modmanager
             if (target.Game != MEGame.ME3) throw new Exception(@"Cannot fetch TestPatch SFAR for games that are not ME3");
             return ME3Directory.GetTestPatchSFARPath(target.TargetPath);
         }
+
+        // Oh boy how do we do this for localizations?
         public static string GetCoalescedPath(GameTarget target)
         {
             if (target.Game != MEGame.ME2 && target.Game != MEGame.ME3) throw new Exception(@"Cannot fetch Coalesced path for games that are not ME2/ME3");
-            if (target.Game == MEGame.ME2) return Path.Combine(GetBioGamePath(target), @"Config", @"PC", @"Cooked", "Coalesced.ini");
+            if (target.Game == MEGame.ME2) return Path.Combine(GetBioGamePath(target), @"Config", @"PC", @"Cooked", @"Coalesced.ini");
             return Path.Combine(GetCookedPath(target), @"Coalesced.bin");
         }
         public static bool IsInBasegame(string file, GameTarget target) => MEDirectories.IsInBasegame(file, target.Game, target.TargetPath);

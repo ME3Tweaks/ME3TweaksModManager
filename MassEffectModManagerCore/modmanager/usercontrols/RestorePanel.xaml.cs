@@ -66,12 +66,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
-            GameRestoreControllers.Add(new GameRestoreObject(MEGame.ME1, targetsList.Where(x => x.Game == MEGame.ME1), mainwindow));
-            GameRestoreControllers.Add(new GameRestoreObject(MEGame.ME2, targetsList.Where(x => x.Game == MEGame.ME2), mainwindow));
-            GameRestoreControllers.Add(new GameRestoreObject(MEGame.ME3, targetsList.Where(x => x.Game == MEGame.ME3), mainwindow));
+            GameRestoreControllers.Add(new GameRestoreObject(MEGame.LELauncher, targetsList.Where(x => x.Game == MEGame.LELauncher), mainwindow));
             GameRestoreControllers.Add(new GameRestoreObject(MEGame.LE1, targetsList.Where(x => x.Game == MEGame.LE1), mainwindow));
             GameRestoreControllers.Add(new GameRestoreObject(MEGame.LE2, targetsList.Where(x => x.Game == MEGame.LE2), mainwindow));
             GameRestoreControllers.Add(new GameRestoreObject(MEGame.LE3, targetsList.Where(x => x.Game == MEGame.LE3), mainwindow));
+            GameRestoreControllers.Add(new GameRestoreObject(MEGame.ME1, targetsList.Where(x => x.Game == MEGame.ME1), mainwindow));
+            GameRestoreControllers.Add(new GameRestoreObject(MEGame.ME2, targetsList.Where(x => x.Game == MEGame.ME2), mainwindow));
+            GameRestoreControllers.Add(new GameRestoreObject(MEGame.ME3, targetsList.Where(x => x.Game == MEGame.ME3), mainwindow));
         }
 
         public class GameRestoreObject : INotifyPropertyChanged
@@ -118,12 +119,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (Utilities.IsGameRunning(Game))
                 {
-                    M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_dialogCannotRestoreXWhileItIsRunning, Utilities.GetGameName(Game)), M3L.GetString(M3L.string_gameRunning), MessageBoxButton.OK, MessageBoxImage.Error);
+                    M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_dialogCannotRestoreXWhileItIsRunning, Game.ToGameName()), M3L.GetString(M3L.string_gameRunning), MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
 
                 bool restore = RestoreTarget.IsCustomOption; //custom option is restore to custom location
-                restore = restore || M3L.ShowDialog(window, M3L.GetString(M3L.string_dialog_restoringXWillDeleteGameDir, Utilities.GetGameName(Game)), M3L.GetString(M3L.string_gameTargetWillBeDeleted), MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
+                restore = restore || M3L.ShowDialog(window, M3L.GetString(M3L.string_dialog_restoringXWillDeleteGameDir, Game.ToGameName()), M3L.GetString(M3L.string_gameTargetWillBeDeleted), MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
                 if (restore)
                 {
                     NamedBackgroundWorker nbw = new NamedBackgroundWorker(Game + @"-Restore");
@@ -139,7 +140,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         RestoreInProgress = true;
                         // Nuke the LODs
-                        if (!RestoreTarget.IsCustomOption)
+                        if (!RestoreTarget.IsCustomOption && RestoreTarget.Game.IsOTGame())
                         {
                             Log.Information($@"Resetting LODs for {RestoreTarget.Game}");
                             Utilities.SetLODs(RestoreTarget, false, false, false);

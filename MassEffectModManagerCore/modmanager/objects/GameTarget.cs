@@ -114,7 +114,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         }
                     }
 
-                    if (Game != MEGame.Unknown)
+                    if (Game != MEGame.LELauncher)
                     {
                         // Actual game
                         var oldTMOption = TextureModded;
@@ -416,7 +416,7 @@ namespace MassEffectModManagerCore.modmanager.objects
 
         public void PopulateDLCMods(bool includeDisabled, Func<InstallationInformation.InstalledDLCMod, bool> deleteConfirmationCallback = null, Action notifyDeleted = null, bool modNamePrefersTPMI = false)
         {
-            if (Game == MEGame.Unknown) return; // LE Launcher doesn't have DLC mods
+            if (Game == MEGame.LELauncher) return; // LE Launcher doesn't have DLC mods
             var dlcDir = M3Directories.GetDLCPath(this);
             var allOfficialDLCforGame = MEDirectories.OfficialDLC(Game);
             var installedDLC = M3Directories.GetInstalledDLC(this, includeDisabled);
@@ -440,7 +440,7 @@ namespace MassEffectModManagerCore.modmanager.objects
 
         public bool IsTargetWritable()
         {
-            if (Game == MEGame.Unknown)
+            if (Game == MEGame.LELauncher)
             {
                 return Utilities.IsDirectoryWritable(TargetPath) && Utilities.IsDirectoryWritable(Path.Combine(TargetPath, @"Content"));
             }
@@ -517,7 +517,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         Path.Combine(TargetPath, @"BioGame", @"CookedPCConsole", @"Startup_INT.pcc"),
                         Path.Combine(TargetPath, @"BioGame", @"CookedPCConsole", @"Coalesced_INT.bin"),
                         Path.Combine(TargetPath, @"BioGame", @"CookedPCConsole", @"BioD_QuaTlL_505LifeBoat_LOC_INT.pcc"),
-                        Path.Combine(TargetPath, @"BioGame", @"CookedPCConsole", @"cithub_ad_low_a_S_DEU.afc"),
+                        Path.Combine(TargetPath, @"BioGame", @"CookedPCConsole", @"cithub_ad_low_a_S_INT.afc"),
                         Path.Combine(TargetPath, @"BioGame", @"DLC", @"DLC_METR_Patch01", @"CookedPCConsole", @"BioA_Nor_103aGalaxyMap.pcc")
                     };
                     break;
@@ -532,7 +532,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         Path.Combine(TargetPath, @"BioGame", @"CookedPCConsole", @"citwrd_rp1_bailey_m_D_Int.afc")
                     };
                     break;
-                case MEGame.Unknown: // LELAUNCHER
+                case MEGame.LELauncher: // LELAUNCHER
                     validationFiles = new[]
                     {
                         Path.Combine(TargetPath, @"MassEffectLauncher.exe"),
@@ -540,7 +540,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         Path.Combine(TargetPath, @"Content", @"click.wav"),
                         Path.Combine(TargetPath, @"Content", @"LauncherUI.swf"),
                         Path.Combine(TargetPath, @"Content", @"Xbox_ControllerIcons.swf"),
-                        Path.Combine(TargetPath, @"Content", @"Sounds","mus_gui_menu_looping_quad.wav"),
+                        Path.Combine(TargetPath, @"Content", @"Sounds", @"mus_gui_menu_looping_quad.wav"),
                     };
                     break;
             }
@@ -951,7 +951,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         public List<TextureModInstallationInfo> GetTextureModInstallationHistory()
         {
             var alotInfos = new List<TextureModInstallationInfo>();
-            if (Game == MEGame.Unknown) return alotInfos;
+            if (Game == MEGame.LELauncher) return alotInfos;
             int startPos = -1;
             while (GetInstalledALOTInfo(startPos, false) != null)
             {
@@ -1239,7 +1239,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         public string NumASIModsInstalledText { get; private set; }
         public void PopulateASIInfo()
         {
-            if (Game == MEGame.Unknown) return;
+            if (Game == MEGame.LELauncher) return;
             var installedASIs = GetInstalledASIs();
             if (installedASIs.Any())
             {

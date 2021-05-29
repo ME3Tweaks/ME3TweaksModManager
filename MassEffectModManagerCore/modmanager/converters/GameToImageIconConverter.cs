@@ -20,6 +20,7 @@ namespace MassEffectModManagerCore.modmanager.converters
         private static string le2IconPath;
         private static string le3IconPath;
         private static string leLauncherIconPath;
+        private static string unknownIconPath;
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             init();
@@ -46,8 +47,10 @@ namespace MassEffectModManagerCore.modmanager.converters
                     return MippedIconExtension.StaticConvert(le2IconPath, size);
                 case MEGame.LE3:
                     return MippedIconExtension.StaticConvert(le3IconPath, size);
-                case MEGame.Unknown:
+                case MEGame.LELauncher:
                     return MippedIconExtension.StaticConvert(leLauncherIconPath, size);
+                case MEGame.Unknown:
+                    return MippedIconExtension.StaticConvert(unknownIconPath, size);
                 default:
                     return null;
             }
@@ -64,6 +67,7 @@ namespace MassEffectModManagerCore.modmanager.converters
             le2IconPath = (string)Application.Current.Resources[@"le2gameiconpath"];
             le3IconPath = (string)Application.Current.Resources[@"le3gameiconpath"];
             leLauncherIconPath = (string)Application.Current.Resources[@"lelaunchergameiconpath"];
+            unknownIconPath = (string)Application.Current.Resources[@"unknowngameiconpath"];
             initialized = true;
         }
 

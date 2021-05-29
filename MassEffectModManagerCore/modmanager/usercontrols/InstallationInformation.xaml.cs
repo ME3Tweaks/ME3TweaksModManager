@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Navigation;
+using LegendaryExplorerCore.Gammtek.Extensions;
 using Serilog;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
@@ -298,7 +299,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         M3L.ShowDialog(Window.GetWindow(this),
                             M3L.GetString(M3L.string_interp_cannotDeleteModsWhileXIsRunning,
-                                Utilities.GetGameName(SelectedTarget.Game)), M3L.GetString(M3L.string_gameRunning),
+                                SelectedTarget.Game.ToGameName()), M3L.GetString(M3L.string_gameRunning),
                             MessageBoxButton.OK, MessageBoxImage.Error);
                         return false;
                     }
@@ -331,8 +332,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     if (Utilities.IsGameRunning(SelectedTarget.Game))
                     {
                         M3L.ShowDialog(Window.GetWindow(this),
-                            M3L.GetString(M3L.string_interp_cannotRestoreFilesWhileXIsRunning,
-                                Utilities.GetGameName(SelectedTarget.Game)), M3L.GetString(M3L.string_gameRunning),
+                            M3L.GetString(M3L.string_interp_cannotRestoreFilesWhileXIsRunning,SelectedTarget.Game.ToGameName()), M3L.GetString(M3L.string_gameRunning),
                             MessageBoxButton.OK, MessageBoxImage.Error);
                         return false;
                     }
@@ -373,7 +373,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         M3L.ShowDialog(Window.GetWindow(this),
                             M3L.GetString(M3L.string_interp_cannotRestoreFilesWhileXIsRunning,
-                                Utilities.GetGameName(SelectedTarget.Game)), M3L.GetString(M3L.string_gameRunning),
+                                SelectedTarget.Game.ToGameName()), M3L.GetString(M3L.string_gameRunning),
                             MessageBoxButton.OK, MessageBoxImage.Error);
                         return false;
                     }

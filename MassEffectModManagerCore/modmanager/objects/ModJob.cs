@@ -425,8 +425,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 case MEGame.LE1:
                 case MEGame.LE2:
                 case MEGame.LE3:
-                case MEGame.Unknown:
-                    // Maybe add Unknown? (Unknown in M3 = LELauncher)
+                case MEGame.LELauncher:
                     return LEHeadersToDLCNamesMap;
                 default:
                     throw new Exception(@"Can't get supported list of headers for unknown game type.");
@@ -468,7 +467,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 case MEGame.LE2:
                 case MEGame.LE3:
                     return LESupportedNonCustomDLCJobHeaders;
-                case MEGame.Unknown:
+                case MEGame.LELauncher:
                     return LELauncherSupportedNonCustomDLCJobHeaders;
                 default:
                     throw new Exception(@"Can't get supported list of headers for unknown game type.");

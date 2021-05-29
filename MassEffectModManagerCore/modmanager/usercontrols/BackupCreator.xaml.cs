@@ -2,6 +2,7 @@
 using MassEffectModManagerCore.ui;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
@@ -30,12 +31,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// </summary>
     public partial class BackupCreator : MMBusyPanelBase
     {
-        public bool AnyGameMissingBackup => !BackupService.ME1BackedUp || !BackupService.ME2BackedUp || !BackupService.ME3BackedUp;
+        public bool AnyGameMissingBackup => !BackupService.ME1BackedUp || !BackupService.ME2BackedUp || !BackupService.ME3BackedUp
+        || !BackupService.LE1BackedUp || !BackupService.LE2BackedUp || !BackupService.LE3BackedUp;
         public ObservableCollectionExtended<GameBackup> GameBackups { get; } = new ObservableCollectionExtended<GameBackup>();
 
-        //public GameBackup ME3Backup { get; set; }
-        //public GameBackup ME2Backup { get; set; }
-        //public GameBackup ME1Backup { get; set; }
         private List<GameTarget> targetsList;
         public BackupCreator(List<GameTarget> targetsList, GameTarget selectedTarget, Window window)
         {
@@ -63,6 +62,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
+            GameBackups.Add(new GameBackup(MEGame.LELauncher, targetsList.Where(x => x.Game == MEGame.LELauncher), mainwindow));
             GameBackups.Add(new GameBackup(MEGame.LE1, targetsList.Where(x => x.Game == MEGame.LE1), mainwindow));
             GameBackups.Add(new GameBackup(MEGame.LE2, targetsList.Where(x => x.Game == MEGame.LE2), mainwindow));
             GameBackups.Add(new GameBackup(MEGame.LE3, targetsList.Where(x => x.Game == MEGame.LE3), mainwindow));
@@ -84,31 +84,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 this.AvailableBackupSources.AddRange(availableBackupSources);
                 this.AvailableBackupSources.Add(new GameTarget(Game, M3L.GetString(M3L.string_linkBackupToAnExistingGameCopy), false, true));
                 LoadCommands();
-                switch (Game)
-                {
-                    case MEGame.ME1:
-                        GameIconSource = @"/images/gameicons/ME1_48.ico";
-                        break;
-                    case MEGame.ME2:
-                        GameIconSource = @"/images/gameicons/ME2_48.ico";
-                        break;
-                    case MEGame.ME3:
-                        GameIconSource = @"/images/gameicons/ME3_48.ico";
-                        break;
-                    case MEGame.LE1:
-                        GameIconSource = @"/images/gameicons/LE1_48.ico";
-                        break;
-                    case MEGame.LE2:
-                        GameIconSource = @"/images/gameicons/LE2_48.ico";
-                        break;
-                    case MEGame.LE3:
-                        GameIconSource = @"/images/gameicons/LE3_48.ico";
-                        break;
-
-                }
-
                 GameTitle = Game.ToGameName();
-
                 ResetBackupStatus();
             }
 
@@ -122,7 +98,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 var gbPath = BackupService.GetGameBackupPath(Game, false, false, forceReturnPath: true);
                 Log.Information($@"User is attempting to unlink backup for {Game}");
-                var message = M3L.GetString(M3L.string_dialog_unlinkingBackup, Utilities.GetGameName(Game), gbPath, Utilities.GetGameName(Game));
+                var message = M3L.GetString(M3L.string_dialog_unlinkingBackup, Game.ToGameName(), gbPath, Game.ToGameName());
                 var shouldUnlink = M3L.ShowDialog(window, message, M3L.GetString(M3L.string_unlinkingBackup), MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
                 if (shouldUnlink)
                 {
@@ -145,7 +121,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             private bool CanUnlinkBackup()
             {
-                return BackupService.GetGameBackupPath(Game, false, false, true) != null;
+                return BackupLocation != null;
             }
 
             private bool CanBeginBackup()
@@ -155,13 +131,25 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             private void BeginBackup()
             {
+                string[] languages = null;
                 var targetToBackup = BackupSourceTarget;
                 if (!targetToBackup.IsCustomOption)
                 {
                     if (Utilities.IsGameRunning(targetToBackup.Game))
                     {
-                        M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_cannotBackupGameWhileRunning, Utilities.GetGameName(BackupSourceTarget.Game)), M3L.GetString(M3L.string_gameRunning), MessageBoxButton.OK, MessageBoxImage.Error);
+                        M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_cannotBackupGameWhileRunning, BackupSourceTarget.Game.ToGameName()), M3L.GetString(M3L.string_gameRunning), MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
+                    }
+
+                    // Language selection
+                    if (Game != MEGame.LELauncher)
+                    {
+                        CheckBoxDialog cbw = new CheckBoxDialog(
+                            "Select which languages to include in the backup. Languages not selected will not be backed up; if you choose to repair the game, these languages will be redownloaded.",
+                            "Select languages", StarterKitGeneratorWindow.GetLanguagesForGame(targetToBackup.Game),
+                            new[] { @"INT" }, new[] { @"INT" });
+                        cbw.ShowDialog();
+                        languages = cbw.GetSelectedItems().OfType<string>().ToArray();
                     }
                 }
                 else
@@ -210,6 +198,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         TaskbarHelper.SetProgressState(tbs);
                     }
                 };
+
                 nbw.DoWork += (a, b) =>
                 {
                     Log.Information(@"Starting the backup thread. Checking path: " + targetToBackup.TargetPath);
@@ -256,9 +245,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         return x;
                     }).ToList();
                     var installedDLC = VanillaDatabaseService.GetInstalledOfficialDLC(targetToBackup);
-                    var allOfficialDLC = MEDirectories.OfficialDLC(targetToBackup.Game);
+                    var allOfficialDLC = targetToBackup.Game == MEGame.LELauncher ? null : MEDirectories.OfficialDLC(targetToBackup.Game);
 
-                    if (installedDLC.Count() < allOfficialDLC.Count())
+                    if (allOfficialDLC != null && installedDLC.Count() < allOfficialDLC.Count())
                     {
                         var dlcList = string.Join("\n - ", allOfficialDLC.Except(installedDLC).Select(x => $@"{MEDirectories.OfficialDLCNames(targetToBackup.Game)[x]} ({x})")); //do not localize
                         dlcList = @" - " + dlcList;
@@ -566,11 +555,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
 
                 //Check is Documents folder
-                var docsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"BioWare", Utilities.GetGameName(Game));
+                var docsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"BioWare");
                 if (backupPath.Equals(docsPath, StringComparison.InvariantCultureIgnoreCase) || backupPath.IsSubPathOf(docsPath))
                 {
-                    Log.Error(@"User chose path in or around the documents path for the game - not allowed as game can load files from here.");
-                    M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_dialog_linkFailedSubdirectoryOfGameDocumentsFolder, Utilities.GetGameName(Game)),
+                    Log.Error(@"User chose path in the documents path for the game - not allowed as game can load files from here.");
+                    M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_dialog_linkFailedSubdirectoryOfGameDocumentsFolder),
                         M3L.GetString(M3L.string_locationNotAllowedForBackup), MessageBoxButton.OK,
                         MessageBoxImage.Error);
                     return false;
@@ -652,15 +641,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 BackupStatusLine2 = BackupLocation ?? BackupService.GetBackupStatusTooltip(Game);
             }
 
-            public string GameIconSource { get; }
             public string GameTitle { get; }
             //Fody uses this property on weaving
 #pragma warning disable
             public event PropertyChangedEventHandler PropertyChanged;
 #pragma warning restore
             public GameTarget BackupSourceTarget { get; set; }
-            [AlsoNotifyFor(nameof(BackupOptionsVisible))]
-            public string BackupLocation { get; set; }
+            public string BackupLocation
+            {
+                get;
+                set;
+            }
             public string BackupStatus { get; set; }
             public string BackupStatusLine2 { get; set; }
             public int ProgressMax { get; set; } = 100;
@@ -669,6 +660,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             public bool ProgressVisible { get; set; } = false;
             public ICommand BackupButtonCommand { get; set; }
             public ICommand UnlinkBackupCommand { get; set; }
+
+            [DependsOn(nameof(BackupLocation))]
             public bool BackupOptionsVisible => BackupLocation == null;
             public bool BackupInProgress { get; set; }
 

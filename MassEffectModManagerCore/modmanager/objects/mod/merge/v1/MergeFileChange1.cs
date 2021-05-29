@@ -177,7 +177,10 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
                 throw new Exception($"Cannot find AssetUpdate1 entry in source asset package {OwningMM.Assets[AssetName].FileName}: {EntryName}. Merge aborted");
             }
 
-            var resultst = EntryImporter.ImportAndRelinkEntries(EntryImporter.PortingOption.ReplaceSingular, sourceEntry, targetExport.FileRef, targetExport, true, out _, errorOccuredCallback: x => throw new Exception($"Error merging assets: {x}"));
+            var resultst = EntryImporter.ImportAndRelinkEntries(EntryImporter.PortingOption.ReplaceSingular, 
+                sourceEntry, targetExport.FileRef, targetExport, true, out _, 
+                errorOccuredCallback: x => throw new Exception($"Error merging assets: {x}"), 
+                importExportDependencies: true);
             if (resultst.Any())
             {
                 throw new Exception("Errors occurred merging!");

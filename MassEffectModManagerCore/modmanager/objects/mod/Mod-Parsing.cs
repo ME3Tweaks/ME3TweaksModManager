@@ -688,7 +688,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     Game = MEGame.LE3;
                     break;
                 case @"LELAUNCHER":
-                    Game = MEGame.Unknown;
+                    Game = MEGame.LELauncher;
                     TargetsLELauncher = true;
                     break;
                 default:

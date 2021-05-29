@@ -22,9 +22,9 @@ namespace MassEffectModManagerCore.modmanager.converters
                     case "DLCMods":
                     case "Textures":
                     case "Other":
-                        return game != MEGame.Unknown && game != MEGame.UDK ? Visibility.Visible : Visibility.Collapsed;
+                        return game != MEGame.LELauncher && game != MEGame.UDK ? Visibility.Visible : Visibility.Collapsed;
                     case "OfficialDLC":
-                        return game != MEGame.Unknown && game != MEGame.UDK && game != MEGame.LE1 ? Visibility.Visible : Visibility.Collapsed;
+                        return game != MEGame.LELauncher && game != MEGame.UDK && game != MEGame.LE1 ? Visibility.Visible : Visibility.Collapsed;
                     case "SFAR":
                         return game == MEGame.ME3 ? Visibility.Visible : Visibility.Collapsed;
                     case "Basegame":

@@ -155,6 +155,13 @@ namespace MassEffectModManagerCore.modmanager.helpers
             private set => SetProperty(ref _le3Installed, value);
         }
 
+        private static bool _lelInstalled;
+        public static bool LELInstalled
+        {
+            get => _lelInstalled;
+            private set => SetProperty(ref _lelInstalled, value);
+        }
+
 
         //Todo: Maybe cache this so we aren't doing so many reads. Not sure how often this gets hit since it is used in some commands
 
@@ -177,6 +184,13 @@ namespace MassEffectModManagerCore.modmanager.helpers
         {
             get => GetGameBackupPath(MEGame.LE3, true) != null;
             private set => SetProperty(ref _le3BackedUp, value);
+        }
+
+        private static bool _lelBackedUp;
+        public static bool LELBackedUp
+        {
+            get => GetGameBackupPath(MEGame.LELauncher, true) != null;
+            private set => SetProperty(ref _lelBackedUp, value);
         }
 
         private static bool _le1BackupActivity;
@@ -265,6 +279,11 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 {
                     RefreshBackupStatus(MEGame.LE3, window == null || window.InstallationTargets.Any(x => x.Game == MEGame.LE3), LE3BackedUp,
                         msg => LE3BackupStatus = msg, msg => LE3BackupStatusTooltip = msg);
+                }
+                if (game is MEGame.LELauncher or MEGame.Unknown)
+                {
+                    RefreshBackupStatus(MEGame.LELauncher, window == null || window.InstallationTargets.Any(x => x.Game == MEGame.LELauncher), LELBackedUp,
+                        msg => LELBackupStatus = msg, msg => LELBackupStatusTooltip = msg);
                 }
             });
         }
@@ -375,6 +394,13 @@ namespace MassEffectModManagerCore.modmanager.helpers
             private set => SetProperty(ref _le3BackupStatus, value);
         }
 
+        private static string _lelBackupStatus;
+        public static string LELBackupStatus
+        {
+            get => _lelBackupStatus;
+            private set => SetProperty(ref _lelBackupStatus, value);
+        }
+
         private static string _le1BackupStatusTooltip;
         public static string LE1BackupStatusTooltip
         {
@@ -396,6 +422,13 @@ namespace MassEffectModManagerCore.modmanager.helpers
             private set => SetProperty(ref _le3BackupStatusTooltip, value);
         }
 
+        private static string _lelBackupStatusTooltip;
+        public static string LELBackupStatusTooltip
+        {
+            get => _lelBackupStatusTooltip;
+            private set => SetProperty(ref _lelBackupStatusTooltip, value);
+        }
+
         /// <summary>
         /// Fetches the backup status string for the specific game. The status must be refreshed before the values will be initially set
         /// </summary>
@@ -411,6 +444,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 case MEGame.LE1: return LE1BackupStatus;
                 case MEGame.LE2: return LE2BackupStatus;
                 case MEGame.LE3: return LE3BackupStatus;
+                case MEGame.LELauncher: return LELBackupStatus;
             }
 
             return null;
@@ -431,6 +465,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 case MEGame.LE1: return LE1BackupStatusTooltip;
                 case MEGame.LE2: return LE2BackupStatusTooltip;
                 case MEGame.LE3: return LE3BackupStatusTooltip;
+                case MEGame.LELauncher: return LELBackupStatusTooltip;
             }
 
             return null;
@@ -557,7 +592,20 @@ namespace MassEffectModManagerCore.modmanager.helpers
             }
 
             //Super basic validation
-            if (!Directory.Exists(Path.Combine(path, @"BIOGame")) || !Directory.Exists(Path.Combine(path, @"Binaries")))
+            if (game == MEGame.LELauncher)
+            {
+                if (!Directory.Exists(Path.Combine(path, @"Content")))
+                {
+                    if (logReturnedPath)
+                    {
+                        Log.Warning(@" >> " + path + @" is missing Content subdirectory, invalid backup");
+                    }
+
+                    GameBackupPathCache[game] = null;
+                    return null;
+                }
+            }
+            else if (!Directory.Exists(Path.Combine(path, @"BIOGame")) || !Directory.Exists(Path.Combine(path, @"Binaries")))
             {
                 if (logReturnedPath)
                 {
@@ -625,6 +673,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
             LE1Installed = installationTargets.Any(x => x.Game == MEGame.LE1);
             LE2Installed = installationTargets.Any(x => x.Game == MEGame.LE2);
             LE3Installed = installationTargets.Any(x => x.Game == MEGame.LE3);
+            LELInstalled = installationTargets.Any(x => x.Game == MEGame.LELauncher);
             StaticPropertyChanged?.Invoke(null, new PropertyChangedEventArgs(nameof(AnyGameMissingBackup)));
             StaticBackupStateChanged?.Invoke(null, null);
         }

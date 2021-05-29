@@ -239,10 +239,10 @@ namespace MassEffectModManagerCore.modmanager
             return res;
         }
 
-        public static bool EnableWritePermissionsToFolders(List<string> folders, bool me1ageia)
+        public static bool EnableWritePermissionsToFolders(List<string> folders)
         {
             string args = "";
-            if (folders.Any() || me1ageia)
+            if (folders.Any())
             {
                 foreach (var target in folders)
                 {
@@ -252,11 +252,6 @@ namespace MassEffectModManagerCore.modmanager
                     }
 
                     args += $"\"{target}\"";
-                }
-
-                if (me1ageia)
-                {
-                    args += " -create-hklm-reg-key \"SOFTWARE\\WOW6432Node\\AGEIA Technologies\"";
                 }
 
                 string exe = GetCachedExecutablePath("PermissionsGranter.exe");
@@ -931,17 +926,6 @@ namespace MassEffectModManagerCore.modmanager
             assembly ??= System.Reflection.Assembly.GetExecutingAssembly();
             var res = assembly.GetManifestResourceNames();
             return assembly.GetManifestResourceStream(assemblyResource);
-        }
-
-        internal static string GetGameName(MEGame game)
-        {
-            if (game == MEGame.ME1) return "Mass Effect";
-            if (game == MEGame.ME2) return "Mass Effect 2";
-            if (game == MEGame.ME3) return "Mass Effect 3";
-            if (game == MEGame.LE1) return "Mass Effect (Legendary Edition)";
-            if (game == MEGame.LE2) return "Mass Effect 2 (Legendary Edition)";
-            if (game == MEGame.LE3) return "Mass Effect 3 (Legendary Edition)";
-            return "Error: Unknown game";
         }
 
         public static string ExtractInternalFile(string internalResourceName, string destination, bool overwrite, Assembly assembly = null)
@@ -2061,6 +2045,9 @@ namespace MassEffectModManagerCore.modmanager
                     case MEGame.ME3:
                         executableNames += "MassEffect3.exe";
                         break;
+                    case MEGame.LELauncher:
+                        executableNames += "MassEffectLauncher.exe";
+                        break;
                 }
             }
 
@@ -2083,8 +2070,10 @@ namespace MassEffectModManagerCore.modmanager
         /// <returns></returns>
         public static string GetGamePathFromExe(MEGame game, string exe)
         {
-            string result = Path.GetDirectoryName(Path.GetDirectoryName(exe)); //binaries, <GAME>
-
+            string result = Path.GetDirectoryName(exe);
+            if (game == MEGame.LELauncher)
+                return result;
+            result = Path.GetDirectoryName(result); //binaries, <GAME>
             if (game == MEGame.ME3 || game.IsLEGame())
                 result = Path.GetDirectoryName(result); //up one more because of win32/win64 directory.
             return result;
@@ -2138,6 +2127,7 @@ namespace MassEffectModManagerCore.modmanager
             4 => MEGame.LE1,
             5 => MEGame.LE2,
             6 => MEGame.LE3,
+            // LELauncher?
             _ => MEGame.Unknown
         };
     }

@@ -286,7 +286,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
             addDiagLine(gameID, Severity.GAMEID);
             addDiagLine($@"{App.AppVersionHR} Game Diagnostic");
-            addDiagLine($@"Diagnostic for {Utilities.GetGameName(selectedDiagnosticTarget.Game)}");
+            addDiagLine($@"Diagnostic for {selectedDiagnosticTarget.Game.ToGameName()}");
             addDiagLine($@"Diagnostic generated on {DateTime.Now.ToShortDateString()}");
             #endregion
 
@@ -1386,13 +1386,13 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     .Where(z => z.InstanceId == 1001 && z.TimeGenerated > sevenDaysAgo && (GenerateEventLogString(z).ContainsAny(MEDirectories.ExecutableNames(selectedDiagnosticTarget.Game), StringComparison.InvariantCultureIgnoreCase)))
                     .ToList();
 
-                addDiagLine($@"{Utilities.GetGameName(selectedDiagnosticTarget.Game)} crash logs found in Event Viewer", Severity.DIAGSECTION);
+                addDiagLine($@"{selectedDiagnosticTarget.Game.ToGameName()} crash logs found in Event Viewer", Severity.DIAGSECTION);
                 if (entries.Any())
                 {
                     foreach (var entry in entries)
                     {
                         string str = string.Join("\n", GenerateEventLogString(entry).Split('\n').ToList().Take(17).ToList()); //do not localize
-                        addDiagLine($"{Utilities.GetGameName(selectedDiagnosticTarget.Game)} Event {entry.TimeGenerated}\n{str}"); //do not localize
+                        addDiagLine($"{selectedDiagnosticTarget.Game.ToGameName()} Event {entry.TimeGenerated}\n{str}"); //do not localize
                     }
 
                 }
