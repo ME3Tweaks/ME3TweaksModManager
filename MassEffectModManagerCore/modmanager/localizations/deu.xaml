@@ -1284,6 +1284,8 @@
 	<system:String x:Key="string_dialog_cannotDownloadDeletedFile">Datei kann nicht heruntergeladen werden: von NexusMods gelöscht</system:String>
 	<system:String x:Key="string_interp_errorDownloadingModX">Fehler beim Herunterladen des Mods: {0}</system:String>
 	<!-- 0={Error message} -->
+	<system:String x:Key="string_interp_dialog_modNotForThisModManager" xml:space="preserve">Dieser Mod ist für "{0}", was nicht von ME3Tweaks Mod Manager unterstützt wird. Wahrscheinlich hast du erwartet, dass ein anderer Mod Manager benutzt wird, doch dadurch, wie Werkzeuge das nxm://-Protokoll benutzen, kann sich die flasche Applikation öffnen.\n\nÖffne den Mod Manager, den du zum Herunterladen dieses Mods benutzen willst und es sollte sich als Standardeinstellung für nxm://-Links registrieren. Probiere es nocheinmal sobald der geöffnet ist.</system:String>
+	<!-- 0={domain, like 'masseffect'} -->
 
 	<!-- Mod Downloader -->
 	<system:String x:Key="string_modDownloader">Mod Downloader</system:String>
