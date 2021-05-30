@@ -117,9 +117,9 @@
   <helpmenu lang="deu">
     <helpitem title="ME3Tweaks Discord" url="https://discord.gg/s8HA6dc" tooltip="Chat Server für schnelle Unterstützung zu ME3Tweaks-Produkten und Diensten" />
     <helpitem title="N7 Squad Multiplayer Discord" url="https://discord.com/invite/TMaMVhV" tooltip="Chat Server, um andere Mass Effect 3 MP- und Mass Effect Andromeda MP-Spieler zu finden" />
-    <helpitem title="Public Modding Discord" url="https://discord.gg/su8XjdUQPw" tooltip="Server for general Mass Effect modding" />
-    <helpitem title="Mgamerz' Twitter" url="https://twitter.com/Mgamerz" tooltip="Mgamerz's twitter, fun and interesting modding tidbits" />
-    <helpitem title="LEGENDARY EDITION INFO" modaltitle="Legendary Edition support" modalicon="INFO">ME3Tweaks Mod Manager versions below 7.0 do not support Mass Effect: Legendary Edition games. Join the ME3Tweaks Discord or follow Mgamerz on Twitter to see updates about the development of ME3Tweaks Mod Manager 7.0.</helpitem>
+    <helpitem title="Public Modding Discord" url="https://discord.gg/su8XjdUQPw" tooltip="Server für allgemeines Mass Effect Modding" />
+    <helpitem title="Mgamerz' Twitter" url="https://twitter.com/Mgamerz" tooltip="Mgamerz' Twitter, lustige und interessante Modding-Einblicke (Englisch)" />
+    <helpitem title="LEGENDARY EDITION INFO" modaltitle="Legendary Edition support" modalicon="INFO">ME3Tweaks Mod Manager Versionen vor 7.0 unterstützen Mass Effect: Legendary Edition nicht. Tritt dem ME3Tweaks Discord bei oder folge Mgamerz auf Twitter um die Entwicklung von ME3Tweaks Mod Manager 7.0 zu verfolgen.</helpitem>
     <list title="Mods beziehen">
       <!--<helpitem title="ME3Tweaks ModMaker Gallery" url="https://me3tweaks.com/modmaker/gallery" tooltip="Browse mods developed on ME3Tweaks ModMaker"/>-->
       <helpitem title="Liste der von ME3Tweaks vorgeschlagenen Mods" url="https://me3tweaks.com/mods" tooltip="Stöbere durch von ME3Tweaks vorgeschlagene Mods" />
