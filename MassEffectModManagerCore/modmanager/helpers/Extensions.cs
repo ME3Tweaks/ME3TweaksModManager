@@ -79,6 +79,13 @@ namespace MassEffectModManagerCore.modmanager.helpers
             Extensions.InvalidPathingChars = enumerable.ToArray<char>(enumerable.Count);
         }
 
+        public static bool IsEnabledGeneration(this MEGame game)
+        {
+            if (game.IsOTGame() && Settings.GenerationSettingOT) return true;
+            if (game.IsLEGame() && Settings.GenerationSettingLE) return true;
+            return false;
+        }
+
         /// <summary>
         /// Returns logical children of this UI object of the specified type
         /// </summary>

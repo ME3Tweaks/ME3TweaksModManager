@@ -250,6 +250,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             int index = 0;
             foreach (var game in gameEnum)
             {
+                if (!Settings.GenerationSettingOT && game.IsOTGame()) continue;
+                if (!Settings.GenerationSettingLE && game.IsLEGame()) continue;
                 var targets = mainwindow.InstallationTargets.Where(x => x.Game == game).ToList();
                 ASIGame asiGame = null;
                 if (targets.Count > 0)

@@ -62,13 +62,21 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
-            GameBackups.Add(new GameBackup(MEGame.LELauncher, targetsList.Where(x => x.Game == MEGame.LELauncher), mainwindow));
-            GameBackups.Add(new GameBackup(MEGame.LE1, targetsList.Where(x => x.Game == MEGame.LE1), mainwindow));
-            GameBackups.Add(new GameBackup(MEGame.LE2, targetsList.Where(x => x.Game == MEGame.LE2), mainwindow));
-            GameBackups.Add(new GameBackup(MEGame.LE3, targetsList.Where(x => x.Game == MEGame.LE3), mainwindow));
-            GameBackups.Add(new GameBackup(MEGame.ME1, targetsList.Where(x => x.Game == MEGame.ME1), mainwindow));
-            GameBackups.Add(new GameBackup(MEGame.ME2, targetsList.Where(x => x.Game == MEGame.ME2), mainwindow));
-            GameBackups.Add(new GameBackup(MEGame.ME3, targetsList.Where(x => x.Game == MEGame.ME3), mainwindow));
+            if (Settings.GenerationSettingLE)
+            {
+                GameBackups.Add(new GameBackup(MEGame.LELauncher, targetsList.Where(x => x.Game == MEGame.LELauncher),
+                    mainwindow));
+                GameBackups.Add(new GameBackup(MEGame.LE1, targetsList.Where(x => x.Game == MEGame.LE1), mainwindow));
+                GameBackups.Add(new GameBackup(MEGame.LE2, targetsList.Where(x => x.Game == MEGame.LE2), mainwindow));
+                GameBackups.Add(new GameBackup(MEGame.LE3, targetsList.Where(x => x.Game == MEGame.LE3), mainwindow));
+            }
+
+            if (Settings.GenerationSettingOT)
+            {
+                GameBackups.Add(new GameBackup(MEGame.ME1, targetsList.Where(x => x.Game == MEGame.ME1), mainwindow));
+                GameBackups.Add(new GameBackup(MEGame.ME2, targetsList.Where(x => x.Game == MEGame.ME2), mainwindow));
+                GameBackups.Add(new GameBackup(MEGame.ME3, targetsList.Where(x => x.Game == MEGame.ME3), mainwindow));
+            }
         }
 
         public class GameBackup : INotifyPropertyChanged

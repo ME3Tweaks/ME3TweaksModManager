@@ -37,8 +37,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             this.targetsList = targetsList;
             LoadCommands();
             InitializeComponent();
-
-            //InstallationTargets_ComboBox.SelectedItem = selectedTarget;
         }
 
         public ICommand CloseCommand { get; set; }
@@ -66,13 +64,27 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
-            GameRestoreControllers.Add(new GameRestoreObject(MEGame.LELauncher, targetsList.Where(x => x.Game == MEGame.LELauncher), mainwindow));
-            GameRestoreControllers.Add(new GameRestoreObject(MEGame.LE1, targetsList.Where(x => x.Game == MEGame.LE1), mainwindow));
-            GameRestoreControllers.Add(new GameRestoreObject(MEGame.LE2, targetsList.Where(x => x.Game == MEGame.LE2), mainwindow));
-            GameRestoreControllers.Add(new GameRestoreObject(MEGame.LE3, targetsList.Where(x => x.Game == MEGame.LE3), mainwindow));
-            GameRestoreControllers.Add(new GameRestoreObject(MEGame.ME1, targetsList.Where(x => x.Game == MEGame.ME1), mainwindow));
-            GameRestoreControllers.Add(new GameRestoreObject(MEGame.ME2, targetsList.Where(x => x.Game == MEGame.ME2), mainwindow));
-            GameRestoreControllers.Add(new GameRestoreObject(MEGame.ME3, targetsList.Where(x => x.Game == MEGame.ME3), mainwindow));
+            if (Settings.GenerationSettingLE)
+            {
+                GameRestoreControllers.Add(new GameRestoreObject(MEGame.LELauncher,
+                    targetsList.Where(x => x.Game == MEGame.LELauncher), mainwindow));
+                GameRestoreControllers.Add(new GameRestoreObject(MEGame.LE1,
+                    targetsList.Where(x => x.Game == MEGame.LE1), mainwindow));
+                GameRestoreControllers.Add(new GameRestoreObject(MEGame.LE2,
+                    targetsList.Where(x => x.Game == MEGame.LE2), mainwindow));
+                GameRestoreControllers.Add(new GameRestoreObject(MEGame.LE3,
+                    targetsList.Where(x => x.Game == MEGame.LE3), mainwindow));
+            }
+
+            if (Settings.GenerationSettingOT)
+            {
+                GameRestoreControllers.Add(new GameRestoreObject(MEGame.ME1,
+                    targetsList.Where(x => x.Game == MEGame.ME1), mainwindow));
+                GameRestoreControllers.Add(new GameRestoreObject(MEGame.ME2,
+                    targetsList.Where(x => x.Game == MEGame.ME2), mainwindow));
+                GameRestoreControllers.Add(new GameRestoreObject(MEGame.ME3,
+                    targetsList.Where(x => x.Game == MEGame.ME3), mainwindow));
+            }
         }
 
         public class GameRestoreObject : INotifyPropertyChanged

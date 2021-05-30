@@ -427,7 +427,23 @@ namespace MassEffectModManagerCore
                     oldFailedBindableCount = FailedMods.BindableCount;
                 }
             };
+            Settings.StaticPropertyChanged += SettingChanged;
         }
+
+        private void SettingChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(Settings.GenerationSettingOT))
+            {
+                ME1ModsVisible = ME2ModsVisible = ME3ModsVisible = Settings.GenerationSettingOT;
+                FilterMods();
+            }
+            else if (e.PropertyName == nameof(Settings.GenerationSettingLE))
+            {
+                LE1ModsVisible = LE2ModsVisible = LE3ModsVisible = Settings.GenerationSettingLE;
+                FilterMods();
+            }
+        }
+
         public ICommand OpenASIManagerCommand { get; set; }
         public ICommand OpenTutorialCommand { get; set; }
         public ICommand OriginInGameOverlayDisablerCommand { get; set; }
@@ -2030,7 +2046,21 @@ namespace MassEffectModManagerCore
                 var leLaunchermodDescsToLoad = Directory.GetDirectories(Utilities.GetLELauncherModsDirectory()).Select(x => (game: MEGame.LELauncher, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
                 //var modDescsToLoad = leLaunchermodDescsToLoad.ToList();
 
-                var modDescsToLoad = le3modDescsToLoad.Concat(le2modDescsToLoad).Concat(le1modDescsToLoad).Concat(me3modDescsToLoad).Concat(me2modDescsToLoad).Concat(me1modDescsToLoad).Concat(leLaunchermodDescsToLoad);
+                List<(MEGame game, string path)> modDescsToLoad = new();
+                if (Settings.GenerationSettingOT)
+                {
+                    modDescsToLoad.AddRange(me1modDescsToLoad);
+                    modDescsToLoad.AddRange(me2modDescsToLoad);
+                    modDescsToLoad.AddRange(me3modDescsToLoad);
+                }
+
+                if (Settings.GenerationSettingLE)
+                {
+                    modDescsToLoad.AddRange(le1modDescsToLoad);
+                    modDescsToLoad.AddRange(le2modDescsToLoad);
+                    modDescsToLoad.AddRange(le3modDescsToLoad);
+                    modDescsToLoad.AddRange(leLaunchermodDescsToLoad);
+                }
 
                 foreach (var moddesc in modDescsToLoad)
                 {
@@ -3914,7 +3944,7 @@ namespace MassEffectModManagerCore
         private void MD5DB_Gen_Click(object sender, RoutedEventArgs e)
         {
             MD5Gen.GenerateMD5Map(@"D:\Steam\steamapps\common\Mass Effect Legendary Edition\Game\Launcher", "lel.bin");
-            Debug.WriteLine("Done");
+            Debug.WriteLine(@"Done");
         }
     }
 }
