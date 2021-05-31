@@ -82,7 +82,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
         public static bool IsEnabledGeneration(this MEGame game)
         {
             if (game.IsOTGame() && Settings.GenerationSettingOT) return true;
-            if (game.IsLEGame() && Settings.GenerationSettingLE) return true;
+            if ((game == MEGame.LELauncher || game.IsLEGame()) && Settings.GenerationSettingLE) return true;
             return false;
         }
 

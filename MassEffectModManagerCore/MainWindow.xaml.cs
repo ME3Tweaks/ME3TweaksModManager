@@ -199,6 +199,10 @@ namespace MassEffectModManagerCore
         /// </summary>
         public ObservableCollectionExtended<Mod> FailedMods { get; } = new ObservableCollectionExtended<Mod>();
         public ObservableCollectionExtended<GameTarget> InstallationTargets { get; } = new ObservableCollectionExtended<GameTarget>();
+        /// <summary>
+        /// List of all loaded targets, even ones for different generations
+        /// </summary>
+        private List<GameTarget> InternalLoadedTargets { get; } = new();
 
         private BackgroundTaskEngine backgroundTaskEngine;
 
@@ -2382,7 +2386,6 @@ namespace MassEffectModManagerCore
                 addSteamTarget(Path.Combine(legendarySteamLoc, @"Game", @"ME1"), false, MEGame.LE1);
                 addSteamTarget(Path.Combine(legendarySteamLoc, @"Game", @"ME2"), false, MEGame.LE2);
                 addSteamTarget(Path.Combine(legendarySteamLoc, @"Game", @"ME3"), false, MEGame.LE3);
-
             }
 
             Log.Information(@"Loading cached targets");
@@ -2393,8 +2396,13 @@ namespace MassEffectModManagerCore
             // Load LE cached tarets
             targets.AddRange(Utilities.GetCachedTargets(MEGame.LE1, targets, true)); // Kind of a hack, legendary load flag loads all targets for LE
 
+            OrderAndSetTargets(targets, selectedTarget);
+        }
+
+        private void OrderAndSetTargets(List<GameTarget> targets, GameTarget selectedTarget = null)
+        {
             // ORDER THE TARGETS
-            targets = targets.Distinct().ToList();
+            targets = targets.Where(x=>x.Game.IsEnabledGeneration()).Distinct().ToList();
             List<GameTarget> finalList = new List<GameTarget>();
 
             //LE
@@ -2406,7 +2414,6 @@ namespace MassEffectModManagerCore
             if (aTarget != null) finalList.Add(aTarget);
             aTarget = targets.FirstOrDefault(x => x.Game == MEGame.LELauncher && x.RegistryActive);
             if (aTarget != null) finalList.Add(aTarget);
-
 
             // OT
             aTarget = targets.FirstOrDefault(x => x.Game == MEGame.ME3 && x.RegistryActive);
@@ -2426,10 +2433,14 @@ namespace MassEffectModManagerCore
             finalList.AddRange(targets.Where(x => x.Game == MEGame.LE1 && !x.RegistryActive));
             finalList.AddRange(targets.Where(x => x.Game == MEGame.LELauncher && !x.RegistryActive));
 
-
             finalList.AddRange(targets.Where(x => x.Game == MEGame.ME3 && !x.RegistryActive));
             finalList.AddRange(targets.Where(x => x.Game == MEGame.ME2 && !x.RegistryActive));
             finalList.AddRange(targets.Where(x => x.Game == MEGame.ME1 && !x.RegistryActive));
+
+            if (!InternalLoadedTargets.Any())
+            {
+                InternalLoadedTargets.ReplaceAll(finalList.Where(x => !x.IsCustomOption));
+            }
 
             InstallationTargets.ReplaceAll(finalList);
 

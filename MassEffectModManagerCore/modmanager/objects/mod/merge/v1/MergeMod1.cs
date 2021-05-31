@@ -9,6 +9,8 @@ using LegendaryExplorerCore.Memory;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Schema;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
@@ -131,6 +133,15 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
             var sourceDir = Directory.GetParent(manifestFile).FullName;
 
             var manifestText = File.ReadAllText(manifestFile);
+
+            // VALIDATE JSON SCHEMA
+            JsonSchema schema = JsonSchema.Parse(new StreamReader(Utilities.ExtractInternalFileToStream("MassEffectModManagerCore.modmanager.objects.mod.merge.v1.schema.json")).ReadToEnd());
+
+            JObject person = JObject.Parse(manifestText);
+
+            IList<string> messages;
+            bool valid = person.IsValid(schema, out messages);
+
             var mm = JsonConvert.DeserializeObject<MergeMod1>(manifestText);
 
             // Update manifest
