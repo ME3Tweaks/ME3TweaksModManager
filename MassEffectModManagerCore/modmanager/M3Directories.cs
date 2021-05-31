@@ -98,7 +98,7 @@ namespace MassEffectModManagerCore.modmanager
         /// </summary>
         /// <param name="target">Target to get supercedances for</param>
         /// <returns>Dictionary mapping filename to list of DLCs that contain that file, in order of highest priority to lowest</returns>
-        public static Dictionary<string, List<string>> GetFileSupercedances(GameTarget target)
+        public static Dictionary<string, List<string>> GetFileSupercedances(GameTarget target, string[] additionalExtensionsToInclude = null)
         {
             //make dictionary from basegame files
             var fileListMapping = new CaseInsensitiveDictionary<List<string>>();
@@ -107,10 +107,10 @@ namespace MassEffectModManagerCore.modmanager
             {
                 var dlc = Path.GetFileName(directory);
                 if (MEDirectories.OfficialDLC(target.Game).Contains(dlc)) continue; //skip
-                foreach (string filePath in MELoadedFiles.GetCookedFiles(target.Game, directory, false))
+                foreach (string filePath in MELoadedFiles.GetCookedFiles(target.Game, directory, false, additionalExtensions: additionalExtensionsToInclude))
                 {
                     string fileName = Path.GetFileName(filePath);
-                    if (fileName != null && fileName.RepresentsPackageFilePath())
+                    if (fileName != null && fileName.RepresentsPackageFilePath() || (additionalExtensionsToInclude != null && additionalExtensionsToInclude.Contains(Path.GetExtension(fileName))))
                     {
                         if (fileListMapping.TryGetValue(fileName, out var supercedingList))
                         {

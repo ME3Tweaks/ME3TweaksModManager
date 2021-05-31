@@ -2031,4 +2031,9 @@
     <system:String x:Key="string_initializing">Initializing</system:String>
     <system:String x:Key="string_cancelDownload">Cancel download</system:String>
     <system:String x:Key="string_downloadError">Download error</system:String>
+
+    <!-- Plot Manager Panel -->
+    <system:String x:Key="string_syncingPlotManager">Syncing Plot Manager</system:String>
+    <!-- Message that comes up telling user what's happening. Plot Manager is something M3 keeps up to date (as mods override and/or add plot flags) and is used to track plot events -->
+    
 </ResourceDictionary>

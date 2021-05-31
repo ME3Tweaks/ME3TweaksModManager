@@ -201,9 +201,11 @@
 		<EmbeddedResource Include="modmanager\objects\mod\merge\v1\schema.json" />
     <Resource Include="modmanager\toolicons\*.png" />
     <Resource Include="modmanager\toolicons\*.ico" />
-	</ItemGroup>
+    <EmbeddedResource Include="modmanager\plotmanager\**\*.pcc" />
+    <EmbeddedResource Include="modmanager\plotmanager\**\*.u*" />
+  </ItemGroup>
 
-	<ItemGroup>
+  <ItemGroup>
 		<Compile Update="modmanager\usercontrols\TestArchiveGenerator.xaml.cs">
 			<SubType>Code</SubType>
 		</Compile>
@@ -221,6 +223,9 @@
 		</Page>
 		<Page Update="modmanager\localizations\rus.xaml">
 			<SubType>Designer</SubType>
+		</Page>
+		<Page Update="modmanager\usercontrols\PlotManagerUpdatePanel.xaml">
+		  <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
 		</Page>
 		<Page Update="modmanager\usercontrols\TestArchiveGenerator.xaml">
 			<SubType>Designer</SubType>

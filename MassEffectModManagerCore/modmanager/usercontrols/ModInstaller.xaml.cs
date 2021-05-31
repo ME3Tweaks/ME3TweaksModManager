@@ -751,7 +751,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 mergeMod.ApplyMergeMod(ModBeingInstalled, SelectedGameTarget, ref doneMerges, totalMerges, mergeProgressUpdate);
             }
 
-
             //Main installation step has completed
             Log.Information(@"Main stage of mod installation has completed");
             Percent = (int)(numdone * 100.0 / numFilesToInstall);

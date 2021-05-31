@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -171,7 +172,7 @@ namespace MassEffectModManagerCore
         /// <summary>
         /// User controls that are queued for displaying when the previous one has closed.
         /// </summary>
-        private Queue<MMBusyPanelBase> queuedUserControls = new Queue<MMBusyPanelBase>();
+        private ConcurrentQueue<MMBusyPanelBase> queuedUserControls = new ConcurrentQueue<MMBusyPanelBase>();
 
         /// <summary>
         /// The backend libraries and game targets have initially loaded
@@ -1155,7 +1156,7 @@ namespace MassEffectModManagerCore
             }
             else
             {
-                var control = queuedUserControls.Dequeue();
+                if (queuedUserControls.TryDequeue(out var control));
                 //control.OnPanelVisible();
                 BusyContent = control;
             }
@@ -1683,6 +1684,21 @@ namespace MassEffectModManagerCore
                         }
                     }
 
+                    // Update Plot Manager
+                    bool releaseMI = true;
+                    if (!modInstaller.InstallationCancelled && SelectedGameTarget.Game is MEGame.LE2 && !batchMode)
+                    {
+                        var pmUpdate = new PlotManagerUpdatePanel(SelectedGameTarget);
+                        pmUpdate.Close += (a1, b1) =>
+                        {
+                            ReleaseBusyControl(); // Release PMU
+                        };
+                        releaseMI = false;
+                        ReleaseBusyControl(); // Release Mod Installer
+                        ShowBusyControl(pmUpdate);
+                    }
+
+
                     //Run AutoTOC if ME3 and not batch mode
                     if (!modInstaller.InstallationCancelled && (SelectedGameTarget.Game == MEGame.ME3 || SelectedGameTarget.Game.IsLEGame()) && !batchMode)
                     {
@@ -1692,8 +1708,11 @@ namespace MassEffectModManagerCore
                             ReleaseBusyControl();
                             backgroundTaskEngine.SubmitJobCompletion(modInstallTask);
                         };
+                        if (releaseMI)
+                        {
+                            ReleaseBusyControl();
+                        }
                         ShowBusyControl(autoTocUI);
-                        ReleaseBusyControl();
                     }
                     else
                     {
