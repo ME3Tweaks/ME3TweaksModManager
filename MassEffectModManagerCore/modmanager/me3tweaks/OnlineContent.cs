@@ -238,6 +238,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 [@"LE1"] = new CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>(),
                 [@"LE2"] = new CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>(),
                 [@"LE3"] = new CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>(),
+                [@"LELauncher"] = new CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>(),
             };
         }
 

@@ -155,7 +155,7 @@ namespace MassEffectModManagerCore.modmanager
             set => SetProperty(ref _lastSelectedTarget, value);
         }
 
-        private static int _webclientTimeout = 5; // Defaults to 5
+        private static int _webclientTimeout = 7; // Defaults to 7
         public static int WebClientTimeout
         {
             get => _webclientTimeout;

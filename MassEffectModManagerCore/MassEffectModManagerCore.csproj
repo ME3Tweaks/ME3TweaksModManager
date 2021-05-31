@@ -169,6 +169,7 @@
 		<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.31" />
 		<PackageReference Include="MvvmValidation" Version="3.1.2" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+		<PackageReference Include="Newtonsoft.Json.Schema" Version="3.0.14" />
 		<PackageReference Include="Octokit" Version="0.50.0" />
 		<PackageReference Include="Pathoschild.FluentNexus" Version="1.0.2" />
 		<PackageReference Include="PropertyChanged.Fody" Version="3.3.3" />
@@ -203,6 +204,7 @@
     <Resource Include="modmanager\toolicons\*.ico" />
     <EmbeddedResource Include="modmanager\plotmanager\**\*.pcc" />
     <EmbeddedResource Include="modmanager\plotmanager\**\*.u*" />
+    <EmbeddedResource Include="modmanager\lelauncherbypass\*.jsf" />
   </ItemGroup>
 
   <ItemGroup>

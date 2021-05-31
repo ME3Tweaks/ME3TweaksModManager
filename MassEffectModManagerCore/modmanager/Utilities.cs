@@ -2130,5 +2130,23 @@ namespace MassEffectModManagerCore.modmanager
             // LELauncher?
             _ => MEGame.Unknown
         };
+
+        /// <summary>
+        /// Directory for LE Launcher stuff
+        /// </summary>
+        /// <returns></returns>
+        public static string GetLELaunchToolsDir()
+        {
+            return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "LELauncherTools")).FullName;
+        }
+
+        /// <summary>
+        /// Directory for LE Launcher stuff
+        /// </summary>
+        /// <returns></returns>
+        public static string GetLELaunchToolsGameBootDir()
+        {
+            return Directory.CreateDirectory(Path.Combine(GetLELaunchToolsDir(), "GameBoot")).FullName;
+        }
     }
 }

@@ -9,12 +9,16 @@ using LegendaryExplorerCore.GameFilesystem;
 using MassEffectModManagerCore.modmanager.objects;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Packages;
+using MassEffectModManagerCore.modmanager.me3tweaks;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.helpers
 {
     public static class GameLauncher
     {
+        // May 17 update
+        private const string VanillaLESWFLauncherMD5 = @"ab2559b90696f262ef76a152eff4deb9";
+
         /// <summary>
         /// Launches the game. This call is blocking as it may wait for Steam to run, so it should be run on a background thread.
         /// </summary>
@@ -112,11 +116,28 @@ namespace MassEffectModManagerCore.modmanager.helpers
 
             if (Settings.SkipLELauncher && target.Game.IsLEGame())
             {
-                var sourceFile = Path.Combine(Utilities.GetAppDataFolder(), $@"C:\ProgramData\ME3TweaksModManager\LELauncherTools\GameBoot\{target.Game}\LauncherUI.swf");
+                var sourceFile = Path.Combine(Utilities.GetLELaunchToolsGameBootDir(), @"VanillaLauncherUI.swf");
                 var destFile = Path.Combine(LEDirectory.GetLauncherPath(), @"Content", @"LauncherUI.swf");
-                if (File.Exists(sourceFile))
+
+                bool correctSource = false;
+                if (!File.Exists(sourceFile) && Utilities.CalculateMD5(destFile) == VanillaLESWFLauncherMD5)
                 {
-                    File.Copy(sourceFile, destFile, true);
+                    File.Copy(destFile, sourceFile, true);
+                    correctSource = true;
+                }
+
+                if (correctSource || (File.Exists(sourceFile) && Utilities.CalculateMD5(sourceFile) == VanillaLESWFLauncherMD5))
+                {
+                    // JPatch it
+                    Log.Information($@"JPatching LauncherUI.swf to autoboot {target.Game}");
+                    using var outs = File.Open(destFile, FileMode.Create, FileAccess.ReadWrite);
+                    using var ins = File.OpenRead(sourceFile);
+                    JPatch.ApplyJPatch(ins, Utilities.ExtractInternalFileToStream($@"MassEffectModManagerCore.modmanager.lelauncherbypass.To{target.Game}.jsf"), outs);
+                    Log.Information($@"JPatched LauncherUI.swf to autoboot {target.Game}");
+                }
+                else
+                {
+                    Log.Warning(@"LauncherUI.swf has wrong hash, not JPatching to autoboot");
                 }
             }
 

@@ -127,7 +127,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
                 }));
         }
 
-        public static void SerializeTest(Stream outStream, string manifestFile)
+        public static IList<string> Serialize(Stream outStream, string manifestFile)
         {
 
             var sourceDir = Directory.GetParent(manifestFile).FullName;
@@ -135,13 +135,15 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
             var manifestText = File.ReadAllText(manifestFile);
 
             // VALIDATE JSON SCHEMA
-            JsonSchema schema = JsonSchema.Parse(new StreamReader(Utilities.ExtractInternalFileToStream("MassEffectModManagerCore.modmanager.objects.mod.merge.v1.schema.json")).ReadToEnd());
+            JSchema schema = JSchema.Parse(new StreamReader(Utilities.ExtractInternalFileToStream("MassEffectModManagerCore.modmanager.objects.mod.merge.v1.schema.json")).ReadToEnd());
 
             JObject person = JObject.Parse(manifestText);
 
-            IList<string> messages;
-            bool valid = person.IsValid(schema, out messages);
-
+            bool valid = person.IsValid(schema, out IList<string> messages);
+            if (!valid)
+            {
+                return messages;
+            }
             var mm = JsonConvert.DeserializeObject<MergeMod1>(manifestText);
 
             // Update manifest
@@ -186,6 +188,8 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
                 outStream.WriteInt32(assetBytes.Length); // ASSET LENGTH
                 outStream.Write(assetBytes); // ASSET DATA
             }
+
+            return null;
         }
     }
 }

@@ -444,7 +444,7 @@ namespace MassEffectModManagerCore
             }
             else if (e.PropertyName == nameof(Settings.GenerationSettingLE))
             {
-                LE1ModsVisible = LE2ModsVisible = LE3ModsVisible = Settings.GenerationSettingLE;
+                LE1ModsVisible = LE2ModsVisible = LE3ModsVisible  = LELauncherModsVisible = Settings.GenerationSettingLE;
                 FilterMods();
             }
         }

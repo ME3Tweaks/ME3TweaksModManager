@@ -29,23 +29,33 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge
             }
         }
 
-#if DEBUG
+        // How to specify version?
         public static string SerializeManifest(string inputfile, int version)
         {
-            var outfile = Path.Combine(Directory.GetParent(inputfile).FullName, Path.GetFileNameWithoutExtension(inputfile) + ".m3m");
-            using FileStream fs = File.Open(outfile, FileMode.Create, FileAccess.ReadWrite);
+            var outfile = Path.Combine(Directory.GetParent(inputfile).FullName, Path.GetFileNameWithoutExtension(inputfile) + @".m3m");
+            using MemoryStream fs = new MemoryStream();
             fs.WriteStringLatin1(MERGEMOD_MAGIC);
             fs.WriteByte((byte)version);
+            IList<string> messages = null;
             switch (version)
             {
                 case 1:
-                    MergeMod1.SerializeTest(fs, inputfile);
+                    messages = MergeMod1.Serialize(fs, inputfile);
                     break;
+                default:
+                    throw new Exception($"Unsupported Merge Mod Version: {version}");
             }
 
+            if (messages != null)
+            {
+                // Will be caught higher up
+                throw new Exception($"Invalid manifest:\n{string.Join('\n', messages)}");
+            }
+
+            fs.WriteToFile(outfile);
             return outfile;
         }
-#endif
+
         public static void DecompileM3M(string file)
         {
             using var fs = File.OpenRead(file);

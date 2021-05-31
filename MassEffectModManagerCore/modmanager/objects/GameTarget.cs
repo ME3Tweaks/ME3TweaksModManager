@@ -371,7 +371,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     return;
                 }
 
-                if (file == getALOTMarkerFilePath())
+                if (this.Game != MEGame.LELauncher && file == getALOTMarkerFilePath())
                 {
                     return; //Do not report this file as modified or user will desync game state with texture state
                 }
