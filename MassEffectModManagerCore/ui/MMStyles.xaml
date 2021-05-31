@@ -96,6 +96,8 @@
     <BitmapImage x:Key="le3gameicon" UriSource="pack://application:,,,/images/gameicons/LE3_48.ico"/>
 
 
+
+    <system:String x:Key="lexIcon">/modmanager/toolicons/lex.ico</system:String>
     <system:String x:Key="me1gameiconpath">/images/gameicons/ME1_48.ico</system:String>
     <system:String x:Key="me2gameiconpath">/images/gameicons/ME2_48.ico</system:String>
     <system:String x:Key="me3gameiconpath">/images/gameicons/ME3_48.ico</system:String>

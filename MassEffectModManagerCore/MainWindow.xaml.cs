@@ -3068,8 +3068,8 @@ namespace MassEffectModManagerCore
 
             // Generic boot
             if (sender == MassEffectRandomizer_MenuItem) tool = ExternalToolLauncher.MER;
-            if (sender == ME3Explorer_MenuItem) tool = ExternalToolLauncher.ME3Explorer;
-            if (sender == ME3ExplorerBeta_MenuItem) tool = ExternalToolLauncher.ME3Explorer_Beta;
+            if (sender == LegendaryExplorerStable_MenuItem) tool = ExternalToolLauncher.LegendaryExplorer;
+            if (sender == LegendaryExplorerBeta_MenuItem) tool = ExternalToolLauncher.LegendaryExplorer_Beta;
             if (sender == MassEffectModder_MenuItem) tool = ExternalToolLauncher.MEM;
             //if (sender == EGMSettings_MenuItem) tool = ExternalToolLauncher.EGMSettings; //EGM settings has it's own command and it not invoked through this menu
             if (tool == null) throw new Exception(@"LaunchExternalTool handler set but no relevant tool was specified! This is a bug. Please report it to Mgamerz on Discord");

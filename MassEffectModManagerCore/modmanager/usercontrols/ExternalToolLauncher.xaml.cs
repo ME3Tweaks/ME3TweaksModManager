@@ -29,8 +29,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     {
         //have to be const apparently
         public const string EGMSettings = @"EGMSettings";
-        public const string ME3Explorer = @"ME3Explorer";
-        public const string ME3Explorer_Beta = @"ME3Explorer (Nightly)";
+        //public const string ME3Explorer = @"ME3Explorer";
+        //public const string ME3Explorer_Beta = @"ME3Explorer (Nightly)";
+        public const string LegendaryExplorer = @"Legendary Explorer";
+        public const string LegendaryExplorer_Beta = @"Legendary Explorer (Nightly)";
         public const string ALOTInstaller = @"ALOT Installer";
         public const string MEIM = @"Mass Effect INI Modder"; //this is no longer external.
         public const string MEM = @"Mass Effect Modder";
@@ -56,9 +58,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     case MER:
                     case ME2R:
                         return @"/modmanager/toolicons/masseffectrandomizer_big.png";
-                    case ME3Explorer:
-                    case ME3Explorer_Beta:
-                        return @"/modmanager/toolicons/me3explorer_big.png";
+                    case LegendaryExplorer:
+                    case LegendaryExplorer_Beta:
+                        return @"/modmanager/toolicons/lex_big.png";
                     case MEM:
                         return @"/modmanager/toolicons/masseffectmodder_big.png";
                     case MEIM:
@@ -302,9 +304,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     toolGithubOwner = @"ME3Tweaks";
                     toolGithubRepoName = @"MassEffect2Randomizer";
                     break;
-                case ME3Explorer:
+                case LegendaryExplorer:
                     toolGithubOwner = @"ME3Tweaks";
-                    toolGithubRepoName = @"ME3Explorer";
+                    toolGithubRepoName = @"LegendaryExplorer";
                     break;
                 case MEM:
                 case MEM_CMD:
@@ -499,7 +501,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             vis => setPercentVisibilityCallback?.Invoke(vis),
                             percent => setPercentTaskDone?.Invoke(percent),
                             exe => resultingExecutableStringCallback?.Invoke(exe),
-                            (exception, message, caption) => errorExtractingCallback?.Invoke(exception, message, caption)
+                            (exception, message, caption) =>
+                                errorExtractingCallback?.Invoke(exception, message, caption)
                         );
                         ToolsCheckedForUpdatesInThisSession.Add(tool);
                         return; //is this the right place for this?
@@ -508,7 +511,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         //Check if it need updated
                         FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(localExecutable);
-                        Version localVersion = new Version($@"{fvi.FileMajorPart}.{fvi.FileMinorPart}.{fvi.FileBuildPart}.{fvi.FilePrivatePart}");
+                        Version localVersion =
+                            new Version(
+                                $@"{fvi.FileMajorPart}.{fvi.FileMinorPart}.{fvi.FileBuildPart}.{fvi.FilePrivatePart}");
                         if (downloadVersion > localVersion)
                         {
                             needsDownloading = true;
@@ -528,9 +533,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             vis => setPercentVisibilityCallback?.Invoke(vis),
                             percent => setPercentTaskDone?.Invoke(percent),
                             exe => resultingExecutableStringCallback?.Invoke(exe),
-                            (exception, message, caption) => errorExtractingCallback?.Invoke(exception, message, caption)
+                            (exception, message, caption) =>
+                                errorExtractingCallback?.Invoke(exception, message, caption)
                         );
                     }
+                }
+                else
+                {
+                    // Not enough information!
+                    Log.Error(@"Unable to download ME3Tweaks hosted tool: Information not present in startup manifest. Ensure M3 can connect to the internet at boot time");
+                    failedToDownloadCallback?.Invoke();
                 }
             }
 
@@ -568,10 +580,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             switch (tool)
             {
-                case ME3Explorer_Beta:
-                    if (App.ServerManifest.TryGetValue(@"me3explorerbeta_latestversion", out var me3expbLatestversion))
+                case LegendaryExplorer:
+                    if (App.ServerManifest.TryGetValue(@"legendaryexplorerbeta_latestversion", out var lexbVersion))
                     {
-                        return new Version(me3expbLatestversion);
+                        return new Version(lexbVersion);
                     }
                     break;
             }
@@ -583,8 +595,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             switch (tool)
             {
-                case ME3Explorer_Beta:
-                    if (App.ServerManifest.TryGetValue(@"me3explorerbeta_latestlink", out var me3expbLatestlink))
+                case LegendaryExplorer_Beta:
+                    if (App.ServerManifest.TryGetValue(@"legendaryexplorerbeta_latestlink", out var me3expbLatestlink))
                     {
                         return me3expbLatestlink;
                     }
@@ -596,21 +608,21 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private static bool toolIsGithubBased(string toolname)
         {
-            if (toolname == ME3Explorer_Beta) return false; //me3tweaks. Info is in startup manifest
+            if (toolname == LegendaryExplorer_Beta) return false; //me3tweaks. Info is in startup manifest
             return true;
         }
 
         private static string toolNameToExeName(string toolname)
         {
-            if (toolname == ME3Explorer_Beta) return @"ME3Explorer.exe";
+            if (toolname == LegendaryExplorer_Beta) return @"LegendaryExplorer.exe";
             if (toolname == ME2R) return @"ME2Randomizer.exe";
             return toolname.Replace(@" ", @"") + @".exe";
         }
 
         private static string[] SupportedToolIDs =
         {
-            ME3Explorer,
-            ME3Explorer_Beta,
+            LegendaryExplorer,
+            LegendaryExplorer_Beta,
             EGMSettings,
             MEM,
             MER,

@@ -102,8 +102,6 @@
 		<None Remove="modmanager\toolicons\masseffectmodder_big.png" />
 		<None Remove="modmanager\toolicons\masseffectrandomizer_32.png" />
 		<None Remove="modmanager\toolicons\masseffectrandomizer_big.png" />
-		<None Remove="modmanager\toolicons\me3explorer_32.png" />
-		<None Remove="modmanager\toolicons\me3explorer_big.png" />
 		<None Remove="staticfiles\objectinfos\ME1ObjectInfo.json" />
 		<None Remove="staticfiles\objectinfos\ME2ObjectInfo.json" />
 		<None Remove="staticfiles\objectinfos\ME3ObjectInfo.json" />
@@ -199,7 +197,8 @@
 		<EmbeddedResource Include="modmanager\executables\vpat.exe" />
 		<Resource Include="modmanager\localizations\icons\*.png" />
 		<Resource Include="modmanager\nexusmodsintegration\nexusmods_icon.png" />
-		<Resource Include="modmanager\toolicons\*.png" />
+    <Resource Include="modmanager\toolicons\*.png" />
+    <Resource Include="modmanager\toolicons\*.ico" />
 	</ItemGroup>
 
 	<ItemGroup>
