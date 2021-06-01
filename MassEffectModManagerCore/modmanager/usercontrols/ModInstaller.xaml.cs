@@ -245,6 +245,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 foreach (var jobMappings in installationQueues.unpackedJobMappings)
                 {
                     installsPackageFile |= jobMappings.Key.MergeMods.Any(); // merge mods will modify packages
+                    installsPackageFile |= jobMappings.Key.AlternateFiles.Any(x => x.IsSelected && x.Operation == AlternateFile.AltFileOperation.OP_APPLY_MERGEMODS); // merge mods will modify packages
                     installsPackageFile |= jobMappings.Value.fileMapping.Keys.Any(x => x.EndsWith(@".pcc", StringComparison.InvariantCultureIgnoreCase));
                     installsPackageFile |= jobMappings.Value.fileMapping.Keys.Any(x => x.EndsWith(@".u", StringComparison.InvariantCultureIgnoreCase));
                     installsPackageFile |= jobMappings.Value.fileMapping.Keys.Any(x => x.EndsWith(@".upk", StringComparison.InvariantCultureIgnoreCase));
@@ -265,18 +266,22 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                 if (installsPackageFile)
                 {
-                    // Todo: ME3, LE warn only
-                    // ME1/ME2 trigger abort
+                    // Todo: LE warn only
+                    // ME1/ME2/ME3 trigger abort
 
-                    if (Settings.DeveloperMode)
+                    if (ModBeingInstalled.Game.IsLEGame())
                     {
-                        Log.Warning(@"ALOT is installed and user is attempting to install a mod (in developer mode). Prompting user to cancel installation");
+                        Log.Warning(
+                            @"Textures are installed and user is attempting to install a mod. Warning user about texture tools no longer working after this");
 
                         bool cancel = false;
                         Application.Current.Dispatcher.Invoke(delegate
                         {
-                            var res = M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_interp_devModeAlotInstalledWarning, ModBeingInstalled.ModName), M3L.GetString(M3L.string_brokenTexturesWarning), MessageBoxButton.YesNo, MessageBoxImage.Error, MessageBoxResult.No);
-                            cancel = res != MessageBoxResult.Yes;
+                            var res = M3L.ShowDialog(Window.GetWindow(this),
+                                "Textures are installed and this mod installs or modifies package files. You can continue to install this mod, but new files will not have updated textures, and texture tools such Mass Effect Modder will no longer operate on this installation. It is safe to continue installing this mod, this is only a warning.",
+                                "Warning: Texture mods are installed",
+                                MessageBoxButton.OKCancel, MessageBoxImage.Warning, MessageBoxResult.Cancel);
+                            cancel = res != MessageBoxResult.OK;
                         });
                         if (cancel)
                         {
@@ -284,15 +289,41 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             Log.Information(@"<<<<<<< Exiting modinstaller");
                             return;
                         }
-                        Log.Warning(@"User installing mod anyways even with ALOT installed");
+                        Log.Warning(@"User installing mod anyways even with textures installed");
                     }
                     else
                     {
-                        Log.Error(@"ALOT is installed. Installing mods that install package files after installing ALOT is not permitted.");
-                        //ALOT Installed, this is attempting to install a package file
-                        e.Result = ModInstallCompletedStatus.INSTALL_FAILED_ALOT_BLOCKING;
-                        Log.Information(@"<<<<<<< Exiting modinstaller");
-                        return;
+                        if (Settings.DeveloperMode)
+                        {
+                            Log.Warning(@"Textures are installed and user is attempting to install a mod (in developer mode). Prompting user to cancel installation");
+
+                            bool cancel = false;
+                            Application.Current.Dispatcher.Invoke(delegate
+                            {
+                                var res = M3L.ShowDialog(Window.GetWindow(this),
+                                    M3L.GetString(M3L.string_interp_devModeAlotInstalledWarning,
+                                        ModBeingInstalled.ModName), M3L.GetString(M3L.string_brokenTexturesWarning),
+                                    MessageBoxButton.YesNo, MessageBoxImage.Error, MessageBoxResult.No);
+                                cancel = res != MessageBoxResult.Yes;
+                            });
+                            if (cancel)
+                            {
+                                e.Result = ModInstallCompletedStatus.USER_CANCELED_INSTALLATION;
+                                Log.Information(@"<<<<<<< Exiting modinstaller");
+                                return;
+                            }
+
+                            Log.Warning(@"User installing mod anyways even with textures installed");
+                        }
+                        else
+                        {
+                            Log.Error(
+                                @"ALOT is installed. Installing mods that install package files after installing ALOT is not permitted.");
+                            //ALOT Installed, this is attempting to install a package file
+                            e.Result = ModInstallCompletedStatus.INSTALL_FAILED_ALOT_BLOCKING;
+                            Log.Information(@"<<<<<<< Exiting modinstaller");
+                            return;
+                        }
                     }
                 }
                 else
@@ -627,10 +658,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     return redirectedPath;
                 }
 
-                //ModBeingInstalled.Archive.FileExtractionStarted += (sender, args) =>
-                //{
-                //    //CLog.Information("Extracting mod file for installation: " + args.FileInfo.FileName, Settings.LogModInstallation);
-                //};
                 List<string> filesInstalled = new List<string>();
                 //List<string> filesToInstall = installationQueues.unpackedJobMappings.SelectMany(x => x.Value.fileMapping.Keys).ToList();
                 ModBeingInstalled.Archive.FileExtractionFinished += (sender, args) =>
@@ -724,6 +751,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             //Stage: Merge Mods
             var allMMs = installationJobs.SelectMany(x => x.MergeMods).ToList();
+            allMMs.AddRange(installationJobs.SelectMany(x => x.AlternateFiles.Where(y=>y.IsSelected && y.MergeMods != null).SelectMany(y => y.MergeMods)));
             var totalMerges = allMMs.Sum(x => x.GetMergeCount());
             int doneMerges = 0;
 

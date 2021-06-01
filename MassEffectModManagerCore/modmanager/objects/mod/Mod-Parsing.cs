@@ -183,8 +183,6 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 StringBuilder sb = new StringBuilder();
                 sb.AppendLine(ModDescription);
                 sb.AppendLine(@"=============================");
-                //Todo: Mod Deltas
-
                 //Todo: Automatic configuration
 
                 //Todo: Optional manuals
@@ -841,10 +839,11 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     //MergeMods: Mod Manager 7.0 (parsed below so it passes the task does something check)
                     string mergeModsList = (ModDescTargetVersion >= 7.0 && header == ModJob.JobHeader.BASEGAME) ? iniData[headerAsString][@"mergemods"] : null;
 
-
+                    // AltFiles: Mod Manager 4.2
+                    string altfilesStr = (ModDescTargetVersion >= 4.2 && header != ModJob.JobHeader.BALANCE_CHANGES) ? iniData[headerAsString][@"altfiles"] : null;
 
                     //Check that the lists here are at least populated in one category. If none are populated then this job will do effectively nothing.
-                    bool taskDoesSomething = (replaceFilesSourceList != null && replaceFilesTargetList != null) || (addFilesSourceList != null && addFilesTargetList != null) || mergeModsList != null;
+                    bool taskDoesSomething = (replaceFilesSourceList != null && replaceFilesTargetList != null) || (addFilesSourceList != null && addFilesTargetList != null) || !string.IsNullOrWhiteSpace(mergeModsList) || !string.IsNullOrWhiteSpace(altfilesStr);
 
                     if (!taskDoesSomething)
                     {
@@ -1093,7 +1092,6 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     }
 
                     //Altfiles: Mod Manager 4.2
-                    string altfilesStr = (ModDescTargetVersion >= 4.2 && headerJob.Header != ModJob.JobHeader.BALANCE_CHANGES) ? iniData[headerAsString][@"altfiles"] : null;
                     if (!string.IsNullOrEmpty(altfilesStr))
                     {
                         var splits = StringStructParser.GetParenthesisSplitValues(altfilesStr);

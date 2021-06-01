@@ -105,6 +105,21 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                                 }
                             }
                         }
+                        else if (file.MergeMods != null)
+                        {
+                            foreach (var mf in file.MergeMods)
+                            {
+                                var relPath = FilesystemInterposer.PathCombine(IsInArchive, ModPath, Mod.MergeModFolderName, mf.MergeModFilename);
+                                if (IsInArchive)
+                                {
+                                    references.Add(relPath.Substring(ModPath.Length + (ModPath.Length > 1 ? 1 : 0))); //substring so its relative to the path of the mod in the archive
+                                }
+                                else
+                                {
+                                    references.Add(relPath.Substring(ModPath.Length + 1)); //chop off the root path of the moddesc.ini
+                                }
+                            }
+                        }
                     }
 
                     // Add the referenced image asset
