@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media.Animation;
@@ -74,19 +75,14 @@ namespace MassEffectModManagerCore
         };
         public string ApplyModButtonText { get; set; } = M3L.GetString(M3L.string_applyMod);
         public string InstallationTargetText { get; set; } = M3L.GetString(M3L.string_installationTarget);
+
+        public ObservableCollectionExtended<GameFilter> GameFilters { get; } = new();
         public bool ME1ASILoaderInstalled { get; set; }
         public bool ME2ASILoaderInstalled { get; set; }
         public bool ME3ASILoaderInstalled { get; set; }
         public bool LE1ASILoaderInstalled { get; set; }
         public bool LE2ASILoaderInstalled { get; set; }
         public bool LE3ASILoaderInstalled { get; set; }
-        public bool ME1ModsVisible { get; set; } = true;
-        public bool ME2ModsVisible { get; set; } = true;
-        public bool ME3ModsVisible { get; set; } = true;
-        public bool LE1ModsVisible { get; set; } = true;
-        public bool LE2ModsVisible { get; set; } = true;
-        public bool LE3ModsVisible { get; set; } = true;
-        public bool LELauncherModsVisible { get; set; } = true;
 
         public bool ME1NexusEndorsed { get; set; }
         public bool ME2NexusEndorsed { get; set; }
@@ -101,6 +97,10 @@ namespace MassEffectModManagerCore
         public string LE2ASILoaderText { get; set; }
         public string LE3ASILoaderText { get; set; }
 
+        /// <summary>
+        /// Suppresses the logic of FilterMods(), used to prevent multiple invocations on global changes
+        /// </summary>
+        private bool SuppressFilterMods;
         /// <summary>
         /// Single-instance argument handling
         /// </summary>
@@ -240,6 +240,17 @@ namespace MassEffectModManagerCore
                 SetApplicationLanguage(App.InitialLanguage, true);
             }
 
+            // Setup game filters
+            foreach (var g in Enum.GetValues<MEGame>())
+            {
+                if (g is MEGame.UDK or MEGame.Unknown)
+                    continue;
+                var gf = new GameFilter(g);
+                Settings.StaticPropertyChanged += gf.NotifyGenerationChanged; // Notify of generation change
+                gf.PropertyChanged += ModGameVisibilityChanged;
+                GameFilters.Add(gf);
+            }
+
             CheckProgramDataWritable();
             AttachListeners();
             //Must be done after UI has initialized
@@ -283,6 +294,14 @@ namespace MassEffectModManagerCore
                     });
                 }
             );
+        }
+
+        private void ModGameVisibilityChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(GameFilter.IsEnabled))
+            {
+                FilterMods();
+            }
         }
 
         private void CheckProgramDataWritable()
@@ -439,13 +458,27 @@ namespace MassEffectModManagerCore
         {
             if (e.PropertyName == nameof(Settings.GenerationSettingOT))
             {
-                ME1ModsVisible = ME2ModsVisible = ME3ModsVisible = Settings.GenerationSettingOT;
+                SuppressFilterMods = true;
+                foreach (var gf in GameFilters.Where(x => !x.Game.IsEnabledGeneration()))
+                {
+                    gf.IsEnabled = false;
+                }
+
+                SuppressFilterMods = false;
                 FilterMods();
+                OrderAndSetTargets(InternalLoadedTargets, SelectedGameTarget);
             }
             else if (e.PropertyName == nameof(Settings.GenerationSettingLE))
             {
-                LE1ModsVisible = LE2ModsVisible = LE3ModsVisible  = LELauncherModsVisible = Settings.GenerationSettingLE;
+                SuppressFilterMods = true;
+                foreach (var gf in GameFilters.Where(x => !x.Game.IsEnabledGeneration()))
+                {
+                    gf.IsEnabled = false;
+                }
+                SuppressFilterMods = false;
+
                 FilterMods();
+                OrderAndSetTargets(InternalLoadedTargets, SelectedGameTarget);
             }
         }
 
@@ -1156,7 +1189,7 @@ namespace MassEffectModManagerCore
             }
             else
             {
-                if (queuedUserControls.TryDequeue(out var control));
+                if (queuedUserControls.TryDequeue(out var control)) ;
                 //control.OnPanelVisible();
                 BusyContent = control;
             }
@@ -2090,16 +2123,11 @@ namespace MassEffectModManagerCore
                     var mod = new Mod(moddesc.path, moddesc.game);
                     if (mod.ValidMod)
                     {
-                        //Application.Current.Dispatcher.Invoke(delegate
-                        //{
                         AllLoadedMods.Add(mod);
-                        if (ME1ModsVisible && mod.Game == MEGame.ME1 || ME2ModsVisible && mod.Game == MEGame.ME2 || ME3ModsVisible && mod.Game == MEGame.ME3
-                            || LE1ModsVisible && mod.Game == MEGame.LE1 || LE2ModsVisible && mod.Game == MEGame.LE2 || LE3ModsVisible && mod.Game == MEGame.LE3
-                            || LELauncherModsVisible && mod.Game == MEGame.LELauncher)
+                        if (GameFilters.FirstOrDefaultOut(x => x.Game == mod.Game, out var gf) && gf.IsEnabled)
                         {
                             VisibleFilteredMods.Add(mod);
                         }
-                        //});
                     }
                     else
                     {
@@ -2421,7 +2449,7 @@ namespace MassEffectModManagerCore
         private void OrderAndSetTargets(List<GameTarget> targets, GameTarget selectedTarget = null)
         {
             // ORDER THE TARGETS
-            targets = targets.Where(x=>x.Game.IsEnabledGeneration()).Distinct().ToList();
+            //targets = targets.Where(x => x.Game.IsEnabledGeneration()).Distinct().ToList();
             List<GameTarget> finalList = new List<GameTarget>();
 
             //LE
@@ -2461,16 +2489,11 @@ namespace MassEffectModManagerCore
                 InternalLoadedTargets.ReplaceAll(finalList.Where(x => !x.IsCustomOption));
             }
 
-            InstallationTargets.ReplaceAll(finalList);
+            InstallationTargets.ReplaceAll(finalList.Where(x => x.IsCustomOption || x.Game.IsEnabledGeneration()));
 
-            if (selectedTarget != null)
+            if (selectedTarget != null && targets.FirstOrDefaultOut(x => x.TargetPath == selectedTarget.TargetPath, out var selTarget))
             {
-                //find new corresponding target
-                var newTarget = targets.FirstOrDefault(x => x.TargetPath == selectedTarget.TargetPath);
-                if (newTarget != null)
-                {
-                    SelectedGameTarget = newTarget;
-                }
+                SelectedGameTarget = selTarget;
             }
             else if (!string.IsNullOrWhiteSpace(Settings.LastSelectedTarget) && InstallationTargets.FirstOrDefaultOut(x => !x.IsCustomOption && x.TargetPath.Equals(Settings.LastSelectedTarget), out var matchingTarget))
             {
@@ -3655,68 +3678,28 @@ namespace MassEffectModManagerCore
 #endif
         }
 
-        private void ToggleLE1Visibility_Click(object sender, RoutedEventArgs e)
-        {
-            LE1ModsVisible = !LE1ModsVisible;
-            FilterMods();
-        }
-
-        private void ToggleLE2Visibility_Click(object sender, RoutedEventArgs e)
-        {
-            LE2ModsVisible = !LE2ModsVisible;
-            FilterMods();
-        }
-
-        private void ToggleLE3Visibility_Click(object sender, RoutedEventArgs e)
-        {
-            LE3ModsVisible = !LE3ModsVisible;
-            FilterMods();
-        }
-
-        private void ToggleLELauncherVisibility_Click(object sender, RoutedEventArgs e)
-        {
-            LELauncherModsVisible = !LELauncherModsVisible;
-            FilterMods();
-        }
-
-        private void ToggleME3Visibility_Click(object sender, RoutedEventArgs e)
-        {
-            ME3ModsVisible = !ME3ModsVisible;
-            FilterMods();
-        }
-
-        private void ToggleME2Visibility_Click(object sender, RoutedEventArgs e)
-        {
-            ME2ModsVisible = !ME2ModsVisible;
-            FilterMods();
-        }
-
-        private void ToggleME1Visibility_Click(object sender, RoutedEventArgs e)
-        {
-            ME1ModsVisible = !ME1ModsVisible;
-            FilterMods();
-        }
-
         private void FilterMods()
         {
-            var allMods = AllLoadedMods.ToList();
-            if (!ME1ModsVisible)
-                allMods.RemoveAll(x => x.Game == MEGame.ME1);
-            if (!ME2ModsVisible)
-                allMods.RemoveAll(x => x.Game == MEGame.ME2);
-            if (!ME3ModsVisible)
-                allMods.RemoveAll(x => x.Game == MEGame.ME3);
-            if (!LE1ModsVisible)
-                allMods.RemoveAll(x => x.Game == MEGame.LE1);
-            if (!LE2ModsVisible)
-                allMods.RemoveAll(x => x.Game == MEGame.LE2);
-            if (!LE3ModsVisible)
-                allMods.RemoveAll(x => x.Game == MEGame.LE3);
-            if (!LELauncherModsVisible)
-                allMods.RemoveAll(x => x.Game == MEGame.LELauncher);
-            AllGamesHidden = !ME1ModsVisible && !ME2ModsVisible && !ME3ModsVisible;
+            if (SuppressFilterMods)
+                return;
+            var allMods = AllLoadedMods.ToList(); // Clone References
+            bool oneVisible = false;
+            foreach (var gf in GameFilters)
+            {
+                if (!gf.IsEnabled)
+                {
+                    allMods.RemoveAll(x => x.Game == gf.Game);
+                }
+                else
+                {
+                    oneVisible = true;
+                }
+            }
+
+            AllGamesHidden = !oneVisible;
             VisibleFilteredMods.ReplaceAll(allMods);
             VisibleFilteredMods.Sort(x => x.ModName);
+
         }
 
         private void ChangeLanguage_Clicked(object sender, RoutedEventArgs e)
@@ -3975,6 +3958,31 @@ namespace MassEffectModManagerCore
         {
             MD5Gen.GenerateMD5Map(@"D:\Steam\steamapps\common\Mass Effect Legendary Edition\Game\Launcher", "lel.bin");
             Debug.WriteLine(@"Done");
+        }
+
+        private void GameFilter_Click(object sender, RoutedEventArgs e)
+        {
+            if (Keyboard.Modifiers == ModifierKeys.Shift)
+            {
+                // Shift Click
+                Debug.WriteLine("HI");
+                if (sender is ToggleButton tb && tb.DataContext is GameFilter gf)
+                {
+                    SuppressFilterMods = true;
+                    foreach (var gameF in GameFilters)
+                    {
+                        if (gameF == gf)
+                        {
+                            gf.IsEnabled = true;
+                            continue;
+                        }
+
+                        gameF.IsEnabled = false;
+                    }
+                    SuppressFilterMods = false;
+                    FilterMods();
+                }
+            }
         }
     }
 }
