@@ -23,7 +23,7 @@ using MemoryAnalyzer = MassEffectModManagerCore.modmanager.memoryanalyzer.Memory
 
 namespace MassEffectModManagerCore.modmanager.objects
 {
-
+    [DebuggerDisplay("GameTarget {Game} {TargetPath}")]
     public class GameTarget : IEqualityComparer<GameTarget>, INotifyPropertyChanged
     {
         public const uint MEMI_TAG = 0x494D454D;
