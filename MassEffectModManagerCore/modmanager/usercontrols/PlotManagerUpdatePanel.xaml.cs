@@ -77,14 +77,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             if (funcMap.Any())
             {
+
                 var plotManager = MEPackageHandler.OpenMEPackageFromStream(vpm, @"PlotManager.pcc");
+                Stopwatch sw = Stopwatch.StartNew();
                 var fl = new FileLib(plotManager);
                 bool initialized = fl.Initialize().Result;
                 if (!initialized)
                 {
                     throw new Exception(@"FileLib for PlotManagerUpdate could not initialize!");
                 }
-
+                sw.Stop();
+                Debug.WriteLine($@"Took {sw.ElapsedMilliseconds}ms to load filelib");
                 foreach (var v in funcMap)
                 {
                     var exp = plotManager.FindExport($@"BioAutoConditionals.{v.Key}");
