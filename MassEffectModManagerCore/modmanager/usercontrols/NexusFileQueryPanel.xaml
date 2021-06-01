@@ -52,7 +52,8 @@
                 <CheckBox
                     DockPanel.Dock="Left"
                     Content="Mass Effect LE"
-                    IsChecked="{Binding SearchLE}" />
+                    IsChecked="{Binding SearchLE}" 
+                    Margin="10,0"/>
                 <generic:CheckBoxComboBox
                     x:Name="CategoryOptionsCBL"
                     HorizontalAlignment="Right" 

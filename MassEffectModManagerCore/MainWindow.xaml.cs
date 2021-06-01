@@ -2440,7 +2440,7 @@ namespace MassEffectModManagerCore
             targets.AddRange(Utilities.GetCachedTargets(MEGame.ME2, targets));
             targets.AddRange(Utilities.GetCachedTargets(MEGame.ME1, targets));
 
-            // Load LE cached tarets
+            // Load LE cached targets
             targets.AddRange(Utilities.GetCachedTargets(MEGame.LE1, targets, true)); // Kind of a hack, legendary load flag loads all targets for LE
 
             OrderAndSetTargets(targets, selectedTarget);
@@ -2489,9 +2489,16 @@ namespace MassEffectModManagerCore
                 InternalLoadedTargets.ReplaceAll(finalList.Where(x => !x.IsCustomOption));
             }
 
+            finalList = finalList.Where(x => x.IsCustomOption || x.Game.IsEnabledGeneration()).ToList();
+            if (finalList.LastOrDefaultOut(out var lastTarget) && lastTarget.IsCustomOption)
+            {
+                // Trim last custom option
+                finalList.Remove(lastTarget);
+            }
+
             InstallationTargets.ReplaceAll(finalList.Where(x => x.IsCustomOption || x.Game.IsEnabledGeneration()));
 
-            if (selectedTarget != null && targets.FirstOrDefaultOut(x => x.TargetPath == selectedTarget.TargetPath, out var selTarget))
+            if (selectedTarget != null && finalList.FirstOrDefaultOut(x => x.TargetPath == selectedTarget.TargetPath, out var selTarget))
             {
                 SelectedGameTarget = selTarget;
             }

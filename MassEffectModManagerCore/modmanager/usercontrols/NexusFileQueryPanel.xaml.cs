@@ -80,7 +80,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public ObservableCollectionExtended<FileCategory> FileCategories { get; } = new ObservableCollectionExtended<FileCategory>(Enum.GetValues<FileCategory>());
         public ObservableCollectionExtended<FileCategory> SelectedFileCategories { get; } = new ObservableCollectionExtended<FileCategory>(Enum.GetValues<FileCategory>()); // all by default
 
-        private bool CanSearch() => !QueryInProgress && !string.IsNullOrWhiteSpace(SearchTerm) && (SearchME1 || SearchME2 || SearchME3) && HasCategory();
+        private bool CanSearch() => !QueryInProgress && !string.IsNullOrWhiteSpace(SearchTerm) && (SearchME1 || SearchME2 || SearchME3 || SearchLE) && HasCategory();
 
         private bool HasCategory()
         {
@@ -245,12 +245,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             OnClosing(DataEventArgs.Empty);
         }
 
-        public class APIStatusResult
-        {
-            public string name { get; set; }
-            public double value { get; set; }
-        }
-
         public class SearchedItemResult : INotifyPropertyChanged
         {
             public FileInstance Instance { get; internal set; }
@@ -315,15 +309,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 var outboundUrl = $@"https://nexusmods.com/{sir.Domain}/mods/{sir.Instance.ModID}?tab=files"; // do not localize
                 Utilities.OpenWebpage(outboundUrl);
             }
-        }
-
-        private class SearchTopLevelResult
-        {
-            public int mod_count { get; set; }
-            public string searched_file { get; set; }
-            public string file_name { get; set; } // Why?
-            public List<string> games { get; set; }
-            public List<SearchedItemResult> mod_ids { get; set; }
         }
     }
 }

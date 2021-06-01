@@ -28,7 +28,7 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
     public class NexusModsUtilities
     {
 
-        public static readonly string[] AllSupportedNexusDomains = { @"masseffect", @"masseffect2", @"masseffect3" };
+        public static readonly string[] AllSupportedNexusDomains = { @"masseffect", @"masseffect2", @"masseffect3", @"masseffectlegendaryedition" };
 
 
         /// <summary>

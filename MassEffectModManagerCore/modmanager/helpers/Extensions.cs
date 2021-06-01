@@ -136,6 +136,40 @@ namespace MassEffectModManagerCore.modmanager.helpers
             return false;
         }
 
+        /// <summary>
+        /// Enumerates the enumerable object, finding the last item that matches the predicate, and sets the result to foundItem. Returns true if an item is found, or false if none is found, and foundItem is set to null. This can be used to prevent double enumeration
+        /// </summary>
+        /// <typeparam name="T">The object type</typeparam>
+        /// <param name="enumerable">The enumerable</param>
+        /// <param name="predicate">The search predicate</param>
+        /// <param name="foundItem">The found item, or null if not found</param>
+        /// <returns>True if found, false otherwise</returns>
+        public static bool LastOrDefaultOut<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate, out T foundItem)
+        {
+            var result = enumerable.LastOrDefault(predicate);
+            if (result != null)
+            {
+                foundItem = result;
+                return true;
+            }
+
+            foundItem = default(T);
+            return false;
+        }
+
+        /// <summary>
+        /// Enumerates the enumerable object, finding the last item that matches the predicate, and sets the result to foundItem. Returns true if an item is found, or false if none is found, and foundItem is set to null. This can be used to prevent double enumeration
+        /// </summary>
+        /// <typeparam name="T">The object type</typeparam>
+        /// <param name="enumerable">The enumerable</param>
+        /// <param name="predicate">The search predicate</param>
+        /// <param name="foundItem">The found item, or null if not found</param>
+        /// <returns>True if found, false otherwise</returns>
+        public static bool LastOrDefaultOut<T>(this IEnumerable<T> enumerable, out T foundItem)
+        {
+            return enumerable.LastOrDefaultOut(x => true, out foundItem);
+        }
+
         public static IEnumerable<T> FindVisualChildren<T>(this DependencyObject depObj) where T : DependencyObject
         {
             if (depObj != null)
