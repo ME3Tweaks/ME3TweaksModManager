@@ -72,6 +72,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             if (Operation == AltFileOperation.OP_NOINSTALL) return false;
             if (Operation == AltFileOperation.OP_NOINSTALL_MULTILISTFILES) return false;
             if (Operation == AltFileOperation.OP_APPLY_MULTILISTFILES) return true;
+            if (Operation == AltFileOperation.OP_APPLY_MERGEMODS) return true;
             return AltFile != null;
         }
 
@@ -528,17 +529,18 @@ namespace MassEffectModManagerCore.modmanager.objects
                 {@"ModOperation", Operation},
                 {@"AltFile", AltFile},
                 {@"ModFile", ModFile},
+                {@"MergeFiles", MergeMods != null  ? string.Join(';',MergeMods.Select(x=>x.MergeModFilename)) : ""},
                 {@"FriendlyName", FriendlyName},
                 {@"Description", Description},
-                {@"CheckedByDefault", CheckedByDefault ? @"True" : null}, //don't put checkedbydefault in if it is not set to true.
-                {@"OptionGroup", GroupName},
-                {@"ApplicableAutoText", ApplicableAutoTextRaw},
-                {@"NotApplicableAutoText", NotApplicableAutoTextRaw},
-                {@"MultiListId", MultiListId > 0 ? MultiListId.ToString() : null},
-                {@"MultiListRootPath", MultiListRootPath},
-                {@"MultiListTargetPath", MultiListTargetPath},
-                {@"ImageAssetName", ImageAssetName},
-                {@"ImageHeight", ImageHeight > 0 ? ImageHeight.ToString() : null}
+                { @"CheckedByDefault", CheckedByDefault ? @"True" : null}, //don't put checkedbydefault in if it is not set to true.
+                { @"OptionGroup", GroupName},
+                { @"ApplicableAutoText", ApplicableAutoTextRaw},
+                { @"NotApplicableAutoText", NotApplicableAutoTextRaw},
+                { @"MultiListId", MultiListId > 0 ? MultiListId.ToString() : null},
+                { @"MultiListRootPath", MultiListRootPath},
+                { @"MultiListTargetPath", MultiListTargetPath},
+                { @"ImageAssetName", ImageAssetName},
+                { @"ImageHeight", ImageHeight > 0 ? ImageHeight.ToString() : null}
             };
 
             ParameterMap.ReplaceAll(MDParameter.MapIntoParameterMap(parameterDictionary));
