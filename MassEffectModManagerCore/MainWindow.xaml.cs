@@ -441,11 +441,13 @@ namespace MassEffectModManagerCore
             {
                 ME1ModsVisible = ME2ModsVisible = ME3ModsVisible = Settings.GenerationSettingOT;
                 FilterMods();
+                OrderAndSetTargets(InternalLoadedTargets, SelectedGameTarget);
             }
             else if (e.PropertyName == nameof(Settings.GenerationSettingLE))
             {
-                LE1ModsVisible = LE2ModsVisible = LE3ModsVisible  = LELauncherModsVisible = Settings.GenerationSettingLE;
+                LE1ModsVisible = LE2ModsVisible = LE3ModsVisible = LELauncherModsVisible = Settings.GenerationSettingLE;
                 FilterMods();
+                OrderAndSetTargets(InternalLoadedTargets, SelectedGameTarget);
             }
         }
 
@@ -1156,7 +1158,7 @@ namespace MassEffectModManagerCore
             }
             else
             {
-                if (queuedUserControls.TryDequeue(out var control));
+                if (queuedUserControls.TryDequeue(out var control)) ;
                 //control.OnPanelVisible();
                 BusyContent = control;
             }
@@ -2421,7 +2423,7 @@ namespace MassEffectModManagerCore
         private void OrderAndSetTargets(List<GameTarget> targets, GameTarget selectedTarget = null)
         {
             // ORDER THE TARGETS
-            targets = targets.Where(x=>x.Game.IsEnabledGeneration()).Distinct().ToList();
+            targets = targets.Where(x => x.Game.IsEnabledGeneration()).Distinct().ToList();
             List<GameTarget> finalList = new List<GameTarget>();
 
             //LE
@@ -2463,14 +2465,9 @@ namespace MassEffectModManagerCore
 
             InstallationTargets.ReplaceAll(finalList);
 
-            if (selectedTarget != null)
+            if (selectedTarget != null && targets.FirstOrDefaultOut(x => x.TargetPath == selectedTarget.TargetPath, out var selTarget))
             {
-                //find new corresponding target
-                var newTarget = targets.FirstOrDefault(x => x.TargetPath == selectedTarget.TargetPath);
-                if (newTarget != null)
-                {
-                    SelectedGameTarget = newTarget;
-                }
+                SelectedGameTarget = selTarget;
             }
             else if (!string.IsNullOrWhiteSpace(Settings.LastSelectedTarget) && InstallationTargets.FirstOrDefaultOut(x => !x.IsCustomOption && x.TargetPath.Equals(Settings.LastSelectedTarget), out var matchingTarget))
             {
