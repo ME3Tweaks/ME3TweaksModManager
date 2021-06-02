@@ -81,7 +81,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 var plotManager = MEPackageHandler.OpenMEPackageFromStream(vpm, @"PlotManager.pcc");
                 Stopwatch sw = Stopwatch.StartNew();
                 var fl = new FileLib(plotManager);
-                bool initialized = fl.Initialize().Result;
+                bool initialized = fl.Initialize(new PackageCache()).Result;
                 if (!initialized)
                 {
                     throw new Exception(@"FileLib for PlotManagerUpdate could not initialize!");

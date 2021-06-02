@@ -211,7 +211,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
             if (!assetsCache.FileLibs.TryGetValue(package.FilePath, out fl))
             {
                 fl = new FileLib(package);
-                bool initialized = fl.Initialize().Result;
+                bool initialized = fl.Initialize(new PackageCache()).Result;
                 if (!initialized)
                 {
                     throw new Exception(
