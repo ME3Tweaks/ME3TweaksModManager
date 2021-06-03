@@ -5,17 +5,26 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.windows"
         xmlns:ui="clr-namespace:MassEffectModManagerCore.ui"
+        xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
         mc:Ignorable="d"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
-        Title="{Binding Caption}" Height="450" Width="800">
+        Title="{Binding Caption}"
+        Width="{Binding RequestedWidth}"
+        Height="{Binding RequestedHeight}">
     <Window.Style>
         <Style
             TargetType="Window"
             BasedOn="{StaticResource {x:Type Window}}" />
     </Window.Style>
     <DockPanel>
-        <TextBlock DockPanel.Dock="Top" Text="{Binding Message}" TextWrapping="Wrap"/>
-        <Button DockPanel.Dock="Bottom" Content="OK" Click="CloseDialog"/>
+        <Border DockPanel.Dock="Top" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}">
+            <TextBlock DockPanel.Dock="Top" Margin="5" Text="{Binding Message}" TextWrapping="Wrap"/>
+        </Border>
+        <DockPanel  Margin="5">
+
+        <Button DockPanel.Dock="Bottom" Content="OK" Click="CloseDialog" HorizontalAlignment="Right" Padding="20,3"/>
         <ItemsControl ItemsSource="{Binding Items}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="{x:Type ui:CheckBoxSelectionPair}">
@@ -23,5 +32,6 @@
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
+        </DockPanel>
     </DockPanel>
 </Window>

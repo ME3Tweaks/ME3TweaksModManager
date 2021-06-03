@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Windows.Documents;
 using System.Windows.Input;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Packages;
+using LegendaryExplorerCore.Packages.CloningImportingAndRelinking;
+using LegendaryExplorerCore.Unreal.BinaryConverters;
 using LegendaryExplorerCore.UnrealScript;
 using LegendaryExplorerCore.UnrealScript.Compiling.Errors;
 using MassEffectModManagerCore.modmanager.helpers;
@@ -31,7 +34,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public static bool RunPlotManagerUpdate(GameTarget target)
         {
-            Log.Information(@"Updating PlotManager for game: {target.TargetPath}");
+            Log.Information($@"Updating PlotManager for game: {target.TargetPath}");
             var supercedances = M3Directories.GetFileSupercedances(target, new[] { @".pmu" });
             Dictionary<string, string> funcMap = new();
             if (supercedances.TryGetValue(@"PlotManagerUpdate.pmu", out var supercedanes))
@@ -88,14 +91,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 sw.Stop();
                 Debug.WriteLine($@"Took {sw.ElapsedMilliseconds}ms to load filelib");
+
+                bool relinkChain = false;
                 foreach (var v in funcMap)
                 {
                     var exp = plotManager.FindExport($@"BioAutoConditionals.{v.Key}");
                     if (exp == null)
                     {
                         // ADD ITEM HERE
-                        Debug.WriteLine(@"NOT IMPLEMENTED!");
-                        continue;
+                        var expToClone = plotManager.Exports.FirstOrDefault(x => x.ClassName == @"Function");
+                        exp = EntryCloner.CloneTree(expToClone);
+                        relinkChain = true;
                     }
 
                     (_, MessageLog log) = UnrealScriptCompiler.CompileFunction(exp, v.Value, fl);
@@ -111,6 +117,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         throw new Exception($"Error compiling function {exp}: {log.AllErrors[0].Message}");
                         return false;
                     }
+                }
+
+                if (relinkChain)
+                {
+                    UClass uc = ObjectBinary.From<UClass>(plotManager.FindExport("BioAutoConditionals"));
+                    uc.UpdateChildrenChain();
+                    uc.Export.WriteBinary(uc);
                 }
                 plotManager.Save(GetPlotManagerPath(target), true);
             }

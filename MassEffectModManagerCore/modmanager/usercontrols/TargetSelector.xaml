@@ -13,7 +13,7 @@
         <local:ExtendedTextureInfoVisibilityConverter x:Key="ExtendedTextureInfoVisibilityConverter"/>
         <DataTemplate x:Key="localTargetSelectorTemplate" DataType="{x:Type modmanager:GameTarget}">
             <DockPanel HorizontalAlignment="Stretch">
-                <Image DockPanel.Dock="Left" Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16"  Visibility="{Binding Converter={StaticResource GameIconVisibilityConverter}}"/>
+                <Image DockPanel.Dock="Left" Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}, ConverterParameter=16}" Width="16" Height="16"  Visibility="{Binding Converter={StaticResource GameIconVisibilityConverter}}"/>
                 <Image DockPanel.Dock="Left" Source="{Binding TargetBootIcon, TargetNullValue={x:Null}}" Width="12" Height="16" RenderOptions.BitmapScalingMode="HighQuality" Margin="3,0,0,0" Visibility="{Binding Converter={StaticResource BootTargetSourceVisibilityConverter}}"/>
                 <DockPanel ToolTip="{DynamicResource string_thisTargetHasBeenTextureModded}" DockPanel.Dock="Right" Margin="3,0,0,0">
                     <!-- This is a real hack job -->

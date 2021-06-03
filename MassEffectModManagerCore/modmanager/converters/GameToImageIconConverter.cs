@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
@@ -28,6 +29,18 @@ namespace MassEffectModManagerCore.modmanager.converters
             if (parameter is float sizeF)
             {
                 size = sizeF;
+            }
+            else if (parameter is int sizeI)
+            {
+                size = sizeI;
+            }
+            else if (parameter is string sizeS)
+            {
+                size = float.Parse(sizeS); // WPF likes to do things as strings
+            }
+            else if (parameter != null)
+            {
+                Debug.WriteLine($"SPECIFIED MIPPED ICON SIZE IS NOT A FLOAT: {parameter}");
             }
 
             MEGame game = MEGame.Unknown;

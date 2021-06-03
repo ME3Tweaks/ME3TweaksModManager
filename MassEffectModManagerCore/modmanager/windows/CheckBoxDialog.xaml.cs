@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using LegendaryExplorerCore.Misc;
+using PropertyChanged;
 using CheckBoxSelectionPair = MassEffectModManagerCore.ui.CheckBoxSelectionPair;
 
 namespace MassEffectModManagerCore.modmanager.windows
@@ -20,14 +21,19 @@ namespace MassEffectModManagerCore.modmanager.windows
     /// <summary>
     /// Interaction logic for CheckBoxDialog.xaml
     /// </summary>
-    public partial class CheckBoxDialog : Window, INotifyPropertyChanged
+    [AddINotifyPropertyChangedInterface]
+    public partial class CheckBoxDialog : Window
     {
 
         public ObservableCollectionExtended<CheckBoxSelectionPair> Items { get; } = new();
-        public CheckBoxDialog(string message, string caption, object[] options, object[] preselectedOptions = null, object[] disabledOptions = null)
+        public CheckBoxDialog(Window owningWindow, string message, string caption, object[] options, object[] preselectedOptions = null, object[] disabledOptions = null, int requestedWidth = 400, int requestedHeight = 250)
         {
+            Owner = owningWindow;
             Message = message;
             Caption = caption;
+
+            RequestedWidth = requestedWidth;
+            RequestedHeight = requestedHeight;
 
             foreach (var o in options)
             {
@@ -43,6 +49,10 @@ namespace MassEffectModManagerCore.modmanager.windows
             InitializeComponent();
         }
 
+        public int RequestedHeight { get; set; }
+
+        public int RequestedWidth { get; set; }
+
         public string Message { get; }
         public string Caption { get; }
 
@@ -51,13 +61,10 @@ namespace MassEffectModManagerCore.modmanager.windows
             return Items.Where(x => x.IsChecked).Select(x => x.Item).ToArray();
         }
 
-#pragma warning disable
-        public event PropertyChangedEventHandler? PropertyChanged;
 
         private void CloseDialog(object sender, RoutedEventArgs e)
         {
             Close();
         }
-#pragma warning restore
     }
 }

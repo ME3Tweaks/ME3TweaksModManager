@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using MassEffectModManagerCore.modmanager.helpers;
@@ -79,7 +80,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
         }
 
-        public class GameBackup : INotifyPropertyChanged
+        [AddINotifyPropertyChangedInterface]
+        public class GameBackup
         {
             public MEGame Game { get; }
             public ObservableCollectionExtended<GameTarget> AvailableBackupSources { get; } = new ObservableCollectionExtended<GameTarget>();
@@ -93,7 +95,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 this.AvailableBackupSources.Add(new GameTarget(Game, M3L.GetString(M3L.string_linkBackupToAnExistingGameCopy), false, true));
                 LoadCommands();
                 GameTitle = Game.ToGameName();
-                ResetBackupStatus();
+                ResetBackupStatus(true);
             }
 
             private void LoadCommands()
@@ -123,7 +125,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
 
                     BackupService.RemoveBackupPath(Game);
-                    ResetBackupStatus();
+                    ResetBackupStatus(true);
                 }
             }
 
@@ -139,6 +141,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             private void BeginBackup()
             {
+                string[] allGameLangauges = StarterKitGeneratorWindow.GetLanguagesForGame(BackupSourceTarget.Game);
                 string[] languages = null;
                 var targetToBackup = BackupSourceTarget;
                 if (!targetToBackup.IsCustomOption)
@@ -152,10 +155,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     // Language selection
                     if (Game != MEGame.LELauncher)
                     {
-                        CheckBoxDialog cbw = new CheckBoxDialog(
+                        CheckBoxDialog cbw = new CheckBoxDialog(window,
                             "Select which languages to include in the backup. Languages not selected will not be backed up; if you choose to repair the game, these languages will be redownloaded.",
-                            "Select languages", StarterKitGeneratorWindow.GetLanguagesForGame(targetToBackup.Game),
-                            new[] { @"INT" }, new[] { @"INT" });
+                            "Select languages", allGameLangauges,
+                            new[] { @"INT" }, new[] { @"INT" }, 450, 300);
                         cbw.ShowDialog();
                         languages = cbw.GetSelectedItems().OfType<string>().ToArray();
                     }
@@ -367,8 +370,25 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 try
                                 {
                                     if (file.Contains(@"\cmmbackup\")) return false; //do not copy cmmbackup files
+
+                                    if (languages != null)
+                                    {
+                                        // Check language of file
+                                        var fileName = Path.GetFileNameWithoutExtension(file);
+                                        if (fileName != null && fileName.LastIndexOf("_", StringComparison.InvariantCultureIgnoreCase) > 0)
+                                        {
+                                            var suffix = fileName.Substring(fileName.LastIndexOf("_", StringComparison.InvariantCultureIgnoreCase) + 1); // INT, ESN, PLPC
+                                            if (allGameLangauges.Contains(suffix, StringComparer.InvariantCultureIgnoreCase) && !languages.Contains(suffix, StringComparer.InvariantCultureIgnoreCase))
+                                            {
+                                                Debug.WriteLine($@"Skipping non-selected localized file for backup: {file}");
+                                                return false; // Do not back up this file
+                                            }
+                                        }
+                                    }
+
                                     if (file.StartsWith(dlcFolderpath, StringComparison.InvariantCultureIgnoreCase))
                                     {
+                                        #region Backing up DLC files
                                         //It's a DLC!
                                         string dlcname = file.Substring(dlcSubStringLen);
                                         var dlcFolderNameEndPos = dlcname.IndexOf('\\');
@@ -393,9 +413,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                             BackupStatusLine2 = M3L.GetString(M3L.string_interp_backingUpX,
                                             M3L.GetString(M3L.string_basegame));
                                         }
+                                        #endregion
                                     }
                                     else
                                     {
+                                        #region Backing up movies or big files
                                         //It's basegame
                                         if (file.EndsWith(@".bik"))
                                         {
@@ -412,6 +434,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                             BackupStatusLine2 = M3L.GetString(M3L.string_interp_backingUpX,
                                                 M3L.GetString(M3L.string_basegame));
                                         }
+                                        #endregion
                                     }
                                 }
                                 catch (Exception e)
@@ -634,26 +657,22 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             private void EndBackup()
             {
                 Log.Information($@"EndBackup()");
-                ResetBackupStatus();
+                ResetBackupStatus(true);
                 ProgressIndeterminate = false;
                 ProgressVisible = false;
                 BackupInProgress = false;
                 return;
             }
 
-            private void ResetBackupStatus()
+            private void ResetBackupStatus(bool forceRefresh)
             {
-                BackupLocation = BackupService.GetGameBackupPath(Game);
+                BackupLocation = BackupService.GetGameBackupPath(Game, refresh: forceRefresh);
                 BackupService.RefreshBackupStatus(window, Game);
                 BackupStatus = BackupService.GetBackupStatus(Game);
                 BackupStatusLine2 = BackupLocation ?? BackupService.GetBackupStatusTooltip(Game);
             }
 
             public string GameTitle { get; }
-            //Fody uses this property on weaving
-#pragma warning disable
-            public event PropertyChangedEventHandler PropertyChanged;
-#pragma warning restore
             public GameTarget BackupSourceTarget { get; set; }
             public string BackupLocation
             {
