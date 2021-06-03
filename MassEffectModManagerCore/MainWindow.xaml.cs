@@ -71,7 +71,7 @@ namespace MassEffectModManagerCore
         private static readonly string DefaultDescriptionText = M3L.GetString(M3L.string_selectModOnLeftToGetStarted);
         private readonly string[] SupportedDroppableExtensions =
         {
-            @".rar", @".zip", @".7z", @".exe", @".tpf", @".mod", @".mem", @".me2mod", @".xml", @".bin", @".tlk", @".par", @".m3m", @".json"
+            @".rar", @".zip", @".7z", @".exe", @".tpf", @".mod", @".mem", @".me2mod", @".xml", @".bin", @".tlk", @".par", @".m3m", @".json", @".extractedbin"
         };
         public string ApplyModButtonText { get; set; } = M3L.GetString(M3L.string_applyMod);
         public string InstallationTargetText { get; set; } = M3L.GetString(M3L.string_installationTarget);
@@ -3267,12 +3267,44 @@ namespace MassEffectModManagerCore
                             LoadExternalLocalizationDictionary(files[0]);
                         }
                         break;
+                    case @".extractedbin":
+                        {
+                            using var fs = new FileStream(files[0], FileMode.Open, FileAccess.Read);
+                            //var magic = fs.ReadInt32();
+                            //fs.Dispose();
+                            //if (magic is 0x666D726D or 0x1B) //fmrm (backwards) (ME3), 0x1B (LE1 (sigh))
+                            //{
+
+                            NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"Coalesced Comppiler");
+                            var task = backgroundTaskEngine.SubmitBackgroundJob(@"CoalescedCompiler", M3L.GetString(M3L.string_compilingCoalescedFile), M3L.GetString(M3L.string_compiledCoalescedFile));
+                            nbw.DoWork += (a, b) =>
+                            {
+                                var dest = Path.Combine(Directory.GetParent(files[0]).FullName, File.ReadAllLines(files[0])[0]);
+                                Log.Information($@"Compiling coalesced file: {files[0]} -> {dest}");
+                                CoalescedConverter.Convert(CoalescedConverter.CoalescedType.ExtractedBin, files[0], dest);
+                                Log.Information(@"Compiled coalesced file");
+                            };
+                            nbw.RunWorkerCompleted += (a, b) =>
+                            {
+                                if (b.Error != null)
+                                {
+                                    Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
+                                }
+
+                                task.finishedUiText = "Failed to compile coalesced file";
+                                backgroundTaskEngine.SubmitJobCompletion(task);
+                            };
+                            nbw.RunWorkerAsync();
+                            // }
+                        }
+                        break;
                     case @".bin":
                         //Check for Coalesced
                         {
                             using var fs = new FileStream(files[0], FileMode.Open, FileAccess.Read);
                             var magic = fs.ReadInt32();
-                            if (magic == 0x666D726D) //fmrm (backwards)
+                            fs.Dispose();
+                            if (magic is 0x666D726D or 0x1B) //fmrm (backwards) (ME3), 0x1B (LE1 (sigh))
                             {
 
                                 NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"Coalesced Decompiler");
@@ -3281,7 +3313,7 @@ namespace MassEffectModManagerCore
                                 {
                                     var dest = Path.Combine(Directory.GetParent(files[0]).FullName, Path.GetFileNameWithoutExtension(files[0]));
                                     Log.Information($@"Decompiling coalesced file: {files[0]} -> {dest}");
-                                    CoalescedConverter.ConvertToXML(files[0], dest);
+                                    CoalescedConverter.Convert(CoalescedConverter.CoalescedType.Binary, files[0], dest);
                                     Log.Information(@"Decompiled coalesced file");
                                 };
                                 nbw.RunWorkerCompleted += (a, b) =>
