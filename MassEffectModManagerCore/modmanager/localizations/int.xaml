@@ -64,7 +64,7 @@
     <system:String x:Key="string_MassEffect2LE">Mass Effect 2 (Legendary Edition)</system:String>
     <system:String x:Key="string_MassEffect3LE">Mass Effect 3 (Legendary Edition)</system:String>
     <system:String x:Key="string_GenerateStarterKit">Generate new DLC mod (Starter Kit)</system:String>
-    <system:String x:Key="string_Binkw32Bypasses">Binkw32 Bypasses</system:String>
+    <system:String x:Key="string_Binkw32Bypasses">Bink Bypasses</system:String>
     <system:String x:Key="string_Grantwriteaccesstogamedirectories">Grant write access to game directories</system:String>
     <system:String x:Key="string_Grantswritepermissionstogamedirectories">Grants write permissions to game directories</system:String>
     <system:String x:Key="string_RunAutoTOC">Run AutoTOC on game (ME3)</system:String>

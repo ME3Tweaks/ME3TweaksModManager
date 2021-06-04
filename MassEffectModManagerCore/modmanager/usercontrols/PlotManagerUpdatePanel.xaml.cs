@@ -75,13 +75,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
             }
 
-            // They are all named .pcc for ease. ME1 doesn't use this extension but loader doesn't care
-            var vpm = Utilities.ExtractInternalFileToStream($@"MassEffectModManagerCore.modmanager.plotmanager.{target.Game}.PlotManager.pcc");
+            var vpm = Utilities.ExtractInternalFileToStream($@"MassEffectModManagerCore.modmanager.plotmanager.{target.Game}.PlotManager.{(target.Game == MEGame.ME1 ? @"u" : @"pcc")}");
 
             if (funcMap.Any())
             {
 
-                var plotManager = MEPackageHandler.OpenMEPackageFromStream(vpm, @"PlotManager.pcc");
+                var plotManager = MEPackageHandler.OpenMEPackageFromStream(vpm, $@"PlotManager.{(target.Game == MEGame.ME1 ? @"u" : @"pcc")}");
                 Stopwatch sw = Stopwatch.StartNew();
                 var fl = new FileLib(plotManager);
                 bool initialized = fl.Initialize(new PackageCache()).Result;
@@ -98,9 +97,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     var exp = plotManager.FindExport($@"BioAutoConditionals.{v.Key}");
                     if (exp == null)
                     {
-                        // ADD ITEM HERE
+                        // Adding a new conditional
                         var expToClone = plotManager.Exports.FirstOrDefault(x => x.ClassName == @"Function");
-                        exp = EntryCloner.CloneTree(expToClone);
+                        exp = EntryCloner.CloneEntry(expToClone);
+                        // Reduces trash
+                        UFunction uf = ObjectBinary.From<UFunction>(exp);
+                        uf.Children = 0;
+                        exp.WriteBinary(uf);
+
                         relinkChain = true;
                     }
 
@@ -140,6 +144,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             switch (target.Game)
             {
+                case MEGame.ME1:
+                    return Path.Combine(M3Directories.GetCookedPath(target), @"PlotManager.u");
+                case MEGame.LE1:
                 case MEGame.ME2:
                 case MEGame.LE2:
                     return Path.Combine(M3Directories.GetCookedPath(target), @"PlotManager.pcc");

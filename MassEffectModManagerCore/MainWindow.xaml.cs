@@ -532,6 +532,7 @@ namespace MassEffectModManagerCore
         public ICommand RestoreModFromME3TweaksCommand { get; set; }
         public ICommand GrantWriteAccessCommand { get; set; }
         public ICommand AutoTOCCommand { get; set; }
+        public ICommand SyncPlotManagerCommand { get; set; }
         public ICommand AutoTOCLECommand { get; set; }
         public ICommand ConsoleKeyKeybinderCommand { get; set; }
         public ICommand LoginToNexusCommand { get; set; }
@@ -570,6 +571,7 @@ namespace MassEffectModManagerCore
             RestoreModFromME3TweaksCommand = new GenericCommand(RestoreSelectedMod, SelectedModIsME3TweaksUpdatable);
             GrantWriteAccessCommand = new GenericCommand(() => CheckTargetPermissions(true, true), HasAtLeastOneTarget);
             AutoTOCCommand = new RelayCommand(RunAutoTOCOnGame, HasGameTarget);
+            SyncPlotManagerCommand = new RelayCommand(SyncPlotManagerForGame, HasGameTarget);
             ConsoleKeyKeybinderCommand = new GenericCommand(OpenConsoleKeyKeybinder, CanOpenConsoleKeyKeybinder);
             LoginToNexusCommand = new GenericCommand(ShowNexusPanel, CanShowNexusPanel);
             EndorseSelectedModCommand = new GenericCommand(EndorseWrapper, CanEndorseMod);
@@ -3628,6 +3630,30 @@ namespace MassEffectModManagerCore
         }
 
 
+        private void SyncPlotManagerForGame(object obj)
+        {
+            if (obj is MEGame game)
+            {
+                var target = GetCurrentTarget(game);
+                if (target != null)
+                {
+                    var task = backgroundTaskEngine.SubmitBackgroundJob(@"SyncPlotManager",
+                        $"Syncing Plot Manager for {game.ToGameName()}",
+                        $"Synced Plot Manager for {game.ToGameName()}");
+                    var pmuUI = new PlotManagerUpdatePanel(target);
+                    pmuUI.Close += (a, b) =>
+                    {
+                        backgroundTaskEngine.SubmitJobCompletion(task);
+                        ReleaseBusyControl();
+                    };
+                    ShowBusyControl(pmuUI);
+                }
+                else
+                {
+                    Log.Error(@"AutoTOC game target was null! This shouldn't be possible");
+                }
+            }
+        }
 
         private void RunAutoTOCOnGame(object obj)
         {
