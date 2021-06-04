@@ -241,15 +241,39 @@ namespace MassEffectModManagerCore
             }
 
             // Setup game filters
+            var enabledFilters = Enum.GetValues<MEGame>();
+            if (!string.IsNullOrWhiteSpace(Settings.SelectedFilters))
+            {
+                var nEnabledGames = new List<MEGame>();
+                var split = Settings.SelectedFilters.Split(',');
+                foreach (var s in split)
+                {
+                    if (Enum.TryParse<MEGame>(s, out var parsedGame))
+                    {
+                        nEnabledGames.Add(parsedGame);
+                    }
+                }
+
+                if (nEnabledGames.Any())
+                    enabledFilters = nEnabledGames.ToArray();
+            }
+
             foreach (var g in Enum.GetValues<MEGame>())
             {
                 if (g is MEGame.UDK or MEGame.Unknown)
                     continue;
                 var gf = new GameFilter(g);
+                if (enabledFilters.Any() && !enabledFilters.Contains(g))
+                {
+                    gf.IsEnabled = false;
+                }
+
                 Settings.StaticPropertyChanged += gf.NotifyGenerationChanged; // Notify of generation change
                 gf.PropertyChanged += ModGameVisibilityChanged;
                 GameFilters.Add(gf);
             }
+
+            // Loa
 
             CheckProgramDataWritable();
             AttachListeners();
@@ -300,6 +324,7 @@ namespace MassEffectModManagerCore
         {
             if (e.PropertyName == nameof(GameFilter.IsEnabled))
             {
+                Settings.SelectedFilters = string.Join(',', GameFilters.Where(x => x.IsEnabled).Select(x => x.Game));
                 FilterMods();
             }
         }

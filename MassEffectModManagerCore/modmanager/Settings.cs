@@ -74,7 +74,7 @@ namespace MassEffectModManagerCore.modmanager
             set => SetProperty(ref _launchGamesThroughOrigin, value);
         }
 
-        private static bool _generationSettingOT = true; 
+        private static bool _generationSettingOT = true;
         public static bool GenerationSettingOT
         {
             get => _generationSettingOT;
@@ -85,7 +85,7 @@ namespace MassEffectModManagerCore.modmanager
                     SetProperty(ref _generationSettingOT, value);
                 }
                 // Do not allow turning both options off
-            } 
+            }
         }
 
         private static bool _generationSettingLE = true;
@@ -146,6 +146,13 @@ namespace MassEffectModManagerCore.modmanager
         {
             get => _updaterServiceUsername;
             set => SetProperty(ref _updaterServiceUsername, value);
+        }
+
+        private static string _selectedFilters;
+        public static string SelectedFilters
+        {
+            get => _selectedFilters;
+            set => SetProperty(ref _selectedFilters, value);
         }
 
         private static string _lastSelectedTarget;
@@ -317,6 +324,7 @@ namespace MassEffectModManagerCore.modmanager
             AutoUpdateLODs4K = LoadSettingBool(settingsIni, "ModManager", "AutoUpdateLODs4K", true);
             PreferCompressingPackages = LoadSettingBool(settingsIni, "ModManager", "PreferCompressingPackages", false); // 'May set to true in the future.
             WebClientTimeout = LoadSettingInt(settingsIni, "ModManager", "WebclientTimeout", 5);
+            SelectedFilters = LoadSettingString(settingsIni, "ModManager", "SelectedFilters", null);
             ModMakerControllerModOption = LoadSettingBool(settingsIni, "ModMaker", "AutoAddControllerMixins", false);
             ModMakerAutoInjectCustomKeybindsOption = LoadSettingBool(settingsIni, "ModMaker", "AutoInjectCustomKeybinds", false);
 
@@ -512,6 +520,7 @@ namespace MassEffectModManagerCore.modmanager
                 SaveSettingBool(settingsIni, "ModManager", "SkipLELauncher", SkipLELauncher);
                 SaveSettingBool(settingsIni, "ModManager", "GenerationSettingOT", GenerationSettingOT);
                 SaveSettingBool(settingsIni, "ModManager", "GenerationSettingLE", GenerationSettingLE);
+                SaveSettingString(settingsIni, "ModManager", "SelectedFilters", SelectedFilters);
 
                 SaveSettingBool(settingsIni, "ModMaker", "AutoAddControllerMixins", ModMakerControllerModOption);
                 SaveSettingBool(settingsIni, "ModMaker", "AutoInjectCustomKeybinds", ModMakerAutoInjectCustomKeybindsOption);
