@@ -15,6 +15,7 @@ using LegendaryExplorerCore.UnrealScript.Compiling.Errors;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
+using Microsoft.AppCenter.Analytics;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -40,7 +41,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (supercedances.TryGetValue(@"PlotManagerUpdate.pmu", out var supercedanes))
             {
                 StringBuilder sb = null;
-                string currentFunc = null;
+                string currentFuncNum = null;
                 foreach (var pmuDLCName in supercedanes)
                 {
                     var text = File.ReadAllLines(Path.Combine(M3Directories.GetDLCPath(target), pmuDLCName, target.Game.CookedDirName(), @"PlotManagerUpdate.pmu"));
@@ -50,27 +51,57 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         {
                             if (sb != null)
                             {
-                                funcMap[currentFunc] = sb.ToString();
-                                currentFunc = null;
+                                funcMap[currentFuncNum] = sb.ToString();
+                                currentFuncNum = null;
                             }
 
                             sb = new StringBuilder();
                             sb.AppendLine(line);
 
                             // Method name
-                            currentFunc = line.Substring(21);
-                            currentFunc = currentFunc.Substring(0, currentFunc.IndexOf('('));
+                            currentFuncNum = line.Substring(21);
+                            currentFuncNum = currentFuncNum.Substring(0, currentFuncNum.IndexOf('('));
+                            if (int.TryParse(currentFuncNum, out var num))
+                            {
+                                if (num <= 0)
+                                {
+                                    Log.Error($@"Skipping plot manager update: Conditional {num} is not a valid number for use. Values must be greater than 0 and less than 2 billion.");
+                                    Analytics.TrackEvent(@"Bad plot manager function", new Dictionary<string, string>() {
+                                        { @"FunctionName", $@"F{currentFuncNum}" },
+                                        { @"DLCName", pmuDLCName }
+                                    });
+                                    sb = null;
+                                }
+                                else if (num.ToString().Length != currentFuncNum.Length)
+                                {
+                                    Log.Error($@"Skipping plot manager update: Conditional {currentFuncNum} is not a valid number for use. Values must not contain leading zeros");
+                                    Analytics.TrackEvent(@"Bad plot manager function", new Dictionary<string, string>() {
+                                        { @"FunctionName", $@"F{currentFuncNum}" },
+                                        { @"DLCName", pmuDLCName }
+                                    });
+                                    sb = null;
+                                }
+                            }
+                            else
+                            {
+                                Log.Error($@"Skipping plot manager update: Conditional {currentFuncNum} is not a valid number for use. Values must be greater than 0 and less than 2 billion.");
+                                Analytics.TrackEvent(@"Bad plot manager function", new Dictionary<string, string>() {
+                                    { @"FunctionName", $@"F{currentFuncNum}" },
+                                    { @"DLCName", pmuDLCName }
+                                });
+                                sb = null;
+                            }
                         }
-                        else if (sb != null)
+                        else
                         {
-                            sb.AppendLine(line);
+                            sb?.AppendLine(line);
                         }
                     }
 
                     // Add final, if any was found
                     if (sb != null)
                     {
-                        funcMap[currentFunc] = sb.ToString();
+                        funcMap[currentFuncNum] = sb.ToString();
                     }
                 }
             }

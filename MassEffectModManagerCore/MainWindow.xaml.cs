@@ -515,6 +515,7 @@ namespace MassEffectModManagerCore
         public ICommand OfficialDLCTogglerCommand { get; set; }
         public ICommand ImportArchiveCommand { get; set; }
         public ICommand ReloadModsCommand { get; set; }
+        public ICommand ModManagerOptionsCommand { get; set; }
         public ICommand ConflictDetectorCommand { get; set; }
         public ICommand ApplyModCommand { get; set; }
         public ICommand RestoreCommand { get; set; }
@@ -553,6 +554,7 @@ namespace MassEffectModManagerCore
         public ICommand NexusModsFileSearchCommand { get; set; }
         private void LoadCommands()
         {
+            ModManagerOptionsCommand = new GenericCommand(ShowOptions);
             ReloadModsCommand = new GenericCommand(ReloadMods, CanReloadMods);
             ApplyModCommand = new GenericCommand(CallApplyMod, CanApplyMod);
             CheckForContentUpdatesCommand = new GenericCommand(CheckForContentUpdates, NetworkThreadNotRunning);
@@ -603,6 +605,16 @@ namespace MassEffectModManagerCore
             OpenTutorialCommand = new GenericCommand(OpenTutorial, () => App.TutorialService != null && App.TutorialService.Any());
             OpenASIManagerCommand = new GenericCommand(OpenASIManager, NetworkThreadNotRunning);
             NexusModsFileSearchCommand = new GenericCommand(OpenNexusSearch); // no conditions for this
+        }
+
+        private void ShowOptions()
+        {
+            var optionsPanel = new OptionsPanel();
+            optionsPanel.Close += (a, b) =>
+            {
+                ReleaseBusyControl();
+            };
+            ShowBusyControl(optionsPanel);
         }
 
         private bool HasGameTarget(object obj)

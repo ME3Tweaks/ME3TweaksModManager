@@ -316,6 +316,9 @@
                         Click="OpenMemoryAnalyzer_Click"
                         Visibility="{x:Static local:App.IsDebugVisibility}" />
                     <MenuItem
+                        Header="Options"
+                        Command="{Binding ModManagerOptionsCommand}"/>
+                    <MenuItem
                         Header="{DynamicResource string_Options}">
                         <MenuItem.Icon>
                             <fa:ImageAwesome
