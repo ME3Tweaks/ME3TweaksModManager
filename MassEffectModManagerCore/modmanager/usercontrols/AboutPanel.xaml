@@ -78,7 +78,7 @@
                 <TextBlock Foreground="White" Grid.Row="7" Grid.Column="1" TextWrapping="Wrap" Text="Russian" TextAlignment="Center" FontWeight="Bold" />
                 <TextBlock Foreground="White" Grid.Row="7" Grid.Column="2" TextWrapping="Wrap" Text="German" TextAlignment="Center" FontWeight="Bold" />
                 <TextBlock Foreground="White" Grid.Row="8" Grid.Column="0" TextWrapping="Wrap" Text="Mgamerz" TextAlignment="Center" />
-                <TextBlock Foreground="White" Grid.Row="8" Grid.Column="1" TextWrapping="Wrap" Text="Arch-Violin" TextAlignment="Center" />
+                <TextBlock Foreground="White" Grid.Row="8" Grid.Column="1" TextWrapping="Wrap" Text="ArcViolon" TextAlignment="Center" />
                 <TextBlock Foreground="White" Grid.Row="8" Grid.Column="2" TextWrapping="Wrap" Text="HarHarLinks" TextAlignment="Center" />
                 <!--<TextBlock Foreground="White" Grid.Row="9" Grid.Column="0"  TextWrapping="Wrap" Text="Polish" TextAlignment="Center" FontWeight="Bold" Margin="0,5,0,0" />-->
                 <TextBlock Foreground="White" Grid.Row="9" Grid.Column="0" TextWrapping="Wrap" Text="Polish" TextAlignment="Center" FontWeight="Bold" Margin="0,5,0,0" />

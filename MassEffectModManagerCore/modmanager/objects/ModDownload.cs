@@ -15,6 +15,7 @@ using Serilog;
 using MassEffectModManagerCore.modmanager.localizations;
 using LegendaryExplorerCore.Misc;
 using Microsoft.AppCenter.Analytics;
+using System.Linq;
 using MemoryAnalyzer = MassEffectModManagerCore.modmanager.memoryanalyzer.MemoryAnalyzer;
 
 namespace MassEffectModManagerCore.modmanager.objects
