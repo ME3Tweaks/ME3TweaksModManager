@@ -134,6 +134,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (Path.GetFileName(executable) == @"MassEffectModder.exe")
                 {
                     //Requires specific asset
+                    if (int.TryParse(release.TagName, out var relVer) && relVer >= 500)
+                    {
+                        asset = null;
+                        Log.Warning($@"MassEffectModder versions >= 500 are not supported for Original Trilogy, skipping version {relVer}");
+                        continue;
+                    }
+
                     asset = release.Assets.FirstOrDefault(x =>
                         x.Name == @"MassEffectModder-v" + release.TagName + @".7z");
                     if (asset == null)
@@ -151,6 +158,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (Path.GetFileName(executable) == @"MassEffectModderNoGui.exe")
                 {
                     //Requires specific asset
+                    if (int.TryParse(release.TagName, out var relVer) && relVer >= 500)
+                    {
+                        asset = null;
+                        Log.Warning($@"MassEffectModderNoGui versions >= 500 are not supported for Original Trilogy, skipping version {relVer}");
+                        continue;
+                    }
                     asset = release.Assets.FirstOrDefault(x =>
                         x.Name == @"MassEffectModderNoGui-v" + release.TagName + @".7z");
                     if (asset == null)
