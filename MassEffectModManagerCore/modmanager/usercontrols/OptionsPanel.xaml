@@ -4,6 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+             xmlns:modmanager="clr-namespace:MassEffectModManagerCore.modmanager"
+             xmlns:ui="clr-namespace:MassEffectModManagerCore.ui"
              mc:Ignorable="d" 
              DataContext="{Binding RelativeSource={RelativeSource Self}}"
              Width="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.7_400_900', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualWidth}"
@@ -16,6 +20,246 @@
             FontWeight="Bold"
             TextAlignment="Center"
             Margin="0,5" />
+        <Button
+            DockPanel.Dock="Bottom"
+            Content="{DynamicResource string_close}"
+            Command="{Binding CloseCommand}"
+            HorizontalAlignment="Right"
+            Padding="7,5"
+            Margin="0,5,0,0" />
+        <DockPanel>
 
+            <!-- Mod Library -->
+            <DockPanel DockPanel.Dock="Top">
+
+            <TextBlock
+                DockPanel.Dock="Top"
+                Text="{DynamicResource string_modLibraryLocation}"
+                TextAlignment="Center"
+                FontSize="16"
+                Margin="0,5,0,0"
+                FontWeight="Bold" />
+            <TextBlock
+                DockPanel.Dock="Top"
+                Text="{DynamicResource string_description_modsImportedAreStoredInLibrary}"
+                TextAlignment="Left"
+                Margin="0,5,0,0" />
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition
+                        Width="1*" />
+                    <ColumnDefinition
+                        Width="100" />
+                </Grid.ColumnDefinitions>
+                <xctk:WatermarkTextBox
+                    Watermark="{DynamicResource string_libraryLocation}"
+                    SnapsToDevicePixels="True"
+                    Margin="0,0,2,0"
+                    IsReadOnly="True"
+                    IsReadOnlyCaretVisible="False"
+                    Text="{Binding LibraryDir}"
+                    Foreground="{DynamicResource {x:Static adonisUi:Brushes.SlightlyDimmedForegroundBrush}}" />
+                <Button
+                    Content="{DynamicResource string_browse}"
+                    Grid.Column="1"
+                    Command="{Binding ChangeLibraryDirCommand}" />
+            </Grid>
+            </DockPanel>
+
+            <Grid
+                DockPanel.Dock="Top"
+                    Margin="0,5,0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition
+                            Width="*" />
+                    <ColumnDefinition
+                            Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition
+                            Height="Auto" />
+                    <RowDefinition
+                            Height="Auto" />
+                    <RowDefinition
+                            Height="Auto" />
+                    <RowDefinition
+                        Height="Auto" />
+                    <RowDefinition
+                        Height="Auto" />
+                    <RowDefinition
+                        Height="Auto" />
+                    <RowDefinition
+                        Height="Auto" />
+                    <RowDefinition
+                        Height="Auto" />
+                    <RowDefinition
+                        Height="Auto" />
+                    <RowDefinition
+                        Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock
+                        Grid.Row="0"
+                        Grid.ColumnSpan="2"
+                        Grid.Column="0"
+                        Text="{DynamicResource string_additionalOptions}"
+                        TextAlignment="Center"
+                        FontSize="16"
+                        Margin="0,0,0,5"
+                        FontWeight="Bold" />
+                <StackPanel
+                        Grid.Row="1"
+                        Grid.Column="0">
+                    <CheckBox
+                            FontWeight="Bold"
+                            Content="{DynamicResource string_enableTelemetry}"
+                            DockPanel.Dock="Top"
+                            IsChecked="{Binding Path=(modmanager:Settings.EnableTelemetry)}" />
+                    <TextBlock
+                            Margin="0,0,10,0"
+                            Text="{DynamicResource string_wp_description_telemetry}"
+                            TextWrapping="Wrap" />
+                </StackPanel>
+                <StackPanel
+                        Grid.Row="1"
+                        Grid.Column="1">
+                    <CheckBox
+                            FontWeight="Bold"
+                            Content="{DynamicResource string_developerMode}"
+                            DockPanel.Dock="Top"
+                            IsChecked="{Binding Path=(modmanager:Settings.DeveloperMode)}" />
+                    <TextBlock
+                            Margin="0,0,10,0"
+                            Text="{DynamicResource string_wp_description_developermod}"
+                            TextWrapping="Wrap" />
+                </StackPanel>
+                <StackPanel
+                    Grid.Row="2"
+                    Grid.Column="0">
+                    <CheckBox
+                        FontWeight="Bold"
+                        Content="{DynamicResource string_optIntoBetaUpdates}"
+                        DockPanel.Dock="Top"
+                        IsChecked="{Binding Path=(modmanager:Settings.BetaMode)}" />
+                    <TextBlock
+                        Margin="0,0,10,0"
+                        Text="{DynamicResource string_tooltip_optIntoBetaUpdates}"
+                        TextWrapping="Wrap" />
+                </StackPanel>
+                <StackPanel
+                    ui:SharedUIBindings.GenerationOT="true"
+                    Grid.Row="2"
+                    Grid.Column="1">
+                    <CheckBox
+                        FontWeight="Bold"
+                        Content="{DynamicResource string_compressPackagesOnInstall}"
+                        DockPanel.Dock="Top"
+                        IsChecked="{Binding Path=(modmanager:Settings.PreferCompressingPackages)}" />
+                    <TextBlock
+                        Margin="0,0,10,0"
+                        Text="{DynamicResource string_tooltip_compressPackagesOnInstall}"
+                        TextWrapping="Wrap" />
+                </StackPanel>
+                <TextBlock
+                    Grid.Row="4"
+                    Grid.ColumnSpan="2"
+                    Grid.Column="0"
+                    Text="Logging"
+                    TextAlignment="Center"
+                    FontSize="16"
+                    Margin="0,0,0,5"
+                    FontWeight="Bold" />
+                <TextBlock
+                    Grid.Row="5"
+                    Grid.ColumnSpan="2"
+                    Grid.Column="0"
+                    Text="Logging may reduce application performance, but is useful for troubleshooting."
+                    TextAlignment="Center"/>
+                <StackPanel
+                    Grid.Row="6"
+                    Grid.Column="0">
+                    <CheckBox
+                        FontWeight="Bold"
+                        Content="{DynamicResource string_LogModStartup}"
+                        DockPanel.Dock="Top"
+                        IsChecked="{Binding Path=(modmanager:Settings.LogModStartup)}" />
+                    <TextBlock
+                        Margin="0,0,10,0"
+                        Text="{DynamicResource string_tooltip_logModLoading}"
+                        TextWrapping="Wrap" />
+                </StackPanel>
+                <StackPanel
+                    Grid.Row="6"
+                    Grid.Column="1">
+                    <CheckBox
+                        FontWeight="Bold"
+
+                        Content="{DynamicResource string_LogModInstallation}"
+                        DockPanel.Dock="Top"
+                        IsChecked="{Binding Path=(modmanager:Settings.LogModInstallation)}" />
+                    <TextBlock
+                        Margin="0,0,10,0"
+                        Text="{DynamicResource string_tooltip_logModInstaller}"
+                        TextWrapping="Wrap" />
+                </StackPanel>
+                <StackPanel
+                    Grid.Row="7"
+                    Grid.Column="0">
+                    <CheckBox
+                        FontWeight="Bold"
+                        Content="{DynamicResource string_LogModUpdater}"
+                        DockPanel.Dock="Top"
+                        IsChecked="{Binding Path=(modmanager:Settings.LogModUpdater)}" />
+                    <TextBlock
+                        Margin="0,0,10,0"
+                        Text="{DynamicResource string_tooltip_logModUpdater}"
+                        TextWrapping="Wrap" />
+                </StackPanel>
+                <StackPanel
+                    Grid.Row="7"
+                    Grid.Column="1">
+                    <CheckBox
+                        FontWeight="Bold"
+                        Content="{DynamicResource string_LogModMakerCompiler}"
+                        DockPanel.Dock="Top"
+                        IsChecked="{Binding Path=(modmanager:Settings.LogModMakerCompiler)}" />
+                    <TextBlock
+                        Margin="0,0,10,0"
+                        Text="{DynamicResource string_tooltip_logModMakerCompiler}"
+                        TextWrapping="Wrap" />
+                </StackPanel>
+            </Grid>
+
+            <!-- THEME -->
+            <DockPanel LastChildFill="False" HorizontalAlignment="Center">
+                <TextBlock DockPanel.Dock="Top" Text="Application theme" FontWeight="Bold" TextAlignment="Center"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button
+                        Margin="12,2,2,2"
+                        Click="ChangeTheme_Light_Clicked">
+                        <StackPanel>
+                            <Image
+                                Source="/images/lighttheme.png"
+                                Width="64" />
+                            <TextBlock
+                                Text="{DynamicResource string_light}"
+                                TextAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                    <Button
+        Margin="2"
+        Click="ChangeTheme_Dark_Clicked">
+                        <StackPanel>
+                            <Image
+                Source="/images/darktheme.png"
+                Width="64" />
+                            <TextBlock
+                Text="{DynamicResource string_dark}"
+                TextAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </DockPanel>
+        </DockPanel>
     </DockPanel>
+
 </local:MMBusyPanelBase>

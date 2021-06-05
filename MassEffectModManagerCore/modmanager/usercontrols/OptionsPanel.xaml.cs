@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using MassEffectModManagerCore.ui;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -22,7 +23,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     {
         public OptionsPanel()
         {
+            LoadCommands();
             InitializeComponent();
+        }
+
+        public ICommand CloseCommand { get; set; }
+
+        private void LoadCommands()
+        {
+            CloseCommand = new GenericCommand(() => OnClosing(DataEventArgs.Empty));
         }
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
@@ -35,5 +44,24 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         }
 
+        private void ChangeTheme_Dark_Clicked(object sender, RoutedEventArgs e)
+        {
+            ChangeTheme(true);
+        }
+
+        private void ChangeTheme_Light_Clicked(object sender, RoutedEventArgs e)
+        {
+            ChangeTheme(false);
+        }
+
+        private void ChangeTheme(bool dark)
+        {
+            if (Settings.DarkTheme ^ dark)
+            {
+                Settings.DarkTheme = !Settings.DarkTheme;
+                //Settings.Save();
+                mainwindow.SetTheme();
+            }
+        }
     }
 }
