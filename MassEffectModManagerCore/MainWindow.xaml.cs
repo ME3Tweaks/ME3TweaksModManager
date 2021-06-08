@@ -1213,6 +1213,14 @@ namespace MassEffectModManagerCore
         /// <param name="control">Control to show or queue</param>
         private void ReleaseBusyControl()
         {
+            var closingPanel = BusyContent as MMBusyPanelBase;
+            BusyContent = null;
+            if (closingPanel != null)
+            {
+                HandlePanelResult(closingPanel.Result);
+
+            }
+
             if (queuedUserControls.Count == 0)
             {
                 BusyContent = null;
@@ -1232,6 +1240,53 @@ namespace MassEffectModManagerCore
                 //control.OnPanelVisible();
                 BusyContent = control;
             }
+        }
+
+        private void HandlePanelResult(PanelResult result)
+        {
+            // This is pretty dicey with thread safety... 
+            foreach (var v in result.TargetsToPlotManagerSync)
+            {
+                SyncPlotManagerForTarget(v);
+            }
+            foreach (var v in result.TargetsToAutoTOC)
+            {
+                AutoTOCTarget(v);
+            }
+
+            Task.Run(() =>
+            {
+                if (result.ReloadTargets)
+                {
+                    PopulateTargets();
+                }
+            }).ContinueWithOnUIThread(x =>
+            {
+
+                if (result.PanelToOpen != null)
+                {
+                    MMBusyPanelBase control = null;
+                    switch (result.PanelToOpen)
+                    {
+                        case EPanelID.ASI_MANAGER:
+                            control = new ASIManagerPanel(result.SelectedTarget);
+                            break;
+                        default:
+                            throw new Exception($@"HandlePanelResult did not handle panelid {result.PanelToOpen}");
+                    }
+
+                    control.Close += (a, b) => { ReleaseBusyControl(); };
+                    ShowBusyControl(control);
+                    Analytics.TrackEvent($@"Launched {result.PanelToOpen}", new Dictionary<string, string>()
+                    {
+                        {@"Invocation method", @"Installation Information"}
+                    });
+                }
+                else if (result.ToolToLaunch != null)
+                {
+                    BootToolPathPassthrough(result.ToolToLaunch);
+                }
+            });
         }
 
         private void ShowBackupPane()
@@ -1272,32 +1327,6 @@ namespace MassEffectModManagerCore
             installationInformation.Close += (a, b) =>
             {
                 ReleaseBusyControl();
-                if (b.Data is string result)
-                {
-                    if (result == @"ASIManager")
-                    {
-                        // This is kinda risky since when the control unloads it might dump the list and 
-                        // the SelectedTarget might be null. I think the worst case is that it simply won't select the tab/target in ASI Manager.
-                        var selectedTarget = installationInformation.SelectedTarget;
-
-                        var asiManager = new ASIManagerPanel(selectedTarget);
-                        asiManager.Close += (a, b) => { ReleaseBusyControl(); };
-                        ShowBusyControl(asiManager);
-                        Analytics.TrackEvent(@"Launched ASI Manager", new Dictionary<string, string>()
-                        {
-                            {@"Invocation method", @"Installation Information"}
-                        });
-                    }
-                    if (result == @"ALOTInstaller")
-                    {
-                        BootToolPathPassthrough(ExternalToolLauncher.ALOTInstaller);
-                    }
-
-                    if (result == @"ReloadTargets")
-                    {
-                        PopulateTargets();
-                    }
-                }
             };
             ShowBusyControl(installationInformation);
         }
@@ -3649,22 +3678,27 @@ namespace MassEffectModManagerCore
                 var target = GetCurrentTarget(game);
                 if (target != null)
                 {
-                    var task = backgroundTaskEngine.SubmitBackgroundJob(@"SyncPlotManager",
-                        $"Syncing Plot Manager for {game.ToGameName()}",
-                        $"Synced Plot Manager for {game.ToGameName()}");
-                    var pmuUI = new PlotManagerUpdatePanel(target);
-                    pmuUI.Close += (a, b) =>
-                    {
-                        backgroundTaskEngine.SubmitJobCompletion(task);
-                        ReleaseBusyControl();
-                    };
-                    ShowBusyControl(pmuUI);
+                    SyncPlotManagerForTarget(target);
                 }
                 else
                 {
-                    Log.Error(@"AutoTOC game target was null! This shouldn't be possible");
+                    Log.Error(@"SyncPlotManagerForGame game target was null! This shouldn't be possible");
                 }
             }
+        }
+
+        private void SyncPlotManagerForTarget(GameTarget target)
+        {
+            var task = backgroundTaskEngine.SubmitBackgroundJob(@"SyncPlotManager",
+                $"Syncing Plot Manager for {target.Game.ToGameName()}",
+                $"Synced Plot Manager for {target.Game.ToGameName()}");
+            var pmuUI = new PlotManagerUpdatePanel(target);
+            pmuUI.Close += (a, b) =>
+            {
+                backgroundTaskEngine.SubmitJobCompletion(task);
+                ReleaseBusyControl();
+            };
+            ShowBusyControl(pmuUI);
         }
 
         private void RunAutoTOCOnGame(object obj)
@@ -3674,20 +3708,25 @@ namespace MassEffectModManagerCore
                 var target = GetCurrentTarget(game);
                 if (target != null)
                 {
-                    var task = backgroundTaskEngine.SubmitBackgroundJob(@"AutoTOC", M3L.GetString(M3L.string_runningAutoTOC), M3L.GetString(M3L.string_ranAutoTOC));
-                    var autoTocUI = new AutoTOC(target);
-                    autoTocUI.Close += (a, b) =>
-                    {
-                        backgroundTaskEngine.SubmitJobCompletion(task);
-                        ReleaseBusyControl();
-                    };
-                    ShowBusyControl(autoTocUI);
+                    AutoTOCTarget(target);
                 }
                 else
                 {
                     Log.Error(@"AutoTOC game target was null! This shouldn't be possible");
                 }
             }
+        }
+
+        private void AutoTOCTarget(GameTarget target)
+        {
+            var task = backgroundTaskEngine.SubmitBackgroundJob(@"AutoTOC", M3L.GetString(M3L.string_runningAutoTOC), M3L.GetString(M3L.string_ranAutoTOC));
+            var autoTocUI = new AutoTOC(target);
+            autoTocUI.Close += (a, b) =>
+            {
+                backgroundTaskEngine.SubmitJobCompletion(task);
+                ReleaseBusyControl();
+            };
+            ShowBusyControl(autoTocUI);
         }
 
         private void ChangeSetting_Clicked(object sender, RoutedEventArgs e)
@@ -4058,7 +4097,7 @@ namespace MassEffectModManagerCore
 
         private void MD5DB_Gen_Click(object sender, RoutedEventArgs e)
         {
-            MD5Gen.GenerateMD5Map(@"D:\Steam\steamapps\common\Mass Effect Legendary Edition\Game\Launcher", "lel.bin");
+            MD5Gen.GenerateMD5Map(@"B:\SteamLibrary\steamapps\common\Mass Effect Legendary Edition\Game\Launcher", "lel.bin");
             Debug.WriteLine(@"Done");
         }
 

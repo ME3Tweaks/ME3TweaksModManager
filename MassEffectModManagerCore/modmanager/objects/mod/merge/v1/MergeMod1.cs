@@ -9,6 +9,7 @@ using LegendaryExplorerCore.Memory;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 using Serilog;
@@ -25,6 +26,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
         public string MergeModFilename { get; set; }
 
         [JsonProperty("game")]
+        [JsonConverter(typeof(StringEnumConverter))]
         public MEGame Game { get; set; } // Only used for sanity check
 
         [JsonProperty("files")]
@@ -123,7 +125,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
             File.WriteAllText(Path.Combine(outputfolder, $@"{Path.GetFileNameWithoutExtension(MergeModFilename)}.json"),
                 JsonConvert.SerializeObject(this, Formatting.Indented, new JsonSerializerSettings
                 {
-                    NullValueHandling = NullValueHandling.Ignore
+                    NullValueHandling = NullValueHandling.Ignore,
                 }));
         }
 

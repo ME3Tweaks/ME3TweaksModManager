@@ -11,7 +11,6 @@
       "files": [
         {
           "filename": "SFXGame.pcc",
-          "fileexistanceoptional": true,
           "applytoalllocalizations": true,
           "changes": [
             {
@@ -70,7 +69,6 @@
         [
           {
             "filename": "SFXGame.pcc",
-            "fileexistanceoptional": true,
             "applytoalllocalizations": true,
             "changes": [
               {
@@ -104,7 +102,6 @@
         "examples": [
           {
             "filename": "SFXGame.pcc",
-            "fileexistanceoptional": true,
             "applytoalllocalizations": true,
             "changes": [
               {

@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using MassEffectModManagerCore.modmanager.objects;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -33,6 +34,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             window.KeyDown += HandleKeyPress;
             OnPanelVisible();
         }
+
+        /// <summary>
+        /// Result of the panel on close
+        /// </summary>
+        public PanelResult Result = new();
 
         public abstract void HandleKeyPress(object sender, KeyEventArgs e);
         public abstract void OnPanelVisible();

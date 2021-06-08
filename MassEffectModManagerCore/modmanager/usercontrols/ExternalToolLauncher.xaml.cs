@@ -35,8 +35,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public const string LegendaryExplorer_Beta = @"Legendary Explorer (Nightly)";
         public const string ALOTInstaller = @"ALOT Installer";
         public const string MEIM = @"Mass Effect INI Modder"; //this is no longer external.
-        public const string MEM = @"Mass Effect Modder";
-        public const string MEM_CMD = @"Mass Effect Modder No Gui";
+        public const string MEM = @"Mass Effect Modder"; // OT only
+        public const string MEM_CMD = @"Mass Effect Modder No Gui"; // OT Only
         public const string MER = @"Mass Effect Randomizer";
         public const string ME2R = @"Mass Effect 2 Randomizer";
         private string tool;

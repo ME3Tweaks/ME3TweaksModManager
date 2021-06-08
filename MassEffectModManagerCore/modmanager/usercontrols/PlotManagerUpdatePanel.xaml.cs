@@ -59,7 +59,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             sb.AppendLine(line);
 
                             // Method name
-                            currentFuncNum = line.Substring(21);
+                            currentFuncNum = line.Substring(22);
                             currentFuncNum = currentFuncNum.Substring(0, currentFuncNum.IndexOf('('));
                             if (int.TryParse(currentFuncNum, out var num))
                             {
@@ -71,6 +71,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                         { @"DLCName", pmuDLCName }
                                     });
                                     sb = null;
+                                    return false;
                                 }
                                 else if (num.ToString().Length != currentFuncNum.Length)
                                 {
@@ -80,6 +81,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                         { @"DLCName", pmuDLCName }
                                     });
                                     sb = null;
+                                    return false;
                                 }
                             }
                             else
@@ -90,6 +92,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     { @"DLCName", pmuDLCName }
                                 });
                                 sb = null;
+                                return false;
                             }
                         }
                         else
