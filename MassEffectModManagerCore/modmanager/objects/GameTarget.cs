@@ -100,10 +100,14 @@ namespace MassEffectModManagerCore.modmanager.objects
                         }
                         else
                         {
-                            if (GameSource.Contains(@"Origin") && (Game == MEGame.ME3 || Game.IsLEGame()))
+                            if (GameSource.Contains(@"Origin") && (Game is MEGame.ME3 or MEGame.LELauncher || Game.IsLEGame()))
                             {
                                 // Check for steam
-                                var testPath = Game.IsLEGame() ? Directory.GetParent(Directory.GetParent(TargetPath).FullName).FullName : TargetPath;
+                                var testPath = Game == MEGame.ME3 ? TargetPath : Directory.GetParent(TargetPath).FullName;
+                                if (Game != MEGame.ME3)
+                                {
+                                    testPath = Directory.GetParent(testPath).FullName;
+                                }
                                 if (Directory.Exists(Path.Combine(testPath, @"__overlay")))
                                 {
                                     GameSource += @" (Steam version)";
