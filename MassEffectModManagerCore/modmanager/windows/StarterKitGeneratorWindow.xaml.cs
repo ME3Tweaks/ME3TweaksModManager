@@ -283,7 +283,7 @@ namespace MassEffectModManagerCore.modmanager.windows
             });
             Validator.AddRule(nameof(ModDLCModuleNumber), () =>
             {
-                if (Game.IsGame2()) return RuleResult.Valid();
+                if (!Game.IsGame2()) return RuleResult.Valid();
                 if (ModDLCModuleNumber <= 0 || ModDLCModuleNumber >= ushort.MaxValue)
                 {
                     return RuleResult.Invalid(M3L.GetString(M3L.string_interp_valueMustBeBetween0AndX, ushort.MaxValue.ToString()));
