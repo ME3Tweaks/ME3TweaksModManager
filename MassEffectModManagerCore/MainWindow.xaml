@@ -1208,6 +1208,19 @@
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem
+                        ui:SharedUIBindings.GenerationLE="True"
+                        Header="Mass Effect Modder (for Legendary Edition)"
+                        Name="MassEffectModderLE_MenuItem"
+                        Click="LaunchExternalTool_Clicked"
+                        ToolTip="{DynamicResource string_Texturebrowserandinstaller}">
+                        <MenuItem.Icon>
+                            <Image
+                                Source="/modmanager/toolicons/masseffectmodder_32.png"
+                                Width="16"
+                                RenderOptions.BitmapScalingMode="Linear" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem
                         ui:SharedUIBindings.GenerationOT="True"
                         Header="{DynamicResource string_MassEffectRandomizer}"
                         Name="MassEffectRandomizer_MenuItem"
