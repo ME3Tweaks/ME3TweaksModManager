@@ -37,6 +37,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public const string MEIM = @"Mass Effect INI Modder"; //this is no longer external.
         public const string MEM = @"Mass Effect Modder"; // OT only
         public const string MEM_CMD = @"Mass Effect Modder No Gui"; // OT Only
+        public const string MEM_LE = @"Mass Effect Modder LE"; // LE only
+        public const string MEM_LE_CMD = @"Mass Effect Modder No Gui LE"; // LE Only
         public const string MER = @"Mass Effect Randomizer";
         public const string ME2R = @"Mass Effect 2 Randomizer";
         private string tool;
@@ -62,6 +64,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     case LegendaryExplorer_Beta:
                         return @"/modmanager/toolicons/lex_big.png";
                     case MEM:
+                    case MEM_LE:
                         return @"/modmanager/toolicons/masseffectmodder_big.png";
                     case MEIM:
                         return @"/modmanager/toolicons/masseffectinimodder_big.png";
@@ -322,7 +325,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     toolGithubRepoName = @"LegendaryExplorer";
                     break;
                 case MEM:
+                case MEM_LE:
                 case MEM_CMD:
+                case MEM_LE_CMD:
                     toolGithubOwner = @"MassEffectModder";
                     toolGithubRepoName = @"MassEffectModder";
                     break;
@@ -455,7 +460,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     if (latestRelease != null)
                     {
                         FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(localExecutable);
-                        if (tool == MEM || tool == MEM_CMD)
+                        if (tool is MEM or MEM_CMD or MEM_LE or MEM_LE_CMD)
                         {
                             //Checks based on major
                             int releaseVer = int.Parse(latestRelease.TagName);
@@ -566,11 +571,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             if (release.Assets.Any())
             {
-                if (tool == MEM)
+                if (tool is MEM or MEM_LE)
                 {
                     return release.Assets.Any(x => x.Name == @"MassEffectModder-v" + release.TagName + @".7z");
                 }
-                if (tool == MEM_CMD)
+                if (tool is MEM_CMD or MEM_LE_CMD)
                 {
                     return release.Assets.Any(x => x.Name == @"MassEffectModderNoGui-v" + release.TagName + @".7z");
                 }
@@ -638,6 +643,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             LegendaryExplorer_Beta,
             EGMSettings,
             MEM,
+            MEM_LE,
             MER,
             ME2R,
             ALOTInstaller,
