@@ -31,7 +31,9 @@ namespace MassEffectModManagerCore.modmanager.helpers
     /// </summary>
     public static class MEMIPCHandler
     {
-
+        /// <summary>
+        /// Path of MEM exe to run. Update before use
+        /// </summary>
         public static string MEMPATH;
 
         #region Static Property Changed
@@ -340,7 +342,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
         public static Dictionary<string, string> GetLODs(MEGame game)
         {
             Dictionary<string, string> lods = new Dictionary<string, string>();
-            var args = $@"--print-lods --gameid {game.ToGameNum()} --ipc";
+            var args = $@"--print-lods --gameid {game.ToMEMGameNum()} --ipc";
             int exitcode = -1;
             MEMIPCHandler.RunMEMIPCUntilExit(args, ipcCallback: (command, param) =>
             {

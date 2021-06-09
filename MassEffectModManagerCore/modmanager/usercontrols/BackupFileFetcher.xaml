@@ -1,5 +1,13 @@
 ﻿<local:MMBusyPanelBase
-    x:Class="MassEffectModManagerCore.modmanager.usercontrols.BackupFileFetcher" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:fa="http://schemas.fontawesome.io/icons/" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+    x:Class="MassEffectModManagerCore.modmanager.usercontrols.BackupFileFetcher" 
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" 
+    xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" 
+    xmlns:fa="http://schemas.fontawesome.io/icons/" 
+    xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
     mc:Ignorable="d"
     d:DesignHeight="450"
     d:DesignWidth="800"
@@ -49,36 +57,6 @@
                 DockPanel.Dock="Right"
                 Command="{Binding CloseCommand}"
                 HorizontalAlignment="Right" />
-            <Button
-                Content="{DynamicResource string_exportExtract}"
-                Padding="7,4"
-                DockPanel.Dock="Right"
-                Command="{Binding FetchFileCommand}"
-                HorizontalAlignment="Right"
-                Margin="5,0" />
-            <CheckBox
-                Content="{DynamicResource string_extractAsMixinSource}"
-                DockPanel.Dock="Right"
-                IsChecked="{Binding ExtractAsMixinSource}"
-                Visibility="{Binding ShowMixinSourceOption, Converter={StaticResource BoolToVisibilityConverter}}" />
-            <xctk:WatermarkTextBox
-                Watermark="{DynamicResource string_typeToFilter}"
-                Width="200"
-                HorizontalAlignment="Left"
-                Text="{Binding FilterTextME1, UpdateSourceTrigger=PropertyChanged}"
-                Visibility="{Binding SelectedGameIndex, Converter={StaticResource EqualIntVisibilityConverter}, ConverterParameter='0'}" />
-            <xctk:WatermarkTextBox
-                Watermark="{DynamicResource string_typeToFilter}"
-                Width="200"
-                HorizontalAlignment="Left"
-                Text="{Binding FilterTextME2, UpdateSourceTrigger=PropertyChanged}"
-                Visibility="{Binding SelectedGameIndex, Converter={StaticResource EqualIntVisibilityConverter}, ConverterParameter='1'}" />
-            <xctk:WatermarkTextBox
-                Watermark="{DynamicResource string_typeToFilter}"
-                Width="200"
-                HorizontalAlignment="Left"
-                Text="{Binding FilterTextME3, UpdateSourceTrigger=PropertyChanged}"
-                Visibility="{Binding SelectedGameIndex, Converter={StaticResource EqualIntVisibilityConverter}, ConverterParameter='2'}" />
         </DockPanel>
         <Grid
             VerticalAlignment="Stretch">
@@ -94,92 +72,56 @@
                     Margin="10"
                     Spin="True" />
                 <TextBlock
-                    Text="{DynamicResource string_gettingListOfFilesFromBackup}"
+                    Text="{Binding LoadingText}"
                     HorizontalAlignment="Center"
                     FontWeight="Bold" />
             </StackPanel>
             <TabControl
-                SelectedIndex="{Binding SelectedGameIndex}"
-                VerticalAlignment="Stretch"
-                Visibility="{Binding LoadingInProgress, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}">
-                <!-- ME1 -->
-                <TabItem>
-                    <TabItem.Header>
-                        <StackPanel
-                            Orientation="Horizontal">
-                            <Image
-                                Source="{StaticResource me1gameicon}"
-                                Width="16"
-                                Height="16"
-                                Margin="0,0,5,0" />
-                            <TextBlock
-                                Text="Mass Effect" />
+                Visibility="{Binding LoadingInProgress, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}"
+                    VerticalAlignment="Stretch"
+                    ItemsSource="{Binding Games}">
+                <TabControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16" Margin="0,0,5,0" />
+                            <TextBlock Text="{Binding GameName}" />
                         </StackPanel>
-                    </TabItem.Header>
-                    <DockPanel>
-                        <ListBox
-                            ItemsSource="{Binding ME1FilesView}"
-                            IsTextSearchEnabled="True"
-                            SelectedItem="{Binding SelectedME1File}"
-                            TextSearch.TextPath="Filename"
-                            HorizontalAlignment="Stretch"
-                            ItemTemplate="{StaticResource FileTemplate}"
-                            ItemContainerStyle="{StaticResource FileContainerStyle}"
-                            VirtualizingStackPanel.VirtualizationMode="Recycling" />
-                    </DockPanel>
-                </TabItem>
-                <!-- ME2 -->
-                <TabItem>
-                    <TabItem.Header>
-                        <StackPanel
-                            Orientation="Horizontal">
-                            <Image
-                                Source="{StaticResource me2gameicon}"
-                                Width="16"
-                                Height="16"
-                                Margin="0,0,5,0" />
-                            <TextBlock
-                                Text="Mass Effect 2" />
-                        </StackPanel>
-                    </TabItem.Header>
-                    <DockPanel>
-                        <ListBox
-                            ItemsSource="{Binding ME2FilesView}"
-                            IsTextSearchEnabled="True"
-                            SelectedItem="{Binding SelectedME2File}"
-                            TextSearch.TextPath="Filename"
-                            HorizontalAlignment="Stretch"
-                            ItemTemplate="{StaticResource FileTemplate}"
-                            ItemContainerStyle="{StaticResource FileContainerStyle}"
-                            VirtualizingStackPanel.VirtualizationMode="Recycling" />
-                    </DockPanel>
-                </TabItem>
-                <!-- ME3 -->
-                <TabItem>
-                    <TabItem.Header>
-                        <StackPanel
-                            Orientation="Horizontal">
-                            <Image
-                                Source="{StaticResource me3gameicon}"
-                                Width="16"
-                                Height="16"
-                                Margin="0,0,5,0" />
-                            <TextBlock
-                                Text="Mass Effect 3" />
-                        </StackPanel>
-                    </TabItem.Header>
-                    <DockPanel>
-                        <ListBox
-                            ItemsSource="{Binding ME3FilesView}"
-                            IsTextSearchEnabled="True"
-                            SelectedItem="{Binding SelectedME3File}"
-                            TextSearch.TextPath="Filename"
-                            HorizontalAlignment="Stretch"
-                            ItemTemplate="{StaticResource FileTemplate}"
-                            ItemContainerStyle="{StaticResource FileContainerStyle}"
-                            VirtualizingStackPanel.VirtualizationMode="Recycling" />
-                    </DockPanel>
-                </TabItem>
+                    </DataTemplate>
+                </TabControl.ItemTemplate>
+                <TabControl.ContentTemplate>
+                    <DataTemplate DataType="{x:Type local:BackupFileFetcher+BackupFetcherGame}">
+                        <DockPanel>
+                            <DockPanel DockPanel.Dock="Bottom">
+                                <Button
+                                    Content="{DynamicResource string_exportExtract}"
+                                    Padding="7,4"
+                                    DockPanel.Dock="Right"
+                                    Command="{Binding FetchFileCommand}"
+                                    HorizontalAlignment="Right"
+                                    Margin="5,0" />
+                                <CheckBox
+                                    Content="{DynamicResource string_extractAsMixinSource}"
+                                    DockPanel.Dock="Right"
+                                    IsChecked="{Binding ExtractAsMixinSource}"
+                                    Visibility="{Binding ShowMixinSourceOption, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                <xctk:WatermarkTextBox
+                                    Watermark="{DynamicResource string_typeToFilter}"
+                                    Width="200"
+                                    HorizontalAlignment="Left"
+                                    Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}"/>
+                            </DockPanel>
+                            <ListBox
+                                    ItemsSource="{Binding FilesView}"
+                                    IsTextSearchEnabled="True"
+                                    TextSearch.TextPath="Filename"
+                                    SelectedItem="{Binding SelectedFile}"
+                                    HorizontalAlignment="Stretch"
+                                    ItemTemplate="{StaticResource FileTemplate}"
+                                    ItemContainerStyle="{StaticResource FileContainerStyle}"
+                                    VirtualizingStackPanel.VirtualizationMode="Recycling" />
+                        </DockPanel>
+                    </DataTemplate>
+                </TabControl.ContentTemplate>
             </TabControl>
         </Grid>
     </DockPanel>
