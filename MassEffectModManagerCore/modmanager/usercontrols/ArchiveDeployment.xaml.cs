@@ -346,7 +346,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         var mount = new MountFile(mountFile);
 
                         int moduleNum = -1;
-                        if (ModBeingDeployed.Game == MEGame.ME2)
+                        if (ModBeingDeployed.Game.IsGame2())
                         {
                             // Look up the module number
                             var bioengine = Path.Combine(modCookedDir, @"BioEngine.ini");
@@ -366,7 +366,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             }
                         }
 
-                        var tlkBasePath = ModBeingDeployed.Game == MEGame.ME2 ? $@"DLC_{moduleNum}" : customDLC;
+                        var tlkBasePath = ModBeingDeployed.Game.IsGame2() ? $@"DLC_{moduleNum}" : customDLC;
                         Dictionary<string, List<ME1TalkFile.TLKStringRef>> tlkMappings = new Dictionary<string, List<ME1TalkFile.TLKStringRef>>();
                         foreach (var language in languages)
                         {

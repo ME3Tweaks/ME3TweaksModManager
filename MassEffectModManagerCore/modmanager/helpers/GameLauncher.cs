@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using LegendaryExplorerCore;
 using LegendaryExplorerCore.GameFilesystem;
+using LegendaryExplorerCore.Gammtek.Extensions;
 using MassEffectModManagerCore.modmanager.objects;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Packages;
@@ -33,6 +34,8 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 target.UpdateLODs(Settings.AutoUpdateLODs2K);
             }
 
+
+            List<string> commandLineArgs = new();
             var exe = M3Directories.GetExecutablePath(target);
             var exeDir = M3Directories.GetExecutableDirectory(target);
             var environmentVars = new Dictionary<string, string>();
@@ -116,6 +119,8 @@ namespace MassEffectModManagerCore.modmanager.helpers
 
             if (Settings.SkipLELauncher && target.Game.IsLEGame())
             {
+                commandLineArgs.Add($@"-game={target.Game.ToGameNum() - 3}"); // Autoboot dll
+
                 var sourceFile = Path.Combine(Utilities.GetLELaunchToolsGameBootDir(), @"VanillaLauncherUI.swf");
                 var destFile = Path.Combine(LEDirectory.GetLauncherPath(), @"Content", @"LauncherUI.swf");
 
@@ -139,9 +144,18 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 {
                     Log.Warning(@"LauncherUI.swf has wrong hash, not JPatching to autoboot");
                 }
+
+                destFile = Path.Combine(LEDirectory.GetLauncherPath(), @"Content", @"BWLogo.bik");
+                if (File.Exists(destFile) && new FileInfo(destFile).Length > 500)
+                {
+                    // > 500 bytes
+                    var blackFrame = Utilities.ExtractInternalFileToStream($@"MassEffectModManagerCore.modmanager.lelauncherbypass.singleblackframe.bik");
+                    blackFrame.WriteToFile(destFile);
+                    Log.Information(@"Installed single black frame for BWLogo.bik");
+                }
             }
 
-            Utilities.RunProcess(exe, (string)null, false, true, false, false, environmentVars);
+            Utilities.RunProcess(exe, commandLineArgs, false, true, false, false, environmentVars);
             Thread.Sleep(3500); // Keep task alive for a bit
         }
 

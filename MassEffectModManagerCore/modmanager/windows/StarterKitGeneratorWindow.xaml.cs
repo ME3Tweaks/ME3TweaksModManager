@@ -205,7 +205,7 @@ namespace MassEffectModManagerCore.modmanager.windows
             //            ModDescription = "This is a starter kit debug testing mod.\n\nHerp a derp flerp.";
             //#endif
             InitializeComponent();
-            Games = MEGameSelector.GetGameSelectors();
+            Games = MEGameSelector.GetGameSelectors().Where(x => x.Game != MEGame.LE1).ToArray();
         }
 
         public MEGame? PendingGame { get; set; }
