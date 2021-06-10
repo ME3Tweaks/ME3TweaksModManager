@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 
@@ -22,6 +24,31 @@ namespace MassEffectModManagerCore.modmanager.converters
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {    // Don't need any convert back
+            return null;
+        }
+    }
+
+    [Localizable(false)]
+    [ValueConversion(typeof(bool), typeof(Visibility))]
+    public class MultiBoolToVisibilityConverter : IMultiValueConverter
+    {
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            var allBools = values.OfType<bool>().ToList();
+            if (values.Length != allBools.Count)
+            {
+                Debug.WriteLine(@"Incorrectly setup MultiBoolToVisibilityConverter");
+                return Visibility.Collapsed;
+            }
+            if (parameter is string str && (str is "Inverse" or "Not"))
+            {
+                return allBools.Any(x => x) ? Visibility.Collapsed : Visibility.Visible;
+            }
+            return allBools.Any(x => x) ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
             return null;
         }
     }

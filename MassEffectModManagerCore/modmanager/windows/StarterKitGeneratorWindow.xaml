@@ -335,7 +335,7 @@
                                         </Style.Triggers>
                                     </Style>
                                 </Button.Style>
-                                <Image Width="24" Source="{Binding Path=., Converter={StaticResource GameToImageIconConverter}, ConverterParameter=24f}"/>
+                                <Image Width="24" Source="{Binding Path=., Converter={StaticResource GameToImageIconConverter}, ConverterParameter=24}"/>
                             </Button>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>

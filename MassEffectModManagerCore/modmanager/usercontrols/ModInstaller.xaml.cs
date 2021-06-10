@@ -15,7 +15,6 @@ using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.modmanager.objects;
-using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Gammtek.Extensions;
@@ -25,8 +24,10 @@ using LegendaryExplorerCore.Unreal;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using Newtonsoft.Json;
+using Pathoschild.FluentNexus.Models;
 using Serilog;
 using SevenZip;
+using Mod = MassEffectModManagerCore.modmanager.objects.mod.Mod;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -210,7 +211,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 return;
             }
 
-            Utilities.InstallBinkBypass(SelectedGameTarget); //Always install binkw32, don't bother checking if it is already ASI version.
+            if (ModBeingInstalled.Game.IsOTGame())
+            {
+                // Don't bother LE since we don't need ASI support right now
+                Utilities.InstallBinkBypass(SelectedGameTarget); //Always install binkw32, don't bother checking if it is already ASI version.
+            }
 
             if (ModBeingInstalled.Game == MEGame.ME2 && ModBeingInstalled.GetJob(ModJob.JobHeader.ME2_RCWMOD) != null && installationJobs.Count == 1)
             {

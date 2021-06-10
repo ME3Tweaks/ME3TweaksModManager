@@ -2,16 +2,20 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Windows.Documents;
 using System.Windows.Input;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Packages;
+using LegendaryExplorerCore.Packages.CloningImportingAndRelinking;
+using LegendaryExplorerCore.Unreal.BinaryConverters;
 using LegendaryExplorerCore.UnrealScript;
 using LegendaryExplorerCore.UnrealScript.Compiling.Errors;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
+using Microsoft.AppCenter.Analytics;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -31,13 +35,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public static bool RunPlotManagerUpdate(GameTarget target)
         {
-            Log.Information(@"Updating PlotManager for game: {target.TargetPath}");
+            Log.Information($@"Updating PlotManager for game: {target.TargetPath}");
             var supercedances = M3Directories.GetFileSupercedances(target, new[] { @".pmu" });
             Dictionary<string, string> funcMap = new();
             if (supercedances.TryGetValue(@"PlotManagerUpdate.pmu", out var supercedanes))
             {
                 StringBuilder sb = null;
-                string currentFunc = null;
+                string currentFuncNum = null;
                 foreach (var pmuDLCName in supercedanes)
                 {
                     var text = File.ReadAllLines(Path.Combine(M3Directories.GetDLCPath(target), pmuDLCName, target.Game.CookedDirName(), @"PlotManagerUpdate.pmu"));
@@ -47,38 +51,70 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         {
                             if (sb != null)
                             {
-                                funcMap[currentFunc] = sb.ToString();
-                                currentFunc = null;
+                                funcMap[currentFuncNum] = sb.ToString();
+                                currentFuncNum = null;
                             }
 
                             sb = new StringBuilder();
                             sb.AppendLine(line);
 
                             // Method name
-                            currentFunc = line.Substring(21);
-                            currentFunc = currentFunc.Substring(0, currentFunc.IndexOf('('));
+                            currentFuncNum = line.Substring(22);
+                            currentFuncNum = currentFuncNum.Substring(0, currentFuncNum.IndexOf('('));
+                            if (int.TryParse(currentFuncNum, out var num))
+                            {
+                                if (num <= 0)
+                                {
+                                    Log.Error($@"Skipping plot manager update: Conditional {num} is not a valid number for use. Values must be greater than 0 and less than 2 billion.");
+                                    Analytics.TrackEvent(@"Bad plot manager function", new Dictionary<string, string>() {
+                                        { @"FunctionName", $@"F{currentFuncNum}" },
+                                        { @"DLCName", pmuDLCName }
+                                    });
+                                    sb = null;
+                                    return false;
+                                }
+                                else if (num.ToString().Length != currentFuncNum.Length)
+                                {
+                                    Log.Error($@"Skipping plot manager update: Conditional {currentFuncNum} is not a valid number for use. Values must not contain leading zeros");
+                                    Analytics.TrackEvent(@"Bad plot manager function", new Dictionary<string, string>() {
+                                        { @"FunctionName", $@"F{currentFuncNum}" },
+                                        { @"DLCName", pmuDLCName }
+                                    });
+                                    sb = null;
+                                    return false;
+                                }
+                            }
+                            else
+                            {
+                                Log.Error($@"Skipping plot manager update: Conditional {currentFuncNum} is not a valid number for use. Values must be greater than 0 and less than 2 billion.");
+                                Analytics.TrackEvent(@"Bad plot manager function", new Dictionary<string, string>() {
+                                    { @"FunctionName", $@"F{currentFuncNum}" },
+                                    { @"DLCName", pmuDLCName }
+                                });
+                                sb = null;
+                                return false;
+                            }
                         }
-                        else if (sb != null)
+                        else
                         {
-                            sb.AppendLine(line);
+                            sb?.AppendLine(line);
                         }
                     }
 
                     // Add final, if any was found
                     if (sb != null)
                     {
-                        funcMap[currentFunc] = sb.ToString();
+                        funcMap[currentFuncNum] = sb.ToString();
                     }
                 }
             }
 
-            // They are all named .pcc for ease. ME1 doesn't use this extension but loader doesn't care
-            var vpm = Utilities.ExtractInternalFileToStream($@"MassEffectModManagerCore.modmanager.plotmanager.{target.Game}.PlotManager.pcc");
+            var vpm = Utilities.ExtractInternalFileToStream($@"MassEffectModManagerCore.modmanager.plotmanager.{target.Game}.PlotManager.{(target.Game == MEGame.ME1 ? @"u" : @"pcc")}");
 
             if (funcMap.Any())
             {
 
-                var plotManager = MEPackageHandler.OpenMEPackageFromStream(vpm, @"PlotManager.pcc");
+                var plotManager = MEPackageHandler.OpenMEPackageFromStream(vpm, $@"PlotManager.{(target.Game == MEGame.ME1 ? @"u" : @"pcc")}");
                 Stopwatch sw = Stopwatch.StartNew();
                 var fl = new FileLib(plotManager);
                 bool initialized = fl.Initialize(new PackageCache()).Result;
@@ -88,14 +124,22 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 sw.Stop();
                 Debug.WriteLine($@"Took {sw.ElapsedMilliseconds}ms to load filelib");
+
+                bool relinkChain = false;
                 foreach (var v in funcMap)
                 {
                     var exp = plotManager.FindExport($@"BioAutoConditionals.{v.Key}");
                     if (exp == null)
                     {
-                        // ADD ITEM HERE
-                        Debug.WriteLine(@"NOT IMPLEMENTED!");
-                        continue;
+                        // Adding a new conditional
+                        var expToClone = plotManager.Exports.FirstOrDefault(x => x.ClassName == @"Function");
+                        exp = EntryCloner.CloneEntry(expToClone);
+                        // Reduces trash
+                        UFunction uf = ObjectBinary.From<UFunction>(exp);
+                        uf.Children = 0;
+                        exp.WriteBinary(uf);
+
+                        relinkChain = true;
                     }
 
                     (_, MessageLog log) = UnrealScriptCompiler.CompileFunction(exp, v.Value, fl);
@@ -112,6 +156,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         return false;
                     }
                 }
+
+                if (relinkChain)
+                {
+                    UClass uc = ObjectBinary.From<UClass>(plotManager.FindExport("BioAutoConditionals"));
+                    uc.UpdateChildrenChain();
+                    uc.Export.WriteBinary(uc);
+                }
                 plotManager.Save(GetPlotManagerPath(target), true);
             }
             else
@@ -127,6 +178,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             switch (target.Game)
             {
+                case MEGame.ME1:
+                    return Path.Combine(M3Directories.GetCookedPath(target), @"PlotManager.u");
+                case MEGame.LE1:
                 case MEGame.ME2:
                 case MEGame.LE2:
                     return Path.Combine(M3Directories.GetCookedPath(target), @"PlotManager.pcc");

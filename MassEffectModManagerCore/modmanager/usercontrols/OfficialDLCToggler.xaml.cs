@@ -11,12 +11,13 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
-
+using LegendaryExplorerCore.Packages;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
+using PropertyChanged;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -79,11 +80,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
-            AvailableTargets.ReplaceAll(mainwindow.InstallationTargets.Where(x => x.Selectable && x.Game.IsEnabledGeneration()));
+            AvailableTargets.ReplaceAll(mainwindow.InstallationTargets.Where(x => x.Selectable && x.Game.IsEnabledGeneration() && x.Game != MEGame.LE1 && x.Game != MEGame.LELauncher));
             SelectedTarget = AvailableTargets.FirstOrDefault();
         }
 
-        public class InstalledDLC : INotifyPropertyChanged
+        [AddINotifyPropertyChangedInterface]
+        public class InstalledDLC
         {
             public GameTarget target { get; set; }
             /// <summary>
@@ -97,10 +99,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             public bool Enabled { get; set; }
             public string HumanName { get; set; }
             public string ToggleText => Enabled ? M3L.GetString(M3L.string_toggleOff) : M3L.GetString(M3L.string_toggleOn);
-            //Fody uses this property on weaving
-#pragma warning disable
-public event PropertyChangedEventHandler PropertyChanged;
-#pragma warning restore
 
             public ICommand ToggleCommand { get; }
             public InstalledDLC()

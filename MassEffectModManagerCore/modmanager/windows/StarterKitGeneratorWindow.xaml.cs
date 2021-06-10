@@ -205,7 +205,7 @@ namespace MassEffectModManagerCore.modmanager.windows
             //            ModDescription = "This is a starter kit debug testing mod.\n\nHerp a derp flerp.";
             //#endif
             InitializeComponent();
-            Games = MEGameSelector.GetGameSelectors();
+            Games = MEGameSelector.GetGameSelectors().Where(x => x.Game != MEGame.LE1).ToArray();
         }
 
         public MEGame? PendingGame { get; set; }
@@ -283,7 +283,7 @@ namespace MassEffectModManagerCore.modmanager.windows
             });
             Validator.AddRule(nameof(ModDLCModuleNumber), () =>
             {
-                if (Game.IsGame2()) return RuleResult.Valid();
+                if (!Game.IsGame2()) return RuleResult.Valid();
                 if (ModDLCModuleNumber <= 0 || ModDLCModuleNumber >= ushort.MaxValue)
                 {
                     return RuleResult.Invalid(M3L.GetString(M3L.string_interp_valueMustBeBetween0AndX, ushort.MaxValue.ToString()));

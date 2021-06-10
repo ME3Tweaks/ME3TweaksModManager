@@ -51,7 +51,7 @@ namespace MassEffectModManagerCore.modmanager.gamemd5
             outStream.WriteStringASCII(@"MD5T");
             outStream.WriteInt32((int)mapStream.Length);
             outStream.Write(compBytes);
-            outStream.WriteToFile($@"C:\Users\Mgamerz\source\repos\ME3Tweaks\ME3TweaksModManager\MassEffectModManagerCore\modmanager\gamemd5\{outName}");
+            outStream.WriteToFile($@"C:\Users\mgame\source\repos\ME3Tweaks\MassEffectModManager\MassEffectModManagerCore\modmanager\gamemd5\{outName}");
 
         }
 

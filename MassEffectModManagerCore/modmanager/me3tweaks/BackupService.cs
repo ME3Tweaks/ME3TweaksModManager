@@ -559,12 +559,13 @@ namespace MassEffectModManagerCore.modmanager.helpers
             }
         }
 
-        private static DateTime LastBackupPathCheck = DateTime.MinValue;
         private static Dictionary<MEGame, string> GameBackupPathCache = new Dictionary<MEGame, string>();
+        private static Dictionary<MEGame, DateTime> GameBackupCheckTimes = new();
 
-        public static string GetGameBackupPath(MEGame game, bool forceCmmVanilla = true, bool logReturnedPath = false, bool forceReturnPath = false)
+        public static string GetGameBackupPath(MEGame game, bool forceCmmVanilla = true, bool logReturnedPath = false, bool forceReturnPath = false, bool refresh = false)
         {
-            if (!forceReturnPath && !logReturnedPath && DateTime.Now < LastBackupPathCheck.AddSeconds(10) && GameBackupPathCache.ContainsKey(game))
+            var cachedTimeExists = GameBackupCheckTimes.TryGetValue(game, out var lastCheck);
+            if (!refresh && !forceReturnPath && !logReturnedPath && cachedTimeExists && DateTime.Now < lastCheck.AddSeconds(10) && GameBackupPathCache.ContainsKey(game))
             {
                 return GameBackupPathCache[game];
             }
@@ -579,7 +580,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 Log.Information($@" >> Backup path lookup in registry for {game} returned: {path}");
             }
 
-            LastBackupPathCheck = DateTime.Now;
+            GameBackupCheckTimes[game] = DateTime.Now;
             if (path == null || !Directory.Exists(path))
             {
                 if (logReturnedPath)

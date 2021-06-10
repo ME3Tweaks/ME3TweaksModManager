@@ -35,8 +35,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public const string LegendaryExplorer_Beta = @"Legendary Explorer (Nightly)";
         public const string ALOTInstaller = @"ALOT Installer";
         public const string MEIM = @"Mass Effect INI Modder"; //this is no longer external.
-        public const string MEM = @"Mass Effect Modder";
-        public const string MEM_CMD = @"Mass Effect Modder No Gui";
+        public const string MEM = @"Mass Effect Modder"; // OT only
+        public const string MEM_CMD = @"Mass Effect Modder No Gui"; // OT Only
+        public const string MEM_LE = @"Mass Effect Modder LE"; // LE only
+        public const string MEM_LE_CMD = @"Mass Effect Modder No Gui LE"; // LE Only
         public const string MER = @"Mass Effect Randomizer";
         public const string ME2R = @"Mass Effect 2 Randomizer";
         private string tool;
@@ -62,6 +64,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     case LegendaryExplorer_Beta:
                         return @"/modmanager/toolicons/lex_big.png";
                     case MEM:
+                    case MEM_LE:
                         return @"/modmanager/toolicons/masseffectmodder_big.png";
                     case MEIM:
                         return @"/modmanager/toolicons/masseffectinimodder_big.png";
@@ -133,9 +136,60 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 //Get asset info
                 asset = release.Assets.FirstOrDefault();
 
-                if (Path.GetFileName(executable) == @"MassEffectModder.exe")
+                #region MEM SPECIFIC
+                if (Path.GetFileName(executable).StartsWith(@"MassEffectModderNoGui"))
                 {
                     //Requires specific asset
+                    if (int.TryParse(release.TagName, out var relVer))
+                    {
+                        if (tool == MEM && relVer >= 500)
+                        {
+                            asset = null;
+                            Log.Warning(
+                                $@"MassEffectModderNoGui versions >= 500 are not supported for Original Trilogy, skipping version {relVer}");
+                            continue;
+                        }
+                        else if (tool == MEM_LE && relVer < 500)
+                        {
+                            asset = null;
+                            Log.Warning(
+                                $@"MassEffectModderNoGui versions < 500 are not supported for Legendary Edition, skipping version {relVer}");
+                            continue;
+                        }
+                    }
+                    asset = release.Assets.FirstOrDefault(x =>
+                        x.Name == @"MassEffectModderNoGui-v" + release.TagName + @".7z");
+                    if (asset == null)
+                    {
+                        Log.Warning(
+                            $@"No applicable assets in release tag {release.TagName} for MassEffectModderNoGui, skipping");
+                        continue;
+                    }
+                    latestRelease = release;
+                    downloadLink = new Uri(asset.BrowserDownloadUrl);
+                    break;
+                }
+                else if (Path.GetFileName(executable).StartsWith(@"MassEffectModder"))
+                {
+                    //Requires specific asset
+                    if (int.TryParse(release.TagName, out var relVer))
+                    {
+                        if (tool == MEM && relVer >= 500)
+                        {
+                            asset = null;
+                            Log.Warning(
+                                $@"MassEffectModder versions >= 500 are not supported for Original Trilogy, skipping version {relVer}");
+                            continue;
+                        }
+                        else if (tool == MEM_LE && relVer < 500)
+                        {
+                            asset = null;
+                            Log.Warning(
+                                $@"MassEffectModder versions < 500 are not supported for Legendary Edition, skipping version {relVer}");
+                            continue;
+                        }
+                    }
+
                     asset = release.Assets.FirstOrDefault(x =>
                         x.Name == @"MassEffectModder-v" + release.TagName + @".7z");
                     if (asset == null)
@@ -150,22 +204,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     break;
                 }
 
-                if (Path.GetFileName(executable) == @"MassEffectModderNoGui.exe")
-                {
-                    //Requires specific asset
-                    asset = release.Assets.FirstOrDefault(x =>
-                        x.Name == @"MassEffectModderNoGui-v" + release.TagName + @".7z");
-                    if (asset == null)
-                    {
-                        Log.Warning(
-                            $@"No applicable assets in release tag {release.TagName} for MassEffectModderNoGui, skipping");
-                        continue;
-                    }
-                    latestRelease = release;
-                    downloadLink = new Uri(asset.BrowserDownloadUrl);
-                    break;
-                }
-
                 if (asset != null)
                 {
                     latestRelease = release;
@@ -174,6 +212,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     break;
                 }
             }
+            #endregion
 
             if (latestRelease == null || downloadLink == null) return;
             Analytics.TrackEvent(@"Downloading new external tool", new Dictionary<string, string>()
@@ -240,6 +279,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         try
                         {
                             archiveFile.ExtractArchive(outputDirectory); // extract all
+                            // Touchup for MEM LE versions
+                            if (Path.GetFileName(executable) == @"MassEffectModderLE.exe")
+                                executable = Path.Combine(Directory.GetParent(executable).FullName, @"MassEffectModder.exe");
+                            if (Path.GetFileName(executable) == @"MassEffectModderNoGuiLE.exe")
+                                executable = Path.Combine(Directory.GetParent(executable).FullName, @"MassEffectModderNoGui.exe");
+
                             resultingExecutableStringCallback?.Invoke(executable);
                         }
                         catch (Exception e)
@@ -265,6 +310,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 {@"Tool name", Path.GetFileName(localExecutable) }
             });
+
+            // Touchup for MEM LE versions
+            if (Path.GetFileName(localExecutable) == @"MassEffectModderLE.exe")
+                localExecutable = Path.Combine(Directory.GetParent(localExecutable).FullName, @"MassEffectModder.exe");
+            if (Path.GetFileName(localExecutable) == @"MassEffectModderNoGuiLE.exe")
+                localExecutable = Path.Combine(Directory.GetParent(localExecutable).FullName, @"MassEffectModderNoGui.exe");
+
             PercentVisibility = Visibility.Collapsed;
             PercentDownloaded = 0;
             Log.Information($@"Launching: {localExecutable} {arguments}");
@@ -309,7 +361,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     toolGithubRepoName = @"LegendaryExplorer";
                     break;
                 case MEM:
+                case MEM_LE:
                 case MEM_CMD:
+                case MEM_LE_CMD:
                     toolGithubOwner = @"MassEffectModder";
                     toolGithubRepoName = @"MassEffectModder";
                     break;
@@ -442,7 +496,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     if (latestRelease != null)
                     {
                         FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(localExecutable);
-                        if (tool == MEM || tool == MEM_CMD)
+                        if (tool is MEM or MEM_CMD or MEM_LE or MEM_LE_CMD)
                         {
                             //Checks based on major
                             int releaseVer = int.Parse(latestRelease.TagName);
@@ -553,11 +607,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             if (release.Assets.Any())
             {
-                if (tool == MEM)
+                if (tool is MEM or MEM_LE)
                 {
                     return release.Assets.Any(x => x.Name == @"MassEffectModder-v" + release.TagName + @".7z");
                 }
-                if (tool == MEM_CMD)
+                if (tool is MEM_CMD or MEM_LE_CMD)
                 {
                     return release.Assets.Any(x => x.Name == @"MassEffectModderNoGui-v" + release.TagName + @".7z");
                 }
@@ -625,6 +679,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             LegendaryExplorer_Beta,
             EGMSettings,
             MEM,
+            MEM_LE,
             MER,
             ME2R,
             ALOTInstaller,

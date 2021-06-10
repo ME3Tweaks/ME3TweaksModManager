@@ -71,7 +71,7 @@ namespace MassEffectModManagerCore
         private static readonly string DefaultDescriptionText = M3L.GetString(M3L.string_selectModOnLeftToGetStarted);
         private readonly string[] SupportedDroppableExtensions =
         {
-            @".rar", @".zip", @".7z", @".exe", @".tpf", @".mod", @".mem", @".me2mod", @".xml", @".bin", @".tlk", @".par", @".m3m", @".json"
+            @".rar", @".zip", @".7z", @".exe", @".tpf", @".mod", @".mem", @".me2mod", @".xml", @".bin", @".tlk", @".par", @".m3m", @".json", @".extractedbin"
         };
         public string ApplyModButtonText { get; set; } = M3L.GetString(M3L.string_applyMod);
         public string InstallationTargetText { get; set; } = M3L.GetString(M3L.string_installationTarget);
@@ -241,15 +241,39 @@ namespace MassEffectModManagerCore
             }
 
             // Setup game filters
+            var enabledFilters = Enum.GetValues<MEGame>();
+            if (!string.IsNullOrWhiteSpace(Settings.SelectedFilters))
+            {
+                var nEnabledGames = new List<MEGame>();
+                var split = Settings.SelectedFilters.Split(',');
+                foreach (var s in split)
+                {
+                    if (Enum.TryParse<MEGame>(s, out var parsedGame))
+                    {
+                        nEnabledGames.Add(parsedGame);
+                    }
+                }
+
+                if (nEnabledGames.Any())
+                    enabledFilters = nEnabledGames.ToArray();
+            }
+
             foreach (var g in Enum.GetValues<MEGame>())
             {
                 if (g is MEGame.UDK or MEGame.Unknown)
                     continue;
                 var gf = new GameFilter(g);
+                if (enabledFilters.Any() && !enabledFilters.Contains(g))
+                {
+                    gf.IsEnabled = false;
+                }
+
                 Settings.StaticPropertyChanged += gf.NotifyGenerationChanged; // Notify of generation change
                 gf.PropertyChanged += ModGameVisibilityChanged;
                 GameFilters.Add(gf);
             }
+
+            // Loa
 
             CheckProgramDataWritable();
             AttachListeners();
@@ -300,6 +324,7 @@ namespace MassEffectModManagerCore
         {
             if (e.PropertyName == nameof(GameFilter.IsEnabled))
             {
+                Settings.SelectedFilters = string.Join(',', GameFilters.Where(x => x.IsEnabled).Select(x => x.Game));
                 FilterMods();
             }
         }
@@ -490,6 +515,7 @@ namespace MassEffectModManagerCore
         public ICommand OfficialDLCTogglerCommand { get; set; }
         public ICommand ImportArchiveCommand { get; set; }
         public ICommand ReloadModsCommand { get; set; }
+        public ICommand ModManagerOptionsCommand { get; set; }
         public ICommand ConflictDetectorCommand { get; set; }
         public ICommand ApplyModCommand { get; set; }
         public ICommand RestoreCommand { get; set; }
@@ -507,6 +533,7 @@ namespace MassEffectModManagerCore
         public ICommand RestoreModFromME3TweaksCommand { get; set; }
         public ICommand GrantWriteAccessCommand { get; set; }
         public ICommand AutoTOCCommand { get; set; }
+        public ICommand SyncPlotManagerCommand { get; set; }
         public ICommand AutoTOCLECommand { get; set; }
         public ICommand ConsoleKeyKeybinderCommand { get; set; }
         public ICommand LoginToNexusCommand { get; set; }
@@ -527,6 +554,7 @@ namespace MassEffectModManagerCore
         public ICommand NexusModsFileSearchCommand { get; set; }
         private void LoadCommands()
         {
+            ModManagerOptionsCommand = new GenericCommand(ShowOptions);
             ReloadModsCommand = new GenericCommand(ReloadMods, CanReloadMods);
             ApplyModCommand = new GenericCommand(CallApplyMod, CanApplyMod);
             CheckForContentUpdatesCommand = new GenericCommand(CheckForContentUpdates, NetworkThreadNotRunning);
@@ -545,6 +573,7 @@ namespace MassEffectModManagerCore
             RestoreModFromME3TweaksCommand = new GenericCommand(RestoreSelectedMod, SelectedModIsME3TweaksUpdatable);
             GrantWriteAccessCommand = new GenericCommand(() => CheckTargetPermissions(true, true), HasAtLeastOneTarget);
             AutoTOCCommand = new RelayCommand(RunAutoTOCOnGame, HasGameTarget);
+            SyncPlotManagerCommand = new RelayCommand(SyncPlotManagerForGame, HasGameTarget);
             ConsoleKeyKeybinderCommand = new GenericCommand(OpenConsoleKeyKeybinder, CanOpenConsoleKeyKeybinder);
             LoginToNexusCommand = new GenericCommand(ShowNexusPanel, CanShowNexusPanel);
             EndorseSelectedModCommand = new GenericCommand(EndorseWrapper, CanEndorseMod);
@@ -576,6 +605,16 @@ namespace MassEffectModManagerCore
             OpenTutorialCommand = new GenericCommand(OpenTutorial, () => App.TutorialService != null && App.TutorialService.Any());
             OpenASIManagerCommand = new GenericCommand(OpenASIManager, NetworkThreadNotRunning);
             NexusModsFileSearchCommand = new GenericCommand(OpenNexusSearch); // no conditions for this
+        }
+
+        private void ShowOptions()
+        {
+            var optionsPanel = new OptionsPanel();
+            optionsPanel.Close += (a, b) =>
+            {
+                ReleaseBusyControl();
+            };
+            ShowBusyControl(optionsPanel);
         }
 
         private bool HasGameTarget(object obj)
@@ -1174,6 +1213,14 @@ namespace MassEffectModManagerCore
         /// <param name="control">Control to show or queue</param>
         private void ReleaseBusyControl()
         {
+            var closingPanel = BusyContent as MMBusyPanelBase;
+            BusyContent = null;
+            if (closingPanel != null)
+            {
+                HandlePanelResult(closingPanel.Result);
+
+            }
+
             if (queuedUserControls.Count == 0)
             {
                 BusyContent = null;
@@ -1193,6 +1240,53 @@ namespace MassEffectModManagerCore
                 //control.OnPanelVisible();
                 BusyContent = control;
             }
+        }
+
+        private void HandlePanelResult(PanelResult result)
+        {
+            // This is pretty dicey with thread safety... 
+            foreach (var v in result.TargetsToPlotManagerSync)
+            {
+                SyncPlotManagerForTarget(v);
+            }
+            foreach (var v in result.TargetsToAutoTOC)
+            {
+                AutoTOCTarget(v);
+            }
+
+            Task.Run(() =>
+            {
+                if (result.ReloadTargets)
+                {
+                    PopulateTargets();
+                }
+            }).ContinueWithOnUIThread(x =>
+            {
+
+                if (result.PanelToOpen != null)
+                {
+                    MMBusyPanelBase control = null;
+                    switch (result.PanelToOpen)
+                    {
+                        case EPanelID.ASI_MANAGER:
+                            control = new ASIManagerPanel(result.SelectedTarget);
+                            break;
+                        default:
+                            throw new Exception($@"HandlePanelResult did not handle panelid {result.PanelToOpen}");
+                    }
+
+                    control.Close += (a, b) => { ReleaseBusyControl(); };
+                    ShowBusyControl(control);
+                    Analytics.TrackEvent($@"Launched {result.PanelToOpen}", new Dictionary<string, string>()
+                    {
+                        {@"Invocation method", @"Installation Information"}
+                    });
+                }
+                else if (result.ToolToLaunch != null)
+                {
+                    BootToolPathPassthrough(result.ToolToLaunch);
+                }
+            });
         }
 
         private void ShowBackupPane()
@@ -1233,32 +1327,6 @@ namespace MassEffectModManagerCore
             installationInformation.Close += (a, b) =>
             {
                 ReleaseBusyControl();
-                if (b.Data is string result)
-                {
-                    if (result == @"ASIManager")
-                    {
-                        // This is kinda risky since when the control unloads it might dump the list and 
-                        // the SelectedTarget might be null. I think the worst case is that it simply won't select the tab/target in ASI Manager.
-                        var selectedTarget = installationInformation.SelectedTarget;
-
-                        var asiManager = new ASIManagerPanel(selectedTarget);
-                        asiManager.Close += (a, b) => { ReleaseBusyControl(); };
-                        ShowBusyControl(asiManager);
-                        Analytics.TrackEvent(@"Launched ASI Manager", new Dictionary<string, string>()
-                        {
-                            {@"Invocation method", @"Installation Information"}
-                        });
-                    }
-                    if (result == @"ALOTInstaller")
-                    {
-                        BootToolPathPassthrough(ExternalToolLauncher.ALOTInstaller);
-                    }
-
-                    if (result == @"ReloadTargets")
-                    {
-                        PopulateTargets();
-                    }
-                }
             };
             ShowBusyControl(installationInformation);
         }
@@ -3104,7 +3172,7 @@ namespace MassEffectModManagerCore
             if (sender == GenerateStarterKitME1_MenuItem) g = MEGame.ME1;
             if (sender == GenerateStarterKitME2_MenuItem) g = MEGame.ME2;
             if (sender == GenerateStarterKitME3_MenuItem) g = MEGame.ME3;
-            if (sender == GenerateStarterKitLE1_MenuItem) g = MEGame.LE1;
+            //if (sender == GenerateStarterKitLE1_MenuItem) g = MEGame.LE1;
             if (sender == GenerateStarterKitLE2_MenuItem) g = MEGame.LE2;
             if (sender == GenerateStarterKitLE3_MenuItem) g = MEGame.LE3;
             new StarterKitGeneratorWindow(g) { Owner = this }.ShowDialog();
@@ -3131,6 +3199,7 @@ namespace MassEffectModManagerCore
             if (sender == LegendaryExplorerStable_MenuItem) tool = ExternalToolLauncher.LegendaryExplorer;
             if (sender == LegendaryExplorerBeta_MenuItem) tool = ExternalToolLauncher.LegendaryExplorer_Beta;
             if (sender == MassEffectModder_MenuItem) tool = ExternalToolLauncher.MEM;
+            if (sender == MassEffectModderLE_MenuItem) tool = ExternalToolLauncher.MEM_LE;
             //if (sender == EGMSettings_MenuItem) tool = ExternalToolLauncher.EGMSettings; //EGM settings has it's own command and it not invoked through this menu
             if (tool == null) throw new Exception(@"LaunchExternalTool handler set but no relevant tool was specified! This is a bug. Please report it to Mgamerz on Discord");
             LaunchExternalTool(tool);
@@ -3267,12 +3336,44 @@ namespace MassEffectModManagerCore
                             LoadExternalLocalizationDictionary(files[0]);
                         }
                         break;
+                    case @".extractedbin":
+                        {
+                            using var fs = new FileStream(files[0], FileMode.Open, FileAccess.Read);
+                            //var magic = fs.ReadInt32();
+                            //fs.Dispose();
+                            //if (magic is 0x666D726D or 0x1B) //fmrm (backwards) (ME3), 0x1B (LE1 (sigh))
+                            //{
+
+                            NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"Coalesced Comppiler");
+                            var task = backgroundTaskEngine.SubmitBackgroundJob(@"CoalescedCompiler", M3L.GetString(M3L.string_compilingCoalescedFile), M3L.GetString(M3L.string_compiledCoalescedFile));
+                            nbw.DoWork += (a, b) =>
+                            {
+                                var dest = Path.Combine(Directory.GetParent(files[0]).FullName, File.ReadAllLines(files[0])[0]);
+                                Log.Information($@"Compiling coalesced file: {files[0]} -> {dest}");
+                                CoalescedConverter.Convert(CoalescedConverter.CoalescedType.ExtractedBin, files[0], dest);
+                                Log.Information(@"Compiled coalesced file");
+                            };
+                            nbw.RunWorkerCompleted += (a, b) =>
+                            {
+                                if (b.Error != null)
+                                {
+                                    Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
+                                }
+
+                                task.finishedUiText = "Failed to compile coalesced file";
+                                backgroundTaskEngine.SubmitJobCompletion(task);
+                            };
+                            nbw.RunWorkerAsync();
+                            // }
+                        }
+                        break;
                     case @".bin":
                         //Check for Coalesced
                         {
                             using var fs = new FileStream(files[0], FileMode.Open, FileAccess.Read);
                             var magic = fs.ReadInt32();
-                            if (magic == 0x666D726D) //fmrm (backwards)
+                            fs.Dispose();
+                            if (magic is 0x666D726D or 0x1B) //fmrm (backwards) (ME3), 0x1B (LE1 (sigh))
                             {
 
                                 NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"Coalesced Decompiler");
@@ -3281,7 +3382,7 @@ namespace MassEffectModManagerCore
                                 {
                                     var dest = Path.Combine(Directory.GetParent(files[0]).FullName, Path.GetFileNameWithoutExtension(files[0]));
                                     Log.Information($@"Decompiling coalesced file: {files[0]} -> {dest}");
-                                    CoalescedConverter.ConvertToXML(files[0], dest);
+                                    CoalescedConverter.Convert(CoalescedConverter.CoalescedType.Binary, files[0], dest);
                                     Log.Information(@"Decompiled coalesced file");
                                 };
                                 nbw.RunWorkerCompleted += (a, b) =>
@@ -3571,6 +3672,35 @@ namespace MassEffectModManagerCore
         }
 
 
+        private void SyncPlotManagerForGame(object obj)
+        {
+            if (obj is MEGame game)
+            {
+                var target = GetCurrentTarget(game);
+                if (target != null)
+                {
+                    SyncPlotManagerForTarget(target);
+                }
+                else
+                {
+                    Log.Error(@"SyncPlotManagerForGame game target was null! This shouldn't be possible");
+                }
+            }
+        }
+
+        private void SyncPlotManagerForTarget(GameTarget target)
+        {
+            var task = backgroundTaskEngine.SubmitBackgroundJob(@"SyncPlotManager",
+                $"Syncing Plot Manager for {target.Game.ToGameName()}",
+                $"Synced Plot Manager for {target.Game.ToGameName()}");
+            var pmuUI = new PlotManagerUpdatePanel(target);
+            pmuUI.Close += (a, b) =>
+            {
+                backgroundTaskEngine.SubmitJobCompletion(task);
+                ReleaseBusyControl();
+            };
+            ShowBusyControl(pmuUI);
+        }
 
         private void RunAutoTOCOnGame(object obj)
         {
@@ -3579,20 +3709,25 @@ namespace MassEffectModManagerCore
                 var target = GetCurrentTarget(game);
                 if (target != null)
                 {
-                    var task = backgroundTaskEngine.SubmitBackgroundJob(@"AutoTOC", M3L.GetString(M3L.string_runningAutoTOC), M3L.GetString(M3L.string_ranAutoTOC));
-                    var autoTocUI = new AutoTOC(target);
-                    autoTocUI.Close += (a, b) =>
-                    {
-                        backgroundTaskEngine.SubmitJobCompletion(task);
-                        ReleaseBusyControl();
-                    };
-                    ShowBusyControl(autoTocUI);
+                    AutoTOCTarget(target);
                 }
                 else
                 {
                     Log.Error(@"AutoTOC game target was null! This shouldn't be possible");
                 }
             }
+        }
+
+        private void AutoTOCTarget(GameTarget target)
+        {
+            var task = backgroundTaskEngine.SubmitBackgroundJob(@"AutoTOC", M3L.GetString(M3L.string_runningAutoTOC), M3L.GetString(M3L.string_ranAutoTOC));
+            var autoTocUI = new AutoTOC(target);
+            autoTocUI.Close += (a, b) =>
+            {
+                backgroundTaskEngine.SubmitJobCompletion(task);
+                ReleaseBusyControl();
+            };
+            ShowBusyControl(autoTocUI);
         }
 
         private void ChangeSetting_Clicked(object sender, RoutedEventArgs e)
@@ -3963,7 +4098,7 @@ namespace MassEffectModManagerCore
 
         private void MD5DB_Gen_Click(object sender, RoutedEventArgs e)
         {
-            MD5Gen.GenerateMD5Map(@"D:\Steam\steamapps\common\Mass Effect Legendary Edition\Game\Launcher", "lel.bin");
+            MD5Gen.GenerateMD5Map(@"B:\SteamLibrary\steamapps\common\Mass Effect Legendary Edition\Game\Launcher", "lel.bin");
             Debug.WriteLine(@"Done");
         }
 

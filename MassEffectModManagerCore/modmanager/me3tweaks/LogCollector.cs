@@ -199,7 +199,10 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
             #endregion
             // Ensure MEM NOGUI
-            ExternalToolLauncher.FetchAndLaunchTool(ExternalToolLauncher.MEM_CMD, currentTaskCallback, null, setPercentDone, readyToLaunch, failedToDownload, failedToExtractMEM);
+            if (selectedDiagnosticTarget != null)
+            {
+                ExternalToolLauncher.FetchAndLaunchTool(selectedDiagnosticTarget.Game.IsLEGame() ? ExternalToolLauncher.MEM_LE_CMD : ExternalToolLauncher.MEM_CMD, currentTaskCallback, null, setPercentDone, readyToLaunch, failedToDownload, failedToExtractMEM);
+            }
 
             //wait for tool fetch
             if (!hasMEM)

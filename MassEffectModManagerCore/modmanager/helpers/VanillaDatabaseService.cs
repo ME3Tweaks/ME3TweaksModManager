@@ -588,24 +588,28 @@ namespace MassEffectModManagerCore.modmanager.helpers
         {
             [@"f4331d60672509b342da12bc42b4622f"] = @"Origin 2.0.0.47902", // May 14 Launch Version
             [@"ade71fcaa13224e383a848b90db807f2"] = @"Origin 2.0.0.48204", // May 17
+            [@"92c9915cf4da2b8fb0b8ebb0795ba2d9"] = @"Origin 2.0.0.48602", // June 7
         };
 
         private static Dictionary<string, string> SUPPORTED_HASHES_LE2 = new Dictionary<string, string>
         {
             [@"3b4dd0078a122476126c3b5c6665db16"] = @"Origin 2.0.0.47902",
             [@"fcb4c06b21853ece31a1897e136df45c"] = @"Origin 2.0.0.48204",
+            [@"b584a70f56cfed7b8f35a081420227b0"] = @"Origin 2.0.0.48602",
         };
 
         private static Dictionary<string, string> SUPPORTED_HASHES_LE3 = new Dictionary<string, string>
         {
             [@"a64622ed97309563a5597adbed4055ca"] = @"Origin 2.0.0.47902",
             [@"c55689e54c921739532beb033f0f0ebf"] = @"Origin 2.0.0.48204",
+            [@"11e222d4f8f7c2a123b80a938b76c922"] = @"Origin 2.0.0.48602",
         };
 
         private static Dictionary<string, string> SUPPORTED_HASHES_LEL = new Dictionary<string, string>
         {
             [@"e03dd006f2d4f56f46a8f6c014230ba8"] = @"Origin 2.0.0.47902",
             [@"a50a5ab69a0de8356ddd8ab69f8ecdc2"] = @"Origin 2.0.0.48204",
+            [@"5e8dc210b4adda2eda1dc367a781c3a8"] = @"Origin 2.0.0.48602",
         };
         
         /// <summary>

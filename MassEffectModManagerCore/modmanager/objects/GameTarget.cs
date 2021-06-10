@@ -100,10 +100,14 @@ namespace MassEffectModManagerCore.modmanager.objects
                         }
                         else
                         {
-                            if (GameSource.Contains(@"Origin") && (Game == MEGame.ME3 || Game.IsLEGame()))
+                            if (GameSource.Contains(@"Origin") && (Game is MEGame.ME3 or MEGame.LELauncher || Game.IsLEGame()))
                             {
                                 // Check for steam
-                                var testPath = Game.IsLEGame() ? Directory.GetParent(Directory.GetParent(TargetPath).FullName).FullName : TargetPath;
+                                var testPath = Game == MEGame.ME3 ? TargetPath : Directory.GetParent(TargetPath).FullName;
+                                if (Game != MEGame.ME3)
+                                {
+                                    testPath = Directory.GetParent(testPath).FullName;
+                                }
                                 if (Directory.Exists(Path.Combine(testPath, @"__overlay")))
                                 {
                                     GameSource += @" (Steam version)";
@@ -414,7 +418,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         public ui.ObservableCollectionExtended<InstallationInformation.InstalledDLCMod> UIInstalledDLCMods { get; } = new ui.ObservableCollectionExtended<InstallationInformation.InstalledDLCMod>();
         public ui.ObservableCollectionExtended<InstalledOfficialDLC> UIInstalledOfficialDLC { get; } = new ui.ObservableCollectionExtended<InstalledOfficialDLC>();
 
-        public void PopulateDLCMods(bool includeDisabled, Func<InstallationInformation.InstalledDLCMod, bool> deleteConfirmationCallback = null, Action notifyDeleted = null, bool modNamePrefersTPMI = false)
+        public void PopulateDLCMods(bool includeDisabled, Func<InstallationInformation.InstalledDLCMod, bool> deleteConfirmationCallback = null, Action notifyDeleted = null, Action notifyToggled = null, bool modNamePrefersTPMI = false)
         {
             if (Game == MEGame.LELauncher) return; // LE Launcher doesn't have DLC mods
             var dlcDir = M3Directories.GetDLCPath(this);
@@ -433,7 +437,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             //Must run on UI thread
             Application.Current.Dispatcher.Invoke(delegate
             {
-                UIInstalledDLCMods.ReplaceAll(installedMods.Select(x => new InstallationInformation.InstalledDLCMod(Path.Combine(dlcDir, x), Game, deleteConfirmationCallback, notifyDeleted, modNamePrefersTPMI)).ToList().OrderBy(x => x.ModName));
+                UIInstalledDLCMods.ReplaceAll(installedMods.Select(x => new InstallationInformation.InstalledDLCMod(Path.Combine(dlcDir, x), Game, deleteConfirmationCallback, notifyDeleted, notifyToggled, modNamePrefersTPMI)).ToList().OrderBy(x => x.ModName));
                 UIInstalledOfficialDLC.ReplaceAll(officialDLC);
             });
         }

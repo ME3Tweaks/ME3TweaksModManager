@@ -180,8 +180,8 @@
 		<PackageReference Include="SSH.NET" Version="2020.0.1" />
 		<PackageReference Include="Trinet.Core.IO.Ntfs" Version="4.1.1" />
 		<PackageReference Include="WatsonWebsocket" Version="2.3.0" />
-		<PackageReference Include="WinCopies.WindowsAPICodePack.Shell" Version="2.3.0" />
-	</ItemGroup>
+    <PackageReference Include="WinCopies.WindowsAPICodePack.Shell" Version="2.3.0" />
+  </ItemGroup>
 	<ItemGroup>
 		<DotNetCliToolReference Include="Microsoft.Extensions.SecretManager.Tools" Version="2.0.2" />
 	</ItemGroup>
@@ -205,6 +205,7 @@
     <EmbeddedResource Include="modmanager\plotmanager\**\*.pcc" />
     <EmbeddedResource Include="modmanager\plotmanager\**\*.u*" />
     <EmbeddedResource Include="modmanager\lelauncherbypass\*.jsf" />
+    <EmbeddedResource Include="modmanager\lelauncherbypass\*.bik" />
   </ItemGroup>
 
   <ItemGroup>
@@ -245,6 +246,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="modmanager\binkw64\" />
+    <Folder Include="modmanager\squadmates\LE3\" />
   </ItemGroup>
 
 </Project>
