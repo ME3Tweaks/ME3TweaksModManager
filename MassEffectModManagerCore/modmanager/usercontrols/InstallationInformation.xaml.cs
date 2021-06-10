@@ -434,7 +434,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     if (itemRestored is GameTarget.ModifiedFileObject mf)
                     {
-                        Result.TargetsToAutoTOC.Add(SelectedTarget);
+                        if (SelectedTarget.Game != MEGame.LELauncher)
+                            Result.TargetsToAutoTOC.Add(SelectedTarget);
                         Application.Current.Dispatcher.Invoke(delegate
                         {
                             SelectedTarget.ModifiedBasegameFiles.Remove(mf);

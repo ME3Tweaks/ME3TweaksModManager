@@ -500,7 +500,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         {
                             //Checks based on major
                             int releaseVer = int.Parse(latestRelease.TagName);
-                            if (releaseVer > fvi.ProductMajorPart)
+                            if (releaseVer > fvi.ProductMajorPart && releaseVer < 500 && tool is MEM or MEM_CMD)
+                            {
+                                needsUpdated = true;
+                            }
+                            if (releaseVer > fvi.ProductMajorPart && releaseVer >= 500 && tool is MEM_LE or MEM_LE_CMD)
                             {
                                 needsUpdated = true;
                             }
@@ -670,6 +674,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             if (toolname == LegendaryExplorer_Beta) return @"LegendaryExplorer.exe";
             if (toolname == ME2R) return @"ME2Randomizer.exe";
+            if (toolname == MEM_LE) return @"MassEffectModder.exe";
+            if (toolname == MEM_LE_CMD) return @"MassEffectModderNoGui.exe";
             return toolname.Replace(@" ", @"") + @".exe";
         }
 

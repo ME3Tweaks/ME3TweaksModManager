@@ -32,7 +32,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public ObservableCollectionExtended<GameTarget> InstallationTargets { get; } = new ObservableCollectionExtended<GameTarget>();
         public ImportInstalledDLCModPanel()
         {
-            DataContext = this;
             LoadCommands();
             InitializeComponent();
         }
@@ -124,7 +123,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     OperationInProgress = false;
                     if (b.Error == null && b.Result != null)
                     {
-                        OnClosing(new DataEventArgs(b.Result)); //avoid accessing b.Result if error occurred
+                        if (b.Result is Mod m)
+                        {
+                            Result.ModToHighlightOnReload = m;
+                            Result.ReloadMods = true;
+                        }
+                        ClosePanel(); //avoid accessing b.Result if error occurred
                     }
                 }
             };
@@ -309,7 +313,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
-            InstallationTargets.ReplaceAll(mainwindow.InstallationTargets.Where(x => x.Selectable));
+            InstallationTargets.ReplaceAll(mainwindow.InstallationTargets.Where(x => x.Selectable && x.Game != MEGame.LELauncher));
             SelectedTarget = InstallationTargets.FirstOrDefault();
         }
     }

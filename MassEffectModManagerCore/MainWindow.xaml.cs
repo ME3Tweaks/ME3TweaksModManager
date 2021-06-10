@@ -45,6 +45,7 @@ using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Serilog;
 using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Unreal;
 using MassEffectModManagerCore.modmanager.gamemd5;
 using MassEffectModManagerCore.modmanager.objects.mod.merge;
 using MassEffectModManagerCore.modmanager.objects.mod.merge.v1;
@@ -732,10 +733,8 @@ namespace MassEffectModManagerCore
             importerPanel.Close += (a, b) =>
             {
                 ReleaseBusyControl();
-                if (b.Data is Mod importedMod)
-                {
-                    LoadMods(importedMod);
-                }
+                if (importerPanel.Result.ReloadMods)
+                    LoadMods(importerPanel.Result.ModToHighlightOnReload);
             };
             ShowBusyControl(importerPanel);
         }
@@ -4084,6 +4083,57 @@ namespace MassEffectModManagerCore
 
             //var le2t = GetCurrentTarget(MEGame.LE2);
             //mergeMod.ApplyMergeMod(null, le2t);
+            string[] exportsToUpdate = new[]
+            {
+                "SFXGameContent.Default__SFXCustomAction_PistolMeleeOne.Timeline0",
+                "SFXGameContent.Default__SFXCustomAction_PistolMeleeTwo.Timeline1",
+                "SFXGameContent.Default__SFXCustomAction_PistolMeleeThree.Timeline2",
+                "SFXGameContent.Default__SFXCustomAction_RifleMeleeOne.Timeline0",
+                "SFXGameContent.Default__SFXCustomAction_RifleMeleeTwo.Timeline1",
+                "SFXGameContent.Default__SFXCustomAction_RifleMeleeThree.Timeline2",
+            };
+            var packages = Directory.GetFiles(@"B:\SteamLibrary\steamapps\common\Mass Effect Legendary Edition\Game\ME3\BioGame\CookedPCConsole", "SFXCharacterClass*.pcc", SearchOption.TopDirectoryOnly);
+            foreach (var p in packages)
+            {
+                var package = MEPackageHandler.OpenMEPackage(p);
+
+                foreach (var expN in exportsToUpdate)
+                {
+                    var exp = package.FindExport(expN);
+                    var prop = exp.GetProperty<ArrayProperty<StructProperty>>("Timeline");
+                    List<int> indicesToUpdate = new List<int>();
+                    for (int i = 0; i < prop.Count; i++)
+                    {
+                        var timelineEvent = prop[i];
+                        if (timelineEvent.GetProp<StrProperty>("InputAlias").Value == "Shared_Melee")
+                        {
+                            indicesToUpdate.Add(prop.Count);
+
+                            prop.Add(timelineEvent); // clone inputalias 
+                            prop.Add(prop[i + 1]); // clone input off (skip same+off+clone ia)
+                            timelineEvent.Properties.AddOrReplaceProp(new StrProperty("PC_Melee", "InputAlias"));
+                            i++; // jump to next event
+                        }
+                    }
+
+                    // reload to generate new objects in memory
+                    exp.WriteProperty(prop);
+                    prop = exp.GetProperty<ArrayProperty<StructProperty>>("Timeline");
+                    foreach (var indx in indicesToUpdate)
+                    {
+                        var timelineEvent = prop[indx];
+                        timelineEvent.Properties.AddOrReplaceProp(new StrProperty("Console_Melee", "InputAlias"));
+                        prop[indx + 1].Properties.AddOrReplaceProp(new IntProperty(indx, new NameReference("nMatchedInputIndex")));
+                    }
+                    exp.WriteProperty(prop);
+
+                }
+
+                package.Save();
+            }
+
+
+
         }
 
         private void ListAllInstallableFiles_Click(object sender, RoutedEventArgs e)

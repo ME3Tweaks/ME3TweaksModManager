@@ -119,8 +119,9 @@ namespace MassEffectModManagerCore.modmanager.helpers
 
             if (Settings.SkipLELauncher && target.Game.IsLEGame())
             {
-                commandLineArgs.Add($@"-game={target.Game.ToGameNum() - 3}"); // Autoboot dll
-
+                commandLineArgs.Add($@"-game {target.Game.ToGameNum() - 3}"); // Autoboot dll
+                commandLineArgs.Add(@"-autoterminate");
+                /*
                 var sourceFile = Path.Combine(Utilities.GetLELaunchToolsGameBootDir(), @"VanillaLauncherUI.swf");
                 var destFile = Path.Combine(LEDirectory.GetLauncherPath(), @"Content", @"LauncherUI.swf");
 
@@ -143,9 +144,9 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 else
                 {
                     Log.Warning(@"LauncherUI.swf has wrong hash, not JPatching to autoboot");
-                }
+                }*/
 
-                destFile = Path.Combine(LEDirectory.GetLauncherPath(), @"Content", @"BWLogo.bik");
+                var destFile = Path.Combine(LEDirectory.GetLauncherPath(), @"Content", @"BWLogo.bik");
                 if (File.Exists(destFile) && new FileInfo(destFile).Length > 500)
                 {
                     // > 500 bytes
