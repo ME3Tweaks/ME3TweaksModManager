@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -211,10 +212,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 return;
             }
 
-            if (ModBeingInstalled.Game.IsOTGame())
+            Utilities.InstallBinkBypass(SelectedGameTarget); //Always install binkw32, don't bother checking if it is already ASI version.
+            if (ModBeingInstalled.Game.IsLEGame())
             {
-                // Don't bother LE since we don't need ASI support right now
-                Utilities.InstallBinkBypass(SelectedGameTarget); //Always install binkw32, don't bother checking if it is already ASI version.
+                GameTarget gt = new GameTarget(MEGame.LELauncher, Path.Combine(Directory.GetParent(SelectedGameTarget.TargetPath).FullName, "Launcher"), false, skipInit: true);
+                Utilities.InstallBinkBypass(gt);
             }
 
             if (ModBeingInstalled.Game == MEGame.ME2 && ModBeingInstalled.GetJob(ModJob.JobHeader.ME2_RCWMOD) != null && installationJobs.Count == 1)
@@ -756,7 +758,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             //Stage: Merge Mods
             var allMMs = installationJobs.SelectMany(x => x.MergeMods).ToList();
-            allMMs.AddRange(installationJobs.SelectMany(x => x.AlternateFiles.Where(y=>y.IsSelected && y.MergeMods != null).SelectMany(y => y.MergeMods)));
+            allMMs.AddRange(installationJobs.SelectMany(x => x.AlternateFiles.Where(y => y.IsSelected && y.MergeMods != null).SelectMany(y => y.MergeMods)));
             var totalMerges = allMMs.Sum(x => x.GetMergeCount());
             int doneMerges = 0;
 

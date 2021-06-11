@@ -62,20 +62,20 @@ namespace MassEffectModManagerCore.modmanager.objects
         /// Indicates that this is a custom, abnormal game object. It may be used only for UI purposes, but it depends on the context.
         /// </summary>
         public bool IsCustomOption { get; set; } = false;
-        public GameTarget(MEGame game, string targetRootPath, bool currentRegistryActive, bool isCustomOption = false, bool isTest = false)
+        public GameTarget(MEGame game, string targetRootPath, bool currentRegistryActive, bool isCustomOption = false, bool isTest = false, bool skipInit = false)
         {
             this.Game = game;
             this.RegistryActive = currentRegistryActive;
             this.IsCustomOption = isCustomOption;
             this.TargetPath = targetRootPath.TrimEnd('\\');
             MemoryAnalyzer.AddTrackedMemoryItem($@"{game} GameTarget {TargetPath} - IsCustomOption: {isCustomOption}", new WeakReference(this));
-            ReloadGameTarget(isTest);
+            ReloadGameTarget(isTest, skipInit: skipInit);
         }
 
-        public void ReloadGameTarget(bool lodUpdateAndLogging = true, bool forceLodUpdate = false, bool reverseME1Executable = true)
+        public void ReloadGameTarget(bool lodUpdateAndLogging = true, bool forceLodUpdate = false, bool reverseME1Executable = true, bool skipInit = false)
         {
             // Unknown = 
-            if (!IsCustomOption)
+            if (!IsCustomOption || skipInit)
             {
                 if (Directory.Exists(TargetPath))
                 {
