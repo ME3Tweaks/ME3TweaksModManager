@@ -27,6 +27,8 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
     [DebuggerDisplay("Mod - {ModName}")] //do not localize
     public partial class Mod : INotifyPropertyChanged
     {
+
+        private static readonly string[] DirectorySeparatorChars = new[] { "\\", "/" };
         /// <summary>
         /// The default website value, to indicate one was not set. This value must be set to a valid url or navigation request in UI binding may not work.
         /// </summary>
@@ -894,31 +896,32 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         }
 
                         //Add files read only targets
-                        if (addFilesTargetReadOnlyList != null)
-                        {
-                            addFilesReadOnlySplit = addFilesTargetList.Split(';').Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
+                        // Disabled in MM7 since it never did anything since MM6
+                        //if (addFilesTargetReadOnlyList != null)
+                        //{
+                        //    addFilesReadOnlySplit = addFilesTargetList.Split(';').Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
 
-                            //Ensure add targets list contains this list
-                            if (addFilesTargetSplit != null)
-                            {
-                                if (!addFilesTargetSplit.ContainsAll(addFilesReadOnlySplit, StringComparer.InvariantCultureIgnoreCase))
-                                {
-                                    //readonly list contains elements not contained in the targets list
-                                    Log.Error($@"Mod has job header ({headerAsString}) that has addfilesreadonlytargets descriptor set, however it contains items that are not part of the addfilestargets list. This is not allowed.");
-                                    LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_headerSpecifiesNotAddedReadOnlyTarget, headerAsString);
-                                    return;
-                                }
-                            }
-                            else
-                            {
-                                //readonly target specified but nothing in the addfilestargets list/unspecified
-                                Log.Error($@"Mod has job header ({headerAsString}) that has addfilesreadonlytargets descriptor set, however there is no addfilestargets specified.");
-                                LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_headerCantSetReadOnlyWithoutAddFilesList, headerAsString);
-                                return;
-                            }
-                            //TODO: IMPLEMENT INSTALLER LOGIC FOR THIS.
-                            CLog.Information($@"Parsing addfilesreadonlytargets on {headerAsString}. Found {addFilesReadOnlySplit.Count} items in list", Settings.LogModStartup);
-                        }
+                        //    //Ensure add targets list contains this list
+                        //    if (addFilesTargetSplit != null)
+                        //    {
+                        //        if (!addFilesTargetSplit.ContainsAll(addFilesReadOnlySplit, StringComparer.InvariantCultureIgnoreCase))
+                        //        {
+                        //            //readonly list contains elements not contained in the targets list
+                        //            Log.Error($@"Mod has job header ({headerAsString}) that has addfilesreadonlytargets descriptor set, however it contains items that are not part of the addfilestargets list. This is not allowed.");
+                        //            LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_headerSpecifiesNotAddedReadOnlyTarget, headerAsString);
+                        //            return;
+                        //        }
+                        //    }
+                        //    else
+                        //    {
+                        //        //readonly target specified but nothing in the addfilestargets list/unspecified
+                        //        Log.Error($@"Mod has job header ({headerAsString}) that has addfilesreadonlytargets descriptor set, however there is no addfilestargets specified.");
+                        //        LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_headerCantSetReadOnlyWithoutAddFilesList, headerAsString);
+                        //        return;
+                        //    }
+                        //    //TODO: IMPLEMENT INSTALLER LOGIC FOR THIS.
+                        //    CLog.Information($@"Parsing addfilesreadonlytargets on {headerAsString}. Found {addFilesReadOnlySplit.Count} items in list", Settings.LogModStartup);
+                        //}
 
                         //Ensure TESTPATCH is supported by making sure we are at least on ModDesc 3 if using TESTPATCH header.
                         //ME3 only
@@ -1161,11 +1164,20 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         }
 
                         //Security check for ..
-                        if (customDLCSourceSplit.Any(x => x.Contains(@"..")) || customDLCDestSplit.Any(x => x.Contains(@"..")))
+                        if (customDLCSourceSplit.Any(x => x.Contains(@"..")) || customDLCDestSplit.Any(x => x.Contains(@".")))
                         {
                             //Security violation: Cannot use .. in filepath
-                            Log.Error(@"CUSTOMDLC header sourcedirs or destdirs includes item that contains a .., which is not permitted.");
+                            Log.Error(@"CUSTOMDLC header sourcedirs or destdirs includes item that contains a '..' (sourcedirs) or '.' (destdirs), which is not permitted.");
                             LoadFailedReason = M3L.GetString(M3L.string_validation_modparsing_loadfailed_customDLCItemHasIllegalCharacters);
+                            return;
+                        }
+
+                        // Security check for directory separators
+                        if (customDLCDestSplit.Any(x => x.ContainsAny(DirectorySeparatorChars, StringComparison.InvariantCultureIgnoreCase)))
+                        {
+                            //Security violation: Cannot use \ in filepath
+                            Log.Error(@"CUSTOMDLC header destdirs contains a value that contains a directory separator character, which is not allowed.");
+                            LoadFailedReason = "CUSTOMDLC header destdirs contains a value that contains a directory separator character, which is not allowed.";
                             return;
                         }
 
@@ -1809,16 +1821,17 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         {
                             if (siloScopes.DisallowedFileSilos.Any(silo => silo.Equals(f, StringComparison.InvariantCultureIgnoreCase)))
                             {
-                                Analytics.TrackEvent(@"Mod attempts to install outside of header silos", new Dictionary<string, string>()
+                                Analytics.TrackEvent(@"Mod attempts to install disallowed file", new Dictionary<string, string>()
                                 {
                                     {@"Mod name", ModName},
                                     {@"Header", job.Header.ToString()},
                                     {@"Game", Game.ToString()},
+                                    {@"File", f}
                                 });
 
                                 // The target of this file is outside the silo
-                                Log.Error($@"{ModName}'s job {job.Header} file target {f} installs a file into a disallowed file silo scope. This is a security risk, mods must only install files to their specified task header directories, and not into protected directories, such as DLC when using BASEGAME tasks.");
-                                LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_securityCheckInsideDisallowedSilo, ModName, job.Header, f);
+                                Log.Error($"{ModName}'s job {job.Header} file target {f} installs a file that cannot be installed by Mod Manager as it has been specifically blacklisted. Installing this file poses a security risk or is known to likely harm a user's installation.");
+                                LoadFailedReason = $"{ModName}'s job {job.Header} file target {f} installs a file that cannot be installed by Mod Manager as it has been specifically blacklisted. Installing this file poses a security risk or is known to likely harm a user's installation.";
                                 return;
                             }
                         }

@@ -1278,7 +1278,7 @@
     <!-- 0 = header string in moddesc.ini -->
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_customDLCMismatchedSourceDirsDestDirs">Job header (CUSTOMDLC) has mismatched sourcedirs and destdirs descriptor lists. sourcedirs has {0} items, destdirs has {0} items. The number of items in each list must match.</system:String>
     <!-- 0 = number, 1 = number -->
-    <system:String x:Key="string_validation_modparsing_loadfailed_customDLCItemHasIllegalCharacters">CUSTOMDLC header sourcedirs or destdirs includes item that contains a .., which is not permitted.</system:String>
+    <system:String x:Key="string_validation_modparsing_loadfailed_customDLCItemHasIllegalCharacters">CUSTOMDLC header sourcedirs or destdirs includes item that contains a '.' (destdirs) or a '..' (sourcedirs), which is not permitted.</system:String>
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_customDLCSourceDirMissing">Job header (CUSTOMDLC) sourcedirs descriptor specifies installation of a Custom DLC folder that does not exist in the mod folder: {0}</system:String>
     <!-- 0 = source dlc foldername -->
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_destDirCannotBeMetadataOrOfficialDLC">Job header (CUSTOMDLC) destdirs descriptor that specifies installation of a Custom DLC folder to a protected target: {0}. Custom DLC cannot be installed to a folder named the same as an official DLC or metadata directory.</system:String>
