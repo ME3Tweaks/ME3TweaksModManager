@@ -1779,7 +1779,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         }
                     }
 
-                    // See if any files are in disallowed silos.
+                    // See if any files are in disallowed directory silos.
                     if (siloScopes.DisallowedSilos.Any())
                     {
                         // We need to check it's silos
@@ -1795,6 +1795,29 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                                 });
                                 // The target of this file is outside the silo
                                 Log.Error($@"{ModName}'s job {job.Header} file target {f} installs a file into a disallowed silo scope. This is a security risk, mods must only install files to their specified task header directories, and not into protected directories, such as DLC when using BASEGAME tasks.");
+                                LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_securityCheckInsideDisallowedSilo, ModName, job.Header, f);
+                                return;
+                            }
+                        }
+                    }
+
+                    // See if any files try to install to a disallowed file silo
+                    if (siloScopes.DisallowedFileSilos.Any())
+                    {
+                        // We need to check it's silos
+                        foreach (var f in allPossibleTargets)
+                        {
+                            if (siloScopes.DisallowedFileSilos.Any(silo => silo.Equals(f, StringComparison.InvariantCultureIgnoreCase)))
+                            {
+                                Analytics.TrackEvent(@"Mod attempts to install outside of header silos", new Dictionary<string, string>()
+                                {
+                                    {@"Mod name", ModName},
+                                    {@"Header", job.Header.ToString()},
+                                    {@"Game", Game.ToString()},
+                                });
+
+                                // The target of this file is outside the silo
+                                Log.Error($@"{ModName}'s job {job.Header} file target {f} installs a file into a disallowed file silo scope. This is a security risk, mods must only install files to their specified task header directories, and not into protected directories, such as DLC when using BASEGAME tasks.");
                                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_securityCheckInsideDisallowedSilo, ModName, job.Header, f);
                                 return;
                             }

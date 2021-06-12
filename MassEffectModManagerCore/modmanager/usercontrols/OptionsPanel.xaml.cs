@@ -46,6 +46,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             if (mainwindow.ChooseModLibraryPath(false))
             {
+                Result.ReloadMods = true;
                 LibraryDir = Settings.ModLibraryPath;
             }
         }

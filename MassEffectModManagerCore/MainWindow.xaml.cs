@@ -1253,6 +1253,11 @@ namespace MassEffectModManagerCore
                 AutoTOCTarget(v);
             }
 
+            if (result.ReloadMods)
+            {
+                LoadMods(result.ModToHighlightOnReload);
+            }
+
             Task.Run(() =>
             {
                 if (result.ReloadTargets)

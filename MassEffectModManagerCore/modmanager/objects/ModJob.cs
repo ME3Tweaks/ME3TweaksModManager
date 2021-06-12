@@ -634,17 +634,33 @@ namespace MassEffectModManagerCore.modmanager.objects
                 // There are specific directories we allow installation to.
                 if (game == MEGame.ME3)
                 {
-                    scopes.DisallowedSilos.Add(@"Binaries\\Win32" + Path.DirectorySeparatorChar); //You are not allowed to install files into the game executable directory.
+                    scopes.DisallowedSilos.Add($@"Binaries{Path.DirectorySeparatorChar}Win32");
                 }
 
                 if (game.IsLEGame())
                 {
-                    scopes.DisallowedSilos.Add(@"Binaries\\Win64" + Path.DirectorySeparatorChar); //You are not allowed to install files into the game executable directory.
+                    scopes.DisallowedSilos.Add($@"Binaries{Path.DirectorySeparatorChar}Win64"); //You are not allowed to install files into the game executable directory.
+                    scopes.DisallowedSilos.Add($@"Binaries{Path.DirectorySeparatorChar}Win64{Path.DirectorySeparatorChar}ASI"); //You are not allowed to install files into the game executable directory.
+                    scopes.DisallowedFileSilos.Add($@"BioGame{Path.DirectorySeparatorChar}Config{Path.DirectorySeparatorChar}GamerSettings.ini"); // You are not allowed to overwrite this file
                 }
 
-                scopes.AllowedSilos.Add(@"Binaries" + Path.DirectorySeparatorChar); //Exec files
-                scopes.AllowedSilos.Add(@"BioGame" + Path.DirectorySeparatorChar); // Stuff in biogame
-                scopes.AllowedSilos.Add(@"data" + Path.DirectorySeparatorChar); // Stuff in biogame
+                if (game == MEGame.LELauncher)
+                {
+                    scopes.DisallowedFileSilos.Add(""); // Root directory
+                    scopes.DisallowedFileSilos.Add(@"."); // Root directory
+                }
+
+                if (game != MEGame.LELauncher)
+                {
+                    scopes.AllowedSilos.Add(@"Binaries" + Path.DirectorySeparatorChar); //Exec files
+                    scopes.AllowedSilos.Add(@"BioGame" + Path.DirectorySeparatorChar); // Stuff in biogame
+                }
+
+                if (game is MEGame.ME1 or MEGame.ME2)
+                {
+                    scopes.AllowedSilos.Add(@"data" + Path.DirectorySeparatorChar); // Contains config tool
+                }
+
                 scopes.DisallowedSilos.Add(dlcDir); // BASEGAME is not allowed into DLC
                 scopes.AllowedSilos.Add(@"Engine" + Path.DirectorySeparatorChar); //Shaders
             }
@@ -677,8 +693,18 @@ namespace MassEffectModManagerCore.modmanager.objects
         /// </summary>
         public class SiloScopes
         {
+            /// <summary>
+            /// Directories that can be installed to
+            /// </summary>
             public List<string> AllowedSilos = new List<string>();
+            /// <summary>
+            /// Directories that cannot be installed to
+            /// </summary>
             public List<string> DisallowedSilos = new List<string>();
+            /// <summary>
+            /// Specific file paths that can not be installed to
+            /// </summary>
+            public List<string> DisallowedFileSilos = new List<string>();
         }
 
         /// <summary>

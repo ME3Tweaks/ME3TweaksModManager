@@ -493,6 +493,18 @@ namespace MassEffectModManagerCore.modmanager.helpers
                     if (ME3VanillaDatabase.Count == 0) LoadDatabaseFor(MEGame.ME3);
                     vanillaDB = ME3VanillaDatabase;
                     break;
+                case MEGame.LE1:
+                    if (LE1VanillaDatabase.Count == 0) LoadDatabaseFor(MEGame.LE1);
+                    vanillaDB = LE1VanillaDatabase;
+                    break;
+                case MEGame.LE2:
+                    if (LE2VanillaDatabase.Count == 0) LoadDatabaseFor(MEGame.LE2);
+                    vanillaDB = LE2VanillaDatabase;
+                    break;
+                case MEGame.LE3:
+                    if (LE3VanillaDatabase.Count == 0) LoadDatabaseFor(MEGame.LE3);
+                    vanillaDB = LE3VanillaDatabase;
+                    break;
                 default:
                     throw new Exception(@"Cannot vanilla check against game that is not ME1/ME2/ME3");
             }
