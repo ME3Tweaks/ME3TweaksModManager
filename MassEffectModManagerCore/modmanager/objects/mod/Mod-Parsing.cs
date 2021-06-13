@@ -19,13 +19,15 @@ using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Packages;
 using MassEffectModManagerCore.modmanager.objects.mod.merge;
 using Microsoft.AppCenter.Analytics;
+using PropertyChanged;
 using Serilog;
 using SevenZip;
 
 namespace MassEffectModManagerCore.modmanager.objects.mod
 {
     [DebuggerDisplay("Mod - {ModName}")] //do not localize
-    public partial class Mod : INotifyPropertyChanged
+    [AddINotifyPropertyChangedInterface]
+    public partial class Mod
     {
 
         private static readonly string[] DirectorySeparatorChars = new[] { "\\", "/" };
@@ -39,10 +41,10 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
         /// </summary>
         public const string MergeModFolderName = @"MergeMods";
 
-        //Fody uses this property on weaving
-#pragma warning disable
-        public event PropertyChangedEventHandler PropertyChanged;
-#pragma warning restore
+        /// <summary>
+        /// MergeMods folder. Do not change
+        /// </summary>
+        public const string Game1EmbeddedTlkFolderName = @"GAME1_EMBEDDED_TLK";
 
         /// <summary>
         /// The numerical ID for a mod on the respective game's NexusMods page. This is automatically parsed from the ModWebsite if this is not explicitly set and the ModWebsite attribute is a nexusmods url.
@@ -1346,7 +1348,6 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_canOnlyHaveOneBalanceChangesFile, replaceFilesSourceSplit.Count.ToString());
                         return;
                     }
-
                 }
             }
 
@@ -1517,6 +1518,18 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 InstallationJobs.Add(localizationJob);
                 RequiredDLC.Add(destDlc); //Add DLC requirement.
             }
+            #endregion
+
+            #region GAME1_TLK_UPDATES
+            //if (Game is MEGame.ME1 or MEGame.LE1)
+            if (Game is MEGame.LE1 && ModDescTargetVersion >= 7.0 && bool.TryParse(iniData[ModJob.JobHeader.GAME1_EMBEDDED_TLK.ToString()][@"usesfeature"], out var usesGame1TlkFeature))
+            {
+                if (!ParseGame1TLKMerges())
+                {
+                    return; // Stop parsing.
+                }
+            }
+
             #endregion
 
             #endregion
@@ -1874,12 +1887,12 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 {
                     if (IsLauncherFiletypeAllowed(file))
                     {
-                        headerJob.AddPreparsedFileToInstall($@"Content/{file}", file, this);
+                        headerJob.AddPreparsedFileToInstall($@"Content\{file}", file, this);
                     }
                     else
                     {
-                        Log.Error($@"The LELAUNCHER header only supports the following file extensions: {string.Join(", ", AllowedLauncherFileTypes)} An unsupported filetype was found: {file}");
-                        LoadFailedReason = $"The LELAUNCHER header only supports the following file extensions: {string.Join(", ", AllowedLauncherFileTypes)} An unsupported filetype was found: {file}";
+                        Log.Error($@"The LELAUNCHER header only supports the following file extensions: {string.Join(@", ", AllowedLauncherFileTypes)} An unsupported filetype was found: {file}");
+                        LoadFailedReason = $"The LELAUNCHER header only supports the following file extensions: {string.Join(@", ", AllowedLauncherFileTypes)} An unsupported filetype was found: {file}";
                         ValidMod = false;
                     }
                 }
@@ -1887,6 +1900,52 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
 
             InstallationJobs.Add(headerJob);
             ValidMod = true;
+        }
+
+        /// <summary>
+        /// Prepares the LELAUNCHER mod job and finalizes loading of the mod.
+        /// </summary>
+        /// <param name="jobSubdirectory"></param>
+        private bool ParseGame1TLKMerges()
+        {
+            int jobDirLength = Mod.Game1EmbeddedTlkFolderName.Length;
+            ModJob headerJob = new ModJob(ModJob.JobHeader.GAME1_EMBEDDED_TLK, this);
+            headerJob.JobDirectory = Mod.Game1EmbeddedTlkFolderName;
+            var sourceDirectory = FilesystemInterposer.PathCombine(IsInArchive, ModPath, Mod.Game1EmbeddedTlkFolderName).Replace('/', '\\');
+            if (FilesystemInterposer.DirectoryExists(sourceDirectory, Archive))
+            {
+                var files = FilesystemInterposer.DirectoryGetFiles(sourceDirectory, @"*.xml", SearchOption.TopDirectoryOnly, Archive).Select(x => x.Substring((ModPath.Length > 0 ? (ModPath.Length + 1) : 0) + jobDirLength).TrimStart('\\')).ToList();
+                if (!files.Any())
+                {
+                    Log.Error($@"Mod specifies {ModJob.JobHeader.GAME1_EMBEDDED_TLK} task header, but no xml file were found in the {Mod.Game1EmbeddedTlkFolderName} directory. Remove this task header if you are not using it, or add valid xml files to the {Mod.Game1EmbeddedTlkFolderName} directory.");
+                    LoadFailedReason = $"Mod specifies {ModJob.JobHeader.GAME1_EMBEDDED_TLK} task header, but no xml file were found in the {Mod.Game1EmbeddedTlkFolderName} directory. Remove this task header if you are not using it, or add valid xml files to the {Mod.Game1EmbeddedTlkFolderName} directory.";
+                    ValidMod = false;
+                    return false;
+                }
+
+                foreach (var file in files)
+                {
+                    if (file.Count(x => x == '.') < 2)
+                    {
+                        Log.Error($@"The {ModJob.JobHeader.GAME1_EMBEDDED_TLK} header only supports the files in the {Mod.Game1EmbeddedTlkFolderName} directory that contain at least 2 '.' characters; one for the extension, and at least one to split the package name from the export path. If the export is nested under packages, more '.' may be needed. Invalid value: {file}");
+                        LoadFailedReason = $"The {ModJob.JobHeader.GAME1_EMBEDDED_TLK} header only supports the files in the {Mod.Game1EmbeddedTlkFolderName} directory that contain at least 2 '.' characters; one for the extension, and at least one to split the package name from the export path. If the export is nested under packages, more '.' may be needed. Invalid value: {file}";
+                        ValidMod = false;
+                        return false;
+                    }
+
+                    headerJob.Game1TLKXmls ??= new List<string>(files.Count);
+                    headerJob.Game1TLKXmls.Add(Path.GetFileName(file));
+                }
+            }
+            else
+            {
+                Log.Error($@"Mod specifies {ModJob.JobHeader.GAME1_EMBEDDED_TLK} task header, but no xml file were found in the {Mod.Game1EmbeddedTlkFolderName} directory. Remove this task header if you are not using it, or add valid xml files to the {Mod.Game1EmbeddedTlkFolderName} directory.");
+                LoadFailedReason = $"Mod specifies {ModJob.JobHeader.GAME1_EMBEDDED_TLK} task header, but no xml file were found in the {Mod.Game1EmbeddedTlkFolderName} directory. Remove this task header if you are not using it, or add valid xml files to the {Mod.Game1EmbeddedTlkFolderName} directory.";
+                ValidMod = false;
+                return false;
+            }
+            InstallationJobs.Add(headerJob);
+            return true;
         }
 
         private static string[] AllowedLauncherFileTypes = new[]

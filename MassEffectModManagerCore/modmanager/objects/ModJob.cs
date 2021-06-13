@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -466,6 +467,11 @@ namespace MassEffectModManagerCore.modmanager.objects
         public List<string> ReadOnlyIndicators = new List<string>();
 
         /// <summary>
+        /// List of xml files in the Game1Tlk job directory. Ensure you check for null before accessing this variable.
+        /// </summary>
+        public List<string> Game1TLKXmls;
+
+        /// <summary>
         /// Gets list of headers that does not include CUSTOMDLC. Includes BASEGAME.
         /// </summary>
         /// <param name="game"></param>
@@ -735,6 +741,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         {
             switch (job.Header)
             {
+                case JobHeader.GAME1_EMBEDDED_TLK:
                 case JobHeader.LOCALIZATION:
                 case JobHeader.ME1_CONFIG:
                 case JobHeader.ME2_RCWMOD:

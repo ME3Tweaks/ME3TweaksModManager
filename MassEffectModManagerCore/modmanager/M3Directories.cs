@@ -148,6 +148,7 @@ namespace MassEffectModManagerCore.modmanager
             if (header == ModJob.JobHeader.CUSTOMDLC) return true; //Don't check custom dlc
             if (header == ModJob.JobHeader.LOCALIZATION) return true; //Don't check localization
             if (header == ModJob.JobHeader.LELAUNCHER) return true; //Don't check launcher
+            if (header == ModJob.JobHeader.GAME1_EMBEDDED_TLK) return true; //Don't check launcher
 
             if (header == ModJob.JobHeader.TESTPATCH)
             {

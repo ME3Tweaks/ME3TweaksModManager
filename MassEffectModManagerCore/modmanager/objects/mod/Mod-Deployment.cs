@@ -132,10 +132,17 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 {
                     references.AddRange(FilesystemInterposer.DirectoryGetFiles(FilesystemInterposer.PathCombine(IsInArchive, ModPath, customDLCmapping.Key), "*", SearchOption.AllDirectories, archive).Select(x => (IsInArchive && ModPath.Length == 0) ? x : x.Substring(ModPath.Length + 1)).ToList());
                 }
-
                 foreach (var mm in job.MergeMods)
                 {
                     references.Add($@"{Mod.MergeModFolderName}\{mm.MergeModFilename}");
+                }
+
+                if (job.Game1TLKXmls != null)
+                {
+                    foreach (var tlkXml in job.Game1TLKXmls)
+                    {
+                        references.Add($@"{Mod.Game1EmbeddedTlkFolderName}\{tlkXml}");
+                    }
                 }
             }
             references.AddRange(AdditionalDeploymentFiles);

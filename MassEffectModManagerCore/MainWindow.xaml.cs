@@ -1193,7 +1193,7 @@ namespace MassEffectModManagerCore
         /// Shows or queues the specified control
         /// </summary>
         /// <param name="control">Control to show or queue</param>
-        private void ShowBusyControl(MMBusyPanelBase control)
+        internal void ShowBusyControl(MMBusyPanelBase control)
         {
             if (queuedUserControls.Count == 0 && !IsBusy)
             {
@@ -1210,7 +1210,7 @@ namespace MassEffectModManagerCore
         /// Shows or queues the specified control
         /// </summary>
         /// <param name="control">Control to show or queue</param>
-        private void ReleaseBusyControl()
+        internal void ReleaseBusyControl()
         {
             var closingPanel = BusyContent as MMBusyPanelBase;
             BusyContent = null;
@@ -2102,7 +2102,7 @@ namespace MassEffectModManagerCore
         /// <param name="game">Game to find target for</param>
         /// <returns>Game matching target. If none
         /// is found, this return null.</returns>
-        private GameTarget GetCurrentTarget(MEGame game)
+        internal GameTarget GetCurrentTarget(MEGame game)
         {
             if (SelectedGameTarget != null)
             {
@@ -3623,7 +3623,7 @@ namespace MassEffectModManagerCore
             var modInspector = new ModArchiveImporter(archiveFile, archiveStream);
             modInspector.Close += (a, b) =>
             {
-
+                // Todo: Convert to Panel Result
                 if (b.Data is List<Mod> modsImported)
                 {
                     ReleaseBusyControl();
@@ -3961,72 +3961,7 @@ namespace MassEffectModManagerCore
             }
         }
 
-        private void ReloadSelectedMod_Click(object sender, RoutedEventArgs e)
-        {
-            Mod m = new Mod(SelectedMod.ModDescPath, MEGame.Unknown);
-        }
-
-        private void StampCurrentTargetWithALOT_Click(object sender, RoutedEventArgs e)
-        {
-            if (SelectedGameTarget != null)
-            {
-                SelectedGameTarget.StampDebugALOTInfo();
-                SelectedGameTarget.ReloadGameTarget();
-            }
-        }
-
-        private void StripCurrentTargetALOTMarker_Click(object sender, RoutedEventArgs e)
-        {
-            if (SelectedGameTarget != null)
-            {
-                SelectedGameTarget.StripALOTInfo();
-                SelectedGameTarget.ReloadGameTarget();
-            }
-        }
-
-        private void DebugPrintReferencedFiles_Click(object sender, RoutedEventArgs e)
-        {
-            if (SelectedMod != null)
-            {
-                var refed = SelectedMod.GetAllRelativeReferences();
-                Debug.WriteLine(@"Referenced files:");
-                foreach (var refx in refed)
-                {
-                    Debug.WriteLine(refx);
-                }
-            }
-        }
-
-        private void DebugPrintInstallationQueue_Click(object sender, RoutedEventArgs e)
-        {
-            if (SelectedMod != null)
-            {
-                var queues = SelectedMod.GetInstallationQueues(InstallationTargets.FirstOrDefault(x => x.Game == SelectedMod.Game));
-                Debug.WriteLine(@"Installation Queue:");
-                foreach (var job in queues.Item1)
-                {
-                    foreach (var file in job.Value.unpackedJobMapping)
-                    {
-                        Debug.WriteLine($@"[UNPACKED {job.Key.Header.ToString()}] {file.Value.FilePath} => {file.Key}");
-                    }
-                }
-
-                foreach (var job in queues.Item2)
-                {
-                    foreach (var file in job.Item3)
-                    {
-                        Debug.WriteLine($@"[SFAR {job.job.Header.ToString()}] {file.Value.FilePath} => {file.Key}");
-                    }
-                }
-            }
-        }
-
-        private void ShowBackupNag_Click(object sender, RoutedEventArgs e)
-        {
-            ShowBackupNag();
-        }
-
-        private void ShowBackupNag()
+        internal void ShowBackupNag()
         {
             var nagPanel = new BackupNagSystem(
                 InstallationTargets.Any(x => x.Game == MEGame.ME1),
@@ -4060,87 +3995,6 @@ namespace MassEffectModManagerCore
             Utilities.OpenWebpage(@"https://me3tweaks.com/donations");
         }
 
-        private void MEMVanillaDBViewer_Click(object sender, RoutedEventArgs e)
-        {
-            var previewPanel = new MEMVanillaDBViewer();
-            previewPanel.Close += (a, b) =>
-            {
-                ReleaseBusyControl();
-                //if (b.Data is bool loadMods)
-                //{
-                //    LoadMods();
-                //}
-            };
-            ShowBusyControl(previewPanel);
-        }
-
-        private void TestMMV1_click(object sender, RoutedEventArgs e)
-        {
-            // SERIALIZER
-            //var testfile = MergeModLoader.SerializeManifest(,1);
-
-
-
-
-            //// LOADER
-            //using FileStream fs = File.OpenRead(testfile);
-            //var mergeMod = MergeModLoader.LoadMergeMod(fs, "MMVV1.m3m", false);
-
-            //var le2t = GetCurrentTarget(MEGame.LE2);
-            //mergeMod.ApplyMergeMod(null, le2t);
-            string[] exportsToUpdate = new[]
-            {
-                "SFXGameContent.Default__SFXCustomAction_PistolMeleeOne.Timeline0",
-                "SFXGameContent.Default__SFXCustomAction_PistolMeleeTwo.Timeline1",
-                "SFXGameContent.Default__SFXCustomAction_PistolMeleeThree.Timeline2",
-                "SFXGameContent.Default__SFXCustomAction_RifleMeleeOne.Timeline0",
-                "SFXGameContent.Default__SFXCustomAction_RifleMeleeTwo.Timeline1",
-                "SFXGameContent.Default__SFXCustomAction_RifleMeleeThree.Timeline2",
-            };
-            var packages = Directory.GetFiles(@"B:\SteamLibrary\steamapps\common\Mass Effect Legendary Edition\Game\ME3\BioGame\CookedPCConsole", "SFXCharacterClass*.pcc", SearchOption.TopDirectoryOnly);
-            foreach (var p in packages)
-            {
-                var package = MEPackageHandler.OpenMEPackage(p);
-
-                foreach (var expN in exportsToUpdate)
-                {
-                    var exp = package.FindExport(expN);
-                    var prop = exp.GetProperty<ArrayProperty<StructProperty>>("Timeline");
-                    List<int> indicesToUpdate = new List<int>();
-                    for (int i = 0; i < prop.Count; i++)
-                    {
-                        var timelineEvent = prop[i];
-                        if (timelineEvent.GetProp<StrProperty>("InputAlias").Value == "Shared_Melee")
-                        {
-                            indicesToUpdate.Add(prop.Count);
-
-                            prop.Add(timelineEvent); // clone inputalias 
-                            prop.Add(prop[i + 1]); // clone input off (skip same+off+clone ia)
-                            timelineEvent.Properties.AddOrReplaceProp(new StrProperty("PC_Melee", "InputAlias"));
-                            i++; // jump to next event
-                        }
-                    }
-
-                    // reload to generate new objects in memory
-                    exp.WriteProperty(prop);
-                    prop = exp.GetProperty<ArrayProperty<StructProperty>>("Timeline");
-                    foreach (var indx in indicesToUpdate)
-                    {
-                        var timelineEvent = prop[indx];
-                        timelineEvent.Properties.AddOrReplaceProp(new StrProperty("Console_Melee", "InputAlias"));
-                        prop[indx + 1].Properties.AddOrReplaceProp(new IntProperty(indx, new NameReference("nMatchedInputIndex")));
-                    }
-                    exp.WriteProperty(prop);
-
-                }
-
-                package.Save();
-            }
-
-
-
-        }
-
         private void ListAllInstallableFiles_Click(object sender, RoutedEventArgs e)
         {
             if (SelectedMod != null)
@@ -4151,18 +4005,11 @@ namespace MassEffectModManagerCore
             }
         }
 
-        private void MD5DB_Gen_Click(object sender, RoutedEventArgs e)
-        {
-            MD5Gen.GenerateMD5Map(@"B:\SteamLibrary\steamapps\common\Mass Effect Legendary Edition\Game\Launcher", "lel.bin");
-            Debug.WriteLine(@"Done");
-        }
-
         private void GameFilter_Click(object sender, RoutedEventArgs e)
         {
             if (Keyboard.Modifiers == ModifierKeys.Shift)
             {
                 // Shift Click
-                Debug.WriteLine("HI");
                 if (sender is ToggleButton tb && tb.DataContext is GameFilter gf)
                 {
                     SuppressFilterMods = true;
@@ -4181,5 +4028,15 @@ namespace MassEffectModManagerCore
                 }
             }
         }
+
+        private void RouteDebugCall(object sender, RoutedEventArgs e)
+        {
+#if DEBUG
+            if (sender is FrameworkElement fe)
+            {
+                DebugMenu.RouteDebugCall(fe.Name, this);
+            }
+        }
+#endif
     }
 }

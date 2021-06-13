@@ -73,7 +73,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         // Must be ME2 or ME3, cannot have a transform, we allow it, archive has been scanned, we haven't started an operation
         // Mods that use the updater service cannot be compressed to ensure the update checks are reliable
-        public bool CanCompressPackages => CompressedMods.Any(x => x.Game >= MEGame.ME2) && CompressedMods.All(x => x.ExeExtractionTransform == null && x.ModClassicUpdateCode == 0) && App.AllowCompressingPackagesOnImport && ArchiveScanned && !TaskRunning;
+        // Excludes Legendary Edition games.
+        public bool CanCompressPackages => CompressedMods.Any(x => x.Game is MEGame.ME2 or MEGame.ME3) && CompressedMods.All(x => x.ExeExtractionTransform == null && x.ModClassicUpdateCode == 0) && App.AllowCompressingPackagesOnImport && ArchiveScanned && !TaskRunning;
 
         public ObservableCollectionExtended<Mod> CompressedMods { get; } = new ObservableCollectionExtended<Mod>();
         public ModArchiveImporter(string file, Stream archiveStream = null)
@@ -81,7 +82,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             MemoryAnalyzer.AddTrackedMemoryItem($@"Mod Archive Importer ({Path.GetFileName(file)})", new WeakReference(this));
             ArchiveFilePath = file;
             ArchiveStream = archiveStream;
-            DataContext = this;
             LoadCommands();
             InitializeComponent();
         }
@@ -361,7 +361,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 #if DEBUG
             foreach (var v in archiveFile.ArchiveFileData)
             {
-                Debug.WriteLine($@"{v.FileName} | Index {v.Index} | Size {v.Size} | Last Modified {v.LastWriteTime}");
+                Debug.WriteLine($@"{v.FileName} | Index {v.Index} | Size {v.Size} | Method {v.Method} | IsDirectory {v.IsDirectory} | Last Modified {v.LastWriteTime}");
             }
 #endif
             var moddesciniEntries = new List<ArchiveFileInfo>();

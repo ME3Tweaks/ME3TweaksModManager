@@ -73,7 +73,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         /// <summary>
         ///  Class that checks a single mod for issues
         /// </summary>
-        public class EncompassingModDeploymentCheck : INotifyPropertyChanged
+        [AddINotifyPropertyChangedInterface]
+        public class EncompassingModDeploymentCheck
         {
             public ObservableCollectionExtended<DeploymentChecklistItem> DeploymentChecklistItems { get; } = new ObservableCollectionExtended<DeploymentChecklistItem>();
             public DeploymentValidationTarget DepValidationTarget { get; set; }
@@ -1203,11 +1204,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
             #endregion
 
-            //Fody uses this property on weaving
-#pragma warning disable
-            public event PropertyChangedEventHandler PropertyChanged;
-#pragma warning restore
-
             /// <summary>
             /// Sets all checks to the 'abandoned' state, as in they will not run due to previous blocking item
             /// </summary>
@@ -1287,10 +1283,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private bool CanClose() => !DeploymentInProgress;
 
         /// <summary>
-        /// File extensnions that will be stored uncompressed in archive as they already have well compressed data and may be of a large size
+        /// File extensions that will be stored uncompressed in archive as they already have well compressed data and may be of a large size
         /// (which increases the solid block size)
         /// </summary>
-        private static string[] NoCompressExtensions = new[] { @".tfc", @".bik", @".m3m" };
+        private static readonly string[] NoCompressExtensions = new[] { @".tfc", @".bik", @".m3m", @".xml" };
+
+        private static readonly string[] IndividualCompressExtensions = new string[] { /*@".xml" */};
+
+
         private void StartDeployment()
         {
             var premadeName = "";
@@ -1458,8 +1458,20 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             //Debug.WriteLine("DONE");
 
-            // setup the compressor for pass 1
+            // setup the compressor for pass 2
             var compressor = new SevenZipCompressor();
+
+            // Pass 1: Directories
+            // Stored uncompressed
+            string currentDeploymentStep = "Folders";
+            compressor.CustomParameters.Add(@"s", @"off");
+            compressor.CompressionMode = CompressionMode.Create;
+            compressor.CompressionLevel = CompressionLevel.None;
+            compressor.CompressFileDictionary(archiveMapping.Where(x => x.Value == null).Select(x=>x.Key).ToDictionary(x => x, x => (string)null), archivePath);
+            
+            // Setup compress for pass 2
+            compressor.CustomParameters.Clear();
+            compressor.CompressionMode = CompressionMode.Append; //Append to 
             compressor.CustomParameters.Add(@"s", @"on");
             if (!MultithreadedCompression)
             {
@@ -1481,7 +1493,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             compressor.CustomParameters.Add(@"yx", @"9");
             compressor.CustomParameters.Add(@"d", @"28"); //Dictionary size 2^28 (256MB)
-            string currentDeploymentStep = M3L.GetString(M3L.string_mod);
+            currentDeploymentStep = M3L.GetString(M3L.string_mod);
 
             DateTime lastPercentUpdateTime = DateTime.Now;
             compressor.Progressing += (a, b) =>
@@ -1502,24 +1514,47 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             };
             compressor.FileCompressionStarted += (a, b) => { Debug.WriteLine(b.FileName); };
 
-            // Pass 1: Compressed items and empty folders
+            // Pass 2: Compressed items and empty folders
             // Includes package files and other basic file types
             // Does not include AFC, TFC, or .BIK
             // Does not include moddesc.ini
             // Does not include any referenced image files under M3Images
             currentDeploymentStep = M3L.GetString(M3L.string_compressedModItems);
 
-            var compressItems = archiveMapping.Where(x => x.Value == null || ShouldBeCompressed(x, archiveMappingToSourceMod[x.Key])).ToDictionary(p => p.Key, p => p.Value);
-            compressor.CompressFileDictionary(compressItems, archivePath);
+            var compressItems = archiveMapping.Where(x => x.Value != null && ShouldBeSolidCompressed(x, archiveMappingToSourceMod[x.Key])).ToDictionary(p => p.Key, p => p.Value);
+            if (compressItems.Any())
+            {
+                compressor.CompressFileDictionary(compressItems, archivePath);
+            }
 
+            // Pass 2: Individual compressed items (non-solid)
+            compressor.CustomParameters.Clear(); //remove custom params as it seems to force LZMA
+            compressor.CustomParameters.Add(@"s", @"off");
+            compressor.CompressionMode = CompressionMode.Append; //Append to 
+            compressor.CustomParameters.Add(@"yx", @"9");
+            compressor.CustomParameters.Add(@"d", @"28"); //Dictionary size 2^28 (256MB)
+            var individualcompressItems = archiveMapping.Where(x => x.Value != null && ShouldBeIndividualCompressed(x, archiveMappingToSourceMod[x.Key])).ToDictionary(p => p.Key, p => p.Value);
 
-            // Pass 2: Uncompressed items
+            if (individualcompressItems.Any())
+            {
+                currentDeploymentStep = "Individually compressed items";
+                compressor.CompressFileDictionary(individualcompressItems, archivePath);
+            }
+            // Compress files one at a time to prevent solid
+            //foreach (var item in individualcompressItems)
+            //{
+            //    var d = new Dictionary<string, string>();
+            //    d[item.Key] = item.Value;
+            //    compressor.CompressFileDictionary(d, archivePath);
+            //}
+
+            // Pass 3: Uncompressed items
             compressor.CustomParameters.Clear(); //remove custom params as it seems to force LZMA
             compressor.CompressionMode = CompressionMode.Append; //Append to 
             compressor.CompressionLevel = CompressionLevel.None;
 
             currentDeploymentStep = M3L.GetString(M3L.string_uncompressedModItems);
-            var nocompressItems = archiveMapping.Where(x => x.Value != null && !ShouldBeCompressed(x, archiveMappingToSourceMod[x.Key])).ToDictionary(p => p.Key, p => p.Value);
+            var nocompressItems = archiveMapping.Where(x => x.Value != null && !ShouldBeSolidCompressed(x, archiveMappingToSourceMod[x.Key]) && !ShouldBeIndividualCompressed(x, archiveMappingToSourceMod[x.Key])).Reverse().ToDictionary(p => p.Key, p => p.Value);
 
             compressor.CompressFileDictionary(nocompressItems, archivePath);
 
@@ -1554,16 +1589,28 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         /// </summary>
         /// <param name="fileMapping">Mapping of the in-archive path to the source file. If the value is null, it means it's a folder.</param>
         /// <returns></returns>
-        private bool ShouldBeCompressed(KeyValuePair<string, string> fileMapping, Mod modBeingDeployed)
+        private bool ShouldBeSolidCompressed(KeyValuePair<string, string> fileMapping, Mod modBeingDeployed)
         {
-            if (fileMapping.Value == null) return true; //This can't be compressed (it's a folder) but it should be done in the compression pass so it's in the archive to begin with
+            if (fileMapping.Value == null) return false; //This can't be compressed (it's a folder). Do not put it in solid block as it must appear before.
             if (NoCompressExtensions.Contains(Path.GetExtension(fileMapping.Value))) return false; //Do not compress these extensions
+            if (IndividualCompressExtensions.Contains(Path.GetExtension(fileMapping.Value), StringComparer.InvariantCultureIgnoreCase)) return false; //Do not compress these extensions solid
             var modRelPath = fileMapping.Value.Substring(modBeingDeployed.ModPath.Length + 1);
             if (modRelPath.StartsWith(@"M3Images", StringComparison.InvariantCultureIgnoreCase))
                 return false; // Referenced image file should not be compressed.
             if (modRelPath == @"moddesc.ini")
                 return false; // moddesc.ini should not be compressed.
             return true;
+        }
+
+        /// <summary>
+        /// Determines if a file should be compressed into the archive with individual compression (non-solid). Does not check if it would also match ShouldBeSolidCompressed.
+        /// </summary>
+        /// <param name="fileMapping">Mapping of the in-archive path to the source file. If the value is null, it means it's a folder.</param>
+        /// <returns></returns>
+        private bool ShouldBeIndividualCompressed(KeyValuePair<string, string> fileMapping, Mod modBeingDeployed)
+        {
+            if (fileMapping.Value == null) return false; //This can't be compressed (it's a folder). It should be done in the solid pass
+            return IndividualCompressExtensions.Contains(Path.GetExtension(fileMapping.Value), StringComparer.InvariantCultureIgnoreCase);
         }
 
         private bool CanDeploy()

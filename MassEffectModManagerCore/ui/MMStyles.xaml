@@ -5,7 +5,8 @@
                     xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" 
                     xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters"
                     xmlns:helpers="clr-namespace:MassEffectModManagerCore.modmanager.helpers"
-                    xmlns:system="clr-namespace:System;assembly=System.Runtime">
+                    xmlns:system="clr-namespace:System;assembly=System.Runtime"
+                    xmlns:fa="http://schemas.fontawesome.io/icons/">
     <converters:GameToImageIconConverter x:Key="GameToImageIconConverter"/>
     <converters:BootTargetSourceVisibilityConverter x:Key="BootTargetSourceVisibilityConverter"/>
     <converters:GameIconVisibilityConverter x:Key="GameIconVisibilityConverter"/>
@@ -41,6 +42,55 @@
     <Style x:Key="TargetSelectorContainerAccentStyle" TargetType="ComboBoxItem" BasedOn="{StaticResource {x:Static adonisUi:Styles.AccentComboBoxItem}}">
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
         <Setter Property="IsEnabled" Value="{Binding Selectable}" />
+    </Style>
+    <Style
+        x:Key="MenuItemHeaderStyle"
+        TargetType="{x:Type MenuItem}">
+        <Setter
+            Property="Margin"
+            Value="-30,0,0,0" />
+        <Setter
+            Property="FontSize"
+            Value="10" />
+        <Setter
+            Property="FontWeight"
+            Value="Bold" />
+        <Setter
+            Property="Height"
+            Value="14" />
+        <Setter
+            Property="StaysOpenOnClick"
+            Value="True" />
+        <Setter
+            Property="BorderThickness"
+            Value="0" />
+        <Setter
+            Property="Foreground"
+            Value="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
+        <Setter
+            Property="Background"
+            Value="{DynamicResource {x:Static adonisUi:Brushes.MenuHeaderBackgroundBrush}}" />
+    </Style>
+    <Style
+        x:Key="EnableDisableImageStyle"
+        TargetType="{x:Type fa:ImageAwesome}">
+        <Style.Triggers>
+            <Trigger
+                Property="IsEnabled"
+                Value="False">
+                <Setter
+                    Property="Opacity"
+                    Value="0.75" />
+                <Setter
+                    Property="BitmapEffect">
+                    <Setter.Value>
+                        <BlurBitmapEffect
+                            Radius="2.0"
+                            KernelType="Gaussian" />
+                    </Setter.Value>
+                </Setter>
+            </Trigger>
+        </Style.Triggers>
     </Style>
     <!--Virtualised ItemsControl-->
     <Style x:Key="ItemsControlVirtualizedStyle" TargetType="ItemsControl">

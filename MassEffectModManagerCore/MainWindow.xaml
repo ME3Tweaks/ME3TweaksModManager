@@ -38,55 +38,6 @@
                 Duration="0:0:0.25"
                 Storyboard.TargetProperty="(FrameworkElement.Width)" />
         </Storyboard>
-        <Style
-            x:Key="MenuItemHeaderStyle"
-            TargetType="{x:Type MenuItem}">
-            <Setter
-                Property="Margin"
-                Value="-30,0,0,0" />
-            <Setter
-                Property="FontSize"
-                Value="10" />
-            <Setter
-                Property="FontWeight"
-                Value="Bold" />
-            <Setter
-                Property="Height"
-                Value="14" />
-            <Setter
-                Property="StaysOpenOnClick"
-                Value="True" />
-            <Setter
-                Property="BorderThickness"
-                Value="0" />
-            <Setter
-                Property="Foreground"
-                Value="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
-            <Setter
-                Property="Background"
-                Value="{DynamicResource {x:Static adonisUi:Brushes.MenuHeaderBackgroundBrush}}" />
-        </Style>
-        <Style
-            x:Key="EnableDisableImageStyle"
-            TargetType="{x:Type fa:ImageAwesome}">
-            <Style.Triggers>
-                <Trigger
-                    Property="IsEnabled"
-                    Value="False">
-                    <Setter
-                        Property="Opacity"
-                        Value="0.75" />
-                    <Setter
-                        Property="BitmapEffect">
-                        <Setter.Value>
-                            <BlurBitmapEffect
-                                Radius="2.0"
-                                KernelType="Gaussian" />
-                        </Setter.Value>
-                    </Setter>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
         <x:Array
             x:Key="ModUtilsMenuArray"
             Type="MenuItem"
@@ -1047,7 +998,7 @@
                                     Width="16"
                                     Height="16" />
                             </MenuItem.Icon>
-                        </MenuItem>                    
+                        </MenuItem>
                     </MenuItem>
                     <MenuItem Header="Sync PlotManager">
                         <MenuItem.Icon>
@@ -1335,61 +1286,24 @@
                         </MenuItem.Icon>
                     </MenuItem>
                 </MenuItem>
-                <MenuItem
+                <MenuItem 
                     Header="{DynamicResource string_debug}"
-                    Visibility="{x:Static local:App.DebugOnlyVisibility}">
-                    <MenuItem
-                        Header="{DynamicResource string_requiresSelectedMod}"
-                        Style="{StaticResource MenuItemHeaderStyle}"
-                        Visibility="{x:Static local:App.DebugOnlyVisibility}" />
-                    <MenuItem
-                        Header="{DynamicResource string_reloadSelectedMod}"
-                        Click="ReloadSelectedMod_Click"
-                        Visibility="{x:Static local:App.DebugOnlyVisibility}" />
-                    <MenuItem
-                        Header="{DynamicResource string_debugPrintAllReferencedFiles}"
-                        Click="DebugPrintReferencedFiles_Click"
-                        Visibility="{x:Static local:App.DebugOnlyVisibility}" />
-                    <MenuItem
-                        Header="{DynamicResource string_debugPrintInstallationQueue}"
-                        Click="DebugPrintInstallationQueue_Click"
-                        Visibility="{x:Static local:App.DebugOnlyVisibility}" />
-                    <MenuItem
-                        Header="{DynamicResource string_requiresSelectedTarget}"
-                        Style="{StaticResource MenuItemHeaderStyle}"
-                        Visibility="{x:Static local:App.DebugOnlyVisibility}" />
-                    <MenuItem
-                        Header="{DynamicResource string_stampCurrentTargetWithALOTMarker}"
-                        Click="StampCurrentTargetWithALOT_Click"
-                        Visibility="{x:Static local:App.DebugOnlyVisibility}" />
-                    <MenuItem
-                        Header="{DynamicResource string_stripCurrentTargetALOTMarker}"
-                        Click="StripCurrentTargetALOTMarker_Click"
-                        Visibility="{x:Static local:App.DebugOnlyVisibility}" />
-                    <MenuItem
-                        Header="MMV1 DEBUG"
-                        Click="TestMMV1_click"
-                        Visibility="{x:Static local:App.DebugOnlyVisibility}" />
-                    <MenuItem
-                        Header="Build MD5 DB"
-                        Click="MD5DB_Gen_Click"
-                        Visibility="{x:Static local:App.DebugOnlyVisibility}" />
-                    <MenuItem
-                        Header="{DynamicResource string_requiresNothing}"
-                        Style="{StaticResource MenuItemHeaderStyle}"
-                        Visibility="{x:Static local:App.DebugOnlyVisibility}" />
-                    <MenuItem
-                        Header="{DynamicResource string_showWelcomePanel}"
-                        Click="ShowWelcomePanel_Click"
-                        Visibility="{x:Static local:App.DebugOnlyVisibility}" />
-                    <MenuItem
-                        Header="{DynamicResource string_showBackupNag}"
-                        Click="ShowBackupNag_Click"
-                        Visibility="{x:Static local:App.DebugOnlyVisibility}" />
-                    <MenuItem
-                        Header="{DynamicResource string_mEMVanillaDBViewer}"
-                        Click="MEMVanillaDBViewer_Click"
-                        Visibility="{x:Static local:App.DebugOnlyVisibility}" />
+                    Visibility="{x:Static local:App.DebugOnlyVisibility}"
+                    Padding="4">
+                    <MenuItem Header="{DynamicResource string_requiresSelectedMod}" Style="{StaticResource MenuItemHeaderStyle}" />
+                    <MenuItem Header="{DynamicResource string_reloadSelectedMod}" Click="RouteDebugCall" Name="ReloadSelectedMod_MenuItem" />
+                    <MenuItem Header="{DynamicResource string_debugPrintAllReferencedFiles}" Name="DebugPrintReferencedFiles_MenuItem" Click="RouteDebugCall" />
+                    <MenuItem Header="{DynamicResource string_debugPrintInstallationQueue}" Name="DebugPrintInstallationQueue_MenuItem" Click="RouteDebugCall" />
+                    <MenuItem Header="{DynamicResource string_requiresSelectedTarget}" Style="{StaticResource MenuItemHeaderStyle}" />
+                    <MenuItem Header="{DynamicResource string_stampCurrentTargetWithALOTMarker}" Name="StampCurrentTargetWithALOTMarker_MenuItem" Click="RouteDebugCall" />
+                    <MenuItem Header="{DynamicResource string_stripCurrentTargetALOTMarker}" Name="StripCurrentTargetWithALOTMarker_MenuItem" Click="RouteDebugCall" />
+                    <MenuItem Header="MMV1 DEBUG" Name="TestMMV1_MenuItem" Click="RouteDebugCall" />
+                    <MenuItem Header="Build MD5 DB" Name="RebuildMD5DB_MenuItem" Click="RouteDebugCall" />
+                    <MenuItem Header="{DynamicResource string_requiresNothing}" Style="{StaticResource MenuItemHeaderStyle}" />
+                    <MenuItem Header="{DynamicResource string_showWelcomePanel}" Name="ShowWelcomePanel_MenuItem" Click="RouteDebugCall" />
+                    <MenuItem Header="{DynamicResource string_showBackupNag}" Name="ShowBackupNag_MenuItem" Click="RouteDebugCall" />
+                    <MenuItem Header="{DynamicResource string_mEMVanillaDBViewer}" Name="ShowMEMDB_MenuItem" Click="RouteDebugCall" />
+                    <MenuItem Header="Test 7z" Name="Test7z_MenuItem" Click="RouteDebugCall" />
                 </MenuItem>
                 <MenuItem
                     Name="HelpMenuItem"
