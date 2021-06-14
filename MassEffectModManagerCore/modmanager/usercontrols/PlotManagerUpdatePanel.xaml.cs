@@ -132,7 +132,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     var exp = plotManager.FindExport(pmKey);
                     if (exp == null)
                     {
-                        CLog.Information($@"Generating new conditional entry: {pmKey}",Settings.LogModInstallation);
                         // Adding a new conditional
                         var expToClone = plotManager.Exports.FirstOrDefault(x => x.ClassName == @"Function");
                         exp = EntryCloner.CloneEntry(expToClone);
@@ -141,6 +140,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         uf.Children = 0;
                         exp.WriteBinary(uf);
                         relinkChain = true;
+                        CLog.Information($@"Generated new conditional entry: {exp.UIndex} {pmKey}", Settings.LogModInstallation);
                     }
                     else
                     {
@@ -164,7 +164,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                 if (relinkChain)
                 {
-                    UClass uc = ObjectBinary.From<UClass>(plotManager.FindExport("BioAutoConditionals"));
+                    UClass uc = ObjectBinary.From<UClass>(plotManager.FindExport(@"BioAutoConditionals"));
                     uc.UpdateChildrenChain();
                     uc.UpdateLocalFunctions();
                     uc.Export.WriteBinary(uc);
