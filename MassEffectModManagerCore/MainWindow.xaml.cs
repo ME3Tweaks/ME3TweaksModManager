@@ -4004,7 +4004,7 @@ namespace MassEffectModManagerCore
             {
                 DebugMenu.RouteDebugCall(fe.Name, this);
             }
-        }
 #endif
+        }
     }
 }
