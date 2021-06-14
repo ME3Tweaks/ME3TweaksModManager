@@ -166,6 +166,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     UClass uc = ObjectBinary.From<UClass>(plotManager.FindExport("BioAutoConditionals"));
                     uc.UpdateChildrenChain();
+                    uc.UpdateLocalFunctions();
                     uc.Export.WriteBinary(uc);
                 }
                 plotManager.Save(GetPlotManagerPath(target), true);
