@@ -128,9 +128,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 bool relinkChain = false;
                 foreach (var v in funcMap)
                 {
-                    var exp = plotManager.FindExport($@"BioAutoConditionals.{v.Key}");
+                    var pmKey = $@"BioAutoConditionals.F{v.Key}";
+                    var exp = plotManager.FindExport(pmKey);
                     if (exp == null)
                     {
+                        CLog.Information($@"Generating new conditional entry: {pmKey}",Settings.LogModInstallation);
                         // Adding a new conditional
                         var expToClone = plotManager.Exports.FirstOrDefault(x => x.ClassName == @"Function");
                         exp = EntryCloner.CloneEntry(expToClone);
@@ -138,8 +140,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         UFunction uf = ObjectBinary.From<UFunction>(exp);
                         uf.Children = 0;
                         exp.WriteBinary(uf);
-
                         relinkChain = true;
+                    }
+                    else
+                    {
+                        CLog.Information($@"Updating conditional entry: {pmKey}", Settings.LogModInstallation);
                     }
 
                     (_, MessageLog log) = UnrealScriptCompiler.CompileFunction(exp, v.Value, fl);

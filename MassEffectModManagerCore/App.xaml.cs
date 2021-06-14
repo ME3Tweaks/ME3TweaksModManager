@@ -129,7 +129,7 @@ namespace MassEffectModManagerCore
 
                 string[] args = Environment.GetCommandLineArgs();
 
-                #region Command line
+#region Command line
 
                 if (args.Length > 1)
                 {
@@ -181,10 +181,10 @@ namespace MassEffectModManagerCore
                     }
                 }
 
-                #endregion
+#endregion
 
                 // Single instance occurs AFTER command line params as to not break the updater which requires simultaneous boot
-                bool isFirstInstance = SingleInstance<App>.InitializeAsFirstInstance(@"ME3TweaksModManager6"); // do not change this string
+                bool isFirstInstance = this.InitializeAsFirstInstance(@"ME3TweaksModManager6"); // do not change this string
                 if (!isFirstInstance)
                 {
                     //If it's not the first instance, arguments are automatically passed to the first instance
@@ -493,7 +493,7 @@ namespace MassEffectModManagerCore
 #if DEBUG
                 version += @" DEBUG";
 #elif PRERELEASE
-                 //version += " PRERELEASE";
+                 version += " PRERELEASE";
 #endif
                 // TODO CHANGE THIS
                 return $"{version}, Build {BuildNumber}";
@@ -508,7 +508,7 @@ namespace MassEffectModManagerCore
 #if DEBUG
                 version += @" DEBUG";
 #elif PRERELEASE
-                 //version += " PRERELEASE";
+                 version += " PRERELEASE";
 #endif
                 return $"ME3Tweaks Mod Manager {version} (Build {BuildNumber})";
             }
@@ -519,8 +519,8 @@ namespace MassEffectModManagerCore
         /// </summary>
         public static string ExecutableLocation { get; private set; }
 
-        #region Server Manifest
-        #region Static Property Changed
+#region Server Manifest
+#region Static Property Changed
 
         public static event PropertyChangedEventHandler StaticPropertyChanged;
         /// <summary>
@@ -539,7 +539,7 @@ namespace MassEffectModManagerCore
             StaticPropertyChanged?.Invoke(null, new PropertyChangedEventArgs(propertyName));
             return true;
         }
-        #endregion
+#endregion
         private static Dictionary<string, string> _serverManifest;
         /// <summary>
         /// The online server manifest that was fetched at boot. If null, the manifest was not fetched
@@ -550,7 +550,7 @@ namespace MassEffectModManagerCore
             set => SetProperty(ref _serverManifest, value);
         }
 
-        #endregion
+#endregion
 
         public static List<IntroTutorial.TutorialStep> TutorialService { get; set; } = new List<IntroTutorial.TutorialStep>(); //in case it takes long time to load
 
@@ -611,12 +611,7 @@ namespace MassEffectModManagerCore
             }
 
             // Clean up single instance
-            SingleInstance<App>.Cleanup();
-        }
-
-        private void App_OnStartup(object sender, StartupEventArgs e)
-        {
-            new MainWindow().Show();
+            SingleInstance.Cleanup();
         }
 
         public static bool IsOperatingSystemSupported()

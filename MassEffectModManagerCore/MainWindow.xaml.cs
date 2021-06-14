@@ -1217,7 +1217,6 @@ namespace MassEffectModManagerCore
             if (closingPanel != null)
             {
                 HandlePanelResult(closingPanel.Result);
-
             }
 
             if (queuedUserControls.Count == 0)
@@ -1771,14 +1770,12 @@ namespace MassEffectModManagerCore
                 var modInstaller = new ModInstaller(mod, forcedTarget ?? SelectedGameTarget, installCompressed, batchMode: batchMode);
                 modInstaller.Close += (a, b) =>
                 {
-
+                    // Panel Result will handle post-install
                     if (!modInstaller.InstallationSucceeded)
                     {
                         if (modInstaller.InstallationCancelled)
                         {
                             modInstallTask.finishedUiText = M3L.GetString(M3L.string_installationAborted);
-                            ReleaseBusyControl();
-                            backgroundTaskEngine.SubmitJobCompletion(modInstallTask);
                             installCompletedCallback?.Invoke(false);
                             return;
                         }
@@ -1788,61 +1785,29 @@ namespace MassEffectModManagerCore
                             installCompletedCallback?.Invoke(false);
                         }
                     }
-
-                    // Update Plot Manager
-                    bool releaseMI = true;
-                    if (!modInstaller.InstallationCancelled && SelectedGameTarget.Game is MEGame.LE2 && !batchMode)
-                    {
-                        var pmUpdate = new PlotManagerUpdatePanel(SelectedGameTarget);
-                        pmUpdate.Close += (a1, b1) =>
-                        {
-                            ReleaseBusyControl(); // Release PMU
-                        };
-                        releaseMI = false;
-                        ReleaseBusyControl(); // Release Mod Installer
-                        ShowBusyControl(pmUpdate);
-                    }
-
-
-                    //Run AutoTOC if ME3 and not batch mode
-                    if (!modInstaller.InstallationCancelled && (SelectedGameTarget.Game == MEGame.ME3 || SelectedGameTarget.Game.IsLEGame()) && !batchMode)
-                    {
-                        var autoTocUI = new AutoTOC(SelectedGameTarget);
-                        autoTocUI.Close += (a1, b1) =>
-                        {
-                            ReleaseBusyControl();
-                            backgroundTaskEngine.SubmitJobCompletion(modInstallTask);
-                        };
-                        if (releaseMI)
-                        {
-                            ReleaseBusyControl();
-                        }
-                        ShowBusyControl(autoTocUI);
-                    }
-                    else
-                    {
-                        ReleaseBusyControl();
-                        backgroundTaskEngine.SubmitJobCompletion(modInstallTask);
-                    }
-
-                    if (modInstaller.InstallationSucceeded)
-                    {
-                        installCompletedCallback?.Invoke(true);
-                        if (ExternalToolLauncher.IsSupportedToolID(mod.PostInstallToolLaunch))
-                        {
-                            Log.Information(@"Launching post-install tool as specified by mod: " + mod.PostInstallToolLaunch);
-                            if (mod.PostInstallToolLaunch == @"EGMSettings")
-                            {
-                                LaunchExternalTool(mod.PostInstallToolLaunch, SelectedGameTarget.TargetPath);
-                            }
-                            else
-                            {
-                                // no args
-                                LaunchExternalTool(mod.PostInstallToolLaunch);
-                            }
-                        }
-                    }
+                    backgroundTaskEngine.SubmitJobCompletion(modInstallTask);
+                    ReleaseBusyControl();
                 };
+
+
+
+                if (modInstaller.InstallationSucceeded)
+                {
+                    installCompletedCallback?.Invoke(true);
+                    if (ExternalToolLauncher.IsSupportedToolID(mod.PostInstallToolLaunch))
+                    {
+                        Log.Information(@"Launching post-install tool as specified by mod: " + mod.PostInstallToolLaunch);
+                        if (mod.PostInstallToolLaunch == @"EGMSettings")
+                        {
+                            LaunchExternalTool(mod.PostInstallToolLaunch, SelectedGameTarget.TargetPath);
+                        }
+                        else
+                        {
+                            // no args
+                            LaunchExternalTool(mod.PostInstallToolLaunch);
+                        }
+                    }
+                }
                 ShowBusyControl(modInstaller);
             }
             else
@@ -1906,6 +1871,9 @@ namespace MassEffectModManagerCore
 
         private void ModManager_ContentRendered(object sender, EventArgs e)
         {
+#if PRERELEASE
+            MessageBox.Show("This is a prerelease build of ME3Tweaks Mod Manager. Do not distribute mods from this build. There may be breaking changes that cause mods made for this build to not work on future builds.");
+#endif
             if (App.BootingUpdate)
             {
                 ShowUpdateCompletedPane();

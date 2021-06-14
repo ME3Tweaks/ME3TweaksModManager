@@ -1199,6 +1199,19 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void ModInstallationCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             var telemetryResult = ModInstallCompletedStatus.NO_RESULT_CODE;
+            if (!BatchMode)
+            {
+                if (ModBeingInstalled.Game.IsGame1() || ModBeingInstalled.Game.IsGame2())
+                {
+                    Result.TargetsToPlotManagerSync.Add(SelectedGameTarget);
+                }
+                if (ModBeingInstalled.Game == MEGame.ME3 || ModBeingInstalled.Game.IsLEGame())
+                {
+                    Result.TargetsToAutoTOC.Add(SelectedGameTarget);
+                }
+            }
+
+
             if (e.Error != null)
             {
                 Log.Error(@"An error occurred during mod installation.");

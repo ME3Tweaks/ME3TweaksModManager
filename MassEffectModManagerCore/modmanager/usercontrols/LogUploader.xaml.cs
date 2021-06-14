@@ -125,7 +125,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     nbw.ReportProgress(-1, state);
                 }
                 StringBuilder logUploadText = new StringBuilder();
-                if (SelectedDiagnosticTarget != null && SelectedDiagnosticTarget.Game > MEGame.Unknown)
+                if (SelectedDiagnosticTarget != null && !SelectedDiagnosticTarget.IsCustomOption && SelectedDiagnosticTarget.Game > MEGame.Unknown)
                 {
                     Debug.WriteLine(@"Selected game target: " + SelectedDiagnosticTarget.TargetPath);
                     logUploadText.Append("[MODE]diagnostics\n"); //do not localize
@@ -191,7 +191,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
                     catch (Exception ex)
                     {
-                        // ex.Message contains rich details, inclulding the URL, verb, response status,
+                        // ex.Message contains rich details, including the URL, verb, response status,
                         // and request and response bodies (if available)
                         Log.Error(@"Handled error uploading log: " + App.FlattenException(ex));
                         string exmessage = ex.Message;
