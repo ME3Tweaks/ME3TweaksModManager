@@ -14,6 +14,7 @@ using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
+using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using Serilog;
 
@@ -24,7 +25,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// </summary>
     public partial class TPMITelemetrySubmissionForm : MMBusyPanelBase
     {
-        public ObservableCollectionExtended<TelemetryPackage> TelemetryPackages { get; } = new ObservableCollectionExtended<TelemetryPackage>();
+        public ui.ObservableCollectionExtended<TelemetryPackage> TelemetryPackages { get; } = new ui.ObservableCollectionExtended<TelemetryPackage>();
 
         public TPMITelemetrySubmissionForm(Mod telemetryMod)
         {

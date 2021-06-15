@@ -36,9 +36,9 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using LegendaryExplorerCore.Gammtek.Extensions;
+using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Unreal.ObjectInfo;
 using Brushes = System.Windows.Media.Brushes;
-using DuplicatingIni = MassEffectModManagerCore.modmanager.gameini.DuplicatingIni;
 using ExportEntry = LegendaryExplorerCore.Packages.ExportEntry;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -51,7 +51,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public string Header { get; set; } = M3L.GetString(M3L.string_prepareModForDistribution);
         public bool MultithreadedCompression { get; set; } = true;
         public string DeployButtonText { get; set; } = M3L.GetString(M3L.string_pleaseWait); //Initial value
-        public ObservableCollectionExtended<EncompassingModDeploymentCheck> ModsInDeployment { get; } = new ObservableCollectionExtended<EncompassingModDeploymentCheck>();
+        public ui.ObservableCollectionExtended<EncompassingModDeploymentCheck> ModsInDeployment { get; } = new ui.ObservableCollectionExtended<EncompassingModDeploymentCheck>();
 
         // Mod that will be first added to the deployment when the UI is loaded
         private Mod initialMod;
@@ -76,7 +76,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         [AddINotifyPropertyChangedInterface]
         public class EncompassingModDeploymentCheck
         {
-            public ObservableCollectionExtended<DeploymentChecklistItem> DeploymentChecklistItems { get; } = new ObservableCollectionExtended<DeploymentChecklistItem>();
+            public ui.ObservableCollectionExtended<DeploymentChecklistItem> DeploymentChecklistItems { get; } = new ui.ObservableCollectionExtended<DeploymentChecklistItem>();
             public DeploymentValidationTarget DepValidationTarget { get; set; }
             private GameTarget internalValidationTarget { get; set; }
             public Mod ModBeingDeployed { get; }
@@ -1899,7 +1899,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public bool ProgressIndeterminate { get; set; }
 
-        public ObservableCollectionExtended<DeploymentValidationTarget> ValidationTargets { get; } = new ObservableCollectionExtended<DeploymentValidationTarget>();
+        public ui.ObservableCollectionExtended<DeploymentValidationTarget> ValidationTargets { get; } = new ui.ObservableCollectionExtended<DeploymentValidationTarget>();
 
         /// <summary>
         /// Object that contains info about the validation targets for a mod. Only one of these can exist per game
@@ -1909,7 +1909,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             public MEGame Game { get; }
             public GameTarget SelectedTarget { get; set; }
             public string HeaderString { get; }
-            public ObservableCollectionExtended<GameTarget> AvailableTargets { get; } = new ObservableCollectionExtended<GameTarget>();
+            public ui.ObservableCollectionExtended<GameTarget> AvailableTargets { get; } = new ui.ObservableCollectionExtended<GameTarget>();
             public ArchiveDeployment DeploymentHost { get; set; }
 
             public DeploymentValidationTarget(ArchiveDeployment deploymentHost, MEGame game, IEnumerable<GameTarget> targets)

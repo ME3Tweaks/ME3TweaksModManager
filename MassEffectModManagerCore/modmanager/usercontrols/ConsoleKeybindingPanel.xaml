@@ -10,7 +10,6 @@
                        Height="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.8_400', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualHeight}">
     <DockPanel>
         <StackPanel DockPanel.Dock="Top">
-
             <TextBlock Text="{DynamicResource string_consoleKeyKeybinder}" FontSize="20" FontWeight="Bold" TextAlignment="Center" DockPanel.Dock="Top" />
             <TextBlock Text="{DynamicResource string_description_consoleKeyKeybinder}" TextWrapping="Wrap" TextAlignment="Center" DockPanel.Dock="Top" />
             <StackPanel Visibility="{Binding IsListeningForKey, Converter={StaticResource BoolToVisibilityConverter}}">
@@ -20,37 +19,8 @@
                 <Button Content="{DynamicResource string_cancelKeyAssignment}" HorizontalAlignment="Center" Margin="0,5,0,0" Click="CancelKeyAssignment_Click" />
             </StackPanel>
         </StackPanel>
-
-        <!-- ME1 -->
-        <!--<Grid Margin="0,5,5,5">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="54" />
-                <ColumnDefinition Width="1*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" Source="{StaticResource me1gameicon}" Width="48" VerticalAlignment="Top" Height="48" HorizontalAlignment="Left" />
-            <TextBlock Grid.Column="1" Grid.Row="0" FontWeight="Bold" Text="Mass Effect" />
-            <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding ME1FullConsoleKeyText}" />
-            <TextBlock Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="2" Text="{Binding ME1MiniConsoleKeyText}" />
-            <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="1" Visibility="{Binding HasME1Install, Converter={StaticResource BoolToVisibilityConverter}}">
-                <Button Content="{DynamicResource string_changeFullKey}" Command="{Binding ChangeME1FullCommand}" />
-                <Button Content="{DynamicResource string_changeMiniKey}" Margin="3,0" Command="{Binding ChangeME1MiniCommand}" />
-                <Button Content="{DynamicResource string_setToDefaultKeys}" Command="{Binding DefaultME1KeysCommand}" />
-            </StackPanel>
-        </Grid>-->
-        <!-- ME2 -->
         <Button DockPanel.Dock="Bottom" Content="{DynamicResource string_close}" HorizontalAlignment="Right" Padding="7,4" Command="{Binding CloseCommand}" />
-
         <ScrollViewer>
-
             <ItemsControl ItemsSource="{Binding Games}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="local:ConsoleKeybindingPanel+KeybindingGame">
@@ -70,20 +40,18 @@
                                   AvailableTargets="{Binding Targets}" 
                                   SelectedGameTarget="{Binding SelectedTarget}" 
                                   HorizontalContentAlignment="Stretch" 
-                                  IsEnabled="{Binding UIEnabled}" />
+                                  IsEnabled="{Binding SharedIsListeningForKey, Converter={StaticResource BoolToEnabledConverter}, ConverterParameter='Not'}" />
                             <TextBlock DockPanel.Dock="Top" Text="{Binding FullConsoleKeyText}" />
                             <TextBlock DockPanel.Dock="Top" Text="{Binding MiniConsoleKeyText}" />
                             <StackPanel Orientation="Horizontal" Visibility="{Binding SelectedTarget, Converter={StaticResource NullVisibilityConverter}}">
-                                <Button Content="{DynamicResource string_changeFullKey}" Command="{Binding ChangeMiniKeyCommand}" />
-                                <Button Content="{DynamicResource string_changeMiniKey}" Margin="3,0" Command="{Binding ChangeFullKeyCommand}" />
+                                <Button Content="{DynamicResource string_changeFullKey}" Command="{Binding ChangeFullKeyCommand}" />
+                                <Button Content="{DynamicResource string_changeMiniKey}" Margin="3,0" Command="{Binding ChangeMiniKeyCommand}" />
                                 <Button Content="{DynamicResource string_setToDefaultKeys}" Command="{Binding DefaultCommand}" />
                             </StackPanel>
                         </DockPanel>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
-
             </ItemsControl>
         </ScrollViewer>
-
     </DockPanel>
 </local:MMBusyPanelBase>

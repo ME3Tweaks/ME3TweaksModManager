@@ -13,14 +13,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
-using MassEffectModManagerCore.modmanager.gameini;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
 using Microsoft.Win32;
 using Serilog;
-using static MassEffectModManagerCore.modmanager.gameini.DuplicatingIni;
 
 namespace MassEffectModManagerCore.modmanager
 {
@@ -1513,7 +1512,7 @@ namespace MassEffectModManagerCore.modmanager
                     if (section == null && highres)
                     {
                         //section missing, and we are setting high res
-                        ini.Sections.Add(new Section()
+                        ini.Sections.Add(new DuplicatingIni.Section()
                         {
                             Entries = iniList,
                             Header = "SystemSettings"
@@ -1656,69 +1655,69 @@ namespace MassEffectModManagerCore.modmanager
 
         #region LODs
 
-        private static List<Section> GetME1HQSettings(bool meuitmMode, bool softShadowsME1)
+        private static List<DuplicatingIni.Section> GetME1HQSettings(bool meuitmMode, bool softShadowsME1)
         {
             //Engine.Engine
-            var engineEngine = new Section()
+            var engineEngine = new DuplicatingIni.Section()
             {
                 Header = "Engine.Engine",
-                Entries = new List<IniEntry>()
+                Entries = new List<DuplicatingIni.IniEntry>()
                 {
-                    new IniEntry("MaxShadowResolution=2048"),
-                    new IniEntry("bEnableBranchingPCFShadows=True")
+                    new DuplicatingIni.IniEntry("MaxShadowResolution=2048"),
+                    new DuplicatingIni.IniEntry("bEnableBranchingPCFShadows=True")
                 }
             };
 
 
-            var engineGameEngine = new Section()
+            var engineGameEngine = new DuplicatingIni.Section()
             {
                 Header = "Engine.GameEngine",
-                Entries = new List<IniEntry>()
+                Entries = new List<DuplicatingIni.IniEntry>()
                 {
 
-                    new IniEntry("MaxShadowResolution=2048"),
-                    new IniEntry("bEnableBranchingPCFShadows=True")
+                    new DuplicatingIni.IniEntry("MaxShadowResolution=2048"),
+                    new DuplicatingIni.IniEntry("bEnableBranchingPCFShadows=True")
                 }
             };
 
-            var systemSettings = new Section
+            var systemSettings = new DuplicatingIni.Section
             {
                 Header = "SystemSettings",
-                Entries = new List<IniEntry>()
+                Entries = new List<DuplicatingIni.IniEntry>()
                 {
-                    new IniEntry("ShadowFilterQualityBias=2"),
-                    new IniEntry("MaxAnisotropy=16"),
-                    new IniEntry("DynamicShadows=True"),
-                    new IniEntry("Trilinear=True"),
-                    new IniEntry("MotionBlur=True"),
-                    new IniEntry("DepthOfField=True"),
-                    new IniEntry("Bloom=True"),
-                    new IniEntry("QualityBloom=True"),
-                    new IniEntry("ParticleLODBias=-1"),
-                    new IniEntry("SkeletalMeshLODBias=-1"),
-                    new IniEntry("DetailMode=2")
+                    new DuplicatingIni.IniEntry("ShadowFilterQualityBias=2"),
+                    new DuplicatingIni.IniEntry("MaxAnisotropy=16"),
+                    new DuplicatingIni.IniEntry("DynamicShadows=True"),
+                    new DuplicatingIni.IniEntry("Trilinear=True"),
+                    new DuplicatingIni.IniEntry("MotionBlur=True"),
+                    new DuplicatingIni.IniEntry("DepthOfField=True"),
+                    new DuplicatingIni.IniEntry("Bloom=True"),
+                    new DuplicatingIni.IniEntry("QualityBloom=True"),
+                    new DuplicatingIni.IniEntry("ParticleLODBias=-1"),
+                    new DuplicatingIni.IniEntry("SkeletalMeshLODBias=-1"),
+                    new DuplicatingIni.IniEntry("DetailMode=2")
                 }
             };
 
-            var textureStreaming = new Section()
+            var textureStreaming = new DuplicatingIni.Section()
             {
                 Header = "TextureStreaming",
-                Entries = new List<IniEntry>()
+                Entries = new List<DuplicatingIni.IniEntry>()
                 {
-                    new IniEntry("PoolSize=1536"),
-                    new IniEntry("MinTimeToGuaranteeMinMipCount=0"),
-                    new IniEntry("MaxTimeToGuaranteeMinMipCount=0")
+                    new DuplicatingIni.IniEntry("PoolSize=1536"),
+                    new DuplicatingIni.IniEntry("MinTimeToGuaranteeMinMipCount=0"),
+                    new DuplicatingIni.IniEntry("MaxTimeToGuaranteeMinMipCount=0")
                 }
             };
 
-            var windrvWindowsclient = new Section()
+            var windrvWindowsclient = new DuplicatingIni.Section()
             {
                 Header = "WinDrv.WindowsClient",
-                Entries = new List<IniEntry>()
+                Entries = new List<DuplicatingIni.IniEntry>()
                 {
-                    new IniEntry("EnableDynamicShadows=True"),
-                    new IniEntry("TextureLODLevel=3"),
-                    new IniEntry("FilterLevel=2")
+                    new DuplicatingIni.IniEntry("EnableDynamicShadows=True"),
+                    new DuplicatingIni.IniEntry("TextureLODLevel=3"),
+                    new DuplicatingIni.IniEntry("FilterLevel=2")
                 }
             };
 
@@ -1727,32 +1726,32 @@ namespace MassEffectModManagerCore.modmanager
             //if soft shadows and MEUITM
             if (softShadowsME1 && meuitmMode)
             {
-                engineEngine.Entries.Add(new IniEntry("DepthBias=0.006000"));
-                engineGameEngine.Entries.Add(new IniEntry("DepthBias=0.006000e"));
+                engineEngine.Entries.Add(new DuplicatingIni.IniEntry("DepthBias=0.006000"));
+                engineGameEngine.Entries.Add(new DuplicatingIni.IniEntry("DepthBias=0.006000e"));
             }
             else
             {
-                engineEngine.Entries.Add(new IniEntry("DepthBias=0.030000"));
-                engineGameEngine.Entries.Add(new IniEntry("DepthBias=0.030000"));
+                engineEngine.Entries.Add(new DuplicatingIni.IniEntry("DepthBias=0.030000"));
+                engineGameEngine.Entries.Add(new DuplicatingIni.IniEntry("DepthBias=0.030000"));
             }
 
             //if soft shadows
             if (softShadowsME1)
             {
-                engineEngine.Entries.Add(new IniEntry("MinShadowResolution=16"));
-                engineGameEngine.Entries.Add(new IniEntry("MinShadowResolution=16"));
-                engineEngine.Entries.Add(new IniEntry("ShadowFilterRadius=2"));
-                engineGameEngine.Entries.Add(new IniEntry("ShadowFilterRadius=2"));
+                engineEngine.Entries.Add(new DuplicatingIni.IniEntry("MinShadowResolution=16"));
+                engineGameEngine.Entries.Add(new DuplicatingIni.IniEntry("MinShadowResolution=16"));
+                engineEngine.Entries.Add(new DuplicatingIni.IniEntry("ShadowFilterRadius=2"));
+                engineGameEngine.Entries.Add(new DuplicatingIni.IniEntry("ShadowFilterRadius=2"));
             }
             else
             {
-                engineEngine.Entries.Add(new IniEntry("ShadowFilterRadius=4"));
-                engineGameEngine.Entries.Add(new IniEntry("ShadowFilterRadius=4"));
-                engineEngine.Entries.Add(new IniEntry("MinShadowResolution=64"));
-                engineGameEngine.Entries.Add(new IniEntry("MinShadowResolution=64"));
+                engineEngine.Entries.Add(new DuplicatingIni.IniEntry("ShadowFilterRadius=4"));
+                engineGameEngine.Entries.Add(new DuplicatingIni.IniEntry("ShadowFilterRadius=4"));
+                engineEngine.Entries.Add(new DuplicatingIni.IniEntry("MinShadowResolution=64"));
+                engineGameEngine.Entries.Add(new DuplicatingIni.IniEntry("MinShadowResolution=64"));
             }
 
-            return new List<Section>()
+            return new List<DuplicatingIni.Section>()
             {
                 engineEngine,
                 engineGameEngine,
@@ -1762,251 +1761,251 @@ namespace MassEffectModManagerCore.modmanager
             };
         }
 
-        private static List<IniEntry> ME1_DefaultLODs = new List<IniEntry>()
+        private static List<DuplicatingIni.IniEntry> ME1_DefaultLODs = new List<DuplicatingIni.IniEntry>()
         {
             //ME1 requires default lods to be restored or it'll just overwrite entire file
-            new IniEntry("TEXTUREGROUP_World=(MinLODSize=16,MaxLODSize=4096,LODBias=2)"),
-            new IniEntry("TEXTUREGROUP_WorldNormalMap=(MinLODSize=16,MaxLODSize=4096,LODBias=2)"),
-            new IniEntry("TEXTUREGROUP_AmbientLightMap=(MinLODSize=32,MaxLODSize=512,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_LightAndShadowMap=(MinLODSize=256,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Environment_64=(MinLODSize=32,MaxLODSize=64,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Environment_128=(MinLODSize=32,MaxLODSize=128,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Environment_256=(MinLODSize=32,MaxLODSize=256,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Environment_512=(MinLODSize=32,MaxLODSize=512,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Environment_1024=(MinLODSize=32,MaxLODSize=1024,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_VFX_64=(MinLODSize=8,MaxLODSize=64,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_VFX_128=(MinLODSize=8,MaxLODSize=128,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_VFX_256=(MinLODSize=8,MaxLODSize=256,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_VFX_512=(MinLODSize=8,MaxLODSize=512,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_VFX_1024=(MinLODSize=8,MaxLODSize=1024,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_APL_128=(MinLODSize=32,MaxLODSize=128,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_APL_256=(MinLODSize=32,MaxLODSize=256,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_APL_512=(MinLODSize=32,MaxLODSize=512,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_APL_1024=(MinLODSize=32,MaxLODSize=1024,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_GUI=(MinLODSize=8,MaxLODSize=1024,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Promotional=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Character_1024=(MinLODSize=32,MaxLODSize=1024,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Character_Diff=(MinLODSize=32,MaxLODSize=512,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Character_Norm=(MinLODSize=32,MaxLODSize=512,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Character_Spec=(MinLODSize=32,MaxLODSize=256,LODBias=0)")
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_World=(MinLODSize=16,MaxLODSize=4096,LODBias=2)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_WorldNormalMap=(MinLODSize=16,MaxLODSize=4096,LODBias=2)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_AmbientLightMap=(MinLODSize=32,MaxLODSize=512,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_LightAndShadowMap=(MinLODSize=256,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Environment_64=(MinLODSize=32,MaxLODSize=64,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Environment_128=(MinLODSize=32,MaxLODSize=128,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Environment_256=(MinLODSize=32,MaxLODSize=256,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Environment_512=(MinLODSize=32,MaxLODSize=512,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Environment_1024=(MinLODSize=32,MaxLODSize=1024,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_VFX_64=(MinLODSize=8,MaxLODSize=64,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_VFX_128=(MinLODSize=8,MaxLODSize=128,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_VFX_256=(MinLODSize=8,MaxLODSize=256,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_VFX_512=(MinLODSize=8,MaxLODSize=512,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_VFX_1024=(MinLODSize=8,MaxLODSize=1024,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_APL_128=(MinLODSize=32,MaxLODSize=128,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_APL_256=(MinLODSize=32,MaxLODSize=256,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_APL_512=(MinLODSize=32,MaxLODSize=512,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_APL_1024=(MinLODSize=32,MaxLODSize=1024,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_GUI=(MinLODSize=8,MaxLODSize=1024,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Promotional=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Character_1024=(MinLODSize=32,MaxLODSize=1024,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Character_Diff=(MinLODSize=32,MaxLODSize=512,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Character_Norm=(MinLODSize=32,MaxLODSize=512,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Character_Spec=(MinLODSize=32,MaxLODSize=256,LODBias=0)")
         };
 
-        private static List<IniEntry> ME1_2KLODs = new List<IniEntry>()
+        private static List<DuplicatingIni.IniEntry> ME1_2KLODs = new List<DuplicatingIni.IniEntry>()
         {
             //ME1 lods have bug where they use MinLodSize
-            new IniEntry("TEXTUREGROUP_World=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_WorldNormalMap=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_AmbientLightMap=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_LightAndShadowMap=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Environment_64=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Environment_128=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Environment_256=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Environment_512=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Environment_1024=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_VFX_64=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_VFX_128=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_VFX_256=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_VFX_512=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_VFX_1024=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_APL_128=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_APL_256=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_APL_512=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_APL_1024=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_GUI=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Promotional=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Character_1024=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Character_Diff=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Character_Norm=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Character_Spec=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)")
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_World=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_WorldNormalMap=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_AmbientLightMap=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_LightAndShadowMap=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Environment_64=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Environment_128=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Environment_256=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Environment_512=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Environment_1024=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_VFX_64=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_VFX_128=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_VFX_256=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_VFX_512=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_VFX_1024=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_APL_128=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_APL_256=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_APL_512=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_APL_1024=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_GUI=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Promotional=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Character_1024=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Character_Diff=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Character_Norm=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Character_Spec=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)")
         };
 
-        private static List<IniEntry> ME1HighResLODs = new List<IniEntry>()
+        private static List<DuplicatingIni.IniEntry> ME1HighResLODs = new List<DuplicatingIni.IniEntry>()
         {
             //ME1 lods have bug where they use MinLodSize
-            new IniEntry("TEXTUREGROUP_World=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_WorldNormalMap=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_AmbientLightMap=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_LightAndShadowMap=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Environment_64=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Environment_128=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Environment_256=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Environment_512=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Environment_1024=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_VFX_64=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_VFX_128=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_VFX_256=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_VFX_512=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_VFX_1024=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_APL_128=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_APL_256=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_APL_512=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_APL_1024=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_GUI=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Promotional=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Character_1024=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Character_Diff=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Character_Norm=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Character_Spec=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)")
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_World=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_WorldNormalMap=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_AmbientLightMap=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_LightAndShadowMap=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Environment_64=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Environment_128=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Environment_256=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Environment_512=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Environment_1024=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_VFX_64=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_VFX_128=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_VFX_256=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_VFX_512=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_VFX_1024=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_APL_128=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_APL_256=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_APL_512=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_APL_1024=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_GUI=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Promotional=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Character_1024=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Character_Diff=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Character_Norm=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Character_Spec=(MinLODSize=4096,MaxLODSize=4096,LODBias=0)")
         };
 
-        private static List<IniEntry> ME2HQGraphicsSettings = new List<IniEntry>()
+        private static List<DuplicatingIni.IniEntry> ME2HQGraphicsSettings = new List<DuplicatingIni.IniEntry>()
         {
-            new IniEntry("MaxShadowResolution=2048"),
-            new IniEntry("MinShadowResolution=64"),
-            new IniEntry("ShadowFilterQualityBias=2"),
-            new IniEntry("ShadowFilterRadius=4"),
-            new IniEntry("bEnableBranchingPCFShadows=True"),
-            new IniEntry("MaxAnisotropy=16"),
-            new IniEntry("Trilinear=True"),
-            new IniEntry("MotionBlur=True"),
-            new IniEntry("DepthOfField=True"),
-            new IniEntry("Bloom=True"),
-            new IniEntry("QualityBloom=True"),
-            new IniEntry("ParticleLODBias=-1"),
-            new IniEntry("SkeletalMeshLODBias=-1"),
-            new IniEntry("DetailMode=2")
+            new DuplicatingIni.IniEntry("MaxShadowResolution=2048"),
+            new DuplicatingIni.IniEntry("MinShadowResolution=64"),
+            new DuplicatingIni.IniEntry("ShadowFilterQualityBias=2"),
+            new DuplicatingIni.IniEntry("ShadowFilterRadius=4"),
+            new DuplicatingIni.IniEntry("bEnableBranchingPCFShadows=True"),
+            new DuplicatingIni.IniEntry("MaxAnisotropy=16"),
+            new DuplicatingIni.IniEntry("Trilinear=True"),
+            new DuplicatingIni.IniEntry("MotionBlur=True"),
+            new DuplicatingIni.IniEntry("DepthOfField=True"),
+            new DuplicatingIni.IniEntry("Bloom=True"),
+            new DuplicatingIni.IniEntry("QualityBloom=True"),
+            new DuplicatingIni.IniEntry("ParticleLODBias=-1"),
+            new DuplicatingIni.IniEntry("SkeletalMeshLODBias=-1"),
+            new DuplicatingIni.IniEntry("DetailMode=2")
         };
 
 
-        private static List<IniEntry> ME2_2KLODs = new List<IniEntry>()
-        {
-            //under GamerSettings.ini [SystemSettings]
-            new IniEntry("TEXTUREGROUP_World=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_WorldNormalMap=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_AmbientLightMap=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_LightAndShadowMap=(MinLODSize=1024,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_RenderTarget=(MinLODSize=2048,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Environment_64=(MinLODSize=128,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Environment_128=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Environment_256=(MinLODSize=512,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Environment_512=(MinLODSize=1024,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Environment_1024=(MinLODSize=2048,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_VFX_64=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_VFX_128=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_VFX_256=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_VFX_512=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_VFX_1024=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_APL_128=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_APL_256=(MinLODSize=512,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_APL_512=(MinLODSize=1024,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_APL_1024=(MinLODSize=2048,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_UI=(MinLODSize=64,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Promotional=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Character_1024=(MinLODSize=2048,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Character_Diff=(MinLODSize=512,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Character_Norm=(MinLODSize=512,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Character_Spec=(MinLODSize=512,MaxLODSize=2048,LODBias=0)")
-        };
-
-
-        private static List<IniEntry> ME2HighResLODs = new List<IniEntry>()
+        private static List<DuplicatingIni.IniEntry> ME2_2KLODs = new List<DuplicatingIni.IniEntry>()
         {
             //under GamerSettings.ini [SystemSettings]
-            new IniEntry("TEXTUREGROUP_World=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_WorldNormalMap=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_AmbientLightMap=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_LightAndShadowMap=(MinLODSize=1024,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_RenderTarget=(MinLODSize=2048,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Environment_64=(MinLODSize=128,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Environment_128=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Environment_256=(MinLODSize=512,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Environment_512=(MinLODSize=1024,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Environment_1024=(MinLODSize=2048,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_VFX_64=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_VFX_128=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_VFX_256=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_VFX_512=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_VFX_1024=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_APL_128=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_APL_256=(MinLODSize=512,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_APL_512=(MinLODSize=1024,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_APL_1024=(MinLODSize=2048,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_UI=(MinLODSize=64,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Promotional=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Character_1024=(MinLODSize=2048,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Character_Diff=(MinLODSize=512,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Character_Norm=(MinLODSize=512,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Character_Spec=(MinLODSize=512,MaxLODSize=2048,LODBias=0)")
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_World=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_WorldNormalMap=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_AmbientLightMap=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_LightAndShadowMap=(MinLODSize=1024,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_RenderTarget=(MinLODSize=2048,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Environment_64=(MinLODSize=128,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Environment_128=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Environment_256=(MinLODSize=512,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Environment_512=(MinLODSize=1024,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Environment_1024=(MinLODSize=2048,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_VFX_64=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_VFX_128=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_VFX_256=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_VFX_512=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_VFX_1024=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_APL_128=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_APL_256=(MinLODSize=512,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_APL_512=(MinLODSize=1024,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_APL_1024=(MinLODSize=2048,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_UI=(MinLODSize=64,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Promotional=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Character_1024=(MinLODSize=2048,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Character_Diff=(MinLODSize=512,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Character_Norm=(MinLODSize=512,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Character_Spec=(MinLODSize=512,MaxLODSize=2048,LODBias=0)")
         };
 
-        private static List<IniEntry> ME3HQGraphicsSettings = new List<IniEntry>()
+
+        private static List<DuplicatingIni.IniEntry> ME2HighResLODs = new List<DuplicatingIni.IniEntry>()
+        {
+            //under GamerSettings.ini [SystemSettings]
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_World=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_WorldNormalMap=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_AmbientLightMap=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_LightAndShadowMap=(MinLODSize=1024,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_RenderTarget=(MinLODSize=2048,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Environment_64=(MinLODSize=128,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Environment_128=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Environment_256=(MinLODSize=512,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Environment_512=(MinLODSize=1024,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Environment_1024=(MinLODSize=2048,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_VFX_64=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_VFX_128=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_VFX_256=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_VFX_512=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_VFX_1024=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_APL_128=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_APL_256=(MinLODSize=512,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_APL_512=(MinLODSize=1024,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_APL_1024=(MinLODSize=2048,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_UI=(MinLODSize=64,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Promotional=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Character_1024=(MinLODSize=2048,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Character_Diff=(MinLODSize=512,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Character_Norm=(MinLODSize=512,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Character_Spec=(MinLODSize=512,MaxLODSize=2048,LODBias=0)")
+        };
+
+        private static List<DuplicatingIni.IniEntry> ME3HQGraphicsSettings = new List<DuplicatingIni.IniEntry>()
         {
             //Apply only. Do not unapply
-            new IniEntry("MaxShadowResolution=2048"),
-            new IniEntry("MinShadowResolution=64"),
-            new IniEntry("ShadowFilterQualityBias=2"),
-            new IniEntry("ShadowFilterRadius=4"),
-            new IniEntry("bEnableBranchingPCFShadows=True"),
-            new IniEntry("MaxAnisotropy=16"),
-            new IniEntry("MotionBlur=True"),
-            new IniEntry("DepthOfField=True"),
-            new IniEntry("Bloom=True"),
-            new IniEntry("QualityBloom=True"),
-            new IniEntry("ParticleLODBias=-1"),
-            new IniEntry("SkeletalMeshLODBias=-1"),
-            new IniEntry("DetailMode=2")
+            new DuplicatingIni.IniEntry("MaxShadowResolution=2048"),
+            new DuplicatingIni.IniEntry("MinShadowResolution=64"),
+            new DuplicatingIni.IniEntry("ShadowFilterQualityBias=2"),
+            new DuplicatingIni.IniEntry("ShadowFilterRadius=4"),
+            new DuplicatingIni.IniEntry("bEnableBranchingPCFShadows=True"),
+            new DuplicatingIni.IniEntry("MaxAnisotropy=16"),
+            new DuplicatingIni.IniEntry("MotionBlur=True"),
+            new DuplicatingIni.IniEntry("DepthOfField=True"),
+            new DuplicatingIni.IniEntry("Bloom=True"),
+            new DuplicatingIni.IniEntry("QualityBloom=True"),
+            new DuplicatingIni.IniEntry("ParticleLODBias=-1"),
+            new DuplicatingIni.IniEntry("SkeletalMeshLODBias=-1"),
+            new DuplicatingIni.IniEntry("DetailMode=2")
         };
 
-        private static List<IniEntry> ME3_2KLODs = new List<IniEntry>()
+        private static List<DuplicatingIni.IniEntry> ME3_2KLODs = new List<DuplicatingIni.IniEntry>()
         {
             //under GamerSettings.ini [SystemSettings]
-            new IniEntry("TEXTUREGROUP_World=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_WorldSpecular=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_WorldNormalMap=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_AmbientLightMap=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_ShadowMap=(MinLODSize=1024,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_RenderTarget=(MinLODSize=2048,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Environment_64=(MinLODSize=128,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Environment_128=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Environment_256=(MinLODSize=512,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Environment_512=(MinLODSize=1024,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Environment_1024=(MinLODSize=2048,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_VFX_64=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_VFX_128=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_VFX_256=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_VFX_512=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_VFX_1024=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_APL_128=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_APL_256=(MinLODSize=512,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_APL_512=(MinLODSize=1024,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_APL_1024=(MinLODSize=2048,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_UI=(MinLODSize=64,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Promotional=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Character_1024=(MinLODSize=2048,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Character_Diff=(MinLODSize=512,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Character_Norm=(MinLODSize=512,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Character_Spec=(MinLODSize=512,MaxLODSize=2048,LODBias=0)")
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_World=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_WorldSpecular=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_WorldNormalMap=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_AmbientLightMap=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_ShadowMap=(MinLODSize=1024,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_RenderTarget=(MinLODSize=2048,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Environment_64=(MinLODSize=128,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Environment_128=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Environment_256=(MinLODSize=512,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Environment_512=(MinLODSize=1024,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Environment_1024=(MinLODSize=2048,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_VFX_64=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_VFX_128=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_VFX_256=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_VFX_512=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_VFX_1024=(MinLODSize=32,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_APL_128=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_APL_256=(MinLODSize=512,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_APL_512=(MinLODSize=1024,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_APL_1024=(MinLODSize=2048,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_UI=(MinLODSize=64,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Promotional=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Character_1024=(MinLODSize=2048,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Character_Diff=(MinLODSize=512,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Character_Norm=(MinLODSize=512,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Character_Spec=(MinLODSize=512,MaxLODSize=2048,LODBias=0)")
         };
 
-        private static List<IniEntry> ME3HighResLODs = new List<IniEntry>()
+        private static List<DuplicatingIni.IniEntry> ME3HighResLODs = new List<DuplicatingIni.IniEntry>()
         {
             //under GamerSettings.ini [SystemSettings]
-            new IniEntry("TEXTUREGROUP_World=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_WorldSpecular=(MinLODSize=256,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_WorldNormalMap=(MinLODSize=256,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_AmbientLightMap=(MinLODSize=32,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_ShadowMap=(MinLODSize=1024,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_RenderTarget=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Environment_64=(MinLODSize=128,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Environment_128=(MinLODSize=256,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Environment_256=(MinLODSize=512,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Environment_512=(MinLODSize=1024,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Environment_1024=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_VFX_64=(MinLODSize=32,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_VFX_128=(MinLODSize=32,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_VFX_256=(MinLODSize=32,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_VFX_512=(MinLODSize=32,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_VFX_1024=(MinLODSize=32,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_APL_128=(MinLODSize=256,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_APL_256=(MinLODSize=512,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_APL_512=(MinLODSize=1024,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_APL_1024=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_UI=(MinLODSize=64,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Promotional=(MinLODSize=256,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Character_1024=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Character_Diff=(MinLODSize=512,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Character_Norm=(MinLODSize=512,MaxLODSize=4096,LODBias=0)"),
-            new IniEntry("TEXTUREGROUP_Character_Spec=(MinLODSize=512,MaxLODSize=4096,LODBias=0)")
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_World=(MinLODSize=256,MaxLODSize=2048,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_WorldSpecular=(MinLODSize=256,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_WorldNormalMap=(MinLODSize=256,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_AmbientLightMap=(MinLODSize=32,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_ShadowMap=(MinLODSize=1024,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_RenderTarget=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Environment_64=(MinLODSize=128,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Environment_128=(MinLODSize=256,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Environment_256=(MinLODSize=512,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Environment_512=(MinLODSize=1024,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Environment_1024=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_VFX_64=(MinLODSize=32,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_VFX_128=(MinLODSize=32,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_VFX_256=(MinLODSize=32,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_VFX_512=(MinLODSize=32,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_VFX_1024=(MinLODSize=32,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_APL_128=(MinLODSize=256,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_APL_256=(MinLODSize=512,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_APL_512=(MinLODSize=1024,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_APL_1024=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_UI=(MinLODSize=64,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Promotional=(MinLODSize=256,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Character_1024=(MinLODSize=2048,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Character_Diff=(MinLODSize=512,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Character_Norm=(MinLODSize=512,MaxLODSize=4096,LODBias=0)"),
+            new DuplicatingIni.IniEntry("TEXTUREGROUP_Character_Spec=(MinLODSize=512,MaxLODSize=4096,LODBias=0)")
         };
 
         #endregion

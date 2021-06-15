@@ -1,8 +1,6 @@
-﻿using System.IO;
-using System.Linq;
+﻿using System.Linq;
 using System.Text;
-using IniParser.Model;
-using MassEffectModManagerCore.modmanager.gameini;
+using LegendaryExplorerCore.Misc;
 
 namespace MassEffectModManagerCore.modmanager.helpers
 {

@@ -26,7 +26,6 @@ using MassEffectModManagerCore.modmanager.gameini;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
-using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.modmanager.nexusmodsintegration;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.usercontrols;
@@ -45,11 +44,13 @@ using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Serilog;
 using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Unreal;
 using MassEffectModManagerCore.modmanager.gamemd5;
 using MassEffectModManagerCore.modmanager.objects.mod.merge;
 using MassEffectModManagerCore.modmanager.objects.mod.merge.v1;
 using Pathoschild.FluentNexus.Models;
+using MemoryAnalyzer = MassEffectModManagerCore.modmanager.memoryanalyzer.MemoryAnalyzer;
 using Mod = MassEffectModManagerCore.modmanager.objects.mod.Mod;
 
 namespace MassEffectModManagerCore
@@ -77,7 +78,7 @@ namespace MassEffectModManagerCore
         public string ApplyModButtonText { get; set; } = M3L.GetString(M3L.string_applyMod);
         public string InstallationTargetText { get; set; } = M3L.GetString(M3L.string_installationTarget);
 
-        public ObservableCollectionExtended<GameFilter> GameFilters { get; } = new();
+        public ui.ObservableCollectionExtended<GameFilter> GameFilters { get; } = new();
         public bool ME1ASILoaderInstalled { get; set; }
         public bool ME2ASILoaderInstalled { get; set; }
         public bool ME3ASILoaderInstalled { get; set; }
@@ -191,16 +192,16 @@ namespace MassEffectModManagerCore
         /// <summary>
         /// Mods currently visible in the left panel
         /// </summary>
-        public ObservableCollectionExtended<Mod> VisibleFilteredMods { get; } = new ObservableCollectionExtended<Mod>();
+        public ui.ObservableCollectionExtended<Mod> VisibleFilteredMods { get; } = new ui.ObservableCollectionExtended<Mod>();
         /// <summary>
         /// All mods that successfully loaded.
         /// </summary>
-        public ObservableCollectionExtended<Mod> AllLoadedMods { get; } = new ObservableCollectionExtended<Mod>();
+        public ui.ObservableCollectionExtended<Mod> AllLoadedMods { get; } = new ui.ObservableCollectionExtended<Mod>();
         /// <summary>
         /// All mods that failed to load
         /// </summary>
-        public ObservableCollectionExtended<Mod> FailedMods { get; } = new ObservableCollectionExtended<Mod>();
-        public ObservableCollectionExtended<GameTarget> InstallationTargets { get; } = new ObservableCollectionExtended<GameTarget>();
+        public ui.ObservableCollectionExtended<Mod> FailedMods { get; } = new ui.ObservableCollectionExtended<Mod>();
+        public ui.ObservableCollectionExtended<GameTarget> InstallationTargets { get; } = new ui.ObservableCollectionExtended<GameTarget>();
         /// <summary>
         /// List of all loaded targets, even ones for different generations
         /// </summary>
@@ -875,12 +876,6 @@ namespace MassEffectModManagerCore
             }
         }
 
-        private void EnableME1ConsoleWrapper()
-        {
-            //TODO: Add way to change keys
-            EnableME1Console();
-        }
-
         private void OpenMEIM()
         {
             new ME1IniModder().Show();
@@ -958,83 +953,6 @@ namespace MassEffectModManagerCore
             var nexusModsLoginPane = new NexusModsLogin();
             nexusModsLoginPane.Close += (a, b) => { ReleaseBusyControl(); };
             ShowBusyControl(nexusModsLoginPane);
-        }
-
-        private bool CanEnableME1Console()
-        {
-            var installed = InstallationTargets.Any(x => x.Game == MEGame.ME1);
-            if (installed)
-            {
-                var iniFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"BioWare", @"Mass Effect", @"Config", @"BIOInput.ini");
-                return File.Exists(iniFile);
-            }
-
-            return false;
-        }
-
-        private void EnableME1Console(string consoleKeyValue = @"Tilde", string typeKeyValue = @"Tab")
-        {
-            var installed = InstallationTargets.Any(x => x.Game == MEGame.ME1);
-            if (installed)
-            {
-                var iniFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"BioWare", @"Mass Effect", @"Config", @"BIOInput.ini");
-                if (File.Exists(iniFile))
-                {
-                    var ini = DuplicatingIni.LoadIni(iniFile);
-                    var engineConsole = ini.Sections.FirstOrDefault(x => x.Header == @"Engine.Console");
-                    if (engineConsole != null)
-                    {
-                        var consoleKey = engineConsole.Entries.FirstOrDefault(x => x.Key == @"ConsoleKey");
-                        if (consoleKey == null)
-                        {
-                            engineConsole.Entries.Add(new DuplicatingIni.IniEntry(@"ConsoleKey=" + consoleKeyValue));
-                        }
-
-                        var typeKey = engineConsole.Entries.FirstOrDefault(x => x.Key == @"TypeKey");
-                        if (typeKey == null)
-                        {
-                            engineConsole.Entries.Add(new DuplicatingIni.IniEntry(@"TypeKey=" + typeKeyValue));
-                        }
-
-                        try
-                        {
-                            File.WriteAllText(iniFile, ini.ToString());
-                            Analytics.TrackEvent(@"Enabled the ME1 console", new Dictionary<string, string>() { { @"Succeeded", @"true" } });
-                            M3L.ShowDialog(this, M3L.GetString(M3L.string_dialogConsoleEnabled), M3L.GetString(M3L.string_consoleEnabled));
-                        }
-                        catch (Exception e)
-                        {
-                            Log.Error(@"Unable to enable console: " + e.Message);
-                            // see if file is read only.
-                            if (File.Exists(iniFile))
-                            {
-                                try
-                                {
-                                    var fi = new FileInfo(iniFile);
-                                    if (fi.IsReadOnly)
-                                    {
-                                        //unmark read only
-                                        fi.IsReadOnly = false;
-                                        File.WriteAllText(iniFile, ini.ToString());
-                                        fi.IsReadOnly = true;
-                                        Analytics.TrackEvent(@"Enabled the ME1 console", new Dictionary<string, string>() { { @"Succeeded", @"true" } });
-                                        M3L.ShowDialog(this, M3L.GetString(M3L.string_dialogConsoleEnabled), M3L.GetString(M3L.string_consoleEnabled));
-                                        return;
-                                    }
-                                }
-                                catch (Exception ex)
-                                {
-                                    Log.Error(@"Attempted to unset/reset read-only flag, failed: " + ex.Message);
-                                }
-                            }
-
-                            Analytics.TrackEvent(@"Enabled the ME1 console", new Dictionary<string, string>() { { @"Succeeded", @"false" } });
-                            Crashes.TrackError(e);
-                            M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_unableToModifyBioinputIni, e.Message), M3L.GetString(M3L.string_couldNotEnableConsole), MessageBoxButton.OK, MessageBoxImage.Error);
-                        }
-                    }
-                }
-            }
         }
 
         public bool HasAtLeastOneTarget() => InstallationTargets.Any();
