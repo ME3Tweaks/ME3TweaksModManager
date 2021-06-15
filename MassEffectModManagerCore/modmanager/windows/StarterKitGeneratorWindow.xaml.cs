@@ -551,7 +551,7 @@ namespace MassEffectModManagerCore.modmanager.windows
 
                         //Generate Coalesced.bin for mod
                         var memory = Utilities.ExtractInternalFileToStream(@"MassEffectModManagerCore.modmanager.starterkit.Default_DLC_MOD_StarterKit.bin");
-                        var files = CoalescedConverter.DecompileToMemory(memory);
+                        var files = CoalescedConverter.DecompileGame3ToMemory(memory);
                         //Modify coal files for this mod.
                         files[@"BioEngine.xml"] = files[@"BioEngine.xml"].Replace(@"StarterKit", skOption.ModDLCFolderName); //update bioengine
 

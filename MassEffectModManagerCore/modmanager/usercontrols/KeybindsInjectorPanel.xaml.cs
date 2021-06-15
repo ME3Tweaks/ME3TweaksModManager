@@ -104,7 +104,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (File.Exists(coalPath))
             {
                 using FileStream fs = new FileStream(coalPath, FileMode.Open);
-                var coalescedFilemapping = CoalescedConverter.DecompileToMemory(fs);
+                var coalescedFilemapping = CoalescedConverter.DecompileGame3ToMemory(fs);
                 fs.Close(); //release
                 coalescedFilemapping[@"BioInput.xml"] = bioInputXml;
                 var outStream = CoalescedConverter.CompileFromMemory(coalescedFilemapping);
@@ -122,7 +122,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (File.Exists(coalPath))
                 {
                     using FileStream fs = new FileStream(coalPath, FileMode.Open);
-                    var coalescedFilemapping = CoalescedConverter.DecompileToMemory(fs);
+                    var coalescedFilemapping = CoalescedConverter.DecompileGame3ToMemory(fs);
                     InstallME3Keybinds(coalescedFilemapping[@"BioInput.xml"], SelectedME3Target);
                 }
             };

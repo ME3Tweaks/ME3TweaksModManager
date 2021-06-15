@@ -1660,8 +1660,8 @@
     <system:String x:Key="string_changeFullKey">Change full key</system:String>
     <system:String x:Key="string_changeMiniKey">Change mini key</system:String>
     <system:String x:Key="string_setToDefaultKeys">Set to default keys</system:String>
-    <system:String x:Key="string_massEffect2ConsoleKeysAreDefinedPerGame">Mass Effect 2 console keys are defined per game.</system:String>
-    <system:String x:Key="string_massEffect3ConsoleKeysAreDefinedPerGame">Mass Effect 3 console keys are defined per game.</system:String>
+    <system:String x:Key="string_interp_gameConsoleKeysAreDefinedPerGame">{0} console keys are defined per game.</system:String>
+    <!-- 0 = game name -->
     <system:String x:Key="string_interp_cannotReadME3Keybinds">The keybindings for the selected Mass Effect 3 target could not be loaded: {0}</system:String>
     <!-- 0 = error message -->
     <system:String x:Key="string_errorReadingKeybinds">Error reading keybinds</system:String>

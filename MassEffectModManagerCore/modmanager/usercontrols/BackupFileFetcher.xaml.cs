@@ -143,14 +143,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
             }
 
-            private const string FileExtensions = @"\.u|\.upk|\.sfm|\.pcc|\.afc|\.bin|\.tlk";
+            private const string FileExtensions = @"\.u|\.upk|\.sfm|\.pcc|\.afc|\.bin|\.tlk|\.usf|\.dlc\.ini";
             public void LoadBackupFiles()
             {
                 var gameFiles = new List<BackupFile>();
                 var bup = BackupService.GetGameBackupPath(Game);
                 if (bup != null)
                 {
-                    var target = new GameTarget(Game, bup, false);
+                    var target = new GameTarget(Game, bup, false, skipInit: true);
                     var cookedPath = M3Directories.GetCookedPath(target);
                     foreach (var f in Extensions.GetFiles(cookedPath, FileExtensions, SearchOption.AllDirectories))
                     {

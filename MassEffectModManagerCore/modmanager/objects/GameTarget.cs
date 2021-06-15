@@ -75,7 +75,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         public void ReloadGameTarget(bool lodUpdateAndLogging = true, bool forceLodUpdate = false, bool reverseME1Executable = true, bool skipInit = false)
         {
             // Unknown = 
-            if (!IsCustomOption || skipInit)
+            if (!IsCustomOption && !skipInit)
             {
                 if (Directory.Exists(TargetPath))
                 {
