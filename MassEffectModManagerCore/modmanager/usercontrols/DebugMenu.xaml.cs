@@ -47,8 +47,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private static void RebuildMD5Map(MainWindow window)
         {
-            MD5Gen.GenerateMD5Map(@"B:\SteamLibrary\steamapps\common\Mass Effect Legendary Edition\Game\Launcher", "lel.bin");
-            Debug.WriteLine(@"Done");
+            Task.Run(()=>
+            {
+                MD5Gen.GenerateMD5Map(@"B:\SteamLibrary\steamapps\common\Mass Effect Legendary Edition\Game\ME1", @"le1.bin");
+                MD5Gen.GenerateMD5Map(@"B:\SteamLibrary\steamapps\common\Mass Effect Legendary Edition\Game\ME2", @"le2.bin");
+                MD5Gen.GenerateMD5Map(@"B:\SteamLibrary\steamapps\common\Mass Effect Legendary Edition\Game\ME3", @"le3.bin");
+                Debug.WriteLine(@"Done");
+            });
         }
 
         private static void BuildMMV1MergeMod(MainWindow mw)

@@ -40,6 +40,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             Dictionary<string, string> funcMap = new();
             if (supercedances.TryGetValue(@"PlotManagerUpdate.pmu", out var supercedanes))
             {
+                supercedanes.Reverse(); // list goes from highest to lowest. We want to build in lowest to highest
                 StringBuilder sb = null;
                 string currentFuncNum = null;
                 foreach (var pmuDLCName in supercedanes)

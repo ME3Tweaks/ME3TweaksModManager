@@ -1272,7 +1272,7 @@ namespace MassEffectModManagerCore.modmanager
         private const string ME1ASILoaderHash = "30660f25ab7f7435b9f3e1a08422411a";
         private const string ME2ASILoaderHash = "a5318e756893f6232284202c1196da13";
         private const string ME3ASILoaderHash = "1acccbdae34e29ca7a50951999ed80d5";
-        private const string LEASILoaderHash = "24b090d89013c9db9b15aeee8b0def12"; // Will need changed as game is updated
+        private const string LEASILoaderHash = "1bbcbaf8c393030cca7f20f7ea7db77f"; // Will need changed as game is updated
 
         internal static bool CheckIfBinkw32ASIIsInstalled(GameTarget target)
         {

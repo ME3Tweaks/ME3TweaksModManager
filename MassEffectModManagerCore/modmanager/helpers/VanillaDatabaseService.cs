@@ -60,17 +60,17 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 case MEGame.LE1:
                     if (LE1VanillaDatabase.Count > 0) return LE1VanillaDatabase;
                     var le1stream = Utilities.ExtractInternalFileToStream($@"{assetPrefix}.bin");
-                    ParseDatabase(le1stream, LE1VanillaDatabase, true);
+                    ParseDatabase(le1stream, LE1VanillaDatabase);
                     return LE1VanillaDatabase;
                 case MEGame.LE2:
                     if (ME2VanillaDatabase.Count > 0) return LE2VanillaDatabase;
                     var le2stream = Utilities.ExtractInternalFileToStream($@"{assetPrefix}.bin");
-                    ParseDatabase(le2stream, LE2VanillaDatabase, true);
+                    ParseDatabase(le2stream, LE2VanillaDatabase);
                     return LE2VanillaDatabase;
                 case MEGame.LE3:
                     if (LE3VanillaDatabase.Count > 0) return LE3VanillaDatabase;
                     var le3stream = Utilities.ExtractInternalFileToStream($@"{assetPrefix}.bin");
-                    ParseDatabase(le3stream, LE3VanillaDatabase, true);
+                    ParseDatabase(le3stream, LE3VanillaDatabase);
                     return LE3VanillaDatabase;
                 case MEGame.LELauncher:
                     if (LELauncherVanillaDatabase.Count > 0) return LELauncherVanillaDatabase;
@@ -406,7 +406,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                     }
                     else
                     {
-                        Debug.WriteLine(@"File not in Vanilla DB: " + file);
+                        Debug.WriteLine(@"File not in Vanilla DB: " + shortname);
                     }
                 }
             }

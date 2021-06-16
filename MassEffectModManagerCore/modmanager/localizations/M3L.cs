@@ -185,6 +185,8 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_binkAsiBypassInstalled = "string_binkAsiBypassInstalled";
 		public const string string_binkAsiLoaderNotInstalled = "string_binkAsiLoaderNotInstalled";
 		public const string string_binkAsiLoaderInstalled = "string_binkAsiLoaderInstalled";
+		public const string string_bink2AsiLoaderNotInstalled = "string_bink2AsiLoaderNotInstalled";
+		public const string string_bink2AsiLoaderInstalled = "string_bink2AsiLoaderInstalled";
 		public const string string_gameNotInstalled = "string_gameNotInstalled";
 		public const string string_otherSavedTargets = "string_otherSavedTargets";
 		public const string string_cannotEndorseMod = "string_cannotEndorseMod";
@@ -1204,7 +1206,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_dialogErrorDeletingExistingMod = "string_dialogErrorDeletingExistingMod";
 		public const string string_interp_errorOccuredWhileDeletingExistingModDirectory = "string_interp_errorOccuredWhileDeletingExistingModDirectory";
 		public const string string_generatingMod = "string_generatingMod";
-		public const string string_interp_valueMustBeBetween0AndX = "string_interp_valueMustBeBetween0AndX";
+		public const string string_interp_valueMustBeBetweenXAndY = "string_interp_valueMustBeBetweenXAndY";
 		public const string string_dialog_devModeAdvert = "string_dialog_devModeAdvert";
 		public const string string_enableDeveloperFeaturesQuestion = "string_enableDeveloperFeaturesQuestion";
 		public const string string_dialog_warnMustBeDeployedForFullFeatures = "string_dialog_warnMustBeDeployedForFullFeatures";

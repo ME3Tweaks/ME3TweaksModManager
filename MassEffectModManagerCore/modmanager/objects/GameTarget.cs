@@ -39,6 +39,16 @@ namespace MassEffectModManagerCore.modmanager.objects
         public string GameSource { get; private set; }
         public string ExecutableHash { get; private set; }
 
+        public string ASILoaderName
+        {
+            get
+            {
+                if (Game == MEGame.ME1) return "Binkw32 ASI Loader";
+                if (Game is MEGame.ME2 or MEGame.ME3) return "Binkw32 ASI Bypass";
+                if (Game.IsLEGame()) return "Bink2w64 ASI Loader";
+                return $@"UNKNOWN GAME FOR ASI LOADER: {Game}";
+            }
+        }
         public string TargetBootIcon
         {
             get
@@ -1258,11 +1268,11 @@ namespace MassEffectModManagerCore.modmanager.objects
         public string Binkw32StatusText { get; private set; }
         public void PopulateBinkInfo()
         {
-            if (Game != MEGame.ME1)
+            if (Game is MEGame.ME2 or MEGame.ME3)
             {
                 Binkw32StatusText = Utilities.CheckIfBinkw32ASIIsInstalled(this) ? M3L.GetString(M3L.string_bypassInstalledASIAndDLCModsWillBeAbleToLoad) : M3L.GetString(M3L.string_bypassNotInstalledASIAndDLCModsWillBeUnableToLoad);
             }
-            else
+            else if (Game is MEGame.ME1 || Game.IsLEGame())
             {
                 Binkw32StatusText = Utilities.CheckIfBinkw32ASIIsInstalled(this) ? M3L.GetString(M3L.string_bypassInstalledASIModsWillBeAbleToLoad) : M3L.GetString(M3L.string_bypassNotInstalledASIModsWillBeUnableToLoad);
             }

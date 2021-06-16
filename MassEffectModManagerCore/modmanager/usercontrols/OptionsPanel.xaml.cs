@@ -12,8 +12,12 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.ui;
+using Microsoft.AppCenter.Analytics;
+using Microsoft.AppCenter.Crashes;
 using PropertyChanged;
+using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -81,6 +85,48 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 Settings.DarkTheme = !Settings.DarkTheme;
                 //Settings.Save();
                 mainwindow.SetTheme();
+            }
+        }
+
+        private void ChangeSetting_Clicked(object sender, RoutedEventArgs e)
+        {
+            //When this method is called, the value has already changed. So check against the opposite boolean state.
+            var callingMember = sender as FrameworkElement;
+
+            if (callingMember == BetaMode_MenuItem && Settings.BetaMode)
+            {
+                var result = M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_dialog_optingIntoBeta), M3L.GetString(M3L.string_enablingBetaMode), MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                if (result == MessageBoxResult.No)
+                {
+                    Settings.BetaMode = false; //turn back off.
+                    return;
+                }
+            }
+            else if (callingMember == EnableTelemetry_MenuItem && !Settings.EnableTelemetry)
+            {
+                //user trying to turn it off 
+                var result = M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_dialogTurningOffTelemetry), M3L.GetString(M3L.string_turningOffTelemetry), MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                if (result == MessageBoxResult.No)
+                {
+                    Settings.EnableTelemetry = true; //keep on.
+                    return;
+                }
+
+                Log.Warning(@"Turning off telemetry :(");
+                //Turn off telemetry.
+                Analytics.SetEnabledAsync(false);
+                Crashes.SetEnabledAsync(false);
+            }
+            else if (callingMember == EnableTelemetry_MenuItem)
+            {
+                //turning telemetry on
+                Log.Information(@"Turning on telemetry :)");
+                Analytics.SetEnabledAsync(true);
+                Crashes.SetEnabledAsync(true);
+            }
+            else
+            {
+                //unknown caller. Might just be settings on/off for logging.
             }
         }
     }

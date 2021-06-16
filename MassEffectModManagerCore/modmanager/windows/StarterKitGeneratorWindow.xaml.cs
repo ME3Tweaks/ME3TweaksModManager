@@ -62,6 +62,29 @@ namespace MassEffectModManagerCore.modmanager.windows
             }
         }
 
+        public int MinMountForGame
+        {
+            get
+            {
+                switch (Game)
+                {
+                    case MEGame.ME3:
+                        return 1005;
+                    case MEGame.ME2:
+                        return 1; //sensible?
+                    case MEGame.ME1:
+                        return 1; //sensible?
+
+                    // Supports up to 2 billion
+                    case MEGame.LE1:
+                    case MEGame.LE2:
+                    case MEGame.LE3:
+                        return 4000;
+                }
+                return 1;
+            }
+        }
+
         public ThirdPartyModInfo PreviewTPMI { get; } = new ThirdPartyModInfo();
         public static GridLength VisibleRowHeight { get; } = new GridLength(25);
         public string BusyText { get; set; }
@@ -237,9 +260,9 @@ namespace MassEffectModManagerCore.modmanager.windows
 
             Validator.AddRule(nameof(ModMountPriority), () =>
             {
-                if (ModMountPriority <= 0 || ModMountPriority >= GetGameSpecificMountLimit())
+                if (ModMountPriority <= MinMountForGame || ModMountPriority >= MaxMountForGame)
                 {
-                    return RuleResult.Invalid(M3L.GetString(M3L.string_interp_valueMustBeBetween0AndX, GetGameSpecificMountLimit().ToString()));
+                    return RuleResult.Invalid(M3L.GetString(M3L.string_interp_valueMustBeBetweenXAndY, MinMountForGame,MaxMountForGame));
                 }
                 return RuleResult.Valid();
             });
@@ -286,7 +309,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                 if (!Game.IsGame2()) return RuleResult.Valid();
                 if (ModDLCModuleNumber <= 0 || ModDLCModuleNumber >= ushort.MaxValue)
                 {
-                    return RuleResult.Invalid(M3L.GetString(M3L.string_interp_valueMustBeBetween0AndX, ushort.MaxValue.ToString()));
+                    return RuleResult.Invalid(M3L.GetString(M3L.string_valueMustBeBetween0And, ushort.MaxValue.ToString()));
                 }
                 return RuleResult.Valid();
             });
@@ -673,7 +696,7 @@ namespace MassEffectModManagerCore.modmanager.windows
 
         private void MountPriority_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
-            if (int.TryParse(ModMountPriority_TextBox.Text, out var val) && val > 0 && val < GetGameSpecificMountLimit())
+            if (int.TryParse(ModMountPriority_TextBox.Text, out var val) && val > MinMountForGame && val < MaxMountForGame)
             {
                 PreviewTPMI.mountpriority = val.ToString();
                 CustomDLCMountsForGame.SortDescending(x => x.MountPriorityInt);
@@ -681,8 +704,6 @@ namespace MassEffectModManagerCore.modmanager.windows
             }
             Validator.Validate(nameof(ModMountPriority));
         }
-
-        private int GetGameSpecificMountLimit() => MaxMountForGame;
 
         private void FieldText_Changed(object sender, TextChangedEventArgs e)
         {

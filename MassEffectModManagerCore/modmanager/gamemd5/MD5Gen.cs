@@ -13,7 +13,7 @@ namespace MassEffectModManagerCore.modmanager.gamemd5
     {
         public static void GenerateMD5Map(string directory, string outName)
         {
-            var allFiles = Directory.GetFiles(directory, @"*.*", SearchOption.AllDirectories);
+            var allFiles = Directory.GetFiles(directory, @"*.*", SearchOption.AllDirectories);//.Take(10).ToArray();
 
             MemoryStream mapStream = new MemoryStream();
 

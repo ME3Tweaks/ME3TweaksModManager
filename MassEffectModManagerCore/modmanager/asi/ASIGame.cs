@@ -7,18 +7,16 @@ using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore.Packages;
+using PropertyChanged;
 
 namespace MassEffectModManagerCore.modmanager.asi
 {
     /// <summary>
     /// ASI Manager UI controller for single game
     /// </summary>
-    public class ASIGame : INotifyPropertyChanged
+    [AddINotifyPropertyChangedInterface]
+    public class ASIGame
     {
-        //Fody uses this property on weaving
-#pragma warning disable
-        public event PropertyChangedEventHandler PropertyChanged;
-#pragma warning restore
         public MEGame Game { get; }
         public ObservableCollectionExtended<GameTarget> GameTargets { get; } = new ObservableCollectionExtended<GameTarget>();
         public ObservableCollectionExtended<object> DisplayedASIMods { get; } = new ObservableCollectionExtended<object>();

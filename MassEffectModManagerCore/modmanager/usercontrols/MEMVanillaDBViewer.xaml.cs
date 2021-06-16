@@ -57,7 +57,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void LoadMEMDBs()
         {
-            var games = new[] {MEGame.ME1, MEGame.ME2, MEGame.ME3, MEGame.LE1, MEGame.LE2, MEGame.LE3, MEGame.LELauncher};
+            var games = new[] {/*MEGame.ME1, MEGame.ME2, MEGame.ME3, MEGame.LE1,*/ MEGame.LE2, MEGame.LE3, MEGame.LELauncher};
             foreach (var g in games)
             {
                 Games.Add(new MemGameDB(g));

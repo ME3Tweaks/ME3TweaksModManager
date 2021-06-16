@@ -225,16 +225,7 @@ namespace MassEffectModManagerCore
             LoadCommands();
             SetTheme();
             InitializeComponent();
-            languageMenuItems = new Dictionary<string, MenuItem>()
-            {
-                {@"int", LanguageINT_MenuItem},
-                {@"rus", LanguageRUS_MenuItem},
-                {@"pol", LanguagePOL_MenuItem},
-                {@"deu", LanguageDEU_MenuItem},
-                {@"bra", LanguageBRA_MenuItem},
-                //{@"fra", LanguageFRA_MenuItem}
-                //{@"esn", LanguageESN_MenuItem}
-            };
+
 
             //Change language if not INT
             if (App.InitialLanguage != @"int")
@@ -768,7 +759,7 @@ namespace MassEffectModManagerCore
                             ApplyMod(queue.ModsToInstall[modIndex], target, batchMode: true, installCompressed: queue.InstallCompressed, installCompletedCallback: modInstalled);
                             modIndex++;
                         }
-                        else if (SelectedGameTarget.Game == MEGame.ME3)
+                        else if (SelectedGameTarget.Game == MEGame.ME3 || SelectedGameTarget.Game.IsLEGame())
                         {
                             //End
                             var autoTocUI = new AutoTOC(SelectedGameTarget);
@@ -1694,15 +1685,14 @@ namespace MassEffectModManagerCore
                         if (modInstaller.InstallationCancelled)
                         {
                             modInstallTask.finishedUiText = M3L.GetString(M3L.string_installationAborted);
-                            installCompletedCallback?.Invoke(false);
-                            return;
                         }
                         else
                         {
                             modInstallTask.finishedUiText = M3L.GetString(M3L.string_interp_failedToInstallMod, mod.ModName);
-                            installCompletedCallback?.Invoke(false);
                         }
+                        installCompletedCallback?.Invoke(false);
                     }
+
                     backgroundTaskEngine.SubmitJobCompletion(modInstallTask);
                     ReleaseBusyControl();
                 };
@@ -1948,16 +1938,31 @@ namespace MassEffectModManagerCore
                 return; //don't check or anything
             }
 
-            var binkME1InstalledText = M3L.GetString(M3L.string_binkAsiLoaderInstalled);
-            var binkME1NotInstalledText = M3L.GetString(M3L.string_binkAsiLoaderNotInstalled);
-            var binkInstalledText = M3L.GetString(M3L.string_binkAsiBypassInstalled);
-            var binkNotInstalledText = M3L.GetString(M3L.string_binkAsiBypassNotInstalled);
+
+            string binkInstalledText = null;
+            string binkNotInstalledText = null;
+
+            if (game == MEGame.ME1)
+            {
+                binkInstalledText = M3L.GetString(M3L.string_binkAsiLoaderInstalled);
+                binkNotInstalledText = M3L.GetString(M3L.string_binkAsiLoaderNotInstalled);
+            }
+            else if (game is MEGame.ME2 or MEGame.ME3)
+            {
+                binkInstalledText = M3L.GetString(M3L.string_binkAsiBypassInstalled);
+                binkNotInstalledText = M3L.GetString(M3L.string_binkAsiBypassNotInstalled);
+            }
+            else if (game.IsLEGame())
+            {
+                binkInstalledText = M3L.GetString(M3L.string_bink2AsiLoaderInstalled);
+                binkNotInstalledText = M3L.GetString(M3L.string_bink2AsiLoaderNotInstalled);
+            }
 
             switch (game)
             {
                 case MEGame.ME1:
                     ME1ASILoaderInstalled = Utilities.CheckIfBinkw32ASIIsInstalled(target);
-                    ME1ASILoaderText = ME1ASILoaderInstalled ? binkME1InstalledText : binkME1NotInstalledText;
+                    ME1ASILoaderText = ME1ASILoaderInstalled ? binkInstalledText : binkNotInstalledText;
                     break;
                 case MEGame.ME2:
                     ME2ASILoaderInstalled = Utilities.CheckIfBinkw32ASIIsInstalled(target);
@@ -1969,7 +1974,7 @@ namespace MassEffectModManagerCore
                     break;
                 case MEGame.LE1:
                     LE1ASILoaderInstalled = Utilities.CheckIfBinkw32ASIIsInstalled(target);
-                    LE1ASILoaderText = LE1ASILoaderInstalled ? binkME1InstalledText : binkME1NotInstalledText;
+                    LE1ASILoaderText = LE1ASILoaderInstalled ? binkInstalledText : binkNotInstalledText;
                     break;
                 case MEGame.LE2:
                     LE2ASILoaderInstalled = Utilities.CheckIfBinkw32ASIIsInstalled(target);
@@ -3122,7 +3127,6 @@ namespace MassEffectModManagerCore
         }
 
         private bool RepopulatingTargets;
-        private Dictionary<string, MenuItem> languageMenuItems;
 
         public void OnSelectedGameTargetChanged()
         {
@@ -3620,55 +3624,6 @@ namespace MassEffectModManagerCore
             ShowBusyControl(autoTocUI);
         }
 
-        private void ChangeSetting_Clicked(object sender, RoutedEventArgs e)
-        {
-            //When this method is called, the value has already changed. So check against the opposite boolean state.
-            var callingMember = (MenuItem)sender;
-            if (callingMember == SetModLibraryPath_MenuItem)
-            {
-                ChooseModLibraryPath(true);
-            }
-            else if (callingMember == DarkMode_MenuItem)
-            {
-                SetTheme();
-            }
-            else if (callingMember == BetaMode_MenuItem && Settings.BetaMode)
-            {
-                var result = M3L.ShowDialog(this, M3L.GetString(M3L.string_dialog_optingIntoBeta), M3L.GetString(M3L.string_enablingBetaMode), MessageBoxButton.YesNo, MessageBoxImage.Warning);
-                if (result == MessageBoxResult.No)
-                {
-                    Settings.BetaMode = false; //turn back off.
-                    return;
-                }
-            }
-            else if (callingMember == EnableTelemetry_MenuItem && !Settings.EnableTelemetry)
-            {
-                //user trying to turn it off 
-                var result = M3L.ShowDialog(this, M3L.GetString(M3L.string_dialogTurningOffTelemetry), M3L.GetString(M3L.string_turningOffTelemetry), MessageBoxButton.YesNo, MessageBoxImage.Warning);
-                if (result == MessageBoxResult.No)
-                {
-                    Settings.EnableTelemetry = true; //keep on.
-                    return;
-                }
-
-                Log.Warning(@"Turning off telemetry :(");
-                //Turn off telemetry.
-                Analytics.SetEnabledAsync(false);
-                Crashes.SetEnabledAsync(false);
-            }
-            else if (callingMember == EnableTelemetry_MenuItem)
-            {
-                //turning telemetry on
-                Log.Information(@"Turning on telemetry :)");
-                Analytics.SetEnabledAsync(true);
-                Crashes.SetEnabledAsync(true);
-            }
-            else
-            {
-                //unknown caller. Might just be settings on/off for logging.
-            }
-        }
-
         internal void SetTheme()
         {
             ResourceLocator.SetColorScheme(Application.Current.Resources, Settings.DarkTheme ? ResourceLocator.DarkColorScheme : ResourceLocator.LightColorScheme);
@@ -3734,44 +3689,6 @@ namespace MassEffectModManagerCore
 
         }
 
-        private void ChangeLanguage_Clicked(object sender, RoutedEventArgs e)
-        {
-            string lang = @"int";
-            if (sender == LanguageINT_MenuItem)
-            {
-                lang = @"int";
-            }
-            else if (sender == LanguagePOL_MenuItem)
-            {
-                lang = @"pol";
-            }
-            else if (sender == LanguageRUS_MenuItem)
-            {
-                lang = @"rus";
-            }
-            else if (sender == LanguageDEU_MenuItem)
-            {
-                lang = @"deu";
-            }
-            else if (sender == LanguageBRA_MenuItem)
-            {
-                lang = @"bra";
-            }
-            //else if (sender == LanguageESN_MenuItem)
-            //{
-            //    lang = @"esn";
-            //}
-            //else if (sender == LanguageFRA_MenuItem)
-            //{
-            //    lang = @"fra";
-            //}
-            //else if (sender == LanguageCZE_MenuItem)
-            //{
-            //    lang = @"cze";
-            //}
-            SetApplicationLanguage(lang, false);
-        }
-
         /// <summary>
         /// Sets the UI language. This will save the settings if it is not startup.
         /// </summary>
@@ -3784,12 +3701,6 @@ namespace MassEffectModManagerCore
             Log.Information(@"Setting language to " + lang);
             Application.Current.Dispatcher.Invoke(async () =>
             {
-
-                foreach (var item in languageMenuItems)
-                {
-                    item.Value.IsChecked = item.Key == lang;
-                }
-
                 //Set language.
                 Task.Run(async () => { await OnlineContent.InternalSetLanguage(lang, forcedDictionary, startup); }).Wait();
 

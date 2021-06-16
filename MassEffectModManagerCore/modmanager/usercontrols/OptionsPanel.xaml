@@ -157,6 +157,8 @@
                         Grid.Row="1"
                         Grid.Column="0">
                     <CheckBox
+                            Name="EnableTelemetry_MenuItem"
+                            Click="ChangeSetting_Clicked"
                             FontWeight="Bold"
                             Content="{DynamicResource string_enableTelemetry}"
                             DockPanel.Dock="Top"
@@ -185,6 +187,8 @@
 
                     Grid.Column="0">
                     <CheckBox
+                        Name="BetaMode_MenuItem"
+                        Click="ChangeSetting_Clicked"
                         FontWeight="Bold"
                         Content="{DynamicResource string_optIntoBetaUpdates}"
                         DockPanel.Dock="Top"
