@@ -267,33 +267,45 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 case @".7z":
                 case @".zip":
                     Log.Information(@"Extracting tool archive: " + downloadPath);
-                    using (var archiveFile = new SevenZipExtractor(downloadPath))
+                    try
                     {
-                        currentTaskUpdateCallback?.Invoke(M3L.GetString(M3L.string_interp_extractingX, tool));
-                        setPercentTaskDone?.Invoke(0);
-                        void progressCallback(object sender, ProgressEventArgs progress)
+                        using (var archiveFile = new SevenZipExtractor(downloadPath))
                         {
-                            setPercentTaskDone?.Invoke(progress.PercentDone);
-                        };
-                        archiveFile.Extracting += progressCallback;
-                        try
-                        {
-                            archiveFile.ExtractArchive(outputDirectory); // extract all
-                            // Touchup for MEM LE versions
-                            if (Path.GetFileName(executable) == @"MassEffectModderLE.exe")
-                                executable = Path.Combine(Directory.GetParent(executable).FullName, @"MassEffectModder.exe");
-                            if (Path.GetFileName(executable) == @"MassEffectModderNoGuiLE.exe")
-                                executable = Path.Combine(Directory.GetParent(executable).FullName, @"MassEffectModderNoGui.exe");
+                            currentTaskUpdateCallback?.Invoke(M3L.GetString(M3L.string_interp_extractingX, tool));
+                            setPercentTaskDone?.Invoke(0);
 
-                            resultingExecutableStringCallback?.Invoke(executable);
-                        }
-                        catch (Exception e)
-                        {
-                            Log.Error($@"Could not extract/run tool {executable} after download: {e.Message}");
-                            errorExtractingCallback?.Invoke(e, M3L.GetString(M3L.string_interp_errorDownloadingAndLaunchingTool, e.Message), M3L.GetString(M3L.string_errorLaunchingTool));
+                            void progressCallback(object sender, ProgressEventArgs progress)
+                            {
+                                setPercentTaskDone?.Invoke(progress.PercentDone);
+                            }
 
+                            ;
+                            archiveFile.Extracting += progressCallback;
+                            try
+                            {
+                                archiveFile.ExtractArchive(outputDirectory); // extract all
+                                // Touchup for MEM LE versions
+                                if (Path.GetFileName(executable) == @"MassEffectModderLE.exe")
+                                    executable = Path.Combine(Directory.GetParent(executable).FullName, @"MassEffectModder.exe");
+                                if (Path.GetFileName(executable) == @"MassEffectModderNoGuiLE.exe")
+                                    executable = Path.Combine(Directory.GetParent(executable).FullName, @"MassEffectModderNoGui.exe");
+
+                                resultingExecutableStringCallback?.Invoke(executable);
+                            }
+                            catch (Exception e)
+                            {
+                                Log.Error($@"Could not extract/run tool {executable} after download: {e.Message}");
+                                errorExtractingCallback?.Invoke(e, M3L.GetString(M3L.string_interp_errorDownloadingAndLaunchingTool, e.Message), M3L.GetString(M3L.string_errorLaunchingTool));
+
+                            }
                         }
                     }
+                    catch (Exception e)
+                    {
+                        Log.Error($@"Exception extracting archive: {e.Message}");
+                        errorExtractingCallback?.Invoke(e, M3L.GetString(M3L.string_interp_errorDownloadingAndLaunchingTool, e.Message), M3L.GetString(M3L.string_errorLaunchingTool));
+                    }
+
                     break;
                 default:
                     Log.Error($@"Failed to download correct file! We don't support this extension. The extension was {extension}");
