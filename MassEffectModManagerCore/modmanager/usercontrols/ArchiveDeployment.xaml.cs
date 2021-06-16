@@ -37,6 +37,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Misc;
+using LegendaryExplorerCore.Packages.CloningImportingAndRelinking;
 using LegendaryExplorerCore.Unreal.ObjectInfo;
 using Brushes = System.Windows.Media.Brushes;
 using ExportEntry = LegendaryExplorerCore.Packages.ExportEntry;
@@ -1050,136 +1051,139 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             //    return;
                             Log.Information($@"Checking package and name references in {relativePath}");
                             var package = MEPackageHandler.OpenMEPackage(Path.Combine(item.ModToValidateAgainst.ModPath, f));
-                            foreach (ExportEntry exp in package.Exports)
-                            {
-                                // Has to be done before accessing the name because it will cause infinite crash loop
-                                //Debug.WriteLine($"Checking {exp.UIndex} {exp.InstancedFullPath} in {exp.FileRef.FilePath}");
-                                if (exp.idxLink == exp.UIndex)
-                                {
-                                    item.AddBlockingError(M3L.GetString(M3L.string_interp_fatalExportCircularReference, f.Substring(ModBeingDeployed.ModPath.Length + 1), exp.UIndex));
-                                    continue;
-                                }
+                            ReferenceCheckPackage rp = new ReferenceCheckPackage();
+                            EntryChecker.CheckReferences(rp, package, M3L.GetString, relativePath);
 
-                                var prefix = M3L.GetString(M3L.string_interp_warningGenericExportPrefix, f.Substring(ModBeingDeployed.ModPath.Length + 1), exp.UIndex, exp.ObjectName.Name, exp.ClassName);
-                                try
-                                {
-                                    if (exp.idxArchetype != 0 && !package.IsEntry(exp.idxArchetype))
-                                    {
-                                        item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningArchetypeOutsideTables, prefix, exp.idxArchetype));
-                                    }
+                            //foreach (ExportEntry exp in package.Exports)
+                            //{
+                            //    // Has to be done before accessing the name because it will cause infinite crash loop
+                            //    //Debug.WriteLine($"Checking {exp.UIndex} {exp.InstancedFullPath} in {exp.FileRef.FilePath}");
+                            //    if (exp.idxLink == exp.UIndex)
+                            //    {
+                            //        item.AddBlockingError(M3L.GetString(M3L.string_interp_fatalExportCircularReference, f.Substring(ModBeingDeployed.ModPath.Length + 1), exp.UIndex));
+                            //        continue;
+                            //    }
 
-                                    if (exp.idxSuperClass != 0 && !package.IsEntry(exp.idxSuperClass))
-                                    {
-                                        item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningSuperclassOutsideTables, prefix, exp.idxSuperClass));
-                                    }
+                            //    var prefix = M3L.GetString(M3L.string_interp_warningGenericExportPrefix, f.Substring(ModBeingDeployed.ModPath.Length + 1), exp.UIndex, exp.ObjectName.Name, exp.ClassName);
+                            //    try
+                            //    {
+                            //        if (exp.idxArchetype != 0 && !package.IsEntry(exp.idxArchetype))
+                            //        {
+                            //            item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningArchetypeOutsideTables, prefix, exp.idxArchetype));
+                            //        }
 
-                                    if (exp.idxClass != 0 && !package.IsEntry(exp.idxClass))
-                                    {
-                                        item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningClassOutsideTables, prefix, exp.idxClass));
-                                    }
+                            //        if (exp.idxSuperClass != 0 && !package.IsEntry(exp.idxSuperClass))
+                            //        {
+                            //            item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningSuperclassOutsideTables, prefix, exp.idxSuperClass));
+                            //        }
 
-                                    if (exp.idxLink != 0 && !package.IsEntry(exp.idxLink))
-                                    {
-                                        item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningLinkOutsideTables, prefix, exp.idxLink));
-                                    }
+                            //        if (exp.idxClass != 0 && !package.IsEntry(exp.idxClass))
+                            //        {
+                            //            item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningClassOutsideTables, prefix, exp.idxClass));
+                            //        }
 
-                                    if (exp.HasComponentMap)
-                                    {
-                                        foreach (var c in exp.ComponentMap)
-                                        {
-                                            if (!package.IsEntry(c.Value))
-                                            {
-                                                // Can components point to 0? I don't think so
-                                                item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningComponentMapItemOutsideTables, prefix, c.Value));
-                                            }
-                                        }
-                                    }
+                            //        if (exp.idxLink != 0 && !package.IsEntry(exp.idxLink))
+                            //        {
+                            //            item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningLinkOutsideTables, prefix, exp.idxLink));
+                            //        }
 
-                                    //find stack references
-                                    if (exp.HasStack && exp.Data is byte[] data)
-                                    {
-                                        var stack1 = EndianReader.ToInt32(data, 0, exp.FileRef.Endian);
-                                        var stack2 = EndianReader.ToInt32(data, 4, exp.FileRef.Endian);
-                                        if (stack1 != 0 && !package.IsEntry(stack1))
-                                        {
-                                            item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningExportStackElementOutsideTables, prefix, 0, stack1));
-                                        }
+                            //        if (exp.HasComponentMap)
+                            //        {
+                            //            foreach (var c in exp.ComponentMap)
+                            //            {
+                            //                if (!package.IsEntry(c.Value))
+                            //                {
+                            //                    // Can components point to 0? I don't think so
+                            //                    item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningComponentMapItemOutsideTables, prefix, c.Value));
+                            //                }
+                            //            }
+                            //        }
 
-                                        if (stack2 != 0 && !package.IsEntry(stack2))
-                                        {
-                                            item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningExportStackElementOutsideTables, prefix, 1, stack2));
-                                        }
-                                    }
-                                    else if (exp.TemplateOwnerClassIdx is var toci && toci >= 0)
-                                    {
-                                        var TemplateOwnerClassIdx = EndianReader.ToInt32(exp.Data, toci, exp.FileRef.Endian);
-                                        if (TemplateOwnerClassIdx != 0 && !package.IsEntry(TemplateOwnerClassIdx))
-                                        {
-                                            item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningTemplateOwnerClassOutsideTables, prefix, toci.ToString(@"X6"), TemplateOwnerClassIdx));
-                                        }
-                                    }
+                            //        //find stack references
+                            //        if (exp.HasStack && exp.Data is byte[] data)
+                            //        {
+                            //            var stack1 = EndianReader.ToInt32(data, 0, exp.FileRef.Endian);
+                            //            var stack2 = EndianReader.ToInt32(data, 4, exp.FileRef.Endian);
+                            //            if (stack1 != 0 && !package.IsEntry(stack1))
+                            //            {
+                            //                item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningExportStackElementOutsideTables, prefix, 0, stack1));
+                            //            }
 
-                                    var props = exp.GetProperties();
-                                    foreach (var p in props)
-                                    {
-                                        recursiveCheckProperty(item, relativePath, exp.ClassName, exp, p);
-                                    }
-                                }
-                                catch (Exception e)
-                                {
-                                    item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningExceptionParsingProperties, prefix, e.Message));
-                                    continue;
-                                }
+                            //            if (stack2 != 0 && !package.IsEntry(stack2))
+                            //            {
+                            //                item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningExportStackElementOutsideTables, prefix, 1, stack2));
+                            //            }
+                            //        }
+                            //        else if (exp.TemplateOwnerClassIdx is var toci && toci >= 0)
+                            //        {
+                            //            var TemplateOwnerClassIdx = EndianReader.ToInt32(exp.Data, toci, exp.FileRef.Endian);
+                            //            if (TemplateOwnerClassIdx != 0 && !package.IsEntry(TemplateOwnerClassIdx))
+                            //            {
+                            //                item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningTemplateOwnerClassOutsideTables, prefix, toci.ToString(@"X6"), TemplateOwnerClassIdx));
+                            //            }
+                            //        }
 
-                                //find binary references
-                                try
-                                {
-                                    if (!exp.IsDefaultObject && ObjectBinary.From(exp) is ObjectBinary objBin)
-                                    {
-                                        List<(UIndex, string)> indices = objBin.GetUIndexes(exp.FileRef.Game);
-                                        foreach ((UIndex uIndex, string propName) in indices)
-                                        {
-                                            if (uIndex.value != 0 && !exp.FileRef.IsEntry(uIndex.value))
-                                            {
-                                                item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningBinaryReferenceOutsideTables, prefix, uIndex.value));
-                                            }
-                                            else if (exp.FileRef.GetEntry(uIndex.value)?.ObjectName.ToString() == @"Trash")
-                                            {
-                                                item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningBinaryReferenceTrashed, prefix, uIndex.value));
-                                            }
-                                            else if (exp.FileRef.GetEntry(uIndex.value)?.ObjectName.ToString() == UnrealPackageFile.TrashPackageName)
-                                            {
-                                                item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningBinaryReferenceTrashed, prefix, uIndex.value));
-                                            }
-                                        }
+                            //        var props = exp.GetProperties();
+                            //        foreach (var p in props)
+                            //        {
+                            //            recursiveCheckProperty(item, relativePath, exp.ClassName, exp, p);
+                            //        }
+                            //    }
+                            //    catch (Exception e)
+                            //    {
+                            //        item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningExceptionParsingProperties, prefix, e.Message));
+                            //        continue;
+                            //    }
 
-                                        var nameIndicies = objBin.GetNames(exp.FileRef.Game);
-                                        foreach (var ni in nameIndicies)
-                                        {
-                                            if (ni.Item1 == "")
-                                            {
-                                                item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningBinaryNameReferenceOutsideNameTable, prefix));
-                                            }
-                                        }
-                                    }
-                                }
-                                catch (Exception e) /* when (!App.IsDebug)*/
-                                {
-                                    item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningUnableToParseBinary, prefix, e.Message));
-                                }
-                            }
+                            //    //find binary references
+                            //    try
+                            //    {
+                            //        if (!exp.IsDefaultObject && ObjectBinary.From(exp) is ObjectBinary objBin)
+                            //        {
+                            //            List<(UIndex, string)> indices = objBin.GetUIndexes(exp.FileRef.Game);
+                            //            foreach ((UIndex uIndex, string propName) in indices)
+                            //            {
+                            //                if (uIndex.value != 0 && !exp.FileRef.IsEntry(uIndex.value))
+                            //                {
+                            //                    item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningBinaryReferenceOutsideTables, prefix, uIndex.value));
+                            //                }
+                            //                else if (exp.FileRef.GetEntry(uIndex.value)?.ObjectName.ToString() == @"Trash")
+                            //                {
+                            //                    item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningBinaryReferenceTrashed, prefix, uIndex.value));
+                            //                }
+                            //                else if (exp.FileRef.GetEntry(uIndex.value)?.ObjectName.ToString() == UnrealPackageFile.TrashPackageName)
+                            //                {
+                            //                    item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningBinaryReferenceTrashed, prefix, uIndex.value));
+                            //                }
+                            //            }
 
-                            foreach (ImportEntry imp in package.Imports)
-                            {
-                                if (imp.idxLink != 0 && !package.TryGetEntry(imp.idxLink, out _))
-                                {
-                                    item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningImportLinkOutideOfTables, f, imp.UIndex, imp.idxLink));
-                                }
-                                else if (imp.idxLink == imp.UIndex)
-                                {
-                                    item.AddBlockingError(M3L.GetString(M3L.string_interp_fatalImportCircularReference, f, imp.UIndex));
-                                }
-                            }
+                            //            var nameIndicies = objBin.GetNames(exp.FileRef.Game);
+                            //            foreach (var ni in nameIndicies)
+                            //            {
+                            //                if (ni.Item1 == "")
+                            //                {
+                            //                    item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningBinaryNameReferenceOutsideNameTable, prefix));
+                            //                }
+                            //            }
+                            //        }
+                            //    }
+                            //    catch (Exception e) /* when (!App.IsDebug)*/
+                            //    {
+                            //        item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningUnableToParseBinary, prefix, e.Message));
+                            //    }
+                            //}
+
+                            //foreach (ImportEntry imp in package.Imports)
+                            //{
+                            //    if (imp.idxLink != 0 && !package.TryGetEntry(imp.idxLink, out _))
+                            //    {
+                            //        item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningImportLinkOutideOfTables, f, imp.UIndex, imp.idxLink));
+                            //    }
+                            //    else if (imp.idxLink == imp.UIndex)
+                            //    {
+                            //        item.AddBlockingError(M3L.GetString(M3L.string_interp_fatalImportCircularReference, f, imp.UIndex));
+                            //    }
+                            //}
                         });
                 }
                 catch (Exception e)
@@ -1467,8 +1471,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             compressor.CustomParameters.Add(@"s", @"off");
             compressor.CompressionMode = CompressionMode.Create;
             compressor.CompressionLevel = CompressionLevel.None;
-            compressor.CompressFileDictionary(archiveMapping.Where(x => x.Value == null).Select(x=>x.Key).ToDictionary(x => x, x => (string)null), archivePath);
-            
+            compressor.CompressFileDictionary(archiveMapping.Where(x => x.Value == null).Select(x => x.Key).ToDictionary(x => x, x => (string)null), archivePath);
+
             // Setup compress for pass 2
             compressor.CustomParameters.Clear();
             compressor.CompressionMode = CompressionMode.Append; //Append to 
@@ -1631,14 +1635,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         /// <summary>
         /// A single deployment checklist item and state
         /// </summary>
-        public class DeploymentChecklistItem : INotifyPropertyChanged
+        [AddINotifyPropertyChangedInterface]
+        public class DeploymentChecklistItem : ReferenceCheckPackage, INotifyPropertyChanged
         {
             public Mod ModToValidateAgainst;
-
-            // The list of generated warnings, errors, and blocking errors
-            private List<string> BlockingErrors = new List<string>();
-            private List<string> SignificantIssues = new List<string>();
-            private List<string> InfoWarnings = new List<string>();
 
             // Bindings
             public string ItemText { get; set; }
@@ -1653,34 +1653,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             public bool CheckDone { get; private set; }
 
             public bool HasMessage => CheckDone && HasAnyMessages();
-
-            private object syncLock = new object();
-            public void AddBlockingError(string message)
-            {
-                lock (syncLock)
-                {
-                    BlockingErrors.Add(message);
-                }
-
-                DeploymentBlocking = true;
-            }
-
-            public void AddSignificantIssue(string message)
-            {
-                lock (syncLock)
-                {
-                    SignificantIssues.Add(message);
-                }
-            }
-
-            public void AddInfoWarning(string message)
-            {
-                lock (syncLock)
-                {
-                    InfoWarnings.Add(message);
-                }
-            }
-
 
             public DeploymentChecklistItem()
             {
@@ -1737,9 +1709,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             public bool HasAnyMessages() => InfoWarnings.Any() || SignificantIssues.Any() || BlockingErrors.Any();
 
-            public IReadOnlyCollection<string> GetBlockingIssues() => BlockingErrors.AsReadOnly();
-            public IReadOnlyCollection<string> GetSignificantIssues() => SignificantIssues.AsReadOnly();
-            public IReadOnlyCollection<string> GetInfoWarningIssues() => InfoWarnings.AsReadOnly();
+            public IReadOnlyCollection<EntryStringPair> GetBlockingIssues() => BlockingErrors.AsReadOnly();
+            public IReadOnlyCollection<EntryStringPair> GetSignificantIssues() => SignificantIssues.AsReadOnly();
+            public IReadOnlyCollection<EntryStringPair> GetInfoWarningIssues() => InfoWarnings.AsReadOnly();
 
             public void Reset()
             {
