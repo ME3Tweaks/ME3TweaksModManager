@@ -230,7 +230,7 @@
     <system:String x:Key="string_importAndManageMods">Import + manage mods</system:String>
     <system:String x:Key="string_libraryManagement">Library management</system:String>
     <system:String x:Key="string_optIntoBetaUpdates">Opt into beta updates</system:String>
-    <system:String xml:space="preserve" x:Key="string_tooltip_optIntoBetaUpdates">Enables beta updates, overriding soak testing settings from ME3Tweaks.&#10;These builds may be less stable but have features that need to be tested</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_optIntoBetaUpdates">Enables beta updates, overriding soak testing settings from ME3Tweaks. These builds may be less stable but have features that need to be tested.</system:String>
     <system:String x:Key="string_tooltip_toggleTelemetry">Enables/disables submission of analytics and crash logs</system:String>
     <system:String x:Key="string_tooltip_logModLoading">Log detailed information about mods loading from the library or archives</system:String>
     <system:String x:Key="string_tooltip_logModMakerCompiler">Log detailed information when ModMaker compiler is running</system:String>
@@ -275,8 +275,8 @@
     <system:String  x:Key="string_tooltip_openModdescIniFile">Open this mod's moddesc.ini file for editing</system:String>
     <system:String  x:Key="string_autoUpdateLODs2K">Auto update LODs (2K, good quality)</system:String>
     <system:String  x:Key="string_autoUpdateLODs4K">Auto update LODs (4K, best quality)</system:String>
-    <system:String xml:space="preserve" x:Key="string_tooltip_autoLods2K">Automatically updates the texture level of detail (LOD) settings when restoring and running the game.&#10;This will ensure whatever target you launch has the correct texture settings, as long as it is launched from Mod Manager.&#10;&#10;This is the 'good' quality setting. This setting will provide a modest improvement over default textures when paired with a high quality texture mod such as ALOT.&#10;The 2K option uses less memory and will provide better game stability when used with large mods</system:String>
-    <system:String xml:space="preserve" x:Key="string_tooltip_autoLods4K">Automatically updates the texture level of detail (LOD) settings when restoring and running the game.&#10;This will ensure whatever target you launch has the correct texture settings, as long as it is launched from Mod Manager.&#10;&#10;This is the 'best' quality setting. This setting will provide the best quality textures when paired with a high quality texture mod such as ALOT</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_autoLods2K">This setting will provide a modest improvement over default textures when paired with a high quality texture mod such as ALOT. This option uses less memory and will provide better game stability when used with large mods.</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_autoLods4K">This setting will provide the best quality textures when paired with a high quality texture mod such as ALOT. This option uses more memory and may cause game instability when paired with large mods.</system:String>
     <system:String  x:Key="string_egmSettings">EGM Settings</system:String>
     <!-- EGM = Expanded Galaxy Mod. Do not localize the acronym -->
     <system:String  x:Key="string_tooltip_egmSettings">Allows you to configure settings for Expanded Galaxy Mod</system:String>
@@ -302,7 +302,7 @@
     <system:String x:Key="string_dialog_programWillNotRunCorrectly">The application may not run correctly without permissions to the settings and cache directory.</system:String>
     <system:String x:Key="string_programDataAccessDenied">ProgramData access denied</system:String>
     <system:String x:Key="string_autoAddControllerMixinsToModMakerMods">Auto-add controller Mixins to ModMaker mods</system:String>
-    <system:String x:Key="string_tooltip_autoAddControllerMixinsToModMakerMods" xml:space="preserve">Automatically add controller fixes to ModMaker mods.&#10;Do not select this if you play with a keyboard/mouse</system:String>
+    <system:String x:Key="string_tooltip_autoAddControllerMixinsToModMakerMods" xml:space="preserve">Automatically add controller fixes to ModMaker mods. Do not select this if you play with a keyboard/mouse.</system:String>
     <system:String xml:space="preserve" x:Key="string_interp_dialog_unsupportedOS">This operating system is not supported. This application has only been validated for use on the following operating systems: \n - {0}. This application may not function correctly on this operating system.</system:String>
     <!-- 0= bulleted list of supported operating system names -->
     <system:String x:Key="string_unsupportedOperatingSystem">Unsupported operating system</system:String>
@@ -319,7 +319,7 @@
     <system:String x:Key="string_mEMVanillaDBViewer">MEM Vanilla DB Viewer</system:String>
     <!-- This is only shown in Debug Mode. But might as well translate it anyways. Do not localize the term MEM (Mass Effect Modder). -->
     <system:String  x:Key="string_autoInjectCustomKeybindsIntoModMakerMods">Auto inject custom keybinds into ModMaker mods</system:String>
-    <system:String xml:space="preserve" x:Key="string_tooltip_autoInjectCustomKeybinds">Automatically inject a custom BioInput.xml file if available in the keybindsoverride directory.&#10;Define custom keybinds in the Custom Keybinds Injector in the Tools menu</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_autoInjectCustomKeybinds">Automatically inject a custom me3-BioInput.xml file if available in the keybindsoverride directory. Define custom keybinds in the Custom Keybinds Injector in the Tools menu. Do not select this option if you use a controller.</system:String>
     <system:String  x:Key="string_customKeybindsInjectorMenuItem">Custom Keybinds Injector (ME3)</system:String>
     <system:String  x:Key="string_tooltip_installsCustomKeybindsOfYourDesignIntoTheGame">Installs Custom Keybinds of your design into the game</system:String>
     <system:String  x:Key="string_originIngameOverlayDisabler">Origin in-game overlay disabler</system:String>
@@ -365,7 +365,7 @@
     <system:String x:Key="string_loadingTargets">Loading targets</system:String>
     <!-- Shown when app is booting up and game targets are being inspected -->
     <system:String x:Key="string_configureNxmHandlerOnBoot">Configure nxm:// handler on boot</system:String>
-    <system:String xml:space="preserve" x:Key="string_tooltip_configureNxmHandlerOnBoot">Configures the NexusMods nxm:// handler, so 'Download with Manager' on NexusMods boots ME3Tweaks Mod Manager.&#10;If turned off, you can re-enable it manually in the NexusMods panel</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_configureNxmHandlerOnBoot">Configures the NexusMods nxm:// handler, so 'Download with Manager' on NexusMods boots ME3Tweaks Mod Manager. If this is turned off, you can configure it manually in the NexusMods panel.</system:String>
     <system:String x:Key="string_dialog_nexusLoginRequiredForDownload">ME3Tweaks Mod Manager must be linked with your NexusMods account in order to directly download from NexusMods. Press OK to open the NexusMods sign-in page to link the application.</system:String>
     <system:String x:Key="string_notSignedIn">Not signed in</system:String>
     <system:String x:Key="string_couldNotEndorseFile">Could not endorse file</system:String>
