@@ -600,7 +600,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         }
                         else if (Game.IsLEGame())
                         {
-                            nexusId = nexusId.Substring(26); // masseffectlegendaryedition
+                            nexusId = nexusId.Substring(16); // legendaryedition
                         }
 
                         nexusId = nexusId.Substring(6)
