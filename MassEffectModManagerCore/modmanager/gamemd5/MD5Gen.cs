@@ -5,16 +5,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LegendaryExplorerCore.Compression;
+using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Packages;
 
 namespace MassEffectModManagerCore.modmanager.gamemd5
 {
     class MD5Gen
     {
-        public static void GenerateMD5Map(string directory, string outName)
+        public static void GenerateMD5Map(MEGame game, string directory, string outName)
         {
             var allFiles = Directory.GetFiles(directory, @"*.*", SearchOption.AllDirectories);//.Take(10).ToArray();
-
+            if (game.IsLEGame())
+            {
+                allFiles.RemoveAll(x => x.Contains(@"BioGame\Config")); // Do not include config files
+            }
             MemoryStream mapStream = new MemoryStream();
 
             // Name Table

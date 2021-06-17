@@ -49,7 +49,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void ClosePanel()
         {
-            OnClosing(new DataEventArgs(GameRestoreControllers.Any(x => x.RefreshTargets)));
+            Result.ReloadTargets = GameRestoreControllers.Any(x => x.RefreshTargets);
+            OnClosing(DataEventArgs.Empty);
         }
 
         private bool CanClose() => !GameRestoreControllers.Any(x => x.RestoreInProgress);
