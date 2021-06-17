@@ -296,6 +296,8 @@ namespace MassEffectModManagerCore.modmanager.helpers
 
         public static bool IsFileVanilla(MEGame game, string fullpath, string relativepath, bool isME1Polish, bool md5check = false)
         {
+            if (game.IsLEGame() && relativepath.StartsWith(@"BioGame\Config\"))
+                return true; // Don't consider these as modified they are modified
             var database = LoadDatabaseFor(game, isME1Polish);
             if (database.TryGetValue(relativepath, out var info))
             {
@@ -623,7 +625,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
             [@"a50a5ab69a0de8356ddd8ab69f8ecdc2"] = @"Origin 2.0.0.48204",
             [@"5e8dc210b4adda2eda1dc367a781c3a8"] = @"Origin 2.0.0.48602",
         };
-        
+
         /// <summary>
         /// Checks the existing listed backup and tags it with cmm_vanilla if determined to be vanilla. This is because ALOT Installer allows modified backups where as Mod Manager will not
         /// </summary>

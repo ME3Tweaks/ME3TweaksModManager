@@ -379,13 +379,16 @@ namespace MassEffectModManagerCore.modmanager.objects
             List<string> modifiedFiles = new List<string>();
             void failedCallback(string file)
             {
-                if (file.EndsWith(@".sfar"))
+                if (Game == MEGame.ME3 && Path.GetExtension(file).Equals(".sfar", StringComparison.InvariantCultureIgnoreCase))
                 {
                     modifiedSfars.Add(file);
                     return;
                 }
-
-                if (this.Game != MEGame.LELauncher && file == getALOTMarkerFilePath())
+                if (Path.GetFileName(file).Equals(@"PCConsoleTOC.bin", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return; // Do not report this file as modified
+                }
+                else if (this.Game != MEGame.LELauncher && file == getALOTMarkerFilePath())
                 {
                     return; //Do not report this file as modified or user will desync game state with texture state
                 }
