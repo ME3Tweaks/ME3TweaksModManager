@@ -524,12 +524,18 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     {
                         list.Add(v.ModFile);
                     }
-
-                    if (v.Operation == AlternateFile.AltFileOperation.OP_APPLY_MULTILISTFILES)
+                    else if (v.Operation == AlternateFile.AltFileOperation.OP_APPLY_MULTILISTFILES)
                     {
                         foreach (var mlFile in v.MultiListSourceFiles)
                         {
                             list.Add(v.MultiListTargetPath + @"\" + mlFile);
+                        }
+                    }
+                    else if (v.Operation == AlternateFile.AltFileOperation.OP_APPLY_MERGEMODS)
+                    {
+                        foreach (var mm in v.MergeMods)
+                        {
+                            list.AddRange(mm.GetMergeFileTargetFiles());
                         }
                     }
                 }
@@ -550,6 +556,11 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                             list.Add(v.DestinationDLCFolder + @"\" + mlFile);
                         }
                     }
+                }
+
+                foreach (var mm in job.MergeMods)
+                {
+                    list.AddRange(mm.GetMergeFileTargetFiles());
                 }
             }
 

@@ -44,12 +44,8 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
             {
                 var targetnameBase = Path.GetFileNameWithoutExtension(FileName);
                 var targetExtension = Path.GetExtension(FileName);
-#if DEBUG
-                var localizations = StarterKitGeneratorWindow.GetLanguagesForGame(associatedMod?.Game ?? MEGame.LE2);
-#else
                 var localizations = StarterKitGeneratorWindow.GetLanguagesForGame(associatedMod.Game);
-#endif
-
+                
                 // Ensure end name is not present on base
                 foreach (var l in localizations)
                 {

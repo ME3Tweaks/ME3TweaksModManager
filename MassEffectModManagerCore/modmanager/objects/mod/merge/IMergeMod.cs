@@ -38,5 +38,11 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge
         /// </summary>
         /// <param name="outputfolder"></param>
         public void ExtractToFolder(string outputfolder);
+
+        /// <summary>
+        /// Returns a list of strings of files that will be modified by this merge file.
+        /// </summary>
+        /// <returns></returns>
+        IEnumerable<string> GetMergeFileTargetFiles();
     }
 }
