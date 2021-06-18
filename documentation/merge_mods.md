@@ -1,4 +1,4 @@
-![](https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/master/documentation/images/documentation_header.png)
+![](images/documentation_header.png)
 
 
 
@@ -10,7 +10,11 @@ The merge mod system is interwoven into the moddesc.ini system, and can take ful
 
 An .m3m mod is created by M3 from a user-created .JSON file. This .JSON file, hereafter referred to as the manifest file, contains information on which game, which file, and which properties will be updated. The manifest file may also contain references to other assets or scripts you would like to have included in your mod. Your manifest file is compiled with all referenced assets to create a binary .m3m file, which is what you distribute to users in your mod. This page outlines the .JSON file format to create an .m3m mod.
 
-![m3m_example_file](https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/master/documentation/images/m3m_example_file.png)
+![m3m_example_file](images/m3m_example_file.png)
+
+*An example merge mod .JSON manifest file*
+
+
 
 ## .JSON File Format
 
@@ -31,11 +35,11 @@ These properties should exist within the outermost set of curly braces in your m
 
 **Example:**
 
-```json
+```
 {
     "game": "LE3",
     "files": [
-        {...your file updates}
+        // your file updates here
      ]
 }
 ```
@@ -54,19 +58,19 @@ The JSON format for a file update in a merge mod. The files property is an array
 
 **Example:**
 
-```json
-[
+```
+"files" : [
 	{
         "filename": "SFXGame.pcc",
         "changes": [
-            {...your desired changes}
+            // your desired changes here
         ]
     },
     {
         "filename": "Startup_INT.pcc",
         "applytoalllocalizations": true,
         "changes": [
-            {...more changes to ALL localizations}
+            // your changes to all localizations here
         ]
     }
 ]
@@ -101,7 +105,7 @@ The format for a single property update for an export. You may have several of t
 
 **Example:**
 
-```json
+```
 { // This example would update three properties on the specified entry
     "entryname": "Default__SFXCameraMode_CombatStorm",
     "propertyupdates": [
@@ -182,10 +186,17 @@ To compile, drag your manifest JSON file onto the M3 interface. M3 will first va
 
 All .m3m files will reside in the MergeMods folder of your mod. Mod Manager 7.0 adds the `mergemods` descriptor under the `BASEGAME`header. It accepts an unquoted semicolon separated list of .m3m files. You must also specify a moddir, though you may not have one if you are only installing an .m3m merge mod. In this case, you can set your moddir to '.'.
 
-**Example moddesc.ini section with merge mods:**
+##### **Example moddesc.ini section with merge mods:**
 
 ```ini
 [BASEGAME]
 moddir = .
 mergemods = NoScreenShake.m3m;NoMinigames.m3m
 ```
+
+##### **Using merge mods with alternates:**
+
+You can use the alternates system to install merge mods. Merge mods use the altfiles system, which can be [read about here](alternates.md). To apply a merge mod from an alternate, you need to use the `OP_APPLY_MERGEMODS` operation, and then specify the filenames of the merge mods you would like to apply with the MergeFiles variable. The MergeFiles variable accepts a semicolon separated list of .m3m files that can be installed for that alternate. 
+
+All .m3m files still need to be in the MergeMods folder of your mod. If you are applying an .m3m file via alternates, you should not list it under the `mergemods` descriptor under the [BASEGAME] header.
+
