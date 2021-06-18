@@ -162,6 +162,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             mw.ShowBackupNag();
         }
+
+        private static void TestCode_Click(MainWindow mw)
+        {
+
+        }
 #endif
     }
 }
