@@ -429,6 +429,8 @@ namespace MassEffectModManagerCore.modmanager.helpers
             private set => SetProperty(ref _lelBackupStatusTooltip, value);
         }
 
+        public const string CMM_VANILLA_FILENAME = @"cmm_vanilla";
+
         /// <summary>
         /// Fetches the backup status string for the specific game. The status must be refreshed before the values will be initially set
         /// </summary>

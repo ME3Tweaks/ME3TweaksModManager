@@ -1542,7 +1542,7 @@ namespace MassEffectModManagerCore
             Log.Information(@"User is adding new modding target");
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.Title = M3L.GetString(M3L.string_selectGameExecutable);
-            string filter = $@"{M3L.GetString(M3L.string_gameExecutable)}|MassEffect.exe;MassEffect2.exe;MassEffect3.exe;MassEffect1.exe"; //only partially localizable.
+            string filter = $@"{M3L.GetString(M3L.string_gameExecutable)}|MassEffect.exe;MassEffect2.exe;MassEffect3.exe;MassEffectLauncher.exe;MassEffect1.exe"; //only partially localizable.
             ofd.Filter = filter;
             if (ofd.ShowDialog() == true)
             {
@@ -1577,7 +1577,7 @@ namespace MassEffectModManagerCore
                     if (gameSelected == MEGame.ME3 || gameSelected.IsLEGame())
                         result = Path.GetDirectoryName(result); //up one more because of win32/64 directory.
                                                                 //Test for cmmvanilla
-                    if (File.Exists(Path.Combine(result, @"cmmvanilla")))
+                    if (File.Exists(Path.Combine(result, BackupService.CMM_VANILLA_FILENAME)))
                     {
                         M3L.ShowDialog(this, M3L.GetString(M3L.string_dialogCannotAddTargetCmmVanilla), M3L.GetString(M3L.string_errorAddingTarget), MessageBoxButton.OK, MessageBoxImage.Error);
                         return;

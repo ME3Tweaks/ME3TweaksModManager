@@ -294,7 +294,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                         //Check for cmmvanilla file and remove it present
 
-                        string cmmVanilla = Path.Combine(restoreTargetPath, @"cmm_vanilla");
+                        string cmmVanilla = Path.Combine(restoreTargetPath, BackupService.CMM_VANILLA_FILENAME);
                         if (File.Exists(cmmVanilla))
                         {
                             Log.Information($@"Removing cmm_vanilla file: {cmmVanilla}");

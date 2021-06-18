@@ -674,8 +674,8 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 {
                     //Backup is OK
                     //Tag
-                    File.WriteAllText(Path.Combine(targetPath, @"cmm_vanilla"), App.AppVersionHR);
-                    Log.Information(@"Wrote cmm_vanilla to validated backup");
+                    File.WriteAllText(Path.Combine(targetPath, BackupService.CMM_VANILLA_FILENAME), App.AppVersionHR);
+                    Log.Information($@"Wrote {BackupService.CMM_VANILLA_FILENAME} to validated backup");
                     BackupService.SetBackedUp(game, true);
                 }
                 else
