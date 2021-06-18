@@ -1223,11 +1223,6 @@ namespace MassEffectModManagerCore
             var restoreManager = new RestorePanel(InstallationTargets.ToList(), SelectedGameTarget);
             restoreManager.Close += (a, b) =>
             {
-                if (b.Data is bool refresh && refresh)
-                {
-                    PopulateTargets(SelectedGameTarget);
-                }
-
                 ReleaseBusyControl();
             };
             ShowBusyControl(restoreManager);

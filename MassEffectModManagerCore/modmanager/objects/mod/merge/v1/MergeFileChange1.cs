@@ -9,6 +9,7 @@ using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Packages.CloningImportingAndRelinking;
 using LegendaryExplorerCore.Unreal;
 using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Kismet;
 using LegendaryExplorerCore.UnrealScript;
 using LegendaryExplorerCore.UnrealScript.Compiling.Errors;
 using Newtonsoft.Json;
@@ -22,6 +23,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
         [JsonProperty("propertyupdates")] public List<PropertyUpdate1> PropertyUpdates { get; set; }
         [JsonProperty("assetupdate")] public AssetUpdate1 AssetUpdate { get; set; }
         [JsonProperty("scriptupdate")] public ScriptUpdate1 ScriptUpdate { get; set; }
+        [JsonProperty("sequenceskipupdate")] public SequenceSkipUpdate1 SequenceSkipUpdate { get; set; }
 
         [JsonIgnore] public MergeFile1 Parent;
         [JsonIgnore] public MergeMod1 OwningMM => Parent.OwningMM;
@@ -50,6 +52,8 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
 
             // APPLY SCRIPT UDPATE
             ScriptUpdate?.ApplyUpdate(package, export, assetsCache, installingMod);
+
+            SequenceSkipUpdate?.ApplyUpdate(package, export, installingMod);
         }
 
         public void SetupParent(MergeFile1 parent)
@@ -177,9 +181,9 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
                 throw new Exception($"Cannot find AssetUpdate1 entry in source asset package {OwningMM.Assets[AssetName].FileName}: {EntryName}. Merge aborted");
             }
 
-            var resultst = EntryImporter.ImportAndRelinkEntries(EntryImporter.PortingOption.ReplaceSingular, 
-                sourceEntry, targetExport.FileRef, targetExport, true, out _, 
-                errorOccuredCallback: x => throw new Exception($"Error merging assets: {x}"), 
+            var resultst = EntryImporter.ImportAndRelinkEntries(EntryImporter.PortingOption.ReplaceSingular,
+                sourceEntry, targetExport.FileRef, targetExport, true, out _,
+                errorOccuredCallback: x => throw new Exception($"Error merging assets: {x}"),
                 importExportDependencies: true);
             if (resultst.Any())
             {
@@ -189,7 +193,6 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
             return true;
         }
     }
-
 
     public class ScriptUpdate1
     {
@@ -240,5 +243,37 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
         }
     }
 
+    public class SequenceSkipUpdate1
+    {
+        /// <summary>
+        /// The MD5 of the target entry. This is to ensure this doesn't apply to a modified object as this could easily break the game.
+        /// This limits functionality of this feature
+        /// </summary>
+        [JsonProperty("entrymd5")]
+        public string EntryMD5 { get; set; }
 
+        /// <summary>
+        /// What outbound link to set as the one to skip through to
+        /// </summary>
+        [JsonProperty("outboundlinknametouse")]
+        public string OutboundLinkNameToUse { get; set; }
+
+        [JsonIgnore] public MergeFileChange1 Parent;
+        [JsonIgnore] public MergeMod1 OwningMM => Parent.OwningMM;
+
+        public bool ApplyUpdate(IMEPackage package, ExportEntry targetExport, Mod installingMod)
+        {
+            if (Utilities.CalculateMD5(new MemoryStream(targetExport.Data)) == EntryMD5)
+            {
+                Log.Information($@"Applying sequence skip: Skipping {targetExport.InstancedFullPath} through on link {OutboundLinkNameToUse}");
+                SeqTools.SkipSequenceElement(targetExport, outboundLinkName: OutboundLinkNameToUse);
+            }
+            else
+            {
+                Log.Warning(@"Target export MD5 is incorrect. This may be the wrong target export, or it may be already patched. We are reporting that the mod installed, in the event the target was updated.");
+            }
+
+            return true;
+        }
+    }
 }
