@@ -77,7 +77,8 @@ namespace MassEffectModManagerCore.modmanager.squadmates
                     case @"EDI": return 10156;
                     case @"Prothean": return 10157;
                     case @"Marine": return 10158;
-                        // case @"Wrex": return ??; Wrex outfit can't be changed, its hardcoded to 13, which is TRUE
+                    case @"Tali": return 10214;
+                    // case @"Wrex": return ??; Wrex outfit can't be changed, its hardcoded to 13, which is TRUE
                 }
             }
 
