@@ -1080,6 +1080,7 @@
                     <MenuItem Header="{DynamicResource string_stripCurrentTargetALOTMarker}" Name="StripCurrentTargetWithALOTMarker_MenuItem" Click="RouteDebugCall" />
                     <MenuItem Header="MMV1 DEBUG" Name="TestMMV1_MenuItem" Click="RouteDebugCall" />
                     <MenuItem Header="Build MD5 DB" Name="RebuildMD5DB_MenuItem" Click="RouteDebugCall" />
+                    <MenuItem Header="Update MD5 DB" Name="UpdateMD5DB_MenuItem" Click="RouteDebugCall" />
                     <MenuItem Header="{DynamicResource string_requiresNothing}" Style="{StaticResource MenuItemHeaderStyle}" />
                     <MenuItem Header="{DynamicResource string_showWelcomePanel}" Name="ShowWelcomePanel_MenuItem" Click="RouteDebugCall" />
                     <MenuItem Header="{DynamicResource string_showBackupNag}" Name="ShowBackupNag_MenuItem" Click="RouteDebugCall" />

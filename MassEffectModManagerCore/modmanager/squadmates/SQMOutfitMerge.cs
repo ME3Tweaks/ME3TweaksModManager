@@ -175,7 +175,6 @@ namespace MassEffectModManagerCore.modmanager.squadmates
                 {
                     CNDFile cnd = new CNDFile();
                     cnd.ConditionalEntries = new List<CNDFile.ConditionalEntry>();
-                    cnd.unk1 = 0x01; // ?
 
                     foreach (var c in smp)
                     {
@@ -257,30 +256,7 @@ namespace MassEffectModManagerCore.modmanager.squadmates
                     }
                     else if (target.Game.IsGame3())
                     {
-                        // We don't need startup package for game 3. But leaving this here for later
-                        //var coal = Path.Combine(cookedDir, $@"Default_{MERGE_DLC_FOLDERNAME}.bin");
-                        //using var fs = File.OpenRead(coal);
-                        //var coalFiles = CoalescedConverter.DecompileGame3ToMemory(fs);
-                        //fs.Close();
 
-                        //var bioEngine = XDocument.Parse(coalFiles[@"BioEngine.xml"]);
-                        ///*
-                        // Section name="engine.startuppackages">
-                        //  <Property name="dlcstartuppackage" type="3">Startup_HEN_PR</Property>
-                        //  <Property name="dlcstartuppackagename" type="0">Startup_HEN_PR</Property>
-                        //  <Property name="package" type="3">PlotManagerAutoDLC_HEN_PR</Property>
-                        //</Section>
-                        // */
-                        //var targetSection = bioEngine.XPathSelectElement($@"/CoalesceAsset/Sections/Section[@name='engine.startuppackages']");
-                        //if (targetSection == null)
-                        //{
-                        //    targetSection = new XElement(@"Section");
-                        //    targetSection.SetAttributeValue(@"name", @"engine.startuppackages");
-                        //}
-                        //targetSection.Add(new XElement(@"Property", ));
-
-                        //coalFiles[@"BioEngine.xml"] = bioEngine.ToString();
-                        //CoalescedConverter.CompileFromMemory(coalFiles).WriteToFile(coal);
                     }
                 }
             }

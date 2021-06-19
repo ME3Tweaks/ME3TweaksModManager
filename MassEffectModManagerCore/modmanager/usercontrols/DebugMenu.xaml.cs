@@ -34,6 +34,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (sender == nameof(MainWindow.ShowBackupNag_MenuItem)) ShowBackupNag_Click(window);
             if (sender == nameof(MainWindow.TestCode_MenuItem)) TestCode_Click(window);
             if (sender == nameof(MainWindow.DebugSquadmateMerge_MenuItem)) TestSquadmateMerge_Click(window);
+            if (sender == nameof(MainWindow.UpdateMD5DB_MenuItem)) UpdateMD5Map(window);
 #endif
         }
 #if DEBUG
@@ -61,6 +62,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 MD5Gen.GenerateMD5Map(MEGame.LE1, @"B:\SteamLibrary\steamapps\common\Mass Effect Legendary Edition\Game\ME1", @"le1.bin");
                 MD5Gen.GenerateMD5Map(MEGame.LE2, @"B:\SteamLibrary\steamapps\common\Mass Effect Legendary Edition\Game\ME2", @"le2.bin");
                 MD5Gen.GenerateMD5Map(MEGame.LE3, @"B:\SteamLibrary\steamapps\common\Mass Effect Legendary Edition\Game\ME3", @"le3.bin");
+                Debug.WriteLine(@"Done");
+            });
+        }
+
+        private static void UpdateMD5Map(MainWindow window)
+        {
+            Task.Run(() =>
+            {
+                MD5Gen.UpdateMD5Map(MEGame.LE1, @"B:\SteamLibrary\steamapps\common\Mass Effect Legendary Edition\Game\ME1", @"le1.bin");
+                MD5Gen.UpdateMD5Map(MEGame.LE2, @"B:\SteamLibrary\steamapps\common\Mass Effect Legendary Edition\Game\ME2", @"le2.bin");
+                MD5Gen.UpdateMD5Map(MEGame.LE3, @"B:\SteamLibrary\steamapps\common\Mass Effect Legendary Edition\Game\ME3", @"le3.bin");
                 Debug.WriteLine(@"Done");
             });
         }

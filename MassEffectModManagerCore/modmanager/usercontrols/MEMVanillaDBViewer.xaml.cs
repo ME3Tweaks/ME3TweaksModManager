@@ -8,6 +8,7 @@ using System.Windows.Input;
 using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
+using PropertyChanged;
 using WinCopies.Util;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -53,18 +54,19 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             LoadingInProgress = false;
         }
 
-        public LegendaryExplorerCore.Misc.ObservableCollectionExtended<MemGameDB> Games { get; }= new();
+        public LegendaryExplorerCore.Misc.ObservableCollectionExtended<MemGameDB> Games { get; } = new();
 
         private void LoadMEMDBs()
         {
-            var games = new[] {/*MEGame.ME1, MEGame.ME2, MEGame.ME3, MEGame.LE1,*/ MEGame.LE2, MEGame.LE3, MEGame.LELauncher};
+            var games = new[] { MEGame.ME1, MEGame.ME2, MEGame.ME3, MEGame.LE1, MEGame.LE2, MEGame.LE3, MEGame.LELauncher };
             foreach (var g in games)
             {
                 Games.Add(new MemGameDB(g));
             }
         }
 
-        public class MemGameDB : INotifyPropertyChanged
+        [AddINotifyPropertyChangedInterface]
+        public class MemGameDB
         {
             public MEGame Game { get; }
             public string GameName => Game.ToGameName(true);
@@ -91,10 +93,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 return true;
             }
-
-#pragma warning disable
-            public event PropertyChangedEventHandler PropertyChanged;
-#pragma warning restore
         }
 
         private static IEnumerable<VanillaEntry> getDBItems(CaseInsensitiveDictionary<List<(int size, string md5)>> db)
@@ -114,7 +112,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
             return files;
         }
-        
+
         public class VanillaEntry
         {
             public string Filepath { get; set; }
