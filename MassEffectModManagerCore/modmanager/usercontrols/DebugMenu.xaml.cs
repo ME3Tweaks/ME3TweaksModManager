@@ -13,6 +13,7 @@ using LegendaryExplorerCore.Unreal;
 using MassEffectModManagerCore.modmanager.gamemd5;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.modmanager.objects.mod.merge;
+using MassEffectModManagerCore.modmanager.squadmates;
 using Microsoft.WindowsAPICodePack.Win32Native.Shell.DesktopWindowManager;
 using SevenZip;
 
@@ -31,10 +32,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (sender == nameof(MainWindow.DebugPrintReferencedFiles_MenuItem)) DebugPrintReferencedFiles_Click(window);
             if (sender == nameof(MainWindow.ShowMEMDB_MenuItem)) ShowMEMViewer(window);
             if (sender == nameof(MainWindow.ShowBackupNag_MenuItem)) ShowBackupNag_Click(window);
+            if (sender == nameof(MainWindow.TestCode_MenuItem)) TestCode_Click(window);
+            if (sender == nameof(MainWindow.DebugSquadmateMerge_MenuItem)) TestSquadmateMerge_Click(window);
 #endif
         }
-
 #if DEBUG
+        private static void TestSquadmateMerge_Click(MainWindow window)
+        {
+            var target = window.SelectedGameTarget;
+            SQMOutfitMerge sqm = new SQMOutfitMerge();
+            sqm.BuildBioPGlobal(target);
+        }
+
         private static void ShowMEMViewer(MainWindow window)
         {
             var previewPanel = new MEMVanillaDBViewer();

@@ -1075,6 +1075,7 @@
                     <MenuItem Header="{DynamicResource string_debugPrintAllReferencedFiles}" Name="DebugPrintReferencedFiles_MenuItem" Click="RouteDebugCall" />
                     <MenuItem Header="{DynamicResource string_debugPrintInstallationQueue}" Name="DebugPrintInstallationQueue_MenuItem" Click="RouteDebugCall" />
                     <MenuItem Header="{DynamicResource string_requiresSelectedTarget}" Style="{StaticResource MenuItemHeaderStyle}" />
+                    <MenuItem Header="Test squadmate merge" Name="DebugSquadmateMerge_MenuItem" Click="RouteDebugCall" />
                     <MenuItem Header="{DynamicResource string_stampCurrentTargetWithALOTMarker}" Name="StampCurrentTargetWithALOTMarker_MenuItem" Click="RouteDebugCall" />
                     <MenuItem Header="{DynamicResource string_stripCurrentTargetALOTMarker}" Name="StripCurrentTargetWithALOTMarker_MenuItem" Click="RouteDebugCall" />
                     <MenuItem Header="MMV1 DEBUG" Name="TestMMV1_MenuItem" Click="RouteDebugCall" />
@@ -1083,6 +1084,7 @@
                     <MenuItem Header="{DynamicResource string_showWelcomePanel}" Name="ShowWelcomePanel_MenuItem" Click="RouteDebugCall" />
                     <MenuItem Header="{DynamicResource string_showBackupNag}" Name="ShowBackupNag_MenuItem" Click="RouteDebugCall" />
                     <MenuItem Header="{DynamicResource string_mEMVanillaDBViewer}" Name="ShowMEMDB_MenuItem" Click="RouteDebugCall" />
+                    <MenuItem Header="Test code" Name="TestCode_MenuItem" Click="RouteDebugCall" />
                     <MenuItem Header="Test 7z" Name="Test7z_MenuItem" Click="RouteDebugCall" />
                 </MenuItem>
                 <MenuItem

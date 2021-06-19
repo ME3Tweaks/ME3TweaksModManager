@@ -661,7 +661,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
             #endregion
 
-            #region Properties = Addition
+            #region Properties - Addition
             var deltaPropertyAdditions = modDeltaDocument.Elements(@"Property").Where(x => x.Attribute(@"operation") != null && x.Attribute(@"operation").Value == OP_ADDITION);
             foreach (var deltaProperty in deltaPropertyAdditions)
             {
