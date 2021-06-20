@@ -163,7 +163,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             bool hasMEM = false;
             string mempath = null;
             #region MEM Fetch Callbacks
-            void failedToDownload()
+            void failedToDownload(string failureMessage)
             {
                 Thread.Sleep(100); //try to stop deadlock
                 Log.Error(@"Failed to acquire MEM for diagnostics.");
