@@ -666,7 +666,13 @@ namespace MassEffectModManagerCore.modmanager.objects
                 else if (game.IsLEGame())
                 {
                     scopes.DisallowedSilos.Add($@"Binaries{Path.DirectorySeparatorChar}Win64"); //You are not allowed to install files into the game executable directory or subdirectories
-                    scopes.DisallowedFileSilos.Add($@"BioGame{Path.DirectorySeparatorChar}Config{Path.DirectorySeparatorChar}GamerSettings.ini"); // You are not allowed to overwrite this file
+                    scopes.DisallowedSilos.Add($@"BioGame{Path.DirectorySeparatorChar}Config"); // You are not allowed to overwrite ini files or anything in config
+                    scopes.DisallowedFileSilos.Add($@"BioGame{Path.DirectorySeparatorChar}CookedPCConsole{Path.DirectorySeparatorChar}PlotManager.pcc"); // You must use PMU feature for this
+
+                    if (game == MEGame.LE3)
+                    {
+                        scopes.DisallowedFileSilos.Add($@"BioGame{Path.DirectorySeparatorChar}CookedPCConsole{Path.DirectorySeparatorChar}Conditionals.cnd"); // You must use override feature
+                    }
                 }
 
                 if (game == MEGame.LELauncher)
