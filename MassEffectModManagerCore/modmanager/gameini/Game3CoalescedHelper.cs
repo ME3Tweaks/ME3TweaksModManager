@@ -131,5 +131,50 @@ namespace MassEffectModManagerCore.modmanager.gameini
             }
             return entries;
         }
+
+        public static void AddArrayEntry(XDocument coalescedXml, Game3CoalescedValueEntry entry)
+        {
+            if (entry.Type > 4 || entry.Type < 0)
+                throw new Exception(@"Type must be between 1 and 4");
+
+            // We don't need startup package for game 3. But leaving this here for later
+            //var coal = Path.Combine(cookedDir, $@"Default_{MERGE_DLC_FOLDERNAME}.bin");
+            //using var fs = File.OpenRead(coal);
+            //var coalFiles = CoalescedConverter.DecompileGame3ToMemory(fs);
+            //fs.Close();
+
+            //var bioEngine = XDocument.Parse(coalFiles[@"BioEngine.xml"]);
+            ///*
+            // Section name="engine.startuppackages">
+            //  <Property name="dlcstartuppackage" type="3">Startup_HEN_PR</Property>
+            //  <Property name="dlcstartuppackagename" type="0">Startup_HEN_PR</Property>
+            //  <Property name="package" type="3">PlotManagerAutoDLC_HEN_PR</Property>
+            //</Section>
+            // */
+
+            var sections = coalescedXml.XPathSelectElement(@"/CoalesceAsset/Sections");
+            var targetSection = sections.XPathSelectElement($@"/Section[@name='{entry.Section}']");
+            if (targetSection == null)
+            {
+                targetSection = new XElement(@"Section");
+                targetSection.SetAttributeValue(@"name", entry.Section);
+                sections.Add(targetSection);
+            }
+
+            var prop = targetSection.XPathSelectElement($@"/Property[@name='{entry.Name}']");
+            if (prop == null)
+            {
+                prop = new XElement(@"Property");
+                prop.SetAttributeValue(@"name", entry.Name);
+                targetSection.Add(prop);
+            }
+
+            foreach (var entryVal in entry.Values)
+            {
+                var valueProp = new XElement(@"Value", entryVal);
+                valueProp.SetAttributeValue(@"type", entry.Type.ToString());
+                prop.Add(valueProp);
+            }
+        }
     }
 }
