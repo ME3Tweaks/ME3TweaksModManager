@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.modmanager.usercontrols;
 
 namespace MassEffectModManagerCore.modmanager.objects
@@ -49,5 +50,14 @@ namespace MassEffectModManagerCore.modmanager.objects
         /// If targets should be reloaded once this panel has closed
         /// </summary>
         public bool ReloadTargets { get; set; }
+        /// <summary>
+        /// If mods should reload once this panel has closed
+        /// </summary>
+        public bool ReloadMods { get; set; }
+
+        /// <summary>
+        /// What mod to highlight when mod reload occurs. Only does something if ReloadMods = true
+        /// </summary>
+        public Mod ModToHighlightOnReload { get; set; }
     }
 }

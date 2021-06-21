@@ -211,7 +211,8 @@
               "oneOf": [
                 { "required": [ "scriptupdate" ] },
                 { "required": [ "assetupdate" ] },
-                { "required": [ "propertyupdates" ] }
+                { "required": [ "propertyupdates" ] },
+                { "required": [ "sequenceskipupdate" ] }
               ],
               "properties": {
                 "entryname": {
@@ -366,6 +367,36 @@
                       "examples": [
                         "BioVFX.MyNewAsset"
                       ]
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "sequenceskipupdate": {
+                  "$id": "#/properties/files/items/properties/changes/items/properties/sequenceskipupdate",
+                  "type": "object",
+                  "title": "Sequence Skip Update",
+                  "description": "A method of skipping a specified sequence object",
+                  "default": {},
+                  "required": [
+                    "entrymd5",
+                    "outboundlinknametouse"
+                  ],
+                  "properties": {
+                    "entrymd5": {
+                      "$id": "#/properties/files/items/properties/changes/items/properties/sequenceskipupdate/properties/entrymd5",
+                      "type": "string",
+                      "title": "Entry MD5 Hash",
+                      "description": "The MD5 Hash of the target entry. This is to ensure this doesn't apply to a modified object",
+                      "default": "",
+                      "minLength": 32,
+                      "maxLength": 32
+                    },
+                    "outboundlinknametouse": {
+                      "$id": "#/properties/files/items/properties/changes/items/properties/sequenceskipupdate/properties/outboundlinknametouse",
+                      "type": "string",
+                      "title": "Outbound link name to use",
+                      "description": "Which outbound link to skip through to",
+                      "default": ""
                     }
                   },
                   "additionalProperties": false

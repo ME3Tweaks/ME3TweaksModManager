@@ -130,6 +130,9 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_MassEffect = "string_MassEffect";
 		public const string string_MassEffect2 = "string_MassEffect2";
 		public const string string_MassEffect3 = "string_MassEffect3";
+		public const string string_MassEffectLE = "string_MassEffectLE";
+		public const string string_MassEffect2LE = "string_MassEffect2LE";
+		public const string string_MassEffect3LE = "string_MassEffect3LE";
 		public const string string_GenerateStarterKit = "string_GenerateStarterKit";
 		public const string string_Binkw32Bypasses = "string_Binkw32Bypasses";
 		public const string string_Grantwriteaccesstogamedirectories = "string_Grantwriteaccesstogamedirectories";
@@ -151,6 +154,8 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_tooltip_me2r = "string_tooltip_me2r";
 		public const string string_ME3ExplorerME3TweaksFork = "string_ME3ExplorerME3TweaksFork";
 		public const string string_ME3ExplorerME3TweaksForkBeta = "string_ME3ExplorerME3TweaksForkBeta";
+		public const string string_LegendaryExplorerStable = "string_LegendaryExplorerStable";
+		public const string string_LegendaryExplorerBeta = "string_LegendaryExplorerBeta";
 		public const string string_ME3ExplorerME3TweaksForkTooltip = "string_ME3ExplorerME3TweaksForkTooltip";
 		public const string string_ME3ExplorerME3TweaksForkBetaTooltip = "string_ME3ExplorerME3TweaksForkBetaTooltip";
 		public const string string_BackupRestore = "string_BackupRestore";
@@ -180,6 +185,8 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_binkAsiBypassInstalled = "string_binkAsiBypassInstalled";
 		public const string string_binkAsiLoaderNotInstalled = "string_binkAsiLoaderNotInstalled";
 		public const string string_binkAsiLoaderInstalled = "string_binkAsiLoaderInstalled";
+		public const string string_bink2AsiLoaderNotInstalled = "string_bink2AsiLoaderNotInstalled";
+		public const string string_bink2AsiLoaderInstalled = "string_bink2AsiLoaderInstalled";
 		public const string string_gameNotInstalled = "string_gameNotInstalled";
 		public const string string_otherSavedTargets = "string_otherSavedTargets";
 		public const string string_cannotEndorseMod = "string_cannotEndorseMod";
@@ -1199,7 +1206,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_dialogErrorDeletingExistingMod = "string_dialogErrorDeletingExistingMod";
 		public const string string_interp_errorOccuredWhileDeletingExistingModDirectory = "string_interp_errorOccuredWhileDeletingExistingModDirectory";
 		public const string string_generatingMod = "string_generatingMod";
-		public const string string_interp_valueMustBeBetween0AndX = "string_interp_valueMustBeBetween0AndX";
+		public const string string_interp_valueMustBeBetweenXAndY = "string_interp_valueMustBeBetweenXAndY";
 		public const string string_dialog_devModeAdvert = "string_dialog_devModeAdvert";
 		public const string string_enableDeveloperFeaturesQuestion = "string_enableDeveloperFeaturesQuestion";
 		public const string string_dialog_warnMustBeDeployedForFullFeatures = "string_dialog_warnMustBeDeployedForFullFeatures";
@@ -1337,8 +1344,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_changeFullKey = "string_changeFullKey";
 		public const string string_changeMiniKey = "string_changeMiniKey";
 		public const string string_setToDefaultKeys = "string_setToDefaultKeys";
-		public const string string_massEffect2ConsoleKeysAreDefinedPerGame = "string_massEffect2ConsoleKeysAreDefinedPerGame";
-		public const string string_massEffect3ConsoleKeysAreDefinedPerGame = "string_massEffect3ConsoleKeysAreDefinedPerGame";
+		public const string string_interp_gameConsoleKeysAreDefinedPerGame = "string_interp_gameConsoleKeysAreDefinedPerGame";
 		public const string string_interp_cannotReadME3Keybinds = "string_interp_cannotReadME3Keybinds";
 		public const string string_errorReadingKeybinds = "string_errorReadingKeybinds";
 		public const string string_interp_cannotOpenMassEffect2CoalescediniMessage = "string_interp_cannotOpenMassEffect2CoalescediniMessage";
@@ -1613,5 +1619,6 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_initializing = "string_initializing";
 		public const string string_cancelDownload = "string_cancelDownload";
 		public const string string_downloadError = "string_downloadError";
+		public const string string_syncingPlotManager = "string_syncingPlotManager";
 	}
 }

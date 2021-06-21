@@ -486,7 +486,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 if (File.Exists(coalPath))
                 {
                     using FileStream fs = new FileStream(coalPath, FileMode.Open);
-                    coalescedFilemapping = CoalescedConverter.DecompileToMemory(fs);
+                    coalescedFilemapping = CoalescedConverter.DecompileGame3ToMemory(fs);
                 }
                 else
                 {
@@ -497,7 +497,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             else if (chunkName == @"BALANCE_CHANGES")
             {
                 var serverCoalesced = Utilities.ExtractInternalFileToStream(@"MassEffectModManagerCore.modmanager.me3tweaks.LiveIni.bin");
-                coalescedFilemapping = CoalescedConverter.DecompileToMemory(serverCoalesced);
+                coalescedFilemapping = CoalescedConverter.DecompileGame3ToMemory(serverCoalesced);
                 coalescedFilename = @"ServerCoalesced.bin";
             }
             else
@@ -507,7 +507,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 coalescedFilename = $@"Default_{dlcFolderName}.bin";
                 if (coalescedData != null)
                 {
-                    coalescedFilemapping = CoalescedConverter.DecompileToMemory(coalescedData);
+                    coalescedFilemapping = CoalescedConverter.DecompileGame3ToMemory(coalescedData);
                 }
                 else
                 {
@@ -661,7 +661,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
             #endregion
 
-            #region Properties = Addition
+            #region Properties - Addition
             var deltaPropertyAdditions = modDeltaDocument.Elements(@"Property").Where(x => x.Attribute(@"operation") != null && x.Attribute(@"operation").Value == OP_ADDITION);
             foreach (var deltaProperty in deltaPropertyAdditions)
             {

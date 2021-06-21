@@ -161,9 +161,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                     }
                     RestoreAllBasegameInProgress = false;
-                    if (SelectedTarget.Game == MEGame.ME3)
+                    if (SelectedTarget.Game == MEGame.ME3 || SelectedTarget.Game.IsLEGame())
                     {
-                        AutoTOC.RunTOCOnGameTarget(SelectedTarget);
+                        Result.TargetsToAutoTOC.Add(SelectedTarget);
                     }
                     CommandManager.InvalidateRequerySuggested();
                 };
@@ -434,7 +434,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     if (itemRestored is GameTarget.ModifiedFileObject mf)
                     {
-                        Result.TargetsToAutoTOC.Add(SelectedTarget);
+                        if (SelectedTarget.Game is MEGame.ME3 or MEGame.LE1 or MEGame.LE2 or MEGame.LE3)
+                            Result.TargetsToAutoTOC.Add(SelectedTarget);
                         Application.Current.Dispatcher.Invoke(delegate
                         {
                             SelectedTarget.ModifiedBasegameFiles.Remove(mf);

@@ -20,14 +20,15 @@ using SevenZip.EventArguments;
 using MassEffectModManagerCore.modmanager.gameini;
 using System.Windows.Media.Animation;
 using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using Microsoft.AppCenter.Analytics;
 using Trinet.Core.IO.Ntfs;
+using MemoryAnalyzer = MassEffectModManagerCore.modmanager.memoryanalyzer.MemoryAnalyzer;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -73,15 +74,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         // Must be ME2 or ME3, cannot have a transform, we allow it, archive has been scanned, we haven't started an operation
         // Mods that use the updater service cannot be compressed to ensure the update checks are reliable
-        public bool CanCompressPackages => CompressedMods.Any(x => x.Game >= MEGame.ME2) && CompressedMods.All(x => x.ExeExtractionTransform == null && x.ModClassicUpdateCode == 0) && App.AllowCompressingPackagesOnImport && ArchiveScanned && !TaskRunning;
+        // Excludes Legendary Edition games.
+        public bool CanCompressPackages => CompressedMods.Any(x => x.Game is MEGame.ME2 or MEGame.ME3) && CompressedMods.All(x => x.ExeExtractionTransform == null && x.ModClassicUpdateCode == 0) && App.AllowCompressingPackagesOnImport && ArchiveScanned && !TaskRunning;
 
-        public ObservableCollectionExtended<Mod> CompressedMods { get; } = new ObservableCollectionExtended<Mod>();
+        public ui.ObservableCollectionExtended<Mod> CompressedMods { get; } = new ui.ObservableCollectionExtended<Mod>();
         public ModArchiveImporter(string file, Stream archiveStream = null)
         {
             MemoryAnalyzer.AddTrackedMemoryItem($@"Mod Archive Importer ({Path.GetFileName(file)})", new WeakReference(this));
             ArchiveFilePath = file;
             ArchiveStream = archiveStream;
-            DataContext = this;
             LoadCommands();
             InitializeComponent();
         }
@@ -272,7 +273,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             // Telemetry data to help find source of mods
             // This should only run if we need to somehow look up source, like if mod is not in TPMI
-            try
+            /*try
             {
                 // note: This currently doesn't do anything as it just parses it out. It doesn't actually send anything or use the results of it
                 if (Settings.EnableTelemetry && archive != null)
@@ -315,7 +316,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             catch (Exception ex)
             {
                 Log.Error($@"Error doing preinspection, it will be skipped. Error: {ex.Message}");
-            }
+            }*/
 
             void ActionTextUpdateCallback(string newText)
             {
@@ -361,7 +362,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 #if DEBUG
             foreach (var v in archiveFile.ArchiveFileData)
             {
-                Debug.WriteLine($@"{v.FileName} | Index {v.Index} | Size {v.Size} | Last Modified {v.LastWriteTime}");
+                Debug.WriteLine($@"{v.FileName} | Index {v.Index} | Size {v.Size} | Method {v.Method} | IsDirectory {v.IsDirectory} | Last Modified {v.LastWriteTime}");
             }
 #endif
             var moddesciniEntries = new List<ArchiveFileInfo>();

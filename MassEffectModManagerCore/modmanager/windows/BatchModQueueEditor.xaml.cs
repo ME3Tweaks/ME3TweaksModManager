@@ -6,12 +6,14 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Input;
+using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.modmanager.usercontrols;
 using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore.Packages;
+using MassEffectModManagerCore.modmanager.helpers;
 using Microsoft.AppCenter.Analytics;
 
 namespace MassEffectModManagerCore.modmanager.windows
@@ -24,6 +26,9 @@ namespace MassEffectModManagerCore.modmanager.windows
         private List<Mod> allMods;
         public ObservableCollectionExtended<Mod> VisibleFilteredMods { get; } = new ObservableCollectionExtended<Mod>();
         public ObservableCollectionExtended<Mod> ModsInGroup { get; } = new ObservableCollectionExtended<Mod>();
+
+        public MEGameSelector[] Games { get; init; }
+
         public string GroupName { get; set; }
         public string GroupDescription { get; set; }
         private string existingFilename;
@@ -39,11 +44,12 @@ namespace MassEffectModManagerCore.modmanager.windows
             DataContext = this;
             this.allMods = allMods;
             LoadCommands();
+            Games = MEGameSelector.GetGameSelectorsIncudingLauncher().ToArray();
+
             InitializeComponent();
             if (queueToEdit != null)
             {
                 existingFilename = queueToEdit.BackingFilename;
-                SetGameRadioUI(queueToEdit.Game);
                 SelectedGame = queueToEdit.Game;
                 GroupName = queueToEdit.QueueName;
                 GroupDescription = queueToEdit.QueueDescription;
@@ -52,21 +58,6 @@ namespace MassEffectModManagerCore.modmanager.windows
             }
         }
 
-        private void SetGameRadioUI(MEGame game)
-        {
-            switch (game)
-            {
-                case MEGame.ME1:
-                    ME1_RadioButton.IsChecked = true;
-                    break;
-                case MEGame.ME2:
-                    ME2_RadioButton.IsChecked = true;
-                    break;
-                case MEGame.ME3:
-                    ME3_RadioButton.IsChecked = true;
-                    break;
-            }
-        }
 
         public ICommand CancelCommand { get; set; }
         public ICommand SaveAndCloseCommand { get; set; }
@@ -281,7 +272,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                 else
                 {
                     //reset choice
-                    SetGameRadioUI(SelectedGame); //reset back
+                    Games.ForEach(x => x.IsSelected = x.Game == SelectedGame);
                 }
             }
             else
@@ -289,6 +280,35 @@ namespace MassEffectModManagerCore.modmanager.windows
                 SelectedGame = newgame;
             }
 
+        }
+
+        private void LE1_Clicked(object sender, RoutedEventArgs e)
+        {
+            TryChangeGameTo(MEGame.LE1);
+        }
+
+        private void LE2_Clicked(object sender, RoutedEventArgs e)
+        {
+            TryChangeGameTo(MEGame.LE2);
+        }
+
+        private void LE3_Clicked(object sender, RoutedEventArgs e)
+        {
+            TryChangeGameTo(MEGame.LE3);
+        }
+
+        private void GameIcon_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is FrameworkElement fw && fw.DataContext is MEGameSelector gamesel)
+            {
+                SetSelectedGame(gamesel.Game);
+            }
+        }
+
+        private void SetSelectedGame(MEGame game)
+        {
+            Games.ForEach(x => x.IsSelected = x.Game == game);
+            TryChangeGameTo(game);
         }
     }
 }

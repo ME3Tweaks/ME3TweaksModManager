@@ -49,7 +49,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void ClosePanel()
         {
-            OnClosing(new DataEventArgs(GameRestoreControllers.Any(x => x.RefreshTargets)));
+            Result.ReloadTargets = GameRestoreControllers.Any(x => x.RefreshTargets);
+            OnClosing(DataEventArgs.Empty);
         }
 
         private bool CanClose() => !GameRestoreControllers.Any(x => x.RestoreInProgress);
@@ -294,7 +295,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                         //Check for cmmvanilla file and remove it present
 
-                        string cmmVanilla = Path.Combine(restoreTargetPath, @"cmm_vanilla");
+                        string cmmVanilla = Path.Combine(restoreTargetPath, BackupService.CMM_VANILLA_FILENAME);
                         if (File.Exists(cmmVanilla))
                         {
                             Log.Information($@"Removing cmm_vanilla file: {cmmVanilla}");

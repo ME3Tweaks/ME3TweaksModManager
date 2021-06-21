@@ -4,16 +4,9 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using MassEffectModManagerCore.modmanager.gameini;
@@ -27,6 +20,10 @@ using Microsoft.AppCenter.Analytics;
 using Serilog;
 using Path = System.IO.Path;
 using LegendaryExplorerCore.Coalesced;
+using LegendaryExplorerCore.Gammtek.Extensions;
+using LegendaryExplorerCore.Misc;
+using MassEffectModManagerCore.modmanager.windows;
+using PropertyChanged;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -35,16 +32,20 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// </summary>
     public partial class ConsoleKeybindingPanel : MMBusyPanelBase
     {
-        public bool OperationInProgress { get; set; }
         public bool IsListeningForKey { get; set; }
 
+        public void OnIsListeningForKeyChanged()
+        {
+            foreach (var game in Games)
+            {
+                game.NotifyKeyListeningState(IsListeningForKey);
+            }
+        }
+
+        public ui.ObservableCollectionExtended<KeybindingGame> Games { get; } = new();
+
         #region Key texts
-        public string ME1FullConsoleKeyText { get; set; }
-        public string ME1MiniConsoleKeyText { get; set; }
-        public string ME2FullConsoleKeyText { get; set; }
-        public string ME2MiniConsoleKeyText { get; set; }
-        public string ME3FullConsoleKeyText { get; set; }
-        public string ME3MiniConsoleKeyText { get; set; }
+
         #endregion
         public ConsoleKeybindingPanel()
         {
@@ -53,368 +54,241 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             InitializeComponent();
         }
 
-        public ICommand ChangeME1MiniCommand { get; set; }
-        public ICommand ChangeME1FullCommand { get; set; }
-        public ICommand DefaultME1KeysCommand { get; set; }
-        public ICommand ChangeME2MiniCommand { get; set; }
-        public ICommand ChangeME2FullCommand { get; set; }
-        public ICommand DefaultME2KeysCommand { get; set; }
-        public ICommand ChangeME3MiniCommand { get; set; }
-        public ICommand ChangeME3FullCommand { get; set; }
-        public ICommand DefaultME3KeysCommand { get; set; }
-        public ICommand CloseCommand { get; set; }
-        private void LoadCommands()
+        [AddINotifyPropertyChangedInterface]
+        public class KeybindingGame
         {
-            ChangeME1FullCommand = new GenericCommand(SetME1FullKey, NotListeningForKey);
-            ChangeME1MiniCommand = new GenericCommand(SetME1MiniKey, NotListeningForKey);
-            DefaultME1KeysCommand = new GenericCommand(ResetME1Keys, NotListeningForKey);
-            ChangeME2FullCommand = new GenericCommand(SetME2FullKey, NotListeningForKey);
-            ChangeME2MiniCommand = new GenericCommand(SetME2MiniKey, NotListeningForKey);
-            DefaultME2KeysCommand = new GenericCommand(ResetME2Keys, NotListeningForKey);
-            ChangeME3FullCommand = new GenericCommand(SetME3FullKey, NotListeningForKey);
-            ChangeME3MiniCommand = new GenericCommand(SetME3MiniKey, NotListeningForKey);
-            DefaultME3KeysCommand = new GenericCommand(ResetME3Keys, NotListeningForKey);
-            CloseCommand = new GenericCommand(() => OnClosing(DataEventArgs.Empty), NotListeningForKey);
-        }
-
-        #region Set Mini/Full/Reset and callbacks
-
-        private void SetME3MiniKey()
-        {
-            KeyBeingAssigned = M3L.GetString(M3L.string_massEffect3MiniConsole);
-            IsListeningForKey = true;
-            OnKeyPressed = SetME3MiniKeyCallback;
-        }
-
-        private void SetME3FullKey()
-        {
-            KeyBeingAssigned = M3L.GetString(M3L.string_massEffect3FullConsole);
-            IsListeningForKey = true;
-            OnKeyPressed = SetME3FullKeyCallback;
-        }
-
-        private void SetME3FullKeyCallback(string consoleKeyStr)
-        {
-            SetME3KeyWithThread(SelectedME3Target, consoleKeyStr: consoleKeyStr);
-        }
-
-        private void SetME3MiniKeyCallback(string unrealKeyStr)
-        {
-            SetME3KeyWithThread(SelectedME3Target, typeKeyStr: unrealKeyStr);
-        }
-        private void ResetME3Keys()
-        {
-            SetME3KeyWithThread(SelectedME3Target, consoleKeyStr: @"Tilde", typeKeyStr: @"Tab");
-        }
-
-        private void SetME1KeyWithThread(string consoleKeyStr = null, string typeKeyStr = null, bool wipeTypeKey = false)
-        {
-            OperationInProgress = true;
-            ME1FullConsoleKeyText = M3L.GetString(M3L.string_updatingKeybindsPleaseWait);
-            ME1MiniConsoleKeyText = "";
-            NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"ME2-ConsoleKeySetterThread");
-            nbw.DoWork += (a, b) =>
+            public void NotifyKeyListeningState(bool isListening)
             {
-                SetME1ConsoleKeybinds(consoleKeyStr, typeKeyStr, wipeTypeKey);
-                LoadME1Keys();
-                Analytics.TrackEvent(@"Set ME1 Console Keys", new Dictionary<string, string>()
-                {
-                    {@"Full Console Key", consoleKeyStr },
-                    {@"Mini Console Key", typeKeyStr }
-                });
-            };
-            nbw.RunWorkerCompleted += (a, b) =>
-            {
-                if (b.Error != null)
-                {
-                    Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
-                }
-                OperationInProgress = false;
-                CommandManager.InvalidateRequerySuggested();
-            };
-            nbw.RunWorkerAsync();
-        }
+                SharedIsListeningForKey = isListening;
+            } 
+            
+            public bool SharedIsListeningForKey { get; set; }
+            public MEGame Game { get; }
+            public GameTarget SelectedTarget { get; set; }
+            public ICommand DefaultCommand { get; }
+            public ICommand ChangeMiniKeyCommand { get; }
+            public ICommand ChangeFullKeyCommand { get; }
 
-        private void SetME1ConsoleKeybinds(string consoleKeyStr, string typeKeyStr, bool wipeTypeKey = false)
-        {
-            var iniFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"BioWare", @"Mass Effect", @"Config", @"BIOInput.ini");
-            if (File.Exists(iniFile))
+            public string FullConsoleKeyText { get; private set; }
+            public string MiniConsoleKeyText { get; private set; }
+            public ui.ObservableCollectionExtended<GameTarget> Targets { get; } = new();
+            private bool OperationInProgress;
+
+            public string WhereKeysAreDefinedText { get; }
+            public KeybindingGame(MEGame game, IEnumerable<GameTarget> targets, Action<Action<string>, string> beginListeningForKey)
             {
-                var ini = DuplicatingIni.LoadIni(iniFile);
-                SetIniBasedKeybinds(ini, consoleKeyStr, typeKeyStr, wipeTypeKey);
-                var wasReadOnly = Utilities.ClearReadOnly(iniFile);
-                File.WriteAllText(iniFile, ini.ToString());
-                if (wasReadOnly)
-                {
-                    Utilities.SetReadOnly(iniFile);
-                }
+                BeginListeningForKeyDelegate = beginListeningForKey;
+                Game = game;
+                WhereKeysAreDefinedText = M3L.GetString(M3L.string_interp_gameConsoleKeysAreDefinedPerGame, Game.ToGameName());
+                DefaultCommand = new GenericCommand(ResetKeybinds, CanResetKeybinds);
+                ChangeMiniKeyCommand = new GenericCommand(SetMiniKey, CanResetKeybinds);
+                ChangeFullKeyCommand = new GenericCommand(SetFullKey, CanResetKeybinds);
+                Targets.AddRange(targets);
+                SelectedTarget = Targets.FirstOrDefault();
+                LoadKeys();
             }
-        }
 
-        private void SetME2KeyWithThread(GameTarget target, string consoleKeyStr = null, string typeKeyStr = null)
-        {
-            OperationInProgress = true;
-            ME2FullConsoleKeyText = M3L.GetString(M3L.string_updatingKeybindsPleaseWait);
-            ME2MiniConsoleKeyText = "";
-            NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"ME2-ConsoleKeySetterThread");
-            nbw.DoWork += (a, b) =>
+            public Action<Action<string>, string> BeginListeningForKeyDelegate { get; }
+
+            public string GameName => Game.ToGameName();
+
+            private void SetFullKey()
             {
-                SetME2ConsoleKeybinds(SelectedME2Target, consoleKeyStr, typeKeyStr);
-                LoadME2Keys(SelectedME2Target);
-                Analytics.TrackEvent(@"Set ME2 Console Keys", new Dictionary<string, string>()
+                void keyPressed(string key)
                 {
-                    {@"Full Console Key", consoleKeyStr },
-                    {@"Mini Console Key", typeKeyStr }
-                });
-            };
-            nbw.RunWorkerCompleted += (a, b) =>
-            {
-                if (b.Error != null)
-                {
-                    Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
+                    if (key != null)
+                        SetKeyWithThread(consoleKeyStr: key);
                 }
-                OperationInProgress = false;
-                CommandManager.InvalidateRequerySuggested();
-            };
-            nbw.RunWorkerAsync();
-        }
+                BeginListeningForKeyDelegate?.Invoke(keyPressed, $"{Game.ToGameName()} Full Console");
+            }
 
-        public static void SetME2ConsoleKeybinds(GameTarget target, string consoleKeyStr, string typeKeyStr)
-        {
-            if (target.Game != MEGame.ME2) throw new Exception(@"Cannot set ME2 keybind for non-ME2 target");
-            var me2c = ME2Coalesced.OpenFromTarget(target);
-            var bioinput = me2c.Inis.FirstOrDefault(x => Path.GetFileName(x.Key).Equals(@"BioInput.ini", StringComparison.InvariantCultureIgnoreCase));
-            SetIniBasedKeybinds(bioinput.Value, consoleKeyStr, typeKeyStr);
-            me2c.Serialize();
-        }
-
-        private static void SetIniBasedKeybinds(DuplicatingIni bioinput, string consoleKeyStr, string typeKeyStr, bool wipeTypeKey = false)
-        {
-            var engineConsole = bioinput.Sections.FirstOrDefault(x => x.Header == @"Engine.Console");
-            if (engineConsole != null)
+            private void SetMiniKey()
             {
-                if (consoleKeyStr != null)
+                void keyPressed(string key)
                 {
-                    var consoleKey = engineConsole.Entries.FirstOrDefault(x => x.Key == @"ConsoleKey");
-                    if (consoleKey != null)
+                    if (key != null)
+                        SetKeyWithThread(typeKeyStr: key);
+                }
+                BeginListeningForKeyDelegate?.Invoke(keyPressed, $"{Game.ToGameName()} Mini Console");
+            }
+
+            private void ResetKeybinds()
+            {
+
+                LoadKeys();
+            }
+
+            private bool CanResetKeybinds() => !SharedIsListeningForKey && !OperationInProgress;
+
+
+            #region LOAD KEYS
+            private void LoadKeys()
+            {
+                Task.Run(() =>
+                {
+                    if (Game == MEGame.ME1)
+                        LoadME1Keys();
+                    else
+                        LoadEmbeddedKeys();
+                });
+            }
+
+            private void LoadEmbeddedKeys()
+            {
+                if (SelectedTarget == null)
+                {
+                    FullConsoleKeyText = M3L.GetString(M3L.string_noInstallsOfGameManagedByModManager);
+                    MiniConsoleKeyText = "";
+                    return; // Can't load keys
+                }
+
+                if (Game == MEGame.ME2)
+                {
+                    #region ME2
+
+                    ME2Coalesced me2c = null;
+                    try
                     {
-                        consoleKey.Value = consoleKeyStr;
+                        me2c = ME2Coalesced.OpenFromTarget(SelectedTarget, true);
+                    }
+                    catch (Exception e)
+                    {
+                        Application.Current.Dispatcher.Invoke(delegate { M3L.ShowDialog(null, M3L.GetString(M3L.string_interp_cannotOpenMassEffect2CoalescediniMessage, e.Message), M3L.GetString(M3L.string_errorReadingCoalescedini), MessageBoxButton.OK, MessageBoxImage.Error); });
+                        MiniConsoleKeyText = M3L.GetString(M3L.string_errorReadingCoalescedini);
+                        MiniConsoleKeyText = M3L.GetString(M3L.string_errorReadingCoalescedini);
+                        return;
+                    }
+
+                    var bioinput = me2c.Inis.FirstOrDefault(x => Path.GetFileName(x.Key).Equals(@"BioInput.ini", StringComparison.InvariantCultureIgnoreCase));
+                    var engineConsole = bioinput.Value.GetSection(@"Engine.Console");
+                    if (engineConsole != null)
+                    {
+                        var consoleKey = engineConsole.GetValue(@"ConsoleKey");
+                        if (consoleKey == null)
+                        {
+                            FullConsoleKeyText = M3L.GetString(M3L.string_fullConsoleNotBoundToAKey);
+                        }
+                        else
+                        {
+                            FullConsoleKeyText = M3L.GetString(M3L.string_interp_fullConsoleBoundToX, consoleKey.Value);
+                        }
+
+                        var typeKey = engineConsole.GetValue(@"TypeKey");
+                        if (typeKey == null)
+                        {
+                            MiniConsoleKeyText = M3L.GetString(M3L.string_miniConsoleNotBoundToAKey);
+                        }
+                        else
+                        {
+                            MiniConsoleKeyText = M3L.GetString(M3L.string_interp_miniConsoleBoundToX, typeKey.Value);
+                        }
+                    }
+
+                    #endregion
+                }
+                else if (Game.IsGame3())
+                {
+                    #region Game 3
+
+                    try
+                    {
+                        var coalPath = Path.Combine(SelectedTarget.TargetPath, @"BioGame", @"CookedPCConsole", @"Coalesced.bin");
+                        Dictionary<string, string> coalescedFilemapping = null;
+                        if (File.Exists(coalPath))
+                        {
+                            using FileStream fs = new FileStream(coalPath, FileMode.Open);
+                            coalescedFilemapping = CoalescedConverter.DecompileGame3ToMemory(fs);
+                        }
+                        else
+                        {
+                            Log.Error(
+                                @"Could not get file data for coalesced chunk BASEGAME as Coalesced.bin file was missing");
+                            return;
+                        }
+
+                        var bioinputText = coalescedFilemapping[@"BioInput.xml"];
+                        var coalFileDoc = XDocument.Parse(bioinputText);
+                        var consolekey = coalFileDoc.XPathSelectElement(
+                            @"/CoalesceAsset/Sections/Section[@name='engine.console']/Property[@name='consolekey']");
+                        var typekey =
+                            coalFileDoc.XPathSelectElement(
+                                @"/CoalesceAsset/Sections/Section[@name='engine.console']/Property[@name='typekey']");
+                        if (consolekey != null)
+                        {
+                            FullConsoleKeyText = M3L.GetString(M3L.string_interp_fullConsoleBoundToX, consolekey.Value);
+                        }
+                        else
+                        {
+                            FullConsoleKeyText = M3L.GetString(M3L.string_fullConsoleNotBoundToAKey);
+                        }
+
+                        if (typekey != null)
+                        {
+                            MiniConsoleKeyText = M3L.GetString(M3L.string_interp_miniConsoleBoundToX, typekey.Value);
+                        }
+                        else
+                        {
+                            MiniConsoleKeyText = M3L.GetString(M3L.string_miniConsoleNotBoundToAKey);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Error(@"Error reading keybinds: " + e.Message);
+                        M3L.ShowDialog(null, M3L.GetString(M3L.string_interp_cannotReadME3Keybinds, e.Message), M3L.GetString(M3L.string_errorReadingKeybinds), MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+
+                    #endregion
+                }
+                else if (Game is MEGame.LE1 or MEGame.LE2)
+                {
+                    #region LE1/LE2
+
+                    // We use INT as base for keybinder
+                    var coalPath = Path.Combine(SelectedTarget.TargetPath, @"BioGame", @"CookedPCConsole", @"Coalesced_INT.bin");
+                    Dictionary<string, LegendaryExplorerCore.Misc.DuplicatingIni> coalescedFilemapping = null;
+                    if (File.Exists(coalPath))
+                    {
+                        using FileStream fs = new FileStream(coalPath, FileMode.Open);
+                        coalescedFilemapping = CoalescedConverter.DecompileLE1LE2ToMemory(fs, @"Coalesced_INT.pcc");
                     }
                     else
                     {
-                        engineConsole.Entries.Add(new DuplicatingIni.IniEntry(@"ConsoleKey=" + typeKeyStr));
+                        Log.Error(
+                            @"Could not get file data for coalesced chunk BASEGAME as Coalesced.bin file was missing");
+                        return;
                     }
-                }
-                var typeKey = engineConsole.Entries.FirstOrDefault(x => x.Key == @"TypeKey");
-                if (wipeTypeKey && typeKey != null)
-                {
-                    engineConsole.Entries.Remove(typeKey);
-                }
-                if (typeKeyStr != null)
-                {
-                    if (typeKey != null)
+
+                    var bioInputIni = coalescedFilemapping[@"BIOInput.ini"];
+                    var engineSection = bioInputIni.GetSection(@"Engine.Console");
+                    if (engineSection != null)
                     {
-                        typeKey.Value = typeKeyStr;
+                        var consolekey = engineSection.GetValue(@"ConsoleKey");
+                        if (consolekey != null)
+                        {
+                            FullConsoleKeyText = M3L.GetString(M3L.string_interp_fullConsoleBoundToX, consolekey.Value);
+                        }
+                        else
+                        {
+                            FullConsoleKeyText = M3L.GetString(M3L.string_fullConsoleNotBoundToAKey);
+                        }
+
+                        var typekey = engineSection.GetValue(@"TypeKey");
+                        if (typekey != null)
+                        {
+                            MiniConsoleKeyText = M3L.GetString(M3L.string_interp_miniConsoleBoundToX, typekey.Value);
+                        }
+                        else
+                        {
+                            MiniConsoleKeyText = M3L.GetString(M3L.string_miniConsoleNotBoundToAKey);
+                        }
+
+                        #endregion
                     }
-                    else
-                    {
-                        //Create Typekey
-                        engineConsole.Entries.Add(new DuplicatingIni.IniEntry(@"TypeKey=" + typeKeyStr));
-                    }
                 }
             }
-        }
 
-        private void SetME3KeyWithThread(GameTarget target, string consoleKeyStr = null, string typeKeyStr = null)
-        {
-            OperationInProgress = true;
-            ME3FullConsoleKeyText = M3L.GetString(M3L.string_updatingKeybindsPleaseWait);
-            ME3MiniConsoleKeyText = "";
-            NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"ME3-ConsoleKeySetterThread");
-            nbw.DoWork += (a, b) =>
-            {
-                SetME3ConsoleKeybinds(SelectedME3Target, consoleKeyStr, typeKeyStr);
-                LoadME3Keys(SelectedME3Target);
-                Analytics.TrackEvent(@"Set ME3 Console Keys", new Dictionary<string, string>()
-                {
-                    {@"Full Console Key", consoleKeyStr },
-                    {@"Mini Console Key", typeKeyStr }
-                });
-            };
-            nbw.RunWorkerCompleted += (a, b) =>
-            {
-                if (b.Error != null)
-                {
-                    Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
-                }
-                OperationInProgress = false;
-                CommandManager.InvalidateRequerySuggested();
-            };
-            nbw.RunWorkerAsync();
-        }
-
-        /// <summary>
-        /// Sets the TypeKey and ConsoleKey values for an ME3 game target. This method is synchronous.
-        /// </summary>
-        /// <param name="target"></param>
-        /// <param name="consoleKeyStr"></param>
-        /// <param name="typeKeyStr"></param>
-        public static void SetME3ConsoleKeybinds(GameTarget target, string consoleKeyStr = null, string typeKeyStr = null)
-        {
-            var coalPath = Path.Combine(target.TargetPath, @"BioGame", @"CookedPCConsole", @"Coalesced.bin");
-            Dictionary<string, string> coalescedFilemapping = null;
-            if (File.Exists(coalPath))
-            {
-                using FileStream fs = new FileStream(coalPath, FileMode.Open);
-                coalescedFilemapping = CoalescedConverter.DecompileToMemory(fs);
-            }
-            else
-            {
-                Log.Error(@"Could not get file data for coalesced chunk BASEGAME as Coalesced.bin file was missing");
-                return;
-            }
-
-            var bioinputText = coalescedFilemapping[@"BioInput.xml"];
-            var coalFileDoc = XDocument.Parse(bioinputText);
-            var consolekey = coalFileDoc.XPathSelectElement(@"/CoalesceAsset/Sections/Section[@name='engine.console']/Property[@name='consolekey']");
-            var typekey = coalFileDoc.XPathSelectElement(@"/CoalesceAsset/Sections/Section[@name='engine.console']/Property[@name='typekey']");
-            if (consolekey != null && consoleKeyStr != null)
-            {
-                consolekey.Value = consoleKeyStr;
-            }
-            else
-            {
-                var consoleElement = coalFileDoc.XPathSelectElement(@"/CoalesceAsset/Sections/Section[@name='engine.console']");
-                var consoleKeyElement = new XElement(@"Property", consoleKeyStr);
-                consoleKeyElement.SetAttributeValue(@"name", @"consolekey");
-                consoleElement.Add(consoleKeyElement);
-            }
-
-            if (typekey != null && typeKeyStr != null)
-            {
-                typekey.Value = typeKeyStr;
-            }
-            else
-            {
-                var consoleElement = coalFileDoc.XPathSelectElement(@"/CoalesceAsset/Sections/Section[@name='engine.console']");
-                var consoleKeyElement = new XElement(@"Property", typeKeyStr);
-                consoleKeyElement.SetAttributeValue(@"name", @"typekey");
-                consoleElement.Add(consoleKeyElement);
-            }
-
-            coalescedFilemapping[@"BioInput.xml"] = coalFileDoc.ToString();
-            var recompiled = CoalescedConverter.CompileFromMemory(coalescedFilemapping);
-            recompiled.WriteToFile(coalPath);
-            AutoTOC.RunTOCOnGameTarget(target);
-        }
-
-        private void SetME2MiniKey()
-        {
-            KeyBeingAssigned = M3L.GetString(M3L.string_massEffect2MiniConsole);
-            IsListeningForKey = true;
-            OnKeyPressed = SetME2MiniKeyCallback;
-        }
-
-        private void SetME2FullKey()
-        {
-            KeyBeingAssigned = M3L.GetString(M3L.string_massEffect2FullConsole);
-            IsListeningForKey = true;
-            OnKeyPressed = SetME2FullKeyCallback;
-        }
-
-        private void SetME2FullKeyCallback(string unrealKeyStr)
-        {
-            SetME2KeyWithThread(SelectedME2Target, unrealKeyStr, null);
-        }
-
-        private void SetME2MiniKeyCallback(string unrealKeyStr)
-        {
-            SetME2KeyWithThread(SelectedME2Target, null, unrealKeyStr);
-        }
-
-        private void ResetME2Keys()
-        {
-            SetME2KeyWithThread(SelectedME2Target, @"Tilde", @"Tab");
-        }
-
-
-        private void SetME1FullKey()
-        {
-            KeyBeingAssigned = M3L.GetString(M3L.string_massEffectFullConsole);
-            IsListeningForKey = true;
-            OnKeyPressed = SetME1FullKeyCallback;
-        }
-
-        private void SetME1MiniKey()
-        {
-            KeyBeingAssigned = M3L.GetString(M3L.string_massEffectMiniConsole);
-            IsListeningForKey = true;
-            OnKeyPressed = SetME1MiniKeyCallback;
-        }
-
-        private void SetME1FullKeyCallback(string unrealKeyStr)
-        {
-            SetME1KeyWithThread(unrealKeyStr, null);
-        }
-
-        private void SetME1MiniKeyCallback(string unrealKeyStr)
-        {
-            SetME1KeyWithThread(null, unrealKeyStr);
-
-        }
-
-        private void ResetME1Keys()
-        {
-            SetME1KeyWithThread(@"Tilde", null, true);
-        }
-
-        #endregion
-        private bool NotListeningForKey() => !IsListeningForKey && !OperationInProgress;
-        public bool UIEnabled => !IsListeningForKey && !OperationInProgress;
-
-        public string KeyBeingAssigned { get; set; }
-
-
-        public Action<string> OnKeyPressed;
-
-        public override void HandleKeyPress(object sender, KeyEventArgs e)
-        {
-            if (OperationInProgress) return; //do not handle key
-            if (IsListeningForKey)
-            {
-                var unrealString = ConvertToUnrealKeyString(e.Key == Key.System ? e.SystemKey : e.Key);
-                if (unrealString != null)
-                {
-                    IsListeningForKey = false;
-                    OnKeyPressed?.Invoke(unrealString);
-                    OnKeyPressed = null;
-                    //e.Handled = true;
-                }
-            }
-            else if (e.Key == Key.Escape)
-            {
-                OnClosing(DataEventArgs.Empty);
-            }
-        }
-
-        public GameTarget SelectedME2Target { get; set; }
-        public GameTarget SelectedME3Target { get; set; }
-        public ObservableCollectionExtended<GameTarget> ME2Targets { get; } = new ObservableCollectionExtended<GameTarget>();
-        public ObservableCollectionExtended<GameTarget> ME3Targets { get; } = new ObservableCollectionExtended<GameTarget>();
-
-        public override void OnPanelVisible()
-        {
-            ME2Targets.ReplaceAll(mainwindow.InstallationTargets.Where(x => x.Game == MEGame.ME2));
-            ME3Targets.ReplaceAll(mainwindow.InstallationTargets.Where(x => x.Game == MEGame.ME3));
-            SelectedME2Target = ME2Targets.FirstOrDefault();
-            SelectedME3Target = ME3Targets.FirstOrDefault();
-            LoadME1Keys();
-        }
-
-        public bool HasME1Install { get; set; } = true;
-        private void LoadME1Keys()
-        {
-            if (mainwindow.InstallationTargets.Where(x => x.Selectable).Any())
+            // KEY LOADERS
+            private void LoadME1Keys()
             {
                 var iniFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"BioWare", @"Mass Effect", @"Config", @"BIOInput.ini");
                 if (File.Exists(iniFile))
@@ -426,156 +300,269 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         var consoleKey = engineConsole.Entries.FirstOrDefault(x => x.Key == @"ConsoleKey");
                         if (consoleKey == null)
                         {
-                            ME1FullConsoleKeyText = M3L.GetString(M3L.string_fullConsoleNotBoundToAKey);
+                            FullConsoleKeyText = M3L.GetString(M3L.string_fullConsoleNotBoundToAKey);
                         }
                         else
                         {
-                            ME1FullConsoleKeyText = M3L.GetString(M3L.string_interp_fullConsoleBoundToX, consoleKey.Value);
+                            FullConsoleKeyText = M3L.GetString(M3L.string_interp_fullConsoleBoundToX, consoleKey.Value);
                         }
 
                         var typeKey = engineConsole.Entries.FirstOrDefault(x => x.Key == @"TypeKey");
                         if (typeKey == null)
                         {
-                            ME1MiniConsoleKeyText = M3L.GetString(M3L.string_miniConsoleNotBoundToAKey);
+                            MiniConsoleKeyText = M3L.GetString(M3L.string_miniConsoleNotBoundToAKey);
                         }
                         else
                         {
-                            ME1MiniConsoleKeyText = M3L.GetString(M3L.string_interp_miniConsoleBoundToX, typeKey.Value);
+                            MiniConsoleKeyText = M3L.GetString(M3L.string_interp_miniConsoleBoundToX, typeKey.Value);
                         }
                     }
                 }
                 else
                 {
-                    HasME1Install = false;
-                    ME1FullConsoleKeyText = M3L.GetString(M3L.string_bioInputiniFileIsMissing);
-                    ME1MiniConsoleKeyText = M3L.GetString(M3L.string_runGameToGenerateFile);
+                    //HasME1Install = false;
+                    FullConsoleKeyText = M3L.GetString(M3L.string_bioInputiniFileIsMissing);
+                    MiniConsoleKeyText = M3L.GetString(M3L.string_runGameToGenerateFile);
                 }
             }
-            else
-            {
-                HasME1Install = false;
-                ME1FullConsoleKeyText = M3L.GetString(M3L.string_noInstallsOfGameManagedByModManager);
-                ME1MiniConsoleKeyText = "";
-            }
-        }
 
-        public void OnSelectedME2TargetChanged()
-        {
-            if (SelectedME2Target != null)
-            {
-                LoadME2Keys(SelectedME2Target);
-            }
-            else
-            {
-                ME2FullConsoleKeyText = M3L.GetString(M3L.string_noInstallsOfGameManagedByModManager);
-                ME2MiniConsoleKeyText = "";
-            }
-        }
+            #endregion
 
-        public void OnSelectedME3TargetChanged()
-        {
-            if (SelectedME3Target != null)
+            #region SET KEYS
+            private static void SetIniBasedKeybinds(DuplicatingIni bioinput, string consoleKeyStr, string typeKeyStr, bool wipeTypeKey = false)
             {
-                LoadME3Keys(SelectedME3Target);
-            }
-            else
-            {
-                ME3FullConsoleKeyText = M3L.GetString(M3L.string_noInstallsOfGameManagedByModManager);
-                ME3MiniConsoleKeyText = "";
-            }
-        }
-
-        private void LoadME2Keys(GameTarget target)
-        {
-            if (target.Game != MEGame.ME2) throw new Exception(@"Cannot load ME2 keys from target that is not ME2");
-            ME2Coalesced me2c = null;
-
-            try
-            {
-                me2c = ME2Coalesced.OpenFromTarget(target, true);
-            }
-            catch (Exception e)
-            {
-                Application.Current.Dispatcher.Invoke(delegate { M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_cannotOpenMassEffect2CoalescediniMessage, e.Message), M3L.GetString(M3L.string_errorReadingCoalescedini), MessageBoxButton.OK, MessageBoxImage.Error); });
-                ME2MiniConsoleKeyText = M3L.GetString(M3L.string_errorReadingCoalescedini);
-                ME2MiniConsoleKeyText = M3L.GetString(M3L.string_errorReadingCoalescedini);
-                return;
-            }
-
-            var bioinput = me2c.Inis.FirstOrDefault(x => Path.GetFileName(x.Key).Equals(@"BioInput.ini", StringComparison.InvariantCultureIgnoreCase));
-            var engineConsole = bioinput.Value.Sections.FirstOrDefault(x => x.Header == @"Engine.Console");
-            if (engineConsole != null)
-            {
-                var consoleKey = engineConsole.Entries.FirstOrDefault(x => x.Key == @"ConsoleKey");
-                if (consoleKey == null)
+                var engineConsole = bioinput.GetSection(@"Engine.Console");
+                if (engineConsole != null)
                 {
-                    ME2FullConsoleKeyText = M3L.GetString(M3L.string_fullConsoleNotBoundToAKey);
-                }
-                else
-                {
-                    ME2FullConsoleKeyText = M3L.GetString(M3L.string_interp_fullConsoleBoundToX, consoleKey.Value);
-                }
-
-                var typeKey = engineConsole.Entries.FirstOrDefault(x => x.Key == @"TypeKey");
-                if (typeKey == null)
-                {
-                    ME2MiniConsoleKeyText = M3L.GetString(M3L.string_miniConsoleNotBoundToAKey);
-                }
-                else
-                {
-                    ME2MiniConsoleKeyText = M3L.GetString(M3L.string_interp_miniConsoleBoundToX, typeKey.Value);
+                    if (consoleKeyStr != null)
+                    {
+                        var consoleKey = engineConsole.GetValue(@"ConsoleKey");
+                        if (consoleKey != null)
+                        {
+                            consoleKey.Value = consoleKeyStr;
+                        }
+                        else
+                        {
+                            engineConsole.Entries.Add(new DuplicatingIni.IniEntry(@"ConsoleKey", typeKeyStr));
+                        }
+                    }
+                    var typeKey = engineConsole.GetValue(@"TypeKey");
+                    if (wipeTypeKey && typeKey != null)
+                    {
+                        engineConsole.Entries.Remove(typeKey);
+                    }
+                    if (typeKeyStr != null)
+                    {
+                        if (typeKey != null)
+                        {
+                            typeKey.Value = typeKeyStr;
+                        }
+                        else
+                        {
+                            //Create Typekey
+                            engineConsole.Entries.Add(new DuplicatingIni.IniEntry(@"TypeKey", typeKeyStr));
+                        }
+                    }
                 }
             }
-        }
 
-        private void LoadME3Keys(GameTarget target)
-        {
-            if (target.Game != MEGame.ME3) throw new Exception(@"Cannot load ME3 keys from target that is not ME3");
-            try
+            private void SetME1ConsoleKeybinds(string consoleKeyStr, string typeKeyStr, bool wipeTypeKey = false)
             {
-                var coalPath = Path.Combine(target.TargetPath, @"BioGame", @"CookedPCConsole", @"Coalesced.bin");
+                var iniFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"BioWare", @"Mass Effect", @"Config", @"BIOInput.ini");
+                if (File.Exists(iniFile))
+                {
+                    var ini = DuplicatingIni.LoadIni(iniFile);
+                    SetIniBasedKeybinds(ini, consoleKeyStr, typeKeyStr, wipeTypeKey);
+                    var wasReadOnly = Utilities.ClearReadOnly(iniFile);
+                    File.WriteAllText(iniFile, ini.ToString());
+                    if (wasReadOnly)
+                    {
+                        Utilities.SetReadOnly(iniFile);
+                    }
+                }
+            }
+            private void SetKeyWithThread(string consoleKeyStr = null, string typeKeyStr = null, bool wipeTypeKey = false)
+            {
+                OperationInProgress = true;
+                FullConsoleKeyText = M3L.GetString(M3L.string_updatingKeybindsPleaseWait);
+                MiniConsoleKeyText = "";
+                NamedBackgroundWorker nbw = new NamedBackgroundWorker($@"{Game}-ConsoleKeySetterThread");
+                nbw.DoWork += (a, b) =>
+                {
+                    if (Game == MEGame.ME1) SetME1ConsoleKeybinds(consoleKeyStr, typeKeyStr, wipeTypeKey);
+                    if (Game == MEGame.ME2) SetME2ConsoleKeybinds(consoleKeyStr, typeKeyStr);
+                    if (Game.IsGame3()) SetME3ConsoleKeybinds(consoleKeyStr, typeKeyStr);
+                    if (Game is MEGame.LE1 or MEGame.LE2) SetLE1LE2ConsoleKeybinds(consoleKeyStr, typeKeyStr);
+
+                    Analytics.TrackEvent($@"Set {Game} Console Keys", new Dictionary<string, string>()
+                    {
+                        {@"Full Console Key", consoleKeyStr },
+                        {@"Mini Console Key", typeKeyStr }
+                    });
+                    LoadKeys();
+                };
+                nbw.RunWorkerCompleted += (a, b) =>
+                {
+                    if (b.Error != null)
+                    {
+                        Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
+                    }
+                    OperationInProgress = false;
+                    CommandManager.InvalidateRequerySuggested();
+                };
+                nbw.RunWorkerAsync();
+            }
+
+            private void SetLE1LE2ConsoleKeybinds(string consoleKeyStr, string typeKeyStr)
+            {
+                var cookedPath = M3Directories.GetCookedPath(SelectedTarget);
+                var langs = StarterKitGeneratorWindow.GetLanguagesForGame(Game);
+                foreach (var lang in langs)
+                {
+                    var fname = Path.Combine(cookedPath, $@"Coalesced_{lang}.bin");
+                    if (File.Exists(fname))
+                    {
+                        using var fs = File.OpenRead(fname);
+                        var decomp = CoalescedConverter.DecompileLE1LE2ToMemory(fs, "");
+                        fs.Dispose();
+                        SetIniBasedKeybinds(decomp[@"BIOInput.ini"], consoleKeyStr, typeKeyStr);
+                        CoalescedConverter.CompileLE1LE2FromMemory(decomp).WriteToFile(fname);
+                    }
+                }
+            }
+
+            private void SetME2ConsoleKeybinds(string consoleKeyStr, string typeKeyStr)
+            {
+                var me2c = ME2Coalesced.OpenFromTarget(SelectedTarget);
+                var bioinput = me2c.Inis.FirstOrDefault(x => Path.GetFileName(x.Key).Equals(@"BioInput.ini", StringComparison.InvariantCultureIgnoreCase));
+                SetIniBasedKeybinds(bioinput.Value, consoleKeyStr, typeKeyStr);
+                me2c.Serialize();
+            }
+
+            /// <summary>
+            /// Sets the TypeKey and ConsoleKey values for an ME3 game target. This method is synchronous.
+            /// </summary>
+            /// <param name="target"></param>
+            /// <param name="consoleKeyStr"></param>
+            /// <param name="typeKeyStr"></param>
+            private void SetME3ConsoleKeybinds(string consoleKeyStr = null, string typeKeyStr = null)
+            {
+                var coalPath = Path.Combine(SelectedTarget.TargetPath, @"BIOGame", @"CookedPCConsole", @"Coalesced.bin");
                 Dictionary<string, string> coalescedFilemapping = null;
                 if (File.Exists(coalPath))
                 {
                     using FileStream fs = new FileStream(coalPath, FileMode.Open);
-                    coalescedFilemapping = CoalescedConverter.DecompileToMemory(fs);
+                    coalescedFilemapping = CoalescedConverter.DecompileGame3ToMemory(fs);
                 }
                 else
                 {
-                    Log.Error(
-                        @"Could not get file data for coalesced chunk BASEGAME as Coalesced.bin file was missing");
+                    Log.Error(@"Could not get file data for Coalesced.bin, file was missing");
                     return;
                 }
 
                 var bioinputText = coalescedFilemapping[@"BioInput.xml"];
                 var coalFileDoc = XDocument.Parse(bioinputText);
-                var consolekey = coalFileDoc.XPathSelectElement(
-                    @"/CoalesceAsset/Sections/Section[@name='engine.console']/Property[@name='consolekey']");
-                var typekey =
-                    coalFileDoc.XPathSelectElement(
-                        @"/CoalesceAsset/Sections/Section[@name='engine.console']/Property[@name='typekey']");
-                if (consolekey != null)
+                var consolekey = coalFileDoc.XPathSelectElement(@"/CoalesceAsset/Sections/Section[@name='engine.console']/Property[@name='consolekey']");
+                var typekey = coalFileDoc.XPathSelectElement(@"/CoalesceAsset/Sections/Section[@name='engine.console']/Property[@name='typekey']");
+                if (consolekey != null && consoleKeyStr != null)
                 {
-                    ME3FullConsoleKeyText = M3L.GetString(M3L.string_interp_fullConsoleBoundToX, consolekey.Value);
+                    consolekey.Value = consoleKeyStr;
                 }
                 else
                 {
-                    ME3FullConsoleKeyText = M3L.GetString(M3L.string_fullConsoleNotBoundToAKey);
+                    var consoleElement = coalFileDoc.XPathSelectElement(@"/CoalesceAsset/Sections/Section[@name='engine.console']");
+                    var consoleKeyElement = new XElement(@"Property", consoleKeyStr);
+                    consoleKeyElement.SetAttributeValue(@"name", @"consolekey");
+                    consoleElement.Add(consoleKeyElement);
                 }
 
-                if (typekey != null)
+                if (typekey != null && typeKeyStr != null)
                 {
-                    ME3MiniConsoleKeyText = M3L.GetString(M3L.string_interp_miniConsoleBoundToX, typekey.Value);
+                    typekey.Value = typeKeyStr;
                 }
                 else
                 {
-                    ME3MiniConsoleKeyText = M3L.GetString(M3L.string_miniConsoleNotBoundToAKey);
+                    var consoleElement = coalFileDoc.XPathSelectElement(@"/CoalesceAsset/Sections/Section[@name='engine.console']");
+                    var consoleKeyElement = new XElement(@"Property", typeKeyStr);
+                    consoleKeyElement.SetAttributeValue(@"name", @"typekey");
+                    consoleElement.Add(consoleKeyElement);
+                }
+
+                coalescedFilemapping[@"BioInput.xml"] = coalFileDoc.ToString();
+                var recompiled = CoalescedConverter.CompileFromMemory(coalescedFilemapping);
+                recompiled.WriteToFile(coalPath);
+                AutoTOC.RunTOCOnGameTarget(SelectedTarget);
+            }
+
+            #endregion
+        }
+
+        public ICommand CloseCommand { get; set; }
+        private void LoadCommands()
+        {
+            CloseCommand = new GenericCommand(() => OnClosing(DataEventArgs.Empty), NotListeningForKey);
+        }
+
+        //private void SetME3MiniKeyCallback(string unrealKeyStr)
+        //{
+        //    SetME3KeyWithThread(SelectedME3Target, typeKeyStr: unrealKeyStr);
+        //}
+        //private void ResetME3Keys()
+        //{
+        //    SetME3KeyWithThread(SelectedME3Target, consoleKeyStr: @"Tilde", typeKeyStr: @"Tab");
+        //}
+
+
+        private void ListenForKey(Action<string> setKeyCallback, string listeningForKeyName)
+        {
+            KeyBeingAssigned = listeningForKeyName;
+            IsListeningForKey = true;
+            OnKeyPressed = setKeyCallback;
+        }
+
+        private bool NotListeningForKey() => !IsListeningForKey;
+
+        public string KeyBeingAssigned { get; set; }
+
+        public Action<string> OnKeyPressed;
+
+
+        public override void HandleKeyPress(object sender, KeyEventArgs e)
+        {
+            if (IsListeningForKey)
+            {
+                if (e.Key == Key.Escape)
+                {
+                    // Can't bind escape.
+                    IsListeningForKey = false;
+                    OnKeyPressed?.Invoke(null);
+                    OnKeyPressed = null;
+                    return;
+                }
+
+                // Handle key if possible
+                var unrealString = ConvertToUnrealKeyString(e.Key == Key.System ? e.SystemKey : e.Key);
+                if (unrealString != null)
+                {
+                    IsListeningForKey = false;
+                    OnKeyPressed?.Invoke(unrealString);
+                    OnKeyPressed = null;
                 }
             }
-            catch (Exception e)
+            else if (e.Key == Key.Escape)
             {
-                Log.Error(@"Error reading keybinds: " + e.Message);
-                M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_cannotReadME3Keybinds, e.Message), M3L.GetString(M3L.string_errorReadingKeybinds), MessageBoxButton.OK, MessageBoxImage.Error);
+                OnClosing(DataEventArgs.Empty);
+            }
+        }
+
+        public override void OnPanelVisible()
+        {
+            foreach (var game in Enum.GetValues<MEGame>())
+            {
+                if ((game.IsOTGame() || game.IsLEGame()) && game.IsEnabledGeneration())
+                {
+                    Games.Add(new KeybindingGame(game, mainwindow.InstallationTargets.Where(x => x.Game == game), ListenForKey));
+                }
             }
         }
 

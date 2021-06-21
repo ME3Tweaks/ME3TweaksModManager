@@ -38,55 +38,6 @@
                 Duration="0:0:0.25"
                 Storyboard.TargetProperty="(FrameworkElement.Width)" />
         </Storyboard>
-        <Style
-            x:Key="MenuItemHeaderStyle"
-            TargetType="{x:Type MenuItem}">
-            <Setter
-                Property="Margin"
-                Value="-30,0,0,0" />
-            <Setter
-                Property="FontSize"
-                Value="10" />
-            <Setter
-                Property="FontWeight"
-                Value="Bold" />
-            <Setter
-                Property="Height"
-                Value="14" />
-            <Setter
-                Property="StaysOpenOnClick"
-                Value="True" />
-            <Setter
-                Property="BorderThickness"
-                Value="0" />
-            <Setter
-                Property="Foreground"
-                Value="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
-            <Setter
-                Property="Background"
-                Value="{DynamicResource {x:Static adonisUi:Brushes.MenuHeaderBackgroundBrush}}" />
-        </Style>
-        <Style
-            x:Key="EnableDisableImageStyle"
-            TargetType="{x:Type fa:ImageAwesome}">
-            <Style.Triggers>
-                <Trigger
-                    Property="IsEnabled"
-                    Value="False">
-                    <Setter
-                        Property="Opacity"
-                        Value="0.75" />
-                    <Setter
-                        Property="BitmapEffect">
-                        <Setter.Value>
-                            <BlurBitmapEffect
-                                Radius="2.0"
-                                KernelType="Gaussian" />
-                        </Setter.Value>
-                    </Setter>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
         <x:Array
             x:Key="ModUtilsMenuArray"
             Type="MenuItem"
@@ -316,9 +267,7 @@
                         Click="OpenMemoryAnalyzer_Click"
                         Visibility="{x:Static local:App.IsDebugVisibility}" />
                     <MenuItem
-                        Header="Options"
-                        Command="{Binding ModManagerOptionsCommand}"/>
-                    <MenuItem
+                        Command="{Binding ModManagerOptionsCommand}"
                         Header="{DynamicResource string_Options}">
                         <MenuItem.Icon>
                             <fa:ImageAwesome
@@ -327,229 +276,8 @@
                                 Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                                 Height="16"
                                 Width="16"
-                                RenderOptions.BitmapScalingMode="HighQuality" />
-                        </MenuItem.Icon>
-                        <MenuItem
-                            Header="{DynamicResource string_ModManager}"
-                            Style="{StaticResource MenuItemHeaderStyle}" />
-                        <MenuItem
-                            Name="SetModLibraryPath_MenuItem"
-                            Header="{DynamicResource string_Setmodlibrarypath}"
-                            StaysOpenOnClick="True"
-                            Click="ChangeSetting_Clicked"
-                            ToolTip="{Binding Path=(modmanager:Settings.ModLibraryPath), Mode=OneWay}" />
-                        <MenuItem
-                            Name="BetaMode_MenuItem"
-                            Header="{DynamicResource string_optIntoBetaUpdates}"
-                            StaysOpenOnClick="True"
-                            Click="ChangeSetting_Clicked"
-                            IsChecked="{Binding Path=(modmanager:Settings.BetaMode)}"
-                            ToolTip="{DynamicResource string_tooltip_optIntoBetaUpdates}"
-                            IsCheckable="True" />
-                        <MenuItem
-                            Name="DeveloperMode_MenuItem"
-                            Header="{DynamicResource string_Developermode}"
-                            StaysOpenOnClick="True"
-                            Click="ChangeSetting_Clicked"
-                            IsChecked="{Binding Path=(modmanager:Settings.DeveloperMode)}"
-                            ToolTip="{DynamicResource string_EnableDeveloperOrientedFeatures}"
-                            IsCheckable="True" />
-                        <MenuItem
-                            Name="AutoLods2K_MenuItem"
-                            Visibility="Visible"
-                            Header="{DynamicResource string_autoUpdateLODs2K}"
-                            StaysOpenOnClick="True"
-                            Click="ChangeSetting_Clicked"
-                            IsChecked="{Binding Path=(modmanager:Settings.AutoUpdateLODs2K)}"
-                            ToolTip="{DynamicResource string_tooltip_autoLods2K}"
-                            IsCheckable="True" />
-                        <MenuItem
-                            Name="AutoLods4K_MenuItem"
-                            Visibility="Visible"
-                            Header="{DynamicResource string_autoUpdateLODs4K}"
-                            StaysOpenOnClick="True"
-                            Click="ChangeSetting_Clicked"
-                            IsChecked="{Binding Path=(modmanager:Settings.AutoUpdateLODs4K)}"
-                            ToolTip="{DynamicResource string_tooltip_autoLods4K}"
-                            IsCheckable="True" />
-                        <MenuItem
-                            Name="LaunchThroughOrigin_MenuItem"
-                            Header="{DynamicResource string_setting_launchThroughOrigin}"
-                            StaysOpenOnClick="True"
-                            Click="ChangeSetting_Clicked"
-                            Visibility="{Binding Converter={StaticResource FlightingVisibilityConverter}, ConverterParameter='launchthroughoriginfeature'}"
-                            IsChecked="{Binding Path=(modmanager:Settings.LaunchGamesThroughOrigin)}"
-                            ToolTip="{DynamicResource string_setting_tooltip_launchThroughOrigin}"
-                            IsCheckable="True" />
-                        <MenuItem
-                            Name="PreferCompressingPackages_MenuItem"
-                            Visibility="Visible"
-                            Header="{DynamicResource string_compressPackagesOnInstall}"
-                            StaysOpenOnClick="True"
-                            Click="ChangeSetting_Clicked"
-                            IsChecked="{Binding Path=(modmanager:Settings.PreferCompressingPackages)}"
-                            ToolTip="{DynamicResource string_tooltip_compressPackagesOnInstall}"
-                            IsCheckable="True" />
-                        <MenuItem
-                            Name="DarkMode_MenuItem"
-                            Visibility="Visible"
-                            Header="{DynamicResource string_Darktheme}"
-                            StaysOpenOnClick="True"
-                            Click="ChangeSetting_Clicked"
-                            IsChecked="{Binding Path=(modmanager:Settings.DarkTheme)}"
-                            ToolTip="{DynamicResource string_SwitchUItodarktheme}"
-                            IsCheckable="True" />
-                        <MenuItem
-                            Name="AutoConfigNXM_MenuItem"
-                            Visibility="Visible"
-                            Header="{DynamicResource string_configureNxmHandlerOnBoot}"
-                            StaysOpenOnClick="True"
-                            Click="ChangeSetting_Clicked"
-                            IsChecked="{Binding Path=(modmanager:Settings.ConfigureNXMHandlerOnBoot)}"
-                            ToolTip="{DynamicResource string_tooltip_configureNxmHandlerOnBoot}"
-                            IsCheckable="True" />
-                        <MenuItem
-                            Header="{DynamicResource string_Language}">
-                            <MenuItem.Icon>
-                                <Image
-                                    Source="/modmanager/localizations/icons/languageselector.png"
-                                    RenderOptions.BitmapScalingMode="HighQuality" />
-                            </MenuItem.Icon>
-                            <!--<MenuItem Name="LanguageCZE_MenuItem" Header="Polski" Click="ChangeLanguage_Clicked" StaysOpenOnClick="True" Visibility="Collapsed">
-                                <MenuItem.Icon>
-                                    <Image Source="/modmanager/localizations/icons/czech.png" />
-                                </MenuItem.Icon>
-                            </MenuItem>-->
-                            <MenuItem
-                                Name="LanguageDEU_MenuItem"
-                                Header="Deutsch"
-                                Click="ChangeLanguage_Clicked"
-                                StaysOpenOnClick="True">
-                                <MenuItem.Icon>
-                                    <Image
-                                        Source="/modmanager/localizations/icons/german.png" />
-                                </MenuItem.Icon>
-                            </MenuItem>
-                            <MenuItem
-                                Name="LanguageINT_MenuItem"
-                                Header="English"
-                                Click="ChangeLanguage_Clicked"
-                                StaysOpenOnClick="True">
-                                <MenuItem.Icon>
-                                    <Image
-                                        Source="/modmanager/localizations/icons/english.png" />
-                                </MenuItem.Icon>
-                            </MenuItem>
-                            <!--
-                            <MenuItem Name="LanguageESN_MenuItem" Header="Español" Click="ChangeLanguage_Clicked" StaysOpenOnClick="True" Visibility="Collapsed">
-                                <MenuItem.Icon>
-                                    <Image Source="/modmanager/localizations/icons/spanish.png" />
-                                </MenuItem.Icon>
-                            </MenuItem>
-                            -->
-                            <!--<MenuItem
-                                Name="LanguageFRA_MenuItem"
-                                Header="Français"
-                                Click="ChangeLanguage_Clicked"
-                                StaysOpenOnClick="True">
-                                <MenuItem.Icon>
-                                    <Image
-                                        Source="/modmanager/localizations/icons/french.png" />
-                                </MenuItem.Icon>
-                            </MenuItem>-->
-                            <MenuItem
-                                Name="LanguagePOL_MenuItem"
-                                Header="Polski"
-                                Click="ChangeLanguage_Clicked"
-                                StaysOpenOnClick="True">
-                                <MenuItem.Icon>
-                                    <Image
-                                        Source="/modmanager/localizations/icons/polish.png" />
-                                </MenuItem.Icon>
-                            </MenuItem>
-                            <MenuItem
-                                Name="LanguageBRA_MenuItem"
-                                Header="Português"
-                                Click="ChangeLanguage_Clicked"
-                                StaysOpenOnClick="True">
-                                <MenuItem.Icon>
-                                    <Image
-                                        Source="/modmanager/localizations/icons/portuguese.png" />
-                                </MenuItem.Icon>
-                            </MenuItem>
-                            <MenuItem
-                                Name="LanguageRUS_MenuItem"
-                                Header="Pусский"
-                                Click="ChangeLanguage_Clicked"
-                                StaysOpenOnClick="True">
-                                <MenuItem.Icon>
-                                    <Image
-                                        Source="/modmanager/localizations/icons/russian.png" />
-                                </MenuItem.Icon>
-                            </MenuItem>
-                        </MenuItem>
-                        <MenuItem
-                            Header="{DynamicResource string_mE3TweaksModMaker}"
-                            Style="{StaticResource MenuItemHeaderStyle}" />
-                        <MenuItem
-                            Name="ModMakerControllerMixins_MenuItem"
-                            Header="{DynamicResource string_autoAddControllerMixinsToModMakerMods}"
-                            StaysOpenOnClick="True"
-                            Click="ChangeSetting_Clicked"
-                            IsChecked="{Binding Path=(modmanager:Settings.ModMakerControllerModOption)}"
-                            ToolTip="{DynamicResource string_tooltip_autoAddControllerMixinsToModMakerMods}"
-                            IsCheckable="True" />
-                        <MenuItem
-                            Name="ModMakerKeybindsInjection_MenuItem"
-                            Header="{DynamicResource string_autoInjectCustomKeybindsIntoModMakerMods}"
-                            StaysOpenOnClick="True"
-                            Click="ChangeSetting_Clicked"
-                            IsChecked="{Binding Path=(modmanager:Settings.ModMakerAutoInjectCustomKeybindsOption)}"
-                            ToolTip="{DynamicResource string_tooltip_autoInjectCustomKeybinds}"
-                            IsCheckable="True" />
-                        <MenuItem
-                            Header="{DynamicResource string_Logging}"
-                            Style="{StaticResource MenuItemHeaderStyle}" />
-                        <MenuItem
-                            Name="EnableTelemetry_MenuItem"
-                            Header="{DynamicResource string_Enabletelemetry}"
-                            StaysOpenOnClick="True"
-                            Click="ChangeSetting_Clicked"
-                            IsChecked="{Binding Path=(modmanager:Settings.EnableTelemetry)}"
-                            ToolTip="{DynamicResource string_tooltip_toggleTelemetry}"
-                            IsCheckable="True" />
-                        <MenuItem
-                            Name="LogModStartup_MenuItem"
-                            Header="{DynamicResource string_LogModStartup}"
-                            StaysOpenOnClick="True"
-                            Click="ChangeSetting_Clicked"
-                            IsChecked="{Binding Path=(modmanager:Settings.LogModStartup)}"
-                            ToolTip="{DynamicResource string_tooltip_logModLoading}"
-                            IsCheckable="True" />
-                        <MenuItem
-                            Name="LogModMakerCompiler_MenuItem"
-                            Header="{DynamicResource string_LogModMakerCompiler}"
-                            StaysOpenOnClick="True"
-                            Click="ChangeSetting_Clicked"
-                            IsChecked="{Binding Path=(modmanager:Settings.LogModMakerCompiler)}"
-                            ToolTip="{DynamicResource string_tooltip_logModMakerCompiler}"
-                            IsCheckable="True" />
-                        <MenuItem
-                            Name="LogModInstall_MenuItem"
-                            Header="{DynamicResource string_LogModInstallation}"
-                            StaysOpenOnClick="True"
-                            Click="ChangeSetting_Clicked"
-                            IsChecked="{Binding Path=(modmanager:Settings.LogModInstallation)}"
-                            ToolTip="{DynamicResource string_tooltip_logModInstaller}"
-                            IsCheckable="True" />
-                        <MenuItem
-                            Name="LogModUpdater_MenuItem"
-                            Header="{DynamicResource string_LogModUpdater}"
-                            StaysOpenOnClick="True"
-                            Click="ChangeSetting_Clicked"
-                            IsChecked="{Binding Path=(modmanager:Settings.LogModUpdater)}"
-                            ToolTip="{DynamicResource string_tooltip_logModUpdater}"
-                            IsCheckable="True" />
+                                RenderOptions.BitmapScalingMode="HighQuality"/>
+                            </MenuItem.Icon>  
                     </MenuItem>
                     <Separator />
                     <MenuItem
@@ -973,20 +701,6 @@
                             StaysOpenOnClick="True" />
 
                     </MenuItem>
-                    <MenuItem
-                        Header="{DynamicResource string_Grantwriteaccesstogamedirectories}"
-                        Command="{Binding GrantWriteAccessCommand}"
-                        ToolTip="{DynamicResource string_Grantswritepermissionstogamedirectories}">
-                        <MenuItem.Icon>
-                            <fa:ImageAwesome
-                                Style="{StaticResource EnableDisableImageStyle}"
-                                Icon="HddOutline"
-                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
-                                Height="16"
-                                Width="16"
-                                RenderOptions.BitmapScalingMode="HighQuality" />
-                        </MenuItem.Icon>
-                    </MenuItem>
                     <MenuItem Header="AutoTOC">
                         <MenuItem.Icon>
                             <fa:ImageAwesome
@@ -1047,7 +761,7 @@
                                     Width="16"
                                     Height="16" />
                             </MenuItem.Icon>
-                        </MenuItem>                    
+                        </MenuItem>
                     </MenuItem>
                     <MenuItem Header="Sync PlotManager">
                         <MenuItem.Icon>
@@ -1113,15 +827,32 @@
                         </MenuItem>
                     </MenuItem>
                     <MenuItem
+                        Header="{DynamicResource string_Grantwriteaccesstogamedirectories}"
+                        Command="{Binding GrantWriteAccessCommand}"
+                        ToolTip="{DynamicResource string_Grantswritepermissionstogamedirectories}">
+                        <MenuItem.Icon>
+                            <fa:ImageAwesome
+                                Style="{StaticResource EnableDisableImageStyle}"
+                                Icon="HddOutline"
+                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                Height="16"
+                                Width="16"
+                                RenderOptions.BitmapScalingMode="HighQuality" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem
                         ui:SharedUIBindings.GenerationOT="True"
                         Header="{DynamicResource string_consoleCommandKeybinder}"
                         Command="{Binding ConsoleKeyKeybinderCommand}"
                         ToolTip="{DynamicResource string_tooltip_consoleCommandKeybinder}">
                         <MenuItem.Icon>
-                            <Image
-                                Source="/images/terminal.png"
+                            <fa:ImageAwesome
+                                Style="{StaticResource EnableDisableImageStyle}"
+                                Icon="Terminal"
+                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                Height="16"
                                 Width="16"
-                                RenderOptions.BitmapScalingMode="Linear" />
+                                RenderOptions.BitmapScalingMode="HighQuality" />
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem
@@ -1335,61 +1066,27 @@
                         </MenuItem.Icon>
                     </MenuItem>
                 </MenuItem>
-                <MenuItem
+                <MenuItem 
                     Header="{DynamicResource string_debug}"
-                    Visibility="{x:Static local:App.DebugOnlyVisibility}">
-                    <MenuItem
-                        Header="{DynamicResource string_requiresSelectedMod}"
-                        Style="{StaticResource MenuItemHeaderStyle}"
-                        Visibility="{x:Static local:App.DebugOnlyVisibility}" />
-                    <MenuItem
-                        Header="{DynamicResource string_reloadSelectedMod}"
-                        Click="ReloadSelectedMod_Click"
-                        Visibility="{x:Static local:App.DebugOnlyVisibility}" />
-                    <MenuItem
-                        Header="{DynamicResource string_debugPrintAllReferencedFiles}"
-                        Click="DebugPrintReferencedFiles_Click"
-                        Visibility="{x:Static local:App.DebugOnlyVisibility}" />
-                    <MenuItem
-                        Header="{DynamicResource string_debugPrintInstallationQueue}"
-                        Click="DebugPrintInstallationQueue_Click"
-                        Visibility="{x:Static local:App.DebugOnlyVisibility}" />
-                    <MenuItem
-                        Header="{DynamicResource string_requiresSelectedTarget}"
-                        Style="{StaticResource MenuItemHeaderStyle}"
-                        Visibility="{x:Static local:App.DebugOnlyVisibility}" />
-                    <MenuItem
-                        Header="{DynamicResource string_stampCurrentTargetWithALOTMarker}"
-                        Click="StampCurrentTargetWithALOT_Click"
-                        Visibility="{x:Static local:App.DebugOnlyVisibility}" />
-                    <MenuItem
-                        Header="{DynamicResource string_stripCurrentTargetALOTMarker}"
-                        Click="StripCurrentTargetALOTMarker_Click"
-                        Visibility="{x:Static local:App.DebugOnlyVisibility}" />
-                    <MenuItem
-                        Header="MMV1 DEBUG"
-                        Click="TestMMV1_click"
-                        Visibility="{x:Static local:App.DebugOnlyVisibility}" />
-                    <MenuItem
-                        Header="Build MD5 DB"
-                        Click="MD5DB_Gen_Click"
-                        Visibility="{x:Static local:App.DebugOnlyVisibility}" />
-                    <MenuItem
-                        Header="{DynamicResource string_requiresNothing}"
-                        Style="{StaticResource MenuItemHeaderStyle}"
-                        Visibility="{x:Static local:App.DebugOnlyVisibility}" />
-                    <MenuItem
-                        Header="{DynamicResource string_showWelcomePanel}"
-                        Click="ShowWelcomePanel_Click"
-                        Visibility="{x:Static local:App.DebugOnlyVisibility}" />
-                    <MenuItem
-                        Header="{DynamicResource string_showBackupNag}"
-                        Click="ShowBackupNag_Click"
-                        Visibility="{x:Static local:App.DebugOnlyVisibility}" />
-                    <MenuItem
-                        Header="{DynamicResource string_mEMVanillaDBViewer}"
-                        Click="MEMVanillaDBViewer_Click"
-                        Visibility="{x:Static local:App.DebugOnlyVisibility}" />
+                    Visibility="{x:Static local:App.DebugOnlyVisibility}"
+                    Padding="4">
+                    <MenuItem Header="{DynamicResource string_requiresSelectedMod}" Style="{StaticResource MenuItemHeaderStyle}" />
+                    <MenuItem Header="{DynamicResource string_reloadSelectedMod}" Click="RouteDebugCall" Name="ReloadSelectedMod_MenuItem" />
+                    <MenuItem Header="{DynamicResource string_debugPrintAllReferencedFiles}" Name="DebugPrintReferencedFiles_MenuItem" Click="RouteDebugCall" />
+                    <MenuItem Header="{DynamicResource string_debugPrintInstallationQueue}" Name="DebugPrintInstallationQueue_MenuItem" Click="RouteDebugCall" />
+                    <MenuItem Header="{DynamicResource string_requiresSelectedTarget}" Style="{StaticResource MenuItemHeaderStyle}" />
+                    <MenuItem Header="Test squadmate merge" Name="DebugSquadmateMerge_MenuItem" Click="RouteDebugCall" />
+                    <MenuItem Header="{DynamicResource string_stampCurrentTargetWithALOTMarker}" Name="StampCurrentTargetWithALOTMarker_MenuItem" Click="RouteDebugCall" />
+                    <MenuItem Header="{DynamicResource string_stripCurrentTargetALOTMarker}" Name="StripCurrentTargetWithALOTMarker_MenuItem" Click="RouteDebugCall" />
+                    <MenuItem Header="MMV1 DEBUG" Name="TestMMV1_MenuItem" Click="RouteDebugCall" />
+                    <MenuItem Header="Build MD5 DB" Name="RebuildMD5DB_MenuItem" Click="RouteDebugCall" />
+                    <MenuItem Header="Update MD5 DB" Name="UpdateMD5DB_MenuItem" Click="RouteDebugCall" />
+                    <MenuItem Header="{DynamicResource string_requiresNothing}" Style="{StaticResource MenuItemHeaderStyle}" />
+                    <MenuItem Header="{DynamicResource string_showWelcomePanel}" Name="ShowWelcomePanel_MenuItem" Click="RouteDebugCall" />
+                    <MenuItem Header="{DynamicResource string_showBackupNag}" Name="ShowBackupNag_MenuItem" Click="RouteDebugCall" />
+                    <MenuItem Header="{DynamicResource string_mEMVanillaDBViewer}" Name="ShowMEMDB_MenuItem" Click="RouteDebugCall" />
+                    <MenuItem Header="Test code" Name="TestCode_MenuItem" Click="RouteDebugCall" />
+                    <MenuItem Header="Test 7z" Name="Test7z_MenuItem" Click="RouteDebugCall" />
                 </MenuItem>
                 <MenuItem
                     Name="HelpMenuItem"

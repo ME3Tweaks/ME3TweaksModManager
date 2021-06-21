@@ -60,17 +60,17 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 case MEGame.LE1:
                     if (LE1VanillaDatabase.Count > 0) return LE1VanillaDatabase;
                     var le1stream = Utilities.ExtractInternalFileToStream($@"{assetPrefix}.bin");
-                    ParseDatabase(le1stream, LE1VanillaDatabase, true);
+                    ParseDatabase(le1stream, LE1VanillaDatabase);
                     return LE1VanillaDatabase;
                 case MEGame.LE2:
                     if (ME2VanillaDatabase.Count > 0) return LE2VanillaDatabase;
                     var le2stream = Utilities.ExtractInternalFileToStream($@"{assetPrefix}.bin");
-                    ParseDatabase(le2stream, LE2VanillaDatabase, true);
+                    ParseDatabase(le2stream, LE2VanillaDatabase);
                     return LE2VanillaDatabase;
                 case MEGame.LE3:
                     if (LE3VanillaDatabase.Count > 0) return LE3VanillaDatabase;
                     var le3stream = Utilities.ExtractInternalFileToStream($@"{assetPrefix}.bin");
-                    ParseDatabase(le3stream, LE3VanillaDatabase, true);
+                    ParseDatabase(le3stream, LE3VanillaDatabase);
                     return LE3VanillaDatabase;
                 case MEGame.LELauncher:
                     if (LELauncherVanillaDatabase.Count > 0) return LELauncherVanillaDatabase;
@@ -296,6 +296,8 @@ namespace MassEffectModManagerCore.modmanager.helpers
 
         public static bool IsFileVanilla(MEGame game, string fullpath, string relativepath, bool isME1Polish, bool md5check = false)
         {
+            if (game.IsLEGame() && relativepath.StartsWith(@"BioGame\Config\"))
+                return true; // Don't consider these as modified they are modified
             var database = LoadDatabaseFor(game, isME1Polish);
             if (database.TryGetValue(relativepath, out var info))
             {
@@ -406,7 +408,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                     }
                     else
                     {
-                        Debug.WriteLine(@"File not in Vanilla DB: " + file);
+                        Debug.WriteLine(@"File not in Vanilla DB: " + shortname);
                     }
                 }
             }
@@ -492,6 +494,18 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 case MEGame.ME3:
                     if (ME3VanillaDatabase.Count == 0) LoadDatabaseFor(MEGame.ME3);
                     vanillaDB = ME3VanillaDatabase;
+                    break;
+                case MEGame.LE1:
+                    if (LE1VanillaDatabase.Count == 0) LoadDatabaseFor(MEGame.LE1);
+                    vanillaDB = LE1VanillaDatabase;
+                    break;
+                case MEGame.LE2:
+                    if (LE2VanillaDatabase.Count == 0) LoadDatabaseFor(MEGame.LE2);
+                    vanillaDB = LE2VanillaDatabase;
+                    break;
+                case MEGame.LE3:
+                    if (LE3VanillaDatabase.Count == 0) LoadDatabaseFor(MEGame.LE3);
+                    vanillaDB = LE3VanillaDatabase;
                     break;
                 default:
                     throw new Exception(@"Cannot vanilla check against game that is not ME1/ME2/ME3");
@@ -611,7 +625,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
             [@"a50a5ab69a0de8356ddd8ab69f8ecdc2"] = @"Origin 2.0.0.48204",
             [@"5e8dc210b4adda2eda1dc367a781c3a8"] = @"Origin 2.0.0.48602",
         };
-        
+
         /// <summary>
         /// Checks the existing listed backup and tags it with cmm_vanilla if determined to be vanilla. This is because ALOT Installer allows modified backups where as Mod Manager will not
         /// </summary>
@@ -660,8 +674,8 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 {
                     //Backup is OK
                     //Tag
-                    File.WriteAllText(Path.Combine(targetPath, @"cmm_vanilla"), App.AppVersionHR);
-                    Log.Information(@"Wrote cmm_vanilla to validated backup");
+                    File.WriteAllText(Path.Combine(targetPath, BackupService.CMM_VANILLA_FILENAME), App.AppVersionHR);
+                    Log.Information($@"Wrote {BackupService.CMM_VANILLA_FILENAME} to validated backup");
                     BackupService.SetBackedUp(game, true);
                 }
                 else

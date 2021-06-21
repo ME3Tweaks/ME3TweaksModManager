@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -82,6 +83,9 @@ namespace MassEffectModManagerCore.modmanager.objects
 
             // LEGENDARY
             LELAUNCHER,
+
+            // GAME 1
+            GAME1_EMBEDDED_TLK // Embedded TLK files for merge
         }
 
         /// <summary>
@@ -245,11 +249,17 @@ namespace MassEffectModManagerCore.modmanager.objects
         /// <returns>string of failure reason. null if OK.</returns>
         internal string AddFileToInstall(string destRelativePath, string sourceRelativePath, Mod mod)
         {
-            //Security check
+            // Security check
             if (!checkExtension(sourceRelativePath, out string failReason))
             {
                 return failReason;
             }
+
+            if (destRelativePath.Contains(@".."))
+            {
+                return $"Relative path {destRelativePath} cannot contain '..' in it";
+            }
+
             string checkingSourceFile;
             if (JobDirectory != null)
             {
@@ -264,7 +274,10 @@ namespace MassEffectModManagerCore.modmanager.objects
             {
                 return M3L.GetString(M3L.string_interp_validation_modjob_replacementFileSpecifiedByJobDoesntExist, checkingSourceFile);
             }
-            FilesToInstall[destRelativePath.Replace('/', '\\').TrimStart('\\')] = sourceRelativePath.Replace('/', '\\');
+
+            var calculatedDest = destRelativePath.Replace('/', '\\').TrimStart('\\').TrimStart('.'); //.TrimStart(.) added 6/11/2021 for security check
+            calculatedDest = calculatedDest.Replace(@"\.\", @"\"); // Security filtering
+            FilesToInstall[calculatedDest] = sourceRelativePath.Replace('/', '\\');
             return null;
         }
 
@@ -287,12 +300,14 @@ namespace MassEffectModManagerCore.modmanager.objects
                 return false;
             }
 
+            // Add .bat, .cmd files?
+
             failReason = null;
             return true;
         }
 
         /// <summary>
-        /// Adds a file to the add/replace list of files to install. This will replace an existing file in the mapping if the destination path is the same. This is for automapping.
+        /// Adds a file to the add/replace list of files to install. This will replace an existing file in the mapping if the destination path is the same. This is for automapping. This does not check the security!
         /// </summary>
         /// <param name="destRelativePath">Relative in-game path (from game root) to install file to.</param>
         /// <param name="sourcePath">Path to parsed file</param>
@@ -319,7 +334,10 @@ namespace MassEffectModManagerCore.modmanager.objects
             {
                 return failReason;
             }
-            FilesToInstall[destRelativePath.Replace('/', '\\').TrimStart('\\')] = sourcePath.Replace('/', '\\');
+
+            var calculatedDest = destRelativePath.Replace('/', '\\').TrimStart('\\').TrimStart('.'); //.TrimStart(.) added 6/11/2021 for security check
+            calculatedDest = calculatedDest.Replace(@"\.\", @"\"); // Security filtering
+            FilesToInstall[calculatedDest] = sourcePath.Replace('/', '\\');
             return null;
         }
 
@@ -351,13 +369,13 @@ namespace MassEffectModManagerCore.modmanager.objects
         }
 
 
-        private static IReadOnlyDictionary<JobHeader, string> ME1HeadersToDLCNamesMap = new Dictionary<JobHeader, string>
+        private readonly static IReadOnlyDictionary<JobHeader, string> ME1HeadersToDLCNamesMap = new Dictionary<JobHeader, string>
         {
             [JobHeader.BRING_DOWN_THE_SKY] = @"DLC_UNC",
             [JobHeader.PINNACLE_STATION] = @"DLC_Vegas"
         };
 
-        private static IReadOnlyDictionary<JobHeader, string> ME2HeadersToDLCNamesMap = new Dictionary<JobHeader, string>
+        private readonly static IReadOnlyDictionary<JobHeader, string> ME2HeadersToDLCNamesMap = new Dictionary<JobHeader, string>
         {
             [JobHeader.AEGIS_PACK] = @"DLC_CER_02",
             [JobHeader.APPEARANCE_PACK_1] = @"DLC_CON_Pack01",
@@ -384,7 +402,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             [JobHeader.ZAEED] = @"DLC_HEN_VT"
         };
 
-        private static IReadOnlyDictionary<JobHeader, string> ME3HeadersToDLCNamesMap = new Dictionary<JobHeader, string>
+        private readonly static IReadOnlyDictionary<JobHeader, string> ME3HeadersToDLCNamesMap = new Dictionary<JobHeader, string>
         {
             [JobHeader.COLLECTORS_EDITION] = @"DLC_OnlinePassHidCE",
             [JobHeader.RESURGENCE] = @"DLC_CON_MP1",
@@ -410,7 +428,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         /// <summary>
         /// There are no supported headers since all DLC is assumed to be installed already
         /// </summary>
-        private static IReadOnlyDictionary<JobHeader, string> LEHeadersToDLCNamesMap = new Dictionary<JobHeader, string> { };
+        private readonly static IReadOnlyDictionary<JobHeader, string> LEHeadersToDLCNamesMap = new Dictionary<JobHeader, string> { };
 
         internal static IReadOnlyDictionary<JobHeader, string> GetHeadersToDLCNamesMap(MEGame game)
         {
@@ -447,6 +465,11 @@ namespace MassEffectModManagerCore.modmanager.objects
         /// List of files that should be set to read-only on install. Used for exec files for EGM
         /// </summary>
         public List<string> ReadOnlyIndicators = new List<string>();
+
+        /// <summary>
+        /// List of xml files in the Game1Tlk job directory. Ensure you check for null before accessing this variable.
+        /// </summary>
+        public List<string> Game1TLKXmls;
 
         /// <summary>
         /// Gets list of headers that does not include CUSTOMDLC. Includes BASEGAME.
@@ -634,17 +657,41 @@ namespace MassEffectModManagerCore.modmanager.objects
                 // There are specific directories we allow installation to.
                 if (game == MEGame.ME3)
                 {
-                    scopes.DisallowedSilos.Add(@"Binaries\\Win32" + Path.DirectorySeparatorChar); //You are not allowed to install files into the game executable directory.
+                    scopes.DisallowedSilos.Add($@"Binaries{Path.DirectorySeparatorChar}Win32");
                 }
-
-                if (game.IsLEGame())
+                else if (game is MEGame.ME1 or MEGame.ME2)
                 {
-                    scopes.DisallowedSilos.Add(@"Binaries\\Win64" + Path.DirectorySeparatorChar); //You are not allowed to install files into the game executable directory.
+                    scopes.DisallowedSilos.Add($@"Binaries{Path.DirectorySeparatorChar}asi");
+                }
+                else if (game.IsLEGame())
+                {
+                    scopes.DisallowedSilos.Add($@"Binaries{Path.DirectorySeparatorChar}Win64"); //You are not allowed to install files into the game executable directory or subdirectories
+                    scopes.DisallowedSilos.Add($@"BioGame{Path.DirectorySeparatorChar}Config"); // You are not allowed to overwrite ini files or anything in config
+                    scopes.DisallowedFileSilos.Add($@"BioGame{Path.DirectorySeparatorChar}CookedPCConsole{Path.DirectorySeparatorChar}PlotManager.pcc"); // You must use PMU feature for this
+
+                    if (game == MEGame.LE3)
+                    {
+                        scopes.DisallowedFileSilos.Add($@"BioGame{Path.DirectorySeparatorChar}CookedPCConsole{Path.DirectorySeparatorChar}Conditionals.cnd"); // You must use override feature
+                    }
                 }
 
-                scopes.AllowedSilos.Add(@"Binaries" + Path.DirectorySeparatorChar); //Exec files
-                scopes.AllowedSilos.Add(@"BioGame" + Path.DirectorySeparatorChar); // Stuff in biogame
-                scopes.AllowedSilos.Add(@"data" + Path.DirectorySeparatorChar); // Stuff in biogame
+                if (game == MEGame.LELauncher)
+                {
+                    scopes.DisallowedFileSilos.Add(""); // Root directory
+                    scopes.DisallowedFileSilos.Add(@"."); // Root directory
+                }
+
+                if (game != MEGame.LELauncher)
+                {
+                    scopes.AllowedSilos.Add(@"Binaries" + Path.DirectorySeparatorChar); //Exec files
+                    scopes.AllowedSilos.Add(@"BioGame" + Path.DirectorySeparatorChar); // Stuff in biogame
+                }
+
+                if (game is MEGame.ME1 or MEGame.ME2)
+                {
+                    scopes.AllowedSilos.Add(@"data" + Path.DirectorySeparatorChar); // Contains config tool
+                }
+
                 scopes.DisallowedSilos.Add(dlcDir); // BASEGAME is not allowed into DLC
                 scopes.AllowedSilos.Add(@"Engine" + Path.DirectorySeparatorChar); //Shaders
             }
@@ -677,8 +724,18 @@ namespace MassEffectModManagerCore.modmanager.objects
         /// </summary>
         public class SiloScopes
         {
+            /// <summary>
+            /// Directories that can be installed to
+            /// </summary>
             public List<string> AllowedSilos = new List<string>();
+            /// <summary>
+            /// Directories that cannot be installed to
+            /// </summary>
             public List<string> DisallowedSilos = new List<string>();
+            /// <summary>
+            /// Specific file paths that can not be installed to
+            /// </summary>
+            public List<string> DisallowedFileSilos = new List<string>();
         }
 
         /// <summary>
@@ -690,6 +747,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         {
             switch (job.Header)
             {
+                case JobHeader.GAME1_EMBEDDED_TLK:
                 case JobHeader.LOCALIZATION:
                 case JobHeader.ME1_CONFIG:
                 case JobHeader.ME2_RCWMOD:

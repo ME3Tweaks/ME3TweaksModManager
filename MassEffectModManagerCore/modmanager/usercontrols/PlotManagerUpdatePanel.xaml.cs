@@ -13,6 +13,7 @@ using LegendaryExplorerCore.Unreal.BinaryConverters;
 using LegendaryExplorerCore.UnrealScript;
 using LegendaryExplorerCore.UnrealScript.Compiling.Errors;
 using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
 using Microsoft.AppCenter.Analytics;
@@ -38,12 +39,19 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             Log.Information($@"Updating PlotManager for game: {target.TargetPath}");
             var supercedances = M3Directories.GetFileSupercedances(target, new[] { @".pmu" });
             Dictionary<string, string> funcMap = new();
+            List<string> combinedNames = new List<string>();
+
             if (supercedances.TryGetValue(@"PlotManagerUpdate.pmu", out var supercedanes))
             {
+                supercedanes.Reverse(); // list goes from highest to lowest. We want to build in lowest to highest
                 StringBuilder sb = null;
                 string currentFuncNum = null;
+                var metaMaps = M3Directories.GetMetaMappedInstalledDLC(target, false);
                 foreach (var pmuDLCName in supercedanes)
                 {
+
+                    var uiName = metaMaps[pmuDLCName]?.ModName ?? ThirdPartyServices.GetThirdPartyModInfo(pmuDLCName, target.Game)?.modname ?? pmuDLCName;
+                    combinedNames.Add(uiName);
                     var text = File.ReadAllLines(Path.Combine(M3Directories.GetDLCPath(target), pmuDLCName, target.Game.CookedDirName(), @"PlotManagerUpdate.pmu"));
                     foreach (var line in text)
                     {
@@ -109,11 +117,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
             }
 
+            var pmPath = GetPlotManagerPath(target);
             var vpm = Utilities.ExtractInternalFileToStream($@"MassEffectModManagerCore.modmanager.plotmanager.{target.Game}.PlotManager.{(target.Game == MEGame.ME1 ? @"u" : @"pcc")}");
-
             if (funcMap.Any())
             {
-
                 var plotManager = MEPackageHandler.OpenMEPackageFromStream(vpm, $@"PlotManager.{(target.Game == MEGame.ME1 ? @"u" : @"pcc")}");
                 Stopwatch sw = Stopwatch.StartNew();
                 var fl = new FileLib(plotManager);
@@ -128,7 +135,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 bool relinkChain = false;
                 foreach (var v in funcMap)
                 {
-                    var exp = plotManager.FindExport($@"BioAutoConditionals.{v.Key}");
+                    var pmKey = $@"BioAutoConditionals.F{v.Key}";
+                    var exp = plotManager.FindExport(pmKey);
                     if (exp == null)
                     {
                         // Adding a new conditional
@@ -138,8 +146,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         UFunction uf = ObjectBinary.From<UFunction>(exp);
                         uf.Children = 0;
                         exp.WriteBinary(uf);
-
                         relinkChain = true;
+                        CLog.Information($@"Generated new conditional entry: {exp.UIndex} {pmKey}", Settings.LogModInstallation);
+                    }
+                    else
+                    {
+                        CLog.Information($@"Updating conditional entry: {pmKey}", Settings.LogModInstallation);
                     }
 
                     (_, MessageLog log) = UnrealScriptCompiler.CompileFunction(exp, v.Value, fl);
@@ -159,17 +171,26 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                 if (relinkChain)
                 {
-                    UClass uc = ObjectBinary.From<UClass>(plotManager.FindExport("BioAutoConditionals"));
+                    UClass uc = ObjectBinary.From<UClass>(plotManager.FindExport(@"BioAutoConditionals"));
                     uc.UpdateChildrenChain();
+                    uc.UpdateLocalFunctions();
                     uc.Export.WriteBinary(uc);
                 }
-                plotManager.Save(GetPlotManagerPath(target), true);
+
+                if (plotManager.IsModified)
+                {
+                    plotManager.Save(pmPath, true);
+                    // Update local file DB
+                    var bgfe = new BasegameFileIdentificationService.BasegameCloudDBFile(pmPath.Substring(target.TargetPath.Length + 1), (int)new FileInfo(pmPath).Length, target.Game, $"PlotManager sync for {string.Join(@", ", combinedNames)}", Utilities.CalculateMD5(pmPath));
+                    BasegameFileIdentificationService.AddLocalBasegameIdentificationEntries(new List<BasegameFileIdentificationService.BasegameCloudDBFile>(new[] { bgfe }));
+                }
             }
             else
             {
                 // Just write out vanilla.
-                vpm.WriteToFile(GetPlotManagerPath(target));
+                vpm.WriteToFile(pmPath);
             }
+
 
             return true;
         }

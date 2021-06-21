@@ -154,13 +154,22 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             public string game { get; set; }
             public int size { get; set; }
             public BasegameCloudDBFile() { }
-            public BasegameCloudDBFile(string file, int size, GameTarget gameTarget, Mod modBeingInstalled, string md5 = null)
+            public BasegameCloudDBFile(string fullfilepath, int size, GameTarget gameTarget, Mod modBeingInstalled, string md5 = null)
             {
-                this.file = file.Substring(gameTarget.TargetPath.Length + 1);
-                this.hash = md5 ?? Utilities.CalculateMD5(file);
+                this.file = fullfilepath.Substring(gameTarget.TargetPath.Length + 1);
+                this.hash = md5 ?? Utilities.CalculateMD5(fullfilepath);
                 this.game = gameTarget.Game.ToGameNum().ToString();
                 this.size = size;
                 this.source = modBeingInstalled.ModName + @" " + modBeingInstalled.ModVersionString;
+            }
+
+            public BasegameCloudDBFile(string relativePathToRoot, int size, MEGame game, string humanName, string md5)
+            {
+                this.file = relativePathToRoot;
+                this.hash = md5 ?? Utilities.CalculateMD5(relativePathToRoot);
+                this.game = game.ToGameNum().ToString(); // due to how json serializes stuff we have to convert it here.
+                this.size = size;
+                this.source = humanName;
             }
         }
     }

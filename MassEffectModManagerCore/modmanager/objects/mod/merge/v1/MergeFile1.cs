@@ -21,9 +21,6 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
 
         [JsonProperty("changes")]
         public List<MergeFileChange1> MergeChanges { get; set; }
-
-        [JsonProperty("fileexistenceoptional")]
-        public bool FileExistenceOptional { get; set; }
         [JsonProperty("applytoalllocalizations")] public bool ApplyToAllLocalizations { get; set; }
 
         [JsonIgnore] public MergeMod1 Parent;
@@ -47,12 +44,8 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
             {
                 var targetnameBase = Path.GetFileNameWithoutExtension(FileName);
                 var targetExtension = Path.GetExtension(FileName);
-#if DEBUG
-                var localizations = StarterKitGeneratorWindow.GetLanguagesForGame(associatedMod?.Game ?? MEGame.LE2);
-#else
                 var localizations = StarterKitGeneratorWindow.GetLanguagesForGame(associatedMod.Game);
-#endif
-
+                
                 // Ensure end name is not present on base
                 foreach (var l in localizations)
                 {
@@ -83,7 +76,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
                 }
                 else
                 {
-                    Log.Warning($@"File not found in game: {FileName}, skipping...");
+                    Log.Warning($@"File not found in game: {FileName}, 3ping...");
                     numMergesCompleted++;
                     mergeProgressDelegate?.Invoke(numMergesCompleted, numMergesCompleted, null, null);
                 }
@@ -98,7 +91,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
 #endif
                 // Open as memorystream as we need to hash this file for tracking
                 using MemoryStream ms = new MemoryStream(File.ReadAllBytes(f));
-                
+
                 var existingMD5 = Utilities.CalculateMD5(ms);
                 var package = MEPackageHandler.OpenMEPackageFromStream(ms, f);
 #if DEBUG
@@ -140,10 +133,12 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
         public void Validate()
         {
             if (FileName == null) throw new Exception("'filename' cannot be null for a merge file!");
-            var safeFiles = EntryImporter.FilesSafeToImportFrom(OwningMM.Game);
+            var safeFiles = EntryImporter.FilesSafeToImportFrom(OwningMM.Game).ToList();
+            safeFiles.Add(@"EntryMenu.pcc"); // ME2+
+            safeFiles.Add(@"EntryMenu.SFM"); // ME1
             if (!safeFiles.Any(x => FileName.StartsWith(Path.GetFileNameWithoutExtension(x), StringComparison.InvariantCultureIgnoreCase)))
             {
-                // Does this catch DLC startups?
+                // Does this catch DLC startups? 
                 throw new Exception($"Cannot merge into non-startup file: {FileName}");
             }
         }

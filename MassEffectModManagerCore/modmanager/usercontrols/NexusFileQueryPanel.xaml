@@ -6,10 +6,9 @@
     xmlns:generic="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols.generic"
     mc:Ignorable="d"
     DataContext="{Binding RelativeSource={RelativeSource Self}}"
-    Width="700"
-    Height="500"
-    d:DesignHeight="450"
-    d:DesignWidth="800">
+    Width="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.8_500_1200', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualWidth}"
+    Height="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.85_500', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualHeight}">
+
     <DockPanel>
         <TextBlock
             TextAlignment="Center"

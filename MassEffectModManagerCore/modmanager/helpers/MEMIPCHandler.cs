@@ -270,6 +270,11 @@ namespace MassEffectModManagerCore.modmanager.helpers
         /// <returns></returns>
         public static bool SetLODs(MEGame game, LodSetting setting)
         {
+            if (game.IsLEGame())
+            {
+                Log.Error(@"Cannot set LODs for LE games! This is a bug in Mod Manager");
+                return false;
+            }
             string args = $@"--apply-lods-gfx --gameid {game.ToGameNum()}";
             if (setting.HasFlag(LodSetting.SoftShadows))
             {
@@ -293,7 +298,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
             int exitcode = -1;
             // We don't care about IPC on this
             MEMIPCHandler.RunMEMIPCUntilExit(args,
-                null,null,
+                null, null,
                 x => Log.Error($@"StdError setting LODs: {x}"),
                 x => exitcode = x); //Change to catch exit code of non zero.        
             if (exitcode != 0)
@@ -350,7 +355,15 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 {
                     case @"LODLINE":
                         var lodSplit = param.Split(@"=");
-                        lods[lodSplit[0]] = param.Substring(lodSplit[0].Length + 1);
+                        try
+                        {
+                            lods[lodSplit[0]] = param.Substring(lodSplit[0].Length + 1);
+                        }
+                        catch (Exception e)
+                        {
+                            Log.Error($@"Error reading LOD line output from MEM: {param}, {e.Message}");
+                        }
+
                         break;
                     default:
                         //Debug.WriteLine(@"oof?");
@@ -429,18 +442,18 @@ namespace MassEffectModManagerCore.modmanager.helpers
             return result;
         }
 
-//#if !WINDOWS
-//        public static bool SetConfigPath(MEGame game, string itemValue)
-//        {
-//            int exitcode = 0;
-//            string args = $"--set-game-user-path --gameid {game.ToGameNum()} --path \"{itemValue}\""; //do not localize
-//            MEMIPCHandler.RunMEMIPCUntilExit(args, applicationExited: x => exitcode = x);
-//            if (exitcode != 0)
-//            {
-//                Log.Error($@"[AICORE] Non-zero MassEffectModderNoGui exit code setting game config path: {exitcode}");
-//            }
-//            return exitcode == 0;
-//        }
-//#endif
+        //#if !WINDOWS
+        //        public static bool SetConfigPath(MEGame game, string itemValue)
+        //        {
+        //            int exitcode = 0;
+        //            string args = $"--set-game-user-path --gameid {game.ToGameNum()} --path \"{itemValue}\""; //do not localize
+        //            MEMIPCHandler.RunMEMIPCUntilExit(args, applicationExited: x => exitcode = x);
+        //            if (exitcode != 0)
+        //            {
+        //                Log.Error($@"[AICORE] Non-zero MassEffectModderNoGui exit code setting game config path: {exitcode}");
+        //            }
+        //            return exitcode == 0;
+        //        }
+        //#endif
     }
 }

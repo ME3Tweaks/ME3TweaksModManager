@@ -6,6 +6,7 @@ using System.Windows;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.usercontrols;
 using LegendaryExplorerCore.Misc;
+using LegendaryExplorerCore.Packages.CloningImportingAndRelinking;
 
 
 namespace MassEffectModManagerCore.modmanager.windows
@@ -31,10 +32,10 @@ namespace MassEffectModManagerCore.modmanager.windows
             public ESeverity Severity { get; }
             public string Message { get; }
 
-            public DCIMessage(ESeverity severity, string message)
+            public DCIMessage(ESeverity severity, EntryStringPair message)
             {
                 Severity = severity;
-                Message = message;
+                Message = message.Message;
             }
 
             public string ToRawString() => $@"{Severity}: {Message}";
@@ -50,7 +51,7 @@ namespace MassEffectModManagerCore.modmanager.windows
 
         private void SetupMessages()
         {
-            var dict = new Dictionary<IReadOnlyCollection<string>, DCIMessage.ESeverity>
+            var dict = new Dictionary<IReadOnlyCollection<EntryStringPair>, DCIMessage.ESeverity>
             {
                 [DCI.GetBlockingIssues()] = DCIMessage.ESeverity.BLOCKING,
                 [DCI.GetSignificantIssues()] = DCIMessage.ESeverity.SIGNIFICANTISSUE,

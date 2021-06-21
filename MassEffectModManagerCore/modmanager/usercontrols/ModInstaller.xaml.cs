@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -211,10 +212,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 return;
             }
 
-            if (ModBeingInstalled.Game.IsOTGame())
+            Utilities.InstallBinkBypass(SelectedGameTarget); //Always install binkw32, don't bother checking if it is already ASI version.
+            if (ModBeingInstalled.Game.IsLEGame())
             {
-                // Don't bother LE since we don't need ASI support right now
-                Utilities.InstallBinkBypass(SelectedGameTarget); //Always install binkw32, don't bother checking if it is already ASI version.
+                GameTarget gt = new GameTarget(MEGame.LELauncher, Path.Combine(Directory.GetParent(SelectedGameTarget.TargetPath).FullName, "Launcher"), false, skipInit: true);
+                Utilities.InstallBinkBypass(gt);
             }
 
             if (ModBeingInstalled.Game == MEGame.ME2 && ModBeingInstalled.GetJob(ModJob.JobHeader.ME2_RCWMOD) != null && installationJobs.Count == 1)
@@ -251,6 +253,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     installsPackageFile |= jobMappings.Key.MergeMods.Any(); // merge mods will modify packages
                     installsPackageFile |= jobMappings.Key.AlternateFiles.Any(x => x.IsSelected && x.Operation == AlternateFile.AltFileOperation.OP_APPLY_MERGEMODS); // merge mods will modify packages
+                    installsPackageFile |= jobMappings.Key.Game1TLKXmls != null && jobMappings.Key.Game1TLKXmls.Any(); // TLK merge will modify packages
                     installsPackageFile |= jobMappings.Value.fileMapping.Keys.Any(x => x.EndsWith(@".pcc", StringComparison.InvariantCultureIgnoreCase));
                     installsPackageFile |= jobMappings.Value.fileMapping.Keys.Any(x => x.EndsWith(@".u", StringComparison.InvariantCultureIgnoreCase));
                     installsPackageFile |= jobMappings.Value.fileMapping.Keys.Any(x => x.EndsWith(@".upk", StringComparison.InvariantCultureIgnoreCase));
@@ -283,7 +286,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         Application.Current.Dispatcher.Invoke(delegate
                         {
                             var res = M3L.ShowDialog(Window.GetWindow(this),
-                                "Textures are installed and this mod installs or modifies package files. You can continue to install this mod, but new files will not have updated textures, and texture tools such Mass Effect Modder will no longer operate on this installation. It is safe to continue installing this mod, this is only a warning.",
+                                "Textures are installed and this mod installs or modifies package files. You can continue to install this mod, but new files will not have the updated textures that were previously installed. You will need to reapply texture mods after installation if you want their changes to apply to packages from this mod.",
                                 "Warning: Texture mods are installed",
                                 MessageBoxButton.OKCancel, MessageBoxImage.Warning, MessageBoxResult.Cancel);
                             cancel = res != MessageBoxResult.OK;
@@ -690,25 +693,30 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     //Debug.WriteLine($"{args.FileInfo.FileName} as file { numdone}");
                     //Debug.WriteLine(numdone);
                 };
-                try
+
+                if (fullPathMappingArchive.Any())
                 {
-                    ModBeingInstalled.Archive.ExtractFiles(SelectedGameTarget.TargetPath, installationRedirectCallback, fullPathMappingArchive.Keys.ToArray()); //directory parameter shouldn't be used here as we will be redirecting everything
-                }
-                catch (Exception ex)
-                {
-                    Log.Error(@"Error extracting files: " + ex.Message);
-                    Crashes.TrackError(ex, new Dictionary<string, string>()
+                    try
                     {
-                        {@"Mod name", ModBeingInstalled.ModName },
-                        {@"Filename", ModBeingInstalled.Archive.FileName },
-                    });
-                    e.Result = ModInstallCompletedStatus.INSTALL_FAILED_EXCEPTION_IN_ARCHIVE_EXTRACTION;
-                    if (Application.Current != null)
-                    {
-                        Application.Current.Dispatcher.Invoke(delegate { M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_interp_errorWhileExtractingArchiveInstall, ex.Message), M3L.GetString(M3L.string_errorExtractingMod), MessageBoxButton.OK, MessageBoxImage.Error); });
+                        ModBeingInstalled.Archive.ExtractFiles(SelectedGameTarget.TargetPath, installationRedirectCallback, fullPathMappingArchive.Keys.ToArray()); //directory parameter shouldn't be used here as we will be redirecting everything
                     }
-                    Log.Warning(@"<<<<<<< Aborting modinstaller");
-                    return;
+                    catch (Exception ex)
+                    {
+                        Log.Error(@"Error extracting files: " + ex.Message);
+                        Crashes.TrackError(ex, new Dictionary<string, string>()
+                        {
+                            {@"Mod name", ModBeingInstalled.ModName},
+                            {@"Filename", ModBeingInstalled.Archive.FileName},
+                        });
+                        e.Result = ModInstallCompletedStatus.INSTALL_FAILED_EXCEPTION_IN_ARCHIVE_EXTRACTION;
+                        if (Application.Current != null)
+                        {
+                            Application.Current.Dispatcher.Invoke(delegate { M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_interp_errorWhileExtractingArchiveInstall, ex.Message), M3L.GetString(M3L.string_errorExtractingMod), MessageBoxButton.OK, MessageBoxImage.Error); });
+                        }
+
+                        Log.Warning(@"<<<<<<< Aborting modinstaller");
+                        return;
+                    }
                 }
             }
 
@@ -756,7 +764,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             //Stage: Merge Mods
             var allMMs = installationJobs.SelectMany(x => x.MergeMods).ToList();
-            allMMs.AddRange(installationJobs.SelectMany(x => x.AlternateFiles.Where(y=>y.IsSelected && y.MergeMods != null).SelectMany(y => y.MergeMods)));
+            allMMs.AddRange(installationJobs.SelectMany(x => x.AlternateFiles.Where(y => y.IsSelected && y.MergeMods != null).SelectMany(y => y.MergeMods)));
             var totalMerges = allMMs.Sum(x => x.GetMergeCount());
             int doneMerges = 0;
 
@@ -782,6 +790,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             foreach (var mergeMod in allMMs)
             {
                 mergeMod.ApplyMergeMod(ModBeingInstalled, SelectedGameTarget, ref doneMerges, totalMerges, mergeProgressUpdate);
+            }
+
+            // Stage: TLK merge (Game 1)
+            var allTLKMerges = installationJobs.Where(x => x.Game1TLKXmls != null).SelectMany(x => x.Game1TLKXmls).ToList();
+            if (allTLKMerges.Any())
+            {
+                var gameMap = MELoadedFiles.GetFilesLoadedInGame(SelectedGameTarget.Game, gameRootOverride: SelectedGameTarget.TargetPath);
+                doneMerges = 0;
+                foreach (var tlkM in allTLKMerges)
+                {
+                    ModBeingInstalled.InstallTLKMerge(tlkM, gameMap);
+                }
             }
 
             //Main installation step has completed
@@ -1179,6 +1199,19 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void ModInstallationCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             var telemetryResult = ModInstallCompletedStatus.NO_RESULT_CODE;
+            if (!BatchMode)
+            {
+                if (ModBeingInstalled.Game.IsGame1() || ModBeingInstalled.Game.IsGame2())
+                {
+                    Result.TargetsToPlotManagerSync.Add(SelectedGameTarget);
+                }
+                if (ModBeingInstalled.Game == MEGame.ME3 || ModBeingInstalled.Game.IsLEGame())
+                {
+                    Result.TargetsToAutoTOC.Add(SelectedGameTarget);
+                }
+            }
+
+
             if (e.Error != null)
             {
                 Log.Error(@"An error occurred during mod installation.");

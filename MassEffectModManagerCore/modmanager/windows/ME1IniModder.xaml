@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.windows"
-        xmlns:ui="clr-namespace:MassEffectIniModder.ui"
+        xmlns:ui="clr-namespace:MassEffectModManagerCore.modmanager.meim.ui"
         mc:Ignorable="d"
         Loaded="Window_Loaded"
         Icon="/modmanager/toolicons/masseffectinimodder_32.png"

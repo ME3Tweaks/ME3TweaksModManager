@@ -115,6 +115,8 @@
     <system:String x:Key="string_binkAsiBypassInstalled">Binkw32 ASI bypass installed</system:String>
     <system:String x:Key="string_binkAsiLoaderNotInstalled">Binkw32 ASI loader not installed</system:String>
     <system:String x:Key="string_binkAsiLoaderInstalled">Binkw32 ASI loader installed</system:String>
+    <system:String x:Key="string_bink2AsiLoaderNotInstalled">Bink2w64 ASI loader not installed</system:String>
+    <system:String x:Key="string_bink2AsiLoaderInstalled">Bink2w64 ASI loader installed</system:String>
     <system:String x:Key="string_gameNotInstalled">Game not installed</system:String>
     <system:String x:Key="string_otherSavedTargets">Other saved targets</system:String>
     <system:String x:Key="string_cannotEndorseMod">Cannot endorse mod</system:String>
@@ -228,7 +230,7 @@
     <system:String x:Key="string_importAndManageMods">Import + manage mods</system:String>
     <system:String x:Key="string_libraryManagement">Library management</system:String>
     <system:String x:Key="string_optIntoBetaUpdates">Opt into beta updates</system:String>
-    <system:String xml:space="preserve" x:Key="string_tooltip_optIntoBetaUpdates">Enables beta updates, overriding soak testing settings from ME3Tweaks.&#10;These builds may be less stable but have features that need to be tested</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_optIntoBetaUpdates">Enables beta updates, overriding soak testing settings from ME3Tweaks. These builds may be less stable but have features that need to be tested.</system:String>
     <system:String x:Key="string_tooltip_toggleTelemetry">Enables/disables submission of analytics and crash logs</system:String>
     <system:String x:Key="string_tooltip_logModLoading">Log detailed information about mods loading from the library or archives</system:String>
     <system:String x:Key="string_tooltip_logModMakerCompiler">Log detailed information when ModMaker compiler is running</system:String>
@@ -273,8 +275,8 @@
     <system:String  x:Key="string_tooltip_openModdescIniFile">Open this mod's moddesc.ini file for editing</system:String>
     <system:String  x:Key="string_autoUpdateLODs2K">Auto update LODs (2K, good quality)</system:String>
     <system:String  x:Key="string_autoUpdateLODs4K">Auto update LODs (4K, best quality)</system:String>
-    <system:String xml:space="preserve" x:Key="string_tooltip_autoLods2K">Automatically updates the texture level of detail (LOD) settings when restoring and running the game.&#10;This will ensure whatever target you launch has the correct texture settings, as long as it is launched from Mod Manager.&#10;&#10;This is the 'good' quality setting. This setting will provide a modest improvement over default textures when paired with a high quality texture mod such as ALOT.&#10;The 2K option uses less memory and will provide better game stability when used with large mods</system:String>
-    <system:String xml:space="preserve" x:Key="string_tooltip_autoLods4K">Automatically updates the texture level of detail (LOD) settings when restoring and running the game.&#10;This will ensure whatever target you launch has the correct texture settings, as long as it is launched from Mod Manager.&#10;&#10;This is the 'best' quality setting. This setting will provide the best quality textures when paired with a high quality texture mod such as ALOT</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_autoLods2K">This setting will provide a modest improvement over default textures when paired with a high quality texture mod such as ALOT. This option uses less memory and will provide better game stability when used with large mods.</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_autoLods4K">This setting will provide the best quality textures when paired with a high quality texture mod such as ALOT. This option uses more memory and may cause game instability when paired with large mods.</system:String>
     <system:String  x:Key="string_egmSettings">EGM Settings</system:String>
     <!-- EGM = Expanded Galaxy Mod. Do not localize the acronym -->
     <system:String  x:Key="string_tooltip_egmSettings">Allows you to configure settings for Expanded Galaxy Mod</system:String>
@@ -300,7 +302,7 @@
     <system:String x:Key="string_dialog_programWillNotRunCorrectly">The application may not run correctly without permissions to the settings and cache directory.</system:String>
     <system:String x:Key="string_programDataAccessDenied">ProgramData access denied</system:String>
     <system:String x:Key="string_autoAddControllerMixinsToModMakerMods">Auto-add controller Mixins to ModMaker mods</system:String>
-    <system:String x:Key="string_tooltip_autoAddControllerMixinsToModMakerMods" xml:space="preserve">Automatically add controller fixes to ModMaker mods.&#10;Do not select this if you play with a keyboard/mouse</system:String>
+    <system:String x:Key="string_tooltip_autoAddControllerMixinsToModMakerMods" xml:space="preserve">Automatically add controller fixes to ModMaker mods. Do not select this if you play with a keyboard/mouse.</system:String>
     <system:String xml:space="preserve" x:Key="string_interp_dialog_unsupportedOS">This operating system is not supported. This application has only been validated for use on the following operating systems: \n - {0}. This application may not function correctly on this operating system.</system:String>
     <!-- 0= bulleted list of supported operating system names -->
     <system:String x:Key="string_unsupportedOperatingSystem">Unsupported operating system</system:String>
@@ -317,7 +319,7 @@
     <system:String x:Key="string_mEMVanillaDBViewer">MEM Vanilla DB Viewer</system:String>
     <!-- This is only shown in Debug Mode. But might as well translate it anyways. Do not localize the term MEM (Mass Effect Modder). -->
     <system:String  x:Key="string_autoInjectCustomKeybindsIntoModMakerMods">Auto inject custom keybinds into ModMaker mods</system:String>
-    <system:String xml:space="preserve" x:Key="string_tooltip_autoInjectCustomKeybinds">Automatically inject a custom BioInput.xml file if available in the keybindsoverride directory.&#10;Define custom keybinds in the Custom Keybinds Injector in the Tools menu</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_autoInjectCustomKeybinds">Automatically inject a custom me3-BioInput.xml file if available in the keybindsoverride directory. Define custom keybinds in the Custom Keybinds Injector in the Tools menu. Do not select this option if you use a controller.</system:String>
     <system:String  x:Key="string_customKeybindsInjectorMenuItem">Custom Keybinds Injector (ME3)</system:String>
     <system:String  x:Key="string_tooltip_installsCustomKeybindsOfYourDesignIntoTheGame">Installs Custom Keybinds of your design into the game</system:String>
     <system:String  x:Key="string_originIngameOverlayDisabler">Origin in-game overlay disabler</system:String>
@@ -363,7 +365,7 @@
     <system:String x:Key="string_loadingTargets">Loading targets</system:String>
     <!-- Shown when app is booting up and game targets are being inspected -->
     <system:String x:Key="string_configureNxmHandlerOnBoot">Configure nxm:// handler on boot</system:String>
-    <system:String xml:space="preserve" x:Key="string_tooltip_configureNxmHandlerOnBoot">Configures the NexusMods nxm:// handler, so 'Download with Manager' on NexusMods boots ME3Tweaks Mod Manager.&#10;If turned off, you can re-enable it manually in the NexusMods panel</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_configureNxmHandlerOnBoot">Configures the NexusMods nxm:// handler, so 'Download with Manager' on NexusMods boots ME3Tweaks Mod Manager. If this is turned off, you can configure it manually in the NexusMods panel.</system:String>
     <system:String x:Key="string_dialog_nexusLoginRequiredForDownload">ME3Tweaks Mod Manager must be linked with your NexusMods account in order to directly download from NexusMods. Press OK to open the NexusMods sign-in page to link the application.</system:String>
     <system:String x:Key="string_notSignedIn">Not signed in</system:String>
     <system:String x:Key="string_couldNotEndorseFile">Could not endorse file</system:String>
@@ -750,7 +752,8 @@
     <system:String x:Key="string_interp_extractingX">Extracting {0}</system:String>
     <system:String x:Key="string_checkingForUpdates">Checking for updates</system:String>
     <system:String xml:space="preserve" x:Key="string_interp_dialogUnableToDownloadX">Unable to download {0}.\nPlease check your network connection and try again.\nIf the issue persists, please come to the ME3Tweaks Discord.</system:String>
-    <system:String x:Key="string_interp_failedToDownloadX">Failed to download {0}</system:String>
+    <system:String x:Key="string_interp_failedToDownloadX">Failed to download {0}: {1}</system:String>
+    <!-- 0 = toolname, 1 = reason -->
     <system:String x:Key="string_interp_errorDownloadingAndLaunchingTool">Error downloading and launching tool: {0}</system:String>
     <!-- 0 = error message -->
     <system:String x:Key="string_errorLaunchingTool">Error launching tool</system:String>
@@ -1278,7 +1281,7 @@
     <!-- 0 = header string in moddesc.ini -->
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_customDLCMismatchedSourceDirsDestDirs">Job header (CUSTOMDLC) has mismatched sourcedirs and destdirs descriptor lists. sourcedirs has {0} items, destdirs has {0} items. The number of items in each list must match.</system:String>
     <!-- 0 = number, 1 = number -->
-    <system:String x:Key="string_validation_modparsing_loadfailed_customDLCItemHasIllegalCharacters">CUSTOMDLC header sourcedirs or destdirs includes item that contains a .., which is not permitted.</system:String>
+    <system:String x:Key="string_validation_modparsing_loadfailed_customDLCItemHasIllegalCharacters">CUSTOMDLC header sourcedirs or destdirs includes item that contains a '.' (destdirs) or a '..' (sourcedirs), which is not permitted.</system:String>
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_customDLCSourceDirMissing">Job header (CUSTOMDLC) sourcedirs descriptor specifies installation of a Custom DLC folder that does not exist in the mod folder: {0}</system:String>
     <!-- 0 = source dlc foldername -->
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_destDirCannotBeMetadataOrOfficialDLC">Job header (CUSTOMDLC) destdirs descriptor that specifies installation of a Custom DLC folder to a protected target: {0}. Custom DLC cannot be installed to a folder named the same as an official DLC or metadata directory.</system:String>
@@ -1465,7 +1468,7 @@
     <system:String xml:space="preserve" x:Key="string_interp_errorOccuredWhileDeletingExistingModDirectory">Error occurred while deleting existing mod directory:\n{0}</system:String>
     <!-- 0 = error message -->
     <system:String x:Key="string_generatingMod">Generating mod</system:String>
-    <system:String x:Key="string_interp_valueMustBeBetween0AndX">Value must be between 0 and {0}</system:String>
+    <system:String x:Key="string_interp_valueMustBeBetweenXAndY">Value must be between {0} and {1}</system:String>
     <!-- 0 = number -->
     <system:String x:Key="string_dialog_devModeAdvert">Developer Mode for ME3Tweaks Mod Manager is currently turned off. Turn it on to access developer tools in the menus, such as the Official DLC toggler, Deploy to 7z feature, Custom DLC Conflict Detector, Backup File Fetcher, and more.\n\nTurn on Developer Mode?</system:String>
     <system:String x:Key="string_enableDeveloperFeaturesQuestion">Enable developer features?</system:String>
@@ -1660,8 +1663,8 @@
     <system:String x:Key="string_changeFullKey">Change full key</system:String>
     <system:String x:Key="string_changeMiniKey">Change mini key</system:String>
     <system:String x:Key="string_setToDefaultKeys">Set to default keys</system:String>
-    <system:String x:Key="string_massEffect2ConsoleKeysAreDefinedPerGame">Mass Effect 2 console keys are defined per game.</system:String>
-    <system:String x:Key="string_massEffect3ConsoleKeysAreDefinedPerGame">Mass Effect 3 console keys are defined per game.</system:String>
+    <system:String x:Key="string_interp_gameConsoleKeysAreDefinedPerGame">{0} console keys are defined per game.</system:String>
+    <!-- 0 = game name -->
     <system:String x:Key="string_interp_cannotReadME3Keybinds">The keybindings for the selected Mass Effect 3 target could not be loaded: {0}</system:String>
     <!-- 0 = error message -->
     <system:String x:Key="string_errorReadingKeybinds">Error reading keybinds</system:String>

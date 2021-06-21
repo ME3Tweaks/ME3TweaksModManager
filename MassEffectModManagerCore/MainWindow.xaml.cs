@@ -26,7 +26,6 @@ using MassEffectModManagerCore.modmanager.gameini;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
-using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.modmanager.nexusmodsintegration;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.usercontrols;
@@ -45,10 +44,13 @@ using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Serilog;
 using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Misc;
+using LegendaryExplorerCore.Unreal;
 using MassEffectModManagerCore.modmanager.gamemd5;
 using MassEffectModManagerCore.modmanager.objects.mod.merge;
 using MassEffectModManagerCore.modmanager.objects.mod.merge.v1;
 using Pathoschild.FluentNexus.Models;
+using MemoryAnalyzer = MassEffectModManagerCore.modmanager.memoryanalyzer.MemoryAnalyzer;
 using Mod = MassEffectModManagerCore.modmanager.objects.mod.Mod;
 
 namespace MassEffectModManagerCore
@@ -76,7 +78,7 @@ namespace MassEffectModManagerCore
         public string ApplyModButtonText { get; set; } = M3L.GetString(M3L.string_applyMod);
         public string InstallationTargetText { get; set; } = M3L.GetString(M3L.string_installationTarget);
 
-        public ObservableCollectionExtended<GameFilter> GameFilters { get; } = new();
+        public ui.ObservableCollectionExtended<GameFilter> GameFilters { get; } = new();
         public bool ME1ASILoaderInstalled { get; set; }
         public bool ME2ASILoaderInstalled { get; set; }
         public bool ME3ASILoaderInstalled { get; set; }
@@ -190,16 +192,16 @@ namespace MassEffectModManagerCore
         /// <summary>
         /// Mods currently visible in the left panel
         /// </summary>
-        public ObservableCollectionExtended<Mod> VisibleFilteredMods { get; } = new ObservableCollectionExtended<Mod>();
+        public ui.ObservableCollectionExtended<Mod> VisibleFilteredMods { get; } = new ui.ObservableCollectionExtended<Mod>();
         /// <summary>
         /// All mods that successfully loaded.
         /// </summary>
-        public ObservableCollectionExtended<Mod> AllLoadedMods { get; } = new ObservableCollectionExtended<Mod>();
+        public ui.ObservableCollectionExtended<Mod> AllLoadedMods { get; } = new ui.ObservableCollectionExtended<Mod>();
         /// <summary>
         /// All mods that failed to load
         /// </summary>
-        public ObservableCollectionExtended<Mod> FailedMods { get; } = new ObservableCollectionExtended<Mod>();
-        public ObservableCollectionExtended<GameTarget> InstallationTargets { get; } = new ObservableCollectionExtended<GameTarget>();
+        public ui.ObservableCollectionExtended<Mod> FailedMods { get; } = new ui.ObservableCollectionExtended<Mod>();
+        public ui.ObservableCollectionExtended<GameTarget> InstallationTargets { get; } = new ui.ObservableCollectionExtended<GameTarget>();
         /// <summary>
         /// List of all loaded targets, even ones for different generations
         /// </summary>
@@ -223,16 +225,7 @@ namespace MassEffectModManagerCore
             LoadCommands();
             SetTheme();
             InitializeComponent();
-            languageMenuItems = new Dictionary<string, MenuItem>()
-            {
-                {@"int", LanguageINT_MenuItem},
-                {@"rus", LanguageRUS_MenuItem},
-                {@"pol", LanguagePOL_MenuItem},
-                {@"deu", LanguageDEU_MenuItem},
-                {@"bra", LanguageBRA_MenuItem},
-                //{@"fra", LanguageFRA_MenuItem}
-                //{@"esn", LanguageESN_MenuItem}
-            };
+
 
             //Change language if not INT
             if (App.InitialLanguage != @"int")
@@ -732,10 +725,8 @@ namespace MassEffectModManagerCore
             importerPanel.Close += (a, b) =>
             {
                 ReleaseBusyControl();
-                if (b.Data is Mod importedMod)
-                {
-                    LoadMods(importedMod);
-                }
+                if (importerPanel.Result.ReloadMods)
+                    LoadMods(importerPanel.Result.ModToHighlightOnReload);
             };
             ShowBusyControl(importerPanel);
         }
@@ -768,7 +759,7 @@ namespace MassEffectModManagerCore
                             ApplyMod(queue.ModsToInstall[modIndex], target, batchMode: true, installCompressed: queue.InstallCompressed, installCompletedCallback: modInstalled);
                             modIndex++;
                         }
-                        else if (SelectedGameTarget.Game == MEGame.ME3)
+                        else if (SelectedGameTarget.Game == MEGame.ME3 || SelectedGameTarget.Game.IsLEGame())
                         {
                             //End
                             var autoTocUI = new AutoTOC(SelectedGameTarget);
@@ -876,12 +867,6 @@ namespace MassEffectModManagerCore
             }
         }
 
-        private void EnableME1ConsoleWrapper()
-        {
-            //TODO: Add way to change keys
-            EnableME1Console();
-        }
-
         private void OpenMEIM()
         {
             new ME1IniModder().Show();
@@ -959,83 +944,6 @@ namespace MassEffectModManagerCore
             var nexusModsLoginPane = new NexusModsLogin();
             nexusModsLoginPane.Close += (a, b) => { ReleaseBusyControl(); };
             ShowBusyControl(nexusModsLoginPane);
-        }
-
-        private bool CanEnableME1Console()
-        {
-            var installed = InstallationTargets.Any(x => x.Game == MEGame.ME1);
-            if (installed)
-            {
-                var iniFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"BioWare", @"Mass Effect", @"Config", @"BIOInput.ini");
-                return File.Exists(iniFile);
-            }
-
-            return false;
-        }
-
-        private void EnableME1Console(string consoleKeyValue = @"Tilde", string typeKeyValue = @"Tab")
-        {
-            var installed = InstallationTargets.Any(x => x.Game == MEGame.ME1);
-            if (installed)
-            {
-                var iniFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"BioWare", @"Mass Effect", @"Config", @"BIOInput.ini");
-                if (File.Exists(iniFile))
-                {
-                    var ini = DuplicatingIni.LoadIni(iniFile);
-                    var engineConsole = ini.Sections.FirstOrDefault(x => x.Header == @"Engine.Console");
-                    if (engineConsole != null)
-                    {
-                        var consoleKey = engineConsole.Entries.FirstOrDefault(x => x.Key == @"ConsoleKey");
-                        if (consoleKey == null)
-                        {
-                            engineConsole.Entries.Add(new DuplicatingIni.IniEntry(@"ConsoleKey=" + consoleKeyValue));
-                        }
-
-                        var typeKey = engineConsole.Entries.FirstOrDefault(x => x.Key == @"TypeKey");
-                        if (typeKey == null)
-                        {
-                            engineConsole.Entries.Add(new DuplicatingIni.IniEntry(@"TypeKey=" + typeKeyValue));
-                        }
-
-                        try
-                        {
-                            File.WriteAllText(iniFile, ini.ToString());
-                            Analytics.TrackEvent(@"Enabled the ME1 console", new Dictionary<string, string>() { { @"Succeeded", @"true" } });
-                            M3L.ShowDialog(this, M3L.GetString(M3L.string_dialogConsoleEnabled), M3L.GetString(M3L.string_consoleEnabled));
-                        }
-                        catch (Exception e)
-                        {
-                            Log.Error(@"Unable to enable console: " + e.Message);
-                            // see if file is read only.
-                            if (File.Exists(iniFile))
-                            {
-                                try
-                                {
-                                    var fi = new FileInfo(iniFile);
-                                    if (fi.IsReadOnly)
-                                    {
-                                        //unmark read only
-                                        fi.IsReadOnly = false;
-                                        File.WriteAllText(iniFile, ini.ToString());
-                                        fi.IsReadOnly = true;
-                                        Analytics.TrackEvent(@"Enabled the ME1 console", new Dictionary<string, string>() { { @"Succeeded", @"true" } });
-                                        M3L.ShowDialog(this, M3L.GetString(M3L.string_dialogConsoleEnabled), M3L.GetString(M3L.string_consoleEnabled));
-                                        return;
-                                    }
-                                }
-                                catch (Exception ex)
-                                {
-                                    Log.Error(@"Attempted to unset/reset read-only flag, failed: " + ex.Message);
-                                }
-                            }
-
-                            Analytics.TrackEvent(@"Enabled the ME1 console", new Dictionary<string, string>() { { @"Succeeded", @"false" } });
-                            Crashes.TrackError(e);
-                            M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_unableToModifyBioinputIni, e.Message), M3L.GetString(M3L.string_couldNotEnableConsole), MessageBoxButton.OK, MessageBoxImage.Error);
-                        }
-                    }
-                }
-            }
         }
 
         public bool HasAtLeastOneTarget() => InstallationTargets.Any();
@@ -1194,7 +1102,7 @@ namespace MassEffectModManagerCore
         /// Shows or queues the specified control
         /// </summary>
         /// <param name="control">Control to show or queue</param>
-        private void ShowBusyControl(MMBusyPanelBase control)
+        internal void ShowBusyControl(MMBusyPanelBase control)
         {
             if (queuedUserControls.Count == 0 && !IsBusy)
             {
@@ -1211,14 +1119,13 @@ namespace MassEffectModManagerCore
         /// Shows or queues the specified control
         /// </summary>
         /// <param name="control">Control to show or queue</param>
-        private void ReleaseBusyControl()
+        internal void ReleaseBusyControl()
         {
             var closingPanel = BusyContent as MMBusyPanelBase;
             BusyContent = null;
             if (closingPanel != null)
             {
                 HandlePanelResult(closingPanel.Result);
-
             }
 
             if (queuedUserControls.Count == 0)
@@ -1252,6 +1159,11 @@ namespace MassEffectModManagerCore
             foreach (var v in result.TargetsToAutoTOC)
             {
                 AutoTOCTarget(v);
+            }
+
+            if (result.ReloadMods)
+            {
+                LoadMods(result.ModToHighlightOnReload);
             }
 
             Task.Run(() =>
@@ -1311,11 +1223,6 @@ namespace MassEffectModManagerCore
             var restoreManager = new RestorePanel(InstallationTargets.ToList(), SelectedGameTarget);
             restoreManager.Close += (a, b) =>
             {
-                if (b.Data is bool refresh && refresh)
-                {
-                    PopulateTargets(SelectedGameTarget);
-                }
-
                 ReleaseBusyControl();
             };
             ShowBusyControl(restoreManager);
@@ -1630,7 +1537,7 @@ namespace MassEffectModManagerCore
             Log.Information(@"User is adding new modding target");
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.Title = M3L.GetString(M3L.string_selectGameExecutable);
-            string filter = $@"{M3L.GetString(M3L.string_gameExecutable)}|MassEffect.exe;MassEffect2.exe;MassEffect3.exe;MassEffect1.exe"; //only partially localizable.
+            string filter = $@"{M3L.GetString(M3L.string_gameExecutable)}|MassEffect.exe;MassEffect2.exe;MassEffect3.exe;MassEffectLauncher.exe;MassEffect1.exe"; //only partially localizable.
             ofd.Filter = filter;
             if (ofd.ShowDialog() == true)
             {
@@ -1665,7 +1572,7 @@ namespace MassEffectModManagerCore
                     if (gameSelected == MEGame.ME3 || gameSelected.IsLEGame())
                         result = Path.GetDirectoryName(result); //up one more because of win32/64 directory.
                                                                 //Test for cmmvanilla
-                    if (File.Exists(Path.Combine(result, @"cmmvanilla")))
+                    if (File.Exists(Path.Combine(result, BackupService.CMM_VANILLA_FILENAME)))
                     {
                         M3L.ShowDialog(this, M3L.GetString(M3L.string_dialogCannotAddTargetCmmVanilla), M3L.GetString(M3L.string_errorAddingTarget), MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
@@ -1767,78 +1674,43 @@ namespace MassEffectModManagerCore
                 var modInstaller = new ModInstaller(mod, forcedTarget ?? SelectedGameTarget, installCompressed, batchMode: batchMode);
                 modInstaller.Close += (a, b) =>
                 {
-
+                    // Panel Result will handle post-install
                     if (!modInstaller.InstallationSucceeded)
                     {
                         if (modInstaller.InstallationCancelled)
                         {
                             modInstallTask.finishedUiText = M3L.GetString(M3L.string_installationAborted);
-                            ReleaseBusyControl();
-                            backgroundTaskEngine.SubmitJobCompletion(modInstallTask);
-                            installCompletedCallback?.Invoke(false);
-                            return;
                         }
                         else
                         {
                             modInstallTask.finishedUiText = M3L.GetString(M3L.string_interp_failedToInstallMod, mod.ModName);
-                            installCompletedCallback?.Invoke(false);
                         }
+                        installCompletedCallback?.Invoke(false);
                     }
 
-                    // Update Plot Manager
-                    bool releaseMI = true;
-                    if (!modInstaller.InstallationCancelled && SelectedGameTarget.Game is MEGame.LE2 && !batchMode)
-                    {
-                        var pmUpdate = new PlotManagerUpdatePanel(SelectedGameTarget);
-                        pmUpdate.Close += (a1, b1) =>
-                        {
-                            ReleaseBusyControl(); // Release PMU
-                        };
-                        releaseMI = false;
-                        ReleaseBusyControl(); // Release Mod Installer
-                        ShowBusyControl(pmUpdate);
-                    }
-
-
-                    //Run AutoTOC if ME3 and not batch mode
-                    if (!modInstaller.InstallationCancelled && (SelectedGameTarget.Game == MEGame.ME3 || SelectedGameTarget.Game.IsLEGame()) && !batchMode)
-                    {
-                        var autoTocUI = new AutoTOC(SelectedGameTarget);
-                        autoTocUI.Close += (a1, b1) =>
-                        {
-                            ReleaseBusyControl();
-                            backgroundTaskEngine.SubmitJobCompletion(modInstallTask);
-                        };
-                        if (releaseMI)
-                        {
-                            ReleaseBusyControl();
-                        }
-                        ShowBusyControl(autoTocUI);
-                    }
-                    else
-                    {
-                        ReleaseBusyControl();
-                        backgroundTaskEngine.SubmitJobCompletion(modInstallTask);
-                    }
-
-                    if (modInstaller.InstallationSucceeded)
-                    {
-                        installCompletedCallback?.Invoke(true);
-                        if (ExternalToolLauncher.IsSupportedToolID(mod.PostInstallToolLaunch))
-                        {
-                            Log.Information(@"Launching post-install tool as specified by mod: " + mod.PostInstallToolLaunch);
-                            if (mod.PostInstallToolLaunch == @"EGMSettings")
-                            {
-                                LaunchExternalTool(mod.PostInstallToolLaunch, SelectedGameTarget.TargetPath);
-                            }
-                            else
-                            {
-                                // no args
-                                LaunchExternalTool(mod.PostInstallToolLaunch);
-                            }
-                        }
-                    }
+                    backgroundTaskEngine.SubmitJobCompletion(modInstallTask);
+                    ReleaseBusyControl();
                 };
+
+
+
+                if (modInstaller.InstallationSucceeded)
+                {
+                    installCompletedCallback?.Invoke(true);
+                    if (ExternalToolLauncher.IsSupportedToolID(mod.PostInstallToolLaunch))
+                    {
+                        Log.Information(@"Launching post-install tool as specified by mod: " + mod.PostInstallToolLaunch);
+                        if (mod.PostInstallToolLaunch == @"EGMSettings")
+                        {
+                            LaunchExternalTool(mod.PostInstallToolLaunch, SelectedGameTarget.TargetPath);
+                        }
+                        else
+                        {
+                            // no args
+                            LaunchExternalTool(mod.PostInstallToolLaunch);
+                        }
+                    }
+                }
                 ShowBusyControl(modInstaller);
             }
             else
@@ -1902,6 +1774,9 @@ namespace MassEffectModManagerCore
 
         private void ModManager_ContentRendered(object sender, EventArgs e)
         {
+#if PRERELEASE
+            MessageBox.Show("This is a prerelease build of ME3Tweaks Mod Manager. Do not distribute mods from this build. There may be breaking changes that cause mods made for this build to not work on future builds.");
+#endif
             if (App.BootingUpdate)
             {
                 ShowUpdateCompletedPane();
@@ -2058,16 +1933,31 @@ namespace MassEffectModManagerCore
                 return; //don't check or anything
             }
 
-            var binkME1InstalledText = M3L.GetString(M3L.string_binkAsiLoaderInstalled);
-            var binkME1NotInstalledText = M3L.GetString(M3L.string_binkAsiLoaderNotInstalled);
-            var binkInstalledText = M3L.GetString(M3L.string_binkAsiBypassInstalled);
-            var binkNotInstalledText = M3L.GetString(M3L.string_binkAsiBypassNotInstalled);
+
+            string binkInstalledText = null;
+            string binkNotInstalledText = null;
+
+            if (game == MEGame.ME1)
+            {
+                binkInstalledText = M3L.GetString(M3L.string_binkAsiLoaderInstalled);
+                binkNotInstalledText = M3L.GetString(M3L.string_binkAsiLoaderNotInstalled);
+            }
+            else if (game is MEGame.ME2 or MEGame.ME3)
+            {
+                binkInstalledText = M3L.GetString(M3L.string_binkAsiBypassInstalled);
+                binkNotInstalledText = M3L.GetString(M3L.string_binkAsiBypassNotInstalled);
+            }
+            else if (game.IsLEGame())
+            {
+                binkInstalledText = M3L.GetString(M3L.string_bink2AsiLoaderInstalled);
+                binkNotInstalledText = M3L.GetString(M3L.string_bink2AsiLoaderNotInstalled);
+            }
 
             switch (game)
             {
                 case MEGame.ME1:
                     ME1ASILoaderInstalled = Utilities.CheckIfBinkw32ASIIsInstalled(target);
-                    ME1ASILoaderText = ME1ASILoaderInstalled ? binkME1InstalledText : binkME1NotInstalledText;
+                    ME1ASILoaderText = ME1ASILoaderInstalled ? binkInstalledText : binkNotInstalledText;
                     break;
                 case MEGame.ME2:
                     ME2ASILoaderInstalled = Utilities.CheckIfBinkw32ASIIsInstalled(target);
@@ -2079,7 +1969,7 @@ namespace MassEffectModManagerCore
                     break;
                 case MEGame.LE1:
                     LE1ASILoaderInstalled = Utilities.CheckIfBinkw32ASIIsInstalled(target);
-                    LE1ASILoaderText = LE1ASILoaderInstalled ? binkME1InstalledText : binkME1NotInstalledText;
+                    LE1ASILoaderText = LE1ASILoaderInstalled ? binkInstalledText : binkNotInstalledText;
                     break;
                 case MEGame.LE2:
                     LE2ASILoaderInstalled = Utilities.CheckIfBinkw32ASIIsInstalled(target);
@@ -2098,7 +1988,7 @@ namespace MassEffectModManagerCore
         /// <param name="game">Game to find target for</param>
         /// <returns>Game matching target. If none
         /// is found, this return null.</returns>
-        private GameTarget GetCurrentTarget(MEGame game)
+        internal GameTarget GetCurrentTarget(MEGame game)
         {
             if (SelectedGameTarget != null)
             {
@@ -3232,7 +3122,6 @@ namespace MassEffectModManagerCore
         }
 
         private bool RepopulatingTargets;
-        private Dictionary<string, MenuItem> languageMenuItems;
 
         public void OnSelectedGameTargetChanged()
         {
@@ -3619,7 +3508,7 @@ namespace MassEffectModManagerCore
             var modInspector = new ModArchiveImporter(archiveFile, archiveStream);
             modInspector.Close += (a, b) =>
             {
-
+                // Todo: Convert to Panel Result
                 if (b.Data is List<Mod> modsImported)
                 {
                     ReleaseBusyControl();
@@ -3730,55 +3619,6 @@ namespace MassEffectModManagerCore
             ShowBusyControl(autoTocUI);
         }
 
-        private void ChangeSetting_Clicked(object sender, RoutedEventArgs e)
-        {
-            //When this method is called, the value has already changed. So check against the opposite boolean state.
-            var callingMember = (MenuItem)sender;
-            if (callingMember == SetModLibraryPath_MenuItem)
-            {
-                ChooseModLibraryPath(true);
-            }
-            else if (callingMember == DarkMode_MenuItem)
-            {
-                SetTheme();
-            }
-            else if (callingMember == BetaMode_MenuItem && Settings.BetaMode)
-            {
-                var result = M3L.ShowDialog(this, M3L.GetString(M3L.string_dialog_optingIntoBeta), M3L.GetString(M3L.string_enablingBetaMode), MessageBoxButton.YesNo, MessageBoxImage.Warning);
-                if (result == MessageBoxResult.No)
-                {
-                    Settings.BetaMode = false; //turn back off.
-                    return;
-                }
-            }
-            else if (callingMember == EnableTelemetry_MenuItem && !Settings.EnableTelemetry)
-            {
-                //user trying to turn it off 
-                var result = M3L.ShowDialog(this, M3L.GetString(M3L.string_dialogTurningOffTelemetry), M3L.GetString(M3L.string_turningOffTelemetry), MessageBoxButton.YesNo, MessageBoxImage.Warning);
-                if (result == MessageBoxResult.No)
-                {
-                    Settings.EnableTelemetry = true; //keep on.
-                    return;
-                }
-
-                Log.Warning(@"Turning off telemetry :(");
-                //Turn off telemetry.
-                Analytics.SetEnabledAsync(false);
-                Crashes.SetEnabledAsync(false);
-            }
-            else if (callingMember == EnableTelemetry_MenuItem)
-            {
-                //turning telemetry on
-                Log.Information(@"Turning on telemetry :)");
-                Analytics.SetEnabledAsync(true);
-                Crashes.SetEnabledAsync(true);
-            }
-            else
-            {
-                //unknown caller. Might just be settings on/off for logging.
-            }
-        }
-
         internal void SetTheme()
         {
             ResourceLocator.SetColorScheme(Application.Current.Resources, Settings.DarkTheme ? ResourceLocator.DarkColorScheme : ResourceLocator.LightColorScheme);
@@ -3844,44 +3684,6 @@ namespace MassEffectModManagerCore
 
         }
 
-        private void ChangeLanguage_Clicked(object sender, RoutedEventArgs e)
-        {
-            string lang = @"int";
-            if (sender == LanguageINT_MenuItem)
-            {
-                lang = @"int";
-            }
-            else if (sender == LanguagePOL_MenuItem)
-            {
-                lang = @"pol";
-            }
-            else if (sender == LanguageRUS_MenuItem)
-            {
-                lang = @"rus";
-            }
-            else if (sender == LanguageDEU_MenuItem)
-            {
-                lang = @"deu";
-            }
-            else if (sender == LanguageBRA_MenuItem)
-            {
-                lang = @"bra";
-            }
-            //else if (sender == LanguageESN_MenuItem)
-            //{
-            //    lang = @"esn";
-            //}
-            //else if (sender == LanguageFRA_MenuItem)
-            //{
-            //    lang = @"fra";
-            //}
-            //else if (sender == LanguageCZE_MenuItem)
-            //{
-            //    lang = @"cze";
-            //}
-            SetApplicationLanguage(lang, false);
-        }
-
         /// <summary>
         /// Sets the UI language. This will save the settings if it is not startup.
         /// </summary>
@@ -3894,12 +3696,6 @@ namespace MassEffectModManagerCore
             Log.Information(@"Setting language to " + lang);
             Application.Current.Dispatcher.Invoke(async () =>
             {
-
-                foreach (var item in languageMenuItems)
-                {
-                    item.Value.IsChecked = item.Key == lang;
-                }
-
                 //Set language.
                 Task.Run(async () => { await OnlineContent.InternalSetLanguage(lang, forcedDictionary, startup); }).Wait();
 
@@ -3957,72 +3753,7 @@ namespace MassEffectModManagerCore
             }
         }
 
-        private void ReloadSelectedMod_Click(object sender, RoutedEventArgs e)
-        {
-            Mod m = new Mod(SelectedMod.ModDescPath, MEGame.Unknown);
-        }
-
-        private void StampCurrentTargetWithALOT_Click(object sender, RoutedEventArgs e)
-        {
-            if (SelectedGameTarget != null)
-            {
-                SelectedGameTarget.StampDebugALOTInfo();
-                SelectedGameTarget.ReloadGameTarget();
-            }
-        }
-
-        private void StripCurrentTargetALOTMarker_Click(object sender, RoutedEventArgs e)
-        {
-            if (SelectedGameTarget != null)
-            {
-                SelectedGameTarget.StripALOTInfo();
-                SelectedGameTarget.ReloadGameTarget();
-            }
-        }
-
-        private void DebugPrintReferencedFiles_Click(object sender, RoutedEventArgs e)
-        {
-            if (SelectedMod != null)
-            {
-                var refed = SelectedMod.GetAllRelativeReferences();
-                Debug.WriteLine(@"Referenced files:");
-                foreach (var refx in refed)
-                {
-                    Debug.WriteLine(refx);
-                }
-            }
-        }
-
-        private void DebugPrintInstallationQueue_Click(object sender, RoutedEventArgs e)
-        {
-            if (SelectedMod != null)
-            {
-                var queues = SelectedMod.GetInstallationQueues(InstallationTargets.FirstOrDefault(x => x.Game == SelectedMod.Game));
-                Debug.WriteLine(@"Installation Queue:");
-                foreach (var job in queues.Item1)
-                {
-                    foreach (var file in job.Value.unpackedJobMapping)
-                    {
-                        Debug.WriteLine($@"[UNPACKED {job.Key.Header.ToString()}] {file.Value.FilePath} => {file.Key}");
-                    }
-                }
-
-                foreach (var job in queues.Item2)
-                {
-                    foreach (var file in job.Item3)
-                    {
-                        Debug.WriteLine($@"[SFAR {job.job.Header.ToString()}] {file.Value.FilePath} => {file.Key}");
-                    }
-                }
-            }
-        }
-
-        private void ShowBackupNag_Click(object sender, RoutedEventArgs e)
-        {
-            ShowBackupNag();
-        }
-
-        private void ShowBackupNag()
+        internal void ShowBackupNag()
         {
             var nagPanel = new BackupNagSystem(
                 InstallationTargets.Any(x => x.Game == MEGame.ME1),
@@ -4056,36 +3787,6 @@ namespace MassEffectModManagerCore
             Utilities.OpenWebpage(@"https://me3tweaks.com/donations");
         }
 
-        private void MEMVanillaDBViewer_Click(object sender, RoutedEventArgs e)
-        {
-            var previewPanel = new MEMVanillaDBViewer();
-            previewPanel.Close += (a, b) =>
-            {
-                ReleaseBusyControl();
-                //if (b.Data is bool loadMods)
-                //{
-                //    LoadMods();
-                //}
-            };
-            ShowBusyControl(previewPanel);
-        }
-
-        private void TestMMV1_click(object sender, RoutedEventArgs e)
-        {
-            // SERIALIZER
-            //var testfile = MergeModLoader.SerializeManifest(,1);
-
-
-
-
-            //// LOADER
-            //using FileStream fs = File.OpenRead(testfile);
-            //var mergeMod = MergeModLoader.LoadMergeMod(fs, "MMVV1.m3m", false);
-
-            //var le2t = GetCurrentTarget(MEGame.LE2);
-            //mergeMod.ApplyMergeMod(null, le2t);
-        }
-
         private void ListAllInstallableFiles_Click(object sender, RoutedEventArgs e)
         {
             if (SelectedMod != null)
@@ -4096,18 +3797,11 @@ namespace MassEffectModManagerCore
             }
         }
 
-        private void MD5DB_Gen_Click(object sender, RoutedEventArgs e)
-        {
-            MD5Gen.GenerateMD5Map(@"B:\SteamLibrary\steamapps\common\Mass Effect Legendary Edition\Game\Launcher", "lel.bin");
-            Debug.WriteLine(@"Done");
-        }
-
         private void GameFilter_Click(object sender, RoutedEventArgs e)
         {
             if (Keyboard.Modifiers == ModifierKeys.Shift)
             {
                 // Shift Click
-                Debug.WriteLine("HI");
                 if (sender is ToggleButton tb && tb.DataContext is GameFilter gf)
                 {
                     SuppressFilterMods = true;
@@ -4125,6 +3819,16 @@ namespace MassEffectModManagerCore
                     FilterMods();
                 }
             }
+        }
+
+        private void RouteDebugCall(object sender, RoutedEventArgs e)
+        {
+#if DEBUG
+            if (sender is FrameworkElement fe)
+            {
+                DebugMenu.RouteDebugCall(fe.Name, this);
+            }
+#endif
         }
     }
 }

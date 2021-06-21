@@ -8,6 +8,7 @@ using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Memory;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
+using MassEffectModManagerCore.modmanager.windows;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
@@ -127,6 +128,34 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
                 {
                     NullValueHandling = NullValueHandling.Ignore,
                 }));
+        }
+
+        public IEnumerable<string> GetMergeFileTargetFiles()
+        {
+            List<string> targets = new List<string>();
+            foreach (var v in FilesToMergeInto)
+            {
+                targets.Add(v.FileName);
+
+                if (v.ApplyToAllLocalizations)
+                {
+                    var targetnameBase = Path.GetFileNameWithoutExtension(v.FileName);
+                    var targetExtension = Path.GetExtension(v.FileName);
+                    var localizations = StarterKitGeneratorWindow.GetLanguagesForGame(Game);
+
+                    // Ensure end name is not present on base
+                    foreach (var l in localizations)
+                    {
+                        if (targetnameBase.EndsWith($@"_{l}", StringComparison.InvariantCultureIgnoreCase))
+                            targetnameBase = targetnameBase.Substring(0, targetnameBase.Length - 4);
+
+                        targets.Add($"{targetnameBase}_{l}{targetExtension}");
+                    }
+                }
+            }
+
+
+            return targets;
         }
 
         public static IList<string> Serialize(Stream outStream, string manifestFile)

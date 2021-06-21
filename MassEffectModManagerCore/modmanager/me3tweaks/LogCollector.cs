@@ -163,7 +163,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             bool hasMEM = false;
             string mempath = null;
             #region MEM Fetch Callbacks
-            void failedToDownload()
+            void failedToDownload(string failureMessage)
             {
                 Thread.Sleep(100); //try to stop deadlock
                 Log.Error(@"Failed to acquire MEM for diagnostics.");
@@ -1265,12 +1265,12 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
                 #endregion
 
-                #region ME3: TOC check
+                #region ME3/LE: TOC check
 
                 //TOC SIZE CHECK
-                if (selectedDiagnosticTarget.Game == MEGame.ME3)
+                if (selectedDiagnosticTarget.Game == MEGame.ME3 || selectedDiagnosticTarget.Game.IsLEGame())
                 {
-                    Log.Information(@"Collecting ME3 TOC information");
+                    Log.Information(@"Collecting TOC information");
 
                     updateStatusCallback?.Invoke(@"Collecting TOC file information");
 
@@ -1290,15 +1290,23 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         {
                             //Console.WriteLine(index + "\t0x" + ent.offset.ToString("X6") + "\t" + ent.size + "\t" + ent.name);
                             string filepath = Path.Combine(gamePath, ent.name);
-                            if (File.Exists(filepath) && !filepath.Equals(markerfile, StringComparison.InvariantCultureIgnoreCase) && !filepath.ToLower().EndsWith(@"pcconsoletoc.bin"))
+                            var fileExists = File.Exists(filepath);
+                            if (fileExists)
                             {
-                                FileInfo fi = new FileInfo(filepath);
-                                long size = fi.Length;
-                                if (ent.size < size)
+                                if (!filepath.Equals(markerfile, StringComparison.InvariantCultureIgnoreCase) && !filepath.ToLower().EndsWith(@"pcconsoletoc.bin"))
                                 {
-                                    addDiagLine($@" - {filepath} size is {size}, but TOC lists {ent.size} ({ent.size - size} bytes)", Severity.ERROR);
-                                    hadTocError = true;
+                                    FileInfo fi = new FileInfo(filepath);
+                                    long size = fi.Length;
+                                    if (ent.size < size)
+                                    {
+                                        addDiagLine($@" - {filepath} size is {size}, but TOC lists {ent.size} ({ent.size - size} bytes)", Severity.ERROR);
+                                        hadTocError = true;
+                                    }
                                 }
+                            }
+                            else
+                            {
+                                addDiagLine($@" - {filepath} is listed in TOC but is not present on disk", Severity.WARN);
                             }
                         }
                     }

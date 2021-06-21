@@ -39,6 +39,16 @@ namespace MassEffectModManagerCore.modmanager.objects
         public string GameSource { get; private set; }
         public string ExecutableHash { get; private set; }
 
+        public string ASILoaderName
+        {
+            get
+            {
+                if (Game == MEGame.ME1) return "Binkw32 ASI Loader";
+                if (Game is MEGame.ME2 or MEGame.ME3) return "Binkw32 ASI Bypass";
+                if (Game.IsLEGame()) return "Bink2w64 ASI Loader";
+                return $@"UNKNOWN GAME FOR ASI LOADER: {Game}";
+            }
+        }
         public string TargetBootIcon
         {
             get
@@ -62,20 +72,20 @@ namespace MassEffectModManagerCore.modmanager.objects
         /// Indicates that this is a custom, abnormal game object. It may be used only for UI purposes, but it depends on the context.
         /// </summary>
         public bool IsCustomOption { get; set; } = false;
-        public GameTarget(MEGame game, string targetRootPath, bool currentRegistryActive, bool isCustomOption = false, bool isTest = false)
+        public GameTarget(MEGame game, string targetRootPath, bool currentRegistryActive, bool isCustomOption = false, bool isTest = false, bool skipInit = false)
         {
             this.Game = game;
             this.RegistryActive = currentRegistryActive;
             this.IsCustomOption = isCustomOption;
             this.TargetPath = targetRootPath.TrimEnd('\\');
             MemoryAnalyzer.AddTrackedMemoryItem($@"{game} GameTarget {TargetPath} - IsCustomOption: {isCustomOption}", new WeakReference(this));
-            ReloadGameTarget(isTest);
+            ReloadGameTarget(isTest, skipInit: skipInit);
         }
 
-        public void ReloadGameTarget(bool lodUpdateAndLogging = true, bool forceLodUpdate = false, bool reverseME1Executable = true)
+        public void ReloadGameTarget(bool lodUpdateAndLogging = true, bool forceLodUpdate = false, bool reverseME1Executable = true, bool skipInit = false)
         {
             // Unknown = 
-            if (!IsCustomOption)
+            if (!IsCustomOption && !skipInit)
             {
                 if (Directory.Exists(TargetPath))
                 {
@@ -369,13 +379,16 @@ namespace MassEffectModManagerCore.modmanager.objects
             List<string> modifiedFiles = new List<string>();
             void failedCallback(string file)
             {
-                if (file.EndsWith(@".sfar"))
+                if (Game == MEGame.ME3 && Path.GetExtension(file).Equals(".sfar", StringComparison.InvariantCultureIgnoreCase))
                 {
                     modifiedSfars.Add(file);
                     return;
                 }
-
-                if (this.Game != MEGame.LELauncher && file == getALOTMarkerFilePath())
+                if (Path.GetFileName(file).Equals(@"PCConsoleTOC.bin", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return; // Do not report this file as modified
+                }
+                else if (this.Game != MEGame.LELauncher && file == getALOTMarkerFilePath())
                 {
                     return; //Do not report this file as modified or user will desync game state with texture state
                 }
@@ -1258,11 +1271,11 @@ namespace MassEffectModManagerCore.modmanager.objects
         public string Binkw32StatusText { get; private set; }
         public void PopulateBinkInfo()
         {
-            if (Game != MEGame.ME1)
+            if (Game is MEGame.ME2 or MEGame.ME3)
             {
                 Binkw32StatusText = Utilities.CheckIfBinkw32ASIIsInstalled(this) ? M3L.GetString(M3L.string_bypassInstalledASIAndDLCModsWillBeAbleToLoad) : M3L.GetString(M3L.string_bypassNotInstalledASIAndDLCModsWillBeUnableToLoad);
             }
-            else
+            else if (Game is MEGame.ME1 || Game.IsLEGame())
             {
                 Binkw32StatusText = Utilities.CheckIfBinkw32ASIIsInstalled(this) ? M3L.GetString(M3L.string_bypassInstalledASIModsWillBeAbleToLoad) : M3L.GetString(M3L.string_bypassNotInstalledASIModsWillBeUnableToLoad);
             }

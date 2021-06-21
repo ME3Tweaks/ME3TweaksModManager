@@ -38,8 +38,9 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     MemoryAnalyzer.AddTrackedMemoryItem($@"Re-opened SVE archive for {ModName}", new WeakReference(Archive));
                 }
             }
+
             var gameDLCPath = M3Directories.GetDLCPath(gameTarget);
-            var customDLCMapping = Enumerable.FirstOrDefault<ModJob>(InstallationJobs, x => x.Header == ModJob.JobHeader.CUSTOMDLC)?.CustomDLCFolderMapping;
+            var customDLCMapping = InstallationJobs.FirstOrDefault(x => x.Header == ModJob.JobHeader.CUSTOMDLC)?.CustomDLCFolderMapping;
             if (customDLCMapping != null)
             {
                 //Make clone so original value is not modified
@@ -51,9 +52,9 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             foreach (var job in InstallationJobs)
             {
                 Log.Information($@"Preprocessing installation job: {job.Header}");
-                var alternateFiles = Enumerable.Where<AlternateFile>(job.AlternateFiles, x => x.IsSelected && x.Operation != AlternateFile.AltFileOperation.OP_NOTHING
-                                                                                                                   && x.Operation != AlternateFile.AltFileOperation.OP_NOINSTALL_MULTILISTFILES).ToList();
-                var alternateDLC = Enumerable.Where<AlternateDLC>(job.AlternateDLCs, x => x.IsSelected).ToList();
+                var alternateFiles = job.AlternateFiles.Where(x => x.IsSelected && x.Operation != AlternateFile.AltFileOperation.OP_NOTHING
+                                                                                               && x.Operation != AlternateFile.AltFileOperation.OP_NOINSTALL_MULTILISTFILES).ToList();
+                var alternateDLC = job.AlternateDLCs.Where(x => x.IsSelected).ToList();
                 if (job.Header == ModJob.JobHeader.CUSTOMDLC)
                 {
                     #region Installation: CustomDLC
@@ -167,7 +168,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         }
 
                         // Process altfile removal of multilist, since it should be done last
-                        var fileRemoveAltFiles = Enumerable.Where<AlternateFile>(job.AlternateFiles, x => x.IsSelected && x.Operation == AlternateFile.AltFileOperation.OP_NOINSTALL_MULTILISTFILES);
+                        var fileRemoveAltFiles = job.AlternateFiles.Where(x => x.IsSelected && x.Operation == AlternateFile.AltFileOperation.OP_NOINSTALL_MULTILISTFILES);
                         foreach (var altFile in fileRemoveAltFiles)
                         {
                             foreach (var multifile in altFile.MultiListSourceFiles)
@@ -258,6 +259,12 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     var installationMapping = new CaseInsensitiveDictionary<InstallSourceFile>();
                     unpackedJobInstallationMapping[job] = (installationMapping, new List<string>());
                     buildInstallationQueue(job, installationMapping, false);
+                    #endregion
+                }
+                else if (job.Header == ModJob.JobHeader.GAME1_EMBEDDED_TLK)
+                {
+                    #region Installation: GAME_EMBEDDED TLK
+                    // We don't parse this here
                     #endregion
                 }
                 else
@@ -420,7 +427,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 throw new Exception(@"Cannot validate a mod against a gametarget that is not for its game");
             }
 
-            var requiredDLC = Enumerable.Select<string, string>(RequiredDLC, x =>
+            var requiredDLC = RequiredDLC.Select(x =>
             {
                 if (Enum.TryParse(x, out ModJob.JobHeader parsedHeader) && ModJob.GetHeadersToDLCNamesMap(Game).TryGetValue(parsedHeader, out var dlcname))
                 {
@@ -444,10 +451,10 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 throw new Exception(@"Cannot validate a mod against a gametarget that is not for its game");
             }
 
-            if (Enumerable.Any<string>(OptionalSingleRequiredDLC))
+            if (OptionalSingleRequiredDLC.Any())
             {
 
-                var requiredAnyDLC = Enumerable.Select<string, string>(OptionalSingleRequiredDLC, x =>
+                var requiredAnyDLC = OptionalSingleRequiredDLC.Select(x =>
                 {
                     if (Enum.TryParse(x, out ModJob.JobHeader parsedHeader) && ModJob.GetHeadersToDLCNamesMap(Game)
                         .TryGetValue(parsedHeader, out var dlcname))
@@ -477,7 +484,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 {
                     foreach (var item in job.ReadOnlyIndicators)
                     {
-                        var destPath = Enumerable.FirstOrDefault<KeyValuePair<string, string>>(job.FilesToInstall, x => x.Value.Equals(item, StringComparison.InvariantCultureIgnoreCase));
+                        var destPath = job.FilesToInstall.FirstOrDefault(x => x.Value.Equals(item, StringComparison.InvariantCultureIgnoreCase));
                         if (destPath.Key == null) Log.Error(@"Error: Bug triggered: destPath for addreadonly files returned null!");
                         list.Add(destPath.Key); //pathcombine?
                     }
@@ -517,12 +524,18 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     {
                         list.Add(v.ModFile);
                     }
-
-                    if (v.Operation == AlternateFile.AltFileOperation.OP_APPLY_MULTILISTFILES)
+                    else if (v.Operation == AlternateFile.AltFileOperation.OP_APPLY_MULTILISTFILES)
                     {
                         foreach (var mlFile in v.MultiListSourceFiles)
                         {
                             list.Add(v.MultiListTargetPath + @"\" + mlFile);
+                        }
+                    }
+                    else if (v.Operation == AlternateFile.AltFileOperation.OP_APPLY_MERGEMODS)
+                    {
+                        foreach (var mm in v.MergeMods)
+                        {
+                            list.AddRange(mm.GetMergeFileTargetFiles());
                         }
                     }
                 }
@@ -543,6 +556,11 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                             list.Add(v.DestinationDLCFolder + @"\" + mlFile);
                         }
                     }
+                }
+
+                foreach (var mm in job.MergeMods)
+                {
+                    list.AddRange(mm.GetMergeFileTargetFiles());
                 }
             }
 

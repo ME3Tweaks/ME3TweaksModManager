@@ -1411,7 +1411,15 @@ namespace SevenZip
                     return;
                 }
 
-                CompressFileDictionary(fileDictionary, fs, password);
+                if (CompressionMode == CompressionMode.Append && !fileDictionary.Any())
+                {
+                    // Nothing to do.
+                    return;
+                }
+                else
+                {
+                    CompressFileDictionary(fileDictionary, fs, password);
+                }
             }
 
             FinalizeUpdate();

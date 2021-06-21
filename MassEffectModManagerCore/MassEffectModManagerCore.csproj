@@ -9,7 +9,7 @@
 		<PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
 		<UseWPF>true</UseWPF>
 		<Platforms>x64</Platforms>
-		<Version>7.0.0.130</Version>
+		<Version>7.0.0.118</Version>
 		<Copyright>ME3Tweaks 2012 - 2021</Copyright>
 		<Authors>Mgamerz</Authors>
 		<PackageId>MassEffectModManagerCore</PackageId>
@@ -135,8 +135,10 @@
 		<EmbeddedResource Include="modmanager\asi\ME3Logger_truncating-v1.0.asi" />
 		<EmbeddedResource Include="modmanager\binkw32\**\*.dll" />
 		<EmbeddedResource Include="modmanager\binkw64\**\*.dll" />
-		<EmbeddedResource Include="modmanager\gamemd5\*.bin" />
-		<EmbeddedResource Include="modmanager\me3tweaks\LiveIni.bin" />
+    <EmbeddedResource Include="modmanager\gamemd5\*.bin" />
+    <EmbeddedResource Include="modmanager\squadmates\**\*.txt" />
+    <EmbeddedResource Include="modmanager\squadmates\**\*.pcc" />
+    <EmbeddedResource Include="modmanager\me3tweaks\LiveIni.bin" />
 		<EmbeddedResource Include="modmanager\me3tweaks\PermissionsGranter.exe" />
 		<EmbeddedResource Include="modmanager\meim\propertymaps\BioEngine.xml" />
 		<EmbeddedResource Include="modmanager\meim\propertymaps\BioGame.xml" />
@@ -203,6 +205,7 @@
     <Resource Include="modmanager\toolicons\*.png" />
     <Resource Include="modmanager\toolicons\*.ico" />
     <EmbeddedResource Include="modmanager\plotmanager\**\*.pcc" />
+    <EmbeddedResource Include="modmanager\mergedlc\**\*.pcc" />
     <EmbeddedResource Include="modmanager\plotmanager\**\*.u*" />
     <EmbeddedResource Include="modmanager\lelauncherbypass\*.jsf" />
     <EmbeddedResource Include="modmanager\lelauncherbypass\*.bik" />

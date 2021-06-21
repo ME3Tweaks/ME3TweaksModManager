@@ -267,33 +267,45 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 case @".7z":
                 case @".zip":
                     Log.Information(@"Extracting tool archive: " + downloadPath);
-                    using (var archiveFile = new SevenZipExtractor(downloadPath))
+                    try
                     {
-                        currentTaskUpdateCallback?.Invoke(M3L.GetString(M3L.string_interp_extractingX, tool));
-                        setPercentTaskDone?.Invoke(0);
-                        void progressCallback(object sender, ProgressEventArgs progress)
+                        using (var archiveFile = new SevenZipExtractor(downloadPath))
                         {
-                            setPercentTaskDone?.Invoke(progress.PercentDone);
-                        };
-                        archiveFile.Extracting += progressCallback;
-                        try
-                        {
-                            archiveFile.ExtractArchive(outputDirectory); // extract all
-                            // Touchup for MEM LE versions
-                            if (Path.GetFileName(executable) == @"MassEffectModderLE.exe")
-                                executable = Path.Combine(Directory.GetParent(executable).FullName, @"MassEffectModder.exe");
-                            if (Path.GetFileName(executable) == @"MassEffectModderNoGuiLE.exe")
-                                executable = Path.Combine(Directory.GetParent(executable).FullName, @"MassEffectModderNoGui.exe");
+                            currentTaskUpdateCallback?.Invoke(M3L.GetString(M3L.string_interp_extractingX, tool));
+                            setPercentTaskDone?.Invoke(0);
 
-                            resultingExecutableStringCallback?.Invoke(executable);
-                        }
-                        catch (Exception e)
-                        {
-                            Log.Error($@"Could not extract/run tool {executable} after download: {e.Message}");
-                            errorExtractingCallback?.Invoke(e, M3L.GetString(M3L.string_interp_errorDownloadingAndLaunchingTool, e.Message), M3L.GetString(M3L.string_errorLaunchingTool));
+                            void progressCallback(object sender, ProgressEventArgs progress)
+                            {
+                                setPercentTaskDone?.Invoke(progress.PercentDone);
+                            }
 
+                            ;
+                            archiveFile.Extracting += progressCallback;
+                            try
+                            {
+                                archiveFile.ExtractArchive(outputDirectory); // extract all
+                                // Touchup for MEM LE versions
+                                if (Path.GetFileName(executable) == @"MassEffectModderLE.exe")
+                                    executable = Path.Combine(Directory.GetParent(executable).FullName, @"MassEffectModder.exe");
+                                if (Path.GetFileName(executable) == @"MassEffectModderNoGuiLE.exe")
+                                    executable = Path.Combine(Directory.GetParent(executable).FullName, @"MassEffectModderNoGui.exe");
+
+                                resultingExecutableStringCallback?.Invoke(executable);
+                            }
+                            catch (Exception e)
+                            {
+                                Log.Error($@"Could not extract/run tool {executable} after download: {e.Message}");
+                                errorExtractingCallback?.Invoke(e, M3L.GetString(M3L.string_interp_errorDownloadingAndLaunchingTool, e.Message), M3L.GetString(M3L.string_errorLaunchingTool));
+
+                            }
                         }
                     }
+                    catch (Exception e)
+                    {
+                        Log.Error($@"Exception extracting archive: {e.Message}");
+                        errorExtractingCallback?.Invoke(e, M3L.GetString(M3L.string_interp_errorDownloadingAndLaunchingTool, e.Message), M3L.GetString(M3L.string_errorLaunchingTool));
+                    }
+
                     break;
                 default:
                     Log.Error($@"Failed to download correct file! We don't support this extension. The extension was {extension}");
@@ -407,9 +419,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             BackgroundWorker bw = new BackgroundWorker();
             #region callbacks
-            void failedToDownload()
+            void failedToDownload(string failureMessage)
             {
-                Action = M3L.GetString(M3L.string_interp_failedToDownloadX, tool);
+                Action = M3L.GetString(M3L.string_interp_failedToDownloadX, tool, failureMessage);
                 PercentVisibility = Visibility.Collapsed;
                 PercentDownloaded = 0;
                 Thread.Sleep(5000);
@@ -437,7 +449,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             Action<bool> setPercentVisibilityCallback = null,
             Action<int> setPercentTaskDone = null,
             Action<string> resultingExecutableStringCallback = null,
-            Action failedToDownloadCallback = null,
+            Action<string> failedToDownloadCallback = null,
             Action<Exception, string, string> errorExtractingCallback = null)
         {
             Log.Information($@"FetchAndLaunchTool() for {tool}");
@@ -450,6 +462,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 //Don't check for updates again.
                 resultingExecutableStringCallback?.Invoke(localExecutable);
+                return;
+            }
+
+            var prereqCheckMessage = checkToolPrerequesites(tool);
+            if (prereqCheckMessage != null)
+            {
+                Log.Error($@"Prerequisite not met: {prereqCheckMessage}");
+                failedToDownloadCallback?.Invoke($"Prerequisite not met: {prereqCheckMessage}");
                 return;
             }
 
@@ -472,7 +492,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         //Must run on UI thread
                         //MessageBox.Show($"Unable to download {tool}.\nPlease check your network connection and try again.\nIf the issue persists, please come to the ME3Tweaks Discord.");
                         Log.Error(@"Unable to launch tool - could not download, and does not exist locally: " + localExecutable);
-                        failedToDownloadCallback?.Invoke();
+                        failedToDownloadCallback?.Invoke("Download failed");
                         return;
                     }
                 }
@@ -500,7 +520,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         {
                             //Checks based on major
                             int releaseVer = int.Parse(latestRelease.TagName);
-                            if (releaseVer > fvi.ProductMajorPart)
+                            if (releaseVer > fvi.ProductMajorPart && releaseVer < 500 && tool is MEM or MEM_CMD)
+                            {
+                                needsUpdated = true;
+                            }
+                            if (releaseVer > fvi.ProductMajorPart && releaseVer >= 500 && tool is MEM_LE or MEM_LE_CMD)
                             {
                                 needsUpdated = true;
                             }
@@ -544,63 +568,88 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             else
             {
                 //Not github based
-                string downloadLink = me3tweaksToolGetDownloadUrl(tool);
-                Version downloadVersion = me3tweaksToolGetLatestVersion(tool);
-                if (downloadVersion != null && downloadLink != null) // has enough info
+                try
                 {
-                    if (needsDownloading) // not present locally
+                    string downloadLink = me3tweaksToolGetDownloadUrl(tool);
+                    Version downloadVersion = me3tweaksToolGetLatestVersion(tool);
+                    if (downloadVersion != null && downloadLink != null) // has enough info
                     {
-                        DownloadToolME3Tweaks(tool, downloadLink, downloadVersion, localExecutable,
-                            s => currentTaskUpdateCallback?.Invoke(s),
-                            vis => setPercentVisibilityCallback?.Invoke(vis),
-                            percent => setPercentTaskDone?.Invoke(percent),
-                            exe => resultingExecutableStringCallback?.Invoke(exe),
-                            (exception, message, caption) =>
-                                errorExtractingCallback?.Invoke(exception, message, caption)
-                        );
-                        ToolsCheckedForUpdatesInThisSession.Add(tool);
-                        return; //is this the right place for this?
-                    }
-                    else
-                    {
-                        //Check if it need updated
-                        FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(localExecutable);
-                        Version localVersion =
-                            new Version(
-                                $@"{fvi.FileMajorPart}.{fvi.FileMinorPart}.{fvi.FileBuildPart}.{fvi.FilePrivatePart}");
-                        if (downloadVersion > localVersion)
+                        if (needsDownloading) // not present locally
                         {
-                            needsDownloading = true;
+                            DownloadToolME3Tweaks(tool, downloadLink, downloadVersion, localExecutable,
+                                s => currentTaskUpdateCallback?.Invoke(s),
+                                vis => setPercentVisibilityCallback?.Invoke(vis),
+                                percent => setPercentTaskDone?.Invoke(percent),
+                                exe => resultingExecutableStringCallback?.Invoke(exe),
+                                (exception, message, caption) =>
+                                    errorExtractingCallback?.Invoke(exception, message, caption)
+                            );
+                            ToolsCheckedForUpdatesInThisSession.Add(tool);
+                            return; //is this the right place for this?
+                        }
+                        else
+                        {
+                            //Check if it need updated
+                            FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(localExecutable);
+                            Version localVersion =
+                                new Version(
+                                    $@"{fvi.FileMajorPart}.{fvi.FileMinorPart}.{fvi.FileBuildPart}.{fvi.FilePrivatePart}");
+                            if (downloadVersion > localVersion)
+                            {
+                                needsDownloading = true;
+                            }
+                        }
+
+
+
+                        if (!needsDownloading)
+                        {
+                            resultingExecutableStringCallback?.Invoke(localExecutable);
+                        }
+                        else
+                        {
+                            DownloadToolME3Tweaks(tool, downloadLink, downloadVersion, localExecutable,
+                                s => currentTaskUpdateCallback?.Invoke(s),
+                                vis => setPercentVisibilityCallback?.Invoke(vis),
+                                percent => setPercentTaskDone?.Invoke(percent),
+                                exe => resultingExecutableStringCallback?.Invoke(exe),
+                                (exception, message, caption) =>
+                                    errorExtractingCallback?.Invoke(exception, message, caption)
+                            );
                         }
                     }
-
-
-
-                    if (!needsDownloading)
-                    {
-                        resultingExecutableStringCallback?.Invoke(localExecutable);
-                    }
                     else
                     {
-                        DownloadToolME3Tweaks(tool, downloadLink, downloadVersion, localExecutable,
-                            s => currentTaskUpdateCallback?.Invoke(s),
-                            vis => setPercentVisibilityCallback?.Invoke(vis),
-                            percent => setPercentTaskDone?.Invoke(percent),
-                            exe => resultingExecutableStringCallback?.Invoke(exe),
-                            (exception, message, caption) =>
-                                errorExtractingCallback?.Invoke(exception, message, caption)
-                        );
+                        // Not enough information!
+                        Log.Error(@"Unable to download ME3Tweaks hosted tool: Information not present in startup manifest. Ensure M3 can connect to the internet at boot time");
+                        failedToDownloadCallback?.Invoke("M3 booted without startup manifest - reboot application with network access");
                     }
                 }
-                else
+                catch (Exception ex)
                 {
-                    // Not enough information!
-                    Log.Error(@"Unable to download ME3Tweaks hosted tool: Information not present in startup manifest. Ensure M3 can connect to the internet at boot time");
-                    failedToDownloadCallback?.Invoke();
+                    Log.Error($@"Error downloading ME3Tweaks too: {ex.Message}");
+                    failedToDownloadCallback?.Invoke(ex.Message);
                 }
             }
 
             ToolsCheckedForUpdatesInThisSession.Add(tool);
+        }
+
+        private static string checkToolPrerequesites(string toolname)
+        {
+            switch (toolname)
+            {
+                case LegendaryExplorer_Beta:
+                {
+                    if (!Utilities.IsNetRuntimeInstalled(5))
+                    {
+                        return @"The .NET 5 runtime is not installed";
+                    }
+                    break;
+                }
+            }
+
+            return null; // nothing wrong
         }
 
         private static bool hasApplicableAsset(string tool, Release release)
@@ -634,8 +683,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             switch (tool)
             {
-                case LegendaryExplorer:
-                    if (App.ServerManifest.TryGetValue(@"legendaryexplorerbeta_latestversion", out var lexbVersion))
+                case LegendaryExplorer_Beta:
+                    if (App.ServerManifest.TryGetValue(@"legendaryexplorernightly_latestversion", out var lexbVersion))
                     {
                         return new Version(lexbVersion);
                     }
@@ -650,9 +699,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             switch (tool)
             {
                 case LegendaryExplorer_Beta:
-                    if (App.ServerManifest.TryGetValue(@"legendaryexplorerbeta_latestlink", out var me3expbLatestlink))
+                    if (App.ServerManifest.TryGetValue(@"legendaryexplorernightly_latestlink", out var lexNightlyLatestLink))
                     {
-                        return me3expbLatestlink;
+                        return lexNightlyLatestLink;
                     }
                     break;
             }
@@ -670,6 +719,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             if (toolname == LegendaryExplorer_Beta) return @"LegendaryExplorer.exe";
             if (toolname == ME2R) return @"ME2Randomizer.exe";
+            if (toolname == MEM_LE) return @"MassEffectModder.exe";
+            if (toolname == MEM_LE_CMD) return @"MassEffectModderNoGui.exe";
             return toolname.Replace(@" ", @"") + @".exe";
         }
 
