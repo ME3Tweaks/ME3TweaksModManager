@@ -204,7 +204,7 @@ namespace MassEffectModManagerCore.modmanager.squadmates
 
                         outfit.ConditionalIndex = STARTING_OUTFIT_CONDITIONAL + list.Count;
                         outfit.AppearanceId = appearanceId++; // may need adjusted
-                        outfit.MemberAppearanceValue = 10 + list.Count; // may need adjusted
+                        outfit.MemberAppearanceValue = 5 + list.Count; // may need adjusted
                         outfit.DLCName = dlc;
                         list.Add(outfit);
                     }
@@ -297,14 +297,14 @@ namespace MassEffectModManagerCore.modmanager.squadmates
                     {
                         foreach (var outfit in sqm)
                         {
-                            var scText = $@"(plot.ints[{GetSquadmateOutfitInt(outfit.HenchName, target.Game)}] == i{outfit.AppearanceId})";
+                            var scText = $@"(plot.ints[{GetSquadmateOutfitInt(outfit.HenchName, target.Game)}] == i{outfit.MemberAppearanceValue})";
                             var compiled = ME3ConditionalsCompiler.Compile(scText);
                             cnd.ConditionalEntries.Add(new CNDFile.ConditionalEntry()
                             { Data = compiled, ID = outfit.ConditionalIndex });
                         }
                     }
 
-                    cnd.ToFile(Path.Combine(cookedDir, $@"Conditionals_{MERGE_DLC_FOLDERNAME}.cnd"));
+                    cnd.ToFile(Path.Combine(cookedDir, $@"Conditionals{MERGE_DLC_FOLDERNAME}.cnd"));
                 }
                 else if (target.Game.IsGame2())
                 {
@@ -400,7 +400,7 @@ namespace MassEffectModManagerCore.modmanager.squadmates
                                 Section = @"sfxgame.sfxguidata_teamselect",
                                 Name = @"selectappearances",
                                 Type = 3,
-                                Value = StringStructParser.BuildCommaSeparatedSplitValueList(outfit.ToPropertyDictionary())
+                                Value = StringStructParser.BuildCommaSeparatedSplitValueList(outfit.ToPropertyDictionary(), @"AvailableImage", @"HighlightImage", @"DeadImage", @"SilhouetteImage")
                             };
                             Game3CoalescedHelper.AddArrayEntry(bioUiDoc, entry);
                         }

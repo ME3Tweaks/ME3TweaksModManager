@@ -651,7 +651,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             switch (tool)
             {
                 case LegendaryExplorer:
-                    if (App.ServerManifest.TryGetValue(@"legendaryexplorerbeta_latestversion", out var lexbVersion))
+                    if (App.ServerManifest.TryGetValue(@"legendaryexplorernightly_latestversion", out var lexbVersion))
                     {
                         return new Version(lexbVersion);
                     }
@@ -666,7 +666,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             switch (tool)
             {
                 case LegendaryExplorer_Beta:
-                    if (App.ServerManifest.TryGetValue(@"legendaryexplorerbeta_latestlink", out var me3expbLatestlink))
+                    if (App.ServerManifest.TryGetValue(@"legendaryexplorernightly_latestlink", out var me3expbLatestlink))
                     {
                         return me3expbLatestlink;
                     }

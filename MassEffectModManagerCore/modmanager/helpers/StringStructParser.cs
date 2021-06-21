@@ -29,7 +29,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
         /// </summary>
         /// <param name="keys"></param>
         /// <returns></returns>
-        public static string BuildCommaSeparatedSplitValueList(Dictionary<string, string> keys)
+        public static string BuildCommaSeparatedSplitValueList(Dictionary<string, string> keys, params string[] keyValuesToQuote)
         {
             string str = @"(";
             bool first = true;
@@ -45,7 +45,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 }
                 str += kp.Key;
                 str += @"=";
-                if (!kp.Value.Contains(@" "))
+                if (!kp.Value.Contains(@" ") && !keyValuesToQuote.Contains(kp.Key, StringComparer.InvariantCultureIgnoreCase))
                 {
                     str += kp.Value;
                 }
@@ -78,7 +78,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
             int openingQuotePos = -1; //quotes if any
             int closingQuotePos = -1; //quotes if any
             bool isInQuotes = false;
-            
+
             int openParenthesisCount = 0;
             Dictionary<string, string> values = new Dictionary<string, string>();
             for (int i = 0; i < inputString.Length; i++)
