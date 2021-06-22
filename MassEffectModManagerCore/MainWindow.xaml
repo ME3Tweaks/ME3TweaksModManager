@@ -277,7 +277,7 @@
                                 Height="16"
                                 Width="16"
                                 RenderOptions.BitmapScalingMode="HighQuality"/>
-                            </MenuItem.Icon>  
+                        </MenuItem.Icon>
                     </MenuItem>
                     <Separator />
                     <MenuItem
@@ -1462,16 +1462,15 @@
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding Game}" Value="{x:Static packages:MEGame.LELauncher}">
                                                         <Setter Property="Background">
-
-<Setter.Value>
-                                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                                                <GradientStop Color="#44000088" Offset="0.0" />
-                                                                <GradientStop Color="#44110077" Offset="0.35" />
-                                                                <GradientStop Color="#44990011" Offset="0.55" />
-                                                                <GradientStop Color="#55AA0000" Offset="1.0" />
-                                                            </LinearGradientBrush>
-                                                        </Setter.Value>
-                                                            </Setter>
+                                                            <Setter.Value>
+                                                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                                    <GradientStop Color="#44000088" Offset="0.0" />
+                                                                    <GradientStop Color="#44110077" Offset="0.35" />
+                                                                    <GradientStop Color="#44990011" Offset="0.55" />
+                                                                    <GradientStop Color="#55AA0000" Offset="1.0" />
+                                                                </LinearGradientBrush>
+                                                            </Setter.Value>
+                                                        </Setter>
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding Game}" Value="{x:Static packages:MEGame.LE1}">
                                                         <Setter Property="Background">

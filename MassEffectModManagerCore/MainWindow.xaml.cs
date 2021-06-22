@@ -33,6 +33,7 @@ using MassEffectModManagerCore.modmanager.windows;
 using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore;
 using LegendaryExplorerCore.Coalesced;
+using LegendaryExplorerCore.Compression;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
@@ -1845,25 +1846,25 @@ namespace MassEffectModManagerCore
                 CurrentOperationText = M3L.GetString(M3L.string_loadingTargets);
                 PopulateTargets();
             }).ContinueWithOnUIThread(x =>
+        {
+            IsEnabled = true;
+            if (!Settings.ShowedPreviewPanel)
             {
-                IsEnabled = true;
-                if (!Settings.ShowedPreviewPanel)
-                {
-                    ShowPreviewPanel();
-                }
-                else
-                {
-                    LoadMods();
-                }
+                ShowPreviewPanel();
+            }
+            else
+            {
+                LoadMods();
+            }
 
-                PerformStartupNetworkFetches(true);
-                if (BackupNagSystem.ShouldShowNagScreen(InstallationTargets.ToList()))
-                {
-                    ShowBackupNag();
-                }
-                collectHardwareInfo();
-                StartedUp = true;
-            });
+            PerformStartupNetworkFetches(true);
+            if (BackupNagSystem.ShouldShowNagScreen(InstallationTargets.ToList()))
+            {
+                ShowBackupNag();
+            }
+            collectHardwareInfo();
+            StartedUp = true;
+        });
 
         }
 
