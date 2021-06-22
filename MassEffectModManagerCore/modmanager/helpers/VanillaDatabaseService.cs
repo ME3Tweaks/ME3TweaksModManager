@@ -376,7 +376,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                     vanillaDB = LELauncherVanillaDatabase;
                     break;
                 default:
-                    throw new Exception(@"Cannot vanilla check against game that is not ME1/ME2/ME3");
+                    throw new Exception(@"Cannot vanilla check against game that is not ME1/ME2/ME3/LE1/LE2/LE3/LELauncher");
             }
             if (Directory.Exists(target.TargetPath))
             {

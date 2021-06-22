@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Flurl.Http;
+using LegendaryExplorerCore.Compression;
 using MassEffectModManagerCore.modmanager.asi;
 using MassEffectModManagerCore.modmanager.gameini;
 using MassEffectModManagerCore.modmanager.helpers;
@@ -130,6 +131,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             ModIsInstalling = true;
             if (CheckForGameBackup())
             {
+                if (SelectedGameTarget.Game.IsLEGame())
+                {
+                    if (!OodleHelper.EnsureOodleDll(SelectedGameTarget.TargetPath, Utilities.GetDllDirectory()))
+                    {
+                        Log.Error($@"Oodle dll could not be sourced from game: {SelectedGameTarget.TargetPath}. Installation cannot proceed");
+                        InstallationSucceeded = false;
+                        InstallationCancelled = true;
+                        M3L.ShowDialog(mainwindow, @"The compression library for opening and saving Legendary Edition packages could not be located. Ensure your game is properly installed. If you continue to have issues, please come to the ME3Tweaks Discord.", "Cannot install mod", MessageBoxButton.OK, MessageBoxImage.Error);
+                        OnClosing(DataEventArgs.Empty);
+                        return;
+                    }
+                }
                 Log.Information($@"BeginInstallingMod(): {ModBeingInstalled.ModName}");
                 NamedBackgroundWorker bw = new NamedBackgroundWorker($@"ModInstaller-{ModBeingInstalled.ModName}");
                 bw.WorkerReportsProgress = true;
