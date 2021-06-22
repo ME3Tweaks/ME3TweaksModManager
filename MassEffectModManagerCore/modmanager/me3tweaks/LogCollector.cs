@@ -714,7 +714,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     modifiedFiles.Add(file);
                 }
 
-                var isVanilla = VanillaDatabaseService.ValidateTargetAgainstVanilla(selectedDiagnosticTarget, failedCallback);
+                var isVanilla = VanillaDatabaseService.ValidateTargetAgainstVanilla(selectedDiagnosticTarget, failedCallback, false);
                 if (isVanilla)
                 {
                     addDiagLine(@"No modified basegame files were found.");

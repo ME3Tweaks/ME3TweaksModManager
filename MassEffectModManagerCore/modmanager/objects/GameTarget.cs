@@ -394,7 +394,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 }
                 modifiedFiles.Add(file);
             }
-            VanillaDatabaseService.ValidateTargetAgainstVanilla(this, failedCallback);
+            VanillaDatabaseService.ValidateTargetAgainstVanilla(this, failedCallback, false);
 
             List<string> inconsistentDLC = new List<string>();
             VanillaDatabaseService.ValidateTargetDLCConsistency(this, x => inconsistentDLC.Add(x));
