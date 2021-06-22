@@ -284,7 +284,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
 
             string gamePath = selectedDiagnosticTarget.TargetPath;
-            var gameID = selectedDiagnosticTarget.Game.ToString().Substring(2);
+            var gameID = selectedDiagnosticTarget.Game.ToMEMGameNum().ToString();
             Log.Information(@"Beginning to build diagnostic output");
 
             addDiagLine(gameID, Severity.GAMEID);

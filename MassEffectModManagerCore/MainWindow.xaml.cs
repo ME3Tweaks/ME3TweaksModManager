@@ -1330,7 +1330,28 @@ namespace MassEffectModManagerCore
                     case MEGame.ME2:
                     case MEGame.ME3:
                         {
-                            iniFile = Path.Combine(iniFile, @"Mass Effect " + SelectedGameTarget.Game.ToString().Substring(2), @"BIOGame", @"Config", @"Gamersettings.ini");
+                            iniFile = Path.Combine(iniFile, @"Mass Effect " + SelectedGameTarget.Game.ToGameNum(), @"BIOGame", @"Config", @"Gamersettings.ini");
+                            if (File.Exists(iniFile))
+                            {
+                                var dini = DuplicatingIni.LoadIni(iniFile);
+                                var section = dini.Sections.FirstOrDefault(x => x.Header == @"SystemSettings");
+                                if (section != null)
+                                {
+                                    var resx = section.Entries.FirstOrDefault(x => x.Key == @"ResX");
+                                    var resy = section.Entries.FirstOrDefault(x => x.Key == @"ResY");
+                                    if (resx != null && resy != null)
+                                    {
+                                        resolution = $@"{resx.Value}x{resy.Value}";
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    case MEGame.LE1:
+                    case MEGame.LE2:
+                    case MEGame.LE3:
+                        {
+                            iniFile = Path.Combine(SelectedGameTarget.TargetPath, @"BioGame", @"Config", @"Gamersettings.ini");
                             if (File.Exists(iniFile))
                             {
                                 var dini = DuplicatingIni.LoadIni(iniFile);
