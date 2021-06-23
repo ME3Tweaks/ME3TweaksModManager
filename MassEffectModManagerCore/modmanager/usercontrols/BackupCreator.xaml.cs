@@ -243,7 +243,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     ProgressIndeterminate = true;
                     BackupStatus = M3L.GetString(M3L.string_validatingBackupSource);
                     Log.Information(@"Checking target is vanilla");
-                    bool isVanilla = VanillaDatabaseService.ValidateTargetAgainstVanilla(targetToBackup, nonVanillaFileFoundCallback);
+                    bool isVanilla = VanillaDatabaseService.ValidateTargetAgainstVanilla(targetToBackup, nonVanillaFileFoundCallback, true);
 
                     Log.Information(@"Checking DLC consistency");
                     bool isDLCConsistent = VanillaDatabaseService.ValidateTargetDLCConsistency(targetToBackup, inconsistentDLCCallback: inconsistentDLCFoundCallback);

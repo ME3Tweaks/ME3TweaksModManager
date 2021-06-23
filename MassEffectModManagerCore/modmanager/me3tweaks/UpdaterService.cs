@@ -14,6 +14,7 @@ using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using LegendaryExplorerCore.Compression;
+using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
@@ -116,7 +117,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     {
                         updateFinalRequest += "&";
                     }
-                    updateFinalRequest += "nexusupdatecode[]=" + mod.Game.ToString().Substring(2) + "-" + mod.NexusModID;
+                    updateFinalRequest += "nexusupdatecode[]=" + mod.Game.ToGameNum() + "-" + mod.NexusModID;
                 }
                 //else if (mod.NexusModID > 0)
                 //{

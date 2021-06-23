@@ -13,6 +13,7 @@ using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore.GameFilesystem;
+using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
@@ -117,7 +118,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     string endpoint = DLC_INFO_TELEMETRY_ENDPOINT;
                     var url = endpoint.SetQueryParam(@"dlc_folder_name", DLCFolderName);
                     url = url.SetQueryParam(@"mod_name", ModName);
-                    url = url.SetQueryParam(@"mod_game", Game.ToString().Substring(2));
+                    url = url.SetQueryParam(@"mod_game", Game.ToGameNum());
                     url = url.SetQueryParam(@"mod_author", ModAuthor);
                     url = url.SetQueryParam(@"mod_site", ModSite);
                     url = url.SetQueryParam(@"mod_mount_priority", MountPriority);

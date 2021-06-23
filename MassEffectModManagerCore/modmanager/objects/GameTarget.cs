@@ -7,6 +7,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
+using LegendaryExplorerCore.Compression;
 using MassEffectModManagerCore.modmanager.asi;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
@@ -80,6 +81,11 @@ namespace MassEffectModManagerCore.modmanager.objects
             this.TargetPath = targetRootPath.TrimEnd('\\');
             MemoryAnalyzer.AddTrackedMemoryItem($@"{game} GameTarget {TargetPath} - IsCustomOption: {isCustomOption}", new WeakReference(this));
             ReloadGameTarget(isTest, skipInit: skipInit);
+
+            if (Game.IsLEGame())
+            {
+                OodleHelper.EnsureOodleDll(TargetPath, Utilities.GetDllDirectory());
+            }
         }
 
         public void ReloadGameTarget(bool lodUpdateAndLogging = true, bool forceLodUpdate = false, bool reverseME1Executable = true, bool skipInit = false)
@@ -394,7 +400,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 }
                 modifiedFiles.Add(file);
             }
-            VanillaDatabaseService.ValidateTargetAgainstVanilla(this, failedCallback);
+            VanillaDatabaseService.ValidateTargetAgainstVanilla(this, failedCallback, false);
 
             List<string> inconsistentDLC = new List<string>();
             VanillaDatabaseService.ValidateTargetDLCConsistency(this, x => inconsistentDLC.Add(x));

@@ -284,7 +284,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
 
             string gamePath = selectedDiagnosticTarget.TargetPath;
-            var gameID = selectedDiagnosticTarget.Game.ToString().Substring(2);
+            var gameID = selectedDiagnosticTarget.Game.ToMEMGameNum().ToString();
             Log.Information(@"Beginning to build diagnostic output");
 
             addDiagLine(gameID, Severity.GAMEID);
@@ -714,7 +714,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     modifiedFiles.Add(file);
                 }
 
-                var isVanilla = VanillaDatabaseService.ValidateTargetAgainstVanilla(selectedDiagnosticTarget, failedCallback);
+                var isVanilla = VanillaDatabaseService.ValidateTargetAgainstVanilla(selectedDiagnosticTarget, failedCallback, false);
                 if (isVanilla)
                 {
                     addDiagLine(@"No modified basegame files were found.");

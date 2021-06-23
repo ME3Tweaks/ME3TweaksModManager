@@ -341,7 +341,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
             return false;
         }
 
-        public static bool ValidateTargetAgainstVanilla(GameTarget target, Action<string> failedValidationCallback)
+        public static bool ValidateTargetAgainstVanilla(GameTarget target, Action<string> failedValidationCallback, bool strictCheck)
         {
             bool isVanilla = true;
             CaseInsensitiveDictionary<List<(int size, string md5)>> vanillaDB = null;
@@ -376,18 +376,21 @@ namespace MassEffectModManagerCore.modmanager.helpers
                     vanillaDB = LELauncherVanillaDatabase;
                     break;
                 default:
-                    throw new Exception(@"Cannot vanilla check against game that is not ME1/ME2/ME3");
+                    throw new Exception(@"Cannot vanilla check against game that is not ME1/ME2/ME3/LE1/LE2/LE3/LELauncher");
             }
             if (Directory.Exists(target.TargetPath))
             {
 
                 foreach (string file in Directory.EnumerateFiles(target.TargetPath, @"*", SearchOption.AllDirectories))
                 {
+                    if (!strictCheck && Path.GetFileName(file).Equals(@"bink2w64.dll", StringComparison.InvariantCultureIgnoreCase))
+                        continue; // Do not report this file as modified
                     var shortname = file.Substring(target.TargetPath.Length + 1);
                     if (vanillaDB.TryGetValue(shortname, out var fileInfo))
                     {
                         var localFileInfo = new FileInfo(file);
-                        bool sfar = Path.GetExtension(file) == @".sfar";
+                        var extension = Path.GetExtension(file);
+                        bool sfar = extension == @".sfar";
                         bool correctSize;
                         if (sfar && localFileInfo.Length == 32)
                         {
@@ -665,7 +668,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 Log.Information(@"Validating backup...");
 
                 VanillaDatabaseService.LoadDatabaseFor(game, target.IsPolishME1);
-                bool isVanilla = VanillaDatabaseService.ValidateTargetAgainstVanilla(target, nonVanillaFileFoundCallback);
+                bool isVanilla = VanillaDatabaseService.ValidateTargetAgainstVanilla(target, nonVanillaFileFoundCallback, true);
                 bool isDLCConsistent = VanillaDatabaseService.ValidateTargetDLCConsistency(target, inconsistentDLCCallback: inconsistentDLCFoundCallback);
                 List<string> dlcModsInstalled = VanillaDatabaseService.GetInstalledDLCMods(target);
                 var memTextures = Directory.GetFiles(target.TargetPath, @"TexturesMEM*.tfc", SearchOption.AllDirectories);
