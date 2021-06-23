@@ -136,8 +136,17 @@
         </DoubleAnimation>
     </Storyboard>
 
-    <!-- Game icon bitmaps since they're used all over the place -->
+    <!--<LinearGradientBrush x:Key="LEModBrush"  StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#33000088" Offset="0.0" />
+        <GradientStop Color="#33110077" Offset="0.35" />
+        <GradientStop Color="#33990011" Offset="0.55" />
+        <GradientStop Color="#33AA0000" Offset="1.0" />
+    </LinearGradientBrush>-->
 
+    <SolidColorBrush x:Key="OTModBrush" Color="#33884433" />
+    <SolidColorBrush x:Key="LEModBrush" Color="#33334488" />
+
+    <!-- Game icon bitmaps since they're used all over the place -->
     <system:String x:Key="lexIcon">/modmanager/toolicons/lex.ico</system:String>
     <system:String x:Key="me1gameiconpath">/images/gameicons/ME1_48.ico</system:String>
     <system:String x:Key="me2gameiconpath">/images/gameicons/ME2_48.ico</system:String>

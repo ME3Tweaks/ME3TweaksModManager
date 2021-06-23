@@ -186,6 +186,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (game == MEGame.ME1) return Path.Combine(path, @"me1-bioinput.ini");
             if (game == MEGame.ME2) return Path.Combine(path, @"me2-bioinput.ini");
             if (game == MEGame.ME3) return Path.Combine(path, @"me3-bioinput.xml");
+            if (game == MEGame.LE1) return Path.Combine(path, @"le1-bioinput.ini");
+            if (game == MEGame.LE2) return Path.Combine(path, @"le2-bioinput.ini");
+            if (game == MEGame.LE3) return Path.Combine(path, @"le3-bioinput.xml");
             return null;
         }
     }

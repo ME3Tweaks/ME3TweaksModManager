@@ -528,7 +528,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     coalescedFilemapping[fileNode.Name + @".xml"] = updatedDocumentText;
                 }
 
-                if (Settings.ModMakerAutoInjectCustomKeybindsOption && chunkName == @"BASEGAME" && KeybindsInjectorPanel.GetDefaultKeybindsOverride(MEGame.ME3) != null)
+                if (Settings.ModMakerAutoInjectCustomKeybindsOption && chunkName == @"BASEGAME" && File.Exists(KeybindsInjectorPanel.GetDefaultKeybindsOverride(MEGame.ME3)))
                 {
                     Log.Information(@"Injecting keybinds file into mod: " + KeybindsInjectorPanel.GetDefaultKeybindsOverride(MEGame.ME3));
                     coalescedFilemapping[@"BioInput.xml"] = File.ReadAllText(KeybindsInjectorPanel.GetDefaultKeybindsOverride(MEGame.ME3));

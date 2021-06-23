@@ -978,6 +978,7 @@
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem
+                        IsEnabled="False"
                         Header="{DynamicResource string_LegendaryExplorerStable}"
                         Name="LegendaryExplorerStable_MenuItem"
                         Click="LaunchExternalTool_Clicked"
@@ -990,6 +991,7 @@
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem
+                        IsEnabled="False"
                         Header="{DynamicResource string_LegendaryExplorerBeta}"
                         Name="LegendaryExplorerBeta_MenuItem"
                         Click="LaunchExternalTool_Clicked"
@@ -1452,61 +1454,25 @@
                                             <Style TargetType="Border">
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding Game}" Value="{x:Static packages:MEGame.ME1}">
-                                                        <Setter Property="Background" Value="#44CCCCCC"/>
+                                                        <Setter Property="Background" Value="{StaticResource OTModBrush}"/>
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding Game}" Value="{x:Static packages:MEGame.ME2}">
-                                                        <Setter Property="Background" Value="#44CCCCCC"/>
+                                                        <Setter Property="Background" Value="{StaticResource OTModBrush}"/>
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding Game}" Value="{x:Static packages:MEGame.ME3}">
-                                                        <Setter Property="Background" Value="#44CCCCCC"/>
+                                                        <Setter Property="Background" Value="{StaticResource OTModBrush}"/>
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding Game}" Value="{x:Static packages:MEGame.LELauncher}">
-                                                        <Setter Property="Background">
-                                                            <Setter.Value>
-                                                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                                                    <GradientStop Color="#44000088" Offset="0.0" />
-                                                                    <GradientStop Color="#44110077" Offset="0.35" />
-                                                                    <GradientStop Color="#44990011" Offset="0.55" />
-                                                                    <GradientStop Color="#55AA0000" Offset="1.0" />
-                                                                </LinearGradientBrush>
-                                                            </Setter.Value>
-                                                        </Setter>
+                                                        <Setter Property="Background" Value="{StaticResource LEModBrush}"/>
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding Game}" Value="{x:Static packages:MEGame.LE1}">
-                                                        <Setter Property="Background">
-                                                            <Setter.Value>
-                                                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                                                    <GradientStop Color="#44000088" Offset="0.0" />
-                                                                    <GradientStop Color="#44110077" Offset="0.35" />
-                                                                    <GradientStop Color="#44990011" Offset="0.55" />
-                                                                    <GradientStop Color="#55AA0000" Offset="1.0" />
-                                                                </LinearGradientBrush>
-                                                            </Setter.Value>
-                                                        </Setter>
+                                                        <Setter Property="Background" Value="{StaticResource LEModBrush}"/>
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding Game}" Value="{x:Static packages:MEGame.LE2}">
-                                                        <Setter Property="Background">
-                                                            <Setter.Value>
-                                                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                                                    <GradientStop Color="#44000088" Offset="0.0" />
-                                                                    <GradientStop Color="#44110077" Offset="0.35" />
-                                                                    <GradientStop Color="#44990011" Offset="0.55" />
-                                                                    <GradientStop Color="#55AA0000" Offset="1.0" />
-                                                                </LinearGradientBrush>
-                                                            </Setter.Value>
-                                                        </Setter>
+                                                        <Setter Property="Background" Value="{StaticResource LEModBrush}"/>
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding Game}" Value="{x:Static packages:MEGame.LE3}">
-                                                        <Setter Property="Background">
-                                                            <Setter.Value>
-                                                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                                                    <GradientStop Color="#44000088" Offset="0.0" />
-                                                                    <GradientStop Color="#44110077" Offset="0.35" />
-                                                                    <GradientStop Color="#44990011" Offset="0.55" />
-                                                                    <GradientStop Color="#55AA0000" Offset="1.0" />
-                                                                </LinearGradientBrush>
-                                                            </Setter.Value>
-                                                        </Setter>
+                                                        <Setter Property="Background" Value="{StaticResource LEModBrush}"/>
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
