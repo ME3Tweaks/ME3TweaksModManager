@@ -466,4 +466,40 @@
       <downloadlink>https://github.com/ME3Tweaks/ME2-ASI-Plugins/releases/download/v1.0-CombolutionSupport/CombolutionSupport-v1.asi</downloadlink>
     </asimod>
   </updategroup>
+  <updategroup groupid="29" game="4" hidden="0">
+    <asimod>
+      <name>AutoTOC</name>
+      <installedname>AutoTOCLE</installedname>
+      <author>SirCxyrtyx</author>
+      <description>This ASI will automatically calculate the Table of Contents (TOC) file for the game on game boot, as well as enable DLC file overrides.</description>
+      <version>1</version>
+      <hash>5698d64ec9afb6b1100efcc86f99a1fc</hash>
+      <sourcecode>https://github.com/SirCxyrtyx/AutoTOC-asi/tree/master</sourcecode>
+      <downloadlink>https://github.com/SirCxyrtyx/AutoTOC-asi/releases/download/LEv1.0/AutoTOC_LE-v1.0.asi</downloadlink>
+    </asimod>
+  </updategroup>
+  <updategroup groupid="30" game="5" hidden="0">
+    <asimod>
+      <name>AutoTOC</name>
+      <installedname>AutoTOCLE</installedname>
+      <author>SirCxyrtyx</author>
+      <description>This ASI will automatically calculate the Table of Contents (TOC) file for the game on game boot.</description>
+      <version>1</version>
+      <hash>5698d64ec9afb6b1100efcc86f99a1fc</hash>
+      <sourcecode>https://github.com/SirCxyrtyx/AutoTOC-asi/tree/master</sourcecode>
+      <downloadlink>https://github.com/SirCxyrtyx/AutoTOC-asi/releases/download/LEv1.0/AutoTOC_LE-v1.0.asi</downloadlink>
+    </asimod>
+  </updategroup>
+  <updategroup groupid="31" game="6" hidden="0">
+    <asimod>
+      <name>AutoTOC</name>
+      <installedname>AutoTOCLE</installedname>
+      <author>SirCxyrtyx</author>
+      <description>This ASI will automatically calculate the Table of Contents (TOC) file for the game on game boot.</description>
+      <version>1</version>
+      <hash>5698d64ec9afb6b1100efcc86f99a1fc</hash>
+      <sourcecode>https://github.com/SirCxyrtyx/AutoTOC-asi/tree/master</sourcecode>
+      <downloadlink>https://github.com/SirCxyrtyx/AutoTOC-asi/releases/download/LEv1.0/AutoTOC_LE-v1.0.asi</downloadlink>
+    </asimod>
+  </updategroup>
 </ASIManifest>
