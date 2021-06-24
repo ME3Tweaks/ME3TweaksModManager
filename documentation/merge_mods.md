@@ -134,17 +134,17 @@ The format for a single property update for an export. You may have several of t
 
 The format for an update to a script export. You must store your script in a plaintext file, which will be embedded into your .m3m file. Your script file must be in the same folder as your manifest file.
 
-| Property Name | Type   | Information                                                  |
-| ------------- | ------ | ------------------------------------------------------------ |
-| scriptfile    | string | The filename of a local plaintext file containing your script. File extension should be .uc. |
+| Property Name  | Type   | Information                                                  |
+| -------------- | ------ | ------------------------------------------------------------ |
+| scriptfilename | string | The filename of a local plaintext file containing your script. File extension should be .uc. |
 
 **Example:**
 
 ```json
 {
-    "entryname": "BioAutoConditionals.F1290",
+    "entryname": "BioInventory.IsPlotItem",
     "scriptupdate": {
-        "scriptfile":"MyPlaintextUnrealScript.uc"
+        "scriptfilename":"MyPlaintextUnrealScript.uc"
     }
 }
 ```
