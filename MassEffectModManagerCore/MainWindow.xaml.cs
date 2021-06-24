@@ -757,6 +757,7 @@ namespace MassEffectModManagerCore
                         continueInstalling &= successful;
                         if (continueInstalling && queue.ModsToInstall.Count > modIndex)
                         {
+                            Log.Information($@"Installing batch mod [{modIndex}/{queue.ModsToInstall.Count}]: {queue.ModsToInstall[modIndex].ModName}");
                             ApplyMod(queue.ModsToInstall[modIndex], target, batchMode: true, installCompressed: queue.InstallCompressed, installCompletedCallback: modInstalled);
                             modIndex++;
                         }
@@ -1707,15 +1708,11 @@ namespace MassEffectModManagerCore
                         {
                             modInstallTask.finishedUiText = M3L.GetString(M3L.string_interp_failedToInstallMod, mod.ModName);
                         }
-                        installCompletedCallback?.Invoke(false);
                     }
-
                     backgroundTaskEngine.SubmitJobCompletion(modInstallTask);
+                    installCompletedCallback?.Invoke(modInstaller.InstallationSucceeded);
                     ReleaseBusyControl();
                 };
-
-
-
                 if (modInstaller.InstallationSucceeded)
                 {
                     installCompletedCallback?.Invoke(true);
@@ -3506,7 +3503,6 @@ namespace MassEffectModManagerCore
                             Log.Error($@"Error compiling m3m mod file: {ex.Message}");
                             M3L.ShowDialog(this, $"Error compiling m3m mod file: {ex.Message}", "Error compiling m3m", MessageBoxButton.OK, MessageBoxImage.Error);
                         }
-
                         break;
                     case @".m3m":
                         try

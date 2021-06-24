@@ -1662,6 +1662,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void DebugPrintInstallationQueue_Click(object sender, RoutedEventArgs e)
         {
+#if DEBUG
             if (ModBeingInstalled != null)
             {
                 var queues = ModBeingInstalled.GetInstallationQueues(SelectedGameTarget);
@@ -1682,6 +1683,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
                 }
             }
+#endif
         }
     }
 }

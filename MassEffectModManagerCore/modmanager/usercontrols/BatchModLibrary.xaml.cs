@@ -33,7 +33,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public ICommand CreateNewGroupCommand { get; private set; }
         public ICommand InstallGroupCommand { get; private set; }
         public ICommand EditGroupCommand { get; private set; }
-        public bool CanCompressPackages => SelectedBatchQueue?.Game >= MEGame.ME2;
+        public bool CanCompressPackages => SelectedBatchQueue != null && SelectedBatchQueue.Game is MEGame.ME2 or MEGame.ME3;
 
         private void LoadCommands()
         {

@@ -406,7 +406,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                 ModMountFlag = mf,
                 ModMountPriority = ModMountPriority,
                 ModURL = ModURL,
-                ModModuleNumber = ModDLCModuleNumber
+                ModModuleNumber = ModDLCModuleNumber,
             };
 
             Log.Information(@"Generating a starter kit mod with the following options:");
@@ -691,10 +691,11 @@ namespace MassEffectModManagerCore.modmanager.windows
             public MEGame ModGame;
 
             public int ModModuleNumber;
+
             /// <summary>
-            /// If a Mod object should be generated via moddesc.ini
+            /// If a Mod object should be generated via moddesc.ini. Defaults to true
             /// </summary>
-            public bool GenerateModdesc { get; set; }
+            public bool GenerateModdesc { get; set; } = true;
             /// <summary>
             /// Directory to place the DLC folder at. Set to null to use the mod library
             /// </summary>
