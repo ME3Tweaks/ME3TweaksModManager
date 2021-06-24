@@ -10,7 +10,38 @@ The merge mod system is interwoven into the moddesc.ini system, and can take ful
 
 An .m3m mod is created by M3 from a user-created .JSON file. This .JSON file, hereafter referred to as the manifest file, contains information on which game, which file, and which properties will be updated. The manifest file may also contain references to other assets or scripts you would like to have included in your mod. Your manifest file is compiled with all referenced assets to create a binary .m3m file, which is what you distribute to users in your mod. This page outlines the .JSON file format to create an .m3m mod.
 
-![m3m_example_file](images/m3m_example_file.png)
+```json
+{
+  "game": "LE1",
+  "files": [
+    {
+      "filename": "SFXGame.pcc",
+      "changes": [
+        {
+          "entryname": "Default__SFXCameraMode_ExploreStorm",
+          "propertyupdates": [
+            {
+              "propertyname": "bIsCameraShakeEnabled",
+              "propertytype": "BoolProperty",
+              "propertyvalue": "False"
+            }
+          ]
+        },
+        {
+          "entryname": "Default__SFXCameraMode_CombatStorm",
+          "propertyupdates": [
+            {
+              "propertyname": "bIsCameraShakeEnabled",
+              "propertytype": "BoolProperty",
+              "propertyvalue": "False"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
 
 *An example merge mod .JSON manifest file*
 
