@@ -29,6 +29,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 string gamename = @"masseffect";
                 if (Game == MEGame.ME2) gamename += @"2";
                 if (Game == MEGame.ME3) gamename += @"3";
+                if (Game.IsLEGame()) gamename += @"legendaryedition";
                 var modinfo = await client.Mods.GetMod(gamename, NexusModID);
                 if (modinfo.User.MemberID == NexusModsUtilities.UserInfo.UserID)
                 {
