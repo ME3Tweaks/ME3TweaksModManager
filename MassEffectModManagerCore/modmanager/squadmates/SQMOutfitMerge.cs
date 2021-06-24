@@ -204,7 +204,6 @@ namespace MassEffectModManagerCore.modmanager.squadmates
 
                         outfit.ConditionalIndex = STARTING_OUTFIT_CONDITIONAL + list.Count;
                         outfit.AppearanceId = appearanceId++; // may need adjusted
-                        outfit.MemberAppearanceValue = 5 + list.Count; // may need adjusted
                         outfit.DLCName = dlc;
                         list.Add(outfit);
                     }
@@ -459,7 +458,9 @@ namespace MassEffectModManagerCore.modmanager.squadmates
             var element = plotStreaming.FirstOrDefault(x => x.GetProp<NameProperty>(@"VirtualChunkName").Value == virtualChunk);
             if (element != null)
             {
-                element.GetProp<ArrayProperty<StructProperty>>(@"Elements").Add(GeneratePlotStreamingElement(fName, sqm.ConditionalIndex));
+                var elem = element.GetProp<ArrayProperty<StructProperty>>(@"Elements");
+                sqm.MemberAppearanceValue = elem.Count;
+                elem.Add(GeneratePlotStreamingElement(fName, sqm.ConditionalIndex));
             }
         }
     }

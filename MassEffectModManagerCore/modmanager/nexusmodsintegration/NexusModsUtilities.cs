@@ -28,7 +28,8 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
     public class NexusModsUtilities
     {
 
-        public static readonly string[] AllSupportedNexusDomains = { @"masseffect", @"masseffect2", @"masseffect3", @"masseffectlegendaryedition" };
+        public static readonly string[] AllSupportedNexusDomains =
+            {@"masseffect", @"masseffect2", @"masseffect3", @"masseffectlegendaryedition"};
 
 
         /// <summary>
@@ -76,6 +77,7 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
 
                     if (apiKey == null) return null;
                 }
+
                 var nexus = GetClient(apiKey);
                 Log.Information("Getting user information from NexusMods");
                 var userinfo = await nexus.Users.ValidateAsync();
@@ -121,7 +123,8 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
             {
                 var entropy = File.ReadAllBytes(entropyf);
                 using MemoryStream fs = new MemoryStream(File.ReadAllBytes(keyPath));
-                return Encoding.Unicode.GetString(DecryptDataFromStream(entropy, DataProtectionScope.CurrentUser, fs, (int)fs.Length));
+                return Encoding.Unicode.GetString(DecryptDataFromStream(entropy, DataProtectionScope.CurrentUser, fs,
+                    (int) fs.Length));
             }
 
             return null; //no key
@@ -154,7 +157,8 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
                 var endorsementstatus = modinfo.Endorsement;
                 if (endorsementstatus != null)
                 {
-                    if (endorsementstatus.EndorseStatus == Pathoschild.FluentNexus.Models.EndorsementStatus.Undecided || endorsementstatus.EndorseStatus == Pathoschild.FluentNexus.Models.EndorsementStatus.Abstained)
+                    if (endorsementstatus.EndorseStatus == Pathoschild.FluentNexus.Models.EndorsementStatus.Undecided ||
+                        endorsementstatus.EndorseStatus == Pathoschild.FluentNexus.Models.EndorsementStatus.Abstained)
                     {
                         return false;
                     }
@@ -180,7 +184,8 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
         /// <param name="endorse"></param>
         /// <param name="fileid"></param>
         /// <param name="currentuserid"></param>
-        public static void EndorseFile(string gamedomain, bool endorse, int fileid, Action<bool> newEndorsementStatusCallback = null)
+        public static void EndorseFile(string gamedomain, bool endorse, int fileid,
+            Action<bool> newEndorsementStatusCallback = null)
         {
             if (NexusModsUtilities.UserInfo == null) return;
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"EndorseMod");
@@ -210,8 +215,8 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
 
                 Analytics.TrackEvent(@"Set endorsement for mod", new Dictionary<string, string>
                 {
-                    {@"Endorsed", endorse.ToString() },
-                    {@"Succeeded", telemetryOverride ?? (endorse == newStatus).ToString() }
+                    {@"Endorsed", endorse.ToString()},
+                    {@"Succeeded", telemetryOverride ?? (endorse == newStatus).ToString()}
                 });
                 b.Result = newStatus;
             };
@@ -221,6 +226,7 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
                 {
                     Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                 }
+
                 if (b.Result is bool val)
                 {
                     newEndorsementStatusCallback?.Invoke(val);
@@ -300,17 +306,20 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
         /// <param name="modid"></param>
         /// <param name="fileid"></param>
         /// <returns></returns>
-        public static async Task<ModFileDownloadLink[]> GetDownloadLinkForFile(string domain, int modid, int fileid, string nxmkey = null, int expiry = 0)
+        public static async Task<ModFileDownloadLink[]> GetDownloadLinkForFile(string domain, int modid, int fileid,
+            string nxmkey = null, int expiry = 0)
         {
             if (nxmkey == null)
                 return await NexusModsUtilities.GetClient().ModFiles.GetDownloadLinks(domain, modid, fileid);
-            return await NexusModsUtilities.GetClient().ModFiles.GetDownloadLinks(domain, modid, fileid, nxmkey, expiry);
+            return await NexusModsUtilities.GetClient().ModFiles
+                .GetDownloadLinks(domain, modid, fileid, nxmkey, expiry);
         }
 
         public static string SetupNXMHandling(Action<long, long, string> notifyProgress, Action<string> notifyFinished)
         {
             bool installNewCopy = true;
-            var value = Registry.GetValue(@"HKEY_CURRENT_USER\SOFTWARE\Classes\nxm\shell\open\command", "", null); // Get's 'Default'
+            var value = Registry.GetValue(@"HKEY_CURRENT_USER\SOFTWARE\Classes\nxm\shell\open\command", "",
+                null); // Get's 'Default'
             if (value is string path)
             {
                 path = path.Replace(" \"%1\"", "").Trim('\"');
@@ -318,7 +327,8 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
                 {
                     string nxmIniPath = Path.Combine(Directory.GetParent(path).FullName, "nxmhandler.ini");
                     // are we already using nxmhandler?
-                    if (Path.GetFileName(path).Equals("nxmhandler.exe", StringComparison.InvariantCultureIgnoreCase) && File.Exists(nxmIniPath))
+                    if (Path.GetFileName(path).Equals("nxmhandler.exe", StringComparison.InvariantCultureIgnoreCase) &&
+                        File.Exists(nxmIniPath))
                     {
                         // Setup for nxmhandler already, we just need to adjust it to add M3
                         SetupM3InNXMHandler(nxmIniPath);
@@ -346,7 +356,7 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
 
                     // Register it
                     using var subkey = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\Classes\nxm\shell\open\command");
-                    subkey.SetValue("", $"\"{ Path.Combine(outpath, "nxmhandler.exe")}\" \"%1\"");
+                    subkey.SetValue("", $"\"{Path.Combine(outpath, "nxmhandler.exe")}\" \"%1\"");
 
                     var protocolKey = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Classes\nxm", true);
                     protocolKey.SetValue("URL Protocol", "");
@@ -395,7 +405,8 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
                 numCurrentHandlers++;
                 handlers.SetSingleEntry($@"size", numCurrentHandlers);
                 handlers.SetSingleEntry($@"{numCurrentHandlers}\games", "other");
-                handlers.SetSingleEntry($@"{numCurrentHandlers}\executable", App.ExecutableLocation.Replace("\\", "\\\\"));
+                handlers.SetSingleEntry($@"{numCurrentHandlers}\executable",
+                    App.ExecutableLocation.Replace("\\", "\\\\"));
                 handlers.SetSingleEntry($@"{numCurrentHandlers}\arguments", "--nxmlink");
             }
 
@@ -460,10 +471,23 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
                 {
                     Monitor.Wait(lockobj, new TimeSpan(0, 0, 1, 0));
                 }
+
                 client.Dispose();
             }
 
             return api_key;
+        }
+
+        /// <summary>
+        /// Gets the content preview for a mod file. This is a blocking call
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        public static ContentPreview GetFileListing(ModFile file)
+        {
+            if (NexusModsUtilities.UserInfo == null) return null;
+            var client = NexusModsUtilities.GetClient();
+            return client.ModFiles.GetContentPreview(file.ContentPreviewLink).Result;
         }
     }
 }

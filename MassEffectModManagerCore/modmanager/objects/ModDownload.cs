@@ -164,6 +164,21 @@ namespace MassEffectModManagerCore.modmanager.objects
                         {
                             if (queryPos > 0)
                             {
+                                if (domain is @"masseffect" or @"masseffect2" && !IsDownloadWhitelisted(domain, ModFile))
+                                {
+                                    // Check to see file has moddesc.ini the listing
+                                    var fileListing = NexusModsUtilities.GetFileListing(ModFile);
+                                    if (fileListing == null || !HasModdescIni(fileListing))
+                                    {
+                                        Log.Error($@"This file is not whitelisted for download and does not contain a moddesc.ini file, this is not a mod manager mod: {ModFile.FileName}");
+                                        Initialized = true;
+                                        ProgressIndeterminate = false;
+                                        OnModDownloadError?.Invoke(this, $"{ModFile.Name} is not compatible with ME3Tweaks Mod Manager. If this is a texture mod, install it with ALOT Installer.");
+                                        return;
+                                    }
+                                }
+
+
                                 // download with manager
                                 string querystring = nxmlink.Substring(queryPos);
                                 var parameters = HttpUtility.ParseQueryString(querystring);
@@ -214,5 +229,68 @@ namespace MassEffectModManagerCore.modmanager.objects
                 }
             });
         }
+
+        private static readonly int[] WhitelistedME1FileIDs = new[]
+        {
+            116, // skip intro movies
+            117, // skip to main menu
+            120, // controller skip intro movies
+            121, // controll skip to main menu
+            245, // ME1 Controller 1.2.2
+            326, // MAKO MOD
+            327, // Mako Mod v2
+            328, // Mako mod v3
+            569, // mass effect ultrawide
+        };
+
+        private static readonly int[] WhitelistedME2FileIDs = new[]
+        {
+            3, // cheat console
+            44, // faster load screens animated
+            338, // Controller Mod 1.7.2
+            365, // no minigames 2.0.2
+        };
+
+        private static readonly int[] WhitelistedME3FileIDs = new[]
+        {
+            0,
+        };
+
+        private bool IsDownloadWhitelisted(string domain, ModFile modFile)
+        {
+            switch (domain)
+            {
+                case @"masseffect":
+                    return WhitelistedME1FileIDs.Contains(modFile.FileID);
+                case @"massseffect2":
+                    return WhitelistedME2FileIDs.Contains(modFile.FileID);
+                case @"masseffect3":
+                    return WhitelistedME3FileIDs.Contains(modFile.FileID);
+            }
+
+            return false;
+        }
+
+        private bool HasModdescIni(ContentPreview fileListing)
+        {
+            foreach (var e in fileListing.Children)
+            {
+                if (HasModdescIniRecursive(e))
+                    return true;
+            }
+
+            return false;
+        }
+
+        private bool HasModdescIniRecursive(ContentPreviewEntry entry)
+        {
+            foreach (var e in entry.Children.Where(x => x.Type == ContentPreviewEntryType.Directory))
+            {
+                return HasModdescIniRecursive(e);
+            }
+
+            return entry.Name == @"moddesc.ini";
+        }
+
     }
 }

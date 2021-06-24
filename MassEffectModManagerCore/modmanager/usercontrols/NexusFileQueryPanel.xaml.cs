@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -76,7 +77,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
 
         public ObservableCollectionExtended<SearchedItemResult> Results { get; } = new ObservableCollectionExtended<SearchedItemResult>();
-
         public ObservableCollectionExtended<FileCategory> FileCategories { get; } = new ObservableCollectionExtended<FileCategory>(Enum.GetValues<FileCategory>());
         public ObservableCollectionExtended<FileCategory> SelectedFileCategories { get; } = new ObservableCollectionExtended<FileCategory>(Enum.GetValues<FileCategory>()); // all by default
 
@@ -180,6 +180,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                     StatusText = M3L.GetString(M3L.string_interp_resultsCount, Results.Count);
                     QueryInProgress = false;
+
+                    //foreach (var res in Results)
+                    //{
+                    //    Debug.WriteLine($"{res.Instance.ModID} {res.Instance.FileID}");
+                    //}
                 }
                 catch (Exception e)
                 {

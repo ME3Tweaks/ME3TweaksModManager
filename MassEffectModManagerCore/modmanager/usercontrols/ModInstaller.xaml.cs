@@ -864,6 +864,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     ASIManager.InstallASIToTargetByGroupID(8, @"ME3Logger-Truncating", SelectedGameTarget);
                 }
             }
+            else if (ModBeingInstalled.Game == MEGame.LE1)
+            {
+                ASIManager.InstallASIToTargetByGroupID(29, @"AutoTOCOverride", SelectedGameTarget);
+            }
+            else if (ModBeingInstalled.Game == MEGame.LE2)
+            {
+                ASIManager.InstallASIToTargetByGroupID(30, @"AutoTOC", SelectedGameTarget);
+            }
+            else if (ModBeingInstalled.Game == MEGame.LE3)
+            {
+                ASIManager.InstallASIToTargetByGroupID(31, @"AutoTOC", SelectedGameTarget);
+            }
 
             if (sfarStagingDirectory != null)
             {
