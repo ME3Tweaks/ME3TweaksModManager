@@ -574,7 +574,6 @@ namespace MassEffectModManagerCore.modmanager.helpers
 
             string path = Utilities.GetRegistrySettingString(App.REGISTRY_KEY_ME3TWEAKS, $@"{game}VanillaBackupLocation");
 
-
             if (forceReturnPath) return path; // do not check it
 
             if (logReturnedPath)
@@ -688,6 +687,45 @@ namespace MassEffectModManagerCore.modmanager.helpers
         public static void RemoveBackupPath(MEGame game)
         {
             RegistryHandler.DeleteRegistryKey(Registry.CurrentUser, @"Software\ME3Tweaks", game + @"VanillaBackupLocation");
+        }
+
+
+        private const string REGISTRY_KEY_ME3CMM = @"HKEY_CURRENT_USER\Software\Mass Effect 3 Mod Manager";
+
+        private const string REGISTRY_KEY_ALOT = @"HKEY_CURRENT_USER\Software\ALOTAddon"; //Shared. Do not change
+
+        /// <summary>
+        /// Copies ME1/ME2/ME3 backup paths to the new location if they are not defined there.
+        /// </summary>
+        public static void MigrateBackupPaths()
+        {
+            if (GetGameBackupPath(MEGame.ME1) == null)
+            {
+                var storedPath = Utilities.GetRegistrySettingString(REGISTRY_KEY_ALOT, $@"ME1VanillaBackupLocation");
+                if (storedPath != null)
+                {
+                    Log.Information(@"Migrating ALOT key backup location for ME1");
+                    Utilities.WriteRegistryKey(App.REGISTRY_KEY_ME3TWEAKS, @"ME1VanillaBackupLocation", storedPath);
+                }
+            }
+            if (GetGameBackupPath(MEGame.ME2) == null)
+            {
+                var storedPath = Utilities.GetRegistrySettingString(REGISTRY_KEY_ALOT, $@"ME2VanillaBackupLocation");
+                if (storedPath != null)
+                {
+                    Log.Information(@"Migrating ALOT key backup location for ME2");
+                    Utilities.WriteRegistryKey(App.REGISTRY_KEY_ME3TWEAKS, @"ME2VanillaBackupLocation", storedPath);
+                }
+            }
+            if (GetGameBackupPath(MEGame.ME3) == null)
+            {
+                var storedPath = Utilities.GetRegistrySettingString(REGISTRY_KEY_ME3CMM, $@"VanillaCopyLocation");
+                if (storedPath != null)
+                {
+                    Log.Information(@"Migrating ME3CMM key backup location for ME3");
+                    Utilities.WriteRegistryKey(App.REGISTRY_KEY_ME3TWEAKS, @"ME3VanillaBackupLocation", storedPath);
+                }
+            }
         }
     }
 }

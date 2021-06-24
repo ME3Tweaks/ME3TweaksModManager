@@ -37,19 +37,12 @@ namespace MassEffectModManagerCore
     public partial class App : Application, ISingleInstance
     {
         public static bool AppDataExistedAtBoot = Directory.Exists(Utilities.GetAppDataFolder(false)); //alphabetically this must come first in App!
-        /// <summary>
-        /// Registry key for legacy Mass Effect 3 Mod Manager. Used to store the ME3 backup directory
-        /// </summary>
-        //internal const string REGISTRY_KEY_ME3CMM = @"HKEY_CURRENT_USER\Software\Mass Effect 3 Mod Manager";
+
         /// <summary>
         /// ME3Tweaks Shared Registry Key
         /// </summary>
         internal const string REGISTRY_KEY_ME3TWEAKS = @"HKEY_CURRENT_USER\Software\ME3Tweaks";
 
-        /// <summary>
-        /// ALOT Addon Registry Key, used for ME1 and ME2 backups
-        /// </summary>
-        //internal const string BACKUP_REGISTRY_KEY = @"HKEY_CURRENT_USER\Software\ALOTAddon"; //Shared. Do not change
 
         public static string LogDir = Path.Combine(Utilities.GetAppDataFolder(), @"logs");
         private static bool POST_STARTUP = false;
@@ -252,6 +245,9 @@ namespace MassEffectModManagerCore
                 {
                     Log.Error(@"Unable to get the list of installed antivirus products: " + e.Message);
                 }
+
+                // Build 118 settings migration for backups
+                BackupService.MigrateBackupPaths();
 
                 Log.Information(@"The following backup paths are listed in the registry:");
                 Log.Information(@"Mass Effect ======");
@@ -496,7 +492,7 @@ namespace MassEffectModManagerCore
                  version += " PRERELEASE";
 #endif
                 // TODO CHANGE THIS
-                return $"{version}, Build {BuildNumber}";
+                return $"{version} BETA, Build {BuildNumber}";
             }
         }
 
@@ -510,7 +506,7 @@ namespace MassEffectModManagerCore
 #elif PRERELEASE
                  version += " PRERELEASE";
 #endif
-                return $"ME3Tweaks Mod Manager {version} (Build {BuildNumber})";
+                return $"ME3Tweaks Mod Manager {version} BETA (Build {BuildNumber})";
             }
         }
 
