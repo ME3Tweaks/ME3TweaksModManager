@@ -21,6 +21,8 @@ ME3Tweaks Mod Manager (which will be written as M3 from now on in this document)
    - Contains information about how to make a localization TLK mod for ME2 and ME3 mods
 - [Merge Mods: Creating an .m3m file](merge_mods.md)
    - Contains information on how to create a merge mod, a format which can update individual exports in common basegame files with few compatibility issues.
+- [Overriding Conditionals with .pmu Files](pmu_files.md)
+   - Contains information on using the Plot Manager Update system to override basegame conditionals in ME1 and ME2, OT and LE.
 
 As of Mod Manager 6.2, there is a built-in moddesc editor that can be used on existing mods. Right click your mod while in developer mode and select `moddesc.ini editor`. Currently this only works on mods that are loaded, and cannot be used for brand new mods.
 
