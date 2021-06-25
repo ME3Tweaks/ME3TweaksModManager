@@ -1132,11 +1132,10 @@ namespace MassEffectModManagerCore.modmanager
             return Path.Combine(GetAppDataFolder(), $"GameTargets{game}.txt");
         }
 
-        internal static string GetCachedLETargetsFile()
-        {
-            return Path.Combine(GetAppDataFolder(), "GameTargetsLE.txt");
-        }
-
+        //internal static string GetCachedLETargetsFile()
+        //{
+        //    return Path.Combine(GetAppDataFolder(), "GameTargetsLE.txt");
+        //}
 
         /// <summary>
         /// Loads cached targets from the cache list
@@ -1145,9 +1144,9 @@ namespace MassEffectModManagerCore.modmanager
         /// <param name="existingTargets"></param>
         /// <param name="legendaryLoad">If this should load in legendary mode, which loads 3 targets per directory</para>
         /// <returns></returns>
-        internal static List<GameTarget> GetCachedTargets(MEGame game, List<GameTarget> existingTargets = null, bool legendaryLoad = false)
+        internal static List<GameTarget> GetCachedTargets(MEGame game, List<GameTarget> existingTargets = null)
         {
-            var cacheFile = legendaryLoad ? GetCachedLETargetsFile() : GetCachedTargetsFile(game);
+            var cacheFile = GetCachedTargetsFile(game);
             if (File.Exists(cacheFile))
             {
                 OrderedSet<GameTarget> targets = new OrderedSet<GameTarget>();
@@ -1201,41 +1200,6 @@ namespace MassEffectModManagerCore.modmanager
             return null;
         }
 
-        internal static void AddCachedLETarget(string leRoot)
-        {
-            var cachefile = GetCachedLETargetsFile();
-            bool creatingFile = !File.Exists(cachefile);
-            var savedTargets = creatingFile ? new List<string>() : Utilities.WriteSafeReadAllLines(cachefile).ToList();
-            try
-            {
-                if (!savedTargets.Contains(leRoot, StringComparer.InvariantCultureIgnoreCase))
-                {
-                    savedTargets.Add(leRoot);
-                    Log.Information($"Saving new entry into targets cache for Legendary Edition: " + leRoot);
-                    try
-                    {
-                        File.WriteAllLines(cachefile, savedTargets);
-                    }
-                    catch (Exception)
-                    {
-                        Thread.Sleep(300);
-                        try
-                        {
-                            File.WriteAllLines(cachefile, savedTargets);
-                        }
-                        catch (Exception ex)
-                        {
-                            Log.Error("Could not save cached targets on retry: " + ex.Message);
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Log.Error("Unable to read/add cached LE target: " + e.Message);
-            }
-        }
-
         internal static void AddCachedTarget(GameTarget target)
         {
             var cachefile = GetCachedTargetsFile(target.Game);
@@ -1269,21 +1233,6 @@ namespace MassEffectModManagerCore.modmanager
             catch (Exception e)
             {
                 Log.Error("Unable to read/add cached target: " + e.Message);
-            }
-        }
-
-        internal static void RemoveLECachedTarget(string targetRoot)
-        {
-            var cachefile = GetCachedLETargetsFile();
-            if (!File.Exists(cachefile)) return; //can't do anything.
-            var savedTargets = Utilities.WriteSafeReadAllLines(cachefile).ToList();
-            var path = Path.GetFullPath(targetRoot); //standardize
-
-            int numRemoved = savedTargets.RemoveAll(x => string.Equals(path, x, StringComparison.InvariantCultureIgnoreCase));
-            if (numRemoved > 0)
-            {
-                Log.Information("Removed " + numRemoved + " LE targets matching name " + path);
-                File.WriteAllLines(cachefile, savedTargets);
             }
         }
 
