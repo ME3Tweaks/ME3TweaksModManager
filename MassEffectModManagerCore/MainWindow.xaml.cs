@@ -2375,7 +2375,7 @@ namespace MassEffectModManagerCore
                     }
                     else
                     {
-                        Log.Error($@"Current boot target for {game} is invalid: " + failureReason);
+                        Log.Error($@"Current boot target for {game} at {target.TargetPath} is invalid: " + failureReason);
                     }
                 }
 
