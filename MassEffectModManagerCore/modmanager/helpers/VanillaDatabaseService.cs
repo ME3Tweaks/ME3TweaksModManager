@@ -383,8 +383,17 @@ namespace MassEffectModManagerCore.modmanager.helpers
 
                 foreach (string file in Directory.EnumerateFiles(target.TargetPath, @"*", SearchOption.AllDirectories))
                 {
-                    if (!strictCheck && Path.GetFileName(file).Equals(@"bink2w64.dll", StringComparison.InvariantCultureIgnoreCase))
-                        continue; // Do not report this file as modified
+                    if (!strictCheck)
+                    {
+                        var fname = Path.GetFileName(file).ToLower();
+                        switch (fname)
+                        {
+                            case @"bink2w64.dll":
+                            case @"pcconsoletoc.bin":
+                                continue; // do not report as modified
+                        }
+                    }
+
                     var shortname = file.Substring(target.TargetPath.Length + 1);
                     if (vanillaDB.TryGetValue(shortname, out var fileInfo))
                     {
