@@ -701,6 +701,7 @@ namespace MassEffectModManagerCore.modmanager
             if (game == MEGame.LE1) return GetLE1ModsDirectory();
             if (game == MEGame.LE2) return GetLE2ModsDirectory();
             if (game == MEGame.LE3) return GetLE3ModsDirectory();
+            if (game == MEGame.LELauncher) return GetLELauncherModsDirectory();
             return null;
         }
 
