@@ -118,7 +118,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             INSTALL_FAILED_INVALID_CONFIG_FOR_COMPAT_PACK_ME3,
             INSTALL_FAILED_ERROR_BUILDING_INSTALLQUEUES,
             INSTALL_FAILED_SINGLEREQUIRED_DLC_MISSING,
-            INSTALL_FAILED_AMD_PROCESSOR_REQUIRED
+            INSTALL_FAILED_AMD_PROCESSOR_REQUIRED,
+            INSTALL_FAILED_EXCEPTION_APPLYING_MERGE_MOD
         }
 
         public string Action { get; set; }
@@ -802,7 +803,25 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
             foreach (var mergeMod in allMMs)
             {
-                mergeMod.ApplyMergeMod(ModBeingInstalled, SelectedGameTarget, ref doneMerges, totalMerges, mergeProgressUpdate);
+                try
+                {
+                    mergeMod.ApplyMergeMod(ModBeingInstalled, SelectedGameTarget, ref doneMerges, totalMerges,
+                        mergeProgressUpdate);
+                }
+                catch (Exception ex)
+                {
+                    // Error applying merge mod!
+                    InstallationSucceeded = false;
+                    Log.Error($@"An error occured installed mergemod {mergeMod.MergeModFilename}: {ex.Message}");
+                    Log.Error(ex.StackTrace);
+                    e.Result = ModInstallCompletedStatus.INSTALL_FAILED_EXCEPTION_APPLYING_MERGE_MOD;
+                    if (Application.Current != null)
+                    {
+                        Application.Current.Dispatcher.Invoke(()=> M3L.ShowDialog(mainwindow, $"An error occured applying merge mod {mergeMod.MergeModFilename}: {ex.Message}.", M3L.GetString(M3L.string_errorInstallingMod), MessageBoxButton.OK, MessageBoxImage.Error));
+                    }
+
+                    Log.Warning(@"<<<<<<< Aborting modinstaller");
+                }
             }
 
             // Stage: TLK merge (Game 1)

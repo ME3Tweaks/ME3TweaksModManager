@@ -178,7 +178,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
             var sourceEntry = sourcePackage.FindExport(EntryName);
             if (sourceEntry == null)
             {
-                throw new Exception($"Cannot find AssetUpdate1 entry in source asset package {OwningMM.Assets[AssetName].FileName}: {EntryName}. Merge aborted");
+                throw new Exception($"Cannot find AssetUpdate1 entry in source asset package {AssetName}: {EntryName}. Merge aborted");
             }
 
             var resultst = EntryImporter.ImportAndRelinkEntries(EntryImporter.PortingOption.ReplaceSingular,

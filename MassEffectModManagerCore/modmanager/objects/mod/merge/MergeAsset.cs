@@ -15,7 +15,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge
     public class MergeAsset
     {
         /// <summary>
-        /// Filename of the asset. Only used during serialization
+        /// Filename of the asset. Only used during serialization and for logging errors
         /// </summary>
         [JsonProperty("filename")]
         public string FileName { get; set; }
