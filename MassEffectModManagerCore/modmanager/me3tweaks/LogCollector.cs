@@ -301,7 +301,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             //paths
             string oldMemGamePath = null;
             string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"MassEffectModder");
-            string _iniPath = Path.Combine(path, @"MassEffectModder.ini");
+            string _iniPath = Path.Combine(path, selectedDiagnosticTarget.Game.IsLEGame() ? @"MassEffectModderLE.ini" : @"MassEffectModder.ini");
             if (hasMEM)
             {
                 // Set INI path to target
@@ -317,13 +317,37 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 }
 
                 IniData ini = new FileIniDataParser().ReadFile(_iniPath);
-                oldMemGamePath = ini[@"GameDataPath"][selectedDiagnosticTarget.Game.ToString()];
-                ini[@"GameDataPath"][selectedDiagnosticTarget.Game.ToString()] = gamePath;
-                File.WriteAllText(_iniPath, ini.ToString());
 
-                var versInfo = FileVersionInfo.GetVersionInfo(mempath);
-                int fileVersion = versInfo.FileMajorPart;
-                addDiagLine($@"Diagnostic MassEffectModderNoGui version: {fileVersion}");
+                if (selectedDiagnosticTarget.Game.IsLEGame())
+                {
+                    oldMemGamePath = ini[@"GameDataPath"]["@MELE"];
+                    var rootPath = Directory.GetParent(gamePath);
+                    if (rootPath != null)
+                        rootPath = Directory.GetParent(rootPath.FullName);
+                    if (rootPath != null)
+                    {
+                        ini[@"GameDataPath"][@"MELE"] = rootPath.FullName;
+                    }
+                    else
+                    {
+                        Log.Error($@"Invalid game directory: {gamePath} is not part of an overall LE install");
+                        addDiagLine($@"MEM diagnostics skipped: Game directory is not part of an overall LE install", Severity.ERROR);
+                        hasMEM = false;
+                    }
+                }
+                else
+                {
+                    oldMemGamePath = ini[@"GameDataPath"][selectedDiagnosticTarget.Game.ToString()];
+                    ini[@"GameDataPath"][selectedDiagnosticTarget.Game.ToString()] = gamePath;
+                }
+
+                if (hasMEM)
+                {
+                    File.WriteAllText(_iniPath, ini.ToString());
+                    var versInfo = FileVersionInfo.GetVersionInfo(mempath);
+                    int fileVersion = versInfo.FileMajorPart;
+                    addDiagLine($@"Diagnostic MassEffectModderNoGui version: {fileVersion}");
+                }
             }
             else
             {
@@ -1289,7 +1313,12 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         foreach (TOCBinFile.Entry ent in tbf.GetAllEntries())
                         {
                             //Console.WriteLine(index + "\t0x" + ent.offset.ToString("X6") + "\t" + ent.size + "\t" + ent.name);
-                            string filepath = Path.Combine(gamePath, ent.name);
+                            var tocrootPath = gamePath;
+                            if (Path.GetFileName(Directory.GetParent(toc).FullName).StartsWith(@"DLC_"))
+                            {
+                                tocrootPath = Directory.GetParent(toc).FullName;
+                            }
+                            string filepath = Path.Combine(tocrootPath, ent.name);
                             var fileExists = File.Exists(filepath);
                             if (fileExists)
                             {

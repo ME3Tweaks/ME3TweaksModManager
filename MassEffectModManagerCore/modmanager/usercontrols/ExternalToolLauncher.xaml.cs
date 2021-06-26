@@ -142,14 +142,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     //Requires specific asset
                     if (int.TryParse(release.TagName, out var relVer))
                     {
-                        if (tool == MEM && relVer >= 500)
+                        if (tool == MEM_CMD && relVer >= 500)
                         {
                             asset = null;
                             Log.Warning(
                                 $@"MassEffectModderNoGui versions >= 500 are not supported for Original Trilogy, skipping version {relVer}");
                             continue;
                         }
-                        else if (tool == MEM_LE && relVer < 500)
+                        else if (tool == MEM_LE_CMD && relVer < 500)
                         {
                             asset = null;
                             Log.Warning(
@@ -534,9 +534,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             try
                             {
                                 Version serverVersion = new Version(latestRelease.TagName);
-                                Version localVersion =
-                                    new Version(
-                                        $@"{fvi.FileMajorPart}.{fvi.FileMinorPart}.{fvi.FileBuildPart}.{fvi.FilePrivatePart}");
+                                Version localVersion = new Version($@"{fvi.FileMajorPart}.{fvi.FileMinorPart}.{fvi.FileBuildPart}.{fvi.FilePrivatePart}");
                                 if (serverVersion > localVersion)
                                 {
                                     needsUpdated = true;
@@ -640,13 +638,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             switch (toolname)
             {
                 case LegendaryExplorer_Beta:
-                {
-                    if (!Utilities.IsNetRuntimeInstalled(5))
                     {
-                        return @"The .NET 5 runtime is not installed";
+                        if (!Utilities.IsNetRuntimeInstalled(5))
+                        {
+                            return @"The .NET 5 runtime is not installed";
+                        }
+                        break;
                     }
-                    break;
-                }
             }
 
             return null; // nothing wrong
@@ -656,6 +654,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             if (release.Assets.Any())
             {
+                // Version gating
+                int.TryParse(release.TagName, out var relVersion);
+                if (tool is MEM_LE or MEM_LE_CMD && relVersion < 500)
+                {
+                    return false;
+                }
+                if (tool is MEM or MEM_CMD && relVersion > 500)
+                {
+                    return false;
+                }
+
                 if (tool is MEM or MEM_LE)
                 {
                     return release.Assets.Any(x => x.Name == @"MassEffectModder-v" + release.TagName + @".7z");
