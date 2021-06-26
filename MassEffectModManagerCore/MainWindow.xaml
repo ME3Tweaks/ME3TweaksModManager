@@ -841,7 +841,6 @@
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem
-                        ui:SharedUIBindings.GenerationOT="True"
                         Header="{DynamicResource string_consoleCommandKeybinder}"
                         Command="{Binding ConsoleKeyKeybinderCommand}"
                         ToolTip="{DynamicResource string_tooltip_consoleCommandKeybinder}">
