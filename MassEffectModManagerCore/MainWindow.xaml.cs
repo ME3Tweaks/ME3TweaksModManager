@@ -1711,12 +1711,6 @@ namespace MassEffectModManagerCore
             if (!Utilities.IsGameRunning(mod.Game))
             {
                 BackgroundTask modInstallTask = backgroundTaskEngine.SubmitBackgroundJob(@"ModInstall", M3L.GetString(M3L.string_interp_installingMod, mod.ModName), M3L.GetString(M3L.string_interp_installedMod, mod.ModName));
-
-                LegendaryExplorerCoreLibSettings.Instance.LEDirectory = null;
-                LE1Directory.DefaultGamePath = null;
-                LE2Directory.DefaultGamePath = null;
-                LE3Directory.DefaultGamePath = null;
-
                 var modInstaller = new ModInstaller(mod, forcedTarget ?? SelectedGameTarget, installCompressed, batchMode: batchMode);
                 modInstaller.Close += (a, b) =>
                 {
