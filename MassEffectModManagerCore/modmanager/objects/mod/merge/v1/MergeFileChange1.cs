@@ -217,8 +217,12 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
                 bool initialized = fl.Initialize(new PackageCache()).Result;
                 if (!initialized)
                 {
-                    throw new Exception(
-                        $@"FileLib for script update could not initialize, cannot merge script to {targetExport.InstancedFullPath}");
+                    Log.Error($@"FileLib loading failed for package {targetExport.InstancedFullPath} ({targetExport.FileRef.FilePath}):");
+                    foreach (var v in fl.InitializationLog.AllErrors)
+                    {
+                        Log.Error(v.Message);
+                    }
+                    throw new Exception($@"FileLib for script update could not initialize, cannot merge script to {targetExport.InstancedFullPath}");
                 }
 
                 assetsCache.FileLibs[package.FilePath] = fl;
@@ -234,9 +238,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
                     Log.Error(l.Message);
                 }
 
-                // Is this right? [0]?
-                throw new Exception($"Error compiling function {targetExport}: {log.AllErrors[0].Message}");
-                return false;
+                throw new Exception($"Error compiling function {targetExport}: {string.Join(Environment.NewLine, log.AllErrors)}");
             }
 
             return true;
