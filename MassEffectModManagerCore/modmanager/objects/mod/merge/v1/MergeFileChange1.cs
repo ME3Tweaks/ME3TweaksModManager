@@ -28,7 +28,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
         [JsonIgnore] public MergeFile1 Parent;
         [JsonIgnore] public MergeMod1 OwningMM => Parent.OwningMM;
 
-        public void ApplyChanges(IMEPackage package, MergeAssetCache1 assetsCache, Mod installingMod)
+        public void ApplyChanges(IMEPackage package, MergeAssetCache1 assetsCache, Mod installingMod, GameTarget gameTarget)
         {
             // APPLY PROPERTY UPDATES
             Log.Information($@"Merging changes into {package.FilePath}");
@@ -51,7 +51,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
             AssetUpdate?.ApplyUpdate(package, export, installingMod);
 
             // APPLY SCRIPT UDPATE
-            ScriptUpdate?.ApplyUpdate(package, export, assetsCache, installingMod);
+            ScriptUpdate?.ApplyUpdate(package, export, assetsCache, installingMod, gameTarget);
 
             SequenceSkipUpdate?.ApplyUpdate(package, export, installingMod);
         }
@@ -208,13 +208,13 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
         [JsonIgnore] public MergeFileChange1 Parent;
         [JsonIgnore] public MergeMod1 OwningMM => Parent.OwningMM;
 
-        public bool ApplyUpdate(IMEPackage package, ExportEntry targetExport, MergeAssetCache1 assetsCache, Mod installingMod)
+        public bool ApplyUpdate(IMEPackage package, ExportEntry targetExport, MergeAssetCache1 assetsCache, Mod installingMod, GameTarget gameTarget)
         {
             FileLib fl;
             if (!assetsCache.FileLibs.TryGetValue(package.FilePath, out fl))
             {
                 fl = new FileLib(package);
-                bool initialized = fl.Initialize(new PackageCache()).Result;
+                bool initialized = fl.Initialize(new RelativePackageCache() { RootPath = M3Directories.GetBioGamePath(gameTarget) }, gameTarget.TargetPath).Result;
                 if (!initialized)
                 {
                     Log.Error($@"FileLib loading failed for package {targetExport.InstancedFullPath} ({targetExport.FileRef.FilePath}):");

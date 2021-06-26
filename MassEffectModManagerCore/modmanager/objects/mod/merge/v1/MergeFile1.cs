@@ -17,9 +17,9 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
         [JsonProperty(@"filename")]
         public string FileName { get; set; }
 
-        [JsonProperty("changes")]
+        [JsonProperty(@"changes")]
         public List<MergeFileChange1> MergeChanges { get; set; }
-        [JsonProperty("applytoalllocalizations")] public bool ApplyToAllLocalizations { get; set; }
+        [JsonProperty(@"applytoalllocalizations")] public bool ApplyToAllLocalizations { get; set; }
 
         [JsonIgnore] public MergeMod1 Parent;
 
@@ -35,7 +35,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
             }
         }
 
-        public void ApplyChanges(CaseInsensitiveDictionary<string> loadedFiles, Mod associatedMod, ref int numMergesCompleted, int numTotalMerges, Action<int, int, string, string> mergeProgressDelegate = null)
+        public void ApplyChanges(GameTarget gameTarget, CaseInsensitiveDictionary<string> loadedFiles, Mod associatedMod, ref int numMergesCompleted, int numTotalMerges, Action<int, int, string, string> mergeProgressDelegate = null)
         {
             List<string> targetFiles = new List<string>();
             if (ApplyToAllLocalizations)
@@ -43,7 +43,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
                 var targetnameBase = Path.GetFileNameWithoutExtension(FileName);
                 var targetExtension = Path.GetExtension(FileName);
                 var localizations = StarterKitGeneratorWindow.GetLanguagesForGame(associatedMod.Game);
-                
+
                 // Ensure end name is not present on base
                 foreach (var l in localizations)
                 {
@@ -74,7 +74,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
                 }
                 else
                 {
-                    Log.Warning($@"File not found in game: {FileName}, 3ping...");
+                    Log.Warning($@"File not found in game: {FileName}, skipping...");
                     numMergesCompleted++;
                     mergeProgressDelegate?.Invoke(numMergesCompleted, numMergesCompleted, null, null);
                 }
@@ -97,7 +97,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
 #endif
                 foreach (var pc in MergeChanges)
                 {
-                    pc.ApplyChanges(package, mac, associatedMod);
+                    pc.ApplyChanges(package, mac, associatedMod, gameTarget);
                 }
 
                 var track = package.IsModified;

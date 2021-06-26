@@ -94,7 +94,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
             int numDone = 0;
             foreach (var mf in FilesToMergeInto)
             {
-                mf.ApplyChanges(loadedFiles, associatedMod, ref numTotalDone, numTotalMerges, mergeProgressDelegate);
+                mf.ApplyChanges(target, loadedFiles, associatedMod, ref numTotalDone, numTotalMerges, mergeProgressDelegate);
                 numDone++;
             }
 

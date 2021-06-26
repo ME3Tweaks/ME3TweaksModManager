@@ -1711,6 +1711,12 @@ namespace MassEffectModManagerCore
             if (!Utilities.IsGameRunning(mod.Game))
             {
                 BackgroundTask modInstallTask = backgroundTaskEngine.SubmitBackgroundJob(@"ModInstall", M3L.GetString(M3L.string_interp_installingMod, mod.ModName), M3L.GetString(M3L.string_interp_installedMod, mod.ModName));
+
+                LegendaryExplorerCoreLibSettings.Instance.LEDirectory = null;
+                LE1Directory.DefaultGamePath = null;
+                LE2Directory.DefaultGamePath = null;
+                LE3Directory.DefaultGamePath = null;
+
                 var modInstaller = new ModInstaller(mod, forcedTarget ?? SelectedGameTarget, installCompressed, batchMode: batchMode);
                 modInstaller.Close += (a, b) =>
                 {
@@ -2417,6 +2423,11 @@ namespace MassEffectModManagerCore
             addSteamTarget(Utilities.GetRegistrySettingString(
                 @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 24980",
                 @"InstallLocation"), foundMe2Active, MEGame.ME2);
+
+            // ME3
+            addSteamTarget(Utilities.GetRegistrySettingString(
+                @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 1238020",
+                @"InstallLocation"), foundMe2Active, MEGame.ME3);
 
             // Legendary Edition
             var legendarySteamLoc = Utilities.GetRegistrySettingString(

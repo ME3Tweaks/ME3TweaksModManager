@@ -793,9 +793,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         // It's basegame
                         var mm = new BasegameFileIdentificationService.BasegameCloudDBFile(file, (int)new FileInfo(file).Length, SelectedGameTarget, ModBeingInstalled);
                         var existingInfo = BasegameFileIdentificationService.GetBasegameFileSource(SelectedGameTarget, file, originalmd5);
-                        if (existingInfo != null)
+                        var newTextToAppend = $@"{ModBeingInstalled.ModName} {ModBeingInstalled.ModVersionString}";
+                        if (existingInfo != null && !existingInfo.source.Contains(newTextToAppend))
                         {
-                            mm.source = $@"{existingInfo.source} + {ModBeingInstalled.ModName} {ModBeingInstalled.ModVersionString}";
+                            mm.source = $@"{existingInfo.source} + {newTextToAppend}";
                         }
                         mergeModBasegameEntries.Add(mm);
                     }
@@ -817,7 +818,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     e.Result = ModInstallCompletedStatus.INSTALL_FAILED_EXCEPTION_APPLYING_MERGE_MOD;
                     if (Application.Current != null)
                     {
-                        Application.Current.Dispatcher.Invoke(()=> M3L.ShowDialog(mainwindow, $"An error occured applying merge mod {mergeMod.MergeModFilename}: {ex.Message}.", M3L.GetString(M3L.string_errorInstallingMod), MessageBoxButton.OK, MessageBoxImage.Error));
+                        Application.Current.Dispatcher.Invoke(() => M3L.ShowDialog(mainwindow, $"An error occured applying merge mod {mergeMod.MergeModFilename}: {ex.Message}.", M3L.GetString(M3L.string_errorInstallingMod), MessageBoxButton.OK, MessageBoxImage.Error));
                     }
 
                     Log.Warning(@"<<<<<<< Aborting modinstaller");

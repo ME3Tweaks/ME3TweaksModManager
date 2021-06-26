@@ -315,7 +315,7 @@ namespace MassEffectModManagerCore.modmanager.squadmates
 
                     // Add Conditional Functions
                     FileLib fl = new FileLib(startup);
-                    bool initialized = fl.Initialize(new PackageCache()).Result;
+                    bool initialized = fl.Initialize(new RelativePackageCache() { RootPath = M3Directories.GetBioGamePath(target) }).Result;
                     if (!initialized)
                     {
                         throw new Exception(
