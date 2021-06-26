@@ -124,7 +124,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     url = url.SetQueryParam(@"mod_mount_priority", MountPriority);
                     url = url.SetQueryParam(@"mod_mount_tlk1", ModMountTLK1);
                     url = url.SetQueryParam(@"mod_mount_flag", MountFlag);
-                    if (Game == MEGame.ME2)
+                    if (Game.IsGame2())
                     {
                         url = url.SetQueryParam(@"mod_modulenumber", ModuleNumber);
                     }
