@@ -1714,8 +1714,8 @@ namespace MassEffectModManagerCore
                 var modInstaller = new ModInstaller(mod, forcedTarget ?? SelectedGameTarget, installCompressed, batchMode: batchMode);
                 modInstaller.Close += (a, b) =>
                 {
-            // Panel Result will handle post-install
-            if (!modInstaller.InstallationSucceeded)
+                    // Panel Result will handle post-install
+                    if (!modInstaller.InstallationSucceeded)
                     {
                         if (modInstaller.InstallationCancelled)
                         {
@@ -1848,16 +1848,16 @@ namespace MassEffectModManagerCore
                 ASIManager.ExtractDefaultASIResources();
 
                 Log.Information(@"Initializing LegendaryExplorerCore library");
-        #region INIT CORE LIB
-        MEPackageHandler.GlobalSharedCacheEnabled = false; // Do not use the package caching system
+                #region INIT CORE LIB
+                MEPackageHandler.GlobalSharedCacheEnabled = false; // Do not use the package caching system
                 LegendaryExplorerCoreLib.InitLib(syncContext, x =>
 {
-                    Log.Error($@"Error saving package: {x}");
-                });
+    Log.Error($@"Error saving package: {x}");
+});
                 T2DLocalizationShim.SetupTexture2DLocalizationShim();
-        #endregion
-        //debugMethod();
-        CurrentOperationText = M3L.GetString(M3L.string_loadingTargets);
+                #endregion
+                //debugMethod();
+                CurrentOperationText = M3L.GetString(M3L.string_loadingTargets);
                 PopulateTargets();
             }).ContinueWithOnUIThread(x =>
         {
@@ -1893,8 +1893,8 @@ namespace MassEffectModManagerCore
                     ManagementObjectSearcher mosProcessor = new ManagementObjectSearcher(@"SELECT * FROM Win32_Processor");
                     foreach (ManagementObject moProcessor in mosProcessor.Get())
                     {
-                // For seeing AMD vs Intel (for ME1 lighting)
-                if (moProcessor[@"name"] != null)
+                        // For seeing AMD vs Intel (for ME1 lighting)
+                        if (moProcessor[@"name"] != null)
                         {
                             data[@"Processor"] = moProcessor[@"name"].ToString();
                             App.IsRunningOnAMD = data[@"Processor"].Contains(@"AMD");
@@ -1924,8 +1924,8 @@ namespace MassEffectModManagerCore
                 {
                     LoadMods();
                 }
-        // if user speeds through, this might not be available yet. oh well
-        if (App.TutorialService != null && App.TutorialService.Any())
+                // if user speeds through, this might not be available yet. oh well
+                if (App.TutorialService != null && App.TutorialService.Any())
                 {
                     new IntroTutorial().Show();
                 }
@@ -2092,11 +2092,11 @@ namespace MassEffectModManagerCore
                 var me2modDescsToLoad = Directory.GetDirectories(Utilities.GetME2ModsDirectory()).Select(x => (game: MEGame.ME2, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
                 var me1modDescsToLoad = Directory.GetDirectories(Utilities.GetME1ModsDirectory()).Select(x => (game: MEGame.ME1, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
 
-        // LE Launcher
-        var leLaunchermodDescsToLoad = Directory.GetDirectories(Utilities.GetLELauncherModsDirectory()).Select(x => (game: MEGame.LELauncher, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
-        //var modDescsToLoad = leLaunchermodDescsToLoad.ToList();
+                // LE Launcher
+                var leLaunchermodDescsToLoad = Directory.GetDirectories(Utilities.GetLELauncherModsDirectory()).Select(x => (game: MEGame.LELauncher, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
+                //var modDescsToLoad = leLaunchermodDescsToLoad.ToList();
 
-        List<(MEGame game, string path)> modDescsToLoad = new();
+                List<(MEGame game, string path)> modDescsToLoad = new();
                 if (Settings.GenerationSettingOT)
                 {
                     modDescsToLoad.AddRange(me1modDescsToLoad);
@@ -2135,12 +2135,12 @@ namespace MassEffectModManagerCore
                 {
                     args.Result = VisibleFilteredMods.FirstOrDefault(x => x.ModPath == modpathToHighlight);
 
-            //telemetry for importing issues
-            var targetMod = AllLoadedMods.FirstOrDefault(x => x.ModPath == modpathToHighlight);
+                    //telemetry for importing issues
+                    var targetMod = AllLoadedMods.FirstOrDefault(x => x.ModPath == modpathToHighlight);
                     if (File.Exists(modpathToHighlight) && targetMod == null)
                     {
-                //moddesc.ini exists but it did not load
-                Log.Error(@"Mod to highlight failed to load! Path: " + modpathToHighlight);
+                        //moddesc.ini exists but it did not load
+                        Log.Error(@"Mod to highlight failed to load! Path: " + modpathToHighlight);
                         Crashes.TrackError(new Exception(@"Mod set to highlight but not in list of loaded mods"), new Dictionary<string, string>()
                         {
                             { @"Moddesc path", modpathToHighlight }
@@ -2694,8 +2694,8 @@ namespace MassEffectModManagerCore
             bw.WorkerReportsProgress = true;
             bw.ProgressChanged += (sender, args) =>
             {
-        //Help items loading
-        if (args.UserState is List<SortableHelpElement> sortableHelpItems)
+                //Help items loading
+                if (args.UserState is List<SortableHelpElement> sortableHelpItems)
                 {
                     setDynamicHelpMenu(sortableHelpItems);
                 }
@@ -2717,9 +2717,9 @@ namespace MassEffectModManagerCore
                     bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"EnsureCriticalFiles", M3L.GetString(M3L.string_downloadingRequiredFiles), M3L.GetString(M3L.string_requiredFilesDownloaded));
                     if (!OnlineContent.EnsureCriticalFiles())
                     {
-                //Critical files not loaded!
+                        //Critical files not loaded!
 
-                b.Result = STARTUP_FAIL_CRITICAL_FILES_MISSING;
+                        b.Result = STARTUP_FAIL_CRITICAL_FILES_MISSING;
                         bgTask.finishedUiText = M3L.GetString(M3L.string_failedToDownloadRequiredFiles);
                         backgroundTaskEngine.SubmitJobCompletion(bgTask);
                         return;
@@ -2775,8 +2775,8 @@ namespace MassEffectModManagerCore
                     }
                     catch (Exception e)
                     {
-                //Error checking for updates!
-                Log.Error(@"Checking for updates failed: " + App.FlattenException(e));
+                        //Error checking for updates!
+                        Log.Error(@"Checking for updates failed: " + App.FlattenException(e));
                         updateCheckTask.finishedUiText = M3L.GetString(M3L.string_failedToCheckForUpdates);
                     }
 
@@ -2787,12 +2787,12 @@ namespace MassEffectModManagerCore
                         bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"MixinFetch", M3L.GetString(M3L.string_loadingMixins), M3L.GetString(M3L.string_loadedMixins));
                         try
                         {
-                    //Mixins
-                    MixinHandler.ServerMixinHash = App.ServerManifest[@"mixinpackagemd5"];
+                            //Mixins
+                            MixinHandler.ServerMixinHash = App.ServerManifest[@"mixinpackagemd5"];
                             if (!MixinHandler.IsMixinPackageUpToDate())
                             {
-                        //Download new package.
-                        var memoryPackage = OnlineContent.DownloadToMemory(MixinHandler.MixinPackageEndpoint, hash: MixinHandler.ServerMixinHash);
+                                //Download new package.
+                                var memoryPackage = OnlineContent.DownloadToMemory(MixinHandler.MixinPackageEndpoint, hash: MixinHandler.ServerMixinHash);
                                 if (memoryPackage.errorMessage != null)
                                 {
                                     Log.Error(@"Error fetching mixin package: " + memoryPackage.errorMessage);
@@ -2828,22 +2828,22 @@ namespace MassEffectModManagerCore
                     }
                     else
                     {
-                // load cached (will load nothing if there is no local file)
-                MixinHandler.LoadME3TweaksPackage();
+                        // load cached (will load nothing if there is no local file)
+                        MixinHandler.LoadME3TweaksPackage();
                     }
                 }
 
-        //bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"EnsureStaticFiles", M3L.GetString(M3L.string_downloadingStaticFiles), M3L.GetString(M3L.string_staticFilesDownloaded));
-        //success = OnlineContent.EnsureStaticAssets();
-        //if (!success)
-        //{
-        //    Application.Current.Dispatcher.Invoke(delegate { M3L.ShowDialog(this, M3L.GetString(M3L.string_dialogCouldNotDownloadStaticAssets), M3L.GetString(M3L.string_missingAssets), MessageBoxButton.OK, MessageBoxImage.Error); });
-        //    bgTask.finishedUiText = M3L.GetString(M3L.string_failedToDownloadStaticFiles);
-        //}
+                //bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"EnsureStaticFiles", M3L.GetString(M3L.string_downloadingStaticFiles), M3L.GetString(M3L.string_staticFilesDownloaded));
+                //success = OnlineContent.EnsureStaticAssets();
+                //if (!success)
+                //{
+                //    Application.Current.Dispatcher.Invoke(delegate { M3L.ShowDialog(this, M3L.GetString(M3L.string_dialogCouldNotDownloadStaticAssets), M3L.GetString(M3L.string_missingAssets), MessageBoxButton.OK, MessageBoxImage.Error); });
+                //    bgTask.finishedUiText = M3L.GetString(M3L.string_failedToDownloadStaticFiles);
+                //}
 
-        //backgroundTaskEngine.SubmitJobCompletion(bgTask);
+                //backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
-        bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"LoadTutorialService", M3L.GetString(M3L.string_checkingTutorialAssets), M3L.GetString(M3L.string_checkedTutorialAssets));
+                bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"LoadTutorialService", M3L.GetString(M3L.string_checkingTutorialAssets), M3L.GetString(M3L.string_checkedTutorialAssets));
                 App.TutorialService = OnlineContent.FetchTutorialManifest(!firstStartupCheck);
                 OnlineContent.TouchupTutorial();
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
@@ -2956,11 +2956,11 @@ namespace MassEffectModManagerCore
                 nbw.RunWorkerAsync();
                 CommandManager.InvalidateRequerySuggested(); //refresh bindings that depend on this
 
-        //byte[] bytes = File.ReadAllBytes(@"C:\Users\mgame\Source\Repos\ME3Tweaks\MassEffectModManager\MassEffectModManagerCore\Deployment\Releases\ME3TweaksModManagerExtractor_6.0.0.99.exe");
-        //MemoryStream ms = new MemoryStream(bytes);
-        //SevenZipExtractor sve = new SevenZipExtractor(ms);
-        //sve.ExtractArchive(@"C:\users\public\documents");
-    };
+                //byte[] bytes = File.ReadAllBytes(@"C:\Users\mgame\Source\Repos\ME3Tweaks\MassEffectModManager\MassEffectModManagerCore\Deployment\Releases\ME3TweaksModManagerExtractor_6.0.0.99.exe");
+                //MemoryStream ms = new MemoryStream(bytes);
+                //SevenZipExtractor sve = new SevenZipExtractor(ms);
+                //sve.ExtractArchive(@"C:\users\public\documents");
+            };
             ContentCheckInProgress = true;
             bw.RunWorkerAsync();
         }
@@ -3547,8 +3547,8 @@ namespace MassEffectModManagerCore
             var modInspector = new ModArchiveImporter(archiveFile, archiveStream);
             modInspector.Close += (a, b) =>
             {
-        // Todo: Convert to Panel Result
-        if (b.Data is List<Mod> modsImported)
+                // Todo: Convert to Panel Result
+                if (b.Data is List<Mod> modsImported)
                 {
                     ReleaseBusyControl();
                     LoadMods(modsImported.Count == 1 ? modsImported.FirstOrDefault() : null, true);
@@ -3556,7 +3556,7 @@ namespace MassEffectModManagerCore
                 else if (b.Data is (Mod compressedModToInstall, bool compressed))
                 {
                     ReleaseBusyControl();
-                    var installTarget = InstallationTargets.FirstOrDefault(x => x.RegistryActive && x.Game == compressedModToInstall.Game);
+                    var installTarget = InstallationTargets.FirstOrDefault(x => x.Game == compressedModToInstall.Game);
                     if (installTarget != null)
                     {
                         SelectedGameTarget = installTarget;
@@ -3735,8 +3735,8 @@ namespace MassEffectModManagerCore
             Log.Information(@"Setting language to " + lang);
             Application.Current.Dispatcher.Invoke(async () =>
             {
-        //Set language.
-        Task.Run(async () => { await OnlineContent.InternalSetLanguage(lang, forcedDictionary, startup); }).Wait();
+                //Set language.
+                Task.Run(async () => { await OnlineContent.InternalSetLanguage(lang, forcedDictionary, startup); }).Wait();
 
                 App.CurrentLanguage = Settings.Language = lang;
                 SetTipsForLanguage();
@@ -3753,8 +3753,8 @@ namespace MassEffectModManagerCore
 
                 if (SelectedMod != null)
                 {
-            // This will force strings to update
-            var sm = SelectedMod;
+                    // This will force strings to update
+                    var sm = SelectedMod;
                     SelectedMod = null;
                     SelectedMod = sm;
                 }
@@ -3763,8 +3763,8 @@ namespace MassEffectModManagerCore
                 {
                     if (forcedDictionary == null)
                     {
-                //Settings.Save(); //save this language option
-            }
+                        //Settings.Save(); //save this language option
+                    }
                     await AuthToNexusMods(languageUpdateOnly: true); //this call will immediately return
                     FailedMods.RaiseBindableCountChanged();
                     CurrentOperationText = M3L.GetString(M3L.string_setLanguageToX);

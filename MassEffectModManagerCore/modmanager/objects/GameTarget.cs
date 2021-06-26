@@ -88,14 +88,14 @@ namespace MassEffectModManagerCore.modmanager.objects
             }
         }
 
-        public void ReloadGameTarget(bool lodUpdateAndLogging = true, bool forceLodUpdate = false, bool reverseME1Executable = true, bool skipInit = false)
+        public void ReloadGameTarget(bool logInfo = true, bool forceLodUpdate = false, bool reverseME1Executable = true, bool skipInit = false)
         {
             // Unknown = 
             if (!IsCustomOption && !skipInit)
             {
                 if (Directory.Exists(TargetPath))
                 {
-                    CLog.Information(@"Getting game source for target " + TargetPath, lodUpdateAndLogging);
+                    CLog.Information(@"Getting game source for target " + TargetPath, logInfo);
                     var hashCheckResult = VanillaDatabaseService.GetGameSource(this, reverseME1Executable);
 
                     GameSource = hashCheckResult.result;
@@ -103,7 +103,7 @@ namespace MassEffectModManagerCore.modmanager.objects
 
                     if (ExecutableHash.Length != 32)
                     {
-                        CLog.Error($@"Issue getting game source: {ExecutableHash}", lodUpdateAndLogging);
+                        CLog.Error($@"Issue getting game source: {ExecutableHash}", logInfo);
                     }
                     else
                     {
@@ -112,7 +112,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         {
                             // No source is listed
                             CLog.Error(@"Unknown source or illegitimate installation: " + hashCheckResult.hash,
-                                lodUpdateAndLogging);
+                                logInfo);
                         }
                         else
                         {
@@ -130,7 +130,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                                 }
                             }
 
-                            CLog.Information(@"Source: " + GameSource, lodUpdateAndLogging);
+                            CLog.Information(@"Source: " + GameSource, logInfo);
                         }
                     }
 
@@ -160,7 +160,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         IsPolishME1 = Game == MEGame.ME1 && File.Exists(Path.Combine(TargetPath, @"BioGame", @"CookedPC", @"Movies", @"niebieska_pl.bik"));
                         if (IsPolishME1)
                         {
-                            CLog.Information(@"ME1 Polish Edition detected", lodUpdateAndLogging);
+                            CLog.Information(@"ME1 Polish Edition detected", logInfo);
                         }
 
                         if (RegistryActive && (Settings.AutoUpdateLODs2K || Settings.AutoUpdateLODs4K) &&
