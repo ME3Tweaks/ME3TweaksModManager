@@ -320,7 +320,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
                 if (selectedDiagnosticTarget.Game.IsLEGame())
                 {
-                    oldMemGamePath = ini[@"GameDataPath"]["@MELE"];
+                    oldMemGamePath = ini[@"GameDataPath"][@"MELE"];
                     var rootPath = Directory.GetParent(gamePath);
                     if (rootPath != null)
                         rootPath = Directory.GetParent(rootPath.FullName);
