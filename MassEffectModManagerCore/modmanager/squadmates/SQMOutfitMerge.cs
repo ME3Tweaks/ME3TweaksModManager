@@ -18,6 +18,7 @@ using LegendaryExplorerCore.UnrealScript.Compiling.Errors;
 using MassEffectModManagerCore.modmanager.gameini;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
+using MassEffectModManagerCore.modmanager.mergedlc;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.usercontrols;
 using MassEffectModManagerCore.modmanager.windows;
@@ -30,10 +31,6 @@ namespace MassEffectModManagerCore.modmanager.squadmates
     {
         private const string SQUADMATE_MERGE_MANIFEST_FILE = @"SquadmateMergeInfo.sqm";
         public const int STARTING_OUTFIT_CONDITIONAL = 10000;
-
-        // todo: move to merge dlc class
-        public const string MERGE_DLC_FOLDERNAME = @"DLC_MOD_M3_MERGE";
-
 
         internal class SquadmateMergeInfo
         {
@@ -172,13 +169,14 @@ namespace MassEffectModManagerCore.modmanager.squadmates
 
         public void BuildBioPGlobal(GameTarget target)
         {
+            M3MergeDLC.RemoveMergeDLC(target);
             var loadedFiles = MELoadedFiles.GetFilesLoadedInGame(target.Game, gameRootOverride: target.TargetPath);
             //var mergeFiles = loadedFiles.Where(x =>
             //    x.Key.StartsWith(@"BioH_") && x.Key.Contains(@"_DLC_MOD_") && x.Key.EndsWith(@".pcc") && !x.Key.Contains(@"_LOC_") && !x.Key.Contains(@"_Explore."));
 
             var appearanceInfo = new CaseInsensitiveDictionary<List<SquadmateInfoSingle>>();
 
-            int appearanceId = 150; // starting
+            int appearanceId = 255; // starting
 
             // Scan squadmate merge files
             var sqmSupercedances = M3Directories.GetFileSupercedances(target, new[] { @".sqm" });
@@ -213,7 +211,7 @@ namespace MassEffectModManagerCore.modmanager.squadmates
 
             if (appearanceInfo.Any())
             {
-                var biopGlobal = MEPackageHandler.OpenMEPackageFromStream(Utilities.GetResourceStream($@"MassEffectModManagerCore.modmanager.squadmates.{target.Game}.BioP_Global.pcc"));
+                var biopGlobal = MEPackageHandler.OpenMEPackage(loadedFiles[@"BioP_Global.pcc"]);
                 var lsk = biopGlobal.Exports.FirstOrDefault(x => x.ClassName == @"LevelStreamingKismet");
                 var persistentLevel = biopGlobal.FindExport(@"TheWorld.PersistentLevel");
 
@@ -265,25 +263,10 @@ namespace MassEffectModManagerCore.modmanager.squadmates
                 bioWorldInfo.WriteProperties(props);
 
 
-                // Generate M3 DLC Folder
-                var sko = new StarterKitGeneratorWindow.StarterKitOptions()
-                {
-                    ModGame = target.Game,
-                    GenerateModdesc = false,
-                    OutputFolderOverride = M3Directories.GetDLCPath(target),
-                    ModDescription = null,
-                    ModInternalName = @"ME3Tweaks Mod Manager Merge DLC",
-                    ModInternalTLKID = 1928304430,
-                    ModMountFlag = target.Game.IsGame3() ? new MountFlag(EME3MountFileFlag.LoadsInSingleplayer) : new MountFlag(0, true),
-                    ModDeveloper = @"ME3Tweaks Mod Manager",
-                    ModMountPriority = 1900000000,
-                    ModDLCFolderNameSuffix = MERGE_DLC_FOLDERNAME.Substring(@"DLC_MOD_".Length)
-                };
-
-                StarterKitGeneratorWindow.CreateStarterKitMod(sko, null);
+               M3MergeDLC.GenerateMergeDLC(target, Guid.NewGuid());
 
                 // Save BioP_Global into DLC
-                var cookedDir = Path.Combine(M3Directories.GetDLCPath(target), MERGE_DLC_FOLDERNAME, target.Game.CookedDirName());
+                var cookedDir = Path.Combine(M3Directories.GetDLCPath(target), M3MergeDLC.MERGE_DLC_FOLDERNAME, target.Game.CookedDirName());
                 var outP = Path.Combine(cookedDir, @"BioP_Global.pcc");
                 biopGlobal.Save(outP);
 
@@ -304,15 +287,15 @@ namespace MassEffectModManagerCore.modmanager.squadmates
                         }
                     }
 
-                    cnd.ToFile(Path.Combine(cookedDir, $@"Conditionals{MERGE_DLC_FOLDERNAME}.cnd"));
+                    cnd.ToFile(Path.Combine(cookedDir, $@"Conditionals{M3MergeDLC.MERGE_DLC_FOLDERNAME}.cnd"));
                 }
                 else if (target.Game.IsGame2())
                 {
-                    var startupF = Path.Combine(cookedDir, $@"Startup_{MERGE_DLC_FOLDERNAME}.pcc");
+                    var startupF = Path.Combine(cookedDir, $@"Startup_{M3MergeDLC.MERGE_DLC_FOLDERNAME}.pcc");
                     var startup = MEPackageHandler.OpenMEPackageFromStream(Utilities.GetResourceStream(
-                        $@"MassEffectModManagerCore.modmanager.mergedlc.{target.Game}.Startup_{MERGE_DLC_FOLDERNAME}.pcc"));
+                        $@"MassEffectModManagerCore.modmanager.mergedlc.{target.Game}.Startup_{M3MergeDLC.MERGE_DLC_FOLDERNAME}.pcc"));
                     var conditionalClass =
-                        startup.FindExport($@"PlotManager{MERGE_DLC_FOLDERNAME}.BioAutoConditionals");
+                        startup.FindExport($@"PlotManager{M3MergeDLC.MERGE_DLC_FOLDERNAME}.BioAutoConditionals");
 
                     // Add Conditional Functions
                     FileLib fl = new FileLib(startup);
@@ -325,7 +308,7 @@ namespace MassEffectModManagerCore.modmanager.squadmates
 
 
                     var funcToClone =
-                        startup.FindExport($@"PlotManager{MERGE_DLC_FOLDERNAME}.BioAutoConditionals.TemplateFunction");
+                        startup.FindExport($@"PlotManager{M3MergeDLC.MERGE_DLC_FOLDERNAME}.BioAutoConditionals.TemplateFunction");
                     foreach (var sqm in appearanceInfo.Values)
                     {
                         foreach (var outfit in sqm)
@@ -351,7 +334,6 @@ namespace MassEffectModManagerCore.modmanager.squadmates
                                     Log.Error(l.Message);
                                 }
 
-                                // Is this right? [0]?
                                 throw new Exception(M3L.GetString(M3L.string_interp_errorCompilingConditionalFunction, func, string.Join('\n', log.AllErrors.Select(x => x.Message))));
                             }
                         }
@@ -376,8 +358,8 @@ namespace MassEffectModManagerCore.modmanager.squadmates
 
                     var startupSection = ini.GetOrAddSection(@"Engine.StartupPackages");
 
-                    startupSection.Entries.Add(new DuplicatingIni.IniEntry(@"+DLCStartupPackage", $@"Startup_{MERGE_DLC_FOLDERNAME}"));
-                    startupSection.Entries.Add(new DuplicatingIni.IniEntry(@"+Package", $@"PlotManager{MERGE_DLC_FOLDERNAME}"));
+                    startupSection.Entries.Add(new DuplicatingIni.IniEntry(@"+DLCStartupPackage", $@"Startup_{M3MergeDLC.MERGE_DLC_FOLDERNAME}"));
+                    startupSection.Entries.Add(new DuplicatingIni.IniEntry(@"+Package", $@"PlotManager{M3MergeDLC.MERGE_DLC_FOLDERNAME}"));
 
                     ini.WriteToFile(bioEngine);
 
@@ -385,7 +367,7 @@ namespace MassEffectModManagerCore.modmanager.squadmates
                 }
                 else if (target.Game.IsGame3())
                 {
-                    var mergeCoalFile = Path.Combine(M3Directories.GetDLCPath(target), MERGE_DLC_FOLDERNAME, target.Game.CookedDirName(), $@"Default_{MERGE_DLC_FOLDERNAME}.bin");
+                    var mergeCoalFile = Path.Combine(M3Directories.GetDLCPath(target), M3MergeDLC.MERGE_DLC_FOLDERNAME, target.Game.CookedDirName(), $@"Default_{M3MergeDLC.MERGE_DLC_FOLDERNAME}.bin");
                     var mergeCoal = CoalescedConverter.DecompileGame3ToMemory(new MemoryStream(File.ReadAllBytes(mergeCoalFile)));
 
                     // Member appearances
