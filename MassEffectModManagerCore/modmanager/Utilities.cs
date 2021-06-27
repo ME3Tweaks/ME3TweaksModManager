@@ -2113,6 +2113,11 @@ namespace MassEffectModManagerCore.modmanager
             return GetGameFromNumber(int.Parse(gameNum));
         }
 
+        /// <summary>
+        /// Converts server game ID to Enum
+        /// </summary>
+        /// <param name="number"></param>
+        /// <returns></returns>
         public static MEGame GetGameFromNumber(int number) => number switch
         {
             1 => MEGame.ME1,
@@ -2121,7 +2126,7 @@ namespace MassEffectModManagerCore.modmanager
             4 => MEGame.LE1,
             5 => MEGame.LE2,
             6 => MEGame.LE3,
-            // LELauncher?
+            7 => MEGame.LELauncher,
             _ => MEGame.Unknown
         };
 

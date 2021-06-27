@@ -2252,7 +2252,7 @@ namespace MassEffectModManagerCore
                 foreach (var mm in updatableMods.Where(x => x.NexusModID > 0 && x.ModClassicUpdateCode == 0)) //check zero as Mgamerz's mods will list me3tweaks with a nexus code still for integrations
                 {
                     var matchingUpdateInfoForMod = updateManifestModInfos.OfType<OnlineContent.NexusModUpdateInfo>().FirstOrDefault(x => x.NexusModsId == mm.NexusModID
-                                                                                                                                   && Enum.Parse<MEGame>(@"ME" + x.GameId) == mm.Game
+                                                                                                                                   && Utilities.GetGameFromNumber(x.GameId) == mm.Game
                                                                                                                                    && updates.All(y => !y.mod.Equals(x.mod)));
                     if (matchingUpdateInfoForMod != null)
                     {
