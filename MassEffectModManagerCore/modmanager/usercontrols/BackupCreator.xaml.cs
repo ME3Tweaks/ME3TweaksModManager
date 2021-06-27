@@ -156,8 +156,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     if (Game != MEGame.LELauncher)
                     {
                         CheckBoxDialog cbw = new CheckBoxDialog(window,
-                            "Select which languages to include in the backup. Languages not selected will not be backed up; if you choose to repair the game, these languages will be redownloaded.",
-                            "Select languages", allGameLangauges,
+                            M3L.GetString(M3L.string_dialog_selectWhichLanguagesToIncludeInBackup),
+                            M3L.GetString(M3L.string_selectLanguages), allGameLangauges,
                             new[] { @"INT" }, new[] { @"INT" }, 450, 300);
                         cbw.ShowDialog();
                         languages = cbw.GetSelectedItems().OfType<string>().ToArray();

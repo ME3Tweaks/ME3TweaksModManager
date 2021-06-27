@@ -12,6 +12,7 @@ using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Kismet;
 using LegendaryExplorerCore.UnrealScript;
 using LegendaryExplorerCore.UnrealScript.Compiling.Errors;
+using MassEffectModManagerCore.modmanager.localizations;
 using Newtonsoft.Json;
 using Serilog;
 
@@ -34,7 +35,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
             Log.Information($@"Merging changes into {package.FilePath}");
             var export = package.FindExport(EntryName);
             if (export == null)
-                throw new Exception($"Could not find export in package {package.FilePath}: {EntryName}! Cannot apply MergeFileChange1.");
+                throw new Exception(M3L.GetString(M3L.string_interp_mergefile_couldNotFindExportInPackage, package.FilePath, EntryName));
 
             if (PropertyUpdates != null)
             {
@@ -129,13 +130,13 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
                     {
                         var entry = package.FindEntry(PropertyValue);
                         if (entry == null)
-                            throw new Exception($"Failed to update ObjectProperty {PropertyName} to {PropertyValue}: {PropertyValue} does not exist in package {package.FilePath}");
+                            throw new Exception(M3L.GetString(M3L.string_interp_mergefile_failedToUpdateObjectPropertyItemNotInPackage, PropertyName, PropertyValue, PropertyValue, package.FilePath));
                         op.Value = entry.UIndex;
                     }
                     operatingCollection.AddOrReplaceProp(op);
                     break;
                 default:
-                    throw new Exception($"Unsupported property type for updating: {PropertyType}");
+                    throw new Exception(M3L.GetString(M3L.string_interp_mergefile_unsupportedPropertyType, PropertyType));
             }
             return true;
         }
@@ -178,16 +179,16 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
             var sourceEntry = sourcePackage.FindExport(EntryName);
             if (sourceEntry == null)
             {
-                throw new Exception($"Cannot find AssetUpdate1 entry in source asset package {AssetName}: {EntryName}. Merge aborted");
+                throw new Exception(M3L.GetString(M3L.string_interp_mergefile_cannotFindAssetEntryInAssetPackage, AssetName, EntryName));
             }
 
             var resultst = EntryImporter.ImportAndRelinkEntries(EntryImporter.PortingOption.ReplaceSingular,
                 sourceEntry, targetExport.FileRef, targetExport, true, out _,
-                errorOccuredCallback: x => throw new Exception($"Error merging assets: {x}"),
+                errorOccuredCallback: x => throw new Exception(M3L.GetString(M3L.string_interp_mergefile_errorMergingAssetsX, x)),
                 importExportDependencies: true);
             if (resultst.Any())
             {
-                throw new Exception($"Errors occurred merging asset {AssetName} {EntryName}: {string.Join('\n', resultst.Select(x => x.Message))}");
+                throw new Exception(M3L.GetString(M3L.string_interp_mergefile_errorsOccurredMergingAsset, AssetName, EntryName, string.Join('\n', resultst.Select(x => x.Message))));
             }
 
             return true;
@@ -199,10 +200,10 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
         /// <summary>
         /// Name of text file containing the script
         /// </summary>
-        [JsonProperty("scriptfilename")]
+        [JsonProperty(@"scriptfilename")]
         public string ScriptFileName { get; set; }
 
-        [JsonProperty("scripttext")]
+        [JsonProperty(@"scripttext")]
         public string ScriptText { get; set; }
 
         [JsonIgnore] public MergeFileChange1 Parent;
@@ -238,7 +239,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
                     Log.Error(l.Message);
                 }
 
-                throw new Exception($"Error compiling function {targetExport}: {string.Join(Environment.NewLine, log.AllErrors)}");
+                throw new Exception(M3L.GetString(M3L.string_interp_mergefile_errorCompilingFunction, targetExport, string.Join(Environment.NewLine, log.AllErrors)));
             }
 
             return true;
@@ -251,13 +252,13 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
         /// The MD5 of the target entry. This is to ensure this doesn't apply to a modified object as this could easily break the game.
         /// This limits functionality of this feature
         /// </summary>
-        [JsonProperty("entrymd5")]
+        [JsonProperty(@"entrymd5")]
         public string EntryMD5 { get; set; }
 
         /// <summary>
         /// What outbound link to set as the one to skip through to
         /// </summary>
-        [JsonProperty("outboundlinknametouse")]
+        [JsonProperty(@"outboundlinknametouse")]
         public string OutboundLinkNameToUse { get; set; }
 
         [JsonIgnore] public MergeFileChange1 Parent;

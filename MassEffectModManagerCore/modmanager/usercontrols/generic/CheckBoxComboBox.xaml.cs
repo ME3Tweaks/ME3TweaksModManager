@@ -1,24 +1,13 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor;
-using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Misc;
+using MassEffectModManagerCore.modmanager.localizations;
 using PropertyChanged;
 using CheckBoxSelectionPair = MassEffectModManagerCore.ui.CheckBoxSelectionPair;
 
@@ -39,7 +28,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.generic
         }
 
         public static readonly DependencyProperty NoItemsSelectedTextProperty =
-            DependencyProperty.Register(@"NoItemsSelectedText", typeof(string), typeof(CheckBoxComboBox), new PropertyMetadata("No items selected"));
+            DependencyProperty.Register(@"NoItemsSelectedText", typeof(string), typeof(CheckBoxComboBox), new PropertyMetadata(M3L.GetString(M3L.string_noItemsSelected)));
 
         #endregion
 

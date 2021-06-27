@@ -8,6 +8,7 @@ using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Memory;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
+using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.windows;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -26,11 +27,11 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
         [JsonIgnore]
         public string MergeModFilename { get; set; }
 
-        [JsonProperty("game")]
+        [JsonProperty(@"game")]
         [JsonConverter(typeof(StringEnumConverter))]
         public MEGame Game { get; set; } // Only used for sanity check
 
-        [JsonProperty("files")]
+        [JsonProperty(@"files")]
         public List<MergeFile1> FilesToMergeInto;
 
         [JsonIgnore]
@@ -60,7 +61,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
                     var assetMag = mergeFileStream.ReadStringASCII(4);
                     if (assetMag != MMV1_ASSETMAGIC)
                     {
-                        throw new Exception("Merge Mod V1 asset not prefixed by asset magic - this file is not properly built!");
+                        throw new Exception(M3L.GetString(M3L.string_error_mergefile_badMagic));
                     }
 
                     MergeAsset ma = new MergeAsset();
@@ -149,7 +150,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
                         if (targetnameBase.EndsWith($@"_{l}", StringComparison.InvariantCultureIgnoreCase))
                             targetnameBase = targetnameBase.Substring(0, targetnameBase.Length - 4);
 
-                        targets.Add($"{targetnameBase}_{l}{targetExtension}");
+                        targets.Add($@"{targetnameBase}_{l}{targetExtension}");
                     }
                 }
             }
@@ -166,7 +167,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
             var manifestText = File.ReadAllText(manifestFile);
 
             // VALIDATE JSON SCHEMA
-            JSchema schema = JSchema.Parse(new StreamReader(Utilities.ExtractInternalFileToStream("MassEffectModManagerCore.modmanager.objects.mod.merge.v1.schema.json")).ReadToEnd());
+            JSchema schema = JSchema.Parse(new StreamReader(Utilities.ExtractInternalFileToStream(@"MassEffectModManagerCore.modmanager.objects.mod.merge.v1.schema.json")).ReadToEnd());
 
             JObject person = JObject.Parse(manifestText);
 
@@ -189,7 +190,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
                     {
                         if (!File.Exists(Path.Combine(sourceDir, mc.AssetUpdate.AssetName)))
                         {
-                            throw new Exception($"Asset does not exist in folder: {mc.AssetUpdate.AssetName}");
+                            throw new Exception(M3L.GetString(M3L.string_interp_error_mergefile_assetNotFoundX, mc.AssetUpdate.AssetName));
                         }
 
                         assets.Add(mc.AssetUpdate.AssetName);
@@ -200,7 +201,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
                         var scriptDiskFile = Path.Combine(sourceDir, mc.ScriptUpdate.ScriptFileName);
                         if (!File.Exists(scriptDiskFile))
                         {
-                            throw new Exception($"Script does not exist in folder: {mc.ScriptUpdate.ScriptFileName}");
+                            throw new Exception(M3L.GetString(M3L.string_interp_error_mergefile_scriptNotFoundX, mc.ScriptUpdate.ScriptFileName));
                         }
 
                         mc.ScriptUpdate.ScriptText = File.ReadAllText(scriptDiskFile);

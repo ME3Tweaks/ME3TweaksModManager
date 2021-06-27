@@ -469,7 +469,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (prereqCheckMessage != null)
             {
                 Log.Error($@"Prerequisite not met: {prereqCheckMessage}");
-                failedToDownloadCallback?.Invoke($"Prerequisite not met: {prereqCheckMessage}");
+                failedToDownloadCallback?.Invoke(M3L.GetString(M3L.string_interp_prerequisiteNotMetX, prereqCheckMessage));
                 return;
             }
 
@@ -492,7 +492,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         //Must run on UI thread
                         //MessageBox.Show($"Unable to download {tool}.\nPlease check your network connection and try again.\nIf the issue persists, please come to the ME3Tweaks Discord.");
                         Log.Error(@"Unable to launch tool - could not download, and does not exist locally: " + localExecutable);
-                        failedToDownloadCallback?.Invoke("Download failed");
+                        failedToDownloadCallback?.Invoke(M3L.GetString(M3L.string_downloadFailed));
                         return;
                     }
                 }
@@ -620,7 +620,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         // Not enough information!
                         Log.Error(@"Unable to download ME3Tweaks hosted tool: Information not present in startup manifest. Ensure M3 can connect to the internet at boot time");
-                        failedToDownloadCallback?.Invoke("M3 booted without startup manifest - reboot application with network access");
+                        failedToDownloadCallback?.Invoke(M3L.GetString(M3L.string_error_cantDownloadNotEnoughInfoInStartupManifest));
                     }
                 }
                 catch (Exception ex)
@@ -641,7 +641,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         if (!Utilities.IsNetRuntimeInstalled(5))
                         {
-                            return @"The .NET 5 runtime is not installed";
+                            return M3L.GetString(M3L.string_error_net5RuntimeMissing);
                         }
                         break;
                     }

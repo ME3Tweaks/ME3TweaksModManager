@@ -303,7 +303,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 foreach (var g in Games)
                 {
-                    LoadingText = $"Loading backup files for {g.Game.ToGameName()}";
+                    LoadingText = M3L.GetString(M3L.string_interp_loadingBackupFilesForGame, g.Game.ToGameName());
                     g.LoadBackupFiles();
                 }
             };

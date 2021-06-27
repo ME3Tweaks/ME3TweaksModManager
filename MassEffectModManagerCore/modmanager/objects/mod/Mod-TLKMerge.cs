@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.TLK.ME1;
+using MassEffectModManagerCore.modmanager.localizations;
 using Microsoft.AppCenter;
 using Serilog;
 
@@ -68,27 +69,27 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     if (exp == null)
                     {
                         // WRONGLY NAMED EXPORT!
-                        Log.Error($"Could not find export in package {packagePath} for TLK merge: {exportPath}");
-                        return $"Could not find export in package {packagePath} for TLK merge: {exportPath}. This merge will be skipped.";
+                        Log.Error($@"Could not find export in package {packagePath} for TLK merge: {exportPath}");
+                        return M3L.GetString(M3L.string_interp_tlkmerge_couldNotFindExportInPackage, packagePath, exportPath);
                     }
 
                     var talkFile = package.LocalTalkFiles.FirstOrDefault(x => x.UIndex == exp.UIndex);
                     var strRefs = talkFile.StringRefs.ToList();
                     foreach (var node in stringNodes)
                     {
-                        var tlkId = int.Parse(node.Element("id").Value);
-                        var flags = int.Parse(node.Element("flags").Value);
-                        var data = node.Element("data").Value;
+                        var tlkId = int.Parse(node.Element(@"id").Value);
+                        var flags = int.Parse(node.Element(@"flags").Value);
+                        var data = node.Element(@"data").Value;
 
                         ME1TalkFile.TLKStringRef strRef = talkFile.StringRefs.FirstOrDefault(x => x.StringID == tlkId);
                         if (strRef == null)
                         {
-                            CLog.Information($"Adding new TLK id {tlkId}", Settings.LogModInstallation);
+                            CLog.Information($@"Adding new TLK id {tlkId}", Settings.LogModInstallation);
                             strRefs.Add(new ME1TalkFile.TLKStringRef(tlkId, flags, data));
                         }
                         else
                         {
-                            CLog.Information($"Updating TLK id {tlkId}", Settings.LogModInstallation);
+                            CLog.Information($@"Updating TLK id {tlkId}", Settings.LogModInstallation);
                             strRef.Data = data;
                             strRef.Flags = flags;
                         }

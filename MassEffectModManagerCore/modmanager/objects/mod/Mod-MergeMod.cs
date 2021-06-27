@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects.mod.merge;
 using Serilog;
 
@@ -64,7 +65,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             if (mm.Game != Game)
             {
                 Log.Error($@"Merge mod {mm.MergeModFilename} lists applicable game as {mm.Game}, but the mod loading this merge mod is for {Game}. The mod and merge mod target games must match.");
-                LoadFailedReason = $"Merge mod {mm.MergeModFilename} lists applicable game as {mm.Game}, but the mod loading this merge mod is for {Game}. The mod and merge mod target games must match.";
+                LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_mergeModGameIdMismatch, mm.MergeModFilename, mm.Game, Game);
                 return null;
             }
 

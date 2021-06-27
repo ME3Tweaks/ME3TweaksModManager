@@ -677,6 +677,8 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_dialog_7zDeploymentInProgress = "string_dialog_7zDeploymentInProgress";
 		public const string string_cancellingDeployment = "string_cancellingDeployment";
 		public const string string_dialog_DeploymentChecksInProgress = "string_dialog_DeploymentChecksInProgress";
+		public const string string_folders = "string_folders";
+		public const string string_individuallyCompressedItems = "string_individuallyCompressedItems";
 		public const string string_backupsAreShared = "string_backupsAreShared";
 		public const string string_backupsMustBeCreatedFresh = "string_backupsMustBeCreatedFresh";
 		public const string string_backUp = "string_backUp";
@@ -721,6 +723,8 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_unlinkBackup = "string_unlinkBackup";
 		public const string string_dialog_unlinkingBackup = "string_dialog_unlinkingBackup";
 		public const string string_unlinkingBackup = "string_unlinkingBackup";
+		public const string string_dialog_selectWhichLanguagesToIncludeInBackup = "string_dialog_selectWhichLanguagesToIncludeInBackup";
+		public const string string_selectLanguages = "string_selectLanguages";
 		public const string string_interp_downloadingX = "string_interp_downloadingX";
 		public const string string_interp_extractingX = "string_interp_extractingX";
 		public const string string_checkingForUpdates = "string_checkingForUpdates";
@@ -730,6 +734,10 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_errorLaunchingTool = "string_errorLaunchingTool";
 		public const string string_interp_errorLaunchingToolX = "string_interp_errorLaunchingToolX";
 		public const string string_interp_unsupportedExtensionX = "string_interp_unsupportedExtensionX";
+		public const string string_interp_prerequisiteNotMetX = "string_interp_prerequisiteNotMetX";
+		public const string string_downloadFailed = "string_downloadFailed";
+		public const string string_error_cantDownloadNotEnoughInfoInStartupManifest = "string_error_cantDownloadNotEnoughInfoInStartupManifest";
+		public const string string_error_net5RuntimeMissing = "string_error_net5RuntimeMissing";
 		public const string string_restoreFromME3Tweaks = "string_restoreFromME3Tweaks";
 		public const string string_theFollowingModsFailedToLoad = "string_theFollowingModsFailedToLoad";
 		public const string string_failedMods = "string_failedMods";
@@ -1057,12 +1065,14 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_interp_validation_modjob_optionGroupMayOnlyHaveOneItemWithCheckedByDefault = "string_interp_validation_modjob_optionGroupMayOnlyHaveOneItemWithCheckedByDefault";
 		public const string string_interp_validation_modjob_altdlc_optionGroupMustHaveAtLeastOneItemWithCheckedByDefault = "string_interp_validation_modjob_altdlc_optionGroupMustHaveAtLeastOneItemWithCheckedByDefault";
 		public const string string_interp_validation_modjob_altdlc_optionGroupMayOnlyHaveOneItemWithCheckedByDefault = "string_interp_validation_modjob_altdlc_optionGroupMayOnlyHaveOneItemWithCheckedByDefault";
+		public const string string_interp_validation_modjob_cannotContainDotDot = "string_interp_validation_modjob_cannotContainDotDot";
 		public const string string_descriptionSetConfigFilesReadOnly = "string_descriptionSetConfigFilesReadOnly";
 		public const string string_makeConfigFilesReadonly = "string_makeConfigFilesReadonly";
 		public const string string_interp_compressingX = "string_interp_compressingX";
 		public const string string_interp_compressedX = "string_interp_compressedX";
 		public const string string_interp_vPatchingIntoAlternate = "string_interp_vPatchingIntoAlternate";
 		public const string string_interp_theArchiveFileArchivePathIsNoLongerAvailable = "string_interp_theArchiveFileArchivePathIsNoLongerAvailable";
+		public const string string_interp_tlkmerge_couldNotFindExportInPackage = "string_interp_tlkmerge_couldNotFindExportInPackage";
 		public const string string_interp_modparsing_modVersion = "string_interp_modparsing_modVersion";
 		public const string string_interp_modparsing_modDeveloper = "string_interp_modparsing_modDeveloper";
 		public const string string_interp_modparsing_modMakerCode = "string_interp_modparsing_modMakerCode";
@@ -1142,6 +1152,16 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_interp_singleRequiredDLC = "string_interp_singleRequiredDLC";
 		public const string string_interp_validation_modparsing_bannerImageAssetNotFound = "string_interp_validation_modparsing_bannerImageAssetNotFound";
 		public const string string_interp_validation_modparsing_bannerUsedButNotDeployedWithM3 = "string_interp_validation_modparsing_bannerUsedButNotDeployedWithM3";
+		public const string string_interp_validation_modparsing_mergeModGameIdMismatch = "string_interp_validation_modparsing_mergeModGameIdMismatch";
+		public const string string_interp_validation_modparsing_leGamesRequireCmm7 = "string_interp_validation_modparsing_leGamesRequireCmm7";
+		public const string string_interp_validation_modparsing_securityIssueMergeModDotDot = "string_interp_validation_modparsing_securityIssueMergeModDotDot";
+		public const string string_interp_validation_modparsing_mergeModNotFound = "string_interp_validation_modparsing_mergeModNotFound";
+		public const string string_validation_modparsing_customdlcDotDotFound = "string_validation_modparsing_customdlcDotDotFound";
+		public const string string_interp_validation_modparsing_modInstallsBlacklistedDestFile = "string_interp_validation_modparsing_modInstallsBlacklistedDestFile";
+		public const string string_interp_validation_modparsing_validation_modparsing_theLELAUNCHERHeaderOnlySupportsTheFollowingFileExtensionsStringJoin = "string_interp_validation_modparsing_validation_modparsing_theLELAUNCHERHeaderOnlySupportsTheFollowingFileExtensionsStringJoin";
+		public const string string_interp_validation_modparsing_tlkMergeNoTlkXmlFound = "string_interp_validation_modparsing_tlkMergeNoTlkXmlFound";
+		public const string string_interp_validation_modparsing_tlkMergeInvalidTlkXmlFilenames = "string_interp_validation_modparsing_tlkMergeInvalidTlkXmlFilenames";
+		public const string string_validation_modparsing_foundDisallowedLauncherFileType = "string_validation_modparsing_foundDisallowedLauncherFileType";
 		public const string string_tooltip_hello = "string_tooltip_hello";
 		public const string string_tooltip_softwareDevelopedWithLoveByME3Tweaks = "string_tooltip_softwareDevelopedWithLoveByME3Tweaks";
 		public const string string_libraries = "string_libraries";
@@ -1336,6 +1356,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_typeToFilter = "string_typeToFilter";
 		public const string string_gettingListOfFilesFromBackup = "string_gettingListOfFilesFromBackup";
 		public const string string_extractAsMixinSource = "string_extractAsMixinSource";
+		public const string string_interp_loadingBackupFilesForGame = "string_interp_loadingBackupFilesForGame";
 		public const string string_interp_XgamesNotBackedUp = "string_interp_XgamesNotBackedUp";
 		public const string string_interp_XgameNotBackedUp = "string_interp_XgameNotBackedUp";
 		public const string string_allGamesBackedUp = "string_allGamesBackedUp";
@@ -1351,12 +1372,6 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_mixins = "string_mixins";
 		public const string string_mergingMods = "string_mergingMods";
 		public const string string_deployingModsTo7z = "string_deployingModsTo7z";
-		public const string string_massEffectFullConsole = "string_massEffectFullConsole";
-		public const string string_massEffectMiniConsole = "string_massEffectMiniConsole";
-		public const string string_massEffect2MiniConsole = "string_massEffect2MiniConsole";
-		public const string string_massEffect2FullConsole = "string_massEffect2FullConsole";
-		public const string string_massEffect3MiniConsole = "string_massEffect3MiniConsole";
-		public const string string_massEffect3FullConsole = "string_massEffect3FullConsole";
 		public const string string_updatingKeybindsPleaseWait = "string_updatingKeybindsPleaseWait";
 		public const string string_fullConsoleNotBoundToAKey = "string_fullConsoleNotBoundToAKey";
 		public const string string_interp_fullConsoleBoundToX = "string_interp_fullConsoleBoundToX";
@@ -1380,6 +1395,8 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_errorReadingKeybinds = "string_errorReadingKeybinds";
 		public const string string_interp_cannotOpenMassEffect2CoalescediniMessage = "string_interp_cannotOpenMassEffect2CoalescediniMessage";
 		public const string string_errorReadingCoalescedini = "string_errorReadingCoalescedini";
+		public const string string_interp_gameNameFullConsole = "string_interp_gameNameFullConsole";
+		public const string string_interp_gameNameMiniConsole = "string_interp_gameNameMiniConsole";
 		public const string string_updaterService = "string_updaterService";
 		public const string string_setChangelog = "string_setChangelog";
 		public const string string_updaterServiceSettings = "string_updaterServiceSettings";
@@ -1650,6 +1667,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_initializing = "string_initializing";
 		public const string string_cancelDownload = "string_cancelDownload";
 		public const string string_downloadError = "string_downloadError";
+		public const string string_interp_nexusModNotCompatible = "string_interp_nexusModNotCompatible";
 		public const string string_syncingPlotManager = "string_syncingPlotManager";
 		public const string string_interp_plotManagerSyncForX = "string_interp_plotManagerSyncForX";
 		public const string string_interp_errorCompilingFunctionReason = "string_interp_errorCompilingFunctionReason";
@@ -1658,5 +1676,28 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_interp_invalidMergeModManifestReason = "string_interp_invalidMergeModManifestReason";
 		public const string string_filenameCannotBeNullInAMergeManifestFile = "string_filenameCannotBeNullInAMergeManifestFile";
 		public const string string_interp_targetingNonStartupFile = "string_interp_targetingNonStartupFile";
+		public const string string_error_mergefile_badMagic = "string_error_mergefile_badMagic";
+		public const string string_interp_error_mergefile_assetNotFoundX = "string_interp_error_mergefile_assetNotFoundX";
+		public const string string_interp_error_mergefile_scriptNotFoundX = "string_interp_error_mergefile_scriptNotFoundX";
+		public const string string_interp_mergefile_couldNotFindExportInPackage = "string_interp_mergefile_couldNotFindExportInPackage";
+		public const string string_interp_mergefile_failedToUpdateObjectPropertyItemNotInPackage = "string_interp_mergefile_failedToUpdateObjectPropertyItemNotInPackage";
+		public const string string_interp_mergefile_unsupportedPropertyType = "string_interp_mergefile_unsupportedPropertyType";
+		public const string string_interp_mergefile_cannotFindAssetEntryInAssetPackage = "string_interp_mergefile_cannotFindAssetEntryInAssetPackage";
+		public const string string_interp_mergefile_errorMergingAssetsX = "string_interp_mergefile_errorMergingAssetsX";
+		public const string string_interp_mergefile_errorsOccurredMergingAsset = "string_interp_mergefile_errorsOccurredMergingAsset";
+		public const string string_interp_mergefile_errorCompilingFunction = "string_interp_mergefile_errorCompilingFunction";
+		public const string string_me3tweaksModManagerOptions = "string_me3tweaksModManagerOptions";
+		public const string string_mainOptions = "string_mainOptions";
+		public const string string_legendaryEditionOptions = "string_legendaryEditionOptions";
+		public const string string_description_leOptions = "string_description_leOptions";
+		public const string string_launcherAutobootSelectedGame = "string_launcherAutobootSelectedGame";
+		public const string string_description_autobootLE = "string_description_autobootLE";
+		public const string string_description_me3tweaksModmaker = "string_description_me3tweaksModmaker";
+		public const string string_textureLODUpdates = "string_textureLODUpdates";
+		public const string string_description_textureLODs = "string_description_textureLODs";
+		public const string string_logging = "string_logging";
+		public const string string_description_logging = "string_description_logging";
+		public const string string_applicationTheme = "string_applicationTheme";
+		public const string string_noItemsSelected = "string_noItemsSelected";
 	}
 }

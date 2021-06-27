@@ -60,8 +60,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             public void NotifyKeyListeningState(bool isListening)
             {
                 SharedIsListeningForKey = isListening;
-            } 
-            
+            }
+
             public bool SharedIsListeningForKey { get; set; }
             public MEGame Game { get; }
             public GameTarget SelectedTarget { get; set; }
@@ -99,7 +99,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     if (key != null)
                         SetKeyWithThread(consoleKeyStr: key);
                 }
-                BeginListeningForKeyDelegate?.Invoke(keyPressed, $"{Game.ToGameName()} Full Console");
+                BeginListeningForKeyDelegate?.Invoke(keyPressed, M3L.GetString(M3L.string_interp_gameNameFullConsole, Game.ToGameName()));
             }
 
             private void SetMiniKey()
@@ -109,7 +109,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     if (key != null)
                         SetKeyWithThread(typeKeyStr: key);
                 }
-                BeginListeningForKeyDelegate?.Invoke(keyPressed, $"{Game.ToGameName()} Mini Console");
+                BeginListeningForKeyDelegate?.Invoke(keyPressed, M3L.GetString(M3L.string_interp_gameNameMiniConsole, Game.ToGameName()));
             }
 
             private void ResetKeybinds()

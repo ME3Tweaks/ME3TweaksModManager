@@ -30,7 +30,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
     public partial class Mod
     {
 
-        private static readonly string[] DirectorySeparatorChars = new[] { "\\", "/" };
+        private static readonly string[] DirectorySeparatorChars = new[] { @"\", @"/" };
         /// <summary>
         /// The default website value, to indicate one was not set. This value must be set to a valid url or navigation request in UI binding may not work.
         /// </summary>
@@ -720,7 +720,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             if (ModDescTargetVersion < 7 && (Game.IsLEGame() || TargetsLELauncher))
             {
                 Log.Error($@"{ModName} is designed for {game}. ModDesc versions (cmmver descriptor under ModManager section) under 7.0 cannot target Legendary Edition games.");
-                LoadFailedReason = $"{ModName} is designed for {Game.ToGameName()}. ModDesc versions (cmmver descriptor under ModManager section) under 7.0 cannot target Legendary Edition games.";
+                LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_leGamesRequireCmm7, ModName, Game.ToGameName());
                 return;
             }
 
@@ -1075,7 +1075,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                             {
                                 // This entry may be malicious, do not load
                                 Log.Error($@"{ModName} has a merge mod listed under header {headerAsString} which contains a '..' in the name. '..' is not allowed in names.");
-                                LoadFailedReason = $"{ModName} has a merge mod listed under header {headerAsString} which contains a '..' in the name. '..' is not allowed in names.";
+                                LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_securityIssueMergeModDotDot, ModName, headerAsString);
                                 return;
                             }
 
@@ -1084,7 +1084,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                             if (!FilesystemInterposer.FileExists(fullPath, Archive))
                             {
                                 Log.Error($@"{ModName} has a merge mod listed under header {headerAsString} which does not exist in the {Mod.MergeModFolderName} folder: {mergeItemSanitized}.");
-                                LoadFailedReason = $"{ModName} has a merge mod listed under header {headerAsString} which does not exist in the {Mod.MergeModFolderName} folder: {mergeItemSanitized}.";
+                                LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_mergeModNotFound, ModName, headerAsString, Mod.MergeModFolderName, mergeItemSanitized);
                                 return;
                             }
 
@@ -1179,7 +1179,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         {
                             //Security violation: Cannot use \ in filepath
                             Log.Error(@"CUSTOMDLC header destdirs contains a value that contains a directory separator character, which is not allowed.");
-                            LoadFailedReason = "CUSTOMDLC header destdirs contains a value that contains a directory separator character, which is not allowed.";
+                            LoadFailedReason = M3L.GetString(M3L.string_validation_modparsing_customdlcDotDotFound);
                             return;
                         }
 
@@ -1843,8 +1843,8 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                                 });
 
                                 // The target of this file is outside the silo
-                                Log.Error($"{ModName}'s job {job.Header} file target {f} installs a file that cannot be installed by Mod Manager as it has been specifically blacklisted. Installing this file poses a security risk or is known to likely harm a user's installation.");
-                                LoadFailedReason = $"{ModName}'s job {job.Header} file target {f} installs a file that cannot be installed by Mod Manager as it has been specifically blacklisted. Installing this file poses a security risk or is known to likely harm a user's installation.";
+                                Log.Error($@"{ModName}'s job {job.Header} file target {f} installs a file that cannot be installed by Mod Manager as it has been specifically blacklisted. Installing this file poses a security risk or is known to likely harm a user's installation.");
+                                LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_modInstallsBlacklistedDestFile, ModName, job.Header, f);
                                 return;
                             }
                         }
@@ -1853,7 +1853,6 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             }
 
             #endregion
-
 
             if (InstallationJobs.Count > 0)
             {
@@ -1892,7 +1891,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     else
                     {
                         Log.Error($@"The LELAUNCHER header only supports the following file extensions: {string.Join(@", ", AllowedLauncherFileTypes)} An unsupported filetype was found: {file}");
-                        LoadFailedReason = $"The LELAUNCHER header only supports the following file extensions: {string.Join(@", ", AllowedLauncherFileTypes)} An unsupported filetype was found: {file}";
+                        LoadFailedReason = M3L.GetString(M3L.string_validation_modparsing_foundDisallowedLauncherFileType, string.Join(@", ", AllowedLauncherFileTypes), file);
                         ValidMod = false;
                     }
                 }
@@ -1918,7 +1917,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 if (!files.Any())
                 {
                     Log.Error($@"Mod specifies {ModJob.JobHeader.GAME1_EMBEDDED_TLK} task header, but no xml file were found in the {Mod.Game1EmbeddedTlkFolderName} directory. Remove this task header if you are not using it, or add valid xml files to the {Mod.Game1EmbeddedTlkFolderName} directory.");
-                    LoadFailedReason = $"Mod specifies {ModJob.JobHeader.GAME1_EMBEDDED_TLK} task header, but no xml file were found in the {Mod.Game1EmbeddedTlkFolderName} directory. Remove this task header if you are not using it, or add valid xml files to the {Mod.Game1EmbeddedTlkFolderName} directory.";
+                    LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_tlkMergeNoTlkXmlFound, ModJob.JobHeader.GAME1_EMBEDDED_TLK, Mod.Game1EmbeddedTlkFolderName, Mod.Game1EmbeddedTlkFolderName);
                     ValidMod = false;
                     return false;
                 }
@@ -1928,7 +1927,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     if (file.Count(x => x == '.') < 2)
                     {
                         Log.Error($@"The {ModJob.JobHeader.GAME1_EMBEDDED_TLK} header only supports the files in the {Mod.Game1EmbeddedTlkFolderName} directory that contain at least 2 '.' characters; one for the extension, and at least one to split the package name from the export path. If the export is nested under packages, more '.' may be needed. Invalid value: {file}");
-                        LoadFailedReason = $"The {ModJob.JobHeader.GAME1_EMBEDDED_TLK} header only supports the files in the {Mod.Game1EmbeddedTlkFolderName} directory that contain at least 2 '.' characters; one for the extension, and at least one to split the package name from the export path. If the export is nested under packages, more '.' may be needed. Invalid value: {file}";
+                        LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_tlkMergeInvalidTlkXmlFilenames, ModJob.JobHeader.GAME1_EMBEDDED_TLK, Mod.Game1EmbeddedTlkFolderName, file);
                         ValidMod = false;
                         return false;
                     }
@@ -1940,7 +1939,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             else
             {
                 Log.Error($@"Mod specifies {ModJob.JobHeader.GAME1_EMBEDDED_TLK} task header, but no xml file were found in the {Mod.Game1EmbeddedTlkFolderName} directory. Remove this task header if you are not using it, or add valid xml files to the {Mod.Game1EmbeddedTlkFolderName} directory.");
-                LoadFailedReason = $"Mod specifies {ModJob.JobHeader.GAME1_EMBEDDED_TLK} task header, but no xml file were found in the {Mod.Game1EmbeddedTlkFolderName} directory. Remove this task header if you are not using it, or add valid xml files to the {Mod.Game1EmbeddedTlkFolderName} directory.";
+                LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_tlkMergeNoTlkXmlFound, ModJob.JobHeader.GAME1_EMBEDDED_TLK, Mod.Game1EmbeddedTlkFolderName, Mod.Game1EmbeddedTlkFolderName);
                 ValidMod = false;
                 return false;
             }

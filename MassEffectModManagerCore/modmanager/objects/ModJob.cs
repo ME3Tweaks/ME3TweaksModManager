@@ -257,7 +257,7 @@ namespace MassEffectModManagerCore.modmanager.objects
 
             if (destRelativePath.Contains(@".."))
             {
-                return $"Relative path {destRelativePath} cannot contain '..' in it";
+                return M3L.GetString(M3L.string_interp_validation_modjob_cannotContainDotDot, destRelativePath);
             }
 
             string checkingSourceFile;

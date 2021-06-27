@@ -1467,7 +1467,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             // Pass 1: Directories
             // Stored uncompressed
-            string currentDeploymentStep = "Folders";
+            string currentDeploymentStep = M3L.GetString(M3L.string_folders);
             compressor.CustomParameters.Add(@"s", @"off");
             compressor.CompressionMode = CompressionMode.Create;
             compressor.CompressionLevel = CompressionLevel.None;
@@ -1541,7 +1541,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             if (individualcompressItems.Any())
             {
-                currentDeploymentStep = "Individually compressed items";
+                currentDeploymentStep = M3L.GetString(M3L.string_individuallyCompressedItems);
                 compressor.CompressFileDictionary(individualcompressItems, archivePath);
             }
             // Compress files one at a time to prevent solid
@@ -1876,7 +1876,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         /// <summary>
         /// Object that contains info about the validation targets for a mod. Only one of these can exist per game
         /// </summary>
-        public class DeploymentValidationTarget : INotifyPropertyChanged
+        [AddINotifyPropertyChangedInterface]
+        public class DeploymentValidationTarget
         {
             public MEGame Game { get; }
             public GameTarget SelectedTarget { get; set; }
@@ -1903,10 +1904,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
             }
 
-            //Fody uses this property on weaving
-#pragma warning disable
-            public event PropertyChangedEventHandler PropertyChanged;
-#pragma warning restore
         }
 
         // This is not incorrectly named. It's just got not matching value

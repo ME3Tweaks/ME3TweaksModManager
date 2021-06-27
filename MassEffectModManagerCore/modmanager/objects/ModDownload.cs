@@ -173,7 +173,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                                         Log.Error($@"This file is not whitelisted for download and does not contain a moddesc.ini file, this is not a mod manager mod: {ModFile.FileName}");
                                         Initialized = true;
                                         ProgressIndeterminate = false;
-                                        OnModDownloadError?.Invoke(this, $"{ModFile.Name} is not compatible with ME3Tweaks Mod Manager. If this is a texture mod, install it with ALOT Installer.");
+                                        OnModDownloadError?.Invoke(this, M3L.GetString(M3L.string_interp_nexusModNotCompatible, ModFile.Name));
                                         return;
                                     }
                                 }
