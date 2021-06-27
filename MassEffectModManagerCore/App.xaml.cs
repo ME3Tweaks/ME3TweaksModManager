@@ -206,17 +206,16 @@ namespace MassEffectModManagerCore
 
                 if (signTime != null)
                 {
-                    IsSigned = true;
-                    BuildDate = signTime.Value.ToLocalTime().ToString(@"MMMM dd, yyyy");
-
+                    BuildDate = signTime.Value.ToLocalTime().ToString(@"MMMM dd, yyyy @ hh:mm");
                     var signer = info.GetSignatures().FirstOrDefault()?.SigningCertificate?.GetNameInfo(X509NameType.SimpleName, false);
                     if (signer != null && (signer == @"Michael Perez" || signer == @"ME3Tweaks"))
                     {
+                        IsSigned = true;
                         Log.Information(@"Build signed by ME3Tweaks. Build date: " + BuildDate);
                     }
                     else
                     {
-                        Log.Warning(@"Build signed, but not by ME3Tweaks.");
+                        Log.Warning(@"Build signed, but not by ME3Tweaks");
                     }
                 }
                 else
