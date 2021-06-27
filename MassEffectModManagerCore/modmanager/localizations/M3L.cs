@@ -361,6 +361,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_decompiledTLKFile = "string_decompiledTLKFile";
 		public const string string_tooltip_me1ASILoader = "string_tooltip_me1ASILoader";
 		public const string string_tooltip_me23ASILoader = "string_tooltip_me23ASILoader";
+		public const string string_tooltip_leASILoader = "string_tooltip_leASILoader";
 		public const string string_debug_showIntroTutorial = "string_debug_showIntroTutorial";
 		public const string string_dialog_multiUserProgramDataWindowsRestrictions = "string_dialog_multiUserProgramDataWindowsRestrictions";
 		public const string string_grantingWritePermissions = "string_grantingWritePermissions";
@@ -423,6 +424,30 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_configuringNxmhandler = "string_configuringNxmhandler";
 		public const string string_configuredNxmhandler = "string_configuredNxmhandler";
 		public const string string_interp_downloadingNxmhandlerX = "string_interp_downloadingNxmhandlerX";
+		public const string string_autoTOC = "string_autoTOC";
+		public const string string_runAutoTOCOnMassEffect3 = "string_runAutoTOCOnMassEffect3";
+		public const string string_runAutoTOCOnMassEffectLegendaryEdition = "string_runAutoTOCOnMassEffectLegendaryEdition";
+		public const string string_runAutoTOCOnMassEffect2LegendaryEdition = "string_runAutoTOCOnMassEffect2LegendaryEdition";
+		public const string string_runAutoTOCOnMassEffect3LegendaryEdition = "string_runAutoTOCOnMassEffect3LegendaryEdition";
+		public const string string_syncPlotManager = "string_syncPlotManager";
+		public const string string_syncPlotManagerForMassEffect = "string_syncPlotManagerForMassEffect";
+		public const string string_tooltip_syncPlotManager = "string_tooltip_syncPlotManager";
+		public const string string_syncPlotManagerForMassEffect2LegendaryEdition = "string_syncPlotManagerForMassEffect2LegendaryEdition";
+		public const string string_massEffectModderForLegendaryEdition = "string_massEffectModderForLegendaryEdition";
+		public const string string_prereleaseNotice = "string_prereleaseNotice";
+		public const string string_failedToCompileCoalescedFile = "string_failedToCompileCoalescedFile";
+		public const string string_interp_errorCompilingM3mModFileExMessage = "string_interp_errorCompilingM3mModFileExMessage";
+		public const string string_interp_errorCompilingM3mModFileX = "string_interp_errorCompilingM3mModFileX";
+		public const string string_interp_syncingPlotManagerForGame = "string_interp_syncingPlotManagerForGame";
+		public const string string_interp_syncedPlotManagerForGame = "string_interp_syncedPlotManagerForGame";
+		public const string string_testSquadmateMerge = "string_testSquadmateMerge";
+		public const string string_mMV1DEBUG = "string_mMV1DEBUG";
+		public const string string_buildMD5DB = "string_buildMD5DB";
+		public const string string_updateMD5DB = "string_updateMD5DB";
+		public const string string_testCode = "string_testCode";
+		public const string string_test7z = "string_test7z";
+		public const string string_originalTrilogy = "string_originalTrilogy";
+		public const string string_legendaryEdition = "string_legendaryEdition";
 		public const string string_thisTargetHasBeenTextureModded = "string_thisTargetHasBeenTextureModded";
 		public const string string_preparingToInstall = "string_preparingToInstall";
 		public const string string_interp_devModeAlotInstalledWarning = "string_interp_devModeAlotInstalledWarning";
@@ -483,6 +508,9 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_tooltip_targetThatTheModWillBeInstalledTo = "string_tooltip_targetThatTheModWillBeInstalledTo";
 		public const string string_tooltip_modinstaller_compressPackages = "string_tooltip_modinstaller_compressPackages";
 		public const string string_interp_error_singleRequiredDlcMissing = "string_interp_error_singleRequiredDlcMissing";
+		public const string string_warningTexturesAreInstalled = "string_warningTexturesAreInstalled";
+		public const string string_warningTextureModsAreInstalled = "string_warningTextureModsAreInstalled";
+		public const string string_interp_errorApplyingMergeModXY = "string_interp_errorApplyingMergeModXY";
 		public const string string_previewPanelTitle = "string_previewPanelTitle";
 		public const string string_selectYourLanguage = "string_selectYourLanguage";
 		public const string string_howToChangeLanguage = "string_howToChangeLanguage";
@@ -1015,6 +1043,9 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_interp_unsupportedME1Version = "string_interp_unsupportedME1Version";
 		public const string string_interp_unsupportedME2Version = "string_interp_unsupportedME2Version";
 		public const string string_interp_unsupportedME3Version = "string_interp_unsupportedME3Version";
+		public const string string_binkw32ASILoader = "string_binkw32ASILoader";
+		public const string string_binkw32ASIBypass = "string_binkw32ASIBypass";
+		public const string string_bink2w64ASILoader = "string_bink2w64ASILoader";
 		public const string string_interp_validation_modjob_replacementFileSpecifiedByJobDoesntExist = "string_interp_validation_modjob_replacementFileSpecifiedByJobDoesntExist";
 		public const string string_validation_modjob_exeFilesNotAllowed = "string_validation_modjob_exeFilesNotAllowed";
 		public const string string_validation_modjob_dllFilesNotAllowed = "string_validation_modjob_dllFilesNotAllowed";
@@ -1620,5 +1651,12 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_cancelDownload = "string_cancelDownload";
 		public const string string_downloadError = "string_downloadError";
 		public const string string_syncingPlotManager = "string_syncingPlotManager";
+		public const string string_interp_plotManagerSyncForX = "string_interp_plotManagerSyncForX";
+		public const string string_interp_errorCompilingFunctionReason = "string_interp_errorCompilingFunctionReason";
+		public const string string_mergeModFileDoesNotHaveCorrectMagicHeader = "string_mergeModFileDoesNotHaveCorrectMagicHeader";
+		public const string string_interp_unsupportedMergeModVersionVersionX = "string_interp_unsupportedMergeModVersionVersionX";
+		public const string string_interp_invalidMergeModManifestReason = "string_interp_invalidMergeModManifestReason";
+		public const string string_filenameCannotBeNullInAMergeManifestFile = "string_filenameCannotBeNullInAMergeManifestFile";
+		public const string string_interp_targetingNonStartupFile = "string_interp_targetingNonStartupFile";
 	}
 }

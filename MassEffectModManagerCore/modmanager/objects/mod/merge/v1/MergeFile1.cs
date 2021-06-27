@@ -6,6 +6,7 @@ using System.Linq;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Packages.CloningImportingAndRelinking;
+using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.windows;
 using Newtonsoft.Json;
 using Serilog;
@@ -130,14 +131,14 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
         /// </summary>
         public void Validate()
         {
-            if (FileName == null) throw new Exception("'filename' cannot be null for a merge file!");
+            if (FileName == null) throw new Exception(M3L.GetString(M3L.string_filenameCannotBeNullInAMergeManifestFile!));
             var safeFiles = EntryImporter.FilesSafeToImportFrom(OwningMM.Game).ToList();
             safeFiles.Add(@"EntryMenu.pcc"); // ME2+
             safeFiles.Add(@"EntryMenu.SFM"); // ME1
             if (!safeFiles.Any(x => FileName.StartsWith(Path.GetFileNameWithoutExtension(x), StringComparison.InvariantCultureIgnoreCase)))
             {
                 // Does this catch DLC startups? 
-                throw new Exception($"Cannot merge into non-startup file: {FileName}");
+                throw new Exception(M3L.GetString(M3L.string_interp_targetingNonStartupFile, FileName));
             }
         }
     }

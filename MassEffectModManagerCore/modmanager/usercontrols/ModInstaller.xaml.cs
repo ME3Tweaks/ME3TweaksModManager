@@ -139,7 +139,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         Log.Error($@"Oodle dll could not be sourced from game: {SelectedGameTarget.TargetPath}. Installation cannot proceed");
                         InstallationSucceeded = false;
                         InstallationCancelled = true;
-                        M3L.ShowDialog(mainwindow, @"The compression library for opening and saving Legendary Edition packages could not be located. Ensure your game is properly installed. If you continue to have issues, please come to the ME3Tweaks Discord.", "Cannot install mod", MessageBoxButton.OK, MessageBoxImage.Error);
+                        M3L.ShowDialog(mainwindow, @"The compression library for opening and saving Legendary Edition packages could not be located. Ensure your game is properly installed. If you continue to have issues, please come to the ME3Tweaks Discord.", M3L.GetString(M3L.string_cannotInstallMod), MessageBoxButton.OK, MessageBoxImage.Error);
                         OnClosing(DataEventArgs.Empty);
                         return;
                     }
@@ -229,7 +229,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             Utilities.InstallBinkBypass(SelectedGameTarget); //Always install binkw32, don't bother checking if it is already ASI version.
             if (ModBeingInstalled.Game.IsLEGame())
             {
-                GameTarget gt = new GameTarget(MEGame.LELauncher, Path.Combine(Directory.GetParent(SelectedGameTarget.TargetPath).FullName, "Launcher"), false, skipInit: true);
+                GameTarget gt = new GameTarget(MEGame.LELauncher, Path.Combine(Directory.GetParent(SelectedGameTarget.TargetPath).FullName, @"Launcher"), false, skipInit: true);
                 Utilities.InstallBinkBypass(gt);
             }
 
@@ -300,8 +300,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         Application.Current.Dispatcher.Invoke(delegate
                         {
                             var res = M3L.ShowDialog(Window.GetWindow(this),
-                                "Textures are installed and this mod installs or modifies package files. You can continue to install this mod, but new files will not have the updated textures that were previously installed. You will need to reapply texture mods after installation if you want their changes to apply to packages from this mod.",
-                                "Warning: Texture mods are installed",
+                                M3L.GetString(M3L.string_warningTexturesAreInstalled),
+                                M3L.GetString(M3L.string_warningTextureModsAreInstalled),
                                 MessageBoxButton.OKCancel, MessageBoxImage.Warning, MessageBoxResult.Cancel);
                             cancel = res != MessageBoxResult.OK;
                         });
@@ -813,12 +813,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     // Error applying merge mod!
                     InstallationSucceeded = false;
-                    Log.Error($@"An error occured installed mergemod {mergeMod.MergeModFilename}: {ex.Message}");
+                    Log.Error($@"An error occurred installed mergemod {mergeMod.MergeModFilename}: {ex.Message}");
                     Log.Error(ex.StackTrace);
                     e.Result = ModInstallCompletedStatus.INSTALL_FAILED_EXCEPTION_APPLYING_MERGE_MOD;
                     if (Application.Current != null)
                     {
-                        Application.Current.Dispatcher.Invoke(() => M3L.ShowDialog(mainwindow, $"An error occured applying merge mod {mergeMod.MergeModFilename}: {ex.Message}.", M3L.GetString(M3L.string_errorInstallingMod), MessageBoxButton.OK, MessageBoxImage.Error));
+                        Application.Current.Dispatcher.Invoke(() => M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_interp_errorApplyingMergeModXY, mergeMod.MergeModFilename, ex.Message), M3L.GetString(M3L.string_errorInstallingMod), MessageBoxButton.OK, MessageBoxImage.Error));
                     }
 
                     Log.Warning(@"<<<<<<< Aborting modinstaller");

@@ -1,9 +1,5 @@
 ﻿<Window
-    x:Class="MassEffectModManagerCore.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local="clr-namespace:MassEffectModManagerCore" xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:fa="http://schemas.fontawesome.io/icons/" xmlns:modmanager="clr-namespace:MassEffectModManagerCore.modmanager" xmlns:usercontrols="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols"
-    xmlns:packages="clr-namespace:LegendaryExplorerCore.Packages;assembly=LegendaryExplorerCore"
-    xmlns:ui="clr-namespace:MassEffectModManagerCore.ui"
-    xmlns:objects="clr-namespace:MassEffectModManagerCore.modmanager.objects"
-    xmlns:mod="clr-namespace:MassEffectModManagerCore.modmanager.objects.mod"
+    x:Class="MassEffectModManagerCore.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local="clr-namespace:MassEffectModManagerCore" xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:fa="http://schemas.fontawesome.io/icons/" xmlns:modmanager="clr-namespace:MassEffectModManagerCore.modmanager" xmlns:usercontrols="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" xmlns:packages="clr-namespace:LegendaryExplorerCore.Packages;assembly=LegendaryExplorerCore" xmlns:ui="clr-namespace:MassEffectModManagerCore.ui" xmlns:objects="clr-namespace:MassEffectModManagerCore.modmanager.objects" xmlns:mod="clr-namespace:MassEffectModManagerCore.modmanager.objects.mod"
     mc:Ignorable="d"
     Closing="ModManagerWindow_Closing"
     ContentRendered="ModManager_ContentRendered"
@@ -276,7 +272,7 @@
                                 Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                                 Height="16"
                                 Width="16"
-                                RenderOptions.BitmapScalingMode="HighQuality"/>
+                                RenderOptions.BitmapScalingMode="HighQuality" />
                         </MenuItem.Icon>
                     </MenuItem>
                     <Separator />
@@ -659,7 +655,6 @@
                             IsChecked="{Binding ME3ASILoaderInstalled}"
                             ToolTip="{DynamicResource string_tooltip_me23ASILoader}"
                             StaysOpenOnClick="True" />
-
                         <!-- Legendary Edition -->
                         <MenuItem
                             ui:SharedUIBindings.GenerationLE="true"
@@ -671,7 +666,7 @@
                             CommandParameter="LE1"
                             Header="{Binding LE1ASILoaderText}"
                             IsChecked="{Binding LE1ASILoaderInstalled}"
-                            ToolTip="PLACEHOLDER"
+                            ToolTip="{DynamicResource string_tooltip_leASILoader}"
                             StaysOpenOnClick="True" />
                         <Separator />
                         <MenuItem
@@ -684,7 +679,7 @@
                             CommandParameter="LE2"
                             Header="{Binding LE2ASILoaderText}"
                             IsChecked="{Binding LE2ASILoaderInstalled}"
-                            ToolTip="PLACEHOLDER"
+                            ToolTip="{DynamicResource string_tooltip_leASILoader}"
                             StaysOpenOnClick="True" />
                         <Separator />
                         <MenuItem
@@ -697,11 +692,11 @@
                             CommandParameter="LE3"
                             Header="{Binding LE3ASILoaderText}"
                             IsChecked="{Binding LE3ASILoaderInstalled}"
-                            ToolTip="PLACEHOLDER"
+                            ToolTip="{DynamicResource string_tooltip_leASILoader}"
                             StaysOpenOnClick="True" />
-
                     </MenuItem>
-                    <MenuItem Header="AutoTOC">
+                    <MenuItem
+                        Header="{DynamicResource string_autoTOC}">
                         <MenuItem.Icon>
                             <fa:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"
@@ -712,7 +707,7 @@
                         </MenuItem.Icon>
                         <MenuItem
                             ui:SharedUIBindings.GenerationOT="True"
-                            Header="Run AutoTOC on Mass Effect 3"
+                            Header="{DynamicResource string_runAutoTOCOnMassEffect3}"
                             Command="{Binding AutoTOCCommand}"
                             CommandParameter="{x:Static packages:MEGame.ME3}"
                             ToolTip="{DynamicResource string_RunsAutoTOCToolTip}">
@@ -725,7 +720,7 @@
                         </MenuItem>
                         <MenuItem
                             ui:SharedUIBindings.GenerationLE="True"
-                            Header="Run AutoTOC on Mass Effect (Legendary Edition)"
+                            Header="{DynamicResource string_runAutoTOCOnMassEffectLegendaryEdition}"
                             Command="{Binding AutoTOCCommand}"
                             CommandParameter="{x:Static packages:MEGame.LE1}"
                             ToolTip="{DynamicResource string_RunsAutoTOCToolTip}">
@@ -738,7 +733,7 @@
                         </MenuItem>
                         <MenuItem
                             ui:SharedUIBindings.GenerationLE="True"
-                            Header="Run AutoTOC on Mass Effect 2 (Legendary Edition)"
+                            Header="{DynamicResource string_runAutoTOCOnMassEffect2LegendaryEdition}"
                             Command="{Binding AutoTOCCommand}"
                             CommandParameter="{x:Static packages:MEGame.LE2}"
                             ToolTip="{DynamicResource string_RunsAutoTOCToolTip}">
@@ -751,7 +746,7 @@
                         </MenuItem>
                         <MenuItem
                             ui:SharedUIBindings.GenerationLE="True"
-                            Header="Run AutoTOC on Mass Effect 3 (Legendary Edition)"
+                            Header="{DynamicResource string_runAutoTOCOnMassEffect3LegendaryEdition}"
                             Command="{Binding AutoTOCCommand}"
                             CommandParameter="{x:Static packages:MEGame.LE3}"
                             ToolTip="{DynamicResource string_RunsAutoTOCToolTip}">
@@ -763,7 +758,8 @@
                             </MenuItem.Icon>
                         </MenuItem>
                     </MenuItem>
-                    <MenuItem Header="Sync PlotManager">
+                    <MenuItem
+                        Header="{DynamicResource string_syncPlotManager}">
                         <MenuItem.Icon>
                             <fa:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"
@@ -774,10 +770,10 @@
                         </MenuItem.Icon>
                         <MenuItem
                             ui:SharedUIBindings.GenerationOT="True"
-                            Header="Sync PlotManager for Mass Effect"
+                            Header="{DynamicResource string_syncPlotManagerForMassEffect}"
                             Command="{Binding SyncPlotManagerCommand}"
                             CommandParameter="{x:Static packages:MEGame.ME1}"
-                            ToolTip="Synchronizes the plot manager updates located in DLC mods with the base plot manager file, which is used for story progression tracking">
+                            ToolTip="{DynamicResource string_tooltip_synchronizesThePlotManagerUpdatesLocatedInDLCModsWithTheBasePlotManagerFileWhichIsUsedForStoryProgressionTracking}">
                             <MenuItem.Icon>
                                 <Image
                                     Source="{ui:MippedIcon Source={StaticResource me1gameiconpath}, Size=16}"
@@ -787,10 +783,10 @@
                         </MenuItem>
                         <MenuItem
                             ui:SharedUIBindings.GenerationOT="True"
-                            Header="Sync PlotManager for Mass Effect"
+                            Header="{DynamicResource string_syncPlotManagerForMassEffect}"
                             Command="{Binding SyncPlotManagerCommand}"
                             CommandParameter="{x:Static packages:MEGame.ME2}"
-                            ToolTip="Synchronizes the plot manager updates located in DLC mods with the base plot manager file, which is used for story progression tracking">
+                            ToolTip="{DynamicResource string_tooltip_synchronizesThePlotManagerUpdatesLocatedInDLCModsWithTheBasePlotManagerFileWhichIsUsedForStoryProgressionTracking}">
                             <MenuItem.Icon>
                                 <Image
                                     Source="{ui:MippedIcon Source={StaticResource me2gameiconpath}, Size=16}"
@@ -814,10 +810,10 @@
                         </MenuItem>-->
                         <MenuItem
                             ui:SharedUIBindings.GenerationLE="True"
-                            Header="Sync PlotManager for Mass Effect 2 (Legendary Edition)"
+                            Header="{DynamicResource string_syncPlotManagerForMassEffect2LegendaryEdition}"
                             Command="{Binding SyncPlotManagerCommand}"
                             CommandParameter="{x:Static packages:MEGame.LE2}"
-                            ToolTip="Synchronizes the plot manager updates located in DLC mods with the base plot manager file, which is used for story progression tracking">
+                            ToolTip="{DynamicResource string_tooltip_synchronizesThePlotManagerUpdatesLocatedInDLCModsWithTheBasePlotManagerFileWhichIsUsedForStoryProgressionTracking}">
                             <MenuItem.Icon>
                                 <Image
                                     Source="{ui:MippedIcon Source={StaticResource le2gameiconpath}, Size=16}"
@@ -939,7 +935,7 @@
                     </MenuItem>
                     <MenuItem
                         ui:SharedUIBindings.GenerationLE="True"
-                        Header="Mass Effect Modder (for Legendary Edition)"
+                        Header="{DynamicResource string_massEffectModderForLegendaryEdition}"
                         Name="MassEffectModderLE_MenuItem"
                         Click="LaunchExternalTool_Clicked"
                         ToolTip="{DynamicResource string_Texturebrowserandinstaller}">
@@ -1067,27 +1063,75 @@
                         </MenuItem.Icon>
                     </MenuItem>
                 </MenuItem>
-                <MenuItem 
+                <MenuItem
                     Header="{DynamicResource string_debug}"
                     Visibility="{x:Static local:App.DebugOnlyVisibility}"
                     Padding="4">
-                    <MenuItem Header="{DynamicResource string_requiresSelectedMod}" Style="{StaticResource MenuItemHeaderStyle}" />
-                    <MenuItem Header="{DynamicResource string_reloadSelectedMod}" Click="RouteDebugCall" Name="ReloadSelectedMod_MenuItem" />
-                    <MenuItem Header="{DynamicResource string_debugPrintAllReferencedFiles}" Name="DebugPrintReferencedFiles_MenuItem" Click="RouteDebugCall" />
-                    <MenuItem Header="{DynamicResource string_debugPrintInstallationQueue}" Name="DebugPrintInstallationQueue_MenuItem" Click="RouteDebugCall" />
-                    <MenuItem Header="{DynamicResource string_requiresSelectedTarget}" Style="{StaticResource MenuItemHeaderStyle}" />
-                    <MenuItem Header="Test squadmate merge" Name="DebugSquadmateMerge_MenuItem" Click="RouteDebugCall" />
-                    <MenuItem Header="{DynamicResource string_stampCurrentTargetWithALOTMarker}" Name="StampCurrentTargetWithALOTMarker_MenuItem" Click="RouteDebugCall" />
-                    <MenuItem Header="{DynamicResource string_stripCurrentTargetALOTMarker}" Name="StripCurrentTargetWithALOTMarker_MenuItem" Click="RouteDebugCall" />
-                    <MenuItem Header="MMV1 DEBUG" Name="TestMMV1_MenuItem" Click="RouteDebugCall" />
-                    <MenuItem Header="Build MD5 DB" Name="RebuildMD5DB_MenuItem" Click="RouteDebugCall" />
-                    <MenuItem Header="Update MD5 DB" Name="UpdateMD5DB_MenuItem" Click="RouteDebugCall" />
-                    <MenuItem Header="{DynamicResource string_requiresNothing}" Style="{StaticResource MenuItemHeaderStyle}" />
-                    <MenuItem Header="{DynamicResource string_showWelcomePanel}" Name="ShowWelcomePanel_MenuItem" Click="RouteDebugCall" />
-                    <MenuItem Header="{DynamicResource string_showBackupNag}" Name="ShowBackupNag_MenuItem" Click="RouteDebugCall" />
-                    <MenuItem Header="{DynamicResource string_mEMVanillaDBViewer}" Name="ShowMEMDB_MenuItem" Click="RouteDebugCall" />
-                    <MenuItem Header="Test code" Name="TestCode_MenuItem" Click="RouteDebugCall" />
-                    <MenuItem Header="Test 7z" Name="Test7z_MenuItem" Click="RouteDebugCall" />
+                    <MenuItem
+                        Header="{DynamicResource string_requiresSelectedMod}"
+                        Style="{StaticResource MenuItemHeaderStyle}" />
+                    <MenuItem
+                        Header="{DynamicResource string_reloadSelectedMod}"
+                        Click="RouteDebugCall"
+                        Name="ReloadSelectedMod_MenuItem" />
+                    <MenuItem
+                        Header="{DynamicResource string_debugPrintAllReferencedFiles}"
+                        Name="DebugPrintReferencedFiles_MenuItem"
+                        Click="RouteDebugCall" />
+                    <MenuItem
+                        Header="{DynamicResource string_debugPrintInstallationQueue}"
+                        Name="DebugPrintInstallationQueue_MenuItem"
+                        Click="RouteDebugCall" />
+                    <MenuItem
+                        Header="{DynamicResource string_requiresSelectedTarget}"
+                        Style="{StaticResource MenuItemHeaderStyle}" />
+                    <MenuItem
+                        Header="{DynamicResource string_testSquadmateMerge}"
+                        Name="DebugSquadmateMerge_MenuItem"
+                        Click="RouteDebugCall" />
+                    <MenuItem
+                        Header="{DynamicResource string_stampCurrentTargetWithALOTMarker}"
+                        Name="StampCurrentTargetWithALOTMarker_MenuItem"
+                        Click="RouteDebugCall" />
+                    <MenuItem
+                        Header="{DynamicResource string_stripCurrentTargetALOTMarker}"
+                        Name="StripCurrentTargetWithALOTMarker_MenuItem"
+                        Click="RouteDebugCall" />
+                    <MenuItem
+                        Header="{DynamicResource string_mMV1DEBUG}"
+                        Name="TestMMV1_MenuItem"
+                        Click="RouteDebugCall" />
+                    <MenuItem
+                        Header="{DynamicResource string_buildMD5DB}"
+                        Name="RebuildMD5DB_MenuItem"
+                        Click="RouteDebugCall" />
+                    <MenuItem
+                        Header="{DynamicResource string_updateMD5DB}"
+                        Name="UpdateMD5DB_MenuItem"
+                        Click="RouteDebugCall" />
+                    <MenuItem
+                        Header="{DynamicResource string_requiresNothing}"
+                        Style="{StaticResource MenuItemHeaderStyle}" />
+                    <MenuItem
+                        Header="{DynamicResource string_showWelcomePanel}"
+                        Name="ShowWelcomePanel_MenuItem"
+                        Click="RouteDebugCall" />
+                    <MenuItem
+                        Header="{DynamicResource string_showBackupNag}"
+                        Name="ShowBackupNag_MenuItem"
+                        Click="RouteDebugCall" />
+                    <MenuItem
+                        Header="{DynamicResource string_mEMVanillaDBViewer}"
+                        Name="ShowMEMDB_MenuItem"
+                        Click="RouteDebugCall" />
+                    <MenuItem
+                        Header="{DynamicResource string_testCode}"
+                        Name="TestCode_MenuItem"
+                        Click="RouteDebugCall" />
+                    <MenuItem
+                        Header="{DynamicResource string_test7z}"
+                        Name="Test7z_MenuItem"
+                        Click="RouteDebugCall" />
                 </MenuItem>
                 <MenuItem
                     Name="HelpMenuItem"
@@ -1301,11 +1345,22 @@
                         Height="3" />
                 </Grid.RowDefinitions>
                 <!-- Header Panel -->
-                <DockPanel Grid.Row="1"
+                <DockPanel
+                    Grid.Row="1"
                     Grid.Column="1"
                     Grid.ColumnSpan="3">
-                    <ToggleButton DockPanel.Dock="Right" Content="Original Trilogy" VerticalAlignment="Center" Style="{DynamicResource {x:Static adonisUi:Styles.DefaultToAccentToggleButton}}" IsChecked="{Binding Path=(modmanager:Settings.GenerationSettingOT)}"/>
-                    <ToggleButton DockPanel.Dock="Right" Content="Legendary Edition"  VerticalAlignment="Center" Style="{DynamicResource {x:Static adonisUi:Styles.DefaultToAccentToggleButton}}" IsChecked="{Binding Path=(modmanager:Settings.GenerationSettingLE)}"/>
+                    <ToggleButton
+                        DockPanel.Dock="Right"
+                        Content="{DynamicResource string_originalTrilogy}"
+                        VerticalAlignment="Center"
+                        Style="{DynamicResource {x:Static adonisUi:Styles.DefaultToAccentToggleButton}}"
+                        IsChecked="{Binding Path=(modmanager:Settings.GenerationSettingOT)}" />
+                    <ToggleButton
+                        DockPanel.Dock="Right"
+                        Content="{DynamicResource string_legendaryEdition}"
+                        VerticalAlignment="Center"
+                        Style="{DynamicResource {x:Static adonisUi:Styles.DefaultToAccentToggleButton}}"
+                        IsChecked="{Binding Path=(modmanager:Settings.GenerationSettingLE)}" />
                     <TextBlock
                         Text="{DynamicResource string_installationTarget}"
                         DockPanel.Dock="Bottom"
@@ -1314,7 +1369,6 @@
                         Text="{Binding Source={x:Static local:App.AppVersionHR}}"
                         FontWeight="Bold" />
                 </DockPanel>
-
                 <Grid
                     Grid.Row="3"
                     Grid.Column="1"
@@ -1323,7 +1377,7 @@
                         <ColumnDefinition
                             Width="7" />
                         <ColumnDefinition
-                            Width="275"/>
+                            Width="275" />
                         <ColumnDefinition
                             Width="*" />
                         <ColumnDefinition
@@ -1377,21 +1431,25 @@
                     Background="Transparent">
                     <DockPanel
                         DockPanel.Dock="Top">
-                        <DockPanel DockPanel.Dock="Bottom">
-
-                            <ItemsControl ItemsSource="{Binding GameFilters}">
+                        <DockPanel
+                            DockPanel.Dock="Bottom">
+                            <ItemsControl
+                                ItemsSource="{Binding GameFilters}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
-                                        <StackPanel Orientation="Horizontal"/>
+                                        <StackPanel
+                                            Orientation="Horizontal" />
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>
-                                    <DataTemplate DataType="objects:GameFilter">
-                                        <ToggleButton Style="{DynamicResource {x:Static adonisUi:Styles.DefaultToAccentToggleButton}}" 
-                                                  IsChecked="{Binding IsEnabled}"
-                                                  Visibility="{Binding IsVisible, Converter={StaticResource BoolToVisibilityConverter}}"
-                                                  Content="{Binding Game}"
-                                                  Click="GameFilter_Click"/>
+                                    <DataTemplate
+                                        DataType="objects:GameFilter">
+                                        <ToggleButton
+                                            Style="{DynamicResource {x:Static adonisUi:Styles.DefaultToAccentToggleButton}}"
+                                            IsChecked="{Binding IsEnabled}"
+                                            Visibility="{Binding IsVisible, Converter={StaticResource BoolToVisibilityConverter}}"
+                                            Content="{Binding Game}"
+                                            Click="GameFilter_Click" />
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
@@ -1425,11 +1483,11 @@
                         Height="0">
                         <TextBlock
                             ToolTip="{DynamicResource string_tooltip_someModsFailed}">
-                        <Hyperlink
+              <Hyperlink
                                 RequestNavigate="FailedMods_LinkClick"
                                 NavigateUri="internal://trigger"
                                 Foreground="Red">
-                            <TextBlock
+                <TextBlock
                                     Text="{Binding FailedModsString}" />
               </Hyperlink>
             </TextBlock>
@@ -1447,35 +1505,65 @@
                             Visibility="{Binding VisibleFilteredMods.Any, Converter={StaticResource BoolToVisibilityConverter}}"
                             Tag="{Binding DataContext}">
                             <ListBox.ItemTemplate>
-                                <DataTemplate DataType="mod:Mod">
-                                    <Border Padding="5,4">
+                                <DataTemplate
+                                    DataType="mod:Mod">
+                                    <Border
+                                        Padding="5,4">
                                         <Border.Style>
-                                            <Style TargetType="Border">
+                                            <Style
+                                                TargetType="Border">
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding Game}" Value="{x:Static packages:MEGame.ME1}">
-                                                        <Setter Property="Background" Value="{StaticResource OTModBrush}"/>
+                                                    <DataTrigger
+                                                        Binding="{Binding Game}"
+                                                        Value="{x:Static packages:MEGame.ME1}">
+                                                        <Setter
+                                                            Property="Background"
+                                                            Value="{StaticResource OTModBrush}" />
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding Game}" Value="{x:Static packages:MEGame.ME2}">
-                                                        <Setter Property="Background" Value="{StaticResource OTModBrush}"/>
+                                                    <DataTrigger
+                                                        Binding="{Binding Game}"
+                                                        Value="{x:Static packages:MEGame.ME2}">
+                                                        <Setter
+                                                            Property="Background"
+                                                            Value="{StaticResource OTModBrush}" />
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding Game}" Value="{x:Static packages:MEGame.ME3}">
-                                                        <Setter Property="Background" Value="{StaticResource OTModBrush}"/>
+                                                    <DataTrigger
+                                                        Binding="{Binding Game}"
+                                                        Value="{x:Static packages:MEGame.ME3}">
+                                                        <Setter
+                                                            Property="Background"
+                                                            Value="{StaticResource OTModBrush}" />
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding Game}" Value="{x:Static packages:MEGame.LELauncher}">
-                                                        <Setter Property="Background" Value="{StaticResource LEModBrush}"/>
+                                                    <DataTrigger
+                                                        Binding="{Binding Game}"
+                                                        Value="{x:Static packages:MEGame.LELauncher}">
+                                                        <Setter
+                                                            Property="Background"
+                                                            Value="{StaticResource LEModBrush}" />
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding Game}" Value="{x:Static packages:MEGame.LE1}">
-                                                        <Setter Property="Background" Value="{StaticResource LEModBrush}"/>
+                                                    <DataTrigger
+                                                        Binding="{Binding Game}"
+                                                        Value="{x:Static packages:MEGame.LE1}">
+                                                        <Setter
+                                                            Property="Background"
+                                                            Value="{StaticResource LEModBrush}" />
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding Game}" Value="{x:Static packages:MEGame.LE2}">
-                                                        <Setter Property="Background" Value="{StaticResource LEModBrush}"/>
+                                                    <DataTrigger
+                                                        Binding="{Binding Game}"
+                                                        Value="{x:Static packages:MEGame.LE2}">
+                                                        <Setter
+                                                            Property="Background"
+                                                            Value="{StaticResource LEModBrush}" />
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding Game}" Value="{x:Static packages:MEGame.LE3}">
-                                                        <Setter Property="Background" Value="{StaticResource LEModBrush}"/>
+                                                    <DataTrigger
+                                                        Binding="{Binding Game}"
+                                                        Value="{x:Static packages:MEGame.LE3}">
+                                                        <Setter
+                                                            Property="Background"
+                                                            Value="{StaticResource LEModBrush}" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
-
                                         </Border.Style>
                                         <StackPanel
                                             Orientation="Horizontal"
@@ -1504,9 +1592,15 @@
                                                 DataContext="{x:Reference MainWindow_Ref}" />
                                         </Setter.Value>
                                     </Setter>
-                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                                    <Setter Property="Margin" Value="1"/>
-                                    <Setter Property="Padding" Value="0"/>
+                                    <Setter
+                                        Property="HorizontalContentAlignment"
+                                        Value="Stretch" />
+                                    <Setter
+                                        Property="Margin"
+                                        Value="1" />
+                                    <Setter
+                                        Property="Padding"
+                                        Value="0" />
                                 </Style>
                             </ListBox.ItemContainerStyle>
                         </ListBox>

@@ -19,11 +19,11 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
 {
     public class MergeFileChange1
     {
-        [JsonProperty("entryname")] public string EntryName { get; set; }
-        [JsonProperty("propertyupdates")] public List<PropertyUpdate1> PropertyUpdates { get; set; }
-        [JsonProperty("assetupdate")] public AssetUpdate1 AssetUpdate { get; set; }
-        [JsonProperty("scriptupdate")] public ScriptUpdate1 ScriptUpdate { get; set; }
-        [JsonProperty("sequenceskipupdate")] public SequenceSkipUpdate1 SequenceSkipUpdate { get; set; }
+        [JsonProperty(@"entryname")] public string EntryName { get; set; }
+        [JsonProperty(@"propertyupdates")] public List<PropertyUpdate1> PropertyUpdates { get; set; }
+        [JsonProperty(@"assetupdate")] public AssetUpdate1 AssetUpdate { get; set; }
+        [JsonProperty(@"scriptupdate")] public ScriptUpdate1 ScriptUpdate { get; set; }
+        [JsonProperty(@"sequenceskipupdate")] public SequenceSkipUpdate1 SequenceSkipUpdate { get; set; }
 
         [JsonIgnore] public MergeFile1 Parent;
         [JsonIgnore] public MergeMod1 OwningMM => Parent.OwningMM;
@@ -66,13 +66,13 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
 
     public class PropertyUpdate1
     {
-        [JsonProperty("propertyname")]
+        [JsonProperty(@"propertyname")]
         public string PropertyName { get; set; }
 
-        [JsonProperty("propertytype")]
+        [JsonProperty(@"propertytype")]
         public string PropertyType { get; set; }
 
-        [JsonProperty("propertyvalue")]
+        [JsonProperty(@"propertyvalue")]
         public string PropertyValue { get; set; }
 
         public bool ApplyUpdate(IMEPackage package, PropertyCollection properties)
@@ -97,19 +97,19 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
             Log.Information($@"Applying property update: {PropertyName} -> {PropertyValue}");
             switch (PropertyType)
             {
-                case "FloatProperty":
+                case @"FloatProperty":
                     FloatProperty fp = new FloatProperty(float.Parse(PropertyValue, CultureInfo.InvariantCulture), propKeys.Last());
                     operatingCollection.AddOrReplaceProp(fp);
                     break;
-                case "IntProperty":
+                case @"IntProperty":
                     IntProperty ip = new IntProperty(int.Parse(PropertyValue), propKeys.Last());
                     operatingCollection.AddOrReplaceProp(ip);
                     break;
-                case "BoolProperty":
+                case @"BoolProperty":
                     BoolProperty bp = new BoolProperty(bool.Parse(PropertyValue), propKeys.Last());
                     operatingCollection.AddOrReplaceProp(bp);
                     break;
-                case "NameProperty":
+                case @"NameProperty":
                     var index = 0;
                     var baseName = PropertyValue;
                     var indexIndex = PropertyValue.IndexOf(@"|", StringComparison.InvariantCultureIgnoreCase);
@@ -122,7 +122,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
                     NameProperty np = new NameProperty(new NameReference(baseName, index), PropertyName);
                     operatingCollection.AddOrReplaceProp(np);
                     break;
-                case "ObjectProperty":
+                case @"ObjectProperty":
                     // This does not support porting in, only relinking existing items
                     ObjectProperty op = new ObjectProperty(0, PropertyName);
                     if (PropertyValue != null)
@@ -146,13 +146,13 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
         /// <summary>
         /// Name of asset file
         /// </summary>
-        [JsonProperty("assetname")]
+        [JsonProperty(@"assetname")]
         public string AssetName { get; set; }
 
         /// <summary>
         /// Entry in the asset to use as porting source
         /// </summary>
-        [JsonProperty("entryname")]
+        [JsonProperty(@"entryname")]
         public string EntryName { get; set; }
 
         [JsonIgnore] public MergeFileChange1 Parent;
@@ -187,7 +187,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
                 importExportDependencies: true);
             if (resultst.Any())
             {
-                throw new Exception("Errors occurred merging!");
+                throw new Exception($"Errors occurred merging asset {AssetName} {EntryName}: {string.Join('\n', resultst.Select(x => x.Message))}");
             }
 
             return true;

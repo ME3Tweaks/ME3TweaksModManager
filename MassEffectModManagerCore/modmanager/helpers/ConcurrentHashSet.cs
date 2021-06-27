@@ -414,7 +414,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
 
                 if (array.Length - count < arrayIndex || count < 0) //"count" itself or "count + arrayIndex" can overflow
                 {
-                    throw new ArgumentException("The index is equal to or greater than the length of the array, or the number of elements in the set is greater than the available space from index to the end of the destination array.");
+                    throw new ArgumentException(@"The index is equal to or greater than the length of the array, or the number of elements in the set is greater than the available space from index to the end of the destination array.");
                 }
 
                 CopyToItems(array, arrayIndex);

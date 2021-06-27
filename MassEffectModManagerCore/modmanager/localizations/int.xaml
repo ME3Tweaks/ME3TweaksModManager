@@ -296,6 +296,7 @@
     <system:String x:Key="string_decompiledTLKFile">Decompiled TLK file</system:String>
     <system:String x:Key="string_tooltip_me1ASILoader">Enables ASI mods to load, which in turns allows loading DLC mod overrides</system:String>
     <system:String x:Key="string_tooltip_me23ASILoader">Allows modified DLC, enables the console, enables ASI mods to work</system:String>
+    <system:String x:Key="string_tooltip_leASILoader">Enables the console, enables ASI mods to work</system:String>
     <system:String x:Key="string_debug_showIntroTutorial">Show Intro Tutorial</system:String>
     <system:String x:Key="string_dialog_multiUserProgramDataWindowsRestrictions">Windows has restricted the permissions on the ME3Tweaks Mod Manager program data directory for this user account. Click OK to grant permissions to this folder to ensure proper application functionality.</system:String>
     <system:String x:Key="string_grantingWritePermissions">Granting write permissions</system:String>
@@ -373,6 +374,37 @@
     <system:String x:Key="string_configuredNxmhandler">Configured nxmhandler</system:String>
     <system:String x:Key="string_interp_downloadingNxmhandlerX">Downloading nxmhandler {0}%</system:String>
     <!-- 0={percentage} -->
+    <system:String x:Key="string_autoTOC">AutoTOC</system:String>
+    <!-- This is menu container. Should probably not be changed since it's essentially a noun -->
+    <system:String x:Key="string_runAutoTOCOnMassEffect3">Run AutoTOC on Mass Effect 3</system:String>
+    <system:String x:Key="string_runAutoTOCOnMassEffectLegendaryEdition">Run AutoTOC on Mass Effect (Legendary Edition)</system:String>
+    <system:String x:Key="string_runAutoTOCOnMassEffect2LegendaryEdition">Run AutoTOC on Mass Effect 2 (Legendary Edition)</system:String>
+    <system:String x:Key="string_runAutoTOCOnMassEffect3LegendaryEdition">Run AutoTOC on Mass Effect 3 (Legendary Edition)</system:String>
+    <system:String x:Key="string_syncPlotManager">Sync PlotManager</system:String>
+    <!-- This is menu item container. This synchronizes the PlotManager file with the DLC changes each mod can specify. PlotManager is a noun -->
+    <system:String x:Key="string_syncPlotManagerForMassEffect">Sync PlotManager for Mass Effect</system:String>
+    <system:String x:Key="string_tooltip_syncPlotManager">Synchronizes the plot manager updates located in DLC mods with the base plot manager file, which is used for story progression tracking</system:String>
+    <system:String x:Key="string_syncPlotManagerForMassEffect2LegendaryEdition">Sync PlotManager for Mass Effect 2 (Legendary Edition)</system:String>
+    <system:String x:Key="string_massEffectModderForLegendaryEdition">Mass Effect Modder (for Legendary Edition)</system:String>
+    <system:String x:Key="string_prereleaseNotice">This is a prerelease build of ME3Tweaks Mod Manager. Do not distribute mods from this build. There may be breaking changes that cause mods made for this build to not work on future builds.</system:String>
+    <system:String x:Key="string_failedToCompileCoalescedFile">Failed to compile coalesced file</system:String>
+    <system:String x:Key="string_interp_errorCompilingM3mModFileExMessage">Error compiling m3m mod file: {0}</system:String>
+    <!-- 0={Error message} -->
+    <system:String x:Key="string_interp_errorCompilingM3mModFileX">Error compiling m3m</system:String>
+    <system:String x:Key="string_interp_syncingPlotManagerForGame">Syncing Plot Manager for {0}</system:String>
+    <!-- 0={target.Game.ToGameName()} -->
+    <system:String x:Key="string_interp_syncedPlotManagerForGame">Synced Plot Manager for {0}</system:String>
+    <!-- 0={target.Game.ToGameName()} -->
+
+    <!-- Debug Menu -->
+    <system:String x:Key="string_testSquadmateMerge">Test squadmate merge</system:String>
+    <system:String x:Key="string_mMV1DEBUG">MMV1 DEBUG</system:String>
+    <system:String x:Key="string_buildMD5DB">Build MD5 DB</system:String>
+    <system:String x:Key="string_updateMD5DB">Update MD5 DB</system:String>
+    <system:String x:Key="string_testCode">Test code</system:String>
+    <system:String x:Key="string_test7z">Test 7z</system:String>
+    <system:String x:Key="string_originalTrilogy">Original Trilogy</system:String>
+    <system:String x:Key="string_legendaryEdition">Legendary Edition</system:String>
 
     <!-- Global Styles --> 
     <system:String x:Key="string_thisTargetHasBeenTextureModded">This target has been texture modded</system:String>
@@ -455,6 +487,10 @@
     <system:String xml:space="preserve" x:Key="string_tooltip_modinstaller_compressPackages">Compressing packages will reduce the amount of disk space required for most mods&#10;Compressing will increase the time it takes to install a mod</system:String>
     <system:String x:Key="string_interp_error_singleRequiredDlcMissing">{0} requires at least one of the following DLC to be installed:{1}</system:String>
     <!-- 0={ModBeingInstalled.ModName} 1={list of dlc names. It starts with a newline, so do not put space between : and bracket symbol} -->
+    <system:String x:Key="string_warningTexturesAreInstalled">Textures are installed and this mod installs or modifies package files. You can continue to install this mod, but new files will not have the updated textures that were previously installed. You will need to reapply texture mods after installation if you want their changes to apply to packages from this mod.</system:String>
+    <system:String x:Key="string_warningTextureModsAreInstalled">Warning: Texture mods are installed</system:String>
+    <system:String x:Key="string_interp_errorApplyingMergeModXY">An error occurred applying merge mod {0}: {1}.</system:String>
+    <!-- 0={mergeMod.MergeModFilename} 1={ex.Message} -->
 
     <!-- Welcome panel -->
     <system:String x:Key="string_previewPanelTitle">Welcome to ME3Tweaks Mod Manager</system:String>
@@ -1183,6 +1219,9 @@
     <system:String x:Key="string_interp_unsupportedME1Version">Unsupported executable version: {0}. The only supported version of MassEffect.exe is 1.2.20608.0</system:String>
     <system:String x:Key="string_interp_unsupportedME2Version">Unsupported executable version: {0}. The only supported version of MassEffect2.exe is 1.2.1604.0</system:String>
     <system:String x:Key="string_interp_unsupportedME3Version">Unsupported executable version: {0}. The only supported version of MassEffect3.exe is 1.5.5427.124</system:String>
+    <system:String x:Key="string_binkw32ASILoader">Binkw32 ASI Loader</system:String>
+    <system:String x:Key="string_binkw32ASIBypass">Binkw32 ASI Bypass</system:String>
+    <system:String x:Key="string_bink2w64ASILoader">Bink2w64 ASI Loader</system:String>
 
     <!-- ModJob -->
     <system:String x:Key="string_interp_validation_modjob_replacementFileSpecifiedByJobDoesntExist">Failed to add replacement file to mod job: {0} does not exist but is specified by the job.</system:String>
@@ -2041,5 +2080,20 @@
     <!-- Plot Manager Panel -->
     <system:String x:Key="string_syncingPlotManager">Syncing Plot Manager</system:String>
     <!-- Message that comes up telling user what's happening. Plot Manager is something M3 keeps up to date (as mods override and/or add plot flags) and is used to track plot events -->
-    
+    <system:String x:Key="string_interp_plotManagerSyncForX">PlotManager sync for {0}</system:String>
+    <!-- 0={comma separated list of mod names} -->
+    <system:String xml:space="preserve" x:Key="string_interp_errorCompilingFunctionReason">Error compiling function {0}: {1}</system:String>
+    <!-- 0={export name} 1={list of log messages} -->
+
+    <!-- Merge Mods (V1) -->
+    <system:String x:Key="string_mergeModFileDoesNotHaveCorrectMagicHeader">Merge mod file does not have correct magic header</system:String>
+    <system:String x:Key="string_interp_unsupportedMergeModVersionVersionX">Unsupported Merge Mod Version: {0}</system:String>
+    <!-- 0={version} -->
+    <system:String xml:space="preserve" x:Key="string_interp_invalidMergeModManifestReason">Invalid merge mod manifest:\n{0}</system:String>
+    <!-- 0={reason merge manifest was invalid (schema text)} -->
+    <system:String x:Key="string_filenameCannotBeNullInAMergeManifestFile">'filename' cannot be null in a merge manifest file!</system:String>
+    <system:String x:Key="string_interp_targetingNonStartupFile">Cannot merge into non-startup file at this time: {0}</system:String>
+    <!-- 0={FileName} -->
+
+
 </ResourceDictionary>

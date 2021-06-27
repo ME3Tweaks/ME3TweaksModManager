@@ -1811,7 +1811,7 @@ namespace MassEffectModManagerCore
         private void ModManager_ContentRendered(object sender, EventArgs e)
         {
 #if PRERELEASE
-            MessageBox.Show("This is a prerelease build of ME3Tweaks Mod Manager. Do not distribute mods from this build. There may be breaking changes that cause mods made for this build to not work on future builds.");
+            MessageBox.Show(M3L.GetString(M3L.string_prereleaseNotice));
 #endif
             if (App.BootingUpdate)
             {
@@ -1851,34 +1851,34 @@ namespace MassEffectModManagerCore
                 #region INIT CORE LIB
                 MEPackageHandler.GlobalSharedCacheEnabled = false; // Do not use the package caching system
                 LegendaryExplorerCoreLib.InitLib(syncContext, x =>
-{
-    Log.Error($@"Error saving package: {x}");
-});
+                {
+                    Log.Error($@"Error saving package: {x}");
+                });
                 T2DLocalizationShim.SetupTexture2DLocalizationShim();
                 #endregion
                 //debugMethod();
                 CurrentOperationText = M3L.GetString(M3L.string_loadingTargets);
                 PopulateTargets();
             }).ContinueWithOnUIThread(x =>
-        {
-            IsEnabled = true;
-            if (!Settings.ShowedPreviewPanel)
             {
-                ShowPreviewPanel();
-            }
-            else
-            {
-                LoadMods();
-            }
+                IsEnabled = true;
+                if (!Settings.ShowedPreviewPanel)
+                {
+                    ShowPreviewPanel();
+                }
+                else
+                {
+                    LoadMods();
+                }
 
-            PerformStartupNetworkFetches(true);
-            if (BackupNagSystem.ShouldShowNagScreen(InstallationTargets.ToList()))
-            {
-                ShowBackupNag();
-            }
-            collectHardwareInfo();
-            StartedUp = true;
-        });
+                PerformStartupNetworkFetches(true);
+                if (BackupNagSystem.ShouldShowNagScreen(InstallationTargets.ToList()))
+                {
+                    ShowBackupNag();
+                }
+                collectHardwareInfo();
+                StartedUp = true;
+            });
 
         }
 
@@ -3294,7 +3294,7 @@ namespace MassEffectModManagerCore
                                     Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                                 }
 
-                                task.finishedUiText = "Failed to compile coalesced file";
+                                task.finishedUiText = M3L.GetString(M3L.string_failedToCompileCoalescedFile);
                                 backgroundTaskEngine.SubmitJobCompletion(task);
                             };
                             nbw.RunWorkerAsync();
@@ -3527,7 +3527,7 @@ namespace MassEffectModManagerCore
                         catch (Exception ex)
                         {
                             Log.Error($@"Error compiling m3m mod file: {ex.Message}");
-                            M3L.ShowDialog(this, $"Error compiling m3m mod file: {ex.Message}", "Error compiling m3m", MessageBoxButton.OK, MessageBoxImage.Error);
+                            M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_errorCompilingM3mModFileX, ex.Message), M3L.GetString(M3L.string_interp_errorCompilingM3mModFileX), MessageBoxButton.OK, MessageBoxImage.Error);
                         }
                         break;
                     case @".m3m":
@@ -3538,7 +3538,7 @@ namespace MassEffectModManagerCore
                         catch (Exception ex)
                         {
                             Log.Error($@"Error decompiling m3m mod file: {ex.Message}");
-                            M3L.ShowDialog(this, $"Error compiling m3m mod file: {ex.Message}", "Error compiling m3m", MessageBoxButton.OK, MessageBoxImage.Error);
+                            M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_errorCompilingM3mModFileX, ex.Message), M3L.GetString(M3L.string_interp_errorCompilingM3mModFileX), MessageBoxButton.OK, MessageBoxImage.Error);
                         }
 
                         break;
@@ -3624,8 +3624,8 @@ namespace MassEffectModManagerCore
         private void SyncPlotManagerForTarget(GameTarget target)
         {
             var task = backgroundTaskEngine.SubmitBackgroundJob(@"SyncPlotManager",
-                $"Syncing Plot Manager for {target.Game.ToGameName()}",
-                $"Synced Plot Manager for {target.Game.ToGameName()}");
+                M3L.GetString(M3L.string_interp_syncingPlotManagerForGame, target.Game.ToGameName()),
+                M3L.GetString(M3L.string_interp_syncedPlotManagerForGame, target.Game.ToGameName()));
             var pmuUI = new PlotManagerUpdatePanel(target);
             pmuUI.Close += (a, b) =>
             {

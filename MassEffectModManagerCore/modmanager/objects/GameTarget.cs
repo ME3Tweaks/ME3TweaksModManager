@@ -44,9 +44,9 @@ namespace MassEffectModManagerCore.modmanager.objects
         {
             get
             {
-                if (Game == MEGame.ME1) return "Binkw32 ASI Loader";
-                if (Game is MEGame.ME2 or MEGame.ME3) return "Binkw32 ASI Bypass";
-                if (Game.IsLEGame()) return "Bink2w64 ASI Loader";
+                if (Game == MEGame.ME1) return M3L.GetString(M3L.string_binkw32ASILoader);
+                if (Game is MEGame.ME2 or MEGame.ME3) return M3L.GetString(M3L.string_binkw32ASIBypass);
+                if (Game.IsLEGame()) return M3L.GetString(M3L.string_bink2w64ASILoader);
                 return $@"UNKNOWN GAME FOR ASI LOADER: {Game}";
             }
         }
@@ -385,7 +385,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             List<string> modifiedFiles = new List<string>();
             void failedCallback(string file)
             {
-                if (Game == MEGame.ME3 && Path.GetExtension(file).Equals(".sfar", StringComparison.InvariantCultureIgnoreCase))
+                if (Game == MEGame.ME3 && Path.GetExtension(file).Equals(@".sfar", StringComparison.InvariantCultureIgnoreCase))
                 {
                     modifiedSfars.Add(file);
                     return;

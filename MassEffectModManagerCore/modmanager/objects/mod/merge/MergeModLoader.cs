@@ -5,18 +5,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LegendaryExplorerCore.Helpers;
+using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects.mod.merge.v1;
 
 namespace MassEffectModManagerCore.modmanager.objects.mod.merge
 {
     public class MergeModLoader
     {
-        private const string MERGEMOD_MAGIC = "M3MM";
+        private const string MERGEMOD_MAGIC = @"M3MM";
         public static IMergeMod LoadMergeMod(Stream mergeFileStream, string filename, bool loadAssets)
         {
             if (mergeFileStream.ReadStringASCII(4) != MERGEMOD_MAGIC)
             {
-                throw new Exception("Merge mod file does not have correct magic header");
+                throw new Exception(M3L.GetString(M3L.string_mergeModFileDoesNotHaveCorrectMagicHeader));
             }
 
             var version = mergeFileStream.ReadByte();
@@ -43,13 +44,13 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge
                     messages = MergeMod1.Serialize(fs, inputfile);
                     break;
                 default:
-                    throw new Exception($"Unsupported Merge Mod Version: {version}");
+                    throw new Exception(M3L.GetString(M3L.string_interp_unsupportedMergeModVersionVersionX, version));
             }
 
             if (messages != null)
             {
                 // Will be caught higher up
-                throw new Exception($"Invalid manifest:\n{string.Join('\n', messages)}");
+                throw new Exception(M3L.GetString(M3L.string_interp_invalidMergeModManifestReason, string.Join('\n', messages)));
             }
 
             fs.WriteToFile(outfile);

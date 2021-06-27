@@ -17,13 +17,13 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge
         /// <summary>
         /// Filename of the asset. Only used during serialization and for logging errors
         /// </summary>
-        [JsonProperty("filename")]
+        [JsonProperty(@"filename")]
         public string FileName { get; set; }
 
         /// <summary>
         /// Size of the asset
         /// </summary>
-        [JsonProperty("filesize")] 
+        [JsonProperty(@"filesize")] 
         public int FileSize { get; set; }
 
         /// <summary>
