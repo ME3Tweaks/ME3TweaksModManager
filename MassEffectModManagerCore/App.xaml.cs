@@ -427,7 +427,7 @@ namespace MassEffectModManagerCore
 
         public static bool IsRunningOnAMD;
 
-        public static string[] SupportedLanguages = { @"int", @"pol", @"rus", @"deu", @"fra", @"bra", @"esn" };
+        public static string[] SupportedLanguages = { @"int", @"pol", @"rus", @"deu", @"fra", @"bra", @"esn", @"kor" };
 
         public static int BuildNumber = Assembly.GetEntryAssembly().GetName().Version.Revision;
 
