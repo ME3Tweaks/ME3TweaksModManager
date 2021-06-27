@@ -17,6 +17,7 @@ using LegendaryExplorerCore.UnrealScript;
 using LegendaryExplorerCore.UnrealScript.Compiling.Errors;
 using MassEffectModManagerCore.modmanager.gameini;
 using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.usercontrols;
 using MassEffectModManagerCore.modmanager.windows;
@@ -36,10 +37,10 @@ namespace MassEffectModManagerCore.modmanager.squadmates
 
         internal class SquadmateMergeInfo
         {
-            [JsonProperty("game")]
+            [JsonProperty(@"game")]
             public MEGame Game { get; set; }
 
-            [JsonProperty("outfits")]
+            [JsonProperty(@"outfits")]
             public List<SquadmateInfoSingle> Outfits { get; set; }
 
             public bool Validate(GameTarget target, CaseInsensitiveDictionary<string> loadedFiles)
@@ -52,28 +53,28 @@ namespace MassEffectModManagerCore.modmanager.squadmates
 
         public class SquadmateInfoSingle
         {
-            [JsonProperty("henchname")]
+            [JsonProperty(@"henchname")]
             public string HenchName { get; set; }
 
-            [JsonProperty("henchpackage")]
+            [JsonProperty(@"henchpackage")]
             public string HenchPackage { get; set; }
 
-            [JsonProperty("highlightimage")]
+            [JsonProperty(@"highlightimage")]
             public string HighlightImage { get; set; }
 
-            [JsonProperty("availableimage")]
+            [JsonProperty(@"availableimage")]
             public string AvailableImage { get; set; }
 
-            [JsonProperty("deadimage")]
+            [JsonProperty(@"deadimage")]
             public string DeadImage { get; set; }
 
-            [JsonProperty("silhouetteimage")]
+            [JsonProperty(@"silhouetteimage")]
             public string SilhouetteImage { get; set; }
 
-            [JsonProperty("descriptiontext0")]
+            [JsonProperty(@"descriptiontext0")]
             public int DescriptionText0 { get; set; }
 
-            [JsonProperty("customtoken0")]
+            [JsonProperty(@"customtoken0")]
             public int CustomToken0 { get; set; }
 
             /// <summary>
@@ -166,7 +167,7 @@ namespace MassEffectModManagerCore.modmanager.squadmates
                 }
             }
 
-            throw new Exception($"Invalid hench name: {squadmateName}. Value are case sensitive.");
+            throw new Exception(M3L.GetString(M3L.string_interp_invalidHenchNameSquadmateNameValueIsCaseSensitive, squadmateName));
         }
 
         public void BuildBioPGlobal(GameTarget target)
@@ -351,7 +352,7 @@ namespace MassEffectModManagerCore.modmanager.squadmates
                                 }
 
                                 // Is this right? [0]?
-                                throw new Exception($"Error compiling function {func}: {log.AllErrors[0].Message}");
+                                throw new Exception(M3L.GetString(M3L.string_interp_errorCompilingConditionalFunction, func, string.Join('\n', log.AllErrors.Select(x => x.Message))));
                             }
                         }
                     }
@@ -414,11 +415,11 @@ namespace MassEffectModManagerCore.modmanager.squadmates
                     {
                         foreach (var outfit in sqm)
                         {
-                            /*
-                             * <Section name="sfxgame.sfxengine">
-      <Property name="dynamicloadmapping">
-        <Value type="3">(ObjectName="BIOG_GesturesConfigDLC.RuntimeData",SeekFreePackageName="GesturesConfigDLC")</Value>
-                             */
+                            //
+                            // * <Section name="sfxgame.sfxengine">
+                            // <Property name="dynamicloadmapping">
+                            // <Value type="3">(ObjectName="BIOG_GesturesConfigDLC.RuntimeData",SeekFreePackageName="GesturesConfigDLC")</Value>
+
                             var entry = new Game3CoalescedValueEntry()
                             {
                                 Section = @"sfxgame.sfxengine",

@@ -1158,7 +1158,6 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_interp_validation_modparsing_mergeModNotFound = "string_interp_validation_modparsing_mergeModNotFound";
 		public const string string_validation_modparsing_customdlcDotDotFound = "string_validation_modparsing_customdlcDotDotFound";
 		public const string string_interp_validation_modparsing_modInstallsBlacklistedDestFile = "string_interp_validation_modparsing_modInstallsBlacklistedDestFile";
-		public const string string_interp_validation_modparsing_validation_modparsing_theLELAUNCHERHeaderOnlySupportsTheFollowingFileExtensionsStringJoin = "string_interp_validation_modparsing_validation_modparsing_theLELAUNCHERHeaderOnlySupportsTheFollowingFileExtensionsStringJoin";
 		public const string string_interp_validation_modparsing_tlkMergeNoTlkXmlFound = "string_interp_validation_modparsing_tlkMergeNoTlkXmlFound";
 		public const string string_interp_validation_modparsing_tlkMergeInvalidTlkXmlFilenames = "string_interp_validation_modparsing_tlkMergeInvalidTlkXmlFilenames";
 		public const string string_validation_modparsing_foundDisallowedLauncherFileType = "string_validation_modparsing_foundDisallowedLauncherFileType";
@@ -1699,5 +1698,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_description_logging = "string_description_logging";
 		public const string string_applicationTheme = "string_applicationTheme";
 		public const string string_noItemsSelected = "string_noItemsSelected";
+		public const string string_interp_invalidHenchNameSquadmateNameValueIsCaseSensitive = "string_interp_invalidHenchNameSquadmateNameValueIsCaseSensitive";
+		public const string string_interp_errorCompilingConditionalFunction = "string_interp_errorCompilingConditionalFunction";
 	}
 }

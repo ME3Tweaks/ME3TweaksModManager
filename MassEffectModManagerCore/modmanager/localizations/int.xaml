@@ -2164,4 +2164,10 @@
     <!-- Check Box Combo Box Control -->
     <system:String x:Key="string_noItemsSelected">No items selected</system:String>
 
+    <!-- Squadmate Merge -->
+    <system:String x:Key="string_interp_invalidHenchNameSquadmateNameValueIsCaseSensitive">Invalid hench name: {0}. Value is case sensitive.</system:String>
+    <!-- 0={Squadmate hench name (Marine, Tali, etc)} -->
+    <system:String x:Key="string_interp_errorCompilingConditionalFunction">Error compiling conditional function {0}: {1}</system:String>
+    <!-- 0={Entry full name} 1={error messages}-->
+
 </ResourceDictionary>
