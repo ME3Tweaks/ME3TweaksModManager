@@ -11,7 +11,7 @@ namespace LocalizationHelper
     [AddINotifyPropertyChangedInterface]
     public class LocalizationLanguage
     {
-        public string ShortName { get; init; }
+        public string LangCode { get; init; }
         public string FullName { get; init; }
         public bool Selected { get; set; }
         public bool AlwaysSelected { get; set; }

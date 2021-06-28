@@ -88,9 +88,9 @@
                           AutoGenerateColumns="False" CanUserAddRows="false"
                           SelectedItem="{Binding SelectedDataGridItem}">
                         <DataGrid.Resources>
-                            <DataTemplate x:Key="LocTextEditorTemplate" >
-                                <TextBox Width="200" TextWrapping="Wrap" Text="{Binding LocalizedStr}"/>
-                            </DataTemplate>
+                            <!--<DataTemplate x:Key="LocTextEditorTemplate" >
+                                <TextBox Width="200" TextWrapping="Wrap" Text="Poop{Binding LocalizedStr}"/>
+                            </DataTemplate>-->
                             <Style TargetType="{x:Type DataGridCell}">
                                 <Style.Triggers>
                                     <Trigger Property="IsSelected" Value="True">
@@ -137,8 +137,8 @@
                                 <DataGridTextColumn.EditingElementStyle>
                                     <Style TargetType="TextBox">
                                         <Setter Property="TextWrapping" Value="Wrap" />
-                                        <Setter Property="AcceptsReturn" Value="true" />
-                                    </Style>
+                                        <Setter Property="AcceptsReturn" Value="False" />
+                                    </Style>    
                                 </DataGridTextColumn.EditingElementStyle>
                             </DataGridTextColumn>
                         </DataGrid.Columns>
@@ -155,7 +155,7 @@
                     </Grid.RowDefinitions>
                     <DataGrid Grid.Row="1" Grid.Column="2" ItemsSource="{Binding LocalizedTips}" AutoGenerateColumns="False" AlternatingRowBackground="BlanchedAlmond" AlternationCount="2" CanUserAddRows="false">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="English" Binding="{Binding INT}" MaxWidth="250" IsReadOnly="True">
+                            <DataGridTextColumn Header="English" Binding="{Binding EnglishString}" MaxWidth="250" IsReadOnly="True">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="{x:Type TextBlock}">
                                         <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
@@ -163,7 +163,7 @@
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
-                            <DataGridTextColumn Header="{Binding CurrentLanguage.FullName}" Binding="{Binding DEU}" MaxWidth="250" Visibility="{Binding DataContext.ShowGerman, Source={x:Reference DataContextReference}, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <DataGridTextColumn Header="Localized" Binding="{Binding LocalizedStr}" MaxWidth="250" Visibility="{Binding DataContext.ShowGerman, Source={x:Reference DataContextReference}, Converter={StaticResource BoolToVisibilityConverter}}">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
@@ -173,7 +173,7 @@
                                 <DataGridTextColumn.EditingElementStyle>
                                     <Style TargetType="TextBox">
                                         <Setter Property="TextWrapping" Value="Wrap" />
-                                        <Setter Property="AcceptsReturn" Value="true" />
+                                        <Setter Property="AcceptsReturn" Value="false" />
                                     </Style>
                                 </DataGridTextColumn.EditingElementStyle>
                             </DataGridTextColumn>
@@ -217,7 +217,7 @@
                     </Grid.RowDefinitions>
                     <DataGrid Grid.Row="1" Grid.Column="2" ItemsSource="{Binding LocalizedTutorialService}" AutoGenerateColumns="False" AlternatingRowBackground="BlanchedAlmond" AlternationCount="2" CanUserAddRows="false">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="English" Binding="{Binding INT}" MaxWidth="250" IsReadOnly="True">
+                            <DataGridTextColumn Header="English" Binding="{Binding EnglishString}" MaxWidth="250" IsReadOnly="True">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="{x:Type TextBlock}">
                                         <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
@@ -225,77 +225,7 @@
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
-                            <DataGridTextColumn Header="German" Binding="{Binding DEU}" MaxWidth="250" Visibility="{Binding DataContext.ShowGerman, Source={x:Reference DataContextReference}, Converter={StaticResource BoolToVisibilityConverter}}">
-                                <DataGridTextColumn.ElementStyle>
-                                    <Style TargetType="TextBlock">
-                                        <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
-                                        <Setter Property="TextBlock.TextAlignment" Value="Left"/>
-                                    </Style>
-                                </DataGridTextColumn.ElementStyle>
-                                <DataGridTextColumn.EditingElementStyle>
-                                    <Style TargetType="TextBox">
-                                        <Setter Property="TextWrapping" Value="Wrap" />
-                                        <Setter Property="AcceptsReturn" Value="true" />
-                                    </Style>
-                                </DataGridTextColumn.EditingElementStyle>
-                            </DataGridTextColumn>
-                            <DataGridTextColumn Header="Russian" Binding="{Binding RUS}" MaxWidth="250" Visibility="{Binding DataContext.ShowRussian, Source={x:Reference DataContextReference}, Converter={StaticResource BoolToVisibilityConverter}}">
-                                <DataGridTextColumn.ElementStyle>
-                                    <Style TargetType="TextBlock">
-                                        <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
-                                        <Setter Property="TextBlock.TextAlignment" Value="Left"/>
-                                    </Style>
-                                </DataGridTextColumn.ElementStyle>
-                                <DataGridTextColumn.EditingElementStyle>
-                                    <Style TargetType="TextBox">
-                                        <Setter Property="TextWrapping" Value="Wrap" />
-                                        <Setter Property="AcceptsReturn" Value="true" />
-                                    </Style>
-                                </DataGridTextColumn.EditingElementStyle>
-                            </DataGridTextColumn>
-                            <DataGridTextColumn Header="Polish" Binding="{Binding POL}" MaxWidth="250" Visibility="{Binding DataContext.ShowPolish, Source={x:Reference DataContextReference}, Converter={StaticResource BoolToVisibilityConverter}}">
-                                <DataGridTextColumn.ElementStyle>
-                                    <Style TargetType="TextBlock">
-                                        <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
-                                        <Setter Property="TextBlock.TextAlignment" Value="Left"/>
-                                    </Style>
-                                </DataGridTextColumn.ElementStyle>
-                                <DataGridTextColumn.EditingElementStyle>
-                                    <Style TargetType="TextBox">
-                                        <Setter Property="TextWrapping" Value="Wrap" />
-                                        <Setter Property="AcceptsReturn" Value="true" />
-                                    </Style>
-                                </DataGridTextColumn.EditingElementStyle>
-                            </DataGridTextColumn>
-                            <DataGridTextColumn Header="French" Binding="{Binding FRA}" MaxWidth="250" Visibility="{Binding DataContext.ShowFrench, Source={x:Reference DataContextReference}, Converter={StaticResource BoolToVisibilityConverter}}">
-                                <DataGridTextColumn.ElementStyle>
-                                    <Style TargetType="TextBlock">
-                                        <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
-                                        <Setter Property="TextBlock.TextAlignment" Value="Left"/>
-                                    </Style>
-                                </DataGridTextColumn.ElementStyle>
-                                <DataGridTextColumn.EditingElementStyle>
-                                    <Style TargetType="TextBox">
-                                        <Setter Property="TextWrapping" Value="Wrap" />
-                                        <Setter Property="AcceptsReturn" Value="true" />
-                                    </Style>
-                                </DataGridTextColumn.EditingElementStyle>
-                            </DataGridTextColumn>
-                            <DataGridTextColumn Header="Spanish" Binding="{Binding ESN}" MaxWidth="250" Visibility="{Binding DataContext.ShowSpanish, Source={x:Reference DataContextReference}, Converter={StaticResource BoolToVisibilityConverter}}">
-                                <DataGridTextColumn.ElementStyle>
-                                    <Style TargetType="TextBlock">
-                                        <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
-                                        <Setter Property="TextBlock.TextAlignment" Value="Left"/>
-                                    </Style>
-                                </DataGridTextColumn.ElementStyle>
-                                <DataGridTextColumn.EditingElementStyle>
-                                    <Style TargetType="TextBox">
-                                        <Setter Property="TextWrapping" Value="Wrap" />
-                                        <Setter Property="AcceptsReturn" Value="true" />
-                                    </Style>
-                                </DataGridTextColumn.EditingElementStyle>
-                            </DataGridTextColumn>
-                            <DataGridTextColumn Header="Portuguese" Binding="{Binding BRA}" MaxWidth="250" Visibility="{Binding DataContext.ShowPortuguese, Source={x:Reference DataContextReference}, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <DataGridTextColumn Header="Localized" Binding="{Binding LocalizedStr}" MaxWidth="250" Visibility="{Binding DataContext.ShowGerman, Source={x:Reference DataContextReference}, Converter={StaticResource BoolToVisibilityConverter}}">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
