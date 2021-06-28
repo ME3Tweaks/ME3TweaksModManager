@@ -27,27 +27,34 @@ namespace LocalizationHelper
     public partial class LocalizationTablesUI : Window, INotifyPropertyChanged
     {
         public Visibility LoadingVisibility { get; set; } = Visibility.Visible;
+        private string[] FullySupportedLangs = { "deu", "rus", "pol", "bra" };
+
         public LocalizationTablesUI()
         {
             Title = $"ME3Tweaks Mod Manager Localizer {Assembly.GetExecutingAssembly().GetName().Version}";
             LoadCommands();
             InitializeComponent();
 
+            // Load official languages
+            Languages.Add(new LocalizationLanguage() { Selected = true, AlwaysSelected = true, ShortName = "int", FullName = "English" });
+            Languages.Add(new LocalizationLanguage() { Selected = false, ShortName = "deu", FullName = "German" });
+            Languages.Add(new LocalizationLanguage() { Selected = false, ShortName = "rus", FullName = "Russian" });
+            Languages.Add(new LocalizationLanguage() { Selected = false, ShortName = "pol", FullName = "Polish" });
+            Languages.Add(new LocalizationLanguage() { Selected = false, ShortName = "esn", FullName = "Spanish" });
+            Languages.Add(new LocalizationLanguage() { Selected = false, ShortName = "bra", FullName = "Portugeuse (Brazilian)" });
+
             //Load localizations
             LoadLocalizations();
         }
+
+        public LocalizationLanguage CurrentLanguage { get; set; }
+        public ObservableCollectionExtended<LocalizationLanguage> Languages { get; } = new();
 
         public void AutoSave(object sender, EventArgs eventArgs)
         {
             try
             {
-                string lang = null;
-                if (ShowGerman) lang = "deu";
-                if (ShowRussian) lang = "rus";
-                if (ShowPolish) lang = "pol";
-                if (ShowFrench) lang = "fra";
-                if (ShowSpanish) lang = "esn";
-                if (ShowPortuguese) lang = "bra";
+                string lang = CurrentLanguage?.ShortName;
 
                 if (lang == null) return; // Do nothing
                 var sb = CreateXamlDocument();
@@ -74,12 +81,12 @@ namespace LocalizationHelper
 
 
         public string PleaseWaitString { get; set; } = "Please wait, starting up";
-        public bool ShowGerman { get; set; }
-        public bool ShowRussian { get; set; }
-        public bool ShowPolish { get; set; }
-        public bool ShowFrench { get; set; }
-        public bool ShowSpanish { get; set; }
-        public bool ShowPortuguese { get; set; }
+        //public bool ShowGerman { get; set; }
+        //public bool ShowRussian { get; set; }
+        //public bool ShowPolish { get; set; }
+        //public bool ShowFrench { get; set; }
+        //public bool ShowSpanish { get; set; }
+        //public bool ShowPortuguese { get; set; }
         public ObservableCollectionExtended<string> LocalizationBranches { get; } = new ObservableCollectionExtended<string>();
         public ObservableCollectionExtended<LocalizedString> LocalizedTips { get; } = new ObservableCollectionExtended<LocalizedString>();
         public ObservableCollectionExtended<LocalizedString> LocalizedTutorialService { get; } = new ObservableCollectionExtended<LocalizedString>();
@@ -519,13 +526,7 @@ namespace LocalizationHelper
 
         private void SaveLocalizedHelpMenu()
         {
-            string lang = null;
-            if (ShowGerman) lang = "deu";
-            if (ShowRussian) lang = "rus";
-            if (ShowPolish) lang = "pol";
-            if (ShowFrench) lang = "fra";
-            if (ShowSpanish) lang = "esn";
-            if (ShowPortuguese) lang = "bra";
+            string lang = CurrentLanguage?.ShortName;
 
             XDocument doc = new XDocument();
             var localizations = new XElement("localizations");
@@ -566,13 +567,7 @@ namespace LocalizationHelper
 
         private void LoadLocalizedHelpMenu()
         {
-            string lang = null;
-            if (ShowGerman) lang = "deu";
-            if (ShowRussian) lang = "rus";
-            if (ShowPolish) lang = "pol";
-            if (ShowFrench) lang = "fra";
-            if (ShowSpanish) lang = "esn";
-            if (ShowPortuguese) lang = "bra";
+            string lang = CurrentLanguage?.ShortName;
             localizedEditor.Text = "";
             if (dynamicHelpLocalizations.TryGetValue(lang, out var text))
             {
@@ -582,13 +577,7 @@ namespace LocalizationHelper
 
         private void SaveTutorialLocalization()
         {
-            string lang = null;
-            if (ShowGerman) lang = "deu";
-            if (ShowRussian) lang = "rus";
-            if (ShowPolish) lang = "pol";
-            if (ShowFrench) lang = "fra";
-            if (ShowSpanish) lang = "esn";
-            if (ShowPortuguese) lang = "bra";
+            string lang = CurrentLanguage?.ShortName;
 
             SaveFileDialog saveFileDialog = new SaveFileDialog()
             {
@@ -614,13 +603,7 @@ namespace LocalizationHelper
 
         private void SaveTipsLocalization()
         {
-            string lang = null;
-            if (ShowGerman) lang = "deu";
-            if (ShowRussian) lang = "rus";
-            if (ShowPolish) lang = "pol";
-            if (ShowFrench) lang = "fra";
-            if (ShowSpanish) lang = "esn";
-            if (ShowPortuguese) lang = "bra";
+            string lang = CurrentLanguage?.ShortName;
 
             SaveFileDialog saveFileDialog = new SaveFileDialog()
             {
@@ -645,13 +628,7 @@ namespace LocalizationHelper
 
         private void CopyLocalization()
         {
-            string lang = null;
-            if (ShowGerman) lang = "deu";
-            if (ShowRussian) lang = "rus";
-            if (ShowPolish) lang = "pol";
-            if (ShowFrench) lang = "fra";
-            if (ShowSpanish) lang = "esn";
-            if (ShowPortuguese) lang = "bra";
+            string lang = CurrentLanguage?.ShortName;
 
             var sb = CreateXamlDocument();
             Clipboard.SetText(sb);
@@ -715,27 +692,12 @@ namespace LocalizationHelper
         private bool CanSaveLocalization()
         {
             if (!LocalizationCategories.Any()) return false;
-            int numChecked = 0;
-            if (ShowGerman) numChecked++;
-            if (ShowRussian) numChecked++;
-            if (ShowPolish) numChecked++;
-            if (ShowFrench) numChecked++;
-            if (ShowSpanish) numChecked++;
-            if (ShowPortuguese) numChecked++;
-            if (numChecked == 1) return true;
-            return false;
+            return true;
         }
 
-        private string[] FullySupportLangs = { "deu", "rus", "pol", "bra" };
         private string CreateXamlDocument()
         {
-            string lang = null;
-            if (ShowGerman) lang = "deu";
-            if (ShowRussian) lang = "rus";
-            if (ShowPolish) lang = "pol";
-            if (ShowFrench) lang = "fra";
-            if (ShowSpanish) lang = "esn";
-            if (ShowPortuguese) lang = "bra";
+            string lang = CurrentLanguage?.ShortName;
 
             // Check interpolations
             foreach (var cat in LocalizationCategories)
@@ -752,7 +714,7 @@ namespace LocalizationHelper
                         }
                     }
 #if DEBUG
-                    else if (FullySupportLangs.Contains(lang) && lstr == null)
+                    else if (FullySupportedLangs.Contains(lang) && lstr == null)
                     {
                         Debug.WriteLine($"{lang} is missing string {str.key}");
                     }
@@ -847,13 +809,7 @@ namespace LocalizationHelper
 
         private void SaveLocalization()
         {
-            string lang = null;
-            if (ShowGerman) lang = "deu";
-            if (ShowRussian) lang = "rus";
-            if (ShowPolish) lang = "pol";
-            if (ShowFrench) lang = "fra";
-            if (ShowSpanish) lang = "esn";
-            if (ShowPortuguese) lang = "bra";
+            string lang = CurrentLanguage?.ShortName;
 
             var sb = CreateXamlDocument();
 
@@ -931,7 +887,7 @@ namespace LocalizationHelper
             public event PropertyChangedEventHandler PropertyChanged;
 #pragma warning restore
         }
-        
+
 #pragma warning disable
         public event PropertyChangedEventHandler PropertyChanged;
 #pragma warning restore
@@ -986,58 +942,8 @@ namespace LocalizationHelper
                         break;
                     }
 
-                    //German
-                    if (ShowGerman && ls.DEU != null && ls.DEU.Contains(searchTerm, StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        //found
-                        found = true;
-                        itemToHighlight = ls;
-                        catToHighlight = cat;
-                        break;
-                    }
-
-                    //Russian
-                    if (ShowRussian && ls.RUS != null && ls.RUS.Contains(searchTerm, StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        //found
-                        found = true;
-                        itemToHighlight = ls;
-                        catToHighlight = cat;
-                        break;
-                    }
-
-                    //Polish
-                    if (ShowPolish && ls.POL != null && ls.POL.Contains(searchTerm, StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        //found
-                        found = true;
-                        itemToHighlight = ls;
-                        catToHighlight = cat;
-                        break;
-                    }
-
-                    //French
-                    if (ShowFrench && ls.FRA != null && ls.FRA.Contains(searchTerm, StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        //found
-                        found = true;
-                        itemToHighlight = ls;
-                        catToHighlight = cat;
-                        break;
-                    }
-
-                    //Spanish
-                    if (ShowSpanish && ls.ESN != null && ls.ESN.Contains(searchTerm, StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        //found
-                        found = true;
-                        itemToHighlight = ls;
-                        catToHighlight = cat;
-                        break;
-                    }
-
-                    //Spanish
-                    if (ShowPortuguese && ls.BRA != null && ls.BRA.Contains(searchTerm, StringComparison.InvariantCultureIgnoreCase))
+                    //Lang
+                    if (CurrentLanguage.Contains(ls, searchTerm))
                     {
                         //found
                         found = true;
