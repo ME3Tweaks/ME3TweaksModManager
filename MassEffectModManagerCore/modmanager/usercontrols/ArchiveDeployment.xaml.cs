@@ -132,7 +132,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     ValidationFunction = ManualValidation
 
                 });
-                if (mod.Game == MEGame.ME3)
+                if (mod.Game == MEGame.ME3) // SFAR Ceeck (ME3 only)
                 {
                     DeploymentChecklistItems.Add(new DeploymentChecklistItem()
                     {
@@ -171,7 +171,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     ValidationFunction = CheckReferences
                 });
 
-                if (mod.Game >= MEGame.ME2)
+                if (mod.Game.IsGame2() || mod.Game.IsGame3())
                 {
                     DeploymentChecklistItems.Add(new DeploymentChecklistItem()
                     {
@@ -330,14 +330,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 var customDLCJob = ModBeingDeployed.GetJob(ModJob.JobHeader.CUSTOMDLC);
                 var customDLCFolders = customDLCJob.CustomDLCFolderMapping.Keys.ToList();
                 customDLCFolders.AddRange(customDLCJob.AlternateDLCs.Where(x => x.Operation == AlternateDLC.AltDLCOperation.OP_ADD_CUSTOMDLC).Select(x => x.AlternateDLCFolder));
-                var languages = ModBeingDeployed.Game == MEGame.ME2 ? StarterKitGeneratorWindow.me2languages : StarterKitGeneratorWindow.me3languages;
+                var languages = ModBeingDeployed.Game.IsGame2() ? StarterKitGeneratorWindow.me2languages : StarterKitGeneratorWindow.me3languages;
                 obj.ItemText = M3L.GetString(M3L.string_languageCheckInProgress);
                 foreach (var customDLC in customDLCFolders)
                 {
                     if (CheckCancelled) return;
-                    if (ModBeingDeployed.Game >= MEGame.ME2)
+                    if (ModBeingDeployed.Game.IsGame2() || ModBeingDeployed.Game.IsGame3())
                     {
-                        var modCookedDir = Path.Combine(ModBeingDeployed.ModPath, customDLC, ModBeingDeployed.Game == MEGame.ME2 ? @"CookedPC" : @"CookedPCConsole");
+                        var modCookedDir = Path.Combine(ModBeingDeployed.ModPath, customDLC, ModBeingDeployed.Game.CookedDirName());
                         var mountFile = Path.Combine(modCookedDir, @"mount.dlc");
                         if (!File.Exists(mountFile))
                         {
@@ -773,7 +773,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     }
                                 }
 
-                                if (package.Game == MEGame.ME3)
+                                if (package.Game == MEGame.ME3) // ME3 only. does not affect LE3
                                 {
                                     // CHECK FOR 4K NORM
                                     var compressionSettings = texture.GetProperty<EnumProperty>(@"CompressionSettings");
