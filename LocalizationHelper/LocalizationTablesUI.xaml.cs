@@ -17,6 +17,7 @@ using System.Xml.XPath;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using Octokit;
+using PropertyChanged;
 using Path = System.IO.Path;
 
 namespace LocalizationHelper
@@ -29,25 +30,29 @@ namespace LocalizationHelper
         public Visibility LoadingVisibility { get; set; } = Visibility.Visible;
         private string[] FullySupportedLangs = { "deu", "rus", "pol", "bra" };
 
+        public List<string> GlobalSupportedLanguages = new List<string>();
+
         public LocalizationTablesUI()
         {
             Title = $"ME3Tweaks Mod Manager Localizer {Assembly.GetExecutingAssembly().GetName().Version}";
+
+            GlobalSupportedLanguages.AddRange(FullySupportedLangs);
             LoadCommands();
             InitializeComponent();
 
             // Load official languages
-            Languages.Add(new LocalizationLanguage() { Selected = true, AlwaysSelected = true, ShortName = "int", FullName = "English" });
             Languages.Add(new LocalizationLanguage() { Selected = false, ShortName = "deu", FullName = "German" });
             Languages.Add(new LocalizationLanguage() { Selected = false, ShortName = "rus", FullName = "Russian" });
             Languages.Add(new LocalizationLanguage() { Selected = false, ShortName = "pol", FullName = "Polish" });
-            Languages.Add(new LocalizationLanguage() { Selected = false, ShortName = "esn", FullName = "Spanish" });
             Languages.Add(new LocalizationLanguage() { Selected = false, ShortName = "bra", FullName = "Portugeuse (Brazilian)" });
+
+
 
             //Load localizations
             LoadLocalizations();
         }
 
-        public LocalizationLanguage CurrentLanguage { get; set; }
+        public static LocalizationLanguage CurrentLanguage { get; set; }
         public ObservableCollectionExtended<LocalizationLanguage> Languages { get; } = new();
 
         public void AutoSave(object sender, EventArgs eventArgs)
@@ -81,12 +86,7 @@ namespace LocalizationHelper
 
 
         public string PleaseWaitString { get; set; } = "Please wait, starting up";
-        //public bool ShowGerman { get; set; }
-        //public bool ShowRussian { get; set; }
-        //public bool ShowPolish { get; set; }
-        //public bool ShowFrench { get; set; }
-        //public bool ShowSpanish { get; set; }
-        //public bool ShowPortuguese { get; set; }
+
         public ObservableCollectionExtended<string> LocalizationBranches { get; } = new ObservableCollectionExtended<string>();
         public ObservableCollectionExtended<LocalizedString> LocalizedTips { get; } = new ObservableCollectionExtended<LocalizedString>();
         public ObservableCollectionExtended<LocalizedString> LocalizedTutorialService { get; } = new ObservableCollectionExtended<LocalizedString>();
@@ -136,7 +136,7 @@ namespace LocalizationHelper
                 var dictionaries = new Dictionary<string, string>();
                 string endpoint = $"https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/{branch}/MassEffectModManagerCore/modmanager/localizations/"; //make dynamic, maybe with octokit.
                 WebClient client = new WebClient();
-                foreach (var lang in LocalizedString.Languages)
+                foreach (var lang in GlobalSupportedLanguages.Concat(new[] { "int" }))
                 {
                     PleaseWaitString = $"Fetching {branch} {lang}";
 
@@ -224,7 +224,7 @@ namespace LocalizationHelper
                     {
                         key = lineInfo.key,
                         preservewhitespace = lineInfo.preserveWhitespace,
-                        INT = lineInfo.text
+                        EnglishString = lineInfo.text
                     };
 
                     if (oldStuff.TryGetValue(lineInfo.key, out var oldString))
@@ -248,7 +248,7 @@ namespace LocalizationHelper
                     }
 
                     if (lineInfo.key == null) Debugger.Break();
-                    if (ls.INT == null) Debugger.Break();
+                    if (ls.EnglishString == null) Debugger.Break();
                     cat.LocalizedStringsForSection.Add(ls);
                 }
 
@@ -267,37 +267,19 @@ namespace LocalizationHelper
                 var wc = new System.Net.WebClient();
                 var tipsJson = wc.DownloadString(tipsEndpoint);
                 var jsonObj = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(tipsJson);
-                var langs = LocalizedString.Languages.Where(x => x != "int");
                 var locTips = new List<LocalizedString>();
                 for (int i = 0; i < jsonObj["int"].Count; i++)
                 {
                     LocalizedString ls = new LocalizedString()
                     {
-                        INT = jsonObj["int"][i]
+                        EnglishString = jsonObj["int"][i]
                     };
-                    foreach (var lang in langs)
+                    foreach (var lang in GlobalSupportedLanguages)
                     {
-                        if (jsonObj[lang].Count <= i) continue; //skip
-                        switch (lang)
+                        if (jsonObj.TryGetValue(lang, out var parsed))
                         {
-                            case "rus":
-                                ls.RUS = jsonObj["rus"][i];
-                                break;
-                            case "deu":
-                                ls.DEU = jsonObj["deu"][i];
-                                break;
-                            case "pol":
-                                ls.POL = jsonObj["pol"][i];
-                                break;
-                            case "fra":
-                                ls.FRA = jsonObj["fra"][i];
-                                break;
-                            case "esn":
-                                ls.ESN = jsonObj["esn"][i];
-                                break;
-                            case "bra":
-                                ls.BRA = jsonObj["bra"][i];
-                                break;
+                            if (parsed.Count <= i) continue; //skip
+                            ls.Localizations[lang] = parsed[i];
                         }
                     }
                     locTips.Add(ls);
@@ -317,7 +299,7 @@ namespace LocalizationHelper
                 dynamicHelpLocalizations["int"] = intxml.ToString();
 
                 //Debug.WriteLine(doc.ToString());
-                foreach (var lang in langs)
+                foreach (var lang in GlobalSupportedLanguages)
                 {
                     var langxml = doc.XPathSelectElement($"/localizations/helpmenu[@lang='{lang}']");
                     if (langxml != null)
@@ -334,36 +316,18 @@ namespace LocalizationHelper
                 wc = new System.Net.WebClient();
                 var tutorialJson = wc.DownloadString(tutorialEndpoint);
                 var TSjsonObj = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(tutorialJson);
-                langs = LocalizedString.Languages.Where(x => x != "int");
                 var locTutorial = new List<LocalizedString>();
                 for (int i = 0; i < TSjsonObj.Count; i++)
                 {
                     LocalizedString ls = new LocalizedString()
                     {
-                        INT = TSjsonObj[i]["lang_int"]
+                        EnglishString = TSjsonObj[i]["lang_int"]
                     };
-                    foreach (var lang in langs)
+                    foreach (var lang in GlobalSupportedLanguages)
                     {
-                        switch (lang)
+                        if (TSjsonObj[i].TryGetValue($"lang_{lang}", out var parsed))
                         {
-                            case "rus":
-                                ls.RUS = TSjsonObj[i]["lang_rus"];
-                                break;
-                            case "deu":
-                                ls.DEU = TSjsonObj[i]["lang_deu"];
-                                break;
-                            case "pol":
-                                ls.POL = TSjsonObj[i]["lang_pol"];
-                                break;
-                            case "fra":
-                                ls.FRA = TSjsonObj[i]["lang_fra"];
-                                break;
-                            case "esn":
-                                ls.ESN = TSjsonObj[i]["lang_esn"];
-                                break;
-                            case "bra":
-                                ls.BRA = TSjsonObj[i]["lang_bra"];
-                                break;
+                            ls.Localizations[lang] = parsed;
                         }
                     }
                     locTutorial.Add(ls);
@@ -418,8 +382,7 @@ namespace LocalizationHelper
 
         private void parseLocalizations(List<LocalizationCategory> categories, Dictionary<string, string> dictionaries)
         {
-            var langs = LocalizedString.Languages.Where(x => x != "int");
-            foreach (var lang in langs)
+            foreach (var lang in GlobalSupportedLanguages)
             {
                 if (dictionaries.ContainsKey(lang))
                 {
@@ -454,27 +417,7 @@ namespace LocalizationHelper
                         LocalizedString ls = t.FirstOrDefault();
                         if (ls != null)
                         {
-                            switch (lang)
-                            {
-                                case "rus":
-                                    ls.RUS = lineInfo.text;
-                                    break;
-                                case "deu":
-                                    ls.DEU = lineInfo.text;
-                                    break;
-                                case "pol":
-                                    ls.POL = lineInfo.text;
-                                    break;
-                                case "fra":
-                                    ls.FRA = lineInfo.text;
-                                    break;
-                                case "esn":
-                                    ls.ESN = lineInfo.text;
-                                    break;
-                                case "bra":
-                                    ls.BRA = lineInfo.text;
-                                    break;
-                            }
+                            ls.Localizations[lang] = lineInfo.text;
                         }
                     }
                 }
@@ -578,7 +521,6 @@ namespace LocalizationHelper
         private void SaveTutorialLocalization()
         {
             string lang = CurrentLanguage?.ShortName;
-
             SaveFileDialog saveFileDialog = new SaveFileDialog()
             {
                 Title = "Save tutorial localization file",
@@ -590,7 +532,7 @@ namespace LocalizationHelper
                 var sb = new StringBuilder();
                 for (int i = 0; i < LocalizedTutorialService.Count; i++)
                 {
-                    var str = LocalizedTutorialService[i].GetString(lang);
+                    var str = LocalizedTutorialService[i].LocalizedStr;
                     if (string.IsNullOrWhiteSpace(str)) str = "NULL";
                     sb.AppendLine(str.Replace("\r\n", "\\n").Replace("\n", "\\n"));
                     sb.AppendLine(); //add space between lines
@@ -616,7 +558,7 @@ namespace LocalizationHelper
                 var sb = new StringBuilder();
                 for (int i = 0; i < LocalizedTips.Count; i++)
                 {
-                    var str = LocalizedTips[i].GetString(lang);
+                    var str = LocalizedTips[i].LocalizedStr;
                     if (string.IsNullOrWhiteSpace(str)) str = "NULL";
                     sb.AppendLine(str.Replace("\r\n", "\\n").Replace("\n", "\\n"));
                     sb.AppendLine(); //add space between lines
@@ -646,7 +588,7 @@ namespace LocalizationHelper
             {
                 var fname = openFileDialog.FileName;
                 var basename = Path.GetFileNameWithoutExtension(fname);
-                if (!LocalizedString.Languages.Contains(basename, StringComparer.InvariantCultureIgnoreCase))
+                if (!GlobalSupportedLanguages.Contains(basename, StringComparer.InvariantCultureIgnoreCase))
                 {
                     MessageBox.Show("Filename must be XXX.xaml, with XXX being your language code. The file selected does not match a supported language.");
                     return;
@@ -657,27 +599,7 @@ namespace LocalizationHelper
                 {
                     foreach (var ls in cat.LocalizedStringsForSection)
                     {
-                        switch (basename)
-                        {
-                            case "rus":
-                                ls.RUS = null;
-                                break;
-                            case "deu":
-                                ls.DEU = null;
-                                break;
-                            case "pol":
-                                ls.POL = null;
-                                break;
-                            case "fra":
-                                ls.FRA = null;
-                                break;
-                            case "esn":
-                                ls.ESN = null;
-                                break;
-                            case "bra":
-                                ls.BRA = null;
-                                break;
-                        }
+                        ls.LocalizedStr = null;
                     }
                 }
 
@@ -704,7 +626,7 @@ namespace LocalizationHelper
             {
                 foreach (var str in cat.LocalizedStringsForSection)
                 {
-                    var lstr = str.GetString(lang);
+                    var lstr = str.LocalizedStr;
                     if (!string.IsNullOrEmpty(lstr))
                     {
                         var checkRes = checkInterpolations(lstr);
@@ -743,13 +665,13 @@ namespace LocalizationHelper
                 sb.AppendLine($"\t<!-- {cat.CategoryName} -->");
                 foreach (var str in cat.LocalizedStringsForSection)
                 {
-                    if (str.GetString(lang) == null) continue; //don't even bother
+                    if (str.LocalizedStr == null) continue; //don't even bother
                     string line = $"\t<system:String x:Key=\"{str.key}\"";
                     if (str.preservewhitespace)
                     {
                         line += " xml:space=\"preserve\"";
                     }
-                    line += $">{str.GetString(lang).Trim()}</system:String>";
+                    line += $">{str.LocalizedStr.Trim()}</system:String>";
                     sb.AppendLine(line);
                     if (!string.IsNullOrWhiteSpace(str.notes))
                     {
@@ -832,60 +754,55 @@ namespace LocalizationHelper
         }
 
         [DebuggerDisplay("LocCat {CategoryName} with {LocalizedStringsForSection.Count} entries")]
-        public class LocalizationCategory : INotifyPropertyChanged
+        [AddINotifyPropertyChangedInterface]
+        public class LocalizationCategory
         {
             public string CategoryName { get; set; }
-#pragma warning disable
-            public event PropertyChangedEventHandler PropertyChanged;
-#pragma warning restore
             public bool HasChangedStrings => LocalizedStringsForSection.Any(x => x.ChangedFromPrevious);
             public ObservableCollectionExtended<LocalizedString> LocalizedStringsForSection { get; } = new ObservableCollectionExtended<LocalizedString>();
         }
 
-        public class LocalizedString : INotifyPropertyChanged
+        [AddINotifyPropertyChangedInterface]
+        public class LocalizedString
         {
-            public static string[] Languages = { "int", "deu", "rus", "pol", "fra", "esn", "bra" };
+            /// <summary>
+            /// The ID of the string
+            /// </summary>
             public string key { get; set; }
+            /// <summary>
+            /// If we should preserver whitespace (e.g. it has newlines)
+            /// </summary>
             public bool preservewhitespace { get; set; }
+            /// <summary>
+            /// Notes about this string (if any)
+            /// </summary>
             public string notes { get; set; }
+            /// <summary>
+            /// The english string
+            /// </summary>
+            public string EnglishString { get; init; }
 
-            public string INT { get; set; }
-            public string DEU { get; set; }
-            public string RUS { get; set; }
-            public string POL { get; set; }
-            public string FRA { get; set; }
-            public string ESN { get; set; }
-            public string BRA { get; set; } //brazilian portuguese
-            public bool ChangedFromPrevious { get; set; }
+            public readonly Dictionary<string, string> Localizations = new();
 
-            public string GetString(string lang)
+            public string LocalizedStr
             {
-                lang = lang.ToLower();
-                switch (lang)
+                get
                 {
-                    case "int":
-                        return INT;
-                    case "deu":
-                        return DEU;
-                    case "rus":
-                        return RUS;
-                    case "pol":
-                        return POL;
-                    case "fra":
-                        return FRA;
-                    case "esn":
-                        return ESN;
-                    case "bra":
-                        return BRA;
-                    default:
-                        throw new NotImplementedException("Language not supported by this tool: " + lang);
+                    if (LocalizationTablesUI.CurrentLanguage == null) return null;
+                    if (Localizations.TryGetValue(LocalizationTablesUI.CurrentLanguage.ShortName, out var str))
+                    {
+                        return str;
+                    }
+                    return null;
+                }
+                set
+                {
+                    if (LocalizationTablesUI.CurrentLanguage == null) return;
+                    Localizations[LocalizationTablesUI.CurrentLanguage.ShortName] = value;
                 }
             }
 
-#pragma warning disable
-
-            public event PropertyChangedEventHandler PropertyChanged;
-#pragma warning restore
+            public bool ChangedFromPrevious { get; set; }
         }
 
 #pragma warning disable
@@ -895,6 +812,9 @@ namespace LocalizationHelper
         public LocalizedString SelectedDataGridItem { get; set; }
 
         public string SearchText { get; set; } = "";
+
+        public int SelectedTabIndex { get; set; }
+
         private void Find_Clicked(object sender, RoutedEventArgs e)
         {
 
@@ -933,7 +853,7 @@ namespace LocalizationHelper
                     }
 
                     //English
-                    if (ls.INT.Contains(searchTerm, StringComparison.InvariantCultureIgnoreCase))
+                    if (ls.EnglishString.Contains(searchTerm, StringComparison.InvariantCultureIgnoreCase))
                     {
                         //found
                         found = true;
@@ -975,6 +895,14 @@ namespace LocalizationHelper
             if (e.Key == Key.Return)
             {
                 Find_Clicked(null, null);
+            }
+        }
+
+        private void Language_Clicked(object sender, RoutedEventArgs e)
+        {
+            if (sender is FrameworkElement fw && fw.DataContext is LocalizationLanguage ll)
+            {
+                CurrentLanguage = ll;
             }
         }
     }
