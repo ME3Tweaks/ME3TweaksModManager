@@ -178,9 +178,10 @@
                             Name="BetaMode_MenuItem"
                             Click="ChangeSetting_Clicked"
                             FontWeight="Bold"
-                            Content="{DynamicResource string_optIntoBetaUpdates}"
                             DockPanel.Dock="Top"
-                            IsChecked="{Binding Path=(modmanager:Settings.BetaMode)}" />
+                            IsChecked="{Binding Path=(modmanager:Settings.BetaMode)}">
+                            <TextBlock Text="{DynamicResource string_optIntoBetaUpdates}" TextWrapping="Wrap"/>
+                        </CheckBox>
                         <TextBlock
                             Margin="0,0,10,0"
                             Text="{DynamicResource string_tooltip_optIntoBetaUpdates}"
@@ -192,9 +193,10 @@
                         Grid.Column="1">
                         <CheckBox
                             FontWeight="Bold"
-                            Content="{DynamicResource string_configureNxmHandlerOnBoot}"
                             DockPanel.Dock="Top"
-                            IsChecked="{Binding Path=(modmanager:Settings.ConfigureNXMHandlerOnBoot)}" />
+                            IsChecked="{Binding Path=(modmanager:Settings.ConfigureNXMHandlerOnBoot)}">
+                            <TextBlock Text="{DynamicResource string_configureNxmHandlerOnBoot}" TextWrapping="Wrap"/>
+                        </CheckBox>
                         <TextBlock
                             Margin="0,0,10,0"
                             Text="{DynamicResource string_tooltip_configureNxmHandlerOnBoot}"
@@ -272,9 +274,10 @@
                         Grid.Column="0">
                         <CheckBox
                             FontWeight="Bold"
-                            Content="{DynamicResource string_autoAddControllerMixinsToModMakerMods}"
                             DockPanel.Dock="Top"
-                            IsChecked="{Binding Path=(modmanager:Settings.ModMakerControllerModOption)}" />
+                            IsChecked="{Binding Path=(modmanager:Settings.ModMakerControllerModOption)}" >
+                            <TextBlock Text="{DynamicResource string_autoAddControllerMixinsToModMakerMods}" TextWrapping="Wrap"/>
+                        </CheckBox>
                         <TextBlock
                             Margin="0,0,10,0"
                             Text="{DynamicResource string_tooltip_autoAddControllerMixinsToModMakerMods}"
@@ -287,9 +290,10 @@
                         Grid.Column="1">
                         <CheckBox
                             FontWeight="Bold"
-                            Content="{DynamicResource string_autoInjectCustomKeybindsIntoModMakerMods}"
                             DockPanel.Dock="Top"
-                            IsChecked="{Binding Path=(modmanager:Settings.ModMakerAutoInjectCustomKeybindsOption)}" />
+                            IsChecked="{Binding Path=(modmanager:Settings.ModMakerAutoInjectCustomKeybindsOption)}">
+                            <TextBlock Text="{DynamicResource string_autoInjectCustomKeybindsIntoModMakerMods}" TextWrapping="Wrap"/>
+                        </CheckBox>
                         <TextBlock
                             Margin="0,0,10,0"
                             Text="{DynamicResource string_tooltip_autoInjectCustomKeybinds}"

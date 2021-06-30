@@ -286,7 +286,8 @@
                           "BoolProperty",
                           "IntProperty",
                           "FloatProperty",
-                          "EnumProperty"
+                          "EnumProperty",
+                          "StrProperty"
                         ],
                         "type": "string"
                       },

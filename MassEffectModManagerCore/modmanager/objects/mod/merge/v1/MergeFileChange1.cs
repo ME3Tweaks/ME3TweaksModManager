@@ -178,6 +178,10 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
                     ep.Value = NameReference.FromInstancedString(enumInfo[1]);
                     operatingCollection.AddOrReplaceProp(ep);
                     break;
+                case @"StrProperty":
+                    var sp = new StrProperty(PropertyValue, propKeys.Last());
+                    operatingCollection.AddOrReplaceProp(sp);
+                    break;
                 default:
                     throw new Exception(M3L.GetString(M3L.string_interp_mergefile_unsupportedPropertyType, PropertyType));
             }
