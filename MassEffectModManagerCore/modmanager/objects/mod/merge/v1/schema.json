@@ -211,6 +211,7 @@
               "oneOf": [
                 { "required": [ "scriptupdate" ] },
                 { "required": [ "assetupdate" ] },
+                { "required": [ "disableconfigupdate" ] },
                 { "required": [ "propertyupdates" ] },
                 { "required": [ "sequenceskipupdate" ] }
               ],
@@ -284,7 +285,8 @@
                           "NameProperty",
                           "BoolProperty",
                           "IntProperty",
-                          "FloatProperty"
+                          "FloatProperty",
+                          "EnumProperty"
                         ],
                         "type": "string"
                       },
@@ -304,6 +306,16 @@
                     },
                     "additionalProperties": false
                   }
+                },
+                "disableconfigupdate": {
+                  "$id": "#/properties/files/items/properties/changes/items/properties/disableconfigupdate",
+                  "default": false,
+                  "description": "Disables the config flag on a property export. Use for patching LE1's config variables in a safe way, since there is no ini merging.",
+                  "examples": [
+                    true
+                  ],
+                  "title": "Disable Config Flag",
+                  "type": "boolean"
                 },
                 "scriptupdate": {
                   "$id": "#/properties/files/items/properties/changes/items/properties/scriptupdate",

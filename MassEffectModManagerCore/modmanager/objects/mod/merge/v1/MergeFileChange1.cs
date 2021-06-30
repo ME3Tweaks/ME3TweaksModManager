@@ -10,6 +10,7 @@ using LegendaryExplorerCore.Packages.CloningImportingAndRelinking;
 using LegendaryExplorerCore.Unreal;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Kismet;
+using LegendaryExplorerCore.Unreal.BinaryConverters;
 using LegendaryExplorerCore.UnrealScript;
 using LegendaryExplorerCore.UnrealScript.Compiling.Errors;
 using MassEffectModManagerCore.modmanager.localizations;
@@ -22,6 +23,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
     {
         [JsonProperty(@"entryname")] public string EntryName { get; set; }
         [JsonProperty(@"propertyupdates")] public List<PropertyUpdate1> PropertyUpdates { get; set; }
+        [JsonProperty(@"disableconfigupdate")] public bool DisableConfigUpdate { get; set; }
         [JsonProperty(@"assetupdate")] public AssetUpdate1 AssetUpdate { get; set; }
         [JsonProperty(@"scriptupdate")] public ScriptUpdate1 ScriptUpdate { get; set; }
         [JsonProperty(@"sequenceskipupdate")] public SequenceSkipUpdate1 SequenceSkipUpdate { get; set; }
@@ -32,7 +34,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
         public void ApplyChanges(IMEPackage package, MergeAssetCache1 assetsCache, Mod installingMod, GameTarget gameTarget)
         {
             // APPLY PROPERTY UPDATES
-            Log.Information($@"Merging changes into {package.FilePath}");
+            Log.Information($@"Merging changes into {EntryName}");
             var export = package.FindExport(EntryName);
             if (export == null)
                 throw new Exception(M3L.GetString(M3L.string_interp_mergefile_couldNotFindExportInPackage, package.FilePath, EntryName));
@@ -41,9 +43,8 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
             {
                 foreach (var pu in PropertyUpdates)
                 {
-                    Log.Information($@"Applying property changes to {export.FileRef.FilePath} {export.InstancedFullPath}");
                     var props = export.GetProperties();
-                    pu.ApplyUpdate(package, props);
+                    pu.ApplyUpdate(package, props, this);
                     export.WriteProperties(props);
                 }
             }
@@ -54,7 +55,28 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
             // APPLY SCRIPT UDPATE
             ScriptUpdate?.ApplyUpdate(package, export, assetsCache, installingMod, gameTarget);
 
+            // APPLY SEQUENCE SKIP UPDATE
             SequenceSkipUpdate?.ApplyUpdate(package, export, installingMod);
+
+            // APPLY CONFIG FLAG REMOVAL
+            if (DisableConfigUpdate)
+            {
+                DisableConfigFlag(package, export, installingMod);
+            }
+        }
+
+        private void DisableConfigFlag(IMEPackage package, ExportEntry export, Mod installingMod)
+        {
+            if (ObjectBinary.From(export) is UProperty ob)
+            {
+                Log.Information($@"Disabling config flag on {export.InstancedFullPath}");
+                ob.PropertyFlags &= ~UnrealFlags.EPropertyFlags.Config;
+                export.WriteBinary(ob);
+            }
+            else
+            {
+                throw new Exception($"{export.InstancedFullPath} in {package.FilePath} is not a property export. Cannot disable config flag on this export.");
+            }
         }
 
         public void SetupParent(MergeFile1 parent)
@@ -62,6 +84,21 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
             Parent = parent;
             if (AssetUpdate != null)
                 AssetUpdate.Parent = this;
+        }
+
+        public void Validate()
+        {
+            if (PropertyUpdates != null)
+            {
+                foreach (var pu in PropertyUpdates)
+                {
+                    pu.Validate();
+                }
+            }
+
+            AssetUpdate?.Validate();
+            ScriptUpdate?.Validate();
+            SequenceSkipUpdate?.Validate();
         }
     }
 
@@ -76,7 +113,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
         [JsonProperty(@"propertyvalue")]
         public string PropertyValue { get; set; }
 
-        public bool ApplyUpdate(IMEPackage package, PropertyCollection properties)
+        public bool ApplyUpdate(IMEPackage package, PropertyCollection properties, MergeFileChange1 mfc)
         {
             var propKeys = PropertyName.Split('.');
 
@@ -135,10 +172,25 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
                     }
                     operatingCollection.AddOrReplaceProp(op);
                     break;
+                case @"EnumProperty":
+                    var enumInfo = PropertyValue.Split('.');
+                    EnumProperty ep = new EnumProperty(enumInfo[0], mfc.OwningMM.Game, PropertyName);
+                    ep.Value = NameReference.FromInstancedString(enumInfo[1]);
+                    operatingCollection.AddOrReplaceProp(ep);
+                    break;
                 default:
                     throw new Exception(M3L.GetString(M3L.string_interp_mergefile_unsupportedPropertyType, PropertyType));
             }
             return true;
+        }
+
+        public void Validate()
+        {
+            if (PropertyType == @"EnumProperty")
+            {
+                if (PropertyValue.Split('.').Length != 2)
+                    throw new Exception("'propertyvalue' for EnumProperty must have a '.' in it to separate the enum type from the enum value");
+            }
         }
     }
 
@@ -193,6 +245,11 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
 
             return true;
         }
+
+        public void Validate()
+        {
+
+        }
     }
 
     public class ScriptUpdate1
@@ -244,6 +301,11 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
 
             return true;
         }
+
+        public void Validate()
+        {
+
+        }
     }
 
     public class SequenceSkipUpdate1
@@ -277,6 +339,11 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
             }
 
             return true;
+        }
+
+        public void Validate()
+        {
+
         }
     }
 }

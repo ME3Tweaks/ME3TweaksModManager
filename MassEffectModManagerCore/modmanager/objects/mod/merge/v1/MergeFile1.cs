@@ -85,6 +85,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
             MergeAssetCache1 mac = new MergeAssetCache1();
             foreach (var f in targetFiles)
             {
+                Log.Information($@"Opening package {f}");
 #if DEBUG
                 Stopwatch sw = Stopwatch.StartNew();
 #endif
@@ -139,6 +140,11 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
             {
                 // Does this catch DLC startups? 
                 throw new Exception(M3L.GetString(M3L.string_interp_targetingNonStartupFile, FileName));
+            }
+
+            foreach (var mc in MergeChanges)
+            {
+                mc.Validate();
             }
         }
     }
