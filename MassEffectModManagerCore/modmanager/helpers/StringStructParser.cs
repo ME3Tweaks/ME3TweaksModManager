@@ -65,6 +65,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
         /// <returns></returns>
         public static Dictionary<string, string> GetCommaSplitValues(string inputString)
         {
+            var origString = inputString;
             if (inputString[0] == '(' && inputString[1] == '(' && inputString[inputString.Length - 1] == ')' && inputString[inputString.Length - 2] == ')')
             {
                 throw new Exception(@"GetCommaSplitValues() can only deal with items encapsulated in a single ( ) set. The current set has at least two, e.g. ((value)).");
@@ -170,6 +171,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
         /// <returns></returns>
         public static List<string> GetParenthesisSplitValues(string inputString)
         {
+            var origString = inputString;
             //Trim ends if this is a list as ( ) will encapsulte a list of ( ) values, e.g. ((hello),(there)) => (hello),(there)
             if (inputString.Length >= 4)
             {
@@ -203,7 +205,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                             if (parenthesisStack.Count == 0)
                             {
                                 Log.Error(@"Error parsing parenthesis split list: Found closing parenthesis that does not match open parenthesis at position " + i);
-                                throw new Exception(@"Error parsing parenthesis split list: Found closing parenthesis that does not match open parenthesis at position " + i); //should this be localized?
+                                throw new Exception($"Error parsing parenthesis split list: Found closing parenthesis that does not match open parenthesis at position {i} in string {inputString}"); //should this be localized?
                             }
 
                             var popped = parenthesisStack.Pop();
@@ -227,7 +229,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
             if (parenthesisStack.Count > 0)
             {
                 Log.Error(@"Error parsing parenthesis split list: count of open and closing parenthesis does not match.");
-                throw new Exception(@"Unclosed opening parenthesis encountered while parsing parenthesis split list"); //should this be localized?
+                throw new Exception($"Unclosed opening parenthesis encountered while parsing parenthesis split list in {origString}"); //should this be localized?
             }
             return splits;
         }
