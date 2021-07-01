@@ -43,6 +43,12 @@ namespace MassEffectModManagerCore.modmanager.mergedlc
             };
 
             StarterKitGeneratorWindow.CreateStarterKitMod(sko, null);
+            MetaCMM mcmm = new MetaCMM()
+            {
+                ModName = @"ME3Tweaks Mod Manager Auto-Generated Merge DLC",
+                Version = @"1.0"
+            };
+            mcmm.WriteMetaCMM(Path.Combine(M3Directories.GetDLCPath(target), MERGE_DLC_FOLDERNAME, @"_metacmm.txt"));
         }
     }
 }

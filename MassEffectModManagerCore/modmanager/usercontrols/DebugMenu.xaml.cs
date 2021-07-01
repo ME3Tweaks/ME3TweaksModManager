@@ -41,8 +41,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private static void TestSquadmateMerge_Click(MainWindow window)
         {
             var target = window.SelectedGameTarget;
-            SQMOutfitMerge sqm = new SQMOutfitMerge();
-            sqm.BuildBioPGlobal(target);
+            SQMOutfitMerge.BuildBioPGlobal(target);
         }
 
         private static void ShowMEMViewer(MainWindow window)

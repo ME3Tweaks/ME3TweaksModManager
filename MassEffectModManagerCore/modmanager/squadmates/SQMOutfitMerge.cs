@@ -118,7 +118,7 @@ namespace MassEffectModManagerCore.modmanager.squadmates
         }
 
 
-        private StructProperty GeneratePlotStreamingElement(string packageName, int conditionalNum)
+        private static StructProperty GeneratePlotStreamingElement(string packageName, int conditionalNum)
         {
             PropertyCollection pc = new PropertyCollection();
             pc.AddOrReplaceProp(new NameProperty(packageName, @"ChunkName"));
@@ -129,7 +129,7 @@ namespace MassEffectModManagerCore.modmanager.squadmates
             return new StructProperty(@"PlotStreamingElement", pc);
         }
 
-        private int GetSquadmateOutfitInt(string squadmateName, MEGame game)
+        private static int GetSquadmateOutfitInt(string squadmateName, MEGame game)
         {
             if (game.IsGame2())
             {
@@ -167,7 +167,7 @@ namespace MassEffectModManagerCore.modmanager.squadmates
             throw new Exception(M3L.GetString(M3L.string_interp_invalidHenchNameSquadmateNameValueIsCaseSensitive, squadmateName));
         }
 
-        public void BuildBioPGlobal(GameTarget target)
+        public static void BuildBioPGlobal(GameTarget target)
         {
             M3MergeDLC.RemoveMergeDLC(target);
             var loadedFiles = MELoadedFiles.GetFilesLoadedInGame(target.Game, gameRootOverride: target.TargetPath);
@@ -421,14 +421,9 @@ namespace MassEffectModManagerCore.modmanager.squadmates
                     CoalescedConverter.CompileFromMemory(mergeCoal).WriteToFile(mergeCoalFile);
                 }
             }
-
-            if (target.Game.IsLEGame() || target.Game == MEGame.ME3)
-            {
-                AutoTOC.RunTOCOnGameTarget(target);
-            }
         }
 
-        private void buildPlotElementObject(ArrayProperty<StructProperty> plotStreaming, SquadmateInfoSingle sqm, MEGame game, bool isExplore)
+        private static void buildPlotElementObject(ArrayProperty<StructProperty> plotStreaming, SquadmateInfoSingle sqm, MEGame game, bool isExplore)
         {
             var fName = sqm.HenchPackage;
             var virtualChunk = $@"BioH_{sqm.HenchName}";

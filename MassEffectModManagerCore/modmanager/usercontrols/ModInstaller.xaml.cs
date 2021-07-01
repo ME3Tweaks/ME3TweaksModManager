@@ -1254,6 +1254,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     Result.TargetsToAutoTOC.Add(SelectedGameTarget);
                 }
+
+                if (ModBeingInstalled.Game.IsGame3())
+                {
+                    Result.TargetsToSquadmateMergeSync.Add(SelectedGameTarget);
+                }
             }
 
 

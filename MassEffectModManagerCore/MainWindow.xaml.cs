@@ -50,6 +50,7 @@ using LegendaryExplorerCore.Unreal;
 using MassEffectModManagerCore.modmanager.gamemd5;
 using MassEffectModManagerCore.modmanager.objects.mod.merge;
 using MassEffectModManagerCore.modmanager.objects.mod.merge.v1;
+using MassEffectModManagerCore.modmanager.squadmates;
 using Pathoschild.FluentNexus.Models;
 using MemoryAnalyzer = MassEffectModManagerCore.modmanager.memoryanalyzer.MemoryAnalyzer;
 using Mod = MassEffectModManagerCore.modmanager.objects.mod.Mod;
@@ -171,6 +172,12 @@ namespace MassEffectModManagerCore
 
         public string FailedModsString { get; set; }
         public string NexusLoginInfoString { get; set; } // BLANK TO START = M3L.GetString(M3L.string_loginToNexusMods);
+
+        private PanelResult BatchPanelResult;
+        /// <summary>
+        /// If the next call to HandlePanelResult() should process BatchPanelResult
+        /// </summary>
+        private bool HandleBatchPanelResult;
 
         /// <summary>
         /// User controls that are queued for displaying when the previous one has closed.
@@ -745,6 +752,7 @@ namespace MassEffectModManagerCore
                 ReleaseBusyControl();
                 if (b.Data is BatchLibraryInstallQueue queue)
                 {
+                    BatchPanelResult = new PanelResult();
                     var target = batchLibrary.SelectedGameTarget;
                     //Install queue
 
@@ -761,12 +769,10 @@ namespace MassEffectModManagerCore
                             ApplyMod(queue.ModsToInstall[modIndex], target, batchMode: true, installCompressed: queue.InstallCompressed, installCompletedCallback: modInstalled);
                             modIndex++;
                         }
-                        else if (SelectedGameTarget.Game == MEGame.ME3 || SelectedGameTarget.Game.IsLEGame())
+                        else
                         {
                             //End
-                            var autoTocUI = new AutoTOC(SelectedGameTarget);
-                            autoTocUI.Close += (a1, b1) => { ReleaseBusyControl(); };
-                            ShowBusyControl(autoTocUI);
+                            HandleBatchPanelResult = true;
                         }
                     }
 
@@ -1153,14 +1159,35 @@ namespace MassEffectModManagerCore
 
         private void HandlePanelResult(PanelResult result)
         {
+            if (BatchPanelResult != null)
+            {
+                result.MergeInto(BatchPanelResult);
+                if (HandleBatchPanelResult)
+                {
+                    result = BatchPanelResult;
+
+                    // Clear result
+                    BatchPanelResult = null;
+                    HandleBatchPanelResult = false;
+                }
+                else
+                    return;
+            }
+
             // This is pretty dicey with thread safety... 
             foreach (var v in result.TargetsToPlotManagerSync)
             {
                 SyncPlotManagerForTarget(v);
             }
+
+            foreach (var v in result.TargetsToSquadmateMergeSync)
+            {
+                ShowRunAndDone(() => SQMOutfitMerge.BuildBioPGlobal(v), "Synchronizing squadmate outfits", "Synchronized squadmate outfits");
+            }
+
             foreach (var v in result.TargetsToAutoTOC)
             {
-                AutoTOCTarget(v);
+                AutoTOCTarget(v, false);
             }
 
             if (result.ReloadMods)
@@ -1201,6 +1228,19 @@ namespace MassEffectModManagerCore
                     BootToolPathPassthrough(result.ToolToLaunch);
                 }
             });
+        }
+
+        private void ShowRunAndDone(Action action, string startStr, string endStr)
+        {
+            var task = backgroundTaskEngine.SubmitBackgroundJob($@"RunAndDone",
+                startStr, endStr);
+            var pmuUI = new RunAndDonePanel(action, "Synchronizing squadmate outfit files");
+            pmuUI.Close += (a, b) =>
+            {
+                backgroundTaskEngine.SubmitJobCompletion(task);
+                ReleaseBusyControl();
+            };
+            ShowBusyControl(pmuUI);
         }
 
         private void ShowBackupPane()
@@ -3651,13 +3691,17 @@ namespace MassEffectModManagerCore
             }
         }
 
-        private void AutoTOCTarget(GameTarget target)
+        private void AutoTOCTarget(GameTarget target, bool showInStatusBar = true)
         {
-            var task = backgroundTaskEngine.SubmitBackgroundJob(@"AutoTOC", M3L.GetString(M3L.string_runningAutoTOC), M3L.GetString(M3L.string_ranAutoTOC));
+            BackgroundTask task = showInStatusBar ? backgroundTaskEngine.SubmitBackgroundJob(@"AutoTOC", M3L.GetString(M3L.string_runningAutoTOC),
+                    M3L.GetString(M3L.string_ranAutoTOC)) : null;
             var autoTocUI = new AutoTOC(target);
             autoTocUI.Close += (a, b) =>
             {
-                backgroundTaskEngine.SubmitJobCompletion(task);
+                if (showInStatusBar)
+                {
+                    backgroundTaskEngine.SubmitJobCompletion(task);
+                }
                 ReleaseBusyControl();
             };
             ShowBusyControl(autoTocUI);
