@@ -40,9 +40,33 @@ namespace MassEffectModManagerCore.modmanager.squadmates
             [JsonProperty(@"outfits")]
             public List<SquadmateInfoSingle> Outfits { get; set; }
 
-            public bool Validate(GameTarget target, CaseInsensitiveDictionary<string> loadedFiles)
+            public bool Validate(string dlcName, GameTarget target, CaseInsensitiveDictionary<string> loadedFiles)
             {
-                // Todo: Validate outfits
+                foreach (var outfit in Outfits)
+                {
+                    // Check packages
+                    if (!loadedFiles.ContainsKey($@"{outfit.HenchPackage}.pcc"))
+                    {
+                        Log.Error($@"SquadmateMergeInfo failed validation: {outfit.HenchPackage}.pcc not found in game");
+                        return false;
+                    }
+
+                    if (Game.IsGame3())
+                    {
+                        if (!loadedFiles.ContainsKey($@"{outfit.HenchPackage}_Explore.pcc"))
+                        {
+                            Log.Error($@"SquadmateMergeInfo failed validation: {outfit.HenchPackage}_Explore.pcc not found in game");
+                            return false;
+                        }
+                    }
+
+                    if (!loadedFiles.ContainsKey($@"SFXHenchImages_{dlcName}.pcc"))
+                    {
+                        Log.Error($@"SquadmateMergeInfo failed validation: SFXHenchImages_{dlcName}.pcc not found in game");
+                        return false;
+                    }
+                }
+
                 return true;
             }
         }
@@ -187,7 +211,7 @@ namespace MassEffectModManagerCore.modmanager.squadmates
                 {
                     var jsonFile = Path.Combine(M3Directories.GetDLCPath(target), dlc, target.Game.CookedDirName(), SQUADMATE_MERGE_MANIFEST_FILE);
                     var infoPackage = JsonConvert.DeserializeObject<SquadmateMergeInfo>(File.ReadAllText(jsonFile));
-                    if (!infoPackage.Validate(target, loadedFiles))
+                    if (!infoPackage.Validate(dlc, target, loadedFiles))
                     {
                         continue; // skip this
                     }
@@ -263,7 +287,7 @@ namespace MassEffectModManagerCore.modmanager.squadmates
                 bioWorldInfo.WriteProperties(props);
 
 
-               M3MergeDLC.GenerateMergeDLC(target, Guid.NewGuid());
+                M3MergeDLC.GenerateMergeDLC(target, Guid.NewGuid());
 
                 // Save BioP_Global into DLC
                 var cookedDir = Path.Combine(M3Directories.GetDLCPath(target), M3MergeDLC.MERGE_DLC_FOLDERNAME, target.Game.CookedDirName());
