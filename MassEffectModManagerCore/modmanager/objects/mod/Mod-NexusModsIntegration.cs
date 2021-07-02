@@ -84,6 +84,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 string gamename = @"masseffect";
                 if (Game == MEGame.ME2) gamename += @"2";
                 if (Game == MEGame.ME3) gamename += @"3";
+                if (Game.IsLEGame() || Game == MEGame.LELauncher) gamename += @"legendaryedition";
                 string telemetryOverride = null;
                 string endorsementFailedReason = null;
                 try

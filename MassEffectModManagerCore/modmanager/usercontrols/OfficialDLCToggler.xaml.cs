@@ -80,7 +80,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
-            AvailableTargets.ReplaceAll(mainwindow.InstallationTargets.Where(x => x.Selectable && x.Game.IsEnabledGeneration() && x.Game != MEGame.LE1 && x.Game != MEGame.LELauncher));
+            AvailableTargets.ReplaceAll(mainwindow.InstallationTargets.Where(x => x.Selectable && x.Game.IsOTGame()));
             SelectedTarget = AvailableTargets.FirstOrDefault();
         }
 
