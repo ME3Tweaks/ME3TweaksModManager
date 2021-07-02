@@ -16,7 +16,7 @@ The 'Game 1 TLK Merge' feature that is part of ME3Tweaks Mod Manager 7.0 can wor
 Your mod must target `cmmver 7.0` or higher for this feature to work. In your moddesc.ini file, you must add the following section:
 
 ```
-[GAME1_EMBEDDED_MERGE]
+[GAME1_EMBEDDED_TLK]
 usesfeature = true
 ```
 
