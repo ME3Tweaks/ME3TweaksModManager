@@ -816,7 +816,7 @@ namespace MassEffectModManagerCore.modmanager
      */
         public static string ConvertBrToNewline(string str) => str?.Replace("<br>", "\n");
 
-        public static string ConvertNewlineToBr(string str) => str?.Replace("\n", "<br>");
+        public static string ConvertNewlineToBr(string str) => str?.Replace("\r\n", "<br>")?.Replace("\n", "<br>");
 
 
         public static string GetME3ModsDirectory() => Path.Combine(GetModsDirectory(), "ME3");
