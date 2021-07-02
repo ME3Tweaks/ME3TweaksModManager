@@ -113,6 +113,8 @@ The JSON format for a file update in a merge mod. The files property is an array
 
 This is the JSON format for an update to a specific export in a file. The changes property is an array of single export change objects. 
 
+The entryname must be the full instanced path for the entry you are trying to update, which means you must include all parent entry names, separated by a `.`. For example, if you are trying to update the `AdjustMouseSensitivity` function that is a child of the `BioPlayerInput`  export, your entry name must be `BioPlayerInput.AdjustMouseSensitivity`. This includes any object indexes. The full instanced path for an export can be seen at the "Currently loaded export" container in the Properties panel in Package Editor.
+
 You may have one of either a `propertyupdates`, a `scriptupdate`, or an `assetupdate` for an export. You may not have more than one. In other words, you may only update this export via one of the three available methods.
 
 | Property Name   | Type                  | Information                                                  |
@@ -165,17 +167,17 @@ The format for a single property update for an export. You may have several of t
 
 The format for an update to a script export. You must store your script in a plaintext file, which will be embedded into your .m3m file. Your script file must be in the same folder as your manifest file.
 
-| Property Name | Type   | Information                                                  |
-| ------------- | ------ | ------------------------------------------------------------ |
-| scriptfile    | string | The filename of a local plaintext file containing your script. File extension should be .uc. |
+| Property Name  | Type   | Information                                                  |
+| -------------- | ------ | ------------------------------------------------------------ |
+| scriptfilename | string | The filename of a local plaintext file containing your script. File extension should be .uc. |
 
 **Example:**
 
 ```json
 {
-    "entryname": "BioAutoConditionals.F1290",
+    "entryname": "BioInventory.IsPlotItem",
     "scriptupdate": {
-        "scriptfile":"MyPlaintextUnrealScript.uc"
+        "scriptfilename":"MyPlaintextUnrealScript.uc"
     }
 }
 ```
