@@ -625,7 +625,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                 var tlkFilePrefix = skOption.ModGame.IsGame3() ? dlcFolderName : $@"DLC_{skOption.ModModuleNumber}";
 
                 // Is this right?
-                var languages = skOption.ModGame.IsLEGame() ? lelanguages : skOption.ModGame == MEGame.ME2 ? me2languages : me3languages;
+                var languages = skOption.ModGame.IsGame2() ? me2languages : me3languages;
                 foreach (var lang in languages)
                 {
                     List<ME1TalkFile.TLKStringRef> strs = new List<ME1TalkFile.TLKStringRef>();
