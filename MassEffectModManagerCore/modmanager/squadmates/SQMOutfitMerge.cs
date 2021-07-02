@@ -62,8 +62,8 @@ namespace MassEffectModManagerCore.modmanager.squadmates
             [JsonProperty(@"availableimage")]
             public string AvailableImage { get; set; }
 
-            [JsonProperty(@"deadimage")]
-            public string DeadImage { get; set; }
+            //[JsonProperty(@"deadimage")]
+            //public string DeadImage { get; set; }
 
             [JsonProperty(@"silhouetteimage")]
             public string SilhouetteImage { get; set; }
@@ -108,7 +108,7 @@ namespace MassEffectModManagerCore.modmanager.squadmates
                     [@"MemberAppearancePlotLabel"] = $@"Appearance{HenchName}",
                     [@"HighlightImage"] = HighlightImage,
                     [@"AvailableImage"] = AvailableImage,
-                    [@"DeadImage"] = DeadImage,
+                    [@"DeadImage"] = @"GUI_Henchmen_Images.PlaceHolder", // Game 3
                     [@"SilhouetteImage"] = SilhouetteImage,
                     [@"DescriptionText[0]"] = DescriptionText0.ToString(),
                     [@"CustomToken0[0]"] = CustomToken0.ToString()

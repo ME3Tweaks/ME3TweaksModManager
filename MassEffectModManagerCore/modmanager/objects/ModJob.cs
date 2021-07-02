@@ -806,6 +806,11 @@ namespace MassEffectModManagerCore.modmanager.objects
                     parameterDictionary[@"addfilesreadonlytargets"] = ReadOnlyIndicators;
                 }
 
+                if (Header == JobHeader.BASEGAME)
+                {
+                    parameterDictionary[@"mergemods"] = string.Join(';', MergeMods.Select(x => x.MergeModFilename));
+                }
+
                 parameterDictionary[@"gamedirectorystructure"] = GameDirectoryStructureRaw ? @"True" : null;
                 parameterDictionary[@"jobdescription"] = RequirementText;
             }
