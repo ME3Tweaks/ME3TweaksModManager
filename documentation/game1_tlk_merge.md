@@ -50,6 +50,6 @@ Files must have the following naming system or it will not work:
  
 ![Where to find instanced full path](images/tlk_merge_instancefullpath.png)
 
-To get a dump of files that are already in the correct naming format, you can use my TLK dump experiment in Legendary Explorer. Go to Package Editor and make sure experiments are on in the `Debugging` menu. A new menu named `Experiments` will show up, and you can go to `Mgamerz's Programming Circus > Dump LE1 TLK to XML` to dump the entire game's TLK to properly named files. You can also filter it by extension, such as INT, DE, etc.
+To get a dump of files that are already in the correct naming format, you can use my TLK dump experiment in Legendary Explorer. Go to Package Editor and make sure experiments are on in the `Debugging` menu. A new menu named `Experiments` will show up, and you can go to `Mgamerz's Programming Circus > Dump LE1 TLK to XML` to dump the entire game's TLK to properly named files. You can also filter it by localization, such as INT, DE, etc, the same ones that appear as suffixes to game files.
 
 The xml files can contain just a few strings to update, all of the strings to update, or even add more strings.
