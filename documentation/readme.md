@@ -25,6 +25,8 @@ ME3Tweaks Mod Manager (which will be written as M3 from now on in this document)
    - Contains information on using the Plot Manager Update system to override basegame conditionals in ME1 and ME2, OT and LE.
 - [Replacing strings in ME1/LE1 using TLK merge](game1_tlk_merge.md)
    - Contains information about how to use the GAME1_EMBEDDED_TLK header to replace strings in ME1/LE1, due to it having embedded TLK files
+- [Adding outfits to squadmates in Game 3 using Squadmate Outfit Merge](squadmate_outfit_merge.md)
+   - Contains information about the squadmate merge feature, and how to use it so you can add outfits without replacing existing ones for Mass Effect 3 (OT + LE)
 
 As of Mod Manager 6.2, there is a built-in moddesc editor that can be used on existing mods. Right click your mod while in developer mode and select `moddesc.ini editor`. Currently this only works on mods that are loaded, and cannot be used for creating the initial mod.
 
