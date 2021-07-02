@@ -50,26 +50,33 @@ An example file would look like this, which is explained below:
 The list of outfits must contain the following information in each object:
 
 **henchname**
+
 The internal name of the henchman. This is present on all henchmen files, and is case sensitive, such as `Tali`, `Marine`, and others.
 
 **henchpackage**
+
 The base package name for the outfit. For Game 3, this will cover 2 packages:
  - \[henchpackage].pcc
  - \[henchpackage]_Explore.pcc
 
 **highlightimage**
+
 The full instanced path to the highlight image (hench selected) for display in the squadmate selection screen. This is located in `SFXHenchImages_\[DLC folder name].pcc`.
 
 **availableimage**
+
 The full instanced path to the available image (hench not selected) for display in the squadmate selection screen. This is located in `SFXHenchImages_\[DLC folder name].pcc`.
 
 **silhouetteimage**
+
 The full instanced path to the silhouette image (hench not available) for display in the squadmate selection screen. This is located in `SFXHenchImages_\[DLC folder name].pcc`.
 
 **descriptiontext[0]**
+
 The TLK string ID describing the bonus provided by the armor. Note that this doesn't actually provide the bonus, just the UI string.
 
 **customtoken[0]**
+
 A custom value to place into the description text string if it has a place for a token.
 
 ### When merge takes place
