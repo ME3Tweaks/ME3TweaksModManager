@@ -986,7 +986,6 @@
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem
-                        IsEnabled="False"
                         Header="{DynamicResource string_LegendaryExplorerBeta}"
                         Name="LegendaryExplorerBeta_MenuItem"
                         Click="LaunchExternalTool_Clicked"
