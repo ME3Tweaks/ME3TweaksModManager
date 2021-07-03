@@ -75,7 +75,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
             }
             else
             {
-                throw new Exception($"{export.InstancedFullPath} in {package.FilePath} is not a property export. Cannot disable config flag on this export.");
+                throw new Exception(M3L.GetString(M3L.string_interp_mergefile_notPropertyExportConfigFlag, export.InstancedFullPath, package.FilePath));
             }
         }
 
@@ -193,7 +193,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
             if (PropertyType == @"EnumProperty")
             {
                 if (PropertyValue.Split('.').Length != 2)
-                    throw new Exception("'propertyvalue' for EnumProperty must have a '.' in it to separate the enum type from the enum value");
+                    throw new Exception(M3L.GetString(M3L.string_interp_mergefile_invalidEnumPropertyValue));
             }
         }
     }

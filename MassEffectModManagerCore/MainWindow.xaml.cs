@@ -1182,7 +1182,7 @@ namespace MassEffectModManagerCore
 
             foreach (var v in result.TargetsToSquadmateMergeSync)
             {
-                ShowRunAndDone(() => SQMOutfitMerge.BuildBioPGlobal(v), "Synchronizing squadmate outfits", "Synchronized squadmate outfits");
+                ShowRunAndDone(() => SQMOutfitMerge.BuildBioPGlobal(v), M3L.GetString(M3L.string_synchronizingSquadmateOutfits), M3L.GetString(M3L.string_synchronizedSquadmateOutfits));
             }
 
             foreach (var v in result.TargetsToAutoTOC)
@@ -1234,7 +1234,7 @@ namespace MassEffectModManagerCore
         {
             var task = backgroundTaskEngine.SubmitBackgroundJob($@"RunAndDone",
                 startStr, endStr);
-            var pmuUI = new RunAndDonePanel(action, "Synchronizing squadmate outfit files");
+            var pmuUI = new RunAndDonePanel(action, M3L.GetString(M3L.string_synchronizingSquadmateOutfitFiles));
             pmuUI.Close += (a, b) =>
             {
                 backgroundTaskEngine.SubmitJobCompletion(task);

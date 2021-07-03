@@ -2146,6 +2146,9 @@
     <!-- 0={Asset Filename} 1={Instanced Full Path} 2={Error messages list} -->
     <system:String x:Key="string_interp_mergefile_errorCompilingFunction">Error compiling function {0}: {1}</system:String>
     <!-- 0={Instanced Full Path of Entry} 1={Error messages list} -->
+    <system:String x:Key="string_interp_mergefile_notPropertyExportConfigFlag">{0} in {1} is not a property export. Cannot disable config flag on this export.</system:String>
+    <!-- 0={entry InstancedFullPath} 1={Filepath} -->
+    <system:String x:Key="string_interp_mergefile_invalidEnumPropertyValue">'propertyvalue' for EnumProperty must have a '.' in it to separate the enum type from the enum value</system:String>
 
     <!-- Options Panel -->
     <system:String x:Key="string_me3tweaksModManagerOptions">ME3Tweaks Mod Manager Options</system:String>
@@ -2169,5 +2172,13 @@
     <!-- 0={Squadmate hench name (Marine, Tali, etc)} -->
     <system:String x:Key="string_interp_errorCompilingConditionalFunction">Error compiling conditional function {0}: {1}</system:String>
     <!-- 0={Entry full name} 1={error messages}-->
+    <system:String x:Key="string_synchronizingSquadmateOutfits">Synchronizing squadmate outfits</system:String>
+    <system:String x:Key="string_synchronizedSquadmateOutfits">Synchronized squadmate outfits</system:String>
+    <system:String x:Key="string_synchronizingSquadmateOutfitFiles">Synchronizing squadmate outfits</system:String>
 
+    <!-- StringStructParser-->
+    <system:String x:Key="string_interp_ssp_unopenedParenthsisFound">Error parsing parenthesis split list: Found closing parenthesis that does not match open parenthesis at position {0} in string {1}</system:String>
+    <!-- 0={Position} 1={Original string} -->
+    <system:String x:Key="string_interp_ssp_unclosedParenthesisFound">Unclosed opening parenthesis encountered while parsing parenthesis split list in {0}</system:String>
+    <!-- 0={Original string} -->
 </ResourceDictionary>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using MassEffectModManagerCore.modmanager.localizations;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.helpers
@@ -10,7 +11,6 @@ namespace MassEffectModManagerCore.modmanager.helpers
     /// <summary>
     /// Parser class for different types of string structs and list
     /// </summary>
-    [Localizable(false)]
     public class StringStructParser
     {
         /// <summary>
@@ -205,7 +205,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                             if (parenthesisStack.Count == 0)
                             {
                                 Log.Error(@"Error parsing parenthesis split list: Found closing parenthesis that does not match open parenthesis at position " + i);
-                                throw new Exception($"Error parsing parenthesis split list: Found closing parenthesis that does not match open parenthesis at position {i} in string {inputString}"); //should this be localized?
+                                throw new Exception(M3L.GetString(M3L.string_interp_ssp_unopenedParenthsisFound, i, inputString)); //should this be localized?
                             }
 
                             var popped = parenthesisStack.Pop();
@@ -229,7 +229,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
             if (parenthesisStack.Count > 0)
             {
                 Log.Error(@"Error parsing parenthesis split list: count of open and closing parenthesis does not match.");
-                throw new Exception($"Unclosed opening parenthesis encountered while parsing parenthesis split list in {origString}"); //should this be localized?
+                throw new Exception(M3L.GetString(M3L.string_interp_ssp_unclosedParenthesisFound, origString)); //should this be localized?
             }
             return splits;
         }

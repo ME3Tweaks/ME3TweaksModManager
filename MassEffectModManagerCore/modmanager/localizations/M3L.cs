@@ -1700,5 +1700,8 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_noItemsSelected = "string_noItemsSelected";
 		public const string string_interp_invalidHenchNameSquadmateNameValueIsCaseSensitive = "string_interp_invalidHenchNameSquadmateNameValueIsCaseSensitive";
 		public const string string_interp_errorCompilingConditionalFunction = "string_interp_errorCompilingConditionalFunction";
+		public const string string_synchronizingSquadmateOutfits = "string_synchronizingSquadmateOutfits";
+		public const string string_synchronizedSquadmateOutfits = "string_synchronizedSquadmateOutfits";
+		public const string string_synchronizingSquadmateOutfitFiles = "string_synchronizingSquadmateOutfitFiles";
 	}
 }
