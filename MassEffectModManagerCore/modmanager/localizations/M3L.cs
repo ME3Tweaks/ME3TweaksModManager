@@ -1685,6 +1685,8 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_interp_mergefile_errorMergingAssetsX = "string_interp_mergefile_errorMergingAssetsX";
 		public const string string_interp_mergefile_errorsOccurredMergingAsset = "string_interp_mergefile_errorsOccurredMergingAsset";
 		public const string string_interp_mergefile_errorCompilingFunction = "string_interp_mergefile_errorCompilingFunction";
+		public const string string_interp_mergefile_notPropertyExportConfigFlag = "string_interp_mergefile_notPropertyExportConfigFlag";
+		public const string string_interp_mergefile_invalidEnumPropertyValue = "string_interp_mergefile_invalidEnumPropertyValue";
 		public const string string_me3tweaksModManagerOptions = "string_me3tweaksModManagerOptions";
 		public const string string_mainOptions = "string_mainOptions";
 		public const string string_legendaryEditionOptions = "string_legendaryEditionOptions";
@@ -1703,5 +1705,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_synchronizingSquadmateOutfits = "string_synchronizingSquadmateOutfits";
 		public const string string_synchronizedSquadmateOutfits = "string_synchronizedSquadmateOutfits";
 		public const string string_synchronizingSquadmateOutfitFiles = "string_synchronizingSquadmateOutfitFiles";
+		public const string string_interp_ssp_unopenedParenthsisFound = "string_interp_ssp_unopenedParenthsisFound";
+		public const string string_interp_ssp_unclosedParenthesisFound = "string_interp_ssp_unclosedParenthesisFound";
 	}
 }
