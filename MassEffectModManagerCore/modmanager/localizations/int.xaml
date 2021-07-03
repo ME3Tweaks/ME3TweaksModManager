@@ -805,7 +805,7 @@
     <!-- 0={string saying why preqrequesite was not met} -->
     <system:String x:Key="string_downloadFailed">Download failed</system:String>
     <system:String x:Key="string_error_cantDownloadNotEnoughInfoInStartupManifest">ME3Tweaks Mod Manager booted without network or could not fetch startup manifest - reboot application with network access to fetch required information to download this program</system:String>
-    <system:String x:Key="string_error_net5RuntimeMissing">The .NET 5 runtime is not installed</system:String>
+    <system:String x:Key="string_error_net5RuntimeMissing">The .NET 5 x64 runtime is not installed</system:String>
     
     <!-- Failed mods panel -->
     <system:String x:Key="string_restoreFromME3Tweaks">Restore from ME3Tweaks</system:String>
