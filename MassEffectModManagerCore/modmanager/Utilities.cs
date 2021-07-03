@@ -82,7 +82,7 @@ namespace MassEffectModManagerCore.modmanager
         public static bool IsNetRuntimeInstalled(int minVer)
         {
             var baseKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\dotnet\Setup\InstalledVersions");
-            if (baseKey.SubKeyCount == 0)
+            if (baseKey == null || baseKey.SubKeyCount == 0)
                 return false;
 
             foreach (var platformKey in baseKey.GetSubKeyNames())
