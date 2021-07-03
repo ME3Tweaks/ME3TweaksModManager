@@ -35,6 +35,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (sender == nameof(MainWindow.TestCode_MenuItem)) TestCode_Click(window);
             if (sender == nameof(MainWindow.DebugSquadmateMerge_MenuItem)) TestSquadmateMerge_Click(window);
             if (sender == nameof(MainWindow.UpdateMD5DB_MenuItem)) UpdateMD5Map(window);
+            if (sender == nameof(MainWindow.StampCurrentTargetWithALOTMarker_MenuItem)) StampCurrentTargetWithALOT_Click(window);
+            if (sender == nameof(MainWindow.StripCurrentTargetWithALOTMarker_MenuItem)) StripCurrentTargetALOTMarker_Click(window);
 #endif
         }
 #if DEBUG

@@ -138,7 +138,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     {
                         // Actual game
                         var oldTMOption = TextureModded;
-                        var alotInfo = GetInstalledALOTInfo();
+                        var alotInfo = GetInstalledALOTInfo(allowCached: false);
                         if (alotInfo != null)
                         {
                             TextureModded = true;
@@ -246,12 +246,12 @@ namespace MassEffectModManagerCore.modmanager.objects
         {
             if (allowCached && cachedTextureModInfo != null && startPos == -1) return cachedTextureModInfo;
 
-            string gamePath = M3Directories.GetTextureMarkerPath(this);
-            if (gamePath != null && File.Exists(gamePath))
+            string markerPath = M3Directories.GetTextureMarkerPath(this);
+            if (markerPath != null && File.Exists(markerPath))
             {
                 try
                 {
-                    using FileStream fs = new FileStream(gamePath, System.IO.FileMode.Open, FileAccess.Read);
+                    using FileStream fs = new FileStream(markerPath, System.IO.FileMode.Open, FileAccess.Read);
                     if (startPos < 0)
                     {
                         fs.SeekEnd();
