@@ -246,7 +246,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         {
             if (allowCached && cachedTextureModInfo != null && startPos == -1) return cachedTextureModInfo;
 
-            string gamePath = getALOTMarkerFilePath();
+            string gamePath = M3Directories.GetTextureMarkerPath(this);
             if (gamePath != null && File.Exists(gamePath))
             {
                 try
@@ -362,12 +362,6 @@ namespace MassEffectModManagerCore.modmanager.objects
             //return new ALOTVersionInfo(9, 0, 0, 0); //MEMI tag but no info we know of
         }
 
-        private string getALOTMarkerFilePath()
-        {
-            // this used to be shared method
-            return M3Directories.GetTextureMarkerPath(this);
-        }
-
         public ui.ObservableCollectionExtended<ModifiedFileObject> ModifiedBasegameFiles { get; } = new ui.ObservableCollectionExtended<ModifiedFileObject>();
         public ui.ObservableCollectionExtended<SFARObject> ModifiedSFARFiles { get; } = new ui.ObservableCollectionExtended<SFARObject>();
         public ICollectionView ModifiedBasegameFilesView => CollectionViewSource.GetDefaultView(ModifiedBasegameFiles);
@@ -394,7 +388,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 {
                     return; // Do not report this file as modified
                 }
-                else if (this.Game != MEGame.LELauncher && file == getALOTMarkerFilePath())
+                else if (this.Game != MEGame.LELauncher && file == M3Directories.GetTextureMarkerPath(this))
                 {
                     return; //Do not report this file as modified or user will desync game state with texture state
                 }
@@ -1029,7 +1023,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         public void StampTextureModificationInfo(TextureModInstallationInfo tmii)
         {
 #if DEBUG
-            var markerPath = getALOTMarkerFilePath();
+            var markerPath = M3Directories.GetTextureMarkerPath(this);
             try
             {
                 using (FileStream fs = new FileStream(markerPath, FileMode.Open, FileAccess.ReadWrite))
@@ -1117,7 +1111,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         internal void StripALOTInfo()
         {
 #if DEBUG
-            var markerPath = getALOTMarkerFilePath();
+            var markerPath = M3Directories.GetTextureMarkerPath(this);
 
             try
             {
