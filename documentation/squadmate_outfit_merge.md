@@ -12,6 +12,8 @@ Squadmate Outfit Merge is a feature in Mod Manager 7.0.1 for Game 3 that allows 
 
 ### Setting up your mod
 
+A demo mod can be downloaded and inspected [here](https://www.nexusmods.com/masseffectlegendaryedition/mods/400).
+
 This feature is not part of moddesc.ini specifically; rather it is a feature automatically run on Mod Manager 7.0.1 and higher at install time. You don't need to add anything to your mod's coalesced file (no appearances, no dynamic load mappings), as Mod Manager will do all of this for you. To use this feature however, you must add a file to your DLC mod's CookedPCConsole folder, named `SquadmateMergeInfo.sqm`, as well as the outfit packages, and your TFC.
 
 #### Package files required
