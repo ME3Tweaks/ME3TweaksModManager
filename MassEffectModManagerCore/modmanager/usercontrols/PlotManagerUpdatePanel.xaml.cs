@@ -128,7 +128,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 bool initialized = fl.Initialize(new RelativePackageCache() { RootPath = M3Directories.GetBioGamePath(target) }).Result;
                 if (!initialized)
                 {
-                    throw new Exception(@"FileLib for PlotManagerUpdate could not initialize!");
+                    Log.Error(@"Error initializing FileLib for plot manager sync:");
+                    foreach (var v in fl.InitializationLog.AllErrors) Log.Error(v.Message);
+                    throw new Exception($"FileLib for PlotManagerSync could not initialize: {string.Join(Environment.NewLine, fl.InitializationLog.AllErrors.Select(x=>x.Message))}");
                 }
                 sw.Stop();
                 Debug.WriteLine($@"Took {sw.ElapsedMilliseconds}ms to load filelib");
