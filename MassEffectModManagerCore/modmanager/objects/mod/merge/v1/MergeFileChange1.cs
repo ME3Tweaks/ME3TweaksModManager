@@ -285,8 +285,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
                         Log.Error(v.Message);
                     }
 
-                    throw new Exception(
-                        $"FileLib for script update could not initialize, cannot merge script to {targetExport.InstancedFullPath}:\n{string.Join(Environment.NewLine, fl.InitializationLog.AllErrors)}");
+                    throw new Exception(M3L.GetString(M3L.string_interp_fileLibInitMergeMod1Script, targetExport.InstancedFullPath, string.Join(Environment.NewLine, fl.InitializationLog.AllErrors)));
                 }
 
                 assetsCache.FileLibs[package.FilePath] = fl;

@@ -38,6 +38,7 @@ namespace LocalizationHelper
             var objects = Path.Combine(modmanagerroot, "modmanager", "objects");
             var gameini = Path.Combine(modmanagerroot, "modmanager", "gameini");
             var helpers = Path.Combine(modmanagerroot, "modmanager", "helpers");
+            var pmu = Path.Combine(modmanagerroot, "modmanager", "plotmanager");
 
             List<string> files = new List<string>();
             files.AddRange(Directory.EnumerateFiles(usercontrols, "*.xaml*", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
@@ -47,6 +48,7 @@ namespace LocalizationHelper
             files.AddRange(Directory.EnumerateFiles(objects, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
             files.AddRange(Directory.EnumerateFiles(gameini, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
             files.AddRange(Directory.EnumerateFiles(helpers, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
+            files.AddRange(Directory.EnumerateFiles(pmu, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
 
             //these files are not localized
             files.Remove(Path.Combine(modmanagerroot, "modmanager", "me3tweaks", "JPatch.cs").Substring(rootLen));
@@ -278,7 +280,7 @@ namespace LocalizationHelper
             bool sectionIsLocalizable = true;
             for (int x = 0; x < filelines.Length; x++)
             {
-                if (x == 1845)
+                if (x == 132)
                     Debug.WriteLine("ok");
                 var line = filelines[x];
                 if (line.Contains("do not localize", StringComparison.InvariantCultureIgnoreCase)) continue; //ignore this line.
@@ -302,7 +304,7 @@ namespace LocalizationHelper
                 if (line.Contains("[DebuggerDisplay(")) continue; //skip these lines
                 var commentIndex = line.IndexOf("//");
                 var protocolIndex = line.IndexOf(@"://");
-                if (line.IndexOf(@"Log.") > 0)
+                if (line.IndexOf(@" Log.") > 0)
                 {
                     Debug.WriteLine($@"Skipping log line at {x}");
                     continue;
@@ -868,6 +870,7 @@ namespace LocalizationHelper
             if (str.Equals("Polski", StringComparison.InvariantCultureIgnoreCase)) return false;
             if (str.Equals("Pусский", StringComparison.InvariantCultureIgnoreCase)) return false;
             if (str.Equals("Português", StringComparison.InvariantCultureIgnoreCase)) return false;
+            if (str.Equals("한국어", StringComparison.InvariantCultureIgnoreCase)) return false;
             return true;
         }
 

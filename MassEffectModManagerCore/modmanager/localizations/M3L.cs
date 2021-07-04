@@ -1670,6 +1670,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_syncingPlotManager = "string_syncingPlotManager";
 		public const string string_interp_plotManagerSyncForX = "string_interp_plotManagerSyncForX";
 		public const string string_interp_errorCompilingFunctionReason = "string_interp_errorCompilingFunctionReason";
+		public const string string_interp_fileLibInitFailedPlotManager = "string_interp_fileLibInitFailedPlotManager";
 		public const string string_mergeModFileDoesNotHaveCorrectMagicHeader = "string_mergeModFileDoesNotHaveCorrectMagicHeader";
 		public const string string_interp_unsupportedMergeModVersionVersionX = "string_interp_unsupportedMergeModVersionVersionX";
 		public const string string_interp_invalidMergeModManifestReason = "string_interp_invalidMergeModManifestReason";
@@ -1687,6 +1688,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_interp_mergefile_errorCompilingFunction = "string_interp_mergefile_errorCompilingFunction";
 		public const string string_interp_mergefile_notPropertyExportConfigFlag = "string_interp_mergefile_notPropertyExportConfigFlag";
 		public const string string_interp_mergefile_invalidEnumPropertyValue = "string_interp_mergefile_invalidEnumPropertyValue";
+		public const string string_interp_fileLibInitMergeMod1Script = "string_interp_fileLibInitMergeMod1Script";
 		public const string string_me3tweaksModManagerOptions = "string_me3tweaksModManagerOptions";
 		public const string string_mainOptions = "string_mainOptions";
 		public const string string_legendaryEditionOptions = "string_legendaryEditionOptions";
