@@ -275,6 +275,101 @@
                                 RenderOptions.BitmapScalingMode="HighQuality" />
                         </MenuItem.Icon>
                     </MenuItem>
+                    <MenuItem
+                            Header="{DynamicResource string_Language}">
+                        <MenuItem.Icon>
+                            <Image Source="/modmanager/localizations/icons/languageselector.png"
+                                    RenderOptions.BitmapScalingMode="HighQuality" />
+                        </MenuItem.Icon>
+                        <!--<MenuItem Name="LanguageCZE_MenuItem" Header="Polski" Click="ChangeLanguage_Clicked" StaysOpenOnClick="True" Visibility="Collapsed">
+                                <MenuItem.Icon>
+                                    <Image Source="/modmanager/localizations/icons/czech.png" />
+                                </MenuItem.Icon>
+                            </MenuItem>-->
+                        <MenuItem
+                                IsChecked="{Binding Path=(modmanager:Settings.Language), Converter={StaticResource StringMatchToBoolConverter}, ConverterParameter='deu'}"
+                                Name="LanguageDEU_MenuItem"
+                                Header="Deutsch"
+                                Click="ChangeLanguage_Clicked"
+                                StaysOpenOnClick="True">
+                            <MenuItem.Icon>
+                                <Image Source="/modmanager/localizations/icons/german.png" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem
+                                IsChecked="{Binding Path=(modmanager:Settings.Language), Converter={StaticResource StringMatchToBoolConverter}, ConverterParameter='int'}"
+                                Name="LanguageINT_MenuItem"
+                                Header="English"
+                                Click="ChangeLanguage_Clicked"
+                                StaysOpenOnClick="True">
+                            <MenuItem.Icon>
+                                <Image
+                                        Source="/modmanager/localizations/icons/english.png" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem
+                            Visibility="Collapsed"
+                            IsChecked="{Binding Path=(modmanager:Settings.Language), Converter={StaticResource StringMatchToBoolConverter}, ConverterParameter='kor'}"
+                            Name="LanguageKOR_MenuItem"
+                            Header="한국어"
+                            Click="ChangeLanguage_Clicked"
+                            StaysOpenOnClick="True">
+                            <MenuItem.Icon>
+                                <Image
+                                    Source="/modmanager/localizations/icons/korean.png" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <!--
+                            <MenuItem Name="LanguageESN_MenuItem" Header="Español" Click="ChangeLanguage_Clicked" StaysOpenOnClick="True" Visibility="Collapsed">
+                                <MenuItem.Icon>
+                                    <Image Source="/modmanager/localizations/icons/spanish.png" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            -->
+                        <!--<MenuItem
+                                Name="LanguageFRA_MenuItem"
+                                Header="Français"
+                                Click="ChangeLanguage_Clicked"
+                                StaysOpenOnClick="True">
+                                <MenuItem.Icon>
+                                    <Image
+                                        Source="/modmanager/localizations/icons/french.png" />
+                                </MenuItem.Icon>
+                            </MenuItem>-->
+                        <MenuItem
+                            IsChecked="{Binding Path=(modmanager:Settings.Language), Converter={StaticResource StringMatchToBoolConverter}, ConverterParameter='pol'}"
+                            Name="LanguagePOL_MenuItem"
+                                Header="Polski"
+                                Click="ChangeLanguage_Clicked"
+                                StaysOpenOnClick="True">
+                            <MenuItem.Icon>
+                                <Image
+                                        Source="/modmanager/localizations/icons/polish.png" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem
+                                IsChecked="{Binding Path=(modmanager:Settings.Language), Converter={StaticResource StringMatchToBoolConverter}, ConverterParameter='bra'}"
+                                Name="LanguageBRA_MenuItem"
+                                Header="Português"
+                                Click="ChangeLanguage_Clicked"
+                                StaysOpenOnClick="True">
+                            <MenuItem.Icon>
+                                <Image
+                                        Source="/modmanager/localizations/icons/portuguese.png" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem
+                                IsChecked="{Binding Path=(modmanager:Settings.Language), Converter={StaticResource StringMatchToBoolConverter}, ConverterParameter='rus'}"
+                                Name="LanguageRUS_MenuItem"
+                                Header="Pусский"
+                                Click="ChangeLanguage_Clicked"
+                                StaysOpenOnClick="True">
+                            <MenuItem.Icon>
+                                <Image
+                                        Source="/modmanager/localizations/icons/russian.png" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </MenuItem>
                     <Separator />
                     <MenuItem
                         Header="{DynamicResource string_Checkforcontentupdates}"

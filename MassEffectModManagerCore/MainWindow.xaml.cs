@@ -3772,6 +3772,49 @@ namespace MassEffectModManagerCore
 
         }
 
+
+        private void ChangeLanguage_Clicked(object sender, RoutedEventArgs e)
+        {
+            string lang = @"int";
+            if (sender == LanguageINT_MenuItem)
+            {
+                lang = @"int";
+            }
+            else if (sender == LanguagePOL_MenuItem)
+            {
+                lang = @"pol";
+            }
+            else if (sender == LanguageRUS_MenuItem)
+            {
+                lang = @"rus";
+            }
+            else if (sender == LanguageDEU_MenuItem)
+            {
+                lang = @"deu";
+            }
+            else if (sender == LanguageBRA_MenuItem)
+            {
+                lang = @"bra";
+            }
+            //else if (sender == LanguageESN_MenuItem)
+            //{
+            //    lang = @"esn";
+            //}
+            //else if (sender == LanguageFRA_MenuItem)
+            //{
+            //    lang = @"fra";
+            //}
+            //else if (sender == LanguageCZE_MenuItem)
+            //{
+            //    lang = @"cze";
+            //}
+            //else if (sender == LanguageKOR_MenuItem)
+            //{
+            //    lang = @"kor";
+            //}
+            SetApplicationLanguage(lang, false);
+        }
+
         /// <summary>
         /// Sets the UI language. This will save the settings if it is not startup.
         /// </summary>
