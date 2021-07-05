@@ -502,4 +502,16 @@
       <downloadlink>https://github.com/SirCxyrtyx/AutoTOC-asi/releases/download/LEv1.0/AutoTOC_LE-v1.0.asi</downloadlink>
     </asimod>
   </updategroup>
+  <updategroup groupid="32" game="3" hidden="0">
+    <asimod>
+      <name>Controller Input Tester</name>
+      <installedname>ControllerInputTester</installedname>
+      <author>Mgamerz</author>
+      <description>This ASI opens a console window that logs controller inputs. You must install a controller mod or it will not output anything. This is only for testing if the game is seeing your controller inputs.</description>
+      <version>1</version>
+      <hash>264691e2d277a31f7c455d59d4f83d7a</hash>
+      <sourcecode>https://github.com/ME3Tweaks/ME3-ASI-Plugins/tree/master/ControllerInputTester</sourcecode>
+      <downloadlink>https://github.com/ME3Tweaks/ME3-ASI-Plugins/releases/download/v1.0-ControllerInputTester/ControllerInputTester.asi</downloadlink>
+    </asimod>
+  </updategroup>
 </ASIManifest>
