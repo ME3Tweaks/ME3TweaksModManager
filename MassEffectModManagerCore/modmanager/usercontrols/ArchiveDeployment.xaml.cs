@@ -382,8 +382,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 tlkMappings[language.filecode] = tf.StringRefs;
 
                                 //Check string order
-                                var malestringRefsInRightOrder = tf.StringRefs.Take(tf.Header.MaleEntryCount).IsAscending((x, y) => x.StringID.CompareTo(y.StringID)); //male strings
-                                var femalestringRefsInRightOrder = tf.StringRefs.Skip(tf.Header.MaleEntryCount).Take(tf.Header.FemaleEntryCount).IsAscending((x, y) => x.StringID.CompareTo(y.StringID)); //male strings
+
+
+
+                                var malestringRefsInRightOrder = tf.StringRefs.Take(tf.Header.MaleEntryCount).IsAscending((x, y) => x.CalculatedID.CompareTo(y.CalculatedID)); //male strings
+                                var femalestringRefsInRightOrder = tf.StringRefs.Skip(tf.Header.MaleEntryCount).Take(tf.Header.FemaleEntryCount).IsAscending((x, y) => x.CalculatedID.CompareTo(y.CalculatedID)); //male strings
                                 string gender = M3L.GetString(M3L.string_male);
                                 if (!malestringRefsInRightOrder)
                                 {

@@ -41,12 +41,12 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
 
             if (PropertyUpdates != null)
             {
+                var props = export.GetProperties();
                 foreach (var pu in PropertyUpdates)
                 {
-                    var props = export.GetProperties();
                     pu.ApplyUpdate(package, props, this);
-                    export.WriteProperties(props);
                 }
+                export.WriteProperties(props);
             }
 
             // APPLY ASSET UPDATE
