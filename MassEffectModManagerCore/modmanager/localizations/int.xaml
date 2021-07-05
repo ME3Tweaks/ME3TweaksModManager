@@ -2109,13 +2109,15 @@
     <system:String x:Key="string_interp_nexusModNotCompatible">{0} is not compatible with ME3Tweaks Mod Manager. If this is a texture mod, install it with ALOT Installer.</system:String>
     <!-- 0={Mod Name (on NexusMods)} -->
 
-    <!-- Plot Manager Panel -->
+    <!-- Plot Manager Sync Panel -->
     <system:String x:Key="string_syncingPlotManager">Syncing Plot Manager</system:String>
     <!-- Message that comes up telling user what's happening. Plot Manager is something M3 keeps up to date (as mods override and/or add plot flags) and is used to track plot events -->
     <system:String x:Key="string_interp_plotManagerSyncForX">PlotManager sync for {0}</system:String>
     <!-- 0={comma separated list of mod names} -->
     <system:String xml:space="preserve" x:Key="string_interp_errorCompilingFunctionReason">Error compiling function {0}: {1}</system:String>
     <!-- 0={export name} 1={list of log messages} -->
+    <system:String x:Key="string_interp_fileLibInitFailedPlotManager">FileLib for PlotManagerSync could not initialize: {0}</system:String>
+    <!-- 0={Newline separated list of errors} -->
 
     <!-- Merge Mods (V1) -->
     <system:String x:Key="string_mergeModFileDoesNotHaveCorrectMagicHeader">Merge mod file does not have correct magic header</system:String>
@@ -2149,6 +2151,8 @@
     <system:String x:Key="string_interp_mergefile_notPropertyExportConfigFlag">{0} in {1} is not a property export. Cannot disable config flag on this export.</system:String>
     <!-- 0={entry InstancedFullPath} 1={Filepath} -->
     <system:String x:Key="string_interp_mergefile_invalidEnumPropertyValue">'propertyvalue' for EnumProperty must have a '.' in it to separate the enum type from the enum value</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_fileLibInitMergeMod1Script">FileLib for script update could not initialize, cannot merge script to {0}:\n{1}</system:String>
+    <!-- 0={target entry InstancedFullPath} 1={newline split list of errors} -->
 
     <!-- Options Panel -->
     <system:String x:Key="string_me3tweaksModManagerOptions">ME3Tweaks Mod Manager Options</system:String>

@@ -130,7 +130,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     Log.Error(@"Error initializing FileLib for plot manager sync:");
                     foreach (var v in fl.InitializationLog.AllErrors) Log.Error(v.Message);
-                    throw new Exception($"FileLib for PlotManagerSync could not initialize: {string.Join(Environment.NewLine, fl.InitializationLog.AllErrors.Select(x=>x.Message))}");
+                    throw new Exception(M3L.GetString(M3L.string_interp_fileLibInitFailedPlotManager, string.Join(Environment.NewLine, fl.InitializationLog.AllErrors.Select(x => x.Message)))); //force localize
                 }
                 sw.Stop();
                 Debug.WriteLine($@"Took {sw.ElapsedMilliseconds}ms to load filelib");
@@ -183,7 +183,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     plotManager.Save(pmPath, true);
                     // Update local file DB
-                    var bgfe = new BasegameFileIdentificationService.BasegameCloudDBFile(pmPath.Substring(target.TargetPath.Length + 1), (int)new FileInfo(pmPath).Length, target.Game, M3L.GetString(M3L.string_interp_plotManagerSyncForX,string.Join(@", ", combinedNames)), Utilities.CalculateMD5(pmPath));
+                    var bgfe = new BasegameFileIdentificationService.BasegameCloudDBFile(pmPath.Substring(target.TargetPath.Length + 1), (int)new FileInfo(pmPath).Length, target.Game, M3L.GetString(M3L.string_interp_plotManagerSyncForX, string.Join(@", ", combinedNames)), Utilities.CalculateMD5(pmPath));
                     BasegameFileIdentificationService.AddLocalBasegameIdentificationEntries(new List<BasegameFileIdentificationService.BasegameCloudDBFile>(new[] { bgfe }));
                 }
             }

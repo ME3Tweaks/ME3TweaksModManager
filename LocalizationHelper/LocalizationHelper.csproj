@@ -11,8 +11,8 @@
     <Copyright>2021 ME3Tweaks</Copyright>
     <ApplicationIcon>localizericon.ico</ApplicationIcon>
     <Version>1.0.8</Version>
-    <AssemblyVersion>1.0.8.0</AssemblyVersion>
-    <FileVersion>1.0.8.0</FileVersion>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <FileVersion>2.0.0.0</FileVersion>
     <Platforms>x64</Platforms>
     <ValidateExecutableReferencesMatchSelfContained>false</ValidateExecutableReferencesMatchSelfContained>
   </PropertyGroup>
