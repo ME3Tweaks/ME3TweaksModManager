@@ -3318,7 +3318,7 @@ namespace MassEffectModManagerCore
                             //if (magic is 0x666D726D or 0x1B) //fmrm (backwards) (ME3), 0x1B (LE1 (sigh))
                             //{
 
-                            NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"Coalesced Comppiler");
+                            NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"Coalesced Compiler");
                             var task = backgroundTaskEngine.SubmitBackgroundJob(@"CoalescedCompiler", M3L.GetString(M3L.string_compilingCoalescedFile), M3L.GetString(M3L.string_compiledCoalescedFile));
                             nbw.DoWork += (a, b) =>
                             {
@@ -3332,9 +3332,9 @@ namespace MassEffectModManagerCore
                                 if (b.Error != null)
                                 {
                                     Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
+                                    task.finishedUiText = M3L.GetString(M3L.string_failedToCompileCoalescedFile);
                                 }
 
-                                task.finishedUiText = M3L.GetString(M3L.string_failedToCompileCoalescedFile);
                                 backgroundTaskEngine.SubmitJobCompletion(task);
                             };
                             nbw.RunWorkerAsync();
@@ -3347,7 +3347,7 @@ namespace MassEffectModManagerCore
                             using var fs = new FileStream(files[0], FileMode.Open, FileAccess.Read);
                             var magic = fs.ReadInt32();
                             fs.Dispose();
-                            if (magic is 0x666D726D or 0x1B) //fmrm (backwards) (ME3), 0x1B (LE1 (sigh))
+                            if (magic is 0x666D726D or 0x1E) //fmrm (backwards) (ME3), 0x1E (LE1 (sigh))
                             {
 
                                 NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"Coalesced Decompiler");
