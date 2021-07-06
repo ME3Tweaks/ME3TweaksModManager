@@ -640,6 +640,11 @@ namespace MassEffectModManagerCore.modmanager
             }
         }
 
+        public static async Task<bool> DeleteFilesAndFoldersRecursivelyAsync(string targetDirectory, bool throwOnFailed = false)
+        {
+            return await Task.FromResult(DeleteFilesAndFoldersRecursively(targetDirectory, throwOnFailed));
+        }
+
         public static bool DeleteFilesAndFoldersRecursively(string targetDirectory, bool throwOnFailed = false)
         {
             if (!Directory.Exists(targetDirectory))

@@ -42,7 +42,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
         /// <param name="tlkXmlName"></param>
         /// <param name="gameFileMapping"></param>
         /// <returns></returns>
-        public string InstallTLKMerge(string tlkXmlName, Dictionary<string, string> gameFileMapping, bool savePackage, GameTarget target, Mod modBeingInstalled, Action<BasegameFileIdentificationService.BasegameCloudDBFile> addCloudDBEntry)
+        public string InstallTLKMerge(string tlkXmlName, Dictionary<string, string> gameFileMapping, bool savePackage, PackageCache cache, GameTarget target, Mod modBeingInstalled, Action<BasegameFileIdentificationService.BasegameCloudDBFile> addCloudDBEntry)
         {
             // Need to load file into memory
             string xmlContents;
@@ -84,7 +84,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
 
                 if (packagePath != null)
                 {
-                    var package = MEPackageHandler.OpenMEPackage(packagePath);
+                    var package = cache.GetCachedPackage(packagePath);
                     var exp = package.FindExport(exportPath);
                     if (exp == null)
                     {
@@ -112,10 +112,10 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         {
                             if (numDone <= 25)
                             {
-                                CLog.Information($@"Updating TLK id {tlkId}", Settings.LogModInstallation);
+                                //CLog.Information($@"Updating TLK id {tlkId}", Settings.LogModInstallation);
                                 if (numDone == 25)
                                 {
-                                    CLog.Information($@"Remaining updates will not be logged for this TLK to trim log size...", Settings.LogModInstallation);
+                                    //CLog.Information($@"Remaining updates will not be logged for this TLK to trim log size...", Settings.LogModInstallation);
                                 }
                             }
                             strRef.Data = data;
@@ -133,6 +133,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         Log.Information($@"Saving TLKMerged package {packagePath}");
                         package.Save();
                         addCloudDBEntry?.Invoke(new BasegameFileIdentificationService.BasegameCloudDBFile(package.FilePath, (int)new FileInfo(package.FilePath).Length, target, modBeingInstalled));
+                        cache.DropPackageFromCache(packagePath); // we are not doing more operations on this file so drop it out
                     }
                 }
             }

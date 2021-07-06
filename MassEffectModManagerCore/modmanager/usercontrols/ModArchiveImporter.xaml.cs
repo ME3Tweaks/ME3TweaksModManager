@@ -883,37 +883,51 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     //Will delete on import
                     bool abort = false;
-                    Application.Current.Dispatcher.Invoke(delegate
+                    Application.Current.Dispatcher.Invoke(() =>
                     {
-                        var result = M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_interp_dialogImportingModWillDeleteExistingMod, sanitizedPath), M3L.GetString(M3L.string_modAlreadyExists), MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No);
+                        var result = M3L.ShowDialog(Window.GetWindow(this),
+                            M3L.GetString(M3L.string_interp_dialogImportingModWillDeleteExistingMod, sanitizedPath),
+                            M3L.GetString(M3L.string_modAlreadyExists), MessageBoxButton.YesNo, MessageBoxImage.Warning,
+                            MessageBoxResult.No);
                         if (result == MessageBoxResult.No)
                         {
                             e.Result = ModImportResult.USER_ABORTED_IMPORT;
                             abort = true;
                             return;
                         }
-
-                        try
-                        {
-                            if (!Utilities.DeleteFilesAndFoldersRecursively(sanitizedPath))
-                            {
-                                Log.Error(@"Could not delete existing mod directory.");
-                                e.Result = ModImportResult.ERROR_COULD_NOT_DELETE_EXISTING_DIR;
-                                M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_dialogErrorOccuredDeletingExistingMod), M3L.GetString(M3L.string_errorDeletingExistingMod), MessageBoxButton.OK, MessageBoxImage.Error);
-                                abort = true;
-                                return;
-                            }
-
-                        }
-                        catch (Exception ex)
-                        {
-                            //I don't think this can be triggered but will leave as failsafe anyways.
-                            Log.Error(@"Error while deleting existing output directory: " + App.FlattenException(ex));
-                            M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_interp_errorOccuredDeletingExistingModX, ex.Message), M3L.GetString(M3L.string_errorDeletingExistingMod), MessageBoxButton.OK, MessageBoxImage.Error);
-                            e.Result = ModImportResult.ERROR_COULD_NOT_DELETE_EXISTING_DIR;
-                            abort = true;
-                        }
                     });
+                    if (abort)
+                        return;
+
+                    try
+                    {
+                        ActionText = "Deleting existing mod in library";
+                        var deletedOK = Utilities.DeleteFilesAndFoldersRecursively(sanitizedPath);
+                        if (!deletedOK)
+                        {
+                            Log.Error(@"Could not delete existing mod directory.");
+                            e.Result = ModImportResult.ERROR_COULD_NOT_DELETE_EXISTING_DIR;
+                            M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_dialogErrorOccuredDeletingExistingMod), M3L.GetString(M3L.string_errorDeletingExistingMod), MessageBoxButton.OK, MessageBoxImage.Error);
+                            abort = true;
+                            return;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        //I don't think this can be triggered but will leave as failsafe anyways.
+                        Log.Error(@"Error while deleting existing output directory: " + App.FlattenException(ex));
+                        Application.Current.Dispatcher.Invoke(
+                            () =>
+                            {
+                                M3L.ShowDialog(Window.GetWindow(this),
+                                    M3L.GetString(M3L.string_interp_errorOccuredDeletingExistingModX, ex.Message),
+                                    M3L.GetString(M3L.string_errorDeletingExistingMod), MessageBoxButton.OK,
+                                    MessageBoxImage.Error);
+                            });
+                        e.Result = ModImportResult.ERROR_COULD_NOT_DELETE_EXISTING_DIR;
+                        abort = true;
+                    }
+
                     if (abort)
                     {
                         Log.Warning(@"Aborting mod import.");
@@ -923,6 +937,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                 Directory.CreateDirectory(sanitizedPath);
 
+                ActionText = M3L.GetString(M3L.string_interp_extractingX, mod.ModName);
                 //Check if RCW mod
                 if (mod.InstallationJobs.Count == 1 && mod.InstallationJobs[0].Header == ModJob.JobHeader.ME2_RCWMOD)
                 {

@@ -836,12 +836,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 doneMerges = 0;
                 var mergeFiles = Mod.CoalesceTLKMergeFiles(allTLKMerges);
                 int totalTlkMerges = mergeFiles.Count;
+                PackageCache cache = new PackageCache();
                 foreach (var tlkFileMap in mergeFiles)
                 {
                     for (int i = 0; i < tlkFileMap.Value.Count; i++)
                     {
                         var tlkXmlFile = tlkFileMap.Value[i];
-                        ModBeingInstalled.InstallTLKMerge(tlkXmlFile, gameMap, i == tlkFileMap.Value.Count - 1, SelectedGameTarget, ModBeingInstalled, x => basegameCloudDBUpdates.Add(x));
+                        ModBeingInstalled.InstallTLKMerge(tlkXmlFile, gameMap, i == tlkFileMap.Value.Count - 1, cache, SelectedGameTarget, ModBeingInstalled, x => basegameCloudDBUpdates.Add(x));
                     }
 
                     Percent = (int)(doneMerges * 100.0 / totalTlkMerges);
