@@ -73,6 +73,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     var bitmap = new BitmapImage();
                     bitmap.BeginInit();
                     bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmap.CreateOptions = BitmapCreateOptions.IgnoreColorProfile; // Fixes crashes on things like ICC, maybe?
                     bitmap.StreamSource = loadStream;
                     bitmap.EndInit();
                     bitmap.Freeze();
