@@ -27,7 +27,7 @@
     <converters:StringMatchToBoolConverter x:Key="StringMatchToBoolConverter"/>
     <DataTemplate x:Key="TargetSelectorTemplate" DataType="{x:Type modmanager:GameTarget}">
         <DockPanel HorizontalAlignment="Stretch">
-            <Image DockPanel.Dock="Left" Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16"  Visibility="{Binding Converter={StaticResource GameIconVisibilityConverter}}"/>
+            <Image DockPanel.Dock="Left" Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16"/>
             <Image DockPanel.Dock="Left" Source="{Binding TargetBootIcon, TargetNullValue={x:Null}}" Width="12" Height="16" RenderOptions.BitmapScalingMode="HighQuality" Margin="3,0,0,0" Visibility="{Binding Converter={StaticResource BootTargetSourceVisibilityConverter}}"/>
             <TextBlock Text="{Binding TargetPath}" Margin="3,0,0,0" HorizontalAlignment="Stretch" DockPanel.Dock="Left"/>
             <DockPanel ToolTip="{DynamicResource string_thisTargetHasBeenTextureModded}"  DockPanel.Dock="Right" Margin="3,0,0,0" Visibility="{Binding TextureModded, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}">

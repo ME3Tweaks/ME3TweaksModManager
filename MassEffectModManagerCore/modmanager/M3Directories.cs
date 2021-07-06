@@ -48,7 +48,7 @@ namespace MassEffectModManagerCore.modmanager
             if (target.Game == MEGame.LELauncher) return target.TargetPath; // LELauncher
             return MEDirectories.GetExecutableFolderPath(target.Game, target.TargetPath);
         }
-        public static string GetLODConfigFile(GameTarget target) => MEDirectories.GetLODConfigFile(target.Game);
+        public static string GetLODConfigFile(GameTarget target) => MEDirectories.GetLODConfigFile(target.Game, target.TargetPath);
         public static string GetTextureMarkerPath(GameTarget target) => MEDirectories.GetTextureModMarkerPath(target.Game, target.TargetPath);
         public static string GetASIPath(GameTarget target) => MEDirectories.GetASIPath(target.Game, target.TargetPath);
         public static string GetTestPatchSFARPath(GameTarget target)

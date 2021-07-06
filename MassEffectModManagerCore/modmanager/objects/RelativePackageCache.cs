@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LegendaryExplorerCore.Packages;
+using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.objects
 {
@@ -47,14 +48,14 @@ namespace MassEffectModManagerCore.modmanager.objects
                     {
                         if (Cache.TryGetValue(Path.Combine(RootPath, packagePath), out var relPackage))
                         {
-                            //Debug.WriteLine($@"PackageCache hit: {packagePath}");
+                            //Log.Information($@"RelativePackageCache hit: {packagePath}");
                             return relPackage;
                         }
                     }
                     catch (Exception e)
                     {
                         // in case two full paths are tried to be set this will probably throw invalid path exception.
-                        Debug.WriteLine($@"Error combining paths: {RootPath}, {packagePath}");
+                        Log.Error($@"Error combining paths: {RootPath}, {packagePath}");
                     }
                 }
 
@@ -62,7 +63,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 {
                     if (File.Exists(packagePath))
                     {
-                        Debug.WriteLine($@"RelativePackageCache load: {packagePath}");
+                        //Log.Information($@"RelativePackageCache load: {packagePath}");
                         package = MEPackageHandler.OpenMEPackage(packagePath, forceLoadFromDisk: true);
                         Cache[packagePath] = package;
                         return package;
@@ -75,7 +76,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                             packagePath = Path.Combine(RootPath, packagePath);
                             if (File.Exists(packagePath))
                             {
-                                Debug.WriteLine($@"RelativePackageCache load: {packagePath}");
+                                //Log.Information($@"RelativePackageCache load: {packagePath}");
                                 package = MEPackageHandler.OpenMEPackage(packagePath, forceLoadFromDisk: true);
                                 Cache[packagePath] = package;
                                 return package;
@@ -84,11 +85,11 @@ namespace MassEffectModManagerCore.modmanager.objects
                         catch (Exception e)
                         {
                             // in case two full paths are tried to be set this will probably throw invalid path exception.
-                            Debug.WriteLine($@"Error combining paths: {RootPath}, {packagePath}");
+                            Log.Error($@"Error combining paths: {RootPath}, {packagePath}");
                         }
                     }
 
-                    Debug.WriteLine($@"RelativePackageCache miss: File not found: {packagePath}");
+                    //Log.Warning($@"RelativePackageCache miss: File not found in RPC, RPC root: {RootPath}, path: {packagePath}");
                 }
             }
 

@@ -75,12 +75,14 @@ namespace MassEffectModManagerCore.modmanager.objects
         public bool IsCustomOption { get; set; } = false;
         public GameTarget(MEGame game, string targetRootPath, bool currentRegistryActive, bool isCustomOption = false, bool isTest = false, bool skipInit = false)
         {
+            if (!currentRegistryActive)
+                Debug.WriteLine("hi");
             this.Game = game;
             this.RegistryActive = currentRegistryActive;
             this.IsCustomOption = isCustomOption;
             this.TargetPath = targetRootPath.TrimEnd('\\');
             MemoryAnalyzer.AddTrackedMemoryItem($@"{game} GameTarget {TargetPath} - IsCustomOption: {isCustomOption}", new WeakReference(this));
-            ReloadGameTarget(isTest, skipInit: skipInit);
+            ReloadGameTarget(!isTest, skipInit: skipInit);
 
             if (Game.IsLEGame())
             {
@@ -90,7 +92,6 @@ namespace MassEffectModManagerCore.modmanager.objects
 
         public void ReloadGameTarget(bool logInfo = true, bool forceLodUpdate = false, bool reverseME1Executable = true, bool skipInit = false)
         {
-            // Unknown = 
             if (!IsCustomOption && !skipInit)
             {
                 if (Directory.Exists(TargetPath))

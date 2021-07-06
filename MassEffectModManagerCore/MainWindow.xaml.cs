@@ -1893,7 +1893,7 @@ namespace MassEffectModManagerCore
                 LegendaryExplorerCoreLib.InitLib(syncContext, x =>
                 {
                     Log.Error($@"Error saving package: {x}");
-                });
+                }, Log.Logger);
                 T2DLocalizationShim.SetupTexture2DLocalizationShim();
                 #endregion
                 //debugMethod();

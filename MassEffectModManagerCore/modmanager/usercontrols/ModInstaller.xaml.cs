@@ -576,7 +576,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             bool bgTrackingLocalOnly = ModBeingInstalled.ModModMakerID != 0; // only locally track modmaker mods
             var basegameFilesInstalled = new List<string>();
-            var mergeModBasegameEntries = new List<BasegameFileIdentificationService.BasegameCloudDBFile>();
+            var basegameCloudDBUpdates = new List<BasegameFileIdentificationService.BasegameCloudDBFile>();
             void FileInstalledIntoSFARCallback(Dictionary<string, Mod.InstallSourceFile> sfarMapping, string targetPath)
             {
                 numdone++;
@@ -798,7 +798,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         {
                             mm.source = $@"{existingInfo.source} + {newTextToAppend}";
                         }
-                        mergeModBasegameEntries.Add(mm);
+                        basegameCloudDBUpdates.Add(mm);
                     }
                 }
             }
@@ -829,11 +829,23 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             var allTLKMerges = installationJobs.Where(x => x.Game1TLKXmls != null).SelectMany(x => x.Game1TLKXmls).ToList();
             if (allTLKMerges.Any())
             {
+                PackageCache pc = new PackageCache();
+                Percent = 0;
+                Action = "Updating TLK files";
                 var gameMap = MELoadedFiles.GetFilesLoadedInGame(SelectedGameTarget.Game, gameRootOverride: SelectedGameTarget.TargetPath);
                 doneMerges = 0;
-                foreach (var tlkM in allTLKMerges)
+                var mergeFiles = Mod.CoalesceTLKMergeFiles(allTLKMerges);
+                int totalTlkMerges = mergeFiles.Count;
+                foreach (var tlkFileMap in mergeFiles)
                 {
-                    ModBeingInstalled.InstallTLKMerge(tlkM, gameMap);
+                    for (int i = 0; i < tlkFileMap.Value.Count; i++)
+                    {
+                        var tlkXmlFile = tlkFileMap.Value[i];
+                        ModBeingInstalled.InstallTLKMerge(tlkXmlFile, gameMap, i == tlkFileMap.Value.Count - 1, SelectedGameTarget, ModBeingInstalled, x => basegameCloudDBUpdates.Add(x));
+                    }
+
+                    Percent = (int)(doneMerges * 100.0 / totalTlkMerges);
+                    doneMerges++;
                 }
             }
 
@@ -917,12 +929,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             sw.Stop();
             Debug.WriteLine($@"Elapsed: {sw.ElapsedMilliseconds}");
             //Submit basegame tracking in async way
-            if (basegameFilesInstalled.Any() || mergeModBasegameEntries.Any())
+            if (basegameFilesInstalled.Any() || basegameCloudDBUpdates.Any())
             {
                 try
                 {
-                    var files = new List<BasegameFileIdentificationService.BasegameCloudDBFile>(basegameFilesInstalled.Count + mergeModBasegameEntries.Count);
-                    files.AddRange(mergeModBasegameEntries);
+                    var files = new List<BasegameFileIdentificationService.BasegameCloudDBFile>(basegameFilesInstalled.Count + basegameCloudDBUpdates.Count);
+                    files.AddRange(basegameCloudDBUpdates);
                     foreach (var file in basegameFilesInstalled)
                     {
                         var entry = new BasegameFileIdentificationService.BasegameCloudDBFile(file, (int)new FileInfo(file).Length, SelectedGameTarget, ModBeingInstalled);
