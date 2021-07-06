@@ -436,8 +436,8 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_massEffectModderForLegendaryEdition = "string_massEffectModderForLegendaryEdition";
 		public const string string_prereleaseNotice = "string_prereleaseNotice";
 		public const string string_failedToCompileCoalescedFile = "string_failedToCompileCoalescedFile";
-		public const string string_interp_errorCompilingM3mModFileExMessage = "string_interp_errorCompilingM3mModFileExMessage";
-		public const string string_interp_errorCompilingM3mModFileX = "string_interp_errorCompilingM3mModFileX";
+		public const string string_interp_errorCompilingm3mX = "string_interp_errorCompilingm3mX";
+		public const string string_errorCompilingm3m = "string_errorCompilingm3m";
 		public const string string_interp_syncingPlotManagerForGame = "string_interp_syncingPlotManagerForGame";
 		public const string string_interp_syncedPlotManagerForGame = "string_interp_syncedPlotManagerForGame";
 		public const string string_testSquadmateMerge = "string_testSquadmateMerge";

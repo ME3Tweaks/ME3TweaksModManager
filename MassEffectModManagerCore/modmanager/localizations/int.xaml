@@ -388,9 +388,9 @@
     <system:String x:Key="string_massEffectModderForLegendaryEdition">Mass Effect Modder (for Legendary Edition)</system:String>
     <system:String x:Key="string_prereleaseNotice">This is a prerelease build of ME3Tweaks Mod Manager. Do not distribute mods from this build. There may be breaking changes that cause mods made for this build to not work on future builds.</system:String>
     <system:String x:Key="string_failedToCompileCoalescedFile">Failed to compile coalesced file</system:String>
-    <system:String x:Key="string_interp_errorCompilingM3mModFileExMessage">Error compiling m3m mod file: {0}</system:String>
+    <system:String x:Key="string_interp_errorCompilingm3mX">Error compiling m3m mod file: {0}</system:String>
     <!-- 0={Error message} -->
-    <system:String x:Key="string_interp_errorCompilingM3mModFileX">Error compiling m3m</system:String>
+    <system:String x:Key="string_errorCompilingm3m">Error compiling m3m</system:String>
     <system:String x:Key="string_interp_syncingPlotManagerForGame">Syncing Plot Manager for {0}</system:String>
     <!-- 0={target.Game.ToGameName()} -->
     <system:String x:Key="string_interp_syncedPlotManagerForGame">Synced Plot Manager for {0}</system:String>

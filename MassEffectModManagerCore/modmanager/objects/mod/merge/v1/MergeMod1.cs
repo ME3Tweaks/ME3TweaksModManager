@@ -128,6 +128,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
                 JsonConvert.SerializeObject(this, Formatting.Indented, new JsonSerializerSettings
                 {
                     NullValueHandling = NullValueHandling.Ignore,
+                    DefaultValueHandling = DefaultValueHandling.Ignore
                 }));
         }
 

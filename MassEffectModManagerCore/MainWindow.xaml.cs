@@ -3567,7 +3567,7 @@ namespace MassEffectModManagerCore
                         catch (Exception ex)
                         {
                             Log.Error($@"Error compiling m3m mod file: {ex.Message}");
-                            M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_errorCompilingM3mModFileX, ex.Message), M3L.GetString(M3L.string_interp_errorCompilingM3mModFileX), MessageBoxButton.OK, MessageBoxImage.Error);
+                            M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_errorCompilingm3mX, ex.Message), M3L.GetString(M3L.string_errorCompilingm3m), MessageBoxButton.OK, MessageBoxImage.Error);
                         }
                         break;
                     case @".m3m":
@@ -3578,7 +3578,7 @@ namespace MassEffectModManagerCore
                         catch (Exception ex)
                         {
                             Log.Error($@"Error decompiling m3m mod file: {ex.Message}");
-                            M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_errorCompilingM3mModFileX, ex.Message), M3L.GetString(M3L.string_interp_errorCompilingM3mModFileX), MessageBoxButton.OK, MessageBoxImage.Error);
+                            M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_errorCompilingm3mX, ex.Message), M3L.GetString(M3L.string_errorCompilingm3m), MessageBoxButton.OK, MessageBoxImage.Error);
                         }
 
                         break;
