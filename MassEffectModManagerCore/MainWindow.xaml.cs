@@ -3347,7 +3347,7 @@ namespace MassEffectModManagerCore
                             using var fs = new FileStream(files[0], FileMode.Open, FileAccess.Read);
                             var magic = fs.ReadInt32();
                             fs.Dispose();
-                            if (magic is 0x666D726D or 0x1E) //fmrm (backwards) (ME3), 0x1E (LE1 (sigh))
+                            if (magic is 0x666D726D or 0x1B or 0x1E) //fmrm (backwards) (ME3), 0x1B (LE1), 0x1E (LE2) (sigh)
                             {
 
                                 NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"Coalesced Decompiler");
