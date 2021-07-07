@@ -75,8 +75,8 @@ namespace MassEffectModManagerCore.modmanager.objects
         public bool IsCustomOption { get; set; } = false;
         public GameTarget(MEGame game, string targetRootPath, bool currentRegistryActive, bool isCustomOption = false, bool isTest = false, bool skipInit = false)
         {
-            if (!currentRegistryActive)
-                Debug.WriteLine("hi");
+            //if (!currentRegistryActive)
+            //    Debug.WriteLine("hi");
             this.Game = game;
             this.RegistryActive = currentRegistryActive;
             this.IsCustomOption = isCustomOption;
