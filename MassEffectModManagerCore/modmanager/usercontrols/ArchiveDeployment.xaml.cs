@@ -59,6 +59,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public ArchiveDeployment(Mod mod)
         {
+            Log.Information($@"Initiating deployment for mod {mod.ModName} {mod.ModVersionString}");
             Analytics.TrackEvent(@"Started deployment panel for mod", new Dictionary<string, string>()
             {
                 { @"Mod name" , $@"{mod.ModName} {mod.ParsedModVersion}"}
@@ -66,7 +67,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             initialMod = mod;
             LoadCommands();
             InitializeComponent();
-
         }
 
         public ConcurrentQueue<EncompassingModDeploymentCheck> PendingChecks { get; } = new ConcurrentQueue<EncompassingModDeploymentCheck>();
@@ -382,9 +382,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 tlkMappings[language.filecode] = tf.StringRefs;
 
                                 //Check string order
-
-
-
                                 var malestringRefsInRightOrder = tf.StringRefs.Take(tf.Header.MaleEntryCount).IsAscending((x, y) => x.CalculatedID.CompareTo(y.CalculatedID)); //male strings
                                 var femalestringRefsInRightOrder = tf.StringRefs.Skip(tf.Header.MaleEntryCount).Take(tf.Header.FemaleEntryCount).IsAscending((x, y) => x.CalculatedID.CompareTo(y.CalculatedID)); //male strings
                                 string gender = M3L.GetString(M3L.string_male);
@@ -859,166 +856,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
             }
 
-            void recursiveCheckProperty(DeploymentChecklistItem item, string relativePath, string containingClassOrStructName, IEntry entry, Property property)
-            {
-                var prefix = M3L.GetString(M3L.string_interp_warningPropertyTypingWrongPrefix, relativePath, entry.UIndex, entry.ObjectName.Name, entry.ClassName, property.StartOffset.ToString(@"X6"));
-                if (property is UnknownProperty up)
-                {
-                    item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningFoundBrokenPropertyData, prefix));
-
-                }
-                else if (property is ObjectProperty op)
-                {
-                    bool validRef = true;
-                    if (op.Value > 0 && op.Value > entry.FileRef.ExportCount)
-                    {
-                        //bad
-                        if (op.Name.Name != null)
-                        {
-                            item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningReferenceNotInExportTable, prefix, op.Name.Name, op.Value));
-                            validRef = false;
-                        }
-                        else
-                        {
-                            item.AddSignificantIssue(M3L.GetString(M3L.string_interp_nested_warningReferenceNoInExportTable, prefix, op.Value));
-                            validRef = false;
-                        }
-                    }
-                    else if (op.Value < 0 && Math.Abs(op.Value) > entry.FileRef.ImportCount)
-                    {
-                        //bad
-                        if (op.Name.Name != null)
-                        {
-                            item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningReferenceNotInImportTable, prefix, op.Name.Name, op.Value));
-                            validRef = false;
-
-                        }
-                        else
-                        {
-                            item.AddSignificantIssue(M3L.GetString(M3L.string_interp_nested_warningReferenceNoInImportTable, prefix, op.Value));
-                            validRef = false;
-
-                        }
-                    }
-                    else if (entry.FileRef.GetEntry(op.Value)?.ObjectName.ToString() == @"Trash" || entry.FileRef.GetEntry(op.Value)?.ObjectName.ToString() == @"ME3ExplorerTrashPackage")
-                    {
-                        item.AddSignificantIssue(M3L.GetString(M3L.string_interp_nested_warningTrashedExportReference, prefix, op.Value));
-                        validRef = false;
-                    }
-
-                    // Check object is of correct typing?
-                    if (validRef && op.Value != 0)
-                    {
-                        var referencedEntry = op.ResolveToEntry(entry.FileRef);
-                        if (referencedEntry.FullPath.Equals(@"SFXGame.BioDeprecated", StringComparison.InvariantCulture)) return; //This will appear as wrong even though it's technically not
-
-                        var propInfo = GlobalUnrealObjectInfo.GetPropertyInfo(entry.Game, op.Name, containingClassOrStructName, containingExport: entry as ExportEntry);
-                        var customClassInfos = new Dictionary<string, ClassInfo>();
-
-                        if (referencedEntry.ClassName == @"Class" && op.Value > 0)
-                        {
-
-                            // Make sure we have info about this class.
-                            var lookupEnt = referencedEntry as ExportEntry;
-                            while (lookupEnt != null && lookupEnt.IsClass && !GlobalUnrealObjectInfo.GetClasses(ModBeingDeployed.Game).ContainsKey(lookupEnt.ObjectName))
-                            {
-                                // Needs dynamically generated
-                                var cc = GlobalUnrealObjectInfo.generateClassInfo(lookupEnt);
-                                customClassInfos[lookupEnt.ObjectName] = cc;
-                                lookupEnt = lookupEnt.Parent as ExportEntry;
-                            }
-
-                            // If we did not pull it previously, we should try again with our custom info.
-                            if (propInfo == null && customClassInfos.Any())
-                            {
-                                propInfo = GlobalUnrealObjectInfo.GetPropertyInfo(entry.Game, op.Name,
-                                    containingClassOrStructName, customClassInfos[referencedEntry.ObjectName],
-                                    containingExport: entry as ExportEntry);
-                            }
-                        }
-
-                        if (propInfo != null && propInfo.Reference != null)
-                        {
-                            // We can't resolve if an object inherits from a class object that's only defined in native.
-                            // This is only possible if the refernce is an import and it's importing native class object.
-                            // Like Engine.CodecBinkMovie
-                            if (!referencedEntry.IsAKnownNativeClass())
-                            {
-                                if (referencedEntry.ClassName == @"Class")
-                                {
-                                    // Inherits
-                                    if (!referencedEntry.InheritsFrom(propInfo.Reference, customClassInfos))
-                                    {
-                                        if (op.Name.Name != null)
-                                        {
-                                            item.AddSignificantIssue(M3L.GetString(
-                                                M3L.string_interp_warningWrongPropertyTypingWrongMessage, prefix,
-                                                op.Name.Name, op.Value, op.ResolveToEntry(entry.FileRef).FullPath,
-                                                propInfo.Reference, referencedEntry.ObjectName));
-                                        }
-                                        else
-                                        {
-                                            item.AddSignificantIssue(M3L.GetString(
-                                                M3L
-                                                    .string_interp_nested_warningWrongClassPropertyTypingWrongMessage,
-                                                prefix, op.Value, op.ResolveToEntry(entry.FileRef).FullPath,
-                                                propInfo.Reference, referencedEntry.ObjectName));
-                                        }
-                                    }
-                                }
-                                else if (!referencedEntry.IsA(propInfo.Reference, customClassInfos))
-                                {
-                                    // Is instance of
-                                    if (op.Name.Name != null)
-                                    {
-                                        item.AddSignificantIssue(M3L.GetString(
-                                            M3L.string_interp_warningWrongObjectPropertyTypingWrongMessage,
-                                            prefix, op.Name.Name, op.Value,
-                                            op.ResolveToEntry(entry.FileRef).FullPath, propInfo.Reference,
-                                            referencedEntry.ObjectName));
-                                    }
-                                    else
-                                    {
-                                        item.AddSignificantIssue(M3L.GetString(
-                                            M3L.string_interp_nested_warningWrongObjectPropertyTypingWrongMessage,
-                                            prefix, op.Value, op.ResolveToEntry(entry.FileRef).FullPath,
-                                            propInfo.Reference, referencedEntry.ObjectName));
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                else if (property is ArrayProperty<ObjectProperty> aop)
-                {
-                    foreach (var p in aop)
-                    {
-                        recursiveCheckProperty(item, relativePath, aop.Name, entry, p);
-                    }
-                }
-                else if (property is StructProperty sp)
-                {
-                    foreach (var p in sp.Properties)
-                    {
-                        recursiveCheckProperty(item, relativePath, sp.StructType, entry, p);
-                    }
-                }
-                else if (property is ArrayProperty<StructProperty> asp)
-                {
-                    foreach (var p in asp)
-                    {
-                        recursiveCheckProperty(item, relativePath, p.StructType, entry, p);
-                    }
-                }
-                else if (property is DelegateProperty dp)
-                {
-                    if (dp.Value.Object != 0 && !entry.FileRef.IsEntry(dp.Value.Object))
-                    {
-                        item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningDelegatePropertyIsOutsideOfExportTable, prefix, dp.Name.Name));
-                    }
-                }
-            }
-
 
             /// <summary>
             /// Checks object and name references for invalid values and if values are of the incorrect typing.
@@ -1056,137 +893,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             var package = MEPackageHandler.OpenMEPackage(Path.Combine(item.ModToValidateAgainst.ModPath, f));
                             ReferenceCheckPackage rp = new ReferenceCheckPackage();
                             EntryChecker.CheckReferences(rp, package, M3L.GetString, relativePath);
-
-                            //foreach (ExportEntry exp in package.Exports)
-                            //{
-                            //    // Has to be done before accessing the name because it will cause infinite crash loop
-                            //    //Debug.WriteLine($"Checking {exp.UIndex} {exp.InstancedFullPath} in {exp.FileRef.FilePath}");
-                            //    if (exp.idxLink == exp.UIndex)
-                            //    {
-                            //        item.AddBlockingError(M3L.GetString(M3L.string_interp_fatalExportCircularReference, f.Substring(ModBeingDeployed.ModPath.Length + 1), exp.UIndex));
-                            //        continue;
-                            //    }
-
-                            //    var prefix = M3L.GetString(M3L.string_interp_warningGenericExportPrefix, f.Substring(ModBeingDeployed.ModPath.Length + 1), exp.UIndex, exp.ObjectName.Name, exp.ClassName);
-                            //    try
-                            //    {
-                            //        if (exp.idxArchetype != 0 && !package.IsEntry(exp.idxArchetype))
-                            //        {
-                            //            item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningArchetypeOutsideTables, prefix, exp.idxArchetype));
-                            //        }
-
-                            //        if (exp.idxSuperClass != 0 && !package.IsEntry(exp.idxSuperClass))
-                            //        {
-                            //            item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningSuperclassOutsideTables, prefix, exp.idxSuperClass));
-                            //        }
-
-                            //        if (exp.idxClass != 0 && !package.IsEntry(exp.idxClass))
-                            //        {
-                            //            item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningClassOutsideTables, prefix, exp.idxClass));
-                            //        }
-
-                            //        if (exp.idxLink != 0 && !package.IsEntry(exp.idxLink))
-                            //        {
-                            //            item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningLinkOutsideTables, prefix, exp.idxLink));
-                            //        }
-
-                            //        if (exp.HasComponentMap)
-                            //        {
-                            //            foreach (var c in exp.ComponentMap)
-                            //            {
-                            //                if (!package.IsEntry(c.Value))
-                            //                {
-                            //                    // Can components point to 0? I don't think so
-                            //                    item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningComponentMapItemOutsideTables, prefix, c.Value));
-                            //                }
-                            //            }
-                            //        }
-
-                            //        //find stack references
-                            //        if (exp.HasStack && exp.Data is byte[] data)
-                            //        {
-                            //            var stack1 = EndianReader.ToInt32(data, 0, exp.FileRef.Endian);
-                            //            var stack2 = EndianReader.ToInt32(data, 4, exp.FileRef.Endian);
-                            //            if (stack1 != 0 && !package.IsEntry(stack1))
-                            //            {
-                            //                item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningExportStackElementOutsideTables, prefix, 0, stack1));
-                            //            }
-
-                            //            if (stack2 != 0 && !package.IsEntry(stack2))
-                            //            {
-                            //                item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningExportStackElementOutsideTables, prefix, 1, stack2));
-                            //            }
-                            //        }
-                            //        else if (exp.TemplateOwnerClassIdx is var toci && toci >= 0)
-                            //        {
-                            //            var TemplateOwnerClassIdx = EndianReader.ToInt32(exp.Data, toci, exp.FileRef.Endian);
-                            //            if (TemplateOwnerClassIdx != 0 && !package.IsEntry(TemplateOwnerClassIdx))
-                            //            {
-                            //                item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningTemplateOwnerClassOutsideTables, prefix, toci.ToString(@"X6"), TemplateOwnerClassIdx));
-                            //            }
-                            //        }
-
-                            //        var props = exp.GetProperties();
-                            //        foreach (var p in props)
-                            //        {
-                            //            recursiveCheckProperty(item, relativePath, exp.ClassName, exp, p);
-                            //        }
-                            //    }
-                            //    catch (Exception e)
-                            //    {
-                            //        item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningExceptionParsingProperties, prefix, e.Message));
-                            //        continue;
-                            //    }
-
-                            //    //find binary references
-                            //    try
-                            //    {
-                            //        if (!exp.IsDefaultObject && ObjectBinary.From(exp) is ObjectBinary objBin)
-                            //        {
-                            //            List<(UIndex, string)> indices = objBin.GetUIndexes(exp.FileRef.Game);
-                            //            foreach ((UIndex uIndex, string propName) in indices)
-                            //            {
-                            //                if (uIndex.value != 0 && !exp.FileRef.IsEntry(uIndex.value))
-                            //                {
-                            //                    item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningBinaryReferenceOutsideTables, prefix, uIndex.value));
-                            //                }
-                            //                else if (exp.FileRef.GetEntry(uIndex.value)?.ObjectName.ToString() == @"Trash")
-                            //                {
-                            //                    item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningBinaryReferenceTrashed, prefix, uIndex.value));
-                            //                }
-                            //                else if (exp.FileRef.GetEntry(uIndex.value)?.ObjectName.ToString() == UnrealPackageFile.TrashPackageName)
-                            //                {
-                            //                    item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningBinaryReferenceTrashed, prefix, uIndex.value));
-                            //                }
-                            //            }
-
-                            //            var nameIndicies = objBin.GetNames(exp.FileRef.Game);
-                            //            foreach (var ni in nameIndicies)
-                            //            {
-                            //                if (ni.Item1 == "")
-                            //                {
-                            //                    item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningBinaryNameReferenceOutsideNameTable, prefix));
-                            //                }
-                            //            }
-                            //        }
-                            //    }
-                            //    catch (Exception e) /* when (!App.IsDebug)*/
-                            //    {
-                            //        item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningUnableToParseBinary, prefix, e.Message));
-                            //    }
-                            //}
-
-                            //foreach (ImportEntry imp in package.Imports)
-                            //{
-                            //    if (imp.idxLink != 0 && !package.TryGetEntry(imp.idxLink, out _))
-                            //    {
-                            //        item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningImportLinkOutideOfTables, f, imp.UIndex, imp.idxLink));
-                            //    }
-                            //    else if (imp.idxLink == imp.UIndex)
-                            //    {
-                            //        item.AddBlockingError(M3L.GetString(M3L.string_interp_fatalImportCircularReference, f, imp.UIndex));
-                            //    }
-                            //}
                         });
                 }
                 catch (Exception e)
@@ -1284,6 +990,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 v.CheckCancelled = true;
             }
+
+            Log.Information(@"Closing deployment panel");
             OnClosing(DataEventArgs.Empty);
         }
 
@@ -1759,6 +1467,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void StartCheck(EncompassingModDeploymentCheck emc)
         {
+            Log.Information($@"Starting deployment check on mod {emc.ModBeingDeployed.Game} {emc.ModBeingDeployed.ModName}");
             if (emc.DepValidationTarget.SelectedTarget == null)
             {
                 // There's no selected target! There might not be one available.
@@ -1850,11 +1559,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public void AddModToDeployment(Mod mod)
         {
+            Log.Information($@"Adding mod to deployment: {mod.ModName}");
             var dvt = ValidationTargets.FirstOrDefault(x => x.Game == mod.Game);
             if (dvt == null)
             {
                 // No validation targets for this game yet
-                dvt = new DeploymentValidationTarget(this, mod.Game, mainwindow.InstallationTargets.Where(x => x.Game == mod.Game));
+                var targets = mainwindow.InstallationTargets.Where(x => x.Game == mod.Game).ToList();
+                Log.Information($@"Adding validation target for {mod.Game}. Num targets for this game: {targets.Count()}. Total target count in MW: {mainwindow.InstallationTargets.Count}");
+                dvt = new DeploymentValidationTarget(this, mod.Game, targets); // new target
+
+                // Add validation target and sort game list
                 var sortedTargetList = ValidationTargets.ToList();
                 sortedTargetList.Add(dvt);
                 ValidationTargets.ReplaceAll(sortedTargetList.OrderBy(x => x.Game));
@@ -1893,7 +1607,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 DeploymentHost = deploymentHost;
                 Game = game;
                 HeaderString = M3L.GetString(M3L.string_interp_gamenameValidationTarget, game.ToGameName());
-                AvailableTargets.ReplaceAll(targets.Where(x => !x.TextureModded));
+                foreach (var t in targets)
+                {
+                    if (t.TextureModded)
+                    {
+                        Log.Warning($@"Target is texture modded, cannot be used for validation: {t.TargetPath}, skipping...");
+                        continue;
+                    }
+                    AvailableTargets.Add(t);
+                }
                 SelectedTarget = AvailableTargets.FirstOrDefault();
             }
 
