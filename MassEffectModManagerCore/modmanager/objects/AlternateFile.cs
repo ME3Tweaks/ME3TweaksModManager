@@ -116,7 +116,7 @@ namespace MassEffectModManagerCore.modmanager.objects
 
             if (properties.TryGetValue(@"Condition", out string altCond))
             {
-                if (!Enum.TryParse(altCond, out Condition))
+                if (!Enum.TryParse(altCond, out Condition) || Condition == AltFileCondition.INVALID_CONDITION)
                 {
                     Log.Error($@"Alternate File specifies unknown/unsupported condition: {altCond}"); //do not localize
                     ValidAlternate = false;
@@ -150,7 +150,7 @@ namespace MassEffectModManagerCore.modmanager.objects
 
             if (properties.TryGetValue(@"ModOperation", out var modOp))
             {
-                if (!Enum.TryParse(modOp, out Operation))
+                if (!Enum.TryParse(modOp, out Operation) || Operation == AltFileOperation.INVALID_OPERATION)
                 {
                     Log.Error(@"Alternate File specifies unknown/unsupported operation: " +
                               modOp);
