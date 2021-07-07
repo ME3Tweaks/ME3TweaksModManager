@@ -1004,6 +1004,18 @@
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem
+                        ui:SharedUIBindings.GenerationLE="True"
+                        Header="EGM Settings (Legendary Edition)"
+                        ToolTip="{DynamicResource string_tooltip_egmSettings}"
+                        Command="{Binding LaunchEGMSettingsLECommand}">
+                        <MenuItem.Icon>
+                            <Image
+                                Source="/modmanager/toolicons/egmsettings_32.png"
+                                Width="16"
+                                RenderOptions.BitmapScalingMode="Linear" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem
                         ui:SharedUIBindings.GenerationOT="True"
                         Header="{DynamicResource string_MassEffectINIModder}"
                         Command="{Binding LaunchIniModderCommand}"

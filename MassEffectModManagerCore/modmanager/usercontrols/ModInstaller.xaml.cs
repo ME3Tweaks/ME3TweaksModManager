@@ -1257,21 +1257,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void ModInstallationCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             var telemetryResult = ModInstallCompletedStatus.NO_RESULT_CODE;
-            if (!BatchMode)
+            if (ModBeingInstalled.Game.IsGame1() || ModBeingInstalled.Game.IsGame2())
             {
-                if (ModBeingInstalled.Game.IsGame1() || ModBeingInstalled.Game.IsGame2())
-                {
-                    Result.TargetsToPlotManagerSync.Add(SelectedGameTarget);
-                }
-                if (ModBeingInstalled.Game == MEGame.ME3 || ModBeingInstalled.Game.IsLEGame())
-                {
-                    Result.TargetsToAutoTOC.Add(SelectedGameTarget);
-                }
+                Result.TargetsToPlotManagerSync.Add(SelectedGameTarget);
+            }
+            if (ModBeingInstalled.Game == MEGame.ME3 || ModBeingInstalled.Game.IsLEGame())
+            {
+                Result.TargetsToAutoTOC.Add(SelectedGameTarget);
+            }
 
-                if (ModBeingInstalled.Game.IsGame3())
-                {
-                    Result.TargetsToSquadmateMergeSync.Add(SelectedGameTarget);
-                }
+            if (ModBeingInstalled.Game.IsGame3())
+            {
+                Result.TargetsToSquadmateMergeSync.Add(SelectedGameTarget);
             }
 
 
@@ -1295,6 +1292,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     telemetryResult = mcis;
                     //Success, canceled (generic and handled), ALOT canceled
                     InstallationSucceeded = mcis == ModInstallCompletedStatus.INSTALL_SUCCESSFUL;
+
+                    if (InstallationSucceeded && !string.IsNullOrWhiteSpace(ModBeingInstalled.PostInstallToolLaunch))
+                    {
+                        Result.ToolToLaunch = ModBeingInstalled.PostInstallToolLaunch;
+                    }
+
                     if (mcis == ModInstallCompletedStatus.INSTALL_FAILED_ALOT_BLOCKING)
                     {
                         InstallationCancelled = true;
@@ -1397,7 +1400,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 else
                 {
-                    Log.Fatal(@"The application is going to crash due to a sanity check failure. Please report this to ME3Tweaks so this can be fixed.");
+                    Log.Fatal(@"The application is going to crash due to a sanity check failure in the mod installer (no result!). Please report this to ME3Tweaks so this can be fixed.");
 
                     // Once this issue has been fixed these lines can be commented out or removed (June 14 2020)
                     M3L.ShowDialog(window, M3L.GetString(M3L.string_dialog_appAboutToCrashYouFoundBug), M3L.GetString(M3L.string_appCrash), MessageBoxButton.OK, MessageBoxImage.Error);
@@ -1665,6 +1668,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public void OnSelectedGameTargetChanged(object oldT, object newT)
         {
+            Result.SelectedTarget = newT as GameTarget;
             if (oldT != null && newT != null)
             {
                 PreventInstallUntilTargetChange = false;

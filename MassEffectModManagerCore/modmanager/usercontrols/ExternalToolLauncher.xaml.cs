@@ -29,8 +29,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     {
         //have to be const apparently
         public const string EGMSettings = @"EGMSettings";
-        //public const string ME3Explorer = @"ME3Explorer";
-        //public const string ME3Explorer_Beta = @"ME3Explorer (Nightly)";
+        public const string EGMSettingsLE = @"EGMSettingsLE";
         public const string LegendaryExplorer = @"Legendary Explorer";
         public const string LegendaryExplorer_Beta = @"Legendary Explorer (Nightly)";
         public const string ALOTInstaller = @"ALOT Installer";
@@ -69,6 +68,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     case MEIM:
                         return @"/modmanager/toolicons/masseffectinimodder_big.png";
                     case EGMSettings:
+                    case EGMSettingsLE:
                         return @"/modmanager/toolicons/egmsettings_big.png";
                     default:
                         return null;
@@ -132,10 +132,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             setPercentTaskDone?.Invoke(0);
             foreach (var release in releases)
             {
-
                 //Get asset info
                 asset = release.Assets.FirstOrDefault();
-
                 #region MEM SPECIFIC
                 if (Path.GetFileName(executable).StartsWith(@"MassEffectModderNoGui"))
                 {
@@ -251,6 +249,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             Action<Exception, string, string> errorExtractingCallback = null)
         {
             //Todo: Account for errors
+
+            
             var outputDirectory = Directory.CreateDirectory(Path.GetDirectoryName(executable)).FullName;
             switch (extension)
             {
@@ -289,6 +289,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     executable = Path.Combine(Directory.GetParent(executable).FullName, @"MassEffectModder.exe");
                                 if (Path.GetFileName(executable) == @"MassEffectModderNoGuiLE.exe")
                                     executable = Path.Combine(Directory.GetParent(executable).FullName, @"MassEffectModderNoGui.exe");
+                        
 
                                 resultingExecutableStringCallback?.Invoke(executable);
                             }
@@ -384,6 +385,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     toolGithubRepoName = @"MassEffectIniModder";
                     break;
                 case EGMSettings:
+                case EGMSettingsLE:
                     toolGithubOwner = @"Kinkojiro";
                     toolGithubRepoName = @"EGM-Settings";
                     break;
@@ -685,6 +687,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 // Internal tool
                 return Path.Combine(Utilities.GetCachedExecutablePath());
             }
+
+            if (tool == EGMSettingsLE)
+            {
+                // Same as OT path
+                return Path.Combine(Utilities.GetDataDirectory(), @"ExternalTools", @"EGMSettings");
+            }
+
+
             return Path.Combine(Utilities.GetDataDirectory(), @"ExternalTools", tool);
         }
 
@@ -730,6 +740,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (toolname == ME2R) return @"ME2Randomizer.exe";
             if (toolname == MEM_LE) return @"MassEffectModder.exe";
             if (toolname == MEM_LE_CMD) return @"MassEffectModderNoGui.exe";
+            if (toolname == EGMSettingsLE) return @"EGMSettings.exe";
             return toolname.Replace(@" ", @"") + @".exe";
         }
 
@@ -738,6 +749,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             LegendaryExplorer,
             LegendaryExplorer_Beta,
             EGMSettings,
+            EGMSettingsLE,
             MEM,
             MEM_LE,
             MER,

@@ -50,7 +50,7 @@
                     ToolTip="{DynamicResource string_tooltip_targetThatTheModWillBeInstalledTo}"
                     DockPanel.Dock="Top"
                     AvailableTargets="{Binding InstallationTargets}"
-                    SelectedGameTarget="{Binding SelectedGameTarget, Mode=TwoWay}"
+                    SelectedGameTarget="{Binding SelectedTarget, Mode=TwoWay}"
                     MinWidth="350" />
                 <Button
                     Content="{DynamicResource string_install}"

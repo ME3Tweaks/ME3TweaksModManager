@@ -513,6 +513,7 @@ namespace MassEffectModManagerCore
         public ICommand OriginInGameOverlayDisablerCommand { get; set; }
         public ICommand ModdescEditorCommand { get; set; }
         public ICommand LaunchEGMSettingsCommand { get; set; }
+        public ICommand LaunchEGMSettingsLECommand { get; set; }
         public ICommand OfficialDLCTogglerCommand { get; set; }
         public ICommand ImportArchiveCommand { get; set; }
         public ICommand ReloadModsCommand { get; set; }
@@ -590,14 +591,8 @@ namespace MassEffectModManagerCore
             BackupFileFetcherCommand = new GenericCommand(OpenBackupFileFetcher);
             ConflictDetectorCommand = new GenericCommand(OpenConflictDetector);
             OfficialDLCTogglerCommand = new GenericCommand(OpenOfficialDLCToggler);
-            LaunchEGMSettingsCommand = new GenericCommand(() =>
-            {
-                var target = GetCurrentTarget(MEGame.ME3);
-                if (target != null)
-                {
-                    LaunchExternalTool(ExternalToolLauncher.EGMSettings, target.TargetPath);
-                }
-            }, CanLaunchEGMSettings);
+            LaunchEGMSettingsCommand = new GenericCommand(() => LaunchEGMSettings(), CanLaunchEGMSettings);
+            LaunchEGMSettingsLECommand = new GenericCommand(() => LaunchEGMSettingsLE(), CanLaunchEGMSettingsLE);
             OpenModDescCommand = new GenericCommand(OpenModDesc);
             CheckAllModsForUpdatesCommand = new GenericCommand(CheckAllModsForUpdatesWrapper, () => ModsLoaded);
             CustomKeybindsInjectorCommand = new GenericCommand(OpenKeybindsInjector, () => ModsLoaded && InstallationTargets.Any(x => x.Game == MEGame.ME3));
@@ -606,6 +601,23 @@ namespace MassEffectModManagerCore
             OpenTutorialCommand = new GenericCommand(OpenTutorial, () => App.TutorialService != null && App.TutorialService.Any());
             OpenASIManagerCommand = new GenericCommand(OpenASIManager, NetworkThreadNotRunning);
             NexusModsFileSearchCommand = new GenericCommand(OpenNexusSearch); // no conditions for this
+        }
+        private void LaunchEGMSettings(GameTarget target = null)
+        {
+            target ??= GetCurrentTarget(MEGame.ME3);
+            if (target != null)
+            {
+                LaunchExternalTool(ExternalToolLauncher.EGMSettings, $"\"{target.TargetPath}\""); // do not localize
+            }
+        }
+
+        private void LaunchEGMSettingsLE(GameTarget target = null)
+        {
+            target ??= GetCurrentTarget(MEGame.LE3);
+            if (target != null)
+            {
+                LaunchExternalTool(ExternalToolLauncher.EGMSettingsLE, $"\"{target.TargetPath}\""); // do not localize
+            }
         }
 
         private void ShowOptions()
@@ -684,6 +696,16 @@ namespace MassEffectModManagerCore
         private bool CanLaunchEGMSettings()
         {
             var target = GetCurrentTarget(MEGame.ME3);
+            if (target != null)
+            {
+                return VanillaDatabaseService.GetInstalledDLCMods(target).Contains(@"DLC_MOD_EGM");
+            }
+            return false;
+        }
+
+        private bool CanLaunchEGMSettingsLE()
+        {
+            var target = GetCurrentTarget(MEGame.LE3);
             if (target != null)
             {
                 return VanillaDatabaseService.GetInstalledDLCMods(target).Contains(@"DLC_MOD_EGM");
@@ -1225,7 +1247,18 @@ namespace MassEffectModManagerCore
                 }
                 else if (result.ToolToLaunch != null)
                 {
-                    BootToolPathPassthrough(result.ToolToLaunch);
+                    if (result.ToolToLaunch == ExternalToolLauncher.EGMSettings)
+                    {
+                        LaunchEGMSettings(result.SelectedTarget);
+                    }
+                    else if (result.ToolToLaunch == ExternalToolLauncher.EGMSettingsLE)
+                    {
+                        LaunchEGMSettingsLE(result.SelectedTarget);
+                    }
+                    else
+                    {
+                        BootToolPathPassthrough(result.ToolToLaunch);
+                    }
                 }
             });
         }
@@ -1290,6 +1323,10 @@ namespace MassEffectModManagerCore
             var me1Target = GetCurrentTarget(MEGame.ME1);
             var me2Target = GetCurrentTarget(MEGame.ME2);
             var me3Target = GetCurrentTarget(MEGame.ME3);
+
+            var le1Target = GetCurrentTarget(MEGame.LE1);
+            var le2Target = GetCurrentTarget(MEGame.LE2);
+            var le3Target = GetCurrentTarget(MEGame.LE3);
             if (me1Target != null && me1Target.Supported)
             {
                 arguments += $"--me1path \"{me1Target.TargetPath}\" "; //do not localize
@@ -1302,6 +1339,20 @@ namespace MassEffectModManagerCore
             {
                 arguments += $"--me3path \"{me3Target.TargetPath}\" "; //do not localize
             }
+
+            if (le1Target != null && le1Target.Supported)
+            {
+                arguments += $"--le1path \"{le1Target.TargetPath}\" "; //do not localize
+            }
+            if (le2Target != null && le2Target.Supported)
+            {
+                arguments += $"--le2path \"{le2Target.TargetPath}\" "; //do not localize
+            }
+            if (le3Target != null && le3Target.Supported)
+            {
+                arguments += $"--le3path \"{le3Target.TargetPath}\" "; //do not localize
+            }
+
             LaunchExternalTool(toolname, arguments);
         }
 
@@ -1326,6 +1377,10 @@ namespace MassEffectModManagerCore
                 Task.Run(() => GameLauncher.LaunchGame(SelectedGameTarget))
                     .ContinueWith(x =>
                     {
+                        if (x.Exception != null)
+                        {
+                            Log.Error($@"There was an error launching the game: {x.Exception.FlattenException()}");
+                        }
                         backgroundTaskEngine.SubmitJobCompletion(gameLaunch);
                     });
             }
@@ -1770,23 +1825,6 @@ namespace MassEffectModManagerCore
                     installCompletedCallback?.Invoke(modInstaller.InstallationSucceeded);
                     ReleaseBusyControl();
                 };
-                if (modInstaller.InstallationSucceeded)
-                {
-                    installCompletedCallback?.Invoke(true);
-                    if (ExternalToolLauncher.IsSupportedToolID(mod.PostInstallToolLaunch))
-                    {
-                        Log.Information(@"Launching post-install tool as specified by mod: " + mod.PostInstallToolLaunch);
-                        if (mod.PostInstallToolLaunch == @"EGMSettings")
-                        {
-                            LaunchExternalTool(mod.PostInstallToolLaunch, SelectedGameTarget.TargetPath);
-                        }
-                        else
-                        {
-                            // no args
-                            LaunchExternalTool(mod.PostInstallToolLaunch);
-                        }
-                    }
-                }
                 ShowBusyControl(modInstaller);
             }
             else
