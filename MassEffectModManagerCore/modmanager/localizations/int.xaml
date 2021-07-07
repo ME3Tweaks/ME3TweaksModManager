@@ -2136,7 +2136,7 @@
     <!-- 0={Filename}. This string shows up if file is not found locally when compiling json file -->
     <system:String x:Key="string_interp_mergefile_couldNotFindExportInPackage">Could not find export in package {0}: {1}! Cannot apply MergeFileChange1.</system:String>
     <!-- 0={FilePath} 1={Instanced Full Name} -->
-    <system:String x:Key="string_interp_mergefile_failedToUpdateObjectPropertyItemNotInPackage">Failed to update ObjectProperty {0} to {1}: {1} does not exist in package {3}</system:String>
+    <system:String x:Key="string_interp_mergefile_failedToUpdateObjectPropertyItemNotInPackage">Failed to update ObjectProperty {0} to {1}: {1} does not exist in package {2}</system:String>
     <!-- 0={PropertyName} 1={PropertyValue} 2={FilePath} -->
     <system:String x:Key="string_interp_mergefile_unsupportedPropertyType">Unsupported property type for updating: {0}</system:String>
     <!-- 0={PropertyType (BoolProperty, NameProperty, etc)} -->
