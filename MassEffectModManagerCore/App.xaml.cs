@@ -122,7 +122,7 @@ namespace MassEffectModManagerCore
 
                 string[] args = Environment.GetCommandLineArgs();
 
-#region Command line
+                #region Command line
 
                 if (args.Length > 1)
                 {
@@ -174,7 +174,7 @@ namespace MassEffectModManagerCore
                     }
                 }
 
-#endregion
+                #endregion
 
                 // Single instance occurs AFTER command line params as to not break the updater which requires simultaneous boot
                 bool isFirstInstance = this.InitializeAsFirstInstance(@"ME3TweaksModManager6"); // do not change this string
@@ -225,6 +225,11 @@ namespace MassEffectModManagerCore
 #if !DEBUG
                     Log.Warning(@"This build is not signed by ME3Tweaks. This may not be an official build.");
 #endif
+                }
+
+                if (args.Length > 0)
+                {
+                    Log.Information($@"Application arguments: {string.Join(" ", args)}");
                 }
 
 
@@ -514,8 +519,8 @@ namespace MassEffectModManagerCore
         /// </summary>
         public static string ExecutableLocation { get; private set; }
 
-#region Server Manifest
-#region Static Property Changed
+        #region Server Manifest
+        #region Static Property Changed
 
         public static event PropertyChangedEventHandler StaticPropertyChanged;
         /// <summary>
@@ -534,7 +539,7 @@ namespace MassEffectModManagerCore
             StaticPropertyChanged?.Invoke(null, new PropertyChangedEventArgs(propertyName));
             return true;
         }
-#endregion
+        #endregion
         private static Dictionary<string, string> _serverManifest;
         /// <summary>
         /// The online server manifest that was fetched at boot. If null, the manifest was not fetched
@@ -545,7 +550,7 @@ namespace MassEffectModManagerCore
             set => SetProperty(ref _serverManifest, value);
         }
 
-#endregion
+        #endregion
 
         public static List<IntroTutorial.TutorialStep> TutorialService { get; set; } = new List<IntroTutorial.TutorialStep>(); //in case it takes long time to load
 
