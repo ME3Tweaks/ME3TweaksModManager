@@ -9,7 +9,7 @@
 		<PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
 		<UseWPF>true</UseWPF>
 		<Platforms>x64</Platforms>
-		<Version>7.0.1.119</Version>
+		<Version>7.0.2.120</Version>
 		<Copyright>ME3Tweaks 2012 - 2021</Copyright>
 		<Authors>Mgamerz</Authors>
 		<PackageId>MassEffectModManagerCore</PackageId>
@@ -229,6 +229,12 @@
 		</Page>
 		<Page Update="modmanager\localizations\rus.xaml">
 			<SubType>Designer</SubType>
+		</Page>
+		<Page Update="modmanager\usercontrols\moddescinieditor\LELauncherEditorControl.xaml">
+		  <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+		</Page>
+		<Page Update="modmanager\usercontrols\moddescinieditor\Game1TLKMergeEditorControl.xaml">
+		  <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
 		</Page>
 		<Page Update="modmanager\usercontrols\PlotManagerUpdatePanel.xaml">
 		  <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>

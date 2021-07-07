@@ -1893,8 +1893,16 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         Log.Error($@"The LELAUNCHER header only supports the following file extensions: {string.Join(@", ", AllowedLauncherFileTypes)} An unsupported filetype was found: {file}");
                         LoadFailedReason = M3L.GetString(M3L.string_validation_modparsing_foundDisallowedLauncherFileType, string.Join(@", ", AllowedLauncherFileTypes), file);
                         ValidMod = false;
+                        return;
                     }
                 }
+            }
+            else
+            {
+                Log.Error($@"{ModName}'s LELAUNCHER header specifies a job subdirectory (moddir) that does not exist: {jobSubDir}");
+                LoadFailedReason = $"{ModName}'s LELAUNCHER header specifies a job subdirectory (moddir) that does not exist: {jobSubDir}";
+                ValidMod = false;
+                return;
             }
 
             InstallationJobs.Add(headerJob);

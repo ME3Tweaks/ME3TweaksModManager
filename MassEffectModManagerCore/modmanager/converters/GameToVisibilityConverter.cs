@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -17,34 +18,48 @@ namespace MassEffectModManagerCore.modmanager.converters
         {
             if (value is MEGame game && parameter is string gameStr)
             {
-                bool inverted = false;
-                if (gameStr.IndexOf('_') > 0)
+                Visibility v = Visibility.Visible;
+
+                var splitparms = gameStr.Split('_');
+
+                // Go by pairings
+                for (int i = 0; i < splitparms.Length; i++)
                 {
-                    var splitparms = gameStr.Split('_');
-                    inverted = splitparms.Any(x => x == "Not");
-                    gameStr = splitparms.Last();
-                }
-                if (Enum.TryParse(gameStr, out MEGame parameterGame))
-                {
-                    if (inverted ^ parameterGame == game) return Visibility.Visible;
-                }
-                else if (gameStr.StartsWith("Game"))
-                {
-                    var gameId = gameStr[^1];
-                    switch (gameId)
+                    bool inverted = splitparms[i] == @"Not";
+                    if (inverted) i++; // skip to next parm
+
+
+                    if (Enum.TryParse(splitparms[i], out MEGame parameterGame))
                     {
-                        case '1':
-                            if (inverted ^ game.IsGame1()) return Visibility.Visible;
-                            break;
-                        case '2':
-                            if (inverted ^ game.IsGame2()) return Visibility.Visible;
-                            break;
-                        case '3':
-                            if (inverted ^ game.IsGame3()) return Visibility.Visible;
-                            break;
+                        if (inverted ^ parameterGame == game) continue; // OK, do not set to collapsed
                     }
+                    else if (splitparms[i].StartsWith("Game"))
+                    {
+                        var gameId = gameStr[^1];
+                        switch (gameId)
+                        {
+                            case '1':
+                                if (inverted ^ game.IsGame1()) continue;
+                                break;
+                            case '2':
+                                if (inverted ^ game.IsGame2()) continue;
+                                break;
+                            case '3':
+                                if (inverted ^ game.IsGame3()) continue;
+                                break;
+                        }
+                    }
+
+                    // One of the above conditions did not register as true.
+                    return Visibility.Collapsed;
                 }
+
+                // We are OK
+                return Visibility.Visible;
             }
+
+            // Set up incorrectly.
+            Debug.WriteLine(@"Incorrect setup for GameToVisibilityConverter!");
             return Visibility.Collapsed;
         }
 

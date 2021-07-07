@@ -32,7 +32,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             // ModInfo
             parameterDictionary = new Dictionary<string, object>()
             {
-                {@"game", Game},
+                {@"game", Game.ToString().ToUpper()}, // Upper for LELAUNCHER
                 {@"modname", ModName},
                 {@"moddesc", ModDescription},
                 {@"modver", ParsedModVersion},
@@ -50,7 +50,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             {
                 parameterDictionary[@"amdprocessoronly"] = RequiresAMD;
             }
-            
+
             if (!string.IsNullOrWhiteSpace(PostInstallToolLaunch))
             {
                 // This is a non-public property but is used by one mod

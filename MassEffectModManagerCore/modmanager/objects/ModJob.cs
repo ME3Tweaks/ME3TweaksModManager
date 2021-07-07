@@ -515,6 +515,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 case MEGame.LE1:
                 case MEGame.LE2:
                 case MEGame.LE3:
+                case MEGame.LELauncher:
                     return new JobHeader[] { }; // LE does not support any DLC headers
                 default:
                     throw new Exception(@"Can't get supported list of dlc headers for unknown game type.");

@@ -1305,7 +1305,7 @@
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_nomoddev">The moddesc.ini file located at {0} does not have a value set for moddev. This value is required.</system:String>
     <!-- 0 = moddesc.ini file path -->
     <system:String x:Key="string_validation_modparsing_loadfailed_cantSetBothUpdaterAndModMaker">This mod has both an updater service update code and a modmaker code assigned. This is not allowed.</system:String>
-    <system:String x:Key="string_interp_validation_modparsing_loadfailed_unknownGameId">This mod has an unknown game ID set for ModInfo descriptor 'game'. Valid values are ME1, ME2, or ME3. Value provided: {0}</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_loadfailed_unknownGameId">This mod has an unknown game ID set for ModInfo descriptor 'game'. Valid values are ME1, ME2, ME3, LE1, LE2, LE3, and LELAUNCHER. Value provided: {0}</system:String>
     <!-- provided game value from moddesc -->
     <system:String x:Key="string_interp_validation_modparsing_loadfailed_cmm6RequiredForME12">This mod is designed for {0}. The moddesc target version is {1}, however the first version of moddesc that supports ME1 or ME2 is 6.0.</system:String>
     <!-- 0 = game name, 1 = moddesc target version number -->
