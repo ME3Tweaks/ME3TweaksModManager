@@ -727,7 +727,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             virtualModDesc[@"CUSTOMDLC"][@"destdirs"] = dlcFolderName;
                             virtualModDesc[@"UPDATES"][@"originalarchivehash"] = md5;
 
-                            var archiveSize = new FileInfo(archive.FileName).Length;
+                            var archiveSize = archive.GetBackingStream().Length;
                             var importingInfos = ThirdPartyServices.GetImportingInfosBySize(archiveSize);
                             if (importingInfos.Count == 1 && importingInfos[0].GetParsedRequiredDLC().Count > 0)
                             {
