@@ -15,6 +15,7 @@ using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Unreal;
+using MassEffectModManagerCore.modmanager.me3tweaks;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.helpers

@@ -1,9 +1,8 @@
 ﻿using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Windows.Media;
 using FontAwesome.WPF;
 
-namespace MassEffectModManagerCore.modmanager.windows
+namespace MassEffectModManagerCore.ui
 {
     /// <summary>
     /// Class defining a basic UI task, that defaults to an gray hourglass, no spin, with no text.

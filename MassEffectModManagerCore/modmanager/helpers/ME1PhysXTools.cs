@@ -2,7 +2,7 @@
 using MassEffectModManagerCore.modmanager.objects;
 using Serilog;
 
-namespace ALOTInstallerCore.Helpers
+namespace MassEffectModManagerCore.modmanager.helpers
 {
     public class ME1PhysXTools
     {

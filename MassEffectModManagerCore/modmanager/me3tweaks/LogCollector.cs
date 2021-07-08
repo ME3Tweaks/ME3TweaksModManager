@@ -19,7 +19,6 @@ using IniParser.Model;
 using MassEffectModManagerCore.modmanager.helpers;
 using NickStrupat;
 using System.Windows.Shell;
-using ALOTInstallerCore.Helpers;
 using MassEffectModManagerCore.modmanager.asi;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Gammtek.Extensions;

@@ -1,0 +1,110 @@
+﻿<Window x:Class="MassEffectModManagerCore.modmanager.save.game2.UI.SaveSelectorUI"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:ui="clr-namespace:MassEffectModManagerCore.modmanager.save.game2.UI"
+        xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters"
+        xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterOwner"
+        ContentRendered="SSContent_Rendered"
+        DataContext="{Binding RelativeSource={RelativeSource Self}}"
+        Title="Save Selector" Height="550" Width="800">
+    <Window.Resources>
+        <ui:DifficultyStringConverter x:Key="DifficultyStringConverter"/>
+        <ui:LevelNameStringConverter x:Key="LevelNameStringConverter"/>
+        <ui:SaveGameNameConverter x:Key="SaveGameNameConverter"/>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <converters:NullVisibilityConverter x:Key="NullVisibility"/>
+        <Style  TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource MahApps.Styles.ListBoxItem}">
+            <Style.Triggers>
+                <Trigger Property="ItemsControl.AlternationIndex" Value="1">
+                    <Setter Property="Background" Value="#25225577"></Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    <DockPanel>
+        <ListBox ItemsSource="{Binding SaveCareers}" SelectedItem="{Binding SelectedCareer}"  DockPanel.Dock="Left" Width="200"
+                 Visibility="{Binding LoadingSaves, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}"
+                 AlternationCount="2">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel>
+                        <TextBlock Text="{Binding CharacterName}" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding SaveFiles.BindableCount, StringFormat=\{0\} save(s)}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <ListBox ItemsSource="{Binding SelectedCareer.SaveFiles}" SelectedItem="{Binding SelectedSaveFile}"  DockPanel.Dock="Left" Width="200"
+                 Visibility="{Binding LoadingSaves, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}"
+                 AlternationCount="2">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel>
+                        <TextBlock Text="{Binding Converter={StaticResource SaveGameNameConverter}}" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding BindableTimestamp}" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding BindableBaseLevelName, Converter={StaticResource LevelNameStringConverter}}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <StackPanel
+            Visibility="{Binding LoadingSaves, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}">
+            <TextBlock TextAlignment="Center" Text="{Binding SelectedLevelText}"
+                       FontWeight="Bold"
+                       FontSize="24"
+                       Margin="0,10"/>
+            <Image Source="{Binding CurrentSaveImage}"/>
+            <StackPanel            
+                Visibility="{Binding SelectedSaveFile, Converter={StaticResource NullVisibility}}">
+                <TextBlock TextAlignment="Center" Text="Last played:"
+                       FontWeight="Bold"
+                       FontSize="16"
+                       Margin="0,0,0,5"/>
+                <TextBlock TextAlignment="Center" Text="{Binding SelectedSaveFile.BindableTimestamp}"
+                       FontSize="16"
+                       Margin="0,0,0,5"/>
+                <TextBlock TextAlignment="Center" Text="Time played:"
+                       FontWeight="Bold"
+                       FontSize="16"
+                       Margin="0,0,0,5"/>
+                <TextBlock TextAlignment="Center" 
+                       FontSize="16"
+                       Margin="0,0,0,5">
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="{}{0} hour(s) {1} minute(s)">
+                            <Binding Path="SelectedSaveFile.BindableTimePlayed.Hours"/>
+                            <Binding Path="SelectedSaveFile.BindableTimePlayed.Minutes"/>
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+                <TextBlock TextAlignment="Center" Text="Difficulty:"
+                       FontWeight="Bold"
+                       FontSize="16"
+                       Margin="0,0,0,5"/>
+
+                <TextBlock Text="{Binding SelectedSaveFile.BindableDifficulty, Converter={StaticResource DifficultyStringConverter}}"
+                       TextAlignment="Center" 
+                       FontSize="16"
+                       Margin="0,0,0,5"/>
+                <Button Content="Refund henchmen talent points" Command="{Binding RefundHenchTalentsCommand}"/>
+                <Button Content="Refund player talent points" Command="{Binding RefundPlayerTalentsCommand}"/>
+                <Button Content="Refund henchmen + player talent points" Command="{Binding RefundHenchPlayerTalentsCommand}"/>
+            </StackPanel>
+        </StackPanel>
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding LoadingSaves, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <ContentControl
+                x:Name="LoadingSpinner_Image"
+                Focusable="False"
+                ContentTemplate="{DynamicResource {x:Static adonisUi:Templates.LoadingCircle}}"
+                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                Width="32"
+                Height="32" />
+            <TextBlock Text="Reading saved games" Margin="0,5,0,0"/>
+        </StackPanel>
+    </DockPanel>
+</Window>

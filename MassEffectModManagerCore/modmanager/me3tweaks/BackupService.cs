@@ -4,20 +4,18 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 using FontAwesome.WPF;
+using LegendaryExplorerCore.Packages;
+using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
-using LegendaryExplorerCore.Packages;
 using Microsoft.Win32;
-using Octokit;
-using Pathoschild.FluentNexus.Models;
 using Serilog;
 using Application = System.Windows.Application;
 
 
-namespace MassEffectModManagerCore.modmanager.helpers
+namespace MassEffectModManagerCore.modmanager.me3tweaks
 {
     /// <summary>
     /// Contains methods and bindable variables for accessing and displaying info about game backups 
