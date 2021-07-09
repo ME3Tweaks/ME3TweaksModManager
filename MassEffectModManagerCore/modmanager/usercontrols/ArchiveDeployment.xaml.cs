@@ -888,12 +888,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             item.ItemText = M3L.GetString(M3L.string_checkingNameAndObjectReferences) + $@" [{lnumChecked - 1}/{referencedFiles.Count}]";
 
                             var relativePath = f.Substring(ModBeingDeployed.ModPath.Length + 1);
-                            //if (f.Contains(@"2_Respawn_Patch\BioD_Kro001"))
-                            //{
-                            //    //Debugger.Break();
-                            //}
-                            //else
-                            //    return;
                             Log.Information($@"Checking package and name references in {relativePath}");
                             var package = MEPackageHandler.OpenMEPackage(Path.Combine(item.ModToValidateAgainst.ModPath, f));
                             EntryChecker.CheckReferences(item, package, M3L.GetString, relativePath);
