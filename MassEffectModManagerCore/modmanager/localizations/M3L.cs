@@ -344,6 +344,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_tooltip_autoLods2K = "string_tooltip_autoLods2K";
 		public const string string_tooltip_autoLods4K = "string_tooltip_autoLods4K";
 		public const string string_egmSettings = "string_egmSettings";
+		public const string string_eGMSettingsLegendaryEdition = "string_eGMSettingsLegendaryEdition";
 		public const string string_tooltip_egmSettings = "string_tooltip_egmSettings";
 		public const string string_donations = "string_donations";
 		public const string string_tooltip_opensTheME3TweaksDonationsInformationPage = "string_tooltip_opensTheME3TweaksDonationsInformationPage";
@@ -661,6 +662,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_interp_warningComponentMapItemOutsideTables = "string_interp_warningComponentMapItemOutsideTables";
 		public const string string_interp_warningExportStackElementOutsideTables = "string_interp_warningExportStackElementOutsideTables";
 		public const string string_interp_fatalImportCircularReference = "string_interp_fatalImportCircularReference";
+		public const string string_interp_refCheckInvalidNameValue = "string_interp_refCheckInvalidNameValue";
 		public const string string_interp_warningExceptionParsingProperties = "string_interp_warningExceptionParsingProperties";
 		public const string string_interp_warningTemplateOwnerClassOutsideTables = "string_interp_warningTemplateOwnerClassOutsideTables";
 		public const string string_interp_warningBinaryReferenceOutsideTables = "string_interp_warningBinaryReferenceOutsideTables";
@@ -1033,6 +1035,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_interp_altfile_opnoinstallmultilistfiles_requires_moddesc61 = "string_interp_altfile_opnoinstallmultilistfiles_requires_moddesc61";
 		public const string string_interp_altfile_multilistNIMissingMultiListTargetPath = "string_interp_altfile_multilistNIMissingMultiListTargetPath";
 		public const string string_interp_altfile_multilistIdNINotIntegerOrMissing = "string_interp_altfile_multilistIdNINotIntegerOrMissing";
+		public const string string_interp_altfile_installToNotGuaranteedCustomDLC = "string_interp_altfile_installToNotGuaranteedCustomDLC";
 		public const string string_interp_invalidTargetMissingFile = "string_interp_invalidTargetMissingFile";
 		public const string string_invalidTargetProtectedByCmmvanilla = "string_invalidTargetProtectedByCmmvanilla";
 		public const string string_dialog_cannotRemoveActiveTarget = "string_dialog_cannotRemoveActiveTarget";
@@ -1161,6 +1164,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_interp_validation_modparsing_tlkMergeNoTlkXmlFound = "string_interp_validation_modparsing_tlkMergeNoTlkXmlFound";
 		public const string string_interp_validation_modparsing_tlkMergeInvalidTlkXmlFilenames = "string_interp_validation_modparsing_tlkMergeInvalidTlkXmlFilenames";
 		public const string string_validation_modparsing_foundDisallowedLauncherFileType = "string_validation_modparsing_foundDisallowedLauncherFileType";
+		public const string string_interp_validation_modparsing_leLauncherDirNotFound = "string_interp_validation_modparsing_leLauncherDirNotFound";
 		public const string string_tooltip_hello = "string_tooltip_hello";
 		public const string string_tooltip_softwareDevelopedWithLoveByME3Tweaks = "string_tooltip_softwareDevelopedWithLoveByME3Tweaks";
 		public const string string_libraries = "string_libraries";
@@ -1647,6 +1651,11 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_mde_dec_header_metadata_modinfo = "string_mde_dec_header_metadata_modinfo";
 		public const string string_mde_dec_header_metadata_updates = "string_mde_dec_header_metadata_updates";
 		public const string string_multilists = "string_multilists";
+		public const string string_mde_dec_header_lelauncher = "string_mde_dec_header_lelauncher";
+		public const string string_mde_legendaryEditionLauncher = "string_mde_legendaryEditionLauncher";
+		public const string string_mde_game1TLKMerge = "string_mde_game1TLKMerge";
+		public const string string_mde_dec_header_game1TlkMerge = "string_mde_dec_header_game1TlkMerge";
+		public const string string_usesFeature = "string_usesFeature";
 		public const string string_nexusModsFileSearch = "string_nexusModsFileSearch";
 		public const string string_description_nexusModsFileSearch = "string_description_nexusModsFileSearch";
 		public const string string_search = "string_search";

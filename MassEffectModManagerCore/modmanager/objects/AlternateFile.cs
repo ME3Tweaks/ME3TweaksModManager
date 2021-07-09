@@ -395,10 +395,9 @@ namespace MassEffectModManagerCore.modmanager.objects
                             }
                             else
                             {
-
                                 Log.Error($@"Alternate file {FriendlyName} in-mod target (ModFile) does not appear to target a DLC target this mod will (always) install: {ModFile}");
                                 ValidAlternate = false;
-                                LoadFailedReason = @"Dummy placeholder";
+                                LoadFailedReason = M3L.GetString(M3L.string_interp_altfile_installToNotGuaranteedCustomDLC, FriendlyName, ModFile);
                                 return;
                             }
                         }

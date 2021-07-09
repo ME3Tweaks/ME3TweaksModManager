@@ -279,6 +279,8 @@
     <system:String xml:space="preserve" x:Key="string_tooltip_autoLods4K">This setting will provide the best quality textures when paired with a high quality texture mod such as ALOT. This option uses more memory and may cause game instability when paired with large mods.</system:String>
     <system:String  x:Key="string_egmSettings">EGM Settings</system:String>
     <!-- EGM = Expanded Galaxy Mod. Do not localize the acronym -->
+    <system:String x:Key="string_eGMSettingsLegendaryEdition">EGM Settings (Legendary Edition)</system:String>
+    <!-- EGM = Expanded Galaxy Mod. Do not localize the acronym -->
     <system:String  x:Key="string_tooltip_egmSettings">Allows you to configure settings for Expanded Galaxy Mod</system:String>
     <system:String  x:Key="string_donations">Donations</system:String>
     <system:String  x:Key="string_tooltip_opensTheME3TweaksDonationsInformationPage">Opens the ME3Tweaks Donations information page</system:String>
@@ -1208,6 +1210,8 @@
     <!-- 0={FriendlyName} -->
     <system:String x:Key="string_interp_altfile_multilistIdNINotIntegerOrMissing">Alternate File ({0}) specifies operation OP_NOINSTALL_MULTILISTFILES but does not specify the MultiListId attribute, or it could not be parsed to an integer.</system:String>
     <!-- 0={FriendlyName} -->
+    <system:String x:Key="string_interp_altfile_installToNotGuaranteedCustomDLC">Alternate file {0} in-mod target (ModFile) does not appear to target a DLC target this mod will (always) install: {1}</system:String>
+    <!-- 0={FriendlyName} 1={File path} -->
 
     <!-- GameTarget -->
     <system:String x:Key="string_interp_invalidTargetMissingFile">Invalid target: {0} was not found in game directory.</system:String>
@@ -1431,6 +1435,8 @@
     <system:String x:Key="string_interp_validation_modparsing_tlkMergeInvalidTlkXmlFilenames">The {0} header only supports the files in the {1} directory that contain at least 2 '.' characters; one for the extension, and at least one to split the package name from the export path. If the export is nested under packages, more '.' may be needed. Invalid value: {2}</system:String>
     <!-- 0={Header (BASEGAME, GAME1_TLK_MERGE, etc)} 1={Foldername} 2={Filepath} -->
     <system:String x:Key="string_validation_modparsing_foundDisallowedLauncherFileType">The LELAUNCHER header only supports the following file extensions: {0} An unsupported filetype was found: {1}</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_leLauncherDirNotFound">{0}'s LELAUNCHER header specifies a job subdirectory (moddir) that does not exist: {1}</system:String>
+    <!-- 0={ModName} 1={jobSubDir} -->
 
     <!-- About Panel -->
     <system:String x:Key="string_tooltip_hello">Hello!</system:String>
@@ -2077,6 +2083,15 @@
     <system:String x:Key="string_mde_dec_header_metadata_modinfo">The ModInfo header contains most of the information that is displayed to the user in Mod Manager's interface. The more information you give to a user, the less likely they will need to ask you questions about your mod.</system:String>
     <system:String x:Key="string_mde_dec_header_metadata_updates">The UPDATES header is used for the ME3Tweaks Updater Service. The additionaldeployment items can be used to force non-referenced files to be included when deploying your mod.</system:String>
     <system:String x:Key="string_multilists">Multilists</system:String>
+    <system:String x:Key="string_mde_dec_header_lelauncher">The LELauncher header is used to specify the directory of your files that will install to the game's launcher directory. The files must match the file structure of the game's launcher, starting at the Content directory.</system:String>
+    <system:String x:Key="string_mde_legendaryEditionLauncher">Legendary Edition Launcher</system:String>
+    <!-- This is moddesc feature. This is tab header for the [LELAUNCHER] editor -->
+    <system:String x:Key="string_mde_game1TLKMerge">Game 1 TLK Merge</system:String>
+    <!-- This is moddesc feature. This is tab header for the [GAME1_EMBEDDED_TLK] editor -->
+    <system:String x:Key="string_mde_dec_header_game1TlkMerge">The GAME1_EMBEDDED_TLK header allows you to opt into TLK merging for the first Mass Effect game. By doing this, you can update strings in packages without having to ship package files. See the moddesc documentation on how to use this feature.</system:String>
+    <system:String x:Key="string_usesFeature">Uses feature</system:String>
+
+
 
     <!-- Nexus File Search -->
     <system:String x:Key="string_nexusModsFileSearch">NexusMods File Search</system:String>

@@ -1900,7 +1900,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             else
             {
                 Log.Error($@"{ModName}'s LELAUNCHER header specifies a job subdirectory (moddir) that does not exist: {jobSubDir}");
-                LoadFailedReason = $"{ModName}'s LELAUNCHER header specifies a job subdirectory (moddir) that does not exist: {jobSubDir}";
+                LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_leLauncherDirNotFound, ModName, jobSubDir);
                 ValidMod = false;
                 return;
             }

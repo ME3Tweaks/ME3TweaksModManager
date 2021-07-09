@@ -13,12 +13,15 @@
                 DockPanel.Dock="Top" />
             <TextBlock
                 DockPanel.Dock="Top"
-                Text="The GAME1_EMBEDDED_TLK header allows you to opt into TLK merging for the first Mass Effect game. By doing this, you can update strings in packages without having to ship package files. See the moddesc documentation on how to use this feature."
+                Text="{DynamicResource string_mde_dec_header_game1TlkMerge}"
                 MaxWidth="700"
                 TextWrapping="Wrap"
                 HorizontalAlignment="Left"
                 TextAlignment="Left" />
-            <CheckBox Content="Uses feature" VerticalAlignment="Top" IsChecked="{Binding UsesFeature}"/>
+            <CheckBox
+                Content="{DynamicResource string_usesFeature}"
+                VerticalAlignment="Top"
+                IsChecked="{Binding UsesFeature}" />
         </DockPanel>
     </ScrollViewer>
 </local:ModdescEditorControlBase>

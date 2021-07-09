@@ -1,7 +1,6 @@
 ﻿<Window
     x:Class="MassEffectModManagerCore.modmanager.windows.ModDescEditor" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.windows" xmlns:alternates="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alternates" xmlns:moddescinieditor="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor"
-    mc:Ignorable="d"
-    xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" 
+    mc:Ignorable="d" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
     DataContext="{Binding RelativeSource={RelativeSource Self}}"
     Title="{DynamicResource string_moddesciniEdsitor}"
     MinHeight="750"
@@ -49,12 +48,11 @@
             <TabItem
                 Header="{DynamicResource string_basegame}"
                 Visibility="{Binding EditingMod.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Not_LELauncher'}">
-
                 <moddescinieditor:BasegameEditorControl
                     x:Name="basegame_editor_control" />
             </TabItem>
             <TabItem
-                Header="Legendary Edition Launcher"
+                Header="{DynamicResource string_mde_legendaryEditionLauncher}"
                 Visibility="{Binding EditingMod.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='LELauncher'}">
                 <moddescinieditor:LELauncherEditorControl
                     x:Name="lelauncher_editor_control" />
@@ -111,7 +109,7 @@
                     x:Name="localization_editor_control" />
             </TabItem>
             <TabItem
-                Header="Game 1 TLK Merge"
+                Header="{DynamicResource string_mde_game1TLKMerge}"
                 Visibility="{Binding EditingMod.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Game1'}">
                 <moddescinieditor:Game1TLKMergeEditorControl
                     x:Name="game1tlkmerge_editor_control" />
@@ -130,7 +128,7 @@
                             DockPanel.Dock="Right"
                             Margin="5,0,0,0"
                             HorizontalAlignment="Right"
-                            Command="{Binding SaveModdescToModCommand}" 
+                            Command="{Binding SaveModdescToModCommand}"
                             Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}" />
                         <Button
                             Content="{DynamicResource string_copyText}"

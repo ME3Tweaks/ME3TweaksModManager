@@ -12,14 +12,21 @@
                 DockPanel.Dock="Top" />
             <TextBlock
                 DockPanel.Dock="Top"
-                Text="The LELauncher header is used to specify the directory of your files that will install to the game's launcher directory. The files must match the file structure of the game's launcher, starting in at Content directory."
+                Text="{DynamicResource string_mde_dec_header_lelauncher}"
                 MaxWidth="750"
                 HorizontalAlignment="Left"
                 TextAlignment="Left"
                 TextWrapping="Wrap" />
-            <DockPanel Margin="10,0,0,5">
-                <TextBlock DockPanel.Dock="Left" Text="moddir" Width="160"/>
-                <TextBox Text="{Binding FileDir}" TextWrapping="Wrap" VerticalAlignment="Top"/>
+            <DockPanel
+                Margin="10,0,0,5">
+                <TextBlock
+                    DockPanel.Dock="Left"
+                    Text="moddir"
+                    Width="160" />
+                <TextBox
+                    Text="{Binding FileDir}"
+                    TextWrapping="Wrap"
+                    VerticalAlignment="Top" />
             </DockPanel>
         </DockPanel>
     </ScrollViewer>
