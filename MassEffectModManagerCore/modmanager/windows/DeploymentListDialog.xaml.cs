@@ -53,9 +53,9 @@ namespace MassEffectModManagerCore.modmanager.windows
         {
             var dict = new Dictionary<IReadOnlyCollection<EntryStringPair>, DCIMessage.ESeverity>
             {
-                [DCI.GetBlockingIssues()] = DCIMessage.ESeverity.BLOCKING,
+                [DCI.GetBlockingErrors()] = DCIMessage.ESeverity.BLOCKING,
                 [DCI.GetSignificantIssues()] = DCIMessage.ESeverity.SIGNIFICANTISSUE,
-                [DCI.GetInfoWarningIssues()] = DCIMessage.ESeverity.INFO
+                [DCI.GetInfoWarnings()] = DCIMessage.ESeverity.INFO
             };
 
             foreach (var severitylist in dict)

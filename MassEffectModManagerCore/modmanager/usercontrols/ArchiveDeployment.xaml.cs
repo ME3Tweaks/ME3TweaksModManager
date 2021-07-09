@@ -257,6 +257,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         {
                             item.AddBlockingError(M3L.GetString(M3L.string_interp_packageFileNoExports, p));
                         }
+
+                        if (package.Game != ModBeingDeployed.Game)
+                        {
+                            item.AddSignificantIssue($"Package {package.FilePath.Substring(ModBeingDeployed.ModPath.Length + 1)} is for game {package.Game} but mod being deployed is for game {ModBeingDeployed.Game}. Ensure this is correct.");
+                        }
                     }
                 }
 
@@ -891,8 +896,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             //    return;
                             Log.Information($@"Checking package and name references in {relativePath}");
                             var package = MEPackageHandler.OpenMEPackage(Path.Combine(item.ModToValidateAgainst.ModPath, f));
-                            ReferenceCheckPackage rp = new ReferenceCheckPackage();
-                            EntryChecker.CheckReferences(rp, package, M3L.GetString, relativePath);
+                            EntryChecker.CheckReferences(item, package, M3L.GetString, relativePath);
                         });
                 }
                 catch (Exception e)
@@ -1394,17 +1398,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     Foreground = Brushes.Green;
                     Icon = FontAwesomeIcon.CheckCircle;
                 }
-                else if (BlockingErrors.Any())
+                else if (GetBlockingErrors().Any())
                 {
                     Foreground = Brushes.Red;
                     Icon = FontAwesomeIcon.TimesCircle;
                 }
-                else if (SignificantIssues.Any())
+                else if (GetSignificantIssues().Any())
                 {
                     Foreground = Brushes.Orange;
                     Icon = FontAwesomeIcon.Warning;
                 }
-                else if (InfoWarnings.Any())
+                else if (GetInfoWarnings().Any())
                 {
                     Foreground = Brushes.DodgerBlue;
                     Icon = FontAwesomeIcon.InfoCircle;
@@ -1418,17 +1422,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             public event PropertyChangedEventHandler PropertyChanged;
 #pragma warning restore
 
-            public bool HasAnyMessages() => InfoWarnings.Any() || SignificantIssues.Any() || BlockingErrors.Any();
-
-            public IReadOnlyCollection<EntryStringPair> GetBlockingIssues() => BlockingErrors.AsReadOnly();
-            public IReadOnlyCollection<EntryStringPair> GetSignificantIssues() => SignificantIssues.AsReadOnly();
-            public IReadOnlyCollection<EntryStringPair> GetInfoWarningIssues() => InfoWarnings.AsReadOnly();
+            public bool HasAnyMessages() => GetInfoWarnings().Any() || GetSignificantIssues().Any() || GetBlockingErrors().Any();
 
             public void Reset()
             {
-                BlockingErrors.Clear();
-                SignificantIssues.Clear();
-                InfoWarnings.Clear();
+                ClearMessages();
                 CheckDone = false;
                 Initialize();
             }
@@ -1445,7 +1443,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             if (sender is Hyperlink hl && hl.DataContext is DeploymentChecklistItem dcli)
             {
-                // Todo: Make special dialog for this window
                 DeploymentListDialog ld = new DeploymentListDialog(dcli, Window.GetWindow(hl));
                 ld.ShowDialog();
             }

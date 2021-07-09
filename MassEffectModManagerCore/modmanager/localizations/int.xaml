@@ -702,6 +702,8 @@
     <!-- 0={Message prefix string} 1={integer}, 2={integer} -->
     <system:String x:Key="string_interp_fatalImportCircularReference">{0}, import {1} has a circular self reference for its link. The game and the toolset will be unable to handle this condition</system:String>
     <!-- 0={Message prefix string} 1={integer} -->
+    <system:String x:Key="string_interp_refCheckInvalidNameValue">{0}, invalid name reference found for {1} on {2}</system:String>
+    <!-- 0={Message prefix string} 1={name of something} 2={what it was found like, like import -270} -->
     <system:String x:Key="string_interp_warningExceptionParsingProperties">{0} Exception occurred while parsing properties: {1}</system:String>
     <!-- 0={Message prefix string} 1={exception message} -->
     <system:String x:Key="string_interp_warningTemplateOwnerClassOutsideTables">{0} TemplateOwnerClass (Data offset 0x{1}) ({2}) is outside of import/export table</system:String>

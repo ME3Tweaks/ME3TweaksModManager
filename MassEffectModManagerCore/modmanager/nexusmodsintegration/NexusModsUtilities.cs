@@ -331,6 +331,7 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
                         File.Exists(nxmIniPath))
                     {
                         // Setup for nxmhandler already, we just need to adjust it to add M3
+                        Log.Information(@"Configuring existing nxmhandler");
                         SetupM3InNXMHandler(nxmIniPath);
                         installNewCopy = false;
                     }
@@ -339,6 +340,8 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
 
             if (installNewCopy)
             {
+                Log.Information(@"Configuring new instance of nxmhandler");
+
                 // It's not setup. We will set up a copy of it
                 var outpath = Utilities.GetCachedExecutablePath("nxmhandler");
 
@@ -386,11 +389,13 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
                 {
                     // ???
                     // Is ini configured incorrectly?
+                    Log.Warning(@"NXMHandler ini appears to be configured incorrectly");
                 }
                 else
                 {
                     if (games.Value == "other")
                     {
+                        Log.Information(@"Updating 'other' in nxmhandler");
                         // We need to update this one
                         handlers.SetSingleEntry($@"{i}\executable", App.ExecutableLocation.Replace("\\", "\\\\"));
                         handlers.SetSingleEntry($@"{i}\arguments", "--nxmlink");
@@ -402,6 +407,7 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
             if (!updated)
             {
                 // Add ours
+                Log.Warning(@"Adding section 'other' in nxmhandler");
                 numCurrentHandlers++;
                 handlers.SetSingleEntry($@"size", numCurrentHandlers);
                 handlers.SetSingleEntry($@"{numCurrentHandlers}\games", "other");
@@ -411,7 +417,7 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
             }
 
             File.WriteAllText(nxmIniPath, ini.ToString());
-
+            Log.Information(@"Finished configuring nxmhandler");
             // Register nxm protocol
 
         }
