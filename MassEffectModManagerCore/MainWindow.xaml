@@ -664,7 +664,7 @@
                                     RenderOptions.BitmapScalingMode="HighQuality" />
                             </MenuItem.Icon>
                         </MenuItem>
-                        <!--<MenuItem
+                        <MenuItem
                             ui:SharedUIBindings.GenerationLE="True"
                             Name="GenerateStarterKitLE1_MenuItem"
                             Header="{DynamicResource string_MassEffectLE}"
@@ -676,7 +676,7 @@
                                     Height="16"
                                     RenderOptions.BitmapScalingMode="HighQuality" />
                             </MenuItem.Icon>
-                        </MenuItem>-->
+                        </MenuItem>
                         <MenuItem
                             ui:SharedUIBindings.GenerationLE="True"
                             Name="GenerateStarterKitLE2_MenuItem"

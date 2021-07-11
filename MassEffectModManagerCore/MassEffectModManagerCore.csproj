@@ -89,6 +89,7 @@
 		<None Remove="modmanager\meim\propertymaps\BioParty.xml" />
 		<None Remove="modmanager\nexusmodsintegration\nexusmods_icon.png" />
 		<None Remove="modmanager\objects\mod\merge\v1\schema.json" />
+		<None Remove="modmanager\starterkit\BlankTlkFile.pcc" />
 		<None Remove="modmanager\starterkit\BlankTlkFile.upk" />
 		<None Remove="modmanager\starterkit\Default.sfar" />
 		<None Remove="modmanager\starterkit\Default_DLC_MOD_StarterKit.bin" />
@@ -143,6 +144,7 @@
 		<EmbeddedResource Include="modmanager\meim\propertymaps\BioEngine.xml" />
 		<EmbeddedResource Include="modmanager\meim\propertymaps\BioGame.xml" />
 		<EmbeddedResource Include="modmanager\meim\propertymaps\BioParty.xml" />
+		<EmbeddedResource Include="modmanager\starterkit\BlankTlkFile.pcc" />
 		<EmbeddedResource Include="modmanager\starterkit\BlankTlkFile.upk" />
 		<EmbeddedResource Include="modmanager\starterkit\Default.sfar" />
 		<EmbeddedResource Include="modmanager\starterkit\Default_DLC_MOD_StarterKit.bin" />
