@@ -192,7 +192,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\AdonisUI.ClassicTheme\AdonisUI.ClassicTheme.csproj" />
 		<ProjectReference Include="..\IniFileParser\IniFileParser.csproj" />
-		<ProjectReference Include="..\ME3Explorer\LegendaryExplorer\LegendaryExplorerCore\LegendaryExplorerCore.csproj" />
+		<ProjectReference Include="..\LegendaryExplorer\LegendaryExplorer\LegendaryExplorerCore\LegendaryExplorerCore.csproj" />
 		<ProjectReference Include="..\SevenZip\SevenZip.csproj" />
 		<ProjectReference Include="..\WpfExtendedToolkit-Extended\Src\Xceed.Wpf.Toolkit\DotNetProjects.Wpf.Extended.Toolkit.csproj" />
 	</ItemGroup>
