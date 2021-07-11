@@ -27,7 +27,7 @@ namespace SevenZip
         : SevenZipBase, IDisposable
 
     {
-
+        public long ArchiveSize; // M3
         private List<ArchiveFileInfo> _archiveFileData;
         private IInArchive _archive;
         private IInStream _archiveStream;
@@ -73,6 +73,7 @@ namespace SevenZip
                 _format = FileChecker.CheckSignature(archiveFullName, out _offset, out isExecutable);
             }
             PreserveDirectoryStructure = true;
+            ArchiveSize = new FileInfo(archiveFullName).Length;
             SevenZipLibraryManager.LoadLibrary(this, _format);
             try
             {
@@ -115,6 +116,8 @@ namespace SevenZip
             {
                 _format = FileChecker.CheckSignature(stream, out _offset, out isExecutable);
             }
+
+            ArchiveSize = stream.Length;
             PreserveDirectoryStructure = true;
             SevenZipLibraryManager.LoadLibrary(this, _format);
             try
@@ -1475,7 +1478,7 @@ namespace SevenZip
         #endregion
 
         /// <summary>
-        /// M3: Return backing stream. Use only for re-opening archive that was disposed
+        /// M3: Return backing stream. Use only for re-opening archive that was disposed. May return null somehow...
         /// </summary>
         /// <returns></returns>
         public Stream GetBackingStream()
