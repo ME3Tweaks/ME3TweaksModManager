@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using LegendaryExplorerCore.Helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.ui;
@@ -113,15 +114,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             var extension = Path.GetExtension(url);
             string downloadPath = Path.Combine(temppath, toolName + extension);
 
-            downloadClient.DownloadFileCompleted += (a, b) =>
+            downloadClient.DownloadDataCompleted += (a, b) =>
             {
-                extractTool(tool, executable, extension, downloadPath, currentTaskUpdateCallback, setPercentVisibilityCallback, setPercentTaskDone, resultingExecutableStringCallback, errorExtractingCallback);
+                extractTool(tool, executable, extension, new MemoryStream(b.Result), currentTaskUpdateCallback, setPercentVisibilityCallback, setPercentTaskDone, resultingExecutableStringCallback, errorExtractingCallback);
             };
-            downloadClient.DownloadFileAsync(new Uri(url), downloadPath);
+            downloadClient.DownloadDataAsync(new Uri(url), downloadPath);
         }
 
-        public static void DownloadToolGithub(string localToolFolderName, string tool, List<Release> releases, string executable,
-            Action<string> currentTaskUpdateCallback = null, Action<bool> setPercentVisibilityCallback = null, Action<int> setPercentTaskDone = null, Action<string> resultingExecutableStringCallback = null,
+        public static void DownloadToolGithub(string localToolFolderName, string tool, List<Release> releases,
+            string executable,
+            Action<string> currentTaskUpdateCallback = null, Action<bool> setPercentVisibilityCallback = null,
+            Action<int> setPercentTaskDone = null, Action<string> resultingExecutableStringCallback = null,
             Action<Exception, string, string> errorExtractingCallback = null)
         {
             Release latestRelease = null;
@@ -134,7 +137,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 //Get asset info
                 asset = release.Assets.FirstOrDefault();
+
                 #region MEM SPECIFIC
+
                 if (Path.GetFileName(executable).StartsWith(@"MassEffectModderNoGui"))
                 {
                     //Requires specific asset
@@ -155,6 +160,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             continue;
                         }
                     }
+
                     asset = release.Assets.FirstOrDefault(x =>
                         x.Name == @"MassEffectModderNoGui-v" + release.TagName + @".7z");
                     if (asset == null)
@@ -163,6 +169,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             $@"No applicable assets in release tag {release.TagName} for MassEffectModderNoGui, skipping");
                         continue;
                     }
+
                     latestRelease = release;
                     downloadLink = new Uri(asset.BrowserDownloadUrl);
                     break;
@@ -210,6 +217,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     break;
                 }
             }
+
             #endregion
 
             if (latestRelease == null || downloadLink == null) return;
@@ -218,39 +226,47 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {@"Tool name", Path.GetFileName(executable)},
                 {@"Version", latestRelease.TagName}
             });
-            currentTaskUpdateCallback?.Invoke($@"{M3L.GetString(M3L.string_interp_downloadingX, tool)} {latestRelease.TagName}");
+            currentTaskUpdateCallback?.Invoke(
+                $@"{M3L.GetString(M3L.string_interp_downloadingX, tool)} {latestRelease.TagName}");
 
             WebClient downloadClient = new WebClient();
 
             downloadClient.Headers[@"Accept"] = @"application/vnd.github.v3+json";
             downloadClient.Headers[@"user-agent"] = @"ME3TweaksModManager";
-            string temppath = Utilities.GetTempPath();
-            downloadClient.DownloadProgressChanged += (s, e) =>
-            {
-                setPercentTaskDone?.Invoke(e.ProgressPercentage);
-            };
+            //string temppath = Utilities.GetTempPath();
+            downloadClient.DownloadProgressChanged += (s, e) => { setPercentTaskDone?.Invoke(e.ProgressPercentage); };
 
             var extension = Path.GetExtension(asset.BrowserDownloadUrl);
-            string downloadPath = Path.Combine(temppath, tool.Replace(@" ", "") + extension);
+            //string downloadPath = Path.Combine(temppath, tool.Replace(@" ", "") + extension);
 
-            downloadClient.DownloadFileCompleted += (a, b) =>
+            downloadClient.DownloadDataCompleted += (a, b) =>
             {
-                extractTool(tool, executable, extension, downloadPath, currentTaskUpdateCallback, setPercentVisibilityCallback, setPercentTaskDone, resultingExecutableStringCallback, errorExtractingCallback);
+                if (b.Error == null)
+                {
+                    extractTool(tool, executable, extension, new MemoryStream(b.Result), currentTaskUpdateCallback,
+                        setPercentVisibilityCallback, setPercentTaskDone, resultingExecutableStringCallback,
+                        errorExtractingCallback);
+                }
+                else
+                {
+                    Log.Error($@"Error downloading tool: {b.Error.Message}");
+                    errorExtractingCallback?.Invoke(b.Error,
+                        M3L.GetString(M3L.string_interp_errorDownloadingAndLaunchingTool, b.Error.Message),
+                        M3L.GetString(M3L.string_errorLaunchingTool));
+                }
             };
             Log.Information(@"Downloading file: " + downloadLink);
-
-            downloadClient.DownloadFileAsync(downloadLink, downloadPath);
+            downloadClient.DownloadDataAsync(downloadLink);
         }
 
 
-
-        private static void extractTool(string tool, string executable, string extension, string downloadPath,
-            Action<string> currentTaskUpdateCallback = null, Action<bool> setPercentVisibilityCallback = null, Action<int> setPercentTaskDone = null, Action<string> resultingExecutableStringCallback = null,
-            Action<Exception, string, string> errorExtractingCallback = null)
+        private static void extractTool(string tool, string executable, string extension, MemoryStream downloadStream,
+                Action<string> currentTaskUpdateCallback = null, Action<bool> setPercentVisibilityCallback = null, Action<int> setPercentTaskDone = null, Action<string> resultingExecutableStringCallback = null,
+                Action<Exception, string, string> errorExtractingCallback = null)
         {
             //Todo: Account for errors
 
-            
+
             var outputDirectory = Directory.CreateDirectory(Path.GetDirectoryName(executable)).FullName;
             switch (extension)
             {
@@ -260,16 +276,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         File.Delete(executable);
                     }
 
-                    File.Move(downloadPath, executable);
+                    downloadStream.WriteToFile(executable);
                     resultingExecutableStringCallback?.Invoke(executable);
                     break;
                 case @".rar":
                 case @".7z":
                 case @".zip":
-                    Log.Information(@"Extracting tool archive: " + downloadPath);
+                    Log.Information(@"Extracting tool archive");
                     try
                     {
-                        using (var archiveFile = new SevenZipExtractor(downloadPath))
+                        downloadStream.Position = 0;
+                        using (var archiveFile = new SevenZipExtractor(downloadStream))
                         {
                             currentTaskUpdateCallback?.Invoke(M3L.GetString(M3L.string_interp_extractingX, tool));
                             setPercentTaskDone?.Invoke(0);
@@ -284,12 +301,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             try
                             {
                                 archiveFile.ExtractArchive(outputDirectory); // extract all
-                                // Touchup for MEM LE versions
+                                                                             // Touchup for MEM LE versions
                                 if (Path.GetFileName(executable) == @"MassEffectModderLE.exe")
                                     executable = Path.Combine(Directory.GetParent(executable).FullName, @"MassEffectModder.exe");
                                 if (Path.GetFileName(executable) == @"MassEffectModderNoGuiLE.exe")
                                     executable = Path.Combine(Directory.GetParent(executable).FullName, @"MassEffectModderNoGui.exe");
-                        
+
 
                                 resultingExecutableStringCallback?.Invoke(executable);
                             }
