@@ -76,10 +76,10 @@ namespace MassEffectModManagerCore.modmanager.windows
                         return 1; //sensible?
                     case MEGame.ME1:
                         return 1; //sensible?
-
-                    // Supports up to 2 billion
                     case MEGame.LE1:
+                        return 10;
                     case MEGame.LE2:
+                        return 2500;
                     case MEGame.LE3:
                         return 4000;
                 }
@@ -533,8 +533,6 @@ namespace MassEffectModManagerCore.modmanager.windows
             var cookedDir = Directory.CreateDirectory(Path.Combine(contentDirectory, skOption.ModGame.CookedDirName())).FullName;
             if (skOption.ModGame.IsGame1())
             {
-                // TODO: Figure this out for LE1 DLC system
-
                 //AutoLoad.ini
                 IniData autoload = new IniData();
                 autoload[@"Packages"][@"GlobalTalkTable1"] = $@"{dlcFolderName}_GlobalTlk.GlobalTlk_tlk";
@@ -547,28 +545,37 @@ namespace MassEffectModManagerCore.modmanager.windows
                 new FileIniDataParser().WriteFile(Path.Combine(contentDirectory, @"AutoLoad.ini"), autoload, new UTF8Encoding(false));
 
                 //TLK
-                var dialogdir = Directory.CreateDirectory(Path.Combine(cookedDir, @"Packages", @"Dialog")).FullName;
-                var tlkGlobalFile = Path.Combine(dialogdir, $@"{dlcFolderName}_GlobalTlk.upk");
-                Utilities.ExtractInternalFile(@"MassEffectModManagerCore.modmanager.starterkit.BlankTlkFile.upk", tlkGlobalFile, true);
-                var tlkFile = MEPackageHandler.OpenMEPackage(tlkGlobalFile);
-                var tlk1 = new ME1TalkFile(tlkFile.GetUExport(1));
-                var tlk2 = new ME1TalkFile(tlkFile.GetUExport(2));
+                var dialogdir = skOption.ModGame == MEGame.ME1
+                    ? Directory.CreateDirectory(Path.Combine(cookedDir, @"Packages", @"Dialog")).FullName
+                    : cookedDir;
+                var tlkGlobalFile = Path.Combine(dialogdir, $@"{dlcFolderName}_GlobalTlk");
+                var extension = skOption.ModGame == MEGame.ME1 ? @"upk" : @"pcc";
+                foreach (var lang in le1languages)
+                {
+                    var langExt = lang.filecode == @"INT" ? "" : $@"_{lang.filecode}";
+                    var tlkPath = $@"{tlkGlobalFile}{langExt}.{extension}";
+                    Utilities.ExtractInternalFile($@"MassEffectModManagerCore.modmanager.starterkit.BlankTlkFile.{extension}", tlkPath, true);
 
-                tlk1.StringRefs[0].StringID = skOption.ModInternalTLKID;
-                tlk2.StringRefs[0].StringID = skOption.ModInternalTLKID;
+                    var tlkFile = MEPackageHandler.OpenMEPackage(tlkPath);
+                    var tlk1 = new ME1TalkFile(tlkFile.GetUExport(1));
+                    var tlk2 = new ME1TalkFile(tlkFile.GetUExport(2));
 
-                tlk1.StringRefs[0].Data = skOption.ModInternalName;
-                tlk2.StringRefs[0].Data = skOption.ModInternalName;
+                    tlk1.StringRefs[0].StringID = skOption.ModInternalTLKID;
+                    tlk2.StringRefs[0].StringID = skOption.ModInternalTLKID;
 
-                var huff = new HuffmanCompression();
-                huff.LoadInputData(tlk1.StringRefs.ToList());
-                huff.serializeTalkfileToExport(tlkFile.GetUExport(1));
+                    tlk1.StringRefs[0].Data = skOption.ModInternalName;
+                    tlk2.StringRefs[0].Data = skOption.ModInternalName;
 
-                huff = new HuffmanCompression();
-                huff.LoadInputData(tlk2.StringRefs.ToList());
-                huff.serializeTalkfileToExport(tlkFile.GetUExport(2));
-                Log.Information($@"Saving {skOption.ModGame} TLK package");
-                tlkFile.Save();
+                    var huff = new HuffmanCompression();
+                    huff.LoadInputData(tlk1.StringRefs.ToList());
+                    huff.serializeTalkfileToExport(tlkFile.GetUExport(1));
+
+                    huff = new HuffmanCompression();
+                    huff.LoadInputData(tlk2.StringRefs.ToList());
+                    huff.serializeTalkfileToExport(tlkFile.GetUExport(2));
+                    Log.Information($@"Saving {tlkPath} TLK package");
+                    tlkFile.Save();
+                }
             }
             else
             {

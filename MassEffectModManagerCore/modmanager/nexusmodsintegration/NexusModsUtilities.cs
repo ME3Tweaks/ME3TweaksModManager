@@ -124,7 +124,7 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
                 var entropy = File.ReadAllBytes(entropyf);
                 using MemoryStream fs = new MemoryStream(File.ReadAllBytes(keyPath));
                 return Encoding.Unicode.GetString(DecryptDataFromStream(entropy, DataProtectionScope.CurrentUser, fs,
-                    (int) fs.Length));
+                    (int)fs.Length));
             }
 
             return null; //no key
@@ -331,7 +331,7 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
                         File.Exists(nxmIniPath))
                     {
                         // Setup for nxmhandler already, we just need to adjust it to add M3
-                        Log.Information(@"Configuring existing nxmhandler");
+                        Log.Information($@"Configuring existing nxmhandler located at ({path})");
                         SetupM3InNXMHandler(nxmIniPath);
                         installNewCopy = false;
                     }

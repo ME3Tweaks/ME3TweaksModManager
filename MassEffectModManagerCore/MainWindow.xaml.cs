@@ -3185,7 +3185,7 @@ namespace MassEffectModManagerCore
             if (sender == GenerateStarterKitME1_MenuItem) g = MEGame.ME1;
             if (sender == GenerateStarterKitME2_MenuItem) g = MEGame.ME2;
             if (sender == GenerateStarterKitME3_MenuItem) g = MEGame.ME3;
-            //if (sender == GenerateStarterKitLE1_MenuItem) g = MEGame.LE1;
+            if (sender == GenerateStarterKitLE1_MenuItem) g = MEGame.LE1;
             if (sender == GenerateStarterKitLE2_MenuItem) g = MEGame.LE2;
             if (sender == GenerateStarterKitLE3_MenuItem) g = MEGame.LE3;
             new StarterKitGeneratorWindow(g) { Owner = this }.ShowDialog();
