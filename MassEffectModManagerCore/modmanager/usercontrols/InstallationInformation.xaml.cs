@@ -13,12 +13,13 @@ using LegendaryExplorerCore.Gammtek.Extensions;
 using Serilog;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using static MassEffectModManagerCore.modmanager.me3tweaks.ThirdPartyServices;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using PropertyChanged;
+using MemoryAnalyzer = MassEffectModManagerCore.modmanager.memoryanalyzer.MemoryAnalyzer;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {

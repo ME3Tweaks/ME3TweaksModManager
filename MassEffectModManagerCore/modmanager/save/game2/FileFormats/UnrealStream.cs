@@ -353,7 +353,7 @@ namespace MassEffectModManagerCore.modmanager.save.game2.FileFormats
                 throw new ArgumentNullException("list", "serializable list should not be null");
             }
 
-            this.ReadBasicList(list, r => (byte) r.Stream.ReadByte());
+            this.ReadBasicList(list, r => (byte)r.Stream.ReadByte());
         }
 
         private void ReadBasicList<TType>(List<TType> list, Func<IUnrealStream, TType> readValue)
@@ -563,23 +563,34 @@ namespace MassEffectModManagerCore.modmanager.save.game2.FileFormats
                 throw new ArgumentNullException("list", "serializable list should not be null");
             }
 
-            var count = this.Stream.ReadUInt32();
-            if (count >= 0x7FFFFF)
+            if (this.Loading == true)
             {
-                throw new FormatException("too many items in list");
-            }
+                var count = this.Stream.ReadUInt32();
+                if (count >= 0x7FFFFF)
+                {
+                    throw new FormatException("too many items in list");
+                }
 
-            list.Clear();
-            for (uint i = 0; i < count; i++)
+                list.Clear();
+                for (uint i = 0; i < count; i++)
+                {
+                    var item = new TType();
+                    item.Serialize(this);
+                    list.Add(item);
+                }
+            }
+            else
             {
-                var item = new TType();
-                item.Serialize(this);
-                list.Add(item);
+                this.Stream.WriteUInt32((uint)list.Count);
+                foreach (var item in list)
+                {
+                    item.Serialize(this);
+                }
             }
         }
 
         public void Serialize<TType>(ref BindingList<TType> list, Func<IUnrealStream, bool> condition,
-            Func<BindingList<TType>> defaultList) where TType : class, IUnrealSerializable, new()
+                Func<BindingList<TType>> defaultList) where TType : class, IUnrealSerializable, new()
         {
             if (condition == null)
             {

@@ -5,12 +5,17 @@ using System.ComponentModel;
 namespace MassEffectModManagerCore.modmanager.save.game2.FileFormats.Save
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    public partial class Player : IUnrealSerializable
+    public partial class Player : IUnrealSerializable, IPlayerRecord
     {
         [UnrealFieldOffset(0x000)]
         [UnrealFieldCategory("Player")]
         [UnrealFieldDisplayName("Is Female")]
         public bool IsFemale;
+        public bool Proxy_IsFemale
+        {
+            get => IsFemale;
+            set => IsFemale = value;
+        }
 
         [UnrealFieldOffset(0x004)]
         [UnrealFieldCategory("Statistics")]
@@ -31,6 +36,25 @@ namespace MassEffectModManagerCore.modmanager.save.game2.FileFormats.Save
         [UnrealFieldCategory("Player")]
         [UnrealFieldDisplayName("First Name")]
         public string FirstName;
+        public string Proxy_FirstName
+        {
+            get => FirstName;
+            set => FirstName = value;
+        }
+
+        public void SetMorphHead(IMorphHead morphHead)
+        {
+            if (morphHead is MorphHead head)
+            {
+                Appearance.MorphHead = head;
+                Appearance.HasMorphHead = true;
+            }
+            else
+            {
+                Appearance.MorphHead = null;
+                Appearance.HasMorphHead = false;
+            }
+        }
 
         [UnrealFieldOffset(0x02C)]
         [UnrealFieldCategory("Player")]

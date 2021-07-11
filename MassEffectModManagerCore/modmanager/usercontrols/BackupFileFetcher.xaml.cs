@@ -13,6 +13,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Unreal;
 using MassEffectModManagerCore.modmanager.me3tweaks;

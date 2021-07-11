@@ -29,30 +29,51 @@ using LegendaryExplorerCore.Coalesced;
 using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Gammtek.IO;
 using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Packages;
+using LegendaryExplorerCore.Unreal;
 using MassEffectModManagerCore.modmanager.save.game2.FileFormats;
 
 namespace MassEffectModManagerCore.modmanager.save.game3
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
     [OriginalName("SFXSaveGame")]
-    public class SFXSaveGameFile : IUnrealSerializable, INotifyPropertyChanged
+    public class SaveFileGame3 : IUnrealSerializable, INotifyPropertyChanged, ISaveFile
     {
         private Endian _Endian;
         private uint _Version;
         private uint _Checksum;
 
+        public MEGame Game
+        {
+            get
+            {
+                if (Version == 29) return MEGame.ME2;
+                if (Version == 30) return MEGame.LE2;
+                if (Version == 59) return MEGame.ME3; // Also LE3
+                return MEGame.Unknown;
+            }
+        } 
+        public string SaveFilePath { get; init; }
         #region Fields
+        public int SaveNumber { get; set; }
+        public ESFXSaveGameType SaveGameType { get; set; }
+
+        public IPlayerRecord Proxy_PlayerRecord => Player;
+
         [OriginalName("DebugName")]
         private string _DebugName;
 
         [OriginalName("SecondsPlayed")]
         private float _SecondsPlayed;
 
+
         [OriginalName("Disc")]
         private int _Disc;
 
         [OriginalName("BaseLevelName")]
         private string _BaseLevelName;
+        public string Proxy_BaseLevelName => BaseLevelName;
+
 
         [OriginalName("BaseLevelNameDisplayOverrideAsRead")]
         private string _BaseLevelNameDisplayOverrideAsRead;
@@ -65,6 +86,7 @@ namespace MassEffectModManagerCore.modmanager.save.game3
 
         [OriginalName("TimeStamp")]
         private SaveTimeStamp _TimeStamp = new SaveTimeStamp();
+        public DateTime Proxy_TimeStamp => _TimeStamp.ToDate();
 
         [OriginalName("SaveLocation")]
         private Vector _Location = new Vector();
@@ -621,17 +643,47 @@ namespace MassEffectModManagerCore.modmanager.save.game3
         }
         #endregion
 
-        public static SFXSaveGameFile Read(Stream input)
+        public static SaveFileGame3 Read(Stream input, string fileName = null, MEGame expectedGame = MEGame.Unknown)
         {
+
             if (input == null)
             {
                 throw new ArgumentNullException("input");
             }
 
-            var save = new SFXSaveGameFile()
+            var save = new SaveFileGame3()
             {
-                _Version = input.ReadUInt32()
+                _Version = input.ReadUInt32(),
+                SaveFilePath = fileName
             };
+
+            if (fileName != null)
+            {
+                // Setup save params
+                var sgName = Path.GetFileNameWithoutExtension(fileName);
+                if (sgName.StartsWith("Save_"))
+                {
+                    // Parse number
+                    var numStr = sgName.Substring(sgName.IndexOf("_") + 1);
+                    if (int.TryParse(numStr, out var saveNum))
+                    {
+                        save.SaveNumber = saveNum;
+                        save.SaveGameType = ESFXSaveGameType.SaveGameType_Manual;
+                    }
+                }
+                else if (sgName.StartsWith("AutoSave"))
+                {
+                    save.SaveGameType = ESFXSaveGameType.SaveGameType_Auto;
+                }
+                else if (sgName.StartsWith("ChapterSave"))
+                {
+                    save.SaveGameType = ESFXSaveGameType.SaveGameType_Chapter;
+                }
+                else if (sgName.StartsWith("QuickSave"))
+                {
+                    save.SaveGameType = ESFXSaveGameType.SaveGameType_Quick;
+                }
+            }
 
             if (save._Version != 29 && save._Version.Swap() != 29 &&
                 save._Version != 59 && save._Version.Swap() != 59)
@@ -668,7 +720,7 @@ namespace MassEffectModManagerCore.modmanager.save.game3
             return save;
         }
 
-        public static void Write(SFXSaveGameFile save, Stream output)
+        public static void Write(SaveFileGame3 save, Stream output)
         {
             if (save == null)
             {

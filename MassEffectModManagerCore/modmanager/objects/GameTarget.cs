@@ -363,8 +363,8 @@ namespace MassEffectModManagerCore.modmanager.objects
             //return new ALOTVersionInfo(9, 0, 0, 0); //MEMI tag but no info we know of
         }
 
-        public ui.ObservableCollectionExtended<ModifiedFileObject> ModifiedBasegameFiles { get; } = new ui.ObservableCollectionExtended<ModifiedFileObject>();
-        public ui.ObservableCollectionExtended<SFARObject> ModifiedSFARFiles { get; } = new ui.ObservableCollectionExtended<SFARObject>();
+        public ObservableCollectionExtended<ModifiedFileObject> ModifiedBasegameFiles { get; } = new();
+        public ObservableCollectionExtended<SFARObject> ModifiedSFARFiles { get; } = new();
         public ICollectionView ModifiedBasegameFilesView => CollectionViewSource.GetDefaultView(ModifiedBasegameFiles);
 
         public void PopulateModifiedBasegameFiles(Func<string, bool> restoreBasegamefileConfirmationCallback,
@@ -429,8 +429,8 @@ namespace MassEffectModManagerCore.modmanager.objects
             });
         }
 
-        public ui.ObservableCollectionExtended<InstallationInformation.InstalledDLCMod> UIInstalledDLCMods { get; } = new ui.ObservableCollectionExtended<InstallationInformation.InstalledDLCMod>();
-        public ui.ObservableCollectionExtended<InstalledOfficialDLC> UIInstalledOfficialDLC { get; } = new ui.ObservableCollectionExtended<InstalledOfficialDLC>();
+        public ObservableCollectionExtended<InstallationInformation.InstalledDLCMod> UIInstalledDLCMods { get; } = new ObservableCollectionExtended<InstallationInformation.InstalledDLCMod>();
+        public ObservableCollectionExtended<InstalledOfficialDLC> UIInstalledOfficialDLC { get; } = new ObservableCollectionExtended<InstalledOfficialDLC>();
 
         public void PopulateDLCMods(bool includeDisabled, Func<InstallationInformation.InstalledDLCMod, bool> deleteConfirmationCallback = null, Action notifyDeleted = null, Action notifyToggled = null, bool modNamePrefersTPMI = false)
         {
@@ -960,7 +960,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             }
         }
 
-        public ui.ObservableCollectionExtended<TextureModInstallationInfo> TextureInstallHistory { get; } = new ui.ObservableCollectionExtended<TextureModInstallationInfo>();
+        public ObservableCollectionExtended<TextureModInstallationInfo> TextureInstallHistory { get; } = new ObservableCollectionExtended<TextureModInstallationInfo>();
 
         public void PopulateTextureInstallHistory()
         {
@@ -1229,7 +1229,7 @@ namespace MassEffectModManagerCore.modmanager.objects
 
             public string FilePath { get; set; }
         }
-        public ui.ObservableCollectionExtended<InstalledExtraFile> ExtraFiles { get; } = new ui.ObservableCollectionExtended<InstalledExtraFile>();
+        public ObservableCollectionExtended<InstalledExtraFile> ExtraFiles { get; } = new ObservableCollectionExtended<InstalledExtraFile>();
         /// <summary>
         /// Populates list of 'extra' items for the game. This includes things like dlls, and for ME1, config files
         /// </summary>

@@ -13,7 +13,9 @@ using LegendaryExplorerCore.Unreal;
 using MassEffectModManagerCore.modmanager.gamemd5;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.modmanager.objects.mod.merge;
+using MassEffectModManagerCore.modmanager.save.game2.UI;
 using MassEffectModManagerCore.modmanager.squadmates;
+using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Win32Native.Shell.DesktopWindowManager;
 using SevenZip;
 
@@ -37,8 +39,26 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (sender == nameof(MainWindow.UpdateMD5DB_MenuItem)) UpdateMD5Map(window);
             if (sender == nameof(MainWindow.StampCurrentTargetWithALOTMarker_MenuItem)) StampCurrentTargetWithALOT_Click(window);
             if (sender == nameof(MainWindow.StripCurrentTargetWithALOTMarker_MenuItem)) StripCurrentTargetALOTMarker_Click(window);
+            if (sender == nameof(MainWindow.InstallHeadMorph_MenuItem)) InstallHeadMorphTest_Click(window);
 #endif
         }
+
+        private static void InstallHeadMorphTest_Click(MainWindow window)
+        {
+            SaveSelectorUI ssui = new SaveSelectorUI();
+            ssui.Show();
+
+            /*
+            OpenFileDialog ofd = new OpenFileDialog()
+            {
+                Filter = @".ron",
+            };
+            if (ofd.ShowDialog().Value)
+            {
+                
+            }*/
+        }
+
 #if DEBUG
         private static void TestSquadmateMerge_Click(MainWindow window)
         {

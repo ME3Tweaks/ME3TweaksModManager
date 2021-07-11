@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Input;
 using MassEffectModManagerCore.modmanager.localizations;
 using Serilog;
+using LegendaryExplorerCore.Misc;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {

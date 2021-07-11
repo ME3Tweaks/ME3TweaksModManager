@@ -80,7 +80,7 @@ namespace MassEffectModManagerCore
         public string ApplyModButtonText { get; set; } = M3L.GetString(M3L.string_applyMod);
         public string InstallationTargetText { get; set; } = M3L.GetString(M3L.string_installationTarget);
 
-        public ui.ObservableCollectionExtended<GameFilter> GameFilters { get; } = new();
+        public ObservableCollectionExtended<GameFilter> GameFilters { get; } = new();
         public bool ME1ASILoaderInstalled { get; set; }
         public bool ME2ASILoaderInstalled { get; set; }
         public bool ME3ASILoaderInstalled { get; set; }
@@ -200,16 +200,16 @@ namespace MassEffectModManagerCore
         /// <summary>
         /// Mods currently visible in the left panel
         /// </summary>
-        public ui.ObservableCollectionExtended<Mod> VisibleFilteredMods { get; } = new ui.ObservableCollectionExtended<Mod>();
+        public ObservableCollectionExtended<Mod> VisibleFilteredMods { get; } = new ObservableCollectionExtended<Mod>();
         /// <summary>
         /// All mods that successfully loaded.
         /// </summary>
-        public ui.ObservableCollectionExtended<Mod> AllLoadedMods { get; } = new ui.ObservableCollectionExtended<Mod>();
+        public ObservableCollectionExtended<Mod> AllLoadedMods { get; } = new ObservableCollectionExtended<Mod>();
         /// <summary>
         /// All mods that failed to load
         /// </summary>
-        public ui.ObservableCollectionExtended<Mod> FailedMods { get; } = new ui.ObservableCollectionExtended<Mod>();
-        public ui.ObservableCollectionExtended<GameTarget> InstallationTargets { get; } = new ui.ObservableCollectionExtended<GameTarget>();
+        public ObservableCollectionExtended<Mod> FailedMods { get; } = new ObservableCollectionExtended<Mod>();
+        public ObservableCollectionExtended<GameTarget> InstallationTargets { get; } = new ObservableCollectionExtended<GameTarget>();
         /// <summary>
         /// List of all loaded targets, even ones for different generations
         /// </summary>
@@ -3407,6 +3407,14 @@ namespace MassEffectModManagerCore
                                 };
                                 nbw.RunWorkerAsync();
                             }
+#if DEBUG
+                            // TOC DUMP
+                            else if (magic is 0x3AB70C13)
+                            {
+                                TOCBinFile tbf = new TOCBinFile(files[0]);
+                                tbf.DumpTOC();
+                            }
+#endif
                         }
                         break;
                     case @".xml":

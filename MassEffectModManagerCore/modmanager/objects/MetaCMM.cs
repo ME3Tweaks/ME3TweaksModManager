@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
 using System.Text;
+using LegendaryExplorerCore.Misc;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.ui;
 

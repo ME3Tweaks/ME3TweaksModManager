@@ -1,5 +1,4 @@
-﻿using MassEffectModManagerCore.modmanager.memoryanalyzer;
-using MassEffectModManagerCore.modmanager.objects;
+﻿using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
 using Serilog;
 using System;
@@ -8,10 +7,12 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using LegendaryExplorerCore.Misc;
 using MassEffectModManagerCore.modmanager.asi;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using LegendaryExplorerCore.Packages;
+using MemoryAnalyzer = MassEffectModManagerCore.modmanager.memoryanalyzer.MemoryAnalyzer;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {

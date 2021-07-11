@@ -26,7 +26,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// </summary>
     public partial class TPMITelemetrySubmissionForm : MMBusyPanelBase
     {
-        public ui.ObservableCollectionExtended<TelemetryPackage> TelemetryPackages { get; } = new ui.ObservableCollectionExtended<TelemetryPackage>();
+        public ObservableCollectionExtended<TelemetryPackage> TelemetryPackages { get; } = new ObservableCollectionExtended<TelemetryPackage>();
 
         public TPMITelemetrySubmissionForm(Mod telemetryMod)
         {
