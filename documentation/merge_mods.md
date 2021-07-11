@@ -123,6 +123,7 @@ You may have one of either a `propertyupdates`, a `scriptupdate`, or an `assetup
 | propertyupdates | array[propertyupdate] | A list of property updates                                   |
 | scriptupdate    | scriptupdate object   | A direct script replacement, only available when updating an UnrealScript function export |
 | assetupdate     | assetupdate object    | A full asset replacement from a local package file           |
+| disableconfigupdate     | bool    | Disables an entries' "Config" flag so it does not read from Coalesced           |
 
 
 
@@ -205,6 +206,18 @@ The format for a full asset update. This format will fully replace the basegame 
 }
 ```
 
+### `disableconfigupdate` JSON format
+
+The format for disabling the 'config' flag on a property export. This is useful when working on LE1 as it doesn't have the ability for us to ship ini updates in DLC mods. As such, the only options are shipping an entire coalesced file or making the changes to the file itself. Shipping an entire coalesced file is undesirable so turning off the ability for the property to read from Coalesced, and then changing the property in the package file is preferable.
+
+**Example:**
+
+```json
+{
+    "entryname": "BioPlayerController.MaxNonCombatStormStamina",
+    "disableconfigupdate": true
+}
+```
 
 
 ## Compiling a .m3m file
