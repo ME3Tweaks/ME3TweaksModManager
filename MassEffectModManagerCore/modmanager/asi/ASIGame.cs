@@ -2,22 +2,21 @@
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Input;
+using LegendaryExplorerCore.Gammtek.Extensions;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.Packages;
+using PropertyChanged;
 
 namespace MassEffectModManagerCore.modmanager.asi
 {
     /// <summary>
     /// ASI Manager UI controller for single game
     /// </summary>
-    public class ASIGame : INotifyPropertyChanged
+    [AddINotifyPropertyChangedInterface]
+    public class ASIGame
     {
-        //Fody uses this property on weaving
-#pragma warning disable
-        public event PropertyChangedEventHandler PropertyChanged;
-#pragma warning restore
         public MEGame Game { get; }
         public ObservableCollectionExtended<GameTarget> GameTargets { get; } = new ObservableCollectionExtended<GameTarget>();
         public ObservableCollectionExtended<object> DisplayedASIMods { get; } = new ObservableCollectionExtended<object>();
@@ -36,7 +35,7 @@ namespace MassEffectModManagerCore.modmanager.asi
 
         public bool LoaderInstalled { get; set; }
         public bool IsEnabled { get; set; }
-        public string GameName => Utilities.GetGameName(Game);
+        public string GameName => Game.ToGameName(true);
 
         public ICommand InstallLoaderCommand { get; }
         public ASIGame(MEGame game, List<GameTarget> targets)

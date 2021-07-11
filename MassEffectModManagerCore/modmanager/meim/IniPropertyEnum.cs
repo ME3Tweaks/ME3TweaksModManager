@@ -13,16 +13,13 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 =============================================*/
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using MassEffectModManagerCore.modmanager.gameini;
+using LegendaryExplorerCore.Misc;
 
-namespace MassEffectIniModder.classes
+namespace MassEffectModManagerCore.modmanager.meim
 {
     [Localizable(false)]
     public class IniPropertyEnum : IniPropertyMaster

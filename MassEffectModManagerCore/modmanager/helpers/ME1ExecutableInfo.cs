@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 using System.IO;
-using ME3ExplorerCore.Helpers;
+using LegendaryExplorerCore.Helpers;
 
 //Taken from ALOT Installer V4
 namespace MassEffectModManagerCore.modmanager.helpers

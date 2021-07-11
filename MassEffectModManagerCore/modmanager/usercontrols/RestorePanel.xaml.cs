@@ -10,8 +10,10 @@ using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
-using ME3ExplorerCore.GameFilesystem;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.GameFilesystem;
+using LegendaryExplorerCore.Gammtek.Extensions;
+using LegendaryExplorerCore.Packages;
+using MassEffectModManagerCore.modmanager.me3tweaks;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using Microsoft.WindowsAPICodePack.Dialogs;
@@ -36,8 +38,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             this.targetsList = targetsList;
             LoadCommands();
             InitializeComponent();
-
-            //InstallationTargets_ComboBox.SelectedItem = selectedTarget;
         }
 
         public ICommand CloseCommand { get; set; }
@@ -50,7 +50,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void ClosePanel()
         {
-            OnClosing(new DataEventArgs(GameRestoreControllers.Any(x => x.RefreshTargets)));
+            Result.ReloadTargets = GameRestoreControllers.Any(x => x.RefreshTargets);
+            OnClosing(DataEventArgs.Empty);
         }
 
         private bool CanClose() => !GameRestoreControllers.Any(x => x.RestoreInProgress);
@@ -65,16 +66,34 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
-            GameRestoreControllers.Add(new GameRestoreObject(MEGame.ME1, targetsList.Where(x => x.Game == MEGame.ME1), mainwindow));
-            GameRestoreControllers.Add(new GameRestoreObject(MEGame.ME2, targetsList.Where(x => x.Game == MEGame.ME2), mainwindow));
-            GameRestoreControllers.Add(new GameRestoreObject(MEGame.ME3, targetsList.Where(x => x.Game == MEGame.ME3), mainwindow));
+            if (Settings.GenerationSettingLE)
+            {
+                GameRestoreControllers.Add(new GameRestoreObject(MEGame.LELauncher,
+                    targetsList.Where(x => x.Game == MEGame.LELauncher), mainwindow));
+                GameRestoreControllers.Add(new GameRestoreObject(MEGame.LE1,
+                    targetsList.Where(x => x.Game == MEGame.LE1), mainwindow));
+                GameRestoreControllers.Add(new GameRestoreObject(MEGame.LE2,
+                    targetsList.Where(x => x.Game == MEGame.LE2), mainwindow));
+                GameRestoreControllers.Add(new GameRestoreObject(MEGame.LE3,
+                    targetsList.Where(x => x.Game == MEGame.LE3), mainwindow));
+            }
+
+            if (Settings.GenerationSettingOT)
+            {
+                GameRestoreControllers.Add(new GameRestoreObject(MEGame.ME1,
+                    targetsList.Where(x => x.Game == MEGame.ME1), mainwindow));
+                GameRestoreControllers.Add(new GameRestoreObject(MEGame.ME2,
+                    targetsList.Where(x => x.Game == MEGame.ME2), mainwindow));
+                GameRestoreControllers.Add(new GameRestoreObject(MEGame.ME3,
+                    targetsList.Where(x => x.Game == MEGame.ME3), mainwindow));
+            }
         }
 
         public class GameRestoreObject : INotifyPropertyChanged
         {
             public bool RefreshTargets;
 
-            private MEGame Game;
+            public MEGame Game { get; }
 
             public bool CanOpenDropdown => !RestoreInProgress && BackupLocation != null;
 
@@ -88,22 +107,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 this.AvailableBackupSources.AddRange(availableBackupSources);
                 AvailableBackupSources.Add(new GameTarget(Game, M3L.GetString(M3L.string_restoreToCustomLocation), false, true));
                 LoadCommands();
-                switch (Game)
-                {
-                    case MEGame.ME1:
-                        GameTitle = @"Mass Effect";
-                        GameIconSource = @"/images/gameicons/ME1_48.ico";
-                        break;
-                    case MEGame.ME2:
-                        GameTitle = @"Mass Effect 2";
-                        GameIconSource = @"/images/gameicons/ME2_48.ico";
-                        break;
-                    case MEGame.ME3:
-                        GameTitle = @"Mass Effect 3";
-                        GameIconSource = @"/images/gameicons/ME3_48.ico";
-                        break;
-                }
-
+                GameTitle = Game.ToGameName();
                 ResetRestoreStatus();
             }
 
@@ -129,12 +133,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (Utilities.IsGameRunning(Game))
                 {
-                    M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_dialogCannotRestoreXWhileItIsRunning, Utilities.GetGameName(Game)), M3L.GetString(M3L.string_gameRunning), MessageBoxButton.OK, MessageBoxImage.Error);
+                    M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_dialogCannotRestoreXWhileItIsRunning, Game.ToGameName()), M3L.GetString(M3L.string_gameRunning), MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
 
                 bool restore = RestoreTarget.IsCustomOption; //custom option is restore to custom location
-                restore = restore || M3L.ShowDialog(window, M3L.GetString(M3L.string_dialog_restoringXWillDeleteGameDir, Utilities.GetGameName(Game)), M3L.GetString(M3L.string_gameTargetWillBeDeleted), MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
+                restore = restore || M3L.ShowDialog(window, M3L.GetString(M3L.string_dialog_restoringXWillDeleteGameDir, Game.ToGameName()), M3L.GetString(M3L.string_gameTargetWillBeDeleted), MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
                 if (restore)
                 {
                     NamedBackgroundWorker nbw = new NamedBackgroundWorker(Game + @"-Restore");
@@ -150,7 +154,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         RestoreInProgress = true;
                         // Nuke the LODs
-                        if (!RestoreTarget.IsCustomOption)
+                        if (!RestoreTarget.IsCustomOption && RestoreTarget.Game.IsOTGame())
                         {
                             Log.Information($@"Resetting LODs for {RestoreTarget.Game}");
                             Utilities.SetLODs(RestoreTarget, false, false, false);
@@ -292,7 +296,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                         //Check for cmmvanilla file and remove it present
 
-                        string cmmVanilla = Path.Combine(restoreTargetPath, @"cmm_vanilla");
+                        string cmmVanilla = Path.Combine(restoreTargetPath, BackupService.CMM_VANILLA_FILENAME);
                         if (File.Exists(cmmVanilla))
                         {
                             Log.Information($@"Removing cmm_vanilla file: {cmmVanilla}");

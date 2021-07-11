@@ -19,13 +19,13 @@ using IniParser.Model;
 using MassEffectModManagerCore.modmanager.helpers;
 using NickStrupat;
 using System.Windows.Shell;
-using ALOTInstallerCore.Helpers;
 using MassEffectModManagerCore.modmanager.asi;
-using ME3ExplorerCore.GameFilesystem;
-using ME3ExplorerCore.Helpers;
-using ME3ExplorerCore.Unreal;
+using LegendaryExplorerCore.GameFilesystem;
+using LegendaryExplorerCore.Gammtek.Extensions;
+using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Unreal;
 using Microsoft.WindowsAPICodePack.Taskbar;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.Packages;
 
 namespace MassEffectModManagerCore.modmanager.me3tweaks
 {
@@ -162,7 +162,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             bool hasMEM = false;
             string mempath = null;
             #region MEM Fetch Callbacks
-            void failedToDownload()
+            void failedToDownload(string failureMessage)
             {
                 Thread.Sleep(100); //try to stop deadlock
                 Log.Error(@"Failed to acquire MEM for diagnostics.");
@@ -198,7 +198,10 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
             #endregion
             // Ensure MEM NOGUI
-            ExternalToolLauncher.FetchAndLaunchTool(ExternalToolLauncher.MEM_CMD, currentTaskCallback, null, setPercentDone, readyToLaunch, failedToDownload, failedToExtractMEM);
+            if (selectedDiagnosticTarget != null)
+            {
+                ExternalToolLauncher.FetchAndLaunchTool(selectedDiagnosticTarget.Game.IsLEGame() ? ExternalToolLauncher.MEM_LE_CMD : ExternalToolLauncher.MEM_CMD, currentTaskCallback, null, setPercentDone, readyToLaunch, failedToDownload, failedToExtractMEM);
+            }
 
             //wait for tool fetch
             if (!hasMEM)
@@ -280,12 +283,12 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
 
             string gamePath = selectedDiagnosticTarget.TargetPath;
-            var gameID = selectedDiagnosticTarget.Game.ToString().Substring(2);
+            var gameID = selectedDiagnosticTarget.Game.ToMEMGameNum().ToString();
             Log.Information(@"Beginning to build diagnostic output");
 
             addDiagLine(gameID, Severity.GAMEID);
             addDiagLine($@"{App.AppVersionHR} Game Diagnostic");
-            addDiagLine($@"Diagnostic for {Utilities.GetGameName(selectedDiagnosticTarget.Game)}");
+            addDiagLine($@"Diagnostic for {selectedDiagnosticTarget.Game.ToGameName()}");
             addDiagLine($@"Diagnostic generated on {DateTime.Now.ToShortDateString()}");
             #endregion
 
@@ -297,7 +300,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             //paths
             string oldMemGamePath = null;
             string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"MassEffectModder");
-            string _iniPath = Path.Combine(path, @"MassEffectModder.ini");
+            string _iniPath = Path.Combine(path, selectedDiagnosticTarget.Game.IsLEGame() ? @"MassEffectModderLE.ini" : @"MassEffectModder.ini");
             if (hasMEM)
             {
                 // Set INI path to target
@@ -313,13 +316,37 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 }
 
                 IniData ini = new FileIniDataParser().ReadFile(_iniPath);
-                oldMemGamePath = ini[@"GameDataPath"][selectedDiagnosticTarget.Game.ToString()];
-                ini[@"GameDataPath"][selectedDiagnosticTarget.Game.ToString()] = gamePath;
-                File.WriteAllText(_iniPath, ini.ToString());
 
-                var versInfo = FileVersionInfo.GetVersionInfo(mempath);
-                int fileVersion = versInfo.FileMajorPart;
-                addDiagLine($@"Diagnostic MassEffectModderNoGui version: {fileVersion}");
+                if (selectedDiagnosticTarget.Game.IsLEGame())
+                {
+                    oldMemGamePath = ini[@"GameDataPath"][@"MELE"];
+                    var rootPath = Directory.GetParent(gamePath);
+                    if (rootPath != null)
+                        rootPath = Directory.GetParent(rootPath.FullName);
+                    if (rootPath != null)
+                    {
+                        ini[@"GameDataPath"][@"MELE"] = rootPath.FullName;
+                    }
+                    else
+                    {
+                        Log.Error($@"Invalid game directory: {gamePath} is not part of an overall LE install");
+                        addDiagLine($@"MEM diagnostics skipped: Game directory is not part of an overall LE install", Severity.ERROR);
+                        hasMEM = false;
+                    }
+                }
+                else
+                {
+                    oldMemGamePath = ini[@"GameDataPath"][selectedDiagnosticTarget.Game.ToString()];
+                    ini[@"GameDataPath"][selectedDiagnosticTarget.Game.ToString()] = gamePath;
+                }
+
+                if (hasMEM)
+                {
+                    File.WriteAllText(_iniPath, ini.ToString());
+                    var versInfo = FileVersionInfo.GetVersionInfo(mempath);
+                    int fileVersion = versInfo.FileMajorPart;
+                    addDiagLine($@"Diagnostic MassEffectModderNoGui version: {fileVersion}");
+                }
             }
             else
             {
@@ -710,7 +737,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     modifiedFiles.Add(file);
                 }
 
-                var isVanilla = VanillaDatabaseService.ValidateTargetAgainstVanilla(selectedDiagnosticTarget, failedCallback);
+                var isVanilla = VanillaDatabaseService.ValidateTargetAgainstVanilla(selectedDiagnosticTarget, failedCallback, false);
                 if (isVanilla)
                 {
                     addDiagLine(@"No modified basegame files were found.");
@@ -1261,12 +1288,12 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
                 #endregion
 
-                #region ME3: TOC check
+                #region ME3/LE: TOC check
 
                 //TOC SIZE CHECK
-                if (selectedDiagnosticTarget.Game == MEGame.ME3)
+                if (selectedDiagnosticTarget.Game == MEGame.ME3 || selectedDiagnosticTarget.Game.IsLEGame())
                 {
-                    Log.Information(@"Collecting ME3 TOC information");
+                    Log.Information(@"Collecting TOC information");
 
                     updateStatusCallback?.Invoke(@"Collecting TOC file information");
 
@@ -1282,19 +1309,32 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         Log.Information($@"Checking TOC file {toc}");
 
                         TOCBinFile tbf = new TOCBinFile(toc);
-                        foreach (TOCBinFile.Entry ent in tbf.Entries)
+                        foreach (TOCBinFile.Entry ent in tbf.GetAllEntries())
                         {
                             //Console.WriteLine(index + "\t0x" + ent.offset.ToString("X6") + "\t" + ent.size + "\t" + ent.name);
-                            string filepath = Path.Combine(gamePath, ent.name);
-                            if (File.Exists(filepath) && !filepath.Equals(markerfile, StringComparison.InvariantCultureIgnoreCase) && !filepath.ToLower().EndsWith(@"pcconsoletoc.bin"))
+                            var tocrootPath = gamePath;
+                            if (Path.GetFileName(Directory.GetParent(toc).FullName).StartsWith(@"DLC_"))
                             {
-                                FileInfo fi = new FileInfo(filepath);
-                                long size = fi.Length;
-                                if (ent.size < size)
+                                tocrootPath = Directory.GetParent(toc).FullName;
+                            }
+                            string filepath = Path.Combine(tocrootPath, ent.name);
+                            var fileExists = File.Exists(filepath);
+                            if (fileExists)
+                            {
+                                if (!filepath.Equals(markerfile, StringComparison.InvariantCultureIgnoreCase) && !filepath.ToLower().EndsWith(@"pcconsoletoc.bin"))
                                 {
-                                    addDiagLine($@" - {filepath} size is {size}, but TOC lists {ent.size} ({ent.size - size} bytes)", Severity.ERROR);
-                                    hadTocError = true;
+                                    FileInfo fi = new FileInfo(filepath);
+                                    long size = fi.Length;
+                                    if (ent.size < size)
+                                    {
+                                        addDiagLine($@" - {filepath} size is {size}, but TOC lists {ent.size} ({ent.size - size} bytes)", Severity.ERROR);
+                                        hadTocError = true;
+                                    }
                                 }
+                            }
+                            else
+                            {
+                                addDiagLine($@" - {filepath} is listed in TOC but is not present on disk", Severity.WARN);
                             }
                         }
                     }
@@ -1385,13 +1425,13 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     .Where(z => z.InstanceId == 1001 && z.TimeGenerated > sevenDaysAgo && (GenerateEventLogString(z).ContainsAny(MEDirectories.ExecutableNames(selectedDiagnosticTarget.Game), StringComparison.InvariantCultureIgnoreCase)))
                     .ToList();
 
-                addDiagLine($@"{Utilities.GetGameName(selectedDiagnosticTarget.Game)} crash logs found in Event Viewer", Severity.DIAGSECTION);
+                addDiagLine($@"{selectedDiagnosticTarget.Game.ToGameName()} crash logs found in Event Viewer", Severity.DIAGSECTION);
                 if (entries.Any())
                 {
                     foreach (var entry in entries)
                     {
                         string str = string.Join("\n", GenerateEventLogString(entry).Split('\n').ToList().Take(17).ToList()); //do not localize
-                        addDiagLine($"{Utilities.GetGameName(selectedDiagnosticTarget.Game)} Event {entry.TimeGenerated}\n{str}"); //do not localize
+                        addDiagLine($"{selectedDiagnosticTarget.Game.ToGameName()} Event {entry.TimeGenerated}\n{str}"); //do not localize
                     }
 
                 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml.Linq;
 using MassEffectModManagerCore.modmanager.localizations;
-using ME3ExplorerCore.TLK.ME1;
+using LegendaryExplorerCore.TLK.ME1;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager
@@ -51,7 +51,7 @@ namespace MassEffectModManagerCore.modmanager
 
                 var tlk = Path.Combine(rootDir.FullName, tlkname);
                 Log.Information(@"Saving TLK file: " + tlk);
-                ME3ExplorerCore.TLK.ME2ME3.HuffmanCompression.SaveToTlkFile(tlk, strings);
+                LegendaryExplorerCore.TLK.ME2ME3.HuffmanCompression.SaveToTlkFile(tlk, strings);
                 Log.Information(@"Saved TLK file: " + tlk);
             }
             catch (Exception e)
@@ -88,7 +88,7 @@ namespace MassEffectModManagerCore.modmanager
             Log.Information(@"Saving TLK file: " + tlk);
             try
             {
-                ME3ExplorerCore.TLK.ME2ME3.HuffmanCompression.SaveToTlkFile(tlk, strings);
+                LegendaryExplorerCore.TLK.ME2ME3.HuffmanCompression.SaveToTlkFile(tlk, strings);
                 Log.Information(@"Saved TLK file: " + tlk);
             }
             catch (Exception e)
@@ -121,7 +121,7 @@ namespace MassEffectModManagerCore.modmanager
             Log.Information(@"Saving TLK file: " + tlk);
             try
             {
-                ME3ExplorerCore.TLK.ME2ME3.HuffmanCompression.SaveToTlkFile(tlk, strings);
+                LegendaryExplorerCore.TLK.ME2ME3.HuffmanCompression.SaveToTlkFile(tlk, strings);
                 Log.Information(@"Saved TLK file: " + tlk);
             }
             catch (Exception e)

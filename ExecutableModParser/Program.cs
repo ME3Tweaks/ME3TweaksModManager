@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using ME3ExplorerCore.Helpers;
+using LegendaryExplorerCore.Helpers;
 using SevenZip;
-using Utilities = MassEffectModManagerCore.Utilities;
+using Utilities = MassEffectModManagerCore.modmanager.Utilities;
 
 namespace ExecutableModParser
 {

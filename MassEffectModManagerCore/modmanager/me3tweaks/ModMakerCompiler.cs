@@ -2,7 +2,7 @@
 using IniParser.Model;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.objects;
-using ME3ExplorerCore.Helpers;
+using LegendaryExplorerCore.Helpers;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -14,12 +14,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.XPath;
+using LegendaryExplorerCore.Coalesced;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.modmanager.usercontrols;
-using ME3ExplorerCore.GameFilesystem;
-using ME3ExplorerCore.Packages;
-using ME3ExplorerCore.TLK.ME2ME3;
+using LegendaryExplorerCore.GameFilesystem;
+using LegendaryExplorerCore.Packages;
+using LegendaryExplorerCore.TLK.ME2ME3;
 using Microsoft.AppCenter.Analytics;
 
 namespace MassEffectModManagerCore.modmanager.me3tweaks
@@ -485,7 +486,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 if (File.Exists(coalPath))
                 {
                     using FileStream fs = new FileStream(coalPath, FileMode.Open);
-                    coalescedFilemapping = MassEffect3.Coalesce.Converter.DecompileToMemory(fs);
+                    coalescedFilemapping = CoalescedConverter.DecompileGame3ToMemory(fs);
                 }
                 else
                 {
@@ -496,7 +497,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             else if (chunkName == @"BALANCE_CHANGES")
             {
                 var serverCoalesced = Utilities.ExtractInternalFileToStream(@"MassEffectModManagerCore.modmanager.me3tweaks.LiveIni.bin");
-                coalescedFilemapping = MassEffect3.Coalesce.Converter.DecompileToMemory(serverCoalesced);
+                coalescedFilemapping = CoalescedConverter.DecompileGame3ToMemory(serverCoalesced);
                 coalescedFilename = @"ServerCoalesced.bin";
             }
             else
@@ -506,7 +507,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 coalescedFilename = $@"Default_{dlcFolderName}.bin";
                 if (coalescedData != null)
                 {
-                    coalescedFilemapping = MassEffect3.Coalesce.Converter.DecompileToMemory(coalescedData);
+                    coalescedFilemapping = CoalescedConverter.DecompileGame3ToMemory(coalescedData);
                 }
                 else
                 {
@@ -527,14 +528,14 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     coalescedFilemapping[fileNode.Name + @".xml"] = updatedDocumentText;
                 }
 
-                if (Settings.ModMakerAutoInjectCustomKeybindsOption && chunkName == @"BASEGAME" && KeybindsInjectorPanel.GetDefaultKeybindsOverride(MEGame.ME3) != null)
+                if (Settings.ModMakerAutoInjectCustomKeybindsOption && chunkName == @"BASEGAME" && File.Exists(KeybindsInjectorPanel.GetDefaultKeybindsOverride(MEGame.ME3)))
                 {
                     Log.Information(@"Injecting keybinds file into mod: " + KeybindsInjectorPanel.GetDefaultKeybindsOverride(MEGame.ME3));
                     coalescedFilemapping[@"BioInput.xml"] = File.ReadAllText(KeybindsInjectorPanel.GetDefaultKeybindsOverride(MEGame.ME3));
                 }
 
                 CLog.Information($@"{loggingPrefix} Recompiling coalesced file", Settings.LogModMakerCompiler);
-                var newFileStream = MassEffect3.Coalesce.Converter.CompileFromMemory(coalescedFilemapping);
+                var newFileStream = CoalescedConverter.CompileFromMemory(coalescedFilemapping);
 
 
                 var outFolder = Path.Combine(mod.ModPath, chunkName, @"CookedPCConsole");
@@ -660,7 +661,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
             #endregion
 
-            #region Properties = Addition
+            #region Properties - Addition
             var deltaPropertyAdditions = modDeltaDocument.Elements(@"Property").Where(x => x.Attribute(@"operation") != null && x.Attribute(@"operation").Value == OP_ADDITION);
             foreach (var deltaProperty in deltaPropertyAdditions)
             {

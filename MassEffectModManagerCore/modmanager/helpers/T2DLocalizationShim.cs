@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MassEffectModManagerCore.modmanager.localizations;
-using ME3ExplorerCore.Unreal.Classes;
+using LegendaryExplorerCore.Unreal.Classes;
 
 namespace MassEffectModManagerCore.modmanager.helpers
 {

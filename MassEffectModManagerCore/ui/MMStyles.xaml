@@ -4,7 +4,9 @@
                     xmlns:modmanager="clr-namespace:MassEffectModManagerCore.modmanager.objects"
                     xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" 
                     xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters"
-                    xmlns:helpers="clr-namespace:MassEffectModManagerCore.modmanager.helpers">
+                    xmlns:helpers="clr-namespace:MassEffectModManagerCore.modmanager.helpers"
+                    xmlns:system="clr-namespace:System;assembly=System.Runtime"
+                    xmlns:fa="http://schemas.fontawesome.io/icons/">
     <converters:GameToImageIconConverter x:Key="GameToImageIconConverter"/>
     <converters:BootTargetSourceVisibilityConverter x:Key="BootTargetSourceVisibilityConverter"/>
     <converters:GameIconVisibilityConverter x:Key="GameIconVisibilityConverter"/>
@@ -20,9 +22,12 @@
     <converters:GameToVisibilityConverter x:Key="GameToVisibilityConverter" />
     <helpers:FlightingVisibilityConverter x:Key="FlightingVisibilityConverter"/>
     <converters:LocalizationConverter x:Key="LocalizationConverter" />
+    <converters:SizePercentageConverter x:Key="SizePercentageConverter" />
+    <converters:GenerationsSizePercentageConverter x:Key="GenerationsSizePercentageConverter" />
+    <converters:StringMatchToBoolConverter x:Key="StringMatchToBoolConverter"/>
     <DataTemplate x:Key="TargetSelectorTemplate" DataType="{x:Type modmanager:GameTarget}">
         <DockPanel HorizontalAlignment="Stretch">
-            <Image DockPanel.Dock="Left" Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16"  Visibility="{Binding Converter={StaticResource GameIconVisibilityConverter}}"/>
+            <Image DockPanel.Dock="Left" Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16"/>
             <Image DockPanel.Dock="Left" Source="{Binding TargetBootIcon, TargetNullValue={x:Null}}" Width="12" Height="16" RenderOptions.BitmapScalingMode="HighQuality" Margin="3,0,0,0" Visibility="{Binding Converter={StaticResource BootTargetSourceVisibilityConverter}}"/>
             <TextBlock Text="{Binding TargetPath}" Margin="3,0,0,0" HorizontalAlignment="Stretch" DockPanel.Dock="Left"/>
             <DockPanel ToolTip="{DynamicResource string_thisTargetHasBeenTextureModded}"  DockPanel.Dock="Right" Margin="3,0,0,0" Visibility="{Binding TextureModded, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}">
@@ -38,6 +43,55 @@
     <Style x:Key="TargetSelectorContainerAccentStyle" TargetType="ComboBoxItem" BasedOn="{StaticResource {x:Static adonisUi:Styles.AccentComboBoxItem}}">
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
         <Setter Property="IsEnabled" Value="{Binding Selectable}" />
+    </Style>
+    <Style
+        x:Key="MenuItemHeaderStyle"
+        TargetType="{x:Type MenuItem}">
+        <Setter
+            Property="Margin"
+            Value="-30,0,0,0" />
+        <Setter
+            Property="FontSize"
+            Value="10" />
+        <Setter
+            Property="FontWeight"
+            Value="Bold" />
+        <Setter
+            Property="Height"
+            Value="14" />
+        <Setter
+            Property="StaysOpenOnClick"
+            Value="True" />
+        <Setter
+            Property="BorderThickness"
+            Value="0" />
+        <Setter
+            Property="Foreground"
+            Value="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
+        <Setter
+            Property="Background"
+            Value="{DynamicResource {x:Static adonisUi:Brushes.MenuHeaderBackgroundBrush}}" />
+    </Style>
+    <Style
+        x:Key="EnableDisableImageStyle"
+        TargetType="{x:Type fa:ImageAwesome}">
+        <Style.Triggers>
+            <Trigger
+                Property="IsEnabled"
+                Value="False">
+                <Setter
+                    Property="Opacity"
+                    Value="0.75" />
+                <Setter
+                    Property="BitmapEffect">
+                    <Setter.Value>
+                        <BlurBitmapEffect
+                            Radius="2.0"
+                            KernelType="Gaussian" />
+                    </Setter.Value>
+                </Setter>
+            </Trigger>
+        </Style.Triggers>
     </Style>
     <!--Virtualised ItemsControl-->
     <Style x:Key="ItemsControlVirtualizedStyle" TargetType="ItemsControl">
@@ -83,8 +137,24 @@
         </DoubleAnimation>
     </Storyboard>
 
+    <!--<LinearGradientBrush x:Key="LEModBrush"  StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#33000088" Offset="0.0" />
+        <GradientStop Color="#33110077" Offset="0.35" />
+        <GradientStop Color="#33990011" Offset="0.55" />
+        <GradientStop Color="#33AA0000" Offset="1.0" />
+    </LinearGradientBrush>-->
+
+    <SolidColorBrush x:Key="OTModBrush" Color="#33884433" />
+    <SolidColorBrush x:Key="LEModBrush" Color="#33334488" />
+
     <!-- Game icon bitmaps since they're used all over the place -->
-    <BitmapImage x:Key="me1gameicon" UriSource="pack://application:,,,/images/gameicons/ME1_48.ico"/>
-    <BitmapImage x:Key="me2gameicon" UriSource="pack://application:,,,/images/gameicons/ME2_48.ico"/>
-    <BitmapImage x:Key="me3gameicon" UriSource="pack://application:,,,/images/gameicons/ME3_48.ico"/>
+    <system:String x:Key="lexIcon">/modmanager/toolicons/lex.ico</system:String>
+    <system:String x:Key="me1gameiconpath">/images/gameicons/ME1_48.ico</system:String>
+    <system:String x:Key="me2gameiconpath">/images/gameicons/ME2_48.ico</system:String>
+    <system:String x:Key="me3gameiconpath">/images/gameicons/ME3_48.ico</system:String>
+    <system:String x:Key="le1gameiconpath">/images/gameicons/LE1_Icon.ico</system:String>
+    <system:String x:Key="le2gameiconpath">/images/gameicons/LE2_Icon.ico</system:String>
+    <system:String x:Key="le3gameiconpath">/images/gameicons/LE3_Icon.ico</system:String>
+    <system:String x:Key="lelaunchergameiconpath">/images/gameicons/LEL_Icon.ico</system:String>
+    <system:String x:Key="unknowngameiconpath">/images/gameicons/Unknown_48.ico</system:String>
 </ResourceDictionary>

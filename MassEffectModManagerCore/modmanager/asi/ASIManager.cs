@@ -6,10 +6,10 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Xml.Linq;
-using ME3ExplorerCore.Helpers;
+using LegendaryExplorerCore.Helpers;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.objects;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.Packages;
 using Microsoft.AppCenter.Analytics;
 using Serilog;
 
@@ -22,7 +22,7 @@ namespace MassEffectModManagerCore.modmanager.asi
     {
         //Fody uses this property on weaving
 #pragma warning disable
-public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged;
 #pragma warning restore
         public static readonly string CachedASIsFolder = Directory.CreateDirectory(Path.Combine(Utilities.GetAppDataFolder(), @"CachedASIs")).FullName;
 
@@ -32,6 +32,11 @@ public event PropertyChangedEventHandler PropertyChanged;
         public static List<ASIMod> MasterME1ASIUpdateGroups = new List<ASIMod>();
         public static List<ASIMod> MasterME2ASIUpdateGroups = new List<ASIMod>();
         public static List<ASIMod> MasterME3ASIUpdateGroups = new List<ASIMod>();
+
+        public static List<ASIMod> MasterLE1ASIUpdateGroups = new List<ASIMod>();
+        public static List<ASIMod> MasterLE2ASIUpdateGroups = new List<ASIMod>();
+        public static List<ASIMod> MasterLE3ASIUpdateGroups = new List<ASIMod>();
+
 
         /// <summary>
         /// Loads the ASI manifest. This should only be done at startup or when the online manifest is refreshed. ForceLocal only works if there is local ASI manifest present
@@ -139,8 +144,14 @@ public event PropertyChangedEventHandler PropertyChanged;
                     return MEGame.ME2;
                 case 3:
                     return MEGame.ME3;
+                case 4:
+                    return MEGame.LE1;
+                case 5:
+                    return MEGame.LE2;
+                case 6:
+                    return MEGame.LE3;
                 default:
-                    return MEGame.Unknown;
+                    throw new Exception($"Unsupported game id in manifest: {i}");
             }
         }
 
@@ -162,6 +173,15 @@ public event PropertyChangedEventHandler PropertyChanged;
                     break;
                 case MEGame.ME3:
                     relevantGroups = MasterME3ASIUpdateGroups;
+                    break;
+                case MEGame.LE1:
+                    relevantGroups = MasterLE1ASIUpdateGroups;
+                    break;
+                case MEGame.LE2:
+                    relevantGroups = MasterLE2ASIUpdateGroups;
+                    break;
+                case MEGame.LE3:
+                    relevantGroups = MasterLE3ASIUpdateGroups;
                     break;
                 default:
                     return null;
@@ -186,6 +206,10 @@ public event PropertyChangedEventHandler PropertyChanged;
                 MasterME1ASIUpdateGroups.Clear();
                 MasterME2ASIUpdateGroups.Clear();
                 MasterME3ASIUpdateGroups.Clear();
+
+                MasterLE1ASIUpdateGroups.Clear();
+                MasterLE2ASIUpdateGroups.Clear();
+                MasterLE3ASIUpdateGroups.Clear();
                 XElement rootElement = XElement.Parse(xmlText.Trim());
 
                 //I Love Linq
@@ -220,6 +244,15 @@ public event PropertyChangedEventHandler PropertyChanged;
                             break;
                         case MEGame.ME3:
                             MasterME3ASIUpdateGroups.Add(v);
+                            break;
+                        case MEGame.LE1:
+                            MasterLE1ASIUpdateGroups.Add(v);
+                            break;
+                        case MEGame.LE2:
+                            MasterLE2ASIUpdateGroups.Add(v);
+                            break;
+                        case MEGame.LE3:
+                            MasterLE3ASIUpdateGroups.Add(v);
                             break;
                     }
 
@@ -299,10 +332,10 @@ public event PropertyChangedEventHandler PropertyChanged;
             }
 
             // Install the ASI
-            if (forceSource == null || forceSource.Value == false)
-            {
-                Debug.WriteLine("Hit me");
-            }
+            //if (forceSource == null || forceSource.Value == false)
+            //{
+            //    Debug.WriteLine("Hit me");
+            //}
             string md5;
             bool useLocal = forceSource.HasValue && !forceSource.Value; // false (forceLocal)
             if (!useLocal && !forceSource.HasValue)
@@ -401,34 +434,6 @@ public event PropertyChangedEventHandler PropertyChanged;
             }
 
             return InstallASIToTarget(group, gameTarget);
-            //var asigame = new ASIGame(gameTarget);
-            //var dlcModEnabler = asigame.ASIModUpdateGroups.FirstOrDefault(x => x.UpdateGroupId == updateGroup); //DLC mod enabler is group 16
-            //if (dlcModEnabler != null)
-            //{
-            //    Log.Information($"Installing {nameForLogging} ASI");
-            //    var asiLockObject = new object();
-
-            //    void asiInstalled()
-            //    {
-            //        lock (asiLockObject)
-            //        {
-            //            Monitor.Pulse(asiLockObject);
-            //        }
-            //    }
-
-            //    var asiNotInstalledAlready = asigame.ApplyASI(dlcModEnabler.GetLatestVersion(), asiInstalled);
-            //    if (asiNotInstalledAlready)
-            //    {
-            //        lock (asiLockObject)
-            //        {
-            //            Monitor.Wait(asiLockObject, 3500); //3.5 seconds max time.
-            //        }
-            //    }
-            //}
-            //else
-            //{
-            //    Log.Error($"Could not install {nameForLogging} ASI!!");
-            //}
         }
 
         /// <summary>
@@ -446,6 +451,12 @@ public event PropertyChangedEventHandler PropertyChanged;
                     return MasterME2ASIUpdateGroups;
                 case MEGame.ME3:
                     return MasterME3ASIUpdateGroups;
+                case MEGame.LE1:
+                    return MasterLE1ASIUpdateGroups;
+                case MEGame.LE2:
+                    return MasterLE2ASIUpdateGroups;
+                case MEGame.LE3:
+                    return MasterLE3ASIUpdateGroups;
                 default:
                     return null;
             }

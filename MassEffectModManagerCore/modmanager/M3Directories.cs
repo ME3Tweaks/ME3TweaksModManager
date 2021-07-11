@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.objects;
-using ME3ExplorerCore.GameFilesystem;
-using ME3ExplorerCore.Helpers;
-using ME3ExplorerCore.Misc;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.GameFilesystem;
+using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Misc;
+using LegendaryExplorerCore.Packages;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager
@@ -35,10 +35,20 @@ namespace MassEffectModManagerCore.modmanager
                     return exeReal;
                 }
             }
+            else if (target.Game == MEGame.LELauncher)
+            {
+                // LE LAUNCHER
+                return Path.Combine(target.TargetPath, @"MassEffectLauncher.exe");
+            }
             return MEDirectories.GetExecutablePath(target.Game, target.TargetPath);
         }
-        public static string GetExecutableDirectory(GameTarget target) => MEDirectories.GetExecutableFolderPath(target.Game, target.TargetPath);
-        public static string GetLODConfigFile(GameTarget target) => MEDirectories.GetLODConfigFile(target.Game);
+
+        public static string GetExecutableDirectory(GameTarget target)
+        {
+            if (target.Game == MEGame.LELauncher) return target.TargetPath; // LELauncher
+            return MEDirectories.GetExecutableFolderPath(target.Game, target.TargetPath);
+        }
+        public static string GetLODConfigFile(GameTarget target) => MEDirectories.GetLODConfigFile(target.Game, target.TargetPath);
         public static string GetTextureMarkerPath(GameTarget target) => MEDirectories.GetTextureModMarkerPath(target.Game, target.TargetPath);
         public static string GetASIPath(GameTarget target) => MEDirectories.GetASIPath(target.Game, target.TargetPath);
         public static string GetTestPatchSFARPath(GameTarget target)
@@ -46,10 +56,12 @@ namespace MassEffectModManagerCore.modmanager
             if (target.Game != MEGame.ME3) throw new Exception(@"Cannot fetch TestPatch SFAR for games that are not ME3");
             return ME3Directory.GetTestPatchSFARPath(target.TargetPath);
         }
+
+        // Oh boy how do we do this for localizations?
         public static string GetCoalescedPath(GameTarget target)
         {
             if (target.Game != MEGame.ME2 && target.Game != MEGame.ME3) throw new Exception(@"Cannot fetch Coalesced path for games that are not ME2/ME3");
-            if (target.Game == MEGame.ME2) return Path.Combine(GetBioGamePath(target), @"Config", @"PC", @"Cooked", "Coalesced.ini");
+            if (target.Game == MEGame.ME2) return Path.Combine(GetBioGamePath(target), @"Config", @"PC", @"Cooked", @"Coalesced.ini");
             return Path.Combine(GetCookedPath(target), @"Coalesced.bin");
         }
         public static bool IsInBasegame(string file, GameTarget target) => MEDirectories.IsInBasegame(file, target.Game, target.TargetPath);
@@ -86,7 +98,7 @@ namespace MassEffectModManagerCore.modmanager
         /// </summary>
         /// <param name="target">Target to get supercedances for</param>
         /// <returns>Dictionary mapping filename to list of DLCs that contain that file, in order of highest priority to lowest</returns>
-        public static Dictionary<string, List<string>> GetFileSupercedances(GameTarget target)
+        public static Dictionary<string, List<string>> GetFileSupercedances(GameTarget target, string[] additionalExtensionsToInclude = null)
         {
             //make dictionary from basegame files
             var fileListMapping = new CaseInsensitiveDictionary<List<string>>();
@@ -95,10 +107,10 @@ namespace MassEffectModManagerCore.modmanager
             {
                 var dlc = Path.GetFileName(directory);
                 if (MEDirectories.OfficialDLC(target.Game).Contains(dlc)) continue; //skip
-                foreach (string filePath in MELoadedFiles.GetCookedFiles(target.Game, directory, false))
+                foreach (string filePath in MELoadedFiles.GetCookedFiles(target.Game, directory, false, additionalExtensions: additionalExtensionsToInclude))
                 {
                     string fileName = Path.GetFileName(filePath);
-                    if (fileName != null && fileName.RepresentsPackageFilePath())
+                    if (fileName != null && fileName.RepresentsPackageFilePath() || (additionalExtensionsToInclude != null && additionalExtensionsToInclude.Contains(Path.GetExtension(fileName))))
                     {
                         if (fileListMapping.TryGetValue(fileName, out var supercedingList))
                         {
@@ -135,6 +147,8 @@ namespace MassEffectModManagerCore.modmanager
             if (header == ModJob.JobHeader.BASEGAME) return true; //Don't check basegame
             if (header == ModJob.JobHeader.CUSTOMDLC) return true; //Don't check custom dlc
             if (header == ModJob.JobHeader.LOCALIZATION) return true; //Don't check localization
+            if (header == ModJob.JobHeader.LELAUNCHER) return true; //Don't check launcher
+            if (header == ModJob.JobHeader.GAME1_EMBEDDED_TLK) return true; //Don't check launcher
 
             if (header == ModJob.JobHeader.TESTPATCH)
             {

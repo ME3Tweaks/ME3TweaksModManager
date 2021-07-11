@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using MassEffectModManagerCore.modmanager.localizations;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.helpers
@@ -10,7 +11,6 @@ namespace MassEffectModManagerCore.modmanager.helpers
     /// <summary>
     /// Parser class for different types of string structs and list
     /// </summary>
-    [Localizable(false)]
     public class StringStructParser
     {
         /// <summary>
@@ -29,7 +29,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
         /// </summary>
         /// <param name="keys"></param>
         /// <returns></returns>
-        public static string BuildCommaSeparatedSplitValueList(Dictionary<string, string> keys)
+        public static string BuildCommaSeparatedSplitValueList(Dictionary<string, string> keys, params string[] keyValuesToQuote)
         {
             string str = @"(";
             bool first = true;
@@ -45,7 +45,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 }
                 str += kp.Key;
                 str += @"=";
-                if (!kp.Value.Contains(@" "))
+                if (!kp.Value.Contains(@" ") && !keyValuesToQuote.Contains(kp.Key, StringComparer.InvariantCultureIgnoreCase))
                 {
                     str += kp.Value;
                 }
@@ -65,6 +65,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
         /// <returns></returns>
         public static Dictionary<string, string> GetCommaSplitValues(string inputString)
         {
+            var origString = inputString;
             if (inputString[0] == '(' && inputString[1] == '(' && inputString[inputString.Length - 1] == ')' && inputString[inputString.Length - 2] == ')')
             {
                 throw new Exception(@"GetCommaSplitValues() can only deal with items encapsulated in a single ( ) set. The current set has at least two, e.g. ((value)).");
@@ -78,7 +79,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
             int openingQuotePos = -1; //quotes if any
             int closingQuotePos = -1; //quotes if any
             bool isInQuotes = false;
-            
+
             int openParenthesisCount = 0;
             Dictionary<string, string> values = new Dictionary<string, string>();
             for (int i = 0; i < inputString.Length; i++)
@@ -170,6 +171,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
         /// <returns></returns>
         public static List<string> GetParenthesisSplitValues(string inputString)
         {
+            var origString = inputString;
             //Trim ends if this is a list as ( ) will encapsulte a list of ( ) values, e.g. ((hello),(there)) => (hello),(there)
             if (inputString.Length >= 4)
             {
@@ -203,7 +205,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                             if (parenthesisStack.Count == 0)
                             {
                                 Log.Error(@"Error parsing parenthesis split list: Found closing parenthesis that does not match open parenthesis at position " + i);
-                                throw new Exception(@"Error parsing parenthesis split list: Found closing parenthesis that does not match open parenthesis at position " + i); //should this be localized?
+                                throw new Exception(M3L.GetString(M3L.string_interp_ssp_unopenedParenthsisFound, i, inputString)); //should this be localized?
                             }
 
                             var popped = parenthesisStack.Pop();
@@ -227,7 +229,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
             if (parenthesisStack.Count > 0)
             {
                 Log.Error(@"Error parsing parenthesis split list: count of open and closing parenthesis does not match.");
-                throw new Exception(@"Unclosed opening parenthesis encountered while parsing parenthesis split list"); //should this be localized?
+                throw new Exception(M3L.GetString(M3L.string_interp_ssp_unclosedParenthesisFound, origString)); //should this be localized?
             }
             return splits;
         }

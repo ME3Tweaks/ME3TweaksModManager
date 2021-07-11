@@ -9,7 +9,7 @@ using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.modmanager.windows;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.Packages;
 using Microsoft.AppCenter.Analytics;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -33,7 +33,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public ICommand CreateNewGroupCommand { get; private set; }
         public ICommand InstallGroupCommand { get; private set; }
         public ICommand EditGroupCommand { get; private set; }
-        public bool CanCompressPackages => SelectedBatchQueue?.Game >= MEGame.ME2;
+        public bool CanCompressPackages => SelectedBatchQueue != null && SelectedBatchQueue.Game is MEGame.ME2 or MEGame.ME3;
 
         private void LoadCommands()
         {

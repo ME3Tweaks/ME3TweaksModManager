@@ -29,12 +29,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     {
         //have to be const apparently
         public const string EGMSettings = @"EGMSettings";
-        public const string ME3Explorer = @"ME3Explorer";
-        public const string ME3Explorer_Beta = @"ME3Explorer (Nightly)";
+        public const string EGMSettingsLE = @"EGMSettingsLE";
+        public const string LegendaryExplorer = @"Legendary Explorer";
+        public const string LegendaryExplorer_Beta = @"Legendary Explorer (Nightly)";
         public const string ALOTInstaller = @"ALOT Installer";
         public const string MEIM = @"Mass Effect INI Modder"; //this is no longer external.
-        public const string MEM = @"Mass Effect Modder";
-        public const string MEM_CMD = @"Mass Effect Modder No Gui";
+        public const string MEM = @"Mass Effect Modder"; // OT only
+        public const string MEM_CMD = @"Mass Effect Modder No Gui"; // OT Only
+        public const string MEM_LE = @"Mass Effect Modder LE"; // LE only
+        public const string MEM_LE_CMD = @"Mass Effect Modder No Gui LE"; // LE Only
         public const string MER = @"Mass Effect Randomizer";
         public const string ME2R = @"Mass Effect 2 Randomizer";
         private string tool;
@@ -56,14 +59,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     case MER:
                     case ME2R:
                         return @"/modmanager/toolicons/masseffectrandomizer_big.png";
-                    case ME3Explorer:
-                    case ME3Explorer_Beta:
-                        return @"/modmanager/toolicons/me3explorer_big.png";
+                    case LegendaryExplorer:
+                    case LegendaryExplorer_Beta:
+                        return @"/modmanager/toolicons/lex_big.png";
                     case MEM:
+                    case MEM_LE:
                         return @"/modmanager/toolicons/masseffectmodder_big.png";
                     case MEIM:
                         return @"/modmanager/toolicons/masseffectinimodder_big.png";
                     case EGMSettings:
+                    case EGMSettingsLE:
                         return @"/modmanager/toolicons/egmsettings_big.png";
                     default:
                         return null;
@@ -127,18 +132,60 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             setPercentTaskDone?.Invoke(0);
             foreach (var release in releases)
             {
-
                 //Get asset info
                 asset = release.Assets.FirstOrDefault();
-
-                if (Path.GetFileName(executable) == @"MassEffectModder.exe")
+                #region MEM SPECIFIC
+                if (Path.GetFileName(executable).StartsWith(@"MassEffectModderNoGui"))
                 {
                     //Requires specific asset
-                    if (int.TryParse(release.TagName, out var relVer) && relVer >= 500)
+                    if (int.TryParse(release.TagName, out var relVer))
                     {
-                        asset = null;
-                        Log.Warning($@"MassEffectModder versions >= 500 are not supported for Original Trilogy, skipping version {relVer}");
+                        if (tool == MEM_CMD && relVer >= 500)
+                        {
+                            asset = null;
+                            Log.Warning(
+                                $@"MassEffectModderNoGui versions >= 500 are not supported for Original Trilogy, skipping version {relVer}");
+                            continue;
+                        }
+                        else if (tool == MEM_LE_CMD && relVer < 500)
+                        {
+                            asset = null;
+                            Log.Warning(
+                                $@"MassEffectModderNoGui versions < 500 are not supported for Legendary Edition, skipping version {relVer}");
+                            continue;
+                        }
+                    }
+                    asset = release.Assets.FirstOrDefault(x =>
+                        x.Name == @"MassEffectModderNoGui-v" + release.TagName + @".7z");
+                    if (asset == null)
+                    {
+                        Log.Warning(
+                            $@"No applicable assets in release tag {release.TagName} for MassEffectModderNoGui, skipping");
                         continue;
+                    }
+                    latestRelease = release;
+                    downloadLink = new Uri(asset.BrowserDownloadUrl);
+                    break;
+                }
+                else if (Path.GetFileName(executable).StartsWith(@"MassEffectModder"))
+                {
+                    //Requires specific asset
+                    if (int.TryParse(release.TagName, out var relVer))
+                    {
+                        if (tool == MEM && relVer >= 500)
+                        {
+                            asset = null;
+                            Log.Warning(
+                                $@"MassEffectModder versions >= 500 are not supported for Original Trilogy, skipping version {relVer}");
+                            continue;
+                        }
+                        else if (tool == MEM_LE && relVer < 500)
+                        {
+                            asset = null;
+                            Log.Warning(
+                                $@"MassEffectModder versions < 500 are not supported for Legendary Edition, skipping version {relVer}");
+                            continue;
+                        }
                     }
 
                     asset = release.Assets.FirstOrDefault(x =>
@@ -155,28 +202,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     break;
                 }
 
-                if (Path.GetFileName(executable) == @"MassEffectModderNoGui.exe")
-                {
-                    //Requires specific asset
-                    if (int.TryParse(release.TagName, out var relVer) && relVer >= 500)
-                    {
-                        asset = null;
-                        Log.Warning($@"MassEffectModderNoGui versions >= 500 are not supported for Original Trilogy, skipping version {relVer}");
-                        continue;
-                    }
-                    asset = release.Assets.FirstOrDefault(x =>
-                        x.Name == @"MassEffectModderNoGui-v" + release.TagName + @".7z");
-                    if (asset == null)
-                    {
-                        Log.Warning(
-                            $@"No applicable assets in release tag {release.TagName} for MassEffectModderNoGui, skipping");
-                        continue;
-                    }
-                    latestRelease = release;
-                    downloadLink = new Uri(asset.BrowserDownloadUrl);
-                    break;
-                }
-
                 if (asset != null)
                 {
                     latestRelease = release;
@@ -185,6 +210,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     break;
                 }
             }
+            #endregion
 
             if (latestRelease == null || downloadLink == null) return;
             Analytics.TrackEvent(@"Downloading new external tool", new Dictionary<string, string>()
@@ -223,6 +249,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             Action<Exception, string, string> errorExtractingCallback = null)
         {
             //Todo: Account for errors
+
+            
             var outputDirectory = Directory.CreateDirectory(Path.GetDirectoryName(executable)).FullName;
             switch (extension)
             {
@@ -239,27 +267,46 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 case @".7z":
                 case @".zip":
                     Log.Information(@"Extracting tool archive: " + downloadPath);
-                    using (var archiveFile = new SevenZipExtractor(downloadPath))
+                    try
                     {
-                        currentTaskUpdateCallback?.Invoke(M3L.GetString(M3L.string_interp_extractingX, tool));
-                        setPercentTaskDone?.Invoke(0);
-                        void progressCallback(object sender, ProgressEventArgs progress)
+                        using (var archiveFile = new SevenZipExtractor(downloadPath))
                         {
-                            setPercentTaskDone?.Invoke(progress.PercentDone);
-                        };
-                        archiveFile.Extracting += progressCallback;
-                        try
-                        {
-                            archiveFile.ExtractArchive(outputDirectory); // extract all
-                            resultingExecutableStringCallback?.Invoke(executable);
-                        }
-                        catch (Exception e)
-                        {
-                            Log.Error($@"Could not extract/run tool {executable} after download: {e.Message}");
-                            errorExtractingCallback?.Invoke(e, M3L.GetString(M3L.string_interp_errorDownloadingAndLaunchingTool, e.Message), M3L.GetString(M3L.string_errorLaunchingTool));
+                            currentTaskUpdateCallback?.Invoke(M3L.GetString(M3L.string_interp_extractingX, tool));
+                            setPercentTaskDone?.Invoke(0);
 
+                            void progressCallback(object sender, ProgressEventArgs progress)
+                            {
+                                setPercentTaskDone?.Invoke(progress.PercentDone);
+                            }
+
+                            ;
+                            archiveFile.Extracting += progressCallback;
+                            try
+                            {
+                                archiveFile.ExtractArchive(outputDirectory); // extract all
+                                // Touchup for MEM LE versions
+                                if (Path.GetFileName(executable) == @"MassEffectModderLE.exe")
+                                    executable = Path.Combine(Directory.GetParent(executable).FullName, @"MassEffectModder.exe");
+                                if (Path.GetFileName(executable) == @"MassEffectModderNoGuiLE.exe")
+                                    executable = Path.Combine(Directory.GetParent(executable).FullName, @"MassEffectModderNoGui.exe");
+                        
+
+                                resultingExecutableStringCallback?.Invoke(executable);
+                            }
+                            catch (Exception e)
+                            {
+                                Log.Error($@"Could not extract/run tool {executable} after download: {e.Message}");
+                                errorExtractingCallback?.Invoke(e, M3L.GetString(M3L.string_interp_errorDownloadingAndLaunchingTool, e.Message), M3L.GetString(M3L.string_errorLaunchingTool));
+
+                            }
                         }
                     }
+                    catch (Exception e)
+                    {
+                        Log.Error($@"Exception extracting archive: {e.Message}");
+                        errorExtractingCallback?.Invoke(e, M3L.GetString(M3L.string_interp_errorDownloadingAndLaunchingTool, e.Message), M3L.GetString(M3L.string_errorLaunchingTool));
+                    }
+
                     break;
                 default:
                     Log.Error($@"Failed to download correct file! We don't support this extension. The extension was {extension}");
@@ -276,6 +323,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 {@"Tool name", Path.GetFileName(localExecutable) }
             });
+
+            // Touchup for MEM LE versions
+            if (Path.GetFileName(localExecutable) == @"MassEffectModderLE.exe")
+                localExecutable = Path.Combine(Directory.GetParent(localExecutable).FullName, @"MassEffectModder.exe");
+            if (Path.GetFileName(localExecutable) == @"MassEffectModderNoGuiLE.exe")
+                localExecutable = Path.Combine(Directory.GetParent(localExecutable).FullName, @"MassEffectModderNoGui.exe");
+
             PercentVisibility = Visibility.Collapsed;
             PercentDownloaded = 0;
             Log.Information($@"Launching: {localExecutable} {arguments}");
@@ -315,12 +369,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     toolGithubOwner = @"ME3Tweaks";
                     toolGithubRepoName = @"MassEffect2Randomizer";
                     break;
-                case ME3Explorer:
+                case LegendaryExplorer:
                     toolGithubOwner = @"ME3Tweaks";
-                    toolGithubRepoName = @"ME3Explorer";
+                    toolGithubRepoName = @"LegendaryExplorer";
                     break;
                 case MEM:
+                case MEM_LE:
                 case MEM_CMD:
+                case MEM_LE_CMD:
                     toolGithubOwner = @"MassEffectModder";
                     toolGithubRepoName = @"MassEffectModder";
                     break;
@@ -329,6 +385,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     toolGithubRepoName = @"MassEffectIniModder";
                     break;
                 case EGMSettings:
+                case EGMSettingsLE:
                     toolGithubOwner = @"Kinkojiro";
                     toolGithubRepoName = @"EGM-Settings";
                     break;
@@ -364,9 +421,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             BackgroundWorker bw = new BackgroundWorker();
             #region callbacks
-            void failedToDownload()
+            void failedToDownload(string failureMessage)
             {
-                Action = M3L.GetString(M3L.string_interp_failedToDownloadX, tool);
+                Action = M3L.GetString(M3L.string_interp_failedToDownloadX, tool, failureMessage);
                 PercentVisibility = Visibility.Collapsed;
                 PercentDownloaded = 0;
                 Thread.Sleep(5000);
@@ -394,7 +451,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             Action<bool> setPercentVisibilityCallback = null,
             Action<int> setPercentTaskDone = null,
             Action<string> resultingExecutableStringCallback = null,
-            Action failedToDownloadCallback = null,
+            Action<string> failedToDownloadCallback = null,
             Action<Exception, string, string> errorExtractingCallback = null)
         {
             Log.Information($@"FetchAndLaunchTool() for {tool}");
@@ -407,6 +464,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 //Don't check for updates again.
                 resultingExecutableStringCallback?.Invoke(localExecutable);
+                return;
+            }
+
+            var prereqCheckMessage = checkToolPrerequesites(tool);
+            if (prereqCheckMessage != null)
+            {
+                Log.Error($@"Prerequisite not met: {prereqCheckMessage}");
+                failedToDownloadCallback?.Invoke(M3L.GetString(M3L.string_interp_prerequisiteNotMetX, prereqCheckMessage));
                 return;
             }
 
@@ -429,7 +494,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         //Must run on UI thread
                         //MessageBox.Show($"Unable to download {tool}.\nPlease check your network connection and try again.\nIf the issue persists, please come to the ME3Tweaks Discord.");
                         Log.Error(@"Unable to launch tool - could not download, and does not exist locally: " + localExecutable);
-                        failedToDownloadCallback?.Invoke();
+                        failedToDownloadCallback?.Invoke(M3L.GetString(M3L.string_downloadFailed));
                         return;
                     }
                 }
@@ -453,11 +518,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     if (latestRelease != null)
                     {
                         FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(localExecutable);
-                        if (tool == MEM || tool == MEM_CMD)
+                        if (tool is MEM or MEM_CMD or MEM_LE or MEM_LE_CMD)
                         {
                             //Checks based on major
                             int releaseVer = int.Parse(latestRelease.TagName);
-                            if (releaseVer > fvi.ProductMajorPart)
+                            if (releaseVer > fvi.ProductMajorPart && releaseVer < 500 && tool is MEM or MEM_CMD)
+                            {
+                                needsUpdated = true;
+                            }
+                            if (releaseVer > fvi.ProductMajorPart && releaseVer >= 500 && tool is MEM_LE or MEM_LE_CMD)
                             {
                                 needsUpdated = true;
                             }
@@ -467,9 +536,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             try
                             {
                                 Version serverVersion = new Version(latestRelease.TagName);
-                                Version localVersion =
-                                    new Version(
-                                        $@"{fvi.FileMajorPart}.{fvi.FileMinorPart}.{fvi.FileBuildPart}.{fvi.FilePrivatePart}");
+                                Version localVersion = new Version($@"{fvi.FileMajorPart}.{fvi.FileMinorPart}.{fvi.FileBuildPart}.{fvi.FilePrivatePart}");
                                 if (serverVersion > localVersion)
                                 {
                                     needsUpdated = true;
@@ -501,64 +568,110 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             else
             {
                 //Not github based
-                string downloadLink = me3tweaksToolGetDownloadUrl(tool);
-                Version downloadVersion = me3tweaksToolGetLatestVersion(tool);
-                if (downloadVersion != null && downloadLink != null) // has enough info
+                try
                 {
-                    if (needsDownloading) // not present locally
+                    string downloadLink = me3tweaksToolGetDownloadUrl(tool);
+                    Version downloadVersion = me3tweaksToolGetLatestVersion(tool);
+                    if (downloadVersion != null && downloadLink != null) // has enough info
                     {
-                        DownloadToolME3Tweaks(tool, downloadLink, downloadVersion, localExecutable,
-                            s => currentTaskUpdateCallback?.Invoke(s),
-                            vis => setPercentVisibilityCallback?.Invoke(vis),
-                            percent => setPercentTaskDone?.Invoke(percent),
-                            exe => resultingExecutableStringCallback?.Invoke(exe),
-                            (exception, message, caption) => errorExtractingCallback?.Invoke(exception, message, caption)
-                        );
-                        ToolsCheckedForUpdatesInThisSession.Add(tool);
-                        return; //is this the right place for this?
-                    }
-                    else
-                    {
-                        //Check if it need updated
-                        FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(localExecutable);
-                        Version localVersion = new Version($@"{fvi.FileMajorPart}.{fvi.FileMinorPart}.{fvi.FileBuildPart}.{fvi.FilePrivatePart}");
-                        if (downloadVersion > localVersion)
+                        if (needsDownloading) // not present locally
                         {
-                            needsDownloading = true;
+                            DownloadToolME3Tweaks(tool, downloadLink, downloadVersion, localExecutable,
+                                s => currentTaskUpdateCallback?.Invoke(s),
+                                vis => setPercentVisibilityCallback?.Invoke(vis),
+                                percent => setPercentTaskDone?.Invoke(percent),
+                                exe => resultingExecutableStringCallback?.Invoke(exe),
+                                (exception, message, caption) =>
+                                    errorExtractingCallback?.Invoke(exception, message, caption)
+                            );
+                            ToolsCheckedForUpdatesInThisSession.Add(tool);
+                            return; //is this the right place for this?
+                        }
+                        else
+                        {
+                            //Check if it need updated
+                            FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(localExecutable);
+                            Version localVersion =
+                                new Version(
+                                    $@"{fvi.FileMajorPart}.{fvi.FileMinorPart}.{fvi.FileBuildPart}.{fvi.FilePrivatePart}");
+                            if (downloadVersion > localVersion)
+                            {
+                                needsDownloading = true;
+                            }
+                        }
+
+
+
+                        if (!needsDownloading)
+                        {
+                            resultingExecutableStringCallback?.Invoke(localExecutable);
+                        }
+                        else
+                        {
+                            DownloadToolME3Tweaks(tool, downloadLink, downloadVersion, localExecutable,
+                                s => currentTaskUpdateCallback?.Invoke(s),
+                                vis => setPercentVisibilityCallback?.Invoke(vis),
+                                percent => setPercentTaskDone?.Invoke(percent),
+                                exe => resultingExecutableStringCallback?.Invoke(exe),
+                                (exception, message, caption) =>
+                                    errorExtractingCallback?.Invoke(exception, message, caption)
+                            );
                         }
                     }
-
-
-
-                    if (!needsDownloading)
-                    {
-                        resultingExecutableStringCallback?.Invoke(localExecutable);
-                    }
                     else
                     {
-                        DownloadToolME3Tweaks(tool, downloadLink, downloadVersion, localExecutable,
-                            s => currentTaskUpdateCallback?.Invoke(s),
-                            vis => setPercentVisibilityCallback?.Invoke(vis),
-                            percent => setPercentTaskDone?.Invoke(percent),
-                            exe => resultingExecutableStringCallback?.Invoke(exe),
-                            (exception, message, caption) => errorExtractingCallback?.Invoke(exception, message, caption)
-                        );
+                        // Not enough information!
+                        Log.Error(@"Unable to download ME3Tweaks hosted tool: Information not present in startup manifest. Ensure M3 can connect to the internet at boot time");
+                        failedToDownloadCallback?.Invoke(M3L.GetString(M3L.string_error_cantDownloadNotEnoughInfoInStartupManifest));
                     }
+                }
+                catch (Exception ex)
+                {
+                    Log.Error($@"Error downloading ME3Tweaks too: {ex.Message}");
+                    failedToDownloadCallback?.Invoke(ex.Message);
                 }
             }
 
             ToolsCheckedForUpdatesInThisSession.Add(tool);
         }
 
+        private static string checkToolPrerequesites(string toolname)
+        {
+            switch (toolname)
+            {
+                case LegendaryExplorer_Beta:
+                    {
+                        if (!Utilities.IsNetRuntimeInstalled(5))
+                        {
+                            return M3L.GetString(M3L.string_error_net5RuntimeMissing);
+                        }
+                        break;
+                    }
+            }
+
+            return null; // nothing wrong
+        }
+
         private static bool hasApplicableAsset(string tool, Release release)
         {
             if (release.Assets.Any())
             {
-                if (tool == MEM)
+                // Version gating
+                int.TryParse(release.TagName, out var relVersion);
+                if (tool is MEM_LE or MEM_LE_CMD && relVersion < 500)
+                {
+                    return false;
+                }
+                if (tool is MEM or MEM_CMD && relVersion > 500)
+                {
+                    return false;
+                }
+
+                if (tool is MEM or MEM_LE)
                 {
                     return release.Assets.Any(x => x.Name == @"MassEffectModder-v" + release.TagName + @".7z");
                 }
-                if (tool == MEM_CMD)
+                if (tool is MEM_CMD or MEM_LE_CMD)
                 {
                     return release.Assets.Any(x => x.Name == @"MassEffectModderNoGui-v" + release.TagName + @".7z");
                 }
@@ -574,6 +687,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 // Internal tool
                 return Path.Combine(Utilities.GetCachedExecutablePath());
             }
+
+            if (tool == EGMSettingsLE)
+            {
+                // Same as OT path
+                return Path.Combine(Utilities.GetDataDirectory(), @"ExternalTools", @"EGMSettings");
+            }
+
+
             return Path.Combine(Utilities.GetDataDirectory(), @"ExternalTools", tool);
         }
 
@@ -581,10 +702,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             switch (tool)
             {
-                case ME3Explorer_Beta:
-                    if (App.ServerManifest.TryGetValue(@"me3explorerbeta_latestversion", out var me3expbLatestversion))
+                case LegendaryExplorer_Beta:
+                    if (App.ServerManifest.TryGetValue(@"legendaryexplorernightly_latestversion", out var lexbVersion))
                     {
-                        return new Version(me3expbLatestversion);
+                        return new Version(lexbVersion);
                     }
                     break;
             }
@@ -596,10 +717,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             switch (tool)
             {
-                case ME3Explorer_Beta:
-                    if (App.ServerManifest.TryGetValue(@"me3explorerbeta_latestlink", out var me3expbLatestlink))
+                case LegendaryExplorer_Beta:
+                    if (App.ServerManifest.TryGetValue(@"legendaryexplorernightly_latestlink", out var lexNightlyLatestLink))
                     {
-                        return me3expbLatestlink;
+                        return lexNightlyLatestLink;
                     }
                     break;
             }
@@ -609,23 +730,28 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private static bool toolIsGithubBased(string toolname)
         {
-            if (toolname == ME3Explorer_Beta) return false; //me3tweaks. Info is in startup manifest
+            if (toolname == LegendaryExplorer_Beta) return false; //me3tweaks. Info is in startup manifest
             return true;
         }
 
         private static string toolNameToExeName(string toolname)
         {
-            if (toolname == ME3Explorer_Beta) return @"ME3Explorer.exe";
+            if (toolname == LegendaryExplorer_Beta) return @"LegendaryExplorer.exe";
             if (toolname == ME2R) return @"ME2Randomizer.exe";
+            if (toolname == MEM_LE) return @"MassEffectModder.exe";
+            if (toolname == MEM_LE_CMD) return @"MassEffectModderNoGui.exe";
+            if (toolname == EGMSettingsLE) return @"EGMSettings.exe";
             return toolname.Replace(@" ", @"") + @".exe";
         }
 
         private static string[] SupportedToolIDs =
         {
-            ME3Explorer,
-            ME3Explorer_Beta,
+            LegendaryExplorer,
+            LegendaryExplorer_Beta,
             EGMSettings,
+            EGMSettingsLE,
             MEM,
+            MEM_LE,
             MER,
             ME2R,
             ALOTInstaller,

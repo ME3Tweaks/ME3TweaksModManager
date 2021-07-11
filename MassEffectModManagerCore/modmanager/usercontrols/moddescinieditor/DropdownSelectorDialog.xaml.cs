@@ -13,7 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using MassEffectModManagerCore.ui;
-using ME3ExplorerCore.Gammtek.Extensions.Collections.Generic;
+using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
 {

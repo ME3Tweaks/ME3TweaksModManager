@@ -5,15 +5,17 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using FontAwesome.WPF;
-using ME3ExplorerCore.Helpers;
+using LegendaryExplorerCore.Helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.objects.mod;
-using ME3ExplorerCore.Compression;
-using ME3ExplorerCore.GameFilesystem;
-using ME3ExplorerCore.Misc;
-using ME3ExplorerCore.Packages;
-using ME3ExplorerCore.Unreal;
+using LegendaryExplorerCore.Compression;
+using LegendaryExplorerCore.GameFilesystem;
+using LegendaryExplorerCore.Gammtek.Extensions;
+using LegendaryExplorerCore.Misc;
+using LegendaryExplorerCore.Packages;
+using LegendaryExplorerCore.Unreal;
+using MassEffectModManagerCore.modmanager.me3tweaks;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.helpers
@@ -27,26 +29,55 @@ namespace MassEffectModManagerCore.modmanager.helpers
         public static CaseInsensitiveDictionary<List<(int size, string md5)>> ME2VanillaDatabase = new CaseInsensitiveDictionary<List<(int size, string md5)>>();
         public static CaseInsensitiveDictionary<List<(int size, string md5)>> ME3VanillaDatabase = new CaseInsensitiveDictionary<List<(int size, string md5)>>();
 
+        public static CaseInsensitiveDictionary<List<(int size, string md5)>> LE1VanillaDatabase = new CaseInsensitiveDictionary<List<(int size, string md5)>>();
+        public static CaseInsensitiveDictionary<List<(int size, string md5)>> LE2VanillaDatabase = new CaseInsensitiveDictionary<List<(int size, string md5)>>();
+        public static CaseInsensitiveDictionary<List<(int size, string md5)>> LE3VanillaDatabase = new CaseInsensitiveDictionary<List<(int size, string md5)>>();
+        public static CaseInsensitiveDictionary<List<(int size, string md5)>> LELauncherVanillaDatabase = new CaseInsensitiveDictionary<List<(int size, string md5)>>();
+
+
         public static CaseInsensitiveDictionary<List<(int size, string md5)>> LoadDatabaseFor(MEGame game, bool isMe1PL = false)
         {
-            string assetPrefix = @"MassEffectModManagerCore.modmanager.gamemd5.me";
+            string assetPrefix = $@"MassEffectModManagerCore.modmanager.gamemd5.{game.ToString().ToLower()}";
+            if (game == MEGame.LELauncher)
+                assetPrefix = $@"MassEffectModManagerCore.modmanager.gamemd5.lel";
+
             switch (game)
             {
                 case MEGame.ME1:
                     ME1VanillaDatabase.Clear();
-                    var me1stream = Utilities.ExtractInternalFileToStream($@"{assetPrefix}1{(isMe1PL ? @"pl" : @"")}.bin"); //do not localize
+                    var me1stream = Utilities.ExtractInternalFileToStream($@"{assetPrefix}{(isMe1PL ? @"pl" : @"")}.bin"); //do not localize
                     ParseDatabase(me1stream, ME1VanillaDatabase);
                     return ME1VanillaDatabase;
                 case MEGame.ME2:
                     if (ME2VanillaDatabase.Count > 0) return ME2VanillaDatabase;
-                    var me2stream = Utilities.ExtractInternalFileToStream($@"{assetPrefix}2.bin");
+                    var me2stream = Utilities.ExtractInternalFileToStream($@"{assetPrefix}.bin");
                     ParseDatabase(me2stream, ME2VanillaDatabase);
                     return ME2VanillaDatabase;
                 case MEGame.ME3:
                     if (ME3VanillaDatabase.Count > 0) return ME3VanillaDatabase;
-                    var me3stream = Utilities.ExtractInternalFileToStream($@"{assetPrefix}3.bin");
+                    var me3stream = Utilities.ExtractInternalFileToStream($@"{assetPrefix}.bin");
                     ParseDatabase(me3stream, ME3VanillaDatabase);
                     return ME3VanillaDatabase;
+                case MEGame.LE1:
+                    if (LE1VanillaDatabase.Count > 0) return LE1VanillaDatabase;
+                    var le1stream = Utilities.ExtractInternalFileToStream($@"{assetPrefix}.bin");
+                    ParseDatabase(le1stream, LE1VanillaDatabase);
+                    return LE1VanillaDatabase;
+                case MEGame.LE2:
+                    if (ME2VanillaDatabase.Count > 0) return LE2VanillaDatabase;
+                    var le2stream = Utilities.ExtractInternalFileToStream($@"{assetPrefix}.bin");
+                    ParseDatabase(le2stream, LE2VanillaDatabase);
+                    return LE2VanillaDatabase;
+                case MEGame.LE3:
+                    if (LE3VanillaDatabase.Count > 0) return LE3VanillaDatabase;
+                    var le3stream = Utilities.ExtractInternalFileToStream($@"{assetPrefix}.bin");
+                    ParseDatabase(le3stream, LE3VanillaDatabase);
+                    return LE3VanillaDatabase;
+                case MEGame.LELauncher:
+                    if (LELauncherVanillaDatabase.Count > 0) return LELauncherVanillaDatabase;
+                    var lelstream = Utilities.ExtractInternalFileToStream($@"{assetPrefix}.bin");
+                    ParseDatabase(lelstream, LELauncherVanillaDatabase);
+                    return LELauncherVanillaDatabase;
             }
 
             return null;
@@ -114,7 +145,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
             return null;
         }
 
-        private static void ParseDatabase(MemoryStream stream, Dictionary<string, List<(int size, string md5)>> targetDictionary)
+        private static void ParseDatabase(MemoryStream stream, Dictionary<string, List<(int size, string md5)>> targetDictionary, bool trimLERoots = false)
         {
             if (stream.ReadStringASCII(4) != @"MD5T")
             {
@@ -140,7 +171,10 @@ namespace MassEffectModManagerCore.modmanager.helpers
             for (int i = 0; i < numEntries; i++)
             {
                 //Read entry
-                packageNames.Add(table.ReadStringASCIINull().Replace('/', '\\').TrimStart('\\'));
+                var readName = table.ReadStringASCIINull().Replace('/', '\\').TrimStart('\\');
+                if (trimLERoots)
+                    readName = readName.Substring(9); // Game/ME1/
+                packageNames.Add(readName);
             }
 
             numEntries = table.ReadInt32(); //Not sure how this could be different from names list?
@@ -263,6 +297,8 @@ namespace MassEffectModManagerCore.modmanager.helpers
 
         public static bool IsFileVanilla(MEGame game, string fullpath, string relativepath, bool isME1Polish, bool md5check = false)
         {
+            if (game.IsLEGame() && relativepath.StartsWith(@"BioGame\Config\"))
+                return true; // Don't consider these as modified they are modified
             var database = LoadDatabaseFor(game, isME1Polish);
             if (database.TryGetValue(relativepath, out var info))
             {
@@ -306,7 +342,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
             return false;
         }
 
-        public static bool ValidateTargetAgainstVanilla(GameTarget target, Action<string> failedValidationCallback)
+        public static bool ValidateTargetAgainstVanilla(GameTarget target, Action<string> failedValidationCallback, bool strictCheck)
         {
             bool isVanilla = true;
             CaseInsensitiveDictionary<List<(int size, string md5)>> vanillaDB = null;
@@ -321,22 +357,50 @@ namespace MassEffectModManagerCore.modmanager.helpers
                     vanillaDB = ME2VanillaDatabase;
                     break;
                 case MEGame.ME3:
-                    if (ME2VanillaDatabase.Count == 0) LoadDatabaseFor(MEGame.ME3);
+                    if (ME3VanillaDatabase.Count == 0) LoadDatabaseFor(MEGame.ME3);
                     vanillaDB = ME3VanillaDatabase;
                     break;
+                case MEGame.LE1:
+                    if (LE1VanillaDatabase.Count == 0) LoadDatabaseFor(MEGame.LE1);
+                    vanillaDB = LE1VanillaDatabase;
+                    break;
+                case MEGame.LE2:
+                    if (LE2VanillaDatabase.Count == 0) LoadDatabaseFor(MEGame.LE2);
+                    vanillaDB = LE2VanillaDatabase;
+                    break;
+                case MEGame.LE3:
+                    if (LE3VanillaDatabase.Count == 0) LoadDatabaseFor(MEGame.LE3);
+                    vanillaDB = LE3VanillaDatabase;
+                    break;
+                case MEGame.LELauncher:
+                    if (LELauncherVanillaDatabase.Count == 0) LoadDatabaseFor(MEGame.LELauncher);
+                    vanillaDB = LELauncherVanillaDatabase;
+                    break;
                 default:
-                    throw new Exception(@"Cannot vanilla check against game that is not ME1/ME2/ME3");
+                    throw new Exception(@"Cannot vanilla check against game that is not ME1/ME2/ME3/LE1/LE2/LE3/LELauncher");
             }
             if (Directory.Exists(target.TargetPath))
             {
 
                 foreach (string file in Directory.EnumerateFiles(target.TargetPath, @"*", SearchOption.AllDirectories))
                 {
+                    if (!strictCheck)
+                    {
+                        var fname = Path.GetFileName(file).ToLower();
+                        switch (fname)
+                        {
+                            case @"bink2w64.dll":
+                            case @"pcconsoletoc.bin":
+                                continue; // do not report as modified
+                        }
+                    }
+
                     var shortname = file.Substring(target.TargetPath.Length + 1);
                     if (vanillaDB.TryGetValue(shortname, out var fileInfo))
                     {
                         var localFileInfo = new FileInfo(file);
-                        bool sfar = Path.GetExtension(file) == @".sfar";
+                        var extension = Path.GetExtension(file);
+                        bool sfar = extension == @".sfar";
                         bool correctSize;
                         if (sfar && localFileInfo.Length == 32)
                         {
@@ -357,7 +421,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                     }
                     else
                     {
-                        Debug.WriteLine(@"File not in Vanilla DB: " + file);
+                        Debug.WriteLine(@"File not in Vanilla DB: " + shortname);
                     }
                 }
             }
@@ -444,6 +508,18 @@ namespace MassEffectModManagerCore.modmanager.helpers
                     if (ME3VanillaDatabase.Count == 0) LoadDatabaseFor(MEGame.ME3);
                     vanillaDB = ME3VanillaDatabase;
                     break;
+                case MEGame.LE1:
+                    if (LE1VanillaDatabase.Count == 0) LoadDatabaseFor(MEGame.LE1);
+                    vanillaDB = LE1VanillaDatabase;
+                    break;
+                case MEGame.LE2:
+                    if (LE2VanillaDatabase.Count == 0) LoadDatabaseFor(MEGame.LE2);
+                    vanillaDB = LE2VanillaDatabase;
+                    break;
+                case MEGame.LE3:
+                    if (LE3VanillaDatabase.Count == 0) LoadDatabaseFor(MEGame.LE3);
+                    vanillaDB = LE3VanillaDatabase;
+                    break;
                 default:
                     throw new Exception(@"Cannot vanilla check against game that is not ME1/ME2/ME3");
             }
@@ -473,7 +549,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
             {
                 md5 = Utilities.CalculateMD5(exe);
             }
-            
+
             switch (target.Game)
             {
                 case MEGame.ME1:
@@ -490,8 +566,20 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 case MEGame.ME3:
                     SUPPORTED_HASHES_ME3.TryGetValue(md5, out var me3result);
                     return (md5, me3result);
+                case MEGame.LE1:
+                    SUPPORTED_HASHES_LE1.TryGetValue(md5, out var le1result);
+                    return (md5, le1result);
+                case MEGame.LE2:
+                    SUPPORTED_HASHES_LE2.TryGetValue(md5, out var le2result);
+                    return (md5, le2result);
+                case MEGame.LE3:
+                    SUPPORTED_HASHES_LE3.TryGetValue(md5, out var le3result);
+                    return (md5, le3result);
+                case MEGame.LELauncher:
+                    SUPPORTED_HASHES_LEL.TryGetValue(md5, out var lelresult);
+                    return (md5, lelresult);
                 default:
-                    throw new Exception(@"Cannot vanilla check against game that is not ME1/ME2/ME3");
+                    throw new Exception(@"Cannot vanilla check against game that is not ME1/ME2/ME3 LE1/LE2/LE3");
             }
         }
 
@@ -523,13 +611,41 @@ namespace MassEffectModManagerCore.modmanager.helpers
             [@"70dc87862da9010aad1acd7d0c2c857b"] = @"Origin, Russian",
         };
 
+        private static Dictionary<string, string> SUPPORTED_HASHES_LE1 = new Dictionary<string, string>
+        {
+            [@"f4331d60672509b342da12bc42b4622f"] = @"Origin 2.0.0.47902", // May 14 Launch Version
+            [@"ade71fcaa13224e383a848b90db807f2"] = @"Origin 2.0.0.48204", // May 17
+            [@"92c9915cf4da2b8fb0b8ebb0795ba2d9"] = @"Origin 2.0.0.48602", // June 7
+        };
+
+        private static Dictionary<string, string> SUPPORTED_HASHES_LE2 = new Dictionary<string, string>
+        {
+            [@"3b4dd0078a122476126c3b5c6665db16"] = @"Origin 2.0.0.47902",
+            [@"fcb4c06b21853ece31a1897e136df45c"] = @"Origin 2.0.0.48204",
+            [@"b584a70f56cfed7b8f35a081420227b0"] = @"Origin 2.0.0.48602",
+        };
+
+        private static Dictionary<string, string> SUPPORTED_HASHES_LE3 = new Dictionary<string, string>
+        {
+            [@"a64622ed97309563a5597adbed4055ca"] = @"Origin 2.0.0.47902",
+            [@"c55689e54c921739532beb033f0f0ebf"] = @"Origin 2.0.0.48204",
+            [@"11e222d4f8f7c2a123b80a938b76c922"] = @"Origin 2.0.0.48602",
+        };
+
+        private static Dictionary<string, string> SUPPORTED_HASHES_LEL = new Dictionary<string, string>
+        {
+            [@"e03dd006f2d4f56f46a8f6c014230ba8"] = @"Origin 2.0.0.47902",
+            [@"a50a5ab69a0de8356ddd8ab69f8ecdc2"] = @"Origin 2.0.0.48204",
+            [@"5e8dc210b4adda2eda1dc367a781c3a8"] = @"Origin 2.0.0.48602",
+        };
+
         /// <summary>
         /// Checks the existing listed backup and tags it with cmm_vanilla if determined to be vanilla. This is because ALOT Installer allows modified backups where as Mod Manager will not
         /// </summary>
         /// <param name="game"></param>
         internal static void CheckAndTagBackup(MEGame game)
         {
-            Log.Information(@"Validating backup for " + Utilities.GetGameName(game));
+            Log.Information(@"Validating backup for " + game.ToGameName());
             var targetPath = BackupService.GetGameBackupPath(game, false);
             Log.Information(@"Backup location: " + targetPath);
             BackupService.SetStatus(game, M3L.GetString(M3L.string_checkingBackup), M3L.GetString(M3L.string_pleaseWait));
@@ -562,7 +678,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 Log.Information(@"Validating backup...");
 
                 VanillaDatabaseService.LoadDatabaseFor(game, target.IsPolishME1);
-                bool isVanilla = VanillaDatabaseService.ValidateTargetAgainstVanilla(target, nonVanillaFileFoundCallback);
+                bool isVanilla = VanillaDatabaseService.ValidateTargetAgainstVanilla(target, nonVanillaFileFoundCallback, true);
                 bool isDLCConsistent = VanillaDatabaseService.ValidateTargetDLCConsistency(target, inconsistentDLCCallback: inconsistentDLCFoundCallback);
                 List<string> dlcModsInstalled = VanillaDatabaseService.GetInstalledDLCMods(target);
                 var memTextures = Directory.GetFiles(target.TargetPath, @"TexturesMEM*.tfc", SearchOption.AllDirectories);
@@ -571,8 +687,8 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 {
                     //Backup is OK
                     //Tag
-                    File.WriteAllText(Path.Combine(targetPath, @"cmm_vanilla"), App.AppVersionHR);
-                    Log.Information(@"Wrote cmm_vanilla to validated backup");
+                    File.WriteAllText(Path.Combine(targetPath, BackupService.CMM_VANILLA_FILENAME), App.AppVersionHR);
+                    Log.Information($@"Wrote {BackupService.CMM_VANILLA_FILENAME} to validated backup");
                     BackupService.SetBackedUp(game, true);
                 }
                 else

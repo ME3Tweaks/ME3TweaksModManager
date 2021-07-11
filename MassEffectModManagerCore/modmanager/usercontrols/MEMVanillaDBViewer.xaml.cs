@@ -5,8 +5,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Data;
 using System.Windows.Input;
-using ME3ExplorerCore.Misc;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.Gammtek.Extensions;
+using LegendaryExplorerCore.Misc;
+using LegendaryExplorerCore.Packages;
+using PropertyChanged;
+using WinCopies.Util;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -15,6 +18,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// </summary>
     public partial class MEMVanillaDBViewer : MMBusyPanelBase
     {
+        public MemGameDB SelectedGame { get; set; }
         public MEMVanillaDBViewer()
         {
             DataContext = this;
@@ -35,10 +39,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             OnClosing(DataEventArgs.Empty);
         }
 
-        public string FilterTextME1 { get; set; }
-        public string FilterTextME2 { get; set; }
-        public string FilterTextME3 { get; set; }
-
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Escape)
@@ -50,22 +50,52 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
-
-            var db = VanillaDatabaseService.LoadDatabaseFor(MEGame.ME1, false);
-            ME1Files.ReplaceAll(getDBItems(db));
-            db = VanillaDatabaseService.LoadDatabaseFor(MEGame.ME2,false);
-            ME2Files.ReplaceAll(getDBItems(db));
-            db = VanillaDatabaseService.LoadDatabaseFor(MEGame.ME3, false);
-            ME3Files.ReplaceAll(getDBItems(db));
-
+            LoadMEMDBs();
             LoadingInProgress = false;
-            ME1FilesView.Filter = FilterBackupFilesME1;
-            ME2FilesView.Filter = FilterBackupFilesME2;
-            ME3FilesView.Filter = FilterBackupFilesME3;
-
         }
 
-        private IEnumerable<VanillaEntry> getDBItems(CaseInsensitiveDictionary<List<(int size, string md5)>> db)
+        public LegendaryExplorerCore.Misc.ObservableCollectionExtended<MemGameDB> Games { get; } = new();
+
+        private void LoadMEMDBs()
+        {
+            var games = new[] { MEGame.ME1, MEGame.ME2, MEGame.ME3, MEGame.LE1, MEGame.LE2, MEGame.LE3, MEGame.LELauncher };
+            foreach (var g in games)
+            {
+                Games.Add(new MemGameDB(g));
+            }
+        }
+
+        [AddINotifyPropertyChangedInterface]
+        public class MemGameDB
+        {
+            public MEGame Game { get; }
+            public string GameName => Game.ToGameName(true);
+            public string SearchText { get; set; }
+            private ui.ObservableCollectionExtended<VanillaEntry> Files { get; } = new ui.ObservableCollectionExtended<VanillaEntry>();
+            public ICollectionView FilesView => CollectionViewSource.GetDefaultView(Files);
+            public MemGameDB(MEGame game)
+            {
+                this.Game = game;
+                Files.ReplaceAll(getDBItems(VanillaDatabaseService.LoadDatabaseFor(Game, false)));
+                FilesView.Filter = FilterFiles;
+            }
+
+            public void OnSearchTextChanged()
+            {
+                FilesView.Refresh();
+            }
+
+            private bool FilterFiles(object obj)
+            {
+                if (!string.IsNullOrWhiteSpace(SearchText) && obj is VanillaEntry bobj)
+                {
+                    return bobj.Filepath.Contains(SearchText, StringComparison.InvariantCultureIgnoreCase);
+                }
+                return true;
+            }
+        }
+
+        private static IEnumerable<VanillaEntry> getDBItems(CaseInsensitiveDictionary<List<(int size, string md5)>> db)
         {
             var files = new List<VanillaEntry>();
             foreach (var v in db)
@@ -81,60 +111,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
             }
             return files;
-        }
-
-
-        private ui.ObservableCollectionExtended<VanillaEntry> ME1Files { get; } = new ui.ObservableCollectionExtended<VanillaEntry>();
-        private ui.ObservableCollectionExtended<VanillaEntry> ME2Files { get; } = new ui.ObservableCollectionExtended<VanillaEntry>();
-        private ui.ObservableCollectionExtended<VanillaEntry> ME3Files { get; } = new ui.ObservableCollectionExtended<VanillaEntry>();
-        public ICollectionView ME1FilesView => CollectionViewSource.GetDefaultView(ME1Files);
-        public ICollectionView ME2FilesView => CollectionViewSource.GetDefaultView(ME2Files);
-        public ICollectionView ME3FilesView => CollectionViewSource.GetDefaultView(ME3Files);
-        public int SelectedGameIndex { get; set; }
-
-        public VanillaEntry SelectedME1File { get; set; }
-        public VanillaEntry SelectedME2File { get; set; }
-        public VanillaEntry SelectedME3File { get; set; }
-
-        //These are separate methods because I don t want to have to do a looped if statement 6000 times for me3 for example.
-        private bool FilterBackupFilesME1(object obj)
-        {
-            if (!string.IsNullOrWhiteSpace(FilterTextME1) && obj is VanillaEntry bobj)
-            {
-                return bobj.Filepath.Contains(FilterTextME1, StringComparison.InvariantCultureIgnoreCase);
-            }
-            return true;
-        }
-
-        private bool FilterBackupFilesME2(object obj)
-        {
-            if (!string.IsNullOrWhiteSpace(FilterTextME2) && obj is VanillaEntry bobj)
-            {
-                return bobj.Filepath.Contains(FilterTextME2, StringComparison.InvariantCultureIgnoreCase);
-            }
-            return true;
-        }
-
-        private bool FilterBackupFilesME3(object obj)
-        {
-            if (!string.IsNullOrWhiteSpace(FilterTextME3) && obj is VanillaEntry bobj)
-            {
-                return bobj.Filepath.Contains(FilterTextME3, StringComparison.InvariantCultureIgnoreCase);
-            }
-            return true;
-        }
-
-        public void OnFilterTextME1Changed()
-        {
-            ME1FilesView.Refresh();
-        }
-        public void OnFilterTextME2Changed()
-        {
-            ME2FilesView.Refresh();
-        }
-        public void OnFilterTextME3Changed()
-        {
-            ME3FilesView.Refresh();
         }
 
         public class VanillaEntry

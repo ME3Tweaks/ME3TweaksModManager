@@ -13,8 +13,8 @@ using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.usercontrols;
-using ME3ExplorerCore.Helpers;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Packages;
 using Microsoft.AppCenter.Crashes;
 using Serilog;
 using SevenZip;
@@ -111,7 +111,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             if (isExe)
             {
                 //remap to mod root. Not entirely sure if this needs to be done for sub mods?
-                referencedFiles = Enumerable.Select<string, string>(referencedFiles, x => FilesystemInterposer.PathCombine(IsInArchive, ModPath, x)).ToList(); //remap to in-archive paths so they match entry paths
+                referencedFiles = referencedFiles.Select(x => FilesystemInterposer.PathCombine(IsInArchive, ModPath, x)).ToList(); //remap to in-archive paths so they match entry paths
             }
             foreach (var info in archive.ArchiveFileData)
             {
@@ -138,21 +138,21 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 Log.Information(@"Mapping extraction target for " + entryInfo.FileName);
 
                 string entryPath = entryInfo.FileName;
-                if (ExeExtractionTransform != null && Enumerable.Any<(int index, string outfile)>(ExeExtractionTransform.PatchRedirects, x => x.index == entryInfo.Index))
+                if (ExeExtractionTransform != null && ExeExtractionTransform.PatchRedirects.Any(x => x.index == entryInfo.Index))
                 {
                     Log.Information(@"Extracting vpatch file at index " + entryInfo.Index);
-                    return Path.Combine(Utilities.GetVPatchRedirectsFolder(), Enumerable.First<(int index, string outfile)>(ExeExtractionTransform.PatchRedirects, x => x.index == entryInfo.Index).outfile);
+                    return Path.Combine(Utilities.GetVPatchRedirectsFolder(), ExeExtractionTransform.PatchRedirects.First(x => x.index == entryInfo.Index).outfile);
                 }
 
-                if (ExeExtractionTransform != null && Enumerable.Any<int>(ExeExtractionTransform.NoExtractIndexes, x => x == entryInfo.Index))
+                if (ExeExtractionTransform != null && ExeExtractionTransform.NoExtractIndexes.Any(x => x == entryInfo.Index))
                 {
                     Log.Information(@"Extracting file to trash (not used): " + entryPath);
                     return Path.Combine(Utilities.GetTempPath(), @"Trash", @"trashfile");
                 }
 
-                if (ExeExtractionTransform != null && Enumerable.Any<(int index, string outfile)>(ExeExtractionTransform.AlternateRedirects, x => x.index == entryInfo.Index))
+                if (ExeExtractionTransform != null && ExeExtractionTransform.AlternateRedirects.Any(x => x.index == entryInfo.Index))
                 {
-                    var outfile = Enumerable.First<(int index, string outfile)>(ExeExtractionTransform.AlternateRedirects, x => x.index == entryInfo.Index).outfile;
+                    var outfile = ExeExtractionTransform.AlternateRedirects.First(x => x.index == entryInfo.Index).outfile;
                     Log.Information($@"Extracting file with redirection: {entryPath} -> {outfile}");
                     return Path.Combine(outputFolderPath, outfile);
                 }
@@ -172,7 +172,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 compressionQueue = new BlockingCollection<string>();
             }
 
-            int numberOfPackagesToCompress = Enumerable.Count<string>(referencedFiles, x => StringExtensions.RepresentsPackageFilePath(x));
+            int numberOfPackagesToCompress = referencedFiles.Count(x => x.RepresentsPackageFilePath());
             int compressedPackageCount = 0;
             NamedBackgroundWorker compressionThread;
             if (compressPackages)
@@ -285,7 +285,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
 
             if (ExeExtractionTransform != null)
             {
-                if (EnumerableExtensions.Any<ModArchiveImporter.ExeTransform.VPatchDirective>(ExeExtractionTransform.VPatches))
+                if (ExeExtractionTransform.VPatches.Any())
                 {
                     // MEHEM uses Vpatching for its alternates.
                     var vpat = Utilities.GetCachedExecutablePath(@"vpat.exe");

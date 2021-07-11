@@ -11,10 +11,12 @@ using System.IO;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
-using ME3ExplorerCore.GameFilesystem;
-using ME3ExplorerCore.Helpers;
-using ME3ExplorerCore.Packages;
-using ME3ExplorerCore.Unreal;
+using LegendaryExplorerCore.Gammtek.Extensions;
+using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Packages;
+using LegendaryExplorerCore.Unreal;
+using MassEffectModManagerCore.modmanager.me3tweaks;
+using PropertyChanged;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -24,84 +26,210 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// </summary>
     public partial class BackupFileFetcher : MMBusyPanelBase
     {
+        public string LoadingText { get; set; }
+        public ObservableCollectionExtended<BackupFetcherGame> Games { get; } = new();
         public BackupFileFetcher()
         {
             DataContext = this;
             LoadCommands();
+            if (Settings.GenerationSettingOT)
+            {
+                Games.Add(new BackupFetcherGame(MEGame.ME1, window));
+                Games.Add(new BackupFetcherGame(MEGame.ME2, window));
+                Games.Add(new BackupFetcherGame(MEGame.ME3, window));
+            }
+            if (Settings.GenerationSettingLE)
+            {
+                Games.Add(new BackupFetcherGame(MEGame.LE1, window));
+                Games.Add(new BackupFetcherGame(MEGame.LE2, window));
+                Games.Add(new BackupFetcherGame(MEGame.LE3, window));
+            }
             InitializeComponent();
         }
 
         public bool LoadingInProgress { get; set; } = true;
         public ICommand CloseCommand { get; set; }
-        public ICommand FetchFileCommand { get; set; }
 
+        private void LoadCommands()
+        {
+            CloseCommand = new GenericCommand(ClosePanel);
+        }
+
+        [AddINotifyPropertyChangedInterface]
+        public class BackupFetcherGame
+        {
+            public BackupFetcherGame(MEGame game, Window mainWindow)
+            {
+                this.mainWindow = mainWindow;
+                this.Game = game;
+                FilesView.Filter = FilterBackupFiles;
+                FetchFileCommand = new GenericCommand(FetchFile, CanFetchFile);
+            }
+
+            public MEGame Game { get; set; }
+            public string GameName => Game.ToGameName(true);
 #if DEBUG
-        public bool ShowMixinSourceOption => SelectedGameIndex == 2; // ME3
-        public bool ExtractAsMixinSource { get; set; }
+            public bool ShowMixinSourceOption => Game == MEGame.ME3;
+            public bool ExtractAsMixinSource { get; set; }
 
 #else
         public bool ShowMixinSourceOption => false;
         public bool ExtractAsMixinSource {get => false; set { }}
 #endif
-
-        private void LoadCommands()
-        {
-            CloseCommand = new GenericCommand(ClosePanel);
-            FetchFileCommand = new GenericCommand(FetchFile, CanFetchFile);
-        }
-
-        private void FetchFile()
-        {
-            if (SelectedGameIndex == 0 && SelectedME1File != null)
+            public BackupFile SelectedFile { get; set; }
+            public string FilterText { get; set; }
+            public ObservableCollectionExtended<BackupFile> BackupFiles { get; } = new();
+            public ICollectionView FilesView => CollectionViewSource.GetDefaultView(BackupFiles);
+            private bool FilterBackupFiles(object obj)
             {
-                FetchME1File();
-            }
-            if (SelectedGameIndex == 1 && SelectedME2File != null)
-            {
-                FetchME2File();
-            }
-            if (SelectedGameIndex == 2 && SelectedME3File != null)
-            {
-                FetchME3File();
-            }
-        }
-
-        private void FetchME3File()
-        {
-            BackupFile fileTofetch = SelectedME3File;
-            SaveFileDialog m = new SaveFileDialog
-            {
-                Title = M3L.GetString(M3L.string_selectDestinationLocation),
-                Filter = M3L.GetString(M3L.string_packageFile) + @"|*" + Path.GetExtension(fileTofetch.Filename), //TODO CHANGE FILTER
-                FileName = fileTofetch.Filename
-            };
-            var result = m.ShowDialog(mainwindow);
-            if (result.Value)
-            {
-                if (fileTofetch.Module == @"BASEGAME")
+                if (!string.IsNullOrWhiteSpace(FilterText) && obj is BackupFile bobj)
                 {
-                    var fetchedfilestream = VanillaDatabaseService.FetchBasegameFile(MEGame.ME3, fileTofetch.Filename);
+                    return bobj.Filename.Contains(FilterText, StringComparison.InvariantCultureIgnoreCase);
+                }
+                return true;
+            }
 
-                    if (ExtractAsMixinSource)
+            public ICommand FetchFileCommand { get; set; }
+
+            private Window mainWindow;
+
+            public void OnFilterTextChanged()
+            {
+                FilesView.Refresh();
+            }
+
+            private bool CanFetchFile() => SelectedFile != null;
+
+            public void FetchFile()
+            {
+                SaveFileDialog m = new SaveFileDialog
+                {
+                    Title = M3L.GetString(M3L.string_selectDestinationLocation),
+                    Filter = M3L.GetString(M3L.string_packageFile) + @"|*" + Path.GetExtension(SelectedFile.Filename), //TODO CHANGE FILTER
+                    FileName = SelectedFile.Filename
+                };
+                var result = m.ShowDialog(mainWindow);
+                if (result.Value)
+                {
+                    if (SelectedFile.Module == @"BASEGAME")
                     {
-                        // Decompress and save as mixin rules
-                        var p = MEPackageHandler.OpenMEPackageFromStream(fetchedfilestream);
-                        p.Save(m.FileName, includeAdditionalPackagesToCook: false, includeDependencyTable: true);
+                        var fetchedfilestream = VanillaDatabaseService.FetchBasegameFile(Game, SelectedFile.Filename);
+
+                        if (Game == MEGame.ME3 && ExtractAsMixinSource)
+                        {
+                            // Decompress and save as mixin rules
+                            var p = MEPackageHandler.OpenMEPackageFromStream(fetchedfilestream);
+                            p.Save(m.FileName, includeAdditionalPackagesToCook: false, includeDependencyTable: true);
+                        }
+                        else
+                        {
+                            fetchedfilestream.WriteToFile(m.FileName);
+                        }
                     }
                     else
                     {
+                        MemoryStream fetchedfilestream;
+                        if (Game.IsGame1() || Game.IsGame2() || Game == MEGame.LE3)
+                        {
+                            fetchedfilestream = VanillaDatabaseService.FetchME1ME2DLCFile(Game, SelectedFile.Module, SelectedFile.Filename);
+                        }
+                        else
+                        {
+                            // ME3
+                            fetchedfilestream = VanillaDatabaseService.FetchFileFromVanillaSFAR(SelectedFile.Module, SelectedFile.Filename);
+                        }
                         fetchedfilestream.WriteToFile(m.FileName);
                     }
+                    M3L.ShowDialog(mainWindow, M3L.GetString(M3L.string_interp_fileFetchedAndWrittenToX, m.FileName), M3L.GetString(M3L.string_fileFetched));
                 }
-                else
+            }
+
+            private const string FileExtensions = @"\.u|\.upk|\.sfm|\.pcc|\.afc|\.bin|\.tlk|\.usf|\.dlc\.ini";
+            public void LoadBackupFiles()
+            {
+                var gameFiles = new List<BackupFile>();
+                var bup = BackupService.GetGameBackupPath(Game);
+                if (bup != null)
                 {
-                    var fetchedfilestream = VanillaDatabaseService.FetchFileFromVanillaSFAR(fileTofetch.Module, fileTofetch.Filename);
-                    fetchedfilestream.WriteToFile(m.FileName);
+                    var target = new GameTarget(Game, bup, false, skipInit: true);
+                    var cookedPath = M3Directories.GetCookedPath(target);
+                    foreach (var f in Extensions.GetFiles(cookedPath, FileExtensions, SearchOption.AllDirectories))
+                    {
+                        gameFiles.Add(new BackupFile(@"BASEGAME", Path.GetFileName(f)));
+                    }
+
+                    gameFiles.Sort(); //sort basegame
+
+                    var dlcDir = M3Directories.GetDLCPath(target);
+                    var officialDLC = VanillaDatabaseService.GetInstalledOfficialDLC(target);
+
+                    foreach (var dlcName in officialDLC)
+                    {
+                        if (Game == MEGame.ME3)
+                        {
+                            var sfarPath = Path.Combine(dlcDir, dlcName, @"CookedPCConsole", @"Default.sfar");
+                            if (File.Exists(sfarPath))
+                            {
+                                var filesToAdd = new List<BackupFile>();
+                                DLCPackage dlc = new DLCPackage(sfarPath);
+                                foreach (var f in dlc.Files)
+                                {
+                                    filesToAdd.Add(new BackupFile(dlcName, Path.GetFileName(f.FileName)));
+                                }
+
+                                filesToAdd.Sort();
+                                gameFiles.AddRange(filesToAdd);
+                            }
+                        }
+                        else
+                        {
+                            // Non ME3
+                            var cookedDLCPath = Path.Combine(dlcDir, dlcName, Game.CookedDirName());
+                            if (Directory.Exists(cookedDLCPath))
+                            {
+                                var filesToAdd = new List<BackupFile>();
+
+                                foreach (var f in Extensions.GetFiles(cookedDLCPath, FileExtensions,
+                                    SearchOption.AllDirectories))
+                                {
+                                    filesToAdd.Add(new BackupFile(dlcName, Path.GetFileName(f)));
+                                }
+
+                                filesToAdd.Sort();
+                                gameFiles.AddRange(filesToAdd);
+                            }
+
+                        }
+                    }
+
+                    //TESTPATCH
+                    if (Game == MEGame.ME3)
+                    {
+                        var tpPath = M3Directories.GetTestPatchSFARPath(target);
+                        if (File.Exists(tpPath))
+                        {
+                            var filesToAdd = new List<BackupFile>();
+                            DLCPackage dlc = new DLCPackage(tpPath);
+                            foreach (var f in dlc.Files)
+                            {
+                                filesToAdd.Add(new BackupFile(@"TESTPATCH", Path.GetFileName(f.FileName)));
+                            }
+
+                            filesToAdd.Sort();
+                            gameFiles.AddRange(filesToAdd);
+                        }
+                    }
                 }
-                M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_fileFetchedAndWrittenToX, m.FileName), M3L.GetString(M3L.string_fileFetched));
+
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    BackupFiles.ReplaceAll(gameFiles);
+                });
+                Debug.WriteLine($@"Num {Game} files: " + BackupFiles.Count);
             }
         }
 
+        /*
         private void FetchME2File()
         {
             BackupFile fileTofetch = SelectedME2File;
@@ -154,24 +282,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
             }
             M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_fileFetchedAndWrittenToX, m.FileName), M3L.GetString(M3L.string_fileFetched));
-        }
-
-        private bool CanFetchFile()
-        {
-            if (SelectedGameIndex == 0 && SelectedME1File != null) return true;
-            if (SelectedGameIndex == 1 && SelectedME2File != null) return true;
-            if (SelectedGameIndex == 2 && SelectedME3File != null) return true;
-            return false;
-        }
+        }*/
 
         private void ClosePanel()
         {
             OnClosing(DataEventArgs.Empty);
         }
-
-        public string FilterTextME1 { get; set; }
-        public string FilterTextME2 { get; set; }
-        public string FilterTextME3 { get; set; }
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
@@ -181,15 +297,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
         }
 
-
         public override void OnPanelVisible()
         {
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"BackupFileFetcher-Load");
             nbw.DoWork += (a, b) =>
             {
-                LoadME1FilesList();
-                LoadME2FilesList();
-                LoadME3FilesList();
+                foreach (var g in Games)
+                {
+                    LoadingText = M3L.GetString(M3L.string_interp_loadingBackupFilesForGame, g.Game.ToGameName());
+                    g.LoadBackupFiles();
+                }
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {
@@ -198,13 +315,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                 }
                 LoadingInProgress = false;
-                ME1FilesView.Filter = FilterBackupFilesME1;
-                ME2FilesView.Filter = FilterBackupFilesME2;
-                ME3FilesView.Filter = FilterBackupFilesME3;
             };
             nbw.RunWorkerAsync();
         }
-
+        /*
         private void LoadME1FilesList()
         {
             var me1files = new List<BackupFile>();
@@ -285,59 +399,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             Debug.WriteLine(@"Num ME2 files: " + ME2Files.Count);
         }
 
-        private ObservableCollectionExtended<BackupFile> ME1Files { get; } = new ObservableCollectionExtended<BackupFile>();
-        private ObservableCollectionExtended<BackupFile> ME2Files { get; } = new ObservableCollectionExtended<BackupFile>();
-        private ObservableCollectionExtended<BackupFile> ME3Files { get; } = new ObservableCollectionExtended<BackupFile>();
-        public ICollectionView ME1FilesView => CollectionViewSource.GetDefaultView(ME1Files);
-        public ICollectionView ME2FilesView => CollectionViewSource.GetDefaultView(ME2Files);
-        public ICollectionView ME3FilesView => CollectionViewSource.GetDefaultView(ME3Files);
-        public int SelectedGameIndex { get; set; }
-
-        public BackupFile SelectedME1File { get; set; }
-        public BackupFile SelectedME2File { get; set; }
-        public BackupFile SelectedME3File { get; set; }
-
-        //These are separate methods because I don t want to have to do a looped if statement 6000 times for me3 for example.
-        private bool FilterBackupFilesME1(object obj)
-        {
-            if (!string.IsNullOrWhiteSpace(FilterTextME1) && obj is BackupFile bobj)
-            {
-                return bobj.Filename.Contains(FilterTextME1, StringComparison.InvariantCultureIgnoreCase);
-            }
-            return true;
-        }
-
-        private bool FilterBackupFilesME2(object obj)
-        {
-            if (!string.IsNullOrWhiteSpace(FilterTextME2) && obj is BackupFile bobj)
-            {
-                return bobj.Filename.Contains(FilterTextME2, StringComparison.InvariantCultureIgnoreCase);
-            }
-            return true;
-        }
-
-        private bool FilterBackupFilesME3(object obj)
-        {
-            if (!string.IsNullOrWhiteSpace(FilterTextME3) && obj is BackupFile bobj)
-            {
-                return bobj.Filename.Contains(FilterTextME3, StringComparison.InvariantCultureIgnoreCase);
-            }
-            return true;
-        }
-
-        public void OnFilterTextME1Changed()
-        {
-            ME1FilesView.Refresh();
-        }
-        public void OnFilterTextME2Changed()
-        {
-            ME2FilesView.Refresh();
-        }
-        public void OnFilterTextME3Changed()
-        {
-            ME3FilesView.Refresh();
-        }
-
         private void LoadME3FilesList()
         {
             var me3files = new List<BackupFile>();
@@ -390,7 +451,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             });
             Debug.WriteLine(@"Num ME3 files: " + ME3Files.Count);
         }
-
+        */
         public class BackupFile : IComparable<BackupFile>
         {
             public string Module { get; }

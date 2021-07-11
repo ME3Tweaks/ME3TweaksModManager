@@ -6,10 +6,9 @@
     xmlns:generic="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols.generic"
     mc:Ignorable="d"
     DataContext="{Binding RelativeSource={RelativeSource Self}}"
-    Width="700"
-    Height="500"
-    d:DesignHeight="450"
-    d:DesignWidth="800">
+    Width="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.8_500_1200', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualWidth}"
+    Height="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.85_500', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualHeight}">
+
     <DockPanel>
         <TextBlock
             TextAlignment="Center"
@@ -37,18 +36,29 @@
                 DockPanel.Dock="Bottom"
                 Margin="0,3">
                 <CheckBox
+                    ui:SharedUIBindings.GenerationOT="true"
                     DockPanel.Dock="Left"
                     Content="Mass Effect"
-                    IsChecked="{Binding SearchME1}" />
+                    IsChecked="{Binding SearchME1}"
+                    Margin="0,0,5,0" />
                 <CheckBox
+                    ui:SharedUIBindings.GenerationOT="true"
                     DockPanel.Dock="Left"
                     Content="Mass Effect 2"
                     IsChecked="{Binding SearchME2}"
-                    Margin="10,0" />
+                    Margin="0,0,5,0" />
                 <CheckBox
+                    ui:SharedUIBindings.GenerationOT="true"
                     DockPanel.Dock="Left"
                     Content="Mass Effect 3"
-                    IsChecked="{Binding SearchME3}" />
+                    IsChecked="{Binding SearchME3}"
+                    Margin="0,0,5,0" />
+                <CheckBox
+                    ui:SharedUIBindings.GenerationLE="true"
+                    DockPanel.Dock="Left"
+                    Content="Mass Effect LE"
+                    IsChecked="{Binding SearchLE}" 
+                    Margin="0,0,5,0" />
                 <generic:CheckBoxComboBox
                     x:Name="CategoryOptionsCBL"
                     HorizontalAlignment="Right" 

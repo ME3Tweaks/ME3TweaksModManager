@@ -4,51 +4,72 @@
     d:DesignHeight="450"
     d:DesignWidth="600"
     DataContext="{Binding RelativeSource={RelativeSource Self}}"
-    Width="500">
-    <StackPanel>
+    Width="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.7_400_900', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualWidth}"
+    Height="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.8_400_700', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualHeight}">
+    <DockPanel>
         <TextBlock
+            DockPanel.Dock="Top"
             Text="{DynamicResource string_Backup}"
             FontSize="24"
             FontWeight="Bold"
             TextAlignment="Center"
             Margin="0,5" />
         <TextBlock
+            DockPanel.Dock="Top"
             Text="{DynamicResource string_backupsAreUsedToRestoreYourGame}"
             TextWrapping="Wrap" />
-        <ItemsControl
+        <Button
+            DockPanel.Dock="Bottom"
+            Content="{DynamicResource string_close}"
+            Command="{Binding CloseCommand}"
+            HorizontalAlignment="Right"
+            Padding="7,5"
+            Margin="0,5,0,0" />
+        <TextBlock
+            DockPanel.Dock="Bottom"
+            Text="{DynamicResource string_backupsMustBeCreatedFresh}"
+            TextWrapping="Wrap"
+            Visibility="{Binding AnyGameMissingBackup, Converter={StaticResource BoolToVisibilityConverter}}" />
+        <TextBlock
+            DockPanel.Dock="Bottom"
+            Text="{DynamicResource string_backupsAreShared}"
+            TextWrapping="Wrap"
+            Margin="0,5" />
+        <ScrollViewer>
+            <ItemsControl
             ItemsSource="{Binding GameBackups}">
-            <ItemsControl.ItemContainerStyle>
-                <Style>
-                    <Setter
+                <ItemsControl.ItemContainerStyle>
+                    <Style>
+                        <Setter
                         Property="FrameworkElement.DataContext"
                         Value="{Binding RelativeSource={RelativeSource Self}}" />
-                </Style>
-            </ItemsControl.ItemContainerStyle>
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <Grid
+                    </Style>
+                </ItemsControl.ItemContainerStyle>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid
                         Margin="0,5,5,5">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition
                                 Width="54" />
-                            <ColumnDefinition
+                                <ColumnDefinition
                                 Width="1*" />
-                            <ColumnDefinition
+                                <ColumnDefinition
                                 Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition
                                 Height="Auto" />
-                            <RowDefinition
+                                <RowDefinition
                                 Height="Auto" />
-                            <RowDefinition
+                                <RowDefinition
                                 Height="Auto" />
-                            <RowDefinition
+                                <RowDefinition
                                 Height="Auto" />
-                            <RowDefinition
+                                <RowDefinition
                                 Height="Auto" />
-                        </Grid.RowDefinitions>
-                        <Button
+                            </Grid.RowDefinitions>
+                            <Button
                             Content="{DynamicResource string_unlinkBackup}"
                             Grid.Column="2"
                             Grid.RowSpan="2"
@@ -56,37 +77,37 @@
                             ToolTip="{DynamicResource string_tooltip_unlinkBackupButton}"
                             Command="{Binding UnlinkBackupCommand}"
                             ui:SharedUIBindings.VisibilityToEnabled="True" />
-                        <Image
+                            <Image
                             Grid.Column="0"
                             Grid.Row="0"
                             Grid.RowSpan="3"
-                            Source="{Binding GameIconSource}"
+                            Source="{Binding Game, Mode=OneWay, Converter={StaticResource GameToImageIconConverter}, ConverterParameter='48'}"
                             Width="48"
                             VerticalAlignment="Top"
                             Height="48"
                             HorizontalAlignment="Left" />
-                        <TextBlock
+                            <TextBlock
                             Grid.Column="1"
                             Grid.Row="0"
                             FontWeight="Bold"
                             Text="{Binding GameTitle}" />
-                        <TextBlock
+                            <TextBlock
                             Grid.Column="1"
                             Grid.Row="1"
                             Text="{Binding BackupStatus}"
                             TextWrapping="Wrap"/>
-                        <TextBlock
+                            <TextBlock
                             Grid.Column="1"
                             Grid.Row="2"
                             Text="{Binding BackupStatusLine2}"
                             TextWrapping="Wrap"/>
-                        <local:TargetSelector Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2"
+                            <local:TargetSelector Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2"
                             IsEnabled="{Binding BackupInProgress, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}"
                             AvailableTargets="{Binding AvailableBackupSources}"
                             SelectedGameTarget="{Binding BackupSourceTarget}"
                             HorizontalContentAlignment="Stretch"
                             Visibility="{Binding BackupOptionsVisible, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}"/>
-                        <Button
+                            <Button
                             Content="{DynamicResource string_backUp}"
                             Padding="3,0"
                             Visibility="{Binding BackupOptionsVisible, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}"
@@ -94,7 +115,7 @@
                             Grid.Row="3"
                             Grid.Column="2"
                             Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}" />
-                        <ProgressBar
+                            <ProgressBar
                             IsIndeterminate="{Binding ProgressIndeterminate, FallbackValue=True}"
                             Value="{Binding ProgressValue}"
                             Height="10"
@@ -103,23 +124,11 @@
                             Grid.Column="0"
                             Grid.Row="4"
                             Grid.ColumnSpan="3" />
-                    </Grid>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
-        <TextBlock
-            Text="{DynamicResource string_backupsAreShared}"
-            TextWrapping="Wrap"
-            Margin="0,5" />
-        <TextBlock
-            Text="{DynamicResource string_backupsMustBeCreatedFresh}"
-            TextWrapping="Wrap"
-            Visibility="{Binding AnyGameMissingBackup, Converter={StaticResource BoolToVisibilityConverter}}" />
-        <Button
-            Content="{DynamicResource string_close}"
-            Command="{Binding CloseCommand}"
-            HorizontalAlignment="Right"
-            Padding="7,5"
-            Margin="0,5,0,0" />
-    </StackPanel>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+    </DockPanel>
 </local:MMBusyPanelBase>

@@ -1,7 +1,6 @@
 ﻿<Window
     x:Class="MassEffectModManagerCore.modmanager.windows.ModDescEditor" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.windows" xmlns:alternates="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alternates" xmlns:moddescinieditor="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor"
-    mc:Ignorable="d"
-    xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" 
+    mc:Ignorable="d" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
     DataContext="{Binding RelativeSource={RelativeSource Self}}"
     Title="{DynamicResource string_moddesciniEdsitor}"
     MinHeight="750"
@@ -47,22 +46,32 @@
                     x:Name="metadataEditor_control" />
             </TabItem>
             <TabItem
-                Header="{DynamicResource string_basegame}">
+                Header="{DynamicResource string_basegame}"
+                Visibility="{Binding EditingMod.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Not_LELauncher'}">
                 <moddescinieditor:BasegameEditorControl
                     x:Name="basegame_editor_control" />
             </TabItem>
             <TabItem
-                Header="{DynamicResource string_officialDLC}">
+                Header="{DynamicResource string_mde_legendaryEditionLauncher}"
+                Visibility="{Binding EditingMod.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='LELauncher'}">
+                <moddescinieditor:LELauncherEditorControl
+                    x:Name="lelauncher_editor_control" />
+            </TabItem>
+            <TabItem
+                Header="{DynamicResource string_officialDLC}"
+                Visibility="{Binding EditingMod.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='ME3'}">
                 <moddescinieditor:OfficialDLCEditorControl
                     x:Name="officialdlc_editor_control" />
             </TabItem>
             <TabItem
-                Header="{DynamicResource string_customDLC}">
+                Header="{DynamicResource string_customDLC}"
+                Visibility="{Binding EditingMod.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Not_LE1_Not_LELauncher'}">
                 <moddescinieditor:CustomDLCEditorControl
                     x:Name="customdlcEditor_control" />
             </TabItem>
             <TabItem
-                Header="{DynamicResource string_alternateFilesCustomDLC}">
+                Header="{DynamicResource string_alternateFilesCustomDLC}"
+                Visibility="{Binding EditingMod.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Not_LE1_Not_LELauncher'}">
                 <ScrollViewer
                     HorizontalScrollBarVisibility="Disabled"
                     Margin="-8">
@@ -73,7 +82,8 @@
                 </ScrollViewer>
             </TabItem>
             <TabItem
-                Header="{DynamicResource string_alternateDLCCustomDLC}">
+                Header="{DynamicResource string_alternateDLCCustomDLC}"
+                Visibility="{Binding EditingMod.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Not_LELauncher_Not_LE1'}">
                 <alternates:AlternateDLCBuilder
                     x:Name="customdlc_alternateDlcEditor_control" />
             </TabItem>
@@ -94,9 +104,15 @@
             <!-- ME2, 3 only -->
             <TabItem
                 Header="{DynamicResource string_localizationModInfo}"
-                Visibility="{Binding EditingMod.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Not_ME1'}">
+                Visibility="{Binding EditingMod.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Not_Game1_Not_LELauncher'}">
                 <moddescinieditor:LocalizationTaskEditorControl
                     x:Name="localization_editor_control" />
+            </TabItem>
+            <TabItem
+                Header="{DynamicResource string_mde_game1TLKMerge}"
+                Visibility="{Binding EditingMod.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Game1'}">
+                <moddescinieditor:Game1TLKMergeEditorControl
+                    x:Name="game1tlkmerge_editor_control" />
             </TabItem>
             <TabItem
                 Header="{DynamicResource string_resultingModdescini}"
@@ -112,7 +128,7 @@
                             DockPanel.Dock="Right"
                             Margin="5,0,0,0"
                             HorizontalAlignment="Right"
-                            Command="{Binding SaveModdescToModCommand}" 
+                            Command="{Binding SaveModdescToModCommand}"
                             Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}" />
                         <Button
                             Content="{DynamicResource string_copyText}"

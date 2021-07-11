@@ -1,24 +1,28 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using IniParser;
 using IniParser.Model;
+using LegendaryExplorerCore.Coalesced;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.ui;
-using ME3ExplorerCore.GameFilesystem;
-using ME3ExplorerCore.Packages;
-using ME3ExplorerCore.TLK.ME1;
+using LegendaryExplorerCore.GameFilesystem;
+using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
+using LegendaryExplorerCore.Packages;
+using LegendaryExplorerCore.TLK.ME1;
 using Microsoft.AppCenter.Analytics;
 using MvvmValidation;
 using Serilog;
@@ -31,6 +35,8 @@ namespace MassEffectModManagerCore.modmanager.windows
     /// </summary>
     public partial class StarterKitGeneratorWindow : ValidatableWindowBase
     {
+        public static (string filecode, string langcode)[] le1languages = { (@"INT", @"en-us"), (@"ES", @"es-es"), (@"DE", @"de-de"), (@"RA", @"ru-ru"), (@"FR", @"fr-fr"), (@"IT", @"it-it"), (@"PLPC", @"pl-pl"), (@"JPN", @"jp-jp") };
+        public static (string filecode, string langcode)[] lelanguages = { (@"INT", @"en-us"), (@"ESN", @"es-es"), (@"DEU", @"de-de"), (@"RUS", @"ru-ru"), (@"FRA", @"fr-fr"), (@"ITA", @"it-it"), (@"POL", @"pl-pl"), (@"JPN", @"jp-jp") };
         public static (string filecode, string langcode)[] me3languages = { (@"INT", @"en-us"), (@"ESN", @"es-es"), (@"DEU", @"de-de"), (@"RUS", @"ru-ru"), (@"FRA", @"fr-fr"), (@"ITA", @"it-it"), (@"POL", @"pl-pl"), (@"JPN", @"jp-jp") };
         public static (string filecode, string langcode)[] me2languages = { (@"INT", @"en-us"), (@"ESN", @"es-es"), (@"DEU", @"de-de"), (@"RUS", @"ru-ru"), (@"FRA", @"fr-fr"), (@"ITA", @"it-it"), (@"POL", @"pl-pl"), (@"HUN", @"hu-hu"), (@"CZE", @"cs-cz") };
 
@@ -46,8 +52,37 @@ namespace MassEffectModManagerCore.modmanager.windows
                         return 2000; //sensible?
                     case MEGame.ME1:
                         return 500; //sensible?
+
+                    // Supports up to 2 billion
+                    case MEGame.LE1:
+                    case MEGame.LE2:
+                    case MEGame.LE3:
+                        return 32000;
                 }
                 return 500;
+            }
+        }
+
+        public int MinMountForGame
+        {
+            get
+            {
+                switch (Game)
+                {
+                    case MEGame.ME3:
+                        return 1005;
+                    case MEGame.ME2:
+                        return 1; //sensible?
+                    case MEGame.ME1:
+                        return 1; //sensible?
+                    case MEGame.LE1:
+                        return 10;
+                    case MEGame.LE2:
+                        return 2500;
+                    case MEGame.LE3:
+                        return 4000;
+                }
+                return 1;
             }
         }
 
@@ -152,32 +187,32 @@ namespace MassEffectModManagerCore.modmanager.windows
             }
         }
 
-        public UIMountFlag ModMountFlag { get; set; }
-        public ObservableCollectionExtended<UIMountFlag> DisplayedMountFlags { get; } = new ObservableCollectionExtended<UIMountFlag>();
-        private readonly List<UIMountFlag> ME1MountFlags = new List<UIMountFlag>();
-        private readonly List<UIMountFlag> ME2MountFlags = new List<UIMountFlag>();
-        private readonly List<UIMountFlag> ME3MountFlags = new List<UIMountFlag>();
+        public ObservableCollectionExtended<MountFlag> DisplayedMountFlags { get; } = new ObservableCollectionExtended<MountFlag>();
+        //private readonly List<MountFlag> ME1MountFlags = new List<MountFlag>();
+        private readonly List<MountFlag> ME2MountFlags = new List<MountFlag>();
+        private readonly List<MountFlag> ME3MountFlags = new List<MountFlag>();
         public ObservableCollectionExtended<ThirdPartyModInfo> CustomDLCMountsForGame { get; } = new ObservableCollectionExtended<ThirdPartyModInfo>();
+
+        // Doesn't change so you can bind to this
+        public MEGameSelector[] Games { get; init; }
 
         public StarterKitGeneratorWindow(MEGame Game) : base()
         {
             MemoryAnalyzer.AddTrackedMemoryItem(@"Starter Kit Window", new WeakReference(this));
             Log.Information(@"Opening Starter Kit window");
-            DataContext = this;
-            ME1MountFlags.Add(new UIMountFlag(EMountFileFlag.ME1_NoSaveFileDependency, M3L.GetString(M3L.string_noSaveFileDependencyOnDLC)));
-            ME1MountFlags.Add(new UIMountFlag(EMountFileFlag.ME1_SaveFileDependency, M3L.GetString(M3L.string_saveFileDependencyOnDLC)));
 
-            ME2MountFlags.Add(new UIMountFlag(EMountFileFlag.ME2_NoSaveFileDependency, @"0x00 | No save file dependency on DLC"));
-            ME2MountFlags.Add(new UIMountFlag(EMountFileFlag.ME2_SaveFileDependency, @"0x02 | Save file dependency on DLC"));
+            PendingGame = Game;
 
-            ME3MountFlags.Add(new UIMountFlag(EMountFileFlag.ME3_SPOnly_NoSaveFileDependency, @"0x08 - SP only | No file dependency on DLC"));
-            ME3MountFlags.Add(new UIMountFlag(EMountFileFlag.ME3_SPOnly_SaveFileDependency, @"0x09 - SP only | Save file dependency on DLC"));
-            ME3MountFlags.Add(new UIMountFlag(EMountFileFlag.ME3_SPMP_SaveFileDependency, @"0x1C - SP & MP | No save file dependency on DLC"));
-            ME3MountFlags.Add(new UIMountFlag(EMountFileFlag.ME3_MPOnly_Patch, @"0x0C - MP only | Loads in MP (PATCH)"));
-            ME3MountFlags.Add(new UIMountFlag(EMountFileFlag.ME3_MPOnly_1, @"0x14 - MP only | Loads in MP"));
-            ME3MountFlags.Add(new UIMountFlag(EMountFileFlag.ME3_MPOnly_2, @"0x34 - MP only | Loads in MP"));
+            var flagset2 = Enum.GetValues<EME2MountFileFlag>();
+            ME2MountFlags.ReplaceAll(flagset2.Select(x => new MountFlag((int)x, true)));
+
+            var flagset3 = Enum.GetValues<EME3MountFileFlag>();
+            ME3MountFlags.ReplaceAll(flagset3.Select(x => new MountFlag((int)x, false)));
+
+
+
             PreviewTPMI.IsPreview = true;
-            DisplayedMountFlags.Add(new UIMountFlag(EMountFileFlag.ME1_NoSaveFileDependency, M3L.GetString(M3L.string_loadingPlaceholder)));
+            //DisplayedMountFlags.Add(new UIMountFlag(EMountFileFlag.ME1_NoSaveFileDependency, M3L.GetString(M3L.string_loadingPlaceholder)));
             SetupValidation();
 
             LoadCommands();
@@ -194,8 +229,10 @@ namespace MassEffectModManagerCore.modmanager.windows
             //            ModDescription = "This is a starter kit debug testing mod.\n\nHerp a derp flerp.";
             //#endif
             InitializeComponent();
-            SetGame(Game);
+            Games = MEGameSelector.GetGameSelectors().ToArray();
         }
+
+        public MEGame? PendingGame { get; set; }
 
         private void SetupValidation()
         {
@@ -224,9 +261,9 @@ namespace MassEffectModManagerCore.modmanager.windows
 
             Validator.AddRule(nameof(ModMountPriority), () =>
             {
-                if (ModMountPriority <= 0 || ModMountPriority >= GetGameSpecificMountLimit())
+                if (ModMountPriority <= MinMountForGame || ModMountPriority >= MaxMountForGame)
                 {
-                    return RuleResult.Invalid(M3L.GetString(M3L.string_interp_valueMustBeBetween0AndX, GetGameSpecificMountLimit().ToString()));
+                    return RuleResult.Invalid(M3L.GetString(M3L.string_interp_valueMustBeBetweenXAndY, MinMountForGame, MaxMountForGame));
                 }
                 return RuleResult.Valid();
             });
@@ -247,7 +284,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                 //Debug.WriteLine("MDFN " + ModDLCFolderName);
                 if (string.IsNullOrWhiteSpace(ModDLCFolderName))
                     return RuleResult.Invalid(M3L.GetString(M3L.string_dLCFolderNameCannotBeEmpty));
-                Regex reg = new Regex("[A-Za-z0-9_]+$"); //do not localize
+                Regex reg = new Regex("^[A-Za-z0-9_]+$"); //do not localize
                 if (!reg.IsMatch(ModDLCFolderName))
                 {
                     return RuleResult.Invalid(M3L.GetString(M3L.string_dLCFolderNameCanOnlyConsistOf));
@@ -270,10 +307,10 @@ namespace MassEffectModManagerCore.modmanager.windows
             });
             Validator.AddRule(nameof(ModDLCModuleNumber), () =>
             {
-                if (Game != MEGame.ME2) return RuleResult.Valid();
+                if (!Game.IsGame2()) return RuleResult.Valid();
                 if (ModDLCModuleNumber <= 0 || ModDLCModuleNumber >= ushort.MaxValue)
                 {
-                    return RuleResult.Invalid(M3L.GetString(M3L.string_interp_valueMustBeBetween0AndX, ushort.MaxValue.ToString()));
+                    return RuleResult.Invalid(M3L.GetString(M3L.string_valueMustBeBetween0And, ushort.MaxValue.ToString()));
                 }
                 return RuleResult.Valid();
             });
@@ -290,10 +327,10 @@ namespace MassEffectModManagerCore.modmanager.windows
 
         private void PrecheckStarterKitValues()
         {
-            if (Game == MEGame.ME2)
+            if (Game.IsGame2())
             {
                 //Check Engine Number.
-                var sameModuleNumberItems = ThirdPartyServices.GetThirdPartyModInfosByModuleNumber(ModDLCModuleNumber);
+                var sameModuleNumberItems = ThirdPartyServices.GetThirdPartyModInfosByModuleNumber(ModDLCModuleNumber, Game);
                 if (sameModuleNumberItems.Count > 0)
                 {
                     string conflicts = "";
@@ -312,7 +349,16 @@ namespace MassEffectModManagerCore.modmanager.windows
                 if (result == MessageBoxResult.No) return;
             }
 
-            if (ModMountFlag.Flag == EMountFileFlag.ME1_SaveFileDependency || ModMountFlag.Flag == EMountFileFlag.ME2_SaveFileDependency || ModMountFlag.Flag == EMountFileFlag.ME3_SPMP_SaveFileDependency || ModMountFlag.Flag == EMountFileFlag.ME3_SPMP_SaveFileDependency)
+
+            MountFlag mf = new MountFlag(0, Game.IsGame2());
+            var mountFlags = MountSelector.GetSelectedItems().OfType<MountFlag>();
+            foreach (var f in mountFlags)
+            {
+                mf.SetFlagBit(f.FlagValue);
+            }
+
+            if ((Game.IsGame2() && ((EME2MountFileFlag)mf.FlagValue).HasFlag(EME2MountFileFlag.SaveFileDependency))
+            || (Game.IsGame3() && ((EME3MountFileFlag)mf.FlagValue).HasFlag(EME3MountFileFlag.SaveFileDependency)))
             {
                 var result = M3L.ShowDialog(this, M3L.GetString(M3L.string_dialog_discourageUseOfSPSaveRequired), M3L.GetString(M3L.string_undesirableMountFlag), MessageBoxButton.YesNo, MessageBoxImage.Error, MessageBoxResult.No);
                 if (result == MessageBoxResult.No) return;
@@ -342,10 +388,10 @@ namespace MassEffectModManagerCore.modmanager.windows
                 }
             }
 
-            RunStarterKitGenerator();
+            RunStarterKitGenerator(mf);
         }
 
-        private void RunStarterKitGenerator()
+        private void RunStarterKitGenerator(MountFlag mf)
         {
 
             StarterKitOptions sko = new StarterKitOptions
@@ -353,14 +399,14 @@ namespace MassEffectModManagerCore.modmanager.windows
                 ModName = ModName,
                 ModDescription = ModDescription,
                 ModDeveloper = ModDeveloper,
-                ModDLCFolderName = ModDLCFolderName,
+                ModDLCFolderNameSuffix = ModDLCFolderName,
                 ModGame = Game,
                 ModInternalName = ModInternalName,
                 ModInternalTLKID = ModInternalTLKID,
-                ModMountFlag = ModMountFlag.Flag,
+                ModMountFlag = mf,
                 ModMountPriority = ModMountPriority,
                 ModURL = ModURL,
-                ModModuleNumber = ModDLCModuleNumber
+                ModModuleNumber = ModDLCModuleNumber,
             };
 
             Log.Information(@"Generating a starter kit mod with the following options:");
@@ -368,29 +414,40 @@ namespace MassEffectModManagerCore.modmanager.windows
 
             IsBusy = true;
             BusyText = M3L.GetString(M3L.string_generatingMod);
-            CreateStarterKitMod(sko, s => { BusyText = s; }, FinishedCallback);
+            Task.Run(() =>
+            {
+                FinishedCallback(CreateStarterKitMod(sko, s => { BusyText = s; }));
+            });
         }
 
         private void FinishedCallback(Mod obj)
         {
-            IsBusy = false;
-            if (Owner is MainWindow w)
+            Application.Current.Dispatcher.Invoke(() =>
             {
-                w.LoadMods(obj);
-            }
-            Close();
-            if (!Settings.DeveloperMode)
-            {
-                var turnOnDevMode = M3L.ShowDialog(Owner, M3L.GetString(M3L.string_dialog_devModeAdvert), M3L.GetString(M3L.string_enableDeveloperFeaturesQuestion), MessageBoxButton.YesNo, MessageBoxImage.Question);
-                if (turnOnDevMode == MessageBoxResult.Yes)
-                {
-                    Settings.DeveloperMode = true;
-                    Analytics.TrackEvent(@"Turned on developer mode after starter kit");
-                    //Settings.Save();
-                }
-            }
 
-            M3L.ShowDialog(Owner, M3L.GetString(M3L.string_dialog_warnMustBeDeployedForFullFeatures), M3L.GetString(M3L.string_deploymentInfo), MessageBoxButton.OK, MessageBoxImage.Warning);
+                IsBusy = false;
+                if (Owner is MainWindow w)
+                {
+                    w.LoadMods(obj);
+                }
+
+                Close();
+                if (!Settings.DeveloperMode)
+                {
+                    var turnOnDevMode = M3L.ShowDialog(Owner, M3L.GetString(M3L.string_dialog_devModeAdvert),
+                        M3L.GetString(M3L.string_enableDeveloperFeaturesQuestion), MessageBoxButton.YesNo,
+                        MessageBoxImage.Question);
+                    if (turnOnDevMode == MessageBoxResult.Yes)
+                    {
+                        Settings.DeveloperMode = true;
+                        Analytics.TrackEvent(@"Turned on developer mode after starter kit");
+                        //Settings.Save();
+                    }
+                }
+
+                M3L.ShowDialog(Owner, M3L.GetString(M3L.string_dialog_warnMustBeDeployedForFullFeatures),
+                    M3L.GetString(M3L.string_deploymentInfo), MessageBoxButton.OK, MessageBoxImage.Warning);
+            });
         }
 
         private bool ValidateInput()
@@ -401,21 +458,13 @@ namespace MassEffectModManagerCore.modmanager.windows
         public MEGame Game { get; private set; }
 
 
-        private void RadioButton_Click(object sender, RoutedEventArgs e)
+        private void GameIcon_Click(object sender, RoutedEventArgs e)
         {
-            if (sender == ME1_RadioButton)
+            if (sender is FrameworkElement fw && fw.DataContext is MEGameSelector gamesel)
             {
-                SetGame(MEGame.ME1);
-            }
-
-            if (sender == ME2_RadioButton)
-            {
-                SetGame(MEGame.ME2);
-            }
-
-            if (sender == ME3_RadioButton)
-            {
-                SetGame(MEGame.ME3);
+                Games.ForEach(x => x.IsSelected = false);
+                gamesel.IsSelected = true;
+                SetGame(gamesel.Game);
             }
         }
 
@@ -424,32 +473,26 @@ namespace MassEffectModManagerCore.modmanager.windows
             try
             {
                 Game = game;
-                if (Game == MEGame.ME1)
+                if (Game.IsGame1())
                 {
-                    DisplayedMountFlags.ReplaceAll(ME1MountFlags);
-                    CustomDLCMountsForGame.ReplaceAll(App.ThirdPartyIdentificationService[MEGame.ME1.ToString()].Values
-                        .Where(x => !x.IsOutdated));
-                    ME1_RadioButton.IsChecked = true;
+                    DisplayedMountFlags.ClearEx();
+                    CustomDLCMountsForGame.ReplaceAll(App.ThirdPartyIdentificationService[Game.ToString()].Values.Where(x => !x.IsOutdated));
                 }
 
-                if (Game == MEGame.ME2)
+                if (Game.IsGame2())
                 {
                     DisplayedMountFlags.ReplaceAll(ME2MountFlags);
-                    CustomDLCMountsForGame.ReplaceAll(App.ThirdPartyIdentificationService[MEGame.ME2.ToString()].Values
-                        .Where(x => !x.IsOutdated));
-                    ME2_RadioButton.IsChecked = true;
+                    CustomDLCMountsForGame.ReplaceAll(App.ThirdPartyIdentificationService[Game.ToString()].Values.Where(x => !x.IsOutdated));
                 }
 
-                if (Game == MEGame.ME3)
+                if (Game.IsGame3())
                 {
                     DisplayedMountFlags.ReplaceAll(ME3MountFlags);
-                    CustomDLCMountsForGame.ReplaceAll(App.ThirdPartyIdentificationService[MEGame.ME3.ToString()].Values
-                        .Where(x => !x.IsOutdated));
-                    ME3_RadioButton.IsChecked = true;
+                    MountSelector.SetSelectedItems(new MountFlag[] { new MountFlag(EME3MountFileFlag.LoadsInSingleplayer) });
+                    CustomDLCMountsForGame.ReplaceAll(App.ThirdPartyIdentificationService[Game.ToString()].Values.Where(x => !x.IsOutdated));
                 }
 
                 CustomDLCMountsForGame.Insert(0, PreviewTPMI);
-                DisplayedMountFlags[0].Selected = true;
                 CustomDLCMountsForGame.SortDescending(x => x.MountPriorityInt);
                 CustomDLCMountsListBox.ScrollIntoView(PreviewTPMI);
             }
@@ -460,58 +503,59 @@ namespace MassEffectModManagerCore.modmanager.windows
             }
         }
 
-        public class UIMountFlag
+        public static Mod CreateStarterKitMod(StarterKitOptions skOption, Action<string> UITextCallback)
         {
-            public UIMountFlag(EMountFileFlag flag, string displayString)
+            //NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"StarterKitThread");
+            //nbw.DoWork += (sender, args) =>
+            //{
+            var dlcFolderName = $@"DLC_MOD_{skOption.ModDLCFolderNameSuffix}";
+            var modPath = skOption.OutputFolderOverride ?? Path.Combine(Utilities.GetModDirectoryForGame(skOption.ModGame), Utilities.SanitizePath(skOption.ModName));
+            if (skOption.OutputFolderOverride == null && Directory.Exists(modPath))
             {
-                this.Flag = flag;
-                this.DisplayString = displayString;
+                Utilities.DeleteFilesAndFoldersRecursively(modPath);
             }
 
-            public EMountFileFlag Flag { get; }
-            public string DisplayString { get; }
-            public bool Selected { get; set; }
-        }
+            Directory.CreateDirectory(modPath);
 
-        public static void CreateStarterKitMod(StarterKitOptions options, Action<string> UITextCallback, Action<Mod> finishedCallback)
-        {
-            NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"StarterKitThread");
-            nbw.DoWork += (sender, args) =>
+            //Creating DLC directories
+            Log.Information(@"Creating starter kit folders");
+            var contentDirectory = Path.Combine(modPath, dlcFolderName);
+
+            if (skOption.OutputFolderOverride != null && Directory.Exists(contentDirectory))
             {
-                var skOption = args.Argument as StarterKitOptions;
+                // Wipe out DLC folder target
+                Utilities.DeleteFilesAndFoldersRecursively(contentDirectory);
+            }
 
-                var dlcFolderName = $@"DLC_MOD_{skOption.ModDLCFolderName}";
-                var modsDirectory = Utilities.GetModDirectoryForGame(skOption.ModGame);
-                var modPath = Path.Combine(modsDirectory, Utilities.SanitizePath(skOption.ModName));
-                if (Directory.Exists(modPath))
+            Directory.CreateDirectory(contentDirectory);
+
+            var cookedDir = Directory.CreateDirectory(Path.Combine(contentDirectory, skOption.ModGame.CookedDirName())).FullName;
+            if (skOption.ModGame.IsGame1())
+            {
+                //AutoLoad.ini
+                IniData autoload = new IniData();
+                autoload[@"Packages"][@"GlobalTalkTable1"] = $@"{dlcFolderName}_GlobalTlk.GlobalTlk_tlk";
+
+                autoload[@"GUI"][@"NameStrRef"] = skOption.ModInternalTLKID.ToString();
+
+                autoload[@"ME1DLCMOUNT"][@"ModName"] = skOption.ModName;
+                autoload[@"ME1DLCMOUNT"][@"ModMount"] = skOption.ModMountPriority.ToString();
+                Log.Information($@"Saving autoload.ini for {skOption.ModGame} mod");
+                new FileIniDataParser().WriteFile(Path.Combine(contentDirectory, @"AutoLoad.ini"), autoload, new UTF8Encoding(false));
+
+                //TLK
+                var dialogdir = skOption.ModGame == MEGame.ME1
+                    ? Directory.CreateDirectory(Path.Combine(cookedDir, @"Packages", @"Dialog")).FullName
+                    : cookedDir;
+                var tlkGlobalFile = Path.Combine(dialogdir, $@"{dlcFolderName}_GlobalTlk");
+                var extension = skOption.ModGame == MEGame.ME1 ? @"upk" : @"pcc";
+                foreach (var lang in le1languages)
                 {
-                    Utilities.DeleteFilesAndFoldersRecursively(modPath);
-                }
+                    var langExt = lang.filecode == @"INT" ? "" : $@"_{lang.filecode}";
+                    var tlkPath = $@"{tlkGlobalFile}{langExt}.{extension}";
+                    Utilities.ExtractInternalFile($@"MassEffectModManagerCore.modmanager.starterkit.BlankTlkFile.{extension}", tlkPath, true);
 
-                Directory.CreateDirectory(modPath);
-
-                //Creating DLC directories
-                Log.Information(@"Creating starter kit folders");
-                var contentDirectory = Directory.CreateDirectory(Path.Combine(modPath, dlcFolderName)).FullName;
-                var cookedDir = Directory.CreateDirectory(Path.Combine(contentDirectory, skOption.ModGame == MEGame.ME3 ? @"CookedPCConsole" : @"CookedPC")).FullName;
-                if (skOption.ModGame == MEGame.ME1)
-                {
-                    //AutoLoad.ini
-                    IniData autoload = new IniData();
-                    autoload[@"Packages"][@"GlobalTalkTable1"] = $@"{dlcFolderName}_GlobalTlk.GlobalTlk_tlk";
-
-                    autoload[@"GUI"][@"NameStrRef"] = skOption.ModInternalTLKID.ToString();
-
-                    autoload[@"ME1DLCMOUNT"][@"ModName"] = skOption.ModName;
-                    autoload[@"ME1DLCMOUNT"][@"ModMount"] = skOption.ModMountPriority.ToString();
-                    Log.Information(@"Saving autoload.ini for ME1 mod");
-                    new FileIniDataParser().WriteFile(Path.Combine(contentDirectory, @"AutoLoad.ini"), autoload, new UTF8Encoding(false));
-
-                    //TLK
-                    var dialogdir = Directory.CreateDirectory(Path.Combine(cookedDir, @"Packages", @"Dialog")).FullName;
-                    var tlkGlobalFile = Path.Combine(dialogdir, $@"{dlcFolderName}_GlobalTlk.upk");
-                    Utilities.ExtractInternalFile(@"MassEffectModManagerCore.modmanager.starterkit.BlankTlkFile.upk", tlkGlobalFile, true);
-                    var tlkFile = MEPackageHandler.OpenMEPackage(tlkGlobalFile);
+                    var tlkFile = MEPackageHandler.OpenMEPackage(tlkPath);
                     var tlk1 = new ME1TalkFile(tlkFile.GetUExport(1));
                     var tlk2 = new ME1TalkFile(tlkFile.GetUExport(2));
 
@@ -528,89 +572,97 @@ namespace MassEffectModManagerCore.modmanager.windows
                     huff = new HuffmanCompression();
                     huff.LoadInputData(tlk2.StringRefs.ToList());
                     huff.serializeTalkfileToExport(tlkFile.GetUExport(2));
-                    Log.Information(@"Saving ME1 TLK package");
+                    Log.Information($@"Saving {tlkPath} TLK package");
                     tlkFile.Save();
                 }
-                else
-                {
-                    //ME2, ME3
-                    MountFile mf = new MountFile();
-                    mf.IsME2 = skOption.ModGame == MEGame.ME2;
-                    mf.MountFlag = skOption.ModMountFlag;
-                    mf.ME2Only_DLCFolderName = dlcFolderName;
-                    mf.ME2Only_DLCHumanName = skOption.ModName;
-                    mf.MountPriority = (ushort)skOption.ModMountPriority;
-                    mf.TLKID = skOption.ModInternalTLKID;
-                    Log.Information(@"Saving mount.dlc file for mod");
-                    mf.WriteMountFile(Path.Combine(cookedDir, @"Mount.dlc"));
+            }
+            else
+            {
+                //ME2, ME3
+                MountFile mf = new MountFile();
+                mf.Game = skOption.ModGame;
+                mf.MountFlags = skOption.ModMountFlag;
+                mf.ME2Only_DLCFolderName = dlcFolderName;
+                mf.ME2Only_DLCHumanName = skOption.ModName;
+                mf.MountPriority = (ushort)skOption.ModMountPriority;
+                mf.TLKID = skOption.ModInternalTLKID;
+                Log.Information(@"Saving mount.dlc file for mod");
+                mf.WriteMountFile(Path.Combine(cookedDir, @"Mount.dlc"));
 
+                if (skOption.ModGame.IsGame3())
+                {
                     if (skOption.ModGame == MEGame.ME3)
                     {
                         //Extract Default.Sfar
                         Utilities.ExtractInternalFile(@"MassEffectModManagerCore.modmanager.starterkit.Default.sfar", Path.Combine(cookedDir, @"Default.sfar"), true);
+                    }
 
-                        //Generate Coalesced.bin for mod
-                        var memory = Utilities.ExtractInternalFileToStream(@"MassEffectModManagerCore.modmanager.starterkit.Default_DLC_MOD_StarterKit.bin");
-                        var files = MassEffect3.Coalesce.Converter.DecompileToMemory(memory);
-                        //Modify coal files for this mod.
-                        files[@"BioEngine.xml"] = files[@"BioEngine.xml"].Replace(@"StarterKit", skOption.ModDLCFolderName); //update bioengine
+                    //Generate Coalesced.bin for mod
+                    var memory = Utilities.ExtractInternalFileToStream(@"MassEffectModManagerCore.modmanager.starterkit.Default_DLC_MOD_StarterKit.bin");
+                    var files = CoalescedConverter.DecompileGame3ToMemory(memory);
+                    //Modify coal files for this mod.
+                    files[@"BioEngine.xml"] = files[@"BioEngine.xml"].Replace(@"StarterKit", skOption.ModDLCFolderNameSuffix); //update bioengine
 
-                        var newMemory = MassEffect3.Coalesce.Converter.CompileFromMemory(files);
-                        var outpath = Path.Combine(cookedDir, $@"Default_{dlcFolderName}.bin");
-                        Log.Information(@"Saving new starterkit coalesced file");
-                        File.WriteAllBytes(outpath, newMemory.ToArray());
+                    var newMemory = CoalescedConverter.CompileFromMemory(files);
+                    var outpath = Path.Combine(cookedDir, $@"Default_{dlcFolderName}.bin");
+                    Log.Information(@"Saving new starterkit coalesced file");
+                    File.WriteAllBytes(outpath, newMemory.ToArray());
+                }
+                else
+                {
+                    //ME2, LE2
+                    IniData bioEngineIni = new IniData();
+                    bioEngineIni.Configuration.AssigmentSpacer = ""; //no spacer.
+                    bioEngineIni[@"Core.System"][@"!CookPaths"] = @"CLEAR";
+                    bioEngineIni[@"Core.System"][@"+SeekFreePCPaths"] = $@"..\BIOGame\DLC\{dlcFolderName}\CookedPC"; // Is still CookedPC on LE
+
+                    //bioEngineIni["Engine.PackagesToAlwaysCook"]["!Package"] = "CLEAR";
+                    //bioEngineIni["Engine.PackagesToAlwaysCook"]["!SeekFreePackage"] = "CLEAR";
+
+                    //Todo: Find way to tell user what this is for and how to pick one. Used to determine TLK filename
+                    bioEngineIni[@"Engine.DLCModules"][dlcFolderName] = skOption.ModModuleNumber.ToString();
+
+                    bioEngineIni[@"DLCInfo"][@"Version"] = 0.ToString(); //unknown
+                    bioEngineIni[@"DLCInfo"][@"Flags"] = ((int)skOption.ModMountFlag.FlagValue).ToString();
+                    bioEngineIni[@"DLCInfo"][@"Name"] = skOption.ModInternalTLKID.ToString();
+                    Log.Information(@"Saving BioEngine file");
+                    new FileIniDataParser().WriteFile(Path.Combine(cookedDir, @"BIOEngine.ini"), bioEngineIni, new UTF8Encoding(false));
+                }
+
+                var tlkFilePrefix = skOption.ModGame.IsGame3() ? dlcFolderName : $@"DLC_{skOption.ModModuleNumber}";
+
+                // Is this right?
+                var languages = skOption.ModGame.IsGame2() ? me2languages : me3languages;
+                foreach (var lang in languages)
+                {
+                    List<ME1TalkFile.TLKStringRef> strs = new List<ME1TalkFile.TLKStringRef>();
+                    strs.Add(new ME1TalkFile.TLKStringRef(skOption.ModInternalTLKID, 0, skOption.ModInternalName));
+                    if (skOption.ModGame.IsGame2())
+                    {
+                        strs.Add(new ME1TalkFile.TLKStringRef(skOption.ModInternalTLKID + 1, 1, @"DLC_" + skOption.ModModuleNumber));
                     }
                     else
                     {
-                        //ME2
-                        IniData bioEngineIni = new IniData();
-                        bioEngineIni.Configuration.AssigmentSpacer = ""; //no spacer.
-                        bioEngineIni[@"Core.System"][@"!CookPaths"] = @"CLEAR";
-                        bioEngineIni[@"Core.System"][@"+SeekFreePCPaths"] = $@"..\BIOGame\DLC\{dlcFolderName}\CookedPC";
-
-                        //bioEngineIni["Engine.PackagesToAlwaysCook"]["!Package"] = "CLEAR";
-                        //bioEngineIni["Engine.PackagesToAlwaysCook"]["!SeekFreePackage"] = "CLEAR";
-
-                        //Todo: Find way to tell user what this is for and how to pick one. Used to determine TLK filename
-                        bioEngineIni[@"Engine.DLCModules"][dlcFolderName] = skOption.ModModuleNumber.ToString();
-
-                        bioEngineIni[@"DLCInfo"][@"Version"] = 0.ToString(); //unknown
-                        bioEngineIni[@"DLCInfo"][@"Flags"] = ((int)skOption.ModMountFlag).ToString(); //unknown
-                        bioEngineIni[@"DLCInfo"][@"Name"] = skOption.ModInternalTLKID.ToString();
-                        Log.Information(@"Saving BioEngine file");
-                        new FileIniDataParser().WriteFile(Path.Combine(cookedDir, @"BIOEngine.ini"), bioEngineIni, new UTF8Encoding(false));
+                        strs.Add(new ME1TalkFile.TLKStringRef(skOption.ModInternalTLKID + 1, 1, @"DLC_MOD_" + skOption.ModDLCFolderNameSuffix));
                     }
 
-                    var tlkFilePrefix = skOption.ModGame == MEGame.ME3 ? dlcFolderName : $@"DLC_{skOption.ModModuleNumber}";
-                    var languages = skOption.ModGame == MEGame.ME2 ? me2languages : me3languages;
-                    foreach (var lang in languages)
+                    strs.Add(new ME1TalkFile.TLKStringRef(skOption.ModInternalTLKID + 2, 2, lang.langcode));
+                    strs.Add(new ME1TalkFile.TLKStringRef(skOption.ModInternalTLKID + 3, 3, @"Male"));
+                    strs.Add(new ME1TalkFile.TLKStringRef(skOption.ModInternalTLKID + 3, 4, @"Female"));
+
+                    foreach (var str in strs)
                     {
-                        List<ME1TalkFile.TLKStringRef> strs = new List<ME1TalkFile.TLKStringRef>();
-                        strs.Add(new ME1TalkFile.TLKStringRef(skOption.ModInternalTLKID, 0, skOption.ModInternalName));
-                        if (skOption.ModGame == MEGame.ME2)
-                        {
-                            strs.Add(new ME1TalkFile.TLKStringRef(skOption.ModInternalTLKID + 1, 1, @"DLC_" + skOption.ModModuleNumber));
-                        }
-                        else
-                        {
-                            strs.Add(new ME1TalkFile.TLKStringRef(skOption.ModInternalTLKID + 1, 1, @"DLC_MOD_" + skOption.ModDLCFolderName));
-                        }
-
-                        strs.Add(new ME1TalkFile.TLKStringRef(skOption.ModInternalTLKID + 2, 2, lang.langcode));
-                        strs.Add(new ME1TalkFile.TLKStringRef(skOption.ModInternalTLKID + 3, 3, @"Male"));
-                        strs.Add(new ME1TalkFile.TLKStringRef(skOption.ModInternalTLKID + 3, 4, @"Female"));
-
-                        foreach (var str in strs)
-                        {
-                            str.Data += '\0';
-                        }
-
-                        var tlk = Path.Combine(cookedDir, $@"{tlkFilePrefix}_{lang.filecode}.tlk");
-                        Log.Information(@"Saving TLK file: " + tlk);
-                        ME3ExplorerCore.TLK.ME2ME3.HuffmanCompression.SaveToTlkFile(tlk, strs);
+                        str.Data += '\0';
                     }
-                }
 
+                    var tlk = Path.Combine(cookedDir, $@"{tlkFilePrefix}_{lang.filecode}.tlk");
+                    Log.Information(@"Saving TLK file: " + tlk);
+                    LegendaryExplorerCore.TLK.ME2ME3.HuffmanCompression.SaveToTlkFile(tlk, strs);
+                }
+            }
+
+            if (skOption.GenerateModdesc)
+            {
                 IniData ini = new IniData();
                 ini[@"ModManager"][@"cmmver"] = App.HighestSupportedModDesc.ToString(CultureInfo.InvariantCulture); //prevent commas
                 ini[@"ModInfo"][@"game"] = skOption.ModGame.ToString();
@@ -623,21 +675,13 @@ namespace MassEffectModManagerCore.modmanager.windows
                 ini[@"CUSTOMDLC"][@"sourcedirs"] = dlcFolderName;
                 ini[@"CUSTOMDLC"][@"destdirs"] = dlcFolderName;
 
-
                 var modDescPath = Path.Combine(modPath, @"moddesc.ini");
                 new FileIniDataParser().WriteFile(modDescPath, ini, new UTF8Encoding(false));
                 Mod m = new Mod(modDescPath, skOption.ModGame);
-                args.Result = m;
-            };
-            nbw.RunWorkerCompleted += (a, b) =>
-            {
-                if (b.Error != null)
-                {
-                    Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
-                }
-                finishedCallback(b.Result as Mod);
-            };
-            nbw.RunWorkerAsync(options);
+                return m;
+            }
+
+            return null;
         }
 
         public class StarterKitOptions
@@ -646,22 +690,32 @@ namespace MassEffectModManagerCore.modmanager.windows
             public string ModDeveloper;
             public string ModName;
             public string ModInternalName;
-            public string ModDLCFolderName;
+            public string ModDLCFolderNameSuffix;
             public int ModMountPriority;
             public int ModInternalTLKID;
             public string ModURL;
-            public EMountFileFlag ModMountFlag;
+            public MountFlag ModMountFlag;
             public MEGame ModGame;
 
             public int ModModuleNumber;
+
+            /// <summary>
+            /// If a Mod object should be generated via moddesc.ini. Defaults to true
+            /// </summary>
+            public bool GenerateModdesc { get; set; } = true;
+            /// <summary>
+            /// Directory to place the DLC folder at. Set to null to use the mod library
+            /// </summary>
+            public string OutputFolderOverride { get; set; }
+
             public override string ToString()
             {
                 StringBuilder sb = new StringBuilder();
                 sb.AppendLine(@"Game: " + ModGame);
                 sb.AppendLine(@"ModName: " + ModName);
                 sb.AppendLine(@"ModDescription: " + ModDescription);
-                sb.AppendLine(@"ModDeveloper: " + ModDLCFolderName);
-                sb.AppendLine(@"ModDLCFolderName: " + ModDLCFolderName);
+                sb.AppendLine(@"ModDeveloper: " + ModDLCFolderNameSuffix);
+                sb.AppendLine(@"ModDLCFolderName: " + ModDLCFolderNameSuffix);
                 sb.AppendLine(@"ModInternalTLKID: " + ModInternalTLKID);
                 sb.AppendLine(@"ModMountPriority: " + ModMountPriority);
                 sb.AppendLine(@"ModModuleNumber: " + ModModuleNumber);
@@ -673,7 +727,7 @@ namespace MassEffectModManagerCore.modmanager.windows
 
         private void MountPriority_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
-            if (int.TryParse(ModMountPriority_TextBox.Text, out var val) && val > 0 && val < GetGameSpecificMountLimit())
+            if (int.TryParse(ModMountPriority_TextBox.Text, out var val) && val > MinMountForGame && val < MaxMountForGame)
             {
                 PreviewTPMI.mountpriority = val.ToString();
                 CustomDLCMountsForGame.SortDescending(x => x.MountPriorityInt);
@@ -681,8 +735,6 @@ namespace MassEffectModManagerCore.modmanager.windows
             }
             Validator.Validate(nameof(ModMountPriority));
         }
-
-        private int GetGameSpecificMountLimit() => MaxMountForGame;
 
         private void FieldText_Changed(object sender, TextChangedEventArgs e)
         {
@@ -700,6 +752,31 @@ namespace MassEffectModManagerCore.modmanager.windows
                 Validator.Validate(nameof(ModName));
             else if (textField == ModInternalTLK_TextBox)
                 Validator.Validate(nameof(ModInternalTLKID));
+            //else if (textField == ModSuffix_TextBox)
+            //    Validator.Validate(nameof(ModDLCFolderName));
+        }
+
+        private void StarterKit_ContentRendered(object sender, EventArgs e)
+        {
+            if (PendingGame != null)
+            {
+                if (Games.Any())
+                {
+                    Games.FirstOrDefault(x => x.Game == PendingGame).IsSelected = true;
+                }
+                SetGame(PendingGame.Value);
+                PendingGame = null;
+            }
+        }
+
+        public static string[] GetLanguagesForGame(MEGame game)
+        {
+            if (game is MEGame.ME1) return new[] { @"INT" };
+            if (game is MEGame.LE1) return le1languages.Select(x => x.filecode).ToArray();
+            if (game.IsGame3()) return me3languages.Select(x => x.filecode).ToArray();
+            if (game.IsGame2()) return me2languages.Select(x => x.filecode).ToArray();
+
+            return new string[] { };
         }
     }
 }

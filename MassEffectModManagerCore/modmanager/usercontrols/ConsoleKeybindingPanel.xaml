@@ -4,99 +4,54 @@
                        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
                        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
                        xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" 
+                       xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
                        DataContext="{Binding RelativeSource={RelativeSource Self}}"
-                       xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800" Width="600">
-    <StackPanel>
-        <TextBlock Text="{DynamicResource string_consoleKeyKeybinder}" FontSize="20" FontWeight="Bold" TextAlignment="Center" DockPanel.Dock="Top" />
-        <TextBlock Text="{DynamicResource string_description_consoleKeyKeybinder}" TextWrapping="Wrap" TextAlignment="Center" DockPanel.Dock="Top" />
-        <StackPanel Visibility="{Binding IsListeningForKey, Converter={StaticResource BoolToVisibilityConverter}}">
-            <TextBlock Text="{DynamicResource string_listeningForKeypress}" TextWrapping="Wrap" TextAlignment="Center" Foreground="DarkTurquoise" FontSize="28" />
-            <TextBlock Text="{DynamicResource string_pressAnyKeyOnYourKeyboardToAssignItFor}" TextWrapping="Wrap" TextAlignment="Center" Foreground="DarkTurquoise" FontSize="16" />
-            <TextBlock Text="{Binding KeyBeingAssigned}" TextWrapping="Wrap" TextAlignment="Center" Foreground="DarkTurquoise" FontSize="16" />
-            <Button Content="{DynamicResource string_cancelKeyAssignment}" HorizontalAlignment="Center" Margin="0,5,0,0" Click="CancelKeyAssignment_Click" />
+                       Width="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.9_400_900', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualWidth}"
+                       Height="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.8_400', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualHeight}">
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top">
+            <TextBlock Text="{DynamicResource string_consoleKeyKeybinder}" FontSize="20" FontWeight="Bold" TextAlignment="Center" DockPanel.Dock="Top" />
+            <TextBlock Text="{DynamicResource string_description_consoleKeyKeybinder}" TextWrapping="Wrap" TextAlignment="Center" DockPanel.Dock="Top" />
+            <StackPanel Visibility="{Binding IsListeningForKey, Converter={StaticResource BoolToVisibilityConverter}}">
+                <TextBlock Text="{DynamicResource string_listeningForKeypress}" TextWrapping="Wrap" TextAlignment="Center" Foreground="DarkTurquoise" FontSize="28" />
+                <TextBlock Text="{DynamicResource string_pressAnyKeyOnYourKeyboardToAssignItFor}" TextWrapping="Wrap" TextAlignment="Center" Foreground="DarkTurquoise" FontSize="16" />
+                <TextBlock Text="{Binding KeyBeingAssigned}" TextWrapping="Wrap" TextAlignment="Center" Foreground="DarkTurquoise" FontSize="16" />
+                <Button Content="{DynamicResource string_cancelKeyAssignment}" HorizontalAlignment="Center" Margin="0,5,0,0" Click="CancelKeyAssignment_Click" />
+            </StackPanel>
         </StackPanel>
-        <!-- ME1 -->
-        <Grid Margin="0,5,5,5">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="54" />
-                <ColumnDefinition Width="1*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" Source="{StaticResource me1gameicon}" Width="48" VerticalAlignment="Top" Height="48" HorizontalAlignment="Left" />
-            <TextBlock Grid.Column="1" Grid.Row="0" FontWeight="Bold" Text="Mass Effect" />
-            <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding ME1FullConsoleKeyText}" />
-            <TextBlock Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="2" Text="{Binding ME1MiniConsoleKeyText}" />
-            <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="1" Visibility="{Binding HasME1Install, Converter={StaticResource BoolToVisibilityConverter}}">
-                <Button Content="{DynamicResource string_changeFullKey}" Command="{Binding ChangeME1FullCommand}" />
-                <Button Content="{DynamicResource string_changeMiniKey}" Margin="3,0" Command="{Binding ChangeME1MiniCommand}" />
-                <Button Content="{DynamicResource string_setToDefaultKeys}" Command="{Binding DefaultME1KeysCommand}" />
-            </StackPanel>
-        </Grid>
-        <!-- ME2 -->
-        <Grid Margin="0,5,5,5">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="54" />
-                <ColumnDefinition Width="1*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" Source="{StaticResource me2gameicon}" Width="48" VerticalAlignment="Top" Height="48" HorizontalAlignment="Left" />
-            <TextBlock Grid.Column="1" Grid.Row="0" FontWeight="Bold" Text="Mass Effect 2" />
-            <TextBlock Grid.Column="1" Grid.Row="1" Text="{DynamicResource string_massEffect2ConsoleKeysAreDefinedPerGame}" />
-            <local:TargetSelector Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="2" AvailableTargets="{Binding ME2Targets}" SelectedGameTarget="{Binding SelectedME2Target}" 
+        <Button DockPanel.Dock="Bottom" Content="{DynamicResource string_close}" HorizontalAlignment="Right" Padding="7,4" Command="{Binding CloseCommand}" />
+        <ScrollViewer>
+            <ItemsControl ItemsSource="{Binding Games}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="local:ConsoleKeybindingPanel+KeybindingGame">
+                        <DockPanel Margin="0,5,5,5">
+                            <Image DockPanel.Dock="Left" 
+                                   Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}, ConverterParameter=48}" 
+                                   Width="48" VerticalAlignment="Top" Height="48" 
+                                   Margin="0,3,5,0"
+                                   HorizontalAlignment="Left" />
+                            <TextBlock DockPanel.Dock="Top" FontWeight="Bold" Text="{Binding GameName}" />
+                            <TextBlock DockPanel.Dock="Top" 
+                                       Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Not_ME1'}"
+                                       Text="{Binding WhereKeysAreDefinedText}" />
+                            <local:TargetSelector
+                                DockPanel.Dock="Top"
+                                Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Not_ME1'}"
+                                  AvailableTargets="{Binding Targets}" 
+                                  SelectedGameTarget="{Binding SelectedTarget}" 
                                   HorizontalContentAlignment="Stretch" 
-                                  IsEnabled="{Binding UIEnabled}" />
-            <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding ME2FullConsoleKeyText}" />
-            <TextBlock Grid.Column="1" Grid.Row="4" Grid.ColumnSpan="2" Text="{Binding ME2MiniConsoleKeyText}" />
-            <StackPanel Orientation="Horizontal" Grid.Row="5" Grid.Column="1" Visibility="{Binding SelectedME2Target, Converter={StaticResource NullVisibilityConverter}}">
-                <Button Content="{DynamicResource string_changeFullKey}" Command="{Binding ChangeME2FullCommand}" />
-                <Button Content="{DynamicResource string_changeMiniKey}" Margin="3,0" Command="{Binding ChangeME2MiniCommand}" />
-                <Button Content="{DynamicResource string_setToDefaultKeys}" Command="{Binding DefaultME2KeysCommand}" />
-            </StackPanel>
-        </Grid>
-        <!-- ME3 -->
-        <Grid Margin="0,5,5,5">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="54" />
-                <ColumnDefinition Width="1*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" Source="{StaticResource me3gameicon}" Width="48" VerticalAlignment="Top" Height="48" HorizontalAlignment="Left" />
-            <TextBlock Grid.Column="1" Grid.Row="0" FontWeight="Bold" Text="Mass Effect 3" />
-            <TextBlock Grid.Column="1" Grid.Row="1" Text="{DynamicResource string_massEffect3ConsoleKeysAreDefinedPerGame}" />
-            <local:TargetSelector Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="2" AvailableTargets="{Binding ME3Targets}" SelectedGameTarget="{Binding SelectedME3Target}" 
-                            IsEnabled="{Binding UIEnabled}" />
-            <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding ME3FullConsoleKeyText}" />
-            <TextBlock Grid.Column="1" Grid.Row="4" Grid.ColumnSpan="2" Text="{Binding ME3MiniConsoleKeyText}" />
-            <StackPanel Orientation="Horizontal" Grid.Row="5" Grid.Column="1" Visibility="{Binding SelectedME3Target, Converter={StaticResource NullVisibilityConverter}}">
-                <Button Content="{DynamicResource string_changeFullKey}" Command="{Binding ChangeME3FullCommand}" />
-                <Button Content="{DynamicResource string_changeMiniKey}" Margin="3,0" Command="{Binding ChangeME3MiniCommand}" />
-                <Button Content="{DynamicResource string_setToDefaultKeys}" Command="{Binding DefaultME3KeysCommand}" />
-            </StackPanel>
-        </Grid>
-        <Button Content="{DynamicResource string_close}" HorizontalAlignment="Right" Padding="7,4" Command="{Binding CloseCommand}" />
-    </StackPanel>
+                                  IsEnabled="{Binding SharedIsListeningForKey, Converter={StaticResource BoolToEnabledConverter}, ConverterParameter='Not'}" />
+                            <TextBlock DockPanel.Dock="Top" Text="{Binding FullConsoleKeyText}" />
+                            <TextBlock DockPanel.Dock="Top" Text="{Binding MiniConsoleKeyText}" />
+                            <StackPanel Orientation="Horizontal" Visibility="{Binding SelectedTarget, Converter={StaticResource NullVisibilityConverter}}">
+                                <Button Content="{DynamicResource string_changeFullKey}" Command="{Binding ChangeFullKeyCommand}" />
+                                <Button Content="{DynamicResource string_changeMiniKey}" Margin="3,0" Command="{Binding ChangeMiniKeyCommand}" />
+                                <Button Content="{DynamicResource string_setToDefaultKeys}" Command="{Binding DefaultCommand}" />
+                            </StackPanel>
+                        </DockPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </DockPanel>
 </local:MMBusyPanelBase>

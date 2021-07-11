@@ -8,13 +8,14 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
 using IniParser.Model;
+using LegendaryExplorerCore.Gammtek.Extensions;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.ui;
-using ME3ExplorerCore.Helpers;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Packages;
 using Microsoft.AppCenter.Analytics;
 using Serilog;
 
@@ -31,7 +32,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public ObservableCollectionExtended<GameTarget> InstallationTargets { get; } = new ObservableCollectionExtended<GameTarget>();
         public ImportInstalledDLCModPanel()
         {
-            DataContext = this;
             LoadCommands();
             InitializeComponent();
         }
@@ -123,7 +123,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     OperationInProgress = false;
                     if (b.Error == null && b.Result != null)
                     {
-                        OnClosing(new DataEventArgs(b.Result)); //avoid accessing b.Result if error occurred
+                        if (b.Result is Mod m)
+                        {
+                            Result.ModToHighlightOnReload = m;
+                            Result.ReloadMods = true;
+                        }
+                        ClosePanel(); //avoid accessing b.Result if error occurred
                     }
                 }
             };
@@ -180,7 +185,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             ini[@"ModInfo"][@"game"] = SelectedTarget.Game.ToString();
             ini[@"ModInfo"][@"modname"] = ModNameText;
             ini[@"ModInfo"][@"moddev"] = M3L.GetString(M3L.string_importedFromGame);
-            ini[@"ModInfo"][@"moddesc"] = M3L.GetString(M3L.string_defaultDescriptionForImportedMod, Utilities.GetGameName(SelectedTarget.Game), DateTime.Now);
+            ini[@"ModInfo"][@"moddesc"] = M3L.GetString(M3L.string_defaultDescriptionForImportedMod, SelectedTarget.Game.ToGameName(), DateTime.Now);
             ini[@"ModInfo"][@"modver"] = M3L.GetString(M3L.string_unknown);
             ini[@"ModInfo"][@"unofficial"] = @"true";
             ini[@"ModInfo"][@"importedby"] = App.BuildNumber.ToString();
@@ -308,7 +313,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
-            InstallationTargets.ReplaceAll(mainwindow.InstallationTargets.Where(x => x.Selectable));
+            InstallationTargets.ReplaceAll(mainwindow.InstallationTargets.Where(x => x.Selectable && x.Game != MEGame.LELauncher));
             SelectedTarget = InstallationTargets.FirstOrDefault();
         }
     }

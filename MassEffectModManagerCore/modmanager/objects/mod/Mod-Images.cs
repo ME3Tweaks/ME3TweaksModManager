@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Media.Imaging;
-using ME3ExplorerCore.Misc;
+using LegendaryExplorerCore.Misc;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.objects.mod
@@ -49,41 +49,51 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             }
             if (LoadedImageAssets.TryGetValue(assetName, out var loaded)) return loaded;
 
-            var imagePathFull = FilesystemInterposer.PathCombine(Archive != null, ModImageAssetsPath, assetName);
-            if (FilesystemInterposer.FileExists(imagePathFull, Archive))
+            Stream loadStream = null;
+
+            try
             {
-                // Load the image
-
-                Stream loadStream;
-                if (Archive == null)
+                var imagePathFull = FilesystemInterposer.PathCombine(Archive != null, ModImageAssetsPath, assetName);
+                if (FilesystemInterposer.FileExists(imagePathFull, Archive))
                 {
-                    // read from disk
-                    loadStream = File.OpenRead(imagePathFull);
+                    // Load the image
+                    if (Archive == null)
+                    {
+                        // read from disk
+                        loadStream = File.OpenRead(imagePathFull);
+                    }
+                    else
+                    {
+                        // read from Archive
+                        loadStream = new MemoryStream();
+                        Archive.ExtractFile(imagePathFull, loadStream);
+                        loadStream.Position = 0;
+                    }
+
+                    var bitmap = new BitmapImage();
+                    bitmap.BeginInit();
+                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmap.CreateOptions = BitmapCreateOptions.IgnoreColorProfile; // Fixes crashes on things like ICC, maybe?
+                    bitmap.StreamSource = loadStream;
+                    bitmap.EndInit();
+                    bitmap.Freeze();
+
+                    LoadedImageAssets[assetName] = bitmap;
+                    return bitmap; // This is so xaml doesn't trigger possibly before this code block has executed
                 }
-                else
-                {
-                    // read from Archive
-                    loadStream = new MemoryStream();
-                    Archive.ExtractFile(imagePathFull, loadStream);
-                    loadStream.Position = 0;
-                }
-
-                var bitmap = new BitmapImage();
-
-                bitmap.BeginInit();
-                bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                bitmap.StreamSource = loadStream;
-                bitmap.EndInit();
-                bitmap.Freeze();
-
+            }
+            catch (Exception e)
+            {
+                Log.Error($@"Error loading image asset {assetName}: {e.Message}. The asset will not be loaded");
+            }
+            finally
+            {
+                // Ensure file is closed
                 if (loadStream is FileStream fs)
                 {
                     fs.Close();
                     fs.Dispose();
                 }
-
-                LoadedImageAssets[assetName] = bitmap;
-                return bitmap; // This is so xaml doesn't trigger possibly before this code block has executed
             }
 
             return null;

@@ -13,18 +13,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 =============================================*/
-using MassEffectIniModder.classes;
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using Microsoft.AppCenter.Crashes;
 
-namespace MassEffectIniModder.ui
+namespace MassEffectModManagerCore.modmanager.meim.ui
 {
     public partial class IniDataTemplates : ResourceDictionary
     {

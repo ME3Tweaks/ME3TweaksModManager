@@ -11,9 +11,9 @@ using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
-using ME3ExplorerCore.Compression;
-using ME3ExplorerCore.Helpers;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.Compression;
+using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Packages;
 using Microsoft.WindowsAPICodePack.Taskbar;
 using Serilog;
 
@@ -55,7 +55,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             AvailableLogs.AddRange(logfiles.Select(x => new LogItem(x.FullName)));
             SelectedLog = AvailableLogs.FirstOrDefault();
             var targets = mainwindow.InstallationTargets.Where(x => x.Selectable);
-            DiagnosticTargets.Add(new GameTarget(MEGame.Unknown, M3L.GetString(M3L.string_selectAGameTargetToGenerateDiagnosticsFor), false));
+            DiagnosticTargets.Add(new GameTarget(MEGame.Unknown, M3L.GetString(M3L.string_selectAGameTargetToGenerateDiagnosticsFor), false, true));
             DiagnosticTargets.AddRange(targets);
             SelectedDiagnosticTarget = DiagnosticTargets.FirstOrDefault();
             //if (LogSelector_ComboBox.Items.Count > 0)
@@ -125,7 +125,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     nbw.ReportProgress(-1, state);
                 }
                 StringBuilder logUploadText = new StringBuilder();
-                if (SelectedDiagnosticTarget != null && SelectedDiagnosticTarget.Game > MEGame.Unknown)
+                if (SelectedDiagnosticTarget != null && !SelectedDiagnosticTarget.IsCustomOption && SelectedDiagnosticTarget.Game > MEGame.Unknown)
                 {
                     Debug.WriteLine(@"Selected game target: " + SelectedDiagnosticTarget.TargetPath);
                     logUploadText.Append("[MODE]diagnostics\n"); //do not localize
@@ -191,7 +191,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
                     catch (Exception ex)
                     {
-                        // ex.Message contains rich details, inclulding the URL, verb, response status,
+                        // ex.Message contains rich details, including the URL, verb, response status,
                         // and request and response bodies (if available)
                         Log.Error(@"Handled error uploading log: " + App.FlattenException(ex));
                         string exmessage = ex.Message;

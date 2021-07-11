@@ -14,10 +14,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using System.Xml.Linq;
-using MassEffectIniModder.classes;
+using LegendaryExplorerCore.Misc;
 using MassEffectModManagerCore.modmanager.gameini;
 using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.ui;
+using MassEffectModManagerCore.modmanager.meim;
 using Microsoft.AppCenter.Analytics;
 using Serilog;
 
@@ -30,9 +30,9 @@ namespace MassEffectModManagerCore.modmanager.windows
     {
         private bool doNotOpen;
 
-        public ObservableCollectionExtended<IniPropertyMaster> BioEngineEntries { get; } = new ObservableCollectionExtended<IniPropertyMaster>();
-        public ObservableCollectionExtended<IniPropertyMaster> BioGameEntries { get; } = new ObservableCollectionExtended<IniPropertyMaster>();
-        public ObservableCollectionExtended<IniPropertyMaster> BioPartyEntries { get; } = new ObservableCollectionExtended<IniPropertyMaster>();
+        public ui.ObservableCollectionExtended<IniPropertyMaster> BioEngineEntries { get; } = new ui.ObservableCollectionExtended<IniPropertyMaster>();
+        public ui.ObservableCollectionExtended<IniPropertyMaster> BioGameEntries { get; } = new ui.ObservableCollectionExtended<IniPropertyMaster>();
+        public ui.ObservableCollectionExtended<IniPropertyMaster> BioPartyEntries { get; } = new ui.ObservableCollectionExtended<IniPropertyMaster>();
 
         public ME1IniModder()
         {
@@ -43,7 +43,7 @@ namespace MassEffectModManagerCore.modmanager.windows
             string configFileFolder = Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\BioWare\Mass Effect\Config";
             if (Directory.Exists(configFileFolder))
             {
-                Dictionary<string, ObservableCollectionExtended<IniPropertyMaster>> loadingMap = new Dictionary<string, ObservableCollectionExtended<IniPropertyMaster>>();
+                Dictionary<string, ui.ObservableCollectionExtended<IniPropertyMaster>> loadingMap = new Dictionary<string, ui.ObservableCollectionExtended<IniPropertyMaster>>();
                 loadingMap[@"BioEngine.xml"] = BioEngineEntries;
                 loadingMap[@"BioGame.xml"] = BioGameEntries;
                 loadingMap[@"BioParty.xml"] = BioPartyEntries;

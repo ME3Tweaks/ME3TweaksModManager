@@ -11,7 +11,7 @@ using System.Windows.Input;
 using MassEffectModManagerCore.modmanager.asi;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.Packages;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -246,10 +246,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public override void OnPanelVisible()
         {
             //This has to be done here as mainwindow will not be available until this is called
-            MEGame[] gameEnum = new[] { MEGame.ME1, MEGame.ME2, MEGame.ME3 };
+            MEGame[] gameEnum = new[] { MEGame.ME1, MEGame.ME2, MEGame.ME3, MEGame.LE1, MEGame.LE2, MEGame.LE3 };
             int index = 0;
             foreach (var game in gameEnum)
             {
+                if (!Settings.GenerationSettingOT && game.IsOTGame()) continue;
+                if (!Settings.GenerationSettingLE && game.IsLEGame()) continue;
                 var targets = mainwindow.InstallationTargets.Where(x => x.Game == game).ToList();
                 ASIGame asiGame = null;
                 if (targets.Count > 0)

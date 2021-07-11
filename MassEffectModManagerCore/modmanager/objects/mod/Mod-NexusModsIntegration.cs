@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.nexusmodsintegration;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.Packages;
 using Microsoft.AppCenter.Analytics;
 using Pathoschild.FluentNexus.Models;
 using Serilog;
@@ -29,6 +29,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 string gamename = @"masseffect";
                 if (Game == MEGame.ME2) gamename += @"2";
                 if (Game == MEGame.ME3) gamename += @"3";
+                if (Game.IsLEGame()) gamename += @"legendaryedition";
                 var modinfo = await client.Mods.GetMod(gamename, NexusModID);
                 if (modinfo.User.MemberID == NexusModsUtilities.UserInfo.UserID)
                 {
@@ -83,6 +84,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 string gamename = @"masseffect";
                 if (Game == MEGame.ME2) gamename += @"2";
                 if (Game == MEGame.ME3) gamename += @"3";
+                if (Game.IsLEGame() || Game == MEGame.LELauncher) gamename += @"legendaryedition";
                 string telemetryOverride = null;
                 string endorsementFailedReason = null;
                 try

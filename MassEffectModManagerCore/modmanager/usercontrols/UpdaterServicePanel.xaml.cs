@@ -21,8 +21,8 @@ using System.Windows.Input;
 using System.Windows.Media.Animation;
 using System.Xml;
 using MassEffectModManagerCore.modmanager.objects.mod;
-using ME3ExplorerCore.Helpers;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Packages;
 using static MassEffectModManagerCore.modmanager.me3tweaks.OnlineContent;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols

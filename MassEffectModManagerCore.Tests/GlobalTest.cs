@@ -5,8 +5,8 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using MassEffectModManagerCore.modmanager;
-using ME3ExplorerCore;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore;
+using LegendaryExplorerCore.Packages;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using Serilog;
@@ -31,7 +31,7 @@ namespace MassEffectModManagerCore.Tests
                 //Utilities.ExtractInternalFile("MassEffectModManagerCore.bundleddlls.zlibwrapper.dll", Path.Combine(Utilities.GetDllDirectory(), "zlibwrapper.dll"), false, Assembly.GetAssembly(typeof(GameTarget)));
                 //SetDllDirectory(Utilities.GetDllDirectory());
 
-                ME3ExplorerCoreLib.InitLib(TaskScheduler.Default, null);
+                LegendaryExplorerCoreLib.InitLib(TaskScheduler.Default, null);
 
                 Analytics.SetEnabledAsync(false);
                 Crashes.SetEnabledAsync(false);

@@ -38,6 +38,7 @@ namespace LocalizationHelper
             var objects = Path.Combine(modmanagerroot, "modmanager", "objects");
             var gameini = Path.Combine(modmanagerroot, "modmanager", "gameini");
             var helpers = Path.Combine(modmanagerroot, "modmanager", "helpers");
+            var pmu = Path.Combine(modmanagerroot, "modmanager", "plotmanager");
 
             List<string> files = new List<string>();
             files.AddRange(Directory.EnumerateFiles(usercontrols, "*.xaml*", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
@@ -47,6 +48,7 @@ namespace LocalizationHelper
             files.AddRange(Directory.EnumerateFiles(objects, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
             files.AddRange(Directory.EnumerateFiles(gameini, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
             files.AddRange(Directory.EnumerateFiles(helpers, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
+            files.AddRange(Directory.EnumerateFiles(pmu, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
 
             //these files are not localized
             files.Remove(Path.Combine(modmanagerroot, "modmanager", "me3tweaks", "JPatch.cs").Substring(rootLen));
@@ -58,6 +60,7 @@ namespace LocalizationHelper
             files.Add("MainWindow.xaml");
             files.Add("MainWindow.xaml.cs");
             files.Add(Path.Combine(modmanagerroot, "modmanager", "TLKTranspiler.cs").Substring(rootLen));
+            files.Add(Path.Combine(modmanagerroot, "modmanager", "squadmates", "SQMOutfitMerge.cs").Substring(rootLen));
             //files.Add(Path.Combine(modmanagerroot, "gamefileformats","unreal","Texture2D.cs").Substring(rootLen));
 
             files.Sort();
@@ -277,6 +280,8 @@ namespace LocalizationHelper
             bool sectionIsLocalizable = true;
             for (int x = 0; x < filelines.Length; x++)
             {
+                if (x == 132)
+                    Debug.WriteLine("ok");
                 var line = filelines[x];
                 if (line.Contains("do not localize", StringComparison.InvariantCultureIgnoreCase)) continue; //ignore this line.
                 if (line.Contains("Localizable(true)", StringComparison.InvariantCultureIgnoreCase))
@@ -299,6 +304,11 @@ namespace LocalizationHelper
                 if (line.Contains("[DebuggerDisplay(")) continue; //skip these lines
                 var commentIndex = line.IndexOf("//");
                 var protocolIndex = line.IndexOf(@"://");
+                if (line.IndexOf(@" Log.") > 0)
+                {
+                    Debug.WriteLine($@"Skipping log line at {x}");
+                    continue;
+                }
                 var matches = r.Matches(line);
                 foreach (var match in matches)
                 {
@@ -311,8 +321,11 @@ namespace LocalizationHelper
                         {
                             continue; //this is a comment
                         }
+
+                        
                         // Otherwise, this is something like http:// as the :// index is // index - 1
                     }
+                    
                     var str = match.ToString();
                     if (str.StartsWith("@") || str.StartsWith("$@")) continue; //skip literals
                     var strname = "string_";
@@ -810,9 +823,13 @@ namespace LocalizationHelper
             if (str.Equals("Mass Effect", StringComparison.InvariantCultureIgnoreCase)) return false;
             if (str.Equals("Mass Effect 2", StringComparison.InvariantCultureIgnoreCase)) return false;
             if (str.Equals("Mass Effect 3", StringComparison.InvariantCultureIgnoreCase)) return false;
+            if (str.Equals("Mass Effect LE", StringComparison.InvariantCultureIgnoreCase)) return false;
             if (str.Equals("ME1", StringComparison.InvariantCultureIgnoreCase)) return false;
             if (str.Equals("ME2", StringComparison.InvariantCultureIgnoreCase)) return false;
             if (str.Equals("ME3", StringComparison.InvariantCultureIgnoreCase)) return false;
+            if (str.Equals("LE1", StringComparison.InvariantCultureIgnoreCase)) return false;
+            if (str.Equals("LE2", StringComparison.InvariantCultureIgnoreCase)) return false;
+            if (str.Equals("LE3", StringComparison.InvariantCultureIgnoreCase)) return false;
             return true;
         }
 
@@ -853,6 +870,7 @@ namespace LocalizationHelper
             if (str.Equals("Polski", StringComparison.InvariantCultureIgnoreCase)) return false;
             if (str.Equals("Pусский", StringComparison.InvariantCultureIgnoreCase)) return false;
             if (str.Equals("Português", StringComparison.InvariantCultureIgnoreCase)) return false;
+            if (str.Equals("한국어", StringComparison.InvariantCultureIgnoreCase)) return false;
             return true;
         }
 

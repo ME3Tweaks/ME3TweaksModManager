@@ -4,27 +4,38 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using LegendaryExplorerCore;
+using LegendaryExplorerCore.GameFilesystem;
+using LegendaryExplorerCore.Gammtek.Extensions;
 using MassEffectModManagerCore.modmanager.objects;
-using ME3ExplorerCore.Helpers;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Packages;
+using MassEffectModManagerCore.modmanager.me3tweaks;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.helpers
 {
     public static class GameLauncher
     {
+        // May 17 update
+        private const string VanillaLESWFLauncherMD5 = @"ab2559b90696f262ef76a152eff4deb9";
+
         /// <summary>
         /// Launches the game. This call is blocking as it may wait for Steam to run, so it should be run on a background thread.
         /// </summary>
         /// <param name="target"></param>
         public static void LaunchGame(GameTarget target)
         {
+            target.ReloadGameTarget(false);
+
             // Update LODs for target
-            if (Settings.AutoUpdateLODs4K || Settings.AutoUpdateLODs2K)
+            if (target.SupportsLODUpdates() && (Settings.AutoUpdateLODs4K || Settings.AutoUpdateLODs2K))
             {
                 target.UpdateLODs(Settings.AutoUpdateLODs2K);
             }
 
+
+            List<string> commandLineArgs = new();
             var exe = M3Directories.GetExecutablePath(target);
             var exeDir = M3Directories.GetExecutableDirectory(target);
             var environmentVars = new Dictionary<string, string>();
@@ -34,9 +45,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 // IS GAME STEAM BASED?
                 if (target.GameSource.Contains(@"Steam"))
                 {
-                    var steamInstallPath =
-                        Utilities.GetRegistrySettingString(@"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Valve\Steam",
-                            @"InstallPath");
+                    var steamInstallPath = Utilities.GetRegistrySettingString(@"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Valve\Steam", @"InstallPath");
                     if (steamInstallPath != null && Directory.Exists(steamInstallPath))
                     {
                         environmentVars[@"SteamPath"] = steamInstallPath;
@@ -57,6 +66,11 @@ namespace MassEffectModManagerCore.modmanager.helpers
                             break;
                         case MEGame.ME3:
                             gameId = 1238020;
+                            break;
+                        case MEGame.LE1:
+                        case MEGame.LE2:
+                        case MEGame.LE3:
+                            gameId = 1328670;
                             break;
                     }
 
@@ -103,7 +117,46 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 }
             }
 
-            Utilities.RunProcess(exe, (string)null, false, true, false, false, environmentVars);
+            if (Settings.SkipLELauncher && target.Game.IsLEGame())
+            {
+                commandLineArgs.Add($@"-game {target.Game.ToGameNum() - 3}"); // Autoboot dll
+                commandLineArgs.Add(@"-autoterminate");
+                /*
+                var sourceFile = Path.Combine(Utilities.GetLELaunchToolsGameBootDir(), @"VanillaLauncherUI.swf");
+                var destFile = Path.Combine(LEDirectory.GetLauncherPath(), @"Content", @"LauncherUI.swf");
+
+                bool correctSource = false;
+                if (!File.Exists(sourceFile) && Utilities.CalculateMD5(destFile) == VanillaLESWFLauncherMD5)
+                {
+                    File.Copy(destFile, sourceFile, true);
+                    correctSource = true;
+                }
+
+                if (correctSource || (File.Exists(sourceFile) && Utilities.CalculateMD5(sourceFile) == VanillaLESWFLauncherMD5))
+                {
+                    // JPatch it
+                    Log.Information($@"JPatching LauncherUI.swf to autoboot {target.Game}");
+                    using var outs = File.Open(destFile, FileMode.Create, FileAccess.ReadWrite);
+                    using var ins = File.OpenRead(sourceFile);
+                    JPatch.ApplyJPatch(ins, Utilities.ExtractInternalFileToStream($@"MassEffectModManagerCore.modmanager.lelauncherbypass.To{target.Game}.jsf"), outs);
+                    Log.Information($@"JPatched LauncherUI.swf to autoboot {target.Game}");
+                }
+                else
+                {
+                    Log.Warning(@"LauncherUI.swf has wrong hash, not JPatching to autoboot");
+                }*/
+
+                var destFile = Path.Combine(LEDirectory.GetLauncherPath(), @"Content", @"BWLogo.bik");
+                if (File.Exists(destFile) && new FileInfo(destFile).Length > 500)
+                {
+                    // > 500 bytes
+                    var blackFrame = Utilities.ExtractInternalFileToStream($@"MassEffectModManagerCore.modmanager.lelauncherbypass.singleblackframe.bik");
+                    blackFrame.WriteToFile(destFile);
+                    Log.Information(@"Installed single black frame for BWLogo.bik");
+                }
+            }
+
+            Utilities.RunProcess(exe, commandLineArgs, false, true, false, false, environmentVars);
             Thread.Sleep(3500); // Keep task alive for a bit
         }
 

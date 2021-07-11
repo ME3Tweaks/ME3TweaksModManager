@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,7 +14,7 @@ using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.nexusmodsintegration;
 using MassEffectModManagerCore.modmanager.objects.nexusfiledb;
 using MassEffectModManagerCore.ui;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.Packages;
 using Pathoschild.FluentNexus.Models;
 using Serilog;
 
@@ -34,7 +35,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public bool SearchME1 { get; set; }
         public bool SearchME2 { get; set; }
         public bool SearchME3 { get; set; }
-        public void OnSearchME1Changed() { UpdateFilters(); }
+        public bool SearchLE { get; set; }
 
         private void UpdateFilters()
         {
@@ -46,14 +47,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (SearchME1) { newNames.AddRange(getFilenamesForGame(@"masseffect")); }
             if (SearchME2) { newNames.AddRange(getFilenamesForGame(@"masseffect2")); }
             if (SearchME3) { newNames.AddRange(getFilenamesForGame(@"masseffect3")); }
+            if (SearchLE) { newNames.AddRange(getFilenamesForGame(@"masseffectlegendaryedition")); }
 
             newNames = newNames.Distinct().OrderBy(x => x).ToList();
             AllSearchableNames.ReplaceAll(newNames);
         }
-
+        
+        public void OnSearchME1Changed() { UpdateFilters(); }
         public void OnSearchME2Changed() { UpdateFilters(); }
         public void OnSearchME3Changed() { UpdateFilters(); }
-
+        public void OnSearchLEChanged() { UpdateFilters(); }
 
         public ObservableCollectionExtended<string> AllSearchableNames { get; } = new ObservableCollectionExtended<string>();
 
@@ -74,11 +77,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
 
         public ObservableCollectionExtended<SearchedItemResult> Results { get; } = new ObservableCollectionExtended<SearchedItemResult>();
-
         public ObservableCollectionExtended<FileCategory> FileCategories { get; } = new ObservableCollectionExtended<FileCategory>(Enum.GetValues<FileCategory>());
         public ObservableCollectionExtended<FileCategory> SelectedFileCategories { get; } = new ObservableCollectionExtended<FileCategory>(Enum.GetValues<FileCategory>()); // all by default
 
-        private bool CanSearch() => !QueryInProgress && !string.IsNullOrWhiteSpace(SearchTerm) && (SearchME1 || SearchME2 || SearchME3) && HasCategory();
+        private bool CanSearch() => !QueryInProgress && !string.IsNullOrWhiteSpace(SearchTerm) && (SearchME1 || SearchME2 || SearchME3 || SearchLE) && HasCategory();
 
         private bool HasCategory()
         {
@@ -100,6 +102,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (SearchME1) searchGames.Add(@"masseffect");
             if (SearchME2) searchGames.Add(@"masseffect2");
             if (SearchME3) searchGames.Add(@"masseffect3");
+            if (SearchLE) searchGames.Add(@"masseffectlegendaryedition");
             QueryInProgress = true;
             Task.Run(() =>
             {
@@ -177,6 +180,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                     StatusText = M3L.GetString(M3L.string_interp_resultsCount, Results.Count);
                     QueryInProgress = false;
+
+                    //foreach (var res in Results)
+                    //{
+                    //    Debug.WriteLine($"{res.Instance.ModID} {res.Instance.FileID}");
+                    //}
                 }
                 catch (Exception e)
                 {
@@ -242,12 +250,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             OnClosing(DataEventArgs.Empty);
         }
 
-        public class APIStatusResult
-        {
-            public string name { get; set; }
-            public double value { get; set; }
-        }
-
         public class SearchedItemResult : INotifyPropertyChanged
         {
             public FileInstance Instance { get; internal set; }
@@ -267,6 +269,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             return @"/images/gameicons/ME2_48.ico";
                         case @"masseffect3":
                             return @"/images/gameicons/ME3_48.ico";
+                        case @"masseffectlegendaryedition":
+                            return @"/images/gameicons/LEL_Icon.ico";
                     }
 
                     return null;
@@ -310,15 +314,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 var outboundUrl = $@"https://nexusmods.com/{sir.Domain}/mods/{sir.Instance.ModID}?tab=files"; // do not localize
                 Utilities.OpenWebpage(outboundUrl);
             }
-        }
-
-        private class SearchTopLevelResult
-        {
-            public int mod_count { get; set; }
-            public string searched_file { get; set; }
-            public string file_name { get; set; } // Why?
-            public List<string> games { get; set; }
-            public List<SearchedItemResult> mod_ids { get; set; }
         }
     }
 }

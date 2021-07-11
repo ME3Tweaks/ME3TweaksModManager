@@ -6,6 +6,7 @@ using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.modmanager.objects.mod.editor;
+using MassEffectModManagerCore.modmanager.objects.mod.merge;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.objects
@@ -21,6 +22,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             OP_INSTALL,
             OP_APPLY_MULTILISTFILES,
             OP_NOINSTALL_MULTILISTFILES,
+            OP_APPLY_MERGEMODS,
             OP_NOTHING //Used for alt groups
         }
 
@@ -47,6 +49,12 @@ namespace MassEffectModManagerCore.modmanager.objects
         /// Alternate file to use, if the operation uses an alternate file
         /// </summary>
         public string AltFile { get; private set; }
+
+        /// <summary>
+        /// List of loaded of MergeMods to use, if the operation deals with MergeMod files.
+        /// </summary>
+        public IMergeMod[] MergeMods { get; private set; }
+
         /// <summary>
         /// In-game relative path that will be operated on according to the specified operation
         /// </summary>
@@ -64,6 +72,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             if (Operation == AltFileOperation.OP_NOINSTALL) return false;
             if (Operation == AltFileOperation.OP_NOINSTALL_MULTILISTFILES) return false;
             if (Operation == AltFileOperation.OP_APPLY_MULTILISTFILES) return true;
+            if (Operation == AltFileOperation.OP_APPLY_MERGEMODS) return true;
             return AltFile != null;
         }
 
@@ -71,13 +80,6 @@ namespace MassEffectModManagerCore.modmanager.objects
         /// BACKWARDS COMPATIBLILITY ONLY: ModDesc 4.5 used SubstituteFile but was removed from support in 5.0
         /// </summary>
         public string SubstituteFile;
-
-        //public const string OPERATION_SUBSTITUTE = "OP_SUBSTITUTE"; //swap a file in a job
-        //public const string OPERATION_NOINSTALL = "OP_NOINSTALL"; //do not install a file
-        //public const string OPERATION_INSTALL = "OP_INSTALL"; //install a file
-        //public const string CONDITION_MANUAL = "COND_MANUAL"; //user must choose alt
-        //public const string CONDITION_DLC_PRESENT = "COND_DLC_PRESENT"; //automatically choose alt if DLC listed is present
-        //public const string CONDITION_DLC_NOT_PRESENT = "COND_DLC_NOT_PRESENT"; //automatically choose if DLC is not present
 
         public override bool UIIsSelectable
         {
@@ -112,13 +114,15 @@ namespace MassEffectModManagerCore.modmanager.objects
                 return;
             }
 
-            if (!Enum.TryParse(properties[@"Condition"], out Condition))
+            if (properties.TryGetValue(@"Condition", out string altCond))
             {
-                Log.Error($@"Alternate File specifies unknown/unsupported condition: {properties[@"Condition"]}"); //do not localize
-                ValidAlternate = false;
-                var condition = properties[@"Condition"];
-                LoadFailedReason = $@"{M3L.GetString(M3L.string_validation_altfile_unknownCondition)} {condition}";
-                return;
+                if (!Enum.TryParse(altCond, out Condition) || Condition == AltFileCondition.INVALID_CONDITION)
+                {
+                    Log.Error($@"Alternate File specifies unknown/unsupported condition: {altCond}"); //do not localize
+                    ValidAlternate = false;
+                    LoadFailedReason = $@"{M3L.GetString(M3L.string_validation_altfile_unknownCondition)} {altCond}";
+                    return;
+                }
             }
 
             if (properties.TryGetValue(@"ConditionalDLC", out string conditionalDlc))
@@ -144,14 +148,22 @@ namespace MassEffectModManagerCore.modmanager.objects
                 }
             }
 
-            //todo: ensure ModOperation is set before trying to parse it
-
-            if (!Enum.TryParse(properties[@"ModOperation"], out Operation))
+            if (properties.TryGetValue(@"ModOperation", out var modOp))
             {
-                Log.Error(@"Alternate File specifies unknown/unsupported operation: " + properties[@"ModOperation"]);
+                if (!Enum.TryParse(modOp, out Operation) || Operation == AltFileOperation.INVALID_OPERATION)
+                {
+                    Log.Error(@"Alternate File specifies unknown/unsupported operation: " +
+                              modOp);
+                    ValidAlternate = false;
+                    LoadFailedReason = $@"{M3L.GetString(M3L.string_validation_altfile_unknownOperation)} {modOp}";
+                    return;
+                }
+            }
+            else
+            {
+                Log.Error($@"Alternate File does not specify ModOperation, which is required for all Alternate Files: {FriendlyName}");
                 ValidAlternate = false;
-                var operation = properties[@"ModOperation"];
-                LoadFailedReason = $@"{M3L.GetString(M3L.string_validation_altfile_unknownOperation)} {operation}";
+                LoadFailedReason = $@"Alternate File does not specify ModOperation, which is required for all Alternate Files: {FriendlyName}";
                 return;
             }
 
@@ -164,7 +176,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             if (modForValidating.ModDescTargetVersion >= 6 && string.IsNullOrWhiteSpace(Description))
             {
                 //Cannot be null.
-                Log.Error($@"Alternate File {FriendlyName} with mod targeting moddesc >= 6.0 cannot have empty Description or missing description");
+                Log.Error($@"Alternate File {FriendlyName} with mod targeting moddesc >= 6.0 cannot have empty Description or missing Description");
                 ValidAlternate = false;
                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altfile_cmmver6RequiresDescription, FriendlyName);
                 return;
@@ -174,6 +186,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             {
                 if (Operation == AltFileOperation.OP_APPLY_MULTILISTFILES)
                 {
+                    #region MULTILIST
                     if (associatedJob.Header == ModJob.JobHeader.CUSTOMDLC)
                     {
                         //This cannot be used on custom dlc
@@ -211,7 +224,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         if (associatedJob.MultiLists.TryGetValue(multilistid, out var ml))
                         {
                             MultiListId = multilistid;
-                            MultiListSourceFiles = ml.Select(x=>x.TrimStart('\\', '/')).ToArray();
+                            MultiListSourceFiles = ml.Select(x => x.TrimStart('\\', '/')).ToArray();
                         }
                         else
                         {
@@ -229,9 +242,11 @@ namespace MassEffectModManagerCore.modmanager.objects
                         LoadFailedReason = M3L.GetString(M3L.string_interp_altfile_multilistIdNotIntegerOrMissing, FriendlyName);
                         return;
                     }
+                    #endregion
                 }
                 else if (Operation == AltFileOperation.OP_NOINSTALL_MULTILISTFILES)
                 {
+                    #region NOINSTALL MULTILIST
                     if (modForValidating.ModDescTargetVersion < 6.1)
                     {
                         Log.Error($@"Alternate File ({FriendlyName}) specifies operation OP_NOINSTALL_MULTILISTFILES, but this feature is only supported on moddesc version 6.1 or higher.");
@@ -281,9 +296,78 @@ namespace MassEffectModManagerCore.modmanager.objects
                     }
                     // There's no way to verify files not being installed cause they can change at runtime
                     // Just have to trust developer on it
+                    #endregion
+                }
+                else if (Operation == AltFileOperation.OP_APPLY_MERGEMODS)
+                {
+                    #region MERGE MOD
+                    if (modForValidating.ModDescTargetVersion < 7.0)
+                    {
+                        Log.Error($@"Alternate File operation OP_APPLY_MERGEMOD can only be used when targeting cmmver >= 7.0");
+                        ValidAlternate = false;
+                        LoadFailedReason = $@"Alternate File operation OP_APPLY_MERGEMOD can only be used when targeting cmmver >= 7.0";
+                        return;
+                    }
+                    if (associatedJob.Header != ModJob.JobHeader.BASEGAME)
+                    {
+                        Log.Error($@"Alternate File {FriendlyName} attempts to use OP_APPLY_MERGEMODS operation on a non-BASEGAME header, which currently is not allowed");
+                        ValidAlternate = false;
+                        LoadFailedReason = $@"Alternate File {FriendlyName} attempts to use OP_APPLY_MERGEMODS operation on a non-BASEGAME header, which currently is not allowed";
+                        return;
+                    }
+                    if (properties.TryGetValue(@"MergeFiles", out string mf))
+                    {
+                        var mergeFiles = StringStructParser.GetSemicolonSplitList(mf).Select(x => x.TrimStart('\\', '/')).ToArray();
+
+                        // Verify files exist
+                        var merges = new List<IMergeMod>();
+                        foreach (var mFile in mergeFiles)
+                        {
+                            if (mFile.Contains(@".."))
+                            {
+                                // Security issue
+                                Log.Error($@"Alternate File {FriendlyName} has merge filename with a .. in it, which is not allowed: {mFile}");
+                                ValidAlternate = false;
+                                LoadFailedReason = $@"Alternate File {FriendlyName} has merge filename with a .. in it, which is not allowed: {mFile}";
+                                return;
+                            }
+
+                            var mergeFilePath = FilesystemInterposer.PathCombine(modForValidating.IsInArchive, modForValidating.ModPath, Mod.MergeModFolderName, mFile);
+                            var mergeFileExists = FilesystemInterposer.FileExists(mergeFilePath, modForValidating.Archive);
+                            if (!mergeFileExists)
+                            {
+                                Log.Error($@"Alternate File merge file (item in MergeFiles) does not exist: {mFile}");
+                                ValidAlternate = false;
+                                LoadFailedReason = $@"Alternate File merge file (item in MergeFiles) does not exist: {mFile}";
+                                return;
+                            }
+
+                            var mm = modForValidating.LoadMergeMod(mergeFilePath);
+                            if (mm == null)
+                            {
+                                // MM failed to load
+                                Log.Error($@"Alternate File merge file {mFile} failed to load: {modForValidating.LoadFailedReason}");
+                                ValidAlternate = false;
+                                LoadFailedReason = $@"Alternate File merge file {mFile} failed to load: {modForValidating.LoadFailedReason}";
+                                return;
+                            }
+                            merges.Add(mm);
+                        }
+
+                        MergeMods = merges.ToArray();
+                    }
+                    else
+                    {
+                        Log.Error($@"Alternate File merge filenames (MergeFiles) required but not specified. This value is required for Alternate Files using the OP_APPLY_MERGEMODS operation.");
+                        ValidAlternate = false;
+                        LoadFailedReason = $@"Alternate File merge filenames (MergeFiles) required but not specified. This value is required for Alternate Files using the OP_APPLY_MERGEMODS operation.";
+                        return;
+                    }
+                    #endregion
                 }
                 else
                 {
+                    #region SUBSTITUTE, INSTALL, NOINSTALL
                     if (properties.TryGetValue(@"ModFile", out string modfile))
                     {
                         ModFile = modfile.TrimStart('\\', '/').Replace('/', '\\');
@@ -311,16 +395,16 @@ namespace MassEffectModManagerCore.modmanager.objects
                             }
                             else
                             {
-
                                 Log.Error($@"Alternate file {FriendlyName} in-mod target (ModFile) does not appear to target a DLC target this mod will (always) install: {ModFile}");
                                 ValidAlternate = false;
-                                LoadFailedReason = @"Dummy placeholder";
+                                LoadFailedReason = M3L.GetString(M3L.string_interp_altfile_installToNotGuaranteedCustomDLC, FriendlyName, ModFile);
                                 return;
                             }
                         }
                     }
                     else
                     {
+                        // Non DLC 
                         if (!associatedJob.FilesToInstall.TryGetValue(ModFile, out var sourceFile))
                         {
                             Log.Error($@"Alternate file {FriendlyName} in-mod target (ModFile) specified but does not exist in job: {ModFile}");
@@ -333,7 +417,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     //these both are the same these days i guess, I honestly can't remember which one I wanted to use
                     if (properties.TryGetValue(@"AltFile", out string altfile))
                     {
-                        AltFile = altfile.TrimStart('\\','/');
+                        AltFile = altfile.TrimStart('\\', '/');
                     }
                     else if (AltFile == null && properties.TryGetValue(@"ModAltFile", out string maltfile))
                     {
@@ -372,6 +456,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         //Ensure it is not part of  DLC directory itself.
                         var modFile = FilesystemInterposer.PathCombine(modForValidating.IsInArchive, modForValidating.ModPath, ModFile);
                     }
+                    #endregion
                 }
             }
 
@@ -443,17 +528,18 @@ namespace MassEffectModManagerCore.modmanager.objects
                 {@"ModOperation", Operation},
                 {@"AltFile", AltFile},
                 {@"ModFile", ModFile},
+                {@"MergeFiles", MergeMods != null  ? string.Join(';',MergeMods.Select(x=>x.MergeModFilename)) : ""},
                 {@"FriendlyName", FriendlyName},
                 {@"Description", Description},
-                {@"CheckedByDefault", CheckedByDefault ? @"True" : null}, //don't put checkedbydefault in if it is not set to true.
-                {@"OptionGroup", GroupName},
-                {@"ApplicableAutoText", ApplicableAutoTextRaw},
-                {@"NotApplicableAutoText", NotApplicableAutoTextRaw},
-                {@"MultiListId", MultiListId > 0 ? MultiListId.ToString() : null},
-                {@"MultiListRootPath", MultiListRootPath},
-                {@"MultiListTargetPath", MultiListTargetPath},
-                {@"ImageAssetName", ImageAssetName},
-                {@"ImageHeight", ImageHeight > 0 ? ImageHeight.ToString() : null}
+                { @"CheckedByDefault", CheckedByDefault ? @"True" : null}, //don't put checkedbydefault in if it is not set to true.
+                { @"OptionGroup", GroupName},
+                { @"ApplicableAutoText", ApplicableAutoTextRaw},
+                { @"NotApplicableAutoText", NotApplicableAutoTextRaw},
+                { @"MultiListId", MultiListId > 0 ? MultiListId.ToString() : null},
+                { @"MultiListRootPath", MultiListRootPath},
+                { @"MultiListTargetPath", MultiListTargetPath},
+                { @"ImageAssetName", ImageAssetName},
+                { @"ImageHeight", ImageHeight > 0 ? ImageHeight.ToString() : null}
             };
 
             ParameterMap.ReplaceAll(MDParameter.MapIntoParameterMap(parameterDictionary));

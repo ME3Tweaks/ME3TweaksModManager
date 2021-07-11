@@ -1,11 +1,13 @@
 ﻿using System.IO;
 using System.Linq;
 using System.Windows.Input;
+using LegendaryExplorerCore.Coalesced;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
-using ME3ExplorerCore.Helpers;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Packages;
+using MassEffectModManagerCore.modmanager.me3tweaks;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -103,10 +105,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (File.Exists(coalPath))
             {
                 using FileStream fs = new FileStream(coalPath, FileMode.Open);
-                var coalescedFilemapping = MassEffect3.Coalesce.Converter.DecompileToMemory(fs);
+                var coalescedFilemapping = CoalescedConverter.DecompileGame3ToMemory(fs);
                 fs.Close(); //release
                 coalescedFilemapping[@"BioInput.xml"] = bioInputXml;
-                var outStream = MassEffect3.Coalesce.Converter.CompileFromMemory(coalescedFilemapping);
+                var outStream = CoalescedConverter.CompileFromMemory(coalescedFilemapping);
                 outStream.WriteToFile(coalPath);
             }
         }
@@ -121,7 +123,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (File.Exists(coalPath))
                 {
                     using FileStream fs = new FileStream(coalPath, FileMode.Open);
-                    var coalescedFilemapping = MassEffect3.Coalesce.Converter.DecompileToMemory(fs);
+                    var coalescedFilemapping = CoalescedConverter.DecompileGame3ToMemory(fs);
                     InstallME3Keybinds(coalescedFilemapping[@"BioInput.xml"], SelectedME3Target);
                 }
             };
@@ -185,6 +187,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (game == MEGame.ME1) return Path.Combine(path, @"me1-bioinput.ini");
             if (game == MEGame.ME2) return Path.Combine(path, @"me2-bioinput.ini");
             if (game == MEGame.ME3) return Path.Combine(path, @"me3-bioinput.xml");
+            if (game == MEGame.LE1) return Path.Combine(path, @"le1-bioinput.ini");
+            if (game == MEGame.LE2) return Path.Combine(path, @"le2-bioinput.ini");
+            if (game == MEGame.LE3) return Path.Combine(path, @"le3-bioinput.xml");
             return null;
         }
     }

@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace ME3Explorer
+namespace MassEffectModManagerCore.ui
 {
     public abstract class NotifyPropertyChangedBase : INotifyPropertyChanged
     {

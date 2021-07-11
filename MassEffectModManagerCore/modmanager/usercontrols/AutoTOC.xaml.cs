@@ -8,9 +8,9 @@ using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.ui;
-using ME3ExplorerCore.GameFilesystem;
-using ME3ExplorerCore.Packages;
-using ME3ExplorerCore.Unreal;
+using LegendaryExplorerCore.GameFilesystem;
+using LegendaryExplorerCore.Packages;
+using LegendaryExplorerCore.Unreal;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -61,6 +61,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             Log.Information(@"Autotocing game: " + target.TargetPath);
 
+            //if (target.Game.IsLEGame())
+            //{
+                TOCCreator.CreateTOCForGame(target.Game, percentDoneCallback, target.TargetPath);
+                return true;
+            //}
+            /*
             //get toc target folders, ensuring we clean up the inputs a bit.
             string baseDir = Path.GetFullPath(Path.Combine(target.TargetPath, @"BIOGame"));
             string dlcDirRoot = M3Directories.GetDLCPath(target);
@@ -144,71 +150,35 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 done++;
                 percentDoneCallback?.Invoke((int)Math.Floor(done * 100.0 / tocTargets.Count));
             }
-            return true;
+            return true;*/
         }
 
-        public static void CreateUnpackedTOC(string dlcDirectory)
-        {
-            Log.Information(@"Creating unpacked toc for " + dlcDirectory);
-//#if DEBUG
-//            if (dlcDirectory.Contains(@"DLC_CON_END") || dlcDirectory.Contains(@"DLC_EXP_Pack002"))
-//            {
-//                Debugger.Break();
-//                throw new Exception(@"ASSERT ERROR: CREATING UNPACKED TOC FOR OFFICIAL DLC!");
-//            }
-//#endif
-            var watch = System.Diagnostics.Stopwatch.StartNew();
-            MemoryStream ms = TOCCreator.CreateTOCForDirectory(dlcDirectory);
-            if (ms != null)
-            {
-                string tocPath = Path.Combine(dlcDirectory, @"PCConsoleTOC.bin");
-                File.WriteAllBytes(tocPath, ms.ToArray());
-                ms.Close();
-                watch.Stop();
-                var elapsedMs = watch.ElapsedMilliseconds;
-                Log.Information($@"{Path.GetFileName(dlcDirectory)} - {dlcDirectory} Ran Unpacked TOC, took {elapsedMs}ms");
-            }
-            else
-            {
-                Log.Warning(@"Did not create TOC for " + dlcDirectory);
-                watch.Stop();
-            }
-        }
-
-        /// <summary>
-        /// Gets the sizes of each SFAR in an unmodified state.
-        /// This does not account for 1.6 TESTPATCH.
-        /// </summary>
-        /// <returns></returns>
-        //static Dictionary<string, long> GetSFARSizeMap()
+        //public static void CreateUnpackedTOC(string dlcDirectory)
         //{
-        //    if (sfarSizeMap == null)
+        //    Log.Information(@"Creating unpacked toc for " + dlcDirectory);
+        //    #if DEBUG
+        //                if (dlcDirectory.Contains(@"DLC_CON_END") || dlcDirectory.Contains(@"DLC_EXP_Pack002"))
+        //                {
+        //                    Debugger.Break();
+        //                    throw new Exception(@"ASSERT ERROR: CREATING UNPACKED TOC FOR OFFICIAL DLC!");
+        //                }
+        //    #endif
+        //    var watch = System.Diagnostics.Stopwatch.StartNew();
+        //    MemoryStream ms = TOCCreator.CreateTOCForDirectory(dlcDirectory);
+        //    if (ms != null)
         //    {
-        //        sfarSizeMap = new Dictionary<string, long>();
-        //        sfarSizeMap[@"DLC_CON_MP1"] = 220174473L;
-        //        sfarSizeMap[@"DLC_CON_MP2"] = 139851674L;
-        //        sfarSizeMap[@"DLC_CON_MP3"] = 198668075L;
-        //        sfarSizeMap[@"DLC_CON_MP4"] = 441856666L;
-        //        sfarSizeMap[@"DLC_CON_MP5"] = 208777784L;
-
-        //        sfarSizeMap[@"DLC_UPD_Patch01"] = 208998L;
-        //        sfarSizeMap[@"DLC_UPD_Patch02"] = 302772L;
-        //        sfarSizeMap[@"DLC_TestPatch"] = 2455154L; //1.6 also has a version
-
-        //        sfarSizeMap[@"DLC_HEN_PR"] = 594778936L;
-        //        sfarSizeMap[@"DLC_CON_END"] = 1919137514L;
-
-        //        sfarSizeMap[@"DLC_EXP_Pack001"] = 1561239503L;
-        //        sfarSizeMap[@"DLC_EXP_Pack002"] = 1849136836L;
-        //        sfarSizeMap[@"DLC_EXP_Pack003"] = 1886013531L;
-        //        sfarSizeMap[@"DLC_EXP_Pack003_Base"] = 1896814656L;
-        //        sfarSizeMap[@"DLC_CON_APP01"] = 53878606L;
-        //        sfarSizeMap[@"DLC_CON_GUN01"] = 18708500L;
-        //        sfarSizeMap[@"DLC_CON_GUN02"] = 17134896L;
-        //        sfarSizeMap[@"DLC_CON_DH1"] = 284862077L;
-        //        sfarSizeMap[@"DLC_OnlinePassHidCE"] = 56321927L;
+        //        string tocPath = Path.Combine(dlcDirectory, @"PCConsoleTOC.bin");
+        //        File.WriteAllBytes(tocPath, ms.ToArray());
+        //        ms.Close();
+        //        watch.Stop();
+        //        var elapsedMs = watch.ElapsedMilliseconds;
+        //        Log.Information($@"{Path.GetFileName(dlcDirectory)} - {dlcDirectory} Ran Unpacked TOC, took {elapsedMs}ms");
         //    }
-        //    return sfarSizeMap;
+        //    else
+        //    {
+        //        Log.Warning(@"Did not create TOC for " + dlcDirectory);
+        //        watch.Stop();
+        //    }
         //}
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)

@@ -12,9 +12,11 @@ using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.ui;
-using ME3ExplorerCore.GameFilesystem;
-using ME3ExplorerCore.Gammtek.Extensions.Collections.Generic;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.GameFilesystem;
+using LegendaryExplorerCore.Gammtek.Extensions;
+using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
+using LegendaryExplorerCore.Misc;
+using LegendaryExplorerCore.Packages;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -24,7 +26,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// </summary>
     public partial class TPMITelemetrySubmissionForm : MMBusyPanelBase
     {
-        public ObservableCollectionExtended<TelemetryPackage> TelemetryPackages { get; } = new ObservableCollectionExtended<TelemetryPackage>();
+        public ui.ObservableCollectionExtended<TelemetryPackage> TelemetryPackages { get; } = new ui.ObservableCollectionExtended<TelemetryPackage>();
 
         public TPMITelemetrySubmissionForm(Mod telemetryMod)
         {
@@ -104,7 +106,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             //Fody uses this property on weaving
 #pragma warning disable
-public event PropertyChangedEventHandler PropertyChanged;
+            public event PropertyChangedEventHandler PropertyChanged;
 #pragma warning restore
 
             public void SubmitPackage()
@@ -116,13 +118,13 @@ public event PropertyChangedEventHandler PropertyChanged;
                     string endpoint = DLC_INFO_TELEMETRY_ENDPOINT;
                     var url = endpoint.SetQueryParam(@"dlc_folder_name", DLCFolderName);
                     url = url.SetQueryParam(@"mod_name", ModName);
-                    url = url.SetQueryParam(@"mod_game", Game.ToString().Substring(2));
+                    url = url.SetQueryParam(@"mod_game", Game.ToGameNum());
                     url = url.SetQueryParam(@"mod_author", ModAuthor);
                     url = url.SetQueryParam(@"mod_site", ModSite);
                     url = url.SetQueryParam(@"mod_mount_priority", MountPriority);
                     url = url.SetQueryParam(@"mod_mount_tlk1", ModMountTLK1);
                     url = url.SetQueryParam(@"mod_mount_flag", MountFlag);
-                    if (Game == MEGame.ME2)
+                    if (Game.IsGame2())
                     {
                         url = url.SetQueryParam(@"mod_modulenumber", ModuleNumber);
                     }
@@ -203,26 +205,31 @@ public event PropertyChangedEventHandler PropertyChanged;
                             //No mount flag right now.
                         }
                         break;
+                    case MEGame.LE1:
+                        throw new Exception(@"Not implemented yet!");
+                        break;
                     case MEGame.ME2:
+                    case MEGame.LE2:
                         {
-                            var mountFile = Path.Combine(sourceDir, @"CookedPC", @"mount.dlc");
+                            var mountFile = Path.Combine(sourceDir, game.CookedDirName(), @"mount.dlc");
                             MountFile mf = new MountFile(mountFile);
                             tp.ModMountTLK1 = mf.TLKID;
                             tp.MountPriority = mf.MountPriority;
-                            tp.MountFlag = (int)mf.MountFlag;
-                            tp.MountFlagHR = mf.MountFlag.ToString();
-                            var ini = DuplicatingIni.LoadIni(Path.Combine(sourceDir, @"CookedPC", @"BIOEngine.ini"));
+                            tp.MountFlag = (int)mf.MountFlags.FlagValue;
+                            tp.MountFlagHR = mf.MountFlags.ToHumanReadableString();
+                            var ini = DuplicatingIni.LoadIni(Path.Combine(sourceDir, game.CookedDirName(), @"BIOEngine.ini"));
                             tp.ModuleNumber = ini[@"Engine.DLCModules"][dlcFoldername]?.Value;
                         }
                         break;
                     case MEGame.ME3:
+                    case MEGame.LE3:
                         {
                             var mountFile = Path.Combine(sourceDir, @"CookedPCConsole", @"mount.dlc");
                             MountFile mf = new MountFile(mountFile);
                             tp.ModMountTLK1 = mf.TLKID;
                             tp.MountPriority = mf.MountPriority;
-                            tp.MountFlag = (int)mf.MountFlag;
-                            tp.MountFlagHR = mf.MountFlag.ToString();
+                            tp.MountFlag = mf.MountFlags.FlagValue;
+                            tp.MountFlagHR = mf.MountFlags.ToHumanReadableString();
                         }
                         break;
                 }

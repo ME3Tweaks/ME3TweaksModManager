@@ -4,8 +4,8 @@
     d:DesignHeight="450"
     d:DesignWidth="800"
     DataContext="{Binding RelativeSource={RelativeSource Self}}"
-    Width="600"
-    Height="500">
+    Width="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.8_500_1400', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualWidth}"
+    Height="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.7_500', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualHeight}">
     <DockPanel>
         <TextBlock
             DockPanel.Dock="Top"
@@ -62,6 +62,7 @@
                             DockPanel.Dock="Bottom"
                             FontSize="10" />
                         <TextBlock
+                            FontWeight="Bold"
                             Text="{Binding Filename}" />
                     </DockPanel>
                 </HierarchicalDataTemplate>

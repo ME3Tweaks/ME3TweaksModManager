@@ -42,6 +42,8 @@ namespace MassEffectModManagerCore.modmanager.windows
             editorControls.Add(me1config_editor_control);
             editorControls.Add(balancechanges_editor_control);
             editorControls.Add(localization_editor_control);
+            editorControls.Add(game1tlkmerge_editor_control);
+            editorControls.Add(lelauncher_editor_control);
         }
 
         private void LoadCommands()

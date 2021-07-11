@@ -22,7 +22,7 @@
 	<system:String x:Key="string_library_octokit">Klient API GitHub</system:String>
 	<system:String x:Key="string_library_serilog">Wysoce elastyczny rejestrator</system:String>
 	<system:String x:Key="string_library_wpftoolkitextended" xml:space="preserve">Dodatkowe, użyteczne opcje WPF \nME3Tweaks Mod Manager używa tej biblioteki w zmodyfikowanej wersji.</system:String>
-	<system:String x:Key="string_library_me3explorercore">Backend zestawu narzędziowego dla trylogii Mass Effect</system:String>
+	<system:String x:Key="string_library_LegendaryExplorerCore">Backend zestawu narzędziowego dla trylogii Mass Effect</system:String>
 	<system:String x:Key="string_library_cliwrap">Asynchroniczny wrapper do interakcji z wierszem poleceń dla aplikacji</system:String>
 	<system:String x:Key="string_library_commandlineparser">Rozbudowany wiersz poleceń dla parser'a argumentów</system:String>
 	<system:String x:Key="string_library_computerinfo">Mała biblioteka do fetching'u (zbierania informacji) CPU, OS oraz pamięci RAM</system:String>
@@ -428,7 +428,7 @@
 	<system:String x:Key="string_interp_missingReferencedTlkStrInMod">Plik TLK {1} zawarty w autorskim DLC {0} nie zawiera zmiennej ciągu znaków TLK string ID {2}, jak zadeklarowano w pliku mount.dlc. Mod TLK musi zawierać zawierać zmienną ciągu znaków TLK do której odnosi się plik mount.dlc</system:String>
 	<!-- 0={DLC folder name} 1={TLK file path} 2={Mount file TLK integer} -->
 	<system:String x:Key="string_referencesCheck">Sprawdzanie odniesień</system:String>
-	<system:String x:Key="string_interp_dialog_invalidReferencesFound">Następujące problemy zostały wykryte podczas sprawdzania poprawności nazw pakietów plików i referencji obiektów. Przyczyną błędów może być build ME3ExplorerCore wykorzystywane przez Mod Managera, ale tego typu problemy powinny zostać sprawdzone, ponieważ nieprawidłowe odniesienia prawdopodobnie spowodują crash'e gry.</system:String>
+	<system:String x:Key="string_interp_dialog_invalidReferencesFound">Następujące problemy zostały wykryte podczas sprawdzania poprawności nazw pakietów plików i referencji obiektów. Przyczyną błędów może być build LegendaryExplorerCore wykorzystywane przez Mod Managera, ale tego typu problemy powinny zostać sprawdzone, ponieważ nieprawidłowe odniesienia prawdopodobnie spowodują crash'e gry.</system:String>
 	<system:String x:Key="string_invalidNameAndObjectReferences">Nieprawidłowa nazwa odniesienia obiektu</system:String>
 	<system:String x:Key="string_checkingNameAndObjectReferences">Sprawdzanie nazw oraz odniesień obiektu</system:String>
 	<system:String x:Key="string_noReferenceIssuesWereDetected">Nie wykryto problemów z odniesieniami</system:String>

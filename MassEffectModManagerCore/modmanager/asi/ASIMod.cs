@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.usercontrols;
-using ME3ExplorerCore.Helpers;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Packages;
 
 namespace MassEffectModManagerCore.modmanager.asi
 {

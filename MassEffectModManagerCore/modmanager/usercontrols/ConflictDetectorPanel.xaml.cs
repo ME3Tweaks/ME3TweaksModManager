@@ -6,7 +6,8 @@ using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.Packages;
+using MassEffectModManagerCore.modmanager.helpers;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -87,7 +88,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
-            ConflictTargets.ReplaceAll(mainwindow.InstallationTargets.Where(x => x.Selectable));
+            ConflictTargets.ReplaceAll(mainwindow.InstallationTargets.Where(x => x.Selectable && x.Game.IsEnabledGeneration()));
             SelectedTarget = ConflictTargets.FirstOrDefault();
         }
 

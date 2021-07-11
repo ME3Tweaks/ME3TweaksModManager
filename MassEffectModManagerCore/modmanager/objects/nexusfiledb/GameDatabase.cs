@@ -4,7 +4,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using MassEffectModManagerCore.modmanager.me3tweaks;
-using ME3ExplorerCore.Helpers;
+using LegendaryExplorerCore.Helpers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -20,6 +20,9 @@ namespace MassEffectModManagerCore.modmanager.objects.nexusfiledb
         /// </summary>
         public static void EnsureDatabaseFile(bool downloadIfNeverDownloaded = false)
         {
+            if (EnsureCheckedThisSession)
+                return;
+
             if (App.ServerManifest != null && App.ServerManifest.TryGetValue(@"latest_nexusdb_hash", out var nexusDbHash))
             {
                 string md5 = null;
@@ -48,6 +51,7 @@ namespace MassEffectModManagerCore.modmanager.objects.nexusfiledb
             if (downloadResult.errorMessage == null)
             {
                 downloadResult.download.WriteToFile(nexusDBPath);
+                EnsureCheckedThisSession = true;
             }
         }
 
@@ -78,7 +82,13 @@ namespace MassEffectModManagerCore.modmanager.objects.nexusfiledb
                     zip.Dispose();
                     zipDataStream.Close();
                 }
-                return JsonConvert.DeserializeObject<GameDatabase>(json);
+                var db =  JsonConvert.DeserializeObject<GameDatabase>(json);
+                foreach (var i in db.ModFileInfos)
+                {
+                    // Change linebreak to newline
+                    i.Value.Description = i.Value.Description.Replace(@"<br />", "\n"); //do not localize
+                }
+                return db;
             }
 
             return null; // Database not found!

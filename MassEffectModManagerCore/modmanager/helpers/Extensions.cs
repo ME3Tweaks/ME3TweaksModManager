@@ -13,9 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
-using MassEffectModManagerCore.modmanager.helpers;
-using ME3ExplorerCore.Gammtek.Extensions;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.Packages;
 using Serilog;
 using SevenZip;
 
@@ -81,6 +79,24 @@ namespace MassEffectModManagerCore.modmanager.helpers
             Extensions.InvalidPathingChars = enumerable.ToArray<char>(enumerable.Count);
         }
 
+        public static int ToMEMGameNum(this MEGame game)
+        {
+            if (game == MEGame.ME1) return 1;
+            if (game == MEGame.ME2) return 2;
+            if (game == MEGame.ME3) return 3;
+            if (game == MEGame.LE1) return 1;
+            if (game == MEGame.LE2) return 2;
+            if (game == MEGame.LE3) return 3;
+            return 0;
+        }
+
+        public static bool IsEnabledGeneration(this MEGame game)
+        {
+            if (game.IsOTGame() && Settings.GenerationSettingOT) return true;
+            if ((game == MEGame.LELauncher || game.IsLEGame()) && Settings.GenerationSettingLE) return true;
+            return false;
+        }
+
         /// <summary>
         /// Returns logical children of this UI object of the specified type
         /// </summary>
@@ -131,6 +147,40 @@ namespace MassEffectModManagerCore.modmanager.helpers
             return false;
         }
 
+        /// <summary>
+        /// Enumerates the enumerable object, finding the last item that matches the predicate, and sets the result to foundItem. Returns true if an item is found, or false if none is found, and foundItem is set to null. This can be used to prevent double enumeration
+        /// </summary>
+        /// <typeparam name="T">The object type</typeparam>
+        /// <param name="enumerable">The enumerable</param>
+        /// <param name="predicate">The search predicate</param>
+        /// <param name="foundItem">The found item, or null if not found</param>
+        /// <returns>True if found, false otherwise</returns>
+        public static bool LastOrDefaultOut<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate, out T foundItem)
+        {
+            var result = enumerable.LastOrDefault(predicate);
+            if (result != null)
+            {
+                foundItem = result;
+                return true;
+            }
+
+            foundItem = default(T);
+            return false;
+        }
+
+        /// <summary>
+        /// Enumerates the enumerable object, finding the last item that matches the predicate, and sets the result to foundItem. Returns true if an item is found, or false if none is found, and foundItem is set to null. This can be used to prevent double enumeration
+        /// </summary>
+        /// <typeparam name="T">The object type</typeparam>
+        /// <param name="enumerable">The enumerable</param>
+        /// <param name="predicate">The search predicate</param>
+        /// <param name="foundItem">The found item, or null if not found</param>
+        /// <returns>True if found, false otherwise</returns>
+        public static bool LastOrDefaultOut<T>(this IEnumerable<T> enumerable, out T foundItem)
+        {
+            return enumerable.LastOrDefaultOut(x => true, out foundItem);
+        }
+
         public static IEnumerable<T> FindVisualChildren<T>(this DependencyObject depObj) where T : DependencyObject
         {
             if (depObj != null)
@@ -151,21 +201,24 @@ namespace MassEffectModManagerCore.modmanager.helpers
             }
         }
 
-        public static int ToGameNum(this MEGame game)
-        {
-            if (game == MEGame.ME1) return 1;
-            if (game == MEGame.ME2) return 2;
-            if (game == MEGame.ME3) return 3;
-            return 0;
-        }
+        //public static int ToGameNum(this MEGame game)
+        //{
+        //    if (game == MEGame.ME1) return 1;
+        //    if (game == MEGame.ME2) return 2;
+        //    if (game == MEGame.ME3) return 3;
+        //    return 0;
+        //}
 
-        public static string ToGameName(this MEGame game)
-        {
-            if (game == MEGame.ME1) return @"Mass Effect";
-            if (game == MEGame.ME2) return @"Mass Effect 2";
-            if (game == MEGame.ME3) return @"Mass Effect 3";
-            return @"UNKNOWN GAME";
-        }
+        //public static string ToGameName(this MEGame game)
+        //{
+        //    if (game == MEGame.ME1) return @"Mass Effect";
+        //    if (game == MEGame.ME2) return @"Mass Effect 2";
+        //    if (game == MEGame.ME3) return @"Mass Effect 3";
+        //    if (game == MEGame.LE1) return @"Mass Effect (Legendary Edition)";
+        //    if (game == MEGame.LE2) return @"Mass Effect 2 (Legendary Edition)";
+        //    if (game == MEGame.LE3) return @"Mass Effect 3 (Legendary Edition)";
+        //    return @"UNKNOWN GAME";
+        //}
 
         public static string GetStorageTypeOfFile(this SevenZipExtractor archive, string fileName)
         {

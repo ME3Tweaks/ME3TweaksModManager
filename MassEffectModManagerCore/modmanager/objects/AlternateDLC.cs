@@ -93,7 +93,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 return;
             }
 
-            if (!Enum.TryParse(properties[@"Condition"], out Condition))
+            if (!Enum.TryParse(properties[@"Condition"], out Condition) || Condition == AltDLCCondition.INVALID_CONDITION)
             {
                 Log.Error($@"Alternate DLC specifies unknown/unsupported condition: {properties[@"Condition"]}"); //do not localize
                 ValidAlternate = false;
@@ -102,7 +102,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 return;
             }
 
-            if (!Enum.TryParse(properties[@"ModOperation"], out Operation))
+            if (!Enum.TryParse(properties[@"ModOperation"], out Operation) || Operation == AltDLCOperation.INVALID_OPERATION)
             {
                 Log.Error($@"Alternate DLC specifies unknown/unsupported operation: {properties[@"ModOperation"]}"); //do not localize
                 ValidAlternate = false;

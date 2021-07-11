@@ -11,7 +11,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.ui;
-using ME3ExplorerCore.Helpers;
+using LegendaryExplorerCore.Helpers;
 
 namespace MassEffectModManagerCore.modmanager.memoryanalyzer
 {

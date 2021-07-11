@@ -23,7 +23,6 @@ namespace MassEffectModManagerCore.modmanager
 
         private static bool Loaded = false;
         public static event PropertyChangedEventHandler StaticPropertyChanged;
-
         /// <summary>
         /// Sets given property and notifies listeners of its change. IGNORES setting the property to same value.
         /// Should be called in property setters.
@@ -75,6 +74,36 @@ namespace MassEffectModManagerCore.modmanager
             set => SetProperty(ref _launchGamesThroughOrigin, value);
         }
 
+        private static bool _generationSettingOT = true;
+        public static bool GenerationSettingOT
+        {
+            get => _generationSettingOT;
+            set
+            {
+                if (GenerationSettingLE || value)
+                {
+                    SetProperty(ref _generationSettingOT, value);
+                }
+                // Do not allow turning both options off
+            }
+        }
+
+        private static bool _generationSettingLE = true;
+        public static bool GenerationSettingLE
+        {
+            get => _generationSettingLE;
+            set
+            {
+                if (GenerationSettingOT || value)
+                {
+                    SetProperty(ref _generationSettingLE, value);
+                }
+                // Do not allow turning both options off
+            }
+        }
+
+
+
         private static bool _enableTelemetry = true;
         public static bool EnableTelemetry
         {
@@ -119,6 +148,13 @@ namespace MassEffectModManagerCore.modmanager
             set => SetProperty(ref _updaterServiceUsername, value);
         }
 
+        private static string _selectedFilters;
+        public static string SelectedFilters
+        {
+            get => _selectedFilters;
+            set => SetProperty(ref _selectedFilters, value);
+        }
+
         private static string _lastSelectedTarget;
         public static string LastSelectedTarget
         {
@@ -126,7 +162,7 @@ namespace MassEffectModManagerCore.modmanager
             set => SetProperty(ref _lastSelectedTarget, value);
         }
 
-        private static int _webclientTimeout = 5; // Defaults to 5
+        private static int _webclientTimeout = 7; // Defaults to 7
         public static int WebClientTimeout
         {
             get => _webclientTimeout;
@@ -254,6 +290,13 @@ namespace MassEffectModManagerCore.modmanager
             set => SetProperty(ref _logModMakerCompiler, value);
         }
 
+        private static bool _skipLELauncher = true;
+        public static bool SkipLELauncher
+        {
+            get => _skipLELauncher;
+            set => SetProperty(ref _skipLELauncher, value);
+        }
+
         public static readonly string SettingsPath = Path.Combine(Utilities.GetAppDataFolder(), "settings.ini");
 
         public static void Load()
@@ -281,6 +324,7 @@ namespace MassEffectModManagerCore.modmanager
             AutoUpdateLODs4K = LoadSettingBool(settingsIni, "ModManager", "AutoUpdateLODs4K", true);
             PreferCompressingPackages = LoadSettingBool(settingsIni, "ModManager", "PreferCompressingPackages", false); // 'May set to true in the future.
             WebClientTimeout = LoadSettingInt(settingsIni, "ModManager", "WebclientTimeout", 5);
+            SelectedFilters = LoadSettingString(settingsIni, "ModManager", "SelectedFilters", null);
             ModMakerControllerModOption = LoadSettingBool(settingsIni, "ModMaker", "AutoAddControllerMixins", false);
             ModMakerAutoInjectCustomKeybindsOption = LoadSettingBool(settingsIni, "ModMaker", "AutoInjectCustomKeybinds", false);
 
@@ -301,6 +345,12 @@ namespace MassEffectModManagerCore.modmanager
             DarkTheme = LoadSettingBool(settingsIni, "UI", "DarkTheme", false);
 
             ConfigureNXMHandlerOnBoot = LoadSettingBool(settingsIni, "ModManager", "ConfigureNXMHandlerOnBoot", true);
+
+            // LEGENDARY
+            SkipLELauncher = LoadSettingBool(settingsIni, "ModManager", "SkipLELauncher", true);
+            GenerationSettingLE = LoadSettingBool(settingsIni, "ModManager", "GenerationSettingLE", true);
+            GenerationSettingOT = LoadSettingBool(settingsIni, "ModManager", "GenerationSettingOT", true);
+
             Loaded = true;
         }
 
@@ -466,7 +516,11 @@ namespace MassEffectModManagerCore.modmanager
                 SaveSettingBool(settingsIni, "ModManager", "AutoUpdateLODs2K", AutoUpdateLODs2K);
                 SaveSettingBool(settingsIni, "ModManager", "PreferCompressingPackages", PreferCompressingPackages);
                 SaveSettingInt(settingsIni, "ModManager", "WebclientTimeout", WebClientTimeout);
-                SaveSettingBool(settingsIni, "ModManager","ConfigureNXMHandlerOnBoot", ConfigureNXMHandlerOnBoot);
+                SaveSettingBool(settingsIni, "ModManager", "ConfigureNXMHandlerOnBoot", ConfigureNXMHandlerOnBoot);
+                SaveSettingBool(settingsIni, "ModManager", "SkipLELauncher", SkipLELauncher);
+                SaveSettingBool(settingsIni, "ModManager", "GenerationSettingOT", GenerationSettingOT);
+                SaveSettingBool(settingsIni, "ModManager", "GenerationSettingLE", GenerationSettingLE);
+                SaveSettingString(settingsIni, "ModManager", "SelectedFilters", SelectedFilters);
 
                 SaveSettingBool(settingsIni, "ModMaker", "AutoAddControllerMixins", ModMakerControllerModOption);
                 SaveSettingBool(settingsIni, "ModMaker", "AutoInjectCustomKeybinds", ModMakerAutoInjectCustomKeybindsOption);

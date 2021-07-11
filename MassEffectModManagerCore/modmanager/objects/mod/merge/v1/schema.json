@@ -1,0 +1,427 @@
+﻿{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "http://example.com/example.json",
+  "type": "object",
+  "title": "M3 Merge Mod V1",
+  "description": "An M3 merge mod V1 manifest file",
+  "default": {},
+  "examples": [
+    {
+      "game": "ME1",
+      "files": [
+        {
+          "filename": "SFXGame.pcc",
+          "applytoalllocalizations": true,
+          "changes": [
+            {
+              "entryname": "Default__SFXCameraMode_ExploreStorm",
+              "propertyupdates": [
+                {
+                  "propertyname": "bIsCameraShakeEnabled",
+                  "propertytype": "BoolProperty",
+                  "propertyvalue": "True"
+                }
+              ],
+              "scriptupdate": {
+                "scriptfilename": "Script.uc"
+              },
+              "assetupdate": {
+                "assetname": "MyAsset.pcc",
+                "entryname": "EntryNameInMyAsset"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "required": [
+    "game",
+    "files"
+  ],
+  "properties": {
+    "game": {
+      "$id": "#/properties/game",
+      "type": "string",
+      "title": "The game schema",
+      "description": "The game you are targeting with your merge mod",
+      "default": "",
+      "examples": [
+        "ME1"
+      ],
+      "enum": [
+        "ME1",
+        "ME2",
+        "ME3",
+        "LE1",
+        "LE2",
+        "LE3"
+      ]
+    },
+    "files": {
+      "$id": "#/properties/files",
+      "type": "array",
+      "title": "The files schema",
+      "description": "The files you would like to update with your merge mod",
+      "minItems": 1,
+      "default": [],
+      "examples": [
+        [
+          {
+            "filename": "SFXGame.pcc",
+            "applytoalllocalizations": true,
+            "changes": [
+              {
+                "entryname": "Default__SFXCameraMode_ExploreStorm",
+                "propertyupdates": [
+                  {
+                    "propertyname": "bIsCameraShakeEnabled",
+                    "propertytype": "BoolProperty",
+                    "propertyvalue": "True"
+                  }
+                ],
+                "scriptupdate": {
+                  "scriptfilename": "Script.uc"
+                },
+                "assetupdate": {
+                  "assetname": "MyAsset.pcc",
+                  "entryname": "MyNewEntryName"
+                }
+              }
+            ]
+          }
+        ]
+      ],
+      "additionalItems": false,
+      "items": {
+        "$id": "#/properties/files/items",
+        "type": "object",
+        "title": "File",
+        "description": "File to update with a merge mod",
+        "default": {},
+        "examples": [
+          {
+            "filename": "SFXGame.pcc",
+            "applytoalllocalizations": true,
+            "changes": [
+              {
+                "entryname": "Default__SFXCameraMode_ExploreStorm",
+                "propertyupdates": [
+                  {
+                    "propertyname": "bIsCameraShakeEnabled",
+                    "propertytype": "BoolProperty",
+                    "propertyvalue": "True"
+                  }
+                ],
+                "scriptupdate": {
+                  "scriptfilename": "Script.uc",
+                  "scripttext": "public static function bool MyEntireScript()"
+                },
+                "assetupdate": {
+                  "assetname": "MyAsset.pcc",
+                  "entryname": "MyNewEntryName"
+                }
+              }
+            ]
+          }
+        ],
+        "required": [
+          "filename",
+          "changes"
+        ],
+        "properties": {
+          "filename": {
+            "$id": "#/properties/files/items/properties/filename",
+            "type": "string",
+            "title": "Filename",
+            "description": "The filename of the file you would like to update",
+            "default": "",
+            "examples": [
+              "SFXGame.pcc"
+            ]
+          },
+          "applytoalllocalizations": {
+            "$id": "#/properties/files/items/properties/applytoalllocalizations",
+            "default": false,
+            "description": "Toggles whether your property updates apply to all localizations of a file. The target file can have a localization on it (Such as Startup_INT.pcc), or just be the basename, such as Startup.pcc",
+            "examples": [
+              true
+            ],
+            "title": "Apply to all localizations",
+            "type": "boolean"
+          },
+          "changes": {
+            "$id": "#/properties/files/items/properties/changes",
+            "default": [],
+            "description": "The list of changes you would like to apply to this file",
+            "examples": [
+              [
+                {
+                  "entryname": "Default__SFXCameraMode_ExploreStorm",
+                  "propertyupdates": [
+                    {
+                      "propertyname": "bIsCameraShakeEnabled",
+                      "propertytype": "BoolProperty",
+                      "propertyvalue": "True"
+                    }
+                  ],
+                  "scriptupdate": {
+                    "scriptfilename": "Script.uc",
+                    "scripttext": "public static function bool MyEntireScript()"
+                  },
+                  "assetupdate": {
+                    "assetname": "MyAsset.pcc",
+                    "entryname": "MyNewEntryName"
+                  }
+                }
+              ]
+            ],
+            "title": "Changes",
+            "type": "array",
+            "minItems": 1,
+            "additionalItems": true,
+            "items": {
+              "$id": "#/properties/files/items/properties/changes/items/",
+              "type": "object",
+              "title": "The first anyOf schema",
+              "description": "An explanation about the purpose of this instance.",
+              "default": {},
+              "examples": [
+                {
+                  "entryname": "Default__SFXCameraMode_ExploreStorm",
+                  "propertyupdates": [
+                    {
+                      "propertyname": "bIsCameraShakeEnabled",
+                      "propertytype": "BoolProperty",
+                      "propertyvalue": "True"
+                    }
+                  ],
+                  "scriptupdate": {
+                    "scriptfilename": "Script.uc"
+                  },
+                  "assetupdate": {
+                    "assetname": "MyAsset.pcc",
+                    "entryname": "MyNewEntryName"
+                  }
+                }
+              ],
+              "required": [
+                "entryname"
+              ],
+              "oneOf": [
+                { "required": [ "scriptupdate" ] },
+                { "required": [ "assetupdate" ] },
+                { "required": [ "disableconfigupdate" ] },
+                { "required": [ "propertyupdates" ] },
+                { "required": [ "sequenceskipupdate" ] }
+              ],
+              "properties": {
+                "entryname": {
+                  "$id": "#/properties/files/items/properties/changes/items/properties/entryname",
+                  "type": "string",
+                  "title": "Entry name",
+                  "description": "The full name of the entry you would like to update",
+                  "default": "",
+                  "examples": [
+                    "Default__SFXCameraMode_ExploreStorm"
+                  ]
+                },
+                "propertyupdates": {
+                  "$id": "#/properties/files/items/properties/changes/items/properties/propertyupdates",
+                  "type": "array",
+                  "title": "Property updates",
+                  "description": "A list of direct property updates to apply to this entry",
+                  "default": [],
+                  "minItems": 1,
+                  "examples": [
+                    [
+                      {
+                        "propertyname": "bIsCameraShakeEnabled",
+                        "propertytype": "BoolProperty",
+                        "propertyvalue": "True"
+                      }
+                    ]
+                  ],
+                  "additionalItems": true,
+                  "items": {
+                    "$id": "#/properties/files/items/properties/changes/items/properties/propertyupdates/items/",
+                    "type": "object",
+                    "title": "Property update",
+                    "description": "A property to update",
+                    "default": {},
+                    "examples": [
+                      {
+                        "propertyname": "bIsCameraShakeEnabled",
+                        "propertytype": "BoolProperty",
+                        "propertyvalue": "True"
+                      }
+                    ],
+                    "required": [
+                      "propertyname",
+                      "propertytype",
+                      "propertyvalue"
+                    ],
+                    "properties": {
+                      "propertyname": {
+                        "$id": "#/properties/files/items/properties/changes/items/properties/propertyupdates/items/properties/propertyname",
+                        "type": "string",
+                        "title": "Property name",
+                        "description": "The full name of the property. If updating a struct, include the name of the struct, separated by a '.'. For example, Offset.X to update X in the Offset StructProperty.",
+                        "default": "",
+                        "examples": [
+                          "bIsCameraShakeEnabled"
+                        ]
+                      },
+                      "propertytype": {
+                        "$id": "#/properties/files/items/properties/changes/items/properties/propertyupdates/items/properties/propertytype",
+                        "default": "",
+                        "description": "The type of property you are updating. The value must be the final property type to update, if this is nested. ObjectProperties can only link to existing objects or to null",
+                        "examples": [
+                          "BoolProperty"
+                        ],
+                        "title": "The property type",
+                        "enum": [
+                          "ObjectProperty",
+                          "NameProperty",
+                          "BoolProperty",
+                          "IntProperty",
+                          "FloatProperty",
+                          "EnumProperty",
+                          "StrProperty"
+                        ],
+                        "type": "string"
+                      },
+                      "propertyvalue": {
+                        "$id": "#/properties/files/items/properties/changes/items/properties/propertyupdates/items/properties/propertyvalue",
+                        "type": "string",
+                        "title": "Property value",
+                        "description": "The updated value, as a string. If updating an ObjectProperty to a value of 0, enter 'null' (not as a string)",
+                        "default": "",
+                        "examples": [
+                          "True",
+                          "1.5",
+                          "ActorTag_2",
+                          null
+                        ]
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "disableconfigupdate": {
+                  "$id": "#/properties/files/items/properties/changes/items/properties/disableconfigupdate",
+                  "default": false,
+                  "description": "Disables the config flag on a property export. Use for patching LE1's config variables in a safe way, since there is no ini merging.",
+                  "examples": [
+                    true
+                  ],
+                  "title": "Disable Config Flag",
+                  "type": "boolean"
+                },
+                "scriptupdate": {
+                  "$id": "#/properties/files/items/properties/changes/items/properties/scriptupdate",
+                  "type": "object",
+                  "title": "The scriptupdate schema",
+                  "description": "A script you would like to replace",
+                  "default": {},
+                  "examples": [
+                    {
+                      "scriptfilename": "Script.uc"
+                    }
+                  ],
+                  "required": [ "scriptfilename" ],
+                  "properties": {
+                    "scriptfilename": {
+                      "$id": "#/properties/files/items/properties/changes/items/properties/scriptupdate/properties/scriptfilename",
+                      "type": "string",
+                      "title": "Script filename",
+                      "description": "The name of a plaintext file containing the updated script. It must be next to the .json file",
+                      "default": "",
+                      "examples": [
+                        "Script.uc"
+                      ]
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "assetupdate": {
+                  "$id": "#/properties/files/items/properties/changes/items/properties/assetupdate",
+                  "type": "object",
+                  "title": "Asset Update",
+                  "description": "An asset package file that will be opened for copying an asset out of, as well as the full instanced path of the entry. The asset must be next to the .json file",
+                  "default": {},
+                  "examples": [
+                    {
+                      "assetname": "MyAsset.pcc",
+                      "entryname": "MyNewEntryName"
+                    }
+                  ],
+                  "required": [
+                    "assetname",
+                    "entryname"
+                  ],
+                  "properties": {
+                    "assetname": {
+                      "$id": "#/properties/files/items/properties/changes/items/properties/assetupdate/properties/assetname",
+                      "type": "string",
+                      "title": "Asset Filename",
+                      "description": "The filename of the package file containing the updated asset",
+                      "default": "",
+                      "examples": [
+                        "MyAsset.pcc"
+                      ]
+                    },
+                    "entryname": {
+                      "$id": "#/properties/files/items/properties/changes/items/properties/assetupdate/properties/entryname",
+                      "type": "string",
+                      "title": "Updated entry name",
+                      "description": "The full instanced path of the updated asset in your asset file",
+                      "default": "",
+                      "examples": [
+                        "BioVFX.MyNewAsset"
+                      ]
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "sequenceskipupdate": {
+                  "$id": "#/properties/files/items/properties/changes/items/properties/sequenceskipupdate",
+                  "type": "object",
+                  "title": "Sequence Skip Update",
+                  "description": "A method of skipping a specified sequence object",
+                  "default": {},
+                  "required": [
+                    "entrymd5",
+                    "outboundlinknametouse"
+                  ],
+                  "properties": {
+                    "entrymd5": {
+                      "$id": "#/properties/files/items/properties/changes/items/properties/sequenceskipupdate/properties/entrymd5",
+                      "type": "string",
+                      "title": "Entry MD5 Hash",
+                      "description": "The MD5 Hash of the target entry. This is to ensure this doesn't apply to a modified object",
+                      "default": "",
+                      "minLength": 32,
+                      "maxLength": 32
+                    },
+                    "outboundlinknametouse": {
+                      "$id": "#/properties/files/items/properties/changes/items/properties/sequenceskipupdate/properties/outboundlinknametouse",
+                      "type": "string",
+                      "title": "Outbound link name to use",
+                      "description": "Which outbound link to skip through to",
+                      "default": ""
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

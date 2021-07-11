@@ -7,22 +7,24 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
+using LegendaryExplorerCore.Compression;
 using MassEffectModManagerCore.modmanager.asi;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
-using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.modmanager.usercontrols;
 using MassEffectModManagerCore.ui;
-using ME3ExplorerCore.GameFilesystem;
+using LegendaryExplorerCore.GameFilesystem;
 using Serilog;
-using ME3ExplorerCore.Helpers;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Misc;
+using LegendaryExplorerCore.Packages;
 using static MassEffectModManagerCore.modmanager.usercontrols.InstallationInformation;
+using MemoryAnalyzer = MassEffectModManagerCore.modmanager.memoryanalyzer.MemoryAnalyzer;
 
 namespace MassEffectModManagerCore.modmanager.objects
 {
-
+    [DebuggerDisplay("GameTarget {Game} {TargetPath}")]
     public class GameTarget : IEqualityComparer<GameTarget>, INotifyPropertyChanged
     {
         public const uint MEMI_TAG = 0x494D454D;
@@ -38,6 +40,16 @@ namespace MassEffectModManagerCore.modmanager.objects
         public string GameSource { get; private set; }
         public string ExecutableHash { get; private set; }
 
+        public string ASILoaderName
+        {
+            get
+            {
+                if (Game == MEGame.ME1) return M3L.GetString(M3L.string_binkw32ASILoader);
+                if (Game is MEGame.ME2 or MEGame.ME3) return M3L.GetString(M3L.string_binkw32ASIBypass);
+                if (Game.IsLEGame()) return M3L.GetString(M3L.string_bink2w64ASILoader);
+                return $@"UNKNOWN GAME FOR ASI LOADER: {Game}";
+            }
+        }
         public string TargetBootIcon
         {
             get
@@ -61,43 +73,30 @@ namespace MassEffectModManagerCore.modmanager.objects
         /// Indicates that this is a custom, abnormal game object. It may be used only for UI purposes, but it depends on the context.
         /// </summary>
         public bool IsCustomOption { get; set; } = false;
-        public GameTarget(MEGame game, string targetRootPath, bool currentRegistryActive, bool isCustomOption = false, bool isTest = false)
+        public GameTarget(MEGame game, string targetRootPath, bool currentRegistryActive, bool isCustomOption = false, bool isTest = false, bool skipInit = false)
         {
+            //if (!currentRegistryActive)
+            //    Debug.WriteLine("hi");
             this.Game = game;
             this.RegistryActive = currentRegistryActive;
             this.IsCustomOption = isCustomOption;
             this.TargetPath = targetRootPath.TrimEnd('\\');
             MemoryAnalyzer.AddTrackedMemoryItem($@"{game} GameTarget {TargetPath} - IsCustomOption: {isCustomOption}", new WeakReference(this));
-            ReloadGameTarget(isTest);
+            ReloadGameTarget(!isTest, skipInit: skipInit);
+
+            if (Game.IsLEGame())
+            {
+                OodleHelper.EnsureOodleDll(TargetPath, Utilities.GetDllDirectory());
+            }
         }
 
-        public void ReloadGameTarget(bool lodUpdateAndLogging = true, bool forceLodUpdate = false, bool reverseME1Executable = true)
+        public void ReloadGameTarget(bool logInfo = true, bool forceLodUpdate = false, bool reverseME1Executable = true, bool skipInit = false)
         {
-            if (Game != MEGame.Unknown && !IsCustomOption)
+            if (!IsCustomOption && !skipInit)
             {
                 if (Directory.Exists(TargetPath))
                 {
-                    var oldTMOption = TextureModded;
-                    var alotInfo = GetInstalledALOTInfo();
-                    if (alotInfo != null)
-                    {
-                        TextureModded = true;
-                        ALOTVersion = alotInfo.ToString();
-                        if (alotInfo.MEUITMVER > 0)
-                        {
-                            MEUITMInstalled = true;
-                            MEUITMVersion = alotInfo.MEUITMVER;
-                        }
-                    }
-                    else
-                    {
-                        TextureModded = false;
-                        ALOTVersion = null;
-                        MEUITMInstalled = false;
-                        MEUITMVersion = 0;
-                    }
-
-                    CLog.Information(@"Getting game source for target " + TargetPath, lodUpdateAndLogging);
+                    CLog.Information(@"Getting game source for target " + TargetPath, logInfo);
                     var hashCheckResult = VanillaDatabaseService.GetGameSource(this, reverseME1Executable);
 
                     GameSource = hashCheckResult.result;
@@ -105,7 +104,7 @@ namespace MassEffectModManagerCore.modmanager.objects
 
                     if (ExecutableHash.Length != 32)
                     {
-                        CLog.Error($@"Issue getting game source: {ExecutableHash}", lodUpdateAndLogging);
+                        CLog.Error($@"Issue getting game source: {ExecutableHash}", logInfo);
                     }
                     else
                     {
@@ -114,27 +113,55 @@ namespace MassEffectModManagerCore.modmanager.objects
                         {
                             // No source is listed
                             CLog.Error(@"Unknown source or illegitimate installation: " + hashCheckResult.hash,
-                                lodUpdateAndLogging);
+                                logInfo);
                         }
                         else
                         {
-                            if (GameSource.Contains(@"Origin") && Game == MEGame.ME3)
+                            if (GameSource.Contains(@"Origin") && (Game is MEGame.ME3 or MEGame.LELauncher || Game.IsLEGame()))
                             {
                                 // Check for steam
-                                if (Directory.Exists(Path.Combine(TargetPath, @"__overlay")))
+                                var testPath = Game == MEGame.ME3 ? TargetPath : Directory.GetParent(TargetPath).FullName;
+                                if (Game != MEGame.ME3)
+                                {
+                                    testPath = Directory.GetParent(testPath).FullName;
+                                }
+                                if (Directory.Exists(Path.Combine(testPath, @"__overlay")))
                                 {
                                     GameSource += @" (Steam version)";
                                 }
                             }
 
-                            CLog.Information(@"Source: " + GameSource, lodUpdateAndLogging);
+                            CLog.Information(@"Source: " + GameSource, logInfo);
+                        }
+                    }
+
+                    if (Game != MEGame.LELauncher)
+                    {
+                        // Actual game
+                        var oldTMOption = TextureModded;
+                        var alotInfo = GetInstalledALOTInfo(allowCached: false);
+                        if (alotInfo != null)
+                        {
+                            TextureModded = true;
+                            ALOTVersion = alotInfo.ToString();
+                            if (alotInfo.MEUITMVER > 0)
+                            {
+                                MEUITMInstalled = true;
+                                MEUITMVersion = alotInfo.MEUITMVER;
+                            }
+                        }
+                        else
+                        {
+                            TextureModded = false;
+                            ALOTVersion = null;
+                            MEUITMInstalled = false;
+                            MEUITMVersion = 0;
                         }
 
-                        IsPolishME1 = Game == MEGame.ME1 && File.Exists(Path.Combine(TargetPath, @"BioGame",
-                            @"CookedPC", @"Movies", @"niebieska_pl.bik"));
+                        IsPolishME1 = Game == MEGame.ME1 && File.Exists(Path.Combine(TargetPath, @"BioGame", @"CookedPC", @"Movies", @"niebieska_pl.bik"));
                         if (IsPolishME1)
                         {
-                            CLog.Information(@"ME1 Polish Edition detected", lodUpdateAndLogging);
+                            CLog.Information(@"ME1 Polish Edition detected", logInfo);
                         }
 
                         if (RegistryActive && (Settings.AutoUpdateLODs2K || Settings.AutoUpdateLODs4K) &&
@@ -143,17 +170,30 @@ namespace MassEffectModManagerCore.modmanager.objects
                             UpdateLODs(Settings.AutoUpdateLODs2K);
                         }
                     }
+                    else
+                    {
+                        // LELAUNCHER
+                        IsValid = true; //set to false if target becomes invalid
+                    }
                 }
                 else
                 {
                     Log.Error($@"Target is invalid: {TargetPath} does not exist (or is not accessible)");
-                    IsValid = false; //set to false if target becomes invalid
+                    IsValid = false;
                 }
+            }
+            else
+            {
+                // Custom Option
+                IsValid = true;
             }
         }
 
         public void UpdateLODs(bool twoK)
         {
+            if (Game.IsLEGame())
+                return; // Do not update LE LODs for now.
+
             if (!TextureModded)
             {
                 Utilities.SetLODs(this, false, false, false);
@@ -175,7 +215,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         }
                     }
                 }
-                else
+                else if (Game.IsOTGame())
                 {
                     //me2/3
                     Utilities.SetLODs(this, true, twoK, false);
@@ -207,12 +247,12 @@ namespace MassEffectModManagerCore.modmanager.objects
         {
             if (allowCached && cachedTextureModInfo != null && startPos == -1) return cachedTextureModInfo;
 
-            string gamePath = getALOTMarkerFilePath();
-            if (gamePath != null && File.Exists(gamePath))
+            string markerPath = M3Directories.GetTextureMarkerPath(this);
+            if (markerPath != null && File.Exists(markerPath))
             {
                 try
                 {
-                    using FileStream fs = new FileStream(gamePath, System.IO.FileMode.Open, FileAccess.Read);
+                    using FileStream fs = new FileStream(markerPath, System.IO.FileMode.Open, FileAccess.Read);
                     if (startPos < 0)
                     {
                         fs.SeekEnd();
@@ -323,14 +363,8 @@ namespace MassEffectModManagerCore.modmanager.objects
             //return new ALOTVersionInfo(9, 0, 0, 0); //MEMI tag but no info we know of
         }
 
-        private string getALOTMarkerFilePath()
-        {
-            // this used to be shared method
-            return M3Directories.GetTextureMarkerPath(this);
-        }
-
-        public ObservableCollectionExtended<ModifiedFileObject> ModifiedBasegameFiles { get; } = new ObservableCollectionExtended<ModifiedFileObject>();
-        public ObservableCollectionExtended<SFARObject> ModifiedSFARFiles { get; } = new ObservableCollectionExtended<SFARObject>();
+        public ui.ObservableCollectionExtended<ModifiedFileObject> ModifiedBasegameFiles { get; } = new ui.ObservableCollectionExtended<ModifiedFileObject>();
+        public ui.ObservableCollectionExtended<SFARObject> ModifiedSFARFiles { get; } = new ui.ObservableCollectionExtended<SFARObject>();
         public ICollectionView ModifiedBasegameFilesView => CollectionViewSource.GetDefaultView(ModifiedBasegameFiles);
 
         public void PopulateModifiedBasegameFiles(Func<string, bool> restoreBasegamefileConfirmationCallback,
@@ -346,19 +380,22 @@ namespace MassEffectModManagerCore.modmanager.objects
             List<string> modifiedFiles = new List<string>();
             void failedCallback(string file)
             {
-                if (file.EndsWith(@".sfar"))
+                if (Game == MEGame.ME3 && Path.GetExtension(file).Equals(@".sfar", StringComparison.InvariantCultureIgnoreCase))
                 {
                     modifiedSfars.Add(file);
                     return;
                 }
-
-                if (file == getALOTMarkerFilePath())
+                if (Path.GetFileName(file).Equals(@"PCConsoleTOC.bin", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return; // Do not report this file as modified
+                }
+                else if (this.Game != MEGame.LELauncher && file == M3Directories.GetTextureMarkerPath(this))
                 {
                     return; //Do not report this file as modified or user will desync game state with texture state
                 }
                 modifiedFiles.Add(file);
             }
-            VanillaDatabaseService.ValidateTargetAgainstVanilla(this, failedCallback);
+            VanillaDatabaseService.ValidateTargetAgainstVanilla(this, failedCallback, false);
 
             List<string> inconsistentDLC = new List<string>();
             VanillaDatabaseService.ValidateTargetDLCConsistency(this, x => inconsistentDLC.Add(x));
@@ -392,11 +429,12 @@ namespace MassEffectModManagerCore.modmanager.objects
             });
         }
 
-        public ObservableCollectionExtended<InstallationInformation.InstalledDLCMod> UIInstalledDLCMods { get; } = new ObservableCollectionExtended<InstallationInformation.InstalledDLCMod>();
-        public ObservableCollectionExtended<InstalledOfficialDLC> UIInstalledOfficialDLC { get; } = new ObservableCollectionExtended<InstalledOfficialDLC>();
+        public ui.ObservableCollectionExtended<InstallationInformation.InstalledDLCMod> UIInstalledDLCMods { get; } = new ui.ObservableCollectionExtended<InstallationInformation.InstalledDLCMod>();
+        public ui.ObservableCollectionExtended<InstalledOfficialDLC> UIInstalledOfficialDLC { get; } = new ui.ObservableCollectionExtended<InstalledOfficialDLC>();
 
-        public void PopulateDLCMods(bool includeDisabled, Func<InstallationInformation.InstalledDLCMod, bool> deleteConfirmationCallback = null, Action notifyDeleted = null, bool modNamePrefersTPMI = false)
+        public void PopulateDLCMods(bool includeDisabled, Func<InstallationInformation.InstalledDLCMod, bool> deleteConfirmationCallback = null, Action notifyDeleted = null, Action notifyToggled = null, bool modNamePrefersTPMI = false)
         {
+            if (Game == MEGame.LELauncher) return; // LE Launcher doesn't have DLC mods
             var dlcDir = M3Directories.GetDLCPath(this);
             var allOfficialDLCforGame = MEDirectories.OfficialDLC(Game);
             var installedDLC = M3Directories.GetInstalledDLC(this, includeDisabled);
@@ -413,13 +451,17 @@ namespace MassEffectModManagerCore.modmanager.objects
             //Must run on UI thread
             Application.Current.Dispatcher.Invoke(delegate
             {
-                UIInstalledDLCMods.ReplaceAll(installedMods.Select(x => new InstallationInformation.InstalledDLCMod(Path.Combine(dlcDir, x), Game, deleteConfirmationCallback, notifyDeleted, modNamePrefersTPMI)).ToList().OrderBy(x => x.ModName));
+                UIInstalledDLCMods.ReplaceAll(installedMods.Select(x => new InstallationInformation.InstalledDLCMod(Path.Combine(dlcDir, x), Game, deleteConfirmationCallback, notifyDeleted, notifyToggled, modNamePrefersTPMI)).ToList().OrderBy(x => x.ModName));
                 UIInstalledOfficialDLC.ReplaceAll(officialDLC);
             });
         }
 
         public bool IsTargetWritable()
         {
+            if (Game == MEGame.LELauncher)
+            {
+                return Utilities.IsDirectoryWritable(TargetPath) && Utilities.IsDirectoryWritable(Path.Combine(TargetPath, @"Content"));
+            }
             return Utilities.IsDirectoryWritable(TargetPath) && Utilities.IsDirectoryWritable(Path.Combine(TargetPath, @"Binaries"));
         }
 
@@ -474,9 +516,55 @@ namespace MassEffectModManagerCore.modmanager.objects
                         Path.Combine(TargetPath, @"BioGame", @"CookedPCConsole", @"citwrd_rp1_bailey_m_D_Int.afc")
                     };
                     break;
+                case MEGame.LE1:
+                    validationFiles = new[]
+                    {
+                        Path.Combine(TargetPath, @"Binaries", @"Win64", @"MassEffect1.exe"),
+                        Path.Combine(TargetPath, @"BioGame", @"CookedPCConsole", @"Textures5.tfc"),
+                        Path.Combine(TargetPath, @"BioGame", @"CookedPCConsole", @"Startup_INT.pcc"),
+                        Path.Combine(TargetPath, @"BioGame", @"CookedPCConsole", @"Coalesced_INT.bin"),
+                        Path.Combine(TargetPath, @"BioGame", @"CookedPCConsole", @"Textures.tfc"),
+                        Path.Combine(TargetPath, @"BioGame", @"CookedPCConsole", @"PlotManagerAutoDLC_UNC.pcc")
+                    };
+                    break;
+                case MEGame.LE2:
+                    validationFiles = new[]
+                    {
+                        Path.Combine(TargetPath, @"Binaries", @"Win64", @"MassEffect2.exe"),
+                        Path.Combine(TargetPath, @"BioGame", @"PCConsoleTOC.bin"),
+                        Path.Combine(TargetPath, @"BioGame", @"CookedPCConsole", @"Startup_INT.pcc"),
+                        Path.Combine(TargetPath, @"BioGame", @"CookedPCConsole", @"Coalesced_INT.bin"),
+                        Path.Combine(TargetPath, @"BioGame", @"CookedPCConsole", @"BioD_QuaTlL_505LifeBoat_LOC_INT.pcc"),
+                        Path.Combine(TargetPath, @"BioGame", @"CookedPCConsole", @"cithub_ad_low_a_S_INT.afc"),
+                        Path.Combine(TargetPath, @"BioGame", @"DLC", @"DLC_METR_Patch01", @"CookedPCConsole", @"BioA_Nor_103aGalaxyMap.pcc")
+                    };
+                    break;
+                case MEGame.LE3:
+                    validationFiles = new[]
+                    {
+                        Path.Combine(TargetPath, @"Binaries", @"Win64", @"MassEffect3.exe"),
+                        Path.Combine(TargetPath, @"BioGame", @"CookedPCConsole", @"Textures1.tfc"),
+                        Path.Combine(TargetPath, @"BioGame", @"CookedPCConsole", @"Startup.pcc"),
+                        Path.Combine(TargetPath, @"BioGame", @"DLC", @"DLC_CON_PRO3", @"CookedPCConsole", @"DLC_CON_PRO3_INT.tlk"),
+                        Path.Combine(TargetPath, @"BioGame", @"DLC", @"DLC_CON_END", @"CookedPCConsole", @"BioD_End001_910RaceToConduit.pcc"),
+                        Path.Combine(TargetPath, @"BioGame", @"CookedPCConsole", @"citwrd_rp1_bailey_m_D_Int.afc")
+                    };
+                    break;
+                case MEGame.LELauncher: // LELAUNCHER
+                    validationFiles = new[]
+                    {
+                        Path.Combine(TargetPath, @"MassEffectLauncher.exe"),
+                        Path.Combine(TargetPath, @"Content", @"EulaUI.swf"),
+                        Path.Combine(TargetPath, @"Content", @"click.wav"),
+                        Path.Combine(TargetPath, @"Content", @"LauncherUI.swf"),
+                        Path.Combine(TargetPath, @"Content", @"Xbox_ControllerIcons.swf"),
+                        Path.Combine(TargetPath, @"Content", @"Sounds", @"mus_gui_menu_looping_quad.wav"),
+                    };
+                    break;
             }
 
             if (validationFiles == null) return null; //Invalid game.
+            Log.Information($@"Validating game target: {TargetPath}");
             foreach (var f in validationFiles)
             {
                 if (!File.Exists(f))
@@ -516,6 +604,8 @@ namespace MassEffectModManagerCore.modmanager.objects
                         return M3L.GetString(M3L.string_interp_unsupportedME3Version, exeInfo.FileVersion);
                     }
                     break;
+
+                    // No check for Legendary Edition games right now until patch cycle ends
             }
 
             if (!ignoreCmmVanilla)
@@ -870,7 +960,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             }
         }
 
-        public ObservableCollectionExtended<TextureModInstallationInfo> TextureInstallHistory { get; } = new ObservableCollectionExtended<TextureModInstallationInfo>();
+        public ui.ObservableCollectionExtended<TextureModInstallationInfo> TextureInstallHistory { get; } = new ui.ObservableCollectionExtended<TextureModInstallationInfo>();
 
         public void PopulateTextureInstallHistory()
         {
@@ -880,6 +970,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         public List<TextureModInstallationInfo> GetTextureModInstallationHistory()
         {
             var alotInfos = new List<TextureModInstallationInfo>();
+            if (Game == MEGame.LELauncher) return alotInfos;
             int startPos = -1;
             while (GetInstalledALOTInfo(startPos, false) != null)
             {
@@ -933,7 +1024,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         public void StampTextureModificationInfo(TextureModInstallationInfo tmii)
         {
 #if DEBUG
-            var markerPath = getALOTMarkerFilePath();
+            var markerPath = M3Directories.GetTextureMarkerPath(this);
             try
             {
                 using (FileStream fs = new FileStream(markerPath, FileMode.Open, FileAccess.ReadWrite))
@@ -1021,7 +1112,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         internal void StripALOTInfo()
         {
 #if DEBUG
-            var markerPath = getALOTMarkerFilePath();
+            var markerPath = M3Directories.GetTextureMarkerPath(this);
 
             try
             {
@@ -1138,7 +1229,7 @@ namespace MassEffectModManagerCore.modmanager.objects
 
             public string FilePath { get; set; }
         }
-        public ObservableCollectionExtended<InstalledExtraFile> ExtraFiles { get; } = new ObservableCollectionExtended<InstalledExtraFile>();
+        public ui.ObservableCollectionExtended<InstalledExtraFile> ExtraFiles { get; } = new ui.ObservableCollectionExtended<InstalledExtraFile>();
         /// <summary>
         /// Populates list of 'extra' items for the game. This includes things like dlls, and for ME1, config files
         /// </summary>
@@ -1167,6 +1258,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         public string NumASIModsInstalledText { get; private set; }
         public void PopulateASIInfo()
         {
+            if (Game == MEGame.LELauncher) return;
             var installedASIs = GetInstalledASIs();
             if (installedASIs.Any())
             {
@@ -1181,11 +1273,11 @@ namespace MassEffectModManagerCore.modmanager.objects
         public string Binkw32StatusText { get; private set; }
         public void PopulateBinkInfo()
         {
-            if (Game != MEGame.ME1)
+            if (Game is MEGame.ME2 or MEGame.ME3)
             {
                 Binkw32StatusText = Utilities.CheckIfBinkw32ASIIsInstalled(this) ? M3L.GetString(M3L.string_bypassInstalledASIAndDLCModsWillBeAbleToLoad) : M3L.GetString(M3L.string_bypassNotInstalledASIAndDLCModsWillBeUnableToLoad);
             }
-            else
+            else if (Game is MEGame.ME1 || Game.IsLEGame())
             {
                 Binkw32StatusText = Utilities.CheckIfBinkw32ASIIsInstalled(this) ? M3L.GetString(M3L.string_bypassInstalledASIModsWillBeAbleToLoad) : M3L.GetString(M3L.string_bypassNotInstalledASIModsWillBeUnableToLoad);
             }
@@ -1228,5 +1320,8 @@ namespace MassEffectModManagerCore.modmanager.objects
 
             return installedASIs;
         }
+
+        public bool SupportsLODUpdates() => Game is MEGame.ME1 or MEGame.ME2 or MEGame.ME3; // update to remove ME3 in future
+
     }
 }

@@ -105,6 +105,21 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                                 }
                             }
                         }
+                        else if (file.MergeMods != null)
+                        {
+                            foreach (var mf in file.MergeMods)
+                            {
+                                var relPath = FilesystemInterposer.PathCombine(IsInArchive, ModPath, Mod.MergeModFolderName, mf.MergeModFilename);
+                                if (IsInArchive)
+                                {
+                                    references.Add(relPath.Substring(ModPath.Length + (ModPath.Length > 1 ? 1 : 0))); //substring so its relative to the path of the mod in the archive
+                                }
+                                else
+                                {
+                                    references.Add(relPath.Substring(ModPath.Length + 1)); //chop off the root path of the moddesc.ini
+                                }
+                            }
+                        }
                     }
 
                     // Add the referenced image asset
@@ -113,10 +128,21 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         references.Add(FilesystemInterposer.PathCombine(IsInArchive, ModImageAssetsPath, file.ImageAssetName).Substring(ModPath.Length + (ModPath.Length > 1 ? 1 : 0)));
                     }
                 }
-
                 foreach (var customDLCmapping in job.CustomDLCFolderMapping)
                 {
                     references.AddRange(FilesystemInterposer.DirectoryGetFiles(FilesystemInterposer.PathCombine(IsInArchive, ModPath, customDLCmapping.Key), "*", SearchOption.AllDirectories, archive).Select(x => (IsInArchive && ModPath.Length == 0) ? x : x.Substring(ModPath.Length + 1)).ToList());
+                }
+                foreach (var mm in job.MergeMods)
+                {
+                    references.Add($@"{Mod.MergeModFolderName}\{mm.MergeModFilename}");
+                }
+
+                if (job.Game1TLKXmls != null)
+                {
+                    foreach (var tlkXml in job.Game1TLKXmls)
+                    {
+                        references.Add($@"{Mod.Game1EmbeddedTlkFolderName}\{tlkXml}");
+                    }
                 }
             }
             references.AddRange(AdditionalDeploymentFiles);

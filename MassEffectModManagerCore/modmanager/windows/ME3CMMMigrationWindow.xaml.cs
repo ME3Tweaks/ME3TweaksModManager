@@ -11,9 +11,10 @@ using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.Packages;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
+using PropertyChanged;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.windows
@@ -21,7 +22,8 @@ namespace MassEffectModManagerCore.modmanager.windows
     /// <summary>
     /// Interaction logic for ME3CMMMigrationWindow.xaml
     /// </summary>
-    public partial class ME3CMMMigrationWindow : Window, INotifyPropertyChanged
+    [AddINotifyPropertyChangedInterface]
+    public partial class ME3CMMMigrationWindow : Window
     {
         public ObservableCollectionExtended<BasicUITask> Tasks { get; } = new ObservableCollectionExtended<BasicUITask>();
         BasicUITask MigratingModsTask = new BasicUITask(M3L.GetString(M3L.string_migratingMods));
@@ -34,11 +36,6 @@ namespace MassEffectModManagerCore.modmanager.windows
             Tasks.Add(MigratingSettings);
             Tasks.Add(CleaningUpTask);
         }
-
-        //Fody uses this property on weaving
-#pragma warning disable
-public event PropertyChangedEventHandler PropertyChanged;
-#pragma warning restore
 
         private void Migration_ContentRendered(object sender, EventArgs e)
         {

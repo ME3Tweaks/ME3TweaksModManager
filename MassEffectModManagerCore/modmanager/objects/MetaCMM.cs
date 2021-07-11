@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
+using System.Text;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.ui;
 
@@ -21,6 +23,33 @@ namespace MassEffectModManagerCore.modmanager.objects
         public ObservableCollectionExtended<string> IncompatibleDLC { get; } = new ObservableCollectionExtended<string>();
         public ObservableCollectionExtended<string> OptionsSelectedAtInstallTime { get; } = new ObservableCollectionExtended<string>();
 
+        public void WriteMetaCMM(string path)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine(ModName);
+            sb.AppendLine(Version);
+            sb.AppendLine(InstalledBy ?? App.BuildNumber.ToString());
+            sb.AppendLine(InstallerInstanceGUID);
+
+            // MetaCMM Extended
+            if (OptionsSelectedAtInstallTime.Any())
+            {
+                sb.AppendLine($@"{PrefixOptionsSelectedOnInstall}{string.Join(';', OptionsSelectedAtInstallTime)}");
+            }
+            if (IncompatibleDLC.Any())
+            {
+                sb.AppendLine($@"{PrefixIncompatibleDLC}{string.Join(';', IncompatibleDLC)}");
+            }
+
+            File.WriteAllText(path, sb.ToString());
+        }
+
+        public MetaCMM() { }
+        
+        /// <summary>
+        /// Loads a metaCMM file from disk
+        /// </summary>
+        /// <param name="metaFile"></param>
         public MetaCMM(string metaFile)
         {
             var lines = Utilities.WriteSafeReadAllLines(metaFile).ToList();

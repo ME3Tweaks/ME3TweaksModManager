@@ -1,5 +1,4 @@
-﻿using MassEffectModManagerCore.modmanager.objects;
-using Serilog;
+﻿using Serilog;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,8 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using MassEffectModManagerCore.modmanager.helpers;
-using static MassEffectModManagerCore.modmanager.gameini.DuplicatingIni;
+using LegendaryExplorerCore.Misc;
 
 namespace MassEffectModManagerCore.modmanager.gameini
 {
@@ -174,8 +172,8 @@ namespace MassEffectModManagerCore.modmanager.gameini
         public class Section
         {
             public string SectionName;
-            public List<IniEntry> KeysToDelete = new List<IniEntry>();
-            public List<IniEntry> KeysToAdd = new List<IniEntry>();
+            public List<DuplicatingIni.IniEntry> KeysToDelete = new List<DuplicatingIni.IniEntry>();
+            public List<DuplicatingIni.IniEntry> KeysToAdd = new List<DuplicatingIni.IniEntry>();
             public Section(string sectionname, string[] lines, ref int linepos)
             {
                 SectionName = sectionname;
@@ -193,7 +191,7 @@ namespace MassEffectModManagerCore.modmanager.gameini
                         linepos--;
                         break; //end of section
                     }
-                    List<IniEntry> listToAddTo = null;
+                    List<DuplicatingIni.IniEntry> listToAddTo = null;
                     if (line.StartsWith("+"))
                     {
                         //add
@@ -207,7 +205,7 @@ namespace MassEffectModManagerCore.modmanager.gameini
                     if (listToAddTo != null)
                     {
                         line = line.Substring(1); //slice off +/-
-                        listToAddTo.Add(new IniEntry(line));
+                        listToAddTo.Add(new DuplicatingIni.IniEntry(line));
                     }
                 }
             }

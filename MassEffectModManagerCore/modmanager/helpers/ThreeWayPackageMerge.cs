@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Serilog;
 using System.IO;
-using ME3ExplorerCore.Helpers;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Packages;
 
 namespace MassEffectModManagerCore.modmanager.helpers
 {
@@ -148,8 +148,8 @@ namespace MassEffectModManagerCore.modmanager.helpers
 
                         //make data offset and data size the same, as the exports could be the same even if it was appended later.
                         //The datasize being different is a data difference not a true header difference so we won't list it here.
-                        byte[] header1 = exp1.Header.TypedClone();
-                        byte[] header2 = exp2.Header.TypedClone();
+                        byte[] header1 = exp1.Header.ArrayClone();
+                        byte[] header2 = exp2.Header.ArrayClone();
                         Buffer.BlockCopy(BitConverter.GetBytes((long)0), 0, header1, 32, sizeof(long)); //zero out offset
                         Buffer.BlockCopy(BitConverter.GetBytes((long)0), 0, header2, 32, sizeof(long)); //zero out offset
 

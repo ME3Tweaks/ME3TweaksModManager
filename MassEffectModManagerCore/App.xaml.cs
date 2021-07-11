@@ -23,11 +23,12 @@ using System.Security.Cryptography.X509Certificates;
 using AuthenticodeExaminer;
 using CommandLine.Text;
 using MassEffectModManagerCore.modmanager.windows;
-using ME3ExplorerCore.Helpers;
-using ME3ExplorerCore.Misc;
-using ME3ExplorerCore.Packages;
+using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Misc;
+using LegendaryExplorerCore.Packages;
 using SingleInstanceCore;
-using ME3ExplorerCore.Compression;
+using LegendaryExplorerCore.Compression;
+using LegendaryExplorerCore.Unreal;
 using Microsoft.AppCenter;
 
 namespace MassEffectModManagerCore
@@ -36,15 +37,12 @@ namespace MassEffectModManagerCore
     public partial class App : Application, ISingleInstance
     {
         public static bool AppDataExistedAtBoot = Directory.Exists(Utilities.GetAppDataFolder(false)); //alphabetically this must come first in App!
-        /// <summary>
-        /// Registry key for legacy Mass Effect 3 Mod Manager. Used to store the ME3 backup directory
-        /// </summary>
-        internal const string REGISTRY_KEY_ME3CMM = @"HKEY_CURRENT_USER\Software\Mass Effect 3 Mod Manager";
 
         /// <summary>
-        /// ALOT Addon Registry Key, used for ME1 and ME2 backups
+        /// ME3Tweaks Shared Registry Key
         /// </summary>
-        internal const string BACKUP_REGISTRY_KEY = @"HKEY_CURRENT_USER\Software\ALOTAddon"; //Shared. Do not change
+        internal const string REGISTRY_KEY_ME3TWEAKS = @"HKEY_CURRENT_USER\Software\ME3Tweaks";
+
 
         public static string LogDir = Path.Combine(Utilities.GetAppDataFolder(), @"logs");
         private static bool POST_STARTUP = false;
@@ -70,7 +68,7 @@ namespace MassEffectModManagerCore
         /// <summary>
         /// The highest version of ModDesc that this version of Mod Manager can support.
         /// </summary>
-        public const double HighestSupportedModDesc = 6.3;
+        public const double HighestSupportedModDesc = 7.0;
 
         //Windows 8.1 Update 1
         public static readonly Version MIN_SUPPORTED_OS = new Version(@"6.3.9600");
@@ -105,7 +103,7 @@ namespace MassEffectModManagerCore
         public App() : base()
         {
             ExecutableLocation = Process.GetCurrentProcess().MainModule.FileName;
-            
+
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 
@@ -179,7 +177,7 @@ namespace MassEffectModManagerCore
                 #endregion
 
                 // Single instance occurs AFTER command line params as to not break the updater which requires simultaneous boot
-                bool isFirstInstance = SingleInstance<App>.InitializeAsFirstInstance(@"ME3TweaksModManager6"); // do not change this string
+                bool isFirstInstance = this.InitializeAsFirstInstance(@"ME3TweaksModManager6"); // do not change this string
                 if (!isFirstInstance)
                 {
                     //If it's not the first instance, arguments are automatically passed to the first instance
@@ -193,7 +191,6 @@ namespace MassEffectModManagerCore
                 this.Dispatcher.UnhandledException += OnDispatcherUnhandledException;
                 ToolTipService.ShowDurationProperty.OverrideMetadata(
                     typeof(DependencyObject), new FrameworkPropertyMetadata(20000));
-
 
                 Log.Information(@"===========================================================================");
                 FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(ExecutableLocation);
@@ -209,17 +206,16 @@ namespace MassEffectModManagerCore
 
                 if (signTime != null)
                 {
-                    IsSigned = true;
-                    BuildDate = signTime.Value.ToLocalTime().ToString(@"MMMM dd, yyyy");
-
+                    BuildDate = signTime.Value.ToLocalTime().ToString(@"MMMM dd, yyyy @ hh:mm");
                     var signer = info.GetSignatures().FirstOrDefault()?.SigningCertificate?.GetNameInfo(X509NameType.SimpleName, false);
                     if (signer != null && (signer == @"Michael Perez" || signer == @"ME3Tweaks"))
                     {
+                        IsSigned = true;
                         Log.Information(@"Build signed by ME3Tweaks. Build date: " + BuildDate);
                     }
                     else
                     {
-                        Log.Warning(@"Build signed, but not by ME3Tweaks.");
+                        Log.Warning(@"Build signed, but not by ME3Tweaks");
                     }
                 }
                 else
@@ -229,6 +225,11 @@ namespace MassEffectModManagerCore
 #if !DEBUG
                     Log.Warning(@"This build is not signed by ME3Tweaks. This may not be an official build.");
 #endif
+                }
+
+                if (args.Length > 0)
+                {
+                    Log.Information($@"Application arguments: {string.Join(" ", args)}");
                 }
 
 
@@ -249,6 +250,9 @@ namespace MassEffectModManagerCore
                     Log.Error(@"Unable to get the list of installed antivirus products: " + e.Message);
                 }
 
+                // Build 118 settings migration for backups
+                BackupService.MigrateBackupPaths();
+
                 Log.Information(@"The following backup paths are listed in the registry:");
                 Log.Information(@"Mass Effect ======");
                 Log.Information(BackupService.GetGameBackupPath(MEGame.ME1, true, true));
@@ -256,6 +260,12 @@ namespace MassEffectModManagerCore
                 Log.Information(BackupService.GetGameBackupPath(MEGame.ME2, true, true));
                 Log.Information(@"Mass Effect 3 ====");
                 Log.Information(BackupService.GetGameBackupPath(MEGame.ME3, true, true));
+                Log.Information(@"Mass Effect LE ======");
+                Log.Information(BackupService.GetGameBackupPath(MEGame.LE1, true, true));
+                Log.Information(@"Mass Effect 2 LE ====");
+                Log.Information(BackupService.GetGameBackupPath(MEGame.LE2, true, true));
+                Log.Information(@"Mass Effect 3 LE ====");
+                Log.Information(BackupService.GetGameBackupPath(MEGame.LE3, true, true));
 
                 //Build 104 changed location of settings from AppData to ProgramData.
                 if (!AppDataExistedAtBoot)
@@ -422,7 +432,7 @@ namespace MassEffectModManagerCore
 
         public static bool IsRunningOnAMD;
 
-        public static string[] SupportedLanguages = { @"int", @"pol", @"rus", @"deu", @"fra", @"bra", @"esn" };
+        public static string[] SupportedLanguages = { @"int", @"pol", @"rus", @"deu", @"fra", @"bra", @"esn", @"kor" };
 
         public static int BuildNumber = Assembly.GetEntryAssembly().GetName().Version.Revision;
 
@@ -483,10 +493,10 @@ namespace MassEffectModManagerCore
 #if DEBUG
                 version += @" DEBUG";
 #elif PRERELEASE
-                 //version += " PRERELEASE";
+                 version += " PRERELEASE";
 #endif
                 // TODO CHANGE THIS
-                return $"{version}, Build {BuildNumber}";
+                return $"{version} BETA, Build {BuildNumber}";
             }
         }
 
@@ -498,9 +508,9 @@ namespace MassEffectModManagerCore
 #if DEBUG
                 version += @" DEBUG";
 #elif PRERELEASE
-                 //version += " PRERELEASE";
+                 version += " PRERELEASE";
 #endif
-                return $"ME3Tweaks Mod Manager {version} (Build {BuildNumber})";
+                return $"ME3Tweaks Mod Manager {version} BETA (Build {BuildNumber})";
             }
         }
 
@@ -601,12 +611,7 @@ namespace MassEffectModManagerCore
             }
 
             // Clean up single instance
-            SingleInstance<App>.Cleanup();
-        }
-
-        private void App_OnStartup(object sender, StartupEventArgs e)
-        {
-            new MainWindow().Show();
+            SingleInstance.Cleanup();
         }
 
         public static bool IsOperatingSystemSupported()

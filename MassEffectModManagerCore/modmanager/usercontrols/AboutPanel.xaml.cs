@@ -58,7 +58,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 new LibraryCredit(@"Octokit", @"https://github.com/octokit/octokit.net", M3L.GetString(M3L.string_library_octokit)),
                 new LibraryCredit(@"Serilog", @"https://serilog.net", M3L.GetString(M3L.string_library_serilog)),
                 new LibraryCredit(@"WPF Extended Toolkit", @"https://github.com/dotnetprojects/WpfExtendedToolkit", M3L.GetString(M3L.string_library_wpftoolkitextended)),
-                new LibraryCredit(@"ME3ExplorerCore", @"https://github.com/ME3Tweaks/ME3Explorer", M3L.GetString(M3L.string_library_me3explorercore)),
+                new LibraryCredit(@"LegendaryExplorerCore", @"https://github.com/ME3Tweaks/ME3Explorer", M3L.GetString(M3L.string_library_LegendaryExplorerCore)),
                 new LibraryCredit(@"AuthenticodeExaminer", @"https://github.com/vcsjones/AuthenticodeExaminer", M3L.GetString(M3L.string_library_authenticodeexaminer)),
                 new LibraryCredit(@"CliWrap", @"https://github.com/Tyrrrz/CliWrap", M3L.GetString(M3L.string_library_cliwrap)),
                 new LibraryCredit(@"CommandLineParser", @"https://github.com/commandlineparser/commandline", M3L.GetString(M3L.string_library_commandlineparser)),
