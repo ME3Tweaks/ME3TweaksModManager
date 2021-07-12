@@ -7,14 +7,15 @@ using System.Text;
 using System.Windows;
 using System.Windows.Input;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
+using LegendaryExplorerCore.Misc;
 using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.modmanager.memoryanalyzer;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.modmanager.usercontrols;
 using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore.Packages;
 using MassEffectModManagerCore.modmanager.helpers;
 using Microsoft.AppCenter.Analytics;
+using MemoryAnalyzer = MassEffectModManagerCore.modmanager.memoryanalyzer.MemoryAnalyzer;
 
 namespace MassEffectModManagerCore.modmanager.windows
 {

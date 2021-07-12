@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using LegendaryExplorerCore.Misc;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using LegendaryExplorerCore.Packages;
 

@@ -71,7 +71,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             public MEGame Game { get; }
             public string GameName => Game.ToGameName(true);
             public string SearchText { get; set; }
-            private ui.ObservableCollectionExtended<VanillaEntry> Files { get; } = new ui.ObservableCollectionExtended<VanillaEntry>();
+            private ObservableCollectionExtended<VanillaEntry> Files { get; } = new ObservableCollectionExtended<VanillaEntry>();
             public ICollectionView FilesView => CollectionViewSource.GetDefaultView(Files);
             public MemGameDB(MEGame game)
             {

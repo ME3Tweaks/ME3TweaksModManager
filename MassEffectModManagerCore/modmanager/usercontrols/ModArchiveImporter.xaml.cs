@@ -77,7 +77,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         // Excludes Legendary Edition games.
         public bool CanCompressPackages => CompressedMods.Any(x => x.Game is MEGame.ME2 or MEGame.ME3) && CompressedMods.All(x => x.ExeExtractionTransform == null && x.ModClassicUpdateCode == 0) && App.AllowCompressingPackagesOnImport && ArchiveScanned && !TaskRunning;
 
-        public ui.ObservableCollectionExtended<Mod> CompressedMods { get; } = new ui.ObservableCollectionExtended<Mod>();
+        public ObservableCollectionExtended<Mod> CompressedMods { get; } = new ObservableCollectionExtended<Mod>();
         public ModArchiveImporter(string file, Stream archiveStream = null)
         {
             MemoryAnalyzer.AddTrackedMemoryItem($@"Mod Archive Importer ({Path.GetFileName(file)})", new WeakReference(this));

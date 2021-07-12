@@ -710,7 +710,7 @@ public event PropertyChangedEventHandler PropertyChanged;
             /// <summary>
             /// List of files that must be remotely fetched
             /// </summary>
-            public ui.ObservableCollectionExtended<SourceFile> applicableUpdates { get; } = new ui.ObservableCollectionExtended<SourceFile>();
+            public ObservableCollectionExtended<SourceFile> applicableUpdates { get; } = new ObservableCollectionExtended<SourceFile>();
             /// <summary>
             /// List of files that can be sourced locally, e.g. they were renamed/moved or copied.
             /// </summary>
@@ -718,7 +718,7 @@ public event PropertyChangedEventHandler PropertyChanged;
             /// <summary>
             /// List of files that no longer are referenced and can be deleted
             /// </summary>
-            public ui.ObservableCollectionExtended<string> filesToDelete { get; } = new ui.ObservableCollectionExtended<string>();
+            public ObservableCollectionExtended<string> filesToDelete { get; } = new ObservableCollectionExtended<string>();
             public bool CanUpdate { get; internal set; } = true; //Default to true
             public string TotalBytesHR => FileSize.FormatSize(TotalBytesToDownload);
             public string RemainingDataToDownload

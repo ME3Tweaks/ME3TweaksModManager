@@ -28,7 +28,7 @@ namespace MassEffectModManagerCore.modmanager.save.game3
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
     [OriginalName("MorphHeadSaveRecord")]
-    public class MorphHead : IUnrealSerializable, INotifyPropertyChanged
+    public class MorphHead : IUnrealSerializable, INotifyPropertyChanged, IMorphHead
     {
         #region Fields
         [OriginalName("HairMesh")]

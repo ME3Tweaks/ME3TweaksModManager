@@ -1229,6 +1229,10 @@
                         Name="ShowBackupNag_MenuItem"
                         Click="RouteDebugCall" />
                     <MenuItem
+                        Header="Install Headmorph"
+                        Name="InstallHeadMorph_MenuItem"
+                        Click="RouteDebugCall" />
+                    <MenuItem
                         Header="{DynamicResource string_mEMVanillaDBViewer}"
                         Name="ShowMEMDB_MenuItem"
                         Click="RouteDebugCall" />

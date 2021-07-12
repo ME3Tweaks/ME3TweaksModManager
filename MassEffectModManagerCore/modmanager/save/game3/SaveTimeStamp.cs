@@ -125,5 +125,12 @@ namespace MassEffectModManagerCore.modmanager.save.game3
                 this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
         }
+
+        public DateTime ToDate()
+        {
+            var hour = (int)Math.Floor((this.SecondsSinceMidnight / 60.0) / 60.0);
+            var minutes = (int)Math.Round(this.SecondsSinceMidnight / 60.0) % 60;
+            return new DateTime(Year, Month, Day, hour, minutes, 0);
+        }
     }
 }

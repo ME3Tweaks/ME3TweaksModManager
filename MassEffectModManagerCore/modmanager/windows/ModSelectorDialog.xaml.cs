@@ -5,6 +5,7 @@ using System.Windows;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
+using LegendaryExplorerCore.Misc;
 
 namespace MassEffectModManagerCore.modmanager.windows
 {

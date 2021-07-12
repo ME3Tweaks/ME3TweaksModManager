@@ -5,12 +5,13 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows.Input;
-using MassEffectModManagerCore.modmanager.memoryanalyzer;
+using LegendaryExplorerCore.Misc;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.modmanager.windows;
 using LegendaryExplorerCore.Packages;
 using Microsoft.AppCenter.Analytics;
+using MemoryAnalyzer = MassEffectModManagerCore.modmanager.memoryanalyzer.MemoryAnalyzer;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {

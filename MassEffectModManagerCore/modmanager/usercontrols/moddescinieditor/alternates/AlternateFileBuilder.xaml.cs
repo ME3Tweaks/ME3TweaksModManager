@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Windows;
 using IniParser.Model;
+using LegendaryExplorerCore.Misc;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;

@@ -3,16 +3,29 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Misc;
+using LegendaryExplorerCore.Packages;
+using LegendaryExplorerCore.Textures;
+using LegendaryExplorerCore.Unreal.Classes;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.save.game2.FileFormats;
+using MassEffectModManagerCore.modmanager.save.game3;
+using MassEffectModManagerCore.modmanager.save.gibbedio;
 using MassEffectModManagerCore.ui;
+using Microsoft.Win32;
+using PropertyChanged;
+using Serilog;
+using SixLabors.ImageSharp.Processing;
 using Path = System.IO.Path;
 
 namespace MassEffectModManagerCore.modmanager.save.game2.UI
@@ -20,27 +33,28 @@ namespace MassEffectModManagerCore.modmanager.save.game2.UI
     /// <summary>
     /// Interaction logic for SaveSelectorUI.xaml
     /// </summary>
-    public partial class SaveSelectorUI : Window, INotifyPropertyChanged
+    [AddINotifyPropertyChangedInterface]
+    public partial class SaveSelectorUI : Window
     {
         #region Career
+
         /// <summary>
         /// Save career as defined by name
         /// </summary>
-        public class Career : INotifyPropertyChanged
+        [AddINotifyPropertyChangedInterface]
+        public class Career
         {
-            public Career(List<SaveFile> saves, string charName)
+            public Career(List<ISaveFile> saves, string charName)
             {
                 CharacterName = charName;
                 SaveFiles.ReplaceAll(saves);
             }
 
             public string CharacterName { get; init; }
-            public LegendaryExplorerCore.Misc.ObservableCollectionExtended<SaveFile> SaveFiles { get; } = new LegendaryExplorerCore.Misc.ObservableCollectionExtended<SaveFile>();
+            public ObservableCollectionExtended<ISaveFile> SaveFiles { get; } = new();
 
-#pragma warning disable
-            public event PropertyChangedEventHandler? PropertyChanged;
-#pragma warning restore
         }
+
         #endregion
 
         /// <summary>
@@ -49,7 +63,7 @@ namespace MassEffectModManagerCore.modmanager.save.game2.UI
         public bool LoadingSaves { get; set; }
 
 
-        public LegendaryExplorerCore.Misc.ObservableCollectionExtended<Career> SaveCareers { get; } = new LegendaryExplorerCore.Misc.ObservableCollectionExtended<Career>();
+        public ObservableCollectionExtended<Career> SaveCareers { get; } = new();
 
         /// <summary>
         /// The currently selected Career
@@ -61,27 +75,155 @@ namespace MassEffectModManagerCore.modmanager.save.game2.UI
             SelectedSaveFile = SelectedCareer?.SaveFiles.FirstOrDefault();
         }
 
-        public SaveFile SelectedSaveFile { get; set; }
+        public ISaveFile SelectedSaveFile { get; set; }
+
+        public MEGame CurrentGame { get; set; } = MEGame.LE3; // debug
+
+        public Dictionary<MEGame, CaseInsensitiveDictionary<BitmapSource>> LevelImageCache { get; } = new();
 
         public void OnSelectedSaveFileChanged()
         {
-            //var csi = "";
-            //if (SelectedSaveFile == null)
-            //{
-            //    SelectedLevelText = "Select a save file";
-            //    csi = MERUtilities.ListStaticAssets("saveimages", includemerPrefix: true).FirstOrDefault(x => x.EndsWith("nosave.png"));
-            //}
-            //else
-            //{
-            //    var sfname = SelectedSaveFile.BaseLevelName.ToLower() + ".png";
-            //    var path = MERUtilities.ListStaticAssets("saveimages", includemerPrefix: true).FirstOrDefault(x => x.EndsWith(sfname));
-            //    path ??= MERUtilities.ListStaticAssets("saveimages", includemerPrefix: true).FirstOrDefault(x => x.EndsWith("unknown.png")); // could not find asset
-            //    csi = path;
-            //    SelectedLevelText = LevelNameStringConverter.StaticConvert(SelectedSaveFile.BaseLevelName);
+            var csi = "";
+            if (SelectedSaveFile == null)
+            {
+                SelectedLevelText = "Select a save file";
+                // csi = MERUtilities.ListStaticAssets("saveimages", includemerPrefix: true).FirstOrDefault(x => x.EndsWith("nosave.png"));
+            }
+            else
+            {
+                SelectedLevelText = LevelNameStringConverter.StaticConvert(SelectedSaveFile.Game, SelectedSaveFile.Proxy_BaseLevelName);
 
-            //}
+                var sfname = SelectedSaveFile.Proxy_BaseLevelName.ToLower();
+                if (LevelImageCache.TryGetValue(CurrentGame, out var cache) && cache.TryGetValue(sfname, out var cachedImage))
+                {
+                    CurrentSaveImage = cachedImage;
+                }
+                else
+                {
+                    // Load cache?
+                    LoadSaveImageCache(sfname);
+                }
 
-            //CurrentSaveImage = MERUtilities.LoadImage(MERUtilities.GetEmbeddedStaticFilesBinaryFile(csi, true));
+            }
+        }
+
+        private static CaseInsensitiveDictionary<string> ME3MapToTextureNames = new()
+        {
+            { "Biop_Nor", "GUI_SF_SaveLoad_Images.Elevators.LVL_NorCIC_512x256" },
+            { "BioP_ProEar", "GUI_SF_SaveLoad_Images.ME3_images.LVL_Earth_512x256" },
+            { "BioP_ProMar", "GUI_SF_SaveLoad_Images.ME3_images.LVL_Mars_512x256" },
+            { "BioP_ProCit", "GUI_SF_SaveLoad_Images.Elevators.LVL_CitHosp_512x256" },
+            { "BioP_Gth001", "GUI_SF_SaveLoad_Images.ME3_images.LVL_Geth01_512x256" },
+            { "BioP_Gth002", "GUI_SF_SaveLoad_Images.ME3_images.LVL_Geth02_512x256" },
+            { "BioP_GthN7a", "GUI_SF_SaveLoad_Images.ME3_images.LVL_GethAdmiral_512x256" },
+            { "BioP_GthLeg", "GUI_SF_SaveLoad_Images.ME3_images.LVL_GethLegion_512x256" },
+            { "BioP_KroGar", "GUI_SF_SaveLoad_Images.ME3_images.LVL_Garrus_512x256" },
+            { "BioP_Kro001", "GUI_SF_SaveLoad_Images.ME3_images.LVL_Geno01_512x256" },
+            { "BioP_Kro002", "GUI_SF_SaveLoad_Images.ME3_images.LVL_Geno02_512x256" },
+            { "BioP_KroN7a", "GUI_SF_SaveLoad_Images.ME3_images.LVL_GenoRescue_512x256" },
+            { "BioP_KroN7b", "GUI_SF_SaveLoad_Images.ME3_images.LVL_GenoBomb_512x256" },
+            { "BioP_KroGru", "GUI_SF_SaveLoad_Images.ME3_images.LVL_GenoGrunt_512x256" },
+            { "BioP_Cat002", "GUI_SF_SaveLoad_Images.ME3_images.LVL_Cat2Thessia_512x256" },
+            { "BioP_Cat003", "GUI_SF_SaveLoad_Images.ME3_images.LVL_Cat3Coup_512x256" },
+            { "BioP_CerMir", "GUI_SF_SaveLoad_Images.ME3_images.LVL_Miranda_512x256" },
+            { "BioP_CerJcb", "GUI_SF_SaveLoad_Images.ME3_images.LVL_Jacob_512x256" },
+            { "BioP_CitHub", "GUI_SF_SaveLoad_Images.Elevators.LVL_CitCommon_512x256" },
+            { "BioP_CitSam", "GUI_SF_SaveLoad_Images.ME3_images.LVL_Samara_512x256" },
+            { "BioP_OmgJck", "GUI_SF_SaveLoad_Images.ME3_images.LVL_Grissom_512x256" },
+            { "BioP_SPDish", "GUI_SF_SaveLoad_Images.ME3_images.LVL_FBDagger_512x256" },
+            { "BioP_SPSlum", "GUI_SF_SaveLoad_Images.ME3_images.LVL_FBGhost_512x256" },
+            { "BioP_SPTowr", "GUI_SF_SaveLoad_Images.ME3_images.LVL_FBGiant_512x256" },
+            { "BioP_SPCer", "GUI_SF_SaveLoad_Images.ME3_images.LVL_FBGlacier_512x256" },
+            { "BioP_SPRctr", "GUI_SF_SaveLoad_Images.ME3_images.LVL_FBReactor_512x256" },
+            { "BioP_SPNov", "GUI_SF_SaveLoad_Images.ME3_images.LVL_FBWhite_512x256" },
+            { "BioP_Cat004", "GUI_SF_SaveLoad_Images.ME3_images.LVL_Cat4Illusive_512x256" },
+            { "BioP_End001", "GUI_SF_SaveLoad_Images.ME3_images.LVL_EndEarth_512x256" },
+            { "BioP_End002", "GUI_SF_SaveLoad_Images.ME3_images.LVL_EndCitadel_512x256" },
+            { "BioP_End003", "GUI_SF_SaveLoad_Images.ME3_images.LVL_EndCitadel_512x256" },
+        };
+
+        private string ConvertLevelToImageName(MEGame game, string baselevelname)
+        {
+            if (game.IsGame2())
+            {
+                return baselevelname + "_IMG";
+            }
+            else if (game.IsGame3())
+            {
+                ME3MapToTextureNames.TryGetValue(baselevelname, out var result);
+                if (result != null)
+                    return result;
+            }
+
+            return "";
+        }
+
+        private void LoadSaveImageCache(string sfname)
+        {
+            var imagePackages = new List<string>();
+            LevelImageCache[CurrentGame] = new CaseInsensitiveDictionary<BitmapSource>();
+            switch (CurrentGame)
+            {
+                case MEGame.LE2:
+                case MEGame.ME2:
+                    imagePackages.Add(@"GUI_SF_SaveLoad_Images.pcc");
+                    break;
+                case MEGame.ME3:
+                    imagePackages.Add(@"SFXImages_SaveLoad_1.pcc");
+                    imagePackages.Add(@"SFXImages_SaveLoad_2.pcc");
+                    imagePackages.Add(@"SFXImages_SaveLoad_3.pcc");
+                    imagePackages.Add(@"SFXImages_SaveLoad_4.pcc");
+                    imagePackages.Add(@"SFXImages_SaveLoad_5.pcc");
+                    imagePackages.Add(@"SFXImages_SaveLoad_6.pcc");
+                    break;
+                case MEGame.LE3:
+                    imagePackages.Add(@"SFXImages_SaveLoad_1.pcc");
+                    imagePackages.Add(@"SFXImages_SaveLoad_2.pcc");
+                    imagePackages.Add(@"SFXImages_SaveLoad_3.pcc");
+                    imagePackages.Add(@"SFXImages_SaveLoad_4.pcc");
+                    imagePackages.Add(@"SFXImages_SaveLoad_5.pcc");
+                    imagePackages.Add(@"SFXImages_SaveLoad_6.pcc");
+                    break;
+            }
+
+            var loadedFiles = MELoadedFiles.GetFilesLoadedInGame(CurrentGame);
+            foreach (var imagePackageName in imagePackages)
+            {
+                if (loadedFiles.TryGetValue(imagePackageName, out var imagePackagePath))
+                {
+                    var package = MEPackageHandler.OpenMEPackage(imagePackagePath);
+                    foreach (var tex in package.Exports.Where(x => x.IsTexture()))
+                    {
+                        if (CurrentGame.IsGame2() && !tex.ObjectName.Name.Contains(@"_IMG")) continue;
+                        Texture2D t2d = new Texture2D(tex);
+                        // NOTE: Set 'ClearAlpha' to false to make image support transparency!
+                        var bitmap = Image.convertRawToBitmapARGB(t2d.GetImageBytesForMip(t2d.GetTopMip(), t2d.Export.Game, true, out _), t2d.GetTopMip().width, t2d.GetTopMip().height, Image.getPixelFormatType(t2d.TextureFormat), true);
+                        //var bitmap = DDSImage.ToBitmap(imagebytes, fmt, mipToLoad.width, mipToLoad.height, CurrentLoadedExport.FileRef.Platform.ToString());
+                        var memory = new MemoryStream(bitmap.Height * bitmap.Width * 4 + 54);
+                        bitmap.Save(memory, ImageFormat.Bmp);
+                        memory.Position = 0;
+                        LevelImageCache[CurrentGame][GetLevelNameFromTexturePath(tex.InstancedFullPath, CurrentGame)] = (BitmapSource)new ImageSourceConverter().ConvertFrom(memory);
+                    }
+                }
+            }
+        }
+
+        private string GetLevelNameFromTexturePath(string texInstancedFullPath, MEGame currentGame)
+        {
+            if (currentGame.IsGame2())
+            {
+                //return ME2
+                texInstancedFullPath = texInstancedFullPath.Split('.').Last();
+                return texInstancedFullPath.Substring(0, texInstancedFullPath.IndexOf("_IMG"));
+            }
+            if (currentGame.IsGame3())
+            {
+                var kvp = ME3MapToTextureNames.FirstOrDefault(x => x.Value.Equals(texInstancedFullPath, StringComparison.InvariantCultureIgnoreCase));
+                if (kvp.Key != null)
+                    return kvp.Key;
+            }
+
+            return "";
         }
 
         /// <summary>
@@ -91,7 +233,7 @@ namespace MassEffectModManagerCore.modmanager.save.game2.UI
 
 
 
-        public BitmapImage CurrentSaveImage { get; set; }
+        public BitmapSource CurrentSaveImage { get; set; }
 
         public SaveSelectorUI()
         {
@@ -104,90 +246,149 @@ namespace MassEffectModManagerCore.modmanager.save.game2.UI
 
         private void LoadCommands()
         {
+            ImportHeadmorphCommand = new GenericCommand(StartImportingHeadMorph, CanImportHeadMorph);
             //RefundHenchTalentsCommand = new GenericCommand(RefundHenchTalents, SaveIsSelected);
             //RefundPlayerTalentsCommand = new GenericCommand(RefundPlayerHenchTalents, SaveIsSelected);
             //RefundHenchPlayerTalentsCommand = new GenericCommand(RefundHenchPlayerTalents, SaveIsSelected);
         }
 
-//        private void RefundPlayerHenchTalents()
-//        {
-//            InternalRefundPoints(true, false);
-//        }
+        private void StartImportingHeadMorph()
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
 
-//        private async void InternalRefundPoints(bool refundPlayer, bool refundHench)
-//        {
-//            if (refundPlayer)
-//            {
-//                // CLEAR PLAYER POWERS
-//                for (int i = SelectedSaveFile.PlayerRecord.Powers.Count - 1; i > 0; i--)
-//                {
-//                    // Need to figure out a way to only remove powers and leave things like first aid.
-//                    var power = SelectedSaveFile.PlayerRecord.Powers[i].PowerClassName;
-//                    bool shouldRemove = true;
-//                    Debug.WriteLine(power);
-//                    switch (power)
-//                    {
-//                        case "SFXGameContent_Powers.SFXPower_FirstAid":
-//                        case "SFXGameContent_Powers.SFXPower_PlayerMelee":
-//                        case "SFXGameContent_Powers.SFXPower_PlayerMeleePistol":
-//                            shouldRemove = false;
-//                            break;
-//                    }
+            var result = ofd.ShowDialog();
+            if (result.HasValue && result.Value)
+            {
+                var extension = Path.GetExtension(ofd.FileName);
+                if (extension == @".ron")
+                {
 
-//                    if (shouldRemove)
-//                    {
-//                        SelectedSaveFile.PlayerRecord.Powers.RemoveAt(i);
-//                    }
-//                }
+                }
+                else if (extension == @".me3headmorph")
+                {
+                    using var input = new MemoryStream(File.ReadAllBytes(ofd.FileName));
+                    var magic = input.ReadStringASCIINull();
+                    if (magic != @"GIBBEDMASSEFFECT3HEADMORPH")
+                        throw new Exception(@"Magic for this .me3headmorph file is incorrect. This is not a gibbed ME3 headmorph.");
 
-//                // Set the number of talent points
-//                SelectedSaveFile.PlayerRecord.TalentPoints = TalentReset.GetNumTalentPoints(SelectedSaveFile.PlayerRecord.Level, true, true);
-//            }
+                    uint version = input.ReadUInt32();
 
-//            if (refundHench)
-//            {
+                    if (version != SelectedSaveFile.Version)
+                    {
+                        throw new Exception(@"This headmorph cannot apply to this save file, it is from a different version of the game.");
+                    }
 
-//                // CLEAR SQUADMATE POWERS
-//                //foreach (var hm in SelectedSaveFile.HenchmanRecords)
-//                //{
-//                //    var numTalentPoints = TalentReset.GetNumTalentPoints(SelectedSaveFile.PlayerRecord.Level, false, true, hm.Tag == "hench_vixen" || hm.Tag == "hench_leading");
-//                //    hm.TalentPoints = numTalentPoints;
-//                //    hm.Powers.Clear(); // Wipe out the talents list so game has to rebuild it on load
-//                //}
+                    var reader = new UnrealStream(input, true, version);
+                    var morphHead = new MorphHead();
+                    morphHead.Serialize(reader);
+                    SelectedSaveFile.Proxy_PlayerRecord.SetMorphHead(morphHead);
+                    var sf = SelectedSaveFile as SaveFileGame3;
+                    var savePath = Directory.GetParent(sf.SaveFilePath).FullName;
+                    int i = 0;
+                    while (true)
+                    {
+                        var testPath = Path.Combine(savePath, $@"Save_{(i + sf.SaveNumber).ToString().PadLeft(4, '0')}.pcsav");
+                        if (!File.Exists(testPath))
+                        {
+                            savePath = testPath;
+                            break;
+                        }
 
-//                // Game breaking?
-//                SelectedSaveFile.HenchmanRecords.Clear(); // Clears the loadout which removes powers (and weapons)
-//            }
+                        i++;
+                    }
 
-//            // Commit the save
-//#if DEBUG
-//            using (var outS = File.Open(SelectedSaveFile.FileName, FileMode.Create, FileAccess.Write))
-//            {
-//                SelectedSaveFile.Save(outS);
-//            }
-//#endif
+                    var ms = new MemoryStream();
+                    SaveFileGame3.Write(sf, ms);
+                    ms.WriteToFile(savePath);
+                    Log.Information($@"Installed headmorph {ofd.FileName} into save {savePath}");
+                }
+            }
+        }
 
-//            // Test the save file
-//            using (var outS = File.OpenRead(SelectedSaveFile.FileName))
-//            {
-//                var testSave = SaveFile.Load(outS);
-//            }
+        private bool CanImportHeadMorph()
+        {
+            return SaveIsSelected() && (SelectedSaveFile.Game.IsGame2() || SelectedSaveFile.Game.IsGame3());
+        }
 
-//            M3L.ShowDialog(this, "Your save file has been updated.", "Save updated");
-//            Debug.WriteLine("Done!");
-//        }
+        //        private void RefundPlayerHenchTalents()
+        //        {
+        //            InternalRefundPoints(true, false);
+        //        }
 
-//        private void RefundHenchTalents()
-//        {
-//            InternalRefundPoints(false, true);
-//        }
+        //        private async void InternalRefundPoints(bool refundPlayer, bool refundHench)
+        //        {
+        //            if (refundPlayer)
+        //            {
+        //                // CLEAR PLAYER POWERS
+        //                for (int i = SelectedSaveFile.PlayerRecord.Powers.Count - 1; i > 0; i--)
+        //                {
+        //                    // Need to figure out a way to only remove powers and leave things like first aid.
+        //                    var power = SelectedSaveFile.PlayerRecord.Powers[i].PowerClassName;
+        //                    bool shouldRemove = true;
+        //                    Debug.WriteLine(power);
+        //                    switch (power)
+        //                    {
+        //                        case "SFXGameContent_Powers.SFXPower_FirstAid":
+        //                        case "SFXGameContent_Powers.SFXPower_PlayerMelee":
+        //                        case "SFXGameContent_Powers.SFXPower_PlayerMeleePistol":
+        //                            shouldRemove = false;
+        //                            break;
+        //                    }
 
-//        private void RefundHenchPlayerTalents()
-//        {
-//            InternalRefundPoints(true, true);
-//        }
+        //                    if (shouldRemove)
+        //                    {
+        //                        SelectedSaveFile.PlayerRecord.Powers.RemoveAt(i);
+        //                    }
+        //                }
 
-        public GenericCommand RefundPlayerTalentsCommand { get; set; }
+        //                // Set the number of talent points
+        //                SelectedSaveFile.PlayerRecord.TalentPoints = TalentReset.GetNumTalentPoints(SelectedSaveFile.PlayerRecord.Level, true, true);
+        //            }
+
+        //            if (refundHench)
+        //            {
+
+        //                // CLEAR SQUADMATE POWERS
+        //                //foreach (var hm in SelectedSaveFile.HenchmanRecords)
+        //                //{
+        //                //    var numTalentPoints = TalentReset.GetNumTalentPoints(SelectedSaveFile.PlayerRecord.Level, false, true, hm.Tag == "hench_vixen" || hm.Tag == "hench_leading");
+        //                //    hm.TalentPoints = numTalentPoints;
+        //                //    hm.Powers.Clear(); // Wipe out the talents list so game has to rebuild it on load
+        //                //}
+
+        //                // Game breaking?
+        //                SelectedSaveFile.HenchmanRecords.Clear(); // Clears the loadout which removes powers (and weapons)
+        //            }
+
+        //            // Commit the save
+        //#if DEBUG
+        //            using (var outS = File.Open(SelectedSaveFile.FileName, FileMode.Create, FileAccess.Write))
+        //            {
+        //                SelectedSaveFile.Save(outS);
+        //            }
+        //#endif
+
+        //            // Test the save file
+        //            using (var outS = File.OpenRead(SelectedSaveFile.FileName))
+        //            {
+        //                var testSave = SaveFile.Load(outS);
+        //            }
+
+        //            M3L.ShowDialog(this, "Your save file has been updated.", "Save updated");
+        //            Debug.WriteLine("Done!");
+        //        }
+
+        //        private void RefundHenchTalents()
+        //        {
+        //            InternalRefundPoints(false, true);
+        //        }
+
+        //        private void RefundHenchPlayerTalents()
+        //        {
+        //            InternalRefundPoints(true, true);
+        //        }
+
+        public GenericCommand ImportHeadmorphCommand { get; set; }
 
         public GenericCommand RefundHenchPlayerTalentsCommand { get; set; }
 
@@ -200,20 +401,20 @@ namespace MassEffectModManagerCore.modmanager.save.game2.UI
             Task.Run(() =>
             {
                 // Load saves
-                var savePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BioWare", "Mass Effect 2", "Save");
+                var savePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"BioWare", GetSaveSubDir(CurrentGame));
 
                 var saveDirs = Directory.GetDirectories(savePath);
-                Dictionary<string, List<SaveFile>> charNameCareers = new Dictionary<string, List<SaveFile>>();
+                Dictionary<string, List<ISaveFile>> charNameCareers = new Dictionary<string, List<ISaveFile>>();
                 foreach (var saveDir in saveDirs)
                 {
-                    foreach (var sf in Directory.GetFiles(saveDir, "*.pcsav"))
+                    foreach (var sf in Directory.GetFiles(saveDir, @"*.pcsav"))
                     {
                         using var saveFileS = File.OpenRead(sf);
-                        var saveFile = SaveFile.Load(saveFileS, sf);
-                        if (!charNameCareers.TryGetValue(saveFile.PlayerRecord.FirstName, out var list))
+                        var saveFile = SaveFileLoader.LoadSaveFile(saveFileS, sf);
+                        if (!charNameCareers.TryGetValue(saveFile.Proxy_PlayerRecord.Proxy_FirstName, out var list))
                         {
-                            list = new List<SaveFile>();
-                            charNameCareers[saveFile.PlayerRecord.FirstName] = list;
+                            list = new List<ISaveFile>();
+                            charNameCareers[saveFile.Proxy_PlayerRecord.Proxy_FirstName] = list;
                         }
 
                         list.Add(saveFile);
@@ -222,7 +423,7 @@ namespace MassEffectModManagerCore.modmanager.save.game2.UI
 
                 foreach (var v in charNameCareers)
                 {
-                    charNameCareers[v.Key] = v.Value.OrderByDescending(x => x.TimeStamp.ToDate()).ToList();
+                    charNameCareers[v.Key] = v.Value.OrderByDescending(x => x.Proxy_TimeStamp).ToList();
                 }
 
                 return charNameCareers;
@@ -233,8 +434,25 @@ namespace MassEffectModManagerCore.modmanager.save.game2.UI
             });
         }
 
-#pragma warning disable
-        public event PropertyChangedEventHandler? PropertyChanged;
-#pragma warning restore
+        private string GetSaveSubDir(MEGame currentGame)
+        {
+            switch (currentGame)
+            {
+                case MEGame.ME1:
+                    return @"Mass Effect\Save";
+                case MEGame.ME2:
+                    return @"Mass Effect 2\Save";
+                case MEGame.ME3:
+                    return @"Mass Effect 3\Save";
+                case MEGame.LE1:
+                    return @"Mass Effect Legendary Edition\Save\ME1";
+                case MEGame.LE2:
+                    return @"Mass Effect Legendary Edition\Save\ME2";
+                case MEGame.LE3:
+                    return @"Mass Effect Legendary Edition\Save\ME3";
+            }
+
+            return null;
+        }
     }
 }

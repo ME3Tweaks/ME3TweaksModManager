@@ -20,6 +20,7 @@ using MassEffectModManagerCore.modmanager.me3tweaks;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
+using System.Windows.Data;
 using AuthenticodeExaminer;
 using CommandLine.Text;
 using MassEffectModManagerCore.modmanager.windows;
@@ -106,6 +107,13 @@ namespace MassEffectModManagerCore
 
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
+
+            ObservableCollectionExtendedThreading.EnableCrossThreadUpdatesDelegate = (collection, syncLock) => 
+                Application.Current?.Dispatcher?.Invoke(() =>
+                {
+                    BindingOperations.EnableCollectionSynchronization(collection, syncLock);
+                });
+
 
             var settingsExist = File.Exists(Settings.SettingsPath); //for init language
             try

@@ -12,13 +12,18 @@
         ContentRendered="SSContent_Rendered"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         Title="Save Selector" Height="550" Width="800">
+    <Window.Style>
+        <Style
+            TargetType="Window"
+            BasedOn="{StaticResource {x:Type Window}}" />
+    </Window.Style>
     <Window.Resources>
         <ui:DifficultyStringConverter x:Key="DifficultyStringConverter"/>
         <ui:LevelNameStringConverter x:Key="LevelNameStringConverter"/>
         <ui:SaveGameNameConverter x:Key="SaveGameNameConverter"/>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <converters:NullVisibilityConverter x:Key="NullVisibility"/>
-        <Style  TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource MahApps.Styles.ListBoxItem}">
+        <Style  TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
             <Style.Triggers>
                 <Trigger Property="ItemsControl.AlternationIndex" Value="1">
                     <Setter Property="Background" Value="#25225577"></Setter>
@@ -91,12 +96,10 @@
                        TextAlignment="Center" 
                        FontSize="16"
                        Margin="0,0,0,5"/>
-                <Button Content="Refund henchmen talent points" Command="{Binding RefundHenchTalentsCommand}"/>
-                <Button Content="Refund player talent points" Command="{Binding RefundPlayerTalentsCommand}"/>
-                <Button Content="Refund henchmen + player talent points" Command="{Binding RefundHenchPlayerTalentsCommand}"/>
+                <Button Content="Install headmorph" Command="{Binding ImportHeadmorphCommand}"/>
             </StackPanel>
         </StackPanel>
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding LoadingSaves, Converter={StaticResource BooleanToVisibilityConverter}}">
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding LoadingSaves, Converter={StaticResource BoolToVisibilityConverter}}">
             <ContentControl
                 x:Name="LoadingSpinner_Image"
                 Focusable="False"

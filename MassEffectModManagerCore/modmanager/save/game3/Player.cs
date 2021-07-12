@@ -29,7 +29,7 @@ namespace MassEffectModManagerCore.modmanager.save.game3
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
     [OriginalName("PlayerSaveRecord")]
-    public class Player : IUnrealSerializable, INotifyPropertyChanged
+    public class Player : IUnrealSerializable, INotifyPropertyChanged, IPlayerRecord
     {
         #region Fields
         [OriginalName("bIsFemale")]
@@ -199,7 +199,7 @@ namespace MassEffectModManagerCore.modmanager.save.game3
         }
 
         #region Properties
-        public bool IsFemale
+        public bool Proxy_IsFemale
         {
             get { return this._IsFemale; }
             set
@@ -207,7 +207,7 @@ namespace MassEffectModManagerCore.modmanager.save.game3
                 if (value != this._IsFemale)
                 {
                     this._IsFemale = value;
-                    this.NotifyPropertyChanged("IsFemale");
+                    this.NotifyPropertyChanged(nameof(Proxy_IsFemale));
                 }
             }
         }
@@ -285,12 +285,12 @@ namespace MassEffectModManagerCore.modmanager.save.game3
                 if (Equals(value, this._CurrentXP) == false)
                 {
                     this._CurrentXP = value;
-                    this.NotifyPropertyChanged("CurrentXP");
+                    this.NotifyPropertyChanged(nameof(CurrentXP));
                 }
             }
         }
 
-        public string FirstName
+        public string Proxy_FirstName
         {
             get { return this._FirstName; }
             set
@@ -298,8 +298,22 @@ namespace MassEffectModManagerCore.modmanager.save.game3
                 if (value != this._FirstName)
                 {
                     this._FirstName = value;
-                    this.NotifyPropertyChanged("FirstName");
+                    this.NotifyPropertyChanged(nameof(Proxy_FirstName));
                 }
+            }
+        }
+
+        public void SetMorphHead(IMorphHead morphHead)
+        {
+            if (morphHead is MorphHead head)
+            {
+                Appearance.MorphHead = head;
+                Appearance.HasMorphHead = true;
+            }
+            else
+            {
+                Appearance.MorphHead = null;
+                Appearance.HasMorphHead = false;
             }
         }
 

@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Unreal;
 
 namespace MassEffectModManagerCore.modmanager.save.game2.FileFormats
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    public partial class SaveFile : INotifyPropertyChanged
+    public partial class SaveFileGame2 : INotifyPropertyChanged, ISaveFile
     {
 
         // ME2R CHANGES
@@ -19,6 +20,8 @@ namespace MassEffectModManagerCore.modmanager.save.game2.FileFormats
         public Save.DifficultyOptions BindableDifficulty => Difficulty;
         public DateTime BindableTimestamp => TimeStamp.ToDate();
         public TimeSpan BindableTimePlayed => TimeSpan.FromSeconds(SecondsPlayed);
+        public MEGame Game { get; set; }
+        public string SaveFilePath { get; }
 
         // Metadata
         public string FileName { get; set; }
@@ -33,7 +36,7 @@ namespace MassEffectModManagerCore.modmanager.save.game2.FileFormats
 
 
         // Original code is as follows
-        public uint Version; // ME2 1.0 (release) has saves of version 29 (0x1D)
+        public uint Version { get; set; } // ME2 1.0 (release) has saves of version 29 (0x1D)
         public uint Checksum; // CRC32 of save data (from start) to before CRC32 value
 
         [UnrealFieldOffset(0x054)]
@@ -55,6 +58,7 @@ namespace MassEffectModManagerCore.modmanager.save.game2.FileFormats
         [UnrealFieldCategory("3. Location")]
         [UnrealFieldDisplayName("Base Level Name")]
         public string BaseLevelName;
+        public string Proxy_BaseLevelName => BaseLevelName;
 
         [UnrealFieldOffset(0x0A0)]
         [UnrealFieldCategory("1. Information")]
@@ -70,6 +74,7 @@ namespace MassEffectModManagerCore.modmanager.save.game2.FileFormats
         [UnrealFieldCategory("1. Information")]
         [UnrealFieldDisplayName("Time Stamp")]
         public Save.SaveTimeStamp TimeStamp;
+        public DateTime Proxy_TimeStamp => TimeStamp.ToDate();
 
         [UnrealFieldOffset(0x0A8)]
         [UnrealFieldCategory("3. Location")]
@@ -115,6 +120,8 @@ namespace MassEffectModManagerCore.modmanager.save.game2.FileFormats
         [UnrealFieldCategory("2. Squad")]
         [UnrealFieldDisplayName("Player")]
         public Save.Player PlayerRecord;
+
+        public IPlayerRecord Proxy_PlayerRecord => PlayerRecord;
 
         [UnrealFieldOffset(0x2B0)]
         [UnrealFieldCategory("2. Squad")]
@@ -166,9 +173,9 @@ namespace MassEffectModManagerCore.modmanager.save.game2.FileFormats
             stream.Serialize(ref this.DependentDLC);
         }
 
-        public static SaveFile Load(Stream input, string fileName = null)
+        public static SaveFileGame2 Load(Stream input, string fileName = null, MEGame expectedGame = MEGame.Unknown)
         {
-            SaveFile save = new SaveFile();
+            SaveFileGame2 save = new SaveFileGame2();
             save.Version = input.ReadUInt32();
 
             if (fileName != null)
@@ -201,9 +208,16 @@ namespace MassEffectModManagerCore.modmanager.save.game2.FileFormats
                 }
             }
 
-            if (save.Version != 29)
+            if (save.Version != 29 && save.Version != 30)
             {
-                throw new FormatException("todo: fix earlier save version support (not really important)");
+                throw new FormatException("Save version not supported. This parser only supports ME2 (29) and LE2 (30)");
+            }
+
+            if (save.Version == 29) save.Game = MEGame.ME2;
+            if (save.Version == 30) save.Game = MEGame.LE2;
+            if (expectedGame != MEGame.Unknown && expectedGame != save.Game)
+            {
+                throw new Exception($@"Sanity check failure: Save loader expected save for {expectedGame} but save appears to be for {{Game}}");
             }
 
             UnrealStream stream = new UnrealStream(input, true, save.Version);
@@ -270,5 +284,6 @@ namespace MassEffectModManagerCore.modmanager.save.game2.FileFormats
 #pragma warning disable
         public event PropertyChangedEventHandler? PropertyChanged;
 #pragma warning restore
+
     }
 }

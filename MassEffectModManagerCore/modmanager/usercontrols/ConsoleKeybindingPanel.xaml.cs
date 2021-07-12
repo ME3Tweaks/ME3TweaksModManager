@@ -42,7 +42,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
         }
 
-        public ui.ObservableCollectionExtended<KeybindingGame> Games { get; } = new();
+        public ObservableCollectionExtended<KeybindingGame> Games { get; } = new();
 
         #region Key texts
 
@@ -71,7 +71,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             public string FullConsoleKeyText { get; private set; }
             public string MiniConsoleKeyText { get; private set; }
-            public ui.ObservableCollectionExtended<GameTarget> Targets { get; } = new();
+            public ObservableCollectionExtended<GameTarget> Targets { get; } = new();
             private bool OperationInProgress;
 
             public string WhereKeysAreDefinedText { get; }
