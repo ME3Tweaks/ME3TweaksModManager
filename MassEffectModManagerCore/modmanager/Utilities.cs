@@ -966,6 +966,7 @@ namespace MassEffectModManagerCore.modmanager
         public static Stream GetResourceStream(string assemblyResource, Assembly assembly = null)
         {
             assembly ??= System.Reflection.Assembly.GetExecutingAssembly();
+
             var res = assembly.GetManifestResourceNames();
             return assembly.GetManifestResourceStream(assemblyResource);
         }

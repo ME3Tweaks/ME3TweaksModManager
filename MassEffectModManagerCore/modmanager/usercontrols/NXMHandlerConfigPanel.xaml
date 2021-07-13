@@ -33,11 +33,9 @@
         <Button
             DockPanel.Dock="Top"
             Content="Register ME3Tweaks Mod Manager as handler"
-            Command="{Binding UploadLogCommand}"
+            Command="{Binding RegisterCommand}"
             HorizontalAlignment="Left"
-            Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"
-            Visibility="{Binding UploadingLog, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}" />
-
+            Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"/>
         <TextBlock 
             DockPanel.Dock="Top"
             Text="Other apps"

@@ -5,6 +5,7 @@ using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Misc;
+using MassEffectModManagerCore.modmanager.nexusmodsintegration;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 
@@ -24,11 +25,25 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public ICommand AddOtherAppCommand { get; set; }
         public ICommand CloseCommand { get; set; }
+        public ICommand RegisterCommand { get; set; }
+        public ICommand RemoveAppCommand { get; set; }
 
         private void LoadCommands()
         {
+            RemoveAppCommand = new RelayCommand(RemoveApp);
+            RegisterCommand = new GenericCommand(RegisterM3);
             AddOtherAppCommand = new GenericCommand(AddNXMApp, CanAddNXMApp);
             CloseCommand = new GenericCommand(() => OnClosing(DataEventArgs.Empty), CanClose);
+        }
+
+        private void RegisterM3()
+        {
+            NexusModsUtilities.SetupNXMHandling();
+        }
+
+        private void RemoveApp(object obj)
+        {
+            throw new System.NotImplementedException();
         }
 
         private bool CanClose()

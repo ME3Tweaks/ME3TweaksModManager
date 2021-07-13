@@ -74,6 +74,7 @@
 		<None Remove="modmanager\gamemd5\me1pl.bin" />
 		<None Remove="modmanager\gamemd5\me2.bin" />
 		<None Remove="modmanager\gamemd5\me3.bin" />
+		<None Remove="modmanager\licenses\minhook.txt" />
 		<None Remove="modmanager\localizations\icons\english.png" />
 		<None Remove="modmanager\localizations\icons\french.png" />
 		<None Remove="modmanager\localizations\icons\german.png" />
@@ -139,6 +140,7 @@
     <EmbeddedResource Include="modmanager\gamemd5\*.bin" />
     <EmbeddedResource Include="modmanager\squadmates\**\*.txt" />
     <EmbeddedResource Include="modmanager\squadmates\**\*.pcc" />
+    <EmbeddedResource Include="modmanager\licenses\minhook.txt" />
     <EmbeddedResource Include="modmanager\me3tweaks\LiveIni.bin" />
 		<EmbeddedResource Include="modmanager\me3tweaks\PermissionsGranter.exe" />
 		<EmbeddedResource Include="modmanager\meim\propertymaps\BioEngine.xml" />
