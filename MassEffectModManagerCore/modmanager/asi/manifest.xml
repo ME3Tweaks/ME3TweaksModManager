@@ -509,7 +509,7 @@
       <author>Mgamerz</author>
       <description>This ASI opens a console window that logs controller inputs. You must install a controller mod or it will not output anything. This is only for testing if the game is seeing your controller inputs.</description>
       <version>1</version>
-      <hash>264691e2d277a31f7c455d59d4f83d7a</hash>
+      <hash>505f72686345451dfe6e7b02448c78e1</hash>
       <sourcecode>https://github.com/ME3Tweaks/ME3-ASI-Plugins/tree/master/ControllerInputTester</sourcecode>
       <downloadlink>https://github.com/ME3Tweaks/ME3-ASI-Plugins/releases/download/v1.0-ControllerInputTester/ControllerInputTester.asi</downloadlink>
     </asimod>
