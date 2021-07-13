@@ -1,26 +1,12 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
-using System.Text;
-using System.Windows;
 using System.Windows.Input;
-using Flurl.Http;
-using MassEffectModManagerCore.modmanager.helpers;
-using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
-using LegendaryExplorerCore.Compression;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
-using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
-using LegendaryExplorerCore.Packages;
 using Microsoft.Win32;
-using Microsoft.WindowsAPICodePack.Taskbar;
 using Newtonsoft.Json;
-using PropertyChanged;
-using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -65,7 +51,22 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             var result = ofd.ShowDialog();
             if (result.HasValue && result.Value)
             {
-                OtherGameHandlers.Add(new NexusDomainHandler() { ProgramPath = ofd.FileName, Arguments = @"%1"});
+                OtherGameHandlers.Add(new NexusDomainHandler() { ProgramPath = ofd.FileName, Arguments = GetDefaultArgumentsForApp(Path.GetFileNameWithoutExtension(ofd.FileName))});
+            }
+        }
+
+        private string GetDefaultArgumentsForApp(string appExeName)
+        {
+            switch (appExeName.ToLower())
+            {
+                case "vortex":
+                    return @"-d %1";
+                case "kortex x64":
+                case "kortex":
+                    return "-DownloadLink \"%1\""; // do not localize
+                case "nexusclient":
+                default:
+                    return @"%1";
             }
         }
 
