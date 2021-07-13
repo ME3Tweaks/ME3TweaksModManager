@@ -134,8 +134,18 @@ The format for a single property update for an export. You may have several of t
 | Property Name | Type   | Information                                                  |
 | ------------- | ------ | ------------------------------------------------------------ |
 | propertyname  | string | The full name of the property. If updating a struct, include the name of the struct, separated by a '.'. For example, Offset.X to update X in the Offset StructProperty. |
-| propertytype  | string | The property type. Currently supported types: BoolProperty, FloatProperty, IntProperty, NameProperty. The value must be the final property type to update, if this is part of a nested struct. |
+| propertytype  | string | The property type. The value must be the final property type to update, if this is part of a nested struct. Supported types are below. |
 | propertyvalue | string | The updated property value, <u>as a string</u>               |
+
+**Supported Property Types:**
+
+- BoolProperty
+- FloatProperty
+- IntProperty
+- StrProperty
+- NameProperty
+- EnumProperty
+- ObjectProperty (Does not support porting in, only relinking to existing objects. Pass in full instanced path as propertyvalue)
 
 **Example:**
 
