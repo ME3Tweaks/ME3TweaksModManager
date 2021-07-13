@@ -9,6 +9,7 @@ using FontAwesome.WPF;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.nexusmodsintegration;
+using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
 using Microsoft.AppCenter.Analytics;
 using Pathoschild.Http.Client;
@@ -59,7 +60,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public GenericCommand AuthorizeCommand { get; set; }
         public GenericCommand UnlinkCommand { get; set; }
         public GenericCommand CloseCommand { get; set; }
-        public GenericCommand SetupWithDLMCommand { get; set; }
+        public GenericCommand ConfigureNXMCommand { get; set; }
 
         public bool IsAuthorizing { get; private set; }
 
@@ -68,50 +69,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             AuthorizeCommand = new GenericCommand(AuthorizeWithNexus, CanAuthorizeWithNexus);
             UnlinkCommand = new GenericCommand(UnlinkFromNexus, CanUnlinkWithNexus);
             CloseCommand = new GenericCommand(ClosePanel, CanClose);
-            SetupWithDLMCommand = new GenericCommand(SetupDLM, CanUnlinkWithNexus);
+            ConfigureNXMCommand = new GenericCommand(ConfigureNXM);
         }
 
-        public long DLMProgressMax { get; private set; } = 1;
-        public long DLMProgressValue { get; private set; } = 0;
-        public bool DLMProgressIndeterminate { get; private set; } = true;
-        public string DLMSetupText { get; private set; } = M3L.GetString(M3L.string_setupDownloadWithManager);
-        private void SetupDLM()
+        private void ConfigureNXM()
         {
-            SettingUpNXM = true;
-            Task.Run(() =>
-            {
-                NexusModsUtilities.SetupNXMHandling(nxmProgressDelegate, nxmFinishedDelegate);
-            });
+            Result.PanelToOpen = EPanelID.NXM_CONFIGURATOR;
+            OnClosing(DataEventArgs.Empty);
         }
-
-        private void nxmFinishedDelegate(string obj)
-        {
-            SettingUpNXM = false;
-            if (obj != null)
-            {
-                M3L.ShowDialog(window, obj, M3L.GetString(M3L.string_failedToSetupDownloadWithManager), MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            else
-            {
-                DLMSetupText = M3L.GetString(M3L.string_downloadWithManagerConfigured);
-            }
-
-        }
-
-        private void nxmProgressDelegate(long done, long total, string message)
-        {
-            DLMProgressIndeterminate = total < 0;
-            if (!DLMProgressIndeterminate)
-            {
-                DLMProgressMax = total;
-                DLMProgressValue = done;
-            }
-            if (DLMSetupText != null)
-            {
-                DLMSetupText = message;
-            }
-        }
-
 
         private bool CanClose() => !IsAuthorizing;
 
@@ -127,7 +92,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public FontAwesomeIcon ActiveIcon { get; set; }
         public bool SpinIcon { get; set; }
         public bool VisibleIcon { get; set; }
-        public bool SettingUpNXM { get; set; }
 
         public void OnIsAuthorizedChanged() => VisibleIcon = IsAuthorized;
 
@@ -223,7 +187,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             mainwindow.RefreshNexusStatus();
         }
 
-        private bool CanUnlinkWithNexus() => !SettingUpNXM && IsAuthorized;
+        private bool CanUnlinkWithNexus() => !IsAuthorized;
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {

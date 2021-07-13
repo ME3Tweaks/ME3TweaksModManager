@@ -210,27 +210,12 @@ namespace MassEffectModManagerCore.modmanager.windows
             var flagset3 = Enum.GetValues<EME3MountFileFlag>();
             ME3MountFlags.ReplaceAll(flagset3.Select(x => new MountFlag((int)x, false)));
 
-
-
             PreviewTPMI.IsPreview = true;
-            //DisplayedMountFlags.Add(new UIMountFlag(EMountFileFlag.ME1_NoSaveFileDependency, M3L.GetString(M3L.string_loadingPlaceholder)));
             SetupValidation();
 
             LoadCommands();
-
-            //#if DEBUG
-            //            ModName = "Debug Test Mod";
-            //            ModDeveloper = "Developer";
-            //            ModInternalName = "StarterKit Mod";
-            //            //ModDLCFolderName = "DLC_MOD_StarterKitMod";
-            //            ModMountPriority = 3678;
-            //            ModDLCModuleNumber = 150;
-            //            ModURL = "https://example.com";
-            //            ModInternalTLKID = 277346578;
-            //            ModDescription = "This is a starter kit debug testing mod.\n\nHerp a derp flerp.";
-            //#endif
             InitializeComponent();
-            Games = MEGameSelector.GetGameSelectors().ToArray();
+            Games = MEGameSelector.GetGameSelectors().Where(x=>x.Game != MEGame.LE1).ToArray();
         }
 
         public MEGame? PendingGame { get; set; }

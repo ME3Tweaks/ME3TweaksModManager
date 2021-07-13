@@ -1,7 +1,9 @@
 ﻿<local:MMBusyPanelBase x:Class="MassEffectModManagerCore.modmanager.usercontrols.NexusModsLogin" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
                        xmlns:fa="http://schemas.fontawesome.io/icons/" xmlns:modmanager="clr-namespace:MassEffectModManagerCore.modmanager"
-                       mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800" Width="450"
-                       DataContext="{Binding RelativeSource={RelativeSource Self}}">
+                       mc:Ignorable="d"
+                       DataContext="{Binding RelativeSource={RelativeSource Self}}"
+                       Width="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.8_400_650', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualWidth}"
+                       Height="Auto">
     <DockPanel>
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" HorizontalAlignment="Center">
             <Image Source="/images/nexusmods_scenethemed.png" Height="64" VerticalAlignment="Center" />
@@ -14,14 +16,6 @@
             <TextBlock Text="{DynamicResource string_nexusModsDirections}" TextWrapping="Wrap" />
             <TextBlock Text="{DynamicResource string_caution}" FontWeight="Bold" Margin="0,10,0,0" />
             <TextBlock Text="{DynamicResource string_doNotShareAPIKeyWarning}" TextWrapping="Wrap" />
-            <StackPanel Visibility="{Binding Path=(modmanager:Settings.ConfigureNXMHandlerOnBoot), Converter={StaticResource BoolToVisibilityConverter},ConverterParameter='Not'}">
-                <Button Content="{Binding DLMSetupText}" Command="{Binding SetupWithDLMCommand}" Grid.Column="0" Grid.Row="2" Margin="0,5,0,0" HorizontalAlignment="Left" Grid.ColumnSpan="2" />
-                <ProgressBar IsIndeterminate="{Binding DLMProgressIndeterminate, Mode=OneWay}" 
-                         Value="{Binding DLMProgressValue, Mode=OneWay}" 
-                         Maximum="{Binding DLMProgressMax, Mode=OneWay}"
-                         Height="10"
-                         Visibility="{Binding SettingUpNXM, Converter={StaticResource BoolToVisibilityConverter}}"/>
-            </StackPanel>
             <Separator DockPanel.Dock="Top" Margin="0,10"/>
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -45,8 +39,11 @@
                         </StackPanel>
                     </Button.Content>
                 </Button>
-                <Button Content="{DynamicResource string_unlinkModManagerFromNexusMods}" Command="{Binding UnlinkCommand}" Grid.Column="0" Grid.Row="2" Margin="0,5,0,0" HorizontalAlignment="Left" Grid.ColumnSpan="2" />
-                <Button Content="{DynamicResource string_close}" Command="{Binding CloseCommand}" HorizontalAlignment="Right" Padding="7,5" Margin="0,5,0,0" Grid.Row="2" Grid.Column="2" />
+                <DockPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2">
+                    <Button Content="{DynamicResource string_unlinkModManagerFromNexusMods}" Command="{Binding UnlinkCommand}" Margin="0,5,0,0" HorizontalAlignment="Left"/>
+                    <Button Content="Configure 'Download with Manager'"  Command="{Binding ConfigureNXMCommand}" Margin="5,5,0,0" HorizontalAlignment="Left"/>
+                    <Button Content="{DynamicResource string_close}" Command="{Binding CloseCommand}" HorizontalAlignment="Right" Padding="7,5" Margin="0,5,0,0" />
+                </DockPanel>
             </Grid>
         </StackPanel>
     </DockPanel>

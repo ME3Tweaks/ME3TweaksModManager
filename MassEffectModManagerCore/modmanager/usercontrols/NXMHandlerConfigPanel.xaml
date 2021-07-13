@@ -1,0 +1,120 @@
+﻿<local:MMBusyPanelBase
+    x:Class="MassEffectModManagerCore.modmanager.usercontrols.NXMHandlerConfigPanel" 
+    DataContext="{Binding RelativeSource={RelativeSource Self}}"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" 
+    xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+    xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" 
+    xmlns:fa5="http://schemas.fontawesome.com/icons/" 
+    xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters"
+    xmlns:fa="http://schemas.fontawesome.io/icons/"
+    xmlns:objects="clr-namespace:MassEffectModManagerCore.modmanager.objects"
+    mc:Ignorable="d"
+    Width="500">
+    <DockPanel
+        Margin="5,5,5,5">
+        <TextBlock
+            DockPanel.Dock="Top"
+            TextAlignment="Center"
+            Text="NexusMods Downloader Configuration"
+            FontSize="20"
+            FontWeight="Bold"
+            HorizontalAlignment="Center"
+            Grid.ColumnSpan="2"></TextBlock>
+        <TextBlock
+            DockPanel.Dock="Top"
+            TextWrapping="Wrap"
+
+            Text="The 'download with manager' feature on NexusMods uses the NXM protocol. This means that only one application can be registered to receive it at a time. Mod Manager can register itself as the receiver and forward non-supported games (such as Skyrim or Fallout) downloads to a different manager of your choice."
+            TextAlignment="Left" />
+        <Button
+            DockPanel.Dock="Top"
+            Content="Register ME3Tweaks Mod Manager as handler"
+            Command="{Binding UploadLogCommand}"
+            HorizontalAlignment="Left"
+            Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"
+            Visibility="{Binding UploadingLog, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}" />
+
+        <TextBlock 
+            DockPanel.Dock="Top"
+            Text="Other apps"
+                   FontWeight="Bold" 
+                   FontSize="16"/>
+        <TextBlock 
+            DockPanel.Dock="Top"
+            Text="You can register other applications to handle other game besides Mass Effect games. You need to supply the domain (which is the game name in a nexusmods url), the target application, and the arguments the application needs. Use '%1' to indicate the nxm:// link."
+            TextWrapping="Wrap"/>
+
+        <Button
+            Command="{Binding AddOtherAppCommand}"
+            HorizontalAlignment="Left"
+            DockPanel.Dock="Top"
+            Margin="0,5">
+            <Button.Content>
+                <StackPanel
+                    Orientation="Horizontal">
+                    <fa:ImageAwesome
+                        Icon="Plus"
+                        Width="12"
+                        Height="12"
+                        Margin="0,0,5,0"
+                        Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
+                    <TextBlock
+                        Text="Add other app" />
+                </StackPanel>
+            </Button.Content>
+        </Button>
+        <Button
+                DockPanel.Dock="Bottom"
+                Content="{DynamicResource string_close}"
+                Command="{Binding CloseCommand}"
+                Width="100"
+                Margin="0,5,0,0"
+                HorizontalAlignment="Right"/>
+
+        <ItemsControl ItemsSource="{Binding OtherGameHandlers}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="objects:NexusDomainHandler">
+                    <DockPanel HorizontalAlignment="Stretch">
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+                            <Button
+                                Command="{Binding RemoveAppCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=local:NXMHandlerConfigPanel}}"
+                                HorizontalAlignment="Left"
+                                Margin="0,5">
+                                <Button.Content>
+                                        <fa:ImageAwesome
+                                            Icon="Minus"
+                                            Width="12"
+                                            Height="12"
+                                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
+                                </Button.Content>
+                            </Button>
+                            <TextBlock Text="Additional App" VerticalAlignment="Center" Margin="5,0" FontWeight="Bold"/>
+                        </StackPanel>
+                        <Grid HorizontalAlignment="Stretch">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="80"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="Application" Grid.Row="0" Grid.Column="0"/>
+                            <TextBlock Text="Arguments" Grid.Row="1" Grid.Column="0"/>
+                            <TextBlock Text="Domains" Grid.Row="2" Grid.Column="0"/>
+                            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding ProgramPath}" HorizontalAlignment="Stretch"/>
+                            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Arguments}" HorizontalAlignment="Stretch"/>
+                            <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding DomainsEditable}" HorizontalAlignment="Stretch"/>
+                        </Grid>
+                    </DockPanel>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </DockPanel>
+</local:MMBusyPanelBase>

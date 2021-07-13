@@ -52,6 +52,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
+
         }
 
         public void OnSelectedTargetChanged()
@@ -74,8 +75,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         HumanName = ThirdPartyServices.GetThirdPartyModInfo(foldername, SelectedTarget.Game).modname
                     });
                 }
-
-
             }
         }
 

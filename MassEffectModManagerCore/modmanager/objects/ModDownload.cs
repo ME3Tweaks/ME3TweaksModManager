@@ -16,6 +16,7 @@ using MassEffectModManagerCore.modmanager.localizations;
 using LegendaryExplorerCore.Misc;
 using Microsoft.AppCenter.Analytics;
 using System.Linq;
+using PropertyChanged;
 using MemoryAnalyzer = MassEffectModManagerCore.modmanager.memoryanalyzer.MemoryAnalyzer;
 
 namespace MassEffectModManagerCore.modmanager.objects
@@ -23,13 +24,13 @@ namespace MassEffectModManagerCore.modmanager.objects
     /// <summary>
     /// Class for information about a mod that is being downloaded
     /// </summary>
-    public class ModDownload : INotifyPropertyChanged
+    [AddINotifyPropertyChangedInterface]
+    public class ModDownload
     {
-        public event PropertyChangedEventHandler PropertyChanged;
         public string NXMLink { get; set; }
         public List<ModFileDownloadLink> DownloadLinks { get; } = new List<ModFileDownloadLink>();
         public ModFile ModFile { get; private set; }
-        private string domain;
+        public NexusProtocolLink ProtocolLink { get; private set; }
         /// <summary>
         /// If this mod has been initialized
         /// </summary>
@@ -46,7 +47,6 @@ namespace MassEffectModManagerCore.modmanager.objects
         /// The downloaded stream data
         /// </summary>
         public Stream DownloadedStream { get; private set; }
-
         /// <summary>
         /// Invoked when the mod has initialized
         /// </summary>
@@ -98,7 +98,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     // Download didn't work!
                     Analytics.TrackEvent(@"NXM Download", new Dictionary<string, string>()
                     {
-                        {@"Domain", domain},
+                        {@"Domain", ProtocolLink?.Domain},
                         {@"File", ModFile?.Name},
                         {@"Result", $@"Failed, {downloadResult.errorMessage}"},
                     });
@@ -107,7 +107,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 {
                     Analytics.TrackEvent(@"NXM Download", new Dictionary<string, string>()
                     {
-                        {@"Domain", domain},
+                        {@"Domain", ProtocolLink?.Domain},
                         {@"File", ModFile?.Name},
                         {@"Result", @"Success"},
                     });
@@ -138,33 +138,28 @@ namespace MassEffectModManagerCore.modmanager.objects
                 {
                     DownloadLinks.Clear();
 
-                    var nxmlink = NXMLink.Substring(6);
-                    var queryPos = nxmlink.IndexOf('?');
+                    ProtocolLink = NexusProtocolLink.Parse(NXMLink);
+                    if (ProtocolLink == null) return; // Parse failed.
 
-                    var info = queryPos > 0 ? nxmlink.Substring(0, queryPos) : nxmlink;
-                    var infos = info.Split('/');
-                    domain = infos[0];
-                    var modid = int.Parse(infos[2]);
-                    var fileid = int.Parse(infos[4]);
-
-                    if (!NexusModsUtilities.AllSupportedNexusDomains.Contains(domain))
+                    if (!NexusModsUtilities.AllSupportedNexusDomains.Contains(ProtocolLink?.Domain))
                     {
-                        Log.Error($@"Cannot download file from unsupported domain: {domain}. Open your preferred mod manager from that game first");
+                        Log.Error($@"Cannot download file from unsupported domain: {ProtocolLink?.Domain}. Open your preferred mod manager from that game first");
                         Initialized = true;
                         ProgressIndeterminate = false;
                         OnModDownloadError?.Invoke(this,
-                            M3L.GetString(M3L.string_interp_dialog_modNotForThisModManager, domain));
+                            M3L.GetString(M3L.string_interp_dialog_modNotForThisModManager, ProtocolLink.Domain));
                         return;
                     }
 
-                    ModFile = NexusModsUtilities.GetClient().ModFiles.GetModFile(domain, modid, fileid).Result;
+                    ModFile = NexusModsUtilities.GetClient().ModFiles.GetModFile(ProtocolLink.Domain, ProtocolLink.ModId, ProtocolLink.FileId).Result;
                     if (ModFile != null)
                     {
                         if (ModFile.Category != FileCategory.Deleted)
                         {
-                            if (queryPos > 0)
+                            if (ProtocolLink.Key != null)
                             {
-                                if (domain is @"masseffect" or @"masseffect2" && !IsDownloadWhitelisted(domain, ModFile))
+                                // Website click
+                                if (ProtocolLink.Domain is @"masseffect" or @"masseffect2" && !IsDownloadWhitelisted(ProtocolLink.Domain, ModFile))
                                 {
                                     // Check to see file has moddesc.ini the listing
                                     var fileListing = NexusModsUtilities.GetFileListing(ModFile);
@@ -179,13 +174,10 @@ namespace MassEffectModManagerCore.modmanager.objects
                                 }
 
 
-                                // download with manager
-                                string querystring = nxmlink.Substring(queryPos);
-                                var parameters = HttpUtility.ParseQueryString(querystring);
+                                // download with manager was clicked.
 
                                 // Check if parameters are correct!
-                                DownloadLinks.AddRange(NexusModsUtilities.GetDownloadLinkForFile(domain, modid, fileid,
-                                    parameters[@"key"], int.Parse(parameters[@"expires"])).Result);
+                                DownloadLinks.AddRange(NexusModsUtilities.GetDownloadLinkForFile(ProtocolLink).Result);
                             }
                             else
                             {
@@ -201,7 +193,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                                     return;
                                 }
 
-                                DownloadLinks.AddRange(NexusModsUtilities.GetDownloadLinkForFile(domain, modid, fileid)
+                                DownloadLinks.AddRange(NexusModsUtilities.GetDownloadLinkForFile(ProtocolLink)
                                     ?.Result);
                             }
 

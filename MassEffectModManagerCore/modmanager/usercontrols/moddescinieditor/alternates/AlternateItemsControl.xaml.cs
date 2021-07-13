@@ -2,23 +2,20 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using PropertyChanged;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alternates
 {
     /// <summary>
     /// Interaction logic for AlternateItemsControl.xaml
     /// </summary>
-    public partial class AlternateItemsControl : UserControl, INotifyPropertyChanged
+    [AddINotifyPropertyChangedInterface]
+    public partial class AlternateItemsControl : UserControl
     {
         public AlternateItemsControl()
         {
             InitializeComponent();
         }
-
-        //Fody uses this property on weaving
-#pragma warning disable
-public event PropertyChangedEventHandler PropertyChanged;
-#pragma warning restore
 
         private void HandleMouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
         {

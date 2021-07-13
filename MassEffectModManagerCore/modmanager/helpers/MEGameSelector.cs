@@ -5,10 +5,12 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PropertyChanged;
 
 namespace MassEffectModManagerCore.modmanager.helpers
 {
-    public class MEGameSelector : INotifyPropertyChanged
+    [AddINotifyPropertyChangedInterface]
+    public class MEGameSelector
     {
         public bool IsSelected { get; set; }
         public MEGame Game { get; set; }
@@ -22,8 +24,5 @@ namespace MassEffectModManagerCore.modmanager.helpers
 
         public static MEGameSelector[] GetGameSelectors() => allSupportedGames.Where(x => x != MEGame.LELauncher && x.IsEnabledGeneration()).Select(x => new MEGameSelector(x)).ToArray();
         public static MEGameSelector[] GetGameSelectorsIncudingLauncher() => allSupportedGames.Where(x => x.IsEnabledGeneration()).Select(x => new MEGameSelector(x)).ToArray();
-#pragma  warning disable
-        public event PropertyChangedEventHandler? PropertyChanged;
-#pragma  warning restore
     }
 }

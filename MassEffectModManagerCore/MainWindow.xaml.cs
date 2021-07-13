@@ -125,6 +125,14 @@ namespace MassEffectModManagerCore
 
         private void showNXMDownloader(string nxmLink)
         {
+            var npl = NexusProtocolLink.Parse(nxmLink);
+            if (npl == null) return;
+
+            if (NexusDomainHandler.HandleExternalLink(npl))
+            {
+                return; // Handled by external handler.
+            }
+
             if (NexusModsUtilities.UserInfo == null)
             {
                 // Not logged in
@@ -1233,6 +1241,9 @@ namespace MassEffectModManagerCore
                     {
                         case EPanelID.ASI_MANAGER:
                             control = new ASIManagerPanel(result.SelectedTarget);
+                            break;
+                        case EPanelID.NXM_CONFIGURATOR:
+                            control = new NXMHandlerConfigPanel();
                             break;
                         default:
                             throw new Exception($@"HandlePanelResult did not handle panelid {result.PanelToOpen}");
@@ -2961,23 +2972,26 @@ namespace MassEffectModManagerCore
                     bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"WritePermissions", M3L.GetString(M3L.string_checkingWritePermissions), M3L.GetString(M3L.string_checkedUserWritePermissions));
                     CheckTargetPermissions(true);
                     backgroundTaskEngine.SubmitJobCompletion(bgTask);
-
-                    bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"NXMHandlerSetup", M3L.GetString(M3L.string_configuringNxmhandler), M3L.GetString(M3L.string_configuredNxmhandler));
-                    NexusModsUtilities.SetupNXMHandling((done, total, message) =>
+                    if (Settings.ConfigureNXMHandlerOnBoot)
                     {
-                        if (total > 0)
+                        bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"NXMHandlerSetup",
+                            M3L.GetString(M3L.string_configuringNxmhandler),
+                            M3L.GetString(M3L.string_configuredNxmhandler));
+                        NexusModsUtilities.SetupNXMHandling((done, total, message) =>
                         {
-                            backgroundTaskEngine.SubmitBackgroundTaskUpdate(bgTask, M3L.GetString(M3L.string_interp_downloadingNxmhandlerX, Math.Round(done * 100.0f / total)));
-                        }
-                        else
-                        {
-                            backgroundTaskEngine.SubmitBackgroundTaskUpdate(bgTask, message);
+                            if (total > 0)
+                            {
+                                backgroundTaskEngine.SubmitBackgroundTaskUpdate(bgTask,
+                                    M3L.GetString(M3L.string_interp_downloadingNxmhandlerX,
+                                        Math.Round(done * 100.0f / total)));
+                            }
+                            else
+                            {
+                                backgroundTaskEngine.SubmitBackgroundTaskUpdate(bgTask, message);
 
-                        }
-                    }, (result) =>
-                    {
-                        backgroundTaskEngine.SubmitJobCompletion(bgTask);
-                    });
+                            }
+                        }, (result) => { backgroundTaskEngine.SubmitJobCompletion(bgTask); });
+                    }
                 }
 
                 if (OnlineContent.CanFetchContentThrottleCheck())

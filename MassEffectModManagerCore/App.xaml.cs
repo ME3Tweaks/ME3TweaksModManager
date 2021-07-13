@@ -30,6 +30,7 @@ using LegendaryExplorerCore.Packages;
 using SingleInstanceCore;
 using LegendaryExplorerCore.Compression;
 using LegendaryExplorerCore.Unreal;
+using MassEffectModManagerCore.modmanager.objects;
 using Microsoft.AppCenter;
 
 namespace MassEffectModManagerCore
@@ -108,7 +109,7 @@ namespace MassEffectModManagerCore
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 
-            ObservableCollectionExtendedThreading.EnableCrossThreadUpdatesDelegate = (collection, syncLock) => 
+            ObservableCollectionExtendedThreading.EnableCrossThreadUpdatesDelegate = (collection, syncLock) =>
                 Application.Current?.Dispatcher?.Invoke(() =>
                 {
                     BindingOperations.EnableCollectionSynchronization(collection, syncLock);
@@ -240,6 +241,21 @@ namespace MassEffectModManagerCore
                     Log.Information($@"Application arguments: {string.Join(" ", args)}");
                 }
 
+                // Load NXM handlers
+                try
+                {
+                    NexusDomainHandler.LoadExternalHandlers();
+                    if (PendingNXMLink != null && NexusDomainHandler.HandleExternalLink(PendingNXMLink))
+                    {
+                        Log.Information(@"Exiting application");
+                        Environment.Exit(0);
+                        return; // Nothing else to do
+                    }
+                }
+                catch (Exception e)
+                {
+                    Log.Error($@"Error loading external nxm handlers: {e.Message}");
+                }
 
                 System.Windows.Controls.ToolTipService.ShowOnDisabledProperty.OverrideMetadata(typeof(Control),
                     new FrameworkPropertyMetadata(true));
@@ -561,6 +577,7 @@ namespace MassEffectModManagerCore
         #endregion
 
         public static List<IntroTutorial.TutorialStep> TutorialService { get; set; } = new List<IntroTutorial.TutorialStep>(); //in case it takes long time to load
+        public static List<NexusDomainHandler> NexusDomainHandlers { get; } = new();
 
         /// <summary>
         /// Called when an unhandled exception occurs. This method can only be invoked after startup has completed. 

@@ -116,6 +116,11 @@ namespace MassEffectModManagerCore.modmanager
             return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "nexusmodsintegration")).FullName;
         }
 
+        internal static string GetExternalNexusHandlersFile()
+        {
+            return Path.Combine(GetNexusModsCache(), "othernexushandlers.json");
+        }
+
         internal static string GetBatchInstallGroupsFolder()
         {
             return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "batchmodqueues")).FullName;

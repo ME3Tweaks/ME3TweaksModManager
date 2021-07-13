@@ -17,6 +17,7 @@ namespace MassEffectModManagerCore.modmanager.objects
     public enum EPanelID
     {
         ASI_MANAGER,
+        NXM_CONFIGURATOR
     }
     /// <summary>
     /// Object that holds information about what to do when a panel closes

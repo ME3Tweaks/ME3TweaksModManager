@@ -232,6 +232,9 @@
 		<Page Update="modmanager\localizations\rus.xaml">
 			<SubType>Designer</SubType>
 		</Page>
+		<Page Update="modmanager\usercontrols\NXMHandlerConfigPanel.xaml">
+		  <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+		</Page>
 		<Page Update="modmanager\usercontrols\moddescinieditor\LELauncherEditorControl.xaml">
 		  <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
 		</Page>
