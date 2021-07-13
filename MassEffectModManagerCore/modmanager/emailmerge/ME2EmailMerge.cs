@@ -18,8 +18,9 @@ namespace MassEffectModManagerCore.modmanager.emailmerge
 {
     public class ME2EmailMerge
     {
-        private const int STARTING_EMAIL_TRANSITION = 90000;
         public const int STARTING_EMAIL_CONDITIONAL = 10100;
+        private const int STARTING_EMAIL_TRANSITION = 90000;
+        private const string EMAIL_MERGE_MANIFEST_FILE = @"Game2EmailMerge.json";
 
         internal class ME2EmailMergeFile
         {
@@ -139,21 +140,29 @@ namespace MassEffectModManagerCore.modmanager.emailmerge
             var loadedFiles = MELoadedFiles.GetFilesLoadedInGame(target.Game, gameRootOverride: target.TargetPath);
 
             // File to base modifications on
-            string BaseFile =
-                @"D:\Mass Effect Modding\Dumb Shit\ME2 Mail Merge\BioD_Nor_103Messages.pcc";
-            using IMEPackage pcc = MEPackageHandler.OpenMEPackage(BaseFile);
+            using IMEPackage pcc = MEPackageHandler.OpenMEPackage(loadedFiles[@"BioD_Nor103_Messages.pcc"]);
 
             // Path to Message templates file - different files for ME2/LE2
             string ResourcesFilePath = $@"MassEffectModManagerCore.modmanager.emailmerge.{target.Game}.103Message_Template_{target.Game}";
             using IMEPackage resources = MEPackageHandler.OpenMEPackageFromStream(Utilities.GetResourceStream(ResourcesFilePath));
 
+            // Startup file to place conditionals and transitions into
             using IMEPackage startup = MEPackageHandler.OpenMEPackageFromStream(Utilities.GetResourceStream(
                 $@"MassEffectModManagerCore.modmanager.mergedlc.{target.Game}.Startup_{M3MergeDLC.MERGE_DLC_FOLDERNAME}.pcc"));
             
-            var emailInfos = new List<ME2EmailMergeFile>();
 
-            var json = @"D:\Mass Effect Modding\Dumb Shit\ME2 Mail Merge\test.json";
-            emailInfos.Add(JsonConvert.DeserializeObject<ME2EmailMergeFile>(File.ReadAllText(json)));
+            var emailInfos = new List<ME2EmailMergeFile>();
+            var jsonSupercedances = M3Directories.GetFileSupercedances(target, new[] { @".json" });
+            if (jsonSupercedances.TryGetValue(EMAIL_MERGE_MANIFEST_FILE, out var jsonList))
+            {
+                jsonList.Reverse();
+                foreach (var dlc in jsonList)
+                {
+                    var jsonFile = Path.Combine(M3Directories.GetDLCPath(target), dlc, target.Game.CookedDirName(),
+                        EMAIL_MERGE_MANIFEST_FILE);
+                    emailInfos.Add(JsonConvert.DeserializeObject<ME2EmailMergeFile>(File.ReadAllText(jsonFile)));
+                }
+            }
 
             // Sanity checks
             if (!emailInfos.Any() || !emailInfos.SelectMany(e => e.Emails).Any())
@@ -167,13 +176,14 @@ namespace MassEffectModManagerCore.modmanager.emailmerge
             }
 
             // Startup File
-
             // Could replace this with full instanced path in M3 implementation
-            ExportEntry stateEventMap = startup.Exports
+            ExportEntry stateEventMapExport = startup.Exports
                 .First(e => e.ClassName == "BioStateEventMap" && e.ObjectName == "StateTransitionMap");
-            BioStateEventMap map = stateEventMap.GetBinaryData<BioStateEventMap>();
+            BioStateEventMap StateEventMap = stateEventMapExport.GetBinaryData<BioStateEventMap>();
+            ExportEntry ConditionalClass =
+                startup.FindExport($@"PlotManager{M3MergeDLC.MERGE_DLC_FOLDERNAME}.BioAutoConditionals");
 
-
+            #region Sequence Exports
             // Send message - All email conditionals are checked and emails transitions are triggered
             ExportEntry SendMessageContainer = pcc.FindExport(@"TheWorld.PersistentLevel.Main_Sequence.Send_Messages");
             ExportEntry LastSendMessage = KismetHelper.GetSequenceObjects(SendMessageContainer).OfType<ExportEntry>()
@@ -217,6 +227,7 @@ namespace MassEffectModManagerCore.modmanager.emailmerge
                     @"TheWorld.PersistentLevel.Main_Sequence.Archive_Message.BioSeqAct_PMCheckConditional_1");
             ExportEntry ExampleSetInt = KismetHelper.GetOutboundLinksOfNode(ArchiveSwitch)[0][0].LinkedOp as ExportEntry;
             ExportEntry ExamplePlotInt = SeqTools.GetVariableLinksOfNode(ExampleSetInt)[0].LinkedNodes[0] as ExportEntry;
+            #endregion
 
             int messageID = KismetHelper.GetOutboundLinksOfNode(ArchiveSwitch).Count + 1;
             int currentSwCount = ArchiveSwitch.GetProperty<IntProperty>("LinkCount").Value;
@@ -230,12 +241,13 @@ namespace MassEffectModManagerCore.modmanager.emailmerge
                     string emailName = modName + "_" + email.EmailName;
 
                     // Create send transition
-                    int transitionId = WriteTransition(map, email.StatusPlotInt);
+                    int transitionId = WriteTransition(StateEventMap, email.StatusPlotInt);
                     int conditionalId = WriteConditional(email.TriggerConditional);
 
-                    //
+                    #region SendMessage
+                    //////////////
                     // SendMessage
-                    //
+                    //////////////
 
                     // Create seq object
                     var SMTemp = emailMod.InMemoryBool.HasValue ? TemplateSendMessageBoolCheck : TemplateSendMessage;
@@ -284,10 +296,12 @@ namespace MassEffectModManagerCore.modmanager.emailmerge
                     // Hook up output links
                     KismetHelper.CreateOutputLink(LastSendMessage, "Out", newSend);
                     LastSendMessage = newSend;
+                    #endregion
 
-                    //
+                    #region MarkRead
+                    ///////////
                     // MarkRead
-                    //
+                    ///////////
 
                     // Create seq object
                     var MRTemp = email.ReadTransition.HasValue ? TemplateMarkReadTransition : TemplateMarkRead;
@@ -324,10 +338,12 @@ namespace MassEffectModManagerCore.modmanager.emailmerge
                     // Hook up output links
                     KismetHelper.CreateOutputLink(LastMarkRead, "Out", newMarkRead);
                     LastMarkRead = newMarkRead;
+                    #endregion
 
-                    //
+                    #region DisplayEmail
+                    ////////////////
                     // Display Email
-                    //
+                    ////////////////
 
                     // Create seq object
                     EntryImporter.ImportAndRelinkEntries(EntryImporter.PortingOption.CloneTreeAsChild,
@@ -378,10 +394,12 @@ namespace MassEffectModManagerCore.modmanager.emailmerge
                     // Hook up output links
                     KismetHelper.CreateOutputLink(LastDisplayMessage, "Out", newDisplayMessage);
                     LastDisplayMessage = newDisplayMessage;
+                    #endregion
 
-                    //
+                    #region ArchiveEmail
+                    ////////////////
                     // Archive Email
-                    //
+                    ////////////////
 
                     var NewSetInt = EntryCloner.CloneEntry(ExampleSetInt);
                     KismetHelper.AddObjectToSequence(NewSetInt, ArchiveContainer);
@@ -400,16 +418,23 @@ namespace MassEffectModManagerCore.modmanager.emailmerge
 
                     messageID++;
                     currentSwCount++;
+                    #endregion
                 }
             }
             KismetHelper.CreateOutputLink(LastMarkRead, "Out", MarkReadOutLink);
             KismetHelper.CreateOutputLink(LastDisplayMessage, "Out", DisplayMessageOutLink);
             ArchiveSwitch.WriteProperty(new IntProperty(currentSwCount, "LinkCount"));
 
-            stateEventMap.WriteBinary(map);
+            stateEventMapExport.WriteBinary(StateEventMap);
 
-            startup.Save();
-            //pcc.Save(outputPath);
+            // Save Messages file into DLC
+            var cookedDir = Path.Combine(M3Directories.GetDLCPath(target), M3MergeDLC.MERGE_DLC_FOLDERNAME, target.Game.CookedDirName());
+            var outMessages = Path.Combine(cookedDir, @"BioD_Nor103_Messages.pcc");
+            pcc.Save(outMessages);
+
+            // Save Startup file into DLC
+            var startupF = Path.Combine(cookedDir, $@"Startup_{M3MergeDLC.MERGE_DLC_FOLDERNAME}.pcc");
+            startup.Save(startupF);
         }
     }
 }
