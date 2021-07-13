@@ -139,6 +139,7 @@
     <EmbeddedResource Include="modmanager\gamemd5\*.bin" />
     <EmbeddedResource Include="modmanager\squadmates\**\*.txt" />
     <EmbeddedResource Include="modmanager\squadmates\**\*.pcc" />
+	<EmbeddedResource Include="modmanager\emailmerge\**\*.pcc" />
     <EmbeddedResource Include="modmanager\me3tweaks\LiveIni.bin" />
 		<EmbeddedResource Include="modmanager\me3tweaks\PermissionsGranter.exe" />
 		<EmbeddedResource Include="modmanager\meim\propertymaps\BioEngine.xml" />
@@ -260,6 +261,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="modmanager\binkw64\" />
+    <Folder Include="modmanager\emailmerge\LE2\" />
+    <Folder Include="modmanager\emailmerge\ME2\" />
     <Folder Include="modmanager\squadmates\LE3\" />
   </ItemGroup>
 
