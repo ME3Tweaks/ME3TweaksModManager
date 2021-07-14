@@ -4,12 +4,14 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LocalizationHelper"
+        xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters;assembly=ME3TweaksModManager"
         mc:Ignorable="d"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
-        Height="550" 
-        Width="1200">
+        Height="650" 
+        Width="1250">
     <Window.Resources>
         <local:TabVisibilityBarConverter x:Key="TabVisibilityBarConverter"/>
+        <converters:NullVisibilityConverter x:Key="NullVisibilityConverter"/>
     </Window.Resources>
     <DockPanel>
         <FrameworkElement x:Name="ProxyElement" Visibility="Collapsed"/>
@@ -31,6 +33,7 @@
 
             <StatusBarItem DockPanel.Dock="Right" HorizontalAlignment="Right" Visibility="{Binding SelectedTabIndex, Converter={StaticResource TabVisibilityBarConverter}, ConverterParameter='0'}">
                 <StackPanel Orientation="Horizontal">
+                    <Button Content="Add language" HorizontalAlignment="Right" Padding="7,4" VerticalAlignment="Center" Command="{Binding AddLangCommand}"/>
                     <Button Content="Open autosave dir" HorizontalAlignment="Right" Padding="7,4" VerticalAlignment="Center" Command="{Binding OpenAutosaveDirCommand}" Margin="5,0"/>
                     <Button Content="Copy localization" HorizontalAlignment="Right" Padding="7,4" VerticalAlignment="Center" Command="{Binding CopyLocalizationCommand}" />
                     <Button Content="Load localization" HorizontalAlignment="Right" Padding="7,4" VerticalAlignment="Center" Command="{Binding LoadLocalizationCommand}"  Margin="5,0"/>
@@ -127,7 +130,7 @@
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
-                            <DataGridTextColumn Header="Localized" Binding="{Binding LocalizedStr}" MaxWidth="250" Visibility="{Binding DataContext.ShowGerman, Source={x:Reference DataContextReference}, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <DataGridTextColumn Header="Localized" Binding="{Binding LocalizedStr}" MaxWidth="250" Visibility="{Binding CurrentLanguage, Converter={StaticResource NullVisibilityConverter}}">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
@@ -225,7 +228,7 @@
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
-                            <DataGridTextColumn Header="Localized" Binding="{Binding LocalizedStr}" MaxWidth="250" Visibility="{Binding DataContext.ShowGerman, Source={x:Reference DataContextReference}, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <DataGridTextColumn Header="Localized" Binding="{Binding LocalizedStr}" MaxWidth="250" Visibility="{Binding DataContext.CurrentLanguage, Source={x:Reference DataContextReference}, Converter={StaticResource NullVisibilityConverter}}">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="TextBlock.TextWrapping" Value="Wrap" />

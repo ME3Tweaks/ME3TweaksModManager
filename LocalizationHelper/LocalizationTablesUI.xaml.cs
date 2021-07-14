@@ -28,7 +28,7 @@ namespace LocalizationHelper
     public partial class LocalizationTablesUI : Window, INotifyPropertyChanged
     {
         public Visibility LoadingVisibility { get; set; } = Visibility.Visible;
-        private string[] FullySupportedLangs = {"deu", "rus", "pol", "bra"};
+        private string[] FullySupportedLangs = { "deu", "rus", "pol", "bra" };
 
         public List<string> GlobalSupportedLanguages = new List<string>();
 
@@ -41,11 +41,11 @@ namespace LocalizationHelper
             InitializeComponent();
 
             // Load official languages
-            Languages.Add(new LocalizationLanguage() {Selected = false, LangCode = "deu", FullName = "German"});
-            Languages.Add(new LocalizationLanguage() {Selected = false, LangCode = "rus", FullName = "Russian"});
-            Languages.Add(new LocalizationLanguage() {Selected = false, LangCode = "pol", FullName = "Polish"});
+            Languages.Add(new LocalizationLanguage() { Selected = false, LangCode = "deu", FullName = "German" });
+            Languages.Add(new LocalizationLanguage() { Selected = false, LangCode = "rus", FullName = "Russian" });
+            Languages.Add(new LocalizationLanguage() { Selected = false, LangCode = "pol", FullName = "Polish" });
             Languages.Add(new LocalizationLanguage()
-                {Selected = false, LangCode = "bra", FullName = "Portugeuse (Brazilian)"});
+            { Selected = false, LangCode = "bra", FullName = "Portugeuse (Brazilian)" });
 
 
 
@@ -158,7 +158,7 @@ namespace LocalizationHelper
                 string endpoint =
                     $"https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/{branch}/MassEffectModManagerCore/modmanager/localizations/"; //make dynamic, maybe with octokit.
                 WebClient client = new WebClient();
-                foreach (var lang in GlobalSupportedLanguages.Concat(new[] {"int"}))
+                foreach (var lang in GlobalSupportedLanguages.Concat(new[] { "int" }))
                 {
                     PleaseWaitString = $"Fetching {branch} {lang}";
 
@@ -482,10 +482,12 @@ namespace LocalizationHelper
         public ICommand SaveLocalizedHelpMenuCommand { get; set; }
         public ICommand SaveTutorialLocalizationCommand { get; set; }
         public ICommand OpenAutosaveDirCommand { get; set; }
+        public ICommand AddLangCommand { get; set; }
 
         private void LoadCommands()
         {
             OpenAutosaveDirCommand = new GenericCommand(OpenAutosavesLocation);
+            AddLangCommand = new GenericCommand(AddLanguage, CanAddLang);
             SaveLocalizationCommand = new GenericCommand(SaveLocalization, CanSaveLocalization);
             CopyLocalizationCommand = new GenericCommand(CopyLocalization, CanSaveLocalization);
             LoadLocalizationCommand = new GenericCommand(LoadLocalization, CanSaveLocalization);
@@ -493,6 +495,31 @@ namespace LocalizationHelper
             SaveTutorialLocalizationCommand = new GenericCommand(SaveTutorialLocalization, CanSaveLocalization);
             LoadLocalizedHelpMenuCommand = new GenericCommand(LoadLocalizedHelpMenu, CanSaveLocalization);
             SaveLocalizedHelpMenuCommand = new GenericCommand(SaveLocalizedHelpMenu, CanSaveLocalization);
+        }
+
+        private void AddLanguage()
+        {
+            var result = PromptDialog.Prompt(this, "Enter a 3 letter language code for your new language.",
+                "Enter lang code").Replace(" ", "");
+            if (result.Length != 3)
+                return;
+            LocalizationLanguage locLang = Languages.FirstOrDefault(x => x.LangCode == result);
+            if (locLang == null)
+            {
+                locLang = new LocalizationLanguage() { Selected = false, FullName = result, LangCode = result };
+                Languages.Add(locLang);
+                foreach (var lang in Languages)
+                {
+                    lang.Selected = false;
+                }
+                locLang.Selected = true;
+                CurrentLanguage = locLang;
+            }
+        }
+
+        private bool CanAddLang()
+        {
+            return LocalizationCategories != null && LocalizationCategories.Any();
         }
 
         private void OpenAutosavesLocation()
@@ -658,7 +685,7 @@ namespace LocalizationHelper
                     if (locLang == null)
                     {
                         locLang = new LocalizationLanguage()
-                            {Selected = false, FullName = langCode, LangCode = langCode};
+                        { Selected = false, FullName = langCode, LangCode = langCode };
                         Languages.Add(locLang);
                     }
 
@@ -911,6 +938,7 @@ namespace LocalizationHelper
 
         public int SelectedTabIndex { get; set; }
 
+
         private void Find_Clicked(object sender, RoutedEventArgs e)
         {
 
@@ -1017,7 +1045,7 @@ namespace LocalizationHelper
                     ls.OnLanguageChanged();
                 }
             }
-            foreach(var lts in LocalizedTutorialService)
+            foreach (var lts in LocalizedTutorialService)
             {
                 lts.OnLanguageChanged();
             }
@@ -1026,7 +1054,7 @@ namespace LocalizationHelper
                 ltip.OnLanguageChanged();
             }
             LoadLocalizedHelpMenu();
-            
+
         }
     }
 }

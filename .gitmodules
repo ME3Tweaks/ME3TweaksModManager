@@ -1,3 +1,6 @@
 [submodule "LegendaryExplorer"]
 	path = LegendaryExplorer
 	url = https://github.com/ME3Tweaks/LegendaryExplorer
+[submodule "RoboSharp"]
+	path = RoboSharp
+	url = https://github.com/Mgamerz/RoboSharp.git

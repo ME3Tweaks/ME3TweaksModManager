@@ -19,16 +19,16 @@ namespace LocalizationHelper
     {
         public App()
         {
-            var inputfile = @"C:\users\mgame\desktop\tstinput.txt";
-            var lines = File.ReadAllLines(inputfile);
-            foreach (var l in lines)
-            {
-                var levelCode = l.Substring(0, 16).Trim();
-                var levelName = l.Substring(16).Trim();
-                Debug.WriteLine($"\"{levelCode.ToLower()}\" => \"{levelName}\",");
-            }
+            //var inputfile = @"C:\users\mgame\desktop\tstinput.txt";
+            //var lines = File.ReadAllLines(inputfile);
+            //foreach (var l in lines)
+            //{
+            //    var levelCode = l.Substring(0, 16).Trim();
+            //    var levelName = l.Substring(16).Trim();
+            //    Debug.WriteLine($"\"{levelCode.ToLower()}\" => \"{levelName}\",");
+            //}
 
-            Environment.Exit(0);
+            //Environment.Exit(0);
 
 
             Dispatcher.UnhandledException += Dispatcher_UnhandledException;
