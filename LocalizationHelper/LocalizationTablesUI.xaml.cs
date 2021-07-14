@@ -917,7 +917,7 @@ namespace LocalizationHelper
 
             public bool ChangedFromPrevious { get; set; }
 
-            public void OnLanguageChanged()
+            public void OnCurrentLanguageChanged()
             {
                 // Rebind
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LocalizedStr)));
@@ -1042,16 +1042,16 @@ namespace LocalizationHelper
             {
                 foreach (var ls in SelectedCategory.LocalizedStringsForSection)
                 {
-                    ls.OnLanguageChanged();
+                    ls.OnCurrentLanguageChanged();
                 }
             }
             foreach (var lts in LocalizedTutorialService)
             {
-                lts.OnLanguageChanged();
+                lts.OnCurrentLanguageChanged();
             }
             foreach (var ltip in LocalizedTips)
             {
-                ltip.OnLanguageChanged();
+                ltip.OnCurrentLanguageChanged();
             }
             LoadLocalizedHelpMenu();
 
