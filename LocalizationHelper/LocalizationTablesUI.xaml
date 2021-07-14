@@ -4,14 +4,13 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LocalizationHelper"
-        xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters;assembly=ME3TweaksModManager"
         mc:Ignorable="d"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         Height="650" 
         Width="1250">
     <Window.Resources>
         <local:TabVisibilityBarConverter x:Key="TabVisibilityBarConverter"/>
-        <converters:NullVisibilityConverter x:Key="NullVisibilityConverter"/>
+        <local:NullVisibilityConverter x:Key="NullVisibilityConverter"/>
     </Window.Resources>
     <DockPanel>
         <FrameworkElement x:Name="ProxyElement" Visibility="Collapsed"/>
