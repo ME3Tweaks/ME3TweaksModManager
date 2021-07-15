@@ -21,6 +21,7 @@ using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
+using MassEffectModManagerCore.modmanager.usercontrols.interfaces;
 using Microsoft.AppCenter.Crashes;
 using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Taskbar;
@@ -31,7 +32,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// <summary>
     /// Interaction logic for BackupRestoreManager.xaml
     /// </summary>
-    public partial class BackupCreator : MMBusyPanelBase
+    public partial class BackupCreator : MMBusyPanelBase, ISizeAdjustable
     {
         public bool AnyGameMissingBackup => !BackupService.ME1BackedUp || !BackupService.ME2BackedUp || !BackupService.ME3BackedUp
         || !BackupService.LE1BackedUp || !BackupService.LE2BackedUp || !BackupService.LE3BackedUp;
@@ -43,6 +44,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             this.targetsList = targetsList;
             LoadCommands();
             InitializeComponent();
+            Self = this;
         }
 
         public ICommand CloseCommand { get; set; }
@@ -62,23 +64,42 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
         }
 
+        protected override void OnClosing(DataEventArgs args)
+        {
+            window.SizeChanged -= OnBackupStatusChanged;
+            base.OnClosing(args);
+        }
+
+        private void OnBackupStatusChanged()
+        {
+            Adjustment = -26 * GameBackups.Count(x => !x.BackupOptionsVisible);
+            TriggerPropertyChangedFor(nameof(Self));
+        }
+
         public override void OnPanelVisible()
         {
+            window.SizeChanged += OnBackupStatusChanged;
             if (Settings.GenerationSettingLE)
             {
-                GameBackups.Add(new GameBackup(MEGame.LELauncher, targetsList.Where(x => x.Game == MEGame.LELauncher),
-                    mainwindow));
-                GameBackups.Add(new GameBackup(MEGame.LE1, targetsList.Where(x => x.Game == MEGame.LE1), mainwindow));
-                GameBackups.Add(new GameBackup(MEGame.LE2, targetsList.Where(x => x.Game == MEGame.LE2), mainwindow));
-                GameBackups.Add(new GameBackup(MEGame.LE3, targetsList.Where(x => x.Game == MEGame.LE3), mainwindow));
+                GameBackups.Add(new GameBackup(MEGame.LELauncher, targetsList.Where(x => x.Game == MEGame.LELauncher), mainwindow, OnBackupStatusChanged));
+                GameBackups.Add(new GameBackup(MEGame.LE1, targetsList.Where(x => x.Game == MEGame.LE1), mainwindow, OnBackupStatusChanged));
+                GameBackups.Add(new GameBackup(MEGame.LE2, targetsList.Where(x => x.Game == MEGame.LE2), mainwindow, OnBackupStatusChanged));
+                GameBackups.Add(new GameBackup(MEGame.LE3, targetsList.Where(x => x.Game == MEGame.LE3), mainwindow, OnBackupStatusChanged));
             }
 
             if (Settings.GenerationSettingOT)
             {
-                GameBackups.Add(new GameBackup(MEGame.ME1, targetsList.Where(x => x.Game == MEGame.ME1), mainwindow));
-                GameBackups.Add(new GameBackup(MEGame.ME2, targetsList.Where(x => x.Game == MEGame.ME2), mainwindow));
-                GameBackups.Add(new GameBackup(MEGame.ME3, targetsList.Where(x => x.Game == MEGame.ME3), mainwindow));
+                GameBackups.Add(new GameBackup(MEGame.ME1, targetsList.Where(x => x.Game == MEGame.ME1), mainwindow, OnBackupStatusChanged));
+                GameBackups.Add(new GameBackup(MEGame.ME2, targetsList.Where(x => x.Game == MEGame.ME2), mainwindow, OnBackupStatusChanged));
+                GameBackups.Add(new GameBackup(MEGame.ME3, targetsList.Where(x => x.Game == MEGame.ME3), mainwindow, OnBackupStatusChanged));
             }
+            OnBackupStatusChanged();
+        }
+
+        private void OnBackupStatusChanged(object sender, SizeChangedEventArgs e)
+        {
+            Debug.WriteLine("SIZE CHANGED");
+            OnBackupStatusChanged();
         }
 
         [AddINotifyPropertyChangedInterface]
@@ -87,10 +108,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             public MEGame Game { get; }
             public ObservableCollectionExtended<GameTarget> AvailableBackupSources { get; } = new ObservableCollectionExtended<GameTarget>();
             private MainWindow window;
+            private Action backupStatusChangedDelegate;
 
-            public GameBackup(MEGame game, IEnumerable<GameTarget> availableBackupSources, MainWindow window)
+            public GameBackup(MEGame game, IEnumerable<GameTarget> availableBackupSources, MainWindow window, Action backupStatusChangedDelegate)
             {
                 this.window = window;
+                this.backupStatusChangedDelegate = backupStatusChangedDelegate;
                 this.Game = game;
                 this.AvailableBackupSources.AddRange(availableBackupSources);
                 this.AvailableBackupSources.Add(new GameTarget(Game, M3L.GetString(M3L.string_linkBackupToAnExistingGameCopy), false, true));
@@ -671,6 +694,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 BackupService.RefreshBackupStatus(window, Game);
                 BackupStatus = BackupService.GetBackupStatus(Game);
                 BackupStatusLine2 = BackupLocation ?? BackupService.GetBackupStatusTooltip(Game);
+                backupStatusChangedDelegate?.Invoke();
             }
 
             public string GameTitle { get; }
@@ -694,5 +718,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             public bool BackupInProgress { get; set; }
 
         }
+
+        public double Adjustment { get; set; }
+        public double FullSize => mainwindow?.RootDisplayObject.ActualHeight ?? 0;
+        public ISizeAdjustable Self { get; init; }
+
+
     }
 }

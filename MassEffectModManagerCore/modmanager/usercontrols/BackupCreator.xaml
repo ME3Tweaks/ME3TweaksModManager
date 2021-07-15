@@ -5,7 +5,7 @@
     d:DesignWidth="600"
     DataContext="{Binding RelativeSource={RelativeSource Self}}"
     Width="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.7_400_900', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualWidth}"
-    Height="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.8_400_700', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualHeight}">
+    Height="{Binding Self, Converter={StaticResource GenerationsSizeAdjustedPercentageConverter}, ConverterParameter='0.0_200_1150_270_350'}">
     <DockPanel>
         <TextBlock
             DockPanel.Dock="Top"

@@ -195,6 +195,7 @@
 		<ProjectReference Include="..\AdonisUI.ClassicTheme\AdonisUI.ClassicTheme.csproj" />
 		<ProjectReference Include="..\IniFileParser\IniFileParser.csproj" />
 		<ProjectReference Include="..\LegendaryExplorer\LegendaryExplorer\LegendaryExplorerCore\LegendaryExplorerCore.csproj" />
+		<ProjectReference Include="..\RoboSharp\RoboSharp\RoboSharp.csproj" />
 		<ProjectReference Include="..\SevenZip\SevenZip.csproj" />
 		<ProjectReference Include="..\WpfExtendedToolkit-Extended\Src\Xceed.Wpf.Toolkit\DotNetProjects.Wpf.Extended.Toolkit.csproj" />
 	</ItemGroup>
