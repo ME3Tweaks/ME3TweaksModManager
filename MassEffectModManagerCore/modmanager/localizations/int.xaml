@@ -1693,10 +1693,8 @@
     <!-- 0={Game name} -->
 
     <!-- Backup Nag System -->
-    <system:String x:Key="string_interp_XgamesNotBackedUp">{0} games not backed up</system:String>
-    <!-- 0= # of games not backed up (the only values for this string will be 2 or 3) -->
-    <system:String x:Key="string_interp_XgameNotBackedUp">{0} game not backed up</system:String>
-    <!-- 0 in this item will the value of 1.  -->
+    <system:String x:Key="string_interp_XgamesNotBackedUp">{0} game(s) not backed up</system:String>
+    <!-- 0= # of games not backed up. If your language uses plurality for values, attempt to make it work for both (like how this string uses game(s) to cover both cases of 1 and not 1) -->
     <system:String x:Key="string_allGamesBackedUp">All games backed up</system:String>
     <system:String x:Key="string_description_vanillaBackupRequired">ME3Tweaks Mod Manager requires unmodified game backups to perform certain actions.</system:String>
     <system:String x:Key="string_description_missingBackupWillLimitFeatures">Without a backup of a game, the following features of Mod Manager will be disabled or have limited functionality for that game:</system:String>
