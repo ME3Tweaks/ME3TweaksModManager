@@ -869,6 +869,7 @@ namespace MassEffectModManagerCore.modmanager
         private static (bool isRunning, DateTime lastChecked) me1RunningInfo = (false, DateTime.MinValue.AddSeconds(5));
         private static (bool isRunning, DateTime lastChecked) me2RunningInfo = (false, DateTime.MinValue.AddSeconds(5));
         private static (bool isRunning, DateTime lastChecked) me3RunningInfo = (false, DateTime.MinValue.AddSeconds(5));
+        private static (bool isRunning, DateTime lastChecked) leLauncherRunningInfo = (false, DateTime.MinValue.AddSeconds(5));
 
 
         private static int TIME_BETWEEN_PROCESS_CHECKS = 5;
@@ -895,6 +896,9 @@ namespace MassEffectModManagerCore.modmanager
                 case MEGame.LE3:
                 case MEGame.ME3:
                     runningInfo = me3RunningInfo;
+                    break;
+                case MEGame.LELauncher:
+                    runningInfo = leLauncherRunningInfo;
                     break;
             }
 
@@ -925,6 +929,9 @@ namespace MassEffectModManagerCore.modmanager
                 case MEGame.ME3:
                 case MEGame.LE3:
                     me3RunningInfo = runningInfo;
+                    break;
+                case MEGame.LELauncher:
+                    leLauncherRunningInfo = runningInfo;
                     break;
             }
 
