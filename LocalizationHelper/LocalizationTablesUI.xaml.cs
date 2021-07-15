@@ -695,7 +695,7 @@ namespace LocalizationHelper
                     }
 
                     locLang.Selected = true;
-
+                    CurrentLanguage = locLang;
                     MessageBox.Show("Loaded localization for " + langCode + ".");
                 }
                 catch (Exception e)
