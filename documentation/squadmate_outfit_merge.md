@@ -19,7 +19,7 @@ This feature is not part of moddesc.ini specifically; rather it is a feature aut
 #### Package files required
 There are several packages that must be included:
  - Your squadmate's outfit(s), including the \_Explore version, and the localization files for each. 
-    - These need to be uniquely named as BioH_\[Squadmate Base Name]_\[DLC Folder Name]_\[Number].pcc. This ensures that a developer doesn't produce a same named package as another mod might.
+    - These need to be uniquely named as BioH_\[Squadmate Base Name]\_[DLC Folder Name]\_[Number].pcc. This ensures that a developer doesn't produce a same named package as another mod might.
     - The localizations don't need to be modified except for renaming them to match the base filename.
     - Memory instances in package should probably be renamed to match your DLC), such as `SFXGameContent_DLC_MOD_MyOutfit`.
  - A package file containing the images to use for the squad selection UI must be present. This file must be named SFXHenchImages_\[DLC Folder Name].pcc
@@ -63,15 +63,15 @@ The base package name for the outfit. For Game 3, this will cover 2 packages:
 
 **highlightimage**
 
-The full instanced path to the highlight image (hench selected) for display in the squadmate selection screen. This is located in `SFXHenchImages_\[DLC folder name].pcc`.
+The full instanced path to the highlight image (hench selected) for display in the squadmate selection screen. This is located in `SFXHenchImages_[DLC folder name].pcc`.
 
 **availableimage**
 
-The full instanced path to the available image (hench not selected) for display in the squadmate selection screen. This is located in `SFXHenchImages_\[DLC folder name].pcc`.
+The full instanced path to the available image (hench not selected) for display in the squadmate selection screen. This is located in `SFXHenchImages_[DLC folder name].pcc`.
 
 **silhouetteimage**
 
-The full instanced path to the silhouette image (hench not available) for display in the squadmate selection screen. This is located in `SFXHenchImages_\[DLC folder name].pcc`.
+The full instanced path to the silhouette image (hench not available) for display in the squadmate selection screen. This is located in `SFXHenchImages_[DLC folder name].pcc`.
 
 **descriptiontext[0]**
 
