@@ -139,8 +139,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
 
                 var useNewMethod = M3L.ShowDialog(window,
-                    "Use the experimental new restore method? It is faster but is not yet battle tested.",
-                    "Use beta feature?", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes;
+                    M3L.GetString(M3L.string_beta_useNewRestoreMethod),
+                    M3L.GetString(M3L.string_useBetaFeatureQuestion), MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes;
 
                 bool restore = RestoreTarget.IsCustomOption || useNewMethod; //custom option is restore to custom location
                 restore = restore || M3L.ShowDialog(window, M3L.GetString(M3L.string_dialog_restoringXWillDeleteGameDir, Game.ToGameName()), M3L.GetString(M3L.string_gameTargetWillBeDeleted), MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
@@ -315,7 +315,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     if (args.ProcessedFile.Name.StartsWith(backupPath) && args.ProcessedFile.Name.Length > backupPath.Length)
                                     {
                                         CurrentRCFile = args.ProcessedFile.Name.Substring(backupPath.Length + 1);
-                                        BackupStatusLine2 = $"Copying {CurrentRCFile}";
+                                        BackupStatusLine2 = M3L.GetString(M3L.string_interp_copyingX, CurrentRCFile);
                                     }
                                 };
                                 rc.Start().Wait();
@@ -415,8 +415,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     {
                                         // Warn user
                                         var shouldContinue = MessageBoxResult.Yes == M3L.ShowDialog(window,
-                                                                                    $"The selected directory is not empty: {restoreTargetPath}. ALL NON-GAME FILES AND FOLDERS IN THIS DIRECTORY WILL BE DELETED. Are you sure you want to continue?",
-                                                                                    "Directory not empty", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                                                                                    M3L.GetString(M3L.string_interp_directoryNotEmptyWillDeleteEverything, restoreTargetPath),
+                                                                                    M3L.GetString(M3L.string_directoryNotEmpty), MessageBoxButton.YesNo, MessageBoxImage.Warning);
                                         if (!shouldContinue)
                                             return;
                                         Log.Warning($@"The user is continuing to new-gen restore on existing directory anyways");

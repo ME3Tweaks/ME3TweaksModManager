@@ -5,6 +5,7 @@ using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Misc;
+using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.nexusmodsintegration;
 using Microsoft.Win32;
 using Newtonsoft.Json;
@@ -60,7 +61,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             OpenFileDialog ofd = new OpenFileDialog()
             {
-                Filter = "Executables|*.exe",
+                Filter = $@"{M3L.GetString(M3L.string_executables)}|*.exe",
                 CheckFileExists = true,
             };
             var result = ofd.ShowDialog();
@@ -74,12 +75,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             switch (appExeName.ToLower())
             {
-                case "vortex":
+                case @"vortex":
                     return @"-d %1";
-                case "kortex x64":
-                case "kortex":
+                case @"kortex x64":
+                case @"kortex":
                     return "-DownloadLink \"%1\""; // do not localize
-                case "nexusclient":
+                case @"nexusclient":
                 default:
                     return @"%1";
             }

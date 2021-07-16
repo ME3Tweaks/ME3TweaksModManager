@@ -121,39 +121,6 @@ namespace MassEffectModManagerCore.modmanager.helpers
             {
                 commandLineArgs.Add($@"-game {target.Game.ToGameNum() - 3}"); // Autoboot dll
                 commandLineArgs.Add(@"-autoterminate");
-                /*
-                var sourceFile = Path.Combine(Utilities.GetLELaunchToolsGameBootDir(), @"VanillaLauncherUI.swf");
-                var destFile = Path.Combine(LEDirectory.GetLauncherPath(), @"Content", @"LauncherUI.swf");
-
-                bool correctSource = false;
-                if (!File.Exists(sourceFile) && Utilities.CalculateMD5(destFile) == VanillaLESWFLauncherMD5)
-                {
-                    File.Copy(destFile, sourceFile, true);
-                    correctSource = true;
-                }
-
-                if (correctSource || (File.Exists(sourceFile) && Utilities.CalculateMD5(sourceFile) == VanillaLESWFLauncherMD5))
-                {
-                    // JPatch it
-                    Log.Information($@"JPatching LauncherUI.swf to autoboot {target.Game}");
-                    using var outs = File.Open(destFile, FileMode.Create, FileAccess.ReadWrite);
-                    using var ins = File.OpenRead(sourceFile);
-                    JPatch.ApplyJPatch(ins, Utilities.ExtractInternalFileToStream($@"MassEffectModManagerCore.modmanager.lelauncherbypass.To{target.Game}.jsf"), outs);
-                    Log.Information($@"JPatched LauncherUI.swf to autoboot {target.Game}");
-                }
-                else
-                {
-                    Log.Warning(@"LauncherUI.swf has wrong hash, not JPatching to autoboot");
-                }*/
-
-                var destFile = Path.Combine(LEDirectory.GetLauncherPath(), @"Content", @"BWLogo.bik");
-                if (File.Exists(destFile) && new FileInfo(destFile).Length > 500)
-                {
-                    // > 500 bytes
-                    var blackFrame = Utilities.ExtractInternalFileToStream($@"MassEffectModManagerCore.modmanager.lelauncherbypass.singleblackframe.bik");
-                    blackFrame.WriteToFile(destFile);
-                    Log.Information(@"Installed single black frame for BWLogo.bik");
-                }
             }
 
             Utilities.RunProcess(exe, commandLineArgs, false, true, false, false, environmentVars);

@@ -212,8 +212,6 @@
     <EmbeddedResource Include="modmanager\plotmanager\**\*.pcc" />
     <EmbeddedResource Include="modmanager\mergedlc\**\*.pcc" />
     <EmbeddedResource Include="modmanager\plotmanager\**\*.u*" />
-    <EmbeddedResource Include="modmanager\lelauncherbypass\*.jsf" />
-    <EmbeddedResource Include="modmanager\lelauncherbypass\*.bik" />
   </ItemGroup>
 
   <ItemGroup>

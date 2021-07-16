@@ -98,7 +98,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void OnBackupStatusChanged(object sender, SizeChangedEventArgs e)
         {
-            Debug.WriteLine("SIZE CHANGED");
             OnBackupStatusChanged();
         }
 
