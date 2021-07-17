@@ -260,7 +260,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                         if (package.Game != ModBeingDeployed.Game)
                         {
-                            item.AddSignificantIssue($"Package {package.FilePath.Substring(ModBeingDeployed.ModPath.Length + 1)} is for game {package.Game} but mod being deployed is for game {ModBeingDeployed.Game}. Ensure this is correct.");
+                            item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningPackageForOtherGameFound, package.FilePath.Substring(ModBeingDeployed.ModPath.Length + 1), package.Game, ModBeingDeployed.Game));
                         }
                     }
                 }

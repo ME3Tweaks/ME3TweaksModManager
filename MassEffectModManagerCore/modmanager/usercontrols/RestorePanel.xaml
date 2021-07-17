@@ -2,7 +2,7 @@
                        DataContext="{Binding RelativeSource={RelativeSource Self}}"
                        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" mc:Ignorable="d"
                        Width="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.7_400_900', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualWidth}"
-                       Height="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.4_410_700', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualHeight}">
+                       Height="{Binding Converter={StaticResource GenerationsSizePercentageConverter}, ConverterParameter='0.4_200_800_110_200', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualHeight}">
     <DockPanel>
         <TextBlock DockPanel.Dock="Top" Text="{DynamicResource string_fullGameRestore}" FontSize="24" FontWeight="Bold" TextAlignment="Center" Margin="0,5" />
         <TextBlock DockPanel.Dock="Top" Text="{DynamicResource string_entireGameDirectoryWillBeDeleted}" TextWrapping="Wrap" />

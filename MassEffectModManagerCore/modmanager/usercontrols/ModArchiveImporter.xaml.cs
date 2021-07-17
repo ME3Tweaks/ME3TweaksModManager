@@ -901,7 +901,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                     try
                     {
-                        ActionText = "Deleting existing mod in library";
+                        ActionText = M3L.GetString(M3L.string_deletingExistingModInLibrary);
                         var deletedOK = Utilities.DeleteFilesAndFoldersRecursively(sanitizedPath);
                         if (!deletedOK)
                         {

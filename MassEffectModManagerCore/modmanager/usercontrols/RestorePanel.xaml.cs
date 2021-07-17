@@ -20,7 +20,7 @@ using Microsoft.AppCenter.Crashes;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Microsoft.WindowsAPICodePack.Taskbar;
 using Serilog;
-
+using RoboSharp;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -138,7 +138,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     return;
                 }
 
-                bool restore = RestoreTarget.IsCustomOption; //custom option is restore to custom location
+                var useNewMethod = M3L.ShowDialog(window,
+                    M3L.GetString(M3L.string_beta_useNewRestoreMethod),
+                    M3L.GetString(M3L.string_useBetaFeatureQuestion), MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes;
+
+                bool restore = RestoreTarget.IsCustomOption || useNewMethod; //custom option is restore to custom location
                 restore = restore || M3L.ShowDialog(window, M3L.GetString(M3L.string_dialog_restoringXWillDeleteGameDir, Game.ToGameName()), M3L.GetString(M3L.string_gameTargetWillBeDeleted), MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
                 if (restore)
                 {
@@ -163,42 +167,47 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                         string restoreTargetPath = b.Argument as string;
                         string backupPath = BackupLocation;
-                        BackupStatusLine2 = M3L.GetString(M3L.string_deletingExistingGameInstallation);
-                        if (Directory.Exists(restoreTargetPath))
+
+                        if (!useNewMethod)
                         {
-                            if (Directory.GetFiles(restoreTargetPath).Any() || Directory.GetDirectories(restoreTargetPath).Any())
+                            BackupStatusLine2 = M3L.GetString(M3L.string_deletingExistingGameInstallation);
+                            if (Directory.Exists(restoreTargetPath))
                             {
-                                Log.Information(@"Deleting existing game directory: " + restoreTargetPath);
-                                try
+                                if (Directory.GetFiles(restoreTargetPath).Any() ||
+                                    Directory.GetDirectories(restoreTargetPath).Any())
                                 {
-                                    bool deletedDirectory = Utilities.DeleteFilesAndFoldersRecursively(restoreTargetPath);
-                                    if (deletedDirectory != true)
+                                    Log.Information(@"Deleting existing game directory: " + restoreTargetPath);
+                                    try
                                     {
-                                        b.Result = RestoreResult.ERROR_COULD_NOT_DELETE_GAME_DIRECTORY;
+                                        bool deletedDirectory =
+                                            Utilities.DeleteFilesAndFoldersRecursively(restoreTargetPath);
+                                        if (deletedDirectory != true)
+                                        {
+                                            b.Result = RestoreResult.ERROR_COULD_NOT_DELETE_GAME_DIRECTORY;
+                                            return;
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        //todo: handle this better
+                                        Log.Error(
+                                            $@"Exception deleting game directory: {restoreTargetPath}: {ex.Message}");
+                                        b.Result = RestoreResult.EXCEPTION_DELETING_GAME_DIRECTORY;
                                         return;
                                     }
                                 }
-                                catch (Exception ex)
-                                {
-                                    //todo: handle this better
-                                    Log.Error($@"Exception deleting game directory: {restoreTargetPath}: {ex.Message}");
-                                    b.Result = RestoreResult.EXCEPTION_DELETING_GAME_DIRECTORY;
-                                    return;
-                                }
                             }
-                        }
-                        else
-                        {
-                            Log.Error(@"Game directory not found! Was it removed while the app was running?");
-                        }
+                            else
+                            {
+                                Log.Error(@"Game directory not found! Was it removed while the app was running?");
+                            }
 
-                        //Todo: Revert LODs, remove IndirectSound settings (MEUITM)
-
-                        var created = Utilities.CreateDirectoryWithWritePermission(restoreTargetPath);
-                        if (!created)
-                        {
-                            b.Result = RestoreResult.ERROR_COULD_NOT_CREATE_DIRECTORY;
-                            return;
+                            var created = Utilities.CreateDirectoryWithWritePermission(restoreTargetPath);
+                            if (!created)
+                            {
+                                b.Result = RestoreResult.ERROR_COULD_NOT_CREATE_DIRECTORY;
+                                return;
+                            }
                         }
 
                         BackupStatusLine2 = M3L.GetString(M3L.string_restoringGameFromBackup);
@@ -287,26 +296,44 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                             BackupStatus = M3L.GetString(M3L.string_restoringGame);
                             Log.Information($@"Copying backup to game directory: {backupPath} -> {restoreTargetPath}");
-                            CopyDir.CopyAll_ProgressBar(new DirectoryInfo(backupPath), new DirectoryInfo(restoreTargetPath),
-                                totalItemsToCopyCallback: totalFilesToCopyCallback,
-                                aboutToCopyCallback: aboutToCopyCallback,
-                                fileCopiedCallback: fileCopiedCallback,
-                                ignoredExtensions: new[] { @"*.pdf", @"*.mp3" });
+                            if (useNewMethod)
+                            {
+                                string CurrentRCFile = null;
+                                RoboCommand rc = new RoboCommand();
+                                rc.CopyOptions.Destination = restoreTargetPath;
+                                rc.CopyOptions.Source = backupPath;
+                                rc.CopyOptions.Mirror = true;
+                                rc.CopyOptions.MultiThreadedCopiesCount = 2;
+                                rc.OnCopyProgressChanged += (sender, args) =>
+                                {
+                                    ProgressIndeterminate = false;
+                                    ProgressValue = (int)args.CurrentFileProgress;
+                                    ProgressMax = 100;
+                                };
+                                rc.OnFileProcessed += (sender, args) =>
+                                {
+                                    if (args.ProcessedFile.Name.StartsWith(backupPath) && args.ProcessedFile.Name.Length > backupPath.Length)
+                                    {
+                                        CurrentRCFile = args.ProcessedFile.Name.Substring(backupPath.Length + 1);
+                                        BackupStatusLine2 = M3L.GetString(M3L.string_interp_copyingX, CurrentRCFile);
+                                    }
+                                };
+                                rc.Start().Wait();
+                            }
+                            else
+                            {
+                                CopyDir.CopyAll_ProgressBar(new DirectoryInfo(backupPath),
+                                    new DirectoryInfo(restoreTargetPath),
+                                    totalItemsToCopyCallback: totalFilesToCopyCallback,
+                                    aboutToCopyCallback: aboutToCopyCallback,
+                                    fileCopiedCallback: fileCopiedCallback,
+                                    ignoredExtensions: new[] { @"*.pdf", @"*.mp3" });
+                            }
                             Log.Information(@"Restore of game data has completed");
+                            BackupCopyFinished(restoreTargetPath);
                         }
 
-                        //Check for cmmvanilla file and remove it present
 
-                        string cmmVanilla = Path.Combine(restoreTargetPath, BackupService.CMM_VANILLA_FILENAME);
-                        if (File.Exists(cmmVanilla))
-                        {
-                            Log.Information($@"Removing cmm_vanilla file: {cmmVanilla}");
-                            File.Delete(cmmVanilla);
-                        }
-
-                        Log.Information(@"Restore thread wrapping up");
-                        RestoreTarget.ReloadGameTarget();
-                        b.Result = RestoreResult.RESTORE_OK;
                     };
                     nbw.RunWorkerCompleted += (a, b) =>
                     {
@@ -356,7 +383,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         EndRestore();
                         CommandManager.InvalidateRequerySuggested();
                     };
-                    var restTarget = RestoreTarget.TargetPath;
+                    var restoreTargetPath = RestoreTarget.TargetPath;
                     if (RestoreTarget.IsCustomOption)
                     {
                         CommonOpenFileDialog m = new CommonOpenFileDialog
@@ -368,20 +395,42 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         if (m.ShowDialog() == CommonFileDialogResult.Ok)
                         {
                             //Check empty
-                            restTarget = m.FileName;
-                            if (Directory.Exists(restTarget))
+                            restoreTargetPath = m.FileName;
+                            if (Directory.Exists(restoreTargetPath))
                             {
-                                if (Directory.GetFiles(restTarget).Length > 0 || Directory.GetDirectories(restTarget).Length > 0)
+                                if (Directory.GetFiles(restoreTargetPath).Length > 0 || Directory.GetDirectories(restoreTargetPath).Length > 0)
                                 {
+                                    Log.Warning($@"The selected restore directory is not empty: {restoreTargetPath}");
                                     //Directory not empty
-                                    M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogDirectoryIsNotEmptyLocationToRestoreToMustBeEmpty), M3L.GetString(M3L.string_cannotRestoreToThisLocation), MessageBoxButton.OK, MessageBoxImage.Error);
-                                    return;
+                                    if (!useNewMethod)
+                                    {
+                                        M3L.ShowDialog(window,
+                                            M3L.GetString(M3L
+                                                .string_dialogDirectoryIsNotEmptyLocationToRestoreToMustBeEmpty),
+                                            M3L.GetString(M3L.string_cannotRestoreToThisLocation), MessageBoxButton.OK,
+                                            MessageBoxImage.Error);
+                                        return;
+                                    }
+                                    else
+                                    {
+                                        // Warn user
+                                        var shouldContinue = MessageBoxResult.Yes == M3L.ShowDialog(window,
+                                                                                    M3L.GetString(M3L.string_interp_directoryNotEmptyWillDeleteEverything, restoreTargetPath),
+                                                                                    M3L.GetString(M3L.string_directoryNotEmpty), MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                                        if (!shouldContinue)
+                                            return;
+                                        Log.Warning($@"The user is continuing to new-gen restore on existing directory anyways");
+
+                                    }
                                 }
 
                                 //TODO: PREVENT RESTORING TO DOCUMENTS/BIOWARE
                             }
 
-                            Analytics.TrackEvent(@"Chose to restore game to custom location", new Dictionary<string, string>() { { @"Game", Game.ToString() } });
+                            Analytics.TrackEvent(@"Chose to restore game to custom location", new Dictionary<string, string>() {
+                                { @"Game", Game.ToString() },
+                                { @"New-gen", useNewMethod.ToString() }
+                            });
 
                         }
                         else
@@ -393,7 +442,22 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     RefreshTargets = true;
                     TaskbarHelper.SetProgress(0);
                     TaskbarHelper.SetProgressState(TaskbarProgressBarState.Normal);
-                    nbw.RunWorkerAsync(restTarget);
+                    nbw.RunWorkerAsync(restoreTargetPath);
+                }
+            }
+
+            /// <summary>
+            /// Call when the copying of data has finished. This will remove the CMMVanilla file
+            /// </summary>
+            /// <param name="restoreTargetPath"></param>
+            private void BackupCopyFinished(string restoreTargetPath)
+            {
+                //Check for cmmvanilla file and remove it present
+                string cmmVanilla = Path.Combine(restoreTargetPath, BackupService.CMM_VANILLA_FILENAME);
+                if (File.Exists(cmmVanilla))
+                {
+                    Log.Information($@"Removing cmm_vanilla file: {cmmVanilla}");
+                    File.Delete(cmmVanilla);
                 }
             }
 

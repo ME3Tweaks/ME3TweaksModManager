@@ -832,7 +832,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 PackageCache pc = new PackageCache();
                 Percent = 0;
-                Action = "Updating TLK files";
+                Action = M3L.GetString(M3L.string_updatingTLKFiles);
                 var gameMap = MELoadedFiles.GetFilesLoadedInGame(SelectedGameTarget.Game, gameRootOverride: SelectedGameTarget.TargetPath);
                 doneMerges = 0;
                 var mergeFiles = Mod.CoalesceTLKMergeFiles(allTLKMerges);

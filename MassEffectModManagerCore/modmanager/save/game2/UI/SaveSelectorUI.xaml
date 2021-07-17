@@ -51,8 +51,8 @@
                 <DataTemplate>
                     <StackPanel>
                         <TextBlock Text="{Binding Converter={StaticResource SaveGameNameConverter}}" FontWeight="Bold"/>
-                        <TextBlock Text="{Binding BindableTimestamp}" FontWeight="Bold"/>
-                        <TextBlock Text="{Binding BindableBaseLevelName, Converter={StaticResource LevelNameStringConverter}}"/>
+                        <TextBlock Text="{Binding Proxy_TimeStamp}" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding Proxy_DebugName}"/>
                     </StackPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>

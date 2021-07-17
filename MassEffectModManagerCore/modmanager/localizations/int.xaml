@@ -493,6 +493,7 @@
     <system:String x:Key="string_warningTextureModsAreInstalled">Warning: Texture mods are installed</system:String>
     <system:String x:Key="string_interp_errorApplyingMergeModXY">An error occurred applying merge mod {0}: {1}.</system:String>
     <!-- 0={mergeMod.MergeModFilename} 1={ex.Message} -->
+    <system:String x:Key="string_updatingTLKFiles">Updating TLK files</system:String>
 
     <!-- Welcome panel -->
     <system:String x:Key="string_previewPanelTitle">Welcome to ME3Tweaks Mod Manager</system:String>
@@ -735,6 +736,8 @@
     <system:String x:Key="string_dialog_DeploymentChecksInProgress">Mods are currently being checked before deployment. Cancel the deployment?</system:String>
     <system:String x:Key="string_folders">Folders</system:String>
     <system:String x:Key="string_individuallyCompressedItems">Individually compressed items</system:String>
+    <system:String x:Key="string_interp_warningPackageForOtherGameFound">Package {0} is for game {1} but mod being deployed is for game {2}. Ensure this is correct.</system:String>
+    <!-- 0={package file path} 1={Package game (ME1/2/3...)} 2={ModBeingDeployed.Game (ME1/2/3...} -->
 
     <!-- Backup Creator-->
     <system:String x:Key="string_backupsAreShared">Backups are shared across various modding tools including Mass Effect Randomizer, ALOT Installer, and Legendary Explorer.</system:String>
@@ -990,7 +993,8 @@
     <system:String xml:space="preserve" x:Key="string_tooltip_installModArchiveWindow">Directly installs the mod to the current active target for the relevant game.&#10;This will NOT import it into the mod library</system:String>
     <system:String x:Key="string_interp_xChosenOptions">{0} chosen option(s)</system:String>
     <!-- 0 = number of chosen installation options (the options that come up on mod install). Can be 0 -->
-    
+    <system:String x:Key="string_deletingExistingModInLibrary">Deleting existing mod in library</system:String>
+
     <!-- Mod updater -->
     <system:String x:Key="string_modupdatesavailable">Mod updates available</system:String>
     <system:String x:Key="string_downloadUpdate">Download update</system:String>
@@ -1076,6 +1080,12 @@
     <system:String xml:space="preserve" x:Key="string_dialog_restoringXWillDeleteGameDir">Restoring {0} will completely delete the game directory and then copy the backup into the original location.\n\nDelete this installation and restore it from backup?</system:String>
     <!-- 0=Utilities.GetGameName(Game) -->
     <system:String x:Key="string_gameTargetWillBeDeleted">Game target will be deleted</system:String>
+    <system:String x:Key="string_beta_useNewRestoreMethod">Use the experimental new restore method? It is faster but is not yet battle tested.</system:String>
+    <system:String x:Key="string_useBetaFeatureQuestion">Use beta feature?</system:String>
+    <system:String x:Key="string_interp_copyingX">Copying {0}</system:String>
+    <!-- 0={File} -->
+    <system:String x:Key="string_interp_directoryNotEmptyWillDeleteEverything">The selected directory is not empty: {0}. ALL NON-GAME FILES AND FOLDERS IN THIS DIRECTORY WILL BE DELETED. Are you sure you want to continue?</system:String>
+    <!-- 0={Directory user chose} -->
 
     <!-- Test archive generator-->
     <system:String x:Key="string_hashingFiles">Hashing files</system:String>
@@ -1121,9 +1131,7 @@
     <system:String x:Key="string_pasteYourAPIKeyHere">Paste your API key here</system:String>
     <system:String x:Key="string_manuallyEnterAPIKey">Manually enter API key</system:String>
     <system:String x:Key="string_yourAPIKeyWillAppearHere">Your API key will appear here</system:String>
-    <system:String x:Key="string_setupDownloadWithManager">Setup Download with Manager</system:String>
-    <system:String x:Key="string_failedToSetupDownloadWithManager">Failed to setup Download with Manager</system:String>
-    <system:String x:Key="string_downloadWithManagerConfigured">Download with Manager configured</system:String>
+    <system:String x:Key="string_configureDownloadWithManager">Configure 'Download with Manager'</system:String>
 
     <!-- Alternates Global -->
     <system:String x:Key="string_validation_alt_imageAssetArchiveError">Alternate {0} lists image asset {1}, but the asset could not be read from the archive. The log will contain additional information.</system:String>
@@ -1693,10 +1701,8 @@
     <!-- 0={Game name} -->
 
     <!-- Backup Nag System -->
-    <system:String x:Key="string_interp_XgamesNotBackedUp">{0} games not backed up</system:String>
-    <!-- 0= # of games not backed up (the only values for this string will be 2 or 3) -->
-    <system:String x:Key="string_interp_XgameNotBackedUp">{0} game not backed up</system:String>
-    <!-- 0 in this item will the value of 1.  -->
+    <system:String x:Key="string_interp_XgamesNotBackedUp">{0} game(s) not backed up</system:String>
+    <!-- 0= # of games not backed up. If your language uses plurality for values, attempt to make it work for both (like how this string uses game(s) to cover both cases of 1 and not 1) -->
     <system:String x:Key="string_allGamesBackedUp">All games backed up</system:String>
     <system:String x:Key="string_description_vanillaBackupRequired">ME3Tweaks Mod Manager requires unmodified game backups to perform certain actions.</system:String>
     <system:String x:Key="string_description_missingBackupWillLimitFeatures">Without a backup of a game, the following features of Mod Manager will be disabled or have limited functionality for that game:</system:String>
@@ -2202,4 +2208,28 @@
     <!-- 0={Position} 1={Original string} -->
     <system:String x:Key="string_interp_ssp_unclosedParenthesisFound">Unclosed opening parenthesis encountered while parsing parenthesis split list in {0}</system:String>
     <!-- 0={Original string} -->
+
+    <!-- License Viewer -->
+    <system:String x:Key="string_licenseViewer">License Viewer</system:String>
+    <!-- Title of a window for viewing software license text -->
+
+    <!-- NXM Config Panel -->
+    <system:String x:Key="string_executables">Executables</system:String>
+    <!-- Used in context of filetype selector. 'Executables (*.exe)' -->
+    <system:String x:Key="string_nexusModsDownloaderConfiguration">NexusMods Downloader Configuration</system:String>
+    <system:String x:Key="string_description_downloadWithManager">The 'download with manager' feature on NexusMods uses the NXM protocol. This means that only one application can be registered to receive it at a time. Mod Manager can register itself as the receiver and forward non-supported games (such as Skyrim or Fallout) downloads to a different manager of your choice.</system:String>
+    <system:String x:Key="string_registerME3TweaksModManagerAsHandler">Register ME3Tweaks Mod Manager as handler</system:String>
+    <system:String x:Key="string_otherApps">Other apps</system:String>
+    <system:String x:Key="string_description_downloadWithManagerOtherApps">You can register other applications to handle other game besides Mass Effect games. You need to supply the domain (which is the game name in a nexusmods url), the target application, and the arguments the application needs. Use '%1' to indicate the nxm:// link.</system:String>
+    <system:String x:Key="string_addOtherApp">Add other app</system:String>
+    <system:String x:Key="string_additionalApp">Additional App</system:String>
+    <system:String x:Key="string_application">Application</system:String>
+    <system:String x:Key="string_arguments">Arguments</system:String>
+    <system:String x:Key="string_domains">Domains</system:String>
+
+    <!-- Nexus Domain Handler -->
+    <system:String x:Key="string_interp_handlerProgramDoesNotExist">Cannot invoke handler for {0} domain: specified application {1} does not exist</system:String>
+    <!-- 0={game domain (like 'skyrim')} 1={ProgramPath} -->
+
+
 </ResourceDictionary>

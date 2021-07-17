@@ -109,7 +109,7 @@ namespace MassEffectModManagerCore.modmanager.save.game2.UI
                     "biop_cat001" => "Priority: Eden Prime",
                     "biop_cat002" => "Priority: Thessia",
                     "biop_cat003" => "Priority: The Citadel II",
-                    "biop_cat004" => "Priority: Cerberus Headquaters (See Note Below)",
+                    "biop_cat004" => "Priority: Cerberus Headquarters",
                     "biop_cerjcb" => "Arrae: Ex-Cerberus Scientists",
                     "biop_cermir" => "Priority: Horizon",
                     "biop_char" => "Character Creation Menu",

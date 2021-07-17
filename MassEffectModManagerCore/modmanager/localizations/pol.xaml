@@ -192,7 +192,7 @@
 	<system:String x:Key="string_interp_dialog_linkFailedInvalidTarget">Wskazana instalacja nie może zostać połączona jako kopia zapasowa z powodu błędu walidacyjnego: {0}</system:String>
 	<!-- 0=Validation failure reason -->
 	<system:String x:Key="string_invalidGameCopy">Nieprawidłowa kopia gry</system:String>
-	<system:String x:Key="string_interp_dialog_linkFailedSubdirectoryOfGameDocumentsFolder">Ścieżka Dokumenty/Bioware/{0} (i jej zagłębienia) nie może być użyta jako lokalizacja kopii zapasowych, ponieważ ładowane są z niej pliki gry. Prosimy o wybranie innej lokalizacji.</system:String>
+	<system:String x:Key="string_interp_dialog_linkFailedSubdirectoryOfGameDocumentsFolder">Ścieżka Dokumenty/Bioware/ (i jej zagłębienia) nie może być użyta jako lokalizacja kopii zapasowych, ponieważ ładowane są z niej pliki gry. Prosimy o wybranie innej lokalizacji.</system:String>
 	<!-- 0=Game name (Mass Effect, Mass Effect 3, etc) -->
 	<system:String x:Key="string_locationNotAllowedForBackup">Lokalizacja niedozwolona dla kopii zapasowych</system:String>
 	<system:String x:Key="string_dialog_userAccountDoesntHaveWritePermissionsBackup">Twoje konto użytkownika nie ma uprawnień nadpisywania danych w wybranych katalogu. Wybierz inny katalog.</system:String>

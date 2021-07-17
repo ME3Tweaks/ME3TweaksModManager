@@ -49,6 +49,7 @@ namespace MassEffectModManagerCore.modmanager.save.game3
             {
                 if (Version == 29) return MEGame.ME2;
                 if (Version == 30) return MEGame.LE2;
+                if (Version == 50) return MEGame.LE1;
                 if (Version == 59) return MEGame.ME3; // Also LE3
                 return MEGame.Unknown;
             }
@@ -59,6 +60,7 @@ namespace MassEffectModManagerCore.modmanager.save.game3
         public ESFXSaveGameType SaveGameType { get; set; }
 
         public IPlayerRecord Proxy_PlayerRecord => Player;
+        public string Proxy_DebugName => DebugName;
 
         [OriginalName("DebugName")]
         private string _DebugName;
