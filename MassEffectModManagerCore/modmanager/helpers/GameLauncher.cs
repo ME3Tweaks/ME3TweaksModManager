@@ -119,7 +119,8 @@ namespace MassEffectModManagerCore.modmanager.helpers
 
             if (Settings.SkipLELauncher && target.Game.IsLEGame())
             {
-                commandLineArgs.Add($@"-game {target.Game.ToGameNum() - 3}"); // Autoboot dll
+                commandLineArgs.Add($@"-game"); // Autoboot dll
+                commandLineArgs.Add((target.Game.ToGameNum() - 3).ToString());
                 commandLineArgs.Add(@"-autoterminate");
                 /*
                 var sourceFile = Path.Combine(Utilities.GetLELaunchToolsGameBootDir(), @"VanillaLauncherUI.swf");
