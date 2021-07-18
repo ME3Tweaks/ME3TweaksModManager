@@ -49,6 +49,14 @@ namespace MassEffectModManagerCore.modmanager.converters
                                 break;
                         }
                     }
+                    else if (splitparms[i] == "LEGame")
+                    {
+                        if (inverted ^ game.IsLEGame()) continue;
+                    }
+                    else if (splitparms[i] == "OTGame")
+                    {
+                        if (inverted ^ game.IsOTGame()) continue;
+                    }
 
                     // One of the above conditions did not register as true.
                     return Visibility.Collapsed;

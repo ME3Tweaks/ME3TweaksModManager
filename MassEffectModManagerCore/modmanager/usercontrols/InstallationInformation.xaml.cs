@@ -807,5 +807,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             ShowInstalledOptions = !ShowInstalledOptions;
             ShowInstalledOptionsText = ShowInstalledOptions ? M3L.GetString(M3L.string_hideInstalledOptions) : M3L.GetString(M3L.string_showInstalledOptions);
         }
+
+        private void OpenMEMLE_Click(object sender, RoutedEventArgs e)
+        {
+            Result.ToolToLaunch = ExternalToolLauncher.MEM_LE;
+            ClosePanel();
+        }
     }
 }
