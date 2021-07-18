@@ -466,10 +466,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 // Check TLK exists.
                                 var tlkExportObjName = tlkFile.Split('.').Last();
                                 tlkFile = tlkFile.Substring(0, tlkFile.IndexOf(@".")); //They end with _tlk
-                                var tlkPackagePath = Directory.GetFiles(Path.Combine(ModBeingDeployed.ModPath, customDLC), $@"{tlkFile}.upk", SearchOption.AllDirectories).FirstOrDefault();
+                                var tlkExtension = ModBeingDeployed.Game == MEGame.ME1 ? @".upk" : @".pcc";
+                                var tlkPackagePath = Directory.GetFiles(Path.Combine(ModBeingDeployed.ModPath, customDLC), $@"{tlkFile}{tlkExtension}", SearchOption.AllDirectories).FirstOrDefault();
                                 if (tlkPackagePath == null)
                                 {
-                                    obj.AddBlockingError(M3L.GetString(M3L.string_interp_dlcModMissingAutoLoadTlkFile, customDLC, tlkFile));
+                                    obj.AddBlockingError(M3L.GetString(M3L.string_interp_dlcModMissingAutoLoadTlkFile, customDLC, tlkFile, tlkExtension));
                                 }
                                 else
                                 {
