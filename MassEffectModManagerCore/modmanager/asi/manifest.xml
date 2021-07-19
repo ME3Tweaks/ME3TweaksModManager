@@ -10,6 +10,7 @@
       <hash>bc47e1e18e84c85e54e53148d728517a</hash>
       <sourcecode>https://github.com/Erik-JS/ME3-ASI</sourcecode>
       <downloadlink>https://me3tweaks.com/mods/asi/MouseDisabler-v1.asi</downloadlink>
+      <autoremovegroups/>
     </asimod>
     <asimod>
       <name>Mouse Disabler</name>
@@ -20,6 +21,7 @@
       <hash>fe33ab85c79875e2deb0df6ca3e7c232</hash>
       <sourcecode>https://github.com/Erik-JS/ME3-ASI/tree/master/ME3MouseDisabler</sourcecode>
       <downloadlink>https://me3tweaks.com/mods/asi/MouseDisabler-v2.asi</downloadlink>
+      <autoremovegroups/>
     </asimod>
   </updategroup>
   <updategroup groupid="1" game="3" hidden="0">
@@ -32,6 +34,7 @@
       <hash>1b9bb3fb16e8d4c108bd4e123175096c</hash>
       <sourcecode>https://github.com/Mgamerz/Misc-Stuff/tree/master/ME3MPSDKTEST</sourcecode>
       <downloadlink>https://me3tweaks.com/mods/asi/OriginMPStatus-v1.asi</downloadlink>
+      <autoremovegroups/>
     </asimod>
     <asimod>
       <name>Origin MP Status</name>
@@ -42,6 +45,7 @@
       <hash>48639bd925a0246bd5e48c53fabdefc4</hash>
       <sourcecode>https://github.com/Mgamerz/Misc-Stuff/tree/master/ME3MPSDKTEST</sourcecode>
       <downloadlink>https://me3tweaks.com/mods/asi/OriginMPStatus-v2.asi</downloadlink>
+      <autoremovegroups/>
     </asimod>
     <asimod>
       <name>Origin MP Status</name>
@@ -52,6 +56,7 @@
       <hash>70f1cc4d96c91e65a63d25244d01deec</hash>
       <sourcecode>https://github.com/ME3Tweaks/ME3-ASI-Plugins/tree/master/OriginMPStatus</sourcecode>
       <downloadlink>https://me3tweaks.com/mods/asi/OriginMPStatus-v3.asi</downloadlink>
+      <autoremovegroups/>
     </asimod>
   </updategroup>
   <updategroup groupid="2" game="3" hidden="0">
@@ -64,6 +69,7 @@
       <hash>0b31c1ce3f582ae6f8638add16518972</hash>
       <sourcecode>https://github.com/Erik-JS/ME3-ASI/tree/master/ME3ClientMessageExposer</sourcecode>
       <downloadlink>https://me3tweaks.com/mods/asi/ME3ClientMessageExposer-v1.asi</downloadlink>
+      <autoremovegroups/>
     </asimod>
   </updategroup>
   <updategroup groupid="4" game="3" hidden="0">
@@ -76,6 +82,7 @@
       <hash>5df6dccda9c6081cf3a04a21d537be64</hash>
       <sourcecode>https://github.com/Erik-JS/ME3-ASI/tree/master/ME3OriginUnlinker</sourcecode>
       <downloadlink>https://me3tweaks.com/mods/asi/OriginUnlinker-v1.asi</downloadlink>
+      <autoremovegroups/>
     </asimod>
   </updategroup>
   <updategroup groupid="5" game="3" hidden="0">
@@ -88,6 +95,7 @@
       <hash>42c1e21b2f4b345efb7988268a924be5</hash>
       <sourcecode>https://github.com/Erik-JS/ME3-ASI/tree/master/ME3BalanceChangesReplacer</sourcecode>
       <downloadlink>https://me3tweaks.com/mods/asi/BalanceChangesReplacer-v1.asi</downloadlink>
+      <autoremovegroups/>
     </asimod>
     <asimod>
       <name>Balance Changes Replacer</name>
@@ -98,6 +106,7 @@
       <hash>a44044728d08320537528121a193a7d8</hash>
       <sourcecode>https://github.com/Erik-JS/ME3-ASI/tree/master/ME3BalanceChangesReplacer</sourcecode>
       <downloadlink>https://me3tweaks.com/mods/asi/BalanceChangesReplacer-v2.asi</downloadlink>
+      <autoremovegroups/>
     </asimod>
     <asimod>
       <name>Balance Changes Replacer</name>
@@ -108,6 +117,7 @@
       <hash>6143daf3f9db91eef76590ffae09d743</hash>
       <sourcecode>https://github.com/Erik-JS/ME3-ASI/tree/master/ME3BalanceChangesReplacer</sourcecode>
       <downloadlink>https://me3tweaks.com/mods/asi/BalanceChangesReplacer-v3.asi</downloadlink>
+      <autoremovegroups/>
     </asimod>
   </updategroup>
   <updategroup groupid="6" game="3" hidden="0">
@@ -120,6 +130,7 @@
       <hash>ef4b9e2ed35caa1449c7e035d662894f</hash>
       <sourcecode>https://github.com/Erik-JS/ME3-ASI/tree/master/ME3LiveTLKProxy</sourcecode>
       <downloadlink>https://me3tweaks.com/mods/asi/ME3LiveTLKProxy-v1.asi</downloadlink>
+      <autoremovegroups/>
     </asimod>
   </updategroup>
   <updategroup groupid="7" game="3" hidden="0">
@@ -132,6 +143,7 @@
       <hash>af3572e3d0ac3cf7f89d22f6f7508dea</hash>
       <sourcecode>https://github.com/Erik-JS/ME3-ASI/tree/master/ME3ParallelProcessUnlocker</sourcecode>
       <downloadlink>https://me3tweaks.com/mods/asi/ME3ParallelProcessUnlocker-v1.asi</downloadlink>
+      <autoremovegroups/>
     </asimod>
   </updategroup>
   <updategroup groupid="8" game="3" hidden="1">
@@ -144,6 +156,7 @@
       <hash>7e993485f7efb5ded2b549eeb9b45297</hash>
       <sourcecode>https://github.com/Erik-JS/ME3-ASI/tree/master/ME3Logger</sourcecode>
       <downloadlink>https://me3tweaks.com/mods/asi/ME3Logger-v1.asi</downloadlink>
+      <autoremovegroups/>
     </asimod>
     <asimod>
       <name>ME3 Logger - Truncating</name>
@@ -154,6 +167,7 @@
       <hash>54ed0a6a0201db28dc34b751418303d9</hash>
       <sourcecode>https://github.com/Mgamerz/ME3-ASI/tree/master/ME3Logger</sourcecode>
       <downloadlink>https://me3tweaks.com/mods/asi/ME3Logger_truncating.asi</downloadlink>
+      <autoremovegroups/>
     </asimod>
   </updategroup>
   <updategroup groupid="9" game="3" hidden="0">
@@ -166,6 +180,7 @@
       <hash>6a85a3d46718a5326d02b0e12da59cc7</hash>
       <sourcecode>https://github.com/SirCxyrtyx/AutoTOC-asi</sourcecode>
       <downloadlink>https://me3tweaks.com/mods/asi/AutoTOC-v1.asi</downloadlink>
+      <autoremovegroups/>
     </asimod>
     <asimod>
       <name>AutoTOC ASI</name>
@@ -176,6 +191,7 @@
       <hash>6eab5b81f2390b352681fb900e78e430</hash>
       <sourcecode>https://github.com/SirCxyrtyx/AutoTOC-asi</sourcecode>
       <downloadlink>https://github.com/SirCxyrtyx/AutoTOC-asi/releases/download/v2.1/AutoTOC-v2.1.asi</downloadlink>
+      <autoremovegroups/>
     </asimod>
   </updategroup>
   <updategroup groupid="10" game="3" hidden="0">
@@ -188,6 +204,7 @@
       <hash>591470bf4251a568eca68d1ddb4f7f49</hash>
       <sourcecode>https://github.com/Mgamerz/FemShep-ME3-ASI-Plugins/tree/master/KismetLogger</sourcecode>
       <downloadlink>https://me3tweaks.com/mods/asi/KismetLogger-v1.asi</downloadlink>
+      <autoremovegroups/>
     </asimod>
     <asimod>
       <name>Kismet Logger</name>
@@ -198,6 +215,7 @@
       <hash>173e4696083b31466bf18b1f4072b4bf</hash>
       <sourcecode>https://github.com/Mgamerz/FemShep-ME3-ASI-Plugins/tree/master/KismetLogger</sourcecode>
       <downloadlink>https://me3tweaks.com/mods/asi/KismetLogger-v2.asi</downloadlink>
+      <autoremovegroups/>
     </asimod>
     <asimod>
       <name>Kismet Logger</name>
@@ -208,6 +226,7 @@
       <hash>9ff67ff0b1a383f477792dd231820f0d</hash>
       <sourcecode>https://github.com/Mgamerz/FemShep-ME3-ASI-Plugins/tree/master/KismetLogger</sourcecode>
       <downloadlink>https://me3tweaks.com/mods/asi/KismetLogger-v3.asi</downloadlink>
+      <autoremovegroups/>
     </asimod>
     <asimod>
       <name>Kismet Logger</name>
@@ -218,6 +237,7 @@
       <hash>00aa9650fb13c4149a625126102ea276</hash>
       <sourcecode>https://github.com/ME3Tweaks/ME3-ASI-Plugins/tree/master/KismetLogger</sourcecode>
       <downloadlink>https://me3tweaks.com/mods/asi/KismetLogger-v4.asi</downloadlink>
+      <autoremovegroups/>
     </asimod>
   </updategroup>
   <updategroup groupid="11" game="3" hidden="0">
@@ -230,6 +250,7 @@
       <hash>fe303c82f51d1be88d06aa16ed530bcd</hash>
       <sourcecode>https://github.com/Mgamerz/FemShep-ME3-ASI-Plugins/tree/master/RetaliationBugfix</sourcecode>
       <downloadlink>https://me3tweaks.com/mods/asi/RetaliationBugfix-v1.asi</downloadlink>
+      <autoremovegroups/>
     </asimod>
   </updategroup>
   <updategroup groupid="12" game="3" hidden="0">
@@ -242,6 +263,7 @@
       <hash>02cd08af302bc8793bfab912edca1ec4</hash>
       <sourcecode>https://github.com/Mgamerz/FemShep-ME3-ASI-Plugins/tree/master/FullGAW</sourcecode>
       <downloadlink>https://me3tweaks.com/mods/asi/FullGAW-v1.asi</downloadlink>
+      <autoremovegroups/>
     </asimod>
   </updategroup>
   <updategroup groupid="13" game="3" hidden="0">
@@ -254,6 +276,7 @@
       <hash>6b6ebf755a0fa4c9fb72429705c89c09</hash>
       <sourcecode>https://github.com/Mgamerz/FemShep-ME3-ASI-Plugins/tree/master/POCCCMovingSpawnPoints</sourcecode>
       <downloadlink>https://me3tweaks.com/mods/asi/POCCCMovingSpawnPoints-v1.asi</downloadlink>
+      <autoremovegroups/>
     </asimod>
   </updategroup>
   <updategroup groupid="14" game="2" hidden="0">
@@ -266,6 +289,7 @@
       <hash>965b2378c60430fb949b62a134b28414</hash>
       <sourcecode>https://github.com/ME3Tweaks/ME2-ASI-Plugins/tree/master/KismetLogger</sourcecode>
       <downloadlink>https://me3tweaks.com/mods/asi/me2/KismetLogger-v1.asi</downloadlink>
+      <autoremovegroups/>
     </asimod>
   </updategroup>
   <updategroup groupid="15" game="2" hidden="0">
@@ -278,6 +302,7 @@
       <hash>47deac6685cf5d51b4d6f9e5ae9a3009</hash>
       <sourcecode>https://github.com/ME3Tweaks/ME2-ASI-Plugins/tree/master/FunctionLogger</sourcecode>
       <downloadlink>https://me3tweaks.com/mods/asi/me2/FunctionLogger-v1.asi</downloadlink>
+      <autoremovegroups/>
     </asimod>
   </updategroup>
   <updategroup groupid="16" game="1" hidden="0">
@@ -290,6 +315,7 @@
       <hash>1e8311283fa2630ff40c930df2960bab</hash>
       <sourcecode>https://github.com/SirCxyrtyx/ME1-DLC-ModEnabler</sourcecode>
       <downloadlink>https://github.com/SirCxyrtyx/ME1-DLC-ModEnabler/releases/download/v1.0/ME1-DLC-ModEnabler-v1.asi</downloadlink>
+      <autoremovegroups/>
     </asimod>
   </updategroup>
   <updategroup groupid="17" game="3" hidden="0">
@@ -302,6 +328,7 @@
       <hash>6b1f0f29ea10a6e4c5c3a078df469dd9</hash>
       <sourcecode>https://github.com/Erik-JS/ME3-ASI/tree/master/ME3DocumentsRedirector</sourcecode>
       <downloadlink>https://github.com/Erik-JS/ME3-ASI/raw/master/ME3DocumentsRedirector/Release/ME3DocumentsRedirector.asi</downloadlink>
+      <autoremovegroups/>
     </asimod>
   </updategroup>
   <updategroup groupid="18" game="2" hidden="0">
@@ -314,6 +341,7 @@
       <hash>9179456d118c2ad02d280aec681acd8f</hash>
       <sourcecode>https://github.com/ME3Tweaks/ME2-ASI-Plugins/tree/master/AceSlammer</sourcecode>
       <downloadlink>https://me3tweaks.com/mods/asi/me2/AceSlammer-ME2-v1.asi</downloadlink>
+      <autoremovegroups/>
     </asimod>
   </updategroup>
   <updategroup groupid="19" game="3" hidden="0">
@@ -326,6 +354,7 @@
       <hash>cf9c833fb87870cd45b2e3a91fa4f692</hash>
       <sourcecode>https://github.com/ME3Tweaks/ME3-ASI-Plugins/tree/v1.0-SeqActLogEnabler/SeqActLogEnabler</sourcecode>
       <downloadlink>https://github.com/ME3Tweaks/ME3-ASI-Plugins/releases/download/v1.0-SeqActLogEnabler/SeqActLogEnabler-v1.0.asi</downloadlink>
+      <autoremovegroups/>
     </asimod>
   </updategroup>
   <updategroup groupid="20" game="2" hidden="0">
@@ -338,6 +367,7 @@
       <hash>5361b073cac08c8ebd1de4a6344452ee</hash>
       <sourcecode>https://github.com/ME3Tweaks/ME3-ASI-Plugins/tree/master/SplashEnabler</sourcecode>
       <downloadlink>https://github.com/ME3Tweaks/ME3-ASI-Plugins/releases/download/v1.0-SplashEnabler/SplashEnabler-v1.0.asi</downloadlink>
+      <autoremovegroups/>
     </asimod>
   </updategroup>
   <updategroup groupid="21" game="3" hidden="0">
@@ -350,6 +380,7 @@
       <hash>5361b073cac08c8ebd1de4a6344452ee</hash>
       <sourcecode>https://github.com/ME3Tweaks/ME3-ASI-Plugins/tree/master/SplashEnabler</sourcecode>
       <downloadlink>https://github.com/ME3Tweaks/ME3-ASI-Plugins/releases/download/v1.0-SplashEnabler/SplashEnabler-v1.0.asi</downloadlink>
+      <autoremovegroups/>
     </asimod>
   </updategroup>
   <updategroup groupid="22" game="3" hidden="0">
@@ -362,6 +393,7 @@
       <hash>f78c01d4fb150f5ff3280920345e95a0</hash>
       <sourcecode>https://github.com/ME3Tweaks/ME3-ASI-Plugins/tree/master/GarbageCollectorForcer</sourcecode>
       <downloadlink>https://github.com/ME3Tweaks/ME3-ASI-Plugins/releases/download/v1.0-GarbageCollectorForcer/GarbageCollectionForcer-v1.0.asi</downloadlink>
+      <autoremovegroups/>
     </asimod>
   </updategroup>
   <updategroup groupid="23" game="2" hidden="0">
@@ -374,6 +406,7 @@
       <hash>f320d81dee4e935b353101e528352433</hash>
       <sourcecode>https://github.com/adolfintel/ME2KasumiCrashFix</sourcecode>
       <downloadlink>https://github.com/adolfintel/ME2KasumiCrashFix/releases/download/v1.0-KasumiCrashFix/KasumiCrashFix-v1.0.asi</downloadlink>
+      <autoremovegroups/>
     </asimod>
   </updategroup>
   <updategroup groupid="24" game="3" hidden="0">
@@ -386,6 +419,7 @@
       <hash>a7c4c4877481a36783dbd696146fb663</hash>
       <sourcecode>https://github.com/ME3Tweaks/ME3-ASI-Plugins/tree/master/SteamingLevelsHUD</sourcecode>
       <downloadlink>https://github.com/ME3Tweaks/ME3-ASI-Plugins/releases/download/v1.0-StreamingLevelsHUD/StreamingLevelsHUD-v1.0.asi</downloadlink>
+      <autoremovegroups/>
     </asimod>
     <asimod>
       <name>Streaming Levels HUD</name>
@@ -396,6 +430,7 @@
       <hash>4e8ee823fe0b3a2c8df73d3748b2a03f</hash>
       <sourcecode>https://github.com/ME3Tweaks/ME3-ASI-Plugins/tree/master/SteamingLevelsHUD</sourcecode>
       <downloadlink>https://github.com/ME3Tweaks/ME3-ASI-Plugins/releases/download/v2.0-StreamingLevelsHUD/StreamingLevelsHUD-v2.0.asi</downloadlink>
+      <autoremovegroups/>
     </asimod>
   </updategroup>
   <updategroup groupid="25" game="2" hidden="0">
@@ -408,6 +443,7 @@
       <hash>52477ccc1973864616e86d49d276afbf</hash>
       <sourcecode>https://github.com/ME3Tweaks/ME2-ASI-Plugins/tree/master/SteamingLevelsHUD</sourcecode>
       <downloadlink>https://github.com/ME3Tweaks/ME2-ASI-Plugins/releases/download/v1.0-StreamingLevelsHUD/StreamingLevelsHUD-v1.0.asi</downloadlink>
+      <autoremovegroups/>
     </asimod>
     <asimod>
       <name>Streaming Levels HUD</name>
@@ -418,6 +454,7 @@
       <hash>302dbb9b254978ba0de80896b7eddafc</hash>
       <sourcecode>https://github.com/ME3Tweaks/ME2-ASI-Plugins/tree/master/SteamingLevelsHUD</sourcecode>
       <downloadlink>https://github.com/ME3Tweaks/ME2-ASI-Plugins/releases/download/v2.0-StreamingLevelsHUD/StreamingLevelsHUD-v2.0.asi</downloadlink>
+      <autoremovegroups/>
     </asimod>
     <asimod>
       <name>Streaming Levels HUD</name>
@@ -428,6 +465,7 @@
       <hash>d5dfac6ac51d038c0e19b3deade7152d</hash>
       <sourcecode>https://github.com/ME3Tweaks/ME2-ASI-Plugins/tree/master/SteamingLevelsHUD</sourcecode>
       <downloadlink>https://github.com/ME3Tweaks/ME2-ASI-Plugins/releases/download/v3.0-StreamingLevelsHUD/StreamingLevelsHUD-v3.asi</downloadlink>
+      <autoremovegroups/>
     </asimod>
   </updategroup>
   <updategroup groupid="26" game="2" hidden="0">
@@ -440,6 +478,7 @@
       <hash>435fbda22dd4352118e592c1147248c7</hash>
       <sourcecode>https://github.com/ME3Tweaks/ME2-ASI-Plugins/tree/master/DeathCounterLS</sourcecode>
       <downloadlink>https://github.com/ME3Tweaks/ME2-ASI-Plugins/releases/download/v1.0-DeathCounterLS/DeathCounterLS-v1.0.asi</downloadlink>
+      <autoremovegroups/>
     </asimod>
   </updategroup>
   <updategroup groupid="27" game="2" hidden="0">
@@ -452,6 +491,7 @@
       <hash>9f25d1dcc331079b95dd4b2ec2bc96e1</hash>
       <sourcecode>https://github.com/ME3Tweaks/ME2-ASI-Plugins/tree/v1.0-SeqAct_LogEnabler/SeqActLogEnabler</sourcecode>
       <downloadlink>https://github.com/ME3Tweaks/ME2-ASI-Plugins/releases/download/v1.0-SeqAct_LogEnabler/SeqActLogEnabler-v1.0.asi</downloadlink>
+      <autoremovegroups/>
     </asimod>
   </updategroup>
   <updategroup groupid="28" game="2" hidden="0">
@@ -464,6 +504,7 @@
       <hash>5128e70acee1515e397295da1b2c348c</hash>
       <sourcecode>https://github.com/ME3Tweaks/ME2-ASI-Plugins/tree/v1.0-CombolutionSupport/CombolutionSupport</sourcecode>
       <downloadlink>https://github.com/ME3Tweaks/ME2-ASI-Plugins/releases/download/v1.0-CombolutionSupport/CombolutionSupport-v1.asi</downloadlink>
+      <autoremovegroups/>
     </asimod>
   </updategroup>
   <updategroup groupid="29" game="4" hidden="0">
@@ -476,6 +517,18 @@
       <hash>5698d64ec9afb6b1100efcc86f99a1fc</hash>
       <sourcecode>https://github.com/SirCxyrtyx/AutoTOC-asi/tree/master</sourcecode>
       <downloadlink>https://github.com/SirCxyrtyx/AutoTOC-asi/releases/download/LEv1.0/AutoTOC_LE-v1.0.asi</downloadlink>
+      <autoremovegroups/>
+    </asimod>
+    <asimod>
+      <name>AutoTOC</name>
+      <installedname>AutoTOCLE</installedname>
+      <author>SirCxyrtyx</author>
+      <description>This ASI will automatically calculate the Table of Contents (TOC) file for the game on game boot, as well as enable DLC file overrides.</description>
+      <version>2</version>
+      <hash>6e0418e9208743ea9addf5cf4aa94add</hash>
+      <sourcecode>https://github.com/SirCxyrtyx/AutoTOC-asi/tree/master</sourcecode>
+      <downloadlink>https://github.com/SirCxyrtyx/AutoTOC-asi/releases/download/LEv2/AutoTOC_LE-v2.asi</downloadlink>
+      <autoremovegroups/>
     </asimod>
   </updategroup>
   <updategroup groupid="30" game="5" hidden="0">
@@ -488,6 +541,18 @@
       <hash>5698d64ec9afb6b1100efcc86f99a1fc</hash>
       <sourcecode>https://github.com/SirCxyrtyx/AutoTOC-asi/tree/master</sourcecode>
       <downloadlink>https://github.com/SirCxyrtyx/AutoTOC-asi/releases/download/LEv1.0/AutoTOC_LE-v1.0.asi</downloadlink>
+      <autoremovegroups/>
+    </asimod>
+    <asimod>
+      <name>AutoTOC</name>
+      <installedname>AutoTOCLE</installedname>
+      <author>SirCxyrtyx</author>
+      <description>This ASI will automatically calculate the Table of Contents (TOC) file for the game on game boot.</description>
+      <version>2</version>
+      <hash>6e0418e9208743ea9addf5cf4aa94add</hash>
+      <sourcecode>https://github.com/SirCxyrtyx/AutoTOC-asi/tree/master</sourcecode>
+      <downloadlink>https://github.com/SirCxyrtyx/AutoTOC-asi/releases/download/LEv2/AutoTOC_LE-v2.asi</downloadlink>
+      <autoremovegroups/>
     </asimod>
   </updategroup>
   <updategroup groupid="31" game="6" hidden="0">
@@ -500,6 +565,18 @@
       <hash>5698d64ec9afb6b1100efcc86f99a1fc</hash>
       <sourcecode>https://github.com/SirCxyrtyx/AutoTOC-asi/tree/master</sourcecode>
       <downloadlink>https://github.com/SirCxyrtyx/AutoTOC-asi/releases/download/LEv1.0/AutoTOC_LE-v1.0.asi</downloadlink>
+      <autoremovegroups/>
+    </asimod>
+    <asimod>
+      <name>AutoTOC</name>
+      <installedname>AutoTOCLE</installedname>
+      <author>SirCxyrtyx</author>
+      <description>This ASI will automatically calculate the Table of Contents (TOC) file for the game on game boot.</description>
+      <version>2</version>
+      <hash>6e0418e9208743ea9addf5cf4aa94add</hash>
+      <sourcecode>https://github.com/SirCxyrtyx/AutoTOC-asi/tree/master</sourcecode>
+      <downloadlink>https://github.com/SirCxyrtyx/AutoTOC-asi/releases/download/LEv2/AutoTOC_LE-v2.asi</downloadlink>
+      <autoremovegroups/>
     </asimod>
   </updategroup>
   <updategroup groupid="32" game="3" hidden="0">
@@ -512,6 +589,46 @@
       <hash>505f72686345451dfe6e7b02448c78e1</hash>
       <sourcecode>https://github.com/ME3Tweaks/ME3-ASI-Plugins/tree/master/ControllerInputTester</sourcecode>
       <downloadlink>https://github.com/ME3Tweaks/ME3-ASI-Plugins/releases/download/v1.0-ControllerInputTester/ControllerInputTester.asi</downloadlink>
+      <autoremovegroups/>
+    </asimod>
+  </updategroup>
+  <updategroup groupid="33" game="4" hidden="0">
+    <asimod>
+      <name>Autoload Enabler</name>
+      <installedname>AutoloadEnabler</installedname>
+      <author>d00t</author>
+      <description>This ASI enables the autoload.ini feature, which is a fairly critical component for LE1 DLC mods. Without this, DLC cannot fully mount.</description>
+      <version>1</version>
+      <hash>0a7b5fafb17b47b4f8014ffeb796280f</hash>
+      <sourcecode>https://github.com/d00telemental/LENativeExperiments/tree/main/LE1AutoloadEnabler</sourcecode>
+      <downloadlink>https://github.com/d00telemental/LENativeExperiments/releases/download/LE1AutoloadEnabler-0.2.1/LE1AutoloadEnabler.asi</downloadlink>
+      <autoremovegroups>34</autoremovegroups>
+    </asimod>
+  </updategroup>
+  <updategroup groupid="34" game="4" hidden="0">
+    <asimod>
+      <name>Autoload Enabler (Debug)</name>
+      <installedname>AutoloadEnablerDebug</installedname>
+      <author>d00t</author>
+      <description>This ASI enables the autoload.ini feature, which is a fairly critical component for LE1 DLC mods. Without this, DLC cannot fully mount. This version adds a console command, 'profile autoload', which shows information about the loaded mods. It only works with the miniconsole (not the full one).</description>
+      <version>1</version>
+      <hash>ddd0d822c0a9c6ccfdcaa1cc5e9796e9</hash>
+      <sourcecode>https://github.com/d00telemental/LENativeExperiments/tree/main/LE1AutoloadEnabler</sourcecode>
+      <downloadlink>https://github.com/d00telemental/LENativeExperiments/releases/download/LE1AutoloadEnabler-0.2.1/LE1AutoloadEnabler-Debug.asi</downloadlink>
+      <autoremovegroups>33</autoremovegroups>
+    </asimod>
+  </updategroup>
+  <updategroup groupid="35" game="4" hidden="0">
+    <asimod>
+      <name>Streaming Levels HUD</name>
+      <installedname>StreamingLevelsHUD</installedname>
+      <author>Mgamerz</author>
+      <description>This ASI draws the list of streaming levels on the top left of the screen, as well as their current loaded state. It additionally shows the amount of memory the process is currently using, as well as as the maximum.  The HUD can be toggled on and off by pressing CTRL + T.</description>
+      <version>1</version>
+      <hash>be86ed353176e5457645733380e58fde</hash>
+      <sourcecode>https://github.com/ME3Tweaks/LE1-ASI-Plugins/tree/main/LE1StreamingLevelsHUD</sourcecode>
+      <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LE1StreamingLevelsHUD-v1.0/LE1StreamingLevelsHUD.asi</downloadlink>
+      <autoremovegroups/>
     </asimod>
   </updategroup>
 </ASIManifest>
