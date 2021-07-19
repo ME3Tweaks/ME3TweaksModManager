@@ -295,9 +295,19 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             #endregion
 
                             BackupStatus = M3L.GetString(M3L.string_restoringGame);
+
+                            // LE: Backup Config file so settings don't get lost
+                            string configText = null;
+                            var configPath = RestoreTarget.Game.IsLEGame() ? M3Directories.GetLODConfigFile(RestoreTarget) : null;
+                            if (File.Exists(configPath))
+                            {
+                                configText = File.ReadAllText(configPath); // backup to memory
+                            }
+
                             Log.Information($@"Copying backup to game directory: {backupPath} -> {restoreTargetPath}");
                             if (useNewMethod)
                             {
+
                                 string CurrentRCFile = null;
                                 RoboCommand rc = new RoboCommand();
                                 rc.CopyOptions.Destination = restoreTargetPath;
@@ -329,7 +339,23 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     fileCopiedCallback: fileCopiedCallback,
                                     ignoredExtensions: new[] { @"*.pdf", @"*.mp3" });
                             }
+
                             Log.Information(@"Restore of game data has completed");
+
+                            if (configText != null)
+                            {
+                                // Restore config file
+                                try
+                                {
+                                    Directory.CreateDirectory(Directory.GetParent(configPath).FullName);
+                                    File.WriteAllText(configPath, configText);
+                                    Log.Information(@"Restored config file");
+                                }
+                                catch (Exception e)
+                                {
+                                    Log.Error($@"Could not restore config file: {e.Message}");
+                                }
+                            }
                             BackupCopyFinished(restoreTargetPath);
                         }
 

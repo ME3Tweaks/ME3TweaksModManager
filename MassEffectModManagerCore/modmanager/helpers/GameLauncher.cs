@@ -17,9 +17,6 @@ namespace MassEffectModManagerCore.modmanager.helpers
 {
     public static class GameLauncher
     {
-        // May 17 update
-        private const string VanillaLESWFLauncherMD5 = @"ab2559b90696f262ef76a152eff4deb9";
-
         /// <summary>
         /// Launches the game. This call is blocking as it may wait for Steam to run, so it should be run on a background thread.
         /// </summary>
@@ -119,6 +116,13 @@ namespace MassEffectModManagerCore.modmanager.helpers
 
             if (Settings.SkipLELauncher && target.Game.IsLEGame())
             {
+                var binkPath = Path.Combine(target.TargetPath, @"..", @"Launcher", @"bink2w64.dll");
+                var launcherExe = Path.Combine(target.TargetPath, @"..", @"Launcher", @"MassEffectLauncher.exe");
+                if (File.Exists(launcherExe))
+                {
+                    // Ensure bypass is installed
+                    Utilities.InstallBinkBypass(binkPath, Path.Combine(target.TargetPath, @"..", @"Launcher"), MEGame.LELauncher);
+                }
                 commandLineArgs.Add($@"-game"); // Autoboot dll
                 commandLineArgs.Add((target.Game.ToGameNum() - 3).ToString());
                 commandLineArgs.Add(@"-autoterminate");
