@@ -5,13 +5,15 @@ using System.Text;
 using System.Windows.Media;
 using MassEffectModManagerCore.modmanager.localizations;
 using LegendaryExplorerCore.Packages;
+using PropertyChanged;
 
 namespace MassEffectModManagerCore.modmanager.asi
 {
     /// <summary>
     /// Object containing information about a single version of an ASI mod in the ASI mod manifest
     /// </summary>
-    public class ASIModVersion : INotifyPropertyChanged
+    [AddINotifyPropertyChangedInterface]
+    public class ASIModVersion
     {
         /// <summary>
         /// The direct download link to the ASI
@@ -55,10 +57,32 @@ namespace MassEffectModManagerCore.modmanager.asi
         /// </summary>
         public ASIMod OwningMod { get; set; }
 
-        //Fody uses this property on weaving
-#pragma warning disable 67
-public event PropertyChangedEventHandler PropertyChanged;
-#pragma warning restore 67
+        /// <summary>
+        /// List of other groups to delete on install. This is for ASIs that have multiple differing update groups (like autoload)
+        /// </summary>
+        public List<int> OtherGroupsToDeleteOnInstall = new();
+
+        /// <summary>
+        /// Internal hack to generate the OtherGroupsToDeleteOnInstall variable from text.
+        /// </summary>
+        public string _otherGroupsToDeleteOnInstallInternal
+        {
+            set
+            {
+                if (!string.IsNullOrWhiteSpace(value))
+                {
+                    OtherGroupsToDeleteOnInstall.Clear();
+                    var split = value.Split(',');
+                    foreach (var v in split)
+                    {
+                        if (int.TryParse(v, out var asigroupid))
+                        {
+                            OtherGroupsToDeleteOnInstall.Add(asigroupid);
+                        }
+                    }
+                }
+            }
+        }
 
 
     }

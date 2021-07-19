@@ -11,6 +11,7 @@ using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.objects;
 using LegendaryExplorerCore.Packages;
 using Microsoft.AppCenter.Analytics;
+using PropertyChanged;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.asi
@@ -18,12 +19,9 @@ namespace MassEffectModManagerCore.modmanager.asi
     /// <summary>
     /// Backend for ASI Management
     /// </summary>
-    public class ASIManager : INotifyPropertyChanged
+    [AddINotifyPropertyChangedInterface]
+    public class ASIManager
     {
-        //Fody uses this property on weaving
-#pragma warning disable
-        public event PropertyChangedEventHandler PropertyChanged;
-#pragma warning restore
         public static readonly string CachedASIsFolder = Directory.CreateDirectory(Path.Combine(Utilities.GetAppDataFolder(), @"CachedASIs")).FullName;
 
         public static readonly string ManifestLocation = Path.Combine(CachedASIsFolder, @"manifest.xml");
@@ -229,7 +227,9 @@ namespace MassEffectModManagerCore.modmanager.asi
                                             Hash = (string)z.Element(@"hash"),
                                             SourceCodeLink = (string)z.Element(@"sourcecode"),
                                             DownloadLink = (string)z.Element(@"downloadlink"),
-                                            Game = intToGame((int)e.Attribute(@"game")) // use e element to pull from outer group
+                                            Game = intToGame((int)e.Attribute(@"game")), // use e element to pull from outer group
+                                            _otherGroupsToDeleteOnInstallInternal = z.Element(@"autoremovegroups")?.Value,
+
                                         }).ToList()
                                     }).ToList();
                 foreach (var v in updateGroups)
@@ -260,6 +260,7 @@ namespace MassEffectModManagerCore.modmanager.asi
                     foreach (var m in v.Versions)
                     {
                         m.OwningMod = v;
+                        m.OtherGroupsToDeleteOnInstall.Remove(v.UpdateGroupId); // Ensure we don' delete ourself on install
                     }
                 }
 
@@ -308,8 +309,9 @@ namespace MassEffectModManagerCore.modmanager.asi
             }
             string finalPath = Path.Combine(destinationDirectory, destinationFilename);
 
+            var installedASIs = target.GetInstalledASIs();
             // Delete existing ASIs from the same group to ensure we don't install the same mod
-            var existingSameGroupMods = target.GetInstalledASIs().OfType<KnownInstalledASIMod>().Where(x => x.AssociatedManifestItem.OwningMod == asi.OwningMod).ToList();
+            var existingSameGroupMods = installedASIs.OfType<KnownInstalledASIMod>().Where(x => x.AssociatedManifestItem.OwningMod == asi.OwningMod).ToList();
             bool hasExistingVersionOfModInstalled = false;
             if (existingSameGroupMods.Any())
             {
@@ -326,9 +328,14 @@ namespace MassEffectModManagerCore.modmanager.asi
                 }
             }
 
-            if (hasExistingVersionOfModInstalled && !forceSource.HasValue) //Let app decide
+            // Remove any conflicting ASIs
+            foreach (var v in installedASIs.OfType<KnownInstalledASIMod>())
             {
-                return true; // This asi was "Installed" (because it was already installed).
+                if (asi.OtherGroupsToDeleteOnInstall.Contains(v.AssociatedManifestItem.OwningMod.UpdateGroupId))
+                {
+                    // Delete tis other ASI
+                    v.Uninstall();
+                }
             }
 
             // Install the ASI

@@ -900,7 +900,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
             else if (ModBeingInstalled.Game == MEGame.LE1)
             {
-                ASIManager.InstallASIToTargetByGroupID(29, @"AutoTOCOverride", SelectedGameTarget);
+                ASIManager.InstallASIToTargetByGroupID(29, @"AutoTOC_LE", SelectedGameTarget);
+                ASIManager.InstallASIToTargetByGroupID(32, @"AutoloadEnabler", SelectedGameTarget);
             }
             else if (ModBeingInstalled.Game == MEGame.LE2)
             {
