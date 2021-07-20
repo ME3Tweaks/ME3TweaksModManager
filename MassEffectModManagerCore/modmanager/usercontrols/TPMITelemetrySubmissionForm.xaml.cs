@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Windows;
 using System.Windows.Input;
 using Flurl;
 using Flurl.Http;
@@ -17,6 +18,7 @@ using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
+using Microsoft.WindowsAPICodePack.COMNative.MediaDevices;
 using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -135,7 +137,19 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                     SubmitText = M3L.GetString(M3L.string_submitting);
                     Log.Information($@"Submitting telemetry to ME3Tweaks for {ModName} TelemetryPackage");
-                    var result = await url.GetAsync().ReceiveString();
+                    try
+                    {
+                        var result = await url.GetAsync().ReceiveString();
+                    }
+                    catch (Exception e)
+                    {
+                        // DO ON UI THREAD
+
+                        // Message needs URL stripped.
+                        M3L.ShowDialog(null, $"Error submitting mod information: {e.Message}", "Error submitting",
+                            MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+
                     SubmitText = M3L.GetString(M3L.string_submitted);
                     TelemetrySubmitted = true;
                     TelemetrySubmissionInProgress = false;

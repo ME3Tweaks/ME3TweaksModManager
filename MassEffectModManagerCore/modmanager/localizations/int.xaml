@@ -634,8 +634,8 @@
     <!-- 0={filepath} -->
     <system:String x:Key="string_interp_dlcModMissingTlkInAutoloadIni">DLC mod {0} does not specify a TLK file in it's AutoLoad.ini. This attribute is required and a valid TLK file must be provided with every mod for modding scene purposes.</system:String>
     <!-- 0={filepath} -->
-    <system:String x:Key="string_interp_dlcModMissingAutoLoadTlkFile">DLC mod {0} specifies a TLK file named {1}(.upk) but this file does not exist in the DLC mod directory.</system:String>
-    <!-- 0={filepath} 1={filepath} -->
+    <system:String x:Key="string_interp_dlcModMissingAutoLoadTlkFile">DLC mod {0} specifies a TLK file named {1}({2}) but this file does not exist in the DLC mod directory.</system:String>
+    <!-- 0={filepath} 1={filepath} 2={extension (.pcc, .upk) -->
     <system:String x:Key="string_interp_dlcModTlkPackageHasNoUsableTlk">DLC mod {0}'s TLK package doesn't contain a usable TLK export in it.</system:String>
     <!-- 0={filepath} -->
     <system:String x:Key="string_interp_dlcModTlkPackageMissingStringId">DLC mod {0}'s TLK package doesn't contain the listed string ID {1}. The mod's TLK must contain the listed string ID.</system:String>
@@ -895,9 +895,13 @@
     <system:String x:Key="string_dialog_restoringSFARWithoutBackup">Restoring SFARs without a backup will only delete unpacked files, as there is no backup file that can be copied in. This will leave the DLC in a broken, unusable state. You need to make a backup from an unmodified version of the game before you can properly restore DLC SFARs.</system:String>
     <system:String x:Key="string_backupNotAvailable">Backup not available</system:String>
     <system:String  x:Key="string_textures">Textures</system:String>
-    <system:String xml:space="preserve" x:Key="string_tooltip_manageTextures">Textures for the trilogy are installed using ALOT Installer.&#10;Texture mods must be installed last</system:String>
     <system:String  x:Key="string_manageTextures">Install textures with ALOT Installer</system:String>
-    <system:String  x:Key="string_filesInstalledInSession">Files installed in session:</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_manageTextures">Textures for the original trilogy are installed using ALOT Installer.&#10;Texture mods must be installed last</system:String>
+
+    <system:String  x:Key="string_manageTexturesLE">Install textures with Mass Effect Modder</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_manageTexturesLE">Textures for Legendary Edition are installed using Mass Effect Modder.&#10;Texture mods must be installed last or they will not work properly</system:String>
+
+<system:String  x:Key="string_filesInstalledInSession">Files installed in session:</system:String>
     <system:String  x:Key="string_interp_textureInstallationDate">Texture installation - {0}</system:String>
     <!-- 0 = date -->
     <system:String  x:Key="string_interp_versioningInfoX">Texture installation - {0}</system:String>

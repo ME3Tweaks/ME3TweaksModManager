@@ -199,7 +199,7 @@ namespace MassEffectModManagerCore.modmanager.objects
 
                             ProgressMaximum = ModFile.Size * 1024; // Bytes
                             Initialized = true;
-                            Log.Error($@"ModDownload has initialized: {ModFile.FileName}");
+                            Log.Information($@"ModDownload has initialized: {ModFile.FileName}");
                             OnInitialized?.Invoke(this, null);
                         }
                         else

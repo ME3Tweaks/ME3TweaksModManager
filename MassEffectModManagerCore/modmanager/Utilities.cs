@@ -535,7 +535,7 @@ namespace MassEffectModManagerCore.modmanager
                 argsStr = "";
                 foreach (var arg in argsL)
                 {
-                    if (arg != "") argsStr += " ";
+                    if (arg != "" && argsStr != "") argsStr += " ";
                     if (arg.Contains(" "))
                     {
                         argsStr += $"\"{arg}\"";
@@ -1272,7 +1272,7 @@ namespace MassEffectModManagerCore.modmanager
         private const string ME1ASILoaderHash = "30660f25ab7f7435b9f3e1a08422411a";
         private const string ME2ASILoaderHash = "a5318e756893f6232284202c1196da13";
         private const string ME3ASILoaderHash = "1acccbdae34e29ca7a50951999ed80d5";
-        private const string LEASILoaderHash = "90b08d964c532be9d9158aeefc5cd812"; // Will need changed as game is updated // bink 2003 by d00t
+        private const string LEASILoaderHash = "39ee6dabd1ea26abf0facdd5eae300b7"; // Will need changed as game is updated // bink 2004 by d00t
 
         internal static bool CheckIfBinkw32ASIIsInstalled(GameTarget target)
         {
