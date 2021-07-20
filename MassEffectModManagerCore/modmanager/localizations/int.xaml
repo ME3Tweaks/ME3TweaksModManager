@@ -2224,7 +2224,7 @@
     <system:String x:Key="string_description_downloadWithManager">The 'download with manager' feature on NexusMods uses the NXM protocol. This means that only one application can be registered to receive it at a time. Mod Manager can register itself as the receiver and forward non-supported games (such as Skyrim or Fallout) downloads to a different manager of your choice.</system:String>
     <system:String x:Key="string_registerME3TweaksModManagerAsHandler">Register ME3Tweaks Mod Manager as handler</system:String>
     <system:String x:Key="string_otherApps">Other apps</system:String>
-    <system:String x:Key="string_description_downloadWithManagerOtherApps">You can register other applications to handle other game besides Mass Effect games. You need to supply the domain (which is the game name in a nexusmods url), the target application, and the arguments the application needs. Use '%1' to indicate the nxm:// link.</system:String>
+    <system:String x:Key="string_description_downloadWithManagerOtherApps">You can register other applications to handle other games besides Mass Effect games. You need to supply the domain (which is the game name in a NexusMods URL), the target application, and the arguments the application needs. Use '%1' to indicate the nxm:// link.</system:String>
     <system:String x:Key="string_addOtherApp">Add other app</system:String>
     <system:String x:Key="string_additionalApp">Additional App</system:String>
     <system:String x:Key="string_application">Application</system:String>
