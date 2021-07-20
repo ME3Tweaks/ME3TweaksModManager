@@ -1222,7 +1222,7 @@
     <!-- 0={FriendlyName} -->
     <system:String x:Key="string_interp_altfile_multilistIdNINotIntegerOrMissing">Alternate File ({0}) specifies operation OP_NOINSTALL_MULTILISTFILES but does not specify the MultiListId attribute, or it could not be parsed to an integer.</system:String>
     <!-- 0={FriendlyName} -->
-    <system:String x:Key="string_interp_altfile_installToNotGuaranteedCustomDLC">Alternate file {0} in-mod target (ModFile) does not appear to target a DLC target this mod will (always) install: {1}</system:String>
+    <system:String x:Key="string_interp_altfile_installToNotGuaranteedCustomDLC">Alternate file ({0}) in-mod target (ModFile) does not appear to target a DLC target this mod will (always) install: {1}</system:String>
     <!-- 0={FriendlyName} 1={File path} -->
 
     <!-- GameTarget -->
