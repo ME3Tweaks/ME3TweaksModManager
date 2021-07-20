@@ -921,7 +921,7 @@
 	<system:String x:Key="string_runningAutoTOC">Executando AutoTOC</system:String>
 	<system:String x:Key="string_ranAutoTOC">AutoTOC executado</system:String>
 	<system:String x:Key="string_nonModManagerModFound">Mod externo ao Gerenciador encontrado</system:String>
-	<system:String x:Key="string_dialogCriticalFilesMissing" xml:space="preserve">"O Gerenciador de Mods não conseguiu adquirir arquivos necessários para funcionar devidamente.\nPor favor, assegure-se de estar conectado à internet e de que é possível acessar GitHub e ME3Tweaks.\nO Gerenciador de Mods fechará agora. Se precisar de ajuda, por favor visite o Discord de ME3Tweaks /ord.</system:String>
+	<system:String x:Key="string_dialogCriticalFilesMissing" xml:space="preserve">"O Gerenciador de Mods não conseguiu adquirir arquivos necessários para funcionar devidamente.\nPor favor, assegure-se de estar conectado à internet e de que é possível acessar GitHub e ME3Tweaks.\nO Gerenciador de Mods fechará agora. Se precisar de ajuda, por favor visite o Discord de ME3Tweaks Discord.</system:String>
 	<system:String x:Key="string_requiredFilesNotDownloaded">Impossível baixar arquivos requeridos</system:String>
 	<system:String x:Key="string_checkingWritePermissions">Verificando permissões</system:String>
 	<system:String x:Key="string_checkedUserWritePermissions">Permissões de usuário verificadas</system:String>

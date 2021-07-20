@@ -168,7 +168,7 @@
     <system:String x:Key="string_runningAutoTOC">Running AutoTOC</system:String>
     <system:String x:Key="string_ranAutoTOC">Ran AutoTOC</system:String>
     <system:String x:Key="string_nonModManagerModFound">Non-Mod Manager mod found</system:String>
-    <system:String xml:space="preserve" x:Key="string_dialogCriticalFilesMissing">"Mod Manager was unable to acquire files that are required for the program to function properly.\nPlease ensure you are connected to the internet and that both GitHub and ME3Tweaks is reachable.\nMod Manager will now close. If you need assistance, please come to the ME3Tweaks /ord.</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialogCriticalFilesMissing">"Mod Manager was unable to acquire files that are required for the program to function properly.\nPlease ensure you are connected to the internet and that both GitHub and ME3Tweaks is reachable.\nMod Manager will now close. If you need assistance, please come to the ME3Tweaks Discord.</system:String>
     <system:String x:Key="string_requiredFilesNotDownloaded">Required files unable to be downloaded</system:String>
     <system:String x:Key="string_checkingWritePermissions">Checking write permissions</system:String>
     <system:String x:Key="string_checkedUserWritePermissions">Checked user write permissions</system:String>
