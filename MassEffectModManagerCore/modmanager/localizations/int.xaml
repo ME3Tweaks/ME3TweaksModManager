@@ -168,7 +168,7 @@
     <system:String x:Key="string_runningAutoTOC">Running AutoTOC</system:String>
     <system:String x:Key="string_ranAutoTOC">Ran AutoTOC</system:String>
     <system:String x:Key="string_nonModManagerModFound">Non-Mod Manager mod found</system:String>
-    <system:String xml:space="preserve" x:Key="string_dialogCriticalFilesMissing">"Mod Manager was unable to acquire files that are required for the program to function properly.\nPlease ensure you are connected to the internet and that both GitHub and ME3Tweaks is reachable.\nMod Manager will now close. If you need assistance, please come to the ME3Tweaks Discord.</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialogCriticalFilesMissing">Mod Manager was unable to acquire files that are required for the program to function properly.\nPlease ensure you are connected to the internet and that both GitHub and ME3Tweaks is reachable.\nMod Manager will now close. If you need assistance, please come to the ME3Tweaks Discord.</system:String>
     <system:String x:Key="string_requiredFilesNotDownloaded">Required files unable to be downloaded</system:String>
     <system:String x:Key="string_checkingWritePermissions">Checking write permissions</system:String>
     <system:String x:Key="string_checkedUserWritePermissions">Checked user write permissions</system:String>
@@ -385,8 +385,10 @@
     <system:String x:Key="string_syncPlotManager">Sync PlotManager</system:String>
     <!-- This is menu item container. This synchronizes the PlotManager file with the DLC changes each mod can specify. PlotManager is a noun -->
     <system:String x:Key="string_syncPlotManagerForMassEffect">Sync PlotManager for Mass Effect</system:String>
-    <system:String x:Key="string_tooltip_syncPlotManager">Synchronizes the plot manager updates located in DLC mods with the base plot manager file, which is used for story progression tracking</system:String>
+    <system:String x:Key="string_syncPlotManagerForMassEffect2">Sync PlotManager for Mass Effect 2</system:String>
+    <system:String x:Key="string_syncPlotManagerForMassEffectLegendaryEdition">Sync PlotManager for Mass Effect (Legendary Edition)</system:String>
     <system:String x:Key="string_syncPlotManagerForMassEffect2LegendaryEdition">Sync PlotManager for Mass Effect 2 (Legendary Edition)</system:String>
+    <system:String x:Key="string_tooltip_syncPlotManager">Synchronizes the plot manager updates located in DLC mods with the base plot manager file, which is used for story progression tracking</system:String>
     <system:String x:Key="string_massEffectModderForLegendaryEdition">Mass Effect Modder (for Legendary Edition)</system:String>
     <system:String x:Key="string_prereleaseNotice">This is a prerelease build of ME3Tweaks Mod Manager. Do not distribute mods from this build. There may be breaking changes that cause mods made for this build to not work on future builds.</system:String>
     <system:String x:Key="string_failedToCompileCoalescedFile">Failed to compile coalesced file</system:String>
