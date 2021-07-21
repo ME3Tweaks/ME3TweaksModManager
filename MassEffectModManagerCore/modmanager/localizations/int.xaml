@@ -1448,7 +1448,7 @@
     <!-- 0={Header (GAME1_EMBEDDED_TLK)} 1={Embedded TLK Foldername} -->
     <system:String x:Key="string_interp_validation_modparsing_tlkMergeInvalidTlkXmlFilenames">The {0} header only supports the files in the {1} directory that contain at least 2 '.' characters; one for the extension, and at least one to split the package name from the export path. If the export is nested under packages, more '.' may be needed. Invalid value: {2}</system:String>
     <!-- 0={Header (BASEGAME, GAME1_TLK_MERGE, etc)} 1={Foldername} 2={Filepath} -->
-    <system:String x:Key="string_validation_modparsing_foundDisallowedLauncherFileType">The LELAUNCHER header only supports the following file extensions: {0} An unsupported filetype was found: {1}</system:String>
+    <system:String x:Key="string_validation_modparsing_foundDisallowedLauncherFileType">The LELAUNCHER header only supports the following file extensions: {0}. An unsupported filetype was found: {1}</system:String>
     <!-- 0={file extension list (.txt, .afc, .tfc...) 1={file extension (.txt for example)} -->
     <system:String x:Key="string_interp_validation_modparsing_leLauncherDirNotFound">{0}'s LELAUNCHER header specifies a job subdirectory (moddir) that does not exist: {1}</system:String>
     <!-- 0={ModName} 1={jobSubDir} -->
