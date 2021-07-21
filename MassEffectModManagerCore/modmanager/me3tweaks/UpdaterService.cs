@@ -217,16 +217,25 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                     CLog.Information(
                                         $" >> Decompressing compressed package for update comparison check: {fpath}",
                                         Settings.LogModUpdater);
-                                    qPackage = MEPackageHandler.OpenMEPackage(fpath);
-                                    MemoryStream tStream = new MemoryStream();
-                                    tStream = qPackage.SaveToStream(false);
-                                    hashMap[v] = new USFileInfo()
+                                    try
                                     {
-                                        MD5 = Utilities.CalculateMD5(tStream),
-                                        CompressedMD5 = Utilities.CalculateMD5(fpath),
-                                        Filesize = tStream.Length,
-                                        RelativeFilepath = v
-                                    };
+                                        qPackage = MEPackageHandler.OpenMEPackage(fpath);
+                                        MemoryStream tStream = new MemoryStream();
+                                        tStream = qPackage.SaveToStream(false);
+                                        hashMap[v] = new USFileInfo()
+                                        {
+                                            MD5 = Utilities.CalculateMD5(tStream),
+                                            CompressedMD5 = Utilities.CalculateMD5(fpath),
+                                            Filesize = tStream.Length,
+                                            RelativeFilepath = v
+                                        };
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        // Don't put in hashmap. It died
+                                        Log.Error($@"Exception trying to decompress package {fpath}: {e.Message}");
+                                    }
+
                                     continue;
                                 }
                             }
