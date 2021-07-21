@@ -293,6 +293,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     if (altFile.Operation == AlternateFile.AltFileOperation.OP_NOTHING) continue; //skip nothing
                     if (altFile.Operation == AlternateFile.AltFileOperation.OP_APPLY_MULTILISTFILES) continue; //do not apply in the main loop.
                     if (altFile.Operation == AlternateFile.AltFileOperation.OP_NOINSTALL_MULTILISTFILES) continue; //do not apply in the main loop.
+                    if (altFile.Operation == AlternateFile.AltFileOperation.OP_APPLY_MERGEMODS) continue; //do not apply in the main loop.
 
                     if (altFile.ModFile.Equals(destFile, StringComparison.InvariantCultureIgnoreCase))
                     {

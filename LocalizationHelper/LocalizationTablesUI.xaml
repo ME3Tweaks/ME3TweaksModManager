@@ -165,7 +165,7 @@
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
-                            <DataGridTextColumn Header="Localized" Binding="{Binding LocalizedStr}" MaxWidth="250" Visibility="{Binding DataContext.ShowGerman, Source={x:Reference DataContextReference}, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <DataGridTextColumn Header="Localized" Binding="{Binding LocalizedStr}" MaxWidth="250" Visibility="{Binding CurrentLanguage, Converter={StaticResource NullVisibilityConverter}}">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
@@ -217,7 +217,7 @@
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    <DataGrid Grid.Row="1" Grid.Column="2" ItemsSource="{Binding LocalizedTutorialService}" AutoGenerateColumns="False" AlternatingRowBackground="BlanchedAlmond" AlternationCount="2" CanUserAddRows="false">
+                    <DataGrid Grid.Row="1" ItemsSource="{Binding LocalizedTutorialService}" AutoGenerateColumns="False" AlternatingRowBackground="BlanchedAlmond" AlternationCount="2" CanUserAddRows="false">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="English" Binding="{Binding EnglishString}" MaxWidth="250" IsReadOnly="True">
                                 <DataGridTextColumn.ElementStyle>
@@ -227,7 +227,7 @@
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
-                            <DataGridTextColumn Header="Localized" Binding="{Binding LocalizedStr}" MaxWidth="250" Visibility="{Binding DataContext.CurrentLanguage, Source={x:Reference DataContextReference}, Converter={StaticResource NullVisibilityConverter}}">
+                            <DataGridTextColumn Header="Localized" Binding="{Binding LocalizedStr}" MaxWidth="250" Visibility="{Binding CurrentLanguage, Converter={StaticResource NullVisibilityConverter}}">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="TextBlock.TextWrapping" Value="Wrap" />

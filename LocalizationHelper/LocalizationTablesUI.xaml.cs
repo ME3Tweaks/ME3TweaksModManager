@@ -258,15 +258,15 @@ namespace LocalizationHelper
                         if (oldString != newV.Root.Value)
                         {
                             if (ls.key == "string_modEndorsed") Debugger.Break();
-                            Debug.WriteLine("Changed: " + ls.key);
-                            Debug.WriteLine("  OLD: " + oldString);
-                            Debug.WriteLine("  NEW: " + lineInfo.text);
+                            //Debug.WriteLine("Changed: " + ls.key);
+                            //Debug.WriteLine("  OLD: " + oldString);
+                            //Debug.WriteLine("  NEW: " + lineInfo.text);
                             ls.ChangedFromPrevious = true;
                         }
                     }
                     else if (oldStuff.Any())
                     {
-                        Debug.WriteLine("New: " + ls.key);
+                        //Debug.WriteLine("New: " + ls.key);
                         ls.ChangedFromPrevious = true;
                     }
 

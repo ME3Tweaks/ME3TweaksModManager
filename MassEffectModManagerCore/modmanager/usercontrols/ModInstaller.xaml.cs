@@ -628,6 +628,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         Log.Information($@"Compressing installed package: {targetPath}");
                         package = MEPackageHandler.OpenMEPackage(targetPath);
                         package.Save(compress: true);
+
+#if DEBUG
+                        // TEST: REopen package
+                        try
+                        {
+                            var p = MEPackageHandler.OpenMEPackage(targetPath);
+                        }
+                        catch (Exception e) { }
+#endif
                     }
                 }
 
