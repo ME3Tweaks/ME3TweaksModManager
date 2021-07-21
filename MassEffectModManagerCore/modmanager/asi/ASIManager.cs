@@ -325,6 +325,7 @@ namespace MassEffectModManagerCore.modmanager.asi
                     }
                     Log.Information($@"Deleting existing ASI from same group: {v.InstalledPath}");
                     v.Uninstall();
+                    installedASIs.Remove(v);
                 }
             }
 
@@ -336,6 +337,11 @@ namespace MassEffectModManagerCore.modmanager.asi
                     // Delete tis other ASI
                     v.Uninstall();
                 }
+            }
+
+            if (hasExistingVersionOfModInstalled)
+            {
+                return true; // The ASI was already installed. There is nothing left to do
             }
 
             // Install the ASI
