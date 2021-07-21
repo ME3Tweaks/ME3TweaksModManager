@@ -1449,6 +1449,7 @@
     <system:String x:Key="string_interp_validation_modparsing_tlkMergeInvalidTlkXmlFilenames">The {0} header only supports the files in the {1} directory that contain at least 2 '.' characters; one for the extension, and at least one to split the package name from the export path. If the export is nested under packages, more '.' may be needed. Invalid value: {2}</system:String>
     <!-- 0={Header (BASEGAME, GAME1_TLK_MERGE, etc)} 1={Foldername} 2={Filepath} -->
     <system:String x:Key="string_validation_modparsing_foundDisallowedLauncherFileType">The LELAUNCHER header only supports the following file extensions: {0} An unsupported filetype was found: {1}</system:String>
+    <!-- 0={file extension list (.txt, .afc, .tfc...) 1={file extension (.txt for example)} -->
     <system:String x:Key="string_interp_validation_modparsing_leLauncherDirNotFound">{0}'s LELAUNCHER header specifies a job subdirectory (moddir) that does not exist: {1}</system:String>
     <!-- 0={ModName} 1={jobSubDir} -->
 
@@ -2095,7 +2096,7 @@
     <system:String x:Key="string_mde_dec_header_metadata_modinfo">The ModInfo header contains most of the information that is displayed to the user in Mod Manager's interface. The more information you give to a user, the less likely they will need to ask you questions about your mod.</system:String>
     <system:String x:Key="string_mde_dec_header_metadata_updates">The UPDATES header is used for the ME3Tweaks Updater Service. The additionaldeployment items can be used to force non-referenced files to be included when deploying your mod.</system:String>
     <system:String x:Key="string_multilists">Multilists</system:String>
-    <system:String x:Key="string_mde_dec_header_lelauncher">The LELauncher header is used to specify the directory of your files that will install to the game's launcher directory. The files must match the file structure of the game's launcher, starting at the Content directory.</system:String>
+    <system:String x:Key="string_mde_dec_header_lelauncher">The LELAUNCHER header is used to specify the directory of your files that will install to the game's launcher directory. The files must match the file structure of the game's launcher, starting at the Content directory.</system:String>
     <system:String x:Key="string_mde_legendaryEditionLauncher">Legendary Edition Launcher</system:String>
     <!-- This is moddesc feature. This is tab header for the [LELAUNCHER] editor -->
     <system:String x:Key="string_mde_game1TLKMerge">Game 1 TLK Merge</system:String>
