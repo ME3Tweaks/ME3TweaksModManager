@@ -54,6 +54,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         {
             get
             {
+                if (IsCustomOption) return null; // No icon as this is not actual game
                 if (GameSource == null) return @"/images/unknown.png";
                 if (GameSource.Contains(@"Steam")) return @"/images/steam.png"; //higher priority than Origin in icon will make the Steam/Origin mix work
                 if (GameSource.Contains(@"Origin")) return @"/images/origin.png";

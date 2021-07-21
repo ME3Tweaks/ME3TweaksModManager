@@ -19,6 +19,8 @@ using LegendaryExplorerCore.Packages;
 using static MassEffectModManagerCore.modmanager.me3tweaks.ThirdPartyServices;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using PropertyChanged;
+using SixLabors.ImageSharp;
+using Color = System.Windows.Media.Color;
 using MemoryAnalyzer = MassEffectModManagerCore.modmanager.memoryanalyzer.MemoryAnalyzer;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -64,14 +66,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private bool CanRestoreMPSFARs()
         {
-            return IsPanelOpen && !Utilities.IsGameRunning(SelectedTarget.Game) && SelectedTarget.HasModifiedMPSFAR() && !SFARBeingRestored;
+            return IsPanelOpen && SelectedTarget != null && SelectedTarget.Game != MEGame.Unknown && !Utilities.IsGameRunning(SelectedTarget.Game) && SelectedTarget.HasModifiedMPSFAR() && !SFARBeingRestored;
         }
         private bool CanRestoreSPSFARs()
         {
-            return IsPanelOpen && !Utilities.IsGameRunning(SelectedTarget.Game) && SelectedTarget.HasModifiedSPSFAR() && !SFARBeingRestored;
+            return IsPanelOpen && SelectedTarget.Game != MEGame.Unknown && !Utilities.IsGameRunning(SelectedTarget.Game) && SelectedTarget.HasModifiedSPSFAR() && !SFARBeingRestored;
         }
 
-        private bool CanRemoveTarget() => SelectedTarget != null && !SelectedTarget.RegistryActive;
+        private bool CanRemoveTarget() => SelectedTarget != null && SelectedTarget.Game != MEGame.Unknown && !SelectedTarget.RegistryActive;
 
         private void RemoveTarget()
         {
@@ -96,7 +98,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private bool CanRestoreAllBasegame()
         {
-            return IsPanelOpen && !Utilities.IsGameRunning(SelectedTarget.Game) && SelectedTarget?.ModifiedBasegameFiles.Count > 0 && !RestoreAllBasegameInProgress && BackupService.GetGameBackupPath(SelectedTarget.Game) != null; //check if ifles being restored
+            return IsPanelOpen && SelectedTarget != null && SelectedTarget.Game != MEGame.Unknown && !Utilities.IsGameRunning(SelectedTarget.Game) && SelectedTarget?.ModifiedBasegameFiles.Count > 0 && !RestoreAllBasegameInProgress && BackupService.GetGameBackupPath(SelectedTarget.Game) != null; //check if ifles being restored
         }
 
         public string ModifiedFilesFilterText { get; set; }
@@ -284,7 +286,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private bool CanRestoreAllSFARs()
         {
-            return IsPanelOpen && !Utilities.IsGameRunning(SelectedTarget.Game) && SelectedTarget.ModifiedSFARFiles.Count > 0 && !SFARBeingRestored;
+            return IsPanelOpen && SelectedTarget != null && SelectedTarget.Game != MEGame.Unknown && !Utilities.IsGameRunning(SelectedTarget.Game) && SelectedTarget.ModifiedSFARFiles.Count > 0 && !SFARBeingRestored;
         }
 
         /// <summary>
@@ -292,6 +294,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         /// </summary>
         private void PopulateUI()
         {
+            if (SelectedTarget == null || SelectedTarget.Game == MEGame.Unknown) return; // Do not populate anything
             BackgroundWorker bw = new BackgroundWorker();
             bw.DoWork += (a, b) =>
             {
