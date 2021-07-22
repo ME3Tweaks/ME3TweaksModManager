@@ -227,10 +227,8 @@
 	<!-- 0={Game name} -->
 
 	<!-- Backup Nag System -->
-	<system:String x:Key="string_interp_XgamesNotBackedUp">{0} игры не заархивировано</system:String>
-	<!-- 0= # of games not backed up (the only values for this string will be 2 or 3) -->
-	<system:String x:Key="string_interp_XgameNotBackedUp">{0} игра не заархивирована</system:String>
-	<!-- 0 in this item will the value of 1. -->
+	<system:String x:Key="string_interp_XgamesNotBackedUp">Игр не заархивировано: {0}</system:String>
+	<!-- 0= # of games not backed up. If your language uses plurality for values, attempt to make it work for both (like how this string uses game(s) to cover both cases of 1 and not 1) -->
 	<system:String x:Key="string_allGamesBackedUp">Все игры заархивированы</system:String>
 	<system:String x:Key="string_description_vanillaBackupRequired">ME3Tweaks Mod Mananger требует наличия архивов оригинальных игр для выполнения некоторых действий.</system:String>
 	<system:String x:Key="string_description_missingBackupWillLimitFeatures">Без наличия архива игры следующие функции Mod Manager будут отключены или ограничены для данной игры:</system:String>
@@ -308,7 +306,7 @@
 	<!-- 0={Game name (ME1/ME2, etc)} -->
 
 	<!-- Debug Menu -->
-	<system:String x:Key="string_testSquadmateMerge">Тест объединения сопартийцев</system:String>
+	<system:String x:Key="string_testSquadmateMerge">Тест синхронизации сопартийцев</system:String>
 	<system:String x:Key="string_mMV1DEBUG">Отладка MMV1</system:String>
 	<system:String x:Key="string_buildMD5DB">Создание базы данных MD5</system:String>
 	<system:String x:Key="string_updateMD5DB">Обновление базы данных MD5</system:String>
@@ -430,7 +428,7 @@
 	<system:String x:Key="string_interp_dlcModMissingTlkInAutoloadIni">В AutoLoad.ini DLC-мода {0} не указан файл TLK. Данный атрибут и соответствующий файл TLK должны присутствовать в каждом моде для возможности работы с ними.</system:String>
 	<!-- 0={filepath} -->
 	<system:String x:Key="string_interp_dlcModMissingAutoLoadTlkFile">В DLC-моде указан файл TLK с именем {1} (.upk), но данный файл отсутствует в папке DLC-мода.</system:String>
-	<!-- 0={filepath} 1={filepath} -->
+	<!-- 0={filepath} 1={filepath} 2={extension (.pcc, .upk) -->
 	<system:String x:Key="string_interp_dlcModTlkPackageHasNoUsableTlk">TLK-пакет DLC-мода не содержит пригодный TLK-export.</system:String>
 	<!-- 0={filepath} -->
 	<system:String x:Key="string_interp_dlcModTlkPackageMissingStringId">TLK-пакет DLC-мода не содержит указанный id строки {1}. Требуется наличие указанного id строки в TLK мода.</system:String>
@@ -531,6 +529,8 @@
 	<system:String x:Key="string_dialog_DeploymentChecksInProgress">Моды проходят проверку перед преобразованием. Отменить преобразование?</system:String>
 	<system:String x:Key="string_folders">Папки</system:String>
 	<system:String x:Key="string_individuallyCompressedItems">Отдельно сжатые объекты</system:String>
+	<system:String x:Key="string_interp_warningPackageForOtherGameFound">Пакектный файл {0} предназначен для  игры {1}, но мод был преобразован для игры {2}. Удостоверьтесь, что это корректно.</system:String>
+	<!-- 0={package file path} 1={Package game (ME1/2/3...)} 2={ModBeingDeployed.Game (ME1/2/3...} -->
 
 	<!-- External tool launcher -->
 	<system:String x:Key="string_interp_downloadingX">Скачивание {0}</system:String>
@@ -716,8 +716,10 @@
 	<system:String x:Key="string_dialog_restoringSFARWithoutBackup">Восстановление SFAR без архива лишь удалит нераспакованные файлы, поскольку не будет источника для копирования. Это приведет DLC в поврежденное состояние. Необходимо создать архив оригинальной игры для возможности корректного восстановления DLC SFAR.</system:String>
 	<system:String x:Key="string_backupNotAvailable">Архив недоступен</system:String>
 	<system:String x:Key="string_textures">Текстуры</system:String>
-	<system:String x:Key="string_tooltip_manageTextures" xml:space="preserve">Текстуры для трилогии установлены посредством ALOT Installer.&#10;Текстурные моды должны устанавливаться в последнюю очередь</system:String>
 	<system:String x:Key="string_manageTextures">Установить текстуры через ALOT Installer</system:String>
+	<system:String x:Key="string_tooltip_manageTextures" xml:space="preserve">Текстуры для трилогии установлены посредством ALOT Installer.&#10;Текстурные моды должны устанавливаться в последнюю очередь</system:String>
+	<system:String x:Key="string_manageTexturesLE">Установка текстур посредством Mass Effect Modder</system:String>
+	<system:String x:Key="string_tooltip_manageTexturesLE" xml:space="preserve">Текстуры для Legendary Edition были установлены с использованием Mass Effect Modder.&#10;Текстурные моды должны устанавливаться в последнюю очередь, иначе они не смогут корректно работать</system:String>
 	<system:String x:Key="string_filesInstalledInSession">Файлы, установленные в сессии:</system:String>
 	<system:String x:Key="string_interp_textureInstallationDate">Установка текстур - {0}</system:String>
 	<!-- 0 = date -->
@@ -744,6 +746,10 @@
 	<system:String x:Key="string_selectWhichKeybindsToInstall">Выберите привязки клавиш для установки:</system:String>
 	<system:String x:Key="string_resetKeybinds">Сбросить Привязки Клавиш</system:String>
 	<system:String x:Key="string_installKeybinds">Установить Привязки Клавиш</system:String>
+
+	<!-- License Viewer -->
+	<system:String x:Key="string_licenseViewer">Licence Viewer</system:String>
+	<!-- Title of a window for viewing software license text -->
 
 	<!-- List Dialog -->
 	<system:String x:Key="string_dialogCouldNotSetDataToClipboard" xml:space="preserve">Невозможно скопировать данные в буфер обмена:\n</system:String>
@@ -1176,8 +1182,10 @@
 	<system:String x:Key="string_syncPlotManager">Синхронизация PlotManager</system:String>
 	<!-- This is menu item container. This synchronizes the PlotManager file with the DLC changes each mod can specify. PlotManager is a noun -->
 	<system:String x:Key="string_syncPlotManagerForMassEffect">Синхронизация PlotManager для Mass Effect</system:String>
-	<system:String x:Key="string_tooltip_syncPlotManager">Синхронизирует обновления Plot Manager из DLC-модов с файлом основного сюжета</system:String>
+	<system:String x:Key="string_syncPlotManagerForMassEffect2">Синхронизация PlotManager для Mass Effect 2</system:String>
+	<system:String x:Key="string_syncPlotManagerForMassEffectLegendaryEdition">Синхронизация PlotManager для Mass Effect (Legendary Edition)</system:String>
 	<system:String x:Key="string_syncPlotManagerForMassEffect2LegendaryEdition">Синхронизация PlotManager для Mass Effect 2 (Legendary Edition)</system:String>
+	<system:String x:Key="string_tooltip_syncPlotManager">Синхронизирует обновления Plot Manager из DLC-модов с файлом основного сюжета</system:String>
 	<system:String x:Key="string_massEffectModderForLegendaryEdition">Mass Effect Modder (Legendary Edition)</system:String>
 	<system:String x:Key="string_prereleaseNotice">Это предрелизная сбока ME3Tweaks Mod Manager. Не публикуйте моды из данной сборки. Здесь могут присутствовать критические изменения, из-за которых моды, сделанные для данной сборки, не будут работать на последующих сборках.</system:String>
 	<system:String x:Key="string_failedToCompileCoalescedFile">Компиляция файла coalesced не удалась</system:String>
@@ -1375,6 +1383,7 @@
 	<system:String x:Key="string_tooltip_installModArchiveWindow" xml:space="preserve">Устанавливает мод напрямую в текущую активную целевую игру соответствующего типа.&#10;Мод при этом НЕ будет импортирован в библиотеку</system:String>
 	<system:String x:Key="string_interp_xChosenOptions">Выбрано опций: {0}</system:String>
 	<!-- 0 = number of chosen installation options (the options that come up on mod install). Can be 0 -->
+	<system:String x:Key="string_deletingExistingModInLibrary">Удаление сушествующего мода из библиотеки</system:String>
 
 	<!-- Mod Download -->
 	<system:String x:Key="string_dialog_mustBePremiumUserToDownload">Невозможно скачать файл: Необходимо иметь премиум-подписку NexusMods для использования прямых ссылок.</system:String>
@@ -1474,6 +1483,7 @@
 	<system:String x:Key="string_warningTextureModsAreInstalled">Внимание: Установлены текстурные моды</system:String>
 	<system:String x:Key="string_interp_errorApplyingMergeModXY">Возникла ошибка объединения модов {0}</system:String>
 	<!-- 0={mergeMod.MergeModFilename} 1={ex.Message} -->
+	<system:String x:Key="string_updatingTLKFiles">Обновление TLK-файлов</system:String>
 
 	<!-- Mod Selector Dialog -->
 	<system:String x:Key="string_addSelectedModsToDeployment">Добавить выбранные моды к преобразованию</system:String>
@@ -1695,6 +1705,7 @@
 	<system:String x:Key="string_interp_validation_modparsing_tlkMergeInvalidTlkXmlFilenames">Заголок {0} поддерживает только те файлы в директории {1}, что содержат как минимум 2 '.' символа; один для расширения и хотя бы один для отделения имени пакетного файла от пути экспорта. Если экспорт вложен в пакетные файлы, может потребоваться больше '.' символов. Недопустимое значение: {2}</system:String>
 	<!-- 0={Header (BASEGAME, GAME1_TLK_MERGE, etc)} 1={Foldername} 2={Filepath} -->
 	<system:String x:Key="string_validation_modparsing_foundDisallowedLauncherFileType">Заголовок LELAUNCHER поддерживает только следующие расширения файлов {0} Обнаружен неподдерживаемый тип файла: {1}</system:String>
+	<!-- 0={file extension list (.txt, .afc, .tfc...) 1={file extension (.txt for example)} -->
 	<system:String x:Key="string_interp_validation_modparsing_leLauncherDirNotFound">В заголовоке LELAUNCHER мода {0} указана несуществующая поддиректория задания (moddir): {1}</system:String>
 	<!-- 0={ModName} 1={jobSubDir} -->
 
@@ -1839,6 +1850,10 @@
 	<system:String x:Key="string_tooltip_autoInjectKeybinds" xml:space="preserve">Автоматическая интеграция пользовательского файла BioInput.xml (при наличии) в директорию keybindsoveride.&#10;Определите привязки через Custom Keybinds Injector в меню Инструменты</system:String>
 	<system:String x:Key="string_injectCustomKeybindsIfAvailable">Интегрировать пользовательские привязки клавиш (при наличии)</system:String>
 
+	<!-- Nexus Domain Handler -->
+	<system:String x:Key="string_interp_handlerProgramDoesNotExist">Невозможно вызвать обработчик для домена {0}: указаннове приложение {1} не существует</system:String>
+	<!-- 0={game domain (like 'skyrim')} 1={ProgramPath} -->
+
 	<!-- Nexus File Search -->
 	<system:String x:Key="string_nexusModsFileSearch">Поиск Файлов NexusMods</system:String>
 	<system:String x:Key="string_description_nexusModsFileSearch">Вы можете искать файлы из модов для игр трилогии Mass Effect на NexusMods используя Поиск Файлов NexusMods. База данных регулярно обновляется и поддерживается ME3Tweaks.</system:String>
@@ -1870,9 +1885,21 @@
 	<system:String x:Key="string_pasteYourAPIKeyHere">Вставьте сюда ваш API-ключ</system:String>
 	<system:String x:Key="string_manuallyEnterAPIKey">Ввести API-ключ вручную</system:String>
 	<system:String x:Key="string_yourAPIKeyWillAppearHere">Ваш API-ключ появится здесь</system:String>
-	<system:String x:Key="string_setupDownloadWithManager">Настройка Загрузки через Manager</system:String>
-	<system:String x:Key="string_failedToSetupDownloadWithManager">Не удалось настроить Загрузку через Manager</system:String>
-	<system:String x:Key="string_downloadWithManagerConfigured">Загрузка через Manager настроена</system:String>
+	<system:String x:Key="string_configureDownloadWithManager">Настройка функции 'Загрузка через Manager'</system:String>
+
+	<!-- NXM Config Panel -->
+	<system:String x:Key="string_executables">Исполняемые файлы</system:String>
+	<!-- Used in context of filetype selector. 'Executables (*.exe)' -->
+	<system:String x:Key="string_nexusModsDownloaderConfiguration">Конфигурация NexusMods Downloader</system:String>
+	<system:String x:Key="string_description_downloadWithManager">Функция 'Загрузка через Manager' на NexusMods использует протокол NXM. Это означает, что единовременно может быть зарегистрирована только одно приложение. Mod Manager может зарегистрировать себя в качестве получателя и перенаправлять загрузки для неподдерживаемых игр (например Skyrim или Fallout) в другие программы по вашему выбору.</system:String>
+	<system:String x:Key="string_registerME3TweaksModManagerAsHandler">Регистрация ME3Tweaks Mod Manager в качестве обработчика</system:String>
+	<system:String x:Key="string_otherApps">Другие приложения</system:String>
+	<system:String x:Key="string_description_downloadWithManagerOtherApps">Вы можете зарегистрировать другие приложения для обработки других игр, кроме игр Mass Effect. Вам нужно указать домен (имя игры из ссылки NexusMods), целевое приложение и аргументы, необходимые приложению. Используйте '%1' для указания nxm:// ссылки.</system:String>
+	<system:String x:Key="string_addOtherApp">Добавление другого прилоения</system:String>
+	<system:String x:Key="string_additionalApp">Дополнительное приложение</system:String>
+	<system:String x:Key="string_application">Приложение</system:String>
+	<system:String x:Key="string_arguments">Аргументы</system:String>
+	<system:String x:Key="string_domains">Домены</system:String>
 
 	<!-- Official DLC Toggler -->
 	<system:String x:Key="string_officialDLCToggler">Official DLC Toggler</system:String>
@@ -1991,6 +2018,12 @@
 	<system:String x:Key="string_dialog_restoringXWillDeleteGameDir" xml:space="preserve">Восстановление {0} полностью удалит директорию игры и затем скопирует содержимое архива по исходному пути.\n\nУдалить данную игру и восстановить ее из архива?</system:String>
 	<!-- 0=Utilities.GetGameName(Game) -->
 	<system:String x:Key="string_gameTargetWillBeDeleted">Указанная игра будет удалена</system:String>
+	<system:String x:Key="string_beta_useNewRestoreMethod">Использовать новый экспериментальный метод восстановления? Он быстрее, но еще не был протестирован на практике.</system:String>
+	<system:String x:Key="string_useBetaFeatureQuestion">Использовать бета-функцию?</system:String>
+	<system:String x:Key="string_interp_copyingX">Копирование {0}</system:String>
+	<!-- 0={File} -->
+	<system:String x:Key="string_interp_directoryNotEmptyWillDeleteEverything">Выбранная директория не пуста: {0}. ВСЕ НЕИГРОВЫЕ ФАЙЛЫ И ПАПКИ В ЭТОЙ ДИРЕКТОРИИ БУДУТ УДАЛЕНЫ. Вы уверены, что хотите продолжить?</system:String>
+	<!-- 0={Directory user chose} -->
 
 	<!-- Squadmate Merge -->
 	<system:String x:Key="string_interp_invalidHenchNameSquadmateNameValueIsCaseSensitive">Неверное имя сопартийца: {0}. Значение чувствительно к регистру.</system:String>
