@@ -144,8 +144,8 @@ The format for a single property update for an export. You may have several of t
 - IntProperty
 - StrProperty
 - NameProperty
-- EnumProperty
-- ObjectProperty (Does not support porting in, only relinking to existing objects. Pass in full instanced path as propertyvalue)
+- EnumProperty - This is the same as ByteProperty(Enum). Pass in EnumType.Value as propertyvalue. Example: `FireMode.FireMode_FullAuto` for a FireMode enum
+- ObjectProperty - Does not support porting in, only relinking to existing objects. Pass in full instanced path as propertyvalue
 
 **Example:**
 
