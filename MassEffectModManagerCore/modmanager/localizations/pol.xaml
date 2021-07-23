@@ -195,7 +195,6 @@
 	<!-- 0=Validation failure reason -->
 	<system:String x:Key="string_invalidGameCopy">Nieprawidłowa kopia gry</system:String>
 	<system:String x:Key="string_interp_dialog_linkFailedSubdirectoryOfGameDocumentsFolder">Ścieżka Dokumenty/Bioware/ (i jej zagłębienia) nie może być użyta jako lokalizacja kopii zapasowych, ponieważ ładowane są z niej pliki gry. Prosimy o wybranie innej lokalizacji.</system:String>
-	<!-- 0=Game name (Mass Effect, Mass Effect 3, etc) -->
 	<system:String x:Key="string_locationNotAllowedForBackup">Lokalizacja niedozwolona dla kopii zapasowych</system:String>
 	<system:String x:Key="string_dialog_userAccountDoesntHaveWritePermissionsBackup">Twoje konto użytkownika nie ma uprawnień nadpisywania danych w wybranych katalogu. Wybierz inny katalog.</system:String>
 	<system:String x:Key="string_dialog_linkTargetWontBeModdable">Kopia gry którą połączysz nie będzie dostępna do modowania. Upewnij się, że jest to kopia zapasowa gry, a nie Twój głównyn folder instalacyjny, w przeciwnym wypadku nie uda się modyfikować Twojej gry.</system:String>
@@ -226,10 +225,8 @@
 	<!-- 0={Game name} -->
 
 	<!-- Backup Nag System -->
-	<system:String x:Key="string_interp_XgamesNotBackedUp">{0} gier bez kopii zapasowych</system:String>
-	<!-- 0= # of games not backed up (the only values for this string will be 2 or 3) -->
-	<system:String x:Key="string_interp_XgameNotBackedUp">{0} gra bez kopii zapasowej</system:String>
-	<!-- 0 in this item will the value of 1. -->
+	<system:String x:Key="string_interp_XgamesNotBackedUp">{0} gra/gry bez kopii zapasowych</system:String>
+	<!-- 0= # of games not backed up. If your language uses plurality for values, attempt to make it work for both (like how this string uses game(s) to cover both cases of 1 and not 1) -->
 	<system:String x:Key="string_allGamesBackedUp">Wszystkie gry z kopiami zapasowymi</system:String>
 	<system:String x:Key="string_description_vanillaBackupRequired">ME3Tweaks Mod Manager wymaga niezmodyfikowanych kopii zapasowych żeby przeprowadzić niektóre operacje.</system:String>
 	<system:String x:Key="string_description_missingBackupWillLimitFeatures">Bez kopii zapasowych gry, następujące funkcje Mod Managera będą wyłączone lub będą miały dla tej gry ograniczone możliwości:</system:String>
@@ -428,8 +425,8 @@
 	<!-- 0={filepath} -->
 	<system:String x:Key="string_interp_dlcModMissingTlkInAutoloadIni">Modyfikacja DLC {0} nie wyszczególnia żadnego pliku TLK w AutoLoad.ini. Scena modderska wymaga by każda stworzona modyfikacja zawierała ten atrybut oraz poprawny plik TLK.</system:String>
 	<!-- 0={filepath} -->
-	<system:String x:Key="string_interp_dlcModMissingAutoLoadTlkFile">Modyfikacja DLC {0} wyszczególnia plik TLK o nazwie {1}, lecz taki plik nie istnieje w głównym folderze owej modyfikacji.</system:String>
-	<!-- 0={filepath} 1={filepath} -->
+	<system:String x:Key="string_interp_dlcModMissingAutoLoadTlkFile">Modyfikacja DLC {0} wyszczególnia plik TLK o nazwie {1}({2}), lecz taki plik nie istnieje w głównym folderze owej modyfikacji.</system:String>
+	<!-- 0={filepath} 1={filepath} 2={extension (.pcc, .upk) -->
 	<system:String x:Key="string_interp_dlcModTlkPackageHasNoUsableTlk">Pakiet TLK modyfikacji DLC {0} nie zawiera żadnego pliku TLK do użytku</system:String>
 	<!-- 0={filepath} -->
 	<system:String x:Key="string_interp_dlcModTlkPackageMissingStringId">Pakiet TLK modyfikacji DLC {0} nie zawiera zmiennej string id {1}. TLK modyfikacji musi zawierać zmienną string id.</system:String>
@@ -485,7 +482,7 @@
 	<!-- 0={relativepath} 1={integer} -->
 	<system:String x:Key="string_interp_warningGenericExportPrefix">{0}, export {1} {2} ({3})</system:String>
 	<!-- 0={relativepath} 1={integer} 2={Object name string} 3={Object class string} -->
-	<system:String x:Key="string_interp_warningArchetypeOutsideTables">{0} Archetype {1} znajduję się poza tablicą import/export</system:String>
+	<system:String x:Key="string_interp_warningArchetypeOutsideTables">{0} Archetyp {1} znajduję się poza tablicą import/export</system:String>
 	<!-- 0={Message prefix string} 1={integer} -->
 	<system:String x:Key="string_interp_warningSuperclassOutsideTables">{0} Nagłówek SuperClass {1} znajduję się poza tablicą import/export</system:String>
 	<!-- 0={Message prefix string} 1={integer} -->
@@ -522,8 +519,10 @@
 	<system:String x:Key="string_deploymentValidationTargetDesc">Walidacja ścieżki jest wykorzystywana do zweryfikowania konfiguracji twojej modyfikacji względem innych modyfikacji, takich jak łatki kompatybilności dot. tekstur. Zainstaluj odpowiednie modyfikacje w tej ścieżce, dzięki czemu Mod Manager może sprawdzić te odniesienia. Ścieżka poddana walidacji nie może posiada zainstalonych modyfikacji tekstur (ALOT)</system:String>
 	<system:String x:Key="string_interp_noValidationTarget">Brak ścieżki do walidacji dla {0}!</system:String>
 	<!-- 0={ME1/ME2/ME3} -->
-	<system:String x:Key="string_folders">Folder</system:String>
+	<system:String x:Key="string_folders">Foldery</system:String>
 	<system:String x:Key="string_individuallyCompressedItems">Osobno skompresowane elementy</system:String>
+	<system:String x:Key="string_interp_warningPackageForOtherGameFound">Pakiet {0} jest przeznaczony dla gry {1} lecz jest mod jest tworzony dla gry {2}. Upewnij się, że jest to prawidłowe</system:String>
+	<!-- 0={package file path} 1={Package game (ME1/2/3...)} 2={ModBeingDeployed.Game (ME1/2/3...} -->
 
 	<!-- External tool launcher -->
 	<system:String x:Key="string_interp_downloadingX">Pobieranie {0}</system:String>
@@ -706,8 +705,9 @@
 	<system:String x:Key="string_dialog_restoringSFARWithoutBackup">Przywrócenie SFAR bez kopii zapasowej spowoduje jedynie usunięcie nieskompresowanych plików, gdyż nie istnieje żaden gotowy do przywrócenia z kopii zapasowej. Ta operacja spowoduje, że DLC nie będzie się nadawało do jakiegokolwiek użytku. Poprawne przywrócenie SFAR dla DLC jest możliwe tylko poprzez stworzenie i przywrócenie plików z kopii zapasowej oryginalnej gry.</system:String>
 	<system:String x:Key="string_backupNotAvailable">Kopia zapasowa nie jest dostępna.</system:String>
 	<system:String x:Key="string_textures">Tekstury</system:String>
-	<system:String x:Key="string_tooltip_manageTextures" xml:space="preserve">Tekstury dla trylogii instalowane są przy pomocy ALOT Instaler.&#10;Modyfikacje zmieniające tekstury muszą zostać zainstalowane jako ostatnie.</system:String>
 	<system:String x:Key="string_manageTextures">Zainstaluj tekstury za pomocą ALOT Installer</system:String>
+	<system:String x:Key="string_tooltip_manageTextures" xml:space="preserve">Tekstury dla trylogii instalowane są przy pomocy ALOT Instaler.&#10;Modyfikacje zmieniające tekstury muszą zostać zainstalowane jako ostatnie.</system:String>
+	<system:String x:Key="string_tooltip_manageTexturesLE" xml:space="preserve">Tekstury dla Edycji Legendarnej instalowane są przy pomocy Mass Effect Modder.&#10;Modyfikacje tekstur muszą zostać zainstalowane ostatnie, w przeciwnym wypadku nie bedą działac prawidłowo</system:String>
 	<system:String x:Key="string_filesInstalledInSession">Pliki zainstalowane podczas tej sesji:</system:String>
 	<system:String x:Key="string_interp_textureInstallationDate">Instalacja tekstur - {0}</system:String>
 	<!-- 0 = date -->
@@ -731,6 +731,10 @@
 	<system:String x:Key="string_selectWhichKeybindsToInstall">Wybierz, które skróty klawiszowe zainstalować:</system:String>
 	<system:String x:Key="string_resetKeybinds">Zresetuj Skróty Klawiszowe</system:String>
 	<system:String x:Key="string_installKeybinds">Zainstaluj Skróty Klawiszowe</system:String>
+
+	<!-- License Viewer -->
+	<system:String x:Key="string_licenseViewer">Podgląd licencji</system:String>
+	<!-- Title of a window for viewing software license text -->
 
 	<!-- List Dialog -->
 	<system:String x:Key="string_dialogCouldNotSetDataToClipboard" xml:space="preserve">Nie udało się ustawić danych do schowka:\n</system:String>
@@ -1150,8 +1154,10 @@
 	<system:String x:Key="string_syncPlotManager">Zsynchronizuj PlotManager</system:String>
 	<!-- This is menu item container. This synchronizes the PlotManager file with the DLC changes each mod can specify. PlotManager is a noun -->
 	<system:String x:Key="string_syncPlotManagerForMassEffect">Zsynchronizuj PlotManager dla Mass Effect</system:String>
-	<system:String x:Key="string_tooltip_syncPlotManager">Synchronizuje aktualizacje menadżera wątków zlokalizowane w modach DLC z bazowym plikiem menadżera wątków, który jest używany do śledzenia postępów fabuły</system:String>
+	<system:String x:Key="string_syncPlotManagerForMassEffect2">Zsynchronizuj PlotManager dla Mass Effect 2</system:String>
+	<system:String x:Key="string_syncPlotManagerForMassEffectLegendaryEdition">Zsynchronizuj PlotManager dla Mass Effect (Edycja Legendarna)</system:String>
 	<system:String x:Key="string_syncPlotManagerForMassEffect2LegendaryEdition">Zsynchronizuj PlotManager dla Mass Effect 2 (Edycja Legendarna)</system:String>
+	<system:String x:Key="string_tooltip_syncPlotManager">Synchronizuje aktualizacje menadżera wątków zlokalizowane w modach DLC z bazowym plikiem menadżera wątków, który jest używany do śledzenia postępów fabuły</system:String>
 	<system:String x:Key="string_massEffectModderForLegendaryEdition">Mass Effect Modder (dla Edycji Legendarnej)</system:String>
 	<system:String x:Key="string_prereleaseNotice">To jest przedpremierowa wersja ME3Tweaks Mod Manager. Nie rozpowszechniaj modów stworzonych przez tą wersje. Mogą znajdować się w niej zmiany które spowodują że mody stworzone dla tej wersji nie bedą działac w przyszłych wersjach</system:String>
 	<system:String x:Key="string_failedToCompileCoalescedFile">Nie udało się skompilować pliku coalesced</system:String>
@@ -1347,10 +1353,15 @@
 	<system:String x:Key="string_tooltip_launchesALOTInstaller">Włącza ALOT Installer</system:String>
 	<system:String x:Key="string_tooltip_compressPackages" xml:space="preserve">Kompresuje paczki plików podczas importu, zmniejszając ich rozmiar. Jest to funkcja eksperymentalna - jeżeli wystąpią problemy z modami, nie używaj tej funkcji.&#10;Ta opcja nie jest dostępna dla następujących scenariuszy ze względu na ich skomplikowanie:&#10; - Bezpośrednia instalacja z archiwum&#10; - Pliki Mass Effect 1&#10;&#10;Ta funkcja ME3Tweaks może zostać wyłączona kiedy Mod Manager połaczy się z serwerem</system:String>
 	<system:String x:Key="string_tooltip_installModArchiveWindow" xml:space="preserve">Bezpośrednio instaluje modyfikację w obecnie wskazanej ścieżce gry.&#10;Ta operacja NIE zaimportuje modyfikacji do biblioteki modów.</system:String>
+	<system:String x:Key="string_deletingExistingModInLibrary">Usuwanie moda istniejącego już w bibliotece</system:String>
 
 	<!-- Mod Download -->
 
 	<!-- Mod Downloader -->
+	<system:String x:Key="string_modDownloader">Pobieranie Modów</system:String>
+	<system:String x:Key="string_initializing">Inicjalizacja</system:String>
+	<system:String x:Key="string_cancelDownload">Przerwij pobieranie</system:String>
+	<system:String x:Key="string_downloadError">Błąd podczas pobierania</system:String>
 	<system:String x:Key="string_interp_nexusModNotCompatible">{0} nie jest kompatybilny z ME3Tweaks Mod Manager. Jeżeli jest to mod tekstur to zainstaluj go przy użyciu instalatora ALOT.</system:String>
 	<!-- 0={Mod Name (on NexusMods)} -->
 
@@ -1436,6 +1447,7 @@
 	<system:String x:Key="string_warningTextureModsAreInstalled">Uwaga: Mody tekstur są zainstalowane</system:String>
 	<system:String x:Key="string_interp_errorApplyingMergeModXY">Wystąpił błąd podczas aplikowania moda scalającego {0}: {1}.</system:String>
 	<!-- 0={mergeMod.MergeModFilename} 1={ex.Message} -->
+	<system:String x:Key="string_updatingTLKFiles">Aktualizacja plików TLK</system:String>
 
 	<!-- Mod Selector Dialog -->
 	<system:String x:Key="string_addSelectedModsToDeployment">Dodaj wybrane modyfikacje do publikacji</system:String>
@@ -1655,6 +1667,7 @@
 	<system:String x:Key="string_interp_validation_modparsing_tlkMergeInvalidTlkXmlFilenames">Nagłowek {0} wspiera wyłącznie pliki w folderze {1} które zawierają przynajmniej 2 znaki '.' ; jeden dla rozszerzenia, oraz przynajmniej jeden do oddzielenia nazwy pakietu od ścieżki eksportu. Jeżeli eksport jest zagnieżdzony pod pakietami to może być potrzebne więcej '.' . Niepoprawna wartość: {2}</system:String>
 	<!-- 0={Header (BASEGAME, GAME1_TLK_MERGE, etc)} 1={Foldername} 2={Filepath} -->
 	<system:String x:Key="string_validation_modparsing_foundDisallowedLauncherFileType">Nagłówek LELAUNCHER wspiera tylko następujące rozszerzenia plików: {0}. Niewspierany typ pliku został znaleziony: {1}</system:String>
+	<!-- 0={file extension list (.txt, .afc, .tfc...) 1={file extension (.txt for example)} -->
 	<system:String x:Key="string_interp_validation_modparsing_leLauncherDirNotFound">Nagłówek LELAUNCHER moda {0} określa zadanie podkatalogu (moddir) który nie istnieje: {1}</system:String>
 	<!-- 0={ModName} 1={jobSubDir} -->
 
@@ -1799,6 +1812,10 @@
 	<system:String x:Key="string_tooltip_autoInjectKeybinds" xml:space="preserve">Automatycznie wstrzykuje plik BioInput.xml (jeśli jest dostępny) do katalogu keybindsoverride.&#10;Zdefiniuj własne ustawienia sterowania w Menu Narzędzi</system:String>
 	<system:String x:Key="string_injectCustomKeybindsIfAvailable">Wstrzyknij własne ustawienia sterowania (jeśli dostępne)</system:String>
 
+	<!-- Nexus Domain Handler -->
+	<system:String x:Key="string_interp_handlerProgramDoesNotExist">Nie można wywołać handlera dla domeny {0}: Wskazana aplikacja {1} nie istnieje</system:String>
+	<!-- 0={game domain (like 'skyrim')} 1={ProgramPath} -->
+
 	<!-- Nexus File Search -->
 	<system:String x:Key="string_nexusModsFileSearch">Wyszukiwarka NexusMods</system:String>
 	<system:String x:Key="string_description_nexusModsFileSearch">Możesz wyszukać plików zawartych w modyfikacjach na NexusMods dla gier trylogii Mass Effect przy pomocy Wyszukiwarki NexusMods. Baza danych jest regularnie aktualizowana przez JonatanRek.</system:String>
@@ -1828,6 +1845,21 @@
 	<system:String x:Key="string_pasteYourAPIKeyHere">Wklej swój klucz API tutaj</system:String>
 	<system:String x:Key="string_manuallyEnterAPIKey">Wpisz klucz API manualnie</system:String>
 	<system:String x:Key="string_yourAPIKeyWillAppearHere">Twój klucz API pojawi się tutaj</system:String>
+	<system:String x:Key="string_configureDownloadWithManager">Skonfiguruj 'Download with Manager'</system:String>
+
+	<!-- NXM Config Panel -->
+	<system:String x:Key="string_executables">Pliki wykonywalne</system:String>
+	<!-- Used in context of filetype selector. 'Executables (*.exe)' -->
+	<system:String x:Key="string_nexusModsDownloaderConfiguration">Configuracja pobierania z NexusMods</system:String>
+	<system:String x:Key="string_description_downloadWithManager">Funkcja 'Download with Manager' znajdująca się na NexusMods wykorzystuje protokół NXM. Oznacza to że protokół może być obsługiwany tylko przez jedna aplikacja jednocześnie. Mod Manager może zarejestrować siebie jako aplikacje obługującą protokół i przekierowywać nie wspierane gry (takie jak Fallout czy Skyrim) do innego managera</system:String>
+	<system:String x:Key="string_registerME3TweaksModManagerAsHandler">Zarejestruj ME3Tweaks Mod Manager jako handler</system:String>
+	<system:String x:Key="string_otherApps">Inne aplikacje</system:String>
+	<system:String x:Key="string_description_downloadWithManagerOtherApps">Możesz zarejestrować inne aplikacje do obsługiwania gier innych niż Mass Effect. W tym celu musisz podać domene (nazwa gry w adresie URL NexusMods), docelową aplikacje, oraz argument potrzebny dla aplikacji. Użyj '%1' aby wskazać miejsce na link nxm://.</system:String>
+	<system:String x:Key="string_addOtherApp">Dodaj inna aplikacje</system:String>
+	<system:String x:Key="string_additionalApp">Dodatkowe aplikacje</system:String>
+	<system:String x:Key="string_application">Aplikacja</system:String>
+	<system:String x:Key="string_arguments">Argumenty</system:String>
+	<system:String x:Key="string_domains">Domena</system:String>
 
 	<!-- Official DLC Toggler -->
 	<system:String x:Key="string_officialDLCToggler">Przełącznik Oficjalnych DLC</system:String>
@@ -1943,6 +1975,12 @@
 	<system:String x:Key="string_dialog_restoringXWillDeleteGameDir" xml:space="preserve">Przywrócenie {0} całkowicie usunie katalog z grą i następnie skorzysta z kopii zapasowej żeby stworzyć ją w pierwotnej lokacji.\n\nUsunąć ten katalog i przywrócić z kopii zapasowej?</system:String>
 	<!-- 0=Utilities.GetGameName(Game) -->
 	<system:String x:Key="string_gameTargetWillBeDeleted">Ścieżka gry zostanie usunięta</system:String>
+	<system:String x:Key="string_beta_useNewRestoreMethod">Użyć nowej, eksperymentalnej metody przywracania? Nowa metoda jest szybsza lecz nie jest jeszcze przetestowana w boju</system:String>
+	<system:String x:Key="string_useBetaFeatureQuestion">Użyć funkcji beta?</system:String>
+	<system:String x:Key="string_interp_copyingX">Kopiowanie {0}</system:String>
+	<!-- 0={File} -->
+	<system:String x:Key="string_interp_directoryNotEmptyWillDeleteEverything">Wybrana scieżka nie jest pusta: {0}. WSZYSTKIE PLIKI I FOLDERY NIE ZWIĄZANE Z GRĄ ZOSTANĄ USUNIĘTE Z TEJ SCIEŻKI. Czy napewno chcesz kontynuować</system:String>
+	<!-- 0={Directory user chose} -->
 
 	<!-- Squadmate Merge -->
 	<system:String x:Key="string_interp_invalidHenchNameSquadmateNameValueIsCaseSensitive">Nieprawidłowa nazwa dla hench: {0}. W wartości rozróżniana jest wielkość liter</system:String>
