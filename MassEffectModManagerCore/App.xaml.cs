@@ -78,7 +78,8 @@ namespace MassEffectModManagerCore
         internal static readonly string[] SupportedOperatingSystemVersions =
         {
             @"Windows 8.1",
-            @"Windows 10 (not EOL versions)"
+            @"Windows 10 (not EOL versions)",
+            //@"Windows 11"
         };
 
         [DllImport(@"kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
