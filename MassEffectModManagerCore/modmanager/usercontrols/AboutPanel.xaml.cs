@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using MassEffectModManagerCore.ui;
 using System.Reflection;
@@ -8,6 +9,7 @@ using System.Windows.Input;
 using System.Windows.Navigation;
 using LegendaryExplorerCore.Misc;
 using MassEffectModManagerCore.modmanager.localizations;
+using MassEffectModManagerCore.modmanager.windows;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -96,6 +98,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void Navigate_Click(object sender, RequestNavigateEventArgs e)
         {
+            if (e.Uri.AbsoluteUri == @"internal://minhook-license/")
+            {
+                new LicenseViewerWindow(new StreamReader(Utilities.GetResourceStream(@"MassEffectModManagerCore.modmanager.licenses.minhook.txt")).ReadToEnd()).Show();
+                return;
+            }
             Utilities.OpenWebpage(e.Uri.AbsoluteUri);
         }
 

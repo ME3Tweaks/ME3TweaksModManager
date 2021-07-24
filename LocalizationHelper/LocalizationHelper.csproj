@@ -10,9 +10,7 @@
     <Description>Localizes the ME3Tweaks Mod Manager files from Github</Description>
     <Copyright>2021 ME3Tweaks</Copyright>
     <ApplicationIcon>localizericon.ico</ApplicationIcon>
-    <Version>1.0.8</Version>
-    <AssemblyVersion>2.0.0.0</AssemblyVersion>
-    <FileVersion>2.0.0.0</FileVersion>
+    <Version>2.0.3</Version>
     <Platforms>x64</Platforms>
     <ValidateExecutableReferencesMatchSelfContained>false</ValidateExecutableReferencesMatchSelfContained>
   </PropertyGroup>

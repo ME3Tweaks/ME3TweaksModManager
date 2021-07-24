@@ -168,7 +168,7 @@
     <system:String x:Key="string_runningAutoTOC">Running AutoTOC</system:String>
     <system:String x:Key="string_ranAutoTOC">Ran AutoTOC</system:String>
     <system:String x:Key="string_nonModManagerModFound">Non-Mod Manager mod found</system:String>
-    <system:String xml:space="preserve" x:Key="string_dialogCriticalFilesMissing">"Mod Manager was unable to acquire files that are required for the program to function properly.\nPlease ensure you are connected to the internet and that both GitHub and ME3Tweaks is reachable.\nMod Manager will now close. If you need assistance, please come to the ME3Tweaks /ord.</system:String>
+    <system:String xml:space="preserve" x:Key="string_dialogCriticalFilesMissing">Mod Manager was unable to acquire files that are required for the program to function properly.\nPlease ensure you are connected to the internet and that both GitHub and ME3Tweaks is reachable.\nMod Manager will now close. If you need assistance, please come to the ME3Tweaks Discord.</system:String>
     <system:String x:Key="string_requiredFilesNotDownloaded">Required files unable to be downloaded</system:String>
     <system:String x:Key="string_checkingWritePermissions">Checking write permissions</system:String>
     <system:String x:Key="string_checkedUserWritePermissions">Checked user write permissions</system:String>
@@ -385,8 +385,10 @@
     <system:String x:Key="string_syncPlotManager">Sync PlotManager</system:String>
     <!-- This is menu item container. This synchronizes the PlotManager file with the DLC changes each mod can specify. PlotManager is a noun -->
     <system:String x:Key="string_syncPlotManagerForMassEffect">Sync PlotManager for Mass Effect</system:String>
-    <system:String x:Key="string_tooltip_syncPlotManager">Synchronizes the plot manager updates located in DLC mods with the base plot manager file, which is used for story progression tracking</system:String>
+    <system:String x:Key="string_syncPlotManagerForMassEffect2">Sync PlotManager for Mass Effect 2</system:String>
+    <system:String x:Key="string_syncPlotManagerForMassEffectLegendaryEdition">Sync PlotManager for Mass Effect (Legendary Edition)</system:String>
     <system:String x:Key="string_syncPlotManagerForMassEffect2LegendaryEdition">Sync PlotManager for Mass Effect 2 (Legendary Edition)</system:String>
+    <system:String x:Key="string_tooltip_syncPlotManager">Synchronizes the plot manager updates located in DLC mods with the base plot manager file, which is used for story progression tracking</system:String>
     <system:String x:Key="string_massEffectModderForLegendaryEdition">Mass Effect Modder (for Legendary Edition)</system:String>
     <system:String x:Key="string_prereleaseNotice">This is a prerelease build of ME3Tweaks Mod Manager. Do not distribute mods from this build. There may be breaking changes that cause mods made for this build to not work on future builds.</system:String>
     <system:String x:Key="string_failedToCompileCoalescedFile">Failed to compile coalesced file</system:String>
@@ -493,6 +495,7 @@
     <system:String x:Key="string_warningTextureModsAreInstalled">Warning: Texture mods are installed</system:String>
     <system:String x:Key="string_interp_errorApplyingMergeModXY">An error occurred applying merge mod {0}: {1}.</system:String>
     <!-- 0={mergeMod.MergeModFilename} 1={ex.Message} -->
+    <system:String x:Key="string_updatingTLKFiles">Updating TLK files</system:String>
 
     <!-- Welcome panel -->
     <system:String x:Key="string_previewPanelTitle">Welcome to ME3Tweaks Mod Manager</system:String>
@@ -633,8 +636,8 @@
     <!-- 0={filepath} -->
     <system:String x:Key="string_interp_dlcModMissingTlkInAutoloadIni">DLC mod {0} does not specify a TLK file in it's AutoLoad.ini. This attribute is required and a valid TLK file must be provided with every mod for modding scene purposes.</system:String>
     <!-- 0={filepath} -->
-    <system:String x:Key="string_interp_dlcModMissingAutoLoadTlkFile">DLC mod {0} specifies a TLK file named {1}(.upk) but this file does not exist in the DLC mod directory.</system:String>
-    <!-- 0={filepath} 1={filepath} -->
+    <system:String x:Key="string_interp_dlcModMissingAutoLoadTlkFile">DLC mod {0} specifies a TLK file named {1}({2}) but this file does not exist in the DLC mod directory.</system:String>
+    <!-- 0={filepath} 1={filepath} 2={extension (.pcc, .upk) -->
     <system:String x:Key="string_interp_dlcModTlkPackageHasNoUsableTlk">DLC mod {0}'s TLK package doesn't contain a usable TLK export in it.</system:String>
     <!-- 0={filepath} -->
     <system:String x:Key="string_interp_dlcModTlkPackageMissingStringId">DLC mod {0}'s TLK package doesn't contain the listed string ID {1}. The mod's TLK must contain the listed string ID.</system:String>
@@ -735,6 +738,8 @@
     <system:String x:Key="string_dialog_DeploymentChecksInProgress">Mods are currently being checked before deployment. Cancel the deployment?</system:String>
     <system:String x:Key="string_folders">Folders</system:String>
     <system:String x:Key="string_individuallyCompressedItems">Individually compressed items</system:String>
+    <system:String x:Key="string_interp_warningPackageForOtherGameFound">Package {0} is for game {1} but mod being deployed is for game {2}. Ensure this is correct.</system:String>
+    <!-- 0={package file path} 1={Package game (ME1/2/3...)} 2={ModBeingDeployed.Game (ME1/2/3...} -->
 
     <!-- Backup Creator-->
     <system:String x:Key="string_backupsAreShared">Backups are shared across various modding tools including Mass Effect Randomizer, ALOT Installer, and Legendary Explorer.</system:String>
@@ -892,9 +897,13 @@
     <system:String x:Key="string_dialog_restoringSFARWithoutBackup">Restoring SFARs without a backup will only delete unpacked files, as there is no backup file that can be copied in. This will leave the DLC in a broken, unusable state. You need to make a backup from an unmodified version of the game before you can properly restore DLC SFARs.</system:String>
     <system:String x:Key="string_backupNotAvailable">Backup not available</system:String>
     <system:String  x:Key="string_textures">Textures</system:String>
-    <system:String xml:space="preserve" x:Key="string_tooltip_manageTextures">Textures for the trilogy are installed using ALOT Installer.&#10;Texture mods must be installed last</system:String>
     <system:String  x:Key="string_manageTextures">Install textures with ALOT Installer</system:String>
-    <system:String  x:Key="string_filesInstalledInSession">Files installed in session:</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_manageTextures">Textures for the original trilogy are installed using ALOT Installer.&#10;Texture mods must be installed last</system:String>
+
+    <system:String  x:Key="string_manageTexturesLE">Install textures with Mass Effect Modder</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_manageTexturesLE">Textures for Legendary Edition are installed using Mass Effect Modder.&#10;Texture mods must be installed last or they will not work properly</system:String>
+
+<system:String  x:Key="string_filesInstalledInSession">Files installed in session:</system:String>
     <system:String  x:Key="string_interp_textureInstallationDate">Texture installation - {0}</system:String>
     <!-- 0 = date -->
     <system:String  x:Key="string_interp_versioningInfoX">Texture installation - {0}</system:String>
@@ -990,7 +999,8 @@
     <system:String xml:space="preserve" x:Key="string_tooltip_installModArchiveWindow">Directly installs the mod to the current active target for the relevant game.&#10;This will NOT import it into the mod library</system:String>
     <system:String x:Key="string_interp_xChosenOptions">{0} chosen option(s)</system:String>
     <!-- 0 = number of chosen installation options (the options that come up on mod install). Can be 0 -->
-    
+    <system:String x:Key="string_deletingExistingModInLibrary">Deleting existing mod in library</system:String>
+
     <!-- Mod updater -->
     <system:String x:Key="string_modupdatesavailable">Mod updates available</system:String>
     <system:String x:Key="string_downloadUpdate">Download update</system:String>
@@ -1076,6 +1086,12 @@
     <system:String xml:space="preserve" x:Key="string_dialog_restoringXWillDeleteGameDir">Restoring {0} will completely delete the game directory and then copy the backup into the original location.\n\nDelete this installation and restore it from backup?</system:String>
     <!-- 0=Utilities.GetGameName(Game) -->
     <system:String x:Key="string_gameTargetWillBeDeleted">Game target will be deleted</system:String>
+    <system:String x:Key="string_beta_useNewRestoreMethod">Use the experimental new restore method? It is faster but is not yet battle tested.</system:String>
+    <system:String x:Key="string_useBetaFeatureQuestion">Use beta feature?</system:String>
+    <system:String x:Key="string_interp_copyingX">Copying {0}</system:String>
+    <!-- 0={File} -->
+    <system:String x:Key="string_interp_directoryNotEmptyWillDeleteEverything">The selected directory is not empty: {0}. ALL NON-GAME FILES AND FOLDERS IN THIS DIRECTORY WILL BE DELETED. Are you sure you want to continue?</system:String>
+    <!-- 0={Directory user chose} -->
 
     <!-- Test archive generator-->
     <system:String x:Key="string_hashingFiles">Hashing files</system:String>
@@ -1121,9 +1137,7 @@
     <system:String x:Key="string_pasteYourAPIKeyHere">Paste your API key here</system:String>
     <system:String x:Key="string_manuallyEnterAPIKey">Manually enter API key</system:String>
     <system:String x:Key="string_yourAPIKeyWillAppearHere">Your API key will appear here</system:String>
-    <system:String x:Key="string_setupDownloadWithManager">Setup Download with Manager</system:String>
-    <system:String x:Key="string_failedToSetupDownloadWithManager">Failed to setup Download with Manager</system:String>
-    <system:String x:Key="string_downloadWithManagerConfigured">Download with Manager configured</system:String>
+    <system:String x:Key="string_configureDownloadWithManager">Configure 'Download with Manager'</system:String>
 
     <!-- Alternates Global -->
     <system:String x:Key="string_validation_alt_imageAssetArchiveError">Alternate {0} lists image asset {1}, but the asset could not be read from the archive. The log will contain additional information.</system:String>
@@ -1210,7 +1224,7 @@
     <!-- 0={FriendlyName} -->
     <system:String x:Key="string_interp_altfile_multilistIdNINotIntegerOrMissing">Alternate File ({0}) specifies operation OP_NOINSTALL_MULTILISTFILES but does not specify the MultiListId attribute, or it could not be parsed to an integer.</system:String>
     <!-- 0={FriendlyName} -->
-    <system:String x:Key="string_interp_altfile_installToNotGuaranteedCustomDLC">Alternate file {0} in-mod target (ModFile) does not appear to target a DLC target this mod will (always) install: {1}</system:String>
+    <system:String x:Key="string_interp_altfile_installToNotGuaranteedCustomDLC">Alternate file ({0}) in-mod target (ModFile) does not appear to target a DLC target this mod will (always) install: {1}</system:String>
     <!-- 0={FriendlyName} 1={File path} -->
 
     <!-- GameTarget -->
@@ -1434,7 +1448,8 @@
     <!-- 0={Header (GAME1_EMBEDDED_TLK)} 1={Embedded TLK Foldername} -->
     <system:String x:Key="string_interp_validation_modparsing_tlkMergeInvalidTlkXmlFilenames">The {0} header only supports the files in the {1} directory that contain at least 2 '.' characters; one for the extension, and at least one to split the package name from the export path. If the export is nested under packages, more '.' may be needed. Invalid value: {2}</system:String>
     <!-- 0={Header (BASEGAME, GAME1_TLK_MERGE, etc)} 1={Foldername} 2={Filepath} -->
-    <system:String x:Key="string_validation_modparsing_foundDisallowedLauncherFileType">The LELAUNCHER header only supports the following file extensions: {0} An unsupported filetype was found: {1}</system:String>
+    <system:String x:Key="string_validation_modparsing_foundDisallowedLauncherFileType">The LELAUNCHER header only supports the following file extensions: {0}. An unsupported filetype was found: {1}</system:String>
+    <!-- 0={file extension list (.txt, .afc, .tfc...) 1={file extension (.txt for example)} -->
     <system:String x:Key="string_interp_validation_modparsing_leLauncherDirNotFound">{0}'s LELAUNCHER header specifies a job subdirectory (moddir) that does not exist: {1}</system:String>
     <!-- 0={ModName} 1={jobSubDir} -->
 
@@ -1693,10 +1708,8 @@
     <!-- 0={Game name} -->
 
     <!-- Backup Nag System -->
-    <system:String x:Key="string_interp_XgamesNotBackedUp">{0} games not backed up</system:String>
-    <!-- 0= # of games not backed up (the only values for this string will be 2 or 3) -->
-    <system:String x:Key="string_interp_XgameNotBackedUp">{0} game not backed up</system:String>
-    <!-- 0 in this item will the value of 1.  -->
+    <system:String x:Key="string_interp_XgamesNotBackedUp">{0} game(s) not backed up</system:String>
+    <!-- 0= # of games not backed up. If your language uses plurality for values, attempt to make it work for both (like how this string uses game(s) to cover both cases of 1 and not 1) -->
     <system:String x:Key="string_allGamesBackedUp">All games backed up</system:String>
     <system:String x:Key="string_description_vanillaBackupRequired">ME3Tweaks Mod Manager requires unmodified game backups to perform certain actions.</system:String>
     <system:String x:Key="string_description_missingBackupWillLimitFeatures">Without a backup of a game, the following features of Mod Manager will be disabled or have limited functionality for that game:</system:String>
@@ -2083,7 +2096,7 @@
     <system:String x:Key="string_mde_dec_header_metadata_modinfo">The ModInfo header contains most of the information that is displayed to the user in Mod Manager's interface. The more information you give to a user, the less likely they will need to ask you questions about your mod.</system:String>
     <system:String x:Key="string_mde_dec_header_metadata_updates">The UPDATES header is used for the ME3Tweaks Updater Service. The additionaldeployment items can be used to force non-referenced files to be included when deploying your mod.</system:String>
     <system:String x:Key="string_multilists">Multilists</system:String>
-    <system:String x:Key="string_mde_dec_header_lelauncher">The LELauncher header is used to specify the directory of your files that will install to the game's launcher directory. The files must match the file structure of the game's launcher, starting at the Content directory.</system:String>
+    <system:String x:Key="string_mde_dec_header_lelauncher">The LELAUNCHER header is used to specify the directory of your files that will install to the game's launcher directory. The files must match the file structure of the game's launcher, starting at the Content directory.</system:String>
     <system:String x:Key="string_mde_legendaryEditionLauncher">Legendary Edition Launcher</system:String>
     <!-- This is moddesc feature. This is tab header for the [LELAUNCHER] editor -->
     <system:String x:Key="string_mde_game1TLKMerge">Game 1 TLK Merge</system:String>
@@ -2202,4 +2215,28 @@
     <!-- 0={Position} 1={Original string} -->
     <system:String x:Key="string_interp_ssp_unclosedParenthesisFound">Unclosed opening parenthesis encountered while parsing parenthesis split list in {0}</system:String>
     <!-- 0={Original string} -->
+
+    <!-- License Viewer -->
+    <system:String x:Key="string_licenseViewer">License Viewer</system:String>
+    <!-- Title of a window for viewing software license text -->
+
+    <!-- NXM Config Panel -->
+    <system:String x:Key="string_executables">Executables</system:String>
+    <!-- Used in context of filetype selector. 'Executables (*.exe)' -->
+    <system:String x:Key="string_nexusModsDownloaderConfiguration">NexusMods Downloader Configuration</system:String>
+    <system:String x:Key="string_description_downloadWithManager">The 'download with manager' feature on NexusMods uses the NXM protocol. This means that only one application can be registered to receive it at a time. Mod Manager can register itself as the receiver and forward non-supported games (such as Skyrim or Fallout) downloads to a different manager of your choice.</system:String>
+    <system:String x:Key="string_registerME3TweaksModManagerAsHandler">Register ME3Tweaks Mod Manager as handler</system:String>
+    <system:String x:Key="string_otherApps">Other apps</system:String>
+    <system:String x:Key="string_description_downloadWithManagerOtherApps">You can register other applications to handle other games besides Mass Effect games. You need to supply the domain (which is the game name in a NexusMods URL), the target application, and the arguments the application needs. Use '%1' to indicate the nxm:// link.</system:String>
+    <system:String x:Key="string_addOtherApp">Add other app</system:String>
+    <system:String x:Key="string_additionalApp">Additional App</system:String>
+    <system:String x:Key="string_application">Application</system:String>
+    <system:String x:Key="string_arguments">Arguments</system:String>
+    <system:String x:Key="string_domains">Domains</system:String>
+
+    <!-- Nexus Domain Handler -->
+    <system:String x:Key="string_interp_handlerProgramDoesNotExist">Cannot invoke handler for {0} domain: specified application {1} does not exist</system:String>
+    <!-- 0={game domain (like 'skyrim')} 1={ProgramPath} -->
+
+
 </ResourceDictionary>

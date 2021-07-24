@@ -628,6 +628,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         Log.Information($@"Compressing installed package: {targetPath}");
                         package = MEPackageHandler.OpenMEPackage(targetPath);
                         package.Save(compress: true);
+
+#if DEBUG
+                        // TEST: REopen package
+                        try
+                        {
+                            var p = MEPackageHandler.OpenMEPackage(targetPath);
+                        }
+                        catch (Exception e) { }
+#endif
                     }
                 }
 
@@ -832,7 +841,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 PackageCache pc = new PackageCache();
                 Percent = 0;
-                Action = "Updating TLK files";
+                Action = M3L.GetString(M3L.string_updatingTLKFiles);
                 var gameMap = MELoadedFiles.GetFilesLoadedInGame(SelectedGameTarget.Game, gameRootOverride: SelectedGameTarget.TargetPath);
                 doneMerges = 0;
                 var mergeFiles = Mod.CoalesceTLKMergeFiles(allTLKMerges);
@@ -900,7 +909,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
             else if (ModBeingInstalled.Game == MEGame.LE1)
             {
-                ASIManager.InstallASIToTargetByGroupID(29, @"AutoTOCOverride", SelectedGameTarget);
+                ASIManager.InstallASIToTargetByGroupID(29, @"AutoTOC_LE", SelectedGameTarget);
+                ASIManager.InstallASIToTargetByGroupID(32, @"AutoloadEnabler", SelectedGameTarget);
             }
             else if (ModBeingInstalled.Game == MEGame.LE2)
             {

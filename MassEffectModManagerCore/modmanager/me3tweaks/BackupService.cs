@@ -686,6 +686,16 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         public static void RemoveBackupPath(MEGame game)
         {
             RegistryHandler.DeleteRegistryKey(Registry.CurrentUser, @"Software\ME3Tweaks", game + @"VanillaBackupLocation");
+
+            // Strip pre 7.0
+            if (game == MEGame.ME3)
+            {
+                RegistryHandler.DeleteRegistryKey(Registry.CurrentUser, @"Software\Mass Effect 3 Mod Manager", @"VanillaCopyLocation");
+            }
+            else if (game == MEGame.ME1 || game == MEGame.ME2)
+            {
+                RegistryHandler.DeleteRegistryKey(Registry.CurrentUser, @"Software\ALOTAddon", game + @"VanillaBackupLocation");
+            }
         }
 
 

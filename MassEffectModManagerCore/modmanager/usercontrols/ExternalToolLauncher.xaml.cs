@@ -116,7 +116,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             downloadClient.DownloadDataCompleted += (a, b) =>
             {
-                extractTool(tool, executable, extension, new MemoryStream(b.Result), currentTaskUpdateCallback, setPercentVisibilityCallback, setPercentTaskDone, resultingExecutableStringCallback, errorExtractingCallback);
+                if (b.Error != null)
+                {
+                    Log.Error($@"Error downloading ME3Tweaks tool: {b.Error.Message}");
+                    errorExtractingCallback?.Invoke(b.Error,
+                        M3L.GetString(M3L.string_interp_errorDownloadingAndLaunchingTool, b.Error.Message),
+                        M3L.GetString(M3L.string_errorLaunchingTool));
+                }
+                else
+                {
+                    extractTool(tool, executable, extension, new MemoryStream(b.Result), currentTaskUpdateCallback, setPercentVisibilityCallback, setPercentTaskDone, resultingExecutableStringCallback, errorExtractingCallback);
+                }
             };
             downloadClient.DownloadDataAsync(new Uri(url), downloadPath);
         }

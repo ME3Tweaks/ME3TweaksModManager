@@ -78,7 +78,8 @@ namespace MassEffectModManagerCore
         internal static readonly string[] SupportedOperatingSystemVersions =
         {
             @"Windows 8.1",
-            @"Windows 10 (not EOL versions)"
+            @"Windows 10 (not EOL versions)",
+            //@"Windows 11"
         };
 
         [DllImport(@"kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
@@ -520,7 +521,7 @@ namespace MassEffectModManagerCore
                  version += " PRERELEASE";
 #endif
                 // TODO CHANGE THIS
-                return $"{version} BETA, Build {BuildNumber}";
+                return $"{version}, Build {BuildNumber}";
             }
         }
 
@@ -534,7 +535,7 @@ namespace MassEffectModManagerCore
 #elif PRERELEASE
                  version += " PRERELEASE";
 #endif
-                return $"ME3Tweaks Mod Manager {version} BETA (Build {BuildNumber})";
+                return $"ME3Tweaks Mod Manager {version} (Build {BuildNumber})";
             }
         }
 

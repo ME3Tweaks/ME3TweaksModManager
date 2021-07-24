@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
+using MassEffectModManagerCore.modmanager.localizations;
 using Newtonsoft.Json;
 using PropertyChanged;
 using Serilog;
@@ -17,13 +18,13 @@ namespace MassEffectModManagerCore.modmanager.objects
     [AddINotifyPropertyChangedInterface]
     public class NexusDomainHandler
     {
-        [JsonProperty("domains")]
+        [JsonProperty(@"domains")]
         public List<string> Domains { get; set; } = new();
 
-        [JsonProperty("programpath")]
+        [JsonProperty(@"programpath")]
         public string ProgramPath { get; set; }
 
-        [JsonProperty("arguments")]
+        [JsonProperty(@"arguments")]
         public string Arguments { get; set; }
 
         [JsonIgnore] public string DomainsEditable { get; set; }
@@ -47,7 +48,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 else
                 {
                     Log.Error($@"Cannot invoke handler for {domain} domain: specified application {ProgramPath} does not exist");
-                    return $"Cannot invoke handler for {domain} domain: specified application {ProgramPath} does not exist";
+                    return M3L.GetString(M3L.string_interp_handlerProgramDoesNotExist, domain, ProgramPath);
                 }
             }
             catch (Exception e)

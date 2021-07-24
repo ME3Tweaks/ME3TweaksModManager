@@ -44,14 +44,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (!BackupService.ME2BackedUp && ME2Installed) numGamesNotBackedUp++;
                 if (!BackupService.ME3BackedUp && ME3Installed) numGamesNotBackedUp++;
 
-                if (numGamesNotBackedUp > 1)
-                {
-                    return M3L.GetString(M3L.string_interp_XgamesNotBackedUp, numGamesNotBackedUp);
-                }
-
                 if (numGamesNotBackedUp > 0)
                 {
-                    return M3L.GetString(M3L.string_interp_XgameNotBackedUp, numGamesNotBackedUp);
+                    return M3L.GetString(M3L.string_interp_XgamesNotBackedUp, numGamesNotBackedUp);
                 }
 
                 return M3L.GetString(M3L.string_allGamesBackedUp);

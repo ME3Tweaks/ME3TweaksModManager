@@ -9,7 +9,7 @@
 		<PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
 		<UseWPF>true</UseWPF>
 		<Platforms>x64</Platforms>
-		<Version>7.0.2.120</Version>
+		<Version>7.0.3.121</Version>
 		<Copyright>ME3Tweaks 2012 - 2021</Copyright>
 		<Authors>Mgamerz</Authors>
 		<PackageId>MassEffectModManagerCore</PackageId>
@@ -59,7 +59,9 @@
 		<None Remove="images\terminal.png" />
 		<None Remove="images\unknown.png" />
 		<None Remove="images\windowicon.png" />
+		<None Remove="modmanager\asi\AutoTOC_LE-v2.0.asi" />
 		<None Remove="modmanager\asi\BalanceChangesReplacer-v3.0.asi" />
+		<None Remove="modmanager\asi\LE1AutoloadEnabler-v1.0.asi" />
 		<None Remove="modmanager\asi\manifest.xml" />
 		<None Remove="modmanager\asi\ME1-DLC-ModEnabler-v1.0.asi" />
 		<None Remove="modmanager\asi\ME3Logger_truncating-v1.0.asi" />
@@ -74,6 +76,7 @@
 		<None Remove="modmanager\gamemd5\me1pl.bin" />
 		<None Remove="modmanager\gamemd5\me2.bin" />
 		<None Remove="modmanager\gamemd5\me3.bin" />
+		<None Remove="modmanager\licenses\minhook.txt" />
 		<None Remove="modmanager\localizations\icons\english.png" />
 		<None Remove="modmanager\localizations\icons\french.png" />
 		<None Remove="modmanager\localizations\icons\german.png" />
@@ -127,7 +130,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<EmbeddedResource Include="modmanager\asi\AutoTOC_LE-v2.0.asi" />
 		<EmbeddedResource Include="modmanager\asi\BalanceChangesReplacer-v3.0.asi" />
+		<EmbeddedResource Include="modmanager\asi\LE1AutoloadEnabler-v1.0.asi" />
 		<EmbeddedResource Include="modmanager\asi\manifest.xml" />
 	</ItemGroup>
 
@@ -139,7 +144,8 @@
     <EmbeddedResource Include="modmanager\gamemd5\*.bin" />
     <EmbeddedResource Include="modmanager\squadmates\**\*.txt" />
     <EmbeddedResource Include="modmanager\squadmates\**\*.pcc" />
-	<EmbeddedResource Include="modmanager\emailmerge\**\*.pcc" />
+  	<EmbeddedResource Include="modmanager\emailmerge\**\*.pcc" />
+    <EmbeddedResource Include="modmanager\licenses\minhook.txt" />
     <EmbeddedResource Include="modmanager\me3tweaks\LiveIni.bin" />
 		<EmbeddedResource Include="modmanager\me3tweaks\PermissionsGranter.exe" />
 		<EmbeddedResource Include="modmanager\meim\propertymaps\BioEngine.xml" />
@@ -194,6 +200,7 @@
 		<ProjectReference Include="..\AdonisUI.ClassicTheme\AdonisUI.ClassicTheme.csproj" />
 		<ProjectReference Include="..\IniFileParser\IniFileParser.csproj" />
 		<ProjectReference Include="..\LegendaryExplorer\LegendaryExplorer\LegendaryExplorerCore\LegendaryExplorerCore.csproj" />
+		<ProjectReference Include="..\RoboSharp\RoboSharp\RoboSharp.csproj" />
 		<ProjectReference Include="..\SevenZip\SevenZip.csproj" />
 		<ProjectReference Include="..\WpfExtendedToolkit-Extended\Src\Xceed.Wpf.Toolkit\DotNetProjects.Wpf.Extended.Toolkit.csproj" />
 	</ItemGroup>
@@ -210,8 +217,6 @@
     <EmbeddedResource Include="modmanager\plotmanager\**\*.pcc" />
     <EmbeddedResource Include="modmanager\mergedlc\**\*.pcc" />
     <EmbeddedResource Include="modmanager\plotmanager\**\*.u*" />
-    <EmbeddedResource Include="modmanager\lelauncherbypass\*.jsf" />
-    <EmbeddedResource Include="modmanager\lelauncherbypass\*.bik" />
   </ItemGroup>
 
   <ItemGroup>

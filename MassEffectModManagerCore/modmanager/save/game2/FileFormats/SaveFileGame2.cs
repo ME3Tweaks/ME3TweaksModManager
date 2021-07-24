@@ -20,6 +20,7 @@ namespace MassEffectModManagerCore.modmanager.save.game2.FileFormats
         public Save.DifficultyOptions BindableDifficulty => Difficulty;
         public DateTime BindableTimestamp => TimeStamp.ToDate();
         public TimeSpan BindableTimePlayed => TimeSpan.FromSeconds(SecondsPlayed);
+        public string Proxy_DebugName => DebugName;
         public MEGame Game { get; set; }
         public string SaveFilePath { get; }
 

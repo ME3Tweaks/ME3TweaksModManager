@@ -205,12 +205,22 @@
             </TabItem>
             <TabItem Header="{DynamicResource string_textures}" Margin="0" Padding="0" Visibility="{Binding Game, Converter={StaticResource InstallationInformationTabVisibilityConverter}, ConverterParameter='Textures'}">
                 <DockPanel VerticalAlignment="Stretch" Margin="-8">
-                    <DockPanel DockPanel.Dock="Bottom" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}">
+                    <DockPanel DockPanel.Dock="Bottom" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}" Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='OTGame'}">
                         <Button HorizontalAlignment="Right" Margin="4" Padding="7,3" ToolTip="{DynamicResource string_tooltip_manageTextures}" Click="OpenALOTInstaller_Click">
                             <Button.Content>
                                 <DockPanel>
                                     <TextBlock Text="{DynamicResource string_manageTextures}" DockPanel.Dock="Left" Margin="0,0,5,0" />
                                     <Image Source="/modmanager/toolicons/alot_32.png" Height="16" />
+                                </DockPanel>
+                            </Button.Content>
+                        </Button>
+                    </DockPanel>
+                    <DockPanel DockPanel.Dock="Bottom" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}" Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='LEGame'}">
+                        <Button HorizontalAlignment="Right" Margin="4" Padding="7,3" ToolTip="{DynamicResource string_tooltip_manageTexturesLE}" Click="OpenMEMLE_Click">
+                            <Button.Content>
+                                <DockPanel>
+                                    <TextBlock Text="{DynamicResource string_manageTexturesLE}" DockPanel.Dock="Left" Margin="0,0,5,0" />
+                                    <Image Source="/modmanager/toolicons/masseffectmodder_32.png" Height="16" />
                                 </DockPanel>
                             </Button.Content>
                         </Button>

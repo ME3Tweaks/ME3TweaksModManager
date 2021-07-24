@@ -1,26 +1,14 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
-using System.Text;
-using System.Windows;
 using System.Windows.Input;
-using Flurl.Http;
-using MassEffectModManagerCore.modmanager.helpers;
-using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
-using LegendaryExplorerCore.Compression;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
-using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
-using LegendaryExplorerCore.Packages;
+using MassEffectModManagerCore.modmanager.localizations;
+using MassEffectModManagerCore.modmanager.nexusmodsintegration;
 using Microsoft.Win32;
-using Microsoft.WindowsAPICodePack.Taskbar;
 using Newtonsoft.Json;
-using PropertyChanged;
-using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -38,11 +26,25 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public ICommand AddOtherAppCommand { get; set; }
         public ICommand CloseCommand { get; set; }
+        public ICommand RegisterCommand { get; set; }
+        public ICommand RemoveAppCommand { get; set; }
 
         private void LoadCommands()
         {
+            RemoveAppCommand = new RelayCommand(RemoveApp);
+            RegisterCommand = new GenericCommand(RegisterM3);
             AddOtherAppCommand = new GenericCommand(AddNXMApp, CanAddNXMApp);
             CloseCommand = new GenericCommand(() => OnClosing(DataEventArgs.Empty), CanClose);
+        }
+
+        private void RegisterM3()
+        {
+            NexusModsUtilities.SetupNXMHandling();
+        }
+
+        private void RemoveApp(object obj)
+        {
+            throw new System.NotImplementedException();
         }
 
         private bool CanClose()
@@ -59,13 +61,28 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             OpenFileDialog ofd = new OpenFileDialog()
             {
-                Filter = "Executables|*.exe",
+                Filter = $@"{M3L.GetString(M3L.string_executables)}|*.exe",
                 CheckFileExists = true,
             };
             var result = ofd.ShowDialog();
             if (result.HasValue && result.Value)
             {
-                OtherGameHandlers.Add(new NexusDomainHandler() { ProgramPath = ofd.FileName, Arguments = @"%1"});
+                OtherGameHandlers.Add(new NexusDomainHandler() { ProgramPath = ofd.FileName, Arguments = GetDefaultArgumentsForApp(Path.GetFileNameWithoutExtension(ofd.FileName))});
+            }
+        }
+
+        private string GetDefaultArgumentsForApp(string appExeName)
+        {
+            switch (appExeName.ToLower())
+            {
+                case @"vortex":
+                    return @"-d %1";
+                case @"kortex x64":
+                case @"kortex":
+                    return "-DownloadLink \"%1\""; // do not localize
+                case @"nexusclient":
+                default:
+                    return @"%1";
             }
         }
 

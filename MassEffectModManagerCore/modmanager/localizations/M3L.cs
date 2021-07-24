@@ -512,6 +512,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_warningTexturesAreInstalled = "string_warningTexturesAreInstalled";
 		public const string string_warningTextureModsAreInstalled = "string_warningTextureModsAreInstalled";
 		public const string string_interp_errorApplyingMergeModXY = "string_interp_errorApplyingMergeModXY";
+		public const string string_updatingTLKFiles = "string_updatingTLKFiles";
 		public const string string_previewPanelTitle = "string_previewPanelTitle";
 		public const string string_selectYourLanguage = "string_selectYourLanguage";
 		public const string string_howToChangeLanguage = "string_howToChangeLanguage";
@@ -681,6 +682,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_dialog_DeploymentChecksInProgress = "string_dialog_DeploymentChecksInProgress";
 		public const string string_folders = "string_folders";
 		public const string string_individuallyCompressedItems = "string_individuallyCompressedItems";
+		public const string string_interp_warningPackageForOtherGameFound = "string_interp_warningPackageForOtherGameFound";
 		public const string string_backupsAreShared = "string_backupsAreShared";
 		public const string string_backupsMustBeCreatedFresh = "string_backupsMustBeCreatedFresh";
 		public const string string_backUp = "string_backUp";
@@ -885,6 +887,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_tooltip_compressPackages = "string_tooltip_compressPackages";
 		public const string string_tooltip_installModArchiveWindow = "string_tooltip_installModArchiveWindow";
 		public const string string_interp_xChosenOptions = "string_interp_xChosenOptions";
+		public const string string_deletingExistingModInLibrary = "string_deletingExistingModInLibrary";
 		public const string string_modupdatesavailable = "string_modupdatesavailable";
 		public const string string_downloadUpdate = "string_downloadUpdate";
 		public const string string_downloadUpdateFromNexusMods = "string_downloadUpdateFromNexusMods";
@@ -953,6 +956,10 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_youMaySeeElevationPromptOnRestore = "string_youMaySeeElevationPromptOnRestore";
 		public const string string_dialog_restoringXWillDeleteGameDir = "string_dialog_restoringXWillDeleteGameDir";
 		public const string string_gameTargetWillBeDeleted = "string_gameTargetWillBeDeleted";
+		public const string string_beta_useNewRestoreMethod = "string_beta_useNewRestoreMethod";
+		public const string string_useBetaFeatureQuestion = "string_useBetaFeatureQuestion";
+		public const string string_interp_copyingX = "string_interp_copyingX";
+		public const string string_interp_directoryNotEmptyWillDeleteEverything = "string_interp_directoryNotEmptyWillDeleteEverything";
 		public const string string_hashingFiles = "string_hashingFiles";
 		public const string string_creatingArchive = "string_creatingArchive";
 		public const string string_submitToME3Tweaks = "string_submitToME3Tweaks";
@@ -988,9 +995,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_pasteYourAPIKeyHere = "string_pasteYourAPIKeyHere";
 		public const string string_manuallyEnterAPIKey = "string_manuallyEnterAPIKey";
 		public const string string_yourAPIKeyWillAppearHere = "string_yourAPIKeyWillAppearHere";
-		public const string string_setupDownloadWithManager = "string_setupDownloadWithManager";
-		public const string string_failedToSetupDownloadWithManager = "string_failedToSetupDownloadWithManager";
-		public const string string_downloadWithManagerConfigured = "string_downloadWithManagerConfigured";
+		public const string string_configureDownloadWithManager = "string_configureDownloadWithManager";
 		public const string string_validation_alt_imageAssetArchiveError = "string_validation_alt_imageAssetArchiveError";
 		public const string string_validation_alt_imageAssetNotFound = "string_validation_alt_imageAssetNotFound";
 		public const string string_validation_alt_imageAssetOutOfRangeHeight = "string_validation_alt_imageAssetOutOfRangeHeight";
@@ -1361,7 +1366,6 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_extractAsMixinSource = "string_extractAsMixinSource";
 		public const string string_interp_loadingBackupFilesForGame = "string_interp_loadingBackupFilesForGame";
 		public const string string_interp_XgamesNotBackedUp = "string_interp_XgamesNotBackedUp";
-		public const string string_interp_XgameNotBackedUp = "string_interp_XgameNotBackedUp";
 		public const string string_allGamesBackedUp = "string_allGamesBackedUp";
 		public const string string_description_vanillaBackupRequired = "string_description_vanillaBackupRequired";
 		public const string string_description_missingBackupWillLimitFeatures = "string_description_missingBackupWillLimitFeatures";
@@ -1718,5 +1722,18 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_synchronizingSquadmateOutfitFiles = "string_synchronizingSquadmateOutfitFiles";
 		public const string string_interp_ssp_unopenedParenthsisFound = "string_interp_ssp_unopenedParenthsisFound";
 		public const string string_interp_ssp_unclosedParenthesisFound = "string_interp_ssp_unclosedParenthesisFound";
+		public const string string_licenseViewer = "string_licenseViewer";
+		public const string string_executables = "string_executables";
+		public const string string_nexusModsDownloaderConfiguration = "string_nexusModsDownloaderConfiguration";
+		public const string string_description_downloadWithManager = "string_description_downloadWithManager";
+		public const string string_registerME3TweaksModManagerAsHandler = "string_registerME3TweaksModManagerAsHandler";
+		public const string string_otherApps = "string_otherApps";
+		public const string string_description_downloadWithManagerOtherApps = "string_description_downloadWithManagerOtherApps";
+		public const string string_addOtherApp = "string_addOtherApp";
+		public const string string_additionalApp = "string_additionalApp";
+		public const string string_application = "string_application";
+		public const string string_arguments = "string_arguments";
+		public const string string_domains = "string_domains";
+		public const string string_interp_handlerProgramDoesNotExist = "string_interp_handlerProgramDoesNotExist";
 	}
 }

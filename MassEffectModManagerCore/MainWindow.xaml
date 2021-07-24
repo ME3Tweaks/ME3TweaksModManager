@@ -230,7 +230,7 @@
     <xctk:BusyIndicator
         IsBusy="{Binding IsBusy}"
         BusyContent="{Binding BusyContent}">
-        <DockPanel>
+        <DockPanel Name="RootDisplayObject">
             <Menu
                 DockPanel.Dock="Top">
                 <Menu.ItemsPanel>
@@ -880,7 +880,7 @@
                         </MenuItem>
                         <MenuItem
                             ui:SharedUIBindings.GenerationOT="True"
-                            Header="{DynamicResource string_syncPlotManagerForMassEffect}"
+                            Header="{DynamicResource string_syncPlotManagerForMassEffect2}"
                             Command="{Binding SyncPlotManagerCommand}"
                             CommandParameter="{x:Static packages:MEGame.ME2}"
                             ToolTip="{DynamicResource string_tooltip_synchronizesThePlotManagerUpdatesLocatedInDLCModsWithTheBasePlotManagerFileWhichIsUsedForStoryProgressionTracking}">
@@ -891,9 +891,9 @@
                                     Height="16" />
                             </MenuItem.Icon>
                         </MenuItem>
-                        <!--<MenuItem
+                        <MenuItem
                             ui:SharedUIBindings.GenerationLE="True"
-                            Header="Sync PlotManager for Mass Efect (Legendary Edition)"
+                            Header="{DynamicResource string_syncPlotManagerForMassEffectLegendaryEdition}"
                             Command="{Binding SyncPlotManagerCommand}"
                             CommandParameter="{x:Static packages:MEGame.LE1}"
                             ToolTip="Synchronizes the plot manager updates located in DLC mods with the base plot manager file, which is used for story progression tracking">
@@ -904,7 +904,7 @@
                                     Width="16"
                                     Height="16" />
                             </MenuItem.Icon>
-                        </MenuItem>-->
+                        </MenuItem>
                         <MenuItem
                             ui:SharedUIBindings.GenerationLE="True"
                             Header="{DynamicResource string_syncPlotManagerForMassEffect2LegendaryEdition}"

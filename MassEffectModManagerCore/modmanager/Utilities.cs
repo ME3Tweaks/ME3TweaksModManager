@@ -535,7 +535,7 @@ namespace MassEffectModManagerCore.modmanager
                 argsStr = "";
                 foreach (var arg in argsL)
                 {
-                    if (arg != "") argsStr += " ";
+                    if (arg != "" && argsStr != "") argsStr += " ";
                     if (arg.Contains(" "))
                     {
                         argsStr += $"\"{arg}\"";
@@ -869,6 +869,7 @@ namespace MassEffectModManagerCore.modmanager
         private static (bool isRunning, DateTime lastChecked) me1RunningInfo = (false, DateTime.MinValue.AddSeconds(5));
         private static (bool isRunning, DateTime lastChecked) me2RunningInfo = (false, DateTime.MinValue.AddSeconds(5));
         private static (bool isRunning, DateTime lastChecked) me3RunningInfo = (false, DateTime.MinValue.AddSeconds(5));
+        private static (bool isRunning, DateTime lastChecked) leLauncherRunningInfo = (false, DateTime.MinValue.AddSeconds(5));
 
 
         private static int TIME_BETWEEN_PROCESS_CHECKS = 5;
@@ -895,6 +896,9 @@ namespace MassEffectModManagerCore.modmanager
                 case MEGame.LE3:
                 case MEGame.ME3:
                     runningInfo = me3RunningInfo;
+                    break;
+                case MEGame.LELauncher:
+                    runningInfo = leLauncherRunningInfo;
                     break;
             }
 
@@ -925,6 +929,9 @@ namespace MassEffectModManagerCore.modmanager
                 case MEGame.ME3:
                 case MEGame.LE3:
                     me3RunningInfo = runningInfo;
+                    break;
+                case MEGame.LELauncher:
+                    leLauncherRunningInfo = runningInfo;
                     break;
             }
 
@@ -966,6 +973,7 @@ namespace MassEffectModManagerCore.modmanager
         public static Stream GetResourceStream(string assemblyResource, Assembly assembly = null)
         {
             assembly ??= System.Reflection.Assembly.GetExecutingAssembly();
+
             var res = assembly.GetManifestResourceNames();
             return assembly.GetManifestResourceStream(assemblyResource);
         }
@@ -1264,7 +1272,7 @@ namespace MassEffectModManagerCore.modmanager
         private const string ME1ASILoaderHash = "30660f25ab7f7435b9f3e1a08422411a";
         private const string ME2ASILoaderHash = "a5318e756893f6232284202c1196da13";
         private const string ME3ASILoaderHash = "1acccbdae34e29ca7a50951999ed80d5";
-        private const string LEASILoaderHash = "1bbcbaf8c393030cca7f20f7ea7db77f"; // Will need changed as game is updated
+        private const string LEASILoaderHash = "2026e1cb78b5c7d95477395ac8c9979a"; // Will need changed as game is updated // bink 2005 by d00t
 
         internal static bool CheckIfBinkw32ASIIsInstalled(GameTarget target)
         {

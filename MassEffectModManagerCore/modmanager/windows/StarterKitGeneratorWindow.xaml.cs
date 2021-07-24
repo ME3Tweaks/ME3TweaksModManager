@@ -215,7 +215,7 @@ namespace MassEffectModManagerCore.modmanager.windows
 
             LoadCommands();
             InitializeComponent();
-            Games = MEGameSelector.GetGameSelectors().Where(x=>x.Game != MEGame.LE1).ToArray();
+            Games = MEGameSelector.GetGameSelectors().ToArray();
         }
 
         public MEGame? PendingGame { get; set; }

@@ -22,7 +22,7 @@
                         Converter={StaticResource ExtendedTextureInfoVisibilityConverter}, 
                         ConverterParameter={x:Reference _TargetSelector}, 
                         FallbackValue=Visible}"/>
-                    <Image Source="/modmanager/toolicons/alot_32.png" Width="16" Height="16" RenderOptions.BitmapScalingMode="HighQuality" HorizontalAlignment="Right" Margin="3,0,0,0" VerticalAlignment="Bottom" Visibility="{Binding TextureModded, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}"/>
+                    <Image Source="{Binding Game, Converter={StaticResource GameToTextureModdedIconConverter}}" Width="16" Height="16" RenderOptions.BitmapScalingMode="HighQuality" HorizontalAlignment="Right" Margin="3,0,0,0" VerticalAlignment="Bottom" Visibility="{Binding TextureModded, Converter={StaticResource BoolToVisibilityConverter}}"/>
                 </DockPanel>
                 <TextBlock Text="{Binding TargetPath}" Margin="3,0,0,0" HorizontalAlignment="Stretch"/>
             </DockPanel>
@@ -30,7 +30,7 @@
         <!-- These are referenced in TargetSelector.xaml.cs by string. Do not modify them -->
         <Style x:Key="TargetSelectorContainerStyle" TargetType="ComboBoxItem" BasedOn="{StaticResource {x:Type ComboBoxItem}}">
             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-            <Setter Property="IsEnabled" Value="{Binding Selectable}" />
+            <Setter Property="IsEnabled" Value="{Binding SelectableX}" />
         </Style>
         <Style x:Key="TargetSelectorContainerAccentStyle" TargetType="ComboBoxItem" BasedOn="{StaticResource {x:Static adonisUi:Styles.AccentComboBoxItem}}">
             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>

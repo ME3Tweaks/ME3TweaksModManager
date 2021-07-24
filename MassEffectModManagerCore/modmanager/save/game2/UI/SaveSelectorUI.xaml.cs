@@ -140,6 +140,32 @@ namespace MassEffectModManagerCore.modmanager.save.game2.UI
             { "BioP_End001", "GUI_SF_SaveLoad_Images.ME3_images.LVL_EndEarth_512x256" },
             { "BioP_End002", "GUI_SF_SaveLoad_Images.ME3_images.LVL_EndCitadel_512x256" },
             { "BioP_End003", "GUI_SF_SaveLoad_Images.ME3_images.LVL_EndCitadel_512x256" },
+
+            // From Ashes
+            { "Biop_Cat001", "GUI_PR_Images.LVL_Prothean_512x256" },
+
+            // Leviathan
+            { "Biop_Lev001", "GUI_LevSaveLoad_Images.SaveLoad.LVL_Lev001" },
+            { "Biop_Lev002", "GUI_LevSaveLoad_Images.SaveLoad.LVL_Lev002" },
+            { "Biop_Lev003", "GUI_LevSaveLoad_Images.SaveLoad.LVL_Lev003" },
+            { "Biop_Lev004", "GUI_LevSaveLoad_Images.SaveLoad.LVL_Lev004" },
+
+            // Omega
+            { "Biop_Omg000", "BIOG_GUI_SAVE_GAME_ICONS.Textures.OmgMission01" },
+            { "Biop_Omg001", "BIOG_GUI_SAVE_GAME_ICONS.Textures.OmgMission01" },
+            { "Biop_Omg02a", "BIOG_GUI_SAVE_GAME_ICONS.Textures.OmgMission02" },
+            { "Biop_Omg003", "BIOG_GUI_SAVE_GAME_ICONS.Textures.OmgMission03" },
+            { "Biop_Omg004", "BIOG_GUI_SAVE_GAME_ICONS.Textures.OmgMission04" },
+            { "Biop_OmgHub", "BIOG_GUI_SAVE_GAME_ICONS.OmgMissionHub" },
+
+            // Citadel
+            { "BioP_Cit001", "DLC_MPImages.SaveLoad.LVL_Cit_Sushi_512x256" },
+            { "BioP_Cit002", "DLC_MPImages.SaveLoad.LVL_Cit_Casino_512x256" },
+            { "BioP_Cit003", "DLC_MPImages.SaveLoad.LVL_Cit_Archives_512x256" },
+            { "BioP_Cit004", "DLC_MPImages.SaveLoad.LVL_Cit_Docks_512x256" },
+            { "BioP_CitHot", "DLC_MPImages.SaveLoad.LVL_Cit_Street_512x256" },
+            { "BioP_CitApt", "DLC_MPImages.SaveLoad.LVL_Cit_Apartmnt_512x256" },
+            { "BioP_CitStart", "DLC_MPImages.SaveLoad.LVL_Cit_Apartmnt_512x256" },
         };
 
         private string ConvertLevelToImageName(MEGame game, string baselevelname)
@@ -183,6 +209,11 @@ namespace MassEffectModManagerCore.modmanager.save.game2.UI
                     imagePackages.Add(@"SFXImages_SaveLoad_4.pcc");
                     imagePackages.Add(@"SFXImages_SaveLoad_5.pcc");
                     imagePackages.Add(@"SFXImages_SaveLoad_6.pcc");
+
+                    imagePackages.Add(@"SFX_GUI_PR_SaveLoadImages_1.pcc"); // Prothean
+                    imagePackages.Add(@"SFXImages_SaveLoad_Lev.pcc"); // Leviathan
+                    imagePackages.Add(@"SFXImages_OMG_SaveLoad.pcc"); // Omega
+                    imagePackages.Add(@"SFXImages_DLCCit_SaveLoad.pcc"); // Citadel
                     break;
             }
 

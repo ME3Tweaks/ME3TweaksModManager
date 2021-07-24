@@ -31,11 +31,13 @@ namespace MassEffectModManagerCore.modmanager.asi
         /// </summary>
         public bool IsHidden { get; set; }
 
+
         /// <summary>
         /// Gets the latest version of the ASI
         /// </summary>
         /// <returns></returns>
         public ASIModVersion LatestVersion => Versions.MaxBy(x => x.Version);
+
 
         /// <summary>
         /// If any of the versions of this ASI match the given hash

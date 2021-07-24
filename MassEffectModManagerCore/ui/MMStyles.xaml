@@ -24,7 +24,9 @@
     <converters:LocalizationConverter x:Key="LocalizationConverter" />
     <converters:SizePercentageConverter x:Key="SizePercentageConverter" />
     <converters:GenerationsSizePercentageConverter x:Key="GenerationsSizePercentageConverter" />
+    <converters:GenerationsSizeAdjustedPercentageConverter x:Key="GenerationsSizeAdjustedPercentageConverter" />
     <converters:StringMatchToBoolConverter x:Key="StringMatchToBoolConverter"/>
+    <converters:GameToTextureModdedIconConverter x:Key="GameToTextureModdedIconConverter"/>
     <DataTemplate x:Key="TargetSelectorTemplate" DataType="{x:Type modmanager:GameTarget}">
         <DockPanel HorizontalAlignment="Stretch">
             <Image DockPanel.Dock="Left" Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16"/>

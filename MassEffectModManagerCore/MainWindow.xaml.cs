@@ -2974,23 +2974,8 @@ namespace MassEffectModManagerCore
                     backgroundTaskEngine.SubmitJobCompletion(bgTask);
                     if (Settings.ConfigureNXMHandlerOnBoot)
                     {
-                        bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"NXMHandlerSetup",
-                            M3L.GetString(M3L.string_configuringNxmhandler),
-                            M3L.GetString(M3L.string_configuredNxmhandler));
-                        NexusModsUtilities.SetupNXMHandling((done, total, message) =>
-                        {
-                            if (total > 0)
-                            {
-                                backgroundTaskEngine.SubmitBackgroundTaskUpdate(bgTask,
-                                    M3L.GetString(M3L.string_interp_downloadingNxmhandlerX,
-                                        Math.Round(done * 100.0f / total)));
-                            }
-                            else
-                            {
-                                backgroundTaskEngine.SubmitBackgroundTaskUpdate(bgTask, message);
+                        NexusModsUtilities.SetupNXMHandling();
 
-                            }
-                        }, (result) => { backgroundTaskEngine.SubmitJobCompletion(bgTask); });
                     }
                 }
 
@@ -3003,55 +2988,55 @@ namespace MassEffectModManagerCore
                 b.Result = 0; //all good
             };
             bw.RunWorkerCompleted += (a, b) =>
-            {
-                if (b.Error != null)
                 {
-                    Log.Error(@"Exception occurred in NetworkFetch thread: " + b.Error.Message);
-                    Log.Error(b.Error.StackTrace);
-                }
-                else if (b.Result is int i)
-                {
-                    if (i != 0)
+                    if (b.Error != null)
                     {
-                        switch (i)
+                        Log.Error(@"Exception occurred in NetworkFetch thread: " + b.Error.Message);
+                        Log.Error(b.Error.StackTrace);
+                    }
+                    else if (b.Result is int i)
+                    {
+                        if (i != 0)
                         {
-                            case STARTUP_FAIL_CRITICAL_FILES_MISSING:
-                                var res = M3L.ShowDialog(this, M3L.GetString(M3L.string_dialogCriticalFilesMissing), M3L.GetString(M3L.string_requiredFilesNotDownloaded), MessageBoxButton.OK, MessageBoxImage.Error);
-                                Environment.Exit(1);
-                                break;
+                            switch (i)
+                            {
+                                case STARTUP_FAIL_CRITICAL_FILES_MISSING:
+                                    var res = M3L.ShowDialog(this, M3L.GetString(M3L.string_dialogCriticalFilesMissing), M3L.GetString(M3L.string_requiredFilesNotDownloaded), MessageBoxButton.OK, MessageBoxImage.Error);
+                                    Environment.Exit(1);
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            ContentCheckInProgress = false;
                         }
                     }
-                    else
+
+                    if (firstStartupCheck && App.PendingNXMLink != null)
                     {
-                        ContentCheckInProgress = false;
+                        showNXMDownloader(App.PendingNXMLink);
+                        App.PendingNXMLink = null;
                     }
-                }
 
-                if (firstStartupCheck && App.PendingNXMLink != null)
+                    NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"BackupCheck");
+                    nbw.DoWork += (a, b) =>
                 {
-                    showNXMDownloader(App.PendingNXMLink);
-                    App.PendingNXMLink = null;
-                }
+        var me1CheckRequired = BackupService.GetGameBackupPath(MEGame.ME1) == null && BackupService.GetGameBackupPath(MEGame.ME1, false) != null;
+        var me2CheckRequired = BackupService.GetGameBackupPath(MEGame.ME2) == null && BackupService.GetGameBackupPath(MEGame.ME2, false) != null;
+        var me3CheckRequired = BackupService.GetGameBackupPath(MEGame.ME3) == null && BackupService.GetGameBackupPath(MEGame.ME3, false) != null;
 
-                NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"BackupCheck");
-                nbw.DoWork += (a, b) =>
-                {
-                    var me1CheckRequired = BackupService.GetGameBackupPath(MEGame.ME1) == null && BackupService.GetGameBackupPath(MEGame.ME1, false) != null;
-                    var me2CheckRequired = BackupService.GetGameBackupPath(MEGame.ME2) == null && BackupService.GetGameBackupPath(MEGame.ME2, false) != null;
-                    var me3CheckRequired = BackupService.GetGameBackupPath(MEGame.ME3) == null && BackupService.GetGameBackupPath(MEGame.ME3, false) != null;
+        if (me1CheckRequired || me2CheckRequired || me3CheckRequired)
+        {
+            var bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"BackupCheck", M3L.GetString(M3L.string_checkingBackups), M3L.GetString(M3L.string_finishedCheckingBackups));
+            if (me1CheckRequired) VanillaDatabaseService.CheckAndTagBackup(MEGame.ME1);
+            if (me2CheckRequired) VanillaDatabaseService.CheckAndTagBackup(MEGame.ME2);
+            if (me3CheckRequired) VanillaDatabaseService.CheckAndTagBackup(MEGame.ME3);
 
-                    if (me1CheckRequired || me2CheckRequired || me3CheckRequired)
-                    {
-                        var bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"BackupCheck", M3L.GetString(M3L.string_checkingBackups), M3L.GetString(M3L.string_finishedCheckingBackups));
-                        if (me1CheckRequired) VanillaDatabaseService.CheckAndTagBackup(MEGame.ME1);
-                        if (me2CheckRequired) VanillaDatabaseService.CheckAndTagBackup(MEGame.ME2);
-                        if (me3CheckRequired) VanillaDatabaseService.CheckAndTagBackup(MEGame.ME3);
-
-                        backgroundTaskEngine.SubmitJobCompletion(bgTask);
-                    }
-                };
-                nbw.RunWorkerAsync();
-                CommandManager.InvalidateRequerySuggested(); //refresh bindings that depend on this
+            backgroundTaskEngine.SubmitJobCompletion(bgTask);
+        }
+    };
+                    nbw.RunWorkerAsync();
+                    CommandManager.InvalidateRequerySuggested(); //refresh bindings that depend on this
 
                 //byte[] bytes = File.ReadAllBytes(@"C:\Users\mgame\Source\Repos\ME3Tweaks\MassEffectModManager\MassEffectModManagerCore\Deployment\Releases\ME3TweaksModManagerExtractor_6.0.0.99.exe");
                 //MemoryStream ms = new MemoryStream(bytes);
@@ -3652,8 +3637,8 @@ namespace MassEffectModManagerCore
             var modInspector = new ModArchiveImporter(archiveFile, archiveStream);
             modInspector.Close += (a, b) =>
             {
-                // Todo: Convert to Panel Result
-                if (b.Data is List<Mod> modsImported)
+        // Todo: Convert to Panel Result
+        if (b.Data is List<Mod> modsImported)
                 {
                     ReleaseBusyControl();
                     LoadMods(modsImported.Count == 1 ? modsImported.FirstOrDefault() : null, true);
@@ -3887,8 +3872,8 @@ namespace MassEffectModManagerCore
             Log.Information(@"Setting language to " + lang);
             Application.Current.Dispatcher.Invoke(async () =>
             {
-                //Set language.
-                Task.Run(async () => { await OnlineContent.InternalSetLanguage(lang, forcedDictionary, startup); }).Wait();
+        //Set language.
+        Task.Run(async () => { await OnlineContent.InternalSetLanguage(lang, forcedDictionary, startup); }).Wait();
 
                 App.CurrentLanguage = Settings.Language = lang;
                 SetTipsForLanguage();
@@ -3905,8 +3890,8 @@ namespace MassEffectModManagerCore
 
                 if (SelectedMod != null)
                 {
-                    // This will force strings to update
-                    var sm = SelectedMod;
+            // This will force strings to update
+            var sm = SelectedMod;
                     SelectedMod = null;
                     SelectedMod = sm;
                 }
@@ -3915,10 +3900,10 @@ namespace MassEffectModManagerCore
                 {
                     if (forcedDictionary == null)
                     {
-                        //Settings.Save(); //save this language option
-                    }
+                //Settings.Save(); //save this language option
+            }
                     await AuthToNexusMods(languageUpdateOnly: true); //this call will immediately return
-                    FailedMods.RaiseBindableCountChanged();
+            FailedMods.RaiseBindableCountChanged();
                     CurrentOperationText = M3L.GetString(M3L.string_setLanguageToX);
                     VisitWebsiteText = (SelectedMod != null && SelectedMod.ModWebsite != Mod.DefaultWebsite) ? M3L.GetString(M3L.string_interp_visitSelectedModWebSite, SelectedMod.ModName) : "";
                 }
