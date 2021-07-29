@@ -239,6 +239,17 @@
       <downloadlink>https://me3tweaks.com/mods/asi/KismetLogger-v4.asi</downloadlink>
       <autoremovegroups/>
     </asimod>
+    <asimod>
+      <name>Kismet Logger</name>
+      <installedname>KismetLogger</installedname>
+      <author>ME3Tweaks</author>
+      <description>This plugin logs kismet sequence object activations to the console and to a file named KismetLog.txt. You can trace the execution of this log with Legendary Explorer's Sequence Editor.</description>
+      <version>5</version>
+      <hash>4fb9b14a74ee8a0859f7539f76dd0ae8</hash>
+      <sourcecode>https://github.com/ME3Tweaks/ME3-ASI-Plugins/tree/master/KismetLogger</sourcecode>
+      <downloadlink>https://github.com/ME3Tweaks/ME3-ASI-Plugins/releases/download/ME3KismetLogger-v5/KismetLogger-v5.asi</downloadlink>
+      <autoremovegroups/>
+    </asimod>
   </updategroup>
   <updategroup groupid="11" game="3" hidden="0">
     <asimod>
@@ -289,6 +300,17 @@
       <hash>965b2378c60430fb949b62a134b28414</hash>
       <sourcecode>https://github.com/ME3Tweaks/ME2-ASI-Plugins/tree/master/KismetLogger</sourcecode>
       <downloadlink>https://me3tweaks.com/mods/asi/me2/KismetLogger-v1.asi</downloadlink>
+      <autoremovegroups/>
+    </asimod>
+    <asimod>
+      <name>Kismet Logger</name>
+      <installedname>KismetLogger</installedname>
+      <author>ME3Tweaks</author>
+      <description>This plugin logs kismet sequence object activations to the console and to a file named KismetLog.txt. You can trace the execution of this log with Legendary Explorer's Sequence Editor.</description>
+      <version>2</version>
+      <hash>c51020ccf2600e4b732b0661750938ad</hash>
+      <sourcecode>https://github.com/ME3Tweaks/ME2-ASI-Plugins/tree/master/KismetLogger</sourcecode>
+      <downloadlink>https://github.com/ME3Tweaks/ME2-ASI-Plugins/releases/download/ME2KismetLogger-v2/KismetLogger-v2.asi</downloadlink>
       <autoremovegroups/>
     </asimod>
   </updategroup>
@@ -628,6 +650,32 @@
       <hash>be86ed353176e5457645733380e58fde</hash>
       <sourcecode>https://github.com/ME3Tweaks/LE1-ASI-Plugins/tree/main/LE1StreamingLevelsHUD</sourcecode>
       <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LE1StreamingLevelsHUD-v1.0/LE1StreamingLevelsHUD.asi</downloadlink>
+      <autoremovegroups/>
+    </asimod>
+  </updategroup>
+  <updategroup groupid="36" game="4" hidden="0">
+    <asimod>
+      <name>Kismet Logger</name>
+      <installedname>KismetLogger</installedname>
+      <author>henbagle</author>
+      <description>This plugin logs kismet sequence object activations to the console and to a file named KismetLog.txt. You can trace the execution of this log with Legendary Explorer's Sequence Editor.</description>
+      <version>1</version>
+      <hash>69f5d843a3c1e82ec44c065f5b301766</hash>
+      <sourcecode>https://github.com/ME3Tweaks/LE1-ASI-Plugins/tree/main/KismetLogger</sourcecode>
+      <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LE1KismetLogger-v1/KismetLogger-v1.asi</downloadlink>
+      <autoremovegroups/>
+    </asimod>
+  </updategroup>
+  <updategroup groupid="37" game="4" hidden="0">
+    <asimod>
+      <name>SeqAct_Log Enabler</name>
+      <installedname>SeqAct_Log-Enabler</installedname>
+      <author>henbagle</author>
+      <description>Will print the contents of SeqVars attached to SeqAct_Logs to the screen. Useful for debugging sequences.</description>
+      <version>1</version>
+      <hash>61b3e8831395d665004e3fa6c58096f1</hash>
+      <sourcecode>https://github.com/ME3Tweaks/LE1-ASI-Plugins/tree/main/SeqActLog%20Enabler</sourcecode>
+      <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LE1SeqActLogEnabler-v1.0/LE1SeqActLogEnabler-v1.asi</downloadlink>
       <autoremovegroups/>
     </asimod>
   </updategroup>
