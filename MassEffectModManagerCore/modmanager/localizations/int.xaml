@@ -535,7 +535,7 @@
     <system:String x:Key="string_recommendedVersionFormatNotFollowed">Recommended version format not followed ({0})</system:String>
     <!-- 0 = X.X or X.X[.X[.X]] (literal string) -->
     <system:String x:Key="string_moddescMissingModsite">moddesc.ini is missing modsite descriptor</system:String>
-    <system:String x:Key="string_noModWebsiteSet">No mod website URL was set - typically the ModInfo modsite descriptor should point to NexusMods page. This also enables users to endorse your mod on NexusMods through Mod Manager.</system:String>
+    <system:String x:Key="string_noModWebsiteSet">No mod website URL was set - typically the ModInfo modsite descriptor should point to the mods download page, for example, the NexusMods page. A NexusMods url also enables users to endorse your mod on NexusMods through Mod Manager. Mods that don't include a modsite are unlikely to be entered into the Third Party Identification Service, which means your mod may have mount conflicts.</system:String>
     <system:String x:Key="string_interp_invalidAudioPointerOutsideAFC">Invalid audio pointer found that points outside of target file stream: {0} Export {1} {2} points to offset {3} in AFC file {4} but the AFC is only {5} bytes long</system:String>
     <!-- 0=PCC Filepath 1=Export Index # 2=Export Name 3=Audio Offset in Hex 4=AFC Filepath 5=AFC Length -->
     <system:String x:Key="string_verifyURLIsCorrect">Verify URL is correct:</system:String>
@@ -740,6 +740,8 @@
     <system:String x:Key="string_individuallyCompressedItems">Individually compressed items</system:String>
     <system:String x:Key="string_interp_warningPackageForOtherGameFound">Package {0} is for game {1} but mod being deployed is for game {2}. Ensure this is correct.</system:String>
     <!-- 0={package file path} 1={Package game (ME1/2/3...)} 2={ModBeingDeployed.Game (ME1/2/3...} -->
+    <system:String x:Key="string_interp_dialog_noModSiteDeployed">The following mods don't have a modsite descriptor set and are not in the Third Party Mod Info database. Mods without the modsite descriptor will not be entered into the database; as such other mods may use your mount ID.\n{0}</system:String>
+    <system:String x:Key="string_dialog_noModSiteDeployed">Mods missing modsite descriptor</system:String>
 
     <!-- Backup Creator-->
     <system:String x:Key="string_backupsAreShared">Backups are shared across various modding tools including Mass Effect Randomizer, ALOT Installer, and Legendary Explorer.</system:String>

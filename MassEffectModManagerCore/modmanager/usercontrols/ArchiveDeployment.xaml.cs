@@ -1068,10 +1068,27 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                     if (b.Error == null && b.Result is List<Mod> modsForTPMISubmission && modsForTPMISubmission.Any())
                     {
-                        var goToTPMIForm = M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_dialog_dlcFolderNotInTPMI, string.Join('\n', modsForTPMISubmission.Select(x => x.ModName))), M3L.GetString(M3L.string_modsNotInThirdPartyIdentificationService), MessageBoxButton.YesNo, MessageBoxImage.Warning);
-                        if (goToTPMIForm == MessageBoxResult.Yes)
+                        var nonSubmittableMods = modsForTPMISubmission.Where(x => x.ModWebsite == Mod.DefaultWebsite).ToList();
+                        modsForTPMISubmission.Remove(x => x.ModWebsite == Mod.DefaultWebsite);
+
+                        if (nonSubmittableMods.Any())
                         {
-                            OnClosing(new DataEventArgs(modsForTPMISubmission));
+                            M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_dialog_noModSiteDeployed, string.Join("\n - ", nonSubmittableMods)), // do not localize
+                                M3L.GetString(M3L.string_dialog_noModSiteDeployed), MessageBoxButton.OK,
+                                MessageBoxImage.Warning);
+                        }
+
+                        if (modsForTPMISubmission.Any())
+                        {
+                            var goToTPMIForm = M3L.ShowDialog(window,
+                                M3L.GetString(M3L.string_interp_dialog_dlcFolderNotInTPMI,
+                                    string.Join('\n', modsForTPMISubmission.Select(x => x.ModName))),
+                                M3L.GetString(M3L.string_modsNotInThirdPartyIdentificationService),
+                                MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                            if (goToTPMIForm == MessageBoxResult.Yes)
+                            {
+                                OnClosing(new DataEventArgs(modsForTPMISubmission));
+                            }
                         }
                     }
 

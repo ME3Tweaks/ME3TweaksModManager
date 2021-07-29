@@ -432,8 +432,10 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_runAutoTOCOnMassEffect3LegendaryEdition = "string_runAutoTOCOnMassEffect3LegendaryEdition";
 		public const string string_syncPlotManager = "string_syncPlotManager";
 		public const string string_syncPlotManagerForMassEffect = "string_syncPlotManagerForMassEffect";
-		public const string string_tooltip_syncPlotManager = "string_tooltip_syncPlotManager";
+		public const string string_syncPlotManagerForMassEffect2 = "string_syncPlotManagerForMassEffect2";
+		public const string string_syncPlotManagerForMassEffectLegendaryEdition = "string_syncPlotManagerForMassEffectLegendaryEdition";
 		public const string string_syncPlotManagerForMassEffect2LegendaryEdition = "string_syncPlotManagerForMassEffect2LegendaryEdition";
+		public const string string_tooltip_syncPlotManager = "string_tooltip_syncPlotManager";
 		public const string string_massEffectModderForLegendaryEdition = "string_massEffectModderForLegendaryEdition";
 		public const string string_prereleaseNotice = "string_prereleaseNotice";
 		public const string string_failedToCompileCoalescedFile = "string_failedToCompileCoalescedFile";
@@ -683,6 +685,8 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_folders = "string_folders";
 		public const string string_individuallyCompressedItems = "string_individuallyCompressedItems";
 		public const string string_interp_warningPackageForOtherGameFound = "string_interp_warningPackageForOtherGameFound";
+		public const string string_interp_dialog_noModSiteDeployed = "string_interp_dialog_noModSiteDeployed";
+		public const string string_dialog_noModSiteDeployed = "string_dialog_noModSiteDeployed";
 		public const string string_backupsAreShared = "string_backupsAreShared";
 		public const string string_backupsMustBeCreatedFresh = "string_backupsMustBeCreatedFresh";
 		public const string string_backUp = "string_backUp";
@@ -810,8 +814,10 @@ namespace MassEffectModManagerCore.modmanager.localizations
 		public const string string_dialog_restoringSFARWithoutBackup = "string_dialog_restoringSFARWithoutBackup";
 		public const string string_backupNotAvailable = "string_backupNotAvailable";
 		public const string string_textures = "string_textures";
-		public const string string_tooltip_manageTextures = "string_tooltip_manageTextures";
 		public const string string_manageTextures = "string_manageTextures";
+		public const string string_tooltip_manageTextures = "string_tooltip_manageTextures";
+		public const string string_manageTexturesLE = "string_manageTexturesLE";
+		public const string string_tooltip_manageTexturesLE = "string_tooltip_manageTexturesLE";
 		public const string string_filesInstalledInSession = "string_filesInstalledInSession";
 		public const string string_interp_textureInstallationDate = "string_interp_textureInstallationDate";
 		public const string string_interp_versioningInfoX = "string_interp_versioningInfoX";
