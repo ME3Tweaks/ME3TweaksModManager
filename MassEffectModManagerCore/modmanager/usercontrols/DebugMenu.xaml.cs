@@ -40,7 +40,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (sender == nameof(MainWindow.StampCurrentTargetWithALOTMarker_MenuItem)) StampCurrentTargetWithALOT_Click(window);
             if (sender == nameof(MainWindow.StripCurrentTargetWithALOTMarker_MenuItem)) StripCurrentTargetALOTMarker_Click(window);
             if (sender == nameof(MainWindow.InstallHeadMorph_MenuItem)) InstallHeadMorphTest_Click(window);
+            if (sender == nameof(MainWindow.ShowWelcomePanel_MenuItem)) ShowWelcomePanel_Click(window);
 #endif
+        }
+
+        private static void ShowWelcomePanel_Click(MainWindow window)
+        {
+            window.ShowFirstRunPanel();
         }
 
         private static void InstallHeadMorphTest_Click(MainWindow window)
