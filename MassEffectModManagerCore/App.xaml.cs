@@ -351,6 +351,7 @@ namespace MassEffectModManagerCore
                     if (currentCultureLang.StartsWith(@"ru")) InitialLanguage = Settings.Language = @"rus";
                     if (currentCultureLang.StartsWith(@"pl")) InitialLanguage = Settings.Language = @"pol";
                     if (currentCultureLang.StartsWith(@"pt")) InitialLanguage = Settings.Language = @"bra";
+                    if (currentCultureLang.StartsWith(@"it")) InitialLanguage = Settings.Language = @"ita";
                     SubmitAnalyticTelemetryEvent(@"Auto set startup language", new Dictionary<string, string>() { { @"Language", InitialLanguage } });
                     Log.Information(@"This is a first boot. The system language code is " + currentCultureLang);
                 }

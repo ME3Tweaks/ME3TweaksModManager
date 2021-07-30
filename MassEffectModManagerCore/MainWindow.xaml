@@ -321,6 +321,17 @@
                                     Source="/modmanager/localizations/icons/korean.png" />
                             </MenuItem.Icon>
                         </MenuItem>
+                        <MenuItem
+                            IsChecked="{Binding Path=(modmanager:Settings.Language), Converter={StaticResource StringMatchToBoolConverter}, ConverterParameter='ita'}"
+                            Name="LanguageITA_MenuItem"
+                            Header="Italiano"
+                            Click="ChangeLanguage_Clicked"
+                            StaysOpenOnClick="True">
+                            <MenuItem.Icon>
+                                <Image
+                                    Source="/modmanager/localizations/icons/italian.png" />
+                            </MenuItem.Icon>
+                        </MenuItem>
                         <!--
                             <MenuItem Name="LanguageESN_MenuItem" Header="Español" Click="ChangeLanguage_Clicked" StaysOpenOnClick="True" Visibility="Collapsed">
                                 <MenuItem.Icon>
@@ -1082,7 +1093,6 @@
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem
-                        IsEnabled="False"
                         Header="{DynamicResource string_LegendaryExplorerStable}"
                         Name="LegendaryExplorerStable_MenuItem"
                         Click="LaunchExternalTool_Clicked"

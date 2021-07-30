@@ -1953,7 +1953,7 @@ namespace MassEffectModManagerCore
                 IsEnabled = true;
                 if (!Settings.ShowedPreviewPanel)
                 {
-                    ShowPreviewPanel();
+                    ShowFirstRunPanel();
                 }
                 else
                 {
@@ -2003,16 +2003,12 @@ namespace MassEffectModManagerCore
             nbw.RunWorkerAsync();
         }
 
-        private void ShowPreviewPanel()
+        internal void ShowFirstRunPanel()
         {
             var previewPanel = new FirstRunPanel();
             previewPanel.Close += (a, b) =>
             {
                 ReleaseBusyControl();
-                if (b.Data is bool loadMods)
-                {
-                    LoadMods();
-                }
                 // if user speeds through, this might not be available yet. oh well
                 if (App.TutorialService != null && App.TutorialService.Any())
                 {
@@ -3841,6 +3837,10 @@ namespace MassEffectModManagerCore
             {
                 lang = @"bra";
             }
+            else if (sender == LanguageITA_MenuItem)
+            {
+                lang = @"ita";
+            }
             //else if (sender == LanguageESN_MenuItem)
             //{
             //    lang = @"esn";
@@ -3950,7 +3950,7 @@ namespace MassEffectModManagerCore
 
         private void ShowWelcomePanel_Click(object sender, RoutedEventArgs e)
         {
-            ShowPreviewPanel();
+            ShowFirstRunPanel();
         }
 
         private void OpenME3TweaksModMaker_Click(object sender, RoutedEventArgs e)

@@ -123,6 +123,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             ChangeLanguage(@"int");
         }
 
+        private void ChangeLang_ITA_Clicked(object sender, RoutedEventArgs e)
+        {
+            ChangeLanguage(@"ita");
+        }
+
         private void ChangeLang_FRA_Clicked(object sender, RoutedEventArgs e)
         {
             ChangeLanguage(@"fra");
