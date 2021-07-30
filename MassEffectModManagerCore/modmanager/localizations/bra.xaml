@@ -1494,7 +1494,7 @@
 	<!-- 0 = header string in moddesc.ini, 1 = error message -->
 	<system:String x:Key="string_interp_validation_modparsing_loadfailed_failedToParseAltfiles">O descritor altfiles especificado no cabeçalho {0} não pôde ser analisado com êxito. O texto não está vazio, mas nenhum valor foi retornado.</system:String>
 	<!-- 0 = header string in moddesc.ini -->
-	<system:String x:Key="string_interp_validation_modparsing_loadfailed_customDLCMismatchedSourceDirsDestDirs">O cabeçalho da tarefa (CUSTOMDLC) tem listas de descritores sourcedirs e destdirs incopatíveis. sourcedirs contém {0} items, destdirs contém {0} items. O número de itens em cada lista deve ser o mesmo.</system:String>
+	<system:String x:Key="string_interp_validation_modparsing_loadfailed_customDLCMismatchedSourceDirsDestDirs">O cabeçalho da tarefa (CUSTOMDLC) tem listas de descritores sourcedirs e destdirs incopatíveis. sourcedirs contém {0} items, destdirs contém {1} items. O número de itens em cada lista deve ser o mesmo.</system:String>
 	<!-- 0 = number, 1 = number -->
 	<system:String x:Key="string_validation_modparsing_loadfailed_customDLCItemHasIllegalCharacters">As sourcedirs ou destdirs do cabeçalho CUSTOMDLC contêm um elemento que usa um .., que não é permitido.</system:String>
 	<system:String x:Key="string_interp_validation_modparsing_loadfailed_customDLCSourceDirMissing">O descritor sourcedirs do cabeçalho da tarefa (CUSTOMDLC) especifica a instalação de uma paste de DLC que não existe na pasta do Mod: {0}</system:String>

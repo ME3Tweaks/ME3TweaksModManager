@@ -1609,7 +1609,7 @@
 	<!-- 0 = header string in moddesc.ini, 1 = error message -->
 	<system:String x:Key="string_interp_validation_modparsing_loadfailed_failedToParseAltfiles">Указанный дескриптор altfiles для заголовка {0} не прошел парсинг. Содержимое присутствует, но значения не были возвращены.</system:String>
 	<!-- 0 = header string in moddesc.ini -->
-	<system:String x:Key="string_interp_validation_modparsing_loadfailed_customDLCMismatchedSourceDirsDestDirs">В заголовке задания (CUSTOMDLC) не совпадают списки дескрипторов sourcedirs и destdirs. В sourcedirs содержится объектов - {0}, в destdirs - {0}. Количество объектов в списках должно совпадать.</system:String>
+	<system:String x:Key="string_interp_validation_modparsing_loadfailed_customDLCMismatchedSourceDirsDestDirs">В заголовке задания (CUSTOMDLC) не совпадают списки дескрипторов sourcedirs и destdirs. В sourcedirs содержится объектов - {0}, в destdirs - {1}. Количество объектов в списках должно совпадать.</system:String>
 	<!-- 0 = number, 1 = number -->
 	<system:String x:Key="string_validation_modparsing_loadfailed_customDLCItemHasIllegalCharacters">В заголовке CUSTOMDLC список sourcedirs или destdirs включает объекты, содержащие '.' (destdirs) или '..' (sourcedirs), что не разрешено.</system:String>
 	<system:String x:Key="string_interp_validation_modparsing_loadfailed_customDLCSourceDirMissing">В заголовке задания (CUSTOMDLC) в дескрипторе sourcedirs указана установка папки Custom DLC, не существующей в папке мода: {0}</system:String>

@@ -1601,7 +1601,7 @@
 	<!-- 0 = header string in moddesc.ini, 1 = error message -->
 	<system:String x:Key="string_interp_validation_modparsing_loadfailed_failedToParseAltfiles">Der angegebene altfiles descriptor im header {0} konnte nicht erfolgreich geparst werden. Text ist nicht leer, doch keine Werte wurden zurückgegeben.</system:String>
 	<!-- 0 = header string in moddesc.ini -->
-	<system:String x:Key="string_interp_validation_modparsing_loadfailed_customDLCMismatchedSourceDirsDestDirs">Job header (CUSTOMDLC) hat nicht zusammenpassende sourcedirs und destdirs descriptor-Listen. sourcedirs enthält {0} Elemente, destdirs enthält {0} Elemente. Die Anzahl der Elemente beider Listen muss gleich sein.</system:String>
+	<system:String x:Key="string_interp_validation_modparsing_loadfailed_customDLCMismatchedSourceDirsDestDirs">Job header (CUSTOMDLC) hat nicht zusammenpassende sourcedirs und destdirs descriptor-Listen. sourcedirs enthält {0} Elemente, destdirs enthält {1} Elemente. Die Anzahl der Elemente beider Listen muss gleich sein.</system:String>
 	<!-- 0 = number, 1 = number -->
 	<system:String x:Key="string_validation_modparsing_loadfailed_customDLCItemHasIllegalCharacters">CUSTOMDLC header sourcedirs oder destdirs enthält ein Element, das einen '.' (destdirs) oder zwei '..' (sourcedirs) enthält. Das ist nicht erlaubt.</system:String>
 	<system:String x:Key="string_interp_validation_modparsing_loadfailed_customDLCSourceDirMissing">Job header (CUSTOMDLC) sourcedirs descriptor gibt die Installation eines Custom DLC-Ordners an, der nicht im Mod-Ordner existiert: {0}</system:String>
