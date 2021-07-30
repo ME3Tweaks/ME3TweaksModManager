@@ -15,13 +15,15 @@ using System.Windows.Shapes;
 using LegendaryExplorerCore.Misc;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
+using PropertyChanged;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
     /// <summary>
     /// Interaction logic for TargetSelector.xaml
     /// </summary>
-    public partial class TargetSelector : UserControl, INotifyPropertyChanged
+    [AddINotifyPropertyChangedInterface]
+    public partial class TargetSelector : UserControl
     {
         #region ShowTextureInfo DP
 
@@ -128,13 +130,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public Style ContainerStyle { get; set; }
         public TargetSelector()
         {
+            ContainerStyle = (Style) FindResource(@"TargetSelectorContainerStyle"); // Default
             InitializeComponent();
         }
-
-        //Fody uses this property on weaving
-#pragma warning disable
-        public event PropertyChangedEventHandler PropertyChanged;
-#pragma warning restore
     }
 
     public class ExtendedTextureInfoVisibilityConverter : IValueConverter

@@ -11,7 +11,6 @@ namespace MassEffectModManagerCore.modmanager.converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-
             if (value is GameTarget gt && !gt.IsCustomOption) return Visibility.Visible;
             return Visibility.Collapsed;
         }

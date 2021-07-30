@@ -210,6 +210,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 tp.Game = game;
                 switch (game)
                 {
+                    case MEGame.LE1:
                     case MEGame.ME1:
                         {
                             var parsedIni = DuplicatingIni.LoadIni(Path.Combine(sourceDir, @"AutoLoad.ini"));
@@ -218,9 +219,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             tp.MountFlagHR = M3L.GetString(M3L.string_me1MountFlagsNotSupportedInM3);
                             //No mount flag right now.
                         }
-                        break;
-                    case MEGame.LE1:
-                        throw new Exception(@"Not implemented yet!");
                         break;
                     case MEGame.ME2:
                     case MEGame.LE2:
