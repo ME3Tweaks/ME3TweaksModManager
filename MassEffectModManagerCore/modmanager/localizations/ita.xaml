@@ -736,7 +736,7 @@
 	<system:String x:Key="string_next">Prossimo</system:String>
 	<system:String x:Key="string_previous">Precedente</system:String>
 	<system:String x:Key="string_skipTutorial">Salta il tutorial</system:String>
-	<system:String x:Key="string_title_quickTutorial">Tutorial veloce per il ME3Tweaks Mod Manager</system:String>
+	<system:String x:Key="string_title_quickTutorial">Tutorial veloce per ME3Tweaks Mod Manager</system:String>
 
 	<!-- Keybinds Injector -->
 	<system:String x:Key="string_customKeybindsInjector">Iniettore di associazioni modificate di tasti</system:String>
@@ -2207,7 +2207,7 @@
 	<system:String x:Key="string_previewPanelTitle">Benvenuto al ME3Tweaks Mod Manager</system:String>
 	<system:String x:Key="string_selectYourLanguage">Seleziona la tua lingua</system:String>
 	<system:String x:Key="string_howToChangeLanguage">Puoi cambiare la tua lingua in ogni momento dal menu Azioni > Opzioni. Nota che che il supporto è disponibile solamente in Inglese</system:String>
-	<system:String x:Key="string_previewPanelIntro" xml:space="preserve">Benvenuto al ME3Tweaks Mod Manager, o M3 in breve. Importa le mod nel ME3Tweaks Mod Manager trascinando e rilasciando i file del loro archivio in questa finestra dopo che chiudi questo messaggio. Guarda cosa è installato selezionando Gestisci Target in alto a destra della finestra principale.&#10;&#10;Se hai qualche problema o feedback, unisciti al server Discord di ME3Tweaks con il pulsante qua sotto</system:String>
+	<system:String x:Key="string_previewPanelIntro" xml:space="preserve">Benvenuto al ME3Tweaks Mod Manager, o M3 in breve. Importa le mod nel ME3Tweaks Mod Manager trascinando e rilasciando i file del loro archivio su questa finestra, una volta chiuso questo messaggio. Guarda cosa è installato selezionando Gestisci Obiettivo in alto a destra nella finestra principale.&#10;&#10;Se hai qualche problema o vuoi fornire del feedback unisciti al server Discord di ME3Tweaks con il pulsante in fondo</system:String>
 	<system:String x:Key="string_joinDiscord">Unisciti al server Discord di ME3Tweaks</system:String>
 	<system:String x:Key="string_close">Chiudi</system:String>
 	<!-- Close (as in close dialog) -->
@@ -2228,5 +2228,5 @@
 	<system:String x:Key="string_enableTelemetry">Abilita la telemetria</system:String>
 	<system:String x:Key="string_wp_description_telemetry">La telementria del Mod Manager è usata dagli sviluppatori per identificare nuove mod, correggere errori nel Mod Manager, e vedere cosa gli utenti si aspettano dall'applicazione</system:String>
 	<system:String x:Key="string_developerMode">Abilitita la modalità per Sviluppatori</system:String>
-	<system:String x:Key="string_wp_description_developermod">La modalità per sviluppatori sblocca aspetti orientati agli sviluppatori, come distribuzione di mod, toggler per i DLC ufficiali, e altro. Se non sei uno sviluppatore di mod, non attivarla.</system:String>
+	<system:String x:Key="string_wp_description_developermod">La modalità per sviluppatori sblocca aspetti orientati agli sviluppatori, come distribuzione di mod, toggler per i DLC ufficiali, e altro. Se non sei uno sviluppatore di mod, non attivarla</system:String>
 </ResourceDictionary>
