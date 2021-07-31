@@ -8,12 +8,12 @@
 	<system:String x:Key="string_translators">Traduttori</system:String>
 	<system:String x:Key="string_NA">N/A</system:String>
 	<system:String x:Key="string_specialThanks">Ringraziamenti speciali</system:String>
-	<system:String x:Key="string_youTheEndUser">Tu, l'utente finale, per aver reso questo software degno di essere sviluppato</system:String>
+	<system:String x:Key="string_youTheEndUser">Te, l'utente finale, per aver reso questo software degno di essere sviluppato</system:String>
 	<system:String x:Key="string_license">Licenza</system:String>
-	<system:String x:Key="string_library_adonisui" xml:space="preserve">La libreria per temi chiaro/scuro in WPF/nME3Tweaks Mod Manager usa una versione modificata di questa libreria</system:String>
+	<system:String x:Key="string_library_adonisui" xml:space="preserve">La libreria per i temi chiaro/scuro in WPF/nME3Tweaks Mod Manager usa una versione modificata di questa libreria</system:String>
 	<system:String x:Key="string_library_sevenzipsharp" xml:space="preserve">La libreria per la compressione e decompressione di file 7z\nME3Tweaks Mod Manager usa una versione modificata di questa libreria</system:String>
 	<system:String x:Key="string_library_iniparser" xml:space="preserve">La libreria per il parsing dei file ini\nME3Tweaks Mod Manager usa una versione modificata di questa libreria</system:String>
-	<system:String x:Key="string_library_flurl">Libreria per il client HTTP moderna e asincrona</system:String>
+	<system:String x:Key="string_library_flurl">Libreria moderna e asincrona per il client HTTP</system:String>
 	<system:String x:Key="string_library_fody">Sistema weaver che rimuove enormi quantità di codice ridondante</system:String>
 	<system:String x:Key="string_library_fontawesome">Pacchetto di icone vettoriali</system:String>
 	<system:String x:Key="string_library_appcenter">Libreria per la telemetria per l'uso con Microsoft Azure</system:String>
@@ -792,7 +792,7 @@
 	<system:String x:Key="string_gameDiagnosticDescription">La diagnostica di un gioco raccoglie informazioni su un obiettivo specifico, inclusi dati sullo stato delle mod delle texture, DLC installati, versione del gioco, crash logs (se ce ne sono), problemi di texture e altro ancora. Se stai avendo un problema con il gioco, per favore selezionalo</system:String>
 	<system:String x:Key="string_tooltip_checkAllTexturesInGameDescription" xml:space="preserve">Selezionare questa opzione controlla tutte le texture del gioco.&#10;Il passaggio del controllo delle texture può richiedere alcuni minuti</system:String>
 	<system:String x:Key="string_fullTexturesCheck">Controllo totale delle texture</system:String>
-	<system:String x:Key="string_diagShareTheLink">Condividi il link risultante dal tuo log/diagnostica con il tuo recipiente. Se non sei sicuro(a) di quale opzione scegliere, selezionane una da entrambe</system:String>
+	<system:String x:Key="string_diagShareTheLink">Condividi il link risultante dal tuo log/diagnostica con il tuo recipiente. Se non sei sicuro/a di quale opzione scegliere, selezionane una da entrambe</system:String>
 	<system:String x:Key="string_selectAnApplicationLog">Seleziona un log dell'applicazione</system:String>
 	<system:String x:Key="string_selectAGameTargetToGenerateDiagnosticsFor">Selezioan un gioco come obiettivo da cui generare diagnostica</system:String>
 	<system:String x:Key="string_compressingForUpload">Compressione per il caricamento</system:String>
@@ -905,7 +905,7 @@
 	<system:String x:Key="string_startingUp">Avvio in corso</system:String>
 	<system:String x:Key="string_selectModOnLeftToGetStarted">Seleziona una mod a sinstra per cominciare.</system:String>
 	<system:String x:Key="string_applyMod">Applica mod</system:String>
-	<system:String x:Key="string_addTarget">Aggiungi obiettivo</system:String>
+	<system:String x:Key="string_addTarget">Aggiungi Obiettivo</system:String>
 	<system:String x:Key="string_startGame">Avvia gioco</system:String>
 	<system:String x:Key="string_installationTarget">Obiettivo di installazione:</system:String>
 	<system:String x:Key="string_binkAsiBypassNotInstalled">Bypass ASI di Bwink32 non installato</system:String>
@@ -1007,7 +1007,7 @@
 	<system:String x:Key="string_tooltip_someModsFailed">Alcune mod non sono riuscite a caricare, clicca per sapere perché</system:String>
 	<system:String x:Key="string_tooltip_addAdditionalTarget">Aggiungi un obiettivo di installazione addizionale</system:String>
 	<system:String x:Key="string_tooltip_targetInfo">Vedi e gestisci le mod e i file installati per questo obiettivo</system:String>
-	<system:String x:Key="string_targetInfo">Gestisci obiettivo</system:String>
+	<system:String x:Key="string_targetInfo">Gestisci Obiettivo</system:String>
 	<system:String x:Key="string_modDescription">Descrizione della mod</system:String>
 	<system:String x:Key="string_endorseME3TweaksModManagerOnNexusMods">Approva ME3Tweaks Mod Manager su NexusMods</system:String>
 	<system:String x:Key="string_endorsedME3TweaksModManagerOnNexusMods">Approvato ME3Tweaks Mod Manager su NexusMods :)</system:String>
@@ -1103,7 +1103,7 @@
 	<system:String x:Key="string_programDataAccessDenied">Accesso negato a ProgramData</system:String>
 	<system:String x:Key="string_autoAddControllerMixinsToModMakerMods">Aggiungi automaticamente Mixin del controller alle mod del ModMaker</system:String>
 	<system:String x:Key="string_tooltip_autoAddControllerMixinsToModMakerMods" xml:space="preserve">Aggiunge automaticamente fix per il controller alle mod del ModMaker. Non selezionarlo se giochi con mouse e tastiera.</system:String>
-	<system:String x:Key="string_interp_dialog_unsupportedOS" xml:space="preserve">Questo sistema operativo non è supportato. Questa applicazione è stata validara per l'utilizzo sui  seguenti sistemi operativi: \n - {0}. Questa potrebbe non funzionare correttamente su questo sistema operativo.</system:String>
+	<system:String x:Key="string_interp_dialog_unsupportedOS" xml:space="preserve">Questo sistema operativo non è supportato. Questa applicazione è stata validata per l'utilizzo sui  seguenti sistemi operativi: \n - {0}. Questa potrebbe non funzionare correttamente su questo sistema operativo.</system:String>
 	<!-- 0= bulleted list of supported operating system names -->
 	<system:String x:Key="string_unsupportedOperatingSystem">Sistema operativo non supportato</system:String>
 	<system:String x:Key="string_errorCompilingCoalesced">Errore durante la compilazione del file Coalesced</system:String>
@@ -1115,7 +1115,7 @@
 	<!-- 0=Exception message -->
 	<system:String x:Key="string_errorReadingXmlFile">Errore durante la lettura del file xml</system:String>
 	<system:String x:Key="string_checkModsForUpdates">Contralla aggiornamenti delle mod</system:String>
-	<system:String x:Key="string_tooltip_checksForUpdatesToModsThatSupportCheckingForUpdates">Contralla aggiornamenti delle mod che supportano il controllo degli aggiornamenti</system:String>
+	<system:String x:Key="string_tooltip_checksForUpdatesToModsThatSupportCheckingForUpdates">Controlla aggiornamenti delle mod che supportano il controllo degli aggiornamenti</system:String>
 	<system:String x:Key="string_mEMVanillaDBViewer">Visualizzatore di Debug di MEM Vanilla</system:String>
 	<!-- This is only shown in Debug Mode. But might as well translate it anyways. Do not localize the term MEM (Mass Effect Modder). -->
 	<system:String x:Key="string_autoInjectCustomKeybindsIntoModMakerMods">Inietta automaticamente associazioni di tasti modificate nelle mod del ModMaker</system:String>
@@ -1139,7 +1139,7 @@
 	<system:String x:Key="string_allGamesHiddenTitle">Nessun gioco selezionato per la visualizzazione</system:String>
 	<system:String x:Key="string_allGamesHiddenDescription">Nessn gioco è selezionato per mostrarne le mod. Clicca su un gioco sopra per abilitare la visualizzazione delle mod per quel gioco.</system:String>
 	<!-- This is bolded text that shows up at the top of the mod library list area when there are no mods. Try to keep it short, feel free to adapt to your language. -->
-	<system:String x:Key="string_noModsInLibraryDescription" xml:space="preserve">Le mod che importi nel Mod Manager saranno elencate qui. Puoi importare delle mod trascinando e rilasciando i loro archiviscaricati (.7z/.rar/.zip/.exe/.me2mod) su questa finestra.&#10;&#10;Le mod che sono installate direttamente dalla finestra di importazione NON saranno mostrate qui, in quanto sono installate nel gioco, non importate nella libreria. Puoi vedere cosa è installato cliccando su 'Gestisici Obiettivo' in alto a destra di questa finestra.&#10;&#10;Le mod che sono importate nella libreria delle mod sono facili da reinstallare, possono essere aggiunte alle code di installazione e altro.</system:String>
+	<system:String x:Key="string_noModsInLibraryDescription" xml:space="preserve">Le mod che importi nel Mod Manager saranno elencate qui. Puoi importare delle mod trascinando e rilasciando i loro archivi che hai scaricato (.7z/.rar/.zip/.exe/.me2mod) su questa finestra.&#10;&#10;Le mod che sono installate direttamente dalla finestra di importazione NON saranno mostrate qui in quanto sono installate nel gioco, ma non importate nella libreria. Puoi vedere cosa è installato cliccando su 'Gestisici Obiettivo' in alto a destra di questa finestra.&#10;&#10;Le mod che sono importate nella libreria sono facili da reinstallare, possono essere aggiunte alle code di installazione e altro.</system:String>
 	<!-- This is the text shown under the no mods in library header. It shows up when there are no mods imported. Make sure Manage Target lines up with your localization of that term. -->
 	<system:String x:Key="string_interp_dialog_cannotDeployModNoTarget">Nessuna installazione per {0} trovata. La distribuzione di una mod richiede una installazione per il gioco in modo che la distribuzione possa controllare per i dati di questa installazione che non saranno disponibili in altri setup.</system:String>
 	<!-- 0=ME1/ME2/ME3 -->
