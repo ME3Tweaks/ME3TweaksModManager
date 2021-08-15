@@ -286,7 +286,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             var gameID = selectedDiagnosticTarget.Game.ToMEMGameNum().ToString();
             Log.Information(@"Beginning to build diagnostic output");
 
-            addDiagLine(gameID, Severity.GAMEID);
+            addDiagLine(selectedDiagnosticTarget.Game.ToGameNum().ToString(), Severity.GAMEID);
             addDiagLine($@"{App.AppVersionHR} Game Diagnostic");
             addDiagLine($@"Diagnostic for {selectedDiagnosticTarget.Game.ToGameName()}");
             addDiagLine($@"Diagnostic generated on {DateTime.Now.ToShortDateString()}");
