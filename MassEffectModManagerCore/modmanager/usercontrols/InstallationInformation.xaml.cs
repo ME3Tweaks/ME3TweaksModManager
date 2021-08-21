@@ -646,7 +646,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 this.dlcFolderPath = dlcFolderPath;
                 this.game = game;
                 var dlcFolderName = DLCFolderNameString = Path.GetFileName(dlcFolderPath);
-                if (App.ThirdPartyIdentificationService.ContainsKey(game.ToString()) && App.ThirdPartyIdentificationService[game.ToString()].TryGetValue(dlcFolderName.TrimStart('x'), out var tpmi))
+                if (App.ThirdPartyIdentificationService != null && App.ThirdPartyIdentificationService.ContainsKey(game.ToString()) && App.ThirdPartyIdentificationService[game.ToString()].TryGetValue(dlcFolderName.TrimStart('x'), out var tpmi))
                 {
                     ModName = tpmi.modname;
                 }
