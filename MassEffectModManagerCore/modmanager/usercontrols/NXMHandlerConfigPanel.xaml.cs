@@ -44,7 +44,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void RemoveApp(object obj)
         {
-            throw new System.NotImplementedException();
+            if (obj is NexusDomainHandler ndh)
+            {
+                OtherGameHandlers.Remove(ndh);
+            }
         }
 
         private bool CanClose()
