@@ -12,6 +12,7 @@ using LegendaryExplorerCore.Misc;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
+using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.ui;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.WindowsAPICodePack.Taskbar;
@@ -25,9 +26,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// </summary>
     public partial class ModUpdateInformation : MMBusyPanelBase
     {
-        private bool AnyModUpdated;
 
         public ObservableCollectionExtended<OnlineContent.ModUpdateInfo> UpdatableMods { get; } = new ObservableCollectionExtended<OnlineContent.ModUpdateInfo>();
+
+        private List<Mod> updatedMods = new();
 
         public bool OperationInProgress { get; set; }
 
@@ -188,7 +190,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         mui.UIStatusString = M3L.GetString(M3L.string_interp_modMakerCodeX, mui.ModMakerId);
                         mui.UpdateInProgress = false;
                         mui.CanUpdate = false;
-                        AnyModUpdated = true;
+                        updatedMods.Add(m);
                     }
                     else
                     {
@@ -259,7 +261,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 var modUpdated = OnlineContent.UpdateMod(ui, stagingDirectory, errorCallback);
                 ui.UpdateInProgress = false;
                 ui.CanUpdate = !modUpdated;
-                AnyModUpdated |= modUpdated;
+                updatedMods.Add(ui.mod);
                 ui.DownloadButtonText = ui.CanUpdate ? M3L.GetString(M3L.string_downloadUpdate) : M3L.GetString(M3L.string_updated);
                 Utilities.DeleteFilesAndFoldersRecursively(stagingDirectory);
             };
@@ -340,7 +342,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void CloseDialog()
         {
-            OnClosing(new DataEventArgs(AnyModUpdated));
+            Result.ReloadMods = updatedMods.Any();
+            Result.ModToHighlightOnReload = updatedMods.FirstOrDefault();
+            OnClosing(DataEventArgs.Empty);
         }
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)

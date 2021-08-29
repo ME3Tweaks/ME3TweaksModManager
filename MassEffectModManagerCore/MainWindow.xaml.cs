@@ -763,8 +763,6 @@ namespace MassEffectModManagerCore
             importerPanel.Close += (a, b) =>
             {
                 ReleaseBusyControl();
-                if (importerPanel.Result.ReloadMods)
-                    LoadMods(importerPanel.Result.ModToHighlightOnReload);
             };
             ShowBusyControl(importerPanel);
         }
@@ -2369,10 +2367,6 @@ namespace MassEffectModManagerCore
                         modUpdatesNotificationDialog.Close += (sender, args) =>
                         {
                             ReleaseBusyControl();
-                            if (args.Data is bool reloadMods && reloadMods)
-                            {
-                                LoadMods(updates.Count == 1 ? updates[0].mod : null);
-                            }
                         };
                         ShowBusyControl(modUpdatesNotificationDialog);
                     });
@@ -3017,28 +3011,28 @@ namespace MassEffectModManagerCore
                     NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"BackupCheck");
                     nbw.DoWork += (a, b) =>
                 {
-        var me1CheckRequired = BackupService.GetGameBackupPath(MEGame.ME1) == null && BackupService.GetGameBackupPath(MEGame.ME1, false) != null;
-        var me2CheckRequired = BackupService.GetGameBackupPath(MEGame.ME2) == null && BackupService.GetGameBackupPath(MEGame.ME2, false) != null;
-        var me3CheckRequired = BackupService.GetGameBackupPath(MEGame.ME3) == null && BackupService.GetGameBackupPath(MEGame.ME3, false) != null;
+                    var me1CheckRequired = BackupService.GetGameBackupPath(MEGame.ME1) == null && BackupService.GetGameBackupPath(MEGame.ME1, false) != null;
+                    var me2CheckRequired = BackupService.GetGameBackupPath(MEGame.ME2) == null && BackupService.GetGameBackupPath(MEGame.ME2, false) != null;
+                    var me3CheckRequired = BackupService.GetGameBackupPath(MEGame.ME3) == null && BackupService.GetGameBackupPath(MEGame.ME3, false) != null;
 
-        if (me1CheckRequired || me2CheckRequired || me3CheckRequired)
-        {
-            var bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"BackupCheck", M3L.GetString(M3L.string_checkingBackups), M3L.GetString(M3L.string_finishedCheckingBackups));
-            if (me1CheckRequired) VanillaDatabaseService.CheckAndTagBackup(MEGame.ME1);
-            if (me2CheckRequired) VanillaDatabaseService.CheckAndTagBackup(MEGame.ME2);
-            if (me3CheckRequired) VanillaDatabaseService.CheckAndTagBackup(MEGame.ME3);
+                    if (me1CheckRequired || me2CheckRequired || me3CheckRequired)
+                    {
+                        var bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"BackupCheck", M3L.GetString(M3L.string_checkingBackups), M3L.GetString(M3L.string_finishedCheckingBackups));
+                        if (me1CheckRequired) VanillaDatabaseService.CheckAndTagBackup(MEGame.ME1);
+                        if (me2CheckRequired) VanillaDatabaseService.CheckAndTagBackup(MEGame.ME2);
+                        if (me3CheckRequired) VanillaDatabaseService.CheckAndTagBackup(MEGame.ME3);
 
-            backgroundTaskEngine.SubmitJobCompletion(bgTask);
-        }
-    };
+                        backgroundTaskEngine.SubmitJobCompletion(bgTask);
+                    }
+                };
                     nbw.RunWorkerAsync();
                     CommandManager.InvalidateRequerySuggested(); //refresh bindings that depend on this
 
-                //byte[] bytes = File.ReadAllBytes(@"C:\Users\mgame\Source\Repos\ME3Tweaks\MassEffectModManager\MassEffectModManagerCore\Deployment\Releases\ME3TweaksModManagerExtractor_6.0.0.99.exe");
-                //MemoryStream ms = new MemoryStream(bytes);
-                //SevenZipExtractor sve = new SevenZipExtractor(ms);
-                //sve.ExtractArchive(@"C:\users\public\documents");
-            };
+                    //byte[] bytes = File.ReadAllBytes(@"C:\Users\mgame\Source\Repos\ME3Tweaks\MassEffectModManager\MassEffectModManagerCore\Deployment\Releases\ME3TweaksModManagerExtractor_6.0.0.99.exe");
+                    //MemoryStream ms = new MemoryStream(bytes);
+                    //SevenZipExtractor sve = new SevenZipExtractor(ms);
+                    //sve.ExtractArchive(@"C:\users\public\documents");
+                };
             ContentCheckInProgress = true;
             bw.RunWorkerAsync();
         }
@@ -3633,8 +3627,8 @@ namespace MassEffectModManagerCore
             var modInspector = new ModArchiveImporter(archiveFile, archiveStream);
             modInspector.Close += (a, b) =>
             {
-        // Todo: Convert to Panel Result
-        if (b.Data is List<Mod> modsImported)
+                // Todo: Convert to Panel Result
+                if (b.Data is List<Mod> modsImported)
                 {
                     ReleaseBusyControl();
                     LoadMods(modsImported.Count == 1 ? modsImported.FirstOrDefault() : null, true);
@@ -3872,8 +3866,8 @@ namespace MassEffectModManagerCore
             Log.Information(@"Setting language to " + lang);
             Application.Current.Dispatcher.Invoke(async () =>
             {
-        //Set language.
-        Task.Run(async () => { await OnlineContent.InternalSetLanguage(lang, forcedDictionary, startup); }).Wait();
+                //Set language.
+                Task.Run(async () => { await OnlineContent.InternalSetLanguage(lang, forcedDictionary, startup); }).Wait();
 
                 App.CurrentLanguage = Settings.Language = lang;
                 SetTipsForLanguage();
@@ -3890,8 +3884,8 @@ namespace MassEffectModManagerCore
 
                 if (SelectedMod != null)
                 {
-            // This will force strings to update
-            var sm = SelectedMod;
+                    // This will force strings to update
+                    var sm = SelectedMod;
                     SelectedMod = null;
                     SelectedMod = sm;
                 }
@@ -3900,10 +3894,10 @@ namespace MassEffectModManagerCore
                 {
                     if (forcedDictionary == null)
                     {
-                //Settings.Save(); //save this language option
-            }
+                        //Settings.Save(); //save this language option
+                    }
                     await AuthToNexusMods(languageUpdateOnly: true); //this call will immediately return
-            FailedMods.RaiseBindableCountChanged();
+                    FailedMods.RaiseBindableCountChanged();
                     CurrentOperationText = M3L.GetString(M3L.string_setLanguageToX);
                     VisitWebsiteText = (SelectedMod != null && SelectedMod.ModWebsite != Mod.DefaultWebsite) ? M3L.GetString(M3L.string_interp_visitSelectedModWebSite, SelectedMod.ModName) : "";
                 }
