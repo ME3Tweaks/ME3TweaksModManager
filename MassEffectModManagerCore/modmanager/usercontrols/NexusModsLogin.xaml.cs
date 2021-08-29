@@ -187,7 +187,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             mainwindow.RefreshNexusStatus();
         }
 
-        private bool CanUnlinkWithNexus() => !IsAuthorized;
+        private bool CanUnlinkWithNexus() => !IsAuthorizing && !string.IsNullOrWhiteSpace(APIKeyText);
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
