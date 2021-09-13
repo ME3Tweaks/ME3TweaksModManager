@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Web;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Linq;
@@ -263,6 +264,11 @@ namespace MassEffectModManagerCore.modmanager.objects
             return false;
         }
 
+        /// <summary>
+        /// Determines if the file listing has any moddesc.ini files in it.
+        /// </summary>
+        /// <param name="fileListing"></param>
+        /// <returns></returns>
         private bool HasModdescIni(ContentPreview fileListing)
         {
             foreach (var e in fileListing.Children)
@@ -276,11 +282,19 @@ namespace MassEffectModManagerCore.modmanager.objects
 
         private bool HasModdescIniRecursive(ContentPreviewEntry entry)
         {
-            foreach (var e in entry.Children.Where(x => x.Type == ContentPreviewEntryType.Directory))
+            // Directory
+            if (entry.Type == ContentPreviewEntryType.Directory)
             {
-                return HasModdescIniRecursive(e);
+                foreach (var e in entry.Children)
+                {
+                    if (HasModdescIniRecursive(e))
+                        return true;
+                }
+
+                return false;
             }
 
+            // File
             return entry.Name == @"moddesc.ini";
         }
 
