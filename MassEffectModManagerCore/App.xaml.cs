@@ -633,6 +633,16 @@ namespace MassEffectModManagerCore
         {
             if (e.ApplicationExitCode == 0)
             {
+                try
+                {
+                    Utilities.DeleteFilesAndFoldersRecursively(Utilities.GetModDownloadCacheDirectory(), false);
+                    Log.Information(@"Deleted mod download cache");
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($@"EXCEPTION DELETING THE DOWNLOAD CACHE!: {ex.Message}");
+                }
+
                 Log.Information(@"Application exiting normally");
                 Log.CloseAndFlush();
             }

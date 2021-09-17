@@ -111,6 +111,10 @@ namespace MassEffectModManagerCore.modmanager
             return false;
         }
 
+        /// <summary>
+        /// Gets the path for the nexus mods integration data folder. This is NOT where mods are stored during donwload.
+        /// </summary>
+        /// <returns></returns>
         internal static string GetNexusModsCache()
         {
             return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "nexusmodsintegration")).FullName;
@@ -2116,6 +2120,10 @@ namespace MassEffectModManagerCore.modmanager
             return Directory.CreateDirectory(Path.Combine(GetME3TweaksServicesCache(), "livelocalization")).FullName;
         }
 
+        /// <summary>
+        /// Where downloaded mods are cached if they are larger than the in-memory size.
+        /// </summary>
+        /// <returns></returns>
         public static string GetModDownloadCacheDirectory()
         {
             return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "downloadedmodscache")).FullName;
