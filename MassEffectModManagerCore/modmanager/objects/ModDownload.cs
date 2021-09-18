@@ -198,7 +198,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                                     ?.Result);
                             }
 
-                            ProgressMaximum = ModFile.Size * 1024; // Bytes
+                            ProgressMaximum = ModFile.SizeInBytes ?? ModFile.SizeInKilobytes * 1024L; // SizeKb is the original version. They added SizeInBytes at my request
                             Initialized = true;
                             Log.Information($@"ModDownload has initialized: {ModFile.FileName}");
                             OnInitialized?.Invoke(this, null);
