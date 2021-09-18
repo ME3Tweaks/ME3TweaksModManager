@@ -237,19 +237,19 @@ namespace MassEffectModManagerCore.modmanager.objects
             /// Reads installed texture mod info from the stream, based on the marker version
             /// </summary>
             /// <param name="inStream"></param>
-            /// <param name="markerVersion"></param>
-            public InstalledTextureMod(Stream inStream, int markerVersion)
+            /// <param name="extendedMarkerVersion"></param>
+            public InstalledTextureMod(Stream inStream, int extendedMarkerVersion)
             {
                 // V4 marker version - DEFAULT
                 ModType = (InstalledTextureModType)inStream.ReadByte();
-                ModName = inStream.ReadUnrealString();
+                ModName = extendedMarkerVersion == 0x02 ? inStream.ReadStringUnicodeNull() : inStream.ReadUnrealString(); inStream.ReadStringUnicodeNull();
                 if (ModType == InstalledTextureModType.MANIFESTFILE)
                 {
-                    AuthorName = inStream.ReadUnrealString();
+                    AuthorName = extendedMarkerVersion == 0x02 ? inStream.ReadStringUnicodeNull() : inStream.ReadUnrealString();
                     var numChoices = inStream.ReadInt32();
                     while (numChoices > 0)
                     {
-                        ChosenOptions.Add(inStream.ReadUnrealString());
+                        ChosenOptions.Add(inStream.ReadStringUnicodeNull());
                         numChoices--;
                     }
                 }
@@ -267,14 +267,14 @@ namespace MassEffectModManagerCore.modmanager.objects
             public void WriteToMarker(Stream fs)
             {
                 fs.WriteByte((byte)ModType); // user file = 0, manifest file = 1
-                fs.WriteUnrealStringUnicode(ModName);
+                fs.WriteStringUnicodeNull(ModName);
                 if (ModType == InstalledTextureModType.MANIFESTFILE)
                 {
-                    fs.WriteUnrealStringUnicode(AuthorName);
+                    fs.WriteStringUnicodeNull(AuthorName);
                     fs.WriteInt32(ChosenOptions.Count);
                     foreach (var c in ChosenOptions)
                     {
-                        fs.WriteUnrealStringUnicode(c);
+                        fs.WriteStringUnicodeNull(c);
                     }
                 }
             }
