@@ -291,8 +291,8 @@ namespace MassEffectModManagerCore.modmanager.objects
                         }
 
                         // Note: If MEMI v1 is written after any other MEMI marker, it will not work as we cannot differentiate v1 to v2+
-
-                        if (preMemi4Bytes != perGameFinal4Bytes) //default bytes before 178 MEMI Format (MEMI v1)
+                        // v1 was never used with LE
+                        if (Game.IsLEGame() || preMemi4Bytes != perGameFinal4Bytes) //default bytes before 178 MEMI Format (MEMI v1)
                         {
                             // MEMI v3 (and technically also v2 but values will be wrong)
                             fs.Position = endPos - 12;
@@ -312,18 +312,30 @@ namespace MassEffectModManagerCore.modmanager.objects
 
                             // MEMI v4 DETECTION
                             fs.Position = endPos - 20;
-                            if (fs.ReadUInt32() == TextureModInstallationInfo.TEXTURE_MOD_MARKER_VERSIONING_MAGIC)
+                            var markerMagic = fs.ReadUInt32();
+                            if (markerMagic == TextureModInstallationInfo.TEXTURE_MOD_MARKER_VERSIONING_MAGIC)
                             {
                                 // It's MEMI v4 (or higher)
                                 var memiExtendedEndPos = endPos - 24; // Sanity check should make reading end here
                                 fs.Position = memiExtendedEndPos;
-                                fs.Position = fs.ReadInt32(); // Go to start of MEMI extended marker
+                                fs.Position -= fs.ReadInt32(); // Go to start of MEMI extended marker
                                 tmii.MarkerStartPosition = (int)fs.Position;
                                 tmii.MarkerExtendedVersion = fs.ReadInt32();
                                 // Extensions to memi format go here
-
-                                if (tmii.MarkerExtendedVersion == 0x04)
+                                if (Game.IsLEGame() && tmii.MarkerExtendedVersion == 0x02)
                                 {
+                                    // MEM LE
+                                    tmii.InstallerVersionFullName = fs.ReadStringUnicodeNull();
+                                    tmii.InstallationTimestamp = new DateTime(1970, 1, 1).ToLocalTime().AddSeconds(fs.ReadUInt32());
+                                    var fileCount = fs.ReadInt32();
+                                    for (int i = 0; i < fileCount; i++)
+                                    {
+                                        tmii.InstalledTextureMods.Add(new TextureModInstallationInfo.InstalledTextureMod(fs, tmii.MarkerExtendedVersion));
+                                    }
+                                }
+                                else if (tmii.MarkerExtendedVersion == 0x04)
+                                {
+                                    // This is done by OT ALOT Installer
                                     tmii.InstallerVersionFullName = fs.ReadUnrealString();
                                     tmii.InstallationTimestamp = DateTime.FromBinary(fs.ReadInt64());
                                     var fileCount = fs.ReadInt32();
