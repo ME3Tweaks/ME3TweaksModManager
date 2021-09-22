@@ -457,7 +457,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             MemoryAnalyzer.AddTrackedMemoryItem(@"Mod (Virtualized) - " + ModName, new WeakReference(this));
         }
 
-        private readonly string[] GameFileExtensions = { @".u", @".upk", @".sfm", @".pcc", @".bin", @".tlk", @".cnd", @".ini", @".afc", @".tfc", @".dlc", @".sfar", @".txt", @".bik", @".bmp", @".usf" };
+        private readonly string[] GameFileExtensions = { @".u", @".upk", @".sfm", @".pcc", @".bin", @".tlk", @".cnd", @".ini", @".afc", @".tfc", @".dlc", @".sfar", @".txt", @".bik", @".bmp", @".usf", @".isb" };
 
         /// <summary>
         /// Main moddesc.ini parser
@@ -963,15 +963,22 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                             if (directoryMatchesGameStructure)
                             {
                                 var sourceDirectory = FilesystemInterposer.PathCombine(IsInArchive, ModPath, jobSubdirectory, replaceFilesSourceSplit[i]).Replace('/', '\\');
-                                var destGameDirectory = replaceFilesTargetSplit[i];
+                                var destGameDirectory = replaceFilesTargetSplit[i].TrimEnd('/', '\\');
                                 if (FilesystemInterposer.DirectoryExists(sourceDirectory, Archive))
                                 {
+                                    #region Pathing corrections
+                                    if (replaceFilesSourceSplit.Count == 1 && replaceFilesSourceSplit[0] == @".")
+                                    {
+                                        // The replacement directory is the 'root' of moddir. This is effectively going to be length zero. We have to correct the string so substrings work properly on the length
+                                        replaceFilesSourceSplit[0] = "";
+                                    }
+                                    #endregion
                                     var files = FilesystemInterposer.DirectoryGetFiles(sourceDirectory, @"*.*", SearchOption.AllDirectories, Archive).Select(x => x.Substring((ModPath.Length > 0 ? (ModPath.Length + 1) : 0) + jobDirLength).TrimStart('\\')).ToList();
                                     foreach (var file in files)
                                     {
                                         if (GameFileExtensions.Contains(Path.GetExtension(file), StringComparer.InvariantCultureIgnoreCase))
                                         {
-                                            var destFile = destGameDirectory + file.Substring(replaceFilesSourceSplit[i].Length);
+                                            var destFile = destGameDirectory + Path.DirectorySeparatorChar + file.Substring(replaceFilesSourceSplit[i].Length);
                                             CLog.Information($@"Adding file to job replace files list: {file} => {destFile}", Settings.LogModStartup);
                                             string failurereason = headerJob.AddPreparsedFileToInstall(destFile, file, this);
                                             if (failurereason != null)
