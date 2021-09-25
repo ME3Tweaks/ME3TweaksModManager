@@ -676,6 +676,17 @@
       <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LE1KismetLogger-v1/KismetLogger-v1.asi</downloadlink>
       <autoremovegroups/>
     </asimod>
+    <asimod>
+      <name>Kismet Logger</name>
+      <installedname>KismetLogger</installedname>
+      <author>henbagle</author>
+      <description>This plugin logs kismet sequence object activations to the console and to a file named KismetLog.txt. You can trace the execution of this log with Legendary Explorer's Sequence Editor.</description>
+      <version>2</version>
+      <hash>590e69f0f2ca0fb9473677be7925827d</hash>
+      <sourcecode>https://github.com/ME3Tweaks/LE1-ASI-Plugins/tree/main/KismetLogger</sourcecode>
+      <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LE1KismetLogger-v2/KismetLogger-v2.asi</downloadlink>
+      <autoremovegroups/>
+    </asimod>
   </updategroup>
   <updategroup groupid="37" game="4" hidden="0">
     <asimod>
@@ -687,6 +698,17 @@
       <hash>61b3e8831395d665004e3fa6c58096f1</hash>
       <sourcecode>https://github.com/ME3Tweaks/LE1-ASI-Plugins/tree/main/SeqActLog%20Enabler</sourcecode>
       <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LE1SeqActLogEnabler-v1.0/LE1SeqActLogEnabler-v1.asi</downloadlink>
+      <autoremovegroups/>
+    </asimod>
+    <asimod>
+      <name>SeqAct_Log Enabler</name>
+      <installedname/>
+      <author>henbagle</author>
+      <description>Will print the contents of SeqVars attached to SeqAct_Logs to the screen. Useful for debugging sequences.</description>
+      <version>2</version>
+      <hash>d975ec36c632d87e6a1c1aa9a093a7ac</hash>
+      <sourcecode>https://github.com/ME3Tweaks/LE1-ASI-Plugins/tree/main/SeqActLog%20Enabler</sourcecode>
+      <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LE1SeqActLogEnabler-v2.0/LE1SeqActLogEnabler-v2.asi</downloadlink>
       <autoremovegroups/>
     </asimod>
   </updategroup>
@@ -739,6 +761,45 @@
       <hash>fc7f408d9fc7f2d7f915593528f77881</hash>
       <sourcecode>https://github.com/ME3Tweaks/LE2-ASI-Plugins/tree/master/LE2KismetLogger</sourcecode>
       <downloadlink>https://github.com/ME3Tweaks/LE2-ASI-Plugins/releases/download/LE2KismetLogger-v1.0/LE2KismetLogger-v1.0.asi</downloadlink>
+      <autoremovegroups/>
+    </asimod>
+  </updategroup>
+  <updategroup groupid="70" game="4" hidden="0">
+    <asimod>
+      <name>Debug Logger</name>
+      <installedname>LEDebugLogger</installedname>
+      <author>ME3Tweaks</author>
+      <description>This ASI logs the debug print from the game executable that can normally only be read with a debugger attached. This occassionally shows useful information, such as bad name index and entry indexes. The log is stored next to the game executable in a file named DebugLogger.txt.</description>
+      <version>1</version>
+      <hash>018912d35d95afeb4130883cf1b9852b</hash>
+      <sourcecode>https://github.com/ME3Tweaks/LE1-ASI-Plugins/tree/LEDebugLogger-v1.0/SelfDebugger</sourcecode>
+      <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LEDebugLogger-v1.0/LEDebugLogger-v.1.0.asi</downloadlink>
+      <autoremovegroups/>
+    </asimod>
+  </updategroup>
+  <updategroup groupid="71" game="5" hidden="0">
+    <asimod>
+      <name>Debug Logger</name>
+      <installedname>LEDebugLogger</installedname>
+      <author>ME3Tweaks</author>
+      <description>This ASI logs the debug print from the game executable that can normally only be read with a debugger attached. This occassionally shows useful information, such as bad name index and entry indexes. The log is stored next to the game executable in a file named DebugLogger.txt.</description>
+      <version>1</version>
+      <hash>018912d35d95afeb4130883cf1b9852b</hash>
+      <sourcecode>https://github.com/ME3Tweaks/LE1-ASI-Plugins/tree/LEDebugLogger-v1.0/SelfDebugger</sourcecode>
+      <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LEDebugLogger-v1.0/LEDebugLogger-v.1.0.asi</downloadlink>
+      <autoremovegroups/>
+    </asimod>
+  </updategroup>
+  <updategroup groupid="72" game="6" hidden="0">
+    <asimod>
+      <name>Debug Logger</name>
+      <installedname>LEDebugLogger</installedname>
+      <author>ME3Tweaks</author>
+      <description>This ASI logs the debug print from the game executable that can normally only be read with a debugger attached. This occassionally shows useful information, such as bad name index and entry indexes. The log is stored next to the game executable in a file named DebugLogger.txt.</description>
+      <version>1</version>
+      <hash>018912d35d95afeb4130883cf1b9852b</hash>
+      <sourcecode>https://github.com/ME3Tweaks/LE1-ASI-Plugins/tree/LEDebugLogger-v1.0/SelfDebugger</sourcecode>
+      <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LEDebugLogger-v1.0/LEDebugLogger-v.1.0.asi</downloadlink>
       <autoremovegroups/>
     </asimod>
   </updategroup>
