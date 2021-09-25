@@ -125,7 +125,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 var plotManager = MEPackageHandler.OpenMEPackageFromStream(vpm, $@"PlotManager.{(target.Game == MEGame.ME1 ? @"u" : @"pcc")}"); // do not localize
                 Stopwatch sw = Stopwatch.StartNew();
                 var fl = new FileLib(plotManager);
-                bool initialized = fl.Initialize(new RelativePackageCache() { RootPath = M3Directories.GetBioGamePath(target) }).Result;
+                bool initialized = fl.Initialize(new RelativePackageCache() { RootPath = M3Directories.GetBioGamePath(target) });
                 if (!initialized)
                 {
                     Log.Error(@"Error initializing FileLib for plot manager sync:");
