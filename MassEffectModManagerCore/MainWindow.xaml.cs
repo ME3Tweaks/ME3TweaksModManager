@@ -105,6 +105,7 @@ namespace MassEffectModManagerCore
         /// Suppresses the logic of FilterMods(), used to prevent multiple invocations on global changes
         /// </summary>
         private bool SuppressFilterMods;
+
         /// <summary>
         /// Single-instance argument handling
         /// </summary>
@@ -116,10 +117,34 @@ namespace MassEffectModManagerCore
             {
                 args = args.Skip(1).Take(args.Length - 1).ToArray();
             }
+
             var result = Parser.Default.ParseArguments<Options>(args);
-            if (result is Parsed<Options> parsedCommandLineArgs && parsedCommandLineArgs.Value.NXMLink != null)
+            if (result is Parsed<Options> parsedCommandLineArgs)
             {
-                showNXMDownloader(parsedCommandLineArgs.Value.NXMLink);
+                if (parsedCommandLineArgs.Value.NXMLink != null)
+                {
+                    showNXMDownloader(parsedCommandLineArgs.Value.NXMLink);
+                }
+
+                if (parsedCommandLineArgs.Value.AutoinstallModdescPath != null && File.Exists(parsedCommandLineArgs.Value.AutoinstallModdescPath))
+                {
+                    Mod m = new Mod(parsedCommandLineArgs.Value.AutoinstallModdescPath, MEGame.Unknown);
+                    if (m.ValidMod)
+                    {
+                        GameTarget t = GetCurrentTarget(m.Game);
+                        if (t != null)
+                        {
+                            ApplyMod(m, t, installCompletedCallback: installed =>
+                            {
+                                if (installed && parsedCommandLineArgs.Value.GameBoot != MEGame.Unknown)
+                                {
+                                    var bootTarget = GetCurrentTarget(m.Game);
+                                    InternalStartGame(bootTarget);
+                                }
+                            });
+                        }
+                    }
+                }
             }
         }
 
@@ -1377,19 +1402,24 @@ namespace MassEffectModManagerCore
 
         private void StartGame()
         {
-            var game = SelectedGameTarget.Game.ToGameName();
+            InternalStartGame(SelectedGameTarget);
+        }
 
+        private void InternalStartGame(GameTarget target)
+        {
+            var game = target.Game.ToGameName();
             BackgroundTask gameLaunch = backgroundTaskEngine.SubmitBackgroundJob(@"GameLaunch", M3L.GetString(M3L.string_interp_launching, game), M3L.GetString(M3L.string_interp_launched, game));
 
             try
             {
-                Task.Run(() => GameLauncher.LaunchGame(SelectedGameTarget))
+                Task.Run(() => GameLauncher.LaunchGame(target))
                     .ContinueWith(x =>
                     {
                         if (x.Exception != null)
                         {
                             Log.Error($@"There was an error launching the game: {x.Exception.FlattenException()}");
                         }
+
                         backgroundTaskEngine.SubmitJobCompletion(gameLaunch);
                     });
             }
@@ -1404,6 +1434,7 @@ namespace MassEffectModManagerCore
                         return; //we don't care.
                     }
                 }
+
                 Log.Error(@"Error launching game: " + e.Message);
             }
 
@@ -1412,7 +1443,7 @@ namespace MassEffectModManagerCore
             var iniFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"BioWare");
             try
             {
-                switch (SelectedGameTarget.Game)
+                switch (target.Game)
                 {
                     case MEGame.ME1:
                         {
@@ -1436,7 +1467,7 @@ namespace MassEffectModManagerCore
                     case MEGame.ME2:
                     case MEGame.ME3:
                         {
-                            iniFile = Path.Combine(iniFile, @"Mass Effect " + SelectedGameTarget.Game.ToGameNum(), @"BIOGame", @"Config", @"Gamersettings.ini");
+                            iniFile = Path.Combine(iniFile, @"Mass Effect " + target.Game.ToGameNum(), @"BIOGame", @"Config", @"Gamersettings.ini");
                             if (File.Exists(iniFile))
                             {
                                 var dini = DuplicatingIni.LoadIni(iniFile);
@@ -1457,7 +1488,7 @@ namespace MassEffectModManagerCore
                     case MEGame.LE2:
                     case MEGame.LE3:
                         {
-                            iniFile = Path.Combine(SelectedGameTarget.TargetPath, @"BioGame", @"Config", @"Gamersettings.ini");
+                            iniFile = Path.Combine(target.TargetPath, @"BioGame", @"Config", @"Gamersettings.ini");
                             if (File.Exists(iniFile))
                             {
                                 var dini = DuplicatingIni.LoadIni(iniFile);
@@ -1486,9 +1517,6 @@ namespace MassEffectModManagerCore
             {
                 Log.Error(@"Error trying to detect screen resolution: " + e.Message);
             }
-            //var exePath = MEDirectories.ExecutablePath(SelectedGameTarget);
-            //Process.Start(exePath);
-
         }
 
         /// <summary>

@@ -680,5 +680,13 @@ namespace MassEffectModManagerCore
 
         [Option(@"nxmlink", HelpText = "Preps Mod Manager for handling an nxm:// link")]
         public string NXMLink { get; set; }
+
+        [Option(@"installmod", HelpText = "Instructs Mod Manager to automatically install the mod from the specified mod path after initialization, to the default target")]
+        public string AutoinstallModdescPath { get; set; }
+
+        [Option(@"bootgame", HelpText = "Instructs Mod Manager to automatically boot the selected game after initialization")]
+        public MEGame? GameBoot { get; set; }
+
+
     }
 }

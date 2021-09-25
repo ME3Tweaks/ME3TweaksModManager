@@ -128,6 +128,12 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 commandLineArgs.Add(@"-autoterminate");
             }
 
+#if DEBUG
+            if (target.Game.IsLEGame() && !target.Supported)
+            {
+                commandLineArgs.Add(@"-NoHomeDir");
+            }
+#endif
             Utilities.RunProcess(exe, commandLineArgs, false, true, false, false, environmentVars);
             Thread.Sleep(3500); // Keep task alive for a bit
         }
