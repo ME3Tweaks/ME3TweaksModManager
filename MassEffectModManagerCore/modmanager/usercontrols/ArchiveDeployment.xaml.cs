@@ -755,6 +755,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         var relativePath = f.Substring(ModBeingDeployed.ModPath.Length + 1);
                         Log.Information(@"Checking file for broken textures: " + f);
                         var package = MEPackageHandler.OpenMEPackage(f);
+                        if (package.Game != ModBeingDeployed.Game)
+                            continue; // Don't bother checking this
                         var textures = package.Exports.Where(x => x.IsTexture() && !x.IsDefaultObject).ToList();
                         foreach (var texture in textures)
                         {
