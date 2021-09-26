@@ -240,7 +240,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             /// <param name="extendedMarkerVersion"></param>
             public InstalledTextureMod(Stream inStream, int extendedMarkerVersion)
             {
-                // V4 marker version - DEFAULT
+                // V4 marker version - DEFAULT (Extended Version 2)
                 ModType = (InstalledTextureModType)inStream.ReadByte();
                 ModName = extendedMarkerVersion == 0x02 ? inStream.ReadStringUnicodeNull() : inStream.ReadUnrealString(); inStream.ReadStringUnicodeNull();
                 if (ModType == InstalledTextureModType.MANIFESTFILE)

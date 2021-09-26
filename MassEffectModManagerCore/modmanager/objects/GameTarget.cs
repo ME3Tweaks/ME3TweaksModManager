@@ -307,7 +307,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                             int MEUITMVER = fs.ReadInt32();
 
                             var tmii = new TextureModInstallationInfo(ALOTVER, ALOTUPDATEVER, ALOTHOTFIXVER, MEUITMVER, memVersionUsed, installerVersionUsed);
-                            tmii.MarkerExtendedVersion = 0x03; // detected memi v3
+                            tmii.MarkerExtendedVersion = 0x01; 
                             tmii.MarkerStartPosition = (int)markerStartOffset;
 
                             // MEMI v4 DETECTION
@@ -326,7 +326,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                                 {
                                     // MEM LE
                                     tmii.InstallerVersionFullName = fs.ReadStringUnicodeNull();
-                                    tmii.InstallationTimestamp = new DateTime(1970, 1, 1).ToLocalTime().AddSeconds(fs.ReadUInt32());
+                                    tmii.InstallationTimestamp = new DateTime(1970, 1, 1).ToLocalTime().AddSeconds(fs.ReadUInt64());
                                     var fileCount = fs.ReadInt32();
                                     for (int i = 0; i < fileCount; i++)
                                     {
