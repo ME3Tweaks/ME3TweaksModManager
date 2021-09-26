@@ -122,29 +122,12 @@ namespace MassEffectModManagerCore
             if (result is Parsed<Options> parsedCommandLineArgs)
             {
                 if (parsedCommandLineArgs.Value.NXMLink != null)
-                {
-                    showNXMDownloader(parsedCommandLineArgs.Value.NXMLink);
-                }
-
-                if (parsedCommandLineArgs.Value.AutoinstallModdescPath != null && File.Exists(parsedCommandLineArgs.Value.AutoinstallModdescPath))
-                {
-                    Mod m = new Mod(parsedCommandLineArgs.Value.AutoinstallModdescPath, MEGame.Unknown);
-                    if (m.ValidMod)
-                    {
-                        GameTarget t = GetCurrentTarget(m.Game);
-                        if (t != null)
-                        {
-                            ApplyMod(m, t, installCompletedCallback: installed =>
-                            {
-                                if (installed && parsedCommandLineArgs.Value.GameBoot != MEGame.Unknown)
-                                {
-                                    var bootTarget = GetCurrentTarget(m.Game);
-                                    InternalStartGame(bootTarget);
-                                }
-                            });
-                        }
-                    }
-                }
+                    App.PendingNXMLink = parsedCommandLineArgs.Value.NXMLink;
+                if (parsedCommandLineArgs.Value.AutoInstallModdescPath != null)
+                    App.PendingAutoModInstallPath = parsedCommandLineArgs.Value.AutoInstallModdescPath;
+                if (parsedCommandLineArgs.Value.GameBoot != null)
+                    App.PendingGameBoot = parsedCommandLineArgs.Value.GameBoot;
+                handleInitialPending();
             }
         }
 
@@ -3030,10 +3013,9 @@ namespace MassEffectModManagerCore
                         }
                     }
 
-                    if (firstStartupCheck && App.PendingNXMLink != null)
+                    if (firstStartupCheck)
                     {
-                        showNXMDownloader(App.PendingNXMLink);
-                        App.PendingNXMLink = null;
+                        handleInitialPending();
                     }
 
                     NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"BackupCheck");
@@ -3063,6 +3045,65 @@ namespace MassEffectModManagerCore
                 };
             ContentCheckInProgress = true;
             bw.RunWorkerAsync();
+        }
+
+        private void handleInitialPending()
+        {
+            if (App.PendingGameBoot is MEGame testGame && !testGame.IsLEGame() && !testGame.IsOTGame())
+            {
+                Log.Error($@"Invalid autoboot game: {testGame}");
+                App.PendingGameBoot = null;
+            }
+            try
+            {
+                if (App.PendingNXMLink != null)
+                {
+                    showNXMDownloader(App.PendingNXMLink);
+                }
+
+                if (App.PendingAutoModInstallPath != null && File.Exists(App.PendingAutoModInstallPath))
+                {
+                    Mod m = new Mod(App.PendingAutoModInstallPath, MEGame.Unknown);
+                    if (m.ValidMod)
+                    {
+                        GameTarget t = GetCurrentTarget(m.Game);
+                        if (t != null)
+                        {
+                            ApplyMod(m, t, installCompletedCallback: installed =>
+                            {
+                                if (installed && App.PendingGameBoot != null)
+                                {
+                                    var bootTarget = GetCurrentTarget(m.Game);
+                                    if (bootTarget != null)
+                                    {
+                                        InternalStartGame(bootTarget);
+                                    }
+                                    App.PendingGameBoot = null;
+                                }
+                            });
+                        }
+                    }
+                }
+                else if (App.PendingGameBoot != null)
+                {
+                    var bootTarget = GetCurrentTarget(App.PendingGameBoot.Value);
+                    if (bootTarget != null)
+                    {
+                        InternalStartGame(bootTarget);
+                    }
+
+                    App.PendingGameBoot = null;
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Error($@"Error handling pending command line actions: {e.Message}");
+                Log.Error(e.FlattenException());
+            }
+
+            App.PendingAutoModInstallPath = null;
+            //App.PendingGameBoot = null; // this is not cleared here as it will be used at end of applymod above
+            App.PendingNXMLink = null;
         }
 
         //string convertKey(string pcKey, StringRef sref)

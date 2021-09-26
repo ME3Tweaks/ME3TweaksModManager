@@ -50,7 +50,14 @@ namespace MassEffectModManagerCore
         private static bool POST_STARTUP = false;
         public const string DISCORD_INVITE_LINK = "https://discord.gg/s8HA6dc";
         public static bool UpgradingFromME3CMM;
+
+        // PENDING THINGS
         public static string PendingNXMLink;
+        public static string PendingAutoModInstallPath;
+        public static MEGame? PendingGameBoot;
+
+
+
         public static Visibility IsDebugVisibility => IsDebug ? Visibility.Visible : Visibility.Collapsed;
 
         public static Visibility DebugOnlyVisibility
@@ -176,6 +183,16 @@ namespace MassEffectModManagerCore
                         if (parsedCommandLineArgs.Value.NXMLink != null)
                         {
                             PendingNXMLink = parsedCommandLineArgs.Value.NXMLink;
+                        }
+
+                        if (parsedCommandLineArgs.Value.AutoInstallModdescPath != null)
+                        {
+                            PendingAutoModInstallPath = parsedCommandLineArgs.Value.AutoInstallModdescPath;
+                        }
+
+                        if (parsedCommandLineArgs.Value.GameBoot != null)
+                        {
+                            PendingGameBoot = parsedCommandLineArgs.Value.GameBoot;
                         }
                     }
                     else
@@ -682,7 +699,7 @@ namespace MassEffectModManagerCore
         public string NXMLink { get; set; }
 
         [Option(@"installmod", HelpText = "Instructs Mod Manager to automatically install the mod from the specified mod path after initialization, to the default target")]
-        public string AutoinstallModdescPath { get; set; }
+        public string AutoInstallModdescPath { get; set; }
 
         [Option(@"bootgame", HelpText = "Instructs Mod Manager to automatically boot the selected game after initialization")]
         public MEGame? GameBoot { get; set; }

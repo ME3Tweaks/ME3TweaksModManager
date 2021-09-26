@@ -99,7 +99,7 @@
     <system:String x:Key="string_ModManagerLogsDiagnostics">Mod Manager Logs &amp; Diagnostics</system:String>
     <system:String x:Key="string_TroubleshootingtoolsforME3Tweaks">Troubleshooting tools for ME3Tweaks</system:String>
     <system:String x:Key="string_About">About</system:String>
-    <system:String x:Key="string_moddescfileformatspecification">moddesc.ini file format specification</system:String>
+    <system:String x:Key="string_moddescfileformatspecification">Mod Manager documentation for developers</system:String>
     <system:String x:Key="string_ReferenceinformationModdesc">Reference information about the moddesc.ini specification</system:String>
     <system:String x:Key="string_AboutME3TweaksModManager">About ME3Tweaks Mod Manager</system:String>
     <system:String x:Key="string_Aboutthisprogram">About this program</system:String>
@@ -1744,7 +1744,7 @@
     <!-- 0=typekey.Value -->
     <system:String x:Key="string_consoleKeyKeybinder">Console Key Keybinder</system:String>
     <!-- In game it is "Console Key", and this is keybinder, hence Console Key Keybinder -->
-    <system:String x:Key="string_description_consoleKeyKeybinder">This tool lets you set what keys are used to open the console and miniconsole in each Mass Effect game.</system:String>
+    <system:String x:Key="string_description_consoleKeyKeybinder">This tool lets you set what keys are used to open the console and miniconsole in each Mass Effect game. To enable the console, install the bink bypass for your game in the Tools menu.</system:String>
     <system:String x:Key="string_listeningForKeypress">Listening for keypress</system:String>
     <system:String x:Key="string_pressAnyKeyOnYourKeyboardToAssignItFor">Press any key on your keyboard to assign it for:</system:String>
     <system:String x:Key="string_cancelKeyAssignment">Cancel key assignment</system:String>
