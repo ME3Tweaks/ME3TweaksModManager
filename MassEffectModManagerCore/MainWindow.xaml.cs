@@ -1725,8 +1725,8 @@ namespace MassEffectModManagerCore
                         result = Path.GetDirectoryName(result);
                     }
 
-                    if (gameSelected.IsLEGame())
-                        result = Path.GetDirectoryName(result); //up one more because of win64 directory.
+                    if (gameSelected.IsLEGame() || gameSelected == MEGame.ME3)
+                        result = Path.GetDirectoryName(result); //up one more because of win32/win64 directory.
 
                     var pendingTarget = new GameTarget(gameSelected, result, false);
                     string failureReason = pendingTarget.ValidateTarget();
