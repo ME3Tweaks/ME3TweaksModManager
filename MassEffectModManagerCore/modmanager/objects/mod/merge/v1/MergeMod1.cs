@@ -110,13 +110,13 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
             {
                 if (mc.ScriptUpdate != null)
                 {
-                    File.WriteAllText(Path.Combine(outputfolder, mc.ScriptUpdate.ScriptFileName), mc.ScriptUpdate.ScriptText);
+                    File.WriteAllText(Path.Combine(outputfolder, Path.GetFileName(mc.ScriptUpdate.ScriptFileName)), mc.ScriptUpdate.ScriptText);
                     mc.ScriptUpdate.ScriptText = null;
                 }
 
                 if (mc.AssetUpdate != null)
                 {
-                    File.WriteAllBytes(Path.Combine(outputfolder, mc.AssetUpdate.AssetName), Assets[mc.AssetUpdate.AssetName].AssetBinary);
+                    File.WriteAllBytes(Path.Combine(outputfolder, Path.GetFileName(mc.AssetUpdate.AssetName)), Assets[mc.AssetUpdate.AssetName].AssetBinary);
                 }
             }
 
