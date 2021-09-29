@@ -164,7 +164,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             private void BeginBackup()
             {
-                string[] allGameLangauges = StarterKitGeneratorWindow.GetLanguagesForGame(BackupSourceTarget.Game);
+                string[] allGameLangauges = StarterKitGeneratorWindow.GetLanguagesForGame(BackupSourceTarget.Game).Select(x=>x.filecode).ToArray();
                 string[] languages = null;
                 var targetToBackup = BackupSourceTarget;
                 if (!targetToBackup.IsCustomOption)

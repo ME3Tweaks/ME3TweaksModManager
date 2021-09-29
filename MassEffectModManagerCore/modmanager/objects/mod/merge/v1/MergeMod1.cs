@@ -148,10 +148,10 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
                     // Ensure end name is not present on base
                     foreach (var l in localizations)
                     {
-                        if (targetnameBase.EndsWith($@"_{l}", StringComparison.InvariantCultureIgnoreCase))
-                            targetnameBase = targetnameBase.Substring(0, targetnameBase.Length - 4);
+                        if (targetnameBase.EndsWith($@"_{l.filecode}", StringComparison.InvariantCultureIgnoreCase))
+                            targetnameBase = targetnameBase.Substring(0, targetnameBase.Length - (l.filecode.Length + 1));
 
-                        targets.Add($@"{targetnameBase}_{l}{targetExtension}");
+                        targets.Add($@"{targetnameBase}_{l.filecode}{targetExtension}");
                     }
                 }
             }

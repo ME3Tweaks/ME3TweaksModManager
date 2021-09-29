@@ -419,7 +419,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 var langs = StarterKitGeneratorWindow.GetLanguagesForGame(Game);
                 foreach (var lang in langs)
                 {
-                    var fname = Path.Combine(cookedPath, $@"Coalesced_{lang}.bin");
+                    var fname = Path.Combine(cookedPath, $@"Coalesced_{lang.filecode}.bin");
                     if (File.Exists(fname))
                     {
                         using var fs = File.OpenRead(fname);

@@ -36,10 +36,14 @@ namespace MassEffectModManagerCore.modmanager.windows
     /// </summary>
     public partial class StarterKitGeneratorWindow : ValidatableWindowBase
     {
-        public static (string filecode, string langcode)[] le1languages = { (@"INT", @"en-us"), (@"ES", @"es-es"), (@"DE", @"de-de"), (@"RA", @"ru-ru"), (@"FR", @"fr-fr"), (@"IT", @"it-it"), (@"PLPC", @"pl-pl"), (@"JPN", @"jp-jp") };
-        public static (string filecode, string langcode)[] lelanguages = { (@"INT", @"en-us"), (@"ESN", @"es-es"), (@"DEU", @"de-de"), (@"RUS", @"ru-ru"), (@"FRA", @"fr-fr"), (@"ITA", @"it-it"), (@"POL", @"pl-pl"), (@"JPN", @"jp-jp") };
-        public static (string filecode, string langcode)[] me3languages = { (@"INT", @"en-us"), (@"ESN", @"es-es"), (@"DEU", @"de-de"), (@"RUS", @"ru-ru"), (@"FRA", @"fr-fr"), (@"ITA", @"it-it"), (@"POL", @"pl-pl"), (@"JPN", @"jp-jp") };
+        public static (string filecode, string langcode)[] me1languages = { (@"INT", @"en-us"), (@"ES", @"es-es"), (@"DE", @"de-de"), (@"RA", @"ru-ru"), (@"FR", @"fr-fr"), (@"IT", @"it-it"), (@"PLPC", @"pl-pl"), (@"JA", @"jp-jp") };
         public static (string filecode, string langcode)[] me2languages = { (@"INT", @"en-us"), (@"ESN", @"es-es"), (@"DEU", @"de-de"), (@"RUS", @"ru-ru"), (@"FRA", @"fr-fr"), (@"ITA", @"it-it"), (@"POL", @"pl-pl"), (@"HUN", @"hu-hu"), (@"CZE", @"cs-cz") };
+        public static (string filecode, string langcode)[] me3languages = { (@"INT", @"en-us"), (@"ESN", @"es-es"), (@"DEU", @"de-de"), (@"RUS", @"ru-ru"), (@"FRA", @"fr-fr"), (@"ITA", @"it-it"), (@"POL", @"pl-pl"), (@"JPN", @"jp-jp") };
+
+        public static (string filecode, string langcode)[] le1languages = { (@"INT", @"en-us"), (@"ES", @"es-es"), (@"DE", @"de-de"), (@"RA", @"ru-ru"), (@"FR", @"fr-fr"), (@"IT", @"it-it"), (@"PLPC", @"pl-pl"), (@"JA", @"jp-jp") };
+        public static (string filecode, string langcode)[] le2languages = { (@"INT", @"en-us"), (@"ESN", @"es-es"), (@"DEU", @"de-de"), (@"RUS", @"ru-ru"), (@"FRA", @"fr-fr"), (@"ITA", @"it-it"), (@"POL", @"pl-pl"), (@"JPN", @"jp-jp") };
+        public static (string filecode, string langcode)[] le3languages = { (@"INT", @"en-us"), (@"ESN", @"es-es"), (@"DEU", @"de-de"), (@"RUS", @"ru-ru"), (@"FRA", @"fr-fr"), (@"ITA", @"it-it"), (@"POL", @"pl-pl"), (@"JPN", @"jp-jp") };
+
 
         public int MaxMountForGame
         {
@@ -617,8 +621,7 @@ namespace MassEffectModManagerCore.modmanager.windows
 
                 var tlkFilePrefix = skOption.ModGame.IsGame3() ? dlcFolderName : $@"DLC_{skOption.ModModuleNumber}";
 
-                // Is this right?
-                var languages = skOption.ModGame.IsGame2() ? me2languages : me3languages;
+                var languages = GetLanguagesForGame(skOption.ModGame);
                 foreach (var lang in languages)
                 {
                     List<ME1TalkFile.TLKStringRef> strs = new List<ME1TalkFile.TLKStringRef>();
@@ -755,14 +758,17 @@ namespace MassEffectModManagerCore.modmanager.windows
             }
         }
 
-        public static string[] GetLanguagesForGame(MEGame game)
+        public static (string filecode, string langcode)[] GetLanguagesForGame(MEGame game)
         {
-            if (game is MEGame.ME1) return new[] { @"INT" };
-            if (game is MEGame.LE1) return le1languages.Select(x => x.filecode).ToArray();
-            if (game.IsGame3()) return me3languages.Select(x => x.filecode).ToArray();
-            if (game.IsGame2()) return me2languages.Select(x => x.filecode).ToArray();
+            if (game is MEGame.ME1) return me1languages;
+            if (game is MEGame.ME2) return me2languages;
+            if (game is MEGame.ME3) return me3languages;
+            if (game is MEGame.LE1) return le1languages;
+            if (game is MEGame.LE2) return le2languages;
+            if (game is MEGame.LE3) return le3languages;
 
-            return new string[] { };
+            throw new Exception($@"Cannot get language for game {game}");
+            return null;
         }
     }
 }
