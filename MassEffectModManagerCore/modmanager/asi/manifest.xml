@@ -702,7 +702,7 @@
     </asimod>
     <asimod>
       <name>SeqAct_Log Enabler</name>
-      <installedname/>
+      <installedname>SeqAct_Log-Enabler</installedname>
       <author>henbagle</author>
       <description>Will print the contents of SeqVars attached to SeqAct_Logs to the screen. Useful for debugging sequences.</description>
       <version>2</version>
