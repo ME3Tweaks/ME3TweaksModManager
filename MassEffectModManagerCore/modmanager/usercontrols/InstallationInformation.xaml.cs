@@ -687,7 +687,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     InstallerInstanceBuild = mcmm.InstalledBy;
                     if (int.TryParse(InstallerInstanceBuild, out var _))
                     {
-                        InstalledBy = M3L.GetString(M3L.string_installedByModManager);
+                        InstalledBy = M3L.GetString(M3L.string_installedByModManager) + @" Build " + InstallerInstanceBuild; // Installed by Mod Manager Build X. Doens't need localized
                     }
                     else
                     {
@@ -738,7 +738,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             private bool CanToggleDLC() => (game is MEGame.ME3 || game.IsLEGame() || DLCFolderName.StartsWith('x')) && !Utilities.IsGameRunning(game);
 
-            public bool EnableDisableVisible => game is MEGame.ME3 or MEGame.LE2 or MEGame.LE3 || DLCFolderName.StartsWith('x');
+            public bool EnableDisableVisible => game is MEGame.ME3 || game.IsLEGame() || DLCFolderName.StartsWith('x');
             public ICommand DeleteCommand { get; set; }
             public GenericCommand EnableDisableCommand { get; set; }
             private bool CanDeleteDLCMod(object obj) => !Utilities.IsGameRunning(game);
