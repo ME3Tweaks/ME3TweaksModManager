@@ -736,7 +736,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 //TriggerPropertyChangedFor(nameof(DLCFolderName));
             }
 
-            private bool CanToggleDLC() => (game is MEGame.ME3 or MEGame.LE2 or MEGame.LE3 || DLCFolderName.StartsWith('x')) && !Utilities.IsGameRunning(game);
+            private bool CanToggleDLC() => (game is MEGame.ME3 || game.IsLEGame() || DLCFolderName.StartsWith('x')) && !Utilities.IsGameRunning(game);
 
             public bool EnableDisableVisible => game is MEGame.ME3 or MEGame.LE2 or MEGame.LE3 || DLCFolderName.StartsWith('x');
             public ICommand DeleteCommand { get; set; }
