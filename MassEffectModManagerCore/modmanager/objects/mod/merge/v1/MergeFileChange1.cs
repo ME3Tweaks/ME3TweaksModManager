@@ -163,7 +163,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
                 case @"ObjectProperty":
                     // This does not support porting in, only relinking existing items
                     ObjectProperty op = new ObjectProperty(0, PropertyName);
-                    if (PropertyValue != null)
+                    if (PropertyValue != null && PropertyValue != @"M3M_NULL") //M3M_NULL is a keyword for setting it to null to satisfy the schema
                     {
                         var entry = package.FindEntry(PropertyValue);
                         if (entry == null)
