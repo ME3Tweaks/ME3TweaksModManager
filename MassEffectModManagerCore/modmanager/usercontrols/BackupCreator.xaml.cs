@@ -164,7 +164,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             private void BeginBackup()
             {
-                string[] allGameLangauges = StarterKitGeneratorWindow.GetLanguagesForGame(BackupSourceTarget.Game).Select(x=>x.filecode).ToArray();
+                string[] allGameLangauges = BackupSourceTarget.Game != MEGame.LELauncher ? StarterKitGeneratorWindow.GetLanguagesForGame(BackupSourceTarget.Game).Select(x=>x.filecode).ToArray() : null;
                 string[] languages = null;
                 var targetToBackup = BackupSourceTarget;
                 if (!targetToBackup.IsCustomOption)
@@ -401,7 +401,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                         if (fileName != null && fileName.LastIndexOf("_", StringComparison.InvariantCultureIgnoreCase) > 0)
                                         {
                                             var suffix = fileName.Substring(fileName.LastIndexOf("_", StringComparison.InvariantCultureIgnoreCase) + 1); // INT, ESN, PLPC
-                                            if (allGameLangauges.Contains(suffix, StringComparer.InvariantCultureIgnoreCase) && !languages.Contains(suffix, StringComparer.InvariantCultureIgnoreCase))
+                                            if (allGameLangauges != null && allGameLangauges.Contains(suffix, StringComparer.InvariantCultureIgnoreCase) && !languages.Contains(suffix, StringComparer.InvariantCultureIgnoreCase))
                                             {
                                                 Debug.WriteLine($@"Skipping non-selected localized file for backup: {file}");
                                                 return false; // Do not back up this file
