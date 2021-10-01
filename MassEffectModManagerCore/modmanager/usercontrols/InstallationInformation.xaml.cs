@@ -753,8 +753,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     if (confirmDelete.HasValue && confirmDelete.Value)
                     {
                         Log.Information(@"Deleting DLC mod from target: " + dlcFolderPath);
-                        Utilities.DeleteFilesAndFoldersRecursively(dlcFolderPath);
-                        notifyDeleted?.Invoke();
+                        try
+                        {
+                            Utilities.DeleteFilesAndFoldersRecursively(dlcFolderPath);
+                            notifyDeleted?.Invoke();
+                        }
+                        catch (Exception e)
+                        {
+                            Log.Error($@"Error deleting DLC mod: {e.Message}");
+                            // Todo: Show a dialog to the user
+                        }
                     }
 
                 }
