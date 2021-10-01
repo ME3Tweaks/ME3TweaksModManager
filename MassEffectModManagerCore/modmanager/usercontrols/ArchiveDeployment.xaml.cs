@@ -335,7 +335,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 var customDLCJob = ModBeingDeployed.GetJob(ModJob.JobHeader.CUSTOMDLC);
                 var customDLCFolders = customDLCJob.CustomDLCFolderMapping.Keys.ToList();
                 customDLCFolders.AddRange(customDLCJob.AlternateDLCs.Where(x => x.Operation == AlternateDLC.AltDLCOperation.OP_ADD_CUSTOMDLC).Select(x => x.AlternateDLCFolder));
-                var languages = ModBeingDeployed.Game.IsGame2() ? StarterKitGeneratorWindow.me2languages : StarterKitGeneratorWindow.me3languages;
+                var languages = StarterKitGeneratorWindow.GetLanguagesForGame(ModBeingDeployed.Game);
                 obj.ItemText = M3L.GetString(M3L.string_languageCheckInProgress);
                 foreach (var customDLC in customDLCFolders)
                 {

@@ -2173,5 +2173,20 @@ namespace MassEffectModManagerCore.modmanager
         {
             return Directory.CreateDirectory(Path.Combine(GetLELaunchToolsDir(), "GameBoot")).FullName;
         }
+
+        /// <summary>
+        /// Writes the location of this exe to the registry. This allows external tools to locate Mod Manager without having them have to specify it.
+        /// </summary>
+        public static void WriteExeLocation()
+        {
+            try
+            {
+                Utilities.WriteRegistryKey(App.REGISTRY_KEY_ME3TWEAKS, @"ExecutableLocation", App.ExecutableLocation);
+            }
+            catch (Exception e)
+            {
+                Log.Error($@"Could not write exe location to registry: {e.Message}");
+            }
+        }
     }
 }

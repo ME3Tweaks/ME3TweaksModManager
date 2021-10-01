@@ -3015,6 +3015,7 @@ namespace MassEffectModManagerCore
 
                     if (firstStartupCheck)
                     {
+                        Utilities.WriteExeLocation();
                         handleInitialPending();
                     }
 
