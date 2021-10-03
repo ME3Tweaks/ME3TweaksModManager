@@ -2014,7 +2014,7 @@
 	<system:String x:Key="string_fullGameRestore">Полное восстановление игры</system:String>
 	<system:String x:Key="string_restoringTextureLODs">Восстановление из архива сбросит ваши настройки качества текстур на значения по умолчанию. Удостоверьтесь, что запускаете игру через ModManager для установки корректного уровня детализации текстур.</system:String>
 	<system:String x:Key="string_entireGameDirectoryWillBeDeleted">Директория игры будет полностью удалена. Если вы пытаетесь выполнить частичное восстановление, включая удаление DLC-модов, восстановление отдельных файлов или SFAR, используйте опции восстановления по нажатию кнопки Настройка Игры</system:String>
-	<system:String x:Key="string_youMaySeeElevationPromptOnRestore">При попытке восстановления игры может появиться всплывающее сообщение. Это индикация того,  ME3Tweaks Mod Manager дает вашей учетной записи правда доступа в новой директории игры после удаления старой.</system:String>
+	<system:String x:Key="string_youMaySeeElevationPromptOnRestore">При попытке восстановления игры может появиться всплывающее сообщение. Это индикация того, что ME3Tweaks Mod Manager дает вашей учетной записи права доступа к новой директории игры после удаления старой.</system:String>
 	<system:String x:Key="string_dialog_restoringXWillDeleteGameDir" xml:space="preserve">Восстановление {0} полностью удалит директорию игры и затем скопирует содержимое архива по исходному пути.\n\nУдалить данную игру и восстановить ее из архива?</system:String>
 	<!-- 0=Utilities.GetGameName(Game) -->
 	<system:String x:Key="string_gameTargetWillBeDeleted">Указанная игра будет удалена</system:String>
