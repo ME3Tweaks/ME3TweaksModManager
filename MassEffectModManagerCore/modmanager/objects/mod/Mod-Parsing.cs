@@ -978,7 +978,8 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                                     {
                                         if (GameFileExtensions.Contains(Path.GetExtension(file), StringComparer.InvariantCultureIgnoreCase))
                                         {
-                                            var destFile = destGameDirectory + Path.DirectorySeparatorChar + file.Substring(replaceFilesSourceSplit[i].Length);
+                                            // We use trimstart here as the split might be an empty string.
+                                            var destFile = destGameDirectory + Path.DirectorySeparatorChar + file.Substring(replaceFilesSourceSplit[i].Length).TrimStart('\\', '/');
                                             CLog.Information($@"Adding file to job replace files list: {file} => {destFile}", Settings.LogModStartup);
                                             string failurereason = headerJob.AddPreparsedFileToInstall(destFile, file, this);
                                             if (failurereason != null)
