@@ -159,7 +159,17 @@ namespace MassEffectModManagerCore
                     foreach (var ii in items)
                     {
                         ii.DownloadedStream.Position = 0;
-                        openModImportUI(ii.ModFile.FileName, ii.DownloadedStream);
+                        if (ii.DownloadedStream is FileStream fs)
+                        {
+                            // Open the file instead
+                            fs.Dispose(); // Ensure it's closed
+                            openModImportUI(fs.Name); // Open the archive itself
+                        }
+                        else
+                        {
+                            openModImportUI(ii.ModFile.FileName, ii.DownloadedStream);
+                        }
+
                     }
                 }
             };
