@@ -803,4 +803,17 @@
       <autoremovegroups/>
     </asimod>
   </updategroup>
+  <updategroup groupid="80" game="4" hidden="0">
+    <asimod>
+      <name>LE1 LEX Interop</name>
+      <installedname>LE1LEXInterop</installedname>
+      <author>henbagle</author>
+      <description>This ASI allows Legendary Explorer to communicate with Mass Effect (Legendary Edition) so tools such as Live Level Editor can be used. This ASI does nothing on its own.</description>
+      <version>1</version>
+      <hash>1e0e463a10a598265c380fde97f9c8d8</hash>
+      <sourcecode>https://github.com/ME3Tweaks/LE1-ASI-Plugins/tree/main/LE1LEXInterop</sourcecode>
+      <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LE1LEXInterop-v1.0/ZZZ_LEXInteropLE1.asi</downloadlink>
+      <autoremovegroups/>
+    </asimod>
+  </updategroup>
 </ASIManifest>
