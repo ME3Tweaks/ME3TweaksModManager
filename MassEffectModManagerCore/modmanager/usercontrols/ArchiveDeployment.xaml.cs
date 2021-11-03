@@ -1075,7 +1075,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                         if (nonSubmittableMods.Any())
                         {
-                            M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_dialog_noModSiteDeployed, string.Join("\n - ", nonSubmittableMods)), // do not localize
+                            M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_dialog_noModSiteDeployed, string.Join("\n - ", nonSubmittableMods.Select(x => x.ModName))), // do not localize
                                 M3L.GetString(M3L.string_dialog_noModSiteDeployed), MessageBoxButton.OK,
                                 MessageBoxImage.Warning);
                         }
