@@ -232,7 +232,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
 
                 // Check for ALOT markers
-                var packageFiles = Utilities.GetPackagesInDirectory(item.ModToValidateAgainst.ModPath, true);
+                var packageFiles = referencedFiles.Where(x=>x.RepresentsPackageFilePath());
                 foreach (var p in packageFiles)
                 {
                     if (Utilities.HasALOTMarker(p))
