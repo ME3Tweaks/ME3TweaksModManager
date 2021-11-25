@@ -7,6 +7,7 @@ using System.Windows.Input;
 using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
+using ME3TweaksCore.Services;
 using PropertyChanged;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols

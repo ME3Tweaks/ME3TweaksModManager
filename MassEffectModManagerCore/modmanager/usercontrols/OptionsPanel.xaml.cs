@@ -17,7 +17,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     {
         public OptionsPanel()
         {
-            LibraryDir = Utilities.GetModsDirectory();
+            LibraryDir = M3Utilities.GetModsDirectory();
             LoadCommands();
             InitializeComponent();
         }

@@ -1,4 +1,6 @@
-﻿using Microsoft.WindowsAPICodePack.Taskbar;
+﻿using ME3TweaksCore.Misc;
+using ME3TweaksCoreWPF.UI;
+using Microsoft.WindowsAPICodePack.Taskbar;
 
 namespace MassEffectModManagerCore.modmanager.helpers
 {
@@ -35,6 +37,11 @@ namespace MassEffectModManagerCore.modmanager.helpers
             {
                 // Sometimes windows throws exception internally fetching progressbar and it bubbles out to here (yes, I've seen this)
             }
+        }
+
+        public static void SetProgressState(MTaskbarState state)
+        {
+            SetProgressState(MTaskbarStateWPF.ConvertTaskbarState(state));
         }
 
         public static void SetProgressState(TaskbarProgressBarState state)

@@ -93,7 +93,7 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
             return null;
         }
 
-        public static bool HasAPIKey => File.Exists(Path.Combine(Utilities.GetNexusModsCache(), "nexusmodsapikey"));
+        public static bool HasAPIKey => File.Exists(Path.Combine(M3Utilities.GetNexusModsCache(), "nexusmodsapikey"));
 
         /// <summary>
         /// Wipes the nexus keys from storage and removes the UserInfo variable
@@ -102,8 +102,8 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
         public static bool WipeKeys()
         {
             UserInfo = null;
-            var keyPath = Path.Combine(Utilities.GetNexusModsCache(), "nexusmodsapikey");
-            var entropyf = Path.Combine(Utilities.GetNexusModsCache(), "entropy");
+            var keyPath = Path.Combine(M3Utilities.GetNexusModsCache(), "nexusmodsapikey");
+            var entropyf = Path.Combine(M3Utilities.GetNexusModsCache(), "entropy");
             if (File.Exists(keyPath)) File.Delete(keyPath);
             if (File.Exists(entropyf)) File.Delete(entropyf);
             return true;
@@ -111,8 +111,8 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
 
         public static string DecryptNexusmodsAPIKeyFromDisk()
         {
-            var keyPath = Path.Combine(Utilities.GetNexusModsCache(), "nexusmodsapikey");
-            var entropyf = Path.Combine(Utilities.GetNexusModsCache(), "entropy");
+            var keyPath = Path.Combine(M3Utilities.GetNexusModsCache(), "nexusmodsapikey");
+            var entropyf = Path.Combine(M3Utilities.GetNexusModsCache(), "entropy");
             if (File.Exists(keyPath) && File.Exists(entropyf))
             {
                 var entropy = File.ReadAllBytes(entropyf);
@@ -426,7 +426,7 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
                 await client.SendAsync(
                     Encoding.UTF8.GetBytes("{\"id\": \"" + guid + "\", \"appid\": \"me3tweaks\"}")); //do not localize
                 Thread.Sleep(1000); //??
-                Utilities.OpenWebpage($"https://www.nexusmods.com/sso?id={guid}&application=me3tweaks");
+                M3Utilities.OpenWebpage($"https://www.nexusmods.com/sso?id={guid}&application=me3tweaks");
                 lock (lockobj)
                 {
                     Monitor.Wait(lockobj, new TimeSpan(0, 0, 1, 0));

@@ -17,6 +17,7 @@ using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Unreal;
 using MassEffectModManagerCore.modmanager.diagnostics;
 using ME3TweaksCore.GameFilesystem;
+using ME3TweaksCore.Services;
 using ME3TweaksCore.Services.Backup;
 using ME3TweaksCoreWPF;
 using PropertyChanged;

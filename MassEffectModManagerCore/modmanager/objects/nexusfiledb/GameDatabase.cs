@@ -26,10 +26,10 @@ namespace MassEffectModManagerCore.modmanager.objects.nexusfiledb
             if (App.ServerManifest != null && App.ServerManifest.TryGetValue(@"latest_nexusdb_hash", out var nexusDbHash))
             {
                 string md5 = null;
-                var dbPath = Path.Combine(Utilities.GetNexusModsCache(), @"nexusmodsdb.zip");
+                var dbPath = Path.Combine(M3Utilities.GetNexusModsCache(), @"nexusmodsdb.zip");
                 if (File.Exists(dbPath))
                 {
-                    md5 = Utilities.CalculateMD5(dbPath);
+                    md5 = M3Utilities.CalculateMD5(dbPath);
                 }
 
                 if (md5 == null && downloadIfNeverDownloaded)
@@ -60,7 +60,7 @@ namespace MassEffectModManagerCore.modmanager.objects.nexusfiledb
             bool closeStreamAtEnd = zipDataStream == null;
             if (zipDataStream == null)
             {
-                var fPath = Path.Combine(Utilities.GetNexusModsCache(), @"nexusmodsdb.zip");
+                var fPath = Path.Combine(M3Utilities.GetNexusModsCache(), @"nexusmodsdb.zip");
                 if (File.Exists(fPath))
                 {
                     zipDataStream = File.OpenRead(fPath);

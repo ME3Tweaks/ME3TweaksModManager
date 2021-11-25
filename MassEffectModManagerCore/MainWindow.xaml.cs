@@ -366,7 +366,7 @@ namespace MassEffectModManagerCore
                 var result = M3L.ShowDialog(null, M3L.GetString(M3L.string_dialog_multiUserProgramDataWindowsRestrictions), M3L.GetString(M3L.string_grantingWritePermissions), MessageBoxButton.OKCancel, MessageBoxImage.Error);
                 if (result == MessageBoxResult.OK)
                 {
-                    bool done = Utilities.CreateDirectoryWithWritePermission(Utilities.GetAppDataFolder(), true);
+                    bool done = M3Utilities.CreateDirectoryWithWritePermission(M3Utilities.GetAppDataFolder(), true);
                     if (done)
                     {
                         M3Log.Information(@"Granted permissions to ProgramData");
@@ -1071,7 +1071,7 @@ namespace MassEffectModManagerCore
             if (confirmationResult == MessageBoxResult.Yes)
             {
                 M3Log.Information(@"Deleting mod from library: " + selectedMod.ModPath);
-                if (Utilities.DeleteFilesAndFoldersRecursively(selectedMod.ModPath))
+                if (M3Utilities.DeleteFilesAndFoldersRecursively(selectedMod.ModPath))
                 {
                     AllLoadedMods.Remove(selectedMod);
                     VisibleFilteredMods.Remove(selectedMod);
@@ -1569,7 +1569,7 @@ namespace MassEffectModManagerCore
                 // ^ Strip ending slash. Then append it to make sure there is ending slash. Reg will interpret final \ as an escape, so we do \\ (as documented on ss64)
                 args.Add(@"/f");
 
-                return Utilities.RunProcess(exe, args, waitForProcess: true, requireAdmin: true);
+                return M3Utilities.RunProcess(exe, args, waitForProcess: true, requireAdmin: true);
             }
 
             return -3;
@@ -1586,9 +1586,9 @@ namespace MassEffectModManagerCore
             if (obj is string str && Enum.TryParse(str, out MEGame game))
             {
                 var target = GetCurrentTarget(game);
-                if (target != null && !Utilities.IsGameRunning(game))
+                if (target != null && !M3Utilities.IsGameRunning(game))
                 {
-                    return File.Exists(Utilities.GetBinkFile(target));
+                    return File.Exists(M3Utilities.GetBinkFile(target));
                 }
             }
 
@@ -1601,7 +1601,7 @@ namespace MassEffectModManagerCore
             {
                 var target = GetCurrentTarget(game);
                 if (target == null) return; //can't toggle this
-                if (Utilities.IsGameRunning(game))
+                if (M3Utilities.IsGameRunning(game))
                 {
                     M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_dialogCannotInstallBinkWhileGameRunning, game.ToGameName()), M3L.GetString(M3L.string_gameRunning), MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
@@ -1632,11 +1632,11 @@ namespace MassEffectModManagerCore
 
                 if (install)
                 {
-                    Utilities.InstallBinkBypass(target);
+                    M3Utilities.InstallBinkBypass(target);
                 }
                 else
                 {
-                    Utilities.UninstallBinkBypass(target);
+                    M3Utilities.UninstallBinkBypass(target);
                 }
 
 
@@ -1651,10 +1651,10 @@ namespace MassEffectModManagerCore
                 var target = GetCurrentTarget(game);
                 if (target != null)
                 {
-                    var configTool = Utilities.GetGameConfigToolPath(target);
+                    var configTool = M3Utilities.GetGameConfigToolPath(target);
                     try
                     {
-                        Utilities.RunProcess(configTool, "", false, true, false, false);
+                        M3Utilities.RunProcess(configTool, "", false, true, false, false);
                     }
                     catch (Exception e)
                     {
@@ -1672,7 +1672,7 @@ namespace MassEffectModManagerCore
                 var target = GetCurrentTarget(game);
                 if (target != null)
                 {
-                    var configTool = Utilities.GetGameConfigToolPath(target);
+                    var configTool = M3Utilities.GetGameConfigToolPath(target);
                     return File.Exists(configTool);
                 }
             }
@@ -1750,7 +1750,7 @@ namespace MassEffectModManagerCore
                                 {@"Supported", pendingTarget.Supported.ToString()}
                             });
 
-                        Utilities.AddCachedTarget(pendingTarget);
+                        M3Utilities.AddCachedTarget(pendingTarget);
                         PopulateTargets(pendingTarget);
                     }
                     else
@@ -1833,7 +1833,7 @@ namespace MassEffectModManagerCore
 
         private void ApplyMod(Mod mod, GameTargetWPF forcedTarget = null, bool batchMode = false, bool? installCompressed = null, Action<bool> installCompletedCallback = null)
         {
-            if (!Utilities.IsGameRunning(mod.Game))
+            if (!M3Utilities.IsGameRunning(mod.Game))
             {
                 BackgroundTask modInstallTask = backgroundTaskEngine.SubmitBackgroundJob(@"ModInstall", M3L.GetString(M3L.string_interp_installingMod, mod.ModName), M3L.GetString(M3L.string_interp_installedMod, mod.ModName));
                 var modInstaller = new ModInstaller(mod, forcedTarget ?? SelectedGameTarget, installCompressed, batchMode: batchMode);
@@ -1885,7 +1885,7 @@ namespace MassEffectModManagerCore
                         Analytics.TrackEvent(@"Granting write permissions", new Dictionary<string, string>() { { @"Granted?", @"Yes" } });
                         try
                         {
-                            Utilities.EnableWritePermissionsToFolders(targetsNeedingUpdate.Select(x => x.TargetPath).ToList());
+                            M3Utilities.EnableWritePermissionsToFolders(targetsNeedingUpdate.Select(x => x.TargetPath).ToList());
                         }
                         catch (Exception e)
                         {
@@ -1901,7 +1901,7 @@ namespace MassEffectModManagerCore
                 else
                 {
                     Analytics.TrackEvent(@"Granting write permissions", new Dictionary<string, string>() { { @"Granted?", @"Implicit" } });
-                    Utilities.EnableWritePermissionsToFolders(targetsNeedingUpdate.Select(x => x.TargetPath).ToList());
+                    M3Utilities.EnableWritePermissionsToFolders(targetsNeedingUpdate.Select(x => x.TargetPath).ToList());
                 }
             }
             else if (showDialogEvenIfNone)
@@ -1953,8 +1953,9 @@ namespace MassEffectModManagerCore
             Task.Run(() =>
             {
                 M3Log.Information(@"Ensuring default ASI assets are present");
-                M3ASIManager.ExtractDefaultASIResources();
+                M3Utilities.ExtractDefaultASIResources();
 
+                // This needs to be done earlier, I think...
                 M3Log.Information(@"Initializing LegendaryExplorerCore library");
                 #region INIT CORE LIB
                 MEPackageHandler.GlobalSharedCacheEnabled = false; // Do not use the package caching system
@@ -2096,27 +2097,27 @@ namespace MassEffectModManagerCore
             switch (game)
             {
                 case MEGame.ME1:
-                    ME1ASILoaderInstalled = Utilities.CheckIfBinkw32ASIIsInstalled(target);
+                    ME1ASILoaderInstalled = M3Utilities.CheckIfBinkw32ASIIsInstalled(target);
                     ME1ASILoaderText = ME1ASILoaderInstalled ? binkInstalledText : binkNotInstalledText;
                     break;
                 case MEGame.ME2:
-                    ME2ASILoaderInstalled = Utilities.CheckIfBinkw32ASIIsInstalled(target);
+                    ME2ASILoaderInstalled = M3Utilities.CheckIfBinkw32ASIIsInstalled(target);
                     ME2ASILoaderText = ME2ASILoaderInstalled ? binkInstalledText : binkNotInstalledText;
                     break;
                 case MEGame.ME3:
-                    ME3ASILoaderInstalled = Utilities.CheckIfBinkw32ASIIsInstalled(target);
+                    ME3ASILoaderInstalled = M3Utilities.CheckIfBinkw32ASIIsInstalled(target);
                     ME3ASILoaderText = ME3ASILoaderInstalled ? binkInstalledText : binkNotInstalledText;
                     break;
                 case MEGame.LE1:
-                    LE1ASILoaderInstalled = Utilities.CheckIfBinkw32ASIIsInstalled(target);
+                    LE1ASILoaderInstalled = M3Utilities.CheckIfBinkw32ASIIsInstalled(target);
                     LE1ASILoaderText = LE1ASILoaderInstalled ? binkInstalledText : binkNotInstalledText;
                     break;
                 case MEGame.LE2:
-                    LE2ASILoaderInstalled = Utilities.CheckIfBinkw32ASIIsInstalled(target);
+                    LE2ASILoaderInstalled = M3Utilities.CheckIfBinkw32ASIIsInstalled(target);
                     LE2ASILoaderText = LE2ASILoaderInstalled ? binkInstalledText : binkNotInstalledText;
                     break;
                 case MEGame.LE3:
-                    LE3ASILoaderInstalled = Utilities.CheckIfBinkw32ASIIsInstalled(target);
+                    LE3ASILoaderInstalled = M3Utilities.CheckIfBinkw32ASIIsInstalled(target);
                     LE3ASILoaderText = LE3ASILoaderInstalled ? binkInstalledText : binkNotInstalledText;
                     break;
             }
@@ -2151,7 +2152,7 @@ namespace MassEffectModManagerCore
         {
             try
             {
-                Utilities.EnsureModDirectories();
+                M3Utilities.EnsureModDirectories();
             }
             catch (Exception e)
             {
@@ -2187,17 +2188,17 @@ namespace MassEffectModManagerCore
                 bool canCheckForModUpdates = OnlineContent.CanFetchContentThrottleCheck(); //This is here as it will fire before other threads can set this value used in this session.
                 ModsLoaded = false;
                 var uiTask = backgroundTaskEngine.SubmitBackgroundJob(@"ModLoader", M3L.GetString(M3L.string_loadingMods), M3L.GetString(M3L.string_loadedMods));
-                M3Log.Information(@"Loading mods from mod library: " + Utilities.GetModsDirectory());
+                M3Log.Information(@"Loading mods from mod library: " + M3Utilities.GetModsDirectory());
 
-                var le3modDescsToLoad = Directory.GetDirectories(Utilities.GetLE3ModsDirectory()).Select(x => (game: MEGame.LE3, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
-                var le2modDescsToLoad = Directory.GetDirectories(Utilities.GetLE2ModsDirectory()).Select(x => (game: MEGame.LE2, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
-                var le1modDescsToLoad = Directory.GetDirectories(Utilities.GetLE1ModsDirectory()).Select(x => (game: MEGame.LE1, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
-                var me3modDescsToLoad = Directory.GetDirectories(Utilities.GetME3ModsDirectory()).Select(x => (game: MEGame.ME3, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
-                var me2modDescsToLoad = Directory.GetDirectories(Utilities.GetME2ModsDirectory()).Select(x => (game: MEGame.ME2, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
-                var me1modDescsToLoad = Directory.GetDirectories(Utilities.GetME1ModsDirectory()).Select(x => (game: MEGame.ME1, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
+                var le3modDescsToLoad = Directory.GetDirectories(M3Utilities.GetLE3ModsDirectory()).Select(x => (game: MEGame.LE3, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
+                var le2modDescsToLoad = Directory.GetDirectories(M3Utilities.GetLE2ModsDirectory()).Select(x => (game: MEGame.LE2, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
+                var le1modDescsToLoad = Directory.GetDirectories(M3Utilities.GetLE1ModsDirectory()).Select(x => (game: MEGame.LE1, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
+                var me3modDescsToLoad = Directory.GetDirectories(M3Utilities.GetME3ModsDirectory()).Select(x => (game: MEGame.ME3, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
+                var me2modDescsToLoad = Directory.GetDirectories(M3Utilities.GetME2ModsDirectory()).Select(x => (game: MEGame.ME2, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
+                var me1modDescsToLoad = Directory.GetDirectories(M3Utilities.GetME1ModsDirectory()).Select(x => (game: MEGame.ME1, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
 
                 // LE Launcher
-                var leLaunchermodDescsToLoad = Directory.GetDirectories(Utilities.GetLELauncherModsDirectory()).Select(x => (game: MEGame.LELauncher, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
+                var leLaunchermodDescsToLoad = Directory.GetDirectories(M3Utilities.GetLELauncherModsDirectory()).Select(x => (game: MEGame.LELauncher, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
                 //var modDescsToLoad = leLaunchermodDescsToLoad.ToList();
 
                 List<(MEGame game, string path)> modDescsToLoad = new();
@@ -2356,7 +2357,7 @@ namespace MassEffectModManagerCore
                 foreach (var mm in updatableMods.Where(x => x.NexusModID > 0 && x.ModClassicUpdateCode == 0)) //check zero as Mgamerz's mods will list me3tweaks with a nexus code still for integrations
                 {
                     var matchingUpdateInfoForMod = updateManifestModInfos.OfType<OnlineContent.NexusModUpdateInfo>().FirstOrDefault(x => x.NexusModsId == mm.NexusModID
-                                                                                                                                   && Utilities.GetGameFromNumber(x.GameId) == mm.Game
+                                                                                                                                   && M3Utilities.GetGameFromNumber(x.GameId) == mm.Game
                                                                                                                                    && updates.All(y => !y.mod.Equals(x.mod)));
                     if (matchingUpdateInfoForMod != null)
                     {
@@ -2419,7 +2420,7 @@ namespace MassEffectModManagerCore
                 {
                     M3Log.Information(@"Current boot target for ME3: " + target.TargetPath);
                     targets.Add(target);
-                    Utilities.AddCachedTarget(target);
+                    M3Utilities.AddCachedTarget(target);
                 }
                 else
                 {
@@ -2435,7 +2436,7 @@ namespace MassEffectModManagerCore
                 {
                     M3Log.Information(@"Current boot target for ME2: " + target.TargetPath);
                     targets.Add(target);
-                    Utilities.AddCachedTarget(target);
+                    M3Utilities.AddCachedTarget(target);
                     foundMe2Active = true;
                 }
                 else
@@ -2452,7 +2453,7 @@ namespace MassEffectModManagerCore
                 {
                     M3Log.Information(@"Current boot target for ME1: " + target.TargetPath);
                     targets.Add(target);
-                    Utilities.AddCachedTarget(target);
+                    M3Utilities.AddCachedTarget(target);
                     foundMe1Active = true;
                 }
                 else
@@ -2499,7 +2500,7 @@ namespace MassEffectModManagerCore
                         M3Log.Information($@"Found Steam game for {game}: " + target.TargetPath);
                         // Todo: Figure out how to insert at correct index
                         targets.Add(target);
-                        Utilities.AddCachedTarget(target);
+                        M3Utilities.AddCachedTarget(target);
                     }
                     else
                     {
@@ -2509,22 +2510,22 @@ namespace MassEffectModManagerCore
             }
 
             // ME1
-            addSteamTarget(Utilities.GetRegistrySettingString(
+            addSteamTarget(M3Utilities.GetRegistrySettingString(
                 @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 17460",
                 @"InstallLocation"), foundMe1Active, MEGame.ME1);
 
             // ME2
-            addSteamTarget(Utilities.GetRegistrySettingString(
+            addSteamTarget(M3Utilities.GetRegistrySettingString(
                 @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 24980",
                 @"InstallLocation"), foundMe2Active, MEGame.ME2);
 
             // ME3
-            addSteamTarget(Utilities.GetRegistrySettingString(
+            addSteamTarget(M3Utilities.GetRegistrySettingString(
                 @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 1238020",
                 @"InstallLocation"), foundMe2Active, MEGame.ME3);
 
             // Legendary Edition
-            var legendarySteamLoc = Utilities.GetRegistrySettingString(
+            var legendarySteamLoc = M3Utilities.GetRegistrySettingString(
                 @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 1328670",
                 @"InstallLocation");
             if (!string.IsNullOrWhiteSpace(legendarySteamLoc))
@@ -2536,15 +2537,15 @@ namespace MassEffectModManagerCore
             }
 
             M3Log.Information(@"Loading cached targets");
-            targets.AddRange(Utilities.GetCachedTargets(MEGame.ME3, targets));
-            targets.AddRange(Utilities.GetCachedTargets(MEGame.ME2, targets));
-            targets.AddRange(Utilities.GetCachedTargets(MEGame.ME1, targets));
+            targets.AddRange(M3Utilities.GetCachedTargets(MEGame.ME3, targets));
+            targets.AddRange(M3Utilities.GetCachedTargets(MEGame.ME2, targets));
+            targets.AddRange(M3Utilities.GetCachedTargets(MEGame.ME1, targets));
 
             // Load LE cached targets
-            targets.AddRange(Utilities.GetCachedTargets(MEGame.LE3, targets));
-            targets.AddRange(Utilities.GetCachedTargets(MEGame.LE2, targets));
-            targets.AddRange(Utilities.GetCachedTargets(MEGame.LE1, targets));
-            targets.AddRange(Utilities.GetCachedTargets(MEGame.LELauncher, targets));
+            targets.AddRange(M3Utilities.GetCachedTargets(MEGame.LE3, targets));
+            targets.AddRange(M3Utilities.GetCachedTargets(MEGame.LE2, targets));
+            targets.AddRange(M3Utilities.GetCachedTargets(MEGame.LE1, targets));
+            targets.AddRange(M3Utilities.GetCachedTargets(MEGame.LELauncher, targets));
 
             OrderAndSetTargets(targets, selectedTarget);
         }
@@ -2737,7 +2738,7 @@ namespace MassEffectModManagerCore
 
         private void RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
-            Utilities.OpenWebpage(e.Uri.AbsoluteUri);
+            M3Utilities.OpenWebpage(e.Uri.AbsoluteUri);
         }
 
         private void ExitApplication_Click(object sender, RoutedEventArgs e)
@@ -2749,13 +2750,13 @@ namespace MassEffectModManagerCore
         {
             if (SelectedMod != null)
             {
-                Utilities.OpenExplorer(SelectedMod.ModPath);
+                M3Utilities.OpenExplorer(SelectedMod.ModPath);
             }
         }
 
         private void OpenME3Tweaks_Click(object sender, RoutedEventArgs e)
         {
-            Utilities.OpenWebpage(@"https://me3tweaks.com/");
+            M3Utilities.OpenWebpage(@"https://me3tweaks.com/");
         }
 
         private void About_Click(object sender, RoutedEventArgs e)
@@ -2788,7 +2789,7 @@ namespace MassEffectModManagerCore
 
         private void OpenModsDirectory_Click(object sender, RoutedEventArgs e)
         {
-            Utilities.OpenExplorer(Utilities.GetModsDirectory());
+            M3Utilities.OpenExplorer(M3Utilities.GetModsDirectory());
         }
 
         private const int STARTUP_FAIL_CRITICAL_FILES_MISSING = 1;
@@ -3025,7 +3026,7 @@ namespace MassEffectModManagerCore
 
                     if (firstStartupCheck)
                     {
-                        Utilities.WriteExeLocation();
+                        M3Utilities.WriteExeLocation();
                         handleInitialPending();
                     }
 
@@ -3225,12 +3226,12 @@ namespace MassEffectModManagerCore
                 if (!string.IsNullOrEmpty(item.URL))
                 {
                     //URL HelpItem
-                    m.Click += (o, eventArgs) => Utilities.OpenWebpage(item.URL);
+                    m.Click += (o, eventArgs) => M3Utilities.OpenWebpage(item.URL);
                 }
                 else if (!string.IsNullOrEmpty(item.ModalTitle))
                 {
                     //Modal dialog
-                    item.ModalText = Utilities.ConvertBrToNewline(item.ModalText);
+                    item.ModalText = M3Utilities.ConvertBrToNewline(item.ModalText);
                     m.Click += (o, eventArgs) => { new DynamicHelpItemModalWindow(item) { Owner = this }.ShowDialog(); };
                 }
 
@@ -3854,7 +3855,7 @@ namespace MassEffectModManagerCore
 
         private void Documentation_Click(object sender, RoutedEventArgs e)
         {
-            Utilities.OpenWebpage(@"https://github.com/ME3Tweaks/ME3TweaksModManager/tree/master/documentation");
+            M3Utilities.OpenWebpage(@"https://github.com/ME3Tweaks/ME3TweaksModManager/tree/master/documentation");
         }
 
         private void OpenMemoryAnalyzer_Click(object sender, RoutedEventArgs e)
@@ -4030,12 +4031,12 @@ namespace MassEffectModManagerCore
 
         private void OpenME3TweaksModMaker_Click(object sender, RoutedEventArgs e)
         {
-            Utilities.OpenWebpage(@"https://me3tweaks.com/modmaker");
+            M3Utilities.OpenWebpage(@"https://me3tweaks.com/modmaker");
         }
 
         private void Donations_Click(object sender, RoutedEventArgs e)
         {
-            Utilities.OpenWebpage(@"https://me3tweaks.com/donations");
+            M3Utilities.OpenWebpage(@"https://me3tweaks.com/donations");
         }
 
         private void ListAllInstallableFiles_Click(object sender, RoutedEventArgs e)

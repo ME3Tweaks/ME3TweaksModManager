@@ -57,7 +57,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void ImportSelectedFolder()
         {
             //Check destination path
-            var destinationName = Utilities.SanitizePath(ModNameText);
+            var destinationName = M3Utilities.SanitizePath(ModNameText);
             if (string.IsNullOrWhiteSpace(destinationName))
             {
                 //cannot use this name
@@ -68,11 +68,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             //Check free space.
             var sourceDir = Path.Combine(M3Directories.GetDLCPath(SelectedTarget), SelectedDLCFolder.DLCFolderName);
-            var library = Utilities.GetModDirectoryForGame(SelectedTarget.Game);
-            if (Utilities.DriveFreeBytes(library, out var freeBytes))
+            var library = M3Utilities.GetModDirectoryForGame(SelectedTarget.Game);
+            if (M3Utilities.DriveFreeBytes(library, out var freeBytes))
             {
                 //Check enough space
-                var sourceSize = Utilities.GetSizeOfDirectory(sourceDir);
+                var sourceSize = M3Utilities.GetSizeOfDirectory(sourceDir);
                 if (sourceSize > (long)freeBytes)
                 {
                     //Not enough space
@@ -94,7 +94,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                 try
                 {
-                    Utilities.DeleteFilesAndFoldersRecursively(outDir);
+                    M3Utilities.DeleteFilesAndFoldersRecursively(outDir);
                 }
                 catch (Exception e)
                 {
@@ -145,7 +145,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             // Check for MEMI, we will not allow importing files with MEMI
             foreach (var file in Directory.GetFiles(sourceDir, @"*.*", SearchOption.AllDirectories))
             {
-                if (file.RepresentsPackageFilePath() && Utilities.HasALOTMarker(file))
+                if (file.RepresentsPackageFilePath() && M3Utilities.HasALOTMarker(file))
                 {
                     M3Log.Error($@"Found a file marked as texture modded: {file}. These files cannot be imported into mod manager");
                     Application.Current.Dispatcher.Invoke(delegate
@@ -158,8 +158,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
 
 
-            var library = Utilities.GetModDirectoryForGame(SelectedTarget.Game);
-            var destinationName = Utilities.SanitizePath(ModNameText);
+            var library = M3Utilities.GetModDirectoryForGame(SelectedTarget.Game);
+            var destinationName = M3Utilities.SanitizePath(ModNameText);
             var modFolder = Path.Combine(library, destinationName);
             var copyDestination = Path.Combine(modFolder, SelectedDLCFolder.DLCFolderName);
             var outInfo = Directory.CreateDirectory(copyDestination);

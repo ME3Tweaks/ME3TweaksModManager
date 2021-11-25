@@ -143,10 +143,10 @@ namespace MassEffectModManagerCore.modmanager.emailmerge
 
             // Path to Message templates file - different files for ME2/LE2
             string ResourcesFilePath = $@"MassEffectModManagerCore.modmanager.emailmerge.{target.Game}.103Message_Template_{target.Game}";
-            using IMEPackage resources = MEPackageHandler.OpenMEPackageFromStream(Utilities.GetResourceStream(ResourcesFilePath));
+            using IMEPackage resources = MEPackageHandler.OpenMEPackageFromStream(M3Utilities.GetResourceStream(ResourcesFilePath));
 
             // Startup file to place conditionals and transitions into
-            using IMEPackage startup = MEPackageHandler.OpenMEPackageFromStream(Utilities.GetResourceStream(
+            using IMEPackage startup = MEPackageHandler.OpenMEPackageFromStream(M3Utilities.GetResourceStream(
                 $@"MassEffectModManagerCore.modmanager.mergedlc.{target.Game}.Startup_{M3MergeDLC.MERGE_DLC_FOLDERNAME}.pcc"));
 
 

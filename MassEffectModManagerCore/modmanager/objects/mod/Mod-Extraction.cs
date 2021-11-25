@@ -140,13 +140,13 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 if (ExeExtractionTransform != null && ExeExtractionTransform.PatchRedirects.Any(x => x.index == entryInfo.Index))
                 {
                     M3Log.Information(@"Extracting vpatch file at index " + entryInfo.Index);
-                    return Path.Combine(Utilities.GetVPatchRedirectsFolder(), ExeExtractionTransform.PatchRedirects.First(x => x.index == entryInfo.Index).outfile);
+                    return Path.Combine(M3Utilities.GetVPatchRedirectsFolder(), ExeExtractionTransform.PatchRedirects.First(x => x.index == entryInfo.Index).outfile);
                 }
 
                 if (ExeExtractionTransform != null && ExeExtractionTransform.NoExtractIndexes.Any(x => x == entryInfo.Index))
                 {
                     M3Log.Information(@"Extracting file to trash (not used): " + entryPath);
-                    return Path.Combine(Utilities.GetTempPath(), @"Trash", @"trashfile");
+                    return Path.Combine(M3Utilities.GetTempPath(), @"Trash", @"trashfile");
                 }
 
                 if (ExeExtractionTransform != null && ExeExtractionTransform.AlternateRedirects.Any(x => x.index == entryInfo.Index))
@@ -287,15 +287,15 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 if (ExeExtractionTransform.VPatches.Any())
                 {
                     // MEHEM uses Vpatching for its alternates.
-                    var vpat = Utilities.GetCachedExecutablePath(@"vpat.exe");
+                    var vpat = M3Utilities.GetCachedExecutablePath(@"vpat.exe");
                     if (!testRun)
                     {
-                        Utilities.ExtractInternalFile(@"MassEffectModManagerCore.modmanager.executables.vpat.exe", vpat, true);
+                        M3Utilities.ExtractInternalFile(@"MassEffectModManagerCore.modmanager.executables.vpat.exe", vpat, true);
                     }
                     //Handle VPatching
                     foreach (var transform in ExeExtractionTransform.VPatches)
                     {
-                        var patchfile = Path.Combine(Utilities.GetVPatchRedirectsFolder(), transform.patchfile);
+                        var patchfile = Path.Combine(M3Utilities.GetVPatchRedirectsFolder(), transform.patchfile);
                         var inputfile = Path.Combine(ModPath, transform.inputfile);
                         var outputfile = Path.Combine(ModPath, transform.outputfile);
 
@@ -308,7 +308,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         updateTextCallback?.Invoke(M3L.GetString(M3L.string_interp_vPatchingIntoAlternate, Path.GetFileName(inputfile)));
                         if (!testRun)
                         {
-                            Utilities.RunProcess(vpat, args, true, false, false, true);
+                            M3Utilities.RunProcess(vpat, args, true, false, false, true);
                         }
                     }
                 }
@@ -372,7 +372,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             if (rcw != null)
             {
                 //Write RCW
-                var sanitizedName = Utilities.SanitizePath(ModName);
+                var sanitizedName = M3Utilities.SanitizePath(ModName);
                 rcw.WriteToFile(Path.Combine(modpath, sanitizedName + @".me2mod"));
 
                 //Write moddesc.ini
@@ -381,7 +381,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 ini[@"ModInfo"][@"game"] = @"ME2";
                 ini[@"ModInfo"][@"modname"] = ModName;
                 ini[@"ModInfo"][@"moddev"] = ModDeveloper;
-                ini[@"ModInfo"][@"moddesc"] = Utilities.ConvertNewlineToBr(ModDescription);
+                ini[@"ModInfo"][@"moddesc"] = M3Utilities.ConvertNewlineToBr(ModDescription);
                 ini[@"ModInfo"][@"modver"] = @"1.0"; //Not going to bother looking this up to match the source
 
                 ini[@"ME2_RCWMOD"][@"modfile"] = sanitizedName + @".me2mod";

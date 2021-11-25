@@ -81,7 +81,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
 
             if (calculateOriginalHash)
             {
-                info.OriginalExecutableHash = Utilities.CalculateMD5(s);
+                info.OriginalExecutableHash = M3Utilities.CalculateMD5(s);
             }
 
             return info;

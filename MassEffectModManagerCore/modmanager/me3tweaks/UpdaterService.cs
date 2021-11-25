@@ -224,8 +224,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                         tStream = qPackage.SaveToStream(false);
                                         hashMap[v] = new USFileInfo()
                                         {
-                                            MD5 = Utilities.CalculateMD5(tStream),
-                                            CompressedMD5 = Utilities.CalculateMD5(fpath),
+                                            MD5 = M3Utilities.CalculateMD5(tStream),
+                                            CompressedMD5 = M3Utilities.CalculateMD5(fpath),
                                             Filesize = tStream.Length,
                                             RelativeFilepath = v
                                         };
@@ -242,7 +242,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
                             hashMap[v] = new USFileInfo()
                             {
-                                MD5 = Utilities.CalculateMD5(fpath),
+                                MD5 = M3Utilities.CalculateMD5(fpath),
                                 Filesize = new FileInfo(fpath).Length,
                                 RelativeFilepath = v
                             };
@@ -454,7 +454,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         return;
                     }
 
-                    var decompressedMD5 = Utilities.CalculateMD5(decompressedStream);
+                    var decompressedMD5 = M3Utilities.CalculateMD5(decompressedStream);
                     if (decompressedMD5 != sourcefile.hash)
                     {
                         M3Log.Error($@"Decompressed file ({sourcefile.relativefilepath}) has the wrong hash. Expected: {sourcefile.hash}, got: {decompressedMD5}");
@@ -501,8 +501,8 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
 
             //Delete empty subdirectories
-            Utilities.DeleteEmptySubdirectories(modPath);
-            Utilities.DeleteFilesAndFoldersRecursively(stagingDirectory);
+            M3Utilities.DeleteEmptySubdirectories(modPath);
+            M3Utilities.DeleteFilesAndFoldersRecursively(stagingDirectory);
             //We're done!
             return true;
         }
@@ -511,10 +511,10 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         public static string StageModForUploadToUpdaterService(Mod mod, List<string> files, long totalAmountToCompress, Func<bool?> canceledCallback = null, Action<string> updateUiTextCallback = null, Action<double> setProgressCallback = null)
         {
             //create staging dir
-            var stagingPath = Utilities.GetUpdaterServiceUploadStagingPath();
+            var stagingPath = M3Utilities.GetUpdaterServiceUploadStagingPath();
             if (Directory.Exists(stagingPath))
             {
-                Utilities.DeleteFilesAndFoldersRecursively(stagingPath);
+                M3Utilities.DeleteFilesAndFoldersRecursively(stagingPath);
             }
             Directory.CreateDirectory(stagingPath);
 

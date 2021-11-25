@@ -150,17 +150,17 @@ public event PropertyChangedEventHandler PropertyChanged;
                 NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"OIGDisablerThread");
                 nbw.DoWork += async (a, b) =>
                 {
-                    if (!Utilities.IsGameRunning(Game))
+                    if (!M3Utilities.IsGameRunning(Game))
                     {
                         var d3d9Path = Path.Combine(M3Directories.GetExecutableDirectory(SelectedTarget), @"d3d9.dll");
                         if (!File.Exists(d3d9Path))
                         {
-                            if (File.Exists(Utilities.GetOriginOverlayDisableFile()))
+                            if (File.Exists(M3Utilities.GetOriginOverlayDisableFile()))
                             {
                                 M3Log.Information(@"Installing origin overlay disabler from cache to " + d3d9Path);
                                 try
                                 {
-                                    File.Copy(Utilities.GetOriginOverlayDisableFile(), d3d9Path);
+                                    File.Copy(M3Utilities.GetOriginOverlayDisableFile(), d3d9Path);
                                 }
                                 catch (Exception e)
                                 {
@@ -196,7 +196,7 @@ public event PropertyChangedEventHandler PropertyChanged;
                                                     M3Log.Information(@"Installing origin overlay disabler from memory to " + d3d9Path);
                                                     memStream.WriteToFile(d3d9Path); //install
                                                     M3Log.Information(@"Caching d3d9 disabler");
-                                                    memStream.WriteToFile(Utilities.GetOriginOverlayDisableFile());
+                                                    memStream.WriteToFile(M3Utilities.GetOriginOverlayDisableFile());
                                                 }
                                                 catch (Exception e)
                                                 {

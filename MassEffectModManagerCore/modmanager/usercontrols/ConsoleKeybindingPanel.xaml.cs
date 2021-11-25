@@ -374,11 +374,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     var ini = DuplicatingIni.LoadIni(iniFile);
                     SetIniBasedKeybinds(ini, consoleKeyStr, typeKeyStr, wipeTypeKey);
-                    var wasReadOnly = Utilities.ClearReadOnly(iniFile);
+                    var wasReadOnly = M3Utilities.ClearReadOnly(iniFile);
                     File.WriteAllText(iniFile, ini.ToString());
                     if (wasReadOnly)
                     {
-                        Utilities.SetReadOnly(iniFile);
+                        M3Utilities.SetReadOnly(iniFile);
                     }
                 }
             }

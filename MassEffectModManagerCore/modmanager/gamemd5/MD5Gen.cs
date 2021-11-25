@@ -1,7 +1,9 @@
 ﻿using System.IO;
 using LegendaryExplorerCore.Compression;
+using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Packages;
+using ME3TweaksCore.Services;
 
 namespace MassEffectModManagerCore.modmanager.gamemd5
 {
@@ -81,7 +83,7 @@ namespace MassEffectModManagerCore.modmanager.gamemd5
             {
                 mapStream.WriteInt32(idx); // Name Table IDX. Update this code for duplicates support
                 mapStream.WriteInt32((int)new FileInfo(f).Length); // Size
-                var md5 = Utilities.CalculateMD5(f);
+                var md5 = M3Utilities.CalculateMD5(f);
                 for (int i = 0; i < 32; i++)
                 {
                     byte b = 0;

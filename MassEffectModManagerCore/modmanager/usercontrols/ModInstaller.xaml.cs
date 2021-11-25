@@ -137,7 +137,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (SelectedGameTarget.Game.IsLEGame())
                 {
-                    if (!OodleHelper.EnsureOodleDll(SelectedGameTarget.TargetPath, Utilities.GetDllDirectory()))
+                    if (!OodleHelper.EnsureOodleDll(SelectedGameTarget.TargetPath, M3Utilities.GetDllDirectory()))
                     {
                         M3Log.Error($@"Oodle dll could not be sourced from game: {SelectedGameTarget.TargetPath}. Installation cannot proceed");
                         InstallationSucceeded = false;
@@ -229,11 +229,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 return;
             }
 
-            Utilities.InstallBinkBypass(SelectedGameTarget); //Always install binkw32, don't bother checking if it is already ASI version.
+            M3Utilities.InstallBinkBypass(SelectedGameTarget); //Always install binkw32, don't bother checking if it is already ASI version.
             if (ModBeingInstalled.Game.IsLEGame())
             {
                 GameTargetWPF gt = new GameTargetWPF(MEGame.LELauncher, Path.Combine(Directory.GetParent(SelectedGameTarget.TargetPath).FullName, @"Launcher"), false, skipInit: true);
-                Utilities.InstallBinkBypass(gt);
+                M3Utilities.InstallBinkBypass(gt);
             }
 
             if (ModBeingInstalled.Game == MEGame.ME2 && ModBeingInstalled.GetJob(ModJob.JobHeader.ME2_RCWMOD) != null && installationJobs.Count == 1)
@@ -458,7 +458,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
 
             //Substage: Add SFAR staging targets
-            string sfarStagingDirectory = (ModBeingInstalled.IsInArchive && installationQueues.sfarJobs.Count > 0) ? Directory.CreateDirectory(Path.Combine(Utilities.GetTempPath(), @"SFARJobStaging")).FullName : null; //don't make directory if we don't need one
+            string sfarStagingDirectory = (ModBeingInstalled.IsInArchive && installationQueues.sfarJobs.Count > 0) ? Directory.CreateDirectory(Path.Combine(M3Utilities.GetTempPath(), @"SFARJobStaging")).FullName : null; //don't make directory if we don't need one
             if (sfarStagingDirectory != null)
             {
                 M3Log.Information(@"Building list of SFAR staging targets");
@@ -522,7 +522,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
             }
 
-            Utilities.DriveFreeBytes(SelectedGameTarget.TargetPath, out var freeSpaceOnTargetDisk);
+            M3Utilities.DriveFreeBytes(SelectedGameTarget.TargetPath, out var freeSpaceOnTargetDisk);
             requiredSpaceToInstall = (long)(requiredSpaceToInstall * 1.1); //+10% for some overhead
             M3Log.Information($@"Mod requires {FileSize.FormatSize(requiredSpaceToInstall)} of disk space to install. We have {FileSize.FormatSize(freeSpaceOnTargetDisk)} available");
             if (requiredSpaceToInstall > (long)freeSpaceOnTargetDisk && freeSpaceOnTargetDisk != 0)
@@ -548,7 +548,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     M3Log.Information($@"Deleting existing DLC directory: {path}");
                     try
                     {
-                        Utilities.DeleteFilesAndFoldersRecursively(path, true);
+                        M3Utilities.DeleteFilesAndFoldersRecursively(path, true);
                     }
                     catch (UnauthorizedAccessException)
                     {
@@ -556,8 +556,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         {
                             // for some reason we don't have permission to do this.
                             M3Log.Warning(@"Unauthorized access exception deleting the existing DLC mod folder. Perhaps permissions aren't being inherited? Prompting for admin to grant writes to folder, which will then be deleted.");
-                            Utilities.CreateDirectoryWithWritePermission(path, true);
-                            Utilities.DeleteFilesAndFoldersRecursively(path);
+                            M3Utilities.CreateDirectoryWithWritePermission(path, true);
+                            M3Utilities.DeleteFilesAndFoldersRecursively(path);
                         }
                         catch (Exception finalException)
                         {
@@ -880,7 +880,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (Directory.Exists(outdatedDLCInGame))
                 {
                     M3Log.Information(@"Deleting outdated custom DLC folder: " + outdatedDLCInGame);
-                    Utilities.DeleteFilesAndFoldersRecursively(outdatedDLCInGame);
+                    M3Utilities.DeleteFilesAndFoldersRecursively(outdatedDLCInGame);
                 }
             }
 
@@ -925,7 +925,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             if (sfarStagingDirectory != null)
             {
-                Utilities.DeleteFilesAndFoldersRecursively(Utilities.GetTempPath());
+                M3Utilities.DeleteFilesAndFoldersRecursively(M3Utilities.GetTempPath());
             }
 
             if (numFilesToInstall == numdone)
@@ -1417,7 +1417,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                     // Once this issue has been fixed these lines can be commented out or removed (June 14 2020)
                     M3L.ShowDialog(window, M3L.GetString(M3L.string_dialog_appAboutToCrashYouFoundBug), M3L.GetString(M3L.string_appCrash), MessageBoxButton.OK, MessageBoxImage.Error);
-                    Utilities.OpenWebpage(App.DISCORD_INVITE_LINK);
+                    M3Utilities.OpenWebpage(App.DISCORD_INVITE_LINK);
                     // End bug message
                     if (e.Result == null)
                     {
@@ -1522,7 +1522,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             AlternateOptions.ClearEx();
             //Write check
-            var canWrite = Utilities.IsDirectoryWritable(SelectedGameTarget.TargetPath);
+            var canWrite = M3Utilities.IsDirectoryWritable(SelectedGameTarget.TargetPath);
             if (!canWrite)
             {
                 M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogNoWritePermissions), M3L.GetString(M3L.string_cannotWriteToGameDirectory), MessageBoxButton.OK, MessageBoxImage.Warning);

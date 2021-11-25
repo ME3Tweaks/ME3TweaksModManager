@@ -187,7 +187,7 @@ public event PropertyChangedEventHandler PropertyChanged;
 
         private void OpenModdescDocumenation_Click(object sender, RoutedEventArgs e)
         {
-            Utilities.OpenWebpage(@"https://github.com/ME3Tweaks/ME3TweaksModManager/tree/master/documentation");
+            M3Utilities.OpenWebpage(@"https://github.com/ME3Tweaks/ME3TweaksModManager/tree/master/documentation");
         }
 
         /// <summary>

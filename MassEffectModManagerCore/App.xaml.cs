@@ -35,7 +35,7 @@ namespace MassEffectModManagerCore
     [Localizable(false)]
     public partial class App : Application, ISingleInstance
     {
-        public static bool AppDataExistedAtBoot = Directory.Exists(Utilities.GetAppDataFolder(false)); //alphabetically this must come first in App!
+        public static bool AppDataExistedAtBoot = Directory.Exists(M3Utilities.GetAppDataFolder(false)); //alphabetically this must come first in App!
 
         /// <summary>
         /// ME3Tweaks Shared Registry Key
@@ -152,7 +152,7 @@ namespace MassEffectModManagerCore
                             var updaterExe = Path.Combine(Directory.GetParent(exeFolder).FullName, @"ME3TweaksUpdater.exe");
 
                             //write updated updater executable
-                            Utilities.ExtractInternalFile(@"MassEffectModManagerCore.updater.ME3TweaksUpdater.exe", updaterExe, true);
+                            M3Utilities.ExtractInternalFile(@"MassEffectModManagerCore.updater.ME3TweaksUpdater.exe", updaterExe, true);
 
                             if (!File.Exists(updaterExe))
                             {
@@ -276,7 +276,7 @@ namespace MassEffectModManagerCore
 
                 try
                 {
-                    var avs = Utilities.GetListOfInstalledAV();
+                    var avs = M3Utilities.GetListOfInstalledAV();
                     M3Log.Information(@"Detected the following antivirus products:");
                     foreach (var av in avs)
                     {
@@ -312,20 +312,20 @@ namespace MassEffectModManagerCore
                 {
                     //First time booting something that uses ProgramData
                     //see if data exists in AppData
-                    var oldDir = Utilities.GetPre104DataFolder();
+                    var oldDir = M3Utilities.GetPre104DataFolder();
                     if (oldDir != null)
                     {
                         //Exists. We should migrate it
                         try
                         {
-                            CopyDir.CopyAll_ProgressBar(new DirectoryInfo(oldDir), new DirectoryInfo(Utilities.GetAppDataFolder()), aboutToCopyCallback: (a) =>
+                            CopyDir.CopyAll_ProgressBar(new DirectoryInfo(oldDir), new DirectoryInfo(M3Utilities.GetAppDataFolder()), aboutToCopyCallback: (a) =>
                             {
                                 M3Log.Information(@"Migrating file from AppData to ProgramData: " + a);
                                 return true;
                             });
 
                             M3Log.Information(@"Deleting old data directory: " + oldDir);
-                            Utilities.DeleteFilesAndFoldersRecursively(oldDir);
+                            M3Utilities.DeleteFilesAndFoldersRecursively(oldDir);
                             M3Log.Information(@"Migration from pre 104 settings to 104+ settings completed");
                         }
                         catch (Exception e)
@@ -375,11 +375,11 @@ namespace MassEffectModManagerCore
                 M3Log.Information(@"Deleting temp files (if any)");
                 try
                 {
-                    Utilities.DeleteFilesAndFoldersRecursively(Utilities.GetTempPath());
+                    M3Utilities.DeleteFilesAndFoldersRecursively(M3Utilities.GetTempPath());
                 }
                 catch (Exception e)
                 {
-                    M3Log.Error($@"Unable to delete temporary files directory {Utilities.GetTempPath()}: {e.Message}");
+                    M3Log.Error($@"Unable to delete temporary files directory {M3Utilities.GetTempPath()}: {e.Message}");
                 }
 
                 M3Log.Information(@"Mod Manager pre-UI startup has completed. The UI will now load.");
@@ -650,7 +650,7 @@ namespace MassEffectModManagerCore
             {
                 try
                 {
-                    Utilities.DeleteFilesAndFoldersRecursively(Utilities.GetModDownloadCacheDirectory(), false);
+                    M3Utilities.DeleteFilesAndFoldersRecursively(M3Utilities.GetModDownloadCacheDirectory(), false);
                     M3Log.Information(@"Deleted mod download cache");
                 }
                 catch (Exception ex)

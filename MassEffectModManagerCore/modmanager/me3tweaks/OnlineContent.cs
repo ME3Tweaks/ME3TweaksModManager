@@ -160,11 +160,11 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
             //read cached first.
             string cached = null;
-            if (File.Exists(Utilities.GetBasegameIdentificationCacheFile()))
+            if (File.Exists(M3Utilities.GetBasegameIdentificationCacheFile()))
             {
                 try
                 {
-                    cached = File.ReadAllText(Utilities.GetBasegameIdentificationCacheFile());
+                    cached = File.ReadAllText(M3Utilities.GetBasegameIdentificationCacheFile());
                 }
                 catch (Exception e)
                 {
@@ -184,7 +184,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
 
 
-            if (!File.Exists(Utilities.GetBasegameIdentificationCacheFile()) || overrideThrottling || OnlineContent.CanFetchContentThrottleCheck())
+            if (!File.Exists(M3Utilities.GetBasegameIdentificationCacheFile()) || overrideThrottling || OnlineContent.CanFetchContentThrottleCheck())
             {
                 var urls = new[] { BasegameFileIdentificationServiceURL, BasegameFileIdentificationServiceBackupURL };
                 foreach (var staticurl in urls)
@@ -196,7 +196,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         using var wc = new ShortTimeoutWebClient();
 
                         string json = wc.DownloadStringAwareOfEncoding(staticurl);
-                        File.WriteAllText(Utilities.GetBasegameIdentificationCacheFile(), json);
+                        File.WriteAllText(M3Utilities.GetBasegameIdentificationCacheFile(), json);
                         return JsonConvert.DeserializeObject<Dictionary<string, CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>>>(json);
                     }
                     catch (Exception e)
@@ -245,11 +245,11 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         public static Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>> FetchThirdPartyIdentificationManifest(bool overrideThrottling = false)
         {
             string cached = null;
-            if (File.Exists(Utilities.GetThirdPartyIdentificationCachedFile()))
+            if (File.Exists(M3Utilities.GetThirdPartyIdentificationCachedFile()))
             {
                 try
                 {
-                    cached = File.ReadAllText(Utilities.GetThirdPartyIdentificationCachedFile());
+                    cached = File.ReadAllText(M3Utilities.GetThirdPartyIdentificationCachedFile());
                 }
                 catch (Exception e)
                 {
@@ -269,14 +269,14 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
 
 
-            if (!File.Exists(Utilities.GetThirdPartyIdentificationCachedFile()) || overrideThrottling || OnlineContent.CanFetchContentThrottleCheck())
+            if (!File.Exists(M3Utilities.GetThirdPartyIdentificationCachedFile()) || overrideThrottling || OnlineContent.CanFetchContentThrottleCheck())
             {
                 try
                 {
                     using var wc = new ShortTimeoutWebClient();
 
                     string json = wc.DownloadStringAwareOfEncoding(ThirdPartyIdentificationServiceURL);
-                    File.WriteAllText(Utilities.GetThirdPartyIdentificationCachedFile(), json);
+                    File.WriteAllText(M3Utilities.GetThirdPartyIdentificationCachedFile(), json);
                     return JsonConvert.DeserializeObject<Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>>>(json);
                 }
                 catch (Exception e)
@@ -373,11 +373,11 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         public static Dictionary<string, List<string>> FetchTipsService(bool overrideThrottling = false)
         {
             string cached = null;
-            if (File.Exists(Utilities.GetTipsServiceFile()))
+            if (File.Exists(M3Utilities.GetTipsServiceFile()))
             {
                 try
                 {
-                    cached = File.ReadAllText(Utilities.GetTipsServiceFile());
+                    cached = File.ReadAllText(M3Utilities.GetTipsServiceFile());
                 }
                 catch (Exception e)
                 {
@@ -396,14 +396,14 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 }
             }
 
-            if (!File.Exists(Utilities.GetTipsServiceFile()) || overrideThrottling || OnlineContent.CanFetchContentThrottleCheck())
+            if (!File.Exists(M3Utilities.GetTipsServiceFile()) || overrideThrottling || OnlineContent.CanFetchContentThrottleCheck())
             {
                 try
                 {
                     using var wc = new ShortTimeoutWebClient();
 
                     string json = wc.DownloadStringAwareOfEncoding(TipsServiceURL);
-                    File.WriteAllText(Utilities.GetTipsServiceFile(), json);
+                    File.WriteAllText(M3Utilities.GetTipsServiceFile(), json);
                     return JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(json);
                 }
                 catch (Exception e)
@@ -436,11 +436,11 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         public static Dictionary<long, List<ThirdPartyServices.ThirdPartyImportingInfo>> FetchThirdPartyImportingService(bool overrideThrottling = false)
         {
             string cached = null;
-            if (File.Exists(Utilities.GetThirdPartyImportingCachedFile()))
+            if (File.Exists(M3Utilities.GetThirdPartyImportingCachedFile()))
             {
                 try
                 {
-                    cached = File.ReadAllText(Utilities.GetThirdPartyImportingCachedFile());
+                    cached = File.ReadAllText(M3Utilities.GetThirdPartyImportingCachedFile());
                 }
                 catch (Exception e)
                 {
@@ -459,14 +459,14 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 }
             }
 
-            if (!File.Exists(Utilities.GetThirdPartyImportingCachedFile()) || overrideThrottling || OnlineContent.CanFetchContentThrottleCheck())
+            if (!File.Exists(M3Utilities.GetThirdPartyImportingCachedFile()) || overrideThrottling || OnlineContent.CanFetchContentThrottleCheck())
             {
                 try
                 {
                     using var wc = new ShortTimeoutWebClient();
 
                     string json = wc.DownloadStringAwareOfEncoding(ThirdPartyImportingServiceURL);
-                    File.WriteAllText(Utilities.GetThirdPartyImportingCachedFile(), json);
+                    File.WriteAllText(M3Utilities.GetThirdPartyImportingCachedFile(), json);
                     return JsonConvert.DeserializeObject<Dictionary<long, List<ThirdPartyServices.ThirdPartyImportingInfo>>>(json);
                 }
                 catch (Exception e)
@@ -501,11 +501,11 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         /// </summary>
         public static void TouchupTutorial()
         {
-            var fileRootPath = Utilities.GetTutorialServiceCache();
+            var fileRootPath = M3Utilities.GetTutorialServiceCache();
             foreach (var step in App.TutorialService)
             {
                 var imagePath = Path.Combine(fileRootPath, step.imagename);
-                bool download = !File.Exists(imagePath) || Utilities.CalculateMD5(imagePath) != step.imagemd5;
+                bool download = !File.Exists(imagePath) || M3Utilities.CalculateMD5(imagePath) != step.imagemd5;
                 if (download)
                 {
                     foreach (var endpoint in StaticFilesBaseEndpoints)
@@ -749,11 +749,11 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             M3Log.Information(@"Fetching tutorial manifest");
             string cached = null;
             // Read cached first.
-            if (File.Exists(Utilities.GetTutorialServiceCacheFile()))
+            if (File.Exists(M3Utilities.GetTutorialServiceCacheFile()))
             {
                 try
                 {
-                    cached = File.ReadAllText(Utilities.GetTutorialServiceCacheFile());
+                    cached = File.ReadAllText(M3Utilities.GetTutorialServiceCacheFile());
                 }
                 catch (Exception e)
                 {
@@ -772,7 +772,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 }
             }
 
-            if (!File.Exists(Utilities.GetTutorialServiceCacheFile()) || overrideThrottling || OnlineContent.CanFetchContentThrottleCheck())
+            if (!File.Exists(M3Utilities.GetTutorialServiceCacheFile()) || overrideThrottling || OnlineContent.CanFetchContentThrottleCheck())
             {
                 string[] urls = new[] { TutorialServiceURL, TutorialServiceBackupURL };
                 foreach (var staticurl in urls)
@@ -784,7 +784,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     {
                         using var wc = new ShortTimeoutWebClient();
                         string json = wc.DownloadStringAwareOfEncoding(staticurl);
-                        File.WriteAllText(Utilities.GetTutorialServiceCacheFile(), json);
+                        File.WriteAllText(M3Utilities.GetTutorialServiceCacheFile(), json);
                         return JsonConvert.DeserializeObject<List<IntroTutorial.TutorialStep>>(json);
                     }
                     catch (Exception e)

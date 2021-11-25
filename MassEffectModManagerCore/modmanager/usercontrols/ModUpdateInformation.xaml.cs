@@ -84,7 +84,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 else
                 {
-                    Utilities.OpenWebpage(ui.mod.ModWebsite);
+                    M3Utilities.OpenWebpage(ui.mod.ModWebsite);
                 }
             }
         }
@@ -180,7 +180,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         try
                         {
-                            File.WriteAllText(System.IO.Path.Combine(Utilities.GetModmakerDefinitionsCache(), mui.ModMakerId + @".xml"), modDelta);
+                            File.WriteAllText(System.IO.Path.Combine(M3Utilities.GetModmakerDefinitionsCache(), mui.ModMakerId + @".xml"), modDelta);
                         }
                         catch (Exception e)
                         {
@@ -258,13 +258,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         );
                     }
                 }
-                var stagingDirectory = Directory.CreateDirectory(Path.Combine(Utilities.GetTempPath(), Path.GetFileName(ui.mod.ModPath))).FullName;
+                var stagingDirectory = Directory.CreateDirectory(Path.Combine(M3Utilities.GetTempPath(), Path.GetFileName(ui.mod.ModPath))).FullName;
                 var modUpdated = OnlineContent.UpdateMod(ui, stagingDirectory, errorCallback);
                 ui.UpdateInProgress = false;
                 ui.CanUpdate = !modUpdated;
                 updatedMods.Add(ui.mod);
                 ui.DownloadButtonText = ui.CanUpdate ? M3L.GetString(M3L.string_downloadUpdate) : M3L.GetString(M3L.string_updated);
-                Utilities.DeleteFilesAndFoldersRecursively(stagingDirectory);
+                M3Utilities.DeleteFilesAndFoldersRecursively(stagingDirectory);
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {

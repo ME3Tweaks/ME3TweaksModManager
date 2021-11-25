@@ -9,6 +9,8 @@ using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.usercontrols;
 using LegendaryExplorerCore.Packages;
+using ME3TweaksCore.Targets;
+using ME3TweaksCoreWPF;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SevenZip;
 using Mod = MassEffectModManagerCore.modmanager.objects.mod.Mod;
@@ -50,11 +52,11 @@ namespace MassEffectModManagerCore.Tests
             }
 
             #region Get Targets
-            List<GameTarget> targets = new List<GameTarget>();
+            var targets = new List<GameTargetWPF>();
             var root = GlobalTest.GetTestGameFoldersDirectory(MEGame.ME1);
             foreach (var d in Directory.GetDirectories(root))
             {
-                GameTarget gt = new GameTarget(MEGame.ME1, d, false, false);
+                var gt = new GameTargetWPF(MEGame.ME1, d, false, false);
                 gt.ValidateTarget();
                 if (gt.IsValid)
                 {
@@ -64,7 +66,7 @@ namespace MassEffectModManagerCore.Tests
             root = GlobalTest.GetTestGameFoldersDirectory(MEGame.ME2);
             foreach (var d in Directory.GetDirectories(root))
             {
-                GameTarget gt = new GameTarget(MEGame.ME2, d, false, false);
+                var gt = new GameTargetWPF(MEGame.ME2, d, false, false);
                 gt.ValidateTarget();
                 if (gt.IsValid)
                 {
@@ -74,7 +76,7 @@ namespace MassEffectModManagerCore.Tests
             root = GlobalTest.GetTestGameFoldersDirectory(MEGame.ME3);
             foreach (var d in Directory.GetDirectories(root))
             {
-                GameTarget gt = new GameTarget(MEGame.ME3, d, false, false);
+                var gt = new GameTargetWPF(MEGame.ME3, d, false, false);
                 gt.ValidateTarget();
                 if (gt.IsValid)
                 {

@@ -52,7 +52,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         /// <param name="metaFile"></param>
         public MetaCMM(string metaFile)
         {
-            var lines = Utilities.WriteSafeReadAllLines(metaFile).ToList();
+            var lines = M3Utilities.WriteSafeReadAllLines(metaFile).ToList();
             int i = 0;
             foreach (var line in lines)
             {

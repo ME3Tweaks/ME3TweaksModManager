@@ -30,14 +30,14 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         public static RecyclableMemoryStreamManager MixinMemoryStreamManager { get; private set; }
         public static string ServerMixinHash;
         public static readonly string MixinPackageEndpoint = @"https://me3tweaks.com/mixins/mixinlibrary.zip";
-        public static readonly string MixinPackagePath = Path.Combine(Directory.CreateDirectory(Path.Combine(Utilities.GetAppDataFolder(), @"Mixins", @"me3tweaks")).FullName, @"mixinlibrary.zip");
+        public static readonly string MixinPackagePath = Path.Combine(Directory.CreateDirectory(Path.Combine(M3Utilities.GetAppDataFolder(), @"Mixins", @"me3tweaks")).FullName, @"mixinlibrary.zip");
 
         public static bool IsMixinPackageUpToDate()
         {
             if (ServerMixinHash == null) return true; //can't check. Just say it's up to date.
             if (File.Exists(MixinPackagePath))
             {
-                var md5 = Utilities.CalculateMD5(MixinPackagePath);
+                var md5 = M3Utilities.CalculateMD5(MixinPackagePath);
                 return md5.Equals(ServerMixinHash, StringComparison.InvariantCultureIgnoreCase);
             }
 
@@ -195,7 +195,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 TargetSize = int.Parse(element.Attribute(@"targetsize").Value)
             };
             var hexStr = element.Value;
-            byte[] hexData = Utilities.HexStringToByteArray(hexStr);
+            byte[] hexData = M3Utilities.HexStringToByteArray(hexStr);
             dynamic.PatchData = new MemoryStream(hexData);
             return dynamic;
         }

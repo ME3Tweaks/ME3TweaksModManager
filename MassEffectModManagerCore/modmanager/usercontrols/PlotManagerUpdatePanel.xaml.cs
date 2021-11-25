@@ -120,7 +120,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
 
             var pmPath = GetPlotManagerPath(target);
-            var vpm = Utilities.ExtractInternalFileToStream($@"MassEffectModManagerCore.modmanager.plotmanager.{target.Game}.PlotManager.{(target.Game == MEGame.ME1 ? @"u" : @"pcc")}"); // do not localize
+            var vpm = M3Utilities.ExtractInternalFileToStream($@"MassEffectModManagerCore.modmanager.plotmanager.{target.Game}.PlotManager.{(target.Game == MEGame.ME1 ? @"u" : @"pcc")}"); // do not localize
             if (funcMap.Any())
             {
                 var plotManager = MEPackageHandler.OpenMEPackageFromStream(vpm, $@"PlotManager.{(target.Game == MEGame.ME1 ? @"u" : @"pcc")}"); // do not localize
@@ -184,7 +184,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     plotManager.Save(pmPath, true);
                     // Update local file DB
-                    var bgfe = new BasegameFileIdentificationService.BasegameCloudDBFile(pmPath.Substring(target.TargetPath.Length + 1), (int)new FileInfo(pmPath).Length, target.Game, M3L.GetString(M3L.string_interp_plotManagerSyncForX, string.Join(@", ", combinedNames)), Utilities.CalculateMD5(pmPath));
+                    var bgfe = new BasegameFileIdentificationService.BasegameCloudDBFile(pmPath.Substring(target.TargetPath.Length + 1), (int)new FileInfo(pmPath).Length, target.Game, M3L.GetString(M3L.string_interp_plotManagerSyncForX, string.Join(@", ", combinedNames)), M3Utilities.CalculateMD5(pmPath));
                     BasegameFileIdentificationService.AddLocalBasegameIdentificationEntries(new List<BasegameFileIdentificationService.BasegameCloudDBFile>(new[] { bgfe }));
                 }
             }

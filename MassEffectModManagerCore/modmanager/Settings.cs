@@ -295,7 +295,7 @@ namespace MassEffectModManagerCore.modmanager
             set => SetProperty(ref _skipLELauncher, value);
         }
 
-        public static readonly string SettingsPath = Path.Combine(Utilities.GetAppDataFolder(), "settings.ini");
+        public static readonly string SettingsPath = Path.Combine(M3Utilities.GetAppDataFolder(), "settings.ini");
 
         public static void Load()
         {

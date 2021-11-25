@@ -2,9 +2,11 @@
 using System.IO;
 using System.Linq;
 using MassEffectModManagerCore.modmanager;
-using MassEffectModManagerCore.modmanager.asi;
 using MassEffectModManagerCore.modmanager.objects;
 using LegendaryExplorerCore.Packages;
+using ME3TweaksCore.GameFilesystem;
+using ME3TweaksCore.NativeMods;
+using ME3TweaksCore.Targets;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MassEffectModManagerCore.Tests
@@ -32,7 +34,7 @@ namespace MassEffectModManagerCore.Tests
                 if (Directory.Exists(asiDir))
                 {
                     // Clean slate
-                    Utilities.DeleteFilesAndFoldersRecursively(asiDir);
+                    M3Utilities.DeleteFilesAndFoldersRecursively(asiDir);
                 }
 
                 var asisForGame = ASIManager.GetASIModsByGame(game);

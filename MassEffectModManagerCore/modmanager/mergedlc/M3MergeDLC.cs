@@ -17,7 +17,7 @@ namespace MassEffectModManagerCore.modmanager.mergedlc
             var mergePath = Path.Combine(M3Directories.GetDLCPath(target), MERGE_DLC_FOLDERNAME);
             if (Directory.Exists(mergePath))
             {
-                Utilities.DeleteFilesAndFoldersRecursively(mergePath);
+                M3Utilities.DeleteFilesAndFoldersRecursively(mergePath);
             }
         }
 

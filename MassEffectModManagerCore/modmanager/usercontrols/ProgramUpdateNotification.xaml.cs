@@ -18,6 +18,7 @@ using LegendaryExplorerCore.Compression;
 using LegendaryExplorerCore.Helpers;
 using MassEffectModManagerCore.modmanager.diagnostics;
 using Microsoft.AppCenter.Analytics;
+using Serilog;
 using SevenZip;
 using Path = System.IO.Path;
 
@@ -103,7 +104,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void ViewChangelog()
         {
-            Utilities.OpenWebpage(ChangelogLink);
+            M3Utilities.OpenWebpage(ChangelogLink);
         }
 
         private void StartUpdate()
@@ -129,7 +130,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
 
             // PATCH UPDATE
-            localExecutableHash ??= Utilities.CalculateMD5(App.ExecutableLocation);
+            localExecutableHash ??= M3Utilities.CalculateMD5(App.ExecutableLocation);
             if (App.ServerManifest.TryGetValue(@"build_md5", out var destMd5))
             {
                 foreach (var item in App.ServerManifest.Where(x => x.Key.StartsWith(@"upd-") || x.Key.StartsWith(@"gh_upd-")))
@@ -239,7 +240,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             M3Log.Information(@"Extracting update from memory");
             SevenZipExtractor sve = new SevenZipExtractor(updatearchive);
             var outDirectory = Directory
-                .CreateDirectory(Path.Combine(Utilities.GetTempPath(), @"update")).FullName;
+                .CreateDirectory(Path.Combine(M3Utilities.GetTempPath(), @"update")).FullName;
             sve.ExtractArchive(outDirectory);
             return outDirectory;
         }
@@ -264,11 +265,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                 MemoryStream outStream = new MemoryStream();
                 JPatch.ApplyJPatch(currentBuildStream, patchStream, outStream);
-                var calculatedHash = Utilities.CalculateMD5(outStream);
+                var calculatedHash = M3Utilities.CalculateMD5(outStream);
                 if (calculatedHash == expectedFinalHash)
                 {
                     M3Log.Information(@"Patch application successful: Writing new executable to disk");
-                    var outDirectory = Directory.CreateDirectory(Path.Combine(Utilities.GetTempPath(), @"update"))
+                    var outDirectory = Directory.CreateDirectory(Path.Combine(M3Utilities.GetTempPath(), @"update"))
                         .FullName;
                     var updateFile = Path.Combine(outDirectory, @"ME3TweaksModManager.exe");
                     outStream.WriteToFile(updateFile);
@@ -305,7 +306,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private bool ApplyUpdate(string updateDirectory, bool closeOnBadSignature = true)
         {
             var updateSwapperExecutable = Path.Combine(updateDirectory, @"ME3TweaksUpdater.exe");
-            Utilities.ExtractInternalFile(@"MassEffectModManagerCore.updater.ME3TweaksUpdater.exe", updateSwapperExecutable, true);
+            M3Utilities.ExtractInternalFile(@"MassEffectModManagerCore.updater.ME3TweaksUpdater.exe", updateSwapperExecutable, true);
             var updateExecutablePath = Directory.GetFiles(updateDirectory, @"ME3TweaksModManager.exe", SearchOption.AllDirectories).FirstOrDefault();
             if (updateExecutablePath != null && File.Exists(updateExecutablePath) && File.Exists(updateSwapperExecutable))
             {
@@ -384,7 +385,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 process.StartInfo.Arguments = args;
                 process.Start();
                 M3Log.Information(@"Stopping Mod Manager to apply update");
-                M3Log.CloseAndFlush();
+                Log.CloseAndFlush();
                 Application.Current.Dispatcher.Invoke(Application.Current.Shutdown);
                 return true;
             }

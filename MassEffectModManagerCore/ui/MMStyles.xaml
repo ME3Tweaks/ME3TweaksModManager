@@ -6,7 +6,8 @@
                     xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters"
                     xmlns:helpers="clr-namespace:MassEffectModManagerCore.modmanager.helpers"
                     xmlns:system="clr-namespace:System;assembly=System.Runtime"
-                    xmlns:fa="http://schemas.fontawesome.io/icons/">
+                    xmlns:fa="http://schemas.fontawesome.io/icons/"
+                    xmlns:targets="clr-namespace:ME3TweaksCore.Targets;assembly=ME3TweaksCore">
     <converters:GameToImageIconConverter x:Key="GameToImageIconConverter"/>
     <converters:BootTargetSourceVisibilityConverter x:Key="BootTargetSourceVisibilityConverter"/>
     <converters:GameIconVisibilityConverter x:Key="GameIconVisibilityConverter"/>
@@ -27,7 +28,7 @@
     <converters:GenerationsSizeAdjustedPercentageConverter x:Key="GenerationsSizeAdjustedPercentageConverter" />
     <converters:StringMatchToBoolConverter x:Key="StringMatchToBoolConverter"/>
     <converters:GameToTextureModdedIconConverter x:Key="GameToTextureModdedIconConverter"/>
-    <DataTemplate x:Key="TargetSelectorTemplate" DataType="{x:Type modmanager:GameTarget}">
+    <DataTemplate x:Key="TargetSelectorTemplate" DataType="{x:Type targets:GameTarget}">
         <DockPanel HorizontalAlignment="Stretch">
             <Image DockPanel.Dock="Left" Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16"/>
             <Image DockPanel.Dock="Left" Source="{Binding TargetBootIcon, TargetNullValue={x:Null}}" Width="12" Height="16" RenderOptions.BitmapScalingMode="HighQuality" Margin="3,0,0,0" Visibility="{Binding Converter={StaticResource BootTargetSourceVisibilityConverter}}"/>

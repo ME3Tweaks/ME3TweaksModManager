@@ -38,7 +38,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void VisitWebsite()
         {
-            Utilities.OpenWebpage(SelectedMod.ModWebsite);
+            M3Utilities.OpenWebpage(SelectedMod.ModWebsite);
         }
 
         private void DeleteMod()

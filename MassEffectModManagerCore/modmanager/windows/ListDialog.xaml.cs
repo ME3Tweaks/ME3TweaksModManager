@@ -57,7 +57,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                 string text = ((TextBlock)sender).Text;
                 if (File.Exists(text))
                 {
-                    Utilities.HighlightInExplorer(text);
+                    M3Utilities.HighlightInExplorer(text);
                 }
             }
         }

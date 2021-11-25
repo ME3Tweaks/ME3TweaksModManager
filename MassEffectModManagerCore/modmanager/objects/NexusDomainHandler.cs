@@ -40,7 +40,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             {
                 if (File.Exists(ProgramPath))
                 {
-                    Utilities.RunProcess(ProgramPath, Arguments.Replace(@"%1", nxmLink));
+                    M3Utilities.RunProcess(ProgramPath, Arguments.Replace(@"%1", nxmLink));
                     return null;
                 }
                 else
@@ -59,10 +59,10 @@ namespace MassEffectModManagerCore.modmanager.objects
 
         public static void LoadExternalHandlers()
         {
-            if (File.Exists(Utilities.GetExternalNexusHandlersFile()))
+            if (File.Exists(M3Utilities.GetExternalNexusHandlersFile()))
             {
                 M3Log.Information(@"Loading external nxm handler info");
-                App.NexusDomainHandlers.ReplaceAll(JsonConvert.DeserializeObject<List<NexusDomainHandler>>(File.ReadAllText(Utilities.GetExternalNexusHandlersFile())));
+                App.NexusDomainHandlers.ReplaceAll(JsonConvert.DeserializeObject<List<NexusDomainHandler>>(File.ReadAllText(M3Utilities.GetExternalNexusHandlersFile())));
             }
         }
 

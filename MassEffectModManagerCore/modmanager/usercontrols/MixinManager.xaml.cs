@@ -21,6 +21,7 @@ using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Unreal;
 using MassEffectModManagerCore.modmanager.diagnostics;
 using ME3TweaksCore.GameFilesystem;
+using ME3TweaksCore.Services;
 using ME3TweaksCore.Services.Backup;
 using ME3TweaksCoreWPF;
 using MemoryAnalyzer = MassEffectModManagerCore.modmanager.memoryanalyzer.MemoryAnalyzer;
@@ -121,7 +122,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private bool CanCompileAsNewMod()
         {
             if (OperationInProgress || !AtLeastOneMixinSelected) return false;
-            if (string.IsNullOrWhiteSpace(NewModName) || string.IsNullOrWhiteSpace(Utilities.SanitizePath(NewModName))) return false;
+            if (string.IsNullOrWhiteSpace(NewModName) || string.IsNullOrWhiteSpace(M3Utilities.SanitizePath(NewModName))) return false;
             return true;
         }
 
@@ -130,7 +131,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"MixinManager CompileAsNewModThread");
             List<string> failedApplications = new List<string>();
             var modname = NewModName;
-            var modpath = Path.Combine(Utilities.GetME3ModsDirectory(), Utilities.SanitizePath(modname));
+            var modpath = Path.Combine(M3Utilities.GetME3ModsDirectory(), M3Utilities.SanitizePath(modname));
             if (Directory.Exists(modpath))
             {
                 var result = M3L.ShowDialog(mainwindow,
@@ -175,7 +176,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                 if (Directory.Exists(modpath))
                 {
-                    Utilities.DeleteFilesAndFoldersRecursively(modpath);
+                    M3Utilities.DeleteFilesAndFoldersRecursively(modpath);
                 }
 
                 ProgressBarMax = mixins.Count();

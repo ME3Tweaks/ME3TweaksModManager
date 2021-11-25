@@ -38,6 +38,7 @@ using LegendaryExplorerCore.Packages.CloningImportingAndRelinking;
 using LegendaryExplorerCore.TLK;
 using MassEffectModManagerCore.modmanager.diagnostics;
 using ME3TweaksCore.GameFilesystem;
+using ME3TweaksCore.Services;
 using ME3TweaksCore.Targets;
 using ME3TweaksCoreWPF;
 using Brushes = System.Windows.Media.Brushes;
@@ -115,7 +116,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 // Commands
                 RerunChecksCommand = new GenericCommand(RunChecksWrapper, CanRerunCheck);
 
-                string versionString = mod.ParsedModVersion != null ? mod.ParsedModVersion.ToString(Utilities.GetDisplayableVersionFieldCount(mod.ParsedModVersion)) : mod.ModVersionString;
+                string versionString = mod.ParsedModVersion != null ? mod.ParsedModVersion.ToString(M3Utilities.GetDisplayableVersionFieldCount(mod.ParsedModVersion)) : mod.ModVersionString;
                 string versionFormat = mod.ModDescTargetVersion < 6 ? @"X.X" : @"X.X[.X[.X]]";
                 string checklistItemText = mod.ParsedModVersion != null ? M3L.GetString(M3L.string_verifyModVersion) : M3L.GetString(M3L.string_recommendedVersionFormatNotFollowed, versionFormat);
                 DeploymentChecklistItems.Add(new DeploymentChecklistItem() { ItemText = $@"{checklistItemText}: {versionString}", ValidationFunction = ManualValidation });
@@ -235,7 +236,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 var packageFiles = referencedFiles.Where(x=>x.RepresentsPackageFilePath());
                 foreach (var p in packageFiles)
                 {
-                    if (Utilities.HasALOTMarker(p))
+                    if (M3Utilities.HasALOTMarker(p))
                     {
                         item.AddBlockingError(M3L.GetString(M3L.string_interp_error_textureTaggedFileFound, p));
                     }
@@ -798,7 +799,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 }
 
 
-
+                                Debug.WriteLine(@"ERROR: ISBASEGAMETFCNAME NEEDS UPDATED FOR LE!!!");
                                 var cache = texture.GetProperty<NameProperty>(@"TextureFileCacheName");
                                 if (cache != null)
                                 {
@@ -1013,11 +1014,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (ModsInDeployment.Count > 1)
             {
                 // Multipack
-                premadeName = Utilities.SanitizePath($@"{ModsInDeployment[0].ModBeingDeployed.ModName}_{ModsInDeployment[0].ModBeingDeployed.ModVersionString}_multipack".Replace(@" ", ""), true);
+                premadeName = M3Utilities.SanitizePath($@"{ModsInDeployment[0].ModBeingDeployed.ModName}_{ModsInDeployment[0].ModBeingDeployed.ModVersionString}_multipack".Replace(@" ", ""), true);
             }
             else
             {
-                premadeName = Utilities.SanitizePath($@"{ModsInDeployment[0].ModBeingDeployed.ModName}_{ModsInDeployment[0].ModBeingDeployed.ModVersionString}".Replace(@" ", ""), true);
+                premadeName = M3Utilities.SanitizePath($@"{ModsInDeployment[0].ModBeingDeployed.ModName}_{ModsInDeployment[0].ModBeingDeployed.ModVersionString}".Replace(@" ", ""), true);
             }
 
             SaveFileDialog d = new SaveFileDialog
@@ -1123,7 +1124,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 var references = modBeingDeployed.GetAllRelativeReferences(true);
                 if (isMultiPack)
                 {
-                    modRefMap[modBeingDeployed] = references.ToDictionary(x => x, x => $@"{Utilities.SanitizePath(modBeingDeployed.ModName)}\{x}");
+                    modRefMap[modBeingDeployed] = references.ToDictionary(x => x, x => $@"{M3Utilities.SanitizePath(modBeingDeployed.ModName)}\{x}");
                 }
                 else
                 {
@@ -1292,7 +1293,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             compressor.CompressFileDictionary(nocompressItems, archivePath);
 
             OperationText = M3L.GetString(M3L.string_deploymentSucceeded);
-            Utilities.HighlightInExplorer(archivePath);
+            M3Utilities.HighlightInExplorer(archivePath);
 
             e.Result = GetModsNeedingTPMISubmission(modsBeingDeployed);
         }

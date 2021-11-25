@@ -42,7 +42,7 @@ namespace MassEffectModManagerCore.modmanager.windows
 
             if (shi.ResourceName != null)
             {
-                string resPath = Path.Combine(Utilities.GetLocalHelpResourcesDirectory(), shi.ResourceName);
+                string resPath = Path.Combine(M3Utilities.GetLocalHelpResourcesDirectory(), shi.ResourceName);
                 if (File.Exists(resPath))
                 {
                     ResourceImage = resPath;

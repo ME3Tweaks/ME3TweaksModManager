@@ -46,7 +46,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                 bool migrated = true;
                 M3Log.Information(@">>>> ME3CMMMigration Thread");
                 M3Log.Information(@"Validate ME3CMM folders and files");
-                var exeDir = Utilities.GetMMExecutableDirectory();
+                var exeDir = M3Utilities.GetMMExecutableDirectory();
 
 
                 var modsDir = Path.Combine(exeDir, @"mods");
@@ -60,7 +60,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                         M3Log.Information(@"Step 1: Migrate mods");
                         MigratingModsTask.SetInProgress();
 
-                        var targetModLibrary = Utilities.GetModsDirectory();
+                        var targetModLibrary = M3Utilities.GetModsDirectory();
 
                         targetModLibrary = Path.Combine(targetModLibrary, @"ME3");
                         if (!Directory.Exists(targetModLibrary))
@@ -98,7 +98,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                                         Directory.CreateDirectory(targetDir);
                                         CopyDir.CopyAll_ProgressBar(new DirectoryInfo(modDirToMove), new DirectoryInfo(targetDir));
                                         M3Log.Information(@" >> Deleting existing directory");
-                                        Utilities.DeleteFilesAndFoldersRecursively(modDirToMove);
+                                        M3Utilities.DeleteFilesAndFoldersRecursively(modDirToMove);
                                     }
 
                                     M3Log.Information($@"Migrated {modDirToMove}");
@@ -173,7 +173,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                                 var failureReason = t.ValidateTarget();
                                 if (failureReason == null)
                                 {
-                                    Utilities.AddCachedTarget(t);
+                                    M3Utilities.AddCachedTarget(t);
                                 }
                                 else
                                 {
@@ -211,7 +211,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                             var modmakerXmls = Directory.GetFiles(modmakerCacheDir, @"*.xml");
                             if (modmakerXmls.Any())
                             {
-                                var mmNewCacheDir = Utilities.GetModmakerDefinitionsCache();
+                                var mmNewCacheDir = M3Utilities.GetModmakerDefinitionsCache();
                                 M3Log.Information(@"Migrating ME3Tweaks ModMaker cached files");
                                 foreach (var f in modmakerXmls)
                                 {
@@ -231,7 +231,7 @@ namespace MassEffectModManagerCore.modmanager.windows
 
                         //MIGRATE 7z.dll - this will only perform an interim fix (maybe network failure?) as we use 19.0 and ME3MM used 18.05
                         var me3mm7z = Path.Combine(dataDir, @"tools\ModManagerCommandLine\x64\7z.dll");
-                        var target7z = Utilities.Get7zDllPath();
+                        var target7z = M3Utilities.Get7zDllPath();
                         if (File.Exists(me3mm7z) && !File.Exists(target7z))
                         {
                             M3Log.Information($@"Copying ME3MM 7z.dll to ME3Tweaks Mod Manager dll location: {me3mm7z} -> {target7z}");
@@ -241,7 +241,7 @@ namespace MassEffectModManagerCore.modmanager.windows
 
                         // Migrate DLC_AUTH_FAIL
                         var me3mmAuthFail = Path.Combine(dataDir, @"help\DLC_AUTH_FAIL.png");
-                        var targetAuthFail = Path.Combine(Utilities.GetLocalHelpResourcesDirectory(), @"DLC_AUTH_FAIL.png");
+                        var targetAuthFail = Path.Combine(M3Utilities.GetLocalHelpResourcesDirectory(), @"DLC_AUTH_FAIL.png");
                         if (File.Exists(me3mmAuthFail) && !File.Exists(targetAuthFail))
                         {
                             M3Log.Information($@"Copying DLC_AUTH_FAIL help resource to ME3Tweaks Mod Manager help resources location: {me3mmAuthFail} -> {targetAuthFail}");
@@ -257,7 +257,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                             var queues = Directory.EnumerateFiles(modGroupsDir, @"*.txt").ToList();
                             foreach (var queue in queues)
                             {
-                                var biqDest = Path.Combine(Utilities.GetBatchInstallGroupsFolder(), Path.GetFileName(queue));
+                                var biqDest = Path.Combine(M3Utilities.GetBatchInstallGroupsFolder(), Path.GetFileName(queue));
                                 M3Log.Information($@"Migrating mod install group: {queue} -> {biqDest}");
                                 File.Move(queue, biqDest, true);
                                 M3Log.Information(@"Migrated " + Path.GetFileName(queue));
@@ -273,7 +273,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                             var filesInKBDir = Directory.EnumerateFiles(overrideDir, @"*.xml").ToList();
                             foreach (var file in filesInKBDir)
                             {
-                                var keybindDir = Path.Combine(Utilities.GetKeybindsOverrideFolder(), @"me3-" + Path.GetFileName(file));
+                                var keybindDir = Path.Combine(M3Utilities.GetKeybindsOverrideFolder(), @"me3-" + Path.GetFileName(file));
                                 M3Log.Information($@"Migrating keybinds override: {file} -> {keybindDir}");
                                 File.Move(file, keybindDir, true);
                                 M3Log.Information(@"Migrated " + Path.GetFileName(file));
@@ -306,7 +306,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                                             try
                                             {
                                                 M3Log.Information(@"Deleting directory: " + entry);
-                                                Utilities.DeleteFilesAndFoldersRecursively(entry, true);
+                                                M3Utilities.DeleteFilesAndFoldersRecursively(entry, true);
                                             }
                                             catch (Exception e)
                                             {
@@ -333,7 +333,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                             // Install redirect to ensure user shortcuts continue to work
                             var me3cmmPath = Path.Combine(exeDir, @"ME3CMM.exe");
                             M3Log.Information(@"Writing redirector to " + me3cmmPath);
-                            Utilities.ExtractInternalFile(@"MassEffectModManagerCore.updater.ME3CMM.exe", me3cmmPath, true);
+                            M3Utilities.ExtractInternalFile(@"MassEffectModManagerCore.updater.ME3CMM.exe", me3cmmPath, true);
 
                         }
                         else

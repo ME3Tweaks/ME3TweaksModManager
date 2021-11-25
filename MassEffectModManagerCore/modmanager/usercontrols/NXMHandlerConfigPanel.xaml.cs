@@ -140,7 +140,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 v.Domains = v.DomainsEditable.Split(',').ToList();
             }
             App.NexusDomainHandlers.ReplaceAll(OtherGameHandlers);
-            File.WriteAllText(Utilities.GetExternalNexusHandlersFile(), JsonConvert.SerializeObject(OtherGameHandlers));
+            File.WriteAllText(M3Utilities.GetExternalNexusHandlersFile(), JsonConvert.SerializeObject(OtherGameHandlers));
         }
 
         public override void OnPanelVisible()

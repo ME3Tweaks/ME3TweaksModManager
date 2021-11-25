@@ -107,7 +107,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void parseBatchFiles(string pathToHighlight = null)
         {
             AvailableBatchQueues.ClearEx();
-            var batchDir = Utilities.GetBatchInstallGroupsFolder();
+            var batchDir = M3Utilities.GetBatchInstallGroupsFolder();
             var files = Directory.GetFiles(batchDir);
             foreach (var file in files)
             {
@@ -214,7 +214,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             while (line < lines.Length)
             {
                 string moddescPath = lines[line];
-                var libraryRoot = Utilities.GetModDirectoryForGame(result.Game);
+                var libraryRoot = M3Utilities.GetModDirectoryForGame(result.Game);
                 //workaround for 103/104 to 105: moddesc path's in biq were stored as full paths instead of relative. me3cmm is relative paths
                 var fullModdescPath = File.Exists(moddescPath) ? moddescPath : Path.Combine(libraryRoot, moddescPath);
 

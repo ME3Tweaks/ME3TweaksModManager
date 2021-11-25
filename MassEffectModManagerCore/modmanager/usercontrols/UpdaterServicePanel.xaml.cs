@@ -492,8 +492,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 SourceFile sf = new SourceFile();
                 var sFile = Path.Combine(mod.ModPath, x);
                 var lFile = Path.Combine(lzmaStagingPath, x + @".lzma");
-                sf.hash = Utilities.CalculateMD5(sFile);
-                sf.lzmahash = Utilities.CalculateMD5(lFile);
+                sf.hash = M3Utilities.CalculateMD5(sFile);
+                sf.lzmahash = M3Utilities.CalculateMD5(lFile);
                 var fileInfo = new FileInfo(sFile);
                 sf.size = fileInfo.Length;
                 sf.timestamp = fileInfo.LastWriteTimeUtc.Ticks;

@@ -96,7 +96,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 Title = M3L.GetString(M3L.string_selectModMakerModXmlFile),
                 Filter = M3L.GetString(M3L.string_modMakerXMLFiles) + @"|*.xml",
-                InitialDirectory = Utilities.GetModmakerDefinitionsCache()
+                InitialDirectory = M3Utilities.GetModmakerDefinitionsCache()
             };
             var result = m.ShowDialog(window);
             if (result.Value)
@@ -108,7 +108,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void OpenModMaker()
         {
-            Utilities.OpenWebpage(@"https://me3tweaks.com/modmaker");
+            M3Utilities.OpenWebpage(@"https://me3tweaks.com/modmaker");
         }
 
         private void ClosePanel()
@@ -217,8 +217,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     var m = compiler.DownloadAndCompileMod(modDelta);
                     if (m != null && !LocalFileOption)
                     {
-                        var sanitizedname = Utilities.SanitizePath(m.ModName);
-                        File.WriteAllText(Path.Combine(Utilities.GetModmakerDefinitionsCache(), $@"{code}-{sanitizedname}.xml"), modDelta);
+                        var sanitizedname = M3Utilities.SanitizePath(m.ModName);
+                        File.WriteAllText(Path.Combine(M3Utilities.GetModmakerDefinitionsCache(), $@"{code}-{sanitizedname}.xml"), modDelta);
                     }
                     b.Result = m;
                 }

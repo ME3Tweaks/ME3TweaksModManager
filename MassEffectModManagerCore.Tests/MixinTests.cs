@@ -8,6 +8,7 @@ using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.usercontrols;
+using ME3TweaksCore.Services.Backup;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MassEffectModManagerCore.Tests
@@ -38,7 +39,7 @@ namespace MassEffectModManagerCore.Tests
 
                 //Mixins are ready to be applied
                 var outdir = Path.Combine(Path.Combine(GlobalTest.GetScratchDir(), "MixinTest"));
-                Utilities.DeleteFilesAndFoldersRecursively(outdir);
+                M3Utilities.DeleteFilesAndFoldersRecursively(outdir);
                 Directory.CreateDirectory(outdir);
                 foreach (var mapping in compilingListsPerModule)
                 {

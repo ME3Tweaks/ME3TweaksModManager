@@ -236,7 +236,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                 {
                     return RuleResult.Invalid(M3L.GetString(M3L.string_modNameCanOnlyContain));
                 }
-                var sanitized = Utilities.SanitizePath(ModName, true);
+                var sanitized = M3Utilities.SanitizePath(ModName, true);
                 if (sanitized.Length == 0)
                 {
                     return RuleResult.Invalid(M3L.GetString(M3L.string_modNameWillNotResolveToAUsableFilesystemPath));
@@ -354,14 +354,14 @@ namespace MassEffectModManagerCore.modmanager.windows
                 if (result == MessageBoxResult.No) return;
             }
 
-            var outputDirectory = Path.Combine(Utilities.GetModDirectoryForGame(Game), Utilities.SanitizePath(ModName));
+            var outputDirectory = Path.Combine(M3Utilities.GetModDirectoryForGame(Game), M3Utilities.SanitizePath(ModName));
             if (Directory.Exists(outputDirectory))
             {
                 var result = M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_dialogWillDeleteExistingMod, outputDirectory), M3L.GetString(M3L.string_modAlreadyExists), MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No);
                 if (result == MessageBoxResult.No) return;
                 try
                 {
-                    if (!Utilities.DeleteFilesAndFoldersRecursively(outputDirectory))
+                    if (!M3Utilities.DeleteFilesAndFoldersRecursively(outputDirectory))
                     {
                         M3Log.Error(@"Could not delete existing output directory.");
                         M3L.ShowDialog(this, M3L.GetString(M3L.string_dialogErrorDeletingExistingMod), M3L.GetString(M3L.string_errorDeletingExistingMod), MessageBoxButton.OK, MessageBoxImage.Error);
@@ -499,10 +499,10 @@ namespace MassEffectModManagerCore.modmanager.windows
             //nbw.DoWork += (sender, args) =>
             //{
             var dlcFolderName = $@"DLC_MOD_{skOption.ModDLCFolderNameSuffix}";
-            var modPath = skOption.OutputFolderOverride ?? Path.Combine(Utilities.GetModDirectoryForGame(skOption.ModGame), Utilities.SanitizePath(skOption.ModName));
+            var modPath = skOption.OutputFolderOverride ?? Path.Combine(M3Utilities.GetModDirectoryForGame(skOption.ModGame), M3Utilities.SanitizePath(skOption.ModName));
             if (skOption.OutputFolderOverride == null && Directory.Exists(modPath))
             {
-                Utilities.DeleteFilesAndFoldersRecursively(modPath);
+                M3Utilities.DeleteFilesAndFoldersRecursively(modPath);
             }
 
             Directory.CreateDirectory(modPath);
@@ -514,7 +514,7 @@ namespace MassEffectModManagerCore.modmanager.windows
             if (skOption.OutputFolderOverride != null && Directory.Exists(contentDirectory))
             {
                 // Wipe out DLC folder target
-                Utilities.DeleteFilesAndFoldersRecursively(contentDirectory);
+                M3Utilities.DeleteFilesAndFoldersRecursively(contentDirectory);
             }
 
             Directory.CreateDirectory(contentDirectory);
@@ -543,7 +543,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                 {
                     var langExt = lang.filecode == @"INT" ? "" : $@"_{lang.filecode}";
                     var tlkPath = $@"{tlkGlobalFile}{langExt}.{extension}";
-                    Utilities.ExtractInternalFile($@"MassEffectModManagerCore.modmanager.starterkit.BlankTlkFile.{extension}", tlkPath, true);
+                    M3Utilities.ExtractInternalFile($@"MassEffectModManagerCore.modmanager.starterkit.BlankTlkFile.{extension}", tlkPath, true);
 
                     var tlkFile = MEPackageHandler.OpenMEPackage(tlkPath);
                     var tlk1 = new ME1TalkFile(tlkFile.GetUExport(1));
@@ -584,11 +584,11 @@ namespace MassEffectModManagerCore.modmanager.windows
                     if (skOption.ModGame == MEGame.ME3)
                     {
                         //Extract Default.Sfar
-                        Utilities.ExtractInternalFile(@"MassEffectModManagerCore.modmanager.starterkit.Default.sfar", Path.Combine(cookedDir, @"Default.sfar"), true);
+                        M3Utilities.ExtractInternalFile(@"MassEffectModManagerCore.modmanager.starterkit.Default.sfar", Path.Combine(cookedDir, @"Default.sfar"), true);
                     }
 
                     //Generate Coalesced.bin for mod
-                    var memory = Utilities.ExtractInternalFileToStream(@"MassEffectModManagerCore.modmanager.starterkit.Default_DLC_MOD_StarterKit.bin");
+                    var memory = M3Utilities.ExtractInternalFileToStream(@"MassEffectModManagerCore.modmanager.starterkit.Default_DLC_MOD_StarterKit.bin");
                     var files = CoalescedConverter.DecompileGame3ToMemory(memory);
                     //Modify coal files for this mod.
                     files[@"BioEngine.xml"] = files[@"BioEngine.xml"].Replace(@"StarterKit", skOption.ModDLCFolderNameSuffix); //update bioengine
@@ -657,7 +657,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                 ini[@"ModInfo"][@"game"] = skOption.ModGame.ToString();
                 ini[@"ModInfo"][@"modname"] = skOption.ModName;
                 ini[@"ModInfo"][@"moddev"] = skOption.ModDeveloper;
-                ini[@"ModInfo"][@"moddesc"] = Utilities.ConvertNewlineToBr(skOption.ModDescription);
+                ini[@"ModInfo"][@"moddesc"] = M3Utilities.ConvertNewlineToBr(skOption.ModDescription);
                 ini[@"ModInfo"][@"modver"] = 1.0.ToString(CultureInfo.InvariantCulture);
                 ini[@"ModInfo"][@"modsite"] = skOption.ModURL;
 

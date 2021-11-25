@@ -8,14 +8,14 @@
                        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" 
                        xmlns:adonisConverters="clr-namespace:AdonisUI.Converters;assembly=AdonisUI" 
                        xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
-                       xmlns:asi="clr-namespace:MassEffectModManagerCore.modmanager.asi"
                        xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters"
+                       xmlns:nativeMods="clr-namespace:ME3TweaksCore.NativeMods;assembly=ME3TweaksCore"
                        DataContext="{Binding RelativeSource={RelativeSource Self}}"
                        mc:Ignorable="d"
                        Width="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter=0.9, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualWidth}"
                        Height="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter=0.8, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualHeight}">
     <UserControl.Resources>
-        <DataTemplate DataType="{x:Type asi:ASIMod}">
+        <DataTemplate DataType="{x:Type nativeMods:ASIMod}">
             <Grid Margin="3" HorizontalAlignment="Stretch">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
@@ -31,7 +31,7 @@
                 <TextBlock Grid.Row="1" Grid.Column="1" Text="{DynamicResource string_notInstalled}"/>
             </Grid>
         </DataTemplate>
-        <DataTemplate DataType="{x:Type asi:KnownInstalledASIMod}">
+        <DataTemplate DataType="{x:Type nativeMods:KnownInstalledASIMod}">
             <Border Background="{Binding BackgroundColor}" BorderThickness="2,1">
                 <Grid Margin="3" HorizontalAlignment="Stretch">
                     <Grid.ColumnDefinitions>
@@ -49,7 +49,7 @@
                 </Grid>
             </Border>
         </DataTemplate>
-        <DataTemplate  DataType="{x:Type asi:UnknownInstalledASIMod}">
+        <DataTemplate  DataType="{x:Type nativeMods:UnknownInstalledASIMod}">
             <Border Background="{Binding BackgroundColor}" BorderThickness="2,1">
 
                 <Grid Margin="3">
@@ -113,7 +113,7 @@
                 </DataTemplate>
             </TabControl.ItemTemplate>
             <TabControl.ContentTemplate>
-                <DataTemplate DataType="{x:Type asi:ASIGame}">
+                <DataTemplate DataType="{x:Type nativeMods:ASIGame}">
                     <Grid Margin="0">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />

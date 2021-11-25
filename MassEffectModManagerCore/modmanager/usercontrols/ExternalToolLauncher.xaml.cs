@@ -102,7 +102,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             WebClient downloadClient = new WebClient();
 
             downloadClient.Headers[@"user-agent"] = @"ME3TweaksModManager";
-            string temppath = Utilities.GetTempPath();
+            string temppath = M3Utilities.GetTempPath();
             downloadClient.DownloadProgressChanged += (s, e) =>
             {
                 setPercentTaskDone?.Invoke(e.ProgressPercentage);
@@ -666,7 +666,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 case LegendaryExplorer_Beta:
                     {
-                        if (!Utilities.IsNetRuntimeInstalled(5))
+                        if (!M3Utilities.IsNetRuntimeInstalled(5))
                         {
                             return M3L.GetString(M3L.string_error_net5RuntimeMissing);
                         }
@@ -710,17 +710,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (tool == MEM_CMD)
             {
                 // Internal tool
-                return Path.Combine(Utilities.GetCachedExecutablePath());
+                return Path.Combine(M3Utilities.GetCachedExecutablePath());
             }
 
             if (tool == EGMSettingsLE)
             {
                 // Same as OT path
-                return Path.Combine(Utilities.GetDataDirectory(), @"ExternalTools", @"EGMSettings");
+                return Path.Combine(M3Utilities.GetDataDirectory(), @"ExternalTools", @"EGMSettings");
             }
 
 
-            return Path.Combine(Utilities.GetDataDirectory(), @"ExternalTools", tool);
+            return Path.Combine(M3Utilities.GetDataDirectory(), @"ExternalTools", tool);
         }
 
         private static Version me3tweaksToolGetLatestVersion(string tool)

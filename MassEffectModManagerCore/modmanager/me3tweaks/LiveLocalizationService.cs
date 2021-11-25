@@ -29,7 +29,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     var locFile = getCachedLocalizationFile(lang);
                     if (File.Exists(locFile))
                     {
-                        var md5 = Utilities.CalculateMD5(locFile);
+                        var md5 = M3Utilities.CalculateMD5(locFile);
                         M3Log.Information($@"Found server livelocalization. HasUpdatedLocalization({lang}) result: {md5 != livelocmd5}");
                         return md5 != livelocmd5;
                     }
@@ -40,7 +40,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             return null; //can't be found or no manifest
         }
 
-        private static string getCachedLocalizationFile(string lang) => Path.Combine(Utilities.GetCachedLocalizationFolder(), $@"{lang}-{App.BuildNumber}.xaml");
+        private static string getCachedLocalizationFile(string lang) => Path.Combine(M3Utilities.GetCachedLocalizationFolder(), $@"{lang}-{App.BuildNumber}.xaml");
 
         /// <summary>
         /// Sets the application's strings based on the language. This call should be run on a background thread (or awaited) as it will block if there is a new localization file to fetch.

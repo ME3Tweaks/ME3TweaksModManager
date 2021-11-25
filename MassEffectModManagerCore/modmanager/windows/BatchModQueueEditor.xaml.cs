@@ -157,14 +157,14 @@ namespace MassEffectModManagerCore.modmanager.windows
             StringBuilder sb = new StringBuilder();
             sb.AppendLine(SelectedGame.ToString());
             sb.AppendLine(GroupName);
-            sb.AppendLine(Utilities.ConvertNewlineToBr(GroupDescription));
-            var libraryRoot = Utilities.GetModDirectoryForGame(SelectedGame);
+            sb.AppendLine(M3Utilities.ConvertNewlineToBr(GroupDescription));
+            var libraryRoot = M3Utilities.GetModDirectoryForGame(SelectedGame);
             foreach (var m in ModsInGroup)
             {
                 sb.AppendLine(m.ModDescPath.Substring(libraryRoot.Length + 1)); //STORE RELATIVE!
             }
 
-            var batchfolder = Utilities.GetBatchInstallGroupsFolder();
+            var batchfolder = M3Utilities.GetBatchInstallGroupsFolder();
             if (existingFilename != null)
             {
                 var existingPath = Path.Combine(batchfolder, existingFilename);
@@ -189,8 +189,8 @@ namespace MassEffectModManagerCore.modmanager.windows
 
         private string getSaveName(string groupName)
         {
-            var batchfolder = Utilities.GetBatchInstallGroupsFolder();
-            var newFname = Utilities.SanitizePath(groupName);
+            var batchfolder = M3Utilities.GetBatchInstallGroupsFolder();
+            var newFname = M3Utilities.SanitizePath(groupName);
             if (string.IsNullOrWhiteSpace(newFname))
             {
                 return getFirstGenericSavename(batchfolder);

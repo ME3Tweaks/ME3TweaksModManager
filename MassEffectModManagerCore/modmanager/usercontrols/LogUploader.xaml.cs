@@ -109,7 +109,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 else if (b.UserState is MTaskbarState tbps)
                 {
-                    TaskbarHelper.SetProgressState(MTaskbarStateWPF.ConvertTaskbarState(tbps));
+                    TaskbarHelper.SetProgressState(tbps);
                 }
             };
             nbw.DoWork += (a, b) =>
@@ -226,7 +226,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     if (response.StartsWith(@"http"))
                     {
-                        Utilities.OpenWebpage(response);
+                        M3Utilities.OpenWebpage(response);
                     }
                     else
                     {

@@ -307,7 +307,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (sender is Hyperlink hl && hl.DataContext is SearchedItemResult sir)
             {
                 var outboundUrl = $@"https://nexusmods.com/{sir.Domain}/mods/{sir.Instance.ModID}?tab=files"; // do not localize
-                Utilities.OpenWebpage(outboundUrl);
+                M3Utilities.OpenWebpage(outboundUrl);
             }
         }
     }

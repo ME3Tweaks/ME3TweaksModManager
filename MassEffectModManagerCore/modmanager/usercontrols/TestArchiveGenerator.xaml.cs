@@ -40,7 +40,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             SaveFileDialog d = new SaveFileDialog
             {
                 Filter = $@"{M3L.GetString(M3L.string_7zipArchiveFile)}|*.7z",
-                FileName = Utilities.SanitizePath($@"{ModForArchive.ModName}_{ModForArchive.ModVersionString}".Replace(@" ", ""), true)
+                FileName = M3Utilities.SanitizePath($@"{ModForArchive.ModName}_{ModForArchive.ModVersionString}".Replace(@" ", ""), true)
             };
             var outputarchive = d.ShowDialog();
             if (outputarchive.HasValue && outputarchive.Value)
@@ -48,7 +48,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 var nbw = new NamedBackgroundWorker(@"TestArchiveGenerator");
                 nbw.DoWork += (a, b) =>
                 {
-                    var stagingPath = Directory.CreateDirectory(Path.Combine(Utilities.GetTempPath(), @"TestGenerator")).FullName;
+                    var stagingPath = Directory.CreateDirectory(Path.Combine(M3Utilities.GetTempPath(), @"TestGenerator")).FullName;
                     var referencedFiles = ModForArchive.GetAllRelativeReferences();
                     int numdone = 0;
                     ActionText = M3L.GetString(M3L.string_hashingFiles);
@@ -59,7 +59,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                           var destfile = Path.Combine(stagingPath, x);
 
                           M3Log.Information(@"Hashing " + sourcefile);
-                          var md5 = Utilities.CalculateMD5(sourcefile);
+                          var md5 = M3Utilities.CalculateMD5(sourcefile);
                           Directory.CreateDirectory(Directory.GetParent(destfile).FullName);
                           M3Log.Information(@"Writing blank hash file " + destfile);
                           File.WriteAllText(destfile, md5);
@@ -78,7 +78,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         SevenZipCompressor svc = new SevenZipCompressor();
                         svc.Progressing += (o, details) => { Percent = (int)(details.AmountCompleted * 100.0 / details.TotalAmount); };
                         svc.CompressDirectory(stagingPath, d.FileName);
-                        Utilities.HighlightInExplorer(d.FileName);
+                        M3Utilities.HighlightInExplorer(d.FileName);
                     }
                 };
                 nbw.RunWorkerCompleted += (a, b) =>

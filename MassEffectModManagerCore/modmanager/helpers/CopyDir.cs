@@ -101,7 +101,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 if (!testrun)
                 {
                     //Will attempt to create dir, prompt for admin if necessary (not sure how this will work in the wild)
-                    Utilities.CreateDirectoryWithWritePermission(Directory.GetParent(dest).FullName);
+                    M3Utilities.CreateDirectoryWithWritePermission(Directory.GetParent(dest).FullName);
 
                     if (File.Exists(dest))
                     {

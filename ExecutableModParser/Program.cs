@@ -4,8 +4,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using LegendaryExplorerCore.Helpers;
+using MassEffectModManagerCore.modmanager;
 using SevenZip;
-using Utilities = MassEffectModManagerCore.modmanager.Utilities;
 
 namespace ExecutableModParser
 {
@@ -73,7 +73,7 @@ namespace ExecutableModParser
             Dictionary<string, string> md5Map = new Dictionary<string, string>();
             foreach (var tf in tfs)
             {
-                md5Map[Utilities.CalculateMD5(tf)] = tf.Substring(destTransformFS.Length + 1);
+                md5Map[M3Utilities.CalculateMD5(tf)] = tf.Substring(destTransformFS.Length + 1);
             }
 
 
@@ -87,7 +87,7 @@ namespace ExecutableModParser
                 }
                 var outStream = new MemoryStream();
                 archive.ExtractFile(entry.Index, outStream);
-                var amd5 = Utilities.CalculateMD5(outStream);
+                var amd5 = M3Utilities.CalculateMD5(outStream);
                 var outName = $"<alternateredirect index=\"{entry.Index}\" outfile=\"{md5Map[amd5]}\"/>";
                 Console.WriteLine(outName);
             }
@@ -128,7 +128,7 @@ namespace ExecutableModParser
                     archive.ExtractFile(e.Index, outStream);
                     catalog.Add(new M3FileInfo()
                     {
-                        md5 = Utilities.CalculateMD5(outStream),
+                        md5 = M3Utilities.CalculateMD5(outStream),
                         size = outStream.Length,
                         dataStream = outStream,
                         path = e.FileName,
@@ -150,7 +150,7 @@ namespace ExecutableModParser
                 {
                     if (IsTrashFile(f)) continue;
                     Console.WriteLine($"Indexing {d}\\{f}");
-                    var md5 = Utilities.CalculateMD5($"{d}\\{f}");
+                    var md5 = M3Utilities.CalculateMD5($"{d}\\{f}");
                     var info = catalog.FirstOrDefault(x => x.md5 == md5);
                     if (info == null)
                     {

@@ -74,11 +74,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             if (SelectedASIObject is ASIMod asi)
             {
-                Utilities.OpenWebpage(asi.LatestVersion.SourceCodeLink);
+                M3Utilities.OpenWebpage(asi.LatestVersion.SourceCodeLink);
             }
             else if (SelectedASIObject is KnownInstalledASIMod kasi && kasi.AssociatedManifestItem != null)
             {
-                Utilities.OpenWebpage(kasi.AssociatedManifestItem.SourceCodeLink);
+                M3Utilities.OpenWebpage(kasi.AssociatedManifestItem.SourceCodeLink);
             }
         }
 
@@ -134,12 +134,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (SelectedASIObject == null) return false;
             if (SelectedASIObject is ASIMod am)
             {
-                return !Utilities.IsGameRunning(am.Game) && (Games.FirstOrDefault(x => x.Game == am.Game)?.GameTargets.Any() ?? false);
+                return !M3Utilities.IsGameRunning(am.Game) && (Games.FirstOrDefault(x => x.Game == am.Game)?.GameTargets.Any() ?? false);
             }
 
             if (SelectedASIObject is InstalledASIMod iam)
             {
-                return !Utilities.IsGameRunning(iam.Game) && (Games.FirstOrDefault(x => x.Game == iam.Game)?.GameTargets.Any() ?? false);
+                return !M3Utilities.IsGameRunning(iam.Game) && (Games.FirstOrDefault(x => x.Game == iam.Game)?.GameTargets.Any() ?? false);
             }
 
             return false;

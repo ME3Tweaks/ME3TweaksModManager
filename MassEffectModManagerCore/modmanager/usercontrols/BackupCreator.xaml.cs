@@ -603,9 +603,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 //Check space
                 if (!targetToBackup.IsCustomOption)
                 {
-                    Utilities.GetDiskFreeSpaceEx(backupPath, out var freeBytes, out var totalBytes,
+                    M3Utilities.GetDiskFreeSpaceEx(backupPath, out var freeBytes, out var totalBytes,
                         out var totalFreeBytes);
-                    var requiredSpace = (ulong)(Utilities.GetSizeOfDirectory(targetToBackup.TargetPath) * 1.1); //10% buffer
+                    var requiredSpace = (ulong)(M3Utilities.GetSizeOfDirectory(targetToBackup.TargetPath) * 1.1); //10% buffer
                     M3Log.Information(
                         $@"Backup space check. Backup size: {FileSize.FormatSize(requiredSpace)}, free space: {FileSize.FormatSize(freeBytes)}");
                     if (freeBytes < requiredSpace)
@@ -623,7 +623,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
 
                     //Check writable
-                    var writable = Utilities.IsDirectoryWritable(backupPath);
+                    var writable = M3Utilities.IsDirectoryWritable(backupPath);
                     if (!writable)
                     {
                         //Not enough space.
@@ -672,8 +672,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 BackupLocation = BackupService.GetGameBackupPath(Game, refresh: forceRefresh);
                 BackupService.RefreshBackupStatus(game: Game);
-                BackupStatus = BackupService.GetBackupStatus(Game);
-                BackupStatusLine2 = BackupLocation ?? BackupService.GetBackupStatusTooltip(Game);
+                //BackupStatus = BackupService.GetBackupStatus(Game); // this is dynamic object that should be bound to in ui
                 backupStatusChangedDelegate?.Invoke();
             }
 
@@ -685,7 +684,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 set;
             }
             public BackupService.GameBackupStatus BackupStatus { get; set; }
-            public string BackupStatusLine2 { get; set; }
             public int ProgressMax { get; set; } = 100;
             public int ProgressValue { get; set; } = 0;
             public bool ProgressIndeterminate { get; set; } = true;

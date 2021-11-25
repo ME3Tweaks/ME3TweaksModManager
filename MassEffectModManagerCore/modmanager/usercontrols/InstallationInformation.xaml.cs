@@ -64,18 +64,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private bool CanRestoreMPSFARs()
         {
-            return IsPanelOpen && SelectedTarget != null && SelectedTarget.Game != MEGame.Unknown && !Utilities.IsGameRunning(SelectedTarget.Game) && SelectedTarget.HasModifiedMPSFAR() && !SFARBeingRestored;
+            return IsPanelOpen && SelectedTarget != null && SelectedTarget.Game != MEGame.Unknown && !M3Utilities.IsGameRunning(SelectedTarget.Game) && SelectedTarget.HasModifiedMPSFAR() && !SFARBeingRestored;
         }
         private bool CanRestoreSPSFARs()
         {
-            return IsPanelOpen && SelectedTarget.Game != MEGame.Unknown && !Utilities.IsGameRunning(SelectedTarget.Game) && SelectedTarget.HasModifiedSPSFAR() && !SFARBeingRestored;
+            return IsPanelOpen && SelectedTarget.Game != MEGame.Unknown && !M3Utilities.IsGameRunning(SelectedTarget.Game) && SelectedTarget.HasModifiedSPSFAR() && !SFARBeingRestored;
         }
 
         private bool CanRemoveTarget() => SelectedTarget != null && SelectedTarget.Game != MEGame.Unknown && !SelectedTarget.RegistryActive;
 
         private void RemoveTarget()
         {
-            Utilities.RemoveCachedTarget(SelectedTarget);
+            M3Utilities.RemoveCachedTarget(SelectedTarget);
             Result.ReloadTargets = true;
             ClosePanel();
         }
@@ -96,7 +96,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private bool CanRestoreAllBasegame()
         {
-            return IsPanelOpen && SelectedTarget != null && SelectedTarget.Game != MEGame.Unknown && !Utilities.IsGameRunning(SelectedTarget.Game) && SelectedTarget?.ModifiedBasegameFiles.Count > 0 && !RestoreAllBasegameInProgress && BackupService.GetGameBackupPath(SelectedTarget.Game) != null; //check if ifles being restored
+            return IsPanelOpen && SelectedTarget != null && SelectedTarget.Game != MEGame.Unknown && !M3Utilities.IsGameRunning(SelectedTarget.Game) && SelectedTarget?.ModifiedBasegameFiles.Count > 0 && !RestoreAllBasegameInProgress && BackupService.GetGameBackupPath(SelectedTarget.Game) != null; //check if ifles being restored
         }
 
         public string ModifiedFilesFilterText { get; set; }
@@ -284,7 +284,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private bool CanRestoreAllSFARs()
         {
-            return IsPanelOpen && SelectedTarget != null && SelectedTarget.Game != MEGame.Unknown && !Utilities.IsGameRunning(SelectedTarget.Game) && SelectedTarget.ModifiedSFARFiles.Count > 0 && !SFARBeingRestored;
+            return IsPanelOpen && SelectedTarget != null && SelectedTarget.Game != MEGame.Unknown && !M3Utilities.IsGameRunning(SelectedTarget.Game) && SelectedTarget.ModifiedSFARFiles.Count > 0 && !SFARBeingRestored;
         }
 
         /// <summary>
@@ -298,7 +298,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 bool deleteConfirmationCallback(InstalledDLCMod mod)
                 {
-                    if (Utilities.IsGameRunning(SelectedTarget.Game))
+                    if (M3Utilities.IsGameRunning(SelectedTarget.Game))
                     {
                         M3L.ShowDialog(Window.GetWindow(this),
                             M3L.GetString(M3L.string_interp_cannotDeleteModsWhileXIsRunning,
@@ -344,7 +344,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 SelectedTarget.PopulateTextureInstallHistory();
                 bool restoreBasegamefileConfirmationCallback(string filepath)
                 {
-                    if (Utilities.IsGameRunning(SelectedTarget.Game))
+                    if (M3Utilities.IsGameRunning(SelectedTarget.Game))
                     {
                         M3L.ShowDialog(Window.GetWindow(this),
                             M3L.GetString(M3L.string_interp_cannotRestoreFilesWhileXIsRunning, SelectedTarget.Game.ToGameName()), M3L.GetString(M3L.string_gameRunning),
@@ -384,7 +384,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                 bool restoreSfarConfirmationCallback(string sfarPath)
                 {
-                    if (Utilities.IsGameRunning(SelectedTarget.Game))
+                    if (M3Utilities.IsGameRunning(SelectedTarget.Game))
                     {
                         M3L.ShowDialog(Window.GetWindow(this),
                             M3L.GetString(M3L.string_interp_cannotRestoreFilesWhileXIsRunning,
@@ -777,7 +777,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void OpenInExplorer_Click(object sender, RoutedEventArgs e)
         {
-            Utilities.OpenExplorer(SelectedTarget.TargetPath);
+            M3Utilities.OpenExplorer(SelectedTarget.TargetPath);
         }
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)

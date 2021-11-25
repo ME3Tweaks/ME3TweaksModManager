@@ -79,7 +79,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void Image_ME3Tweaks_Click(object sender, MouseButtonEventArgs e)
         {
-            Utilities.OpenWebpage(@"https://me3tweaks.com");
+            M3Utilities.OpenWebpage(@"https://me3tweaks.com");
         }
 
         private void About_PreviewMouseDown(object sender, MouseButtonEventArgs e)
@@ -100,10 +100,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             if (e.Uri.AbsoluteUri == @"internal://minhook-license/")
             {
-                new LicenseViewerWindow(new StreamReader(Utilities.GetResourceStream(@"MassEffectModManagerCore.modmanager.licenses.minhook.txt")).ReadToEnd()).Show();
+                new LicenseViewerWindow(new StreamReader(M3Utilities.GetResourceStream(@"MassEffectModManagerCore.modmanager.licenses.minhook.txt")).ReadToEnd()).Show();
                 return;
             }
-            Utilities.OpenWebpage(e.Uri.AbsoluteUri);
+            M3Utilities.OpenWebpage(e.Uri.AbsoluteUri);
         }
 
         private void ClosePanel(object sender, RoutedEventArgs e)

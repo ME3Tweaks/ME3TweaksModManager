@@ -27,7 +27,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public FirstRunPanel()
         {
             DataContext = this;
-            LibraryDir = Utilities.GetModsDirectory();
+            LibraryDir = M3Utilities.GetModsDirectory();
             LoadCommands();
             InitializeComponent();
         }
@@ -87,7 +87,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void JoinDiscord_Click(object sender, RoutedEventArgs e)
         {
-            Utilities.OpenWebpage(App.DISCORD_INVITE_LINK);
+            M3Utilities.OpenWebpage(App.DISCORD_INVITE_LINK);
         }
 
         private void Close_Clicked(object sender, RoutedEventArgs e)
@@ -192,8 +192,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         var authInfo = NexusModsUtilities.AuthToNexusMods(apiKeyReceived).Result;
                         if (authInfo != null)
                         {
-                            using FileStream fs = new FileStream(System.IO.Path.Combine(Utilities.GetNexusModsCache(), @"nexusmodsapikey"), FileMode.Create);
-                            File.WriteAllBytes(System.IO.Path.Combine(Utilities.GetNexusModsCache(), @"entropy"), NexusModsUtilities.EncryptStringToStream(apiKeyReceived, fs));
+                            using FileStream fs = new FileStream(System.IO.Path.Combine(M3Utilities.GetNexusModsCache(), @"nexusmodsapikey"), FileMode.Create);
+                            File.WriteAllBytes(System.IO.Path.Combine(M3Utilities.GetNexusModsCache(), @"entropy"), NexusModsUtilities.EncryptStringToStream(apiKeyReceived, fs));
                             fs.Close();
                             SetAuthorized(true);
                             mainwindow.RefreshNexusStatus();

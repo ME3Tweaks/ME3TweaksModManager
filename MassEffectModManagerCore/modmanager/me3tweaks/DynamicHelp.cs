@@ -20,18 +20,18 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
         public static List<SortableHelpElement> FetchLatestHelp(string language, bool preferLocal, bool overrideThrottling = false)
         {
-            var localHelpExists = File.Exists(Utilities.GetLocalHelpFile());
+            var localHelpExists = File.Exists(M3Utilities.GetLocalHelpFile());
             string cached = null;
             if (localHelpExists)
             {
                 try
                 {
-                    cached = File.ReadAllText(Utilities.GetLocalHelpFile());
+                    cached = File.ReadAllText(M3Utilities.GetLocalHelpFile());
                 }
                 catch (Exception e)
                 {
                     var attachments = new List<ErrorAttachmentLog>();
-                    string log = LogCollector.CollectLatestLog(true);
+                    string log = LogCollector.CollectLatestLog(M3Log.LogDir, true);
                     if (log.Length < FileSize.MebiByte * 7)
                     {
                         attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, "applog.txt"));
@@ -59,7 +59,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     try
                     {
                         string xml = wc.DownloadStringAwareOfEncoding(staticendpoint + @"dynamichelp/latesthelp-localized.xml");
-                        File.WriteAllText(Utilities.GetLocalHelpFile(), xml);
+                        File.WriteAllText(M3Utilities.GetLocalHelpFile(), xml);
                         return ParseLocalHelp(xml, language);
                     }
                     catch (Exception e)
@@ -160,7 +160,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             if (ResourceName != null)
             {
                 //Validate locally
-                var localFile = Path.Combine(Utilities.GetLocalHelpResourcesDirectory(), ResourceName);
+                var localFile = Path.Combine(M3Utilities.GetLocalHelpResourcesDirectory(), ResourceName);
                 if (!File.Exists(localFile))
                 {
                     //Download
@@ -175,7 +175,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                             M3Log.Information("Downloading dynamic help image asset: " + fullURL);
                             wc.DownloadFile(fullURL, localFile);
 
-                            var md5OfDownloadedFile = Utilities.CalculateMD5(localFile);
+                            var md5OfDownloadedFile = M3Utilities.CalculateMD5(localFile);
                             if (md5OfDownloadedFile != ResourceMD5)
                             {
                                 M3Log.Error($"Downloaded asset has wrong hash. Expected: {ResourceMD5}, got: {md5OfDownloadedFile}");

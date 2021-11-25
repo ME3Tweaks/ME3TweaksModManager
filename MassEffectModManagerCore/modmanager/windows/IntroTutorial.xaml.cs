@@ -89,7 +89,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                 }
 
                 tutorialStep.UIString = tutorialStep.UIString.Replace(@"\n", "\n"); //do not localize
-                tutorialStep.UIImagePath = Path.Combine(Utilities.GetTutorialServiceCache(), tutorialStep.imagename);
+                tutorialStep.UIImagePath = Path.Combine(M3Utilities.GetTutorialServiceCache(), tutorialStep.imagename);
             }
 
             CurrentStep = TutorialSteps[0];

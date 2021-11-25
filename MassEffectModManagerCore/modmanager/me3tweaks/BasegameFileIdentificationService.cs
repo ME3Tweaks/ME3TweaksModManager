@@ -21,7 +21,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         {
             if (LocalBasegameFileIdentificationService != null) return;
 
-            var file = Utilities.GetLocalBasegameIdentificationServiceFile();
+            var file = M3Utilities.GetLocalBasegameIdentificationServiceFile();
             if (File.Exists(file))
             {
                 try
@@ -55,7 +55,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             // Update the DB
             foreach (var entry in entries)
             {
-                string gameKey = entry.game == @"0" ? @"LELAUNCHER" : Utilities.GetGameFromNumber(entry.game).ToString();
+                string gameKey = entry.game == @"0" ? @"LELAUNCHER" : M3Utilities.GetGameFromNumber(entry.game).ToString();
                 if (LocalBasegameFileIdentificationService.TryGetValue(gameKey, out var gameDB))
                 {
                     List<BasegameCloudDBFile> existingInfos;
@@ -86,7 +86,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 #endif
                 try
                 {
-                    File.WriteAllText(Utilities.GetLocalBasegameIdentificationServiceFile(), outText);
+                    File.WriteAllText(M3Utilities.GetLocalBasegameIdentificationServiceFile(), outText);
                     M3Log.Information(@"Updated Local Basegame File Identification Service");
 
                 }
@@ -120,7 +120,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
                 if (infosForGameL.TryGetValue(relativeFilename, out var items))
                 {
-                    md5 ??= Utilities.CalculateMD5(fullfilepath);
+                    md5 ??= M3Utilities.CalculateMD5(fullfilepath);
                     var match = items.FirstOrDefault(x => x.hash == md5);
                     if (match != null)
                     {
@@ -136,7 +136,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
                 if (infosForGame.TryGetValue(relativeFilename, out var items))
                 {
-                    md5 ??= Utilities.CalculateMD5(fullfilepath);
+                    md5 ??= M3Utilities.CalculateMD5(fullfilepath);
                     return items.FirstOrDefault(x => x.hash == md5);
                 }
             }
@@ -155,7 +155,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             public BasegameCloudDBFile(string fullfilepath, int size, GameTargetWPF gameTarget, Mod modBeingInstalled, string md5 = null)
             {
                 this.file = fullfilepath.Substring(gameTarget.TargetPath.Length + 1);
-                this.hash = md5 ?? Utilities.CalculateMD5(fullfilepath);
+                this.hash = md5 ?? M3Utilities.CalculateMD5(fullfilepath);
                 this.game = gameTarget.Game.ToGameNum().ToString();
                 this.size = size;
                 this.source = modBeingInstalled.ModName + @" " + modBeingInstalled.ModVersionString;
@@ -164,7 +164,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             public BasegameCloudDBFile(string relativePathToRoot, int size, MEGame game, string humanName, string md5)
             {
                 this.file = relativePathToRoot;
-                this.hash = md5 ?? Utilities.CalculateMD5(relativePathToRoot);
+                this.hash = md5 ?? M3Utilities.CalculateMD5(relativePathToRoot);
                 this.game = game.ToGameNum().ToString(); // due to how json serializes stuff we have to convert it here.
                 this.size = size;
                 this.source = humanName;

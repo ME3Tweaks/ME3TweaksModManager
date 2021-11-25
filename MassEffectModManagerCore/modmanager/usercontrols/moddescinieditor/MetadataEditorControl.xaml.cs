@@ -57,7 +57,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
                     if (v.Key == @"moddesc" && v.Header == @"ModInfo")
                     {
                         // Convert what's written into moddesc
-                        ini[v.Header][v.Key] = Utilities.ConvertNewlineToBr(v.Value);
+                        ini[v.Header][v.Key] = M3Utilities.ConvertNewlineToBr(v.Value);
                     }
                     else
                     {

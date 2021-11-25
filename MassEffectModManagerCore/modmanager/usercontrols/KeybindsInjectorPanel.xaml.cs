@@ -50,7 +50,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public ICommand InstallSelectedKeybindsME3Command { get; set; }
         private void LoadCommands()
         {
-            OpenKeybindsDirectoryCommand = new GenericCommand(() => Utilities.OpenExplorer(Utilities.GetKeybindsOverrideFolder()), CanClose);
+            OpenKeybindsDirectoryCommand = new GenericCommand(() => M3Utilities.OpenExplorer(M3Utilities.GetKeybindsOverrideFolder()), CanClose);
             CloseCommand = new GenericCommand(() => OnClosing(DataEventArgs.Empty), CanClose);
 
             ResetKeybindsME3Command = new GenericCommand(ResetME3Keybinds, CanRestoreKeybinds);
@@ -153,7 +153,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
-            var kbFiles = Directory.GetFiles(Utilities.GetKeybindsOverrideFolder(), @"*.*");
+            var kbFiles = Directory.GetFiles(M3Utilities.GetKeybindsOverrideFolder(), @"*.*");
             foreach (var v in kbFiles)
             {
                 var fname = Path.GetFileName(v);
@@ -184,7 +184,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public static string GetDefaultKeybindsOverride(MEGame game)
         {
-            var path = Utilities.GetKeybindsOverrideFolder();
+            var path = M3Utilities.GetKeybindsOverrideFolder();
             if (game == MEGame.ME1) return Path.Combine(path, @"me1-bioinput.ini");
             if (game == MEGame.ME2) return Path.Combine(path, @"me2-bioinput.ini");
             if (game == MEGame.ME3) return Path.Combine(path, @"me3-bioinput.xml");

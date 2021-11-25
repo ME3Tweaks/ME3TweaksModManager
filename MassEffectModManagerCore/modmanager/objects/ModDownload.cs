@@ -72,7 +72,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 }
                 else
                 {
-                    DownloadedStream = new FileStream(Path.Combine(Utilities.GetModDownloadCacheDirectory(), ModFile.FileName), FileMode.Create);
+                    DownloadedStream = new FileStream(Path.Combine(M3Utilities.GetModDownloadCacheDirectory(), ModFile.FileName), FileMode.Create);
                     MemoryAnalyzer.AddTrackedMemoryItem(@"NXM Download FileStream", new WeakReference(DownloadedStream));
                 }
 

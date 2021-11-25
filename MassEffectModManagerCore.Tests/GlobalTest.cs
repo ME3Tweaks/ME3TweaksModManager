@@ -57,7 +57,7 @@ namespace MassEffectModManagerCore.Tests
         {
             if (Directory.Exists(GetScratchDir()))
             {
-                Utilities.DeleteFilesAndFoldersRecursively(GetScratchDir());
+                M3Utilities.DeleteFilesAndFoldersRecursively(GetScratchDir());
             }
         }
 

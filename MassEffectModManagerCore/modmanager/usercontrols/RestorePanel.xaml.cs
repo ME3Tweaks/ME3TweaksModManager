@@ -37,7 +37,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void ClosePanel()
         {
-            Result.ReloadTargets = GameRestoreControllers.Any(x => x.RefreshTargets);
+            // Restore of game should have reloaded target on completion.
+            //Result.ReloadTargets = GameRestoreControllers.Any(x => x.RefreshTargets);
             OnClosing(DataEventArgs.Empty);
         }
 

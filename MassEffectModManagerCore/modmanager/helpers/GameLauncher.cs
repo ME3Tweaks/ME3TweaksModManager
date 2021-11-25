@@ -38,7 +38,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 // IS GAME STEAM BASED?
                 if (target.GameSource.Contains(@"Steam"))
                 {
-                    var steamInstallPath = Utilities.GetRegistrySettingString(@"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Valve\Steam", @"InstallPath");
+                    var steamInstallPath = M3Utilities.GetRegistrySettingString(@"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Valve\Steam", @"InstallPath");
                     if (steamInstallPath != null && Directory.Exists(steamInstallPath))
                     {
                         environmentVars[@"SteamPath"] = steamInstallPath;
@@ -117,7 +117,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 if (File.Exists(launcherExe))
                 {
                     // Ensure bypass is installed
-                    Utilities.InstallBinkBypass(binkPath, Path.Combine(target.TargetPath, @"..", @"Launcher"), MEGame.LELauncher);
+                    M3Utilities.InstallBinkBypass(binkPath, Path.Combine(target.TargetPath, @"..", @"Launcher"), MEGame.LELauncher);
                 }
                 commandLineArgs.Add($@"-game"); // Autoboot dll
                 commandLineArgs.Add((target.Game.ToGameNum() - 3).ToString());
@@ -130,7 +130,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 commandLineArgs.Add(@"-NoHomeDir");
             }
 #endif
-            Utilities.RunProcess(exe, commandLineArgs, false, true, false, false, environmentVars);
+            M3Utilities.RunProcess(exe, commandLineArgs, false, true, false, false, environmentVars);
             Thread.Sleep(3500); // Keep task alive for a bit
         }
 
@@ -173,7 +173,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                     // We need to run steam or it's going to throw the application error message.
                     M3Log.Information($@"Steam not running. Launching now.");
                     startingUpSteam = true;
-                    Utilities.RunProcess(steamExe);
+                    M3Utilities.RunProcess(steamExe);
                 }
                 else if (startingUpSteam)
                 {
@@ -189,8 +189,8 @@ namespace MassEffectModManagerCore.modmanager.helpers
 
         private static (int steamProcessId, int steamUserId) getRunningSteamInfo()
         {
-            var currentSteamPid = Utilities.GetRegistrySettingInt(@"HKEY_CURRENT_USER\Software\Valve\Steam\ActiveProcess", @"pid"); // Set when the steam client has started up
-            var currentSteamUser = Utilities.GetRegistrySettingInt(@"HKEY_CURRENT_USER\Software\Valve\Steam\ActiveProcess", @"ActiveUser"); // Set when the user is logged in. Cannot launch until this is set
+            var currentSteamPid = M3Utilities.GetRegistrySettingInt(@"HKEY_CURRENT_USER\Software\Valve\Steam\ActiveProcess", @"pid"); // Set when the steam client has started up
+            var currentSteamUser = M3Utilities.GetRegistrySettingInt(@"HKEY_CURRENT_USER\Software\Valve\Steam\ActiveProcess", @"ActiveUser"); // Set when the user is logged in. Cannot launch until this is set
 
             return (currentSteamPid, currentSteamUser);
         }

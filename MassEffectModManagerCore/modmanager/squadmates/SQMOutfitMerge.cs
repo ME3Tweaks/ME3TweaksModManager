@@ -315,7 +315,7 @@ namespace MassEffectModManagerCore.modmanager.squadmates
                 else if (target.Game.IsGame2())
                 {
                     var startupF = Path.Combine(cookedDir, $@"Startup_{M3MergeDLC.MERGE_DLC_FOLDERNAME}.pcc");
-                    var startup = MEPackageHandler.OpenMEPackageFromStream(Utilities.GetResourceStream(
+                    var startup = MEPackageHandler.OpenMEPackageFromStream(M3Utilities.GetResourceStream(
                         $@"MassEffectModManagerCore.modmanager.mergedlc.{target.Game}.Startup_{M3MergeDLC.MERGE_DLC_FOLDERNAME}.pcc"));
                     var conditionalClass =
                         startup.FindExport($@"PlotManager{M3MergeDLC.MERGE_DLC_FOLDERNAME}.BioAutoConditionals");
@@ -340,7 +340,7 @@ namespace MassEffectModManagerCore.modmanager.squadmates
                             func.ObjectName = $@"F{outfit.ConditionalIndex}";
                             func.indexValue = 0;
 
-                            var scText = new StreamReader(Utilities.GetResourceStream(
+                            var scText = new StreamReader(M3Utilities.GetResourceStream(
                                     $@"MassEffectModManagerCore.modmanager.squadmates.{target.Game}.HasOutfitOnConditional.txt"))
                                 .ReadToEnd();
 

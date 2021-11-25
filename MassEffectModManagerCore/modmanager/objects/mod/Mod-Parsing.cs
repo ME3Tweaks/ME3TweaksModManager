@@ -528,7 +528,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 return; //Won't set valid
             }
 
-            ModDescription = Utilities.ConvertBrToNewline(iniData[@"ModInfo"][@"moddesc"]);
+            ModDescription = M3Utilities.ConvertBrToNewline(iniData[@"ModInfo"][@"moddesc"]);
             if (string.IsNullOrWhiteSpace(ModDescription))
             {
                 M3Log.Error($@"moddesc.ini in {ModPath} does not set the moddesc descriptor.");
@@ -1203,7 +1203,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         //Security check: Protected folders
                         foreach (var f in customDLCDestSplit)
                         {
-                            if (Utilities.IsProtectedDLCFolder(f, Game))
+                            if (M3Utilities.IsProtectedDLCFolder(f, Game))
                             {
                                 M3Log.Error($@"Mod has job header (CUSTOMDLC) destdirs descriptor that specifies installation of a Custom DLC folder to a protected target: {f}");
                                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_destDirCannotBeMetadataOrOfficialDLC, f);

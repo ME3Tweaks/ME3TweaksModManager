@@ -335,7 +335,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
 
         public bool ApplyUpdate(IMEPackage package, ExportEntry targetExport, Mod installingMod)
         {
-            if (Utilities.CalculateMD5(new MemoryStream(targetExport.Data)) == EntryMD5)
+            if (M3Utilities.CalculateMD5(new MemoryStream(targetExport.Data)) == EntryMD5)
             {
                 M3Log.Information($@"Applying sequence skip: Skipping {targetExport.InstancedFullPath} through on link {OutboundLinkNameToUse}");
                 SeqTools.SkipSequenceElement(targetExport, outboundLinkName: OutboundLinkNameToUse);

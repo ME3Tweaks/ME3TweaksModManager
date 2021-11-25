@@ -21,6 +21,7 @@ using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.TLK.ME2ME3;
 using MassEffectModManagerCore.modmanager.diagnostics;
+using ME3TweaksCore.Services;
 using ME3TweaksCore.Services.Backup;
 using Microsoft.AppCenter.Analytics;
 
@@ -61,7 +62,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             else if (code != 0)
             {
                 //Try cache
-                string cachedFilename = Path.Combine(Utilities.GetModmakerDefinitionsCache(), code + @".xml");
+                string cachedFilename = Path.Combine(M3Utilities.GetModmakerDefinitionsCache(), code + @".xml");
                 if (File.Exists(cachedFilename))
                 {
                     //Going to compile cached item
@@ -497,7 +498,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
             else if (chunkName == @"BALANCE_CHANGES")
             {
-                var serverCoalesced = Utilities.ExtractInternalFileToStream(@"MassEffectModManagerCore.modmanager.me3tweaks.LiveIni.bin");
+                var serverCoalesced = M3Utilities.ExtractInternalFileToStream(@"MassEffectModManagerCore.modmanager.me3tweaks.LiveIni.bin");
                 coalescedFilemapping = CoalescedConverter.DecompileGame3ToMemory(serverCoalesced);
                 coalescedFilename = @"ServerCoalesced.bin";
             }
@@ -1088,17 +1089,17 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             ini[@"ModInfo"][@"game"] = @"ME3";
             ini[@"ModInfo"][@"modname"] = modName;
             ini[@"ModInfo"][@"moddev"] = modDev;
-            ini[@"ModInfo"][@"moddesc"] = Utilities.ConvertNewlineToBr(modDescription);
+            ini[@"ModInfo"][@"moddesc"] = M3Utilities.ConvertNewlineToBr(modDescription);
             ini[@"ModInfo"][@"modver"] = modVersion;
             ini[@"ModInfo"][@"modid"] = code.ToString();
             ini[@"ModInfo"][@"compiledagainst"] = modmakerServerVer;
             ini[@"ModInfo"][@"modsite"] = @"https://me3tweaks.com/modmaker/mods/" + code;
 
-            var outputDir = modPathOverride ?? Path.Combine(Utilities.GetME3ModsDirectory(), Utilities.SanitizePath(modName));
+            var outputDir = modPathOverride ?? Path.Combine(M3Utilities.GetME3ModsDirectory(), M3Utilities.SanitizePath(modName));
             CLog.Information(@"Generating new mod directory: " + outputDir, Settings.LogModMakerCompiler);
             if (Directory.Exists(outputDir))
             {
-                Utilities.DeleteFilesAndFoldersRecursively(outputDir);
+                M3Utilities.DeleteFilesAndFoldersRecursively(outputDir);
             }
             //apparently system is too fast to respond
             Thread.Sleep(100);

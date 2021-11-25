@@ -125,7 +125,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     CancelButtonText = M3L.GetString(M3L.string_close);
                     NoModSelectedText = M3L.GetString(M3L.string_interp_dialogImportedALOTMainToTextureLibrary,
-                        ScanningFile, Utilities.GetALOTInstallerTextureLibraryDirectory());
+                        ScanningFile, M3Utilities.GetALOTInstallerTextureLibraryDirectory());
                     ActionText = M3L.GetString(M3L.string_importCompleted);
                 }
                 else
@@ -257,7 +257,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                                 M3Log.Information(@"Reading embedded executable file in archive: " + embeddedExePath);
                                 ActionText = M3L.GetString(M3L.string_readingZippedExecutable);
-                                pathOverride = Path.Combine(Utilities.GetTempPath(), Path.GetFileName(embeddedExePath));
+                                pathOverride = Path.Combine(M3Utilities.GetTempPath(), Path.GetFileName(embeddedExePath));
                                 using var outstream = new FileStream(pathOverride, FileMode.Create);
                                 sve.Extracting += (o, pea) => { ActionText = $@"{M3L.GetString(M3L.string_readingZippedExecutable)} {pea.PercentDone}%"; };
                                 sve.ExtractFile(embeddedExePath, outstream);
@@ -472,7 +472,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     //is alot installer
                     M3Log.Information(@"This file contains texture files and ALOTInstaller.exe - this is an ALOT main file");
-                    var textureLibraryPath = Utilities.GetALOTInstallerTextureLibraryDirectory();
+                    var textureLibraryPath = M3Utilities.GetALOTInstallerTextureLibraryDirectory();
                     if (textureLibraryPath != null)
                     {
                         //we have destination
@@ -513,7 +513,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 M3Log.Information(@"Querying third party importing service for information about this file: " + filepath);
                 currentOperationTextCallback?.Invoke(M3L.GetString(M3L.string_queryingThirdPartyImportingService));
-                var md5 = forcedMD5 ?? (archiveStream != null ? Utilities.CalculateMD5(archiveStream) : Utilities.CalculateMD5(filepath));
+                var md5 = forcedMD5 ?? (archiveStream != null ? M3Utilities.CalculateMD5(archiveStream) : M3Utilities.CalculateMD5(filepath));
                 var potentialImportinInfos = ThirdPartyServices.GetImportingInfosBySize(archiveSize);
                 var importingInfo = potentialImportinInfos.FirstOrDefault(x => x.md5 == md5);
 
@@ -819,7 +819,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             ProgressMaximum = 100;
                             ProgressIndeterminate = false;
                             ActionText = M3L.GetString(M3L.string_insufficientDiskSpaceToExtractSelectedMods); //localize me
-                            Utilities.DriveFreeBytes(Utilities.GetModsDirectory(), out var freeSpace);
+                            M3Utilities.DriveFreeBytes(M3Utilities.GetModsDirectory(), out var freeSpace);
                             M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_dialogNotEnoughFreeSpaceToExtract, FileSize.FormatSize(requiredSpace), FileSize.FormatSize(freeSpace)), M3L.GetString(M3L.string_insufficientDiskSpace), MessageBoxButton.OK, MessageBoxImage.Error);
                             return; //Don't do anything.
                         }
@@ -844,7 +844,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             //get total size requirement
             long requiredDiskSpace = mods.Sum(x => x.SizeRequiredtoExtract);
-            if (Utilities.DriveFreeBytes(Utilities.GetModsDirectory(), out var freespaceBytes))
+            if (M3Utilities.DriveFreeBytes(M3Utilities.GetModsDirectory(), out var freespaceBytes))
             {
                 requiredDiskSpace = (long)(requiredDiskSpace * 1.05); //5% buffer
                 M3Log.Information($@"Selected mods require: {FileSize.FormatSize(requiredDiskSpace)}");
@@ -859,7 +859,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
             else
             {
-                M3Log.Error(@"Unable to get amount of free space for mod library directory disk! We will continue anyways. Path: " + Utilities.GetModsDirectory());
+                M3Log.Error(@"Unable to get amount of free space for mod library directory disk! We will continue anyways. Path: " + M3Utilities.GetModsDirectory());
             }
 
 
@@ -873,8 +873,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 ProgressMaximum = 100;
                 ProgressIndeterminate = true;
                 //Ensure directory
-                var modDirectory = Utilities.GetModDirectoryForGame(mod.Game);
-                var sanitizedPath = Path.Combine(modDirectory, Utilities.SanitizePath(mod.ModName));
+                var modDirectory = M3Utilities.GetModDirectoryForGame(mod.Game);
+                var sanitizedPath = Path.Combine(modDirectory, M3Utilities.SanitizePath(mod.ModName));
 
 
                 if (Directory.Exists(sanitizedPath))
@@ -900,7 +900,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     try
                     {
                         ActionText = M3L.GetString(M3L.string_deletingExistingModInLibrary);
-                        var deletedOK = Utilities.DeleteFilesAndFoldersRecursively(sanitizedPath);
+                        var deletedOK = M3Utilities.DeleteFilesAndFoldersRecursively(sanitizedPath);
                         if (!deletedOK)
                         {
                             M3Log.Error(@"Could not delete existing mod directory.");

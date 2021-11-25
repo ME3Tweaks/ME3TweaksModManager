@@ -24,7 +24,7 @@ using Microsoft.Win32;
 namespace MassEffectModManagerCore.modmanager
 {
     [Localizable(false)]
-    public static class Utilities
+    public static class M3Utilities
     {
         public static string GetMMExecutableDirectory() => Path.GetDirectoryName(App.ExecutableLocation);
 
@@ -175,7 +175,7 @@ namespace MassEffectModManagerCore.modmanager
 
         public static bool CreateDirectoryWithWritePermission(string directoryPath, bool forcePermissions = false)
         {
-            if (!forcePermissions && Directory.Exists(Directory.GetParent(directoryPath).FullName) && Utilities.IsDirectoryWritable(Directory.GetParent(directoryPath).FullName))
+            if (!forcePermissions && Directory.Exists(Directory.GetParent(directoryPath).FullName) && M3Utilities.IsDirectoryWritable(Directory.GetParent(directoryPath).FullName))
             {
                 Directory.CreateDirectory(directoryPath);
                 return true;
@@ -195,7 +195,7 @@ namespace MassEffectModManagerCore.modmanager
                 string exe = GetCachedExecutablePath("PermissionsGranter.exe");
                 try
                 {
-                    Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.me3tweaks.PermissionsGranter.exe", exe, true);
+                    M3Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.me3tweaks.PermissionsGranter.exe", exe, true);
                 }
                 catch (Exception e)
                 {
@@ -205,7 +205,7 @@ namespace MassEffectModManagerCore.modmanager
                     try
                     {
                         exe = Path.Combine(Path.GetTempPath(), "PermissionsGranter");
-                        Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.me3tweaks.PermissionsGranter.exe", exe, true);
+                        M3Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.me3tweaks.PermissionsGranter.exe", exe, true);
                     }
                     catch (Exception ex)
                     {
@@ -217,7 +217,7 @@ namespace MassEffectModManagerCore.modmanager
                 string args = "\"" + System.Security.Principal.WindowsIdentity.GetCurrent().Name + "\" -create-directory \"" + directoryPath.TrimEnd('\\') + "\"";
                 try
                 {
-                    int result = Utilities.RunProcess(exe, args, waitForProcess: true, requireAdmin: true, noWindow: true);
+                    int result = M3Utilities.RunProcess(exe, args, waitForProcess: true, requireAdmin: true, noWindow: true);
                     if (result == 0)
                     {
                         M3Log.Information("Elevated process returned code 0, restore directory is hopefully writable now.");
@@ -295,12 +295,12 @@ namespace MassEffectModManagerCore.modmanager
                 }
 
                 string exe = GetCachedExecutablePath("PermissionsGranter.exe");
-                Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.me3tweaks.PermissionsGranter.exe", exe, true);
+                M3Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.me3tweaks.PermissionsGranter.exe", exe, true);
                 args = $"\"{System.Security.Principal.WindowsIdentity.GetCurrent().Name}\" " + args;
                 //need to run write permissions program
                 if (IsAdministrator())
                 {
-                    int result = Utilities.RunProcess(exe, args, true, false);
+                    int result = M3Utilities.RunProcess(exe, args, true, false);
                     if (result == 0)
                     {
                         M3Log.Information("Elevated process returned code 0, directories are hopefully writable now.");
@@ -327,7 +327,7 @@ namespace MassEffectModManagerCore.modmanager
                     //{
                     //    message += "\nRegistry: HKLM\\SOFTWARE\\WOW6432Node\\AGEIA Technologies (Fixes an ME1 launch issue)";
                     //}
-                    int result = Utilities.RunProcess(exe, args, true, true);
+                    int result = M3Utilities.RunProcess(exe, args, true, true);
                     if (result == 0)
                     {
                         M3Log.Information("Elevated process returned code 0, directories are hopefully writable now.");
@@ -366,7 +366,7 @@ namespace MassEffectModManagerCore.modmanager
         /// <returns></returns>
         internal static string GetVPatchRedirectsFolder()
         {
-            return Path.Combine(Utilities.GetTempPath(), "VPatchRedirects");
+            return Path.Combine(M3Utilities.GetTempPath(), "VPatchRedirects");
         }
 
         //(Exception e)
@@ -436,7 +436,7 @@ namespace MassEffectModManagerCore.modmanager
 #endif
 
 
-            using (Stream stream = Utilities.GetResourceStream(internalResourceName))
+            using (Stream stream = M3Utilities.GetResourceStream(internalResourceName))
             {
                 MemoryStream ms = new MemoryStream();
                 stream.CopyTo(ms);
@@ -475,7 +475,7 @@ namespace MassEffectModManagerCore.modmanager
 
         internal static string GetObjectInfoFolder()
         {
-            return Directory.CreateDirectory(Path.Combine(Utilities.GetAppDataFolder(), "ObjectInfo")).FullName;
+            return Directory.CreateDirectory(Path.Combine(M3Utilities.GetAppDataFolder(), "ObjectInfo")).FullName;
         }
 
         internal static string GetDataDirectory()
@@ -992,7 +992,7 @@ namespace MassEffectModManagerCore.modmanager
             if (!File.Exists(destination) || overwrite || new FileInfo(destination).Length == 0)
             {
 
-                using (Stream stream = Utilities.GetResourceStream(internalResourceName, assembly))
+                using (Stream stream = M3Utilities.GetResourceStream(internalResourceName, assembly))
                 {
                     if (File.Exists(destination))
                     {
@@ -1059,33 +1059,33 @@ namespace MassEffectModManagerCore.modmanager
             if (Game == MEGame.ME1)
             {
                 var obinkPath = Path.Combine(TargetPath, "Binaries", "binkw23.dll");
-                Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me1.binkw32.dll", binkPath, true);
-                Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me1.binkw23.dll", obinkPath, true);
+                M3Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me1.binkw32.dll", binkPath, true);
+                M3Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me1.binkw23.dll", obinkPath, true);
             }
             else if (Game == MEGame.ME2)
             {
                 var obinkPath = Path.Combine(TargetPath, "Binaries", "binkw23.dll");
-                Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me2.binkw32.dll", binkPath, true);
-                Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me2.binkw23.dll", obinkPath, true);
+                M3Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me2.binkw32.dll", binkPath, true);
+                M3Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me2.binkw23.dll", obinkPath, true);
 
             }
             else if (Game == MEGame.ME3)
             {
                 var obinkPath = Path.Combine(TargetPath, "Binaries", "win32", "binkw23.dll");
-                Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me3.binkw32.dll", binkPath, true);
-                Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me3.binkw23.dll", obinkPath, true);
+                M3Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me3.binkw32.dll", binkPath, true);
+                M3Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me3.binkw23.dll", obinkPath, true);
             }
             else if (Game.IsLEGame())
             {
                 var obinkPath = Path.Combine(TargetPath, "Binaries", "Win64", "bink2w64_original.dll"); // Where the original bink should go
-                Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw64.bink2w64.dll", binkPath, true);  // Bypass proxy
-                Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw64.bink2w64_original.dll", obinkPath, true); //
+                M3Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw64.bink2w64.dll", binkPath, true);  // Bypass proxy
+                M3Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw64.bink2w64_original.dll", obinkPath, true); //
             }
             else if (Game == MEGame.LELauncher)
             {
                 var obinkPath = Path.Combine(TargetPath, "bink2w64_original.dll"); // Where the original bink should go
-                Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw64.bink2w64.dll", binkPath, true);  // Bypass proxy
-                Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw64.bink2w64_original.dll", obinkPath, true); //
+                M3Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw64.bink2w64.dll", binkPath, true);  // Bypass proxy
+                M3Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw64.bink2w64_original.dll", obinkPath, true); //
             }
             else
             {
@@ -1124,25 +1124,25 @@ namespace MassEffectModManagerCore.modmanager
             {
                 var obinkPath = Path.Combine(target.TargetPath, "Binaries", "binkw23.dll");
                 File.Delete(obinkPath);
-                Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me1.binkw23.dll", binkPath, true);
+                M3Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me1.binkw23.dll", binkPath, true);
             }
             else if (target.Game == MEGame.ME2)
             {
                 var obinkPath = Path.Combine(target.TargetPath, "Binaries", "binkw23.dll");
                 File.Delete(obinkPath);
-                Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me2.binkw23.dll", binkPath, true);
+                M3Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me2.binkw23.dll", binkPath, true);
             }
             else if (target.Game == MEGame.ME3)
             {
                 var obinkPath = Path.Combine(target.TargetPath, "Binaries", "win32", "binkw23.dll");
                 File.Delete(obinkPath);
-                Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me3.binkw23.dll", binkPath, true);
+                M3Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me3.binkw23.dll", binkPath, true);
             }
             else if (target.Game.IsLEGame())
             {
                 var obinkPath = Path.Combine(target.TargetPath, "Binaries", "Win64", "bink2w64_original.dll");
                 File.Delete(obinkPath);
-                Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw64.bink2w64_original.dll", binkPath, true);
+                M3Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw64.bink2w64_original.dll", binkPath, true);
 
             }
 
@@ -1172,7 +1172,7 @@ namespace MassEffectModManagerCore.modmanager
             if (File.Exists(cacheFile))
             {
                 var targets = new OrderedSet<GameTargetWPF>();
-                foreach (var gameDir in Utilities.WriteSafeReadAllLines(cacheFile))
+                foreach (var gameDir in M3Utilities.WriteSafeReadAllLines(cacheFile))
                 {
                     //Validate game directory
                     if (existingTargets != null && existingTargets.Any(x => x.TargetPath.Equals(gameDir, StringComparison.InvariantCultureIgnoreCase)))
@@ -1226,7 +1226,7 @@ namespace MassEffectModManagerCore.modmanager
         {
             var cachefile = GetCachedTargetsFile(target.Game);
             bool creatingFile = !File.Exists(cachefile);
-            var savedTargets = creatingFile ? new List<string>() : Utilities.WriteSafeReadAllLines(cachefile).ToList();
+            var savedTargets = creatingFile ? new List<string>() : M3Utilities.WriteSafeReadAllLines(cachefile).ToList();
             var path = Path.GetFullPath(target.TargetPath); //standardize
             try
             {
@@ -1262,7 +1262,7 @@ namespace MassEffectModManagerCore.modmanager
         {
             var cachefile = GetCachedTargetsFile(target.Game);
             if (!File.Exists(cachefile)) return; //can't do anything.
-            var savedTargets = Utilities.WriteSafeReadAllLines(cachefile).ToList();
+            var savedTargets = M3Utilities.WriteSafeReadAllLines(cachefile).ToList();
             var path = Path.GetFullPath(target.TargetPath); //standardize
 
             int numRemoved = savedTargets.RemoveAll(x => string.Equals(path, x, StringComparison.InvariantCultureIgnoreCase));
@@ -1325,7 +1325,7 @@ namespace MassEffectModManagerCore.modmanager
         /// <returns></returns>
         public static string GetALOTInstallerTextureLibraryDirectory()
         {
-            var path = Utilities.GetRegistrySettingString(@"HKEY_CURRENT_USER\SOFTWARE\ALOTAddon", "LibraryDir");
+            var path = M3Utilities.GetRegistrySettingString(@"HKEY_CURRENT_USER\SOFTWARE\ALOTAddon", "LibraryDir");
             if (path == null || !Directory.Exists(path))
             {
                 return null;
@@ -2020,7 +2020,7 @@ namespace MassEffectModManagerCore.modmanager
         /// <returns></returns>
         internal static string GetModmakerDefinitionsCache()
         {
-            return Directory.CreateDirectory(Path.Combine(Utilities.GetModMakerCache(), "moddefinitions")).FullName;
+            return Directory.CreateDirectory(Path.Combine(M3Utilities.GetModMakerCache(), "moddefinitions")).FullName;
         }
 
         /// <summary>
@@ -2181,12 +2181,17 @@ namespace MassEffectModManagerCore.modmanager
         {
             try
             {
-                Utilities.WriteRegistryKey(App.REGISTRY_KEY_ME3TWEAKS, @"ExecutableLocation", App.ExecutableLocation);
+                M3Utilities.WriteRegistryKey(App.REGISTRY_KEY_ME3TWEAKS, @"ExecutableLocation", App.ExecutableLocation);
             }
             catch (Exception e)
             {
                 M3Log.Error($@"Could not write exe location to registry: {e.Message}");
             }
+        }
+
+        public static void ExtractDefaultASIResources()
+        {
+            // TODO: EXTRACT DEFAULT EMBEDDED ASIS
         }
     }
 }

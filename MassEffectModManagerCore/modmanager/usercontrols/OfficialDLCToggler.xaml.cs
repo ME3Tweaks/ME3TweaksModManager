@@ -11,6 +11,7 @@ using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.ui;
 using ME3TweaksCore.GameFilesystem;
+using ME3TweaksCore.Services;
 using ME3TweaksCoreWPF;
 using PropertyChanged;
 

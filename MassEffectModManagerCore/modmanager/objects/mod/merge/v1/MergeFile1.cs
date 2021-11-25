@@ -93,7 +93,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
                 // Open as memorystream as we need to hash this file for tracking
                 using MemoryStream ms = new MemoryStream(File.ReadAllBytes(f));
 
-                var existingMD5 = Utilities.CalculateMD5(ms);
+                var existingMD5 = M3Utilities.CalculateMD5(ms);
                 var package = MEPackageHandler.OpenMEPackageFromStream(ms, f);
 #if DEBUG
                 Debug.WriteLine($@"Opening package {f} took {sw.ElapsedMilliseconds} ms");
