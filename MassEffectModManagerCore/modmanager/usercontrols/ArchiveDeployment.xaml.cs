@@ -39,6 +39,7 @@ using LegendaryExplorerCore.TLK;
 using MassEffectModManagerCore.modmanager.diagnostics;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.Services;
+using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksCore.Targets;
 using ME3TweaksCoreWPF;
 using Brushes = System.Windows.Media.Brushes;
@@ -1306,7 +1307,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 var folders = v.GetAllPossibleCustomDLCFolders();
                 foreach (var f in folders)
                 {
-                    var tpmi = ThirdPartyServices.GetThirdPartyModInfo(f, v.Game);
+                    var tpmi = TPMIService.GetThirdPartyModInfo(f, v.Game);
                     if (tpmi == null)
                     {
                         modsNeedingSubmission.Add(v);

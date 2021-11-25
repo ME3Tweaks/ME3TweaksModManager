@@ -184,7 +184,7 @@
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
                         <ItemsControl ItemsSource="{Binding UIInstalledOfficialDLC}">
                             <ItemsControl.ItemTemplate>
-                                <DataTemplate DataType="{x:Type local:InstallationInformation+InstalledOfficialDLC}">
+                                <DataTemplate DataType="{x:Type targets:InstalledOfficialDLC}">
                                     <DockPanel Margin="5,0,5,0">
                                         <DockPanel.Resources>
                                             <Style TargetType="{x:Type DockPanel}">
@@ -233,14 +233,14 @@
                                TextWrapping="Wrap"/>-->
                             <ItemsControl ItemsSource="{Binding TextureInstallHistory}">
                                 <ItemsControl.ItemTemplate>
-                                    <DataTemplate DataType="{x:Type objects:TextureModInstallationInfo}">
+                                    <DataTemplate DataType="{x:Type targets:TextureModInstallationInfo}">
                                         <DockPanel Margin="0,0,0,10">
                                             <TextBlock Text="{Binding InstallationTimestamp,                                                  Converter={StaticResource LocalizationConverter}, ConverterParameter='string_interp_textureInstallationDate'}" FontWeight="Bold" DockPanel.Dock="Top" />
                                             <TextBlock Text="{Binding                                                 Converter={StaticResource LocalizationConverter}, ConverterParameter='string_interp_versioningInfoX'}" DockPanel.Dock="Top" />
                                             <TextBlock Text="{DynamicResource string_filesInstalledInSession}" DockPanel.Dock="Top" />
                                             <ItemsControl ItemsSource="{Binding InstalledTextureMods}">
                                                 <ItemsControl.ItemTemplate>
-                                                    <DataTemplate DataType="{x:Type objects:TextureModInstallationInfo+InstalledTextureMod}">
+                                                    <DataTemplate DataType="{x:Type targets:TextureModInstallationInfo+InstalledTextureMod}">
                                                         <DockPanel Margin="5,0,5,0">
                                                             <DockPanel.Resources>
                                                                 <Style TargetType="{x:Type DockPanel}">

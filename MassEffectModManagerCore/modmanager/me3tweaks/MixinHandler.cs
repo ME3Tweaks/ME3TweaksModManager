@@ -12,6 +12,7 @@ using Microsoft.IO;
 using System.Runtime;
 using MassEffectModManagerCore.modmanager.diagnostics;
 using MassEffectModManagerCore.modmanager.localizations;
+using ME3TweaksCore.Helpers;
 using Microsoft.AppCenter.Crashes;
 
 namespace MassEffectModManagerCore.modmanager.me3tweaks

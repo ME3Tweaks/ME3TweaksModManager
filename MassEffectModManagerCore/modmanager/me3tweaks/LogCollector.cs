@@ -1516,7 +1516,7 @@
 //                    var installedIncompatDLC = installedDLCMods.Intersect(v.Value.IncompatibleDLC, StringComparer.InvariantCultureIgnoreCase).ToList();
 //                    foreach (var id in installedIncompatDLC)
 //                    {
-//                        var incompatName = ThirdPartyServices.GetThirdPartyModInfo(id, target.Game);
+//                        var incompatName = TPMIService.GetThirdPartyModInfo(id, target.Game);
 //                        addDiagLine($@"{v.Value.ModName} is not compatible with {incompatName?.modname ?? id}", Severity.FATAL);
 //                    }
 //                }

@@ -477,12 +477,6 @@ namespace MassEffectModManagerCore
 
         public static int BuildNumber = Assembly.GetEntryAssembly().GetName().Version.Revision;
 
-        /// <summary>
-        /// Accesses the third party identification server. Key is the game enum as a string, results are dictionary of DLCName => Info.
-        /// </summary>
-        public static Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>> ThirdPartyIdentificationService;
-
-        public static Dictionary<long, List<ThirdPartyServices.ThirdPartyImportingInfo>> ThirdPartyImportingService;
         public static Dictionary<string, CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>> BasegameFileIdentificationService;
         public static bool BootingUpdate;
         public static int UpdatedFrom = 0;

@@ -12,6 +12,7 @@ using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.ui;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.Services;
+using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksCoreWPF;
 using PropertyChanged;
 
@@ -66,7 +67,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         DLCFolderName = dlc,
                         UIDLCFolderName = foldername,
                         Enabled = !dlc.StartsWith('x'),
-                        HumanName = ThirdPartyServices.GetThirdPartyModInfo(foldername, SelectedTarget.Game).modname
+                        HumanName = TPMIService.GetThirdPartyModInfo(foldername, SelectedTarget.Game).modname
                     });
                 }
             }

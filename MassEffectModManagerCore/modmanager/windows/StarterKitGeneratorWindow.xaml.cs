@@ -24,9 +24,9 @@ using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.TLK;
 using LegendaryExplorerCore.TLK.ME1;
 using MassEffectModManagerCore.modmanager.diagnostics;
+using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using Microsoft.AppCenter.Analytics;
 using MvvmValidation;
-using static MassEffectModManagerCore.modmanager.me3tweaks.ThirdPartyServices;
 using MemoryAnalyzer = MassEffectModManagerCore.modmanager.memoryanalyzer.MemoryAnalyzer;
 
 namespace MassEffectModManagerCore.modmanager.windows
@@ -320,7 +320,7 @@ namespace MassEffectModManagerCore.modmanager.windows
             if (Game.IsGame2())
             {
                 //Check Engine Number.
-                var sameModuleNumberItems = ThirdPartyServices.GetThirdPartyModInfosByModuleNumber(ModDLCModuleNumber, Game);
+                var sameModuleNumberItems = TPMIService.GetThirdPartyModInfosByModuleNumber(ModDLCModuleNumber, Game);
                 if (sameModuleNumberItems.Count > 0)
                 {
                     string conflicts = "";
@@ -330,7 +330,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                 }
             }
 
-            var sameMountPriorityItems = ThirdPartyServices.GetThirdPartyModInfosByMountPriority(Game, ModMountPriority);
+            var sameMountPriorityItems = TPMIService.GetThirdPartyModInfosByMountPriority(Game, ModMountPriority);
             if (sameMountPriorityItems.Count > 0)
             {
                 string conflicts = "";
@@ -466,20 +466,20 @@ namespace MassEffectModManagerCore.modmanager.windows
                 if (Game.IsGame1())
                 {
                     DisplayedMountFlags.ClearEx();
-                    CustomDLCMountsForGame.ReplaceAll(App.ThirdPartyIdentificationService[Game.ToString()].Values.Where(x => !x.IsOutdated));
+                    CustomDLCMountsForGame.ReplaceAll(TPMIService.GetThirdPartyModInfos(Game).Values.Where(x => !x.IsOutdated));
                 }
 
                 if (Game.IsGame2())
                 {
                     DisplayedMountFlags.ReplaceAll(ME2MountFlags);
-                    CustomDLCMountsForGame.ReplaceAll(App.ThirdPartyIdentificationService[Game.ToString()].Values.Where(x => !x.IsOutdated));
+                    CustomDLCMountsForGame.ReplaceAll(TPMIService.GetThirdPartyModInfos(Game).Values.Where(x => !x.IsOutdated));
                 }
 
                 if (Game.IsGame3())
                 {
                     DisplayedMountFlags.ReplaceAll(ME3MountFlags);
                     MountSelector.SetSelectedItems(new MountFlag[] { new MountFlag(EME3MountFileFlag.LoadsInSingleplayer) });
-                    CustomDLCMountsForGame.ReplaceAll(App.ThirdPartyIdentificationService[Game.ToString()].Values.Where(x => !x.IsOutdated));
+                    CustomDLCMountsForGame.ReplaceAll(TPMIService.GetThirdPartyModInfos(Game).Values.Where(x => !x.IsOutdated));
                 }
 
                 CustomDLCMountsForGame.Insert(0, PreviewTPMI);

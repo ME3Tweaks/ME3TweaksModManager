@@ -18,6 +18,7 @@ using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using MassEffectModManagerCore.modmanager.diagnostics;
 using ME3TweaksCore.GameFilesystem;
+using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksCore.Targets;
 using ME3TweaksCoreWPF;
 using Microsoft.AppCenter.Analytics;
@@ -243,7 +244,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             ModSiteText = "";
             if (SelectedDLCFolder != null && SelectedTarget != null && !SelectedTarget.TextureModded)
             {
-                App.ThirdPartyIdentificationService[SelectedTarget.Game.ToString()].TryGetValue(SelectedDLCFolder.DLCFolderName, out var tpmi);
+                TPMIService.TryGetModInfo(MEGame.ME3, SelectedDLCFolder.DLCFolderName, out var tpmi);
                 CurrentModInTPMI = tpmi != null;
                 if (CurrentModInTPMI)
                 {

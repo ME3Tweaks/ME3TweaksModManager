@@ -25,6 +25,7 @@ using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using MassEffectModManagerCore.modmanager.diagnostics;
+using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using Microsoft.AppCenter.Analytics;
 using MemoryAnalyzer = MassEffectModManagerCore.modmanager.memoryanalyzer.MemoryAnalyzer;
 
@@ -228,7 +229,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             //Embedded executables.
             var archiveSize = ArchiveStream != null ? ArchiveStream.Length : new FileInfo(archive).Length;
-            var knownModsOfThisSize = ThirdPartyServices.GetImportingInfosBySize(archiveSize);
+            var knownModsOfThisSize = TPIService.GetImportingInfosBySize(archiveSize);
             string pathOverride = null;
             if (knownModsOfThisSize.Count > 0 && knownModsOfThisSize.Any(x => x.zippedexepath != null))
             {
@@ -248,7 +249,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             var exedata = sve.ArchiveFileData.FirstOrDefault(x => x.FileName == embeddedExePath);
                             if (exedata.FileName != null)
                             {
-                                var importingInfo2 = ThirdPartyServices.GetImportingInfosBySize((long)exedata.Size);
+                                var importingInfo2 = TPIService.GetImportingInfosBySize((long)exedata.Size);
                                 if (importingInfo2.Count == 0)
                                 {
                                     M3Log.Warning(@"zip wrapper for this file has importing information but the embedded exe does not!");
@@ -514,7 +515,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 M3Log.Information(@"Querying third party importing service for information about this file: " + filepath);
                 currentOperationTextCallback?.Invoke(M3L.GetString(M3L.string_queryingThirdPartyImportingService));
                 var md5 = forcedMD5 ?? (archiveStream != null ? M3Utilities.CalculateMD5(archiveStream) : M3Utilities.CalculateMD5(filepath));
-                var potentialImportinInfos = ThirdPartyServices.GetImportingInfosBySize(archiveSize);
+                var potentialImportinInfos = TPIService.GetImportingInfosBySize(archiveSize);
                 var importingInfo = potentialImportinInfos.FirstOrDefault(x => x.md5 == md5);
 
                 if (importingInfo == null && isExe)
@@ -695,7 +696,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 var dlcFolderName = Path.GetFileName(dlcDir);
                 if (!string.IsNullOrEmpty(dlcFolderName))
                 {
-                    var thirdPartyInfo = ThirdPartyServices.GetThirdPartyModInfo(dlcFolderName, game);
+                    var thirdPartyInfo = TPMIService.GetThirdPartyModInfo(dlcFolderName, game);
                     if (thirdPartyInfo != null)
                     {
                         if (thirdPartyInfo.PreventImport == false)
@@ -726,7 +727,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             virtualModDesc[@"UPDATES"][@"originalarchivehash"] = md5;
 
                             var archiveSize = archive.ArchiveSize;
-                            var importingInfos = ThirdPartyServices.GetImportingInfosBySize(archiveSize);
+                            var importingInfos = TPIService.GetImportingInfosBySize(archiveSize);
                             if (importingInfos.Count == 1 && importingInfos[0].GetParsedRequiredDLC().Count > 0)
                             {
                                 OnlineContent.QueryModRelay(importingInfos[0].md5, archiveSize); //Tell telemetry relay we are accessing the TPIS for an existing item so it can update latest for tracking

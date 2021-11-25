@@ -9,6 +9,7 @@ using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.usercontrols;
 using LegendaryExplorerCore.Packages;
+using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksCore.Targets;
 using ME3TweaksCoreWPF;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -29,8 +30,10 @@ namespace MassEffectModManagerCore.Tests
             GlobalTest.Init();
 
             Console.WriteLine("Fetching third party services");
-            App.ThirdPartyImportingService = OnlineContent.FetchThirdPartyImportingService();
-            App.ThirdPartyIdentificationService = OnlineContent.FetchThirdPartyIdentificationManifest();
+            TPMIService.LoadService();
+            //TPISService.LoadService();
+            throw new Exception("TPISService not implemented!");
+            //App.ThirdPartyIdentificationService = OnlineContent.FetchThirdPartyIdentificationManifest();
 
             var compressedModsDirectory = Path.Combine(GlobalTest.FindDirectoryInParentDirectories(GlobalTest.TESTDATA_FOLDER_NAME), "compressedmods");
             List<Mod> modsFoundInArchive = new List<Mod>();

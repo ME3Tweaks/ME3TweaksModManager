@@ -11,6 +11,7 @@ using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
+using ME3TweaksCore.Services.ThirdPartyModIdentification;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
 {
@@ -69,7 +70,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
 
         public void OnTargetModChanged()
         {
-            var tpmi = ThirdPartyServices.GetThirdPartyModInfo(TargetMod, EditingMod.Game);
+            var tpmi = TPMIService.GetThirdPartyModInfo(TargetMod, EditingMod.Game);
             TPMIModName = tpmi?.modname;
         }
 

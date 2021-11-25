@@ -25,6 +25,7 @@ using MassEffectModManagerCore.modmanager.diagnostics;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.NativeMods;
 using ME3TweaksCore.Services.Backup;
+using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksCoreWPF;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
@@ -1352,7 +1353,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 string dlcText = "";
                                 foreach (var dlc in items)
                                 {
-                                    var info = ThirdPartyServices.GetThirdPartyModInfo(dlc, ModBeingInstalled.Game);
+                                    var info = TPMIService.GetThirdPartyModInfo(dlc, ModBeingInstalled.Game);
                                     if (info != null)
                                     {
                                         dlcText += $"\n - {info.modname} ({dlc})"; //Do not localize
@@ -1373,7 +1374,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 string dlcText = "";
                                 foreach (var dlc in items)
                                 {
-                                    var info = ThirdPartyServices.GetThirdPartyModInfo(dlc, ModBeingInstalled.Game);
+                                    var info = TPMIService.GetThirdPartyModInfo(dlc, ModBeingInstalled.Game);
                                     if (info != null)
                                     {
                                         dlcText += $"\n - {info.modname} ({dlc})"; //Do not localize
@@ -1390,7 +1391,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             break;
                         case ModInstallCompletedStatus.INSTALL_FAILED_COULD_NOT_DELETE_EXISTING_FOLDER:
                             // Will only be one item in this list
-                            var tpmi = ThirdPartyServices.GetThirdPartyModInfo(Path.GetFileName(items[0]), ModBeingInstalled.Game);
+                            var tpmi = TPMIService.GetThirdPartyModInfo(Path.GetFileName(items[0]), ModBeingInstalled.Game);
                             string message = M3L.GetString(M3L.string_interp_unableToFullyDeleteExistingModDirectory, items[0], items[1]);
                             message += @" "; //this is here for localization tool
                             if (tpmi != null)
@@ -1551,7 +1552,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         if (dlcMods.Contains(incompat, StringComparer.InvariantCultureIgnoreCase))
                         {
-                            var tpmi = ThirdPartyServices.GetThirdPartyModInfo(incompat, ModBeingInstalled.Game);
+                            var tpmi = TPMIService.GetThirdPartyModInfo(incompat, ModBeingInstalled.Game);
                             if (tpmi != null)
                             {
                                 incompatibleDLC.Add($@" - {incompat} ({tpmi.modname})");
@@ -1593,7 +1594,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         if (dlcMods.Contains(outdatedItem, StringComparer.InvariantCultureIgnoreCase))
                         {
-                            var tpmi = ThirdPartyServices.GetThirdPartyModInfo(outdatedItem, ModBeingInstalled.Game);
+                            var tpmi = TPMIService.GetThirdPartyModInfo(outdatedItem, ModBeingInstalled.Game);
                             if (tpmi != null)
                             {
                                 outdatedDLC.Add($@" - {outdatedItem} ({tpmi.modname})");

@@ -50,6 +50,7 @@ using MassEffectModManagerCore.modmanager.squadmates;
 using ME3TweaksCore.NativeMods;
 using ME3TweaksCore.Services;
 using ME3TweaksCore.Services.Backup;
+using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksCoreWPF;
 using Pathoschild.FluentNexus.Models;
 using MemoryAnalyzer = MassEffectModManagerCore.modmanager.memoryanalyzer.MemoryAnalyzer;
@@ -1055,7 +1056,7 @@ namespace MassEffectModManagerCore
 
         private bool CanOpenArchiveSelectionDialog()
         {
-            return App.ThirdPartyImportingService != null && App.ThirdPartyIdentificationService != null && !ContentCheckInProgress;
+            return TPIService.ServiceLoaded && TPMIService.ServiceLoaded;
         }
 
         private bool CanDeleteModFromLibrary() => SelectedMod != null && !ContentCheckInProgress;
@@ -2960,9 +2961,9 @@ namespace MassEffectModManagerCore
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
                 bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"ThirdPartyServicesFetch", M3L.GetString(M3L.string_loadingThirdPartyServices), M3L.GetString(M3L.string_loadedThirdPartyServices));
-                App.ThirdPartyIdentificationService = OnlineContent.FetchThirdPartyIdentificationManifest(!firstStartupCheck);
+                TPMIService.LoadService(!firstStartupCheck);
                 App.BasegameFileIdentificationService = OnlineContent.FetchBasegameFileIdentificationServiceManifest(!firstStartupCheck);
-                App.ThirdPartyImportingService = OnlineContent.FetchThirdPartyImportingService(!firstStartupCheck);
+                TPIService.LoadService(!firstStartupCheck);
                 ASIManager.LoadManifest(false, !firstStartupCheck);
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
 

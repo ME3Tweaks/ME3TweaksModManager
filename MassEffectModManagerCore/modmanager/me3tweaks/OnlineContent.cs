@@ -11,7 +11,9 @@ using MassEffectModManagerCore.modmanager.windows;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using MassEffectModManagerCore.modmanager.diagnostics;
+using MassEffectModManagerCore.modmanager.objects;
 using ME3TweaksCore.Diagnostics;
+using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using Microsoft.AppCenter.Crashes;
 using Newtonsoft.Json;
 
@@ -242,7 +244,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             };
         }
 
-        public static Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>> FetchThirdPartyIdentificationManifest(bool overrideThrottling = false)
+        public static Dictionary<string, CaseInsensitiveDictionary<ThirdPartyModInfo>> FetchThirdPartyIdentificationManifest(bool overrideThrottling = false)
         {
             string cached = null;
             if (File.Exists(M3Utilities.GetThirdPartyIdentificationCachedFile()))
@@ -277,7 +279,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
                     string json = wc.DownloadStringAwareOfEncoding(ThirdPartyIdentificationServiceURL);
                     File.WriteAllText(M3Utilities.GetThirdPartyIdentificationCachedFile(), json);
-                    return JsonConvert.DeserializeObject<Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>>>(json);
+                    return JsonConvert.DeserializeObject<Dictionary<string, CaseInsensitiveDictionary<ThirdPartyModInfo>>>(json);
                 }
                 catch (Exception e)
                 {
@@ -298,7 +300,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
             try
             {
-                return JsonConvert.DeserializeObject<Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>>>(cached);
+                return JsonConvert.DeserializeObject<Dictionary<string, CaseInsensitiveDictionary<ThirdPartyModInfo>>>(cached);
             }
             catch (Exception e)
             {
@@ -307,16 +309,16 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
         }
 
-        private static Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>> getBlankTPIS()
+        private static Dictionary<string, CaseInsensitiveDictionary<ThirdPartyModInfo>> getBlankTPIS()
         {
-            return new Dictionary<string, CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>>
+            return new Dictionary<string, CaseInsensitiveDictionary<ThirdPartyModInfo>>
             {
-                [@"ME1"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>(),
-                [@"ME2"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>(),
-                [@"ME3"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>(),
-                [@"LE1"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>(),
-                [@"LE2"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>(),
-                [@"LE3"] = new CaseInsensitiveDictionary<ThirdPartyServices.ThirdPartyModInfo>()
+                [@"ME1"] = new CaseInsensitiveDictionary<ThirdPartyModInfo>(),
+                [@"ME2"] = new CaseInsensitiveDictionary<ThirdPartyModInfo>(),
+                [@"ME3"] = new CaseInsensitiveDictionary<ThirdPartyModInfo>(),
+                [@"LE1"] = new CaseInsensitiveDictionary<ThirdPartyModInfo>(),
+                [@"LE2"] = new CaseInsensitiveDictionary<ThirdPartyModInfo>(),
+                [@"LE3"] = new CaseInsensitiveDictionary<ThirdPartyModInfo>()
             };
         }
 
@@ -433,7 +435,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
         }
 
-        public static Dictionary<long, List<ThirdPartyServices.ThirdPartyImportingInfo>> FetchThirdPartyImportingService(bool overrideThrottling = false)
+        public static Dictionary<long, List<ThirdPartyImportingInfo>> FetchThirdPartyImportingService(bool overrideThrottling = false)
         {
             string cached = null;
             if (File.Exists(M3Utilities.GetThirdPartyImportingCachedFile()))
@@ -467,7 +469,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
                     string json = wc.DownloadStringAwareOfEncoding(ThirdPartyImportingServiceURL);
                     File.WriteAllText(M3Utilities.GetThirdPartyImportingCachedFile(), json);
-                    return JsonConvert.DeserializeObject<Dictionary<long, List<ThirdPartyServices.ThirdPartyImportingInfo>>>(json);
+                    return JsonConvert.DeserializeObject<Dictionary<long, List<ThirdPartyImportingInfo>>>(json);
                 }
                 catch (Exception e)
                 {
@@ -481,18 +483,18 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     else
                     {
                         M3Log.Error(@"Unable to fetch latest third party importing service file from server and local file doesn't exist. Returning a blank copy.");
-                        return new Dictionary<long, List<ThirdPartyServices.ThirdPartyImportingInfo>>();
+                        return new Dictionary<long, List<ThirdPartyImportingInfo>>();
                     }
                 }
             }
             try
             {
-                return JsonConvert.DeserializeObject<Dictionary<long, List<ThirdPartyServices.ThirdPartyImportingInfo>>>(cached);
+                return JsonConvert.DeserializeObject<Dictionary<long, List<ThirdPartyImportingInfo>>>(cached);
             }
             catch (Exception e)
             {
                 M3Log.Error(@"Unable to parse cached importing service file: " + e.Message);
-                return new Dictionary<long, List<ThirdPartyServices.ThirdPartyImportingInfo>>();
+                return new Dictionary<long, List<ThirdPartyImportingInfo>>();
             }
         }
 

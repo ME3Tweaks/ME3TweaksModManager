@@ -16,6 +16,7 @@ using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using MassEffectModManagerCore.modmanager.diagnostics;
+using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using Microsoft.AppCenter.Analytics;
 using PropertyChanged;
 using SevenZip;
@@ -225,7 +226,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 if (localizationJob != null)
                 {
                     var nameStr = RequiredDLC.First(); //Localization jobs, if valid, will always have something here.
-                    var tpmi = ThirdPartyServices.GetThirdPartyModInfo(nameStr, Game);
+                    var tpmi = TPMIService.GetThirdPartyModInfo(nameStr, Game);
                     if (tpmi != null) nameStr += $@" ({tpmi.modname})";
                     sb.AppendLine(M3L.GetString(M3L.string_interp_addsTheFollowingLocalizationsToX, nameStr));
                     foreach (var l in localizationJob.FilesToInstall)
@@ -271,7 +272,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     sb.AppendLine(M3L.GetString(M3L.string_modparsing_configCanChangeIfOtherDLCFound));
                     foreach (var autoConfigDLC in autoConfigs)
                     {
-                        string name = ThirdPartyServices.GetThirdPartyModInfo(autoConfigDLC, Game)?.modname ?? autoConfigDLC;
+                        string name = TPMIService.GetThirdPartyModInfo(autoConfigDLC, Game)?.modname ?? autoConfigDLC;
                         sb.AppendLine($@" - {name}");
                     }
                 }
@@ -282,7 +283,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     sb.AppendLine(M3L.GetString(M3L.string_modparsing_requiresTheFollowingDLCToInstall));
                     foreach (var reqDLC in RequiredDLC)
                     {
-                        string name = ThirdPartyServices.GetThirdPartyModInfo(reqDLC, Game)?.modname ?? reqDLC;
+                        string name = TPMIService.GetThirdPartyModInfo(reqDLC, Game)?.modname ?? reqDLC;
                         sb.AppendLine($@" - {name}");
                     }
                 }
@@ -292,7 +293,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     sb.AppendLine(M3L.GetString(M3L.string_interp_singleRequiredDLC));
                     foreach (var reqDLC in OptionalSingleRequiredDLC)
                     {
-                        string name = ThirdPartyServices.GetThirdPartyModInfo(reqDLC, Game)?.modname ?? reqDLC;
+                        string name = TPMIService.GetThirdPartyModInfo(reqDLC, Game)?.modname ?? reqDLC;
                         sb.AppendLine($@" - {name}");
                     }
                 }

@@ -18,6 +18,7 @@ using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
 using ME3TweaksCore.GameFilesystem;
+using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksCoreWPF;
 using Microsoft.AppCenter.Analytics;
 
@@ -52,7 +53,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 foreach (var pmuDLCName in supercedanes)
                 {
 
-                    var uiName = metaMaps[pmuDLCName]?.ModName ?? ThirdPartyServices.GetThirdPartyModInfo(pmuDLCName, target.Game)?.modname ?? pmuDLCName;
+                    var uiName = metaMaps[pmuDLCName]?.ModName ?? TPMIService.GetThirdPartyModInfo(pmuDLCName, target.Game)?.modname ?? pmuDLCName;
                     combinedNames.Add(uiName);
                     var text = File.ReadAllLines(Path.Combine(M3Directories.GetDLCPath(target), pmuDLCName, target.Game.CookedDirName(), @"PlotManagerUpdate.pmu"));
                     foreach (var line in text)

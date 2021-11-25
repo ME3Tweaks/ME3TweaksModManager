@@ -132,7 +132,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             @"DLC_MOD_IT_RUS",
     
                         };
-                        var dlcNames = db.NameTable.Values.Where(x => !ignoredItems.Contains(x) && x.StartsWith(@"DLC_") && Path.GetExtension(x) == string.Empty && !x.Contains(" ") && ThirdPartyServices.GetThirdPartyModInfo(x, MEGame.ME3) == null).Select(x => x.Trim()).Distinct().ToList();
+                        var dlcNames = db.NameTable.Values.Where(x => !ignoredItems.Contains(x) && x.StartsWith(@"DLC_") && Path.GetExtension(x) == string.Empty && !x.Contains(" ") && TPMIService.GetThirdPartyModInfo(x, MEGame.ME3) == null).Select(x => x.Trim()).Distinct().ToList();
                         var xx = new List<string>();
                         foreach (var i in db.FileInstances.Values)
                         {

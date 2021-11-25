@@ -255,7 +255,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     M3Log.Information(@"Checking only vanilla DLC is installed");
                     List<string> dlcModsInstalled = VanillaDatabaseService.GetInstalledDLCMods(targetToBackup).Select(x =>
                     {
-                        var tpmi = ThirdPartyServices.GetThirdPartyModInfo(x, targetToBackup.Game);
+                        var tpmi = TPMIService.GetThirdPartyModInfo(x, targetToBackup.Game);
                         if (tpmi != null) return $@"{x} ({tpmi.modname})";
                         return x;
                     }).ToList();

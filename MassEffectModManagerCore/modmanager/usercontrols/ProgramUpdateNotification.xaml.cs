@@ -10,16 +10,17 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 using AuthenticodeExaminer;
-using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore.Compression;
 using LegendaryExplorerCore.Helpers;
 using MassEffectModManagerCore.modmanager.diagnostics;
+using ME3TweaksCore.Helpers;
 using Microsoft.AppCenter.Analytics;
 using Serilog;
 using SevenZip;
+using NamedBackgroundWorker = MassEffectModManagerCore.modmanager.helpers.NamedBackgroundWorker;
 using Path = System.IO.Path;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols

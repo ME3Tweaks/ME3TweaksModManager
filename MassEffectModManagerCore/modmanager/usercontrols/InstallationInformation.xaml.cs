@@ -17,6 +17,7 @@ using LegendaryExplorerCore.Packages;
 using MassEffectModManagerCore.modmanager.diagnostics;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using ME3TweaksCore.Services.Backup;
+using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksCore.Targets;
 using ME3TweaksCoreWPF;
 using MemoryAnalyzer = MassEffectModManagerCore.modmanager.memoryanalyzer.MemoryAnalyzer;
@@ -581,7 +582,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 FolderName = foldername;
                 Installed = installed;
-                HumanName = ThirdPartyServices.GetThirdPartyModInfo(FolderName, game)?.modname ?? foldername;
+                HumanName = TPMIService.GetThirdPartyModInfo(FolderName, game)?.modname ?? foldername;
             }
 
             public string FolderName { get; set; }

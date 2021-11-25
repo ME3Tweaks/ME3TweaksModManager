@@ -9,6 +9,7 @@ using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.usercontrols;
 using LegendaryExplorerCore.Packages;
+using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Serilog;
 using Mod = MassEffectModManagerCore.modmanager.objects.mod.Mod;
@@ -79,8 +80,8 @@ namespace MassEffectModManagerCore.Tests
             GlobalTest.Init();
 
             Console.WriteLine("Fetching third party services");
-            App.ThirdPartyImportingService = OnlineContent.FetchThirdPartyImportingService();
-            App.ThirdPartyIdentificationService = OnlineContent.FetchThirdPartyIdentificationManifest();
+            TPIService.LoadService();
+            TPMIService.LoadService();
 
             var compressedModsDirectory = Path.Combine(GlobalTest.FindDirectoryInParentDirectories(GlobalTest.TESTDATA_FOLDER_NAME), "compressedmods");
             List<Mod> modsFoundInArchive = new List<Mod>();

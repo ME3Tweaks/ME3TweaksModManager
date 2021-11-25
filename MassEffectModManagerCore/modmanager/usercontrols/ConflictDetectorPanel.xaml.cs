@@ -8,6 +8,7 @@ using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore.Packages;
 using MassEffectModManagerCore.modmanager.helpers;
 using ME3TweaksCore.GameFilesystem;
+using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksCoreWPF;
 using MemoryAnalyzer = MassEffectModManagerCore.modmanager.memoryanalyzer.MemoryAnalyzer;
 
@@ -105,7 +106,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 get
                 {
                     if (tpminame != null) return $@"{tpminame} ({WinningFile.DLCName})";
-                    var tpmi = ThirdPartyServices.GetThirdPartyModInfo(WinningFile.DLCName, Game);
+                    var tpmi = TPMIService.GetThirdPartyModInfo(WinningFile.DLCName, Game);
                     if (tpmi != null)
                     {
                         tpminame = tpmi.modname;
@@ -132,7 +133,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 get
                 {
                     if (tpminame != null) return $@"{tpminame} ({DLCName})";
-                    var tpmi = ThirdPartyServices.GetThirdPartyModInfo(DLCName, Game);
+                    var tpmi = TPMIService.GetThirdPartyModInfo(DLCName, Game);
                     if (tpmi != null)
                     {
                         tpminame = tpmi.modname;
