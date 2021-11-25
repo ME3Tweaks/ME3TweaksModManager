@@ -4,3 +4,6 @@
 [submodule "RoboSharp"]
 	path = RoboSharp
 	url = https://github.com/Mgamerz/RoboSharp.git
+[submodule "submodules/ME3TweaksCore"]
+	path = submodules/ME3TweaksCore
+	url = https://github.com/ME3Tweaks/ME3TweaksCore.git
