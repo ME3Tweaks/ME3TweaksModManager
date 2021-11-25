@@ -1,9 +1,8 @@
-﻿using Serilog;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
+using MassEffectModManagerCore.modmanager.diagnostics;
 
 namespace MassEffectModManagerCore.modmanager
 {
@@ -61,7 +60,7 @@ namespace MassEffectModManagerCore.modmanager
                 }
                 ActiveJob = bt;
                 showIndicatorDelegate();
-                Log.Information("Submitted a background task to engine: " + taskName);
+                M3Log.Information("Submitted a background task to engine: " + taskName);
                 return bt;
             }
         }
@@ -72,7 +71,7 @@ namespace MassEffectModManagerCore.modmanager
             {
                 if (backgroundJobs.TryRemove(task.jobID, out BackgroundTask t))
                 {
-                    Log.Information("Completed a background task: " + t.taskName);
+                    M3Log.Information("Completed a background task: " + t.taskName);
                     if (!backgroundJobs.Any())
                     {
                         hideIndicatorDelegate();

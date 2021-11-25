@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -11,16 +10,14 @@ using MassEffectModManagerCore.modmanager.gameini;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
-using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
-using MassEffectModManagerCore.modmanager.objects.mod.merge;
+using MassEffectModManagerCore.modmanager.diagnostics;
 using Microsoft.AppCenter.Analytics;
 using PropertyChanged;
-using Serilog;
 using SevenZip;
 using MemoryAnalyzer = MassEffectModManagerCore.modmanager.memoryanalyzer.MemoryAnalyzer;
 
@@ -341,7 +338,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
 
         public Mod(RCWMod rcw)
         {
-            Log.Information(@"Converting an RCW mod to an M3 mod.");
+            M3Log.Information(@"Converting an RCW mod to an M3 mod.");
             Game = MEGame.ME2;
             ModDescTargetVersion = 6.0;
             ModDeveloper = rcw.Author;
@@ -361,11 +358,11 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
         /// <param name="archive">Archive to inspect for</param>
         public Mod(ArchiveFileInfo moddescArchiveEntry, SevenZipExtractor archive)
         {
-            Log.Information($@"Loading moddesc.ini from archive: {Path.GetFileName(archive.FileName)} => {moddescArchiveEntry.FileName}");
+            M3Log.Information($@"Loading moddesc.ini from archive: {Path.GetFileName(archive.FileName)} => {moddescArchiveEntry.FileName}");
             MemoryStream ms = new MemoryStream();
             try
             {
-                Log.Information($@"moddesc.ini file is stored with compression {moddescArchiveEntry.Method}");
+                M3Log.Information($@"moddesc.ini file is stored with compression {moddescArchiveEntry.Method}");
                 archive.ExtractFile(moddescArchiveEntry.FileName, ms);
                 CheckDeployedWithM3 = true;
                 DeployedWithM3 = Path.GetExtension(archive.FileName) == @".7z" && moddescArchiveEntry.Method == @"Copy";
@@ -373,7 +370,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             catch (Exception e)
             {
                 ModName = M3L.GetString(M3L.string_loadFailed);
-                Log.Error(@"Error loading moddesc.ini from archive! Error: " + e.Message);
+                M3Log.Error(@"Error loading moddesc.ini from archive! Error: " + e.Message);
                 LoadFailedReason = M3L.GetString(M3L.string_interp_errorReadingArchiveModdesc, e.Message);
                 return;
             }
@@ -408,7 +405,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
         public Mod(string filePath, MEGame expectedGame, bool blankLoad = false)
         {
             ModPath = Path.GetDirectoryName(filePath);
-            Log.Information(@"Loading moddesc: " + filePath);
+            M3Log.Information(@"Loading moddesc: " + filePath);
             try
             {
                 loadMod(File.ReadAllText(filePath), expectedGame, blankLoad: blankLoad);
@@ -439,7 +436,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             }
 
             VirtualizedIniText = iniText;
-            Log.Information(@"Loading virtualized moddesc.ini");
+            M3Log.Information(@"Loading virtualized moddesc.ini");
             try
             {
                 loadMod(iniText, MEGame.Unknown);
@@ -478,7 +475,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     ModName = (ModPath == "" && IsInArchive)
                         ? Path.GetFileNameWithoutExtension(Archive.FileName)
                         : Path.GetFileName(ModPath);
-                    Log.Error(
+                    M3Log.Error(
                         $@"This mod specifies it can only load on M3 builds {minBuild} or higher. The current build number is {App.BuildNumber}.");
                     LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_cannotLoadBuildTooOld,
                         minBuild, App.BuildNumber);
@@ -511,7 +508,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 ModName = (ModPath == "" && IsInArchive)
                     ? Path.GetFileNameWithoutExtension(Archive.FileName)
                     : Path.GetFileName(ModPath);
-                Log.Error($@"moddesc.ini in {ModPath} does not set the modname descriptor.");
+                M3Log.Error($@"moddesc.ini in {ModPath} does not set the modname descriptor.");
                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_nomodname, ModPath);
                 return; //Won't set valid
             }
@@ -525,7 +522,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             Uri uriResult;
             if (!(Uri.TryCreate(ModWebsite, UriKind.Absolute, out uriResult) && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps)))
             {
-                Log.Error($@"Invalid url for mod {ModName}: URL must be of type http:// or https:// and be a valid formed url. Invalid value: {ModWebsite}");
+                M3Log.Error($@"Invalid url for mod {ModName}: URL must be of type http:// or https:// and be a valid formed url. Invalid value: {ModWebsite}");
                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_invalidUrlScheme, ModName, ModWebsite);
                 ModWebsite = DefaultWebsite; //Reset so we don't try to open invalid url
                 return; //Won't set valid
@@ -534,7 +531,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             ModDescription = Utilities.ConvertBrToNewline(iniData[@"ModInfo"][@"moddesc"]);
             if (string.IsNullOrWhiteSpace(ModDescription))
             {
-                Log.Error($@"moddesc.ini in {ModPath} does not set the moddesc descriptor.");
+                M3Log.Error($@"moddesc.ini in {ModPath} does not set the moddesc descriptor.");
                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_nomoddesc, ModPath);
                 return; //Won't set valid
             }
@@ -542,7 +539,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             ModDeveloper = iniData[@"ModInfo"][@"moddev"];
             if (string.IsNullOrWhiteSpace(ModDeveloper))
             {
-                Log.Error($@"moddesc.ini in {ModPath} does not set the moddev descriptor.");
+                M3Log.Error($@"moddesc.ini in {ModPath} does not set the moddev descriptor.");
                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_nomoddev, ModPath);
                 return; //Won't set valid
             }
@@ -631,7 +628,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 Settings.LogModStartup);
             if (ModClassicUpdateCode > 0 && ModModMakerID > 0)
             {
-                Log.Error(
+                M3Log.Error(
                     $@"{ModName} has both an updater service update code and a modmaker code assigned. This is not allowed.");
                 LoadFailedReason =
                     M3L.GetString(M3L.string_validation_modparsing_loadfailed_cantSetBothUpdaterAndModMaker);
@@ -664,7 +661,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             if (parsedModCmmVer >= 6 && game == null && importedByBuild > 0)
             {
                 //Not allowed. You MUST specify game on cmmver 6 or higher
-                Log.Error($@"{ModName} does not set the ModInfo 'game' descriptor, which is required for all mods targeting ModDesc 6 or higher.");
+                M3Log.Error($@"{ModName} does not set the ModInfo 'game' descriptor, which is required for all mods targeting ModDesc 6 or higher.");
                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_missingModInfoGameDescriptor, ModName);
                 return;
             }
@@ -703,7 +700,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     }
                     else
                     {
-                        Log.Error($@"{ModName} has unknown game ID set for ModInfo descriptor 'game'. Valid values are ME1, ME2 or ME3. Value provided: {game}");
+                        M3Log.Error($@"{ModName} has unknown game ID set for ModInfo descriptor 'game'. Valid values are ME1, ME2 or ME3. Value provided: {game}");
                         LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_unknownGameId, game);
                         return;
                     }
@@ -713,14 +710,14 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
 
             if (ModDescTargetVersion < 6 && Game.IsOTGame() && Game != MEGame.ME3)
             {
-                Log.Error($@"{ModName} is designed for {game}. ModDesc versions (cmmver descriptor under ModManager section) under 6.0 do not support ME1 or ME2.");
+                M3Log.Error($@"{ModName} is designed for {game}. ModDesc versions (cmmver descriptor under ModManager section) under 6.0 do not support ME1 or ME2.");
                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_cmm6RequiredForME12, game, ModDescTargetVersion.ToString(CultureInfo.InvariantCulture));
                 return;
             }
 
             if (ModDescTargetVersion < 7 && (Game.IsLEGame() || TargetsLELauncher))
             {
-                Log.Error($@"{ModName} is designed for {game}. ModDesc versions (cmmver descriptor under ModManager section) under 7.0 cannot target Legendary Edition games.");
+                M3Log.Error($@"{ModName} is designed for {game}. ModDesc versions (cmmver descriptor under ModManager section) under 7.0 cannot target Legendary Edition games.");
                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_leGamesRequireCmm7, ModName, Game.ToGameName());
                 return;
             }
@@ -773,7 +770,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     var fullPath = FilesystemInterposer.PathCombine(Archive != null, ModPath, Mod.ModImageAssetFolderName, BannerImageName);
                     if (!FilesystemInterposer.FileExists(fullPath, Archive))
                     {
-                        Log.Error($@"Mod has banner image name of {BannerImageName}, but this file does not exist under the M3Images directory.");
+                        M3Log.Error($@"Mod has banner image name of {BannerImageName}, but this file does not exist under the M3Images directory.");
                         LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_bannerImageAssetNotFound, BannerImageName);
                         return;
                     }
@@ -785,7 +782,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         var storageType = Archive.GetStorageTypeOfFile(fullPath);
                         if (storageType != @"Copy")
                         {
-                            Log.Error($@"Mod has banner image that is in an archive, but the storage type is not listed as 'Copy'. Mod Manager will not load mods from archive that list images that were not deployed using Mod Manager.");
+                            M3Log.Error($@"Mod has banner image that is in an archive, but the storage type is not listed as 'Copy'. Mod Manager will not load mods from archive that list images that were not deployed using Mod Manager.");
                             LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_bannerUsedButNotDeployedWithM3);
                             return;
                         }
@@ -852,7 +849,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
 
                     if (!taskDoesSomething)
                     {
-                        Log.Error($@"Mod has job header ({headerAsString}) with no tasks in add, replace, or remove lists. This header does effectively nothing. Marking mod as invalid");
+                        M3Log.Error($@"Mod has job header ({headerAsString}) with no tasks in add, replace, or remove lists. This header does effectively nothing. Marking mod as invalid");
                         LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_headerDoesNothing, headerAsString);
                         return;
                     }
@@ -867,7 +864,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         if (replaceFilesSourceSplit.Count != replaceFilesTargetSplit.Count)
                         {
                             //Mismatched source and target lists
-                            Log.Error($@"Mod has job header ({headerAsString}) that has mismatched newfiles and replacefiles descriptor lists. newfiles has {replaceFilesSourceSplit.Count} items, replacefiles has {replaceFilesTargetSplit.Count} items. The number of items in each list must match.");
+                            M3Log.Error($@"Mod has job header ({headerAsString}) that has mismatched newfiles and replacefiles descriptor lists. newfiles has {replaceFilesSourceSplit.Count} items, replacefiles has {replaceFilesTargetSplit.Count} items. The number of items in each list must match.");
                             LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_headerHasMismatchedNewFilesReplaceFiles, headerAsString, replaceFilesSourceSplit.Count.ToString(), replaceFilesTargetSplit.Count.ToString());
                             return;
                         }
@@ -890,7 +887,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                             if (addFilesSourceSplit.Count != addFilesTargetSplit.Count)
                             {
                                 //Mismatched source and target lists
-                                Log.Error($@"Mod has job header ({headerAsString}) that has mismatched addfiles and addfilestargets descriptor lists. addfiles has {addFilesSourceSplit.Count} items, addfilestargets has {addFilesTargetSplit.Count} items. The number of items in each list must match.");
+                                M3Log.Error($@"Mod has job header ({headerAsString}) that has mismatched addfiles and addfilestargets descriptor lists. addfiles has {addFilesSourceSplit.Count} items, addfilestargets has {addFilesTargetSplit.Count} items. The number of items in each list must match.");
                                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_headerHasMismatchedAddFilesAddFilesTargets, headerAsString, addFilesSourceSplit.Count.ToString(), addFilesTargetSplit.Count.ToString());
                                 return;
                             }
@@ -910,7 +907,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         //        if (!addFilesTargetSplit.ContainsAll(addFilesReadOnlySplit, StringComparer.InvariantCultureIgnoreCase))
                         //        {
                         //            //readonly list contains elements not contained in the targets list
-                        //            Log.Error($@"Mod has job header ({headerAsString}) that has addfilesreadonlytargets descriptor set, however it contains items that are not part of the addfilestargets list. This is not allowed.");
+                        //            M3Log.Error($@"Mod has job header ({headerAsString}) that has addfilesreadonlytargets descriptor set, however it contains items that are not part of the addfilestargets list. This is not allowed.");
                         //            LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_headerSpecifiesNotAddedReadOnlyTarget, headerAsString);
                         //            return;
                         //        }
@@ -918,7 +915,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         //    else
                         //    {
                         //        //readonly target specified but nothing in the addfilestargets list/unspecified
-                        //        Log.Error($@"Mod has job header ({headerAsString}) that has addfilesreadonlytargets descriptor set, however there is no addfilestargets specified.");
+                        //        M3Log.Error($@"Mod has job header ({headerAsString}) that has addfilesreadonlytargets descriptor set, however there is no addfilestargets specified.");
                         //        LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_headerCantSetReadOnlyWithoutAddFilesList, headerAsString);
                         //        return;
                         //    }
@@ -930,7 +927,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         //ME3 only
                         if (ModDescTargetVersion < 3 && header == ModJob.JobHeader.TESTPATCH)
                         {
-                            Log.Error($@"Mod has job header ({headerAsString}) specified, but this header is only supported when targeting ModDesc 3 or higher.");
+                            M3Log.Error($@"Mod has job header ({headerAsString}) specified, but this header is only supported when targeting ModDesc 3 or higher.");
                             LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_headerUnsupportedOnLTModdesc3, headerAsString);
                             return;
                         }
@@ -984,26 +981,26 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                                             string failurereason = headerJob.AddPreparsedFileToInstall(destFile, file, this);
                                             if (failurereason != null)
                                             {
-                                                Log.Error($@"Error occurred while automapping the replace files lists for {headerAsString}: {failurereason}. This is likely a bug in M3, please report it to Mgamerz");
+                                                M3Log.Error($@"Error occurred while automapping the replace files lists for {headerAsString}: {failurereason}. This is likely a bug in M3, please report it to Mgamerz");
                                                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_errorAutomappingPleaseReport, headerAsString, failurereason);
                                                 return;
                                             }
                                         }
                                         else
                                         {
-                                            Log.Warning(@"File type/extension not supported by gamedirectorystructure scan: " + file);
+                                            M3Log.Warning(@"File type/extension not supported by gamedirectorystructure scan: " + file);
                                         }
                                     }
                                 }
                                 else
                                 {
-                                    Log.Error($@"Error occurred while parsing the replace files lists for {headerAsString}: source directory {sourceDirectory} was not found and the gamedirectorystructure flag was used on this job.");
+                                    M3Log.Error($@"Error occurred while parsing the replace files lists for {headerAsString}: source directory {sourceDirectory} was not found and the gamedirectorystructure flag was used on this job.");
                                     LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_sourceDirectoryForJobNotFound, headerAsString, sourceDirectory);
                                     return;
                                 }
                                 if (!headerJob.FilesToInstall.Any())
                                 {
-                                    Log.Error($@"Error using gamedirectorystructure option: No files were found to install in the specified path for job: {headerAsString}, Path: {sourceDirectory}");
+                                    M3Log.Error($@"Error using gamedirectorystructure option: No files were found to install in the specified path for job: {headerAsString}, Path: {sourceDirectory}");
                                     LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_gamedirectoryStructureFoundNoFiles, headerAsString, sourceDirectory);
                                     return;
                                 }
@@ -1015,7 +1012,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                                 string failurereason = headerJob.AddFileToInstall(destFile, replaceFilesSourceSplit[i], this);
                                 if (failurereason != null)
                                 {
-                                    Log.Error($@"Error occurred while parsing the replace files lists for {headerAsString}: {failurereason}");
+                                    M3Log.Error($@"Error occurred while parsing the replace files lists for {headerAsString}: {failurereason}");
                                     LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_genericFailureParsingLists, headerAsString, failurereason);
                                     return;
                                 }
@@ -1035,7 +1032,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                             string failurereason = headerJob.AddAdditionalFileToInstall(destFile, addFilesSourceSplit[i], this); //add files are layered on top
                             if (failurereason != null)
                             {
-                                Log.Error($@"Error occurred while parsing the add files lists for {headerAsString}: {failurereason}");
+                                M3Log.Error($@"Error occurred while parsing the add files lists for {headerAsString}: {failurereason}");
                                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_genericFailedToParseAddFilesLists, headerAsString, failurereason);
                                 return;
                             }
@@ -1051,7 +1048,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                             string failurereason = headerJob.AddReadOnlyIndicatorForFile(addFilesSourceSplit[i], this);
                             if (failurereason != null)
                             {
-                                Log.Error($@"Error occurred while parsing the addfilesreadonlytargtes list for {headerAsString}: {failurereason}");
+                                M3Log.Error($@"Error occurred while parsing the addfilesreadonlytargtes list for {headerAsString}: {failurereason}");
                                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_genericFailedToParseAddFilesReadOnlyTargets, headerAsString, failurereason);
                                 return;
                             }
@@ -1083,7 +1080,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                             if (mergeItemSanitized.Contains(@".."))
                             {
                                 // This entry may be malicious, do not load
-                                Log.Error($@"{ModName} has a merge mod listed under header {headerAsString} which contains a '..' in the name. '..' is not allowed in names.");
+                                M3Log.Error($@"{ModName} has a merge mod listed under header {headerAsString} which contains a '..' in the name. '..' is not allowed in names.");
                                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_securityIssueMergeModDotDot, ModName, headerAsString);
                                 return;
                             }
@@ -1092,7 +1089,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                             var fullPath = FilesystemInterposer.PathCombine(Archive != null, ModPath, Mod.MergeModFolderName, mergeItem);
                             if (!FilesystemInterposer.FileExists(fullPath, Archive))
                             {
-                                Log.Error($@"{ModName} has a merge mod listed under header {headerAsString} which does not exist in the {Mod.MergeModFolderName} folder: {mergeItemSanitized}.");
+                                M3Log.Error($@"{ModName} has a merge mod listed under header {headerAsString} which does not exist in the {Mod.MergeModFolderName} folder: {mergeItemSanitized}.");
                                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_mergeModNotFound, ModName, headerAsString, Mod.MergeModFolderName, mergeItemSanitized);
                                 return;
                             }
@@ -1111,7 +1108,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         var splits = StringStructParser.GetParenthesisSplitValues(altfilesStr);
                         if (splits.Count == 0)
                         {
-                            Log.Error($@"Alternate files list was unable to be parsed for header {headerAsString}, no items were returned from parenthesis parser.");
+                            M3Log.Error($@"Alternate files list was unable to be parsed for header {headerAsString}, no items were returned from parenthesis parser.");
                             LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_failedToParseAltfiles, headerAsString);
                             return;
                         }
@@ -1169,7 +1166,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         if (customDLCSourceSplit.Count != customDLCDestSplit.Count)
                         {
                             //Mismatched source and target lists
-                            Log.Error($@"Mod has job header (CUSTOMDLC) that has mismatched sourcedirs and destdirs descriptor lists. sourcedirs has {customDLCSourceSplit.Count} items, destdirs has {customDLCDestSplit.Count} items. The number of items in each list must match.");
+                            M3Log.Error($@"Mod has job header (CUSTOMDLC) that has mismatched sourcedirs and destdirs descriptor lists. sourcedirs has {customDLCSourceSplit.Count} items, destdirs has {customDLCDestSplit.Count} items. The number of items in each list must match.");
                             LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_customDLCMismatchedSourceDirsDestDirs, customDLCSourceSplit.Count.ToString(), customDLCDestSplit.Count.ToString());
                             return;
                         }
@@ -1178,7 +1175,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         if (customDLCSourceSplit.Any(x => x.Contains(@"..")) || customDLCDestSplit.Any(x => x.Contains(@".")))
                         {
                             //Security violation: Cannot use .. in filepath
-                            Log.Error(@"CUSTOMDLC header sourcedirs or destdirs includes item that contains a '..' (sourcedirs) or '.' (destdirs), which is not permitted.");
+                            M3Log.Error(@"CUSTOMDLC header sourcedirs or destdirs includes item that contains a '..' (sourcedirs) or '.' (destdirs), which is not permitted.");
                             LoadFailedReason = M3L.GetString(M3L.string_validation_modparsing_loadfailed_customDLCItemHasIllegalCharacters);
                             return;
                         }
@@ -1187,7 +1184,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         if (customDLCDestSplit.Any(x => x.ContainsAny(DirectorySeparatorChars, StringComparison.InvariantCultureIgnoreCase)))
                         {
                             //Security violation: Cannot use \ in filepath
-                            Log.Error(@"CUSTOMDLC header destdirs contains a value that contains a directory separator character, which is not allowed.");
+                            M3Log.Error(@"CUSTOMDLC header destdirs contains a value that contains a directory separator character, which is not allowed.");
                             LoadFailedReason = M3L.GetString(M3L.string_validation_modparsing_customdlcDotDotFound);
                             return;
                         }
@@ -1197,7 +1194,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         {
                             if (!FilesystemInterposer.DirectoryExists(FilesystemInterposer.PathCombine(IsInArchive, ModPath, f), Archive))
                             {
-                                Log.Error($@"Mod has job header (CUSTOMDLC) sourcedirs descriptor specifies installation of a Custom DLC folder that does not exist in the mod folder: {f}");
+                                M3Log.Error($@"Mod has job header (CUSTOMDLC) sourcedirs descriptor specifies installation of a Custom DLC folder that does not exist in the mod folder: {f}");
                                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_customDLCSourceDirMissing, f);
                                 return;
                             }
@@ -1208,14 +1205,14 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         {
                             if (Utilities.IsProtectedDLCFolder(f, Game))
                             {
-                                Log.Error($@"Mod has job header (CUSTOMDLC) destdirs descriptor that specifies installation of a Custom DLC folder to a protected target: {f}");
+                                M3Log.Error($@"Mod has job header (CUSTOMDLC) destdirs descriptor that specifies installation of a Custom DLC folder to a protected target: {f}");
                                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_destDirCannotBeMetadataOrOfficialDLC, f);
                                 return;
                             }
 
                             if (!f.StartsWith(@"DLC_"))
                             {
-                                Log.Error($@"Mod has job header (CUSTOMDLC) destdirs descriptor that specifies installation of a Custom DLC folder that would install a disabled DLC: {f}. DLC folders must start with DLC_.");
+                                M3Log.Error($@"Mod has job header (CUSTOMDLC) destdirs descriptor that specifies installation of a Custom DLC folder that would install a disabled DLC: {f}. DLC folders must start with DLC_.");
                                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_destDirFoldernamesMustStartWithDLC, f);
                                 return;
                             }
@@ -1247,7 +1244,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         var splits = StringStructParser.GetParenthesisSplitValues(altfilesStr);
                         if (splits.Count == 0)
                         {
-                            Log.Error(@"Alternate files list was unable to be parsed, no items were returned from parenthesis parser.");
+                            M3Log.Error(@"Alternate files list was unable to be parsed, no items were returned from parenthesis parser.");
                             LoadFailedReason = M3L.GetString(M3L.string_validation_modparsing_loadfailed_altFilesListFailedToParse);
                             return;
                         }
@@ -1302,7 +1299,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 }
                 else if ((customDLCSourceDirsStr != null) != (customDLCDestDirsStr != null))
                 {
-                    Log.Error($@"{ModName} specifies only one of the two required lists for the CUSTOMDLC header. Both sourcedirs and destdirs descriptors must be set for CUSTOMDLC.");
+                    M3Log.Error($@"{ModName} specifies only one of the two required lists for the CUSTOMDLC header. Both sourcedirs and destdirs descriptors must be set for CUSTOMDLC.");
                     LoadFailedReason = M3L.GetString(M3L.string_validation_modparsing_loadfailed_mustHaveBothSourceAndDestDirs);
                     return;
                 }
@@ -1332,7 +1329,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         if (!balanceFile.EndsWith(@".bin"))
                         {
                             //Invalid file
-                            Log.Error(@"Balance changes file must be a .bin file.");
+                            M3Log.Error(@"Balance changes file must be a .bin file.");
                             LoadFailedReason = M3L.GetString(M3L.string_validation_modparsing_loadfailed_balanceChangesFileNotBinFile);
                             return;
                         }
@@ -1343,7 +1340,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         string failurereason = balanceJob.AddFileToInstall(@"Binaries\win32\asi\ServerCoalesced.bin", balanceFile, this);
                         if (failurereason != null)
                         {
-                            Log.Error($@"Error occurred while creating BALANCE_CHANGE job: {failurereason}");
+                            M3Log.Error($@"Error occurred while creating BALANCE_CHANGE job: {failurereason}");
                             LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_genericErrorCreatingBalanceChangeJob, failurereason);
                             return;
                         }
@@ -1353,7 +1350,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     }
                     else
                     {
-                        Log.Error($@"Balance changes newfile descriptor only allows 1 entry in the list, but {replaceFilesSourceSplit.Count} were parsed.");
+                        M3Log.Error($@"Balance changes newfile descriptor only allows 1 entry in the list, but {replaceFilesSourceSplit.Count} were parsed.");
                         LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_canOnlyHaveOneBalanceChangesFile, replaceFilesSourceSplit.Count.ToString());
                         return;
                     }
@@ -1376,7 +1373,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         var configfilesStr = iniData[@"ME1_CONFIG"][@"configfiles"];
                         if (string.IsNullOrWhiteSpace(configfilesStr))
                         {
-                            Log.Error(@"ME1_CONFIG job was specified but configfiles descriptor is empty or missing. Remove this header if you are not using this task.");
+                            M3Log.Error(@"ME1_CONFIG job was specified but configfiles descriptor is empty or missing. Remove this header if you are not using this task.");
                             LoadFailedReason = M3L.GetString(M3L.string_validation_modparsing_loadfailed_cannotHaveEmptyME1ConfigJob);
                             return;
                         }
@@ -1390,14 +1387,14 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                                 var failurereason = me1ConfigJob.AddFileToInstall(configFilename, configFilename, this);
                                 if (failurereason != null)
                                 {
-                                    Log.Error($@"Error occurred while creating ME1_CONFIG job: {failurereason}");
+                                    M3Log.Error($@"Error occurred while creating ME1_CONFIG job: {failurereason}");
                                     LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_genericErrorReadingME1ConfigJob, failurereason);
                                     return;
                                 }
                             }
                             else
                             {
-                                Log.Error(@"ME1_CONFIG job's configfiles descriptor contains an unsupported config file: " + configFilename);
+                                M3Log.Error(@"ME1_CONFIG job's configfiles descriptor contains an unsupported config file: " + configFilename);
                                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_unsupportedME1ConfigFileSpecified, configFilename);
                                 return;
                             }
@@ -1416,21 +1413,21 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         var path = FilesystemInterposer.PathCombine(IsInArchive, ModPath, rcwfile);
                         if (!FilesystemInterposer.FileExists(path, Archive))
                         {
-                            Log.Error(@"ME2_RCWMOD job was specified, but the specified file doesn't exist: " + rcwfile);
+                            M3Log.Error(@"ME2_RCWMOD job was specified, but the specified file doesn't exist: " + rcwfile);
                             LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_specifiedRCWFileDoesntExist, rcwfile);
                             return;
                         }
 
                         if (IsInArchive)
                         {
-                            Log.Error(@"Cannot load compressed RCW through main mod loader.");
+                            M3Log.Error(@"Cannot load compressed RCW through main mod loader.");
                             LoadFailedReason = M3L.GetString(M3L.string_validation_modparsing_loadfailed_cannotLoadCompressedRCWModThroughMainLoaderLikelyBug);
                             return;
                         }
                         var rcwMods = RCWMod.LoadRCWMods(path);
                         if (rcwMods.Count != 1)
                         {
-                            Log.Error(@"M3-mod based RCW mods may only contain 1 RCW mod each. Importing should split these into multiple single mods.");
+                            M3Log.Error(@"M3-mod based RCW mods may only contain 1 RCW mod each. Importing should split these into multiple single mods.");
                             LoadFailedReason = M3L.GetString(M3L.string_validation_modparsing_loadfailed_rcwModsMayOnlyContainOneRCWMod);
                             return;
                         }
@@ -1453,7 +1450,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             {
                 if (InstallationJobs.Any())
                 {
-                    Log.Error(
+                    M3Log.Error(
                         @"Cannot have LOCALIZATION task with other tasks. LOCALIZATION jobs must be on their own.");
                     LoadFailedReason =
                         M3L.GetString(M3L.string_interp_validation_modparsing_cannotCombineLocalizationTask);
@@ -1462,14 +1459,14 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 var destDlc = iniData[ModJob.JobHeader.LOCALIZATION.ToString()][@"dlcname"];
                 if (string.IsNullOrWhiteSpace(destDlc))
                 {
-                    Log.Error(@"LOCALIZATION header requires 'dlcname' descriptor that the localization file will target.");
+                    M3Log.Error(@"LOCALIZATION header requires 'dlcname' descriptor that the localization file will target.");
                     LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_missingDlcNameDesriptor);
                     return;
                 }
 
                 if (!destDlc.StartsWith(@"DLC_") || MEDirectories.OfficialDLC(Game).Any(x => x.Equals(destDlc, StringComparison.InvariantCultureIgnoreCase)))
                 {
-                    Log.Error(
+                    M3Log.Error(
                         $@"The destdlc descriptor under LOCALIZATION must start with DLC_ and not be an official DLC for the game. Invalid value: {destDlc}");
                     LoadFailedReason =
                         M3L.GetString(M3L.string_interp_validation_modparsing_invalidDlcNameLocalization, destDlc);
@@ -1484,7 +1481,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     var filePath = FilesystemInterposer.PathCombine(IsInArchive, ModPath, f);
                     if (!FilesystemInterposer.FileExists(filePath, Archive))
                     {
-                        Log.Error($@"A referenced localization file could not be found: {f}");
+                        M3Log.Error($@"A referenced localization file could not be found: {f}");
                         LoadFailedReason = M3L.GetString(M3L.string_interp_validaiton_modparsing_referencedLocalizationFileCouldNotBeFound, f);
                         return;
                     }
@@ -1492,7 +1489,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     var fname = Path.GetFileName(f);
                     if (!fname.EndsWith(@".tlk"))
                     {
-                        Log.Error($@"Referenced localization file is not a .tlk: {f}. LOCALIZATION tasks only allow installation of .tlk files.");
+                        M3Log.Error($@"Referenced localization file is not a .tlk: {f}. LOCALIZATION tasks only allow installation of .tlk files.");
                         LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_invalidLocalizationFileType, f);
                         return;
                     }
@@ -1501,7 +1498,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     {
                         if (!fname.StartsWith(destDlc + @"_"))
                         {
-                            Log.Error($@"Referenced localization file has incorrect name: {f}. Localization filenames must begin with the name of the DLC, followed by an underscore and then the three letter language code.");
+                            M3Log.Error($@"Referenced localization file has incorrect name: {f}. Localization filenames must begin with the name of the DLC, followed by an underscore and then the three letter language code.");
                             LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_invalidLocalizationFilename, f);
                             return;
                         }
@@ -1517,7 +1514,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     var failurereason = localizationJob.AddFileToInstall($@"BIOGame/DLC/{destDlc}/{MEDirectories.CookedName(Game)}/{fname}", f, this);
                     if (failurereason != null)
                     {
-                        Log.Error($@"Error occurred while adding file for LOCALIZATION job: {failurereason}");
+                        M3Log.Error($@"Error occurred while adding file for LOCALIZATION job: {failurereason}");
                         LoadFailedReason = M3L.GetString(M3L.string_interp_errorOccuredWhileAddingFileForLOCALIZATIONJobX, failurereason);
                         return;
                     }
@@ -1595,7 +1592,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
 
                     if (!reqDLCss.StartsWith(@"DLC_"))
                     {
-                        Log.Error(@"Required DLC does not match officially supported header or start with DLC_.");
+                        M3Log.Error(@"Required DLC does not match officially supported header or start with DLC_.");
                         LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_invalidRequiredDLCSpecified, reqDLC);
                         return;
                     }
@@ -1613,7 +1610,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 {
                     if (MEDirectories.OfficialDLC(Game).Contains(outdated, StringComparer.InvariantCultureIgnoreCase))
                     {
-                        Log.Error($@"Outdated Custom DLC cannot contain an official DLC: " + outdated);
+                        M3Log.Error($@"Outdated Custom DLC cannot contain an official DLC: " + outdated);
                         LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_customDlcCAnnotListOfficialDLCAsOutdated, outdated);
                         return;
                     }
@@ -1632,7 +1629,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 {
                     if (MEDirectories.OfficialDLC(Game).Contains(incompat, StringComparer.InvariantCultureIgnoreCase))
                     {
-                        Log.Error($@"Incompatible Custom DLC cannot contain an official DLC: " + incompat);
+                        M3Log.Error($@"Incompatible Custom DLC cannot contain an official DLC: " + incompat);
                         LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_customDlcCannotListOfficialDLCAsIncompatible, incompat);
                         return;
                     }
@@ -1652,7 +1649,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     if (addlFolder.Contains(@"..") || addlFolder.Contains(@"/") || addlFolder.Contains(@"\"))
                     {
                         //Security violation: Cannot use .. / or \ in filepath
-                        Log.Error($@"UPDATES header additionaldeploymentfolders includes directory ({addlFolder}) that contains a .., \\ or /, which are not permitted.");
+                        M3Log.Error($@"UPDATES header additionaldeploymentfolders includes directory ({addlFolder}) that contains a .., \\ or /, which are not permitted.");
                         LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_illegalAdditionalDeploymentFoldersValue, addlFolder);
                         return;
                     }
@@ -1660,7 +1657,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     //Check folder exists
                     if (!FilesystemInterposer.DirectoryExists(FilesystemInterposer.PathCombine(IsInArchive, ModPath, addlFolder), Archive))
                     {
-                        Log.Error($@"UPDATES header additionaldeploymentfolders includes directory that does not exist in the mod directory: {addlFolder}");
+                        M3Log.Error($@"UPDATES header additionaldeploymentfolders includes directory that does not exist in the mod directory: {addlFolder}");
                         LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_updatesSpecifiesMissingAdditionalDeploymentFolder, addlFolder);
                         return;
                     }
@@ -1680,7 +1677,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     if (addlFile.Contains(@"..") || addlFile.Contains(@"/") || addlFile.Contains(@"\"))
                     {
                         //Security violation: Cannot use .. / or \ in filepath
-                        Log.Error($@"UPDATES header additionaldeploymentfiles includes file ({addlFile}) that contains a .., \\ or /, which are not permitted.");
+                        M3Log.Error($@"UPDATES header additionaldeploymentfiles includes file ({addlFile}) that contains a .., \\ or /, which are not permitted.");
                         LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_illegalAdditionalDeploymentFilesValue, addlFile);
                         return;
                     }
@@ -1688,7 +1685,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     //Check file exists
                     if (!FilesystemInterposer.FileExists(FilesystemInterposer.PathCombine(IsInArchive, ModPath, addlFile), Archive))
                     {
-                        Log.Error($@"UPDATES header additionaldeploymentfiles includes file that does not exist in the mod directory: {addlFile}");
+                        M3Log.Error($@"UPDATES header additionaldeploymentfiles includes file that does not exist in the mod directory: {addlFile}");
                         LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_updatesSpecifiesMissingAdditionalDeploymentFiles, addlFile);
                         return;
                     }
@@ -1733,7 +1730,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     if (File.Exists(fullpath))
                     {
 
-                        Log.Error(@"Mod folder contains file that moddesc.ini blacklists: " + fullpath);
+                        M3Log.Error(@"Mod folder contains file that moddesc.ini blacklists: " + fullpath);
                         LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_blacklistedfileFound, fullpath);
                         return;
                     }
@@ -1761,7 +1758,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                             {@"Mod name", ModName},
                             {@"Mod version", ModVersionString},
                         });
-                        Log.Fatal($@"{ModName}'s job {job.Header} does not have any allowed silos! This is a bug, all jobs that are scoped should have at least one silo. Please report this to Mgamerz.");
+                        M3Log.Fatal($@"{ModName}'s job {job.Header} does not have any allowed silos! This is a bug, all jobs that are scoped should have at least one silo. Please report this to Mgamerz.");
                         LoadFailedReason = $@"{ModName}'s job {job.Header} does not have any allowed silos! This is a bug, all jobs that are scoped should have at least one silo. Please report this to Mgamerz.";
                         return;
                     }
@@ -1807,7 +1804,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                                     {@"Game", Game.ToString()},
                                 });
                             // The target of this file is outside the silo
-                            Log.Error($@"{ModName}'s job {job.Header} file target {f} is outside of allow locations for this header. This is a security risk, mods must only install files to their specified task header directories.");
+                            M3Log.Error($@"{ModName}'s job {job.Header} file target {f} is outside of allow locations for this header. This is a security risk, mods must only install files to their specified task header directories.");
                             LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_securityCheckOutsideAllowSilo, ModName, job.Header, f);
                             return;
                         }
@@ -1828,7 +1825,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                                     {@"Game", Game.ToString()},
                                 });
                                 // The target of this file is outside the silo
-                                Log.Error($@"{ModName}'s job {job.Header} file target {f} installs a file into a disallowed silo scope. This is a security risk, mods must only install files to their specified task header directories, and not into protected directories, such as DLC when using BASEGAME tasks.");
+                                M3Log.Error($@"{ModName}'s job {job.Header} file target {f} installs a file into a disallowed silo scope. This is a security risk, mods must only install files to their specified task header directories, and not into protected directories, such as DLC when using BASEGAME tasks.");
                                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_securityCheckInsideDisallowedSilo, ModName, job.Header, f);
                                 return;
                             }
@@ -1852,7 +1849,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                                 });
 
                                 // The target of this file is outside the silo
-                                Log.Error($@"{ModName}'s job {job.Header} file target {f} installs a file that cannot be installed by Mod Manager as it has been specifically blacklisted. Installing this file poses a security risk or is known to likely harm a user's installation.");
+                                M3Log.Error($@"{ModName}'s job {job.Header} file target {f} installs a file that cannot be installed by Mod Manager as it has been specifically blacklisted. Installing this file poses a security risk or is known to likely harm a user's installation.");
                                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_modInstallsBlacklistedDestFile, ModName, job.Header, f);
                                 return;
                             }
@@ -1870,7 +1867,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             }
             else if (!blankLoad)
             {
-                Log.Error(@"No installation jobs were specified. This mod does nothing.");
+                M3Log.Error(@"No installation jobs were specified. This mod does nothing.");
                 LoadFailedReason = M3L.GetString(M3L.string_validation_modparsing_loadfailed_modDoesNothing);
                 return;
             }
@@ -1899,7 +1896,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     }
                     else
                     {
-                        Log.Error($@"The LELAUNCHER header only supports the following file extensions: {string.Join(@", ", AllowedLauncherFileTypes)} An unsupported filetype was found: {file}");
+                        M3Log.Error($@"The LELAUNCHER header only supports the following file extensions: {string.Join(@", ", AllowedLauncherFileTypes)} An unsupported filetype was found: {file}");
                         LoadFailedReason = M3L.GetString(M3L.string_validation_modparsing_foundDisallowedLauncherFileType, string.Join(@", ", AllowedLauncherFileTypes), file);
                         ValidMod = false;
                         return;
@@ -1908,7 +1905,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             }
             else
             {
-                Log.Error($@"{ModName}'s LELAUNCHER header specifies a job subdirectory (moddir) that does not exist: {jobSubDir}");
+                M3Log.Error($@"{ModName}'s LELAUNCHER header specifies a job subdirectory (moddir) that does not exist: {jobSubDir}");
                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_leLauncherDirNotFound, ModName, jobSubDir);
                 ValidMod = false;
                 return;
@@ -1933,7 +1930,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 var files = FilesystemInterposer.DirectoryGetFiles(sourceDirectory, @"*.xml", SearchOption.TopDirectoryOnly, Archive).Select(x => x.Substring((ModPath.Length > 0 ? (ModPath.Length + 1) : 0) + jobDirLength).TrimStart('\\')).ToList();
                 if (!files.Any())
                 {
-                    Log.Error($@"Mod specifies {ModJob.JobHeader.GAME1_EMBEDDED_TLK} task header, but no xml file were found in the {Mod.Game1EmbeddedTlkFolderName} directory. Remove this task header if you are not using it, or add valid xml files to the {Mod.Game1EmbeddedTlkFolderName} directory.");
+                    M3Log.Error($@"Mod specifies {ModJob.JobHeader.GAME1_EMBEDDED_TLK} task header, but no xml file were found in the {Mod.Game1EmbeddedTlkFolderName} directory. Remove this task header if you are not using it, or add valid xml files to the {Mod.Game1EmbeddedTlkFolderName} directory.");
                     LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_tlkMergeNoTlkXmlFound, ModJob.JobHeader.GAME1_EMBEDDED_TLK, Mod.Game1EmbeddedTlkFolderName, Mod.Game1EmbeddedTlkFolderName);
                     ValidMod = false;
                     return false;
@@ -1943,7 +1940,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 {
                     if (file.Count(x => x == '.') < 2)
                     {
-                        Log.Error($@"The {ModJob.JobHeader.GAME1_EMBEDDED_TLK} header only supports the files in the {Mod.Game1EmbeddedTlkFolderName} directory that contain at least 2 '.' characters; one for the extension, and at least one to split the package name from the export path. If the export is nested under packages, more '.' may be needed. Invalid value: {file}");
+                        M3Log.Error($@"The {ModJob.JobHeader.GAME1_EMBEDDED_TLK} header only supports the files in the {Mod.Game1EmbeddedTlkFolderName} directory that contain at least 2 '.' characters; one for the extension, and at least one to split the package name from the export path. If the export is nested under packages, more '.' may be needed. Invalid value: {file}");
                         LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_tlkMergeInvalidTlkXmlFilenames, ModJob.JobHeader.GAME1_EMBEDDED_TLK, Mod.Game1EmbeddedTlkFolderName, file);
                         ValidMod = false;
                         return false;
@@ -1955,7 +1952,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             }
             else
             {
-                Log.Error($@"Mod specifies {ModJob.JobHeader.GAME1_EMBEDDED_TLK} task header, but no xml file were found in the {Mod.Game1EmbeddedTlkFolderName} directory. Remove this task header if you are not using it, or add valid xml files to the {Mod.Game1EmbeddedTlkFolderName} directory.");
+                M3Log.Error($@"Mod specifies {ModJob.JobHeader.GAME1_EMBEDDED_TLK} task header, but no xml file were found in the {Mod.Game1EmbeddedTlkFolderName} directory. Remove this task header if you are not using it, or add valid xml files to the {Mod.Game1EmbeddedTlkFolderName} directory.");
                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_tlkMergeNoTlkXmlFound, ModJob.JobHeader.GAME1_EMBEDDED_TLK, Mod.Game1EmbeddedTlkFolderName, Mod.Game1EmbeddedTlkFolderName);
                 ValidMod = false;
                 return false;
@@ -1985,13 +1982,13 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 if (ModDescTargetVersion == 1.0)
                 {
                     //Mod Manager 1/1.1
-                    Log.Error($@"{ModName} is a legacy mod (cmmver 1.0). This moddesc version requires a Coalesced.bin file in the same folder as the moddesc.ini file, but one was not found.");
+                    M3Log.Error($@"{ModName} is a legacy mod (cmmver 1.0). This moddesc version requires a Coalesced.bin file in the same folder as the moddesc.ini file, but one was not found.");
                     LoadFailedReason = M3L.GetString(M3L.string_validation_modparsing_loadfailed_cmm1CoalFileMissing);
                 }
                 else
                 {
                     //Mod Manager 2
-                    Log.Error($@"{ModName} specifies modcoal descriptor for cmmver 2.0, but the local Coalesced file doesn't exist: {legacyCoalFile}");
+                    M3Log.Error($@"{ModName} specifies modcoal descriptor for cmmver 2.0, but the local Coalesced file doesn't exist: {legacyCoalFile}");
                     LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_cmm2CoalFileMissing, legacyCoalFile);
                 }
 
@@ -2002,7 +1999,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             string failurereason = basegameJob.AddFileToInstall(@"BIOGame\CookedPCConsole\Coalesced.bin", @"Coalesced.bin", this);
             if (failurereason != null)
             {
-                Log.Error($@"Error occurred while creating basegame job for legacy 1.0 mod: {failurereason}");
+                M3Log.Error($@"Error occurred while creating basegame job for legacy 1.0 mod: {failurereason}");
                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_errorCreatingLegacyMod, failurereason);
                 return false;
             }

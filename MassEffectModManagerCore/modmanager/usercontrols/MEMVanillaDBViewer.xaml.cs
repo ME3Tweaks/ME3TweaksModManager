@@ -1,5 +1,4 @@
-﻿using MassEffectModManagerCore.modmanager.helpers;
-using MassEffectModManagerCore.ui;
+﻿using MassEffectModManagerCore.ui;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -9,7 +8,6 @@ using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using PropertyChanged;
-using WinCopies.Util;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {

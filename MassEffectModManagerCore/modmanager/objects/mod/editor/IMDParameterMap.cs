@@ -1,5 +1,4 @@
 ﻿using LegendaryExplorerCore.Misc;
-using MassEffectModManagerCore.ui;
 
 namespace MassEffectModManagerCore.modmanager.objects.mod.editor
 {

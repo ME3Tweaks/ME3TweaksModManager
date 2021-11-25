@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using MassEffectModManagerCore.modmanager.diagnostics;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.modmanager.objects.mod.editor;
 using MassEffectModManagerCore.modmanager.objects.mod.merge;
-using Serilog;
+using ME3TweaksCoreWPF;
 
 namespace MassEffectModManagerCore.modmanager.objects
 {
@@ -108,7 +109,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             if (modForValidating.ModDescTargetVersion >= 6 && string.IsNullOrWhiteSpace(FriendlyName))
             {
                 //Cannot be null.
-                Log.Error(@"Alternate File does not specify FriendlyName. Mods targeting moddesc >= 6.0 cannot have empty FriendlyName");
+                M3Log.Error(@"Alternate File does not specify FriendlyName. Mods targeting moddesc >= 6.0 cannot have empty FriendlyName");
                 ValidAlternate = false;
                 LoadFailedReason = M3L.GetString(M3L.string_validation_altfile_oneAltDlcMissingFriendlyNameCmm6);
                 return;
@@ -118,7 +119,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             {
                 if (!Enum.TryParse(altCond, out Condition) || Condition == AltFileCondition.INVALID_CONDITION)
                 {
-                    Log.Error($@"Alternate File specifies unknown/unsupported condition: {altCond}"); //do not localize
+                    M3Log.Error($@"Alternate File specifies unknown/unsupported condition: {altCond}"); //do not localize
                     ValidAlternate = false;
                     LoadFailedReason = $@"{M3L.GetString(M3L.string_validation_altfile_unknownCondition)} {altCond}";
                     return;
@@ -137,7 +138,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     }
                     if (!dlc.StartsWith(@"DLC_"))
                     {
-                        Log.Error(@"An item in Alternate Files's ConditionalDLC doesn't start with DLC_");
+                        M3Log.Error(@"An item in Alternate Files's ConditionalDLC doesn't start with DLC_");
                         LoadFailedReason = M3L.GetString(M3L.string_validation_altfile_conditionalDLCInvalidValue, FriendlyName);
                         return;
                     }
@@ -152,7 +153,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             {
                 if (!Enum.TryParse(modOp, out Operation) || Operation == AltFileOperation.INVALID_OPERATION)
                 {
-                    Log.Error(@"Alternate File specifies unknown/unsupported operation: " +
+                    M3Log.Error(@"Alternate File specifies unknown/unsupported operation: " +
                               modOp);
                     ValidAlternate = false;
                     LoadFailedReason = $@"{M3L.GetString(M3L.string_validation_altfile_unknownOperation)} {modOp}";
@@ -161,7 +162,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             }
             else
             {
-                Log.Error($@"Alternate File does not specify ModOperation, which is required for all Alternate Files: {FriendlyName}");
+                M3Log.Error($@"Alternate File does not specify ModOperation, which is required for all Alternate Files: {FriendlyName}");
                 ValidAlternate = false;
                 LoadFailedReason = $@"Alternate File does not specify ModOperation, which is required for all Alternate Files: {FriendlyName}";
                 return;
@@ -176,7 +177,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             if (modForValidating.ModDescTargetVersion >= 6 && string.IsNullOrWhiteSpace(Description))
             {
                 //Cannot be null.
-                Log.Error($@"Alternate File {FriendlyName} with mod targeting moddesc >= 6.0 cannot have empty Description or missing Description");
+                M3Log.Error($@"Alternate File {FriendlyName} with mod targeting moddesc >= 6.0 cannot have empty Description or missing Description");
                 ValidAlternate = false;
                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altfile_cmmver6RequiresDescription, FriendlyName);
                 return;
@@ -190,7 +191,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     if (associatedJob.Header == ModJob.JobHeader.CUSTOMDLC)
                     {
                         //This cannot be used on custom dlc
-                        Log.Error($@"Alternate File ({FriendlyName}) specifies operation OP_APPLY_MULTILISTFILES on the CUSTOM DLC task - this operation is not supported on this header. Use the altdlc version instead, see the moddesc.ini documentation.");
+                        M3Log.Error($@"Alternate File ({FriendlyName}) specifies operation OP_APPLY_MULTILISTFILES on the CUSTOM DLC task - this operation is not supported on this header. Use the altdlc version instead, see the moddesc.ini documentation.");
                         ValidAlternate = false;
                         LoadFailedReason = $@"Alternate File ({FriendlyName}) specifies operation OP_APPLY_MULTILISTFILES on the CUSTOM DLC task - this operation is not supported on this header. Use the altdlc version instead, see the moddesc.ini documentation.";
                         return;
@@ -201,7 +202,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     }
                     else
                     {
-                        Log.Error($@"Alternate File ({FriendlyName}) specifies operation OP_APPLY_MULTILISTFILES but does not specify the required item MultiListRootPath.");
+                        M3Log.Error($@"Alternate File ({FriendlyName}) specifies operation OP_APPLY_MULTILISTFILES but does not specify the required item MultiListRootPath.");
                         ValidAlternate = false;
                         LoadFailedReason = M3L.GetString(M3L.string_interp_altfile_multilistMissingMultiListRootPath, FriendlyName);
                         return;
@@ -213,7 +214,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     }
                     else
                     {
-                        Log.Error($@"Alternate File ({FriendlyName}) specifies operation OP_APPLY_MULTILISTFILES but does not specify the required item MultiListTargetPath.");
+                        M3Log.Error($@"Alternate File ({FriendlyName}) specifies operation OP_APPLY_MULTILISTFILES but does not specify the required item MultiListTargetPath.");
                         ValidAlternate = false;
                         LoadFailedReason = M3L.GetString(M3L.string_interp_altfile_multilistMissingMultiListTargetPath, FriendlyName);
                         return;
@@ -228,7 +229,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         }
                         else
                         {
-                            Log.Error($@"Alternate File ({FriendlyName}) Multilist ID does not exist as part of the task: multilist" + multilistid);
+                            M3Log.Error($@"Alternate File ({FriendlyName}) Multilist ID does not exist as part of the task: multilist" + multilistid);
                             ValidAlternate = false;
                             var id = @"multilist" + multilistid;
                             LoadFailedReason = M3L.GetString(M3L.string_interp_altfile_multilistMissingFileInMultiList, FriendlyName, associatedJob.Header) + $@" multilist{multilistid}";
@@ -237,7 +238,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     }
                     else
                     {
-                        Log.Error($@"Alternate File ({FriendlyName}) specifies operation OP_APPLY_MULTILISTFILES but does not specify the MultiListId attribute, or it could not be parsed to an integer.");
+                        M3Log.Error($@"Alternate File ({FriendlyName}) specifies operation OP_APPLY_MULTILISTFILES but does not specify the MultiListId attribute, or it could not be parsed to an integer.");
                         ValidAlternate = false;
                         LoadFailedReason = M3L.GetString(M3L.string_interp_altfile_multilistIdNotIntegerOrMissing, FriendlyName);
                         return;
@@ -249,7 +250,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     #region NOINSTALL MULTILIST
                     if (modForValidating.ModDescTargetVersion < 6.1)
                     {
-                        Log.Error($@"Alternate File ({FriendlyName}) specifies operation OP_NOINSTALL_MULTILISTFILES, but this feature is only supported on moddesc version 6.1 or higher.");
+                        M3Log.Error($@"Alternate File ({FriendlyName}) specifies operation OP_NOINSTALL_MULTILISTFILES, but this feature is only supported on moddesc version 6.1 or higher.");
                         ValidAlternate = false;
                         LoadFailedReason = M3L.GetString(M3L.string_interp_altfile_opnoinstallmultilistfiles_requires_moddesc61, FriendlyName);
                         return;
@@ -261,7 +262,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     }
                     else
                     {
-                        Log.Error($@"Alternate File ({FriendlyName}) specifies operation OP_NOINSTALL_MULTILISTFILES but does not specify the required item MultiListRootPath.");
+                        M3Log.Error($@"Alternate File ({FriendlyName}) specifies operation OP_NOINSTALL_MULTILISTFILES but does not specify the required item MultiListRootPath.");
                         ValidAlternate = false;
                         LoadFailedReason = M3L.GetString(M3L.string_interp_altfile_multilistNIMissingMultiListTargetPath, FriendlyName);
                         return;
@@ -281,7 +282,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         }
                         else
                         {
-                            Log.Error($@"Alternate File ({FriendlyName}) Multilist ID does not exist as part of the task: multilist" + multilistid);
+                            M3Log.Error($@"Alternate File ({FriendlyName}) Multilist ID does not exist as part of the task: multilist" + multilistid);
                             ValidAlternate = false;
                             LoadFailedReason = M3L.GetString(M3L.string_interp_altfile_multilistMissingFileInMultiList, FriendlyName, associatedJob.Header) + $@" multilist{multilistid}";
                             return;
@@ -289,7 +290,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     }
                     else
                     {
-                        Log.Error($@"Alternate File ({FriendlyName}) specifies operation OP_NOINSTALL_MULTILISTFILES but does not specify the MultiListId attribute, or it could not be parsed to an integer.");
+                        M3Log.Error($@"Alternate File ({FriendlyName}) specifies operation OP_NOINSTALL_MULTILISTFILES but does not specify the MultiListId attribute, or it could not be parsed to an integer.");
                         ValidAlternate = false;
                         LoadFailedReason = M3L.GetString(M3L.string_interp_altfile_multilistIdNINotIntegerOrMissing, FriendlyName);
                         return;
@@ -303,14 +304,14 @@ namespace MassEffectModManagerCore.modmanager.objects
                     #region MERGE MOD
                     if (modForValidating.ModDescTargetVersion < 7.0)
                     {
-                        Log.Error($@"Alternate File operation OP_APPLY_MERGEMOD can only be used when targeting cmmver >= 7.0");
+                        M3Log.Error($@"Alternate File operation OP_APPLY_MERGEMOD can only be used when targeting cmmver >= 7.0");
                         ValidAlternate = false;
                         LoadFailedReason = $@"Alternate File operation OP_APPLY_MERGEMOD can only be used when targeting cmmver >= 7.0";
                         return;
                     }
                     if (associatedJob.Header != ModJob.JobHeader.BASEGAME)
                     {
-                        Log.Error($@"Alternate File {FriendlyName} attempts to use OP_APPLY_MERGEMODS operation on a non-BASEGAME header, which currently is not allowed");
+                        M3Log.Error($@"Alternate File {FriendlyName} attempts to use OP_APPLY_MERGEMODS operation on a non-BASEGAME header, which currently is not allowed");
                         ValidAlternate = false;
                         LoadFailedReason = $@"Alternate File {FriendlyName} attempts to use OP_APPLY_MERGEMODS operation on a non-BASEGAME header, which currently is not allowed";
                         return;
@@ -326,7 +327,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                             if (mFile.Contains(@".."))
                             {
                                 // Security issue
-                                Log.Error($@"Alternate File {FriendlyName} has merge filename with a .. in it, which is not allowed: {mFile}");
+                                M3Log.Error($@"Alternate File {FriendlyName} has merge filename with a .. in it, which is not allowed: {mFile}");
                                 ValidAlternate = false;
                                 LoadFailedReason = $@"Alternate File {FriendlyName} has merge filename with a .. in it, which is not allowed: {mFile}";
                                 return;
@@ -336,7 +337,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                             var mergeFileExists = FilesystemInterposer.FileExists(mergeFilePath, modForValidating.Archive);
                             if (!mergeFileExists)
                             {
-                                Log.Error($@"Alternate File merge file (item in MergeFiles) does not exist: {mFile}");
+                                M3Log.Error($@"Alternate File merge file (item in MergeFiles) does not exist: {mFile}");
                                 ValidAlternate = false;
                                 LoadFailedReason = $@"Alternate File merge file (item in MergeFiles) does not exist: {mFile}";
                                 return;
@@ -346,7 +347,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                             if (mm == null)
                             {
                                 // MM failed to load
-                                Log.Error($@"Alternate File merge file {mFile} failed to load: {modForValidating.LoadFailedReason}");
+                                M3Log.Error($@"Alternate File merge file {mFile} failed to load: {modForValidating.LoadFailedReason}");
                                 ValidAlternate = false;
                                 LoadFailedReason = $@"Alternate File merge file {mFile} failed to load: {modForValidating.LoadFailedReason}";
                                 return;
@@ -358,7 +359,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     }
                     else
                     {
-                        Log.Error($@"Alternate File merge filenames (MergeFiles) required but not specified. This value is required for Alternate Files using the OP_APPLY_MERGEMODS operation.");
+                        M3Log.Error($@"Alternate File merge filenames (MergeFiles) required but not specified. This value is required for Alternate Files using the OP_APPLY_MERGEMODS operation.");
                         ValidAlternate = false;
                         LoadFailedReason = $@"Alternate File merge filenames (MergeFiles) required but not specified. This value is required for Alternate Files using the OP_APPLY_MERGEMODS operation.";
                         return;
@@ -374,7 +375,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     }
                     else
                     {
-                        Log.Error($@"Alternate file in-mod target (ModFile) required but not specified. This value is required for all Alternate files except when using . Friendlyname: {FriendlyName}");
+                        M3Log.Error($@"Alternate file in-mod target (ModFile) required but not specified. This value is required for all Alternate files except when using . Friendlyname: {FriendlyName}");
                         ValidAlternate = false;
                         LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altfile_noModFileDeclared, FriendlyName);
                         return;
@@ -395,7 +396,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                             }
                             else
                             {
-                                Log.Error($@"Alternate file {FriendlyName} in-mod target (ModFile) does not appear to target a DLC target this mod will (always) install: {ModFile}");
+                                M3Log.Error($@"Alternate file {FriendlyName} in-mod target (ModFile) does not appear to target a DLC target this mod will (always) install: {ModFile}");
                                 ValidAlternate = false;
                                 LoadFailedReason = M3L.GetString(M3L.string_interp_altfile_installToNotGuaranteedCustomDLC, FriendlyName, ModFile);
                                 return;
@@ -407,7 +408,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         // Non DLC 
                         if (!associatedJob.FilesToInstall.TryGetValue(ModFile, out var sourceFile))
                         {
-                            Log.Error($@"Alternate file {FriendlyName} in-mod target (ModFile) specified but does not exist in job: {ModFile}");
+                            M3Log.Error($@"Alternate file {FriendlyName} in-mod target (ModFile) specified but does not exist in job: {ModFile}");
                             ValidAlternate = false;
                             LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altfile_couldNotFindModFile, FriendlyName, ModFile);
                             return;
@@ -447,7 +448,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         var altFileSourceExists = FilesystemInterposer.FileExists(altPath, modForValidating.Archive);
                         if (!altFileSourceExists)
                         {
-                            Log.Error(@"Alternate file source (AltFile) does not exist: " + AltFile);
+                            M3Log.Error(@"Alternate file source (AltFile) does not exist: " + AltFile);
                             ValidAlternate = false;
                             LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altfile_specifiedAltFileDoesntExist, Operation.ToString(), AltFile);
                             return;
@@ -484,7 +485,7 @@ namespace MassEffectModManagerCore.modmanager.objects
 
 
 
-        public void SetupInitialSelection(GameTarget target, Mod mod)
+        public void SetupInitialSelection(GameTargetWPF target, Mod mod)
         {
             IsSelected = CheckedByDefault; //Reset
             if (IsAlways)
@@ -497,7 +498,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 IsSelected = CheckedByDefault;
                 return;
             }
-            var installedDLC = M3Directories.GetInstalledDLC(target);
+            var installedDLC = target.GetInstalledDLC();
             switch (Condition)
             {
                 case AltFileCondition.COND_DLC_NOT_PRESENT:

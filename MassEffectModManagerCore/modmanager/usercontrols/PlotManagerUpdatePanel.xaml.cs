@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Windows.Documents;
 using System.Windows.Input;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Packages;
@@ -12,13 +11,15 @@ using LegendaryExplorerCore.Packages.CloningImportingAndRelinking;
 using LegendaryExplorerCore.Unreal.BinaryConverters;
 using LegendaryExplorerCore.UnrealScript;
 using LegendaryExplorerCore.UnrealScript.Compiling.Errors;
+using MassEffectModManagerCore.modmanager.diagnostics;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
+using ME3TweaksCore.GameFilesystem;
+using ME3TweaksCoreWPF;
 using Microsoft.AppCenter.Analytics;
-using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -27,17 +28,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// </summary>
     public partial class PlotManagerUpdatePanel : MMBusyPanelBase
     {
-        private GameTarget PlotManagerUpdateTarget;
+        private GameTargetWPF PlotManagerUpdateTarget;
 
-        public PlotManagerUpdatePanel(GameTarget target)
+        public PlotManagerUpdatePanel(GameTargetWPF target)
         {
             this.PlotManagerUpdateTarget = target ?? throw new Exception(@"Null target specified for PlotManagerUpdatePanel");
             InitializeComponent();
         }
 
-        public static bool RunPlotManagerUpdate(GameTarget target)
+        public static bool RunPlotManagerUpdate(GameTargetWPF target)
         {
-            Log.Information($@"Updating PlotManager for game: {target.TargetPath}");
+            M3Log.Information($@"Updating PlotManager for game: {target.TargetPath}");
             var supercedances = M3Directories.GetFileSupercedances(target, new[] { @".pmu" });
             Dictionary<string, string> funcMap = new();
             List<string> combinedNames = new List<string>();
@@ -47,7 +48,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 supercedanes.Reverse(); // list goes from highest to lowest. We want to build in lowest to highest
                 StringBuilder sb = null;
                 string currentFuncNum = null;
-                var metaMaps = M3Directories.GetMetaMappedInstalledDLC(target, false);
+                var metaMaps = target.GetMetaMappedInstalledDLC(false);
                 foreach (var pmuDLCName in supercedanes)
                 {
 
@@ -74,7 +75,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             {
                                 if (num <= 0)
                                 {
-                                    Log.Error($@"Skipping plot manager update: Conditional {num} is not a valid number for use. Values must be greater than 0 and less than 2 billion.");
+                                    M3Log.Error($@"Skipping plot manager update: Conditional {num} is not a valid number for use. Values must be greater than 0 and less than 2 billion.");
                                     Analytics.TrackEvent(@"Bad plot manager function", new Dictionary<string, string>() {
                                         { @"FunctionName", $@"F{currentFuncNum}" },
                                         { @"DLCName", pmuDLCName }
@@ -84,7 +85,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 }
                                 else if (num.ToString().Length != currentFuncNum.Length)
                                 {
-                                    Log.Error($@"Skipping plot manager update: Conditional {currentFuncNum} is not a valid number for use. Values must not contain leading zeros");
+                                    M3Log.Error($@"Skipping plot manager update: Conditional {currentFuncNum} is not a valid number for use. Values must not contain leading zeros");
                                     Analytics.TrackEvent(@"Bad plot manager function", new Dictionary<string, string>() {
                                         { @"FunctionName", $@"F{currentFuncNum}" },
                                         { @"DLCName", pmuDLCName }
@@ -95,7 +96,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             }
                             else
                             {
-                                Log.Error($@"Skipping plot manager update: Conditional {currentFuncNum} is not a valid number for use. Values must be greater than 0 and less than 2 billion.");
+                                M3Log.Error($@"Skipping plot manager update: Conditional {currentFuncNum} is not a valid number for use. Values must be greater than 0 and less than 2 billion.");
                                 Analytics.TrackEvent(@"Bad plot manager function", new Dictionary<string, string>() {
                                     { @"FunctionName", $@"F{currentFuncNum}" },
                                     { @"DLCName", pmuDLCName }
@@ -128,8 +129,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 bool initialized = fl.Initialize(new RelativePackageCache() { RootPath = M3Directories.GetBioGamePath(target) });
                 if (!initialized)
                 {
-                    Log.Error(@"Error initializing FileLib for plot manager sync:");
-                    foreach (var v in fl.InitializationLog.AllErrors) Log.Error(v.Message);
+                    M3Log.Error(@"Error initializing FileLib for plot manager sync:");
+                    foreach (var v in fl.InitializationLog.AllErrors) M3Log.Error(v.Message);
                     throw new Exception(M3L.GetString(M3L.string_interp_fileLibInitFailedPlotManager, string.Join(Environment.NewLine, fl.InitializationLog.AllErrors.Select(x => x.Message)))); //force localize
                 }
                 sw.Stop();
@@ -160,10 +161,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     (_, MessageLog log) = UnrealScriptCompiler.CompileFunction(exp, v.Value, fl);
                     if (log.AllErrors.Any())
                     {
-                        Log.Error($@"Error compiling function {exp.InstancedFullPath}:");
+                        M3Log.Error($@"Error compiling function {exp.InstancedFullPath}:");
                         foreach (var l in log.AllErrors)
                         {
-                            Log.Error(l.Message);
+                            M3Log.Error(l.Message);
                         }
 
                         throw new Exception(M3L.GetString(M3L.string_interp_errorCompilingFunctionReason, exp, string.Join('\n', log.AllErrors.Select(x => x.Message))));
@@ -197,7 +198,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             return true;
         }
 
-        private static string GetPlotManagerPath(GameTarget target)
+        private static string GetPlotManagerPath(GameTargetWPF target)
         {
             switch (target.Game)
             {
@@ -228,7 +229,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (b.Error != null)
                 {
-                    Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
+                    M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                 }
                 OnClosing(DataEventArgs.Empty);
             };

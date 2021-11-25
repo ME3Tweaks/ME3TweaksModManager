@@ -3,18 +3,17 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using LegendaryExplorerCore.GameFilesystem;
-using LegendaryExplorerCore.Gammtek.Extensions.IO;
 using LegendaryExplorerCore.Helpers;
-using LegendaryExplorerCore.Memory;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
+using MassEffectModManagerCore.modmanager.diagnostics;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.windows;
+using ME3TweaksCoreWPF;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
-using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
 {
@@ -87,9 +86,9 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
             return mm;
         }
 
-        public bool ApplyMergeMod(Mod associatedMod, GameTarget target, ref int numTotalDone, int numTotalMerges, Action<int, int, string, string> mergeProgressDelegate = null)
+        public bool ApplyMergeMod(Mod associatedMod, GameTargetWPF target, ref int numTotalDone, int numTotalMerges, Action<int, int, string, string> mergeProgressDelegate = null)
         {
-            Log.Information($@"Applying {MergeModFilename}");
+            M3Log.Information($@"Applying {MergeModFilename}");
             var loadedFiles = MELoadedFiles.GetFilesLoadedInGame(target.Game, true, gameRootOverride: target.TargetPath);
 
             int numDone = 0;

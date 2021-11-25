@@ -1229,7 +1229,7 @@
     <system:String x:Key="string_interp_altfile_installToNotGuaranteedCustomDLC">Alternate file ({0}) in-mod target (ModFile) does not appear to target a DLC target this mod will (always) install: {1}</system:String>
     <!-- 0={FriendlyName} 1={File path} -->
 
-    <!-- GameTarget -->
+    <!-- GameTargetWPF -->
     <system:String x:Key="string_interp_invalidTargetMissingFile">Invalid target: {0} was not found in game directory.</system:String>
     <!-- 0 = filename of file that is not found in game dir but should be there -->
     <system:String x:Key="string_invalidTargetProtectedByCmmvanilla">Invalid target: Marked as backup protected with cmm_vanilla file</system:String>

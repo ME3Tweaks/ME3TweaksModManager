@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Media;
-using MassEffectModManagerCore.modmanager.localizations;
 
 namespace MassEffectModManagerCore.modmanager.converters
 {

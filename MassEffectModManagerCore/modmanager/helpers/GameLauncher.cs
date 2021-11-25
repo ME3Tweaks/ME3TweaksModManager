@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using LegendaryExplorerCore;
-using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Gammtek.Extensions;
-using MassEffectModManagerCore.modmanager.objects;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Packages;
-using MassEffectModManagerCore.modmanager.me3tweaks;
-using Serilog;
+using MassEffectModManagerCore.modmanager.diagnostics;
+using ME3TweaksCore.GameFilesystem;
+using ME3TweaksCoreWPF;
 
 namespace MassEffectModManagerCore.modmanager.helpers
 {
@@ -21,7 +17,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
         /// Launches the game. This call is blocking as it may wait for Steam to run, so it should be run on a background thread.
         /// </summary>
         /// <param name="target"></param>
-        public static void LaunchGame(GameTarget target)
+        public static void LaunchGame(GameTargetWPF target)
         {
             target.ReloadGameTarget(false);
 
@@ -85,7 +81,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                         }
                         catch (Exception e)
                         {
-                            Log.Error($@"Could not install steam_appid.txt: {e.Message}");
+                            M3Log.Error($@"Could not install steam_appid.txt: {e.Message}");
                         }
                     }
                 }
@@ -156,12 +152,12 @@ namespace MassEffectModManagerCore.modmanager.helpers
                     // Steam is running, user is logged in, we are good to go
                     if (!startingUpSteam || numTicksSteamLoggedIn > 1)
                     {
-                        Log.Information(@"Steam running and user is logged in, continuing game launch");
+                        M3Log.Information(@"Steam running and user is logged in, continuing game launch");
                         return true;
                     }
                     else
                     {
-                        Log.Information($@"Waiting for steam to finish initializing... ({numRetries} retries left)");
+                        M3Log.Information($@"Waiting for steam to finish initializing... ({numRetries} retries left)");
                         numTicksSteamLoggedIn++;
                     }
 
@@ -169,25 +165,25 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 else if (steamInfo.steamProcessId > 0 && steamInfo.steamUserId <= 0)
                 {
                     // Steam is running but the user is not yet logged in
-                    Log.Information($@"Steam running, but not yet logged in, will retry running game ({numRetries} retries left)");
+                    M3Log.Information($@"Steam running, but not yet logged in, will retry running game ({numRetries} retries left)");
                 }
                 else if (steamInfo.steamProcessId <= 0 && !startingUpSteam)
                 {
                     // Steam is not running
                     // We need to run steam or it's going to throw the application error message.
-                    Log.Information($@"Steam not running. Launching now.");
+                    M3Log.Information($@"Steam not running. Launching now.");
                     startingUpSteam = true;
                     Utilities.RunProcess(steamExe);
                 }
                 else if (startingUpSteam)
                 {
-                    Log.Information($@"Waiting for steam process to startup ({numRetries} retries left)");
+                    M3Log.Information($@"Waiting for steam process to startup ({numRetries} retries left)");
                 }
                 Thread.Sleep(timeBetweenRetries);
                 numRetries--;
             }
 
-            Log.Error(@"Steam could not be launched + logged into within the retry period. The game executable may throw application error message when it's launched. Running steam games requires steam to be running");
+            M3Log.Error(@"Steam could not be launched + logged into within the retry period. The game executable may throw application error message when it's launched. Running steam games requires steam to be running");
             return false;
         }
 

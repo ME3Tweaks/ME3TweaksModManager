@@ -1,7 +1,6 @@
 ﻿using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.ui;
-using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,6 +13,8 @@ using LegendaryExplorerCore.Misc;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using LegendaryExplorerCore.Packages;
+using MassEffectModManagerCore.modmanager.diagnostics;
+using ME3TweaksCore.Services.Backup;
 using Microsoft.Win32;
 using MemoryAnalyzer = MassEffectModManagerCore.modmanager.memoryanalyzer.MemoryAnalyzer;
 
@@ -60,7 +61,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (b.Error != null)
                 {
-                    Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
+                    M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                 }
                 if (b.Error == null && b.Result is List<OnlineContent.ServerModMakerModInfo> topMods)
                 {
@@ -141,7 +142,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     DownloadAndModNameText = M3L.GetString(M3L.string_downloadingModDeltaFromME3Tweaks);
                     var normalEndpoint = OnlineContent.ModmakerModsEndpoint + code;
                     var lzmaEndpoint = normalEndpoint + @"&method=lzma";
-                    Log.Information($@"Downloading modmaker mod {code}");
+                    M3Log.Information($@"Downloading modmaker mod {code}");
 
                     //Try LZMA first
                     try
@@ -166,12 +167,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         }
                         else
                         {
-                            Log.Error(@"Error downloading lzma mod delta to memory: " + download.errorMessage);
+                            M3Log.Error(@"Error downloading lzma mod delta to memory: " + download.errorMessage);
                         }
                     }
                     catch (Exception e)
                     {
-                        Log.Error(@"Error downloading LZMA mod delta to memory: " + e.Message);
+                        M3Log.Error(@"Error downloading LZMA mod delta to memory: " + e.Message);
                     }
 
                     if (modDelta == null)
@@ -189,7 +190,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         }
                         else
                         {
-                            Log.Error(@"Error downloading decompressed mod delta to memory: " + download.errorMessage);
+                            M3Log.Error(@"Error downloading decompressed mod delta to memory: " + download.errorMessage);
                         }
                     }
                 }
@@ -226,7 +227,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (b.Error != null)
                 {
-                    Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
+                    M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                 }
                 CompileInProgress = false;
                 if (!KeepOpenWhenThreadFinishes && b.Result is Mod m)

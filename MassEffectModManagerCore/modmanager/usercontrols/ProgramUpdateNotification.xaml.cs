@@ -16,8 +16,8 @@ using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore.Compression;
 using LegendaryExplorerCore.Helpers;
+using MassEffectModManagerCore.modmanager.diagnostics;
 using Microsoft.AppCenter.Analytics;
-using Serilog;
 using SevenZip;
 using Path = System.IO.Path;
 
@@ -71,14 +71,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
             catch (Exception e)
             {
-                Log.Error($@"There was an exception parsing the version/changelog strings: {e.Message}");
+                M3Log.Error($@"There was an exception parsing the version/changelog strings: {e.Message}");
             }
 
             PrimaryDownloadLink = App.ServerManifest[@"download_link2"];
             BackupDownloadLink = App.ServerManifest[@"download_link"];
             App.ServerManifest.TryGetValue(@"changelog_link", out ChangelogLink);
 
-            Log.Information($@"Update available: {LatestVersion}. Prompting user");
+            M3Log.Information($@"Update available: {LatestVersion}. Prompting user");
             LoadCommands();
             InitializeComponent();
         }
@@ -108,7 +108,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void StartUpdate()
         {
-            Log.Information($@"Beginning update process");
+            M3Log.Information($@"Beginning update process");
 
             NamedBackgroundWorker bw = new NamedBackgroundWorker(@"ProgramUpdater");
             bw.DoWork += DownloadAndApplyUpdate;
@@ -168,16 +168,16 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     foreach (var downloadInfo in downloadInfoMirrors)
                     {
-                        Log.Information($@"Downloading patch file {downloadInfo.downloadLink}");
+                        M3Log.Information($@"Downloading patch file {downloadInfo.downloadLink}");
                         var patchUpdate = OnlineContent.DownloadToMemory(downloadInfo.downloadLink, pCallback,
                             downloadInfo.downloadhash);
                         if (patchUpdate.errorMessage != null)
                         {
-                            Log.Warning($@"Patch update download failed: {patchUpdate.errorMessage}");
+                            M3Log.Warning($@"Patch update download failed: {patchUpdate.errorMessage}");
                         }
                         else
                         {
-                            Log.Information(@"Download OK: Building new executable");
+                            M3Log.Information(@"Download OK: Building new executable");
                             var outPath = BuildUpdateFromPatch(patchUpdate.result, destMd5, downloadInfo.timetamp);
                             if (outPath != null)
                             {
@@ -188,8 +188,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 else
                 {
-                    Log.Warning($@"There is no patch file available to transition our hash {localExecutableHash} to target hash {destMd5}");
-                    Log.Information($@"We will perform a full update instead");
+                    M3Log.Warning($@"There is no patch file available to transition our hash {localExecutableHash} to target hash {destMd5}");
+                    M3Log.Information($@"We will perform a full update instead");
                 }
             }
 
@@ -214,7 +214,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 else
                 {
-                    Log.Error(@"Error downloading update: " + updateFile.errorMessage);
+                    M3Log.Error(@"Error downloading update: " + updateFile.errorMessage);
                     Analytics.TrackEvent(@"Error downloading update",
                         new Dictionary<string, string>() { { @"Error message", updateFile.errorMessage } });
                     errorMessage = updateFile.errorMessage;
@@ -236,7 +236,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         /// <returns></returns>
         private string ExtractFullUpdate(MemoryStream updatearchive)
         {
-            Log.Information(@"Extracting update from memory");
+            M3Log.Information(@"Extracting update from memory");
             SevenZipExtractor sve = new SevenZipExtractor(updatearchive);
             var outDirectory = Directory
                 .CreateDirectory(Path.Combine(Utilities.GetTempPath(), @"update")).FullName;
@@ -267,7 +267,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 var calculatedHash = Utilities.CalculateMD5(outStream);
                 if (calculatedHash == expectedFinalHash)
                 {
-                    Log.Information(@"Patch application successful: Writing new executable to disk");
+                    M3Log.Information(@"Patch application successful: Writing new executable to disk");
                     var outDirectory = Directory.CreateDirectory(Path.Combine(Utilities.GetTempPath(), @"update"))
                         .FullName;
                     var updateFile = Path.Combine(outDirectory, @"ME3TweaksModManager.exe");
@@ -275,27 +275,27 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                     if (long.TryParse(fileTimestamp, out var buildDateLong) && buildDateLong > 0)
                     {
-                        Log.Information(@"Updating timestamp on new executable to the original value");
+                        M3Log.Information(@"Updating timestamp on new executable to the original value");
                         try
                         {
                             File.SetLastWriteTimeUtc(updateFile, new DateTime(buildDateLong));
                         }
                         catch (Exception ex)
                         {
-                            Log.Error($@"Could not set executable date: {ex.Message}");
+                            M3Log.Error($@"Could not set executable date: {ex.Message}");
                         }
                     }
-                    Log.Information(@"New executable patching complete");
+                    M3Log.Information(@"New executable patching complete");
                     return outDirectory;
                 }
                 else
                 {
-                    Log.Error($@"Patch application failed. The resulting hash was wrong. Expected {expectedFinalHash}, got {calculatedHash}");
+                    M3Log.Error($@"Patch application failed. The resulting hash was wrong. Expected {expectedFinalHash}, got {calculatedHash}");
                 }
             }
             catch (Exception e)
             {
-                Log.Error($@"Error applying patch update: {e.Message}");
+                M3Log.Error($@"Error applying patch update: {e.Message}");
             }
 
             return null;
@@ -314,10 +314,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 var validationResult = authenticodeInspector.Validate();
                 if (validationResult != SignatureCheckResult.Valid)
                 {
-                    Log.Error($@"The update file is not signed ({validationResult.ToString()}).");
+                    M3Log.Error($@"The update file is not signed ({validationResult.ToString()}).");
                     if (closeOnBadSignature)
                     {
-                        Log.Error(@"Update will be aborted.");
+                        M3Log.Error(@"Update will be aborted.");
                         Application.Current.Dispatcher.Invoke(() =>
                         {
                             M3L.ShowDialog(Window.GetWindow(this),
@@ -336,10 +336,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     var signer = authenticodeInspector.GetSignatures().FirstOrDefault()?.SigningCertificate?.GetNameInfo(X509NameType.SimpleName, false);
                     if (signer != null && (signer != @"Michael Perez" && signer != @"ME3Tweaks"))
                     {
-                        Log.Error($@"This update is signed, but not by ME3Tweaks. This update is being rejected. The signer name is {signer}");
+                        M3Log.Error($@"This update is signed, but not by ME3Tweaks. This update is being rejected. The signer name is {signer}");
                         if (closeOnBadSignature)
                         {
-                            Log.Error(@"Update will be aborted.");
+                            M3Log.Error(@"Update will be aborted.");
                             Application.Current.Dispatcher.Invoke(() =>
                             {
                                 M3L.ShowDialog(Window.GetWindow(this),
@@ -356,7 +356,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 ProgressText = M3L.GetString(M3L.string_applyingUpdate);
 
                 string args = @"--update-boot";
-                Log.Information($@"Running new mod manager in update mode: {updateExecutablePath} {args}");
+                M3Log.Information($@"Running new mod manager in update mode: {updateExecutablePath} {args}");
 
                 Process process = new Process();
                 // Stop the process from opening a new window
@@ -372,7 +372,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 ProgressText = M3L.GetString(M3L.string_restartingModManager);
                 Thread.Sleep(2000);
                 args = $"--update-from {App.BuildNumber} --update-source-path \"{updateExecutablePath}\" --update-dest-path \"{App.ExecutableLocation}\""; //Do not localize
-                Log.Information($@"Running updater: {updateSwapperExecutable} {args}");
+                M3Log.Information($@"Running updater: {updateSwapperExecutable} {args}");
 
                 process = new Process();
                 // Stop the process from opening a new window
@@ -383,14 +383,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 process.StartInfo.FileName = updateSwapperExecutable;
                 process.StartInfo.Arguments = args;
                 process.Start();
-                Log.Information(@"Stopping Mod Manager to apply update");
-                Log.CloseAndFlush();
+                M3Log.Information(@"Stopping Mod Manager to apply update");
+                M3Log.CloseAndFlush();
                 Application.Current.Dispatcher.Invoke(Application.Current.Shutdown);
                 return true;
             }
             else
             {
-                Log.Error(@"Could not find ME3TweaksModManager.exe or ME3TweaksUpdater.exe! Update will be aborted.");
+                M3Log.Error(@"Could not find ME3TweaksModManager.exe or ME3TweaksUpdater.exe! Update will be aborted.");
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     M3L.ShowDialog(window, M3L.GetString(M3L.string_unableToApplyUpdateME3TweaksExeNotFound), M3L.GetString(M3L.string_errorApplyingUpdate), MessageBoxButton.OK, MessageBoxImage.Error);
@@ -410,7 +410,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void CloseDialog()
         {
-            Log.Warning(@"Update was declined");
+            M3Log.Warning(@"Update was declined");
             OnClosing(DataEventArgs.Empty);
         }
 

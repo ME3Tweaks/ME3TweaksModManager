@@ -11,14 +11,16 @@ using IniParser.Model;
 using LegendaryExplorerCore.Gammtek.Extensions;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
+using MassEffectModManagerCore.modmanager.diagnostics;
+using ME3TweaksCore.GameFilesystem;
+using ME3TweaksCore.Targets;
+using ME3TweaksCoreWPF;
 using Microsoft.AppCenter.Analytics;
-using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -27,10 +29,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// </summary>
     public partial class ImportInstalledDLCModPanel : MMBusyPanelBase
     {
-        public GameTarget SelectedTarget { get; set; }
-        public InstallationInformation.InstalledDLCMod SelectedDLCFolder { get; set; }
-        public ObservableCollectionExtended<InstallationInformation.InstalledDLCMod> InstalledDLCModsForGame { get; } = new ObservableCollectionExtended<InstallationInformation.InstalledDLCMod>();
-        public ObservableCollectionExtended<GameTarget> InstallationTargets { get; } = new ObservableCollectionExtended<GameTarget>();
+        public GameTargetWPF SelectedTarget { get; set; }
+        public InstalledDLCMod SelectedDLCFolder { get; set; }
+        public ObservableCollectionExtended<InstalledDLCMod> InstalledDLCModsForGame { get; } = new();
+        public ObservableCollectionExtended<GameTargetWPF> InstallationTargets { get; } = new();
         public ImportInstalledDLCModPanel()
         {
             LoadCommands();
@@ -59,7 +61,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (string.IsNullOrWhiteSpace(destinationName))
             {
                 //cannot use this name
-                Log.Error(@"Invalid mod name: " + ModNameText);
+                M3Log.Error(@"Invalid mod name: " + ModNameText);
                 M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_dialog_invalidModNameWillResolveToNothing), M3L.GetString(M3L.string_invalidModName), MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
@@ -74,7 +76,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (sourceSize > (long)freeBytes)
                 {
                     //Not enough space
-                    Log.Error($@"Not enough disk space to import mod. Required space: {FileSize.FormatSize(sourceSize)}, available space: {FileSize.FormatSize(freeBytes)}");
+                    M3Log.Error($@"Not enough disk space to import mod. Required space: {FileSize.FormatSize(sourceSize)}, available space: {FileSize.FormatSize(freeBytes)}");
                     M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_interp_insufficientDiskSpaceToImport, Path.GetPathRoot(library), FileSize.FormatSize(sourceSize), FileSize.FormatSize(freeBytes)), M3L.GetString(M3L.string_insufficientFreeDiskSpace), MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
@@ -107,7 +109,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (b.Error != null)
                 {
-                    Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
+                    M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                 }
                 else
                 {
@@ -145,7 +147,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (file.RepresentsPackageFilePath() && Utilities.HasALOTMarker(file))
                 {
-                    Log.Error($@"Found a file marked as texture modded: {file}. These files cannot be imported into mod manager");
+                    M3Log.Error($@"Found a file marked as texture modded: {file}. These files cannot be imported into mod manager");
                     Application.Current.Dispatcher.Invoke(delegate
                     {
                         M3L.ShowDialog(window, M3L.GetString(M3L.string_dialog_cannotImportModTextureMarkersFound), M3L.GetString(M3L.string_cannotImportMod), MessageBoxButton.OK, MessageBoxImage.Error);
@@ -161,7 +163,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             var modFolder = Path.Combine(library, destinationName);
             var copyDestination = Path.Combine(modFolder, SelectedDLCFolder.DLCFolderName);
             var outInfo = Directory.CreateDirectory(copyDestination);
-            Log.Information($@"Importing mod: {sourceDir} -> {copyDestination}");
+            M3Log.Information($@"Importing mod: {sourceDir} -> {copyDestination}");
 
             int numToDo = 0;
             int numDone = 0;
@@ -200,7 +202,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             //Generate and load mod
             var m = new Mod(moddescPath, MEGame.ME3);
             e.Result = m;
-            Log.Information(@"Mod import complete.");
+            M3Log.Information(@"Mod import complete.");
             Analytics.TrackEvent(@"Imported already installed mod", new Dictionary<string, string>()
             {
                 {@"Mod name", m.ModName},
@@ -227,7 +229,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(@"Cannot submit telemetry: " + ex.Message);
+                    M3Log.Error(@"Cannot submit telemetry: " + ex.Message);
                 }
             }
         }

@@ -1,20 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Packages;
-using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.windows;
+using ME3TweaksCore.GameFilesystem;
+using ME3TweaksCoreWPF;
+using MetaCMM = MassEffectModManagerCore.modmanager.objects.MetaCMM;
 
 namespace MassEffectModManagerCore.modmanager.mergedlc
 {
     public class M3MergeDLC
     {
         public const string MERGE_DLC_FOLDERNAME = @"DLC_MOD_M3_MERGE";
-        public static void RemoveMergeDLC(GameTarget target)
+        public static void RemoveMergeDLC(GameTargetWPF target)
         {
             var mergePath = Path.Combine(M3Directories.GetDLCPath(target), MERGE_DLC_FOLDERNAME);
             if (Directory.Exists(mergePath))
@@ -23,7 +21,7 @@ namespace MassEffectModManagerCore.modmanager.mergedlc
             }
         }
 
-        public static void GenerateMergeDLC(GameTarget target, Guid guid)
+        public static void GenerateMergeDLC(GameTargetWPF target, Guid guid)
         {
             // Generate M3 DLC Folder
 

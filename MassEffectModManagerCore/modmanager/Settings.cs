@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -10,9 +9,8 @@ using System.Security.Cryptography;
 using System.Text;
 using IniParser;
 using IniParser.Model;
+using MassEffectModManagerCore.modmanager.diagnostics;
 using MassEffectModManagerCore.modmanager.nexusmodsintegration;
-using Microsoft.AppCenter.Analytics;
-using Serilog;
 
 namespace MassEffectModManagerCore.modmanager
 {
@@ -48,7 +46,7 @@ namespace MassEffectModManagerCore.modmanager
         private static void LogSettingChanging(string propertyName, object value)
         {
             if (Loaded && propertyName == nameof(LastSelectedTarget)) return; // This wil just generate a bunch of mostly useless logs. So only log the first one
-            Log.Information($@"Setting changing: {propertyName} -> {value}");
+            M3Log.Information($@"Setting changing: {propertyName} -> {value}");
         }
 
         #endregion
@@ -312,8 +310,8 @@ namespace MassEffectModManagerCore.modmanager
             }
             catch (Exception e)
             {
-                Log.Error("Error reading settings.ini file: " + e.Message);
-                Log.Error("Mod Manager will use the defaults instead");
+                M3Log.Error("Error reading settings.ini file: " + e.Message);
+                M3Log.Error("Mod Manager will use the defaults instead");
             }
             ShowedPreviewPanel = LoadSettingBool(settingsIni, "ModManager", "ShowedPreviewMessage2", false);
             Language = LoadSettingString(settingsIni, "ModManager", "Language", "int");
@@ -442,7 +440,7 @@ namespace MassEffectModManagerCore.modmanager
             }
             catch (Exception e)
             {
-                Log.Error("Error commiting settings: " + App.FlattenException(e));
+                M3Log.Error("Error commiting settings: " + App.FlattenException(e));
             }
         }
 
@@ -467,7 +465,7 @@ namespace MassEffectModManagerCore.modmanager
                 }
                 catch (Exception e)
                 {
-                    Log.Error(@"Can't decrypt ME3Tweaks Updater Service password: " + e.Message);
+                    M3Log.Error(@"Can't decrypt ME3Tweaks Updater Service password: " + e.Message);
                 }
             }
             return null; //No password
@@ -530,12 +528,12 @@ namespace MassEffectModManagerCore.modmanager
             }
             catch (UnauthorizedAccessException uae)
             {
-                Log.Error("Unauthorized access exception: " + App.FlattenException(uae));
+                M3Log.Error("Unauthorized access exception: " + App.FlattenException(uae));
                 return SettingsSaveResult.FAILED_UNAUTHORIZED;
             }
             catch (Exception e)
             {
-                Log.Error("Error commiting settings: " + App.FlattenException(e));
+                M3Log.Error("Error commiting settings: " + App.FlattenException(e));
             }
 
             return SettingsSaveResult.FAILED_OTHER;
@@ -582,14 +580,14 @@ namespace MassEffectModManagerCore.modmanager
                             {
                                 {@"Filesize", bytes.Length.ToString()}
                             });
-                        Log.Fatal(
+                        M3Log.Fatal(
                             @"DETECTED CORRUPT SETTINGS.INI FILE. This file will be deleted and reset to defaults.");
                         File.Delete(SettingsPath);
                     }
                 }
                 catch (Exception e)
                 {
-                    Log.Error($@"Unable to test if settings.ini file is corrupted: {e.Message}");
+                    M3Log.Error($@"Unable to test if settings.ini file is corrupted: {e.Message}");
                 }
             }
 

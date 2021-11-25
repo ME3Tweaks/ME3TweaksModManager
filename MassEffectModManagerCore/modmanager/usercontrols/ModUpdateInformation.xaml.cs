@@ -9,14 +9,15 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using LegendaryExplorerCore.Misc;
+using MassEffectModManagerCore.modmanager.diagnostics;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.ui;
+using ME3TweaksCore.Services.Backup;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.WindowsAPICodePack.Taskbar;
-using Serilog;
 
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -127,12 +128,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
                     else
                     {
-                        Log.Error(@"Error downloading lzma mod delta to memory: " + download.errorMessage);
+                        M3Log.Error(@"Error downloading lzma mod delta to memory: " + download.errorMessage);
                     }
                 }
                 catch (Exception e)
                 {
-                    Log.Error(@"Error downloading LZMA mod delta to memory: " + e.Message);
+                    M3Log.Error(@"Error downloading LZMA mod delta to memory: " + e.Message);
                 }
 
                 if (modDelta == null)
@@ -146,7 +147,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
                     else
                     {
-                        Log.Error(@"Error downloading decompressed mod delta to memory: " + download.errorMessage);
+                        M3Log.Error(@"Error downloading decompressed mod delta to memory: " + download.errorMessage);
                     }
                 }
 
@@ -183,7 +184,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         }
                         catch (Exception e)
                         {
-                            Log.Error(@"Couldn't cache modmaker xml file: " + e.Message);
+                            M3Log.Error(@"Couldn't cache modmaker xml file: " + e.Message);
                         }
 
                         mui.DownloadButtonText = M3L.GetString(M3L.string_updated);
@@ -204,7 +205,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (b.Error != null)
                 {
-                    Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
+                    M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                 }
                 Analytics.TrackEvent(@"Updated mod", new Dictionary<string, string>()
                 {
@@ -269,7 +270,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (b.Error != null)
                 {
-                    Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
+                    M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                 }
                 Analytics.TrackEvent(@"Updated mod", new Dictionary<string, string>()
                 {

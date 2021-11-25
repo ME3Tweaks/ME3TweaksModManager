@@ -2,7 +2,6 @@
 using System.Windows;
 using IniParser.Model;
 using MassEffectModManagerCore.modmanager.objects;
-using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.ui;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor

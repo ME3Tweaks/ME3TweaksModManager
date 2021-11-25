@@ -1,25 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using FontAwesome.WPF;
-using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore.Packages;
-using MassEffectModManagerCore.modmanager.me3tweaks;
+using ME3TweaksCore.Services.Backup;
+using ME3TweaksCoreWPF;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -69,7 +56,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             TriggerPropertyChangedFor(nameof(Title));
         }
 
-        public static bool ShouldShowNagScreen(List<GameTarget> targets)
+        public static bool ShouldShowNagScreen(List<GameTargetWPF> targets)
         {
             if (targets.Any(x => x.Game == MEGame.ME1))
             {
@@ -131,7 +118,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
-            BackupService.RefreshBackupStatus(mainwindow);
+            BackupService.RefreshBackupStatus();
         }
     }
 }

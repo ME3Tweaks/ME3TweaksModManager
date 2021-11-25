@@ -6,7 +6,6 @@ using System.Windows;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.usercontrols;
 using LegendaryExplorerCore.Misc;
-using LegendaryExplorerCore.Packages.CloningImportingAndRelinking;
 
 
 namespace MassEffectModManagerCore.modmanager.windows

@@ -9,13 +9,14 @@ using AuthenticodeExaminer;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
-using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
+using MassEffectModManagerCore.modmanager.diagnostics;
+using ME3TweaksCore.GameFilesystem;
+using ME3TweaksCoreWPF;
 using Octokit;
-using Serilog;
 using MemoryAnalyzer = MassEffectModManagerCore.modmanager.memoryanalyzer.MemoryAnalyzer;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -43,10 +44,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             public string GameTitle { get; private set; }
             public string D3D9Status { get; private set; }
             public string DisablerButtonText { get; private set; }
-            public ObservableCollectionExtended<GameTarget> Targets { get; } = new ObservableCollectionExtended<GameTarget>();
-            public GameTarget SelectedTarget { get; set; }
+            public ObservableCollectionExtended<GameTargetWPF> Targets { get; } = new ObservableCollectionExtended<GameTargetWPF>();
+            public GameTargetWPF SelectedTarget { get; set; }
             public ICommand ToggleDisablerCommand { get; private set; }
-            public OIGGame(MEGame game, IEnumerable<GameTarget> targets)
+            public OIGGame(MEGame game, IEnumerable<GameTargetWPF> targets)
             {
                 Game = game;
                 Targets.ReplaceAll(targets);
@@ -156,14 +157,14 @@ public event PropertyChangedEventHandler PropertyChanged;
                         {
                             if (File.Exists(Utilities.GetOriginOverlayDisableFile()))
                             {
-                                Log.Information(@"Installing origin overlay disabler from cache to " + d3d9Path);
+                                M3Log.Information(@"Installing origin overlay disabler from cache to " + d3d9Path);
                                 try
                                 {
                                     File.Copy(Utilities.GetOriginOverlayDisableFile(), d3d9Path);
                                 }
                                 catch (Exception e)
                                 {
-                                    Log.Error($@"Error installing d3d9.dll: {e.Message}");
+                                    M3Log.Error($@"Error installing d3d9.dll: {e.Message}");
                                 }
                             }
                             else
@@ -175,7 +176,7 @@ public event PropertyChangedEventHandler PropertyChanged;
                                     var releases = await client.Repository.Release.GetAll(@"ME3Tweaks", @"d3d9-blank-proxy");
                                     if (releases.Count > 0)
                                     {
-                                        Log.Information(@"Parsing release information from github");
+                                        M3Log.Information(@"Parsing release information from github");
 
                                         //The release we want to check is always the latest with assets that is not a pre-release
                                         var latestRel = releases.FirstOrDefault(x => !x.Prerelease && x.Assets.Count > 0);
@@ -192,14 +193,14 @@ public event PropertyChangedEventHandler PropertyChanged;
                                                 data.CopyTo(memStream);
                                                 try
                                                 {
-                                                    Log.Information(@"Installing origin overlay disabler from memory to " + d3d9Path);
+                                                    M3Log.Information(@"Installing origin overlay disabler from memory to " + d3d9Path);
                                                     memStream.WriteToFile(d3d9Path); //install
-                                                    Log.Information(@"Caching d3d9 disabler");
+                                                    M3Log.Information(@"Caching d3d9 disabler");
                                                     memStream.WriteToFile(Utilities.GetOriginOverlayDisableFile());
                                                 }
                                                 catch (Exception e)
                                                 {
-                                                    Log.Error(@"Cannot install/cache disabler: " + e.Message);
+                                                    M3Log.Error(@"Cannot install/cache disabler: " + e.Message);
                                                 }
                                             }
                                         }
@@ -207,20 +208,20 @@ public event PropertyChangedEventHandler PropertyChanged;
                                 }
                                 catch (Exception e)
                                 {
-                                    Log.Error(@"Error checking for tool update: " + e);
+                                    M3Log.Error(@"Error checking for tool update: " + e);
                                 }
                             }
                         }
                         else
                         {
-                            Log.Information(@"Deleting " + d3d9Path);
+                            M3Log.Information(@"Deleting " + d3d9Path);
                             try
                             {
                                 File.Delete(d3d9Path);
                             }
                             catch (Exception e)
                             {
-                                Log.Error($@"Error deleting d3d9.dll: {e.Message}");
+                                M3Log.Error($@"Error deleting d3d9.dll: {e.Message}");
                             }
                         }
                     }

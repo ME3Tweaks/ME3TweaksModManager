@@ -22,16 +22,13 @@ using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Windows.Data;
 using AuthenticodeExaminer;
-using CommandLine.Text;
 using MassEffectModManagerCore.modmanager.windows;
-using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using SingleInstanceCore;
-using LegendaryExplorerCore.Compression;
-using LegendaryExplorerCore.Unreal;
+using MassEffectModManagerCore.modmanager.diagnostics;
 using MassEffectModManagerCore.modmanager.objects;
-using Microsoft.AppCenter;
+using ME3TweaksCore.Services.Backup;
 
 namespace MassEffectModManagerCore
 {
@@ -46,7 +43,6 @@ namespace MassEffectModManagerCore
         internal const string REGISTRY_KEY_ME3TWEAKS = @"HKEY_CURRENT_USER\Software\ME3Tweaks";
 
 
-        public static string LogDir = Path.Combine(Utilities.GetAppDataFolder(), @"logs");
         private static bool POST_STARTUP = false;
         public const string DISCORD_INVITE_LINK = "https://discord.gg/s8HA6dc";
         public static bool UpgradingFromME3CMM;
@@ -130,7 +126,7 @@ namespace MassEffectModManagerCore
                 string exeFolder = Directory.GetParent(ExecutableLocation).FullName;
                 try
                 {
-                    LogCollector.CreateLogger();
+                    Log.Logger = M3Log.CreateLogger();
                 }
                 catch (Exception)
                 {
@@ -197,7 +193,7 @@ namespace MassEffectModManagerCore
                     }
                     else
                     {
-                        Log.Error(@"Could not parse command line arguments! Args: " + string.Join(' ', args));
+                        M3Log.Error(@"Could not parse command line arguments! Args: " + string.Join(' ', args));
                     }
                 }
 
@@ -219,14 +215,14 @@ namespace MassEffectModManagerCore
                 ToolTipService.ShowDurationProperty.OverrideMetadata(
                     typeof(DependencyObject), new FrameworkPropertyMetadata(20000));
 
-                Log.Information(@"===========================================================================");
+                M3Log.Information(@"===========================================================================");
                 FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(ExecutableLocation);
                 string version = fvi.FileVersion;
-                Log.Information(@"ME3Tweaks Mod Manager " + version);
-                Log.Information(@"Application boot: " + DateTime.UtcNow);
-                Log.Information(@"Running as " + Environment.UserName);
-                Log.Information(@"Executable location: " + ExecutableLocation);
-                Log.Information(@"Operating system: " + RuntimeInformation.OSDescription);
+                M3Log.Information(@"ME3Tweaks Mod Manager " + version);
+                M3Log.Information(@"Application boot: " + DateTime.UtcNow);
+                M3Log.Information(@"Running as " + Environment.UserName);
+                M3Log.Information(@"Executable location: " + ExecutableLocation);
+                M3Log.Information(@"Operating system: " + RuntimeInformation.OSDescription);
                 //Get build date
                 var info = new FileInspector(App.ExecutableLocation);
                 var signTime = info.GetSignatures().FirstOrDefault()?.TimestampSignatures.FirstOrDefault()?.TimestampDateTime?.UtcDateTime;
@@ -238,11 +234,11 @@ namespace MassEffectModManagerCore
                     if (signer != null && (signer == @"Michael Perez" || signer == @"ME3Tweaks"))
                     {
                         IsSigned = true;
-                        Log.Information(@"Build signed by ME3Tweaks. Build date: " + BuildDate);
+                        M3Log.Information(@"Build signed by ME3Tweaks. Build date: " + BuildDate);
                     }
                     else
                     {
-                        Log.Warning(@"Build signed, but not by ME3Tweaks");
+                        M3Log.Warning(@"Build signed, but not by ME3Tweaks");
                     }
                 }
                 else
@@ -250,13 +246,13 @@ namespace MassEffectModManagerCore
                     //needs localized later.
                     BuildDate = "WARNING: This build is not signed by ME3Tweaks";
 #if !DEBUG
-                    Log.Warning(@"This build is not signed by ME3Tweaks. This may not be an official build.");
+                    M3Log.Warning(@"This build is not signed by ME3Tweaks. This may not be an official build.");
 #endif
                 }
 
                 if (args.Length > 0)
                 {
-                    Log.Information($@"Application arguments: {string.Join(" ", args)}");
+                    M3Log.Information($@"Application arguments: {string.Join(" ", args)}");
                 }
 
                 // Load NXM handlers
@@ -265,14 +261,14 @@ namespace MassEffectModManagerCore
                     NexusDomainHandler.LoadExternalHandlers();
                     if (PendingNXMLink != null && NexusDomainHandler.HandleExternalLink(PendingNXMLink))
                     {
-                        Log.Information(@"Exiting application");
+                        M3Log.Information(@"Exiting application");
                         Environment.Exit(0);
                         return; // Nothing else to do
                     }
                 }
                 catch (Exception e)
                 {
-                    Log.Error($@"Error loading external nxm handlers: {e.Message}");
+                    M3Log.Error($@"Error loading external nxm handlers: {e.Message}");
                 }
 
                 System.Windows.Controls.ToolTipService.ShowOnDisabledProperty.OverrideMetadata(typeof(Control),
@@ -281,33 +277,35 @@ namespace MassEffectModManagerCore
                 try
                 {
                     var avs = Utilities.GetListOfInstalledAV();
-                    Log.Information(@"Detected the following antivirus products:");
+                    M3Log.Information(@"Detected the following antivirus products:");
                     foreach (var av in avs)
                     {
-                        Log.Information(" - " + av);
+                        M3Log.Information(" - " + av);
                     }
                 }
                 catch (Exception e)
                 {
-                    Log.Error(@"Unable to get the list of installed antivirus products: " + e.Message);
+                    M3Log.Error(@"Unable to get the list of installed antivirus products: " + e.Message);
                 }
+
+                // Todo: Initialize library here?
 
                 // Build 118 settings migration for backups
                 BackupService.MigrateBackupPaths();
 
-                Log.Information(@"The following backup paths are listed in the registry:");
-                Log.Information(@"Mass Effect ======");
-                Log.Information(BackupService.GetGameBackupPath(MEGame.ME1, true, true));
-                Log.Information(@"Mass Effect 2 ====");
-                Log.Information(BackupService.GetGameBackupPath(MEGame.ME2, true, true));
-                Log.Information(@"Mass Effect 3 ====");
-                Log.Information(BackupService.GetGameBackupPath(MEGame.ME3, true, true));
-                Log.Information(@"Mass Effect LE ======");
-                Log.Information(BackupService.GetGameBackupPath(MEGame.LE1, true, true));
-                Log.Information(@"Mass Effect 2 LE ====");
-                Log.Information(BackupService.GetGameBackupPath(MEGame.LE2, true, true));
-                Log.Information(@"Mass Effect 3 LE ====");
-                Log.Information(BackupService.GetGameBackupPath(MEGame.LE3, true, true));
+                M3Log.Information(@"The following backup paths are listed in the registry:");
+                M3Log.Information(@"Mass Effect ======");
+                M3Log.Information(BackupService.GetGameBackupPath(MEGame.ME1, true, true));
+                M3Log.Information(@"Mass Effect 2 ====");
+                M3Log.Information(BackupService.GetGameBackupPath(MEGame.ME2, true, true));
+                M3Log.Information(@"Mass Effect 3 ====");
+                M3Log.Information(BackupService.GetGameBackupPath(MEGame.ME3, true, true));
+                M3Log.Information(@"Mass Effect LE ======");
+                M3Log.Information(BackupService.GetGameBackupPath(MEGame.LE1, true, true));
+                M3Log.Information(@"Mass Effect 2 LE ====");
+                M3Log.Information(BackupService.GetGameBackupPath(MEGame.LE2, true, true));
+                M3Log.Information(@"Mass Effect 3 LE ====");
+                M3Log.Information(BackupService.GetGameBackupPath(MEGame.LE3, true, true));
 
                 //Build 104 changed location of settings from AppData to ProgramData.
                 if (!AppDataExistedAtBoot)
@@ -322,28 +320,28 @@ namespace MassEffectModManagerCore
                         {
                             CopyDir.CopyAll_ProgressBar(new DirectoryInfo(oldDir), new DirectoryInfo(Utilities.GetAppDataFolder()), aboutToCopyCallback: (a) =>
                             {
-                                Log.Information(@"Migrating file from AppData to ProgramData: " + a);
+                                M3Log.Information(@"Migrating file from AppData to ProgramData: " + a);
                                 return true;
                             });
 
-                            Log.Information(@"Deleting old data directory: " + oldDir);
+                            M3Log.Information(@"Deleting old data directory: " + oldDir);
                             Utilities.DeleteFilesAndFoldersRecursively(oldDir);
-                            Log.Information(@"Migration from pre 104 settings to 104+ settings completed");
+                            M3Log.Information(@"Migration from pre 104 settings to 104+ settings completed");
                         }
                         catch (Exception e)
                         {
-                            Log.Error(@"Unable to migrate old settings: " + e.Message);
+                            M3Log.Error(@"Unable to migrate old settings: " + e.Message);
                         }
                     }
                 }
 
 
-                Log.Information("Loading settings");
+                M3Log.Information("Loading settings");
                 Settings.Load();
 
                 if (Settings.ShowedPreviewPanel && !Settings.EnableTelemetry)
                 {
-                    Log.Warning("Telemetry is disabled :(");
+                    M3Log.Warning("Telemetry is disabled :(");
                 }
                 else if (Settings.ShowedPreviewPanel)
                 {
@@ -371,21 +369,21 @@ namespace MassEffectModManagerCore
                     if (currentCultureLang.StartsWith(@"pt")) InitialLanguage = Settings.Language = @"bra";
                     if (currentCultureLang.StartsWith(@"it")) InitialLanguage = Settings.Language = @"ita";
                     SubmitAnalyticTelemetryEvent(@"Auto set startup language", new Dictionary<string, string>() { { @"Language", InitialLanguage } });
-                    Log.Information(@"This is a first boot. The system language code is " + currentCultureLang);
+                    M3Log.Information(@"This is a first boot. The system language code is " + currentCultureLang);
                 }
 
-                Log.Information(@"Deleting temp files (if any)");
+                M3Log.Information(@"Deleting temp files (if any)");
                 try
                 {
                     Utilities.DeleteFilesAndFoldersRecursively(Utilities.GetTempPath());
                 }
                 catch (Exception e)
                 {
-                    Log.Error($@"Unable to delete temporary files directory {Utilities.GetTempPath()}: {e.Message}");
+                    M3Log.Error($@"Unable to delete temporary files directory {Utilities.GetTempPath()}: {e.Message}");
                 }
 
-                Log.Information(@"Mod Manager pre-UI startup has completed. The UI will now load.");
-                Log.Information(@"If the UI fails to start, it may be that a third party tool is injecting itself into Mod Manager, such as RivaTuner or Afterburner, and is corrupting the process.");
+                M3Log.Information(@"Mod Manager pre-UI startup has completed. The UI will now load.");
+                M3Log.Information(@"If the UI fails to start, it may be that a third party tool is injecting itself into Mod Manager, such as RivaTuner or Afterburner, and is corrupting the process.");
                 POST_STARTUP = true; //this could be earlier but i'm not sure when crash handler actually is used, doesn't seem to be after setting it...
             }
             catch (Exception e)
@@ -441,8 +439,8 @@ namespace MassEffectModManagerCore
                     var attachments = new List<ErrorAttachmentLog>();
                     // Attach some text.
                     string errorMessage = "ME3Tweaks Mod Manager has crashed! This is the exception that caused the crash:";
-                    Log.Fatal(report.StackTrace);
-                    Log.Fatal(errorMessage);
+                    M3Log.Fatal(report.StackTrace);
+                    M3Log.Fatal(errorMessage);
                     string log = LogCollector.CollectLatestLog(true);
                     if (log.Length < FileSize.MebiByte * 7)
                     {
@@ -456,10 +454,10 @@ namespace MassEffectModManagerCore
                     }
                     return attachments;
                 };
-                Log.Information(@"Initializing AppCenter");
+                M3Log.Information(@"Initializing AppCenter");
                 AppCenter.Start(APIKeys.AppCenterKey, typeof(Analytics), typeof(Crashes));
             } else {
-                Log.Error(@"This build is not configured correctly for AppCenter!");
+                M3Log.Error(@"This build is not configured correctly for AppCenter!");
             }           
 #else
             if (!APIKeys.HasAppCenterKey)
@@ -608,8 +606,8 @@ namespace MassEffectModManagerCore
         {
             if (!Crashes.IsEnabledAsync().Result)
             {
-                Log.Fatal(@"ME3Tweaks Mod Manager has crashed! This is the exception that caused the crash:");
-                Log.Fatal(FlattenException(e.Exception));
+                M3Log.Fatal(@"ME3Tweaks Mod Manager has crashed! This is the exception that caused the crash:");
+                M3Log.Fatal(FlattenException(e.Exception));
             }
         }
 
@@ -621,8 +619,8 @@ namespace MassEffectModManagerCore
         {
             if (!POST_STARTUP)
             {
-                Log.Fatal(@"ME3Tweaks Mod Manager has encountered a fatal startup crash:");
-                Log.Fatal(FlattenException(e));
+                M3Log.Fatal(@"ME3Tweaks Mod Manager has encountered a fatal startup crash:");
+                M3Log.Fatal(FlattenException(e));
             }
         }
 
@@ -653,14 +651,14 @@ namespace MassEffectModManagerCore
                 try
                 {
                     Utilities.DeleteFilesAndFoldersRecursively(Utilities.GetModDownloadCacheDirectory(), false);
-                    Log.Information(@"Deleted mod download cache");
+                    M3Log.Information(@"Deleted mod download cache");
                 }
                 catch (Exception ex)
                 {
                     Debug.WriteLine($@"EXCEPTION DELETING THE DOWNLOAD CACHE!: {ex.Message}");
                 }
 
-                Log.Information(@"Application exiting normally");
+                M3Log.Information(@"Application exiting normally");
                 Log.CloseAndFlush();
             }
 

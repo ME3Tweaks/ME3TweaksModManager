@@ -3,8 +3,6 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Windows.Data;
 using LegendaryExplorerCore.Unreal;
-using MassEffectModManagerCore.modmanager.save.game2.FileFormats;
-using MassEffectModManagerCore.modmanager.save.game3;
 
 namespace MassEffectModManagerCore.modmanager.save.game2.UI
 {

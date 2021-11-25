@@ -763,7 +763,7 @@
     <system:String x:Key="string_interp_altfile_multilistIdNotIntegerOrMissing">Le fichier alternatif ({0}) spécifie l'opération OP_APPLY_MULTILISTFILES mais ne spécifie pas l'attribut MultiListId, ou il ne pourrait pas être analysé en tant qu'entier.</system:String>
     <!-- 0=FriendlyName -->
 
-    <!-- GameTarget -->
+    <!-- GameTargetWPF -->
     <system:String x:Key="string_interp_ui_alotInstalledVersion" xml:space="preserve">A Lot Of Textures (ALOT) est installé\nVersion {0}</system:String>
     <!-- 0 = ALOT Version -->
     <system:String x:Key="string_ui_alotNotInstalled" xml:space="preserve">A Lot Of Textures (ALOT)\nNon installé</system:String>

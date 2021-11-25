@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
@@ -15,15 +14,15 @@ using LegendaryExplorerCore.Unreal;
 using LegendaryExplorerCore.Unreal.BinaryConverters;
 using LegendaryExplorerCore.UnrealScript;
 using LegendaryExplorerCore.UnrealScript.Compiling.Errors;
+using MassEffectModManagerCore.modmanager.diagnostics;
 using MassEffectModManagerCore.modmanager.gameini;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.mergedlc;
 using MassEffectModManagerCore.modmanager.objects;
-using MassEffectModManagerCore.modmanager.usercontrols;
-using MassEffectModManagerCore.modmanager.windows;
+using ME3TweaksCore.GameFilesystem;
+using ME3TweaksCoreWPF;
 using Newtonsoft.Json;
-using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.squadmates
 {
@@ -40,14 +39,14 @@ namespace MassEffectModManagerCore.modmanager.squadmates
             [JsonProperty(@"outfits")]
             public List<SquadmateInfoSingle> Outfits { get; set; }
 
-            public bool Validate(string dlcName, GameTarget target, CaseInsensitiveDictionary<string> loadedFiles)
+            public bool Validate(string dlcName, GameTargetWPF target, CaseInsensitiveDictionary<string> loadedFiles)
             {
                 foreach (var outfit in Outfits)
                 {
                     // Check packages
                     if (!loadedFiles.ContainsKey($@"{outfit.HenchPackage}.pcc"))
                     {
-                        Log.Error($@"SquadmateMergeInfo failed validation: {outfit.HenchPackage}.pcc not found in game");
+                        M3Log.Error($@"SquadmateMergeInfo failed validation: {outfit.HenchPackage}.pcc not found in game");
                         return false;
                     }
 
@@ -55,14 +54,14 @@ namespace MassEffectModManagerCore.modmanager.squadmates
                     {
                         if (!loadedFiles.ContainsKey($@"{outfit.HenchPackage}_Explore.pcc"))
                         {
-                            Log.Error($@"SquadmateMergeInfo failed validation: {outfit.HenchPackage}_Explore.pcc not found in game");
+                            M3Log.Error($@"SquadmateMergeInfo failed validation: {outfit.HenchPackage}_Explore.pcc not found in game");
                             return false;
                         }
                     }
 
                     if (!loadedFiles.ContainsKey($@"SFXHenchImages_{dlcName}.pcc"))
                     {
-                        Log.Error($@"SquadmateMergeInfo failed validation: SFXHenchImages_{dlcName}.pcc not found in game");
+                        M3Log.Error($@"SquadmateMergeInfo failed validation: SFXHenchImages_{dlcName}.pcc not found in game");
                         return false;
                     }
                 }
@@ -191,7 +190,7 @@ namespace MassEffectModManagerCore.modmanager.squadmates
             throw new Exception(M3L.GetString(M3L.string_interp_invalidHenchNameSquadmateNameValueIsCaseSensitive, squadmateName));
         }
 
-        public static void BuildBioPGlobal(GameTarget target)
+        public static void BuildBioPGlobal(GameTargetWPF target)
         {
             M3MergeDLC.RemoveMergeDLC(target);
             var loadedFiles = MELoadedFiles.GetFilesLoadedInGame(target.Game, gameRootOverride: target.TargetPath);
@@ -352,10 +351,10 @@ namespace MassEffectModManagerCore.modmanager.squadmates
                             (_, MessageLog log) = UnrealScriptCompiler.CompileFunction(func, scText, fl);
                             if (log.AllErrors.Any())
                             {
-                                Log.Error($@"Error compiling function {func.InstancedFullPath}:");
+                                M3Log.Error($@"Error compiling function {func.InstancedFullPath}:");
                                 foreach (var l in log.AllErrors)
                                 {
-                                    Log.Error(l.Message);
+                                    M3Log.Error(l.Message);
                                 }
 
                                 throw new Exception(M3L.GetString(M3L.string_interp_errorCompilingConditionalFunction, func, string.Join('\n', log.AllErrors.Select(x => x.Message))));

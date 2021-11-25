@@ -24,7 +24,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Windows;
 using LegendaryExplorerCore.Coalesced;
 using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Gammtek.IO;

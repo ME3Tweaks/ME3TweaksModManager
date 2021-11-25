@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using LegendaryExplorerCore.Packages;
+using ME3TweaksCoreWPF;
 
 namespace MassEffectModManagerCore.modmanager.objects.mod.merge
 {
@@ -26,7 +23,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge
         /// <param name="associatedMod">The mod that is installing this merge mod</param>
         /// <param name="target">The target to be applied to</param>
         /// <returns></returns>
-        public bool ApplyMergeMod(Mod associatedMod, GameTarget target, ref int numMergesDoneTotal, int numTotalMerges, Action<int, int, string, string> mergeProgressDelegate = null);
+        public bool ApplyMergeMod(Mod associatedMod, GameTargetWPF target, ref int numMergesDoneTotal, int numTotalMerges, Action<int, int, string, string> mergeProgressDelegate = null);
         /// <summary>
         /// Get the number of total merge operations this mod can apply
         /// </summary>

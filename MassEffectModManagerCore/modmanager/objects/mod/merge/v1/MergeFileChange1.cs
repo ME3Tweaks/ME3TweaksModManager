@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Packages.CloningImportingAndRelinking;
 using LegendaryExplorerCore.Unreal;
@@ -13,9 +11,11 @@ using LegendaryExplorerCore.Kismet;
 using LegendaryExplorerCore.Unreal.BinaryConverters;
 using LegendaryExplorerCore.UnrealScript;
 using LegendaryExplorerCore.UnrealScript.Compiling.Errors;
+using MassEffectModManagerCore.modmanager.diagnostics;
 using MassEffectModManagerCore.modmanager.localizations;
+using ME3TweaksCore.GameFilesystem;
+using ME3TweaksCoreWPF;
 using Newtonsoft.Json;
-using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
 {
@@ -31,10 +31,10 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
         [JsonIgnore] public MergeFile1 Parent;
         [JsonIgnore] public MergeMod1 OwningMM => Parent.OwningMM;
 
-        public void ApplyChanges(IMEPackage package, MergeAssetCache1 assetsCache, Mod installingMod, GameTarget gameTarget)
+        public void ApplyChanges(IMEPackage package, MergeAssetCache1 assetsCache, Mod installingMod, GameTargetWPF gameTarget)
         {
             // APPLY PROPERTY UPDATES
-            Log.Information($@"Merging changes into {EntryName}");
+            M3Log.Information($@"Merging changes into {EntryName}");
             var export = package.FindExport(EntryName);
             if (export == null)
                 throw new Exception(M3L.GetString(M3L.string_interp_mergefile_couldNotFindExportInPackage, package.FilePath, EntryName));
@@ -69,7 +69,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
         {
             if (ObjectBinary.From(export) is UProperty ob)
             {
-                Log.Information($@"Disabling config flag on {export.InstancedFullPath}");
+                M3Log.Information($@"Disabling config flag on {export.InstancedFullPath}");
                 ob.PropertyFlags &= ~UnrealFlags.EPropertyFlags.Config;
                 export.WriteBinary(ob);
             }
@@ -132,7 +132,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
                 i++;
             }
 
-            Log.Information($@"Applying property update: {PropertyName} -> {PropertyValue}");
+            M3Log.Information($@"Applying property update: {PropertyName} -> {PropertyValue}");
             switch (PropertyType)
             {
                 case @"FloatProperty":
@@ -239,9 +239,11 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
             }
 
             var resultst = EntryImporter.ImportAndRelinkEntries(EntryImporter.PortingOption.ReplaceSingular,
-                sourceEntry, targetExport.FileRef, targetExport, true, out _,
-                errorOccuredCallback: x => throw new Exception(M3L.GetString(M3L.string_interp_mergefile_errorMergingAssetsX, x)),
-                importExportDependencies: true);
+                sourceEntry, targetExport.FileRef, targetExport, true, new RelinkerOptionsPackage()
+                {
+                    ErrorOccurredCallback = x => throw new Exception(M3L.GetString(M3L.string_interp_mergefile_errorMergingAssetsX, x)),
+                    ImportExportDependencies = true // I don't think this is actually necessary...
+                }, out _);
             if (resultst.Any())
             {
                 throw new Exception(M3L.GetString(M3L.string_interp_mergefile_errorsOccurredMergingAsset, AssetName, EntryName, string.Join('\n', resultst.Select(x => x.Message))));
@@ -270,7 +272,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
         [JsonIgnore] public MergeFileChange1 Parent;
         [JsonIgnore] public MergeMod1 OwningMM => Parent.OwningMM;
 
-        public bool ApplyUpdate(IMEPackage package, ExportEntry targetExport, MergeAssetCache1 assetsCache, Mod installingMod, GameTarget gameTarget)
+        public bool ApplyUpdate(IMEPackage package, ExportEntry targetExport, MergeAssetCache1 assetsCache, Mod installingMod, GameTargetWPF gameTarget)
         {
             FileLib fl;
             if (!assetsCache.FileLibs.TryGetValue(package.FilePath, out fl))
@@ -279,10 +281,10 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
                 bool initialized = fl.Initialize(new RelativePackageCache() { RootPath = M3Directories.GetBioGamePath(gameTarget) }, gameTarget.TargetPath);
                 if (!initialized)
                 {
-                    Log.Error($@"FileLib loading failed for package {targetExport.InstancedFullPath} ({targetExport.FileRef.FilePath}):");
+                    M3Log.Error($@"FileLib loading failed for package {targetExport.InstancedFullPath} ({targetExport.FileRef.FilePath}):");
                     foreach (var v in fl.InitializationLog.AllErrors)
                     {
-                        Log.Error(v.Message);
+                        M3Log.Error(v.Message);
                     }
 
                     throw new Exception(M3L.GetString(M3L.string_interp_fileLibInitMergeMod1Script, targetExport.InstancedFullPath, string.Join(Environment.NewLine, fl.InitializationLog.AllErrors)));
@@ -295,10 +297,10 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
             (_, MessageLog log) = UnrealScriptCompiler.CompileFunction(targetExport, ScriptText, fl);
             if (log.AllErrors.Any())
             {
-                Log.Error($@"Error compiling function {targetExport.InstancedFullPath}:");
+                M3Log.Error($@"Error compiling function {targetExport.InstancedFullPath}:");
                 foreach (var l in log.AllErrors)
                 {
-                    Log.Error(l.Message);
+                    M3Log.Error(l.Message);
                 }
 
                 throw new Exception(M3L.GetString(M3L.string_interp_mergefile_errorCompilingFunction, targetExport, string.Join(Environment.NewLine, log.AllErrors)));
@@ -335,12 +337,12 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
         {
             if (Utilities.CalculateMD5(new MemoryStream(targetExport.Data)) == EntryMD5)
             {
-                Log.Information($@"Applying sequence skip: Skipping {targetExport.InstancedFullPath} through on link {OutboundLinkNameToUse}");
+                M3Log.Information($@"Applying sequence skip: Skipping {targetExport.InstancedFullPath} through on link {OutboundLinkNameToUse}");
                 SeqTools.SkipSequenceElement(targetExport, outboundLinkName: OutboundLinkNameToUse);
             }
             else
             {
-                Log.Warning(@"Target export MD5 is incorrect. This may be the wrong target export, or it may be already patched. We are reporting that the mod installed, in the event the target was updated.");
+                M3Log.Warning(@"Target export MD5 is incorrect. This may be the wrong target export, or it may be already patched. We are reporting that the mod installed, in the event the target was updated.");
             }
 
             return true;

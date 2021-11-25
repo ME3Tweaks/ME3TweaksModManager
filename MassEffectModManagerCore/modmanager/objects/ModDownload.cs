@@ -1,10 +1,7 @@
 ﻿using MassEffectModManagerCore.modmanager.nexusmodsintegration;
 using Pathoschild.FluentNexus.Models;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Web;
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Linq;
@@ -12,11 +9,9 @@ using System.Threading.Tasks;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore.Helpers;
-using Serilog;
 using MassEffectModManagerCore.modmanager.localizations;
-using LegendaryExplorerCore.Misc;
 using Microsoft.AppCenter.Analytics;
-using System.Linq;
+using MassEffectModManagerCore.modmanager.diagnostics;
 using PropertyChanged;
 using MemoryAnalyzer = MassEffectModManagerCore.modmanager.memoryanalyzer.MemoryAnalyzer;
 
@@ -93,7 +88,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     }
                     else
                     {
-                        Log.Error($@"Download failed: {downloadResult.errorMessage}");
+                        M3Log.Error($@"Download failed: {downloadResult.errorMessage}");
                         OnModDownloadError?.Invoke(this, downloadResult.errorMessage);
                     }
                     // Download didn't work!
@@ -132,7 +127,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         /// </summary>
         public void Initialize()
         {
-            Log.Information($@"Initializing {NXMLink}");
+            M3Log.Information($@"Initializing {NXMLink}");
             Task.Run(() =>
             {
                 try
@@ -144,7 +139,7 @@ namespace MassEffectModManagerCore.modmanager.objects
 
                     if (!NexusModsUtilities.AllSupportedNexusDomains.Contains(ProtocolLink?.Domain))
                     {
-                        Log.Error($@"Cannot download file from unsupported domain: {ProtocolLink?.Domain}. Open your preferred mod manager from that game first");
+                        M3Log.Error($@"Cannot download file from unsupported domain: {ProtocolLink?.Domain}. Open your preferred mod manager from that game first");
                         Initialized = true;
                         ProgressIndeterminate = false;
                         OnModDownloadError?.Invoke(this,
@@ -166,7 +161,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                                     var fileListing = NexusModsUtilities.GetFileListing(ModFile);
                                     if (fileListing == null || !HasModdescIni(fileListing))
                                     {
-                                        Log.Error($@"This file is not whitelisted for download and does not contain a moddesc.ini file, this is not a mod manager mod: {ModFile.FileName}");
+                                        M3Log.Error($@"This file is not whitelisted for download and does not contain a moddesc.ini file, this is not a mod manager mod: {ModFile.FileName}");
                                         Initialized = true;
                                         ProgressIndeterminate = false;
                                         OnModDownloadError?.Invoke(this, M3L.GetString(M3L.string_interp_nexusModNotCompatible, ModFile.Name));
@@ -185,7 +180,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                                 // premium?
                                 if (!NexusModsUtilities.UserInfo.IsPremium)
                                 {
-                                    Log.Error(
+                                    M3Log.Error(
                                         $@"Cannot download {ModFile.FileName}: User is not premium, but this link is not generated from NexusMods");
                                     Initialized = true;
                                     ProgressIndeterminate = false;
@@ -200,12 +195,12 @@ namespace MassEffectModManagerCore.modmanager.objects
 
                             ProgressMaximum = ModFile.SizeInBytes ?? ModFile.SizeInKilobytes * 1024L; // SizeKb is the original version. They added SizeInBytes at my request
                             Initialized = true;
-                            Log.Information($@"ModDownload has initialized: {ModFile.FileName}");
+                            M3Log.Information($@"ModDownload has initialized: {ModFile.FileName}");
                             OnInitialized?.Invoke(this, null);
                         }
                         else
                         {
-                            Log.Error($@"Cannot download {ModFile.FileName}: File deleted from NexusMods");
+                            M3Log.Error($@"Cannot download {ModFile.FileName}: File deleted from NexusMods");
                             Initialized = true;
                             ProgressIndeterminate = false;
                             OnModDownloadError?.Invoke(this,
@@ -215,7 +210,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 }
                 catch (Exception e)
                 {
-                    Log.Error($@"Error downloading {ModFile?.FileName}: {e.Message}");
+                    M3Log.Error($@"Error downloading {ModFile?.FileName}: {e.Message}");
                     Initialized = true;
                     ProgressIndeterminate = false;
                     OnModDownloadError?.Invoke(this, M3L.GetString(M3L.string_interp_errorDownloadingModX, e.Message));

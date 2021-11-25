@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using LegendaryExplorerCore.GameFilesystem;
+﻿using System.IO;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Packages;
-using MassEffectModManagerCore.modmanager.save.game2.FileFormats;
 using MassEffectModManagerCore.modmanager.save.game3;
 
 namespace MassEffectModManagerCore.modmanager.save

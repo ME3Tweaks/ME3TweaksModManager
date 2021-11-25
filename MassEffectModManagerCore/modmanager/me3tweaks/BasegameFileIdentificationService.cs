@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using MassEffectModManagerCore.modmanager.objects;
 using System.Linq;
 using LegendaryExplorerCore.Gammtek.Extensions;
-using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
-using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.diagnostics;
 using MassEffectModManagerCore.modmanager.objects.mod;
+using ME3TweaksCoreWPF;
 using Newtonsoft.Json;
-using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.me3tweaks
 {
@@ -34,17 +32,17 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                 Dictionary<string, CaseInsensitiveDictionary<
                                     List<BasegameFileIdentificationService.BasegameCloudDBFile>>>>(
                                 File.ReadAllText(file));
-                    Log.Information(@"Loaded Local Basegame File Identification Service");
+                    M3Log.Information(@"Loaded Local Basegame File Identification Service");
                 }
                 catch (Exception e)
                 {
-                    Log.Error($@"Error loading local BGFIS: {e.Message}");
+                    M3Log.Error($@"Error loading local BGFIS: {e.Message}");
                     LocalBasegameFileIdentificationService = OnlineContent.getBlankBGFIDB();
                 }
             }
             else
             {
-                Log.Information(@"Loaded blank Local Basegame File Identification Service");
+                M3Log.Information(@"Loaded blank Local Basegame File Identification Service");
                 LocalBasegameFileIdentificationService = OnlineContent.getBlankBGFIDB();
             }
         }
@@ -89,18 +87,18 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 try
                 {
                     File.WriteAllText(Utilities.GetLocalBasegameIdentificationServiceFile(), outText);
-                    Log.Information(@"Updated Local Basegame File Identification Service");
+                    M3Log.Information(@"Updated Local Basegame File Identification Service");
 
                 }
                 catch (Exception e)
                 {
                     // bwomp bwomp
-                    Log.Error($@"Error saving local BGFIS: {e.Message}");
+                    M3Log.Error($@"Error saving local BGFIS: {e.Message}");
                 }
             }
             else
             {
-                Log.Information(@"Local Basegame File Identification Service did not need updating");
+                M3Log.Information(@"Local Basegame File Identification Service did not need updating");
 
             }
         }
@@ -112,7 +110,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         /// <param name="target"></param>
         /// <param name="fullfilepath"></param>
         /// <returns></returns>
-        public static BasegameCloudDBFile GetBasegameFileSource(GameTarget target, string fullfilepath, string md5 = null)
+        public static BasegameCloudDBFile GetBasegameFileSource(GameTargetWPF target, string fullfilepath, string md5 = null)
         {
             // Check local first
             LoadLocalBasegameIdentificationService();
@@ -154,7 +152,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             public string game { get; set; }
             public int size { get; set; }
             public BasegameCloudDBFile() { }
-            public BasegameCloudDBFile(string fullfilepath, int size, GameTarget gameTarget, Mod modBeingInstalled, string md5 = null)
+            public BasegameCloudDBFile(string fullfilepath, int size, GameTargetWPF gameTarget, Mod modBeingInstalled, string md5 = null)
             {
                 this.file = fullfilepath.Substring(gameTarget.TargetPath.Length + 1);
                 this.hash = md5 ?? Utilities.CalculateMD5(fullfilepath);

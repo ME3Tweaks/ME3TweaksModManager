@@ -8,15 +8,13 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using LegendaryExplorerCore.Helpers;
+using MassEffectModManagerCore.modmanager.diagnostics;
 using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.ui;
 using Microsoft.AppCenter.Analytics;
 using Octokit;
-using Serilog;
 using SevenZip;
 using Application = System.Windows.Application;
 using Exception = System.Exception;
@@ -110,7 +108,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 setPercentTaskDone?.Invoke(e.ProgressPercentage);
             };
 
-            Log.Information(@"Downloading file: " + url);
+            M3Log.Information(@"Downloading file: " + url);
             var extension = Path.GetExtension(url);
             string downloadPath = Path.Combine(temppath, toolName + extension);
 
@@ -118,7 +116,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (b.Error != null)
                 {
-                    Log.Error($@"Error downloading ME3Tweaks tool: {b.Error.Message}");
+                    M3Log.Error($@"Error downloading ME3Tweaks tool: {b.Error.Message}");
                     errorExtractingCallback?.Invoke(b.Error,
                         M3L.GetString(M3L.string_interp_errorDownloadingAndLaunchingTool, b.Error.Message),
                         M3L.GetString(M3L.string_errorLaunchingTool));
@@ -158,14 +156,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         if (tool == MEM_CMD && relVer >= 500)
                         {
                             asset = null;
-                            Log.Warning(
+                            M3Log.Warning(
                                 $@"MassEffectModderNoGui versions >= 500 are not supported for Original Trilogy, skipping version {relVer}");
                             continue;
                         }
                         else if (tool == MEM_LE_CMD && relVer < 500)
                         {
                             asset = null;
-                            Log.Warning(
+                            M3Log.Warning(
                                 $@"MassEffectModderNoGui versions < 500 are not supported for Legendary Edition, skipping version {relVer}");
                             continue;
                         }
@@ -175,7 +173,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         x.Name == @"MassEffectModderNoGui-v" + release.TagName + @".7z");
                     if (asset == null)
                     {
-                        Log.Warning(
+                        M3Log.Warning(
                             $@"No applicable assets in release tag {release.TagName} for MassEffectModderNoGui, skipping");
                         continue;
                     }
@@ -192,14 +190,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         if (tool == MEM && relVer >= 500)
                         {
                             asset = null;
-                            Log.Warning(
+                            M3Log.Warning(
                                 $@"MassEffectModder versions >= 500 are not supported for Original Trilogy, skipping version {relVer}");
                             continue;
                         }
                         else if (tool == MEM_LE && relVer < 500)
                         {
                             asset = null;
-                            Log.Warning(
+                            M3Log.Warning(
                                 $@"MassEffectModder versions < 500 are not supported for Legendary Edition, skipping version {relVer}");
                             continue;
                         }
@@ -209,7 +207,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         x.Name == @"MassEffectModder-v" + release.TagName + @".7z");
                     if (asset == null)
                     {
-                        Log.Warning(
+                        M3Log.Warning(
                             $@"No applicable assets in release tag {release.TagName} for MassEffectModder, skipping");
                         continue;
                     }
@@ -222,7 +220,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (asset != null)
                 {
                     latestRelease = release;
-                    Log.Information($@"Using release {latestRelease.Name}");
+                    M3Log.Information($@"Using release {latestRelease.Name}");
                     downloadLink = new Uri(asset.BrowserDownloadUrl);
                     break;
                 }
@@ -259,13 +257,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 else
                 {
-                    Log.Error($@"Error downloading tool: {b.Error.Message}");
+                    M3Log.Error($@"Error downloading tool: {b.Error.Message}");
                     errorExtractingCallback?.Invoke(b.Error,
                         M3L.GetString(M3L.string_interp_errorDownloadingAndLaunchingTool, b.Error.Message),
                         M3L.GetString(M3L.string_errorLaunchingTool));
                 }
             };
-            Log.Information(@"Downloading file: " + downloadLink);
+            M3Log.Information(@"Downloading file: " + downloadLink);
             downloadClient.DownloadDataAsync(downloadLink);
         }
 
@@ -292,7 +290,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 case @".rar":
                 case @".7z":
                 case @".zip":
-                    Log.Information(@"Extracting tool archive");
+                    M3Log.Information(@"Extracting tool archive");
                     try
                     {
                         downloadStream.Position = 0;
@@ -322,7 +320,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             }
                             catch (Exception e)
                             {
-                                Log.Error($@"Could not extract/run tool {executable} after download: {e.Message}");
+                                M3Log.Error($@"Could not extract/run tool {executable} after download: {e.Message}");
                                 errorExtractingCallback?.Invoke(e, M3L.GetString(M3L.string_interp_errorDownloadingAndLaunchingTool, e.Message), M3L.GetString(M3L.string_errorLaunchingTool));
 
                             }
@@ -330,13 +328,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
                     catch (Exception e)
                     {
-                        Log.Error($@"Exception extracting archive: {e.Message}");
+                        M3Log.Error($@"Exception extracting archive: {e.Message}");
                         errorExtractingCallback?.Invoke(e, M3L.GetString(M3L.string_interp_errorDownloadingAndLaunchingTool, e.Message), M3L.GetString(M3L.string_errorLaunchingTool));
                     }
 
                     break;
                 default:
-                    Log.Error($@"Failed to download correct file! We don't support this extension. The extension was {extension}");
+                    M3Log.Error($@"Failed to download correct file! We don't support this extension. The extension was {extension}");
                     var ex = new Exception(M3L.GetString(M3L.string_interp_unsupportedExtensionX, extension));
                     errorExtractingCallback?.Invoke(ex, M3L.GetString(M3L.string_interp_errorDownloadingAndLaunchingTool, ex.Message), M3L.GetString(M3L.string_errorLaunchingTool));
                     break;
@@ -359,7 +357,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             PercentVisibility = Visibility.Collapsed;
             PercentDownloaded = 0;
-            Log.Information($@"Launching: {localExecutable} {arguments}");
+            M3Log.Information($@"Launching: {localExecutable} {arguments}");
             try
             {
                 Process.Start(localExecutable, arguments);
@@ -368,7 +366,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
             catch (Exception e)
             {
-                Log.Error($@"Error launching tool {localExecutable}: {e.Message}");
+                M3Log.Error($@"Error launching tool {localExecutable}: {e.Message}");
                 Action = M3L.GetString(M3L.string_interp_errorLaunchingToolX, e.Message);
                 Thread.Sleep(6000);
             }
@@ -419,20 +417,20 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
 
 
-            Log.Information($@"Getting list of releases from github from ({toolGithubOwner}/{toolGithubRepoName})");
+            M3Log.Information($@"Getting list of releases from github from ({toolGithubOwner}/{toolGithubRepoName})");
             var client = new GitHubClient(new ProductHeaderValue(@"ME3TweaksModManager"));
             try
             {
                 var releases = await client.Repository.Release.GetAll(toolGithubOwner, toolGithubRepoName);
                 if (releases.Count > 0)
                 {
-                    Log.Information(@"Parsing release information from github");
+                    M3Log.Information(@"Parsing release information from github");
                     return releases.Where(x => !x.Prerelease && x.Assets.Count > 0).ToList();
                 }
             }
             catch (Exception e)
             {
-                Log.Error(@"Error checking for tool update: " + e);
+                M3Log.Error(@"Error checking for tool update: " + e);
             }
 
             return null;
@@ -481,7 +479,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             Action<string> failedToDownloadCallback = null,
             Action<Exception, string, string> errorExtractingCallback = null)
         {
-            Log.Information($@"FetchAndLaunchTool() for {tool}");
+            M3Log.Information($@"FetchAndLaunchTool() for {tool}");
             var toolName = tool.Replace(@" ", "");
             var localToolFolderName = getToolStoragePath(tool);
             var localExecutable = Path.Combine(localToolFolderName, toolNameToExeName(tool));
@@ -497,7 +495,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             var prereqCheckMessage = checkToolPrerequesites(tool);
             if (prereqCheckMessage != null)
             {
-                Log.Error($@"Prerequisite not met: {prereqCheckMessage}");
+                M3Log.Error($@"Prerequisite not met: {prereqCheckMessage}");
                 failedToDownloadCallback?.Invoke(M3L.GetString(M3L.string_interp_prerequisiteNotMetX, prereqCheckMessage));
                 return;
             }
@@ -520,7 +518,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         //Must run on UI thread
                         //MessageBox.Show($"Unable to download {tool}.\nPlease check your network connection and try again.\nIf the issue persists, please come to the ME3Tweaks Discord.");
-                        Log.Error(@"Unable to launch tool - could not download, and does not exist locally: " + localExecutable);
+                        M3Log.Error(@"Unable to launch tool - could not download, and does not exist locally: " + localExecutable);
                         failedToDownloadCallback?.Invoke(M3L.GetString(M3L.string_downloadFailed));
                         return;
                     }
@@ -571,7 +569,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             }
                             catch (Exception e)
                             {
-                                Log.Error($@"Invalid version number on release {latestRelease.TagName}: {e.Message}");
+                                M3Log.Error($@"Invalid version number on release {latestRelease.TagName}: {e.Message}");
                             }
                         }
                     }
@@ -648,13 +646,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     else
                     {
                         // Not enough information!
-                        Log.Error(@"Unable to download ME3Tweaks hosted tool: Information not present in startup manifest. Ensure M3 can connect to the internet at boot time");
+                        M3Log.Error(@"Unable to download ME3Tweaks hosted tool: Information not present in startup manifest. Ensure M3 can connect to the internet at boot time");
                         failedToDownloadCallback?.Invoke(M3L.GetString(M3L.string_error_cantDownloadNotEnoughInfoInStartupManifest));
                     }
                 }
                 catch (Exception ex)
                 {
-                    Log.Error($@"Error downloading ME3Tweaks too: {ex.Message}");
+                    M3Log.Error($@"Error downloading ME3Tweaks too: {ex.Message}");
                     failedToDownloadCallback?.Invoke(ex.Message);
                 }
             }

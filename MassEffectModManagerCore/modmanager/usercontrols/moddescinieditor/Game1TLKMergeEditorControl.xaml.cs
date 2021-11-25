@@ -1,15 +1,7 @@
 ﻿using System.ComponentModel;
-using System.Linq;
 using System.Windows;
 using IniParser.Model;
-using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.objects;
-using MassEffectModManagerCore.modmanager.objects.mod.editor;
-using MassEffectModManagerCore.modmanager.windows;
-using MassEffectModManagerCore.ui;
-using LegendaryExplorerCore.Helpers;
-using LegendaryExplorerCore.Packages;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
 {

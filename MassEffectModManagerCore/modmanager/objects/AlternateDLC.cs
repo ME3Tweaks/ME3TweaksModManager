@@ -1,13 +1,14 @@
-﻿using Serilog;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using MassEffectModManagerCore.modmanager.helpers;
 using System.IO;
+using MassEffectModManagerCore.modmanager.diagnostics;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.modmanager.objects.mod.editor;
+using ME3TweaksCoreWPF;
 
 namespace MassEffectModManagerCore.modmanager.objects
 {
@@ -87,7 +88,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             if (modForValidating.ModDescTargetVersion >= 6 && string.IsNullOrWhiteSpace(FriendlyName))
             {
                 //Cannot be null.
-                Log.Error(@"Alternate DLC does not specify FriendlyName. Mods targeting moddesc >= 6.0 require FriendlyName");
+                M3Log.Error(@"Alternate DLC does not specify FriendlyName. Mods targeting moddesc >= 6.0 require FriendlyName");
                 ValidAlternate = false;
                 LoadFailedReason = M3L.GetString(M3L.string_validation_altdlc_oneAltDlcMissingFriendlyNameCmm6);
                 return;
@@ -95,7 +96,7 @@ namespace MassEffectModManagerCore.modmanager.objects
 
             if (!Enum.TryParse(properties[@"Condition"], out Condition) || Condition == AltDLCCondition.INVALID_CONDITION)
             {
-                Log.Error($@"Alternate DLC specifies unknown/unsupported condition: {properties[@"Condition"]}"); //do not localize
+                M3Log.Error($@"Alternate DLC specifies unknown/unsupported condition: {properties[@"Condition"]}"); //do not localize
                 ValidAlternate = false;
                 var condition = properties[@"Condition"];
                 LoadFailedReason = $@"{M3L.GetString(M3L.string_validation_altdlc_unknownCondition)} {condition}";
@@ -104,7 +105,7 @@ namespace MassEffectModManagerCore.modmanager.objects
 
             if (!Enum.TryParse(properties[@"ModOperation"], out Operation) || Operation == AltDLCOperation.INVALID_OPERATION)
             {
-                Log.Error($@"Alternate DLC specifies unknown/unsupported operation: {properties[@"ModOperation"]}"); //do not localize
+                M3Log.Error($@"Alternate DLC specifies unknown/unsupported operation: {properties[@"ModOperation"]}"); //do not localize
                 ValidAlternate = false;
                 var operation = properties[@"ModOperation"];
                 LoadFailedReason = $@"{M3L.GetString(M3L.string_validation_altdlc_unknownOperation)} {operation}";
@@ -119,7 +120,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             if (modForValidating.ModDescTargetVersion >= 6 && string.IsNullOrWhiteSpace(Description))
             {
                 //Cannot be null.
-                Log.Error($@"Alternate DLC {FriendlyName} cannot have empty Description or missing Description descriptor as it targets cmmver >= 6");
+                M3Log.Error($@"Alternate DLC {FriendlyName} cannot have empty Description or missing Description descriptor as it targets cmmver >= 6");
                 ValidAlternate = false;
                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altdlc_cmmver6RequiresDescription, FriendlyName);
                 return;
@@ -136,14 +137,14 @@ namespace MassEffectModManagerCore.modmanager.objects
                         if (modForValidating.ModDescTargetVersion >= 6.3)
                         {
                             // On 6.3 trigger failure on this mod to help ensure users design mod properly
-                            Log.Error($@"{modForValidating.ModName} has Alternate DLC {friendlyName} that has a value for ConditionalDLC on Condition COND_MANUAL. COND_MANUAL does not use ConditionalDLC, use DLCRequirements instead.");
+                            M3Log.Error($@"{modForValidating.ModName} has Alternate DLC {friendlyName} that has a value for ConditionalDLC on Condition COND_MANUAL. COND_MANUAL does not use ConditionalDLC, use DLCRequirements instead.");
                             ValidAlternate = false;
                             LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altdlc_condManualWithConditionalDLC, friendlyName);
                             return;
                         }
                         else
                         {
-                            Log.Warning($@"{modForValidating.ModName} has AlternateDLC {friendlyName} that has a value for ConditionalDLC on Condition COND_MANUAL. COND_MANUAL does not use ConditionalDLC, use DLCRequirements instead. On mods targetting moddesc 6.3 and above, this will trigger a load failure for a mod.");
+                            M3Log.Warning($@"{modForValidating.ModName} has AlternateDLC {friendlyName} that has a value for ConditionalDLC on Condition COND_MANUAL. COND_MANUAL does not use ConditionalDLC, use DLCRequirements instead. On mods targetting moddesc 6.3 and above, this will trigger a load failure for a mod.");
                         }
 
                         break;
@@ -154,7 +155,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         //check +/-
                         if (!dlc.StartsWith(@"-") && !dlc.StartsWith(@"+"))
                         {
-                            Log.Error($@"An item in Alternate DLC's ({FriendlyName}) ConditionalDLC doesn't start with + or -. When using the condition {Condition}, you must precede DLC names with + or -. Bad value: {dlc}");
+                            M3Log.Error($@"An item in Alternate DLC's ({FriendlyName}) ConditionalDLC doesn't start with + or -. When using the condition {Condition}, you must precede DLC names with + or -. Bad value: {dlc}");
                             LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altdlc_specificDlcSetupMissingPlusMinus, FriendlyName, Condition, dlc);
                             return;
                         }
@@ -172,7 +173,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         //dlc mods
                         if (!realname.StartsWith(@"DLC_"))
                         {
-                            Log.Error($@"An item in Alternate DLC's ({FriendlyName}) ConditionalDLC doesn't start with DLC_ or is not official header (after the +/- required by {Condition}). Bad value: {dlc}");
+                            M3Log.Error($@"An item in Alternate DLC's ({FriendlyName}) ConditionalDLC doesn't start with DLC_ or is not official header (after the +/- required by {Condition}). Bad value: {dlc}");
                             LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altdlc_specificDlcSetupInvalidDlcName, FriendlyName, Condition, dlc);
                             return;
                         }
@@ -191,7 +192,7 @@ namespace MassEffectModManagerCore.modmanager.objects
 
                         if (!dlc.StartsWith(@"DLC_"))
                         {
-                            Log.Error($@"An item in Alternate DLC's ({FriendlyName}) ConditionalDLC doesn't start with DLC_ or is not official header");
+                            M3Log.Error($@"An item in Alternate DLC's ({FriendlyName}) ConditionalDLC doesn't start with DLC_ or is not official header");
                             LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altdlc_conditionalDLCInvalidValue, FriendlyName);
                             return;
                         }
@@ -214,7 +215,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     }
                     else
                     {
-                        Log.Error($@"Alternate DLC ({FriendlyName}) specifies operation OP_ADD_MULTILISTFILES_TO_CUSTOMDLC but does not specify the required item MultiListRootPath.");
+                        M3Log.Error($@"Alternate DLC ({FriendlyName}) specifies operation OP_ADD_MULTILISTFILES_TO_CUSTOMDLC but does not specify the required item MultiListRootPath.");
                         ValidAlternate = false;
                         LoadFailedReason = M3L.GetString(M3L.string_interp_altdlc_multilistMissingMultiListRootPath, FriendlyName);
                         return;
@@ -229,7 +230,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         }
                         else
                         {
-                            Log.Error($@"Alternate DLC ({FriendlyName}) Multilist ID does not exist as part of the {job.Header} task: multilist" + multilistid);
+                            M3Log.Error($@"Alternate DLC ({FriendlyName}) Multilist ID does not exist as part of the {job.Header} task: multilist" + multilistid);
                             ValidAlternate = false;
                             var id = @"multilist" + multilistid;
                             LoadFailedReason = M3L.GetString(M3L.string_interp_altdlc_multilistMissingMultiListX, FriendlyName, job.Header, id);
@@ -238,7 +239,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     }
                     else
                     {
-                        Log.Error($@"Alternate DLC ({FriendlyName}) specifies operation OP_ADD_MULTILISTFILES_TO_CUSTOMDLC but does not specify the MultiListId attribute, or it could not be parsed to an integer.");
+                        M3Log.Error($@"Alternate DLC ({FriendlyName}) specifies operation OP_ADD_MULTILISTFILES_TO_CUSTOMDLC but does not specify the MultiListId attribute, or it could not be parsed to an integer.");
                         ValidAlternate = false;
                         LoadFailedReason = M3L.GetString(M3L.string_interp_altdlc_multilistIdNotIntegerOrMissing, FriendlyName);
                         return;
@@ -252,7 +253,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     }
                     else
                     {
-                        Log.Error(@"Alternate DLC does not specify ModAltDLC but is required");
+                        M3Log.Error(@"Alternate DLC does not specify ModAltDLC but is required");
                         ValidAlternate = false;
                         LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altdlc_missingModAltDLC, FriendlyName);
                         return;
@@ -265,7 +266,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 }
                 else
                 {
-                    Log.Error(@"Alternate DLC does not specify ModDestDLC but is required");
+                    M3Log.Error(@"Alternate DLC does not specify ModDestDLC but is required");
                     ValidAlternate = false;
                     LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altdlc_missingModDestDLC, FriendlyName);
                     return;
@@ -277,14 +278,14 @@ namespace MassEffectModManagerCore.modmanager.objects
                 //Validation
                 if (string.IsNullOrWhiteSpace(AlternateDLCFolder) && MultiListRootPath == null)
                 {
-                    Log.Error($@"Alternate DLC directory (ModAltDLC) not specified for {FriendlyName}");
+                    M3Log.Error($@"Alternate DLC directory (ModAltDLC) not specified for {FriendlyName}");
                     LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altdlc_sourceDirectoryNotSpecifiedForModAltDLC, FriendlyName);
                     return;
                 }
 
                 if (string.IsNullOrWhiteSpace(DestinationDLCFolder))
                 {
-                    Log.Error($@"Destination DLC directory (ModDestDLC) not specified for {FriendlyName}");
+                    M3Log.Error($@"Destination DLC directory (ModDestDLC) not specified for {FriendlyName}");
                     LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altdlc_destinationDirectoryNotSpecifiedForModDestDLC, FriendlyName);
                     return;
                 }
@@ -297,7 +298,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     var localAltDlcDir = FilesystemInterposer.PathCombine(modForValidating.IsInArchive, modForValidating.ModPath, AlternateDLCFolder);
                     if (!FilesystemInterposer.DirectoryExists(localAltDlcDir, modForValidating.Archive))
                     {
-                        Log.Error($@"Alternate DLC directory (ModAltDLC) does not exist: {AlternateDLCFolder}");
+                        M3Log.Error($@"Alternate DLC directory (ModAltDLC) does not exist: {AlternateDLCFolder}");
                         LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altdlc_sourceDirectoryDoesntExist, FriendlyName, AlternateDLCFolder);
                         return;
                     }
@@ -309,7 +310,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         var path = FilesystemInterposer.PathCombine(modForValidating.IsInArchive, modForValidating.ModPath, MultiListRootPath, multif);
                         if (!FilesystemInterposer.FileExists(path, modForValidating.Archive))
                         {
-                            Log.Error($@"Alternate DLC ({FriendlyName}) specifies a multilist (index {multilistid}) that contains file that does not exist: {multif}");
+                            M3Log.Error($@"Alternate DLC ({FriendlyName}) specifies a multilist (index {multilistid}) that contains file that does not exist: {multif}");
                             LoadFailedReason = M3L.GetString(M3L.string_interp_altdlc_multilistMissingFileInMultilist, FriendlyName, multilistid, multif);
                             return;
                         }
@@ -345,7 +346,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     //dlc mods
                     if (!testreq.StartsWith(@"DLC_"))
                     {
-                        Log.Error($@"An item in Alternate DLC's ({FriendlyName}) DLCRequirements doesn't start with DLC_ or is not official header. Bad value: {originalReq}");
+                        M3Log.Error($@"An item in Alternate DLC's ({FriendlyName}) DLCRequirements doesn't start with DLC_ or is not official header. Bad value: {originalReq}");
                         LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altdlc_dlcRequirementInvalid, FriendlyName, originalReq);
                         return;
                     }
@@ -366,7 +367,7 @@ namespace MassEffectModManagerCore.modmanager.objects
 
                 if (requiredFilePaths.Count() != requiredFileSizes.Count())
                 {
-                    Log.Error($@"Alternate DLC {FriendlyName} uses COND_SPECIFIC_SIZED_FILES but the amount of items in the RequiredFileRelativePaths and RequiredFileSizes lists are not equal");
+                    M3Log.Error($@"Alternate DLC {FriendlyName} uses COND_SPECIFIC_SIZED_FILES but the amount of items in the RequiredFileRelativePaths and RequiredFileSizes lists are not equal");
                     ValidAlternate = false;
                     LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altdlc_specificSizedFilesMismatchedParams, FriendlyName);
                     return;
@@ -379,7 +380,7 @@ namespace MassEffectModManagerCore.modmanager.objects
 
                     if (reqFile.Contains(@".."))
                     {
-                        Log.Error($@"Alternate DLC {FriendlyName} RequiredFileRelativePaths item {reqFile} is invalid: Values cannot contain '..' for security reasons");
+                        M3Log.Error($@"Alternate DLC {FriendlyName} RequiredFileRelativePaths item {reqFile} is invalid: Values cannot contain '..' for security reasons");
                         ValidAlternate = false;
                         LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altdlc_specificSizedFilesContainsIllegalPattern, FriendlyName, reqFile);
                         return;
@@ -392,7 +393,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     }
                     else
                     {
-                        Log.Error($@"Alternate DLC {FriendlyName} RequiredFileSizes item {reqFile} is invalid: {reqSizeStr}. Values must be greater than or equal to zero.");
+                        M3Log.Error($@"Alternate DLC {FriendlyName} RequiredFileSizes item {reqFile} is invalid: {reqSizeStr}. Values must be greater than or equal to zero.");
                         ValidAlternate = false;
                         LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altdlc_specificSizedFileMustBeLargerThanZero, FriendlyName, reqFile, reqSizeStr);
                         return;
@@ -401,7 +402,7 @@ namespace MassEffectModManagerCore.modmanager.objects
 
                 if (!RequiredSpecificFiles.Any())
                 {
-                    Log.Error($@"Alternate DLC {FriendlyName} is invalid: COND_SPECIFIC_SIZED_FILES is specified as the condition but there are no values in RequiredFileRelativePaths/RequiredFileSizes");
+                    M3Log.Error($@"Alternate DLC {FriendlyName} is invalid: COND_SPECIFIC_SIZED_FILES is specified as the condition but there are no values in RequiredFileRelativePaths/RequiredFileSizes");
                     ValidAlternate = false;
                     LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altdlc_specificSizedFilesMissingRequiredParams, FriendlyName);
                     return;
@@ -430,7 +431,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 //ensure conditional dlc list has at least one item.
                 if (ConditionalDLC.Count == 0)
                 {
-                    Log.Error($@"Alternate DLC {FriendlyName} cannot have empty or missing Conditional DLC list, as it does not use COND_MANUAL or COND_SPECIFIC_SIZED_FILES.");
+                    M3Log.Error($@"Alternate DLC {FriendlyName} cannot have empty or missing Conditional DLC list, as it does not use COND_MANUAL or COND_SPECIFIC_SIZED_FILES.");
                     ValidAlternate = false;
                     LoadFailedReason = M3L.GetString(M3L.string_interp_altdlc_emptyConditionalDLCList, FriendlyName);
                     return;
@@ -470,7 +471,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             return AlternateDLCFolder != null || MultiListSourceFiles != null;
         }
 
-        public void SetupInitialSelection(GameTarget target, Mod mod)
+        public void SetupInitialSelection(GameTargetWPF target, Mod mod)
         {
             UIIsSelectable = false; //Reset
             IsSelected = false; //Reset
@@ -479,7 +480,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 IsSelected = CheckedByDefault;
                 if (DLCRequirementsForManual != null)
                 {
-                    var dlc = M3Directories.GetInstalledDLC(target);
+                    var dlc = target.GetInstalledDLC();
 
                     if (mod.ModDescTargetVersion >= 6.3)
                     {
@@ -510,7 +511,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 return;
             }
 
-            var installedDLC = M3Directories.GetInstalledDLC(target);
+            var installedDLC = target.GetInstalledDLC();
             switch (Condition)
             {
                 case AltDLCCondition.COND_DLC_NOT_PRESENT:

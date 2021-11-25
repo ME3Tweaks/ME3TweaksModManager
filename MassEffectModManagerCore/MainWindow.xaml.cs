@@ -21,8 +21,6 @@ using System.Xml.Linq;
 using AdonisUI;
 using CommandLine;
 using MassEffectModManagerCore.modmanager;
-using MassEffectModManagerCore.modmanager.asi;
-using MassEffectModManagerCore.modmanager.gameini;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
@@ -33,7 +31,6 @@ using MassEffectModManagerCore.modmanager.windows;
 using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore;
 using LegendaryExplorerCore.Coalesced;
-using LegendaryExplorerCore.Compression;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
@@ -47,10 +44,13 @@ using Serilog;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Unreal;
-using MassEffectModManagerCore.modmanager.gamemd5;
+using MassEffectModManagerCore.modmanager.diagnostics;
 using MassEffectModManagerCore.modmanager.objects.mod.merge;
-using MassEffectModManagerCore.modmanager.objects.mod.merge.v1;
 using MassEffectModManagerCore.modmanager.squadmates;
+using ME3TweaksCore.NativeMods;
+using ME3TweaksCore.Services;
+using ME3TweaksCore.Services.Backup;
+using ME3TweaksCoreWPF;
 using Pathoschild.FluentNexus.Models;
 using MemoryAnalyzer = MassEffectModManagerCore.modmanager.memoryanalyzer.MemoryAnalyzer;
 using Mod = MassEffectModManagerCore.modmanager.objects.mod.Mod;
@@ -235,11 +235,11 @@ namespace MassEffectModManagerCore
         /// All mods that failed to load
         /// </summary>
         public ObservableCollectionExtended<Mod> FailedMods { get; } = new ObservableCollectionExtended<Mod>();
-        public ObservableCollectionExtended<GameTarget> InstallationTargets { get; } = new ObservableCollectionExtended<GameTarget>();
+        public ObservableCollectionExtended<GameTargetWPF> InstallationTargets { get; } = new ObservableCollectionExtended<GameTargetWPF>();
         /// <summary>
         /// List of all loaded targets, even ones for different generations
         /// </summary>
-        private List<GameTarget> InternalLoadedTargets { get; } = new();
+        private List<GameTargetWPF> InternalLoadedTargets { get; } = new();
 
         private BackgroundTaskEngine backgroundTaskEngine;
 
@@ -250,7 +250,7 @@ namespace MassEffectModManagerCore
             {
                 App.Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
                 //Show migration window before we load the main UI
-                Log.Information(@"Migrating from ME3CMM - showing migration dialog");
+                M3Log.Information(@"Migrating from ME3CMM - showing migration dialog");
                 new ME3CMMMigrationWindow().ShowDialog();
                 App.Current.MainWindow = this;
                 App.Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
@@ -358,35 +358,35 @@ namespace MassEffectModManagerCore
 
         private void CheckProgramDataWritable()
         {
-            Log.Information(@"Checking settings.ini is writable (ProgramData check)...");
+            M3Log.Information(@"Checking settings.ini is writable (ProgramData check)...");
             var settingsResult = Settings.SaveTest();
             if (settingsResult == Settings.SettingsSaveResult.FAILED_UNAUTHORIZED)
             {
-                Log.Error(@"No permissions to appdata! Prompting for user to grant consent");
+                M3Log.Error(@"No permissions to appdata! Prompting for user to grant consent");
                 var result = M3L.ShowDialog(null, M3L.GetString(M3L.string_dialog_multiUserProgramDataWindowsRestrictions), M3L.GetString(M3L.string_grantingWritePermissions), MessageBoxButton.OKCancel, MessageBoxImage.Error);
                 if (result == MessageBoxResult.OK)
                 {
                     bool done = Utilities.CreateDirectoryWithWritePermission(Utilities.GetAppDataFolder(), true);
                     if (done)
                     {
-                        Log.Information(@"Granted permissions to ProgramData");
+                        M3Log.Information(@"Granted permissions to ProgramData");
                     }
                     else
                     {
-                        Log.Error(@"User declined consenting permissions to ProgramData!");
+                        M3Log.Error(@"User declined consenting permissions to ProgramData!");
                         M3L.ShowDialog(null, M3L.GetString(M3L.string_dialog_programWillNotRunCorrectly), M3L.GetString(M3L.string_programDataAccessDenied), MessageBoxButton.OK, MessageBoxImage.Error);
 
                     }
                 }
                 else
                 {
-                    Log.Error(@"User denied granting permissions!");
+                    M3Log.Error(@"User denied granting permissions!");
                     M3L.ShowDialog(null, M3L.GetString(M3L.string_dialog_programWillNotRunCorrectly), M3L.GetString(M3L.string_programDataAccessDenied), MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             else
             {
-                Log.Information(@"settings.ini is writable");
+                M3Log.Information(@"settings.ini is writable");
             }
         }
 
@@ -399,7 +399,7 @@ namespace MassEffectModManagerCore
                     var loggedIn = await AuthToNexusMods();
                     if (loggedIn == null)
                     {
-                        Log.Error(@"Error authorizing to NexusMods, did not get response from server or issue occurred while checking credentials. Setting not authorized");
+                        M3Log.Error(@"Error authorizing to NexusMods, did not get response from server or issue occurred while checking credentials. Setting not authorized");
                         SetNexusNotAuthorizedUI();
                     }
                 }
@@ -439,11 +439,11 @@ namespace MassEffectModManagerCore
                 return null;
             }
 
-            Log.Information(@"Authenticating to NexusMods...");
+            M3Log.Information(@"Authenticating to NexusMods...");
             var userInfo = await NexusModsUtilities.AuthToNexusMods();
             if (userInfo != null)
             {
-                Log.Information(@"Authenticated to NexusMods");
+                M3Log.Information(@"Authenticated to NexusMods");
 
                 //ME1
                 var me1Status = await NexusModsUtilities.GetEndorsementStatusForFile(@"masseffect", 149);
@@ -461,7 +461,7 @@ namespace MassEffectModManagerCore
             }
             else
             {
-                Log.Information(@"Did not authenticate to NexusMods. May not be logged in or there was network issue");
+                M3Log.Information(@"Did not authenticate to NexusMods. May not be logged in or there was network issue");
                 EndorseM3String = M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
             }
 
@@ -628,7 +628,7 @@ namespace MassEffectModManagerCore
             OpenASIManagerCommand = new GenericCommand(OpenASIManager, NetworkThreadNotRunning);
             NexusModsFileSearchCommand = new GenericCommand(OpenNexusSearch); // no conditions for this
         }
-        private void LaunchEGMSettings(GameTarget target = null)
+        private void LaunchEGMSettings(GameTargetWPF target = null)
         {
             target ??= GetCurrentTarget(MEGame.ME3);
             if (target != null)
@@ -637,7 +637,7 @@ namespace MassEffectModManagerCore
             }
         }
 
-        private void LaunchEGMSettingsLE(GameTarget target = null)
+        private void LaunchEGMSettingsLE(GameTargetWPF target = null)
         {
             target ??= GetCurrentTarget(MEGame.LE3);
             if (target != null)
@@ -724,7 +724,7 @@ namespace MassEffectModManagerCore
             var target = GetCurrentTarget(MEGame.ME3);
             if (target != null)
             {
-                return VanillaDatabaseService.GetInstalledDLCMods(target).Contains(@"DLC_MOD_EGM");
+                return target.GetInstalledDLC().Contains(@"DLC_MOD_EGM");
             }
             return false;
         }
@@ -734,7 +734,7 @@ namespace MassEffectModManagerCore
             var target = GetCurrentTarget(MEGame.LE3);
             if (target != null)
             {
-                return VanillaDatabaseService.GetInstalledDLCMods(target).Contains(@"DLC_MOD_EGM");
+                return target.GetInstalledDLC().Contains(@"DLC_MOD_EGM");
             }
             return false;
         }
@@ -776,7 +776,7 @@ namespace MassEffectModManagerCore
 
         private void OpenImportFromGameUI()
         {
-            Log.Information(@"Opening Import DLC mod from game panel");
+            M3Log.Information(@"Opening Import DLC mod from game panel");
             var importerPanel = new ImportInstalledDLCModPanel();
             importerPanel.Close += (a, b) =>
             {
@@ -811,7 +811,7 @@ namespace MassEffectModManagerCore
                         continueInstalling &= successful;
                         if (continueInstalling && queue.ModsToInstall.Count > modIndex)
                         {
-                            Log.Information($@"Installing batch mod [{modIndex}/{queue.ModsToInstall.Count}]: {queue.ModsToInstall[modIndex].ModName}");
+                            M3Log.Information($@"Installing batch mod [{modIndex}/{queue.ModsToInstall.Count}]: {queue.ModsToInstall[modIndex].ModName}");
                             ApplyMod(queue.ModsToInstall[modIndex], target, batchMode: true, installCompressed: queue.InstallCompressed, installCompletedCallback: modInstalled);
                             modIndex++;
                         }
@@ -892,7 +892,7 @@ namespace MassEffectModManagerCore
         {
             if (!ME1NexusEndorsed)
             {
-                Log.Information(@"Endorsing M3 (ME1)");
+                M3Log.Information(@"Endorsing M3 (ME1)");
                 NexusModsUtilities.EndorseFile(@"masseffect", true, 149, (newStatus) =>
                 {
                     ME1NexusEndorsed = newStatus;
@@ -902,7 +902,7 @@ namespace MassEffectModManagerCore
 
             if (!ME2NexusEndorsed)
             {
-                Log.Information(@"Endorsing M3 (ME2)");
+                M3Log.Information(@"Endorsing M3 (ME2)");
                 NexusModsUtilities.EndorseFile(@"masseffect2", true, 248, (newStatus) =>
                 {
                     ME2NexusEndorsed = newStatus;
@@ -912,7 +912,7 @@ namespace MassEffectModManagerCore
 
             if (!ME3NexusEndorsed)
             {
-                Log.Information(@"Endorsing M3 (ME3)");
+                M3Log.Information(@"Endorsing M3 (ME3)");
                 NexusModsUtilities.EndorseFile(@"masseffect3", true, 373, (newStatus) =>
                 {
                     ME3NexusEndorsed = newStatus;
@@ -957,7 +957,7 @@ namespace MassEffectModManagerCore
         {
             if (SelectedMod != null)
             {
-                Log.Information(@"Endorsing mod: " + SelectedMod.ModName);
+                M3Log.Information(@"Endorsing mod: " + SelectedMod.ModName);
                 CurrentModEndorsementStatus = M3L.GetString(M3L.string_endorsing);
                 IsEndorsingMod = true;
                 SelectedMod.EndorseMod(EndorsementCallback, true);
@@ -968,7 +968,7 @@ namespace MassEffectModManagerCore
         {
             if (SelectedMod != null)
             {
-                Log.Information(@"Unendorsing mod: " + SelectedMod.ModName);
+                M3Log.Information(@"Unendorsing mod: " + SelectedMod.ModName);
                 CurrentModEndorsementStatus = M3L.GetString(M3L.string_unendorsing);
                 IsEndorsingMod = true;
                 SelectedMod.EndorseMod(EndorsementCallback, false);
@@ -1048,7 +1048,7 @@ namespace MassEffectModManagerCore
             {
                 Analytics.TrackEvent(@"User opened mod archive for import", new Dictionary<string, string> { { @"Method", @"Manual file selection" }, { @"Filename", Path.GetFileName(m.FileName) } });
                 var archiveFile = m.FileName;
-                Log.Information(@"Opening archive user selected: " + archiveFile);
+                M3Log.Information(@"Opening archive user selected: " + archiveFile);
                 openModImportUI(archiveFile);
             }
         }
@@ -1070,7 +1070,7 @@ namespace MassEffectModManagerCore
             var confirmationResult = M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_dialogDeleteSelectedModFromLibrary, selectedMod.ModName), M3L.GetString(M3L.string_confirmDeletion), MessageBoxButton.YesNo, MessageBoxImage.Warning);
             if (confirmationResult == MessageBoxResult.Yes)
             {
-                Log.Information(@"Deleting mod from library: " + selectedMod.ModPath);
+                M3Log.Information(@"Deleting mod from library: " + selectedMod.ModPath);
                 if (Utilities.DeleteFilesAndFoldersRecursively(selectedMod.ModPath))
                 {
                     AllLoadedMods.Remove(selectedMod);
@@ -1088,17 +1088,17 @@ namespace MassEffectModManagerCore
         {
             if (SelectedMod.InstallationJobs.Count == 1 && SelectedMod.GetJob(ModJob.JobHeader.ME2_RCWMOD) != null)
             {
-                Log.Error(M3L.GetString(M3L.string_rcwModsCannotBeDeployed));
+                M3Log.Error(M3L.GetString(M3L.string_rcwModsCannotBeDeployed));
                 M3L.ShowDialog(this, M3L.GetString(M3L.string_rcwModsCannotBeDeployedDescription),
                     M3L.GetString(M3L.string_cannotDeployMe2modFiles), MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
             // TODO: Move this into archive panel
-            GameTarget vt = GetCurrentTarget(SelectedMod.Game);
+            GameTargetWPF vt = GetCurrentTarget(SelectedMod.Game);
             if (vt == null)
             {
-                Log.Error($@"Cannot deploy mod, no current game install for {SelectedMod.Game} is available");
+                M3Log.Error($@"Cannot deploy mod, no current game install for {SelectedMod.Game} is available");
                 M3L.ShowDialog(this,
                     M3L.GetString(M3L.string_interp_dialog_cannotDeployModNoTarget, SelectedMod.Game),
                     M3L.GetString(M3L.string_cannotDeployMod), MessageBoxButton.OK, MessageBoxImage.Error);
@@ -1127,7 +1127,7 @@ namespace MassEffectModManagerCore
             }
             else
             {
-                Log.Error($@"Cannot deploy mod, no backup for {SelectedMod.Game} is available");
+                M3Log.Error($@"Cannot deploy mod, no backup for {SelectedMod.Game} is available");
                 M3L.ShowDialog(this,
                     M3L.GetString(M3L.string_interp_dialog_cannotDeployModNoBackup, SelectedMod.Game),
                     M3L.GetString(M3L.string_cannotDeployMod), MessageBoxButton.OK, MessageBoxImage.Error);
@@ -1398,7 +1398,7 @@ namespace MassEffectModManagerCore
             InternalStartGame(SelectedGameTarget);
         }
 
-        private void InternalStartGame(GameTarget target)
+        private void InternalStartGame(GameTargetWPF target)
         {
             var game = target.Game.ToGameName();
             BackgroundTask gameLaunch = backgroundTaskEngine.SubmitBackgroundJob(@"GameLaunch", M3L.GetString(M3L.string_interp_launching, game), M3L.GetString(M3L.string_interp_launched, game));
@@ -1410,7 +1410,7 @@ namespace MassEffectModManagerCore
                     {
                         if (x.Exception != null)
                         {
-                            Log.Error($@"There was an error launching the game: {x.Exception.FlattenException()}");
+                            M3Log.Error($@"There was an error launching the game: {x.Exception.FlattenException()}");
                         }
 
                         backgroundTaskEngine.SubmitJobCompletion(gameLaunch);
@@ -1428,7 +1428,7 @@ namespace MassEffectModManagerCore
                     }
                 }
 
-                Log.Error(@"Error launching game: " + e.Message);
+                M3Log.Error(@"Error launching game: " + e.Message);
             }
 
             //Detect screen resolution - useful info for scene modders
@@ -1508,7 +1508,7 @@ namespace MassEffectModManagerCore
             }
             catch (Exception e)
             {
-                Log.Error(@"Error trying to detect screen resolution: " + e.Message);
+                M3Log.Error(@"Error trying to detect screen resolution: " + e.Message);
             }
         }
 
@@ -1518,7 +1518,7 @@ namespace MassEffectModManagerCore
         /// </summary>
         /// <param name="target"></param>
         /// <returns></returns>
-        private int UpdateBootTarget(GameTarget target)
+        private int UpdateBootTarget(GameTargetWPF target)
         {
             string exe = @"reg";
             var args = new List<string>();
@@ -1659,7 +1659,7 @@ namespace MassEffectModManagerCore
                     catch (Exception e)
                     {
                         // user may have canceled running it. seems it sometimes requires admin
-                        Log.Error($@"Error running config tool for {game}: {e.Message}");
+                        M3Log.Error($@"Error running config tool for {game}: {e.Message}");
                     }
                 }
             }
@@ -1682,7 +1682,7 @@ namespace MassEffectModManagerCore
 
         private void AddTarget()
         {
-            Log.Information(@"User is adding new modding target");
+            M3Log.Information(@"User is adding new modding target");
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.Title = M3L.GetString(M3L.string_selectGameExecutable);
             string filter = $@"{M3L.GetString(M3L.string_gameExecutable)}|MassEffect.exe;MassEffect2.exe;MassEffect3.exe;MassEffectLauncher.exe;MassEffect1.exe"; //only partially localizable.
@@ -1691,7 +1691,7 @@ namespace MassEffectModManagerCore
             {
                 MEGame gameSelected = MEGame.Unknown;
                 var filename = Path.GetFileName(ofd.FileName);
-                Log.Information($@"Validating user chosen exe: {filename}");
+                M3Log.Information($@"Validating user chosen exe: {filename}");
                 if (filename.Equals(@"MassEffect3.exe", StringComparison.InvariantCultureIgnoreCase))
                     gameSelected = MEGame.ME3;
                 if (filename.Equals(@"MassEffect2.exe", StringComparison.InvariantCultureIgnoreCase))
@@ -1738,7 +1738,7 @@ namespace MassEffectModManagerCore
                     if (gameSelected.IsLEGame() || gameSelected == MEGame.ME3)
                         result = Path.GetDirectoryName(result); //up one more because of win32/win64 directory.
 
-                    var pendingTarget = new GameTarget(gameSelected, result, false);
+                    var pendingTarget = new GameTargetWPF(gameSelected, result, false);
                     string failureReason = pendingTarget.ValidateTarget();
 
                     if (failureReason == null)
@@ -1761,7 +1761,7 @@ namespace MassEffectModManagerCore
                                 {@"Result", @"Failed, " + failureReason},
                                 {@"Supported", pendingTarget.Supported.ToString()}
                             });
-                        Log.Error(@"Could not add target: " + failureReason);
+                        M3Log.Error(@"Could not add target: " + failureReason);
                         M3L.ShowDialog(this,
                             M3L.GetString(M3L.string_interp_dialogUnableToAddGameTarget, failureReason),
                             M3L.GetString(M3L.string_errorAddingTarget), MessageBoxButton.OK,
@@ -1770,13 +1770,13 @@ namespace MassEffectModManagerCore
                 }
                 else
                 {
-                    Log.Error($@"Unsupported/unknown game: {ofd.FileName}");
+                    M3Log.Error($@"Unsupported/unknown game: {ofd.FileName}");
                 }
             }
 
             else
             {
-                Log.Information(@"User aborted adding new target");
+                M3Log.Information(@"User aborted adding new target");
             }
         }
 
@@ -1791,7 +1791,7 @@ namespace MassEffectModManagerCore
         public bool IsLoadingMods { get; set; }
         public List<string> LoadedTips { get; } = new List<string>();
         public bool ModsLoaded { get; private set; } = false;
-        public GameTarget SelectedGameTarget { get; set; }
+        public GameTargetWPF SelectedGameTarget { get; set; }
 
         private bool CanReloadMods()
         {
@@ -1831,7 +1831,7 @@ namespace MassEffectModManagerCore
         /// <param name="batchMode">Causes ME3 autotoc to skip at end of install</param>
         /// <param name="installCompletedCallback">Callback when mod installation either succeeds for fails</param>
 
-        private void ApplyMod(Mod mod, GameTarget forcedTarget = null, bool batchMode = false, bool? installCompressed = null, Action<bool> installCompletedCallback = null)
+        private void ApplyMod(Mod mod, GameTargetWPF forcedTarget = null, bool batchMode = false, bool? installCompressed = null, Action<bool> installCompletedCallback = null)
         {
             if (!Utilities.IsGameRunning(mod.Game))
             {
@@ -1859,7 +1859,7 @@ namespace MassEffectModManagerCore
             }
             else
             {
-                Log.Error($@"Blocking install of {mod.ModName} because {mod.Game.ToGameName()} is running.");
+                M3Log.Error($@"Blocking install of {mod.ModName} because {mod.Game.ToGameName()} is running.");
                 M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_dialogCannotInstallModsWhileGameRunning, mod.Game.ToGameName()), M3L.GetString(M3L.string_cannotInstallMod), MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -1877,7 +1877,7 @@ namespace MassEffectModManagerCore
             {
                 if (promptForConsent)
                 {
-                    Log.Information(@"Some game paths/keys are not writable. Prompting user.");
+                    M3Log.Information(@"Some game paths/keys are not writable. Prompting user.");
                     bool result = false;
                     Application.Current.Dispatcher.Invoke(delegate { result = M3L.ShowDialog(this, M3L.GetString(M3L.string_dialogUACPreConsent), M3L.GetString(M3L.string_someTargetsKeysWriteProtected), MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes; });
                     if (result)
@@ -1889,12 +1889,12 @@ namespace MassEffectModManagerCore
                         }
                         catch (Exception e)
                         {
-                            Log.Error(@"Error granting write permissions: " + App.FlattenException(e));
+                            M3Log.Error(@"Error granting write permissions: " + App.FlattenException(e));
                         }
                     }
                     else
                     {
-                        Log.Warning(@"User denied permission to grant write permissions");
+                        M3Log.Warning(@"User denied permission to grant write permissions");
                         Analytics.TrackEvent(@"Granting write permissions", new Dictionary<string, string>() { { @"Granted?", @"No" } });
                     }
                 }
@@ -1929,7 +1929,7 @@ namespace MassEffectModManagerCore
             if (!App.IsOperatingSystemSupported())
             {
                 string osList = string.Join("\n - ", App.SupportedOperatingSystemVersions); //do not localize
-                Log.Error(@"This operating system is not supported.");
+                M3Log.Error(@"This operating system is not supported.");
                 M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_dialog_unsupportedOS, osList), M3L.GetString(M3L.string_unsupportedOperatingSystem), MessageBoxButton.OK, MessageBoxImage.Error);
             }
             else
@@ -1952,15 +1952,15 @@ namespace MassEffectModManagerCore
             IsEnabled = false;
             Task.Run(() =>
             {
-                Log.Information(@"Ensuring default ASI assets are present");
-                ASIManager.ExtractDefaultASIResources();
+                M3Log.Information(@"Ensuring default ASI assets are present");
+                M3ASIManager.ExtractDefaultASIResources();
 
-                Log.Information(@"Initializing LegendaryExplorerCore library");
+                M3Log.Information(@"Initializing LegendaryExplorerCore library");
                 #region INIT CORE LIB
                 MEPackageHandler.GlobalSharedCacheEnabled = false; // Do not use the package caching system
                 LegendaryExplorerCoreLib.InitLib(syncContext, x =>
                 {
-                    Log.Error($@"Error saving package: {x}");
+                    M3Log.Error($@"Error saving package: {x}");
                 }, Log.Logger);
                 T2DLocalizationShim.SetupTexture2DLocalizationShim();
                 #endregion
@@ -2128,7 +2128,7 @@ namespace MassEffectModManagerCore
         /// <param name="game">Game to find target for</param>
         /// <returns>Game matching target. If none
         /// is found, this return null.</returns>
-        internal GameTarget GetCurrentTarget(MEGame game)
+        internal GameTargetWPF GetCurrentTarget(MEGame game)
         {
             if (SelectedGameTarget != null)
             {
@@ -2155,7 +2155,7 @@ namespace MassEffectModManagerCore
             }
             catch (Exception e)
             {
-                Log.Error(@"Unable to ensure mod directories: " + e.Message);
+                M3Log.Error(@"Unable to ensure mod directories: " + e.Message);
                 Crashes.TrackError(e);
                 M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_dialogUnableToCreateModLibraryNoPermissions, e.Message), M3L.GetString(M3L.string_errorCreatingModLibrary), MessageBoxButton.OK, MessageBoxImage.Error);
                 var folderPicked = ChooseModLibraryPath(false);
@@ -2165,7 +2165,7 @@ namespace MassEffectModManagerCore
                 }
                 else
                 {
-                    Log.Error(@"Unable to create mod library. Mod Manager will now exit.");
+                    M3Log.Error(@"Unable to create mod library. Mod Manager will now exit.");
                     Crashes.TrackError(new Exception(@"Unable to create mod library"), new Dictionary<string, string>() { { @"Executable location", App.ExecutableLocation } });
                     M3L.ShowDialog(this, M3L.GetString(M3L.string_unableToCreateModLibrary), M3L.GetString(M3L.string_errorCreatingModLibrary), MessageBoxButton.OK, MessageBoxImage.Error);
                     Environment.Exit(1);
@@ -2187,7 +2187,7 @@ namespace MassEffectModManagerCore
                 bool canCheckForModUpdates = OnlineContent.CanFetchContentThrottleCheck(); //This is here as it will fire before other threads can set this value used in this session.
                 ModsLoaded = false;
                 var uiTask = backgroundTaskEngine.SubmitBackgroundJob(@"ModLoader", M3L.GetString(M3L.string_loadingMods), M3L.GetString(M3L.string_loadedMods));
-                Log.Information(@"Loading mods from mod library: " + Utilities.GetModsDirectory());
+                M3Log.Information(@"Loading mods from mod library: " + Utilities.GetModsDirectory());
 
                 var le3modDescsToLoad = Directory.GetDirectories(Utilities.GetLE3ModsDirectory()).Select(x => (game: MEGame.LE3, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
                 var le2modDescsToLoad = Directory.GetDirectories(Utilities.GetLE2ModsDirectory()).Select(x => (game: MEGame.LE2, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
@@ -2244,7 +2244,7 @@ namespace MassEffectModManagerCore
                     if (File.Exists(modpathToHighlight) && targetMod == null)
                     {
                         //moddesc.ini exists but it did not load
-                        Log.Error(@"Mod to highlight failed to load! Path: " + modpathToHighlight);
+                        M3Log.Error(@"Mod to highlight failed to load! Path: " + modpathToHighlight);
                         Crashes.TrackError(new Exception(@"Mod set to highlight but not in list of loaded mods"), new Dictionary<string, string>()
                         {
                             { @"Moddesc path", modpathToHighlight }
@@ -2270,7 +2270,7 @@ namespace MassEffectModManagerCore
                 ModsLoaded = true;
                 if (b.Error != null)
                 {
-                    Log.Error(@"Exception occurred in ModLoader thread: " + b.Error.Message);
+                    M3Log.Error(@"Exception occurred in ModLoader thread: " + b.Error.Message);
                 }
                 IsLoadingMods = false;
                 if (b.Result is Mod m)
@@ -2303,12 +2303,12 @@ namespace MassEffectModManagerCore
 
         private void CheckModsForUpdates(List<Mod> updatableMods, bool restoreMode = false)
         {
-            Log.Information($@"Checking {updatableMods.Count} mods for updates. Turn on mod update logging to view which mods");
+            M3Log.Information($@"Checking {updatableMods.Count} mods for updates. Turn on mod update logging to view which mods");
             if (Settings.LogModUpdater)
             {
                 foreach (var m in updatableMods)
                 {
-                    Log.Information($@" >> Checking for updates to {m.ModName} {m.ParsedModVersion}");
+                    M3Log.Information($@" >> Checking for updates to {m.ModName} {m.ParsedModVersion}");
                 }
             }
 
@@ -2325,7 +2325,7 @@ namespace MassEffectModManagerCore
                 var updates = updateManifestModInfos.Where(x => x.updatecode > 0 && (x.applicableUpdates.Count > 0 || x.filesToDelete.Count > 0)).ToList();
                 foreach (var v in updates)
                 {
-                    Log.Information($@"Classic mod out of date: {v.mod.ModName} {v.mod.ParsedModVersion}, server version: {v.LocalizedServerVersionString}");
+                    M3Log.Information($@"Classic mod out of date: {v.mod.ModName} {v.mod.ParsedModVersion}, server version: {v.LocalizedServerVersionString}");
                 }
 
                 //Calculate MODMAKER Updates
@@ -2339,11 +2339,11 @@ namespace MassEffectModManagerCore
                         {
                             if (!restoreMode)
                             {
-                                Log.Information($@"ModMaker mod out of date: {mm.ModName} {mm.ParsedModVersion}, server version: {serverVer}");
+                                M3Log.Information($@"ModMaker mod out of date: {mm.ModName} {mm.ParsedModVersion}, server version: {serverVer}");
                             }
                             else
                             {
-                                Log.Information($@"Restore mode: Show ModMaker mod {mm.ModName} as out of date. Server version: {serverVer}");
+                                M3Log.Information($@"Restore mode: Show ModMaker mod {mm.ModName} as out of date. Server version: {serverVer}");
                             }
                             matchingServerMod.mod = mm;
                             updates.Add(matchingServerMod);
@@ -2368,13 +2368,13 @@ namespace MassEffectModManagerCore
                                 OnlineContent.NexusModUpdateInfo clonedInfo = new OnlineContent.NexusModUpdateInfo(matchingUpdateInfoForMod) { mod = mm };
                                 updates.Add(clonedInfo);
                                 clonedInfo.SetLocalizedInfo();
-                                Log.Information($@"NexusMods mod out of date: {mm.ModName} {mm.ParsedModVersion}, server version: {serverVer}");
+                                M3Log.Information($@"NexusMods mod out of date: {mm.ModName} {mm.ParsedModVersion}, server version: {serverVer}");
 
                             }
                         }
                         else
                         {
-                            Log.Error($@"Cannot parse nexusmods version of mod, skipping update check for {mm.ModName}. Server version string is { matchingUpdateInfoForMod.versionstr}");
+                            M3Log.Error($@"Cannot parse nexusmods version of mod, skipping update check for {mm.ModName}. Server version string is { matchingUpdateInfoForMod.versionstr}");
                         }
                     }
                 }
@@ -2401,63 +2401,63 @@ namespace MassEffectModManagerCore
             backgroundTaskEngine.SubmitJobCompletion(bgTask);
         }
 
-        private void PopulateTargets(GameTarget selectedTarget = null)
+        private void PopulateTargets(GameTargetWPF selectedTarget = null)
         {
             RepopulatingTargets = true;
             InstallationTargets.ClearEx();
             SelectedGameTarget = null;
             MEDirectories.ReloadGamePaths(true); //this is redundant on the first boot but whatever.
-            Log.Information(@"Populating game targets");
-            List<GameTarget> targets = new List<GameTarget>();
+            M3Log.Information(@"Populating game targets");
+            var targets = new List<GameTargetWPF>();
             bool foundMe1Active = false;
             bool foundMe2Active = false;
             if (ME3Directory.DefaultGamePath != null && Directory.Exists(ME3Directory.DefaultGamePath))
             {
-                var target = new GameTarget(MEGame.ME3, ME3Directory.DefaultGamePath, true);
+                var target = new GameTargetWPF(MEGame.ME3, ME3Directory.DefaultGamePath, true);
                 var failureReason = target.ValidateTarget();
                 if (failureReason == null)
                 {
-                    Log.Information(@"Current boot target for ME3: " + target.TargetPath);
+                    M3Log.Information(@"Current boot target for ME3: " + target.TargetPath);
                     targets.Add(target);
                     Utilities.AddCachedTarget(target);
                 }
                 else
                 {
-                    Log.Error(@"Current boot target for ME3 is invalid: " + failureReason);
+                    M3Log.Error(@"Current boot target for ME3 is invalid: " + failureReason);
                 }
             }
 
             if (ME2Directory.DefaultGamePath != null && Directory.Exists(ME2Directory.DefaultGamePath))
             {
-                var target = new GameTarget(MEGame.ME2, ME2Directory.DefaultGamePath, true);
+                var target = new GameTargetWPF(MEGame.ME2, ME2Directory.DefaultGamePath, true);
                 var failureReason = target.ValidateTarget();
                 if (failureReason == null)
                 {
-                    Log.Information(@"Current boot target for ME2: " + target.TargetPath);
+                    M3Log.Information(@"Current boot target for ME2: " + target.TargetPath);
                     targets.Add(target);
                     Utilities.AddCachedTarget(target);
                     foundMe2Active = true;
                 }
                 else
                 {
-                    Log.Error(@"Current boot target for ME2 is invalid: " + failureReason);
+                    M3Log.Error(@"Current boot target for ME2 is invalid: " + failureReason);
                 }
             }
 
             if (ME1Directory.DefaultGamePath != null && Directory.Exists(ME1Directory.DefaultGamePath))
             {
-                var target = new GameTarget(MEGame.ME1, ME1Directory.DefaultGamePath, true);
+                var target = new GameTargetWPF(MEGame.ME1, ME1Directory.DefaultGamePath, true);
                 var failureReason = target.ValidateTarget();
                 if (failureReason == null)
                 {
-                    Log.Information(@"Current boot target for ME1: " + target.TargetPath);
+                    M3Log.Information(@"Current boot target for ME1: " + target.TargetPath);
                     targets.Add(target);
                     Utilities.AddCachedTarget(target);
                     foundMe1Active = true;
                 }
                 else
                 {
-                    Log.Error(@"Current boot target for ME1 is invalid: " + failureReason);
+                    M3Log.Error(@"Current boot target for ME1 is invalid: " + failureReason);
                 }
             }
 
@@ -2466,16 +2466,16 @@ namespace MassEffectModManagerCore
                 // Load LE targets
                 void loadLETarget(MEGame game, string defaultPath)
                 {
-                    var target = new GameTarget(game, defaultPath, true);
+                    var target = new GameTargetWPF(game, defaultPath, true);
                     var failureReason = target.ValidateTarget();
                     if (failureReason == null)
                     {
-                        Log.Information($@"Current boot target for {game}: {target.TargetPath}");
+                        M3Log.Information($@"Current boot target for {game}: {target.TargetPath}");
                         targets.Add(target);
                     }
                     else
                     {
-                        Log.Error($@"Current boot target for {game} at {target.TargetPath} is invalid: " + failureReason);
+                        M3Log.Error($@"Current boot target for {game} at {target.TargetPath} is invalid: " + failureReason);
                     }
                 }
 
@@ -2492,18 +2492,18 @@ namespace MassEffectModManagerCore
                     && Directory.Exists(targetPath)
                     && !targets.Any(x => x.TargetPath.Equals(targetPath, StringComparison.InvariantCultureIgnoreCase)))
                 {
-                    var target = new GameTarget(game, targetPath, !foundActiveAlready);
+                    var target = new GameTargetWPF(game, targetPath, !foundActiveAlready);
                     var failureReason = target.ValidateTarget();
                     if (failureReason == null)
                     {
-                        Log.Information($@"Found Steam game for {game}: " + target.TargetPath);
+                        M3Log.Information($@"Found Steam game for {game}: " + target.TargetPath);
                         // Todo: Figure out how to insert at correct index
                         targets.Add(target);
                         Utilities.AddCachedTarget(target);
                     }
                     else
                     {
-                        Log.Error($@"Steam version of {game} at {targetPath} is invalid: {failureReason}");
+                        M3Log.Error($@"Steam version of {game} at {targetPath} is invalid: {failureReason}");
                     }
                 }
             }
@@ -2535,7 +2535,7 @@ namespace MassEffectModManagerCore
                 addSteamTarget(Path.Combine(legendarySteamLoc, @"Game", @"ME3"), false, MEGame.LE3);
             }
 
-            Log.Information(@"Loading cached targets");
+            M3Log.Information(@"Loading cached targets");
             targets.AddRange(Utilities.GetCachedTargets(MEGame.ME3, targets));
             targets.AddRange(Utilities.GetCachedTargets(MEGame.ME2, targets));
             targets.AddRange(Utilities.GetCachedTargets(MEGame.ME1, targets));
@@ -2549,14 +2549,14 @@ namespace MassEffectModManagerCore
             OrderAndSetTargets(targets, selectedTarget);
         }
 
-        private void OrderAndSetTargets(List<GameTarget> targets, GameTarget selectedTarget = null)
+        private void OrderAndSetTargets(List<GameTargetWPF> targets, GameTargetWPF selectedTarget = null)
         {
             // ORDER THE TARGETS
             //targets = targets.Where(x => x.Game.IsEnabledGeneration()).Distinct().ToList();
-            List<GameTarget> finalList = new List<GameTarget>();
+            var finalList = new List<GameTargetWPF>();
 
             //LE
-            GameTarget aTarget = targets.FirstOrDefault(x => x.Game == MEGame.LE3 && x.RegistryActive);
+            var aTarget = targets.FirstOrDefault(x => x.Game == MEGame.LE3 && x.RegistryActive);
             if (aTarget != null) finalList.Add(aTarget);
             aTarget = targets.FirstOrDefault(x => x.Game == MEGame.LE2 && x.RegistryActive);
             if (aTarget != null) finalList.Add(aTarget);
@@ -2575,7 +2575,7 @@ namespace MassEffectModManagerCore
 
             if (targets.Count > finalList.Count)
             {
-                finalList.Add(new GameTarget(MEGame.Unknown, $@"==================={M3L.GetString(M3L.string_otherSavedTargets)}===================", false, true) { Selectable = false });
+                finalList.Add(new GameTargetWPF(MEGame.Unknown, $@"==================={M3L.GetString(M3L.string_otherSavedTargets)}===================", false, true) { Selectable = false });
             }
 
             finalList.AddRange(targets.Where(x => x.Game == MEGame.LE3 && !x.RegistryActive));
@@ -2621,7 +2621,7 @@ namespace MassEffectModManagerCore
                 }
             }
 
-            BackupService.SetInstallStatuses(InstallationTargets);
+            //BackupService.SetInstallStatuses(InstallationTargets);
             RepopulatingTargets = false;
         }
 
@@ -2807,7 +2807,7 @@ namespace MassEffectModManagerCore
             };
             bw.DoWork += (a, b) =>
             {
-                Log.Information(@"Start of content check network thread. First startup check: " + firstStartupCheck);
+                M3Log.Information(@"Start of content check network thread. First startup check: " + firstStartupCheck);
 
                 BackgroundTask bgTask;
                 if (firstStartupCheck)
@@ -2840,7 +2840,7 @@ namespace MassEffectModManagerCore
                         {
                             if (latestServerBuildNumer > App.BuildNumber)
                             {
-                                Log.Information(@"Found update for Mod Manager: Build " + latestServerBuildNumer);
+                                M3Log.Information(@"Found update for Mod Manager: Build " + latestServerBuildNumer);
 
                                 Application.Current.Dispatcher.Invoke(delegate
                                 {
@@ -2859,7 +2859,7 @@ namespace MassEffectModManagerCore
                                     {
                                         //Update is available.
                                         {
-                                            Log.Information(@"MD5 of local exe doesn't match server version, minor update detected.");
+                                            M3Log.Information(@"MD5 of local exe doesn't match server version, minor update detected.");
                                             Application.Current.Dispatcher.Invoke(delegate
                                             {
                                                 var updateAvailableDialog = new ProgramUpdateNotification(localmd5);
@@ -2874,14 +2874,14 @@ namespace MassEffectModManagerCore
 #endif
                             else
                             {
-                                Log.Information(@"Mod Manager is up to date");
+                                M3Log.Information(@"Mod Manager is up to date");
                             }
                         }
                     }
                     catch (Exception e)
                     {
                         //Error checking for updates!
-                        Log.Error(@"Checking for updates failed: " + App.FlattenException(e));
+                        M3Log.Error(@"Checking for updates failed: " + App.FlattenException(e));
                         updateCheckTask.finishedUiText = M3L.GetString(M3L.string_failedToCheckForUpdates);
                     }
 
@@ -2900,25 +2900,25 @@ namespace MassEffectModManagerCore
                                 var memoryPackage = OnlineContent.DownloadToMemory(MixinHandler.MixinPackageEndpoint, hash: MixinHandler.ServerMixinHash);
                                 if (memoryPackage.errorMessage != null)
                                 {
-                                    Log.Error(@"Error fetching mixin package: " + memoryPackage.errorMessage);
+                                    M3Log.Error(@"Error fetching mixin package: " + memoryPackage.errorMessage);
                                     bgTask.finishedUiText = M3L.GetString(M3L.string_failedToUpdateMixinPackage);
                                 }
                                 else
                                 {
                                     File.WriteAllBytes(MixinHandler.MixinPackagePath, memoryPackage.result.ToArray());
-                                    Log.Information(@"Wrote ME3Tweaks Mixin Package to disk");
+                                    M3Log.Information(@"Wrote ME3Tweaks Mixin Package to disk");
                                     MixinHandler.LoadME3TweaksPackage();
                                 }
                             }
                             else
                             {
-                                Log.Information(@"ME3Tweaks Mixin Package is up to date");
+                                M3Log.Information(@"ME3Tweaks Mixin Package is up to date");
                                 MixinHandler.LoadME3TweaksPackage();
                             }
                         }
                         catch (Exception e)
                         {
-                            Log.Error(@"Error fetching mixin package: " + e.Message);
+                            M3Log.Error(@"Error fetching mixin package: " + e.Message);
                             bgTask.finishedUiText = M3L.GetString(M3L.string_errorLoadingMixinPackage);
 
                         }
@@ -2973,7 +2973,7 @@ namespace MassEffectModManagerCore
                 }
                 catch (Exception e)
                 {
-                    Log.Error(@"Failed to load tips service: " + e.Message);
+                    M3Log.Error(@"Failed to load tips service: " + e.Message);
                 }
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
 
@@ -2995,15 +2995,15 @@ namespace MassEffectModManagerCore
                     Settings.LastContentCheck = DateTime.Now;
                 }
 
-                Log.Information(@"End of content check network thread");
+                M3Log.Information(@"End of content check network thread");
                 b.Result = 0; //all good
             };
             bw.RunWorkerCompleted += (a, b) =>
                 {
                     if (b.Error != null)
                     {
-                        Log.Error(@"Exception occurred in NetworkFetch thread: " + b.Error.Message);
-                        Log.Error(b.Error.StackTrace);
+                        M3Log.Error(@"Exception occurred in NetworkFetch thread: " + b.Error.Message);
+                        M3Log.Error(b.Error.StackTrace);
                     }
                     else if (b.Result is int i)
                     {
@@ -3039,6 +3039,7 @@ namespace MassEffectModManagerCore
                     if (me1CheckRequired || me2CheckRequired || me3CheckRequired)
                     {
                         var bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"BackupCheck", M3L.GetString(M3L.string_checkingBackups), M3L.GetString(M3L.string_finishedCheckingBackups));
+                        // TODO: NEEDS ACTIVITY SET!
                         if (me1CheckRequired) VanillaDatabaseService.CheckAndTagBackup(MEGame.ME1);
                         if (me2CheckRequired) VanillaDatabaseService.CheckAndTagBackup(MEGame.ME2);
                         if (me3CheckRequired) VanillaDatabaseService.CheckAndTagBackup(MEGame.ME3);
@@ -3062,7 +3063,7 @@ namespace MassEffectModManagerCore
         {
             if (App.PendingGameBoot is MEGame testGame && !testGame.IsLEGame() && !testGame.IsOTGame())
             {
-                Log.Error($@"Invalid autoboot game: {testGame}");
+                M3Log.Error($@"Invalid autoboot game: {testGame}");
                 App.PendingGameBoot = null;
             }
             try
@@ -3077,7 +3078,7 @@ namespace MassEffectModManagerCore
                     Mod m = new Mod(App.PendingAutoModInstallPath, MEGame.Unknown);
                     if (m.ValidMod)
                     {
-                        GameTarget t = GetCurrentTarget(m.Game);
+                        GameTargetWPF t = GetCurrentTarget(m.Game);
                         if (t != null)
                         {
                             ApplyMod(m, t, installCompletedCallback: installed =>
@@ -3108,8 +3109,8 @@ namespace MassEffectModManagerCore
             }
             catch (Exception e)
             {
-                Log.Error($@"Error handling pending command line actions: {e.Message}");
-                Log.Error(e.FlattenException());
+                M3Log.Error($@"Error handling pending command line actions: {e.Message}");
+                M3Log.Error(e.FlattenException());
             }
 
             App.PendingAutoModInstallPath = null;
@@ -3342,7 +3343,7 @@ namespace MassEffectModManagerCore
                     }
                     catch (Win32Exception ex)
                     {
-                        Log.Warning(@"Win32 exception occurred updating boot target. User maybe pressed no to the UAC dialog?: " + ex.Message);
+                        M3Log.Warning(@"Win32 exception occurred updating boot target. User maybe pressed no to the UAC dialog?: " + ex.Message);
                     }
                 }
 
@@ -3386,7 +3387,7 @@ namespace MassEffectModManagerCore
                 // Note that you can have more than one file.
                 string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
                 string ext = Path.GetExtension(files[0]).ToLower();
-                Log.Information(@"File dropped onto interface: " + files[0]);
+                M3Log.Information(@"File dropped onto interface: " + files[0]);
                 switch (ext)
                 {
                     case @".rar":
@@ -3430,15 +3431,15 @@ namespace MassEffectModManagerCore
                             nbw.DoWork += (a, b) =>
                             {
                                 var dest = Path.Combine(Directory.GetParent(files[0]).FullName, File.ReadAllLines(files[0])[0]);
-                                Log.Information($@"Compiling coalesced file: {files[0]} -> {dest}");
+                                M3Log.Information($@"Compiling coalesced file: {files[0]} -> {dest}");
                                 CoalescedConverter.Convert(CoalescedConverter.CoalescedType.ExtractedBin, files[0], dest);
-                                Log.Information(@"Compiled coalesced file");
+                                M3Log.Information(@"Compiled coalesced file");
                             };
                             nbw.RunWorkerCompleted += (a, b) =>
                             {
                                 if (b.Error != null)
                                 {
-                                    Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
+                                    M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                                     task.finishedUiText = M3L.GetString(M3L.string_failedToCompileCoalescedFile);
                                 }
 
@@ -3462,15 +3463,15 @@ namespace MassEffectModManagerCore
                                 nbw.DoWork += (a, b) =>
                                 {
                                     var dest = Path.Combine(Directory.GetParent(files[0]).FullName, Path.GetFileNameWithoutExtension(files[0]));
-                                    Log.Information($@"Decompiling coalesced file: {files[0]} -> {dest}");
+                                    M3Log.Information($@"Decompiling coalesced file: {files[0]} -> {dest}");
                                     CoalescedConverter.Convert(CoalescedConverter.CoalescedType.Binary, files[0], dest);
-                                    Log.Information(@"Decompiled coalesced file");
+                                    M3Log.Information(@"Decompiled coalesced file");
                                 };
                                 nbw.RunWorkerCompleted += (a, b) =>
                                 {
                                     if (b.Error != null)
                                     {
-                                        Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
+                                        M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                                     }
                                     backgroundTaskEngine.SubmitJobCompletion(task);
                                 };
@@ -3534,16 +3535,16 @@ namespace MassEffectModManagerCore
                                     nbw.DoWork += (a, b) =>
                                     {
                                         var dest = Path.Combine(Directory.GetParent(files[0]).FullName, rootElement.Attribute(@"name").Value);
-                                        Log.Information($@"Compiling coalesced file: {files[0]} -> {dest}");
+                                        M3Log.Information($@"Compiling coalesced file: {files[0]} -> {dest}");
                                         try
                                         {
                                             CoalescedConverter.ConvertToBin(files[0], dest);
-                                            Log.Information(@"Compiled coalesced file");
+                                            M3Log.Information(@"Compiled coalesced file");
                                         }
                                         catch (Exception e)
                                         {
-                                            Log.Error($@"Error compiling Coalesced file: {e.Message}:");
-                                            Log.Error(App.FlattenException(e));
+                                            M3Log.Error($@"Error compiling Coalesced file: {e.Message}:");
+                                            M3Log.Error(App.FlattenException(e));
                                             errorCompilingCoalesced(M3L.GetString(M3L.string_interp_exceptionOccuredWhileCompilingCoalsecedFileX, e.Message));
                                         }
                                     };
@@ -3551,7 +3552,7 @@ namespace MassEffectModManagerCore
                                     {
                                         if (b.Error != null)
                                         {
-                                            Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
+                                            M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                                         }
 
                                         if (failedToCompileCoalesced) task.finishedUiText = M3L.GetString(M3L.string_errorCompilingCoalesced);
@@ -3591,7 +3592,7 @@ namespace MassEffectModManagerCore
                                         {
                                             if (b.Error != null)
                                             {
-                                                Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
+                                                M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                                             }
                                             if (failedToCompileTLK) task.finishedUiText = M3L.GetString(M3L.string_compilingFailed);
                                             backgroundTaskEngine.SubmitJobCompletion(task);
@@ -3608,7 +3609,7 @@ namespace MassEffectModManagerCore
                                         {
                                             if (b.Error != null)
                                             {
-                                                Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
+                                                M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                                             }
                                             if (failedToCompileTLK) task.finishedUiText = M3L.GetString(M3L.string_compilingFailed);
                                             backgroundTaskEngine.SubmitJobCompletion(task);
@@ -3625,7 +3626,7 @@ namespace MassEffectModManagerCore
                                     {
                                         if (b.Error != null)
                                         {
-                                            Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
+                                            M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                                         }
                                         if (failedToCompileTLK) task.finishedUiText = M3L.GetString(M3L.string_compilingFailed);
                                         backgroundTaskEngine.SubmitJobCompletion(task);
@@ -3635,7 +3636,7 @@ namespace MassEffectModManagerCore
                             }
                             catch (Exception ex)
                             {
-                                Log.Error(@"Error loading XML file that was dropped onto UI: " + ex.Message);
+                                M3Log.Error(@"Error loading XML file that was dropped onto UI: " + ex.Message);
                                 M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_errorReadingXmlFileX, ex.Message), M3L.GetString(M3L.string_errorReadingXmlFile), MessageBoxButton.OK, MessageBoxImage.Error);
                             }
                         }
@@ -3648,17 +3649,17 @@ namespace MassEffectModManagerCore
                             nbw.DoWork += (a, b) =>
                             {
                                 var dest = Path.Combine(Directory.GetParent(files[0]).FullName, Path.GetFileNameWithoutExtension(files[0]) + @".xml");
-                                Log.Information($@"Decompiling TLK file: {files[0]} -> {dest}");
+                                M3Log.Information($@"Decompiling TLK file: {files[0]} -> {dest}");
                                 var tf = new TalkFile();
                                 tf.LoadTlkData(files[0]);
-                                tf.DumpToFile(dest);
-                                Log.Information(@"Decompiled TLK file");
+                                tf.SaveToXML(dest);
+                                M3Log.Information(@"Decompiled TLK file");
                             };
                             nbw.RunWorkerCompleted += (a, b) =>
                             {
                                 if (b.Error != null)
                                 {
-                                    Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
+                                    M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                                 }
                                 backgroundTaskEngine.SubmitJobCompletion(task);
                             };
@@ -3681,7 +3682,7 @@ namespace MassEffectModManagerCore
                         }
                         catch (Exception ex)
                         {
-                            Log.Error($@"Error compiling m3m mod file: {ex.Message}");
+                            M3Log.Error($@"Error compiling m3m mod file: {ex.Message}");
                             M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_errorCompilingm3mX, ex.Message), M3L.GetString(M3L.string_errorCompilingm3m), MessageBoxButton.OK, MessageBoxImage.Error);
                         }
                         break;
@@ -3692,7 +3693,7 @@ namespace MassEffectModManagerCore
                         }
                         catch (Exception ex)
                         {
-                            Log.Error($@"Error decompiling m3m mod file: {ex.Message}");
+                            M3Log.Error($@"Error decompiling m3m mod file: {ex.Message}");
                             M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_errorCompilingm3mX, ex.Message), M3L.GetString(M3L.string_errorCompilingm3m), MessageBoxButton.OK, MessageBoxImage.Error);
                         }
 
@@ -3703,7 +3704,7 @@ namespace MassEffectModManagerCore
 
         private void openModImportUI(string archiveFile, Stream archiveStream = null)
         {
-            Log.Information(@"Opening Mod Archive Importer for file " + archiveFile);
+            M3Log.Information(@"Opening Mod Archive Importer for file " + archiveFile);
             var modInspector = new ModArchiveImporter(archiveFile, archiveStream);
             modInspector.Close += (a, b) =>
             {
@@ -3771,12 +3772,12 @@ namespace MassEffectModManagerCore
                 }
                 else
                 {
-                    Log.Error(@"SyncPlotManagerForGame game target was null! This shouldn't be possible");
+                    M3Log.Error(@"SyncPlotManagerForGame game target was null! This shouldn't be possible");
                 }
             }
         }
 
-        private void SyncPlotManagerForTarget(GameTarget target)
+        private void SyncPlotManagerForTarget(GameTargetWPF target)
         {
             var task = backgroundTaskEngine.SubmitBackgroundJob(@"SyncPlotManager",
                 M3L.GetString(M3L.string_interp_syncingPlotManagerForGame, target.Game.ToGameName()),
@@ -3801,12 +3802,12 @@ namespace MassEffectModManagerCore
                 }
                 else
                 {
-                    Log.Error(@"AutoTOC game target was null! This shouldn't be possible");
+                    M3Log.Error(@"AutoTOC game target was null! This shouldn't be possible");
                 }
             }
         }
 
-        private void AutoTOCTarget(GameTarget target, bool showInStatusBar = true)
+        private void AutoTOCTarget(GameTargetWPF target, bool showInStatusBar = true)
         {
             BackgroundTask task = showInStatusBar ? backgroundTaskEngine.SubmitBackgroundJob(@"AutoTOC", M3L.GetString(M3L.string_runningAutoTOC),
                     M3L.GetString(M3L.string_ranAutoTOC)) : null;
@@ -3943,7 +3944,7 @@ namespace MassEffectModManagerCore
         public void SetApplicationLanguage(string lang, bool startup, ResourceDictionary forcedDictionary = null)
         {
 
-            Log.Information(@"Setting language to " + lang);
+            M3Log.Information(@"Setting language to " + lang);
             Application.Current.Dispatcher.Invoke(async () =>
             {
                 //Set language.
@@ -3959,7 +3960,7 @@ namespace MassEffectModManagerCore
                 }
                 catch (Exception e)
                 {
-                    Log.Error(@"Could not set localized dynamic help: " + e.Message);
+                    M3Log.Error(@"Could not set localized dynamic help: " + e.Message);
                 }
 
                 if (SelectedMod != null)
@@ -3998,7 +3999,7 @@ namespace MassEffectModManagerCore
                 }
                 catch (Exception e)
                 {
-                    Log.Error(@"Error loading external localization file: " + e.Message);
+                    M3Log.Error(@"Error loading external localization file: " + e.Message);
                 }
             }
         }

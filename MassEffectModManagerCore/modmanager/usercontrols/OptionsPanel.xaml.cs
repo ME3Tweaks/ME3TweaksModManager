@@ -1,23 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
+﻿using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using MassEffectModManagerCore.modmanager.diagnostics;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.ui;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using PropertyChanged;
-using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -112,7 +100,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     return;
                 }
 
-                Log.Warning(@"Turning off telemetry :(");
+                M3Log.Warning(@"Turning off telemetry :(");
                 //Turn off telemetry.
                 Analytics.SetEnabledAsync(false);
                 Crashes.SetEnabledAsync(false);
@@ -120,7 +108,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             else if (callingMember == EnableTelemetry_MenuItem)
             {
                 //turning telemetry on
-                Log.Information(@"Turning on telemetry :)");
+                M3Log.Information(@"Turning on telemetry :)");
                 Analytics.SetEnabledAsync(true);
                 Crashes.SetEnabledAsync(true);
             }

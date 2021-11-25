@@ -5,9 +5,8 @@ using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.nexusmodsintegration;
 using LegendaryExplorerCore.Packages;
+using MassEffectModManagerCore.modmanager.diagnostics;
 using Microsoft.AppCenter.Analytics;
-using Pathoschild.FluentNexus.Models;
-using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.objects.mod
 {
@@ -63,7 +62,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             }
             catch (Exception e)
             {
-                Log.Error(@"Error getting endorsement status: " + e.Message);
+                M3Log.Error(@"Error getting endorsement status: " + e.Message);
                 return false; //null would mean own mod. so just say its not endorsed atm.
             }
         }
@@ -116,7 +115,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     {
                         telemetryOverride = e.ToString();
                     }
-                    Log.Error(@"Error endorsing/unendorsing: " + e.ToString());
+                    M3Log.Error(@"Error endorsing/unendorsing: " + e.ToString());
                 }
 
                 checkedEndorsementStatus = false;
@@ -132,7 +131,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             {
                 if (b.Error != null)
                 {
-                    Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
+                    M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                 }
                 else if (b.Result is string endorsementFailedReason)
                 {

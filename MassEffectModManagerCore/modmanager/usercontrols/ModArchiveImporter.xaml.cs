@@ -1,5 +1,4 @@
-﻿using Serilog;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -14,7 +13,6 @@ using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.ui;
 using System.Diagnostics;
 using System.Globalization;
-using System.Web;
 using System.Xml.Linq;
 using SevenZip.EventArguments;
 using MassEffectModManagerCore.modmanager.gameini;
@@ -26,8 +24,8 @@ using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
+using MassEffectModManagerCore.modmanager.diagnostics;
 using Microsoft.AppCenter.Analytics;
-using Trinet.Core.IO.Ntfs;
 using MemoryAnalyzer = MassEffectModManagerCore.modmanager.memoryanalyzer.MemoryAnalyzer;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -105,11 +103,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             nbw.RunWorkerCompleted += (a, b) =>
             {
                 ActionText = null;
-                Log.Information(@"Archive scan thread exited");
+                M3Log.Information(@"Archive scan thread exited");
                 if (b.Error != null)
                 {
-                    Log.Error($@"Exception occurred in {nbw.Name} thread:");
-                    Log.Error(b.Error.StackTrace);
+                    M3Log.Error($@"Exception occurred in {nbw.Name} thread:");
+                    M3Log.Error(b.Error.StackTrace);
                 }
 
                 if (CompressedMods.Count > 0)
@@ -157,7 +155,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         {@"Archive name", Path.GetFileName(filepath)}
                     });
-                    Log.Error(@"A mod in the archive was not deployed using M3 and targets 6.0 or higher! You should contact the developer and tell them to deploy it properly.");
+                    M3Log.Error(@"A mod in the archive was not deployed using M3 and targets 6.0 or higher! You should contact the developer and tell them to deploy it properly.");
                     M3L.ShowDialog(Window.GetWindow(this),
                         M3L.GetString(M3L.string_dialog_improperlyDeployedMod),
                         M3L.GetString(M3L.string_improperlyDeployedMod), MessageBoxButton.OK,
@@ -191,7 +189,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             ActionText = M3L.GetString(M3L.string_interp_openingX, ScanningFile);
 
             var archive = e.Argument as string;
-            Log.Information($@"Scanning archive for mods: {archive}");
+            M3Log.Information($@"Scanning archive for mods: {archive}");
             void AddCompressedModCallback(Mod m)
             {
                 Application.Current.Dispatcher.Invoke(delegate
@@ -239,7 +237,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     SevenZipExtractor sve = new SevenZipExtractor(archive);
                     string embeddedExePath = null;
-                    Log.Information(@"This file may contain a known exe-based mod.");
+                    M3Log.Information(@"This file may contain a known exe-based mod.");
                     foreach (var importingInfo in knownModsOfThisSize)
                     {
                         if (importingInfo.zippedexepath == null) continue;
@@ -253,11 +251,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 var importingInfo2 = ThirdPartyServices.GetImportingInfosBySize((long)exedata.Size);
                                 if (importingInfo2.Count == 0)
                                 {
-                                    Log.Warning(@"zip wrapper for this file has importing information but the embedded exe does not!");
+                                    M3Log.Warning(@"zip wrapper for this file has importing information but the embedded exe does not!");
                                     break; //no importing info
                                 }
 
-                                Log.Information(@"Reading embedded executable file in archive: " + embeddedExePath);
+                                M3Log.Information(@"Reading embedded executable file in archive: " + embeddedExePath);
                                 ActionText = M3L.GetString(M3L.string_readingZippedExecutable);
                                 pathOverride = Path.Combine(Utilities.GetTempPath(), Path.GetFileName(embeddedExePath));
                                 using var outstream = new FileStream(pathOverride, FileMode.Create);
@@ -315,7 +313,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
             catch (Exception ex)
             {
-                Log.Error($@"Error doing preinspection, it will be skipped. Error: {ex.Message}");
+                M3Log.Error($@"Error doing preinspection, it will be skipped. Error: {ex.Message}");
             }*/
 
             void ActionTextUpdateCallback(string newText)
@@ -414,7 +412,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 Mod failed = new Mod(false);
                 failed.ModName = M3L.GetString(M3L.string_archiveError);
                 failed.LoadFailedReason = M3L.GetString(M3L.string_couldNotInspectArchive7zException);
-                Log.Error($@"Unable to inspect archive {filepath}: SevenZipException occurred! It may be corrupt. The specific error was: {svae.Message}");
+                M3Log.Error($@"Unable to inspect archive {filepath}: SevenZipException occurred! It may be corrupt. The specific error was: {svae.Message}");
                 failedToLoadModeCallback?.Invoke(failed);
                 addCompressedModCallback?.Invoke(failed);
                 if (closeStreamOnComplete)
@@ -473,7 +471,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (isAlotFile)
                 {
                     //is alot installer
-                    Log.Information(@"This file contains texture files and ALOTInstaller.exe - this is an ALOT main file");
+                    M3Log.Information(@"This file contains texture files and ALOTInstaller.exe - this is an ALOT main file");
                     var textureLibraryPath = Utilities.GetALOTInstallerTextureLibraryDirectory();
                     if (textureLibraryPath != null)
                     {
@@ -481,7 +479,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         var destPath = Path.Combine(textureLibraryPath, Path.GetFileName(filepath));
                         if (!File.Exists(destPath))
                         {
-                            Log.Information(M3L.GetString(M3L.string_thisFileIsNotInTheTextureLibraryMovingItToTheTextureLibrary));
+                            M3Log.Information(M3L.GetString(M3L.string_thisFileIsNotInTheTextureLibraryMovingItToTheTextureLibrary));
                             currentOperationTextCallback?.Invoke(M3L.GetString(M3L.string_movingALOTFileToTextureLibraryPleaseWait));
                             archiveFile.Dispose();
                             File.Move(filepath, destPath, true);
@@ -513,7 +511,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
             else
             {
-                Log.Information(@"Querying third party importing service for information about this file: " + filepath);
+                M3Log.Information(@"Querying third party importing service for information about this file: " + filepath);
                 currentOperationTextCallback?.Invoke(M3L.GetString(M3L.string_queryingThirdPartyImportingService));
                 var md5 = forcedMD5 ?? (archiveStream != null ? Utilities.CalculateMD5(archiveStream) : Utilities.CalculateMD5(filepath));
                 var potentialImportinInfos = ThirdPartyServices.GetImportingInfosBySize(archiveSize);
@@ -521,14 +519,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                 if (importingInfo == null && isExe)
                 {
-                    Log.Error(@"EXE-based mods must be validated by ME3Tweaks before they can be imported into M3. This is to prevent breaking third party mods.");
+                    M3Log.Error(@"EXE-based mods must be validated by ME3Tweaks before they can be imported into M3. This is to prevent breaking third party mods.");
                     return;
                 }
 
                 ExeTransform transform = null;
                 if (importingInfo?.exetransform != null)
                 {
-                    Log.Information(@"TPIS lists exe transform for this mod: " + importingInfo.exetransform);
+                    M3Log.Information(@"TPIS lists exe transform for this mod: " + importingInfo.exetransform);
                     transform = new ExeTransform(OnlineContent.FetchExeTransform(importingInfo.exetransform));
                 }
 
@@ -537,7 +535,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     //Partially supported unofficial third party mod
                     //Mod has a custom written moddesc.ini stored on ME3Tweaks
-                    Log.Information(@"Fetching premade moddesc.ini from ME3Tweaks for this mod archive");
+                    M3Log.Information(@"Fetching premade moddesc.ini from ME3Tweaks for this mod archive");
                     string loadFailedReason = null;
                     try
                     {
@@ -546,7 +544,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     catch (Exception e)
                     {
                         loadFailedReason = e.Message;
-                        Log.Error(@"Error fetching moddesc from server: " + e.Message);
+                        M3Log.Error(@"Error fetching moddesc from server: " + e.Message);
                     }
 
                     //if (!isExe)
@@ -554,7 +552,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     Mod virutalCustomMod = new Mod(custommoddesc, "", archiveFile); //Load virtual mod
                     if (virutalCustomMod.ValidMod)
                     {
-                        Log.Information(@"Mod loaded from server moddesc.");
+                        M3Log.Information(@"Mod loaded from server moddesc.");
                         addCompressedModCallback?.Invoke(virutalCustomMod);
                         internalModList.Add(virutalCustomMod);
                         return; //Don't do further parsing as this is custom written
@@ -569,7 +567,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         }
                         else
                         {
-                            Log.Error(@"Server moddesc was not valid for this mod. This shouldn't occur. Please report to Mgamerz.");
+                            M3Log.Error(@"Server moddesc was not valid for this mod. This shouldn't occur. Please report to Mgamerz.");
                             Analytics.TrackEvent(@"Invalid servermoddesc detected", new Dictionary<string, string>()
                                 {
                                     {@"moddesc.ini name", importingInfo.servermoddescname ?? transform.PostTransformModdesc}
@@ -587,7 +585,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
                     //} else
                     //{
-                    //    Log.Information(@"Fetched premade moddesc.ini from server. We will fake the mod for the user");
+                    //    M3Log.Information(@"Fetched premade moddesc.ini from server. We will fake the mod for the user");
                     //}
                 }
 
@@ -634,12 +632,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     //If no version information, check ME3Tweaks to see if it's been added recently
                     //see if server has information on version number
                     currentOperationTextCallback?.Invoke(M3L.GetString(M3L.string_gettingAdditionalInformationAboutFileFromME3Tweaks));
-                    Log.Information(@"Querying ME3Tweaks for additional information for this file...");
+                    M3Log.Information(@"Querying ME3Tweaks for additional information for this file...");
                     var modInfo = OnlineContent.QueryModRelay(md5, archiveSize);
                     //todo: make this work offline.
                     if (modInfo != null && modInfo.TryGetValue(@"version", out string value))
                     {
-                        Log.Information(@"ME3Tweaks reports version number for this file is: " + value);
+                        M3Log.Information(@"ME3Tweaks reports version number for this file is: " + value);
                         foreach (Mod compressedMod in internalModList)
                         {
                             compressedMod.ModVersionString = value;
@@ -650,7 +648,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
                     else
                     {
-                        Log.Information(@"ME3Tweaks does not have additional version information for this file.");
+                        M3Log.Information(@"ME3Tweaks does not have additional version information for this file.");
                         Analytics.TrackEvent(@"Non Mod Manager Mod Dropped", new Dictionary<string, string>()
                             {
                                 {@"Filename", Path.GetFileName(filepath)},
@@ -666,7 +664,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 else
                 {
                     //Try straight up TPMI import?
-                    Log.Warning($@"No importing information is available for file with hash {md5}. No mods could be found.");
+                    M3Log.Warning($@"No importing information is available for file with hash {md5}. No mods could be found.");
                     Analytics.TrackEvent(@"Non Mod Manager Mod Dropped", new Dictionary<string, string>()
                         {
                             {@"Filename", Path.GetFileName(filepath)},
@@ -702,7 +700,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         if (thirdPartyInfo.PreventImport == false)
                         {
-                            Log.Information($@"Third party mod found: {thirdPartyInfo.modname}, preparing virtual moddesc.ini");
+                            M3Log.Information($@"Third party mod found: {thirdPartyInfo.modname}, preparing virtual moddesc.ini");
                             //We will have to load a virtual moddesc. Since Mod constructor requires reading an ini, we will build and feed it a virtual one.
                             IniData virtualModDesc = new IniData();
                             virtualModDesc[@"ModManager"][@"cmmver"] = App.HighestSupportedModDesc.ToString();
@@ -748,7 +746,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
                     else
                     {
-                        Log.Information($@"No third party mod information for importing {dlcFolderName}. Should this be supported for import? Contact Mgamerz on the ME3Tweaks Discord if it should.");
+                        M3Log.Information($@"No third party mod information for importing {dlcFolderName}. Should this be supported for import? Contact Mgamerz on the ME3Tweaks Discord if it should.");
                     }
                 }
             }
@@ -774,7 +772,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (b.Error != null)
                 {
-                    Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
+                    M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                 }
                 TaskRunning = false;
                 if (b.Result is List<Mod> modList)
@@ -849,11 +847,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (Utilities.DriveFreeBytes(Utilities.GetModsDirectory(), out var freespaceBytes))
             {
                 requiredDiskSpace = (long)(requiredDiskSpace * 1.05); //5% buffer
-                Log.Information($@"Selected mods require: {FileSize.FormatSize(requiredDiskSpace)}");
+                M3Log.Information($@"Selected mods require: {FileSize.FormatSize(requiredDiskSpace)}");
                 if ((long)freespaceBytes < requiredDiskSpace)
                 {
-                    Log.Error(@"There is not enough free space on the disk to extract these mods.");
-                    Log.Error($@"Selected mods require: {FileSize.FormatSize(requiredDiskSpace)} | Disk space available in library partition: {FileSize.FormatSize(freespaceBytes)}");
+                    M3Log.Error(@"There is not enough free space on the disk to extract these mods.");
+                    M3Log.Error($@"Selected mods require: {FileSize.FormatSize(requiredDiskSpace)} | Disk space available in library partition: {FileSize.FormatSize(freespaceBytes)}");
                     e.Result = (requiredDiskSpace, ModImportResult.ERROR_INSUFFICIENT_DISK_SPACE);
                     return;
                 }
@@ -861,7 +859,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
             else
             {
-                Log.Error(@"Unable to get amount of free space for mod library directory disk! We will continue anyways. Path: " + Utilities.GetModsDirectory());
+                M3Log.Error(@"Unable to get amount of free space for mod library directory disk! We will continue anyways. Path: " + Utilities.GetModsDirectory());
             }
 
 
@@ -869,7 +867,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             foreach (var mod in mods)
             {
                 //Todo: Extract files
-                Log.Information(@"Extracting mod: " + mod.ModName);
+                M3Log.Information(@"Extracting mod: " + mod.ModName);
                 ActionText = M3L.GetString(M3L.string_interp_extractingX, mod.ModName);
                 ProgressValue = 0;
                 ProgressMaximum = 100;
@@ -905,7 +903,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         var deletedOK = Utilities.DeleteFilesAndFoldersRecursively(sanitizedPath);
                         if (!deletedOK)
                         {
-                            Log.Error(@"Could not delete existing mod directory.");
+                            M3Log.Error(@"Could not delete existing mod directory.");
                             e.Result = ModImportResult.ERROR_COULD_NOT_DELETE_EXISTING_DIR;
                             M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_dialogErrorOccuredDeletingExistingMod), M3L.GetString(M3L.string_errorDeletingExistingMod), MessageBoxButton.OK, MessageBoxImage.Error);
                             abort = true;
@@ -915,7 +913,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     catch (Exception ex)
                     {
                         //I don't think this can be triggered but will leave as failsafe anyways.
-                        Log.Error(@"Error while deleting existing output directory: " + App.FlattenException(ex));
+                        M3Log.Error(@"Error while deleting existing output directory: " + App.FlattenException(ex));
                         Application.Current.Dispatcher.Invoke(
                             () =>
                             {
@@ -930,7 +928,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                     if (abort)
                     {
-                        Log.Warning(@"Aborting mod import.");
+                        M3Log.Warning(@"Aborting mod import.");
                         return;
                     }
                 }
@@ -941,7 +939,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 //Check if RCW mod
                 if (mod.InstallationJobs.Count == 1 && mod.InstallationJobs[0].Header == ModJob.JobHeader.ME2_RCWMOD)
                 {
-                    Log.Information(@"Generating M3 wrapper moddesc.ini for " + mod.ModName);
+                    M3Log.Information(@"Generating M3 wrapper moddesc.ini for " + mod.ModName);
                     mod.ExtractRCWModToM3LibraryMod(sanitizedPath);
                     extractedMods.Add(mod);
                 }
@@ -956,7 +954,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         //Extraction failed!
                         Application.Current.Dispatcher.Invoke(delegate
                         {
-                            Log.Error(@"Error while extracting archive: " + App.FlattenException(ex));
+                            M3Log.Error(@"Error while extracting archive: " + App.FlattenException(ex));
                             M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_interp_anErrorOccuredExtractingTheArchiveX, ex.Message), M3L.GetString(M3L.string_errorExtractingArchive), MessageBoxButton.OK, MessageBoxImage.Error);
                             e.Result = ModImportResult.ERROR_EXTRACTING_ARCHIVE;
                         });

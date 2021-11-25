@@ -657,7 +657,7 @@
     <system:String x:Key="string_interp_validation_altfile_couldNotFindModFile">Alternate File {0} in-mod target (ModFile) specified but does not exist: {1}</system:String>
     <!-- 0 = Friendly name, 1 = Filepath-->
 
-    <!-- GameTarget -->
+    <!-- GameTargetWPF -->
     <system:String  xml:space="preserve" x:Key="string_interp_ui_alotInstalledVersion">A Lot Of Textures (ALOT) is installed\nVersion {0}</system:String>
     <!-- 0 = ALOT Version -->
     <system:String  xml:space="preserve" x:Key="string_ui_alotNotInstalled">A Lot Of Textures (ALOT)\nNot installed</system:String>

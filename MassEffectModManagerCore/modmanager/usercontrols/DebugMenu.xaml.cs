@@ -1,22 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Packages;
-using LegendaryExplorerCore.Unreal;
 using MassEffectModManagerCore.modmanager.gamemd5;
 using MassEffectModManagerCore.modmanager.objects.mod;
-using MassEffectModManagerCore.modmanager.objects.mod.merge;
 using MassEffectModManagerCore.modmanager.save.game2.UI;
 using MassEffectModManagerCore.modmanager.squadmates;
-using Microsoft.Win32;
-using Microsoft.WindowsAPICodePack.Win32Native.Shell.DesktopWindowManager;
 using SevenZip;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols

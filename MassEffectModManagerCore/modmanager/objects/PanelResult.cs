@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.objects.mod;
-using MassEffectModManagerCore.modmanager.usercontrols;
+using ME3TweaksCoreWPF;
 
 namespace MassEffectModManagerCore.modmanager.objects
 {
@@ -27,7 +23,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         /// <summary>
         /// The last selected target in the panel
         /// </summary>
-        public GameTarget SelectedTarget { get; set; }
+        public GameTargetWPF SelectedTarget { get; set; }
         /// <summary>
         /// Tool to launch after this panel has closed
         /// </summary>
@@ -36,16 +32,16 @@ namespace MassEffectModManagerCore.modmanager.objects
         /// <summary>
         /// Targets to plot manager sync after this panel has closed
         /// </summary>
-        public ConcurrentHashSet<GameTarget> TargetsToPlotManagerSync { get; } = new();
+        public ConcurrentHashSet<GameTargetWPF> TargetsToPlotManagerSync { get; } = new();
         /// <summary>
         /// Targets to squadmate merge sync when this panel has closed
         /// </summary>
-        public ConcurrentHashSet<GameTarget> TargetsToSquadmateMergeSync { get; } = new();
+        public ConcurrentHashSet<GameTargetWPF> TargetsToSquadmateMergeSync { get; } = new();
 
         /// <summary>
         /// Targets to TOC after this panel has closed
         /// </summary>
-        public ConcurrentHashSet<GameTarget> TargetsToAutoTOC { get; } = new();
+        public ConcurrentHashSet<GameTargetWPF> TargetsToAutoTOC { get; } = new();
 
         /// <summary>
         /// Panel to open after close

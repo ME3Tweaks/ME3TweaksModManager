@@ -7,20 +7,17 @@ using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.modmanager.windows;
 using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore.GameFilesystem;
-using LegendaryExplorerCore.Gammtek.IO;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.TLK.ME1;
 using LegendaryExplorerCore.TLK.ME2ME3;
 using LegendaryExplorerCore.Unreal;
-using LegendaryExplorerCore.Unreal.BinaryConverters;
 using LegendaryExplorerCore.Unreal.Classes;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Taskbar;
 using PropertyChanged;
-using Serilog;
 using SevenZip;
 using System;
 using System.Collections.Concurrent;
@@ -38,9 +35,12 @@ using System.Windows.Media;
 using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages.CloningImportingAndRelinking;
-using LegendaryExplorerCore.Unreal.ObjectInfo;
+using LegendaryExplorerCore.TLK;
+using MassEffectModManagerCore.modmanager.diagnostics;
+using ME3TweaksCore.GameFilesystem;
+using ME3TweaksCore.Targets;
+using ME3TweaksCoreWPF;
 using Brushes = System.Windows.Media.Brushes;
-using ExportEntry = LegendaryExplorerCore.Packages.ExportEntry;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -59,7 +59,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public ArchiveDeployment(Mod mod)
         {
-            Log.Information($@"Initiating deployment for mod {mod.ModName} {mod.ModVersionString}");
+            M3Log.Information($@"Initiating deployment for mod {mod.ModName} {mod.ModVersionString}");
             Analytics.TrackEvent(@"Started deployment panel for mod", new Dictionary<string, string>()
             {
                 { @"Mod name" , $@"{mod.ModName} {mod.ParsedModVersion}"}
@@ -79,7 +79,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             public ObservableCollectionExtended<DeploymentChecklistItem> DeploymentChecklistItems { get; } = new ObservableCollectionExtended<DeploymentChecklistItem>();
             public DeploymentValidationTarget DepValidationTarget { get; set; }
-            private GameTarget internalValidationTarget { get; set; }
+            private GameTargetWPF internalValidationTarget { get; set; }
             public Mod ModBeingDeployed { get; }
             public ICommand RerunChecksCommand { get; }
             public void RunChecks()
@@ -374,7 +374,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         }
 
                         var tlkBasePath = ModBeingDeployed.Game.IsGame2() ? $@"DLC_{moduleNum}" : customDLC;
-                        Dictionary<string, List<ME1TalkFile.TLKStringRef>> tlkMappings = new Dictionary<string, List<ME1TalkFile.TLKStringRef>>();
+                        Dictionary<string, List<TLKStringRef>> tlkMappings = new Dictionary<string, List<TLKStringRef>>();
                         foreach (var language in languages)
                         {
                             if (CheckCancelled) return;
@@ -404,7 +404,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 }
 
                                 // Check to make sure TLK contains the mount file TLK ID
-                                var referencedStr = tf.findDataById(mount.TLKID);
+                                var referencedStr = tf.FindDataById(mount.TLKID);
                                 if (referencedStr == null || referencedStr == @"No Data")
                                 {
                                     // TLK STRING REF NOT FOUND
@@ -483,7 +483,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     }
 
                                     ME1TalkFile tf = new ME1TalkFile(tfExp);
-                                    var str = tf.findDataById(tlkid);
+                                    var str = tf.FindDataById(tlkid);
                                     if (str == null || str == @"No Data")
                                     {
                                         // INVALID
@@ -591,7 +591,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     if (f.RepresentsPackageFilePath())
                     {
                         var relativePath = f.Substring(ModBeingDeployed.ModPath.Length + 1);
-                        Log.Information(@"Checking file for audio issues: " + f);
+                        M3Log.Information(@"Checking file for audio issues: " + f);
                         var package = MEPackageHandler.OpenMEPackage(f);
                         var wwiseStreams = package.Exports.Where(x => x.ClassName == @"WwiseStream" && !x.IsDefaultObject).ToList();
                         foreach (var wwisestream in wwiseStreams)
@@ -653,7 +653,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     }
                                     else
                                     {
-                                        Log.Warning($@"Could not find AFC file {afcNameProp.ToString()}.afc. Export: {wwisestream.UIndex} {wwisestream.ObjectName}");
+                                        M3Log.Warning($@"Could not find AFC file {afcNameProp.ToString()}.afc. Export: {wwisestream.UIndex} {wwisestream.ObjectName}");
                                         item.AddSignificantIssue(M3L.GetString(M3L.string_interp_couldNotFindReferencedAFC, relativePath, wwisestream.InstancedFullPath, afcNameProp.ToString()));
                                         continue;
                                     }
@@ -669,7 +669,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     audioStream.Seek(audioOffset, SeekOrigin.Begin);
                                     if (audioStream.Position > audioStream.Length - 4)
                                     {
-                                        Log.Warning($@"Found broken audio: {wwisestream.UIndex} {wwisestream.ObjectName} has broken audio, pointer points inside of AFC, but the size of it extends beyond the end of the AFC. Package file: {relativePath}, referenced AFC: {afcPath} @ 0x{audioOffset:X8}. The AFC is only 0x{audioStream.Length:X8} bytes long.");
+                                        M3Log.Warning($@"Found broken audio: {wwisestream.UIndex} {wwisestream.ObjectName} has broken audio, pointer points inside of AFC, but the size of it extends beyond the end of the AFC. Package file: {relativePath}, referenced AFC: {afcPath} @ 0x{audioOffset:X8}. The AFC is only 0x{audioStream.Length:X8} bytes long.");
                                         item.AddSignificantIssue(M3L.GetString(M3L.string_interp_invalidAudioPointerOutsideAFC, relativePath, wwisestream.UIndex, wwisestream.ObjectName, audioOffset, afcPath, audioStream.Length));
                                         if (audioStream is FileStream) audioStream.Close();
                                         continue;
@@ -677,7 +677,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                                     if (audioStream.ReadStringASCIINull(4) != @"RIFF")
                                     {
-                                        Log.Warning($@"Found broken audio: {wwisestream.UIndex} {wwisestream.ObjectName} has broken audio, pointer points to data that does not start with RIFF, which is the start of audio data. Package file: {relativePath}, referenced AFC: {afcPath} @ 0x{audioOffset:X8}.");
+                                        M3Log.Warning($@"Found broken audio: {wwisestream.UIndex} {wwisestream.ObjectName} has broken audio, pointer points to data that does not start with RIFF, which is the start of audio data. Package file: {relativePath}, referenced AFC: {afcPath} @ 0x{audioOffset:X8}.");
                                         item.AddSignificantIssue(M3L.GetString(M3L.string_interp_invalidAudioPointer, relativePath, wwisestream.InstancedFullPath));
                                         if (audioStream is FileStream) audioStream.Close();
                                         continue;
@@ -698,7 +698,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                                         if (audioOffset >= vanillaInfo[0].size)
                                         {
-                                            Log.Warning($@"Found broken audio: {wwisestream.UIndex} {wwisestream.ObjectName} has broken audio, pointer points beyond the end of the AFC file. Package file: {relativePath}, referenced AFC: {afcPath} @ 0x{audioOffset:X8}.");
+                                            M3Log.Warning($@"Found broken audio: {wwisestream.UIndex} {wwisestream.ObjectName} has broken audio, pointer points beyond the end of the AFC file. Package file: {relativePath}, referenced AFC: {afcPath} @ 0x{audioOffset:X8}.");
                                             item.AddSignificantIssue(M3L.GetString(M3L.string_interp_audioStoredInOfficialAFC, relativePath, wwisestream.InstancedFullPath));
                                         }
                                     }
@@ -707,7 +707,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 }
                                 catch (Exception e)
                                 {
-                                    Log.Error($@"Error checking for broken audio: {wwisestream?.UIndex} {wwisestream?.ObjectName}. Package file: {relativePath}, referenced AFC: {afcPath} @ 0x{audioOffset:X8}. The error was: {e.Message}");
+                                    M3Log.Error($@"Error checking for broken audio: {wwisestream?.UIndex} {wwisestream?.ObjectName}. Package file: {relativePath}, referenced AFC: {afcPath} @ 0x{audioOffset:X8}. The error was: {e.Message}");
                                     e.LogStackTrace();
                                     if (audioStream is FileStream) audioStream.Close();
                                     item.AddSignificantIssue(M3L.GetString(M3L.string_errorValidatingAudioReference, relativePath, wwisestream.InstancedFullPath, e.Message));
@@ -753,7 +753,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     if (f.RepresentsPackageFilePath())
                     {
                         var relativePath = f.Substring(ModBeingDeployed.ModPath.Length + 1);
-                        Log.Information(@"Checking file for broken textures: " + f);
+                        M3Log.Information(@"Checking file for broken textures: " + f);
                         var package = MEPackageHandler.OpenMEPackage(f);
                         if (package.Game != ModBeingDeployed.Game)
                             continue; // Don't bother checking this
@@ -776,7 +776,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     if (!tex.NeverStream && tex.Mips.Count(x => x.storageType != StorageTypes.empty) > 6)
                                     {
                                         // NEVERSTREAM SHOULD HAVE BEEN SET.
-                                        Log.Error(@"Found texture missing 'NeverStream' attribute " + texture.InstancedFullPath);
+                                        M3Log.Error(@"Found texture missing 'NeverStream' attribute " + texture.InstancedFullPath);
                                         item.AddBlockingError(M3L.GetString(M3L.string_interp_fatalMissingNeverstreamFlag, relativePath, texture.UIndex, texture.InstancedFullPath));
                                     }
                                 }
@@ -791,7 +791,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                         if (mipTailBaseIdx != null && mipTailBaseIdx == 12)
                                         {
                                             // It's 4K (2^12)
-                                            Log.Error(@"Found 4K Norm. These are not used by game (they use up to 1 mip below the diff) and waste large amounts of memory. Drop the top mip to correct this issue. " + texture.InstancedFullPath);
+                                            M3Log.Error(@"Found 4K Norm. These are not used by game (they use up to 1 mip below the diff) and waste large amounts of memory. Drop the top mip to correct this issue. " + texture.InstancedFullPath);
                                             item.AddBlockingError(M3L.GetString(M3L.string_interp_fatalFound4KNorm, relativePath, texture.UIndex, texture.InstancedFullPath));
                                         }
                                     }
@@ -811,7 +811,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                         }
                                         catch (Exception e)
                                         {
-                                            Log.Warning(@"Found broken texture: " + texture.InstancedFullPath);
+                                            M3Log.Warning(@"Found broken texture: " + texture.InstancedFullPath);
                                             item.AddSignificantIssue(M3L.GetString(M3L.string_interp_couldNotLoadTextureData, relativePath, texture.InstancedFullPath, e.Message));
                                         }
                                     }
@@ -842,7 +842,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                         }
                                         catch (Exception e)
                                         {
-                                            Log.Warning(@"Found broken texture: " + texture.InstancedFullPath);
+                                            M3Log.Warning(@"Found broken texture: " + texture.InstancedFullPath);
                                             item.AddSignificantIssue(M3L.GetString(M3L.string_interp_couldNotLoadTextureData, relativePath, texture.InstancedFullPath, e.Message));
                                         }
                                     }
@@ -891,7 +891,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             item.ItemText = M3L.GetString(M3L.string_checkingNameAndObjectReferences) + $@" [{lnumChecked - 1}/{referencedFiles.Count}]";
 
                             var relativePath = f.Substring(ModBeingDeployed.ModPath.Length + 1);
-                            Log.Information($@"Checking package and name references in {relativePath}");
+                            M3Log.Information($@"Checking package and name references in {relativePath}");
                             var package = MEPackageHandler.OpenMEPackage(Path.Combine(item.ModToValidateAgainst.ModPath, f));
                             EntryChecker.CheckReferences(item, package, M3L.GetString, relativePath);
                         });
@@ -899,7 +899,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 catch (Exception e)
                 {
                     Crashes.TrackError(new Exception(M3L.GetString(M3L.string_errorOccurredCheckingReferences), e));
-                    Log.Error($@"An error occurred checking references for deployment: {e.Message}.");
+                    M3Log.Error($@"An error occurred checking references for deployment: {e.Message}.");
                     item.AddSignificantIssue(M3L.GetString(M3L.string_interp_warningExceptionOccurredDuringRefChecks, e.Message));
                 }
 
@@ -992,7 +992,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 v.CheckCancelled = true;
             }
 
-            Log.Information(@"Closing deployment panel");
+            M3Log.Information(@"Closing deployment panel");
             OnClosing(DataEventArgs.Empty);
         }
 
@@ -1048,7 +1048,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                     if (b.Error != null)
                     {
-                        Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
+                        M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                     }
                     else if (ModsInDeployment.Count == 1)
                     {
@@ -1071,7 +1071,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     if (b.Error == null && b.Result is List<Mod> modsForTPMISubmission && modsForTPMISubmission.Any())
                     {
                         var nonSubmittableMods = modsForTPMISubmission.Where(x => x.ModWebsite == Mod.DefaultWebsite).ToList();
-                        modsForTPMISubmission.Remove(x => x.ModWebsite == Mod.DefaultWebsite);
+                        modsForTPMISubmission.RemoveAll(x => x.ModWebsite == Mod.DefaultWebsite);
 
                         if (nonSubmittableMods.Any())
                         {
@@ -1478,7 +1478,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void StartCheck(EncompassingModDeploymentCheck emc)
         {
-            Log.Information($@"Starting deployment check on mod {emc.ModBeingDeployed.Game} {emc.ModBeingDeployed.ModName}");
+            M3Log.Information($@"Starting deployment check on mod {emc.ModBeingDeployed.Game} {emc.ModBeingDeployed.ModName}");
             if (emc.DepValidationTarget.SelectedTarget == null)
             {
                 // There's no selected target! There might not be one available.
@@ -1516,7 +1516,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (b.Error != null)
                 {
-                    Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
+                    M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                 }
 
                 DeploymentBlocked = emc.DeploymentChecklistItems.Any(x => x.DeploymentBlocking);
@@ -1570,13 +1570,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public void AddModToDeployment(Mod mod)
         {
-            Log.Information($@"Adding mod to deployment: {mod.ModName}");
+            M3Log.Information($@"Adding mod to deployment: {mod.ModName}");
             var dvt = ValidationTargets.FirstOrDefault(x => x.Game == mod.Game);
             if (dvt == null)
             {
                 // No validation targets for this game yet
                 var targets = mainwindow.InstallationTargets.Where(x => x.Game == mod.Game).ToList();
-                Log.Information($@"Adding validation target for {mod.Game}. Num targets for this game: {targets.Count()}. Total target count in MW: {mainwindow.InstallationTargets.Count}");
+                M3Log.Information($@"Adding validation target for {mod.Game}. Num targets for this game: {targets.Count()}. Total target count in MW: {mainwindow.InstallationTargets.Count}");
                 dvt = new DeploymentValidationTarget(this, mod.Game, targets); // new target
 
                 // Add validation target and sort game list
@@ -1608,12 +1608,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public class DeploymentValidationTarget
         {
             public MEGame Game { get; }
-            public GameTarget SelectedTarget { get; set; }
+            public GameTargetWPF SelectedTarget { get; set; }
             public string HeaderString { get; }
-            public ObservableCollectionExtended<GameTarget> AvailableTargets { get; } = new ObservableCollectionExtended<GameTarget>();
+            public ObservableCollectionExtended<GameTargetWPF> AvailableTargets { get; } = new ObservableCollectionExtended<GameTargetWPF>();
             public ArchiveDeployment DeploymentHost { get; set; }
 
-            public DeploymentValidationTarget(ArchiveDeployment deploymentHost, MEGame game, IEnumerable<GameTarget> targets)
+            public DeploymentValidationTarget(ArchiveDeployment deploymentHost, MEGame game, IEnumerable<GameTargetWPF> targets)
             {
                 DeploymentHost = deploymentHost;
                 Game = game;
@@ -1622,7 +1622,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     if (t.TextureModded)
                     {
-                        Log.Warning($@"Target is texture modded, cannot be used for validation: {t.TargetPath}, skipping...");
+                        M3Log.Warning($@"Target is texture modded, cannot be used for validation: {t.TargetPath}, skipping...");
                         continue;
                     }
                     AvailableTargets.Add(t);

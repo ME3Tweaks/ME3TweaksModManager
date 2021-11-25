@@ -1,5 +1,4 @@
-﻿using Serilog;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -12,6 +11,7 @@ using CliWrap.EventStream;
 using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Packages;
+using MassEffectModManagerCore.modmanager.diagnostics;
 
 namespace MassEffectModManagerCore.modmanager.helpers
 {
@@ -157,7 +157,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                     case @"CACHE_USAGE":
                         if (DateTime.Now > (lastCacheoutput.AddSeconds(10)))
                         {
-                            Log.Information($@"[AICORE] MEM cache usage: {FileSize.FormatSize(long.Parse(parm))}");
+                            M3Log.Information($@"[AICORE] MEM cache usage: {FileSize.FormatSize(long.Parse(parm))}");
                             lastCacheoutput = DateTime.Now;
                         }
                         break;
@@ -203,7 +203,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                         {
                             if (exceptionOcurred)
                             {
-                                Log.Fatal($@"[AICORE] {stdOut.Text}");
+                                M3Log.Fatal($@"[AICORE] {stdOut.Text}");
                                 memCrashLine?.Invoke(stdOut.Text);
                             }
                         }
@@ -212,7 +212,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                         Debug.WriteLine(@"STDERR " + stdErr.Text);
                         if (exceptionOcurred)
                         {
-                            Log.Fatal($@"[AICORE] {stdErr.Text}");
+                            M3Log.Fatal($@"[AICORE] {stdErr.Text}");
                         }
                         else
                         {
@@ -257,7 +257,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
             MEMIPCHandler.RunMEMIPCUntilExit(args, applicationExited: x => exitcode = x);
             if (exitcode != 0)
             {
-                Log.Error($@"Non-zero MassEffectModderNoGui exit code setting game path: {exitcode}");
+                M3Log.Error($@"Non-zero MassEffectModderNoGui exit code setting game path: {exitcode}");
             }
             return exitcode == 0;
         }
@@ -272,7 +272,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
         {
             if (game.IsLEGame())
             {
-                Log.Error(@"Cannot set LODs for LE games! This is a bug in Mod Manager");
+                M3Log.Error(@"Cannot set LODs for LE games! This is a bug in Mod Manager");
                 return false;
             }
             string args = $@"--apply-lods-gfx --gameid {game.ToGameNum()}";
@@ -299,11 +299,11 @@ namespace MassEffectModManagerCore.modmanager.helpers
             // We don't care about IPC on this
             MEMIPCHandler.RunMEMIPCUntilExit(args,
                 null, null,
-                x => Log.Error($@"StdError setting LODs: {x}"),
+                x => M3Log.Error($@"StdError setting LODs: {x}"),
                 x => exitcode = x); //Change to catch exit code of non zero.        
             if (exitcode != 0)
             {
-                Log.Error($@"MassEffectModderNoGui had error setting LODs, exited with code {exitcode}");
+                M3Log.Error($@"MassEffectModderNoGui had error setting LODs, exited with code {exitcode}");
                 return false;
             }
 
@@ -330,11 +330,11 @@ namespace MassEffectModManagerCore.modmanager.helpers
                         fileListing.Add(param);
                     }
                 },
-                x => Log.Error($@"StdError getting file listing for file {file}: {x}"),
+                x => M3Log.Error($@"StdError getting file listing for file {file}: {x}"),
                 x => exitcode = x); //Change to catch exit code of non zero.        
             if (exitcode != 0)
             {
-                Log.Error($@"MassEffectModderNoGui had error getting file listing of archive {file}, exit code {exitcode}");
+                M3Log.Error($@"MassEffectModderNoGui had error getting file listing of archive {file}, exit code {exitcode}");
             }
             return fileListing;
         }
@@ -361,7 +361,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                         }
                         catch (Exception e)
                         {
-                            Log.Error($@"Error reading LOD line output from MEM: {param}, {e.Message}");
+                            M3Log.Error($@"Error reading LOD line output from MEM: {param}, {e.Message}");
                         }
 
                         break;
@@ -374,7 +374,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
             );
             if (exitcode != 0)
             {
-                Log.Error($@"Error fetching LODs for {game}, exit code {exitcode}");
+                M3Log.Error($@"Error fetching LODs for {game}, exit code {exitcode}");
                 return null; // Error getting LODs
             }
 
@@ -450,7 +450,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
         //            MEMIPCHandler.RunMEMIPCUntilExit(args, applicationExited: x => exitcode = x);
         //            if (exitcode != 0)
         //            {
-        //                Log.Error($@"[AICORE] Non-zero MassEffectModderNoGui exit code setting game config path: {exitcode}");
+        //                M3Log.Error($@"[AICORE] Non-zero MassEffectModderNoGui exit code setting game config path: {exitcode}");
         //            }
         //            return exitcode == 0;
         //        }

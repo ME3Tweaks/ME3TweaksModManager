@@ -1,25 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using System.Xml.Linq;
 using LegendaryExplorerCore.Misc;
-using MassEffectModManagerCore.modmanager.gameini;
+using MassEffectModManagerCore.modmanager.diagnostics;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.meim;
 using Microsoft.AppCenter.Analytics;
-using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.windows
 {
@@ -215,7 +207,7 @@ public event PropertyChangedEventHandler PropertyChanged;
                 string configFileBeingUpdated = Path.Combine(configFileFolder, kp.Key);
                 if (File.Exists(configFileBeingUpdated))
                 {
-                    Log.Information(@"MEIM: Saving ini file: " + configFileBeingUpdated);
+                    M3Log.Information(@"MEIM: Saving ini file: " + configFileBeingUpdated);
 
                     //unset readonly
                     File.SetAttributes(configFileBeingUpdated, File.GetAttributes(configFileBeingUpdated) & ~FileAttributes.ReadOnly);
@@ -233,12 +225,12 @@ public event PropertyChangedEventHandler PropertyChanged;
                             }
                             else
                             {
-                                Log.Error($@"Could not find property to update in ini! [{prop.SectionName}] {prop.PropertyName}");
+                                M3Log.Error($@"Could not find property to update in ini! [{prop.SectionName}] {prop.PropertyName}");
                             }
                         }
                         else
                         {
-                            Log.Error($@"Could not save property {prop.FriendlyPropertyName} because {validation}");
+                            M3Log.Error($@"Could not save property {prop.FriendlyPropertyName} because {validation}");
                             M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_propertyNotSaved, prop.FriendlyPropertyName, validation), M3L.GetString(M3L.string_errorSavingProperties), MessageBoxButton.OK, MessageBoxImage.Error);
                         }
                     }

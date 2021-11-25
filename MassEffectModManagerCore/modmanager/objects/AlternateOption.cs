@@ -2,12 +2,11 @@
 using System.ComponentModel;
 using System.Windows.Media.Imaging;
 using LegendaryExplorerCore.Misc;
+using MassEffectModManagerCore.modmanager.diagnostics;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.modmanager.objects.mod.editor;
-using MassEffectModManagerCore.ui;
 using PropertyChanged;
-using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.objects
 {
@@ -88,7 +87,7 @@ namespace MassEffectModManagerCore.modmanager.objects
             var assetData = mod.LoadModImageAsset(initializingAssetName ?? ImageAssetName);
             if (assetData == null)
             {
-                Log.Error($@"Alternate {FriendlyName} lists image asset {initializingAssetName}, but the asset could not be loaded.");
+                M3Log.Error($@"Alternate {FriendlyName} lists image asset {initializingAssetName}, but the asset could not be loaded.");
                 if (initializingAssetName != null)
                 {
                     ValidAlternate = false;
@@ -124,7 +123,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     var iap = FilesystemInterposer.PathCombine(modForValidating.Archive != null, modForValidating.ModImageAssetsPath, imageAssetName);
                     if (!FilesystemInterposer.FileExists(iap, modForValidating.Archive))
                     {
-                        Log.Error($@"Alternate file {FriendlyName} lists image asset {imageAssetName}, but the asset does not exist in the mods {Mod.ModImageAssetFolderName} directory.");
+                        M3Log.Error($@"Alternate file {FriendlyName} lists image asset {imageAssetName}, but the asset does not exist in the mods {Mod.ModImageAssetFolderName} directory.");
                         ValidAlternate = false;
                         LoadFailedReason = M3L.GetString(M3L.string_validation_alt_imageAssetNotFound, FriendlyName, ImageAssetName, Mod.ModImageAssetFolderName);
                         return false;
@@ -151,7 +150,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     {
                         if (imageHeight < 0 || imageHeight > 1040)
                         {
-                            Log.Error($@"Alternate {FriendlyName} lists image asset height {imageHeight}, but it is not within the valid values range. ImageHeight must be between 1 and 1039 inclusive.");
+                            M3Log.Error($@"Alternate {FriendlyName} lists image asset height {imageHeight}, but it is not within the valid values range. ImageHeight must be between 1 and 1039 inclusive.");
                             ValidAlternate = false;
                             LoadFailedReason = M3L.GetString(M3L.string_validation_alt_imageAssetOutOfRangeHeight, FriendlyName, imageHeight);
                             return false;
@@ -161,7 +160,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     }
                     else
                     {
-                        Log.Error($@"Alternate {FriendlyName} specifies an image asset but does not set (or have a valid value for) ImageHeight. ImageHeight is required to be set on alternates that specify an image asset.");
+                        M3Log.Error($@"Alternate {FriendlyName} specifies an image asset but does not set (or have a valid value for) ImageHeight. ImageHeight is required to be set on alternates that specify an image asset.");
                         ValidAlternate = false;
                         LoadFailedReason = M3L.GetString(M3L.string_validation_alt_imageAssetMissingHeight, FriendlyName);
                         return false;

@@ -4,10 +4,11 @@ using System.Windows.Input;
 using LegendaryExplorerCore.Misc;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
-using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore.Packages;
 using MassEffectModManagerCore.modmanager.helpers;
+using ME3TweaksCore.GameFilesystem;
+using ME3TweaksCoreWPF;
 using MemoryAnalyzer = MassEffectModManagerCore.modmanager.memoryanalyzer.MemoryAnalyzer;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -17,9 +18,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// </summary>
     public partial class ConflictDetectorPanel : MMBusyPanelBase
     {
-        public ObservableCollectionExtended<GameTarget> ConflictTargets { get; } = new ObservableCollectionExtended<GameTarget>();
+        public ObservableCollectionExtended<GameTargetWPF> ConflictTargets { get; } = new ObservableCollectionExtended<GameTargetWPF>();
         public ObservableCollectionExtended<SupercedanceList> Supercedances { get; } = new ObservableCollectionExtended<SupercedanceList>();
-        public GameTarget SelectedTarget { get; set; }
+        public GameTargetWPF SelectedTarget { get; set; }
         public ConflictDetectorPanel()
         {
             MemoryAnalyzer.AddTrackedMemoryItem(@"Custom DLC Conflict Detector Panel", new WeakReference(this));

@@ -1,5 +1,5 @@
-﻿using Serilog;
-using System.ComponentModel;
+﻿using System.ComponentModel;
+using MassEffectModManagerCore.modmanager.diagnostics;
 
 namespace MassEffectModManagerCore.modmanager
 {
@@ -19,7 +19,7 @@ namespace MassEffectModManagerCore.modmanager
         {
             if (condition)
             {
-                Log.Information(message);
+                M3Log.Information(message);
             }
         }
 
@@ -32,7 +32,7 @@ namespace MassEffectModManagerCore.modmanager
         {
             if (condition)
             {
-                Log.Warning(message);
+                M3Log.Warning(message);
             }
         }
 
@@ -45,7 +45,7 @@ namespace MassEffectModManagerCore.modmanager
         {
             if (condition)
             {
-                Log.Error(message);
+                M3Log.Error(message);
             }
         }
     }

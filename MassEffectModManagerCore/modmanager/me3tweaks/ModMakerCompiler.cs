@@ -3,7 +3,6 @@ using IniParser.Model;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.objects;
 using LegendaryExplorerCore.Helpers;
-using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -21,6 +20,8 @@ using MassEffectModManagerCore.modmanager.usercontrols;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.TLK.ME2ME3;
+using MassEffectModManagerCore.modmanager.diagnostics;
+using ME3TweaksCore.Services.Backup;
 using Microsoft.AppCenter.Analytics;
 
 namespace MassEffectModManagerCore.modmanager.me3tweaks
@@ -64,7 +65,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 if (File.Exists(cachedFilename))
                 {
                     //Going to compile cached item
-                    Log.Information(@"Compiling cached modmaker mode with code " + code);
+                    M3Log.Information(@"Compiling cached modmaker mode with code " + code);
                     return CompileMod(File.ReadAllText(cachedFilename), modPathOverride);
                 }
             }
@@ -78,7 +79,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         /// <param name="modxml">XML document for the mod</param>
         private Mod CompileMod(string modxml, string modPathOverride = null)
         {
-            Log.Information(@"Compiling modmaker mod");
+            M3Log.Information(@"Compiling modmaker mod");
             var xmlDoc = XDocument.Parse(modxml);
 
             var mod = GenerateLibraryModFromDocument(xmlDoc, modPathOverride);
@@ -174,7 +175,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     }
                     else
                     {
-                        Log.Error($@"MixinHandler returned null for mixinid {mixin}! Has the MixinPackage loaded?");
+                        M3Log.Error($@"MixinHandler returned null for mixinid {mixin}! Has the MixinPackage loaded?");
                     }
                 }
 
@@ -264,7 +265,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                             }
                             else
                             {
-                                Log.Warning($@"{loggingPrefix} Could not find string id {id} in TLK");
+                                M3Log.Warning($@"{loggingPrefix} Could not find string id {id} in TLK");
                             }
                         }
 
@@ -281,7 +282,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     }
                     else
                     {
-                        Log.Warning($@"TLK file not found: {vanillaTLK}, skipping");
+                        M3Log.Warning($@"TLK file not found: {vanillaTLK}, skipping");
                         SetCurrentValueCallback?.Invoke(Interlocked.Add(ref numDoneTLKSteps, 3)); //skip 3 steps
                     }
 
@@ -317,13 +318,13 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 {
                     if (allmixins.Any(x => Path.GetFileName(x.TargetFile) == @"SFXGame.pcc"))
                     {
-                        Log.Information(@"Added controller camera mixin as this mod modifies SFXGame and controller option is on");
+                        M3Log.Information(@"Added controller camera mixin as this mod modifies SFXGame and controller option is on");
                         allmixins.Add(MixinHandler.GetMixinByME3TweaksID(1533));
                         Interlocked.Increment(ref OverallProgressMax);
                     }
                     if (allmixins.Any(x => Path.GetFileName(x.TargetFile) == @"Patch_BioPlayerController.pcc"))
                     {
-                        Log.Information(@"Added controller vibration mixin as this mod modifies Patch_BioPlayerController and controller option is on");
+                        M3Log.Information(@"Added controller vibration mixin as this mod modifies Patch_BioPlayerController and controller option is on");
                         allmixins.Add(MixinHandler.GetMixinByME3TweaksID(1557));
                         Interlocked.Increment(ref OverallProgressMax);
                     }
@@ -358,7 +359,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     var numdone = Interlocked.Increment(ref numMixinsApplied);
                     if (numdone > totalMixinsToApply)
                     {
-                        Log.Warning(
+                        M3Log.Warning(
                             $@"Error in progress calculation, numdone > total. Done: {numdone} Total: {totalMixinsToApply}");
                     }
 
@@ -490,7 +491,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 }
                 else
                 {
-                    Log.Error(@"Could not get file data for coalesced chunk BASEGAME as Coalesced.bin file was missing");
+                    M3Log.Error(@"Could not get file data for coalesced chunk BASEGAME as Coalesced.bin file was missing");
                     return false;
                 }
             }
@@ -511,7 +512,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 }
                 else
                 {
-                    Log.Error(@"Could not get file data for coalesced chunk: " + chunkName);
+                    M3Log.Error(@"Could not get file data for coalesced chunk: " + chunkName);
                     return false;
                 }
             }
@@ -530,7 +531,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
                 if (Settings.ModMakerAutoInjectCustomKeybindsOption && chunkName == @"BASEGAME" && File.Exists(KeybindsInjectorPanel.GetDefaultKeybindsOverride(MEGame.ME3)))
                 {
-                    Log.Information(@"Injecting keybinds file into mod: " + KeybindsInjectorPanel.GetDefaultKeybindsOverride(MEGame.ME3));
+                    M3Log.Information(@"Injecting keybinds file into mod: " + KeybindsInjectorPanel.GetDefaultKeybindsOverride(MEGame.ME3));
                     coalescedFilemapping[@"BioInput.xml"] = File.ReadAllText(KeybindsInjectorPanel.GetDefaultKeybindsOverride(MEGame.ME3));
                 }
 
@@ -703,7 +704,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
                     if (arrayContainer == null)
                     {
-                        Log.Error(
+                        M3Log.Error(
                             $@"{loggingPrefix}Did not find arrayproperty @name='{sectionName}']/Property[@name='{propertyName}' and @type='{matchOnType}']");
                     }
                     else
@@ -770,7 +771,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 }
                 catch (Exception e)
                 {
-                    Log.Error(@"Error applying delta property: " + e.Message);
+                    M3Log.Error(@"Error applying delta property: " + e.Message);
                 }
             }
             #endregion
@@ -898,7 +899,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     CLog.Warning(@"Could not find element using enemytype algorithm for value " + value, Settings.LogModMakerCompiler);
                     break;
                 default:
-                    Log.Error($@"Unknown array value matching algorithm: { matchingAlgorithm}. Ths modification of this value will be skipped: {sectionName} -> {propertyName} for {value}");
+                    M3Log.Error($@"Unknown array value matching algorithm: { matchingAlgorithm}. Ths modification of this value will be skipped: {sectionName} -> {propertyName} for {value}");
                     break;
             }
             return null;
@@ -1046,7 +1047,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 //case @"BALANCE_CHANGES":
                 //    return @"ServerCoalesced";
                 default:
-                    Log.Error(@"Unknown chunk name: " + chunkName);
+                    M3Log.Error(@"Unknown chunk name: " + chunkName);
                     return null;
             }
         }
@@ -1063,13 +1064,13 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             var hasError = xmlDoc.XPathSelectElement(@"/ModMaker/error");
             if (hasError != null)
             {
-                Log.Error(@"Mod was not found server.");
+                M3Log.Error(@"Mod was not found server.");
                 return null;
             }
             SetCompileStarted?.Invoke();
             modName = xmlDoc.XPathSelectElement(@"/ModMaker/ModInfo/Name").Value;
             SetModNameCallback?.Invoke(modName);
-            Log.Information(@"Compiling mod: " + modName);
+            M3Log.Information(@"Compiling mod: " + modName);
 
             var modDev = xmlDoc.XPathSelectElement(@"/ModMaker/ModInfo/Author").Value;
             var revisionElement = xmlDoc.XPathSelectElement(@"/ModMaker/ModInfo/Revision");

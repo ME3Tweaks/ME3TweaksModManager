@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
@@ -17,15 +13,12 @@ using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Textures;
 using LegendaryExplorerCore.Unreal.Classes;
-using MassEffectModManagerCore.modmanager.localizations;
+using MassEffectModManagerCore.modmanager.diagnostics;
 using MassEffectModManagerCore.modmanager.save.game2.FileFormats;
 using MassEffectModManagerCore.modmanager.save.game3;
-using MassEffectModManagerCore.modmanager.save.gibbedio;
 using MassEffectModManagerCore.ui;
 using Microsoft.Win32;
 using PropertyChanged;
-using Serilog;
-using SixLabors.ImageSharp.Processing;
 using Path = System.IO.Path;
 
 namespace MassEffectModManagerCore.modmanager.save.game2.UI
@@ -331,7 +324,7 @@ namespace MassEffectModManagerCore.modmanager.save.game2.UI
                     var ms = new MemoryStream();
                     SaveFileGame3.Write(sf, ms);
                     ms.WriteToFile(savePath);
-                    Log.Information($@"Installed headmorph {ofd.FileName} into save {savePath}");
+                    M3Log.Information($@"Installed headmorph {ofd.FileName} into save {savePath}");
                 }
             }
         }

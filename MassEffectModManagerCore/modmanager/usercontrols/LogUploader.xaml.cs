@@ -8,15 +8,18 @@ using System.Windows.Input;
 using Flurl.Http;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.modmanager.me3tweaks;
-using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore.Compression;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
+using MassEffectModManagerCore.modmanager.diagnostics;
+using ME3TweaksCore.Diagnostics;
+using ME3TweaksCore.Misc;
+using ME3TweaksCoreWPF;
+using ME3TweaksCoreWPF.UI;
 using Microsoft.WindowsAPICodePack.Taskbar;
-using Serilog;
+using GenericCommand = MassEffectModManagerCore.ui.GenericCommand;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -29,7 +32,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public string CollectionStatusMessage { get; set; }
         //public string TopText { get; private set; } = M3L.GetString(M3L.string_selectALogToView);
         public ObservableCollectionExtended<LogItem> AvailableLogs { get; } = new ObservableCollectionExtended<LogItem>();
-        public ObservableCollectionExtended<GameTarget> DiagnosticTargets { get; } = new ObservableCollectionExtended<GameTarget>();
+        public ObservableCollectionExtended<GameTargetWPF> DiagnosticTargets { get; } = new ObservableCollectionExtended<GameTargetWPF>();
         public LogUploader()
         {
             DataContext = this;
@@ -50,13 +53,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void InitLogUploaderUI()
         {
             AvailableLogs.ClearEx();
-            var directory = new DirectoryInfo(App.LogDir);
+            var directory = new DirectoryInfo(M3Log.LogDir);
             var logfiles = directory.GetFiles(@"modmanagerlog*.txt").OrderByDescending(f => f.LastWriteTime).ToList();
             AvailableLogs.Add(new LogItem(M3L.GetString(M3L.string_selectAnApplicationLog)) { Selectable = false });
             AvailableLogs.AddRange(logfiles.Select(x => new LogItem(x.FullName)));
             SelectedLog = AvailableLogs.FirstOrDefault();
             var targets = mainwindow.InstallationTargets.Where(x => x.Selectable);
-            DiagnosticTargets.Add(new GameTarget(MEGame.Unknown, M3L.GetString(M3L.string_selectAGameTargetToGenerateDiagnosticsFor), false, true));
+            DiagnosticTargets.Add(new GameTargetWPF(MEGame.Unknown, M3L.GetString(M3L.string_selectAGameTargetToGenerateDiagnosticsFor), false, true));
             DiagnosticTargets.AddRange(targets.Where(x=>x.Game != MEGame.LELauncher));
             SelectedDiagnosticTarget = DiagnosticTargets.FirstOrDefault();
             //if (LogSelector_ComboBox.Items.Count > 0)
@@ -68,7 +71,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public ICommand UploadLogCommand { get; set; }
         public ICommand CancelUploadCommand { get; set; }
         public LogItem SelectedLog { get; set; }
-        public GameTarget SelectedDiagnosticTarget { get; set; }
+        public GameTargetWPF SelectedDiagnosticTarget { get; set; }
 
         private void LoadCommands()
         {
@@ -104,9 +107,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     TaskbarHelper.SetProgress(d);
 
                 }
-                else if (b.UserState is TaskbarProgressBarState tbps)
+                else if (b.UserState is MTaskbarState tbps)
                 {
-                    TaskbarHelper.SetProgressState(tbps);
+                    TaskbarHelper.SetProgressState(MTaskbarStateWPF.ConvertTaskbarState(tbps));
                 }
             };
             nbw.DoWork += (a, b) =>
@@ -121,10 +124,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     nbw.ReportProgress(0, progress / 100.0);
                 }
 
-                void updateTaskbarProgressStateCallback(TaskbarProgressBarState state)
+                void updateTaskbarProgressStateCallback(MTaskbarState state)
                 {
                     nbw.ReportProgress(-1, state);
                 }
+
                 StringBuilder logUploadText = new StringBuilder();
                 if (SelectedDiagnosticTarget != null && !SelectedDiagnosticTarget.IsCustomOption && SelectedDiagnosticTarget.Game > MEGame.Unknown)
                 {
@@ -166,13 +170,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             //should be valid URL.
                             //diagnosticsWorker.ReportProgress(0, new ThreadCommand(SET_DIAGTASK_ICON_GREEN, Image_Upload));
                             //e.Result = responseString;
-                            Log.Information(@"Result from server for log upload: " + responseString);
+                            M3Log.Information(@"Result from server for log upload: " + responseString);
                             b.Result = responseString;
                             return;
                         }
                         else
                         {
-                            Log.Error(@"Error uploading log. The server responded with: " + responseString);
+                            M3Log.Error(@"Error uploading log. The server responded with: " + responseString);
                             b.Result = M3L.GetString(M3L.string_interp_serverRejectedTheUpload, responseString);
                         }
                     }
@@ -186,7 +190,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         // FlurlHttpTimeoutException derives from FlurlHttpException; catch here only
                         // if you want to handle timeouts as a special case
-                        Log.Error(@"Request timed out while uploading log.");
+                        M3Log.Error(@"Request timed out while uploading log.");
                         b.Result = M3L.GetString(M3L.string_interp_requestTimedOutUploading);
 
                     }
@@ -194,7 +198,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         // ex.Message contains rich details, including the URL, verb, response status,
                         // and request and response bodies (if available)
-                        Log.Error(@"Handled error uploading log: " + App.FlattenException(ex));
+                        M3Log.Error(@"Handled error uploading log: " + App.FlattenException(ex));
                         string exmessage = ex.Message;
                         var index = exmessage.IndexOf(@"Request body:");
                         if (index > 0)
@@ -214,7 +218,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (b.Error != null)
                 {
-                    Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
+                    M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                 }
 
                 TaskbarHelper.SetProgressState(TaskbarProgressBarState.NoProgress);

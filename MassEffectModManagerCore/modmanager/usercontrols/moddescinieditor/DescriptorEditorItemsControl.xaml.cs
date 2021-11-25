@@ -2,10 +2,8 @@
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using PropertyChanged;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor

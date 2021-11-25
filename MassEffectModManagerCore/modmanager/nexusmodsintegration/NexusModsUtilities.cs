@@ -3,24 +3,18 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Net.WebSockets;
-using System.Security.Authentication;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using MassEffectModManagerCore.modmanager.helpers;
-using MassEffectModManagerCore.modmanager.me3tweaks;
 using LegendaryExplorerCore.Misc;
+using MassEffectModManagerCore.modmanager.diagnostics;
 using MassEffectModManagerCore.modmanager.objects;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.Win32;
 using Pathoschild.FluentNexus;
 using Pathoschild.FluentNexus.Models;
-using Pathoschild.Http.Client;
-using Serilog;
-using SevenZip;
 using WatsonWebsocket;
 
 namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
@@ -79,11 +73,11 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
                 }
 
                 var nexus = GetClient(apiKey);
-                Log.Information("Getting user information from NexusMods");
+                M3Log.Information("Getting user information from NexusMods");
                 var userinfo = await nexus.Users.ValidateAsync();
                 if (userinfo.Name != null)
                 {
-                    Log.Information("NexusMods API call returned valid data. API key is valid");
+                    M3Log.Information("NexusMods API call returned valid data. API key is valid");
                     UserInfo = userinfo;
                     //Authorized OK.
 
@@ -93,7 +87,7 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
             }
             catch (Exception e)
             {
-                Log.Error(@"Exception while authenticating to nexusmods: " + e.Message);
+                M3Log.Error(@"Exception while authenticating to nexusmods: " + e.Message);
             }
 
             return null;
@@ -171,7 +165,7 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
             }
             catch (Exception e)
             {
-                Log.Error(@"Error getting endorsement status for mod: " + e.Message);
+                M3Log.Error(@"Error getting endorsement status for mod: " + e.Message);
             }
 
             return null; //Cannot endorse this (could not get endorsement status)
@@ -207,7 +201,7 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
                 }
                 catch (Exception e)
                 {
-                    Log.Error(@"Error endorsing/unendorsing: " + e.ToString());
+                    M3Log.Error(@"Error endorsing/unendorsing: " + e.ToString());
                     telemetryOverride = e.ToString();
                 }
 
@@ -224,7 +218,7 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
             {
                 if (b.Error != null)
                 {
-                    Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
+                    M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                 }
 
                 if (b.Result is bool val)
@@ -323,7 +317,7 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
         public static void SetupNXMHandling()
         {
             // Register app
-            Log.Information(@"Registering this application as the nxm:// handler");
+            M3Log.Information(@"Registering this application as the nxm:// handler");
             using var subkey = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\Classes\nxm\shell\open\command");
             subkey.SetValue("", $"\"{App.ExecutableLocation}\" --nxmlink \"%1\"");
 
@@ -349,13 +343,13 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
                 {
                     // ???
                     // Is ini configured incorrectly?
-                    Log.Warning(@"NXMHandler ini appears to be configured incorrectly");
+                    M3Log.Warning(@"NXMHandler ini appears to be configured incorrectly");
                 }
                 else
                 {
                     if (games.Value == "other")
                     {
-                        Log.Information(@"Updating 'other' in nxmhandler");
+                        M3Log.Information(@"Updating 'other' in nxmhandler");
                         // We need to update this one
                         handlers.SetSingleEntry($@"{i}\executable", App.ExecutableLocation.Replace("\\", "\\\\"));
                         handlers.SetSingleEntry($@"{i}\arguments", "--nxmlink");
@@ -367,7 +361,7 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
             if (!updated)
             {
                 // Add ours
-                Log.Warning(@"Adding section 'other' in nxmhandler");
+                M3Log.Warning(@"Adding section 'other' in nxmhandler");
                 numCurrentHandlers++;
                 handlers.SetSingleEntry($@"size", numCurrentHandlers);
                 handlers.SetSingleEntry($@"{numCurrentHandlers}\games", "other");
@@ -377,7 +371,7 @@ namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
             }
 
             File.WriteAllText(nxmIniPath, ini.ToString());
-            Log.Information(@"Finished configuring nxmhandler");
+            M3Log.Information(@"Finished configuring nxmhandler");
             // Register nxm protocol
 
         }

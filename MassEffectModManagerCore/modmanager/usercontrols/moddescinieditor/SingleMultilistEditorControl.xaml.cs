@@ -1,8 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Linq;
-using System.Windows;
 using System.Windows.Controls;
-using MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alternates;
 using MassEffectModManagerCore.ui;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor

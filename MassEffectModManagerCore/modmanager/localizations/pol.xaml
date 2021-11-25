@@ -554,7 +554,7 @@
 	<system:String x:Key="string_deleteFromLibrary">Usuń z biblioteki</system:String>
 	<system:String x:Key="string_visitWebsite">Odwiedź witrynę</system:String>
 
-	<!-- GameTarget -->
+	<!-- GameTargetWPF -->
 	<system:String x:Key="string_interp_invalidTargetMissingFile">Niepoprawna ścieżka: {0} nie został znaleziony w katalogu gry.</system:String>
 	<!-- 0 = filename of file that is not found in game dir but should be there -->
 	<system:String x:Key="string_invalidTargetProtectedByCmmvanilla">Niepoprawna ścieżka: Oznaczona jako kopia zapasowa za pomocą pliku cmm_vanilla</system:String>

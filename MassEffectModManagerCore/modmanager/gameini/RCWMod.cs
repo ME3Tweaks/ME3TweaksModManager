@@ -1,5 +1,4 @@
-﻿using Serilog;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -8,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using LegendaryExplorerCore.Misc;
+using MassEffectModManagerCore.modmanager.diagnostics;
 
 namespace MassEffectModManagerCore.modmanager.gameini
 {
@@ -27,7 +27,7 @@ namespace MassEffectModManagerCore.modmanager.gameini
             var author = lines.FirstOrDefault(x => x.StartsWith("###Author:", StringComparison.InvariantCultureIgnoreCase));
             if (author == null)
             {
-                Log.Warning("RCW mod doesn't list author");
+                M3Log.Warning("RCW mod doesn't list author");
                 author = "Unknown";
             }
             else
@@ -42,7 +42,7 @@ namespace MassEffectModManagerCore.modmanager.gameini
                 var numfiles = lines.Count(x => x.StartsWith("###FILE:", StringComparison.InvariantCultureIgnoreCase));
                 if (numfiles == 0)
                 {
-                    Log.Error("This does not appear to be RCW mod, as no ###MOD: or ###FILE: headers were found.");
+                    M3Log.Error("This does not appear to be RCW mod, as no ###MOD: or ###FILE: headers were found.");
                     return new List<RCWMod>();
                 }
                 nummods = 1;
@@ -78,7 +78,7 @@ namespace MassEffectModManagerCore.modmanager.gameini
                 }
                 else
                 {
-                    Log.Error("This does not appear to be RCW mod, no files were found.");
+                    M3Log.Error("This does not appear to be RCW mod, no files were found.");
                 }
             }
 
@@ -88,7 +88,7 @@ namespace MassEffectModManagerCore.modmanager.gameini
         {
             Author = author;
             ModName = modname;
-            Log.Information("Parsing RCW mod: " + ModName);
+            M3Log.Information("Parsing RCW mod: " + ModName);
             CoalescedFile currentFile = null;
             while (linepos + 1 < lines.Count())
             {

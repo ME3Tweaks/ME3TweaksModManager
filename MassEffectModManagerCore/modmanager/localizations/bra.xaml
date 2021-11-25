@@ -536,7 +536,7 @@
 	<system:String x:Key="string_deleteFromLibrary">Excluir da Biblioteca</system:String>
 	<system:String x:Key="string_visitWebsite">Visitar website</system:String>
 
-	<!-- GameTarget -->
+	<!-- GameTargetWPF -->
 	<system:String x:Key="string_interp_invalidTargetMissingFile">Destiono inválido: {0} não foi encontrado no diretório do jogo.</system:String>
 	<!-- 0 = filename of file that is not found in game dir but should be there -->
 	<system:String x:Key="string_invalidTargetProtectedByCmmvanilla">Destino inválido: Marcado como backup protegido com arquivo cmm_vanilla</system:String>

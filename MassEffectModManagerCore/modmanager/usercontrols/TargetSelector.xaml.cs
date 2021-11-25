@@ -1,20 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Globalization;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using LegendaryExplorerCore.Misc;
-using MassEffectModManagerCore.modmanager.objects;
-using MassEffectModManagerCore.ui;
+using ME3TweaksCore.Targets;
+using ME3TweaksCoreWPF;
 using PropertyChanged;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -50,9 +41,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         /// <summary>
         /// The current selected game target
         /// </summary>
-        public GameTarget SelectedGameTarget
+        public GameTargetWPF SelectedGameTarget
         {
-            get => (GameTarget)GetValue(SelectedGameTargetProperty);
+            get => (GameTargetWPF)GetValue(SelectedGameTargetProperty);
             set => SetValue(SelectedGameTargetProperty, value);
         }
 
@@ -71,9 +62,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         /// <summary>
         /// The current selected game target
         /// </summary>
-        public ObservableCollectionExtended<GameTarget> AvailableTargets
+        public ObservableCollectionExtended<GameTargetWPF> AvailableTargets
         {
-            get => (ObservableCollectionExtended<GameTarget>)GetValue(AvailableTargetsProperty);
+            get => (ObservableCollectionExtended<GameTargetWPF>)GetValue(AvailableTargetsProperty);
             set => SetValue(AvailableTargetsProperty, value);
         }
 
@@ -81,8 +72,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         /// Identified the Label dependency property
         /// </summary>
         public static readonly DependencyProperty AvailableTargetsProperty =
-            DependencyProperty.Register(@"AvailableTargets", typeof(ObservableCollectionExtended<GameTarget>),
-                typeof(TargetSelector), new PropertyMetadata(new ObservableCollectionExtended<GameTarget>()));
+            DependencyProperty.Register(@"AvailableTargets", typeof(ObservableCollectionExtended<GameTargetWPF>),
+                typeof(TargetSelector), new PropertyMetadata(new ObservableCollectionExtended<GameTargetWPF>()));
 
         #endregion
 
@@ -139,7 +130,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is GameTarget gt && parameter is TargetSelector ts)
+            if (value is GameTargetWPF gt && parameter is TargetSelector ts)
             {
                 return (ts.ShowTextureInfo && gt.TextureModded) ? Visibility.Visible : Visibility.Collapsed;
             }

@@ -7,7 +7,6 @@ using System.Windows;
 using System.Windows.Input;
 using Flurl;
 using Flurl.Http;
-using MassEffectModManagerCore.modmanager.gameini;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects;
@@ -18,8 +17,7 @@ using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
-using Microsoft.WindowsAPICodePack.COMNative.MediaDevices;
-using Serilog;
+using MassEffectModManagerCore.modmanager.diagnostics;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -69,7 +67,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (b.Error != null)
                 {
-                    Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
+                    M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                 }
                 List<TelemetryPackage> list = (List<TelemetryPackage>)b.Result;
                 TelemetryPackages.ReplaceAll(list);
@@ -136,7 +134,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
 
                     SubmitText = M3L.GetString(M3L.string_submitting);
-                    Log.Information($@"Submitting telemetry to ME3Tweaks for {ModName} TelemetryPackage");
+                    M3Log.Information($@"Submitting telemetry to ME3Tweaks for {ModName} TelemetryPackage");
                     try
                     {
                         var result = await url.GetAsync().ReceiveString();
@@ -250,7 +248,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
             catch (Exception e)
             {
-                Log.Error($@"Error building telemetry package for {dlcFoldername}: {e.Message}.");
+                M3Log.Error($@"Error building telemetry package for {dlcFoldername}: {e.Message}.");
                 return null;
             }
         }

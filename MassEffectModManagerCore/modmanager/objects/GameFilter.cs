@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 using LegendaryExplorerCore.Packages;
 using MassEffectModManagerCore.modmanager.helpers;
-using MassEffectModManagerCore.ui;
 
 namespace MassEffectModManagerCore.modmanager.objects
 {
+
     public class GameFilter : INotifyPropertyChanged
     {
         public GameFilter(MEGame game)

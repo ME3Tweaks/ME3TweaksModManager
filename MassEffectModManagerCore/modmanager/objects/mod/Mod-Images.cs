@@ -2,7 +2,7 @@
 using System.IO;
 using System.Windows.Media.Imaging;
 using LegendaryExplorerCore.Misc;
-using Serilog;
+using MassEffectModManagerCore.modmanager.diagnostics;
 
 namespace MassEffectModManagerCore.modmanager.objects.mod
 {
@@ -44,7 +44,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             if (assetName == null) return null;
             if (assetName.StartsWith(@"/") || assetName.StartsWith(@"\\") || assetName.Contains(@".."))
             {
-                Log.Error($@"Image assets cannot contain .. or start with / or \. The asset will not be loaded: {assetName}");
+                M3Log.Error($@"Image assets cannot contain .. or start with / or \. The asset will not be loaded: {assetName}");
                 return null;
             }
             if (LoadedImageAssets.TryGetValue(assetName, out var loaded)) return loaded;
@@ -84,7 +84,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             }
             catch (Exception e)
             {
-                Log.Error($@"Error loading image asset {assetName}: {e.Message}. The asset will not be loaded");
+                M3Log.Error($@"Error loading image asset {assetName}: {e.Message}. The asset will not be loaded");
             }
             finally
             {
@@ -116,7 +116,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     if (Math.Abs(aspectRatioDiff) > RequiredAspectRatioTolerance)
                     {
                         // Must have specific aspect ratio.limes
-                        Log.Error($@"{ModName}'s banner image is not the correct aspect ratio. Aspect ratio should be 580x47. The banner won't be displayed.");
+                        M3Log.Error($@"{ModName}'s banner image is not the correct aspect ratio. Aspect ratio should be 580x47. The banner won't be displayed.");
                         RemoveAssetFromCache(BannerImageName);
                     }
                     else

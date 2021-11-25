@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.IO.Compression;
 using System.Security.Cryptography;
 using System.Threading;
 using MassEffectModManagerCore.modmanager.helpers;
@@ -11,9 +10,10 @@ using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.windows;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
+using MassEffectModManagerCore.modmanager.diagnostics;
+using ME3TweaksCore.Diagnostics;
 using Microsoft.AppCenter.Crashes;
 using Newtonsoft.Json;
-using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.me3tweaks
 {
@@ -90,16 +90,16 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     using var wc = new ShortTimeoutWebClient();
                     string json = wc.DownloadString(fetchUrl);
                     App.ServerManifest = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
-                    Log.Information($@"Fetched startup manifest from endpoint {host}");
+                    M3Log.Information($@"Fetched startup manifest from endpoint {host}");
                     return App.ServerManifest;
                 }
                 catch (Exception e)
                 {
-                    Log.Error($@"Unable to fetch startup manifest from endpoint {host}: {e.Message}");
+                    M3Log.Error($@"Unable to fetch startup manifest from endpoint {host}: {e.Message}");
                 }
             }
 
-            Log.Error(@"Failed to fetch startup manifest.");
+            M3Log.Error(@"Failed to fetch startup manifest.");
             return new Dictionary<string, string>();
         }
 
@@ -119,7 +119,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 }
                 catch (Exception e)
                 {
-                    Log.Error($@"Could not download {assetName} from endpoint {staticurl}: {e.Message}");
+                    M3Log.Error($@"Could not download {assetName} from endpoint {staticurl}: {e.Message}");
                 }
             }
 
@@ -147,7 +147,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 }
                 catch (Exception e)
                 {
-                    Log.Error($@"Could not download {assetName} from endpoint {staticurl}: {e.Message}");
+                    M3Log.Error($@"Could not download {assetName} from endpoint {staticurl}: {e.Message}");
                 }
             }
 
@@ -156,7 +156,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
         public static Dictionary<string, CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>> FetchBasegameFileIdentificationServiceManifest(bool overrideThrottling = false)
         {
-            Log.Information(@"Fetching basegame file identification manifest");
+            M3Log.Information(@"Fetching basegame file identification manifest");
 
             //read cached first.
             string cached = null;
@@ -169,7 +169,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 catch (Exception e)
                 {
                     var attachments = new List<ErrorAttachmentLog>();
-                    string log = LogCollector.CollectLatestLog(true);
+                    string log = LogCollector.CollectLatestLog(M3Log.LogDir, true);
                     if (log != null && log.Length < FileSize.MebiByte * 7)
                     {
                         attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, @"applog.txt"));
@@ -202,17 +202,17 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     catch (Exception e)
                     {
                         //Unable to fetch latest help.
-                        Log.Error($@"Error fetching online basegame file identification service from endpoint {host}: {e.Message}");
+                        M3Log.Error($@"Error fetching online basegame file identification service from endpoint {host}: {e.Message}");
                     }
                 }
 
                 if (cached == null)
                 {
-                    Log.Error(@"Unable to load basegame file identification service and local file doesn't exist. Returning a blank copy.");
+                    M3Log.Error(@"Unable to load basegame file identification service and local file doesn't exist. Returning a blank copy.");
                     return getBlankBGFIDB();
                 }
             }
-            Log.Information(@"Using cached BGFIS instead");
+            M3Log.Information(@"Using cached BGFIS instead");
 
             try
             {
@@ -220,7 +220,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
             catch (Exception e)
             {
-                Log.Error(@"Could not parse cached basegame file identification service file. Returning blank BFIS data instead. Reason: " + e.Message);
+                M3Log.Error(@"Could not parse cached basegame file identification service file. Returning blank BFIS data instead. Reason: " + e.Message);
                 return getBlankBGFIDB();
             }
         }
@@ -254,7 +254,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 catch (Exception e)
                 {
                     var attachments = new List<ErrorAttachmentLog>();
-                    string log = LogCollector.CollectLatestLog(true);
+                    string log = LogCollector.CollectLatestLog(M3Log.LogDir, true);
                     if (log != null && log.Length < FileSize.MebiByte * 7)
                     {
                         attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, @"applog.txt"));
@@ -282,15 +282,15 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 catch (Exception e)
                 {
                     //Unable to fetch latest help.
-                    Log.Error(@"Error fetching online third party identification service: " + e.Message);
+                    M3Log.Error(@"Error fetching online third party identification service: " + e.Message);
 
                     if (cached != null)
                     {
-                        Log.Warning(@"Using cached third party identification service  file instead");
+                        M3Log.Warning(@"Using cached third party identification service  file instead");
                     }
                     else
                     {
-                        Log.Error(@"Unable to load third party identification service and local file doesn't exist. Returning a blank copy.");
+                        M3Log.Error(@"Unable to load third party identification service and local file doesn't exist. Returning a blank copy.");
                         return getBlankTPIS();
                     }
                 }
@@ -302,7 +302,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
             catch (Exception e)
             {
-                Log.Error(@"Could not parse cached third party identification service file. Returning blank TPMI data instead. Reason: " + e.Message);
+                M3Log.Error(@"Could not parse cached third party identification service file. Returning blank TPMI data instead. Reason: " + e.Message);
                 return getBlankTPIS();
             }
         }
@@ -333,7 +333,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
             catch (Exception e)
             {
-                Log.Error(@"Error downloading string: " + e.Message);
+                M3Log.Error(@"Error downloading string: " + e.Message);
                 return null;
             }
         }
@@ -356,7 +356,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 }
                 catch (Exception e)
                 {
-                    Log.Error(@"Error converting top mods response to json: " + e.Message);
+                    M3Log.Error(@"Error converting top mods response to json: " + e.Message);
                 }
             }
 
@@ -382,7 +382,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 catch (Exception e)
                 {
                     var attachments = new List<ErrorAttachmentLog>();
-                    string log = LogCollector.CollectLatestLog(true);
+                    string log = LogCollector.CollectLatestLog(M3Log.LogDir, true);
                     if (log != null && log.Length < FileSize.MebiByte * 7)
                     {
                         attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, @"applog.txt"));
@@ -409,14 +409,14 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 catch (Exception e)
                 {
                     //Unable to fetch latest help.
-                    Log.Error(@"Error fetching latest tips service file: " + e.Message);
+                    M3Log.Error(@"Error fetching latest tips service file: " + e.Message);
                     if (cached != null)
                     {
-                        Log.Warning(@"Using cached tips service file instead");
+                        M3Log.Warning(@"Using cached tips service file instead");
                     }
                     else
                     {
-                        Log.Error(@"Unable to fetch latest tips service file from server and local file doesn't exist. Returning a blank copy.");
+                        M3Log.Error(@"Unable to fetch latest tips service file from server and local file doesn't exist. Returning a blank copy.");
                         return new Dictionary<string, List<string>>();
                     }
                 }
@@ -428,7 +428,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
             catch (Exception e)
             {
-                Log.Error(@"Unable to parse cached tips service file: " + e.Message);
+                M3Log.Error(@"Unable to parse cached tips service file: " + e.Message);
                 return new Dictionary<string, List<string>>();
             }
         }
@@ -445,7 +445,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 catch (Exception e)
                 {
                     var attachments = new List<ErrorAttachmentLog>();
-                    string log = LogCollector.CollectLatestLog(true);
+                    string log = LogCollector.CollectLatestLog(M3Log.LogDir, true);
                     if (log != null && log.Length < FileSize.MebiByte * 7)
                     {
                         attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, @"applog.txt"));
@@ -472,15 +472,15 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 catch (Exception e)
                 {
                     //Unable to fetch latest help.
-                    Log.Error(@"Error fetching latest importing service file: " + e.Message);
+                    M3Log.Error(@"Error fetching latest importing service file: " + e.Message);
 
                     if (cached != null)
                     {
-                        Log.Warning(@"Using cached third party importing service file instead");
+                        M3Log.Warning(@"Using cached third party importing service file instead");
                     }
                     else
                     {
-                        Log.Error(@"Unable to fetch latest third party importing service file from server and local file doesn't exist. Returning a blank copy.");
+                        M3Log.Error(@"Unable to fetch latest third party importing service file from server and local file doesn't exist. Returning a blank copy.");
                         return new Dictionary<long, List<ThirdPartyServices.ThirdPartyImportingInfo>>();
                     }
                 }
@@ -491,7 +491,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
             catch (Exception e)
             {
-                Log.Error(@"Unable to parse cached importing service file: " + e.Message);
+                M3Log.Error(@"Unable to parse cached importing service file: " + e.Message);
                 return new Dictionary<long, List<ThirdPartyServices.ThirdPartyImportingInfo>>();
             }
         }
@@ -514,7 +514,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         string host = myUri.Host;
 
                         var fullurl = endpoint + @"tutorial/" + step.imagename;
-                        Log.Information($@"Downloading {step.imagename} from endpoint {host}");
+                        M3Log.Information($@"Downloading {step.imagename} from endpoint {host}");
                         var downloadedImage = OnlineContent.DownloadToMemory(fullurl, null, step.imagemd5);
                         if (downloadedImage.errorMessage == null)
                         {
@@ -524,14 +524,14 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                             }
                             catch (Exception e)
                             {
-                                Log.Error($@"Error writing tutorial image {imagePath}: {e.Message}");
+                                M3Log.Error($@"Error writing tutorial image {imagePath}: {e.Message}");
                             }
 
                             break;
                         }
                         else
                         {
-                            Log.Error($@"Unable to download {step.imagename} from endpoint {host}: {downloadedImage.errorMessage}");
+                            M3Log.Error($@"Unable to download {step.imagename} from endpoint {host}: {downloadedImage.errorMessage}");
                         }
                     }
                 }
@@ -554,7 +554,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
             catch (Exception e)
             {
-                Log.Error(@"Error querying relay service from ME3Tweaks: " + App.FlattenException(e));
+                M3Log.Error(@"Error querying relay service from ME3Tweaks: " + App.FlattenException(e));
             }
 
             return null;
@@ -576,33 +576,33 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                             using var wc = new ShortTimeoutWebClient();
                             {
                                 var fullURL = staticurl + @"7z.dll";
-                                Log.Information(@"Downloading 7z.dll: " + fullURL);
+                                M3Log.Information(@"Downloading 7z.dll: " + fullURL);
                                 wc.DownloadFile(fullURL, sevenZDLL);
                                 break; //No more loops
                             }
                         }
                         catch (Exception e)
                         {
-                            Log.Error($@"Could not download 7z.dll from endpoint {staticurl} {e.Message}");
+                            M3Log.Error($@"Could not download 7z.dll from endpoint {staticurl} {e.Message}");
                         }
                     }
                 }
 
                 if (File.Exists(sevenZDLL))
                 {
-                    Log.Information(@"Setting 7z dll path: " + sevenZDLL);
+                    M3Log.Information(@"Setting 7z dll path: " + sevenZDLL);
                     var p = Path.GetFullPath(sevenZDLL);
                     SevenZip.SevenZipBase.SetLibraryPath(sevenZDLL);
                 }
                 else
                 {
-                    Log.Fatal(@"Unable to load 7z dll! File doesn't exist: " + sevenZDLL);
+                    M3Log.Fatal(@"Unable to load 7z dll! File doesn't exist: " + sevenZDLL);
                     return false;
                 }*/
             }
             catch (Exception e)
             {
-                Log.Error(@"Exception ensuring critical files: " + App.FlattenException(e));
+                M3Log.Error(@"Exception ensuring critical files: " + App.FlattenException(e));
                 return false;
             }
 
@@ -684,7 +684,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             {
                 if (logDownload)
                 {
-                    Log.Information($@"Downloading to {destType}: " + url);
+                    M3Log.Information($@"Downloading to {destType}: " + url);
                 }
                 else
                 {
@@ -746,7 +746,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
         public static List<IntroTutorial.TutorialStep> FetchTutorialManifest(bool overrideThrottling = false)
         {
-            Log.Information(@"Fetching tutorial manifest");
+            M3Log.Information(@"Fetching tutorial manifest");
             string cached = null;
             // Read cached first.
             if (File.Exists(Utilities.GetTutorialServiceCacheFile()))
@@ -758,7 +758,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 catch (Exception e)
                 {
                     var attachments = new List<ErrorAttachmentLog>();
-                    string log = LogCollector.CollectLatestLog(true);
+                    string log = LogCollector.CollectLatestLog(M3Log.LogDir, true);
                     if (log != null && log.Length < FileSize.MebiByte * 7)
                     {
                         attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, @"applog.txt"));
@@ -790,18 +790,18 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     catch (Exception e)
                     {
                         //Unable to fetch latest help.
-                        Log.Error($@"Error fetching latest tutorial service file from endpoint {host}: {e.Message}");
+                        M3Log.Error($@"Error fetching latest tutorial service file from endpoint {host}: {e.Message}");
                     }
                 }
 
                 if (cached == null)
                 {
-                    Log.Error(@"Unable to fetch latest tutorial service file from server and local file doesn't exist. Returning a blank copy.");
+                    M3Log.Error(@"Unable to fetch latest tutorial service file from server and local file doesn't exist. Returning a blank copy.");
                     return new List<IntroTutorial.TutorialStep>();
                 }
             }
 
-            Log.Information(@"Using cached tutorial service file");
+            M3Log.Information(@"Using cached tutorial service file");
 
             try
             {
@@ -809,7 +809,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
             catch (Exception e)
             {
-                Log.Error(@"Unable to parse cached importing service file: " + e.Message);
+                M3Log.Error(@"Unable to parse cached importing service file: " + e.Message);
                 return new List<IntroTutorial.TutorialStep>();
             }
         }

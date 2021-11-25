@@ -7,20 +7,18 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Navigation;
 using LegendaryExplorerCore.Gammtek.Extensions;
-using Serilog;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
-using static MassEffectModManagerCore.modmanager.me3tweaks.ThirdPartyServices;
+using MassEffectModManagerCore.modmanager.diagnostics;
 using MassEffectModManagerCore.modmanager.me3tweaks;
-using PropertyChanged;
-using SixLabors.ImageSharp;
-using Color = System.Windows.Media.Color;
+using ME3TweaksCore.Services.Backup;
+using ME3TweaksCore.Targets;
+using ME3TweaksCoreWPF;
 using MemoryAnalyzer = MassEffectModManagerCore.modmanager.memoryanalyzer.MemoryAnalyzer;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -30,15 +28,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// </summary>
     public partial class InstallationInformation : MMBusyPanelBase
     {
-        public GameTarget SelectedTarget { get; set; }
-        public GameTarget PreviousTarget { get; set; }
+        public GameTargetWPF SelectedTarget { get; set; }
+        public GameTargetWPF PreviousTarget { get; set; }
         public string BackupLocationString { get; set; }
-        public ObservableCollectionExtended<GameTarget> InstallationTargets { get; } = new ObservableCollectionExtended<GameTarget>();
+        public ObservableCollectionExtended<GameTargetWPF> InstallationTargets { get; } = new ObservableCollectionExtended<GameTargetWPF>();
         public ObservableCollectionExtended<InstalledDLCMod> DLCModsInstalled { get; } = new ObservableCollectionExtended<InstalledDLCMod>();
         public bool SFARBeingRestored { get; private set; }
         public bool BasegameFilesBeingRestored { get; private set; }
         public bool ShowInstalledOptions { get; private set; }
-        public InstallationInformation(List<GameTarget> targetsList, GameTarget selectedTarget)
+        public InstallationInformation(List<GameTargetWPF> targetsList, GameTargetWPF selectedTarget)
         {
             MemoryAnalyzer.AddTrackedMemoryItem(@"Installation Information Panel", new WeakReference(this));
             DataContext = this;
@@ -105,7 +103,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private bool FilterBasegameObject(object obj)
         {
-            if (!string.IsNullOrWhiteSpace(ModifiedFilesFilterText) && obj is GameTarget.ModifiedFileObject mobj)
+            if (!string.IsNullOrWhiteSpace(ModifiedFilesFilterText) && obj is ModifiedFileObject mobj)
             {
                 return mobj.FilePath.Contains(ModifiedFilesFilterText, StringComparison.InvariantCultureIgnoreCase);
             }
@@ -161,7 +159,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     if (b.Error != null)
                     {
-                        Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
+                        M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                     }
                     RestoreAllBasegameInProgress = false;
                     if (SelectedTarget.Game == MEGame.ME3 || SelectedTarget.Game.IsLEGame())
@@ -436,7 +434,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                 void notifyRestoredCallback(object itemRestored)
                 {
-                    if (itemRestored is GameTarget.ModifiedFileObject mf)
+                    if (itemRestored is ModifiedFileObject mf)
                     {
                         if (SelectedTarget.Game is MEGame.ME3 or MEGame.LE1 or MEGame.LE2 or MEGame.LE3)
                             Result.TargetsToAutoTOC.Add(SelectedTarget);
@@ -456,7 +454,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             BasegameFilesBeingRestored = false;
                         }
                     }
-                    else if (itemRestored is GameTarget.SFARObject ms)
+                    else if (itemRestored is SFARObject ms)
                     {
                         if (!ms.IsModified)
                         {
@@ -570,7 +568,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             //{
             //    if (b.Error != null)
             //    {
-            //        Log.Error($@"Error in installation information data populator: {b.Error.Message}");
+            //        M3Log.Error($@"Error in installation information data populator: {b.Error.Message}");
             //    }
             //};
             //nbw.RunWorkerAsync();
@@ -593,187 +591,187 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             public event PropertyChangedEventHandler PropertyChanged;
         }
 
-        [AddINotifyPropertyChangedInterface]
-        public class InstalledDLCMod
-        {
-            private string dlcFolderPath;
-            public string EnableDisableText => DLCFolderName.StartsWith(@"xDLC") ? M3L.GetString(M3L.string_enable) : M3L.GetString(M3L.string_disable);
-            public string EnableDisableTooltip { get; set; }
-            public string ModName { get; private set; }
-            public string DLCFolderName { get; private set; }
-            public string DLCFolderNameString { get; private set; }
-            public string InstalledBy { get; private set; }
-            public string Version { get; private set; }
-            public string InstallerInstanceBuild { get; private set; }
+        //[AddINotifyPropertyChangedInterface]
+        //public class InstalledDLCMod
+        //{
+        //    private string dlcFolderPath;
+        //    public string EnableDisableText => DLCFolderName.StartsWith(@"xDLC") ? M3L.GetString(M3L.string_enable) : M3L.GetString(M3L.string_disable);
+        //    public string EnableDisableTooltip { get; set; }
+        //    public string ModName { get; private set; }
+        //    public string DLCFolderName { get; private set; }
+        //    public string DLCFolderNameString { get; private set; }
+        //    public string InstalledBy { get; private set; }
+        //    public string Version { get; private set; }
+        //    public string InstallerInstanceBuild { get; private set; }
 
 
-            public ObservableCollectionExtended<string> IncompatibleDLC { get; } = new ObservableCollectionExtended<string>();
-            public ObservableCollectionExtended<string> ChosenInstallOptions { get; } = new ObservableCollectionExtended<string>();
+        //    public ObservableCollectionExtended<string> IncompatibleDLC { get; } = new ObservableCollectionExtended<string>();
+        //    public ObservableCollectionExtended<string> ChosenInstallOptions { get; } = new ObservableCollectionExtended<string>();
 
-            private MEGame game;
-            private static readonly SolidColorBrush DisabledBrushLightMode = new SolidColorBrush(Color.FromArgb(0xff, 232, 26, 26));
-            private static readonly SolidColorBrush DisabledBrushDarkMode = new SolidColorBrush(Color.FromArgb(0xff, 247, 88, 77));
+        //    private MEGame game;
+        //    private static readonly SolidColorBrush DisabledBrushLightMode = new SolidColorBrush(Color.FromArgb(0xff, 232, 26, 26));
+        //    private static readonly SolidColorBrush DisabledBrushDarkMode = new SolidColorBrush(Color.FromArgb(0xff, 247, 88, 77));
 
-            private Func<InstalledDLCMod, bool> deleteConfirmationCallback;
-            private Action notifyDeleted;
-            private Action notifyToggled;
+        //    private Func<InstalledDLCMod, bool> deleteConfirmationCallback;
+        //    private Action notifyDeleted;
+        //    private Action notifyToggled;
 
-            [DependsOn(nameof(DLCFolderName))]
-            public SolidColorBrush TextColor
-            {
-                get
-                {
-                    if (DLCFolderName.StartsWith('x'))
-                    {
-                        return Settings.DarkTheme ? DisabledBrushDarkMode : DisabledBrushLightMode;
-                    }
-                    return Application.Current.FindResource(AdonisUI.Brushes.ForegroundBrush) as SolidColorBrush;
-                }
-            }
-            /// <summary>
-            /// Indicates that this mod was installed by ALOT Installer or Mod Manager.
-            /// </summary>
-            public bool InstalledByManagedSolution { get; private set; }
-            public void OnDLCFolderNameChanged()
-            {
-                dlcFolderPath = Path.Combine(Directory.GetParent(dlcFolderPath).FullName, DLCFolderName);
-                parseMetaCmm(DLCFolderName.StartsWith('x'), false);
-                //TriggerPropertyChangedFor(nameof(TextColor));
-            }
+        //    [DependsOn(nameof(DLCFolderName))]
+        //    public SolidColorBrush TextColor
+        //    {
+        //        get
+        //        {
+        //            if (DLCFolderName.StartsWith('x'))
+        //            {
+        //                return Settings.DarkTheme ? DisabledBrushDarkMode : DisabledBrushLightMode;
+        //            }
+        //            return Application.Current.FindResource(AdonisUI.Brushes.ForegroundBrush) as SolidColorBrush;
+        //        }
+        //    }
+        //    /// <summary>
+        //    /// Indicates that this mod was installed by ALOT Installer or Mod Manager.
+        //    /// </summary>
+        //    public bool InstalledByManagedSolution { get; private set; }
+        //    public void OnDLCFolderNameChanged()
+        //    {
+        //        dlcFolderPath = Path.Combine(Directory.GetParent(dlcFolderPath).FullName, DLCFolderName);
+        //        parseMetaCmm(DLCFolderName.StartsWith('x'), false);
+        //        //TriggerPropertyChangedFor(nameof(TextColor));
+        //    }
 
-            public InstalledDLCMod(string dlcFolderPath, MEGame game, Func<InstalledDLCMod, bool> deleteConfirmationCallback, Action notifyDeleted, Action notifyToggled, bool modNamePrefersTPMI)
-            {
-                this.dlcFolderPath = dlcFolderPath;
-                this.game = game;
-                var dlcFolderName = DLCFolderNameString = Path.GetFileName(dlcFolderPath);
-                if (App.ThirdPartyIdentificationService != null && App.ThirdPartyIdentificationService.ContainsKey(game.ToString()) && App.ThirdPartyIdentificationService[game.ToString()].TryGetValue(dlcFolderName.TrimStart('x'), out var tpmi))
-                {
-                    ModName = tpmi.modname;
-                }
-                else
-                {
-                    ModName = dlcFolderName;
-                }
+        //    public InstalledDLCMod(string dlcFolderPath, MEGame game, Func<InstalledDLCMod, bool> deleteConfirmationCallback, Action notifyDeleted, Action notifyToggled, bool modNamePrefersTPMI)
+        //    {
+        //        this.dlcFolderPath = dlcFolderPath;
+        //        this.game = game;
+        //        var dlcFolderName = DLCFolderNameString = Path.GetFileName(dlcFolderPath);
+        //        if (App.ThirdPartyIdentificationService != null && App.ThirdPartyIdentificationService.ContainsKey(game.ToString()) && App.ThirdPartyIdentificationService[game.ToString()].TryGetValue(dlcFolderName.TrimStart('x'), out var tpmi))
+        //        {
+        //            ModName = tpmi.modname;
+        //        }
+        //        else
+        //        {
+        //            ModName = dlcFolderName;
+        //        }
 
-                DLCFolderName = dlcFolderName;
-                this.deleteConfirmationCallback = deleteConfirmationCallback;
-                this.notifyDeleted = notifyDeleted;
-                this.notifyToggled = notifyToggled;
-                DeleteCommand = new RelayCommand(DeleteDLCMod, CanDeleteDLCMod);
-                EnableDisableCommand = new GenericCommand(ToggleDLC, CanToggleDLC);
+        //        DLCFolderName = dlcFolderName;
+        //        this.deleteConfirmationCallback = deleteConfirmationCallback;
+        //        this.notifyDeleted = notifyDeleted;
+        //        this.notifyToggled = notifyToggled;
+        //        DeleteCommand = new RelayCommand(DeleteDLCMod, CanDeleteDLCMod);
+        //        EnableDisableCommand = new GenericCommand(ToggleDLC, CanToggleDLC);
 
-            }
+        //    }
 
-            private void parseMetaCmm(bool disabled, bool modNamePrefersTPMI)
-            {
-                DLCFolderNameString = DLCFolderName.TrimStart('x'); //this string is not to show M3L.GetString(M3L.string_disabled)
-                var metaFile = Path.Combine(dlcFolderPath, @"_metacmm.txt");
-                if (File.Exists(metaFile))
-                {
-                    InstalledByManagedSolution = true;
-                    InstalledBy = M3L.GetString(M3L.string_installedByModManager); //Default value when finding metacmm.
-                    MetaCMM mcmm = new MetaCMM(metaFile);
-                    if (DLCFolderNameString != ModName && mcmm.ModName != ModName)
-                    {
-                        DLCFolderNameString += $@" ({ModName})";
-                        if (!modNamePrefersTPMI || ModName == null)
-                        {
-                            ModName = mcmm.ModName;
-                        }
-                    }
+        //    private void parseMetaCmm(bool disabled, bool modNamePrefersTPMI)
+        //    {
+        //        DLCFolderNameString = DLCFolderName.TrimStart('x'); //this string is not to show M3L.GetString(M3L.string_disabled)
+        //        var metaFile = Path.Combine(dlcFolderPath, @"_metacmm.txt");
+        //        if (File.Exists(metaFile))
+        //        {
+        //            InstalledByManagedSolution = true;
+        //            InstalledBy = M3L.GetString(M3L.string_installedByModManager); //Default value when finding metacmm.
+        //            MetaCMM mcmm = new MetaCMM(metaFile);
+        //            if (DLCFolderNameString != ModName && mcmm.ModName != ModName)
+        //            {
+        //                DLCFolderNameString += $@" ({ModName})";
+        //                if (!modNamePrefersTPMI || ModName == null)
+        //                {
+        //                    ModName = mcmm.ModName;
+        //                }
+        //            }
 
-                    ModName = mcmm.ModName;
-                    Version = mcmm.Version;
-                    InstallerInstanceBuild = mcmm.InstalledBy;
-                    if (int.TryParse(InstallerInstanceBuild, out var _))
-                    {
-                        InstalledBy = M3L.GetString(M3L.string_installedByModManager) + @" Build " + InstallerInstanceBuild; // Installed by Mod Manager Build X. Doens't need localized
-                    }
-                    else
-                    {
-                        InstalledBy = M3L.GetString(M3L.string_interp_installedByX, InstallerInstanceBuild);
-                    }
+        //            ModName = mcmm.ModName;
+        //            Version = mcmm.Version;
+        //            InstallerInstanceBuild = mcmm.InstalledBy;
+        //            if (int.TryParse(InstallerInstanceBuild, out var _))
+        //            {
+        //                InstalledBy = M3L.GetString(M3L.string_installedByModManager) + @" Build " + InstallerInstanceBuild; // Installed by Mod Manager Build X. Doens't need localized
+        //            }
+        //            else
+        //            {
+        //                InstalledBy = M3L.GetString(M3L.string_interp_installedByX, InstallerInstanceBuild);
+        //            }
 
-                    // MetaCMM Extended
-                    if (mcmm.OptionsSelectedAtInstallTime != null)
-                    {
-                        ChosenInstallOptions.ReplaceAll(mcmm.OptionsSelectedAtInstallTime);
-                    }
-                    if (mcmm.IncompatibleDLC != null)
-                    {
-                        IncompatibleDLC.ReplaceAll(mcmm.IncompatibleDLC);
-                    }
-                }
-                else
-                {
-                    InstalledBy = M3L.GetString(M3L.string_notInstalledByModManager);
-                }
-                if (disabled)
-                {
-                    DLCFolderNameString += @" - " + M3L.GetString(M3L.string_disabled);
-                }
-            }
+        //            // MetaCMM Extended
+        //            if (mcmm.OptionsSelectedAtInstallTime != null)
+        //            {
+        //                ChosenInstallOptions.ReplaceAll(mcmm.OptionsSelectedAtInstallTime);
+        //            }
+        //            if (mcmm.IncompatibleDLC != null)
+        //            {
+        //                IncompatibleDLC.ReplaceAll(mcmm.IncompatibleDLC);
+        //            }
+        //        }
+        //        else
+        //        {
+        //            InstalledBy = M3L.GetString(M3L.string_notInstalledByModManager);
+        //        }
+        //        if (disabled)
+        //        {
+        //            DLCFolderNameString += @" - " + M3L.GetString(M3L.string_disabled);
+        //        }
+        //    }
 
-            private void ToggleDLC()
-            {
-                var source = dlcFolderPath;
-                var dlcdir = Directory.GetParent(dlcFolderPath).FullName;
-                var isBecomingDisabled = DLCFolderName.StartsWith(@"DLC"); //about to change to xDLC, so it's becoming disabled
-                var newdlcname = DLCFolderName.StartsWith(@"xDLC") ? DLCFolderName.TrimStart('x') : @"x" + DLCFolderName;
-                var target = Path.Combine(dlcdir, newdlcname);
-                try
-                {
-                    Directory.Move(source, target);
-                    DLCFolderName = newdlcname;
-                    dlcFolderPath = target;
-                    EnableDisableTooltip = M3L.GetString(isBecomingDisabled ? M3L.string_tooltip_enableDLC : M3L.string_tooltip_disableDLC);
-                    notifyToggled?.Invoke();
-                }
-                catch (Exception e)
-                {
-                    Log.Error(@"Unable to toggle DLC: " + e.Message);
-                }
-                //TriggerPropertyChangedFor(nameof(DLCFolderName));
-            }
+        //    private void ToggleDLC()
+        //    {
+        //        var source = dlcFolderPath;
+        //        var dlcdir = Directory.GetParent(dlcFolderPath).FullName;
+        //        var isBecomingDisabled = DLCFolderName.StartsWith(@"DLC"); //about to change to xDLC, so it's becoming disabled
+        //        var newdlcname = DLCFolderName.StartsWith(@"xDLC") ? DLCFolderName.TrimStart('x') : @"x" + DLCFolderName;
+        //        var target = Path.Combine(dlcdir, newdlcname);
+        //        try
+        //        {
+        //            Directory.Move(source, target);
+        //            DLCFolderName = newdlcname;
+        //            dlcFolderPath = target;
+        //            EnableDisableTooltip = M3L.GetString(isBecomingDisabled ? M3L.string_tooltip_enableDLC : M3L.string_tooltip_disableDLC);
+        //            notifyToggled?.Invoke();
+        //        }
+        //        catch (Exception e)
+        //        {
+        //            M3Log.Error(@"Unable to toggle DLC: " + e.Message);
+        //        }
+        //        //TriggerPropertyChangedFor(nameof(DLCFolderName));
+        //    }
 
-            private bool CanToggleDLC() => (game is MEGame.ME3 || game.IsLEGame() || DLCFolderName.StartsWith('x')) && !Utilities.IsGameRunning(game);
+        //    private bool CanToggleDLC() => (game is MEGame.ME3 || game.IsLEGame() || DLCFolderName.StartsWith('x')) && !Utilities.IsGameRunning(game);
 
-            public bool EnableDisableVisible => game is MEGame.ME3 || game.IsLEGame() || DLCFolderName.StartsWith('x');
-            public ICommand DeleteCommand { get; set; }
-            public GenericCommand EnableDisableCommand { get; set; }
-            private bool CanDeleteDLCMod(object obj) => !Utilities.IsGameRunning(game);
+        //    public bool EnableDisableVisible => game is MEGame.ME3 || game.IsLEGame() || DLCFolderName.StartsWith('x');
+        //    public ICommand DeleteCommand { get; set; }
+        //    public GenericCommand EnableDisableCommand { get; set; }
+        //    private bool CanDeleteDLCMod(object obj) => !Utilities.IsGameRunning(game);
 
-            private void DeleteDLCMod(object obj)
-            {
-                if (obj is GameTarget gt)
-                {
-                    bool? holdingShift = Keyboard.Modifiers == ModifierKeys.Shift;
-                    if (!holdingShift.Value) holdingShift = null;
-                    var confirmDelete = holdingShift ?? deleteConfirmationCallback?.Invoke(this);
-                    if (confirmDelete.HasValue && confirmDelete.Value)
-                    {
-                        Log.Information(@"Deleting DLC mod from target: " + dlcFolderPath);
-                        try
-                        {
-                            Utilities.DeleteFilesAndFoldersRecursively(dlcFolderPath);
-                            notifyDeleted?.Invoke();
-                        }
-                        catch (Exception e)
-                        {
-                            Log.Error($@"Error deleting DLC mod: {e.Message}");
-                            // Todo: Show a dialog to the user
-                        }
-                    }
+        //    private void DeleteDLCMod(object obj)
+        //    {
+        //        if (obj is GameTargetWPF gt)
+        //        {
+        //            bool? holdingShift = Keyboard.Modifiers == ModifierKeys.Shift;
+        //            if (!holdingShift.Value) holdingShift = null;
+        //            var confirmDelete = holdingShift ?? deleteConfirmationCallback?.Invoke(this);
+        //            if (confirmDelete.HasValue && confirmDelete.Value)
+        //            {
+        //                M3Log.Information(@"Deleting DLC mod from target: " + dlcFolderPath);
+        //                try
+        //                {
+        //                    Utilities.DeleteFilesAndFoldersRecursively(dlcFolderPath);
+        //                    notifyDeleted?.Invoke();
+        //                }
+        //                catch (Exception e)
+        //                {
+        //                    M3Log.Error($@"Error deleting DLC mod: {e.Message}");
+        //                    // Todo: Show a dialog to the user
+        //                }
+        //            }
 
-                }
-            }
+        //        }
+        //    }
 
-            public void ClearHandlers()
-            {
-                deleteConfirmationCallback = null;
-                notifyDeleted = null;
-            }
-        }
+        //    public void ClearHandlers()
+        //    {
+        //        deleteConfirmationCallback = null;
+        //        notifyDeleted = null;
+        //    }
+        //}
 
 
 

@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using MassEffectModManagerCore.modmanager.helpers;
 using LegendaryExplorerCore.Helpers;
-using Serilog;
+using MassEffectModManagerCore.modmanager.diagnostics;
 
 namespace MassEffectModManagerCore.modmanager.me3tweaks
 {
@@ -34,10 +30,10 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     if (File.Exists(locFile))
                     {
                         var md5 = Utilities.CalculateMD5(locFile);
-                        Log.Information($@"Found server livelocalization. HasUpdatedLocalization({lang}) result: {md5 != livelocmd5}");
+                        M3Log.Information($@"Found server livelocalization. HasUpdatedLocalization({lang}) result: {md5 != livelocmd5}");
                         return md5 != livelocmd5;
                     }
-                    Log.Information($@"Server has localization for {lang}, but we don't have a localization locally stored");
+                    M3Log.Information($@"Server has localization for {lang}, but we don't have a localization locally stored");
                     return true; //There is online asset but we do not have it locally
                 }
             }
@@ -101,11 +97,11 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             {
                 // OK!
                 result.result.WriteToFile(getCachedLocalizationFile(lang));
-                Log.Information($@"Wrote updated cached localization file for {lang}");
+                M3Log.Information($@"Wrote updated cached localization file for {lang}");
                 return true;
             }
             // RIP
-            Log.Error($@"Error download updated localization file {lang}: {result.result}");
+            M3Log.Error($@"Error download updated localization file {lang}: {result.result}");
             return false;
 
         }

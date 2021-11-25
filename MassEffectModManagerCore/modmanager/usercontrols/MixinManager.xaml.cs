@@ -7,7 +7,6 @@ using System.IO;
 using System.Windows;
 using System.Windows.Input;
 using System.Linq;
-using Serilog;
 using System.Threading.Tasks;
 using System.Globalization;
 using IniParser.Model;
@@ -20,6 +19,10 @@ using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Unreal;
+using MassEffectModManagerCore.modmanager.diagnostics;
+using ME3TweaksCore.GameFilesystem;
+using ME3TweaksCore.Services.Backup;
+using ME3TweaksCoreWPF;
 using MemoryAnalyzer = MassEffectModManagerCore.modmanager.memoryanalyzer.MemoryAnalyzer;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -30,8 +33,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     public partial class MixinManager : MMBusyPanelBase
     {
         public ObservableCollectionExtended<Mixin> AvailableOfficialMixins { get; set; } = new ObservableCollectionExtended<Mixin>();
-        public ObservableCollectionExtended<GameTarget> AvailableInstallTargets { get; set; } = new ObservableCollectionExtended<GameTarget>();
-        public GameTarget SelectedInstallTarget { get; set; }
+        public ObservableCollectionExtended<GameTargetWPF> AvailableInstallTargets { get; set; } = new ObservableCollectionExtended<GameTargetWPF>();
+        public GameTargetWPF SelectedInstallTarget { get; set; }
         public Mixin SelectedMixin { get; set; }
         public bool OperationInProgress { get; set; }
 
@@ -136,7 +139,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     MessageBoxResult.No);
                 if (result == MessageBoxResult.No)
                 {
-                    Log.Information(@"User has aborted mixin compilation due to same-named mod existing");
+                    M3Log.Information(@"User has aborted mixin compilation due to same-named mod existing");
                     return; //abort.
                 }
             }
@@ -166,7 +169,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     //Error building list
                     modpath = null;
-                    Log.Information(@"Aborting mixin compiling due to incompatible selection of mixins");
+                    M3Log.Information(@"Aborting mixin compiling due to incompatible selection of mixins");
                     return;
                 }
 
@@ -217,7 +220,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (b.Error != null)
                 {
-                    Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
+                    M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                 }
                 OperationInProgress = false;
                 ClearMixinHandler();
@@ -267,7 +270,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     catch (Exception e)
                     {
                         var mixinsStr = string.Join(@", ", file.Value.Select(x => x.PatchName));
-                        Log.Error($@"Error in mixin application for file {file.Key}: {e.Message}");
+                        M3Log.Error($@"Error in mixin application for file {file.Key}: {e.Message}");
                         failedApplicationCallback(M3L.GetString(M3L.string_interp_errorApplyingMixinsForFile, mixinsStr, file.Key, e.Message));
                     }
                 }
@@ -298,14 +301,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         }
                         else
                         {
-                            Log.Information($@"Writing patched file to disk: {outfile}");
+                            M3Log.Information($@"Writing patched file to disk: {outfile}");
                             finalStream.WriteToFile(outfile);
                         }
                     }
                     catch (Exception e)
                     {
                         var mixinsStr = string.Join(@", ", file.Value.Select(x => x.PatchName));
-                        Log.Error($@"Error in mixin application for file {file.Key}: {e.Message}");
+                        M3Log.Error($@"Error in mixin application for file {file.Key}: {e.Message}");
                         failedApplicationCallback(M3L.GetString(M3L.string_interp_errorApplyingMixinsForFile, mixinsStr, file.Key, e.Message));
                     }
 
@@ -341,7 +344,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (Enumerable.Any(failedApplications))
                 {
                     //Error building list
-                    Log.Information(@"Aborting mixin install due to incompatible selection of mixins");
+                    M3Log.Information(@"Aborting mixin install due to incompatible selection of mixins");
                     return;
                 }
 
@@ -395,11 +398,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             if (merged)
                             {
                                 targetPackage.Save(compress: true);
-                                Log.Information(@"Three way merge succeeded for " + targetFile);
+                                M3Log.Information(@"Three way merge succeeded for " + targetFile);
                             }
                             else
                             {
-                                Log.Error(@"Could not merge three way merge into " + targetFile);
+                                M3Log.Error(@"Could not merge three way merge into " + targetFile);
                             }
                             //var outfile = Path.Combine(outdir, Path.GetFileName(file.Key));
                             //package.save(outfile, false); // don't compress
@@ -409,7 +412,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         catch (Exception e)
                         {
                             var mixinsStr = string.Join(@", ", file.Value.Select(x => x.PatchName));
-                            Log.Error($@"Error in mixin application for file {file.Key}: {e.Message}");
+                            M3Log.Error($@"Error in mixin application for file {file.Key}: {e.Message}");
                             failedApplicationCallback(M3L.GetString(M3L.string_interp_errorApplyingMixinsForFile, mixinsStr, file.Key, e.Message));
                         }
                     }
@@ -458,25 +461,25 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 if (unpacked)
                                 {
                                     targetPackage.Save(Path.Combine(targetCookedPCDir, file.Key));
-                                    Log.Information(@"Three way merge succeeded for " + targetPackage.FilePath);
+                                    M3Log.Information(@"Three way merge succeeded for " + targetPackage.FilePath);
                                 }
                                 else
                                 {
                                     var finalSTream = targetPackage.SaveToStream(false); // No compress. Not sure if we should support doing that though.
                                     targetDLCPackage.ReplaceEntry(finalSTream.ToArray(), targetDLCPackage.FindFileEntry(Path.GetFileName(file.Key)));
-                                    Log.Information(@"Three way merge succeeded for " + targetPackage.FilePath);
+                                    M3Log.Information(@"Three way merge succeeded for " + targetPackage.FilePath);
 
                                 }
                             }
                             else
                             {
-                                Log.Error(@"Could not three way merge into: " + targetFileStream);
+                                M3Log.Error(@"Could not three way merge into: " + targetFileStream);
                             }
                         }
                         catch (Exception e)
                         {
                             var mixinsStr = string.Join(@", ", file.Value.Select(x => x.PatchName));
-                            Log.Error($@"Error in mixin application for file {file.Key}: {e.Message}");
+                            M3Log.Error($@"Error in mixin application for file {file.Key}: {e.Message}");
                             failedApplicationCallback(M3L.GetString(M3L.string_interp_errorApplyingMixinsForFile, mixinsStr, file.Key, e.Message));
                         }
 
@@ -513,7 +516,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (b.Error != null)
                 {
-                    Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
+                    M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                 }
                 OperationInProgress = false;
                 ClearMixinHandler();

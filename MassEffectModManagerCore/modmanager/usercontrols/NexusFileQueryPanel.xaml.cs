@@ -1,23 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
 using LegendaryExplorerCore.Misc;
-using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.nexusmodsintegration;
 using MassEffectModManagerCore.modmanager.objects.nexusfiledb;
 using MassEffectModManagerCore.ui;
-using LegendaryExplorerCore.Packages;
+using MassEffectModManagerCore.modmanager.diagnostics;
 using Pathoschild.FluentNexus.Models;
-using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -189,7 +183,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 catch (Exception e)
                 {
-                    Log.Error($@"Could not perform search: {e.Message}");
+                    M3Log.Error($@"Could not perform search: {e.Message}");
                     QueryInProgress = false;
                 }
             });
@@ -236,7 +230,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 catch (Exception e)
                 {
-                    Log.Error($@"Could not ensure the nexus database: {e.Message}");
+                    M3Log.Error($@"Could not ensure the nexus database: {e.Message}");
                 }
 
                 // No longer busy

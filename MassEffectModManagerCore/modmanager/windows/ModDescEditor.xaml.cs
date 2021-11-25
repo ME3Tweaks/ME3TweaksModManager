@@ -5,11 +5,11 @@ using System.IO;
 using System.Windows;
 using System.Windows.Media;
 using IniParser.Model;
+using MassEffectModManagerCore.modmanager.diagnostics;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor;
 using MassEffectModManagerCore.ui;
-using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.windows
 {
@@ -62,7 +62,7 @@ namespace MassEffectModManagerCore.modmanager.windows
             }
             catch (Exception e)
             {
-                Log.Error($@"Failed to copy moddesc.ini text to clipboard: {e.Message}");
+                M3Log.Error($@"Failed to copy moddesc.ini text to clipboard: {e.Message}");
                 StatusMessage = M3L.GetString(M3L.string_interp_failedToCopyModdescini, e.Message);
                 StatusForeground = Brushes.Red;
             }

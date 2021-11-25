@@ -562,7 +562,7 @@
 	<system:String x:Key="string_deleteFromLibrary">Удалить из библиотеки</system:String>
 	<system:String x:Key="string_visitWebsite">Посетить веб-сайт</system:String>
 
-	<!-- GameTarget -->
+	<!-- GameTargetWPF -->
 	<system:String x:Key="string_interp_invalidTargetMissingFile">Недопустимый путь: {0} не обнаружен в папке игры.</system:String>
 	<!-- 0 = filename of file that is not found in game dir but should be there -->
 	<system:String x:Key="string_invalidTargetProtectedByCmmvanilla">Недопустимый путь: Отмечен как архивный наличием файла cmm_vanilla</system:String>

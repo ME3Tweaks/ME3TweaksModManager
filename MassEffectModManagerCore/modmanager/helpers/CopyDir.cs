@@ -1,8 +1,8 @@
-﻿using Serilog;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using MassEffectModManagerCore.modmanager.diagnostics;
 
 namespace MassEffectModManagerCore.modmanager.helpers
 {
@@ -72,13 +72,13 @@ namespace MassEffectModManagerCore.modmanager.helpers
                     }
                     catch (Exception e)
                     {
-                        Log.Error(@"Error copying file: " + fi + @" -> " + Path.Combine(target.FullName, fi.Name) + @": " + e.Message);
+                        M3Log.Error(@"Error copying file: " + fi + @" -> " + Path.Combine(target.FullName, fi.Name) + @": " + e.Message);
                         throw;
                     }
                 }
 
 
-                // Log.Information(@"Copying {0}\{1}", target.FullName, fi.Name);
+                // M3Log.Information(@"Copying {0}\{1}", target.FullName, fi.Name);
                 numdone++;
                 fileCopiedCallback?.Invoke();
             }

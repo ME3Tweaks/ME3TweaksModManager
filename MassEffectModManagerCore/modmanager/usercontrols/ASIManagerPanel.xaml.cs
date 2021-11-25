@@ -1,6 +1,4 @@
-﻿using MassEffectModManagerCore.modmanager.objects;
-using MassEffectModManagerCore.ui;
-using Serilog;
+﻿using MassEffectModManagerCore.ui;
 using System;
 using System.IO;
 using System.Linq;
@@ -8,11 +6,13 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using LegendaryExplorerCore.Misc;
-using MassEffectModManagerCore.modmanager.asi;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using LegendaryExplorerCore.Packages;
-using MemoryAnalyzer = MassEffectModManagerCore.modmanager.memoryanalyzer.MemoryAnalyzer;
+using MassEffectModManagerCore.modmanager.diagnostics;
+using ME3TweaksCore.NativeMods;
+using ME3TweaksCoreWPF;
+using ME3TweaksCoreWPF.NativeMods;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -29,8 +29,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public string SelectedASIName { get; set; }
         public bool InstallInProgress { get; set; }
         public string InstallButtonText { get; set; }
-        private GameTarget preselectedTarget;
-        public ObservableCollectionExtended<ASIGame> Games { get; } = new ObservableCollectionExtended<ASIGame>();
+        private GameTargetWPF preselectedTarget;
+        public ObservableCollectionExtended<ASIGameWPF> Games { get; } = new();
 
 
 
@@ -39,10 +39,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         /// managing and installing ASIs. ASIs are useful for debugging purposes, which is why this feature is now 
         /// part of ME3Explorer.
         /// </summary>
-        public ASIManagerPanel(GameTarget preselectedTarget = null)
+        public ASIManagerPanel(GameTargetWPF preselectedTarget = null)
         {
             MemoryAnalyzer.AddTrackedMemoryItem(@"ASI Manager", new WeakReference(this));
-            Log.Information(@"Opening ASI Manager");
+            M3Log.Information(@"Opening ASI Manager");
 
             DataContext = this;
             Directory.CreateDirectory(ASIManager.CachedASIsFolder);
@@ -118,7 +118,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 InstallInProgress = false;
                 if (b.Error != null)
                 {
-                    Log.Error($@"Exception installing ASI: {b.Error.Message}");
+                    M3Log.Error($@"Exception installing ASI: {b.Error.Message}");
                     M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_interp_anErrorOccuredDeletingTheASI, b.Error.Message), M3L.GetString(M3L.string_errorDeletingASI), MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 RefreshASIStates(asi.Game);
@@ -254,10 +254,10 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (!Settings.GenerationSettingOT && game.IsOTGame()) continue;
                 if (!Settings.GenerationSettingLE && game.IsLEGame()) continue;
                 var targets = mainwindow.InstallationTargets.Where(x => x.Game == game).ToList();
-                ASIGame asiGame = null;
+                ASIGameWPF asiGame = null;
                 if (targets.Count > 0)
                 {
-                    asiGame = new ASIGame(game, targets);
+                    asiGame = new ASIGameWPF(game, targets);
                     Games.Add(asiGame);
 
                     if (preselectedTarget != null && preselectedTarget.Game == game)

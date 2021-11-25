@@ -2,13 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
+using MassEffectModManagerCore.modmanager.diagnostics;
 using MassEffectModManagerCore.modmanager.localizations;
 using Newtonsoft.Json;
 using PropertyChanged;
-using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.objects
 {
@@ -47,13 +45,13 @@ namespace MassEffectModManagerCore.modmanager.objects
                 }
                 else
                 {
-                    Log.Error($@"Cannot invoke handler for {domain} domain: specified application {ProgramPath} does not exist");
+                    M3Log.Error($@"Cannot invoke handler for {domain} domain: specified application {ProgramPath} does not exist");
                     return M3L.GetString(M3L.string_interp_handlerProgramDoesNotExist, domain, ProgramPath);
                 }
             }
             catch (Exception e)
             {
-                Log.Error($@"Error invoking handler for {domain} domain: {e.Message}");
+                M3Log.Error($@"Error invoking handler for {domain} domain: {e.Message}");
                 return e.Message;
             }
             return null;
@@ -63,7 +61,7 @@ namespace MassEffectModManagerCore.modmanager.objects
         {
             if (File.Exists(Utilities.GetExternalNexusHandlersFile()))
             {
-                Log.Information(@"Loading external nxm handler info");
+                M3Log.Information(@"Loading external nxm handler info");
                 App.NexusDomainHandlers.ReplaceAll(JsonConvert.DeserializeObject<List<NexusDomainHandler>>(File.ReadAllText(Utilities.GetExternalNexusHandlersFile())));
             }
         }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -10,12 +9,11 @@ using MassEffectModManagerCore.modmanager.gameini;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.modmanager.objects.mod.editor;
-using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
+using MassEffectModManagerCore.modmanager.diagnostics;
 using MassEffectModManagerCore.modmanager.objects.mod.merge;
-using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.objects
 {
@@ -543,13 +541,13 @@ namespace MassEffectModManagerCore.modmanager.objects
                 var checkedByDefaultForGroups = AlternateFiles.Count(x => x.CheckedByDefault && x.GroupName == group);
                 if (checkedByDefaultForGroups == 0)
                 {
-                    Log.Error($@"Alternate Files that use the OptionGroup feature must have at least one AlternateFile struct set in their group with the CheckedByDefault option, as at least one option must always be chosen. The failing option group name is '{group}'");
+                    M3Log.Error($@"Alternate Files that use the OptionGroup feature must have at least one AlternateFile struct set in their group with the CheckedByDefault option, as at least one option must always be chosen. The failing option group name is '{group}'");
                     failureReason = M3L.GetString(M3L.string_interp_validation_modjob_optionGroupMustHaveAtLeastOneItemWithCheckedByDefault, group);
                     return false;
                 }
                 if (checkedByDefaultForGroups > 1)
                 {
-                    Log.Error($@"Alternate Files that use the OptionGroup feature may only have one AlternateFile struct set with the CheckedByDefault option within their group. The failing option group name is '{group}'");
+                    M3Log.Error($@"Alternate Files that use the OptionGroup feature may only have one AlternateFile struct set with the CheckedByDefault option within their group. The failing option group name is '{group}'");
                     failureReason = M3L.GetString(M3L.string_interp_validation_modjob_optionGroupMayOnlyHaveOneItemWithCheckedByDefault, group);
                     return false;
                 }
@@ -565,7 +563,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     if (checkedByDefaultForGroups == 0)
                     {
                         //needs localized
-                        Log.Error($@"Alternate DLC that use the OptionGroup feature must have at least one AlternateDLC struct set in their group with the CheckedByDefault option, as at least one option must always be chosen. The failing option group name is '{group}'");
+                        M3Log.Error($@"Alternate DLC that use the OptionGroup feature must have at least one AlternateDLC struct set in their group with the CheckedByDefault option, as at least one option must always be chosen. The failing option group name is '{group}'");
                         failureReason = M3L.GetString(M3L.string_interp_validation_modjob_altdlc_optionGroupMustHaveAtLeastOneItemWithCheckedByDefault, group);
                         return false;
                     }
@@ -573,7 +571,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     if (checkedByDefaultForGroups > 1)
                     {
                         //needs localized
-                        Log.Error($@"Alternate DLC that use the OptionGroup feature may only have one AlternateDLC struct set with the CheckedByDefault option within their group. The failing option group name is '{group}'");
+                        M3Log.Error($@"Alternate DLC that use the OptionGroup feature may only have one AlternateDLC struct set with the CheckedByDefault option within their group. The failing option group name is '{group}'");
                         failureReason = M3L.GetString(M3L.string_interp_validation_modjob_altdlc_optionGroupMayOnlyHaveOneItemWithCheckedByDefault, group);
                         return false;
                     }

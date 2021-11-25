@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Text;
+﻿using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using IniParser.Model;
-using IniParser.Parser;
 using MassEffectModManagerCore.modmanager.objects.mod;
-using MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alternates;
 using MassEffectModManagerCore.modmanager.windows;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor

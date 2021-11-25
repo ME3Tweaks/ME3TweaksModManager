@@ -45,7 +45,7 @@ namespace MassEffectModManagerCore.modmanager.windows
             DataContext = this;
             this.allMods = allMods;
             LoadCommands();
-            Games = MEGameSelector.GetGameSelectorsIncudingLauncher().ToArray();
+            Games = MEGameSelector.GetGameSelectorsIncludingLauncher().ToArray();
 
             InitializeComponent();
             if (queueToEdit != null)

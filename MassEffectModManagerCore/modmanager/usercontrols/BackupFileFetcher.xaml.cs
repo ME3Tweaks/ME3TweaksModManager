@@ -1,6 +1,5 @@
 ﻿using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
 using Microsoft.Win32;
 using System;
@@ -16,9 +15,11 @@ using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Unreal;
-using MassEffectModManagerCore.modmanager.me3tweaks;
+using MassEffectModManagerCore.modmanager.diagnostics;
+using ME3TweaksCore.GameFilesystem;
+using ME3TweaksCore.Services.Backup;
+using ME3TweaksCoreWPF;
 using PropertyChanged;
-using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -152,7 +153,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 var bup = BackupService.GetGameBackupPath(Game);
                 if (bup != null)
                 {
-                    var target = new GameTarget(Game, bup, false, skipInit: true);
+                    var target = new GameTargetWPF(Game, bup, false, skipInit: true);
                     var cookedPath = M3Directories.GetCookedPath(target);
                     foreach (var f in Extensions.GetFiles(cookedPath, FileExtensions, SearchOption.AllDirectories))
                     {
@@ -313,7 +314,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (b.Error != null)
                 {
-                    Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
+                    M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                 }
                 LoadingInProgress = false;
             };
@@ -326,7 +327,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             var bup = BackupService.GetGameBackupPath(MEGame.ME1);
             if (bup != null)
             {
-                var target = new GameTarget(MEGame.ME1, bup, false);
+                var target = new GameTargetWPF(MEGame.ME1, bup, false);
                 var cookedPath = M3Directories.GetCookedPath(target);
                 foreach (var f in Extensions.GetFiles(cookedPath, @"\.u|\.upk|\.sfm", SearchOption.AllDirectories))
                 {
@@ -367,7 +368,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             var bup = BackupService.GetGameBackupPath(MEGame.ME2);
             if (bup != null)
             {
-                var target = new GameTarget(MEGame.ME2, bup, false);
+                var target = new GameTargetWPF(MEGame.ME2, bup, false);
                 var cookedPath = M3Directories.GetCookedPath(target);
                 foreach (var f in Extensions.GetFiles(cookedPath, @"\.pcc|\.tfc|\.afc|\.bin|\.tlk", SearchOption.AllDirectories))
                 {
@@ -406,7 +407,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             var bup = BackupService.GetGameBackupPath(MEGame.ME3);
             if (bup != null)
             {
-                var target = new GameTarget(MEGame.ME3, bup, false);
+                var target = new GameTargetWPF(MEGame.ME3, bup, false);
                 var cookedPath = M3Directories.GetCookedPath(target);
                 foreach (var f in Extensions.GetFiles(cookedPath, @"\.pcc|\.tfc|\.afc|\.bin|\.tlk", SearchOption.AllDirectories))
                 {

@@ -6,8 +6,9 @@ using System.Xml;
 
 using MassEffectModManagerCore.modmanager.helpers;
 using LegendaryExplorerCore.Helpers;
+using MassEffectModManagerCore.modmanager.diagnostics;
+using ME3TweaksCore.Diagnostics;
 using Microsoft.AppCenter.Crashes;
-using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.me3tweaks
 {
@@ -63,16 +64,16 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     }
                     catch (Exception e)
                     {
-                        Log.Error($"Error fetching online help from endpoint {staticendpoint}: {e.Message}");
+                        M3Log.Error($"Error fetching online help from endpoint {staticendpoint}: {e.Message}");
                     }
                 }
                 if (cached != null)
                 {
-                    Log.Warning("Using cached help instead");
+                    M3Log.Warning("Using cached help instead");
                 }
                 else
                 {
-                    Log.Error("Unable to display dynamic help: Could not fetch online asset and cached help asset does not exist.");
+                    M3Log.Error("Unable to display dynamic help: Could not fetch online asset and cached help asset does not exist.");
                     return null;
                 }
             }
@@ -83,7 +84,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
             catch (Exception e)
             {
-                Log.Error("Unable to parse local dynamic help file: " + e.Message);
+                M3Log.Error("Unable to parse local dynamic help file: " + e.Message);
                 return null;
             }
         }
@@ -115,7 +116,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
             catch (Exception e)
             {
-                Log.Error("ERROR IN LOCAL HELP FILE: " + e.Message);
+                M3Log.Error("ERROR IN LOCAL HELP FILE: " + e.Message);
                 return new List<SortableHelpElement>();
             }
         }
@@ -171,23 +172,23 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         {
                             using var wc = new System.Net.WebClient();
 
-                            Log.Information("Downloading dynamic help image asset: " + fullURL);
+                            M3Log.Information("Downloading dynamic help image asset: " + fullURL);
                             wc.DownloadFile(fullURL, localFile);
 
                             var md5OfDownloadedFile = Utilities.CalculateMD5(localFile);
                             if (md5OfDownloadedFile != ResourceMD5)
                             {
-                                Log.Error($"Downloaded asset has wrong hash. Expected: {ResourceMD5}, got: {md5OfDownloadedFile}");
+                                M3Log.Error($"Downloaded asset has wrong hash. Expected: {ResourceMD5}, got: {md5OfDownloadedFile}");
                                 File.Delete(localFile);
                             }
                             else
                             {
-                                Log.Information("Downloaded resource passed md5 check");
+                                M3Log.Information("Downloaded resource passed md5 check");
                             }
                         }
                         catch (Exception e)
                         {
-                            Log.Error($"Error downloading dynamic help asset from endpoint {fullURL}: {e.Message}");
+                            M3Log.Error($"Error downloading dynamic help asset from endpoint {fullURL}: {e.Message}");
                         }
                     }
                 }

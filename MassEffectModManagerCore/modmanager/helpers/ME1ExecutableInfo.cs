@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.IO;
+﻿using System.IO;
 using LegendaryExplorerCore.Helpers;
 
 //Taken from ALOT Installer V4

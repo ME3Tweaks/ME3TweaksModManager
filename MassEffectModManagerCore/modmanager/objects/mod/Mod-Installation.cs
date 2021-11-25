@@ -6,7 +6,9 @@ using System.Linq;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
-using Serilog;
+using MassEffectModManagerCore.modmanager.diagnostics;
+using ME3TweaksCore.GameFilesystem;
+using ME3TweaksCoreWPF;
 using SevenZip;
 
 namespace MassEffectModManagerCore.modmanager.objects.mod
@@ -18,7 +20,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
         /// </summary>
         /// <param name="gameTarget"></param>
         /// <returns></returns>
-        public (Dictionary<ModJob, (Dictionary<string, InstallSourceFile> unpackedJobMapping, List<string> dlcFoldersBeingInstalled)>, List<(ModJob job, string sfarPath, Dictionary<string, InstallSourceFile>)>) GetInstallationQueues(GameTarget gameTarget)
+        public (Dictionary<ModJob, (Dictionary<string, InstallSourceFile> unpackedJobMapping, List<string> dlcFoldersBeingInstalled)>, List<(ModJob job, string sfarPath, Dictionary<string, InstallSourceFile>)>) GetInstallationQueues(GameTargetWPF gameTarget)
         {
             if (IsInArchive)
             {
@@ -51,7 +53,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             var sfarInstallationJobs = new List<(ModJob job, string sfarPath, Dictionary<string, InstallSourceFile> installationMapping)>();
             foreach (var job in InstallationJobs)
             {
-                Log.Information($@"Preprocessing installation job: {job.Header}");
+                M3Log.Information($@"Preprocessing installation job: {job.Header}");
                 var alternateFiles = job.AlternateFiles.Where(x => x.IsSelected && x.Operation != AlternateFile.AltFileOperation.OP_NOTHING
                                                                                                && x.Operation != AlternateFile.AltFileOperation.OP_NOINSTALL_MULTILISTFILES).ToList();
                 var alternateDLC = job.AlternateDLCs.Where(x => x.IsSelected).ToList();
@@ -207,7 +209,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 {
                     #region Installation: DLC Unpacked and SFAR (ME3 ONLY)
 
-                    if (M3Directories.IsOfficialDLCInstalled(job.Header, gameTarget))
+                    if (gameTarget.IsOfficialDLCInstalled(job.Header))
                     {
                         string sfarPath = job.Header == ModJob.JobHeader.TESTPATCH ? M3Directories.GetTestPatchSFARPath(gameTarget) : Path.Combine(gameDLCPath, ModJob.GetHeadersToDLCNamesMap(MEGame.ME3)[job.Header], @"CookedPCConsole", @"Default.sfar");
 
@@ -232,7 +234,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     }
                     else
                     {
-                        Log.Warning($@"DLC not installed, skipping: {job.Header}");
+                        M3Log.Warning($@"DLC not installed, skipping: {job.Header}");
                     }
                     #endregion
                 }
@@ -240,7 +242,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 {
                     #region Installation: DLC Unpacked (ME1/ME2 ONLY)
                     //Unpacked
-                    if (M3Directories.IsOfficialDLCInstalled(job.Header, gameTarget))
+                    if (gameTarget.IsOfficialDLCInstalled(job.Header))
                     {
                         var installationMapping = new CaseInsensitiveDictionary<InstallSourceFile>();
                         unpackedJobInstallationMapping[job] = (installationMapping, new List<string>());
@@ -248,7 +250,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     }
                     else
                     {
-                        Log.Warning($@"DLC not installed, skipping: {job.Header}");
+                        M3Log.Warning($@"DLC not installed, skipping: {job.Header}");
                     }
 
                     #endregion
@@ -410,7 +412,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     }
                     else
                     {
-                        Log.Warning($@"Failed to remove multilist file from installation queue as specified by altfile: {targetPath}, path not present in installation files");
+                        M3Log.Warning($@"Failed to remove multilist file from installation queue as specified by altfile: {targetPath}, path not present in installation files");
                     }
                 }
             }
@@ -421,7 +423,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
         /// </summary>
         /// <param name="gameTarget">Target to validate against</param>
         /// <returns>List of missing DLC modules, or an empty list if none</returns>
-        internal List<string> ValidateRequiredModulesAreInstalled(GameTarget gameTarget)
+        internal List<string> ValidateRequiredModulesAreInstalled(GameTargetWPF gameTarget)
         {
             if (gameTarget.Game != Game)
             {
@@ -436,7 +438,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 }
                 return x;
             });
-            var installedDLC = M3Directories.GetInstalledDLC(gameTarget);
+            var installedDLC = gameTarget.GetInstalledDLC();
             return requiredDLC.Except(installedDLC).ToList();
         }
 
@@ -445,7 +447,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
         /// </summary>
         /// <param name="gameTarget">Target to validate against</param>
         /// <returns>List of missing DLC modules, or an empty list if none</returns>
-        internal bool ValidateSingleOptionalRequiredDLCInstalled(GameTarget gameTarget)
+        internal bool ValidateSingleOptionalRequiredDLCInstalled(GameTargetWPF gameTarget)
         {
             if (gameTarget.Game != Game)
             {
@@ -465,7 +467,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
 
                     return x;
                 });
-                var installedDLC = M3Directories.GetInstalledDLC(gameTarget);
+                var installedDLC = gameTarget.GetInstalledDLC();
                 return installedDLC.FirstOrDefault(x => requiredAnyDLC.Contains(x)) != null;
             }
 
@@ -486,7 +488,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     foreach (var item in job.ReadOnlyIndicators)
                     {
                         var destPath = job.FilesToInstall.FirstOrDefault(x => x.Value.Equals(item, StringComparison.InvariantCultureIgnoreCase));
-                        if (destPath.Key == null) Log.Error(@"Error: Bug triggered: destPath for addreadonly files returned null!");
+                        if (destPath.Key == null) M3Log.Error(@"Error: Bug triggered: destPath for addreadonly files returned null!");
                         list.Add(destPath.Key); //pathcombine?
                     }
                 }

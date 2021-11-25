@@ -1,13 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Globalization;
-using System.Windows;
 using System.Windows.Data;
-using System.Windows.Media.Imaging;
 using LegendaryExplorerCore.Packages;
-using MassEffectModManagerCore.modmanager.helpers;
-using MassEffectModManagerCore.ui;
 
 namespace MassEffectModManagerCore.modmanager.converters
 {

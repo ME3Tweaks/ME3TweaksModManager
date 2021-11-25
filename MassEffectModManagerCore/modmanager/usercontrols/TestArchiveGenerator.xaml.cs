@@ -7,8 +7,8 @@ using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore.Packages;
+using MassEffectModManagerCore.modmanager.diagnostics;
 using Microsoft.Win32;
-using Serilog;
 using SevenZip;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -58,17 +58,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                           var sourcefile = Path.Combine(ModForArchive.ModPath, x);
                           var destfile = Path.Combine(stagingPath, x);
 
-                          Log.Information(@"Hashing " + sourcefile);
+                          M3Log.Information(@"Hashing " + sourcefile);
                           var md5 = Utilities.CalculateMD5(sourcefile);
                           Directory.CreateDirectory(Directory.GetParent(destfile).FullName);
-                          Log.Information(@"Writing blank hash file " + destfile);
+                          M3Log.Information(@"Writing blank hash file " + destfile);
                           File.WriteAllText(destfile, md5);
 
 
                           var done = Interlocked.Increment(ref numdone);
                           Percent = (int)(done * 100.0 / referencedFiles.Count);
                       });
-                    Log.Information(@"Copying moddesc.ini");
+                    M3Log.Information(@"Copying moddesc.ini");
                     File.Copy(ModForArchive.ModDescPath, Path.Combine(stagingPath, @"moddesc.ini"), true);
                     Mod testmod = new Mod(Path.Combine(stagingPath, @"moddesc.ini"), MEGame.Unknown);
                     if (testmod.ValidMod)
@@ -85,7 +85,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     if (b.Error != null)
                     {
-                        Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
+                        M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                     }
                     OnClosing(DataEventArgs.Empty);
                 };

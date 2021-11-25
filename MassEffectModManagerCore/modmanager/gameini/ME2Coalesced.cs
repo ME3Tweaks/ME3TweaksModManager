@@ -4,8 +4,8 @@ using System.ComponentModel;
 using System.IO;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
-using MassEffectModManagerCore.modmanager.objects;
-using Serilog;
+using MassEffectModManagerCore.modmanager.diagnostics;
+using ME3TweaksCoreWPF;
 
 namespace MassEffectModManagerCore.modmanager.gameini
 {
@@ -33,7 +33,7 @@ namespace MassEffectModManagerCore.modmanager.gameini
             }
         }
 
-        public static ME2Coalesced OpenFromTarget(GameTarget target, bool throwExceptionOnError = false)
+        public static ME2Coalesced OpenFromTarget(GameTargetWPF target, bool throwExceptionOnError = false)
         {
             var coalPath = Path.Combine(target.TargetPath, @"BioGame", @"Config", @"PC", @"Cooked", @"Coalesced.ini");
             if (!File.Exists(coalPath)) return null;
@@ -43,7 +43,7 @@ namespace MassEffectModManagerCore.modmanager.gameini
             }
             catch (Exception e)
             {
-                Log.Error("Cannot open ME2Coalesced file from target: " + e.Message);
+                M3Log.Error("Cannot open ME2Coalesced file from target: " + e.Message);
                 if (throwExceptionOnError) throw;
                 return null;
             }

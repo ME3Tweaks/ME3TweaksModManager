@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using LegendaryExplorerCore.Misc;
 using MassEffectModManagerCore.modmanager.objects.mod.editor;
-using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore.Packages;
 
 namespace MassEffectModManagerCore.modmanager.objects.mod

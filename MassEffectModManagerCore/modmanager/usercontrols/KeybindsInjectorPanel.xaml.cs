@@ -3,13 +3,13 @@ using System.Linq;
 using System.Windows.Input;
 using LegendaryExplorerCore.Coalesced;
 using MassEffectModManagerCore.modmanager.helpers;
-using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
-using MassEffectModManagerCore.modmanager.me3tweaks;
-using Serilog;
+using MassEffectModManagerCore.modmanager.diagnostics;
+using ME3TweaksCore.Services.Backup;
+using ME3TweaksCoreWPF;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -18,8 +18,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// </summary>
     public partial class KeybindsInjectorPanel : MMBusyPanelBase
     {
-        public GameTarget SelectedME2Target { get; set; }
-        public GameTarget SelectedME3Target { get; set; }
+        public GameTargetWPF SelectedME2Target { get; set; }
+        public GameTargetWPF SelectedME3Target { get; set; }
 
         public ObservableCollectionExtended<KeybindsFile> ME1Keybinds { get; } = new ObservableCollectionExtended<KeybindsFile>();
         public ObservableCollectionExtended<KeybindsFile> ME2Keybinds { get; } = new ObservableCollectionExtended<KeybindsFile>();
@@ -29,8 +29,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public KeybindsFile SelectedME2Keybinds { get; set; }
         public KeybindsFile SelectedME3Keybinds { get; set; }
 
-        public ObservableCollectionExtended<GameTarget> ME2Targets { get; } = new ObservableCollectionExtended<GameTarget>();
-        public ObservableCollectionExtended<GameTarget> ME3Targets { get; } = new ObservableCollectionExtended<GameTarget>();
+        public ObservableCollectionExtended<GameTargetWPF> ME2Targets { get; } = new ObservableCollectionExtended<GameTargetWPF>();
+        public ObservableCollectionExtended<GameTargetWPF> ME3Targets { get; } = new ObservableCollectionExtended<GameTargetWPF>();
 
         public bool KeybindsInstallingME1 { get; set; }
         public bool KeybindsInstallingME2 { get; set; }
@@ -77,7 +77,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (b.Error != null)
                 {
-                    Log.Error(@"Error setting ME3 keybinds: " + b.Error.Message);
+                    M3Log.Error(@"Error setting ME3 keybinds: " + b.Error.Message);
                 }
                 KeybindsInstallingME3 = false;
                 CommandManager.InvalidateRequerySuggested();
@@ -90,7 +90,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         /// </summary>
         /// <param name="bioInputXml">TEXT of the bioinput.xml file</param>
         /// <param name="target">Target to update</param>
-        public static void InstallME3Keybinds(string bioInputXml, GameTarget target)
+        public static void InstallME3Keybinds(string bioInputXml, GameTargetWPF target)
         {
             var coalPath = Path.Combine(target.TargetPath, @"BioGame", @"CookedPCConsole", @"Coalesced.bin");
             InstallME3Keybinds(bioInputXml, coalPath);
@@ -132,7 +132,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (b.Error != null)
                 {
-                    Log.Error(@"Error resetting ME3 keybinds: " + b.Error.Message);
+                    M3Log.Error(@"Error resetting ME3 keybinds: " + b.Error.Message);
                 }
                 KeybindsInstallingME3 = false;
                 CommandManager.InvalidateRequerySuggested();

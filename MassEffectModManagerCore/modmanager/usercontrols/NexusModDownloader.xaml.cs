@@ -7,8 +7,8 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 using MassEffectModManagerCore.modmanager.localizations;
-using Serilog;
 using LegendaryExplorerCore.Misc;
+using MassEffectModManagerCore.modmanager.diagnostics;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -54,7 +54,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public void AddDownload(string nxmLink)
         {
-            Log.Information($@"Queueing nxmlink {nxmLink}");
+            M3Log.Information($@"Queueing nxmlink {nxmLink}");
             var dl = new ModDownload(nxmLink);
             dl.OnInitialized += ModInitialized;
             dl.OnModDownloaded += ModDownloaded;
@@ -104,7 +104,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             if (sender is ModDownload initializedItem)
             {
-                Log.Information($@"Mod has initialized: {initializedItem.ModFile.Name}");
+                M3Log.Information($@"Mod has initialized: {initializedItem.ModFile.Name}");
                 var nextDownload = Downloads.FirstOrDefault(x => !x.Downloaded);
                 nextDownload?.StartDownload(cancellationTokenSource.Token);
             }

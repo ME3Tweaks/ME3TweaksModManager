@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
@@ -14,7 +13,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using LegendaryExplorerCore.Packages;
-using Serilog;
+using MassEffectModManagerCore.modmanager.diagnostics;
 using SevenZip;
 
 
@@ -229,7 +228,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 return ae.Method;
             }
 
-            Log.Error($@"File not found in archive: {fileName}. Can't get compression type");
+            M3Log.Error($@"File not found in archive: {fileName}. Can't get compression type");
             return null;
         }
 

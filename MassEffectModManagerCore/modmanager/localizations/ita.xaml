@@ -562,7 +562,7 @@
 	<system:String x:Key="string_deleteFromLibrary">Rimuovi dalla libreria</system:String>
 	<system:String x:Key="string_visitWebsite">Visita il sito</system:String>
 
-	<!-- GameTarget -->
+	<!-- GameTargetWPF -->
 	<system:String x:Key="string_interp_invalidTargetMissingFile">Obiettivo non valido: {0} non è stato trovato nella cartella di gioco.</system:String>
 	<!-- 0 = filename of file that is not found in game dir but should be there -->
 	<system:String x:Key="string_invalidTargetProtectedByCmmvanilla">Obiettivo non valido: Impostato come backup protetto con il file cmm_vanilla</system:String>

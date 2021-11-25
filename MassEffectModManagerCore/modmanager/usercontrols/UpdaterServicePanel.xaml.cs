@@ -6,7 +6,6 @@ using MassEffectModManagerCore.ui;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.WindowsAPICodePack.Taskbar;
 using Renci.SshNet;
-using Serilog;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -23,6 +22,7 @@ using System.Xml;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Packages;
+using MassEffectModManagerCore.modmanager.diagnostics;
 using static MassEffectModManagerCore.modmanager.me3tweaks.OnlineContent;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -264,7 +264,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (b.Error != null)
                 {
-                    Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
+                    M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                 }
                 TaskbarHelper.SetProgressState(TaskbarProgressBarState.NoProgress);
                 Analytics.TrackEvent(@"Uploaded mod to updater service", new Dictionary<string, string>()
@@ -302,7 +302,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
                     catch (Exception e)
                     {
-                        Log.Information($@"Error logging in during operation '{currentOp}': " + e.Message);
+                        M3Log.Information($@"Error logging in during operation '{currentOp}': " + e.Message);
                         b.Result = M3L.GetString(M3L.string_interp_errorValidatingSettingsXY, currentOp, e.Message);
                     }
                 }
@@ -311,9 +311,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (b.Error != null)
                 {
-                    Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
+                    M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                 }
-                Log.Information(@"Auth checked");
+                M3Log.Information(@"Auth checked");
                 OperationInProgress = false;
                 authCompletedCallback?.Invoke(b.Result);
             };
@@ -352,7 +352,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                                                                           // have an error for example
                 {
                     //Not being served
-                    Log.Error(@"This mod is not configured for serving on the Updater Service. Please contact Mgamerz.");
+                    M3Log.Error(@"This mod is not configured for serving on the Updater Service. Please contact Mgamerz.");
                     CurrentActionText = M3L.GetString(M3L.string_serverNotConfiguredForModContactMgamerz);
                     HideChangelogArea();
                     return UploadModResult.NOT_BEING_SERVED;
@@ -360,7 +360,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
             catch (Exception ex)
             {
-                Log.Error(@"Error validating mod is configured on updater service: " + ex.Message);
+                M3Log.Error(@"Error validating mod is configured on updater service: " + ex.Message);
                 CurrentActionText = M3L.GetString(M3L.string_interp_errorCheckingUpdaterServiceConfiguration, ex.Message);
                 HideChangelogArea();
                 return UploadModResult.ERROR_VALIDATING_MOD_IS_CONFIGURED;
@@ -411,7 +411,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             #region Check package files are not natively compressed
             {
                 // In brackets to scope
-                Log.Information(@"UpdaterServiceUpload: Checking for compressed packages");
+                M3Log.Information(@"UpdaterServiceUpload: Checking for compressed packages");
                 double numDone = 0;
                 int totalFiles = files.Count;
                 var compressedPackages = new List<string>();
@@ -428,11 +428,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         {
                             if (quickP.NumCompressedChunksAtLoad > 0)
                             {
-                                Log.Error($@"Found compressed package: {quickP.FilePath}");
+                                M3Log.Error($@"Found compressed package: {quickP.FilePath}");
                             }
                             else
                             {
-                                Log.Error($@"Found package with IsCompressed flag but no compressed chunks: {quickP.FilePath}");
+                                M3Log.Error($@"Found package with IsCompressed flag but no compressed chunks: {quickP.FilePath}");
                             }
 
                             compressedPackages.Add(f);
@@ -630,7 +630,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             #region Connect to ME3Tweaks
 
             CurrentActionText = M3L.GetString(M3L.string_connectingToME3TweaksUpdaterService);
-            Log.Information(@"Connecting to ME3Tweaks as " + Username);
+            M3Log.Information(@"Connecting to ME3Tweaks as " + Username);
             string host = @"ftp.me3tweaks.com";
             string username = Username;
             string password = Settings.DecryptUpdaterServicePassword();
@@ -638,7 +638,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             using SftpClient sftp = new SftpClient(host, username, password);
             sftp.Connect();
 
-            Log.Information(@"Connected to ME3Tweaks over SSH (SFTP)");
+            M3Log.Information(@"Connected to ME3Tweaks over SSH (SFTP)");
 
             CurrentActionText = M3L.GetString(M3L.string_connectedToME3TweaksUpdaterService);
             var serverFolderName = mod.UpdaterServiceServerFolderShortname;
@@ -652,7 +652,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             if (!sftp.Exists(serverModPath))
             {
                 CurrentActionText = M3L.GetString(M3L.string_creatingServerFolderForMod);
-                Log.Information(@"Creating server folder for mod: " + serverModPath);
+                M3Log.Information(@"Creating server folder for mod: " + serverModPath);
                 sftp.CreateDirectory(serverModPath);
                 justMadeFolder = true;
             }
@@ -661,15 +661,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             Dictionary<string, string> serverHashes = new Dictionary<string, string>();
 
             //Open SSH connection as we will need to hash files out afterwards.
-            Log.Information(@"Connecting to ME3Tweaks Updater Service over SSH (SSH Shell)");
+            M3Log.Information(@"Connecting to ME3Tweaks Updater Service over SSH (SSH Shell)");
             using SshClient sshClient = new SshClient(host, username, password);
             sshClient.Connect();
-            Log.Information(@"Connected to ME3Tweaks Updater Service over SSH (SSH Shell)");
+            M3Log.Information(@"Connected to ME3Tweaks Updater Service over SSH (SSH Shell)");
 
             if (!justMadeFolder && dirContents.Any(x => x.Name != @"." && x.Name != @".."))
             {
                 CurrentActionText = M3L.GetString(M3L.string_hashingFilesOnServerForDelta);
-                Log.Information(@"Hashing existing files on server to compare for delta");
+                M3Log.Information(@"Hashing existing files on server to compare for delta");
                 serverHashes = getServerHashes(sshClient, serverFolderName, serverModPath);
             }
 
@@ -687,17 +687,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     if (matchingHash != sourceFile.Value.lzmahash)
                     {
                         //server hash is different! Upload new file.
-                        Log.Information(@"Server version of file is different from local: " + sourceFile.Key);
+                        M3Log.Information(@"Server version of file is different from local: " + sourceFile.Key);
                         filesToUploadToServer.Add(sourceFile.Key);
                     }
                     else
                     {
-                        Log.Information(@"Server version of file is same as local: " + sourceFile.Key);
+                        M3Log.Information(@"Server version of file is same as local: " + sourceFile.Key);
                     }
                 }
                 else
                 {
-                    Log.Information(@"Server does not have file: " + sourceFile.Key);
+                    M3Log.Information(@"Server does not have file: " + sourceFile.Key);
                     filesToUploadToServer.Add(sourceFile.Key);
                 }
             }
@@ -707,7 +707,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (!manifestFiles.Any(x => (x.Key + @".lzma") == serverfile.Replace('/', '\\')))
                 {
-                    Log.Information(@"File exists on server but not locally: " + serverfile);
+                    M3Log.Information(@"File exists on server but not locally: " + serverfile);
                     filesToDeleteOffServer.Add(serverfile);
                 }
             }
@@ -724,14 +724,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (filesToDeleteOffServer.Any()) text += M3L.GetString(M3L.string_nnFilesToDeleteOffServern) + @" " + string.Join('\n' + @" - ", filesToDeleteOffServer); //weird stuff to deal with localizer
                 text += M3L.GetString(M3L.string_interp_updaterServiceDeltaConfirmationFooter);
                 bool performUpload = false;
-                Log.Information(@"Prompting user to accept server delta");
+                M3Log.Information(@"Prompting user to accept server delta");
                 setTaskbarProgressState?.Invoke(TaskbarProgressBarState.Paused);
                 Application.Current.Dispatcher.Invoke(() => { performUpload = M3L.ShowDialog(mainwindow, text, M3L.GetString(M3L.string_confirmChanges), MessageBoxButton.OKCancel, MessageBoxImage.Exclamation) == MessageBoxResult.OK; });
                 setTaskbarProgressState?.Invoke(TaskbarProgressBarState.Indeterminate);
 
                 if (performUpload)
                 {
-                    Log.Information(@"User has accepted the delta, applying delta to server");
+                    M3Log.Information(@"User has accepted the delta, applying delta to server");
 
                     #region upload files
 
@@ -765,12 +765,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             var serverFolderStr = serverModPath + @"/" + f;
                             if (!sftp.Exists(serverFolderStr))
                             {
-                                Log.Information(@"Creating directory on server: " + serverFolderStr);
+                                M3Log.Information(@"Creating directory on server: " + serverFolderStr);
                                 sftp.CreateDirectory(serverFolderStr);
                             }
                             else
                             {
-                                Log.Information(@"Server folder already exists, skipping: " + serverFolderStr);
+                                M3Log.Information(@"Server folder already exists, skipping: " + serverFolderStr);
                             }
 
                             numDone++;
@@ -794,7 +794,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                         var fullPath = Path.Combine(lzmaStagingPath, file + @".lzma");
                         var serverFilePath = serverModPath + @"/" + file.Replace(@"\", @"/") + @".lzma";
-                        Log.Information(@"Uploading file " + fullPath + @" to " + serverFilePath);
+                        M3Log.Information(@"Uploading file " + fullPath + @" to " + serverFilePath);
                         long amountUploadedBeforeChunk = amountUploaded;
                         using Stream fileStream = new FileStream(fullPath, FileMode.Open);
                         try
@@ -820,7 +820,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         }
                         catch (Exception e)
                         {
-                            Log.Error($@"Error uploading file {fullPath} to server: {e.Message}");
+                            M3Log.Error($@"Error uploading file {fullPath} to server: {e.Message}");
                             CurrentActionText = M3L.GetString(M3L.string_interp_uploadFailedX, e.Message);
                             // Abort
                             Application.Current.Dispatcher.InvokeAsync(() =>
@@ -845,7 +845,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         CurrentActionText = M3L.GetString(M3L.string_interp_deletingObsoleteFiles, numdone, filesToDeleteOffServer.Count);
                         var fullPath = $@"{LZMAStoragePath}/{serverFolderName}/{file}";
-                        Log.Information(@"Deleting unused file off server: " + fullPath);
+                        M3Log.Information(@"Deleting unused file off server: " + fullPath);
                         sftp.DeleteFile(fullPath);
                         numdone++;
                     }
@@ -853,7 +853,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     //Upload manifest
                     using var manifestStream = finalManifestText.ToStream();
                     var serverManifestPath = $@"{ManifestStoragePath}/{serverFolderName}.xml";
-                    Log.Information(@"Uploading manifest to server: " + serverManifestPath);
+                    M3Log.Information(@"Uploading manifest to server: " + serverManifestPath);
                     sftp.UploadFile(manifestStream, serverManifestPath, true, (x) =>
                     {
                         var uploadedAmountHR = FileSize.FormatSize(amountUploaded);
@@ -863,14 +863,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 else
                 {
-                    Log.Warning(@"User has declined uploading the delta. We will not change anything on the server.");
+                    M3Log.Warning(@"User has declined uploading the delta. We will not change anything on the server.");
                     CancelOperations = true;
                     AbortUpload();
                     return UploadModResult.ABORTED_BY_USER;
                 }
 
                 CurrentActionText = M3L.GetString(M3L.string_validatingModOnServer);
-                Log.Information(@"Verifying hashes on server for new files");
+                M3Log.Information(@"Verifying hashes on server for new files");
                 var newServerhashes = getServerHashes(sshClient, serverFolderName, serverModPath);
                 var badHashes = verifyHashes(manifestFiles, newServerhashes);
                 if (badHashes.Any())
@@ -887,11 +887,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             else
             {
                 //Upload manifest
-                Log.Information(@"Hashes on server match local already");
+                M3Log.Information(@"Hashes on server match local already");
                 // This ensures version on server is same as expected.
                 using var manifestStream = finalManifestText.ToStream();
                 var serverManifestPath = $@"{ManifestStoragePath}/{serverFolderName}.xml";
-                Log.Information(@"Uploading manifest to server: " + serverManifestPath);
+                M3Log.Information(@"Uploading manifest to server: " + serverManifestPath);
                 sftp.UploadFile(manifestStream, serverManifestPath, true, (x) =>
                 {
                     var uploadedAmountHR = FileSize.FormatSize(amountUploaded);
@@ -914,7 +914,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             Dictionary<string, string> serverHashes = new Dictionary<string, string>();
             string commandStr = @"find " + serverModPath + @" -type f -exec md5sum '{}' \;";
-            Log.Information(@"Hash command: " + commandStr);
+            M3Log.Information(@"Hash command: " + commandStr);
             var command = sshClient.CreateCommand(commandStr);
             command.CommandTimeout = TimeSpan.FromMinutes(1);
             command.Execute();
@@ -931,7 +931,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                 path = path.Substring(LZMAStoragePath.Length + 2 + serverFolderName.Length); //+ 2 for slashes
                 serverHashes[path] = md5;
-                Log.Information(md5 + @" MD5 for server file " + path);
+                M3Log.Information(md5 + @" MD5 for server file " + path);
             }
 
             return serverHashes;
@@ -948,17 +948,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     if (manifestMD5 != serverMD5)
                     {
-                        Log.Error(@"ERROR ON SERVER HASH FOR FILE " + file);
+                        M3Log.Error(@"ERROR ON SERVER HASH FOR FILE " + file);
                         badHashes.Add(file);
                     }
                     else
                     {
-                        Log.Information(@"Server hash OK for " + file);
+                        M3Log.Information(@"Server hash OK for " + file);
                     }
                 }
                 else
                 {
-                    Log.Information(@"Extra file on server that is not present in manifest " + file);
+                    M3Log.Information(@"Extra file on server that is not present in manifest " + file);
                 }
             }
             return badHashes;
@@ -967,7 +967,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void UploadDirectory(SftpClient client, string localPath, string remotePath, Action<ulong> uploadCallback)
         {
-            Log.Information($@"Uploading directory {localPath} to {remotePath}");
+            M3Log.Information($@"Uploading directory {localPath} to {remotePath}");
 
             IEnumerable<FileSystemInfo> infos =
                 new DirectoryInfo(localPath).EnumerateFileSystemInfos();

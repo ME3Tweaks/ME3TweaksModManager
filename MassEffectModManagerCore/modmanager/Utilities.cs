@@ -15,11 +15,11 @@ using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
+using MassEffectModManagerCore.modmanager.diagnostics;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.modmanager.objects;
+using ME3TweaksCoreWPF;
 using Microsoft.Win32;
-using Serilog;
 
 namespace MassEffectModManagerCore.modmanager
 {
@@ -191,7 +191,7 @@ namespace MassEffectModManagerCore.modmanager
             catch (UnauthorizedAccessException)
             {
                 //Must have admin rights.
-                Log.Information("We need admin rights to create this directory");
+                M3Log.Information("We need admin rights to create this directory");
                 string exe = GetCachedExecutablePath("PermissionsGranter.exe");
                 try
                 {
@@ -199,9 +199,9 @@ namespace MassEffectModManagerCore.modmanager
                 }
                 catch (Exception e)
                 {
-                    Log.Error("Error extracting PermissionsGranter.exe: " + e.Message);
+                    M3Log.Error("Error extracting PermissionsGranter.exe: " + e.Message);
 
-                    Log.Information("Retrying with appdata temp directory instead.");
+                    M3Log.Information("Retrying with appdata temp directory instead.");
                     try
                     {
                         exe = Path.Combine(Path.GetTempPath(), "PermissionsGranter");
@@ -209,7 +209,7 @@ namespace MassEffectModManagerCore.modmanager
                     }
                     catch (Exception ex)
                     {
-                        Log.Error("Retry failed! Unable to make this directory writable due to inability to extract PermissionsGranter.exe. Reason: " + ex.Message);
+                        M3Log.Error("Retry failed! Unable to make this directory writable due to inability to extract PermissionsGranter.exe. Reason: " + ex.Message);
                         return false;
                     }
                 }
@@ -220,12 +220,12 @@ namespace MassEffectModManagerCore.modmanager
                     int result = Utilities.RunProcess(exe, args, waitForProcess: true, requireAdmin: true, noWindow: true);
                     if (result == 0)
                     {
-                        Log.Information("Elevated process returned code 0, restore directory is hopefully writable now.");
+                        M3Log.Information("Elevated process returned code 0, restore directory is hopefully writable now.");
                         return true;
                     }
                     else
                     {
-                        Log.Error("Elevated process returned code " + result + ", directory likely is not writable");
+                        M3Log.Error("Elevated process returned code " + result + ", directory likely is not writable");
                         return false;
                     }
                 }
@@ -240,7 +240,7 @@ namespace MassEffectModManagerCore.modmanager
                         }
                     }
 
-                    Log.Error("Error creating directory with PermissionsGranter: " + e.Message);
+                    M3Log.Error("Error creating directory with PermissionsGranter: " + e.Message);
                     return false;
 
                 }
@@ -303,12 +303,12 @@ namespace MassEffectModManagerCore.modmanager
                     int result = Utilities.RunProcess(exe, args, true, false);
                     if (result == 0)
                     {
-                        Log.Information("Elevated process returned code 0, directories are hopefully writable now.");
+                        M3Log.Information("Elevated process returned code 0, directories are hopefully writable now.");
                         return true;
                     }
                     else
                     {
-                        Log.Error("Elevated process returned code " + result + ", directories probably aren't writable.");
+                        M3Log.Error("Elevated process returned code " + result + ", directories probably aren't writable.");
                         return false;
                     }
                 }
@@ -330,12 +330,12 @@ namespace MassEffectModManagerCore.modmanager
                     int result = Utilities.RunProcess(exe, args, true, true);
                     if (result == 0)
                     {
-                        Log.Information("Elevated process returned code 0, directories are hopefully writable now.");
+                        M3Log.Information("Elevated process returned code 0, directories are hopefully writable now.");
                         return true;
                     }
                     else
                     {
-                        Log.Error("Elevated process returned code " + result + ", directories probably aren't writable.");
+                        M3Log.Error("Elevated process returned code " + result + ", directories probably aren't writable.");
                         return false;
                     }
                 }
@@ -371,8 +371,8 @@ namespace MassEffectModManagerCore.modmanager
 
         //(Exception e)
         //    {
-        //        Log.Error("Error checking for write privledges. This may be a significant sign that an installed game is not in a good state.");
-        //        Log.Error(App.FlattenException(e));
+        //        M3Log.Error("Error checking for write privledges. This may be a significant sign that an installed game is not in a good state.");
+        //        M3Log.Error(App.FlattenException(e));
         //        await this.ShowMessageAsync("Error checking write privileges", "An error occurred while checking write privileges to game folders. This may be a sign that the game is in a bad state.\n\nThe error was:\n" + e.Message);
         //        return false;
         //}
@@ -397,8 +397,8 @@ namespace MassEffectModManagerCore.modmanager
             }
             catch (Exception e)
             {
-                Log.Error("Error checking permissions to folder: " + dir);
-                Log.Error("Directory write test had error that was not UnauthorizedAccess: " + e.Message);
+                M3Log.Error("Error checking permissions to folder: " + dir);
+                M3Log.Error("Directory write test had error that was not UnauthorizedAccess: " + e.Message);
             }
 
             return false;
@@ -430,7 +430,7 @@ namespace MassEffectModManagerCore.modmanager
 
         internal static MemoryStream ExtractInternalFileToStream(string internalResourceName)
         {
-            Log.Information("Extracting embedded file: " + internalResourceName + " to memory");
+            M3Log.Information("Extracting embedded file: " + internalResourceName + " to memory");
 #if DEBUG
             var resources = Assembly.GetExecutingAssembly().GetManifestResourceNames();
 #endif
@@ -553,7 +553,7 @@ namespace MassEffectModManagerCore.modmanager
 
             if (requireAdmin)
             {
-                Log.Information($"Running process as admin: {exe} {argsStr}");
+                M3Log.Information($"Running process as admin: {exe} {argsStr}");
                 //requires elevation
                 using (Process p = new Process())
                 {
@@ -582,7 +582,7 @@ namespace MassEffectModManagerCore.modmanager
             }
             else
             {
-                Log.Information($"Running process: {exe} {argsStr}");
+                M3Log.Information($"Running process: {exe} {argsStr}");
                 try
                 {
                     using (Process p = new Process())
@@ -611,10 +611,10 @@ namespace MassEffectModManagerCore.modmanager
                 }
                 catch (Win32Exception w32e)
                 {
-                    Log.Warning("Win32 exception running process: " + w32e.ToString());
+                    M3Log.Warning("Win32 exception running process: " + w32e.ToString());
                     if (w32e.NativeErrorCode == 740 && allowReattemptAsAdmin)
                     {
-                        Log.Information("Attempting relaunch with administrative rights.");
+                        M3Log.Information("Attempting relaunch with administrative rights.");
                         //requires elevation
                         using (Process p = new Process())
                         {
@@ -673,7 +673,7 @@ namespace MassEffectModManagerCore.modmanager
                 }
                 catch (Exception e)
                 {
-                    Log.Error($"Unable to delete file: {file}. It may be open still: {e.Message}");
+                    M3Log.Error($"Unable to delete file: {file}. It may be open still: {e.Message}");
                     if (throwOnFailed)
                     {
                         throw;
@@ -695,7 +695,7 @@ namespace MassEffectModManagerCore.modmanager
             }
             catch (Exception e)
             {
-                Log.Error($"Unable to delete directory: {targetDirectory}. It may be open still or may not be actually empty: {e.Message}");
+                M3Log.Error($"Unable to delete directory: {targetDirectory}. It may be open still or may not be actually empty: {e.Message}");
                 if (throwOnFailed)
                 {
                     throw;
@@ -758,8 +758,8 @@ namespace MassEffectModManagerCore.modmanager
             }
             catch (IOException e)
             {
-                Log.Error("I/O ERROR CALCULATING CHECKSUM OF FILE: " + filename);
-                Log.Error(App.FlattenException(e));
+                M3Log.Error("I/O ERROR CALCULATING CHECKSUM OF FILE: " + filename);
+                M3Log.Error(App.FlattenException(e));
                 return "";
             }
         }
@@ -776,8 +776,8 @@ namespace MassEffectModManagerCore.modmanager
             }
             catch (Exception e)
             {
-                Log.Error("I/O ERROR CALCULATING CHECKSUM OF STREAM");
-                Log.Error(App.FlattenException(e));
+                M3Log.Error("I/O ERROR CALCULATING CHECKSUM OF STREAM");
+                M3Log.Error(App.FlattenException(e));
                 return "";
             }
         }
@@ -864,7 +864,7 @@ namespace MassEffectModManagerCore.modmanager
             }
             catch (Exception e)
             {
-                Log.Error("Exception trying to open web page from system (typically means browser default is incorrectly configured by Windows): " + e.Message + ". Try opening the URL manually: " + uri);
+                M3Log.Error("Exception trying to open web page from system (typically means browser default is incorrectly configured by Windows): " + e.Message + ". Try opening the URL manually: " + uri);
             }
         }
 
@@ -984,7 +984,7 @@ namespace MassEffectModManagerCore.modmanager
 
         public static string ExtractInternalFile(string internalResourceName, string destination, bool overwrite, Assembly assembly = null)
         {
-            Log.Information("Extracting embedded file: " + internalResourceName + " to " + destination);
+            M3Log.Information("Extracting embedded file: " + internalResourceName + " to " + destination);
             assembly ??= Assembly.GetExecutingAssembly();
 #if DEBUG
             var resources = assembly.GetManifestResourceNames();
@@ -1011,7 +1011,7 @@ namespace MassEffectModManagerCore.modmanager
             }
             else
             {
-                Log.Warning("File already exists. Not overwriting file.");
+                M3Log.Warning("File already exists. Not overwriting file.");
             }
 
             return destination;
@@ -1036,7 +1036,7 @@ namespace MassEffectModManagerCore.modmanager
             return av;
         }
 
-        internal static bool InstallBinkBypass(GameTarget target)
+        internal static bool InstallBinkBypass(GameTargetWPF target)
         {
             if (target == null) return false;
             var binkPath = GetBinkFile(target);
@@ -1047,7 +1047,7 @@ namespace MassEffectModManagerCore.modmanager
             }
             catch (Exception e)
             {
-                Log.Error(@"Error installing binkw32 bypass files: " + e.Message);
+                M3Log.Error(@"Error installing binkw32 bypass files: " + e.Message);
                 return false;
             }
         }
@@ -1055,7 +1055,7 @@ namespace MassEffectModManagerCore.modmanager
         internal static bool InstallBinkBypass(string binkPath, string TargetPath, MEGame Game)
         {
 
-            Log.Information($"Installing Bink bypass for {Game} to {binkPath}");
+            M3Log.Information($"Installing Bink bypass for {Game} to {binkPath}");
             if (Game == MEGame.ME1)
             {
                 var obinkPath = Path.Combine(TargetPath, "Binaries", "binkw23.dll");
@@ -1089,11 +1089,11 @@ namespace MassEffectModManagerCore.modmanager
             }
             else
             {
-                Log.Error("Unknown game for gametarget (InstallBinkBypass)");
+                M3Log.Error("Unknown game for gametarget (InstallBinkBypass)");
                 return false;
             }
 
-            Log.Information($"Installed Bink bypass for {Game}");
+            M3Log.Information($"Installed Bink bypass for {Game}");
             return true;
         }
 
@@ -1106,7 +1106,7 @@ namespace MassEffectModManagerCore.modmanager
             return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "Temp")).FullName;
         }
 
-        internal static string GetBinkFile(GameTarget target)
+        internal static string GetBinkFile(GameTargetWPF target)
         {
             if (target == null) return null;
             if (target.Game == MEGame.ME1 || target.Game == MEGame.ME2) return Path.Combine(target.TargetPath, "Binaries", "binkw32.dll");
@@ -1116,7 +1116,7 @@ namespace MassEffectModManagerCore.modmanager
             return null;
         }
 
-        internal static bool UninstallBinkBypass(GameTarget target)
+        internal static bool UninstallBinkBypass(GameTargetWPF target)
         {
             if (target == null) return false;
             var binkPath = GetBinkFile(target);
@@ -1166,12 +1166,12 @@ namespace MassEffectModManagerCore.modmanager
         /// <param name="existingTargets"></param>
         /// <param name="legendaryLoad">If this should load in legendary mode, which loads 3 targets per directory</para>
         /// <returns></returns>
-        internal static List<GameTarget> GetCachedTargets(MEGame game, List<GameTarget> existingTargets = null)
+        internal static List<GameTargetWPF> GetCachedTargets(MEGame game, List<GameTargetWPF> existingTargets = null)
         {
             var cacheFile = GetCachedTargetsFile(game);
             if (File.Exists(cacheFile))
             {
-                OrderedSet<GameTarget> targets = new OrderedSet<GameTarget>();
+                var targets = new OrderedSet<GameTargetWPF>();
                 foreach (var gameDir in Utilities.WriteSafeReadAllLines(cacheFile))
                 {
                     //Validate game directory
@@ -1182,7 +1182,7 @@ namespace MassEffectModManagerCore.modmanager
 
                     if (Directory.Exists(gameDir))
                     {
-                        GameTarget target = new GameTarget(game, gameDir, false);
+                        var target = new GameTargetWPF(game, gameDir, false);
                         var failureReason = target.ValidateTarget();
                         if (failureReason == null)
                         {
@@ -1190,12 +1190,12 @@ namespace MassEffectModManagerCore.modmanager
                         }
                         else
                         {
-                            Log.Error("Cached target for " + target.Game.ToString() + " is invalid: " + failureReason);
+                            M3Log.Error("Cached target for " + target.Game.ToString() + " is invalid: " + failureReason);
                         }
                     }
                     else
                     {
-                        Log.Warning($@"Cached target directory does not exist, skipping: {gameDir}");
+                        M3Log.Warning($@"Cached target directory does not exist, skipping: {gameDir}");
                     }
                 }
 
@@ -1203,11 +1203,11 @@ namespace MassEffectModManagerCore.modmanager
             }
             else
             {
-                return new List<GameTarget>();
+                return new List<GameTargetWPF>();
             }
         }
 
-        internal static string GetGameConfigToolPath(GameTarget target)
+        internal static string GetGameConfigToolPath(GameTargetWPF target)
         {
             switch (target.Game)
             {
@@ -1222,7 +1222,7 @@ namespace MassEffectModManagerCore.modmanager
             return null;
         }
 
-        internal static void AddCachedTarget(GameTarget target)
+        internal static void AddCachedTarget(GameTargetWPF target)
         {
             var cachefile = GetCachedTargetsFile(target.Game);
             bool creatingFile = !File.Exists(cachefile);
@@ -1233,7 +1233,7 @@ namespace MassEffectModManagerCore.modmanager
                 if (!savedTargets.Contains(path, StringComparer.InvariantCultureIgnoreCase))
                 {
                     savedTargets.Add(path);
-                    Log.Information($"Saving new entry into targets cache for {target.Game}: " + path);
+                    M3Log.Information($"Saving new entry into targets cache for {target.Game}: " + path);
                     try
                     {
                         File.WriteAllLines(cachefile, savedTargets);
@@ -1247,18 +1247,18 @@ namespace MassEffectModManagerCore.modmanager
                         }
                         catch (Exception ex)
                         {
-                            Log.Error("Could not save cached targets on retry: " + ex.Message);
+                            M3Log.Error("Could not save cached targets on retry: " + ex.Message);
                         }
                     }
                 }
             }
             catch (Exception e)
             {
-                Log.Error("Unable to read/add cached target: " + e.Message);
+                M3Log.Error("Unable to read/add cached target: " + e.Message);
             }
         }
 
-        internal static void RemoveCachedTarget(GameTarget target)
+        internal static void RemoveCachedTarget(GameTargetWPF target)
         {
             var cachefile = GetCachedTargetsFile(target.Game);
             if (!File.Exists(cachefile)) return; //can't do anything.
@@ -1268,7 +1268,7 @@ namespace MassEffectModManagerCore.modmanager
             int numRemoved = savedTargets.RemoveAll(x => string.Equals(path, x, StringComparison.InvariantCultureIgnoreCase));
             if (numRemoved > 0)
             {
-                Log.Information("Removed " + numRemoved + " targets matching name " + path);
+                M3Log.Information("Removed " + numRemoved + " targets matching name " + path);
                 File.WriteAllLines(cachefile, savedTargets);
             }
         }
@@ -1278,7 +1278,7 @@ namespace MassEffectModManagerCore.modmanager
         private const string ME3ASILoaderHash = "1acccbdae34e29ca7a50951999ed80d5";
         private const string LEASILoaderHash = "2026e1cb78b5c7d95477395ac8c9979a"; // Will need changed as game is updated // bink 2005 by d00t
 
-        internal static bool CheckIfBinkw32ASIIsInstalled(GameTarget target)
+        internal static bool CheckIfBinkw32ASIIsInstalled(GameTargetWPF target)
         {
             if (target == null) return false;
             string binkPath = GetBinkFile(target);
@@ -1354,7 +1354,7 @@ namespace MassEffectModManagerCore.modmanager
                 DeleteEmptySubdirectories(directory);
                 if (!Directory.EnumerateFileSystemEntries(directory).Any())
                 {
-                    Log.Information("Deleting empty directory: " + directory);
+                    M3Log.Information("Deleting empty directory: " + directory);
                     Directory.Delete(directory, false);
                 }
             }
@@ -1454,7 +1454,7 @@ namespace MassEffectModManagerCore.modmanager
                                                                                             || s.EndsWith(".u", StringComparison.InvariantCultureIgnoreCase) || s.EndsWith(".upk", StringComparison.InvariantCultureIgnoreCase)).ToList();
         }
 
-        internal static bool SetLODs(GameTarget target, bool highres, bool limit2k, bool softshadows)
+        internal static bool SetLODs(GameTargetWPF target, bool highres, bool limit2k, bool softshadows)
         {
             var game = target.Game;
             if (game != MEGame.ME1 && softshadows)
@@ -1464,11 +1464,11 @@ namespace MassEffectModManagerCore.modmanager
 
             if (target.Game.IsLEGame())
             {
-                Log.Information(@"Settings LODs for Legendary Edition is not currently supported");
+                M3Log.Information(@"Settings LODs for Legendary Edition is not currently supported");
                 return true; // fake saying we did it
             }
 
-            Log.Information($@"Settings LODS for {target.Game}, highres: {highres}, 2K: {limit2k}, SS: {softshadows}");
+            M3Log.Information($@"Settings LODS for {target.Game}, highres: {highres}, 2K: {limit2k}, SS: {softshadows}");
 
             try
             {
@@ -1476,7 +1476,7 @@ namespace MassEffectModManagerCore.modmanager
 
                 if (!File.Exists(settingspath) && game == MEGame.ME1)
                 {
-                    Log.Error("Cannot raise/lower LODs on file that doesn't exist (ME1 bioengine file must already exist or exe will overwrite it)");
+                    M3Log.Error("Cannot raise/lower LODs on file that doesn't exist (ME1 bioengine file must already exist or exe will overwrite it)");
                     return false;
                 }
                 else if (!File.Exists(settingspath))
@@ -1495,13 +1495,13 @@ namespace MassEffectModManagerCore.modmanager
                         configFileReadOnly = fi.IsReadOnly;
                         if (configFileReadOnly)
                         {
-                            Log.Information(@"Removing read only flag from ME1 bioengine.ini");
+                            M3Log.Information(@"Removing read only flag from ME1 bioengine.ini");
                             fi.IsReadOnly = false; //clear read only. might happen on some binkw32 in archives, maybe
                         }
                     }
                     catch (Exception e)
                     {
-                        Log.Error($@"Error removing readonly flag from ME1 bioengine.ini: {e.Message}");
+                        M3Log.Error($@"Error removing readonly flag from ME1 bioengine.ini: {e.Message}");
                     }
                 }
 
@@ -1573,14 +1573,14 @@ namespace MassEffectModManagerCore.modmanager
                     }
 
                     File.WriteAllText(settingspath, ini.ToString());
-                    Log.Information(operation);
+                    M3Log.Information(operation);
                 }
                 else if (game == MEGame.ME1)
                 {
                     var section = ini.Sections.FirstOrDefault(x => x.Header == "TextureLODSettings");
                     if (section == null && highres)
                     {
-                        Log.Error("TextureLODSettings section cannot be null in ME1. Run the game to regenerate the bioengine file.");
+                        M3Log.Error("TextureLODSettings section cannot be null in ME1. Run the game to regenerate the bioengine file.");
                         return false; //This section cannot be null
                     }
 
@@ -1625,32 +1625,32 @@ namespace MassEffectModManagerCore.modmanager
                             else
                             {
                                 //!!! Error
-                                Log.Error(@"Error: Could not find ME1 high quality settings key in bioengine.ini: " + hqSection.Header);
+                                M3Log.Error(@"Error: Could not find ME1 high quality settings key in bioengine.ini: " + hqSection.Header);
                             }
                         }
                     }
 
                     File.WriteAllText(settingspath, ini.ToString());
-                    Log.Information("Set " + (highres ? limit2k ? "2K lods" : "4K lods" : "default LODs") + " in BioEngine.ini file for ME1");
+                    M3Log.Information("Set " + (highres ? limit2k ? "2K lods" : "4K lods" : "default LODs") + " in BioEngine.ini file for ME1");
                 }
 
                 if (configFileReadOnly)
                 {
                     try
                     {
-                        Log.Information(@"Re-setting the read only flag on ME1 bioengine.ini");
+                        M3Log.Information(@"Re-setting the read only flag on ME1 bioengine.ini");
                         FileInfo fi = new FileInfo(settingspath);
                         fi.IsReadOnly = true;
                     }
                     catch (Exception e)
                     {
-                        Log.Error($@"Error re-setting readonly flag from ME1 bioengine.ini: {e.Message}");
+                        M3Log.Error($@"Error re-setting readonly flag from ME1 bioengine.ini: {e.Message}");
                     }
                 }
             }
             catch (Exception e)
             {
-                Log.Error(@"Error setting LODs: " + e.Message);
+                M3Log.Error(@"Error setting LODs: " + e.Message);
                 return false;
             }
 
@@ -2072,10 +2072,10 @@ namespace MassEffectModManagerCore.modmanager
             ofd.Filter = filter;
             if (ofd.ShowDialog() == true)
             {
-                Log.Information($@"Executable path selected: {ofd.FileName}");
+                M3Log.Information($@"Executable path selected: {ofd.FileName}");
                 return ofd.FileName;
             }
-            Log.Information(@"User aborted selecting executable");
+            M3Log.Information(@"User aborted selecting executable");
             return null;
         }
         /// <summary>
@@ -2185,7 +2185,7 @@ namespace MassEffectModManagerCore.modmanager
             }
             catch (Exception e)
             {
-                Log.Error($@"Could not write exe location to registry: {e.Message}");
+                M3Log.Error($@"Could not write exe location to registry: {e.Message}");
             }
         }
     }

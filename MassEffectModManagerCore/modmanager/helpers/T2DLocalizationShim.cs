@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MassEffectModManagerCore.modmanager.localizations;
+﻿using MassEffectModManagerCore.modmanager.localizations;
 using LegendaryExplorerCore.Unreal.Classes;
 
 namespace MassEffectModManagerCore.modmanager.helpers

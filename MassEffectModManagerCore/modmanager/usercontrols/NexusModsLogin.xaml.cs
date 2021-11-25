@@ -2,10 +2,10 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using FontAwesome.WPF;
+using MassEffectModManagerCore.modmanager.diagnostics;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.nexusmodsintegration;
@@ -13,7 +13,6 @@ using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
 using Microsoft.AppCenter.Analytics;
 using Pathoschild.Http.Client;
-using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -138,24 +137,24 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         }
                         else
                         {
-                            Log.Error(@"Error authenticating to nexusmods, no userinfo was returned, possible network issue");
+                            M3Log.Error(@"Error authenticating to nexusmods, no userinfo was returned, possible network issue");
                             SetAuthorized(false);
                             mainwindow.RefreshNexusStatus();
                         }
                     }
                     catch (ApiException apiException)
                     {
-                        Log.Error(@"Error authenticating to NexusMods: " + apiException.ToString());
+                        M3Log.Error(@"Error authenticating to NexusMods: " + apiException.ToString());
                         Application.Current.Dispatcher.Invoke(delegate { M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_nexusModsReturnedAnErrorX, apiException.ToString()), M3L.GetString(M3L.string_errorAuthenticatingToNexusMods), MessageBoxButton.OK, MessageBoxImage.Error); });
                     }
                     catch (Exception e)
                     {
-                        Log.Error(@"Other error authenticating to NexusMods: " + e.Message);
+                        M3Log.Error(@"Other error authenticating to NexusMods: " + e.Message);
                     }
                 }
                 else
                 {
-                    Log.Error(@"No API key - setting authorized to false for NM");
+                    M3Log.Error(@"No API key - setting authorized to false for NM");
                     SetAuthorized(false);
                 }
 
@@ -165,7 +164,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (b.Error != null)
                 {
-                    Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
+                    M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                 }
                 VisibleIcon = IsAuthorized;
                 if (IsAuthorized)
@@ -215,7 +214,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
             catch (Exception e)
             {
-                Log.Error(@"Error getting current API Key: " + e.Message);
+                M3Log.Error(@"Error getting current API Key: " + e.Message);
                 SetAuthorized(false);
             }
         }

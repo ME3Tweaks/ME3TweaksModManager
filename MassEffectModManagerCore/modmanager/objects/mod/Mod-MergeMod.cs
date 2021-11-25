@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
+using MassEffectModManagerCore.modmanager.diagnostics;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects.mod.merge;
-using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.objects.mod
 {
@@ -23,7 +18,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 var storageType = Archive.GetStorageTypeOfFile(fullPath);
                 if (storageType != @"Copy")
                 {
-                    Log.Error($@"Mod has merge that is in an archive, but the storage type is not listed as 'Copy'. Mod Manager will not load mods from archive that contain merge mods that were not deployed using Mod Manager.");
+                    M3Log.Error($@"Mod has merge that is in an archive, but the storage type is not listed as 'Copy'. Mod Manager will not load mods from archive that contain merge mods that were not deployed using Mod Manager.");
                     LoadFailedReason = $@"This mod has a merge mod that is in the archive, but the storage type is not listed as 'Copy'. Mod Manager will not load mods from archive that contain merge mods that were not deployed using Mod Manager.";
                     return null;
                 }
@@ -48,8 +43,8 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             }
             catch (Exception e)
             {
-                Log.Error($@"Exception loading merge mod {fullPath}: {e.Message}");
-                Log.Error(e.StackTrace);
+                M3Log.Error($@"Exception loading merge mod {fullPath}: {e.Message}");
+                M3Log.Error(e.StackTrace);
                 LoadFailedReason = $@"An error occurred reading referenced merge mod '{fullPath}': {e.Message}. See the logs for more information.";
                 return null;
             }
@@ -64,7 +59,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
 
             if (mm.Game != Game)
             {
-                Log.Error($@"Merge mod {mm.MergeModFilename} lists applicable game as {mm.Game}, but the mod loading this merge mod is for {Game}. The mod and merge mod target games must match.");
+                M3Log.Error($@"Merge mod {mm.MergeModFilename} lists applicable game as {mm.Game}, but the mod loading this merge mod is for {Game}. The mod and merge mod target games must match.");
                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_mergeModGameIdMismatch, mm.MergeModFilename, mm.Game, Game);
                 return null;
             }

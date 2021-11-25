@@ -12,11 +12,10 @@ using IniParser.Parser;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
-using MassEffectModManagerCore.modmanager.usercontrols;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Packages;
+using MassEffectModManagerCore.modmanager.diagnostics;
 using Microsoft.AppCenter.Crashes;
-using Serilog;
 using SevenZip;
 using SevenZip.EventArguments;
 
@@ -53,7 +52,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     }
                     else
                     {
-                        Log.Information(@"File being skipped, not referenced by mod: " + relativedName);
+                        M3Log.Information(@"File being skipped, not referenced by mod: " + relativedName);
                     }
                 }
             }
@@ -120,7 +119,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     var relativedName = isExe ? info.FileName : info.FileName.Substring(ModPath.Length).TrimStart('\\');
                     if (referencedFiles.Contains(relativedName))
                     {
-                        Log.Information(@"Adding file to extraction list: " + info.FileName);
+                        M3Log.Information(@"Adding file to extraction list: " + info.FileName);
                         fileIndicesToExtract.Add(info.Index);
                         filePathsToExtractTESTONLY.Add(relativedName);
                     }
@@ -135,25 +134,25 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             archive.Progressing += archiveExtractionProgress;
             string outputFilePathMapping(ArchiveFileInfo entryInfo)
             {
-                Log.Information(@"Mapping extraction target for " + entryInfo.FileName);
+                M3Log.Information(@"Mapping extraction target for " + entryInfo.FileName);
 
                 string entryPath = entryInfo.FileName;
                 if (ExeExtractionTransform != null && ExeExtractionTransform.PatchRedirects.Any(x => x.index == entryInfo.Index))
                 {
-                    Log.Information(@"Extracting vpatch file at index " + entryInfo.Index);
+                    M3Log.Information(@"Extracting vpatch file at index " + entryInfo.Index);
                     return Path.Combine(Utilities.GetVPatchRedirectsFolder(), ExeExtractionTransform.PatchRedirects.First(x => x.index == entryInfo.Index).outfile);
                 }
 
                 if (ExeExtractionTransform != null && ExeExtractionTransform.NoExtractIndexes.Any(x => x == entryInfo.Index))
                 {
-                    Log.Information(@"Extracting file to trash (not used): " + entryPath);
+                    M3Log.Information(@"Extracting file to trash (not used): " + entryPath);
                     return Path.Combine(Utilities.GetTempPath(), @"Trash", @"trashfile");
                 }
 
                 if (ExeExtractionTransform != null && ExeExtractionTransform.AlternateRedirects.Any(x => x.index == entryInfo.Index))
                 {
                     var outfile = ExeExtractionTransform.AlternateRedirects.First(x => x.index == entryInfo.Index).outfile;
-                    Log.Information($@"Extracting file with redirection: {entryPath} -> {outfile}");
+                    M3Log.Information($@"Extracting file with redirection: {entryPath} -> {outfile}");
                     return Path.Combine(outputFolderPath, outfile);
                 }
 
@@ -195,14 +194,14 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                                 var lastmodified = fileInfo.LastWriteTime;//File Modification
 
                                 compressedPackageCallback?.Invoke(M3L.GetString(M3L.string_interp_compressingX, Path.GetFileName(package)), compressedPackageCount, numberOfPackagesToCompress);
-                                Log.Information(@"Compressing package: " + package);
+                                M3Log.Information(@"Compressing package: " + package);
                                 p.Save(compress: true);
                                 File.SetCreationTime(package, created);
                                 File.SetLastWriteTime(package, lastmodified);
                             }
                             else
                             {
-                                Log.Information(@"Skipping compression for ME1 package file: " + package);
+                                M3Log.Information(@"Skipping compression for ME1 package file: " + package);
                             }
 
 
@@ -239,7 +238,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
 
             if (!testRun)
             {
-                Log.Information(@"Extracting files...");
+                M3Log.Information(@"Extracting files...");
                 archive.ExtractFiles(outputFolderPath, outputFilePathMapping, fileIndicesToExtract.ToArray());
             }
             else
@@ -251,13 +250,13 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     throw new Exception(@"The amount of referenced files does not match the amount of files that are going to be extracted!");
                 }
             }
-            Log.Information(@"File extraction completed.");
+            M3Log.Information(@"File extraction completed.");
             archive.Progressing -= archiveExtractionProgress;
 
             compressionQueue?.CompleteAdding();
             if (compressPackages && numberOfPackagesToCompress > 0 && numberOfPackagesToCompress > compressedPackageCount)
             {
-                Log.Information(@"Waiting for compression of packages to complete.");
+                M3Log.Information(@"Waiting for compression of packages to complete.");
                 while (!compressionQueue.IsCompleted)
                 {
                     lock (compressionCompletedSignaler)
@@ -266,7 +265,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     }
                 }
 
-                Log.Information(@"Package compression has completed.");
+                M3Log.Information(@"Package compression has completed.");
             }
 
             archive.FileExtractionFinished -= compressPackage;
@@ -305,7 +304,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         {
                             Directory.CreateDirectory(Directory.GetParent(outputfile).FullName); //ensure output directory exists as vpatch will not make one.
                         }
-                        Log.Information($@"VPatching file into alternate: {inputfile} to {outputfile}");
+                        M3Log.Information($@"VPatching file into alternate: {inputfile} to {outputfile}");
                         updateTextCallback?.Invoke(M3L.GetString(M3L.string_interp_vPatchingIntoAlternate, Path.GetFileName(inputfile)));
                         if (!testRun)
                         {
@@ -319,7 +318,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 {
                     string srcfile = Path.Combine(ModPath, copyfile.inputfile);
                     string destfile = Path.Combine(ModPath, copyfile.outputfile);
-                    Log.Information($@"Applying transform copyfile: {srcfile} -> {destfile}");
+                    M3Log.Information($@"Applying transform copyfile: {srcfile} -> {destfile}");
                     if (!testRun)
                     {
                         File.Copy(srcfile, destfile, true);
@@ -329,7 +328,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 if (ExeExtractionTransform.PostTransformModdesc != null)
                 {
                     //fetch online moddesc for this mod.
-                    Log.Information(@"Fetching post-transform third party moddesc.");
+                    M3Log.Information(@"Fetching post-transform third party moddesc.");
                     var moddesc = OnlineContent.FetchThirdPartyModdesc(ExeExtractionTransform.PostTransformModdesc);
                     if (!testRun)
                     {
@@ -346,7 +345,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             //    foreach (var package in packages)
             //    {
             //        updateTextCallback?.Invoke(M3L.GetString(M3L.string_interp_compressingX, Path.GetFileName(package)));
-            //        Log.Information("Compressing package: " + package);
+            //        M3Log.Information("Compressing package: " + package);
             //        var p = MEPackageHandler.OpenMEPackage(package);
             //        p.save(true);
 
@@ -391,7 +390,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             }
             else
             {
-                Log.Error(@"Tried to extract RCW mod to M3 mod but the job was empty.");
+                M3Log.Error(@"Tried to extract RCW mod to M3 mod but the job was empty.");
                 Crashes.TrackError(new Exception(@"Tried to extract RCW mod to M3 mod but the job was empty."));
             }
         }

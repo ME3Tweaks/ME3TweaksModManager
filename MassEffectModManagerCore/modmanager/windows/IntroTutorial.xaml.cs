@@ -1,20 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.IO;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using LegendaryExplorerCore.Misc;
-using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.modmanager.me3tweaks;
+using MassEffectModManagerCore.modmanager.diagnostics;
 using MassEffectModManagerCore.ui;
-using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.windows
 {
@@ -89,7 +78,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                         tutorialStep.UIString = tutorialStep.lang_fra;
                         break;
                     default:
-                        Log.Error(@"Tutorial doesn't support language: " + Settings.Language);
+                        M3Log.Error(@"Tutorial doesn't support language: " + Settings.Language);
                         break;
                 }
 

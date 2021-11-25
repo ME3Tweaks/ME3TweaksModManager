@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MassEffectModManagerCore.modmanager.save.gibbedio
+﻿namespace MassEffectModManagerCore.modmanager.save.gibbedio
 {
     class UnrealFileWriter
     {

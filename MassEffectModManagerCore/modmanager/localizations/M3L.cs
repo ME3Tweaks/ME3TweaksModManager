@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Text;
 using System.Windows;
-using Serilog;
+using MassEffectModManagerCore.modmanager.diagnostics;
 using Microsoft.AppCenter.Crashes;
 
 namespace MassEffectModManagerCore.modmanager.localizations
@@ -66,7 +65,7 @@ namespace MassEffectModManagerCore.modmanager.localizations
             }
             catch (Exception e)
             {
-                Log.Error($@"Error fetching string with key {resourceKey}: {e.ToString()}.");
+                M3Log.Error($@"Error fetching string with key {resourceKey}: {e.ToString()}.");
                 Crashes.TrackError(e, new Dictionary<string, string> { { "String key", resourceKey } });
                 return $@"Error fetching string with key {resourceKey}: {e.ToString()}! Please report this to Mgamerz";
             }

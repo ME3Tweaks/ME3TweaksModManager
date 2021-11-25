@@ -4,10 +4,12 @@ using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using LegendaryExplorerCore.Packages;
+using LegendaryExplorerCore.TLK;
 using LegendaryExplorerCore.TLK.ME1;
+using MassEffectModManagerCore.modmanager.diagnostics;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
-using Serilog;
+using ME3TweaksCoreWPF;
 
 namespace MassEffectModManagerCore.modmanager.objects.mod
 {
@@ -42,7 +44,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
         /// <param name="tlkXmlName"></param>
         /// <param name="gameFileMapping"></param>
         /// <returns></returns>
-        public string InstallTLKMerge(string tlkXmlName, Dictionary<string, string> gameFileMapping, bool savePackage, PackageCache cache, GameTarget target, Mod modBeingInstalled, Action<BasegameFileIdentificationService.BasegameCloudDBFile> addCloudDBEntry)
+        public string InstallTLKMerge(string tlkXmlName, Dictionary<string, string> gameFileMapping, bool savePackage, PackageCache cache, GameTargetWPF target, Mod modBeingInstalled, Action<BasegameFileIdentificationService.BasegameCloudDBFile> addCloudDBEntry)
         {
             // Need to load file into memory
             string xmlContents;
@@ -89,7 +91,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     if (exp == null)
                     {
                         // WRONGLY NAMED EXPORT!
-                        Log.Error($@"Could not find export in package {packagePath} for TLK merge: {exportPath}");
+                        M3Log.Error($@"Could not find export in package {packagePath} for TLK merge: {exportPath}");
                         return M3L.GetString(M3L.string_interp_tlkmerge_couldNotFindExportInPackage, packagePath, exportPath);
                     }
 
@@ -102,11 +104,11 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         var flags = int.Parse(node.Element(@"flags").Value);
                         var data = node.Element(@"data").Value;
 
-                        ME1TalkFile.TLKStringRef strRef = talkFile.StringRefs.FirstOrDefault(x => x.StringID == tlkId);
+                        TLKStringRef strRef = talkFile.StringRefs.FirstOrDefault(x => x.StringID == tlkId);
                         if (strRef == null)
                         {
                             CLog.Information($@"Adding new TLK id {tlkId}", Settings.LogModInstallation);
-                            strRefs.Add(new ME1TalkFile.TLKStringRef(tlkId, flags, data));
+                            strRefs.Add(new TLKStringRef(tlkId, flags, data));
                         }
                         else
                         {
@@ -130,7 +132,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     huff.serializeTalkfileToExport(exp);
                     if (savePackage && package.IsModified)
                     {
-                        Log.Information($@"Saving TLKMerged package {packagePath}");
+                        M3Log.Information($@"Saving TLKMerged package {packagePath}");
                         package.Save();
                         addCloudDBEntry?.Invoke(new BasegameFileIdentificationService.BasegameCloudDBFile(package.FilePath, (int)new FileInfo(package.FilePath).Length, target, modBeingInstalled));
                         cache.DropPackageFromCache(packagePath); // we are not doing more operations on this file so drop it out

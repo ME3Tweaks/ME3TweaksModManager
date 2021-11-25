@@ -1,17 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Windows.Input;
 using MassEffectModManagerCore.modmanager.helpers;
-using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.ui;
-using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Unreal;
-using Serilog;
+using MassEffectModManagerCore.modmanager.diagnostics;
+using ME3TweaksCoreWPF;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -30,12 +25,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         //private AutoTOCMode mode;
         //private Mod modModeMod;
-        private GameTarget gameWideModeTarget;
+        private GameTargetWPF gameWideModeTarget;
 
         public int Percent { get; private set; }
         public string ActionText { get; private set; }
 
-        public AutoTOC(GameTarget target)
+        public AutoTOC(GameTargetWPF target)
         {
             DataContext = this;
             this.gameWideModeTarget = target ?? throw new Exception(@"Null target specified for AutoTOC");
@@ -57,9 +52,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             // TODO actually do this
         }
 
-        public static bool RunTOCOnGameTarget(GameTarget target, Action<int> percentDoneCallback = null)
+        public static bool RunTOCOnGameTarget(GameTargetWPF target, Action<int> percentDoneCallback = null)
         {
-            Log.Information(@"Autotocing game: " + target.TargetPath);
+            M3Log.Information(@"Autotocing game: " + target.TargetPath);
 
             //if (target.Game.IsLEGame())
             //{
@@ -72,7 +67,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             string dlcDirRoot = M3Directories.GetDLCPath(target);
             if (!Directory.Exists(dlcDirRoot))
             {
-                Log.Error(@"Specified game directory does not appear to be a Mass Effect 3 root game directory (DLC folder missing).");
+                M3Log.Error(@"Specified game directory does not appear to be a Mass Effect 3 root game directory (DLC folder missing).");
                 return false;
             }
 
@@ -97,12 +92,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     watch.Stop();
                     if (tocResult == DLCPackage.DLCTOCUpdateResult.RESULT_UPDATE_NOT_NECESSARY)
                     {
-                        Log.Information($@"TOC is already up to date in {tocTarget}");
+                        M3Log.Information($@"TOC is already up to date in {tocTarget}");
                     }
                     else if (tocResult == DLCPackage.DLCTOCUpdateResult.RESULT_UPDATED)
                     {
                         var elapsedMs = watch.ElapsedMilliseconds;
-                        Log.Information($@"{tocTarget} - Ran SFAR TOC, took {elapsedMs}ms");
+                        M3Log.Information($@"{tocTarget} - Ran SFAR TOC, took {elapsedMs}ms");
                     }
                 }
                 else if (ME3Directory.OfficialDLCNames.ContainsKey(Path.GetFileName(tocTarget)))
@@ -124,17 +119,17 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             watch.Stop();
                             if (tocResult == DLCPackage.DLCTOCUpdateResult.RESULT_ERROR_NO_ENTRIES)
                             {
-                                Log.Information($@"No DLC entries in SFAR... Suspicious. Creating empty TOC for {tocTarget}");
+                                M3Log.Information($@"No DLC entries in SFAR... Suspicious. Creating empty TOC for {tocTarget}");
                                 CreateUnpackedTOC(tocTarget);
                             }
                             else if (tocResult == DLCPackage.DLCTOCUpdateResult.RESULT_UPDATE_NOT_NECESSARY)
                             {
-                                Log.Information($@"TOC is already up to date in {tocTarget}");
+                                M3Log.Information($@"TOC is already up to date in {tocTarget}");
                             }
                             else if (tocResult == DLCPackage.DLCTOCUpdateResult.RESULT_UPDATED)
                             {
                                 var elapsedMs = watch.ElapsedMilliseconds;
-                                Log.Information($@"{Path.GetFileName(tocTarget)} - Ran SFAR TOC, took {elapsedMs}ms");
+                                M3Log.Information($@"{Path.GetFileName(tocTarget)} - Ran SFAR TOC, took {elapsedMs}ms");
                             }
                         }
                     }
@@ -155,7 +150,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         //public static void CreateUnpackedTOC(string dlcDirectory)
         //{
-        //    Log.Information(@"Creating unpacked toc for " + dlcDirectory);
+        //    M3Log.Information(@"Creating unpacked toc for " + dlcDirectory);
         //    #if DEBUG
         //                if (dlcDirectory.Contains(@"DLC_CON_END") || dlcDirectory.Contains(@"DLC_EXP_Pack002"))
         //                {
@@ -172,11 +167,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         //        ms.Close();
         //        watch.Stop();
         //        var elapsedMs = watch.ElapsedMilliseconds;
-        //        Log.Information($@"{Path.GetFileName(dlcDirectory)} - {dlcDirectory} Ran Unpacked TOC, took {elapsedMs}ms");
+        //        M3Log.Information($@"{Path.GetFileName(dlcDirectory)} - {dlcDirectory} Ran Unpacked TOC, took {elapsedMs}ms");
         //    }
         //    else
         //    {
-        //        Log.Warning(@"Did not create TOC for " + dlcDirectory);
+        //        M3Log.Warning(@"Did not create TOC for " + dlcDirectory);
         //        watch.Stop();
         //    }
         //}
@@ -200,7 +195,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 if (b.Error != null)
                 {
-                    Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
+                    M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                 }
                 OnClosing(DataEventArgs.Empty);
             };

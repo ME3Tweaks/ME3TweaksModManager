@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using LegendaryExplorerCore.Packages;
-using Serilog;
+using MassEffectModManagerCore.modmanager.diagnostics;
 
 namespace MassEffectModManagerCore.modmanager.objects
 {
@@ -55,7 +50,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                     catch (Exception e)
                     {
                         // in case two full paths are tried to be set this will probably throw invalid path exception.
-                        Log.Error($@"Error combining paths: {RootPath}, {packagePath}");
+                        M3Log.Error($@"Error combining paths: {RootPath}, {packagePath}");
                     }
                 }
 
@@ -85,7 +80,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         catch (Exception e)
                         {
                             // in case two full paths are tried to be set this will probably throw invalid path exception.
-                            Log.Error($@"Error combining paths: {RootPath}, {packagePath}");
+                            M3Log.Error($@"Error combining paths: {RootPath}, {packagePath}");
                         }
                     }
 

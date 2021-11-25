@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
-using MassEffectModManagerCore.modmanager.objects;
+using ME3TweaksCoreWPF;
 
 namespace MassEffectModManagerCore.modmanager.converters
 {
@@ -11,7 +11,7 @@ namespace MassEffectModManagerCore.modmanager.converters
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
 
-            if (value is GameTarget gt /* && gt.RegistryActive*/) return Visibility.Visible;
+            if (value is GameTargetWPF gt /* && gt.RegistryActive*/) return Visibility.Visible;
 
             return Visibility.Collapsed;
         }

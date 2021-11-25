@@ -6,10 +6,11 @@ using System.Linq;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Packages.CloningImportingAndRelinking;
+using MassEffectModManagerCore.modmanager.diagnostics;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.windows;
+using ME3TweaksCoreWPF;
 using Newtonsoft.Json;
-using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
 {
@@ -36,7 +37,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
             }
         }
 
-        public void ApplyChanges(GameTarget gameTarget, CaseInsensitiveDictionary<string> loadedFiles, Mod associatedMod, ref int numMergesCompleted, int numTotalMerges, Action<int, int, string, string> mergeProgressDelegate = null)
+        public void ApplyChanges(GameTargetWPF gameTarget, CaseInsensitiveDictionary<string> loadedFiles, Mod associatedMod, ref int numMergesCompleted, int numTotalMerges, Action<int, int, string, string> mergeProgressDelegate = null)
         {
             List<string> targetFiles = new List<string>();
             if (ApplyToAllLocalizations)
@@ -61,7 +62,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
                     }
                     else
                     {
-                        Log.Warning($@"File not found in game: {targetname}, skipping...");
+                        M3Log.Warning($@"File not found in game: {targetname}, skipping...");
                         numMergesCompleted++;
                         mergeProgressDelegate?.Invoke(numMergesCompleted, numMergesCompleted, null, null);
                     }
@@ -75,7 +76,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
                 }
                 else
                 {
-                    Log.Warning($@"File not found in game: {FileName}, skipping...");
+                    M3Log.Warning($@"File not found in game: {FileName}, skipping...");
                     numMergesCompleted++;
                     mergeProgressDelegate?.Invoke(numMergesCompleted, numMergesCompleted, null, null);
                 }
@@ -85,7 +86,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
             MergeAssetCache1 mac = new MergeAssetCache1();
             foreach (var f in targetFiles)
             {
-                Log.Information($@"Opening package {f}");
+                M3Log.Information($@"Opening package {f}");
 #if DEBUG
                 Stopwatch sw = Stopwatch.StartNew();
 #endif
@@ -105,7 +106,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
                 var track = package.IsModified;
                 if (package.IsModified)
                 {
-                    Log.Information($@"Saving package {package.FilePath}");
+                    M3Log.Information($@"Saving package {package.FilePath}");
 #if DEBUG
                     sw.Restart();
 #endif
@@ -116,7 +117,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
                 }
                 else
                 {
-                    Log.Information($@"Package {package.FilePath} was not modified. This change is likely already installed, not saving package");
+                    M3Log.Information($@"Package {package.FilePath} was not modified. This change is likely already installed, not saving package");
                 }
 
                 numMergesCompleted++;

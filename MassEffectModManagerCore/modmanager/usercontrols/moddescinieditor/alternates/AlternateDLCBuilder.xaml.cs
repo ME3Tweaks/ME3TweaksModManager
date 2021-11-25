@@ -5,7 +5,6 @@ using IniParser.Model;
 using LegendaryExplorerCore.Misc;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.objects;
-using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.ui;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alternates

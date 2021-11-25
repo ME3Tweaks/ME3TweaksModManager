@@ -1,25 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
-using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.diagnostics;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
-using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
+using ME3TweaksCore.GameFilesystem;
+using ME3TweaksCoreWPF;
 using PropertyChanged;
-using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
 {
@@ -34,9 +27,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             InitializeComponent();
         }
 
-        public ObservableCollectionExtended<GameTarget> AvailableTargets { get; } = new ObservableCollectionExtended<GameTarget>();
+        public ObservableCollectionExtended<GameTargetWPF> AvailableTargets { get; } = new ObservableCollectionExtended<GameTargetWPF>();
         public ObservableCollectionExtended<InstalledDLC> InstalledDLCs { get; } = new ObservableCollectionExtended<InstalledDLC>();
-        public GameTarget SelectedTarget { get; set; }
+        public GameTargetWPF SelectedTarget { get; set; }
         public ICommand CloseCommand { get; set; }
 
         private void LoadCommands()
@@ -87,7 +80,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         [AddINotifyPropertyChangedInterface]
         public class InstalledDLC
         {
-            public GameTarget target { get; set; }
+            public GameTargetWPF target { get; set; }
             /// <summary>
             /// Current DLC Folder Name
             /// </summary>
@@ -119,7 +112,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 catch (Exception e)
                 {
-                    Log.Error($@"Error toggling DLC {DLCFolderName}: {e.Message}");
+                    M3Log.Error($@"Error toggling DLC {DLCFolderName}: {e.Message}");
                     M3L.ShowDialog(Application.Current?.MainWindow, M3L.GetString(M3L.string_interp_errorTogglingDLC, e.Message), M3L.GetString(M3L.string_error), MessageBoxButton.OK, MessageBoxImage.Error); //this needs updated to be better
                 }
             }

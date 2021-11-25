@@ -2,10 +2,8 @@
 using System.Globalization;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
 using IniParser.Model;
 using MassEffectModManagerCore.modmanager.objects;
-using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.modmanager.objects.mod.editor;
 using LegendaryExplorerCore.Misc;
 

@@ -12,17 +12,18 @@ using System.Xml.XPath;
 using MassEffectModManagerCore.modmanager.gameini;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Packages;
 using Microsoft.AppCenter.Analytics;
-using Serilog;
 using Path = System.IO.Path;
 using LegendaryExplorerCore.Coalesced;
 using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Misc;
+using MassEffectModManagerCore.modmanager.diagnostics;
 using MassEffectModManagerCore.modmanager.windows;
+using ME3TweaksCore.GameFilesystem;
+using ME3TweaksCoreWPF;
 using PropertyChanged;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -64,18 +65,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             public bool SharedIsListeningForKey { get; set; }
             public MEGame Game { get; }
-            public GameTarget SelectedTarget { get; set; }
+            public GameTargetWPF SelectedTarget { get; set; }
             public ICommand DefaultCommand { get; }
             public ICommand ChangeMiniKeyCommand { get; }
             public ICommand ChangeFullKeyCommand { get; }
 
             public string FullConsoleKeyText { get; private set; }
             public string MiniConsoleKeyText { get; private set; }
-            public ObservableCollectionExtended<GameTarget> Targets { get; } = new();
+            public ObservableCollectionExtended<GameTargetWPF> Targets { get; } = new();
             private bool OperationInProgress;
 
             public string WhereKeysAreDefinedText { get; }
-            public KeybindingGame(MEGame game, IEnumerable<GameTarget> targets, Action<Action<string>, string> beginListeningForKey)
+            public KeybindingGame(MEGame game, IEnumerable<GameTargetWPF> targets, Action<Action<string>, string> beginListeningForKey)
             {
                 BeginListeningForKeyDelegate = beginListeningForKey;
                 Game = game;
@@ -201,7 +202,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         }
                         else
                         {
-                            Log.Error(
+                            M3Log.Error(
                                 @"Could not get file data for coalesced chunk BASEGAME as Coalesced.bin file was missing");
                             return;
                         }
@@ -233,7 +234,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
                     catch (Exception e)
                     {
-                        Log.Error(@"Error reading keybinds: " + e.Message);
+                        M3Log.Error(@"Error reading keybinds: " + e.Message);
                         M3L.ShowDialog(null, M3L.GetString(M3L.string_interp_cannotReadME3Keybinds, e.Message), M3L.GetString(M3L.string_errorReadingKeybinds), MessageBoxButton.OK, MessageBoxImage.Error);
                     }
 
@@ -253,7 +254,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     }
                     else
                     {
-                        Log.Error(
+                        M3Log.Error(
                             @"Could not get file data for coalesced chunk BASEGAME as Coalesced.bin file was missing");
                         return;
                     }
@@ -405,7 +406,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     if (b.Error != null)
                     {
-                        Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
+                        M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                     }
                     OperationInProgress = false;
                     CommandManager.InvalidateRequerySuggested();
@@ -456,7 +457,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 else
                 {
-                    Log.Error(@"Could not get file data for Coalesced.bin, file was missing");
+                    M3Log.Error(@"Could not get file data for Coalesced.bin, file was missing");
                     return;
                 }
 

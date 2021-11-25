@@ -1,11 +1,9 @@
 ﻿#if DEBUG
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using MassEffectModManagerCore.modmanager.helpers;

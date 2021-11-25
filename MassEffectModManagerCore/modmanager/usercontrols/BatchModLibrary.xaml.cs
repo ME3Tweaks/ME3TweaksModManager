@@ -6,10 +6,10 @@ using System.IO;
 using System.Linq;
 using System.Windows.Input;
 using LegendaryExplorerCore.Misc;
-using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.modmanager.windows;
 using LegendaryExplorerCore.Packages;
+using ME3TweaksCoreWPF;
 using Microsoft.AppCenter.Analytics;
 using MemoryAnalyzer = MassEffectModManagerCore.modmanager.memoryanalyzer.MemoryAnalyzer;
 
@@ -23,7 +23,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public BatchLibraryInstallQueue SelectedBatchQueue { get; set; }
         public Mod SelectedModInGroup { get; set; }
         public ObservableCollectionExtended<BatchLibraryInstallQueue> AvailableBatchQueues { get; } = new ObservableCollectionExtended<BatchLibraryInstallQueue>();
-        public ObservableCollectionExtended<GameTarget> InstallationTargetsForGroup { get; } = new ObservableCollectionExtended<GameTarget>();
+        public ObservableCollectionExtended<GameTargetWPF> InstallationTargetsForGroup { get; } = new ObservableCollectionExtended<GameTargetWPF>();
         public BatchModLibrary()
         {
             MemoryAnalyzer.AddTrackedMemoryItem(@"Batch Mod Installer Panel", new WeakReference(this));
@@ -127,11 +127,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
         }
 
-        public GameTarget SelectedGameTarget { get; set; }
+        public GameTargetWPF SelectedGameTarget { get; set; }
 
         private void OnSelectedBatchQueueChanged()
         {
-            GameTarget currentTarget = SelectedGameTarget;
+            GameTargetWPF currentTarget = SelectedGameTarget;
             SelectedGameTarget = null;
             InstallationTargetsForGroup.ClearEx();
             if (SelectedBatchQueue != null)

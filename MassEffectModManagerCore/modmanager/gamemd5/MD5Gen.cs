@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using LegendaryExplorerCore.Compression;
-using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Packages;
-using MassEffectModManagerCore.modmanager.helpers;
 
 namespace MassEffectModManagerCore.modmanager.gamemd5
 {

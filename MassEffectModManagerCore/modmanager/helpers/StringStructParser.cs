@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
+using MassEffectModManagerCore.modmanager.diagnostics;
 using MassEffectModManagerCore.modmanager.localizations;
-using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.helpers
 {
@@ -204,7 +202,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
                         {
                             if (parenthesisStack.Count == 0)
                             {
-                                Log.Error(@"Error parsing parenthesis split list: Found closing parenthesis that does not match open parenthesis at position " + i);
+                                M3Log.Error(@"Error parsing parenthesis split list: Found closing parenthesis that does not match open parenthesis at position " + i);
                                 throw new Exception(M3L.GetString(M3L.string_interp_ssp_unopenedParenthsisFound, i, inputString)); //should this be localized?
                             }
 
@@ -228,7 +226,7 @@ namespace MassEffectModManagerCore.modmanager.helpers
             }
             if (parenthesisStack.Count > 0)
             {
-                Log.Error(@"Error parsing parenthesis split list: count of open and closing parenthesis does not match.");
+                M3Log.Error(@"Error parsing parenthesis split list: count of open and closing parenthesis does not match.");
                 throw new Exception(M3L.GetString(M3L.string_interp_ssp_unclosedParenthesisFound, origString)); //should this be localized?
             }
             return splits;

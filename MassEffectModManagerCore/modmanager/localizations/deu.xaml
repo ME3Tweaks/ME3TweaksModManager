@@ -562,7 +562,7 @@
 	<system:String x:Key="string_deleteFromLibrary">Aus der Bibliothek entfernen</system:String>
 	<system:String x:Key="string_visitWebsite">Website aufrufen</system:String>
 
-	<!-- GameTarget -->
+	<!-- GameTargetWPF -->
 	<system:String x:Key="string_interp_invalidTargetMissingFile">Ungültiges Ziel: {0} wurde nicht im Spiel-Installationsordner gefunden.</system:String>
 	<!-- 0 = filename of file that is not found in game dir but should be there -->
 	<system:String x:Key="string_invalidTargetProtectedByCmmvanilla">Ungültiges Ziel: Dies ist mittels cmm_vanilla-Datei als geschütztes Backup markiert</system:String>

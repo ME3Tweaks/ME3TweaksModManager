@@ -18,8 +18,8 @@ using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
+using MassEffectModManagerCore.modmanager.diagnostics;
 using Microsoft.AppCenter.Crashes;
-using Serilog;
 
 namespace MassEffectModManagerCore.modmanager.me3tweaks
 {
@@ -58,7 +58,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
             catch (Exception e)
             {
-                Log.Error("Unable to fetch latest version of mod on updater service: " + e.Message);
+                M3Log.Error("Unable to fetch latest version of mod on updater service: " + e.Message);
             }
             return null;
         }
@@ -233,7 +233,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                     catch (Exception e)
                                     {
                                         // Don't put in hashmap. It died
-                                        Log.Error($@"Exception trying to decompress package {fpath}: {e.Message}");
+                                        M3Log.Error($@"Exception trying to decompress package {fpath}: {e.Message}");
                                     }
 
                                     continue;
@@ -252,7 +252,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         total = modUpdateInfo.sourceFiles.Count;
                         foreach (var serverFile in modUpdateInfo.sourceFiles)
                         {
-                            Log.Information($@"Checking {serverFile.relativefilepath} for update applicability");
+                            M3Log.Information($@"Checking {serverFile.relativefilepath} for update applicability");
                             updateStatusCallback?.Invoke(
                                 $"Calculating update delta for {modUpdateInfo.mod.ModName} {(int)(i * 100 / total)}%");
                             i++;
@@ -315,7 +315,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                             var blLocalFile = Path.Combine(modBasepath, blacklistedFile);
                             if (File.Exists(blLocalFile))
                             {
-                                Log.Information(@"Blacklisted file marked for deletion: " + blLocalFile);
+                                M3Log.Information(@"Blacklisted file marked for deletion: " + blLocalFile);
                                 modUpdateInfo.filesToDelete.Add(blLocalFile);
                             }
                         }
@@ -377,7 +377,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
             catch (Exception e)
             {
-                Log.Error("Error checking for mod updates: " + App.FlattenException(e));
+                M3Log.Error("Error checking for mod updates: " + App.FlattenException(e));
                 Crashes.TrackError(e, new Dictionary<string, string>()
                 {
                     {"Update check URL", updateFinalRequest}
@@ -390,7 +390,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         [Localizable(true)]
         public static bool UpdateMod(ModUpdateInfo updateInfo, string stagingDirectory, Action<string> errorMessageCallback)
         {
-            Log.Information(@"Updating mod: " + updateInfo.mod.ModName + @" from " + updateInfo.LocalizedLocalVersionString + @" to " + updateInfo.LocalizedServerVersionString);
+            M3Log.Information(@"Updating mod: " + updateInfo.mod.ModName + @" from " + updateInfo.LocalizedLocalVersionString + @" to " + updateInfo.LocalizedServerVersionString);
             string modPath = updateInfo.mod.ModPath;
             string serverRoot = UpdateStorageRoot + updateInfo.serverfolder + '/';
             bool cancelDownloading = false;
@@ -407,7 +407,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 string stagingFile = Path.Combine(stagingDirectory, v.Key.relativefilepath);
                 Directory.CreateDirectory(Directory.GetParent(stagingFile).FullName);
                 var sourceFile = Path.Combine(updateInfo.mod.ModPath, v.Value.RelativeFilepath);
-                Log.Information($@"Cloning file for move/rename/copy delta change: {sourceFile} -> {stagingFile}");
+                M3Log.Information($@"Cloning file for move/rename/copy delta change: {sourceFile} -> {stagingFile}");
                 File.Copy(sourceFile, stagingFile, true);
                 stagedFileMapping[stagingFile] = Path.Combine(updateInfo.mod.ModPath, v.Key.relativefilepath);
             }
@@ -448,7 +448,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     //Hash check output
                     if (decompressedStream.Length != sourcefile.size)
                     {
-                        Log.Error($@"Decompressed file ({sourcefile.relativefilepath}) is not of correct size. Expected: {sourcefile.size}, got: {decompressedStream.Length}");
+                        M3Log.Error($@"Decompressed file ({sourcefile.relativefilepath}) is not of correct size. Expected: {sourcefile.size}, got: {decompressedStream.Length}");
                         errorMessageCallback?.Invoke(M3L.GetString(M3L.string_interp_decompressedFileNotCorrectSize, sourcefile.relativefilepath, sourcefile.size, decompressedStream.Length)); //force localize
                         cancelDownloading = true;
                         return;
@@ -457,7 +457,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     var decompressedMD5 = Utilities.CalculateMD5(decompressedStream);
                     if (decompressedMD5 != sourcefile.hash)
                     {
-                        Log.Error($@"Decompressed file ({sourcefile.relativefilepath}) has the wrong hash. Expected: {sourcefile.hash}, got: {decompressedMD5}");
+                        M3Log.Error($@"Decompressed file ({sourcefile.relativefilepath}) has the wrong hash. Expected: {sourcefile.hash}, got: {decompressedMD5}");
                         errorMessageCallback?.Invoke(M3L.GetString(M3L.string_interp_decompressedFileWrongHash, sourcefile.relativefilepath, sourcefile.hash, decompressedMD5)); //force localize
                         cancelDownloading = true;
                         return;
@@ -468,7 +468,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     {
                         File.SetLastWriteTimeUtc(stagingFile, new DateTime(sourcefile.timestamp));
                     }
-                    Log.Information(@"Wrote updater staged file: " + stagingFile);
+                    M3Log.Information(@"Wrote updater staged file: " + stagingFile);
                     stagedFileMapping[stagingFile] = Path.Combine(modPath, sourcefile.relativefilepath);
                 }
             });
@@ -483,10 +483,10 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             //Apply update
             if (stagedFileMapping.Count > 0)
             {
-                Log.Information(@"Applying staged update to mod directory");
+                M3Log.Information(@"Applying staged update to mod directory");
                 foreach (var file in stagedFileMapping)
                 {
-                    Log.Information($@"Applying update file: {file.Key} => {file.Value}");
+                    M3Log.Information($@"Applying update file: {file.Key} => {file.Value}");
                     Directory.CreateDirectory(Directory.GetParent(file.Value).FullName);
                     File.Copy(file.Key, file.Value, true);
                 }
@@ -496,7 +496,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             foreach (var file in updateInfo.filesToDelete)
             {
                 var fileToDelete = Path.Combine(modPath, file);
-                Log.Information(@"Deleting file for mod update: " + fileToDelete);
+                M3Log.Information(@"Deleting file for mod update: " + fileToDelete);
                 File.Delete(fileToDelete);
             }
 
@@ -539,7 +539,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
 
         private static string LZMACompressFileForUpload(string relativePath, string stagingPath, string modPath, Func<bool?> cancelCheckCallback = null)
         {
-            Log.Information(@"Compressing " + relativePath);
+            M3Log.Information(@"Compressing " + relativePath);
             var destPath = Path.Combine(stagingPath, relativePath + @".lzma");
             var sourcePath = Path.Combine(modPath, relativePath);
             Directory.CreateDirectory(Directory.GetParent(destPath).FullName);
