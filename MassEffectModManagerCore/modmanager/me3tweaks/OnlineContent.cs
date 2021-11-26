@@ -13,73 +13,72 @@ using LegendaryExplorerCore.Misc;
 using MassEffectModManagerCore.modmanager.diagnostics;
 using MassEffectModManagerCore.modmanager.objects;
 using ME3TweaksCore.Diagnostics;
+using ME3TweaksCore.Misc;
+using ME3TweaksCore.Services;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using Microsoft.AppCenter.Crashes;
 using Newtonsoft.Json;
+using ShortTimeoutWebClient = MassEffectModManagerCore.modmanager.helpers.ShortTimeoutWebClient;
 
 namespace MassEffectModManagerCore.modmanager.me3tweaks
 {
+
     partial class OnlineContent
     {
-        private static readonly string StartupManifestURL = @"https://me3tweaks.com/modmanager/updatecheck?currentversion=" + App.BuildNumber + @"&M3=true";
-        private const string StartupManifestBackupURL = @"https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/master/MassEffectModManagerCore/staticfiles/startupmanifest.json";
-        private const string ThirdPartyIdentificationServiceURL = @"https://me3tweaks.com/modmanager/services/thirdpartyidentificationservice?highprioritysupport=true&allgames=true";
-        private const string StaticFilesBaseURL_Github = @"https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/master/MassEffectModManagerCore/staticfiles/";
-        private const string StaticFilesBaseURL_ME3Tweaks = @"https://me3tweaks.com/modmanager/tools/staticfiles/";
+        #region FALLBACKS
+        /// <summary>
+        /// Startup Manifest URLs
+        /// </summary>
+        private static FallbackLink StartupManifestURL = new FallbackLink()
+        {
+            MainURL = @"https://me3tweaks.com/modmanager/updatecheck?currentversion=" + App.BuildNumber + @"&M3=true",
+            FallbackURL = @"https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/master/MassEffectModManagerCore/staticfiles/startupmanifest.json"
+        };
 
-        private const string ME3TweaksStaticFilesBaseURL_Github = @"https://github.com/ME3Tweaks/ME3TweaksAssets/releases/download/";
+        /// <summary>
+        /// Tutorial manifest URLs
+        /// </summary>
+        public static FallbackLink TutorialServiceManifestURL = new FallbackLink()
+        {
+            MainURL = @"https://me3tweaks.com/modmanager/services/tutorialservice",
+            FallbackURL = @"https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/master/MassEffectModManagerCore/staticfiles/tutorialservice.json"
+        };
+
+        /// <summary>
+        /// Endpoint (base URL) for downloading static assets
+        /// </summary>
+        internal static FallbackLink StaticFileBaseEndpoints { get; } = new()
+        {
+            MainURL = @"https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/master/MassEffectModManagerCore/staticfiles/",
+            FallbackURL = @"https://me3tweaks.com/modmanager/tools/staticfiles/"
+        };
+
+        #endregion
 
         private const string ThirdPartyImportingServiceURL = @"https://me3tweaks.com/modmanager/services/thirdpartyimportingservice?allgames=true";
-        private const string BasegameFileIdentificationServiceURL = @"https://me3tweaks.com/modmanager/services/basegamefileidentificationservice";
-        private const string BasegameFileIdentificationServiceBackupURL = @"https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/master/MassEffectModManagerCore/staticfiles/basegamefileidentificationservice.json";
-
         private const string ThirdPartyModDescURL = @"https://me3tweaks.com/mods/dlc_mods/importingmoddesc/";
         private const string ExeTransformBaseURL = @"https://me3tweaks.com/mods/dlc_mods/importingexetransforms/";
         private const string ModInfoRelayEndpoint = @"https://me3tweaks.com/modmanager/services/relayservice";
         private const string TipsServiceURL = @"https://me3tweaks.com/modmanager/services/tipsservice";
         private const string ModMakerTopModsEndpoint = @"https://me3tweaks.com/modmaker/api/topmods";
         private const string LocalizationEndpoint = @"https://me3tweaks.com/modmanager/services/livelocalizationservice";
-
-        private const string TutorialServiceURL = @"https://me3tweaks.com/modmanager/services/tutorialservice";
-        private const string TutorialServiceBackupURL = @"https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/master/MassEffectModManagerCore/staticfiles/tutorialservice.json";
-
-
         public static readonly string ModmakerModsEndpoint = @"https://me3tweaks.com/modmaker/download.php?id=";
 
-        /// <summary>
-        /// List of static files endpoints in order of preference
-        /// </summary>
-        public static string[] StaticFilesBaseEndpoints =
-        {
-            StaticFilesBaseURL_Github,
-            StaticFilesBaseURL_ME3Tweaks
-        };
 
-        /// <summary>
-        /// List of static files endpoints in order of preference. These endpoints are for the ME3TweaksStaticAssets and are not mirroed from github onto me3tweaks.
-        /// </summary>
-        public static string[] ME3TweaksStaticFilesBaseEndpoints =
-        {
-            ME3TweaksStaticFilesBaseURL_Github,
-            StaticFilesBaseURL_ME3Tweaks
-        };
-
-
-        /// <summary>
-        /// Checks if we can perform an online content fetch. This value is updated when manually checking for content updates, and on automatic 1-day intervals (if no previous manual check has occurred)
-        /// </summary>
-        /// <returns></returns>
-        internal static bool CanFetchContentThrottleCheck()
-        {
-            var lastContentCheck = Settings.LastContentCheck;
-            var timeNow = DateTime.Now;
-            return (timeNow - lastContentCheck).TotalDays > 1;
-        }
+        ///// <summary>
+        ///// Checks if we can perform an online content fetch. This value is updated when manually checking for content updates, and on automatic 1-day intervals (if no previous manual check has occurred)
+        ///// </summary>
+        ///// <returns></returns>
+        //internal static bool CanFetchContentThrottleCheck()
+        //{
+        //    var lastContentCheck = Settings.LastContentCheck;
+        //    var timeNow = DateTime.Now;
+        //    return (timeNow - lastContentCheck).TotalDays > 1;
+        //}
 
         public static Dictionary<string, string> FetchOnlineStartupManifest(bool betamode)
         {
-            string[] ulrs = new[] { StartupManifestURL, StartupManifestBackupURL };
-            foreach (var staticurl in ulrs)
+            foreach (var staticurl in StartupManifestURL.GetAllLinks())
             {
                 Uri myUri = new Uri(staticurl);
                 string host = myUri.Host;
@@ -108,7 +107,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         public static (MemoryStream download, string errorMessage) DownloadStaticAsset(string assetName, Action<long, long> progressCallback = null)
         {
             (MemoryStream, string) result = (null, @"Could not download file: No attempt was made, or errors occurred!");
-            foreach (var staticurl in StaticFilesBaseEndpoints)
+            foreach (var staticurl in StaticFileBaseEndpoints.GetAllLinks())
             {
                 try
                 {
@@ -136,7 +135,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         public static (MemoryStream download, string errorMessage) DownloadME3TweaksStaticAsset(string assetName)
         {
             (MemoryStream, string) result = (null, @"Could not download file: No attempt was made, or errors occurred!");
-            foreach (var staticurl in ME3TweaksStaticFilesBaseEndpoints)
+            foreach (var staticurl in StaticFileBaseEndpoints.GetAllLinks())
             {
                 try
                 {
@@ -156,171 +155,6 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             return result;
         }
 
-        public static Dictionary<string, CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>> FetchBasegameFileIdentificationServiceManifest(bool overrideThrottling = false)
-        {
-            M3Log.Information(@"Fetching basegame file identification manifest");
-
-            //read cached first.
-            string cached = null;
-            if (File.Exists(M3Utilities.GetBasegameIdentificationCacheFile()))
-            {
-                try
-                {
-                    cached = File.ReadAllText(M3Utilities.GetBasegameIdentificationCacheFile());
-                }
-                catch (Exception e)
-                {
-                    var attachments = new List<ErrorAttachmentLog>();
-                    string log = LogCollector.CollectLatestLog(M3Log.LogDir, true);
-                    if (log != null && log.Length < FileSize.MebiByte * 7)
-                    {
-                        attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, @"applog.txt"));
-                    }
-                    Crashes.TrackError(e, new Dictionary<string, string>()
-                    {
-                        {@"Error type", @"Error reading cached online content" },
-                        {@"Service", @"Basegame File Identification Service" },
-                        {@"Message", e.Message }
-                    }, attachments.ToArray());
-                }
-            }
-
-
-            if (!File.Exists(M3Utilities.GetBasegameIdentificationCacheFile()) || overrideThrottling || OnlineContent.CanFetchContentThrottleCheck())
-            {
-                var urls = new[] { BasegameFileIdentificationServiceURL, BasegameFileIdentificationServiceBackupURL };
-                foreach (var staticurl in urls)
-                {
-                    Uri myUri = new Uri(staticurl);
-                    string host = myUri.Host;
-                    try
-                    {
-                        using var wc = new ShortTimeoutWebClient();
-
-                        string json = wc.DownloadStringAwareOfEncoding(staticurl);
-                        File.WriteAllText(M3Utilities.GetBasegameIdentificationCacheFile(), json);
-                        return JsonConvert.DeserializeObject<Dictionary<string, CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>>>(json);
-                    }
-                    catch (Exception e)
-                    {
-                        //Unable to fetch latest help.
-                        M3Log.Error($@"Error fetching online basegame file identification service from endpoint {host}: {e.Message}");
-                    }
-                }
-
-                if (cached == null)
-                {
-                    M3Log.Error(@"Unable to load basegame file identification service and local file doesn't exist. Returning a blank copy.");
-                    return getBlankBGFIDB();
-                }
-            }
-            M3Log.Information(@"Using cached BGFIS instead");
-
-            try
-            {
-                return JsonConvert.DeserializeObject<Dictionary<string, CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>>>(cached);
-            }
-            catch (Exception e)
-            {
-                M3Log.Error(@"Could not parse cached basegame file identification service file. Returning blank BFIS data instead. Reason: " + e.Message);
-                return getBlankBGFIDB();
-            }
-        }
-        /// <summary>
-        /// Returns a blank Basegame Identification Database
-        /// </summary>
-        /// <returns></returns>
-        public static Dictionary<string, CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>> getBlankBGFIDB()
-        {
-            return new Dictionary<string, CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>>
-            {
-                [@"ME1"] = new CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>(),
-                [@"ME2"] = new CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>(),
-                [@"ME3"] = new CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>(),
-                [@"LE1"] = new CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>(),
-                [@"LE2"] = new CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>(),
-                [@"LE3"] = new CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>(),
-                [@"LELauncher"] = new CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>(),
-            };
-        }
-
-        public static Dictionary<string, CaseInsensitiveDictionary<ThirdPartyModInfo>> FetchThirdPartyIdentificationManifest(bool overrideThrottling = false)
-        {
-            string cached = null;
-            if (File.Exists(M3Utilities.GetThirdPartyIdentificationCachedFile()))
-            {
-                try
-                {
-                    cached = File.ReadAllText(M3Utilities.GetThirdPartyIdentificationCachedFile());
-                }
-                catch (Exception e)
-                {
-                    var attachments = new List<ErrorAttachmentLog>();
-                    string log = LogCollector.CollectLatestLog(M3Log.LogDir, true);
-                    if (log != null && log.Length < FileSize.MebiByte * 7)
-                    {
-                        attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, @"applog.txt"));
-                    }
-                    Crashes.TrackError(e, new Dictionary<string, string>()
-                    {
-                        {@"Error type", @"Error reading cached online content" },
-                        {@"Service", @"Third Party Identification Service" },
-                        {@"Message", e.Message }
-                    }, attachments.ToArray());
-                }
-            }
-
-
-            if (!File.Exists(M3Utilities.GetThirdPartyIdentificationCachedFile()) || overrideThrottling || OnlineContent.CanFetchContentThrottleCheck())
-            {
-                try
-                {
-                    using var wc = new ShortTimeoutWebClient();
-
-                    string json = wc.DownloadStringAwareOfEncoding(ThirdPartyIdentificationServiceURL);
-                    File.WriteAllText(M3Utilities.GetThirdPartyIdentificationCachedFile(), json);
-                    return JsonConvert.DeserializeObject<Dictionary<string, CaseInsensitiveDictionary<ThirdPartyModInfo>>>(json);
-                }
-                catch (Exception e)
-                {
-                    //Unable to fetch latest help.
-                    M3Log.Error(@"Error fetching online third party identification service: " + e.Message);
-
-                    if (cached != null)
-                    {
-                        M3Log.Warning(@"Using cached third party identification service  file instead");
-                    }
-                    else
-                    {
-                        M3Log.Error(@"Unable to load third party identification service and local file doesn't exist. Returning a blank copy.");
-                        return getBlankTPIS();
-                    }
-                }
-            }
-
-            try
-            {
-                return JsonConvert.DeserializeObject<Dictionary<string, CaseInsensitiveDictionary<ThirdPartyModInfo>>>(cached);
-            }
-            catch (Exception e)
-            {
-                M3Log.Error(@"Could not parse cached third party identification service file. Returning blank TPMI data instead. Reason: " + e.Message);
-                return getBlankTPIS();
-            }
-        }
-
-        private static Dictionary<string, CaseInsensitiveDictionary<ThirdPartyModInfo>> getBlankTPIS()
-        {
-            return new Dictionary<string, CaseInsensitiveDictionary<ThirdPartyModInfo>>
-            {
-                [@"ME1"] = new CaseInsensitiveDictionary<ThirdPartyModInfo>(),
-                [@"ME2"] = new CaseInsensitiveDictionary<ThirdPartyModInfo>(),
-                [@"ME3"] = new CaseInsensitiveDictionary<ThirdPartyModInfo>(),
-                [@"LE1"] = new CaseInsensitiveDictionary<ThirdPartyModInfo>(),
-                [@"LE2"] = new CaseInsensitiveDictionary<ThirdPartyModInfo>(),
-                [@"LE3"] = new CaseInsensitiveDictionary<ThirdPartyModInfo>()
-            };
-        }
 
         public static string FetchRemoteString(string url, string authorizationToken = null)
         {
@@ -331,7 +165,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 {
                     wc.Headers.Add(@"Authorization", authorizationToken);
                 }
-                return wc.DownloadStringAwareOfEncoding(url);
+                return WebClientExtensions.DownloadStringAwareOfEncoding(wc, url);
             }
             catch (Exception e)
             {
@@ -343,7 +177,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         public static string FetchThirdPartyModdesc(string name)
         {
             using var wc = new ShortTimeoutWebClient();
-            string moddesc = wc.DownloadStringAwareOfEncoding(ThirdPartyModDescURL + name);
+            string moddesc = WebClientExtensions.DownloadStringAwareOfEncoding(wc, ThirdPartyModDescURL + name);
             return moddesc;
         }
 
@@ -368,7 +202,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         public static string FetchExeTransform(string name)
         {
             using var wc = new ShortTimeoutWebClient();
-            string moddesc = wc.DownloadStringAwareOfEncoding(ExeTransformBaseURL + name);
+            string moddesc = WebClientExtensions.DownloadStringAwareOfEncoding(wc, ExeTransformBaseURL + name);
             return moddesc;
         }
 
@@ -398,13 +232,13 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 }
             }
 
-            if (!File.Exists(M3Utilities.GetTipsServiceFile()) || overrideThrottling || OnlineContent.CanFetchContentThrottleCheck())
+            if (!File.Exists(M3Utilities.GetTipsServiceFile()) || overrideThrottling || MOnlineContent.CanFetchContentThrottleCheck())
             {
                 try
                 {
                     using var wc = new ShortTimeoutWebClient();
 
-                    string json = wc.DownloadStringAwareOfEncoding(TipsServiceURL);
+                    string json = WebClientExtensions.DownloadStringAwareOfEncoding(wc, TipsServiceURL);
                     File.WriteAllText(M3Utilities.GetTipsServiceFile(), json);
                     return JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(json);
                 }
@@ -461,13 +295,13 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 }
             }
 
-            if (!File.Exists(M3Utilities.GetThirdPartyImportingCachedFile()) || overrideThrottling || OnlineContent.CanFetchContentThrottleCheck())
+            if (!File.Exists(M3Utilities.GetThirdPartyImportingCachedFile()) || overrideThrottling || MOnlineContent.CanFetchContentThrottleCheck())
             {
                 try
                 {
                     using var wc = new ShortTimeoutWebClient();
 
-                    string json = wc.DownloadStringAwareOfEncoding(ThirdPartyImportingServiceURL);
+                    string json = WebClientExtensions.DownloadStringAwareOfEncoding(wc, ThirdPartyImportingServiceURL);
                     File.WriteAllText(M3Utilities.GetThirdPartyImportingCachedFile(), json);
                     return JsonConvert.DeserializeObject<Dictionary<long, List<ThirdPartyImportingInfo>>>(json);
                 }
@@ -510,7 +344,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 bool download = !File.Exists(imagePath) || M3Utilities.CalculateMD5(imagePath) != step.imagemd5;
                 if (download)
                 {
-                    foreach (var endpoint in StaticFilesBaseEndpoints)
+                    foreach (var endpoint in StaticFileBaseEndpoints.GetAllLinks())
                     {
                         Uri myUri = new Uri(endpoint);
                         string host = myUri.Host;
@@ -549,7 +383,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 using (var wc = new ShortTimeoutWebClient())
                 {
                     Debug.WriteLine(finalRelayURL);
-                    string json = wc.DownloadStringAwareOfEncoding(finalRelayURL);
+                    string json = WebClientExtensions.DownloadStringAwareOfEncoding(wc, finalRelayURL);
                     //todo: Implement response format serverside
                     return JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
                 }
@@ -774,10 +608,9 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 }
             }
 
-            if (!File.Exists(M3Utilities.GetTutorialServiceCacheFile()) || overrideThrottling || OnlineContent.CanFetchContentThrottleCheck())
+            if (!File.Exists(M3Utilities.GetTutorialServiceCacheFile()) || overrideThrottling || MOnlineContent.CanFetchContentThrottleCheck())
             {
-                string[] urls = new[] { TutorialServiceURL, TutorialServiceBackupURL };
-                foreach (var staticurl in urls)
+                foreach (var staticurl in TutorialServiceManifestURL.GetAllLinks())
                 {
                     Uri myUri = new Uri(staticurl);
                     string host = myUri.Host;
@@ -785,7 +618,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     try
                     {
                         using var wc = new ShortTimeoutWebClient();
-                        string json = wc.DownloadStringAwareOfEncoding(staticurl);
+                        string json = WebClientExtensions.DownloadStringAwareOfEncoding(wc, staticurl);
                         File.WriteAllText(M3Utilities.GetTutorialServiceCacheFile(), json);
                         return JsonConvert.DeserializeObject<List<IntroTutorial.TutorialStep>>(json);
                     }

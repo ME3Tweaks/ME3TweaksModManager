@@ -50,6 +50,7 @@ using MassEffectModManagerCore.modmanager.squadmates;
 using ME3TweaksCore.NativeMods;
 using ME3TweaksCore.Services;
 using ME3TweaksCore.Services.Backup;
+using ME3TweaksCore.Services.BasegameFileIdentification;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksCoreWPF;
 using Pathoschild.FluentNexus.Models;
@@ -2186,7 +2187,7 @@ namespace MassEffectModManagerCore
             bw.DoWork += (a, args) =>
             {
 
-                bool canCheckForModUpdates = OnlineContent.CanFetchContentThrottleCheck(); //This is here as it will fire before other threads can set this value used in this session.
+                bool canCheckForModUpdates = MOnlineContent.CanFetchContentThrottleCheck(); //This is here as it will fire before other threads can set this value used in this session.
                 ModsLoaded = false;
                 var uiTask = backgroundTaskEngine.SubmitBackgroundJob(@"ModLoader", M3L.GetString(M3L.string_loadingMods), M3L.GetString(M3L.string_loadedMods));
                 M3Log.Information(@"Loading mods from mod library: " + M3Utilities.GetModsDirectory());
@@ -2962,7 +2963,7 @@ namespace MassEffectModManagerCore
 
                 bgTask = backgroundTaskEngine.SubmitBackgroundJob(@"ThirdPartyServicesFetch", M3L.GetString(M3L.string_loadingThirdPartyServices), M3L.GetString(M3L.string_loadedThirdPartyServices));
                 TPMIService.LoadService(!firstStartupCheck);
-                App.BasegameFileIdentificationService = OnlineContent.FetchBasegameFileIdentificationServiceManifest(!firstStartupCheck);
+                BasegameFileIdentificationService.LoadService(!firstStartupCheck);
                 TPIService.LoadService(!firstStartupCheck);
                 ASIManager.LoadManifest(false, !firstStartupCheck);
                 backgroundTaskEngine.SubmitJobCompletion(bgTask);
@@ -2992,7 +2993,8 @@ namespace MassEffectModManagerCore
                     }
                 }
 
-                if (OnlineContent.CanFetchContentThrottleCheck())
+                // Todo: Move to ME3TweaksCore?
+                if (MOnlineContent.CanFetchContentThrottleCheck())
                 {
                     Settings.LastContentCheck = DateTime.Now;
                 }

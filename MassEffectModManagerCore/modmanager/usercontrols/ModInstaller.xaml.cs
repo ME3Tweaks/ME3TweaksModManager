@@ -21,10 +21,12 @@ using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Unreal;
+using MassEffectModManagerCore.me3tweakscoreextended;
 using MassEffectModManagerCore.modmanager.diagnostics;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.NativeMods;
 using ME3TweaksCore.Services.Backup;
+using ME3TweaksCore.Services.BasegameFileIdentification;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksCoreWPF;
 using Microsoft.AppCenter.Analytics;
@@ -580,7 +582,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             bool bgTrackingLocalOnly = ModBeingInstalled.ModModMakerID != 0; // only locally track modmaker mods
             var basegameFilesInstalled = new List<string>();
-            var basegameCloudDBUpdates = new List<BasegameFileIdentificationService.BasegameCloudDBFile>();
+            var basegameCloudDBUpdates = new List<BasegameFileRecord>();
             void FileInstalledIntoSFARCallback(Dictionary<string, Mod.InstallSourceFile> sfarMapping, string targetPath)
             {
                 numdone++;
@@ -804,7 +806,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     if (file.Contains(@"BioGame\CookedPC", StringComparison.InvariantCultureIgnoreCase))
                     {
                         // It's basegame
-                        var mm = new BasegameFileIdentificationService.BasegameCloudDBFile(file, (int)new FileInfo(file).Length, SelectedGameTarget, ModBeingInstalled);
+                        var mm = new M3BasegameFileRecord(file, (int)new FileInfo(file).Length, SelectedGameTarget, ModBeingInstalled);
                         var existingInfo = BasegameFileIdentificationService.GetBasegameFileSource(SelectedGameTarget, file, originalmd5);
                         var newTextToAppend = $@"{ModBeingInstalled.ModName} {ModBeingInstalled.ModVersionString}";
                         if (existingInfo != null && !existingInfo.source.Contains(newTextToAppend))
@@ -948,11 +950,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 try
                 {
-                    var files = new List<BasegameFileIdentificationService.BasegameCloudDBFile>(basegameFilesInstalled.Count + basegameCloudDBUpdates.Count);
+                    var files = new List<BasegameFileRecord>(basegameFilesInstalled.Count + basegameCloudDBUpdates.Count);
                     files.AddRange(basegameCloudDBUpdates);
                     foreach (var file in basegameFilesInstalled)
                     {
-                        var entry = new BasegameFileIdentificationService.BasegameCloudDBFile(file, (int)new FileInfo(file).Length, SelectedGameTarget, ModBeingInstalled);
+                        var entry = new M3BasegameFileRecord(file, (int)new FileInfo(file).Length, SelectedGameTarget, ModBeingInstalled);
                         files.Add(entry);
                     }
                     BasegameFileIdentificationService.AddLocalBasegameIdentificationEntries(files);

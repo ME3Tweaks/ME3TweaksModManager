@@ -18,6 +18,7 @@ using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
 using ME3TweaksCore.GameFilesystem;
+using ME3TweaksCore.Services.BasegameFileIdentification;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksCoreWPF;
 using Microsoft.AppCenter.Analytics;
@@ -185,8 +186,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 {
                     plotManager.Save(pmPath, true);
                     // Update local file DB
-                    var bgfe = new BasegameFileIdentificationService.BasegameCloudDBFile(pmPath.Substring(target.TargetPath.Length + 1), (int)new FileInfo(pmPath).Length, target.Game, M3L.GetString(M3L.string_interp_plotManagerSyncForX, string.Join(@", ", combinedNames)), M3Utilities.CalculateMD5(pmPath));
-                    BasegameFileIdentificationService.AddLocalBasegameIdentificationEntries(new List<BasegameFileIdentificationService.BasegameCloudDBFile>(new[] { bgfe }));
+                    var bgfe = new BasegameFileRecord(pmPath.Substring(target.TargetPath.Length + 1), (int)new FileInfo(pmPath).Length, target.Game, M3L.GetString(M3L.string_interp_plotManagerSyncForX, string.Join(@", ", combinedNames)), M3Utilities.CalculateMD5(pmPath));
+                    BasegameFileIdentificationService.AddLocalBasegameIdentificationEntries(new List<BasegameFileRecord>(new[] { bgfe }));
                 }
             }
             else

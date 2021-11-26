@@ -8,6 +8,7 @@ using MassEffectModManagerCore.modmanager.helpers;
 using LegendaryExplorerCore.Helpers;
 using MassEffectModManagerCore.modmanager.diagnostics;
 using ME3TweaksCore.Diagnostics;
+using ME3TweaksCore.Services;
 using Microsoft.AppCenter.Crashes;
 
 namespace MassEffectModManagerCore.modmanager.me3tweaks
@@ -51,9 +52,9 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
 
 
-            if (!localHelpExists || overrideThrottling || OnlineContent.CanFetchContentThrottleCheck())
+            if (!localHelpExists || overrideThrottling || MOnlineContent.CanFetchContentThrottleCheck())
             {
-                foreach (var staticendpoint in StaticFilesBaseEndpoints)
+                foreach (var staticendpoint in OnlineContent.StaticFileBaseEndpoints.GetAllLinks())
                 {
                     using var wc = new System.Net.WebClient();
                     try
@@ -164,7 +165,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 if (!File.Exists(localFile))
                 {
                     //Download
-                    foreach (var staticendpoint in OnlineContent.StaticFilesBaseEndpoints)
+                    foreach (var staticendpoint in OnlineContent.StaticFileBaseEndpoints.GetAllLinks())
                     {
                         var fullURL = staticendpoint + "dynamichelp/resources/" + ResourceName;
 

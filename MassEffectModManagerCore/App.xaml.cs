@@ -476,8 +476,6 @@ namespace MassEffectModManagerCore
         public static string[] SupportedLanguages = { @"int", @"pol", @"rus", @"deu", @"fra", @"bra", @"esn", @"kor" };
 
         public static int BuildNumber = Assembly.GetEntryAssembly().GetName().Version.Revision;
-
-        public static Dictionary<string, CaseInsensitiveDictionary<List<BasegameFileIdentificationService.BasegameCloudDBFile>>> BasegameFileIdentificationService;
         public static bool BootingUpdate;
         public static int UpdatedFrom = 0;
         public static string InitialLanguage = @"int";
