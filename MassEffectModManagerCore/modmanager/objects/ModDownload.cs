@@ -1,21 +1,21 @@
-﻿using MassEffectModManagerCore.modmanager.nexusmodsintegration;
-using Pathoschild.FluentNexus.Models;
+﻿using System;
 using System.Collections.Generic;
-using System;
 using System.IO;
-using System.Threading;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
-using MassEffectModManagerCore.modmanager.me3tweaks;
-using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore.Helpers;
-using MassEffectModManagerCore.modmanager.localizations;
+using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.me3tweaks;
+using ME3TweaksModManager.modmanager.nexusmodsintegration;
+using ME3TweaksModManager.ui;
 using Microsoft.AppCenter.Analytics;
-using MassEffectModManagerCore.modmanager.diagnostics;
+using Pathoschild.FluentNexus.Models;
 using PropertyChanged;
-using MemoryAnalyzer = MassEffectModManagerCore.modmanager.memoryanalyzer.MemoryAnalyzer;
+using MemoryAnalyzer = ME3TweaksModManager.modmanager.memoryanalyzer.MemoryAnalyzer;
 
-namespace MassEffectModManagerCore.modmanager.objects
+namespace ME3TweaksModManager.modmanager.objects
 {
     /// <summary>
     /// Class for information about a mod that is being downloaded

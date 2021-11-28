@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml.Linq;
 using LegendaryExplorerCore.TLK;
-using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.localizations;
 
-namespace MassEffectModManagerCore.modmanager
+namespace ME3TweaksModManager.modmanager
 {
     /// <summary>
     /// Compiles and decompiles TLK to the tankmaster format (this program does not include the original code for Tankmaster TLK tool)

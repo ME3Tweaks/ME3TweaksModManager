@@ -16,7 +16,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System.Collections.Generic;
 
-namespace MassEffectModManagerCore.modmanager.meim
+namespace ME3TweaksModManager.modmanager.meim
 {
     public class IniSection
     {

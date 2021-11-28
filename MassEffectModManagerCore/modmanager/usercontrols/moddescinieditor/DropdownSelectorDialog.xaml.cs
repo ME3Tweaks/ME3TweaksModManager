@@ -4,10 +4,10 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
-using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
+using ME3TweaksModManager.ui;
 
-namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
+namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
 {
     /// <summary>
     /// Interaction logic for DropdownSelectorDialog.xaml

@@ -9,17 +9,17 @@ using System.Threading;
 using IniParser;
 using IniParser.Model;
 using IniParser.Parser;
-using MassEffectModManagerCore.modmanager.helpers;
-using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.modmanager.me3tweaks;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Packages;
-using MassEffectModManagerCore.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.helpers;
+using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.me3tweaks;
 using Microsoft.AppCenter.Crashes;
 using SevenZip;
 using SevenZip.EventArguments;
 
-namespace MassEffectModManagerCore.modmanager.objects.mod
+namespace ME3TweaksModManager.modmanager.objects.mod
 {
     public partial class Mod
     {

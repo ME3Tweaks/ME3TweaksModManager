@@ -5,22 +5,20 @@ using System.Diagnostics;
 using System.IO;
 using System.Security.Cryptography;
 using System.Threading;
-using MassEffectModManagerCore.modmanager.helpers;
-using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.modmanager.windows;
 using LegendaryExplorerCore.Helpers;
-using LegendaryExplorerCore.Misc;
-using MassEffectModManagerCore.modmanager.diagnostics;
-using MassEffectModManagerCore.modmanager.objects;
 using ME3TweaksCore.Diagnostics;
 using ME3TweaksCore.Misc;
 using ME3TweaksCore.Services;
-using ME3TweaksCore.Services.ThirdPartyModIdentification;
+using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.helpers;
+using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.objects;
+using ME3TweaksModManager.modmanager.windows;
 using Microsoft.AppCenter.Crashes;
 using Newtonsoft.Json;
-using ShortTimeoutWebClient = MassEffectModManagerCore.modmanager.helpers.ShortTimeoutWebClient;
+using ShortTimeoutWebClient = ME3TweaksModManager.modmanager.helpers.ShortTimeoutWebClient;
 
-namespace MassEffectModManagerCore.modmanager.me3tweaks
+namespace ME3TweaksModManager.modmanager.me3tweaks
 {
 
     partial class OnlineContent
@@ -32,7 +30,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         private static FallbackLink StartupManifestURL = new FallbackLink()
         {
             MainURL = @"https://me3tweaks.com/modmanager/updatecheck?currentversion=" + App.BuildNumber + @"&M3=true",
-            FallbackURL = @"https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/master/MassEffectModManagerCore/staticfiles/startupmanifest.json"
+            FallbackURL = @"https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/master/ME3TweaksModManager/staticfiles/startupmanifest.json"
         };
 
         /// <summary>
@@ -41,7 +39,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         public static FallbackLink TutorialServiceManifestURL = new FallbackLink()
         {
             MainURL = @"https://me3tweaks.com/modmanager/services/tutorialservice",
-            FallbackURL = @"https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/master/MassEffectModManagerCore/staticfiles/tutorialservice.json"
+            FallbackURL = @"https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/master/ME3TweaksModManager/staticfiles/tutorialservice.json"
         };
 
         /// <summary>
@@ -49,7 +47,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         /// </summary>
         internal static FallbackLink StaticFileBaseEndpoints { get; } = new()
         {
-            MainURL = @"https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/master/MassEffectModManagerCore/staticfiles/",
+            MainURL = @"https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/master/ME3TweaksModManager/staticfiles/",
             FallbackURL = @"https://me3tweaks.com/modmanager/tools/staticfiles/"
         };
 

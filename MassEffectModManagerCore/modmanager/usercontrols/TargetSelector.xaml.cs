@@ -8,7 +8,7 @@ using ME3TweaksCore.Targets;
 using ME3TweaksCoreWPF;
 using PropertyChanged;
 
-namespace MassEffectModManagerCore.modmanager.usercontrols
+namespace ME3TweaksModManager.modmanager.usercontrols
 {
     /// <summary>
     /// Interaction logic for TargetSelector.xaml

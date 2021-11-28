@@ -4,7 +4,7 @@ using System.Xml.Linq;
 using System.Xml.XPath;
 using LegendaryExplorerCore.Helpers;
 
-namespace MassEffectModManagerCore.modmanager.gameini
+namespace ME3TweaksModManager.modmanager.gameini
 {
     public class Game3CoalescedValueEntry
     {

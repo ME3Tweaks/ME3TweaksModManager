@@ -6,26 +6,25 @@ using System.Xml.Linq;
 using LegendaryExplorerCore.Coalesced;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
-using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Packages.CloningImportingAndRelinking;
 using LegendaryExplorerCore.Unreal;
 using LegendaryExplorerCore.Unreal.BinaryConverters;
 using LegendaryExplorerCore.UnrealScript;
 using LegendaryExplorerCore.UnrealScript.Compiling.Errors;
-using MassEffectModManagerCore.modmanager.diagnostics;
-using MassEffectModManagerCore.modmanager.gameini;
-using MassEffectModManagerCore.modmanager.helpers;
-using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.modmanager.mergedlc;
-using MassEffectModManagerCore.modmanager.objects;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCoreWPF;
+using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.gameini;
+using ME3TweaksModManager.modmanager.helpers;
+using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.merge.dlc;
+using ME3TweaksModManager.modmanager.objects;
 using Newtonsoft.Json;
 
-namespace MassEffectModManagerCore.modmanager.squadmates
+namespace ME3TweaksModManager.modmanager.squadmates
 {
     public class SQMOutfitMerge
     {

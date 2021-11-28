@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksCoreWPF;
 
-namespace MassEffectModManagerCore.modmanager.objects.mod.merge
+namespace ME3TweaksModManager.modmanager.objects.mod.merge
 {
     public interface IMergeMod
     {

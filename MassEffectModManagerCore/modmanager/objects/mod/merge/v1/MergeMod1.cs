@@ -6,16 +6,16 @@ using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
-using MassEffectModManagerCore.modmanager.diagnostics;
-using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.modmanager.windows;
 using ME3TweaksCoreWPF;
+using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.windows;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 
-namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
+namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
 {
     /// <summary>
     /// Merge Mod V1. Merges properties, objects

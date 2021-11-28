@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace MassEffectModManagerCore.modmanager
+namespace ME3TweaksModManager.modmanager
 {
     [Localizable(false)]
     public static partial class APIKeys

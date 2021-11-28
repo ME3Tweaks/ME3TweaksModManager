@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using LegendaryExplorerCore.Gammtek.Extensions;
-using MassEffectModManagerCore.modmanager.objects.mod;
+﻿using LegendaryExplorerCore.Gammtek.Extensions;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Services.BasegameFileIdentification;
 using ME3TweaksCore.Targets;
+using ME3TweaksModManager.modmanager.objects.mod;
 
-namespace MassEffectModManagerCore.me3tweakscoreextended
+namespace ME3TweaksModManager.me3tweakscoreextended
 {
     /// <summary>
     /// /Extension to create a BasegameFileRecord using a game target and a mod.

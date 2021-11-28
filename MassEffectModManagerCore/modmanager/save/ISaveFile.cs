@@ -2,7 +2,7 @@
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Unreal;
 
-namespace MassEffectModManagerCore.modmanager.save
+namespace ME3TweaksModManager.modmanager.save
 {
     public interface ISaveFile
     {

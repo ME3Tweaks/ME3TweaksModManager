@@ -1,9 +1,8 @@
-﻿using System.ComponentModel;
-using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.modmanager.objects.mod;
+﻿using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.objects.mod;
 using PropertyChanged;
 
-namespace MassEffectModManagerCore.modmanager.objects
+namespace ME3TweaksModManager.modmanager.objects
 {
     [AddINotifyPropertyChangedInterface]
     public class ReadOnlyOption : AlternateOption

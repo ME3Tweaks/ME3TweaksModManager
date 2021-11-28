@@ -6,12 +6,12 @@ using System.Linq;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
-using MassEffectModManagerCore.modmanager.diagnostics;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCoreWPF;
+using ME3TweaksModManager.modmanager.diagnostics;
 using SevenZip;
 
-namespace MassEffectModManagerCore.modmanager.objects.mod
+namespace ME3TweaksModManager.modmanager.objects.mod
 {
     public partial class Mod
     {

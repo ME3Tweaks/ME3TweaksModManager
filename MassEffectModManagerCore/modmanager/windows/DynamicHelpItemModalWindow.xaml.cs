@@ -2,9 +2,9 @@
 using System.Windows;
 using System.Windows.Media;
 using FontAwesome5;
-using MassEffectModManagerCore.modmanager.me3tweaks;
+using ME3TweaksModManager.modmanager.me3tweaks;
 
-namespace MassEffectModManagerCore.modmanager.windows
+namespace ME3TweaksModManager.modmanager.windows
 {
     /// <summary>
     /// Interaction logic for DynamicHelpItemModalWindow.xaml

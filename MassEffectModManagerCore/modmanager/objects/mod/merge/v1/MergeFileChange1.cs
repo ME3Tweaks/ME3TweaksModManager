@@ -3,21 +3,21 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Kismet;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Packages.CloningImportingAndRelinking;
 using LegendaryExplorerCore.Unreal;
-using LegendaryExplorerCore.Helpers;
-using LegendaryExplorerCore.Kismet;
 using LegendaryExplorerCore.Unreal.BinaryConverters;
 using LegendaryExplorerCore.UnrealScript;
 using LegendaryExplorerCore.UnrealScript.Compiling.Errors;
-using MassEffectModManagerCore.modmanager.diagnostics;
-using MassEffectModManagerCore.modmanager.localizations;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCoreWPF;
+using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.localizations;
 using Newtonsoft.Json;
 
-namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
+namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
 {
     public class MergeFileChange1
     {

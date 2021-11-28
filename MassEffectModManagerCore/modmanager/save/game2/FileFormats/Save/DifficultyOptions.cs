@@ -1,4 +1,4 @@
-﻿namespace MassEffectModManagerCore.modmanager.save.game2.FileFormats.Save
+﻿namespace ME3TweaksModManager.modmanager.save.game2.FileFormats.Save
 {
     public enum DifficultyOptions : byte
     {

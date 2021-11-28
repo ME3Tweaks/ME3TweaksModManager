@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using MassEffectModManagerCore.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.diagnostics;
 
-namespace MassEffectModManagerCore.modmanager.helpers
+namespace ME3TweaksModManager.modmanager.helpers
 {
     /// <summary>
     /// Helper class for copying a directory with progress

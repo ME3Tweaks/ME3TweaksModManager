@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text;
 
-namespace MassEffectModManagerCore.modmanager.helpers
+namespace ME3TweaksModManager.modmanager.helpers
 {
     //From https://stackoverflow.com/questions/9459184/why-is-the-xmlwriter-always-outputting-utf-16-encoding
     public class StringWriterWithEncoding : StringWriter

@@ -3,11 +3,11 @@
 //using System.ComponentModel;
 //using System.Text;
 //using System.Windows.Media;
-//using MassEffectModManagerCore.modmanager.localizations;
+//using ME3TweaksModManager.modmanager.localizations;
 //using LegendaryExplorerCore.Packages;
 //using PropertyChanged;
 
-//namespace MassEffectModManagerCore.modmanager.asi
+//namespace ME3TweaksModManager.modmanager.asi
 //{
 //    /// <summary>
 //    /// Object containing information about a single version of an ASI mod in the ASI mod manifest

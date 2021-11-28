@@ -2,15 +2,15 @@
 using System.Linq;
 using System.Windows;
 using IniParser.Model;
-using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.modmanager.objects;
-using MassEffectModManagerCore.modmanager.objects.mod.editor;
-using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
+using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.objects;
+using ME3TweaksModManager.modmanager.objects.mod.editor;
+using ME3TweaksModManager.ui;
 
-namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
+namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
 {
     /// <summary>
     /// Interaction logic for ME1ConfigEditorControl.xaml

@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using Newtonsoft.Json;
 
-namespace MassEffectModManagerCore.modmanager.objects.nexusfiledb
+namespace ME3TweaksModManager.modmanager.objects.nexusfiledb
 {
     [DebuggerDisplay("ParentPathId {ParentPathID}, FName: {FilenameId} , FID: {FileID}")]
     public class FileInstance

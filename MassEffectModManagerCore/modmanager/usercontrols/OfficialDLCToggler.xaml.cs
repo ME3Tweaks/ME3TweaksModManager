@@ -6,17 +6,16 @@ using System.Windows;
 using System.Windows.Input;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
-using MassEffectModManagerCore.modmanager.diagnostics;
-using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.modmanager.me3tweaks;
-using MassEffectModManagerCore.ui;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.Services;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksCoreWPF;
+using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.ui;
 using PropertyChanged;
 
-namespace MassEffectModManagerCore.modmanager.usercontrols
+namespace ME3TweaksModManager.modmanager.usercontrols
 {
     /// <summary>
     /// Interaction logic for OfficialDLCToggler.xaml

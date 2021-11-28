@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Windows.Input;
-using MassEffectModManagerCore.modmanager.helpers;
-using MassEffectModManagerCore.modmanager.objects.mod;
-using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Unreal;
-using MassEffectModManagerCore.modmanager.diagnostics;
 using ME3TweaksCoreWPF;
+using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.helpers;
+using ME3TweaksModManager.modmanager.objects.mod;
+using ME3TweaksModManager.ui;
 
-namespace MassEffectModManagerCore.modmanager.usercontrols
+namespace ME3TweaksModManager.modmanager.usercontrols
 {
     /// <summary>
     /// In-Window content container for AutoTOC. Most of this class was ported from Mod Manager Command Line Tools.

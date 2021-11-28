@@ -4,18 +4,15 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using MassEffectModManagerCore.modmanager;
-using MassEffectModManagerCore.modmanager.me3tweaks;
-using MassEffectModManagerCore.modmanager.objects;
-using MassEffectModManagerCore.modmanager.usercontrols;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksCore.Targets;
 using ME3TweaksCoreWPF;
+using ME3TweaksModManager.modmanager;
 using ME3TweaksModManager.modmanager.usercontrols;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SevenZip;
-using Mod = MassEffectModManagerCore.modmanager.objects.mod.Mod;
+using Mod = ME3TweaksModManager.modmanager.objects.mod.Mod;
 
 namespace MassEffectModManagerCore.Tests
 {

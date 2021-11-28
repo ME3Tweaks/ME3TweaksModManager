@@ -2,7 +2,7 @@
 using System.Text;
 using LegendaryExplorerCore.Misc;
 
-namespace MassEffectModManagerCore.modmanager.helpers
+namespace ME3TweaksModManager.modmanager.helpers
 {
     /// <summary>
     /// The code from this class is from https://github.com/ME3Explorer/ME3Explorer/blob/v2.0.10/ME3Explorer/PAREditor/PAREditor.cs

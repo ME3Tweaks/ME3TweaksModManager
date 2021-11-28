@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace MassEffectModManagerCore.modmanager.save.game2.FileFormats.Save
+namespace ME3TweaksModManager.modmanager.save.game2.FileFormats.Save
 {
     // 00BAEDD0
     public class PlotQuest : IUnrealSerializable

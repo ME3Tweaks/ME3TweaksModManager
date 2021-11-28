@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MassEffectModManagerCore.modmanager.objects;
+﻿using System.Collections.Generic;
+using ME3TweaksModManager.modmanager.objects;
 
-namespace MassEffectModManagerCore.modmanager.me3tweaks
+namespace ME3TweaksModManager.modmanager.me3tweaks
 {
     public class TPIService
     {

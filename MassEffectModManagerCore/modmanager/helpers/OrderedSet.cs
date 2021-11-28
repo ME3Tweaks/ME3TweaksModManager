@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 // From https://gmamaladze.wordpress.com/2013/07/25/hashset-that-preserves-insertion-order-or-net-implementation-of-linkedhashset/
-namespace MassEffectModManagerCore.modmanager.helpers
+namespace ME3TweaksModManager.modmanager.helpers
 {
     public class OrderedSet<T> : ICollection<T>
     {

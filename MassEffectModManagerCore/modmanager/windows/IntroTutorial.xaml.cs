@@ -2,10 +2,10 @@
 using System.IO;
 using System.Windows;
 using LegendaryExplorerCore.Misc;
-using MassEffectModManagerCore.modmanager.diagnostics;
-using MassEffectModManagerCore.ui;
+using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.ui;
 
-namespace MassEffectModManagerCore.modmanager.windows
+namespace ME3TweaksModManager.modmanager.windows
 {
     /// <summary>
     /// Interaction logic for IntroTutorial.xaml

@@ -1,4 +1,4 @@
-﻿namespace MassEffectModManagerCore.modmanager.save
+﻿namespace ME3TweaksModManager.modmanager.save
 {
     public interface IPlayerRecord
     {

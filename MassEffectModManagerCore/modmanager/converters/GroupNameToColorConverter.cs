@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace MassEffectModManagerCore.modmanager.converters
+namespace ME3TweaksModManager.modmanager.converters
 {
     [Localizable(false)]
     public class GroupNameToColorConverter : IValueConverter

@@ -1,7 +1,7 @@
 ﻿using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.UnrealScript;
 
-namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
+namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
 {
     /// <summary>
     /// Contains assets to pass through when applying the Merge Mod

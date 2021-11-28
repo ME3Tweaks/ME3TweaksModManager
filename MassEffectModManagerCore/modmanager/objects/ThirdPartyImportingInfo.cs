@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using LegendaryExplorerCore.Packages;
 
-namespace MassEffectModManagerCore.modmanager.objects
+namespace ME3TweaksModManager.modmanager.objects
 {
     public class ThirdPartyImportingInfo
     {

@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel;
 using System.Windows;
 using IniParser.Model;
-using MassEffectModManagerCore.modmanager.objects;
+using ME3TweaksModManager.modmanager.objects;
 
-namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
+namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
 {
     /// <summary>
     /// Interaction logic for LELauncherEditorControl.xaml

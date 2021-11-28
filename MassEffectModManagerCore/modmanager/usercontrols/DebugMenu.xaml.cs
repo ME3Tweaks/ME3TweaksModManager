@@ -3,13 +3,13 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using LegendaryExplorerCore.Packages;
-using MassEffectModManagerCore.modmanager.gamemd5;
-using MassEffectModManagerCore.modmanager.objects.mod;
-using MassEffectModManagerCore.modmanager.save.game2.UI;
-using MassEffectModManagerCore.modmanager.squadmates;
+using ME3TweaksModManager.modmanager.gamemd5;
+using ME3TweaksModManager.modmanager.objects.mod;
+using ME3TweaksModManager.modmanager.save.game2.UI;
+using ME3TweaksModManager.modmanager.squadmates;
 using SevenZip;
 
-namespace MassEffectModManagerCore.modmanager.usercontrols
+namespace ME3TweaksModManager.modmanager.usercontrols
 {
     public static class DebugMenu
     {

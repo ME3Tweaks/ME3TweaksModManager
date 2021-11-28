@@ -5,17 +5,17 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using IniParser.Model;
-using MassEffectModManagerCore.modmanager.gameini;
-using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.modmanager.objects.mod;
-using MassEffectModManagerCore.modmanager.objects.mod.editor;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
-using MassEffectModManagerCore.modmanager.diagnostics;
-using MassEffectModManagerCore.modmanager.objects.mod.merge;
+using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.gameini;
+using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.objects.mod;
+using ME3TweaksModManager.modmanager.objects.mod.editor;
+using ME3TweaksModManager.modmanager.objects.mod.merge;
 
-namespace MassEffectModManagerCore.modmanager.objects
+namespace ME3TweaksModManager.modmanager.objects
 {
     [DebuggerDisplay(@"ModJob for {Header}")]
     public class ModJob : IMDParameterMap

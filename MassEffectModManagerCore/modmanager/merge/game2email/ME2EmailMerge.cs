@@ -7,14 +7,13 @@ using LegendaryExplorerCore.Kismet;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Packages.CloningImportingAndRelinking;
 using LegendaryExplorerCore.Unreal;
-using MassEffectModManagerCore.modmanager.mergedlc;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCoreWPF;
 using ME3TweaksModManager.modmanager.merge.dlc;
 using Newtonsoft.Json;
 using BioStateEventMap = LegendaryExplorerCore.Unreal.BinaryConverters.BioStateEventMap;
 
-namespace MassEffectModManagerCore.modmanager.emailmerge
+namespace ME3TweaksModManager.modmanager.merge.game2email
 {
     public class ME2EmailMerge
     {

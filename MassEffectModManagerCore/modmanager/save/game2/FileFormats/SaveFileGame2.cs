@@ -6,7 +6,7 @@ using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Unreal;
 
-namespace MassEffectModManagerCore.modmanager.save.game2.FileFormats
+namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public partial class SaveFileGame2 : INotifyPropertyChanged, ISaveFile

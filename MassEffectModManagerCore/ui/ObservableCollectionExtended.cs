@@ -8,7 +8,7 @@
 //using System.Windows;
 //using System.Windows.Data;
 
-//namespace MassEffectModManagerCore.ui
+//namespace ME3TweaksModManager.ui
 //{
 //    [Localizable(false)]
 //    public class ObservableCollectionExtended<T> : ObservableCollection<T>

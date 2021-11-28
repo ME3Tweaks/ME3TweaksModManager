@@ -1,5 +1,7 @@
-﻿<local:ModdescEditorControlBase
-    x:Class="MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.MultilistEditorControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor" xmlns:fa5="http://schemas.fontawesome.com/icons/" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+﻿<moddescinieditor:ModdescEditorControlBase
+    x:Class="ME3TweaksModManager.modmanager.usercontrols.moddescinieditor.MultilistEditorControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:fa5="http://schemas.fontawesome.com/icons/" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+    xmlns:moddescinieditor="clr-namespace:ME3TweaksModManager.modmanager.usercontrols.moddescinieditor"
     mc:Ignorable="d"
     DataContext="{Binding RelativeSource={RelativeSource Self}}"
     d:DesignHeight="450"
@@ -41,10 +43,10 @@
             Style="{StaticResource ItemsControlVirtualizedStyle}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate
-                    DataType="{x:Type local:SingleMultilistEditorItem}">
-                    <local:SingleMultilistEditorControl />
+                    DataType="{x:Type moddescinieditor:SingleMultilistEditorItem}">
+                    <moddescinieditor:SingleMultilistEditorControl />
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
     </DockPanel>
-</local:ModdescEditorControlBase>
+</moddescinieditor:ModdescEditorControlBase>

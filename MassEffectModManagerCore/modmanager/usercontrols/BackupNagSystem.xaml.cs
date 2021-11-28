@@ -4,15 +4,13 @@ using System.Linq;
 using System.Windows.Input;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
-using MassEffectModManagerCore.modmanager;
-using MassEffectModManagerCore.modmanager.helpers;
-using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.modmanager.objects;
-using MassEffectModManagerCore.modmanager.usercontrols;
-using MassEffectModManagerCore.modmanager.usercontrols.interfaces;
-using MassEffectModManagerCore.ui;
 using ME3TweaksCore.Services.Backup;
 using ME3TweaksCoreWPF;
+using ME3TweaksModManager.modmanager.helpers;
+using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.objects;
+using ME3TweaksModManager.modmanager.usercontrols.interfaces;
+using ME3TweaksModManager.ui;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {

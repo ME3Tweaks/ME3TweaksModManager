@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
-namespace MassEffectModManagerCore.ui
+
+namespace ME3TweaksModManager.ui
 {
     // From https://stackoverflow.com/a/7747002/800318
     public class AlignableWrapPanel : Panel

@@ -1,8 +1,8 @@
 ﻿using System.Windows;
 using System.Windows.Input;
-using MassEffectModManagerCore.ui;
+using ME3TweaksModManager.ui;
 
-namespace MassEffectModManagerCore.modmanager.usercontrols
+namespace ME3TweaksModManager.modmanager.usercontrols
 {
     /// <summary>
     /// Interaction logic for UpdateCompletedPanel.xaml

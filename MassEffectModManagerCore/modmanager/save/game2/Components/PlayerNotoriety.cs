@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace MassEffectModManagerCore.modmanager.save.game2.Components
+namespace ME3TweaksModManager.modmanager.save.game2.Components
 {
     internal class PlayerNotoriety
     {

@@ -2,10 +2,10 @@
 using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Linq;
-using MassEffectModManagerCore.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.diagnostics;
 using PropertyChanged;
 
-namespace MassEffectModManagerCore.modmanager
+namespace ME3TweaksModManager.modmanager
 {
     /// <summary>
     /// Controller for the bottom left text in the main window for M3

@@ -3,11 +3,11 @@ using System.Globalization;
 using System.Linq;
 using System.Windows;
 using IniParser.Model;
-using MassEffectModManagerCore.modmanager.objects;
-using MassEffectModManagerCore.modmanager.objects.mod.editor;
 using LegendaryExplorerCore.Misc;
+using ME3TweaksModManager.modmanager.objects;
+using ME3TweaksModManager.modmanager.objects.mod.editor;
 
-namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
+namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
 {
     /// <summary>
     /// Interaction logic for MetadataEditorControl.xaml

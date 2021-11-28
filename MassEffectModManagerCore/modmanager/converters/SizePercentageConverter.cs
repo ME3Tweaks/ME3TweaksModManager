@@ -2,8 +2,7 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.Windows.Data;
-using MassEffectModManagerCore.modmanager;
-using MassEffectModManagerCore.modmanager.usercontrols.interfaces;
+using ME3TweaksModManager.modmanager.usercontrols.interfaces;
 
 namespace ME3TweaksModManager.modmanager.converters
 {

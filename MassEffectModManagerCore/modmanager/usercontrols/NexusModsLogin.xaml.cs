@@ -5,16 +5,16 @@ using System.IO;
 using System.Windows;
 using System.Windows.Input;
 using FontAwesome5;
-using MassEffectModManagerCore.modmanager.diagnostics;
-using MassEffectModManagerCore.modmanager.helpers;
-using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.modmanager.nexusmodsintegration;
-using MassEffectModManagerCore.modmanager.objects;
-using MassEffectModManagerCore.ui;
+using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.helpers;
+using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.nexusmodsintegration;
+using ME3TweaksModManager.modmanager.objects;
+using ME3TweaksModManager.ui;
 using Microsoft.AppCenter.Analytics;
 using Pathoschild.Http.Client;
 
-namespace MassEffectModManagerCore.modmanager.usercontrols
+namespace ME3TweaksModManager.modmanager.usercontrols
 {
     /// <summary>
     /// Interaction logic for NexusModsLogin.xaml

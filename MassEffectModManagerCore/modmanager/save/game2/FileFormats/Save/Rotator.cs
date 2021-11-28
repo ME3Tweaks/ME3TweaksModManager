@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 
-namespace MassEffectModManagerCore.modmanager.save.game2.FileFormats.Save
+namespace ME3TweaksModManager.modmanager.save.game2.FileFormats.Save
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public partial class Rotator : IUnrealSerializable

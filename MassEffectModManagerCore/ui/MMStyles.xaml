@@ -1,34 +1,31 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:local="clr-namespace:MassEffectModManagerCore.ui"
-                    xmlns:modmanager="clr-namespace:MassEffectModManagerCore.modmanager.objects"
-                    xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" 
-                    xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters"
-                    xmlns:helpers="clr-namespace:MassEffectModManagerCore.modmanager.helpers"
+                    xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
                     xmlns:system="clr-namespace:System;assembly=System.Runtime"
                     xmlns:fa5="http://schemas.fontawesome.com/icons/"
                     xmlns:targets="clr-namespace:ME3TweaksCore.Targets;assembly=ME3TweaksCore"
-                    xmlns:converters1="clr-namespace:ME3TweaksModManager.modmanager.converters">
-    <converters:GameToImageIconConverter x:Key="GameToImageIconConverter"/>
-    <converters:BootTargetSourceVisibilityConverter x:Key="BootTargetSourceVisibilityConverter"/>
-    <converters:GameIconVisibilityConverter x:Key="GameIconVisibilityConverter"/>
-    <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-    <converters:BoolToHiddenVisibleConverter x:Key="BoolToHiddenVisibleConverter"/>
-    <converters:BoolEnabledConverter x:Key="BoolEnabledConverter"/>
-    <converters:NullVisibilityConverter x:Key="NullVisibilityConverter"/>
-    <converters:NullHiddenConverter x:Key="NullHiddenConverter"/>
-    <converters:EqualIntVisibilityConverter x:Key="EqualIntVisibilityConverter"/>
-    <converters:NullEnabledConverter x:Key="NullEnabledConverter" />
-    <converters:BoolEnabledConverter x:Key="BoolToEnabledConverter" />
-    <converters:NotNullToBoolConverter x:Key="NotNullToBoolConverter" />
-    <converters:GameToVisibilityConverter x:Key="GameToVisibilityConverter" />
+                    xmlns:converters1="clr-namespace:ME3TweaksModManager.modmanager.converters"
+                    xmlns:helpers="clr-namespace:ME3TweaksModManager.modmanager.helpers">
+    <converters1:GameToImageIconConverter x:Key="GameToImageIconConverter"/>
+    <converters1:BootTargetSourceVisibilityConverter x:Key="BootTargetSourceVisibilityConverter"/>
+    <converters1:GameIconVisibilityConverter x:Key="GameIconVisibilityConverter"/>
+    <converters1:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    <converters1:BoolToHiddenVisibleConverter x:Key="BoolToHiddenVisibleConverter"/>
+    <converters1:BoolEnabledConverter x:Key="BoolEnabledConverter"/>
+    <converters1:NullVisibilityConverter x:Key="NullVisibilityConverter"/>
+    <converters1:NullHiddenConverter x:Key="NullHiddenConverter"/>
+    <converters1:EqualIntVisibilityConverter x:Key="EqualIntVisibilityConverter"/>
+    <converters1:NullEnabledConverter x:Key="NullEnabledConverter" />
+    <converters1:BoolEnabledConverter x:Key="BoolToEnabledConverter" />
+    <converters1:NotNullToBoolConverter x:Key="NotNullToBoolConverter" />
+    <converters1:GameToVisibilityConverter x:Key="GameToVisibilityConverter" />
     <helpers:FlightingVisibilityConverter x:Key="FlightingVisibilityConverter"/>
-    <converters:LocalizationConverter x:Key="LocalizationConverter" />
+    <converters1:LocalizationConverter x:Key="LocalizationConverter" />
     <converters1:SizePercentageConverter x:Key="SizePercentageConverter" />
     <converters1:GenerationsSizePercentageConverter x:Key="GenerationsSizePercentageConverter" />
     <converters1:GenerationsSizeAdjustedPercentageConverter x:Key="GenerationsSizeAdjustedPercentageConverter" />
-    <converters:StringMatchToBoolConverter x:Key="StringMatchToBoolConverter"/>
-    <converters:GameToTextureModdedIconConverter x:Key="GameToTextureModdedIconConverter"/>
+    <converters1:StringMatchToBoolConverter x:Key="StringMatchToBoolConverter"/>
+    <converters1:GameToTextureModdedIconConverter x:Key="GameToTextureModdedIconConverter"/>
     <DataTemplate x:Key="TargetSelectorTemplate" DataType="{x:Type targets:GameTarget}">
         <DockPanel HorizontalAlignment="Stretch">
             <Image DockPanel.Dock="Left" Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16"/>

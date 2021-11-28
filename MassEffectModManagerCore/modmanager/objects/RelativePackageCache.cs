@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 using LegendaryExplorerCore.Packages;
-using MassEffectModManagerCore.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.diagnostics;
 
-namespace MassEffectModManagerCore.modmanager.objects
+namespace ME3TweaksModManager.modmanager.objects
 {
     /// <summary>
     /// Package class that is tied to a specific directory root (supporting relative lookups)

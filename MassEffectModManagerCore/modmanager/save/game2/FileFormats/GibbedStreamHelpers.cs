@@ -3,7 +3,7 @@ using System.IO;
 using LegendaryExplorerCore.Gammtek.IO;
 using LegendaryExplorerCore.Helpers;
 
-namespace MassEffectModManagerCore.modmanager.save.game2.FileFormats
+namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
 {
     public static partial class StreamHelpers
     {

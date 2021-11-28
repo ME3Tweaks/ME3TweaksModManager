@@ -13,11 +13,10 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using LegendaryExplorerCore.Packages;
-using MassEffectModManagerCore.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.diagnostics;
 using SevenZip;
 
-
-namespace MassEffectModManagerCore.modmanager.helpers
+namespace ME3TweaksModManager.modmanager.helpers
 {
     /// <summary>
     /// Extension methods for various things, both WPF and WinForms

@@ -1,5 +1,7 @@
-﻿<local:ModdescEditorControlBase
-    x:Class="MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.MetadataEditorControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor" xmlns:system="clr-namespace:System;assembly=System.Runtime"
+﻿<moddescinieditor:ModdescEditorControlBase
+    x:Class="ME3TweaksModManager.modmanager.usercontrols.moddescinieditor.MetadataEditorControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:system="clr-namespace:System;assembly=System.Runtime"
+    xmlns:moddescinieditor="clr-namespace:ME3TweaksModManager.modmanager.usercontrols.moddescinieditor"
     mc:Ignorable="d"
     DataContext="{Binding RelativeSource={RelativeSource Self}}"
     d:DesignHeight="450"
@@ -14,19 +16,19 @@
                 HorizontalAlignment="Left"
                 TextWrapping="Wrap"
                 Margin="0,0,0,10" />
-            <local:DescriptorEditorItemsControl
+            <moddescinieditor:DescriptorEditorItemsControl
                 HeaderText="ModManager"
                 Description="{DynamicResource string_mde_dec_header_metadata_modmanager}"
                 ItemsSource="{Binding ModManagerParameterMap}" />
-            <local:DescriptorEditorItemsControl
+            <moddescinieditor:DescriptorEditorItemsControl
                 HeaderText="ModInfo"
                 Description="{DynamicResource string_mde_dec_header_metadata_modinfo}"
                 ItemsSource="{Binding ModInfoParameterMap}"
                 Margin="0,10" />
-            <local:DescriptorEditorItemsControl
+            <moddescinieditor:DescriptorEditorItemsControl
                 HeaderText="UPDATES"
                 Description="{DynamicResource string_mde_dec_header_metadata_updates}"
                 ItemsSource="{Binding UPDATESParameterMap}" />
         </StackPanel>
     </ScrollViewer>
-</local:ModdescEditorControlBase>
+</moddescinieditor:ModdescEditorControlBase>

@@ -20,7 +20,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using Microsoft.AppCenter.Crashes;
 
-namespace MassEffectModManagerCore.modmanager.meim.ui
+namespace ME3TweaksModManager.modmanager.meim.ui
 {
     public partial class IniDataTemplates : ResourceDictionary
     {

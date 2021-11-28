@@ -3,9 +3,9 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using LegendaryExplorerCore.Helpers;
-using MassEffectModManagerCore.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.diagnostics;
 
-namespace MassEffectModManagerCore.modmanager.me3tweaks
+namespace ME3TweaksModManager.modmanager.me3tweaks
 {
     /// <summary>
     /// Service handler for loading localizations from ME3Tweaks/cache for the specific build. Allows localization updates outside of releases

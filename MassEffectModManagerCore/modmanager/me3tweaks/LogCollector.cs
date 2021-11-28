@@ -10,15 +10,15 @@
 //using System.Text;
 //using System.Threading;
 //using AuthenticodeExaminer;
-//using MassEffectModManagerCore.modmanager.localizations;
-//using MassEffectModManagerCore.modmanager.usercontrols;
+//using ME3TweaksModManager.modmanager.localizations;
+//using ME3TweaksModManager.modmanager.usercontrols;
 //using Microsoft.Win32;
 //using IniParser;
 //using IniParser.Model;
-//using MassEffectModManagerCore.modmanager.helpers;
+//using ME3TweaksModManager.modmanager.helpers;
 //using NickStrupat;
 //using System.Windows.Shell;
-//using MassEffectModManagerCore.modmanager.asi;
+//using ME3TweaksModManager.modmanager.asi;
 //using LegendaryExplorerCore.GameFilesystem;
 //using LegendaryExplorerCore.Gammtek.Extensions;
 //using LegendaryExplorerCore.Helpers;
@@ -27,9 +27,9 @@
 //using LegendaryExplorerCore.Packages;
 //using ME3TweaksCore.GameFilesystem;
 //using ME3TweaksCore.Targets;
-//using TextureModInstallationInfo = MassEffectModManagerCore.modmanager.objects.TextureModInstallationInfo;
+//using TextureModInstallationInfo = ME3TweaksModManager.modmanager.objects.TextureModInstallationInfo;
 
-//namespace MassEffectModManagerCore.modmanager.me3tweaks
+//namespace ME3TweaksModManager.modmanager.me3tweaks
 //{
 //    class LogCollector
 //    {

@@ -2,7 +2,7 @@
 using LegendaryExplorerCore.Helpers;
 
 //Taken from ALOT Installer V4
-namespace MassEffectModManagerCore.modmanager.helpers
+namespace ME3TweaksModManager.modmanager.helpers
 {
     public class ME1ExecutableInfo
     {

@@ -1,17 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using MassEffectModManagerCore.ui;
 using System.Reflection;
 using System.Runtime.Versioning;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Navigation;
 using LegendaryExplorerCore.Misc;
-using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.modmanager.windows;
+using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.windows;
+using ME3TweaksModManager.ui;
 
-namespace MassEffectModManagerCore.modmanager.usercontrols
+namespace ME3TweaksModManager.modmanager.usercontrols
 {
     /// <summary>
     /// Interaction logic for AboutPanel.xaml

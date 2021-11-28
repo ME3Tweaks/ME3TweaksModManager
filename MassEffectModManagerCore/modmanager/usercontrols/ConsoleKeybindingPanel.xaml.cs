@@ -9,25 +9,25 @@ using System.Windows;
 using System.Windows.Input;
 using System.Xml.Linq;
 using System.Xml.XPath;
-using MassEffectModManagerCore.modmanager.gameini;
-using MassEffectModManagerCore.modmanager.helpers;
-using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.ui;
-using LegendaryExplorerCore.Helpers;
-using LegendaryExplorerCore.Packages;
-using Microsoft.AppCenter.Analytics;
-using Path = System.IO.Path;
 using LegendaryExplorerCore.Coalesced;
 using LegendaryExplorerCore.Gammtek.Extensions;
+using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
-using MassEffectModManagerCore.modmanager.diagnostics;
-using MassEffectModManagerCore.modmanager.usercontrols.interfaces;
-using MassEffectModManagerCore.modmanager.windows;
+using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCoreWPF;
+using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.gameini;
+using ME3TweaksModManager.modmanager.helpers;
+using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.usercontrols.interfaces;
+using ME3TweaksModManager.modmanager.windows;
+using ME3TweaksModManager.ui;
+using Microsoft.AppCenter.Analytics;
 using PropertyChanged;
+using Path = System.IO.Path;
 
-namespace MassEffectModManagerCore.modmanager.usercontrols
+namespace ME3TweaksModManager.modmanager.usercontrols
 {
     /// <summary>
     /// Interaction logic for ConsoleKeybindingPanel.xaml

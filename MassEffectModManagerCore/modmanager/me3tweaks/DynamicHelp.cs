@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Xml;
-
-using MassEffectModManagerCore.modmanager.helpers;
 using LegendaryExplorerCore.Helpers;
-using MassEffectModManagerCore.modmanager.diagnostics;
 using ME3TweaksCore.Diagnostics;
 using ME3TweaksCore.Services;
+using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.helpers;
 using Microsoft.AppCenter.Crashes;
 
-namespace MassEffectModManagerCore.modmanager.me3tweaks
+namespace ME3TweaksModManager.modmanager.me3tweaks
 {
     [Localizable(false)]
     partial class OnlineContent

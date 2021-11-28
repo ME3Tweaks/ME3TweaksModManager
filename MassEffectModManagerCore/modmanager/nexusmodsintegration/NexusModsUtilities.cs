@@ -7,17 +7,17 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using MassEffectModManagerCore.modmanager.helpers;
 using LegendaryExplorerCore.Misc;
-using MassEffectModManagerCore.modmanager.diagnostics;
-using MassEffectModManagerCore.modmanager.objects;
+using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.helpers;
+using ME3TweaksModManager.modmanager.objects;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.Win32;
 using Pathoschild.FluentNexus;
 using Pathoschild.FluentNexus.Models;
 using WatsonWebsocket;
 
-namespace MassEffectModManagerCore.modmanager.nexusmodsintegration
+namespace ME3TweaksModManager.modmanager.nexusmodsintegration
 {
     [Localizable(false)]
     public class NexusModsUtilities

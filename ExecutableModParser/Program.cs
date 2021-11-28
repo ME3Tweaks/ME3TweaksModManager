@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using LegendaryExplorerCore.Helpers;
-using MassEffectModManagerCore.modmanager;
+using ME3TweaksModManager.modmanager;
 using SevenZip;
 
 namespace ExecutableModParser

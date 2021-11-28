@@ -7,8 +7,8 @@
 //using System.Net;
 //using System.Xml.Linq;
 //using LegendaryExplorerCore.Helpers;
-//using MassEffectModManagerCore.modmanager.me3tweaks;
-//using MassEffectModManagerCore.modmanager.objects;
+//using ME3TweaksModManager.modmanager.me3tweaks;
+//using ME3TweaksModManager.modmanager.objects;
 //using LegendaryExplorerCore.Packages;
 //using ME3TweaksCore.GameFilesystem;
 //using ME3TweaksCore.Targets;
@@ -16,7 +16,7 @@
 //using PropertyChanged;
 //using Serilog;
 
-//namespace MassEffectModManagerCore.modmanager.asi
+//namespace ME3TweaksModManager.modmanager.asi
 //{
 //    /// <summary>
 //    /// Backend for ASI Management

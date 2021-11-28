@@ -13,15 +13,15 @@ using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Textures;
 using LegendaryExplorerCore.Unreal.Classes;
-using MassEffectModManagerCore.modmanager.diagnostics;
-using MassEffectModManagerCore.modmanager.save.game2.FileFormats;
-using MassEffectModManagerCore.modmanager.save.game3;
-using MassEffectModManagerCore.ui;
+using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.save.game2.FileFormats;
+using ME3TweaksModManager.modmanager.save.game3;
+using ME3TweaksModManager.ui;
 using Microsoft.Win32;
 using PropertyChanged;
 using Path = System.IO.Path;
 
-namespace MassEffectModManagerCore.modmanager.save.game2.UI
+namespace ME3TweaksModManager.modmanager.save.game2.UI
 {
     /// <summary>
     /// Interaction logic for SaveSelectorUI.xaml

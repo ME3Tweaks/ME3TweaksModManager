@@ -22,9 +22,9 @@
 
 using System.ComponentModel;
 using System.Globalization;
-using MassEffectModManagerCore.modmanager.save.game2.FileFormats;
+using ME3TweaksModManager.modmanager.save.game2.FileFormats;
 
-namespace MassEffectModManagerCore.modmanager.save.game3
+namespace ME3TweaksModManager.modmanager.save.game3
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
     [OriginalName("GAWAssetSaveInfo")]

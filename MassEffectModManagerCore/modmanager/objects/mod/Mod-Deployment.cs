@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using MassEffectModManagerCore.modmanager.usercontrols;
 using ME3TweaksModManager.modmanager.usercontrols;
 using SevenZip;
 
-namespace MassEffectModManagerCore.modmanager.objects.mod
+namespace ME3TweaksModManager.modmanager.objects.mod
 {
     //This file contains deployment to archive related functionality
     public partial class Mod

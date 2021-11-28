@@ -2,9 +2,9 @@
 using System.IO;
 using System.Windows.Media.Imaging;
 using LegendaryExplorerCore.Misc;
-using MassEffectModManagerCore.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.diagnostics;
 
-namespace MassEffectModManagerCore.modmanager.objects.mod
+namespace ME3TweaksModManager.modmanager.objects.mod
 {
     public partial class Mod
     {

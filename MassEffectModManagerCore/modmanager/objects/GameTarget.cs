@@ -8,22 +8,22 @@
 //using System.Windows.Data;
 //using System.Windows.Input;
 //using LegendaryExplorerCore.Compression;
-//using MassEffectModManagerCore.modmanager.asi;
-//using MassEffectModManagerCore.modmanager.helpers;
-//using MassEffectModManagerCore.modmanager.localizations;
-//using MassEffectModManagerCore.modmanager.me3tweaks;
-//using MassEffectModManagerCore.modmanager.usercontrols;
-//using MassEffectModManagerCore.ui;
+//using ME3TweaksModManager.modmanager.asi;
+//using ME3TweaksModManager.modmanager.helpers;
+//using ME3TweaksModManager.modmanager.localizations;
+//using ME3TweaksModManager.modmanager.me3tweaks;
+//using ME3TweaksModManager.modmanager.usercontrols;
+//using ME3TweaksModManager.ui;
 //using LegendaryExplorerCore.GameFilesystem;
 //using Serilog;
 //using LegendaryExplorerCore.Helpers;
 //using LegendaryExplorerCore.Misc;
 //using LegendaryExplorerCore.Packages;
 //using ME3TweaksCore.GameFilesystem;
-//using static MassEffectModManagerCore.modmanager.usercontrols.InstallationInformation;
-//using MemoryAnalyzer = MassEffectModManagerCore.modmanager.memoryanalyzer.MemoryAnalyzer;
+//using static ME3TweaksModManager.modmanager.usercontrols.InstallationInformation;
+//using MemoryAnalyzer = ME3TweaksModManager.modmanager.memoryanalyzer.MemoryAnalyzer;
 
-//namespace MassEffectModManagerCore.modmanager.objects
+//namespace ME3TweaksModManager.modmanager.objects
 //{
 //    [DebuggerDisplay("GameTarget {Game} {TargetPath}")]
 //    public class GameTargetWPF : IEqualityComparer<GameTargetWPF>, INotifyPropertyChanged

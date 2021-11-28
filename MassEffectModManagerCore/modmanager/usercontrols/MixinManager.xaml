@@ -1,9 +1,11 @@
-﻿<local:MMBusyPanelBase x:Class="MassEffectModManagerCore.modmanager.usercontrols.MixinManager"
+﻿<usercontrols:MMBusyPanelBase x:Class="ME3TweaksModManager.modmanager.usercontrols.MixinManager"
                        DataContext="{Binding RelativeSource={RelativeSource Self}}"
                        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
-                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols"
-                       mc:Ignorable="d" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" 
+                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                       mc:Ignorable="d" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+                       xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" 
                        xmlns:fa5="http://schemas.fontawesome.com/icons/"
+                       xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
                        Width="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.8_500_1400', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualWidth}"
                        Height="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.7_500', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualHeight}">
     <DockPanel>
@@ -23,7 +25,7 @@
                             
                             <!-- Install into game -->
                             <TextBlock Text="{DynamicResource string_directlyInstallIntoGame}" FontWeight="Bold"/>
-                            <local:TargetSelector 
+                            <usercontrols:TargetSelector 
                                       IsEnabled="{Binding OperationInProgress, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" 
                                       AvailableTargets="{Binding AvailableInstallTargets}" 
                                       SelectedGameTarget="{Binding SelectedInstallTarget}" 
@@ -99,4 +101,4 @@
             </DockPanel>
         </Grid>
     </DockPanel>
-</local:MMBusyPanelBase>
+</usercontrols:MMBusyPanelBase>

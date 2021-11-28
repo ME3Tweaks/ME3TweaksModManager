@@ -25,7 +25,7 @@
 
 // ReSharper restore RedundantUsingDirective
 
-namespace MassEffectModManagerCore.modmanager.save.game3
+namespace ME3TweaksModManager.modmanager.save.game3
 {
     [OriginalName("EAutoReplyModeOptions")]
     public enum AutoReplyModeOptions : byte

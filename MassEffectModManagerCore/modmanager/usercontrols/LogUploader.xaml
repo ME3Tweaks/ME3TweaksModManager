@@ -1,15 +1,14 @@
-﻿<local:MMBusyPanelBase
-    x:Class="MassEffectModManagerCore.modmanager.usercontrols.LogUploader" 
+﻿<usercontrols:MMBusyPanelBase
+    x:Class="ME3TweaksModManager.modmanager.usercontrols.LogUploader" 
     DataContext="{Binding RelativeSource={RelativeSource Self}}"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-    xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
     xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" 
-    xmlns:fa5="http://schemas.fontawesome.com/icons/" 
-    xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters"
+    xmlns:fa5="http://schemas.fontawesome.com/icons/"
+    xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
     mc:Ignorable="d"
     Width="500">
     <DockPanel
@@ -85,7 +84,7 @@
             <TextBlock
                 Text="{DynamicResource string_gameDiagnosticDescription}"
                 TextWrapping="Wrap" />
-            <local:TargetSelector
+            <usercontrols:TargetSelector
                 Theme="Accent"
                 Margin="0,4,0,0"
                 AvailableTargets="{Binding DiagnosticTargets}"
@@ -103,4 +102,4 @@
                 Margin="0,5" />
         </StackPanel>
     </DockPanel>
-</local:MMBusyPanelBase>
+</usercontrols:MMBusyPanelBase>

@@ -1,16 +1,16 @@
-﻿using MassEffectModManagerCore.modmanager.objects;
-using MassEffectModManagerCore.ui;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Input;
-using MassEffectModManagerCore.modmanager.localizations;
 using LegendaryExplorerCore.Misc;
-using MassEffectModManagerCore.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.objects;
+using ME3TweaksModManager.ui;
 
-namespace MassEffectModManagerCore.modmanager.usercontrols
+namespace ME3TweaksModManager.modmanager.usercontrols
 {
     /// <summary>
     /// Interaction logic for NexusModDownloader.xaml

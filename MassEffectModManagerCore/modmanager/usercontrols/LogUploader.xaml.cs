@@ -6,22 +6,21 @@ using System.Text;
 using System.Windows;
 using System.Windows.Input;
 using Flurl.Http;
-using MassEffectModManagerCore.modmanager.helpers;
-using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore.Compression;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
-using MassEffectModManagerCore.modmanager.diagnostics;
 using ME3TweaksCore.Diagnostics;
 using ME3TweaksCore.Misc;
 using ME3TweaksCoreWPF;
-using ME3TweaksCoreWPF.UI;
+using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.helpers;
+using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.ui;
 using Microsoft.WindowsAPICodePack.Taskbar;
-using GenericCommand = MassEffectModManagerCore.ui.GenericCommand;
+using GenericCommand = ME3TweaksModManager.ui.GenericCommand;
 
-namespace MassEffectModManagerCore.modmanager.usercontrols
+namespace ME3TweaksModManager.modmanager.usercontrols
 {
     /// <summary>
     /// Interaction logic for LogUploader.xaml

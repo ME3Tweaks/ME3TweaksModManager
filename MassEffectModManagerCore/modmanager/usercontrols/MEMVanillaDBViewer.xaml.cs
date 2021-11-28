@@ -1,5 +1,4 @@
-﻿using MassEffectModManagerCore.ui;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Data;
@@ -8,9 +7,10 @@ using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.Services;
+using ME3TweaksModManager.ui;
 using PropertyChanged;
 
-namespace MassEffectModManagerCore.modmanager.usercontrols
+namespace ME3TweaksModManager.modmanager.usercontrols
 {
     /// <summary>
     /// Interaction logic for MEMVanillaDBViewer.xaml

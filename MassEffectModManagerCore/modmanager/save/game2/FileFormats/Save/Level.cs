@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MassEffectModManagerCore.modmanager.save.game2.FileFormats.Save
+namespace ME3TweaksModManager.modmanager.save.game2.FileFormats.Save
 {
     // 00BB0CC0
     public class Level : IUnrealSerializable

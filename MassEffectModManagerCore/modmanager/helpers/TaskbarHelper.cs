@@ -2,7 +2,7 @@
 using ME3TweaksCoreWPF.UI;
 using Microsoft.WindowsAPICodePack.Taskbar;
 
-namespace MassEffectModManagerCore.modmanager.helpers
+namespace ME3TweaksModManager.modmanager.helpers
 {
 
     /// <summary>

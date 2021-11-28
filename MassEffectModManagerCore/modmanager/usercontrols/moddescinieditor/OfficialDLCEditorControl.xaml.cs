@@ -5,13 +5,13 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using IniParser.Model;
 using LegendaryExplorerCore.Misc;
-using MassEffectModManagerCore.modmanager.helpers;
-using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.modmanager.objects;
-using MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alternates;
-using MassEffectModManagerCore.ui;
+using ME3TweaksModManager.modmanager.helpers;
+using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.objects;
+using ME3TweaksModManager.modmanager.usercontrols.moddescinieditor.alternates;
+using ME3TweaksModManager.ui;
 
-namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
+namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
 {
     /// <summary>
     /// Interaction logic for OfficialDLCEditorControl.xaml

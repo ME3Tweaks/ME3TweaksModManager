@@ -9,12 +9,12 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
-using MassEffectModManagerCore.modmanager.me3tweaks;
-using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
+using ME3TweaksModManager.modmanager.me3tweaks;
+using ME3TweaksModManager.ui;
 
-namespace MassEffectModManagerCore.modmanager.memoryanalyzer
+namespace ME3TweaksModManager.modmanager.memoryanalyzer
 {
     /// <summary>
     /// Interaction logic for MemoryAnalyzer.xaml

@@ -23,7 +23,7 @@
 using System;
 using System.Collections;
 
-namespace MassEffectModManagerCore.modmanager.save.game3
+namespace ME3TweaksModManager.modmanager.save.game3
 {
     public class BitArrayWrapper : IList
     {

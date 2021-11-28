@@ -10,20 +10,20 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 using AuthenticodeExaminer;
-using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.modmanager.me3tweaks;
-using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore.Compression;
 using LegendaryExplorerCore.Helpers;
-using MassEffectModManagerCore.modmanager.diagnostics;
 using ME3TweaksCore.Helpers;
+using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.me3tweaks;
+using ME3TweaksModManager.ui;
 using Microsoft.AppCenter.Analytics;
 using Serilog;
 using SevenZip;
-using NamedBackgroundWorker = MassEffectModManagerCore.modmanager.helpers.NamedBackgroundWorker;
+using NamedBackgroundWorker = ME3TweaksModManager.modmanager.helpers.NamedBackgroundWorker;
 using Path = System.IO.Path;
 
-namespace MassEffectModManagerCore.modmanager.usercontrols
+namespace ME3TweaksModManager.modmanager.usercontrols
 {
     /// <summary>
     /// Interaction logic for ProgramUpdateNotification.xaml
@@ -261,7 +261,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                 patchStream = new MemoryStream(LZMA.DecompressLZMAFile(patchStream.ToArray()));
                 using var currentBuildStream = File.OpenRead(App.ExecutableLocation);
-                //using var currentBuildStream = File.OpenRead(@"C:\Users\Mgamerz\source\repos\ME3Tweaks\MassEffectModManager\MassEffectModManagerCore\Deployment\Staging\ME3TweaksModManager\ME3TweaksModManager.exe");
+                //using var currentBuildStream = File.OpenRead(@"C:\Users\Mgamerz\source\repos\ME3Tweaks\MassEffectModManager\ME3TweaksModManager\Deployment\Staging\ME3TweaksModManager\ME3TweaksModManager.exe");
 
                 MemoryStream outStream = new MemoryStream();
                 JPatch.ApplyJPatch(currentBuildStream, patchStream, outStream);
@@ -306,7 +306,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private bool ApplyUpdate(string updateDirectory, bool closeOnBadSignature = true)
         {
             var updateSwapperExecutable = Path.Combine(updateDirectory, @"ME3TweaksUpdater.exe");
-            M3Utilities.ExtractInternalFile(@"MassEffectModManagerCore.updater.ME3TweaksUpdater.exe", updateSwapperExecutable, true);
+            M3Utilities.ExtractInternalFile(@"ME3TweaksModManager.updater.ME3TweaksUpdater.exe", updateSwapperExecutable, true);
             var updateExecutablePath = Directory.GetFiles(updateDirectory, @"ME3TweaksModManager.exe", SearchOption.AllDirectories).FirstOrDefault();
             if (updateExecutablePath != null && File.Exists(updateExecutablePath) && File.Exists(updateSwapperExecutable))
             {

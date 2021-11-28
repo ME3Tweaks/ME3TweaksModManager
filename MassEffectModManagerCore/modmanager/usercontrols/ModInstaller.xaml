@@ -1,17 +1,21 @@
-﻿<local:MMBusyPanelBase
-    x:Class="MassEffectModManagerCore.modmanager.usercontrols.ModInstaller" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" xmlns:fa5="http://schemas.fontawesome.com/icons/" xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters" xmlns:objects="clr-namespace:MassEffectModManagerCore.modmanager.objects" xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:ui="clr-namespace:MassEffectModManagerCore.ui" xmlns:massEffectModManagerCore="clr-namespace:MassEffectModManagerCore" xmlns:localizations="clr-namespace:MassEffectModManagerCore.modmanager.localizations"
+﻿<usercontrols:MMBusyPanelBase
+    x:Class="ME3TweaksModManager.modmanager.usercontrols.ModInstaller" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:fa5="http://schemas.fontawesome.com/icons/"
+    xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
     xmlns:objects1="clr-namespace:ME3TweaksModManager.modmanager.objects"
+    xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
+    xmlns:converters="clr-namespace:ME3TweaksModManager.modmanager.converters"
     mc:Ignorable="d"
     DataContext="{Binding RelativeSource={RelativeSource Self}}"
     Height="Auto"
     MinWidth="300"
     MaxWidth="500">
-    <local:MMBusyPanelBase.Resources>
+    <usercontrols:MMBusyPanelBase.Resources>
         <converters:GroupNameToColorConverter
             x:Key="GroupNameToColorConverter" />
         <converters:ImageTooltipVerticalOffsetConverter
             x:Key="ImageTooltipVerticalOffsetConverter" />
-    </local:MMBusyPanelBase.Resources>
+    </usercontrols:MMBusyPanelBase.Resources>
     <StackPanel
         VerticalAlignment="Center">
         <Image
@@ -46,7 +50,7 @@
                     Text="{DynamicResource string_installTo}"
                     FontWeight="Bold"
                     DockPanel.Dock="Top" />
-                <local:TargetSelector
+                <usercontrols:TargetSelector
                     ShowTextureInfo="False"
                     ToolTip="{DynamicResource string_tooltip_targetThatTheModWillBeInstalledTo}"
                     DockPanel.Dock="Top"
@@ -253,7 +257,7 @@
                         </DataTemplate>
 
                         <DataTemplate
-                            DataType="{x:Type objects:AlternateOption}">
+                            DataType="{x:Type objects1:AlternateOption}">
                             <Grid
                                 Margin="0,0,0,5"
                                 MouseUp="AlternateItem_MouseUp"
@@ -448,4 +452,4 @@
                 TextAlignment="Center" />
         </StackPanel>
     </StackPanel>
-</local:MMBusyPanelBase>
+</usercontrols:MMBusyPanelBase>

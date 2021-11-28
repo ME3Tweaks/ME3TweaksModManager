@@ -2,7 +2,7 @@
 using LegendaryExplorerCore.Helpers;
 using Newtonsoft.Json;
 
-namespace MassEffectModManagerCore.modmanager.objects.mod.merge
+namespace ME3TweaksModManager.modmanager.objects.mod.merge
 {
     /// <summary>
     /// Asset file packaged in a merge mod

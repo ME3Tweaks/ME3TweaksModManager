@@ -1,10 +1,10 @@
-﻿<local:MMBusyPanelBase x:Class="MassEffectModManagerCore.modmanager.usercontrols.OfficialDLCToggler"
+﻿<usercontrols:MMBusyPanelBase x:Class="ME3TweaksModManager.modmanager.usercontrols.OfficialDLCToggler"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+             xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
              mc:Ignorable="d" 
              DataContext="{Binding RelativeSource={RelativeSource Self}}"
              Width="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.8_500_1400', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualWidth}"
@@ -12,7 +12,7 @@
     <DockPanel>
         <TextBlock DockPanel.Dock="Top" Text="{DynamicResource string_officialDLCToggler}" FontSize="24" FontWeight="Bold" TextAlignment="Center" />
         <TextBlock DockPanel.Dock="Top" Text="{DynamicResource string_officialDLCTogglerDescription}" TextAlignment="Center" TextWrapping="Wrap"/>
-        <local:TargetSelector DockPanel.Dock="Top" AvailableTargets="{Binding AvailableTargets}" SelectedGameTarget="{Binding SelectedTarget}" Margin="0,5" HorizontalContentAlignment="Stretch" />
+        <usercontrols:TargetSelector DockPanel.Dock="Top" AvailableTargets="{Binding AvailableTargets}" SelectedGameTarget="{Binding SelectedTarget}" Margin="0,5" HorizontalContentAlignment="Stretch" />
         <TextBlock Visibility="{Binding SelectedTarget.Game, ConverterParameter='Not_ME3', Converter={StaticResource GameToVisibilityConverter}}" DockPanel.Dock="Top" TextWrapping="Wrap"
                    Text="{DynamicResource string_officialDLCTogglerME1ME2Warning}" />
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="0,5,0,0">
@@ -21,7 +21,7 @@
         <ScrollViewer Padding="0" BorderThickness="1" BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer2BorderBrush}}">
             <ItemsControl ItemsSource="{Binding InstalledDLCs}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" AlternationCount="2" Padding="0">
                 <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="{x:Type local:OfficialDLCToggler+InstalledDLC}">
+                    <DataTemplate DataType="{x:Type usercontrols:OfficialDLCToggler+InstalledDLC}">
                         <Border Name="BG_Border" Background="#4444AA44">
                             <DockPanel>
                                 <DockPanel.Resources>
@@ -56,4 +56,4 @@
             </ItemsControl>
         </ScrollViewer>
     </DockPanel>
-</local:MMBusyPanelBase>
+</usercontrols:MMBusyPanelBase>

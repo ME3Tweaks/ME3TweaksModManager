@@ -6,7 +6,7 @@ using System.Windows;
 using System.Windows.Data;
 using LegendaryExplorerCore.Packages;
 
-namespace MassEffectModManagerCore.modmanager.converters
+namespace ME3TweaksModManager.modmanager.converters
 {
     [Localizable(false)]
     public class GameToVisibilityConverter : IValueConverter

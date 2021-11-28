@@ -1,38 +1,38 @@
-﻿using Serilog;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
 using System.Windows;
-using CommandLine;
 using System.Windows.Controls;
-using System.Diagnostics;
-using Microsoft.AppCenter.Analytics;
-using Microsoft.AppCenter.Crashes;
-using System.Runtime.InteropServices;
-using MassEffectModManagerCore.modmanager;
-using MassEffectModManagerCore.modmanager.helpers;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography.X509Certificates;
 using System.Windows.Data;
 using AuthenticodeExaminer;
+using CommandLine;
 using LegendaryExplorerCore.Compression;
 using LegendaryExplorerCore.Helpers;
-using MassEffectModManagerCore.modmanager.windows;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
-using SingleInstanceCore;
-using MassEffectModManagerCore.modmanager.diagnostics;
-using MassEffectModManagerCore.modmanager.objects;
 using ME3TweaksCore.Diagnostics;
+using ME3TweaksModManager.modmanager;
+using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.helpers;
+using ME3TweaksModManager.modmanager.objects;
+using ME3TweaksModManager.modmanager.windows;
 using Microsoft.AppCenter;
+using Microsoft.AppCenter.Analytics;
+using Microsoft.AppCenter.Crashes;
+using Serilog;
+using SingleInstanceCore;
 
-namespace MassEffectModManagerCore
+namespace ME3TweaksModManager
 {
     [Localizable(false)]
     public partial class App : Application, ISingleInstance
@@ -154,7 +154,7 @@ namespace MassEffectModManagerCore
                             var updaterExe = Path.Combine(Directory.GetParent(exeFolder).FullName, @"ME3TweaksUpdater.exe");
 
                             //write updated updater executable
-                            M3Utilities.ExtractInternalFile(@"MassEffectModManagerCore.updater.ME3TweaksUpdater.exe", updaterExe, true);
+                            M3Utilities.ExtractInternalFile(@"ME3TweaksModManager.updater.ME3TweaksUpdater.exe", updaterExe, true);
 
                             if (!File.Exists(updaterExe))
                             {

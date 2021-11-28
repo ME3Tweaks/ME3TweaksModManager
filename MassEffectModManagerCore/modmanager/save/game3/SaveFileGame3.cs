@@ -30,9 +30,9 @@ using LegendaryExplorerCore.Gammtek.IO;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Unreal;
-using MassEffectModManagerCore.modmanager.save.game2.FileFormats;
+using ME3TweaksModManager.modmanager.save.game2.FileFormats;
 
-namespace MassEffectModManagerCore.modmanager.save.game3
+namespace ME3TweaksModManager.modmanager.save.game3
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
     [OriginalName("SFXSaveGame")]

@@ -1,5 +1,8 @@
-﻿<local:MMBusyPanelBase
-    x:Class="MassEffectModManagerCore.modmanager.usercontrols.BackupCreator" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:ui="clr-namespace:MassEffectModManagerCore.ui"
+﻿<usercontrols:MMBusyPanelBase
+    x:Class="ME3TweaksModManager.modmanager.usercontrols.BackupCreator" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+    xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
+    xmlns:ui="clr-namespace:ME3TweaksModManager.ui"
     mc:Ignorable="d"
     d:DesignHeight="450"
     d:DesignWidth="600"
@@ -101,7 +104,7 @@
                             Grid.Row="2"
                             Text="{Binding BackupStatus.BackupLocationStatus}"
                             TextWrapping="Wrap"/>
-                            <local:TargetSelector Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2"
+                            <usercontrols:TargetSelector Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2"
                             IsEnabled="{Binding BackupInProgress, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}"
                             AvailableTargets="{Binding AvailableBackupSources}"
                             SelectedGameTarget="{Binding BackupSourceTarget}"
@@ -131,4 +134,4 @@
         </ScrollViewer>
 
     </DockPanel>
-</local:MMBusyPanelBase>
+</usercontrols:MMBusyPanelBase>

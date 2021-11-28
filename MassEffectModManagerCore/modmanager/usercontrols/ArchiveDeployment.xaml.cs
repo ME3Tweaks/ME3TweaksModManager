@@ -1,24 +1,4 @@
-﻿using MassEffectModManagerCore.modmanager.helpers;
-using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.modmanager.me3tweaks;
-using MassEffectModManagerCore.modmanager.objects;
-using MassEffectModManagerCore.modmanager.objects.mod;
-using MassEffectModManagerCore.modmanager.windows;
-using MassEffectModManagerCore.ui;
-using LegendaryExplorerCore.GameFilesystem;
-using LegendaryExplorerCore.Helpers;
-using LegendaryExplorerCore.Packages;
-using LegendaryExplorerCore.TLK.ME1;
-using LegendaryExplorerCore.TLK.ME2ME3;
-using LegendaryExplorerCore.Unreal;
-using LegendaryExplorerCore.Unreal.Classes;
-using Microsoft.AppCenter.Analytics;
-using Microsoft.AppCenter.Crashes;
-using Microsoft.Win32;
-using Microsoft.WindowsAPICodePack.Taskbar;
-using PropertyChanged;
-using SevenZip;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -32,20 +12,39 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using FontAwesome5;
+using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Gammtek.Extensions;
+using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
+using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Packages.CloningImportingAndRelinking;
 using LegendaryExplorerCore.TLK;
-using MassEffectModManagerCore.modmanager.diagnostics;
+using LegendaryExplorerCore.TLK.ME1;
+using LegendaryExplorerCore.TLK.ME2ME3;
+using LegendaryExplorerCore.Unreal;
+using LegendaryExplorerCore.Unreal.Classes;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.Services;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksCore.Targets;
 using ME3TweaksCoreWPF;
+using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.loaders;
+using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.objects;
+using ME3TweaksModManager.modmanager.objects.mod;
+using ME3TweaksModManager.modmanager.windows;
+using ME3TweaksModManager.ui;
+using Microsoft.AppCenter.Analytics;
+using Microsoft.AppCenter.Crashes;
+using Microsoft.Win32;
+using Microsoft.WindowsAPICodePack.Taskbar;
+using PropertyChanged;
+using SevenZip;
 using Brushes = System.Windows.Media.Brushes;
 
-namespace MassEffectModManagerCore.modmanager.usercontrols
+namespace ME3TweaksModManager.modmanager.usercontrols
 {
     /// <summary>
     /// Interaction logic for ArchiveDeployment.xaml

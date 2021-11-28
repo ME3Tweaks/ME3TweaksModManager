@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MassEffectModManagerCore.modmanager.save.game2.FileFormats
+namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
 {
     public class UnrealFieldOffsetAttribute : Attribute
     {

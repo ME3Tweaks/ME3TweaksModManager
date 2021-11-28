@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace MassEffectModManagerCore.modmanager.save.game2.FileFormats.Save
+namespace ME3TweaksModManager.modmanager.save.game2.FileFormats.Save
 {
     // 00BAE5B0
     [TypeConverter(typeof(ExpandableObjectConverter))]

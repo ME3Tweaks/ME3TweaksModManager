@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel;
 using LegendaryExplorerCore.Packages;
-using MassEffectModManagerCore.modmanager.helpers;
+using ME3TweaksModManager.modmanager.helpers;
 
-namespace MassEffectModManagerCore.modmanager.objects
+namespace ME3TweaksModManager.modmanager.objects
 {
 
     public class GameFilter : INotifyPropertyChanged

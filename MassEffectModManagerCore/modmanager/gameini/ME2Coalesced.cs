@@ -4,10 +4,10 @@ using System.ComponentModel;
 using System.IO;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
-using MassEffectModManagerCore.modmanager.diagnostics;
 using ME3TweaksCoreWPF;
+using ME3TweaksModManager.modmanager.diagnostics;
 
-namespace MassEffectModManagerCore.modmanager.gameini
+namespace ME3TweaksModManager.modmanager.gameini
 {
     [Localizable(false)]
     public class ME2Coalesced

@@ -1,10 +1,10 @@
-﻿<local:MMBusyPanelBase x:Class="MassEffectModManagerCore.modmanager.usercontrols.ConsoleKeybindingPanel"
+﻿<usercontrols:MMBusyPanelBase x:Class="ME3TweaksModManager.modmanager.usercontrols.ConsoleKeybindingPanel"
                        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
                        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
                        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-                       xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" 
+                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                        xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+                       xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
                        DataContext="{Binding RelativeSource={RelativeSource Self}}"
                        Width="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.9_400_900', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualWidth}"
                        Height="{Binding Self, Converter={StaticResource GenerationsSizeAdjustedPercentageConverter}, ConverterParameter='0.0_200_700_230_270'}">
@@ -34,7 +34,7 @@
                             <TextBlock DockPanel.Dock="Top" 
                                        Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Not_ME1'}"
                                        Text="{Binding WhereKeysAreDefinedText}" />
-                            <local:TargetSelector
+                            <usercontrols:TargetSelector
                                 DockPanel.Dock="Top"
                                 Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Not_ME1'}"
                                   AvailableTargets="{Binding Targets}" 
@@ -54,4 +54,4 @@
             </ItemsControl>
         </ScrollViewer>
     </DockPanel>
-</local:MMBusyPanelBase>
+</usercontrols:MMBusyPanelBase>

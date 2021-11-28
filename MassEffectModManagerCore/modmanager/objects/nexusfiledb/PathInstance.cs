@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace MassEffectModManagerCore.modmanager.objects.nexusfiledb
+namespace ME3TweaksModManager.modmanager.objects.nexusfiledb
 {
     public class PathInstance
     {

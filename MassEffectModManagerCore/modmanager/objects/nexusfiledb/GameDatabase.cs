@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using MassEffectModManagerCore.modmanager.me3tweaks;
 using LegendaryExplorerCore.Helpers;
+using ME3TweaksModManager.modmanager.me3tweaks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-
-namespace MassEffectModManagerCore.modmanager.objects.nexusfiledb
+namespace ME3TweaksModManager.modmanager.objects.nexusfiledb
 {
     public class GameDatabase
     {

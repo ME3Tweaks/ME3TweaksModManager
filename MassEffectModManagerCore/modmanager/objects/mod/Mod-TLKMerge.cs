@@ -6,14 +6,13 @@ using System.Xml.Linq;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.TLK;
 using LegendaryExplorerCore.TLK.ME1;
-using MassEffectModManagerCore.me3tweakscoreextended;
-using MassEffectModManagerCore.modmanager.diagnostics;
-using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.modmanager.me3tweaks;
 using ME3TweaksCore.Services.BasegameFileIdentification;
 using ME3TweaksCoreWPF;
+using ME3TweaksModManager.me3tweakscoreextended;
+using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.localizations;
 
-namespace MassEffectModManagerCore.modmanager.objects.mod
+namespace ME3TweaksModManager.modmanager.objects.mod
 {
     public partial class Mod
     {

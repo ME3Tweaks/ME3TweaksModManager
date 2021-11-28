@@ -5,10 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using LegendaryExplorerCore.Helpers;
-using MassEffectModManagerCore.modmanager.diagnostics;
-using MassEffectModManagerCore.modmanager.helpers;
 using ME3TweaksCore;
 using ME3TweaksCore.Diagnostics;
+using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.helpers;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 

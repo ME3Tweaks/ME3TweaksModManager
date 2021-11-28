@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using MassEffectModManagerCore.modmanager.me3tweaks;
-using MassEffectModManagerCore.modmanager.objects.nexusfiledb;
+using ME3TweaksModManager.modmanager.me3tweaks;
+using ME3TweaksModManager.modmanager.objects.nexusfiledb;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MassEffectModManagerCore.Tests

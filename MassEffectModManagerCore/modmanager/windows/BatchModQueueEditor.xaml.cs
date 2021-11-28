@@ -8,16 +8,16 @@ using System.Windows;
 using System.Windows.Input;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Misc;
-using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.modmanager.objects.mod;
-using MassEffectModManagerCore.modmanager.usercontrols;
-using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore.Packages;
-using MassEffectModManagerCore.modmanager.helpers;
+using ME3TweaksModManager.modmanager.helpers;
+using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.objects.mod;
+using ME3TweaksModManager.modmanager.usercontrols;
+using ME3TweaksModManager.ui;
 using Microsoft.AppCenter.Analytics;
-using MemoryAnalyzer = MassEffectModManagerCore.modmanager.memoryanalyzer.MemoryAnalyzer;
+using MemoryAnalyzer = ME3TweaksModManager.modmanager.memoryanalyzer.MemoryAnalyzer;
 
-namespace MassEffectModManagerCore.modmanager.windows
+namespace ME3TweaksModManager.modmanager.windows
 {
     /// <summary>
     /// Interaction logic for BatchModQueueEditor.xaml

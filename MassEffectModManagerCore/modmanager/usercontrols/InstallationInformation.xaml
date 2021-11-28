@@ -1,13 +1,17 @@
-﻿<local:MMBusyPanelBase xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:objects="clr-namespace:MassEffectModManagerCore.modmanager.objects" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+﻿<usercontrols:MMBusyPanelBase xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
                        xmlns:targets="clr-namespace:ME3TweaksCore.Targets;assembly=ME3TweaksCore"
-                       x:Class="MassEffectModManagerCore.modmanager.usercontrols.InstallationInformation" mc:Ignorable="d" d:DesignHeight="550" DataContext="{Binding RelativeSource={RelativeSource Self}}" d:DesignWidth="800" Width="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.8_500', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualWidth}" Height="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.8_500', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualHeight}">
+                       xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
+                       xmlns:converters="clr-namespace:ME3TweaksModManager.modmanager.converters"
+                       x:Class="ME3TweaksModManager.modmanager.usercontrols.InstallationInformation" mc:Ignorable="d" d:DesignHeight="550" DataContext="{Binding RelativeSource={RelativeSource Self}}" d:DesignWidth="800" Width="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.8_500', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualWidth}" Height="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.8_500', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualHeight}">
     <UserControl.Resources>
         <converters:InstallationInformationTabVisibilityConverter x:Key="InstallationInformationTabVisibilityConverter" />
     </UserControl.Resources>
     <DockPanel>
         <TextBlock DockPanel.Dock="Top" Text="{DynamicResource string_installationInformation}" FontSize="24" FontWeight="Bold" TextAlignment="Center" />
         <TextBlock DockPanel.Dock="Top" Text="{DynamicResource string_installationInformationSubheader}" TextWrapping="Wrap" MaxWidth="550" TextAlignment="Center" />
-        <local:TargetSelector DockPanel.Dock="Top" AvailableTargets="{Binding InstallationTargets}" IsEnabled="{Binding SFARBeingRestored, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" SelectedGameTarget="{Binding SelectedTarget}" Margin="0,5" HorizontalContentAlignment="Stretch" />
+        <usercontrols:TargetSelector DockPanel.Dock="Top" AvailableTargets="{Binding InstallationTargets}" IsEnabled="{Binding SFARBeingRestored, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}" SelectedGameTarget="{Binding SelectedTarget}" Margin="0,5" HorizontalContentAlignment="Stretch" />
         <DockPanel DockPanel.Dock="Bottom">
             <DockPanel Dock="Right" HorizontalAlignment="Right">
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right">
@@ -22,7 +26,7 @@
             <TabItem Header="{DynamicResource string_installedDLCmods}" Padding="0" VerticalAlignment="Stretch" Visibility="{Binding Game, Converter={StaticResource InstallationInformationTabVisibilityConverter}, ConverterParameter='DLCMods'}">
                 <DockPanel Margin="-8" VerticalAlignment="Stretch">
                     <DockPanel DockPanel.Dock="Bottom" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}">
-                        <Button Content="{Binding ShowInstalledOptionsText, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:InstallationInformation}}}" HorizontalAlignment="Right" Margin="4" Padding="7,3" Click="ToggleShowingInstallOptions_Click" />
+                        <Button Content="{Binding ShowInstalledOptionsText, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type usercontrols:InstallationInformation}}}" HorizontalAlignment="Right" Margin="4" Padding="7,3" Click="ToggleShowingInstallOptions_Click" />
                     </DockPanel>
                     <ScrollViewer Padding="0" VerticalAlignment="Stretch">
                         <ItemsControl ItemsSource="{Binding UIInstalledDLCMods}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" AlternationCount="2" Padding="0">
@@ -41,7 +45,7 @@
                                                 </Style.Triggers>
                                             </Style>
                                         </DockPanel.Resources>
-                                        <StackPanel DockPanel.Dock="Bottom" Margin="5,0,3,3" Visibility="{Binding ShowInstalledOptions, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:InstallationInformation}}, Converter={StaticResource BoolToVisibilityConverter}}">
+                                        <StackPanel DockPanel.Dock="Bottom" Margin="5,0,3,3" Visibility="{Binding ShowInstalledOptions, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type usercontrols:InstallationInformation}}, Converter={StaticResource BoolToVisibilityConverter}}">
                                             <TextBlock Text="{Binding ChosenInstallOptions.BindableCount, Converter={StaticResource LocalizationConverter}, ConverterParameter='string_interp_xChosenOptions'}" FontWeight="Bold" />
                                             <ItemsControl ItemsSource="{Binding ChosenInstallOptions}" />
                                         </StackPanel>
@@ -324,5 +328,5 @@
             </TabItem>
         </TabControl>
     </DockPanel>
-</local:MMBusyPanelBase>
+</usercontrols:MMBusyPanelBase>
 

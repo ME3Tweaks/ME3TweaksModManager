@@ -1,6 +1,6 @@
 ﻿using System.Web;
 
-namespace MassEffectModManagerCore.modmanager.objects
+namespace ME3TweaksModManager.modmanager.objects
 {
     public class NexusProtocolLink
     {

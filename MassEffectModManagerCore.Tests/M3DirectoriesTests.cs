@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using MassEffectModManagerCore.modmanager;
-using MassEffectModManagerCore.modmanager.objects;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.Targets;

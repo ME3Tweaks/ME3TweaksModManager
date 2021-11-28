@@ -1,9 +1,9 @@
 ﻿using System.Windows;
 using System.Windows.Data;
-using MassEffectModManagerCore.modmanager;
-using MassEffectModManagerCore.modmanager.converters;
+using ME3TweaksModManager.modmanager;
+using ME3TweaksModManager.modmanager.converters;
 
-namespace MassEffectModManagerCore.ui
+namespace ME3TweaksModManager.ui
 {
     public static class WPFExtensions
     {

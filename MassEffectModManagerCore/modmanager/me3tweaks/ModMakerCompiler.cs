@@ -1,9 +1,4 @@
-﻿using IniParser;
-using IniParser.Model;
-using MassEffectModManagerCore.modmanager.helpers;
-using MassEffectModManagerCore.modmanager.objects;
-using LegendaryExplorerCore.Helpers;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -13,20 +8,24 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.XPath;
+using IniParser;
+using IniParser.Model;
 using LegendaryExplorerCore.Coalesced;
-using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.modmanager.objects.mod;
-using MassEffectModManagerCore.modmanager.usercontrols;
 using LegendaryExplorerCore.GameFilesystem;
+using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.TLK.ME2ME3;
-using MassEffectModManagerCore.modmanager.diagnostics;
-using ME3TweaksCore.Diagnostics;
 using ME3TweaksCore.Services;
 using ME3TweaksCore.Services.Backup;
+using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.helpers;
+using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.objects;
+using ME3TweaksModManager.modmanager.objects.mod;
+using ME3TweaksModManager.modmanager.usercontrols;
 using Microsoft.AppCenter.Analytics;
 
-namespace MassEffectModManagerCore.modmanager.me3tweaks
+namespace ME3TweaksModManager.modmanager.me3tweaks
 {
     public class ModMakerCompiler
     {

@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Windows.Data;
 
-namespace MassEffectModManagerCore.modmanager.converters
+namespace ME3TweaksModManager.modmanager.converters
 {
     [Localizable(false)]
     public class NotNullToBoolConverter : IValueConverter

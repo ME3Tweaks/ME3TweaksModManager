@@ -6,6 +6,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Markup;
 using System.Xml;
+using ME3TweaksModManager;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MassEffectModManagerCore.Tests

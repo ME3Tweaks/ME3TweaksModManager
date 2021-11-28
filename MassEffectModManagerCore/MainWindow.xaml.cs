@@ -16,55 +16,49 @@ using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media.Animation;
 using System.Windows.Navigation;
-using System.Windows.Threading;
 using System.Xml;
 using System.Xml.Linq;
 using AdonisUI;
 using CommandLine;
-using MassEffectModManagerCore.modmanager;
-using MassEffectModManagerCore.modmanager.helpers;
-using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.modmanager.me3tweaks;
-using MassEffectModManagerCore.modmanager.nexusmodsintegration;
-using MassEffectModManagerCore.modmanager.objects;
-using MassEffectModManagerCore.modmanager.usercontrols;
-using MassEffectModManagerCore.modmanager.windows;
-using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore;
 using LegendaryExplorerCore.Coalesced;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
-using LegendaryExplorerCore.Packages;
-using LegendaryExplorerCore.TLK.ME2ME3;
-using Microsoft.AppCenter.Analytics;
-using Microsoft.AppCenter.Crashes;
-using Microsoft.Win32;
-using Microsoft.WindowsAPICodePack.Dialogs;
-using Serilog;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
+using LegendaryExplorerCore.Packages;
+using LegendaryExplorerCore.TLK.ME2ME3;
 using LegendaryExplorerCore.Unreal;
-using MassEffectModManagerCore.modmanager.diagnostics;
-using MassEffectModManagerCore.modmanager.objects.mod.merge;
-using MassEffectModManagerCore.modmanager.squadmates;
 using ME3TweaksCore;
-using ME3TweaksCore.Helpers;
 using ME3TweaksCore.NativeMods;
 using ME3TweaksCore.Services;
 using ME3TweaksCore.Services.Backup;
 using ME3TweaksCore.Services.BasegameFileIdentification;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksCoreWPF;
+using ME3TweaksModManager.modmanager;
+using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.loaders;
+using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.me3tweaks;
+using ME3TweaksModManager.modmanager.nexusmodsintegration;
+using ME3TweaksModManager.modmanager.objects;
+using ME3TweaksModManager.modmanager.objects.mod.merge;
+using ME3TweaksModManager.modmanager.squadmates;
 using ME3TweaksModManager.modmanager.usercontrols;
+using ME3TweaksModManager.modmanager.windows;
+using ME3TweaksModManager.ui;
+using Microsoft.AppCenter.Analytics;
+using Microsoft.AppCenter.Crashes;
+using Microsoft.Win32;
 using Pathoschild.FluentNexus.Models;
-using MemoryAnalyzer = MassEffectModManagerCore.modmanager.memoryanalyzer.MemoryAnalyzer;
-using Mod = MassEffectModManagerCore.modmanager.objects.mod.Mod;
-using NamedBackgroundWorker = MassEffectModManagerCore.modmanager.helpers.NamedBackgroundWorker;
+using MemoryAnalyzer = ME3TweaksModManager.modmanager.memoryanalyzer.MemoryAnalyzer;
+using Mod = ME3TweaksModManager.modmanager.objects.mod.Mod;
+using NamedBackgroundWorker = ME3TweaksModManager.modmanager.helpers.NamedBackgroundWorker;
 
-namespace MassEffectModManagerCore
+namespace ME3TweaksModManager
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -2793,7 +2787,7 @@ namespace MassEffectModManagerCore
                     nbw.RunWorkerAsync();
                     CommandManager.InvalidateRequerySuggested(); //refresh bindings that depend on this
 
-                    //byte[] bytes = File.ReadAllBytes(@"C:\Users\mgame\Source\Repos\ME3Tweaks\MassEffectModManager\MassEffectModManagerCore\Deployment\Releases\ME3TweaksModManagerExtractor_6.0.0.99.exe");
+                    //byte[] bytes = File.ReadAllBytes(@"C:\Users\mgame\Source\Repos\ME3Tweaks\MassEffectModManager\ME3TweaksModManager\Deployment\Releases\ME3TweaksModManagerExtractor_6.0.0.99.exe");
                     //MemoryStream ms = new MemoryStream(bytes);
                     //SevenZipExtractor sve = new SevenZipExtractor(ms);
                     //sve.ExtractArchive(@"C:\users\public\documents");

@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Threading;
 
 // From https://github.com/i3arnon/ConcurrentHashSet/blob/main/src/ConcurrentHashSet/ConcurrentHashSet.cs
-namespace MassEffectModManagerCore.modmanager.helpers
+namespace ME3TweaksModManager.modmanager.helpers
 {
     /// <summary>
     /// Represents a thread-safe hash-based unique collection.

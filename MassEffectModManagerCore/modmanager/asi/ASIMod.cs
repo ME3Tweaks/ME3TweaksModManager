@@ -2,12 +2,12 @@
 //using System.Collections.Generic;
 //using System.Linq;
 //using System.Text;
-//using MassEffectModManagerCore.modmanager.helpers;
-//using MassEffectModManagerCore.modmanager.usercontrols;
+//using ME3TweaksModManager.modmanager.helpers;
+//using ME3TweaksModManager.modmanager.usercontrols;
 //using LegendaryExplorerCore.Helpers;
 //using LegendaryExplorerCore.Packages;
 
-//namespace MassEffectModManagerCore.modmanager.asi
+//namespace ME3TweaksModManager.modmanager.asi
 //{
 //    /// <summary>
 //    /// Represents a single group of ASI mods across versions. This is used to help prevent installation of duplicate ASIs even if the names differ

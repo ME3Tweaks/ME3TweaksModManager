@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 
-namespace MassEffectModManagerCore.modmanager.save.game3
+namespace ME3TweaksModManager.modmanager.save.game3
 {
     /// <summary>
     /// Converter for Trilogy Save Editor .ron (rust object notation)

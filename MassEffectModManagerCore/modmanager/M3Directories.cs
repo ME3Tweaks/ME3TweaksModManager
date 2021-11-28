@@ -1,9 +1,9 @@
 ﻿using System.IO;
-using MassEffectModManagerCore.modmanager.objects;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCoreWPF;
+using ME3TweaksModManager.modmanager.objects;
 
-namespace MassEffectModManagerCore.modmanager
+namespace ME3TweaksModManager.modmanager
 {
     /// <summary>
     /// Interposer for GameTargetWPF -> MEDirectories, some convenience methods

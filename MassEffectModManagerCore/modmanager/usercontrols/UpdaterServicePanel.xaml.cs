@@ -1,12 +1,4 @@
-﻿using MassEffectModManagerCore.modmanager.helpers;
-using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.modmanager.me3tweaks;
-using MassEffectModManagerCore.modmanager.nexusmodsintegration;
-using MassEffectModManagerCore.ui;
-using Microsoft.AppCenter.Analytics;
-using Microsoft.WindowsAPICodePack.Taskbar;
-using Renci.SshNet;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -19,13 +11,21 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
 using System.Xml;
-using MassEffectModManagerCore.modmanager.objects.mod;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Packages;
-using MassEffectModManagerCore.modmanager.diagnostics;
-using static MassEffectModManagerCore.modmanager.me3tweaks.OnlineContent;
+using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.helpers;
+using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.me3tweaks;
+using ME3TweaksModManager.modmanager.nexusmodsintegration;
+using ME3TweaksModManager.modmanager.objects.mod;
+using ME3TweaksModManager.ui;
+using Microsoft.AppCenter.Analytics;
+using Microsoft.WindowsAPICodePack.Taskbar;
+using Renci.SshNet;
+using static ME3TweaksModManager.modmanager.me3tweaks.OnlineContent;
 
-namespace MassEffectModManagerCore.modmanager.usercontrols
+namespace ME3TweaksModManager.modmanager.usercontrols
 {
     /// <summary>
     /// Interaction logic for UpdaterServicePanel.xaml

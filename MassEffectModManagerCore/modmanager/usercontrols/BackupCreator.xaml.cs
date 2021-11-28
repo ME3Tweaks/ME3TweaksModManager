@@ -1,25 +1,25 @@
-﻿using MassEffectModManagerCore.ui;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Windows;
-using MassEffectModManagerCore.modmanager.helpers;
 using System.Windows.Input;
-using System.IO;
-using MassEffectModManagerCore.modmanager.windows;
-using MassEffectModManagerCore.modmanager.localizations;
 using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
-using MassEffectModManagerCore.modmanager.diagnostics;
-using MassEffectModManagerCore.modmanager.usercontrols.interfaces;
 using ME3TweaksCore.Services.Backup;
 using ME3TweaksCoreWPF;
+using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.helpers;
+using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.usercontrols.interfaces;
+using ME3TweaksModManager.modmanager.windows;
+using ME3TweaksModManager.ui;
 using Microsoft.WindowsAPICodePack.Taskbar;
 using PropertyChanged;
 
-namespace MassEffectModManagerCore.modmanager.usercontrols
+namespace ME3TweaksModManager.modmanager.usercontrols
 {
     /// <summary>
     /// Interaction logic for BackupRestoreManager.xaml

@@ -1,4 +1,4 @@
-﻿namespace MassEffectModManagerCore.modmanager.save.game2.FileFormats
+﻿namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
 {
     public interface IUnrealSerializable
     {

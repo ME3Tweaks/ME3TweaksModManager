@@ -1,13 +1,12 @@
-﻿using MassEffectModManagerCore.ui;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Input;
-using MassEffectModManagerCore.modmanager.objects;
+using ME3TweaksModManager.modmanager.objects;
+using ME3TweaksModManager.ui;
 
-namespace MassEffectModManagerCore.modmanager.usercontrols
+namespace ME3TweaksModManager.modmanager.usercontrols
 {
     public abstract class MMBusyPanelBase : UserControl, INotifyPropertyChanged
     {

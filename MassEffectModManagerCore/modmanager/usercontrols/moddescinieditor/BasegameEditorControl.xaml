@@ -1,5 +1,8 @@
-﻿<local:ModdescEditorControlBase
-    x:Class="MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.BasegameEditorControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor" xmlns:fa5="http://schemas.fontawesome.com/icons/" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:objects="clr-namespace:MassEffectModManagerCore.modmanager.objects" xmlns:alternates="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alternates"
+﻿<moddescinieditor:ModdescEditorControlBase
+    x:Class="ME3TweaksModManager.modmanager.usercontrols.moddescinieditor.BasegameEditorControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:fa5="http://schemas.fontawesome.com/icons/" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+    xmlns:moddescinieditor="clr-namespace:ME3TweaksModManager.modmanager.usercontrols.moddescinieditor"
+    xmlns:alternates="clr-namespace:ME3TweaksModManager.modmanager.usercontrols.moddescinieditor.alternates"
     mc:Ignorable="d"
     DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <ScrollViewer
@@ -37,10 +40,10 @@
                 </Button.Content>
             </Button>
             <StackPanel>
-                <local:DescriptorEditorItemsControl
+                <moddescinieditor:DescriptorEditorItemsControl
                     ItemsSource="{Binding BasegameJob.ParameterMap}"
                     Margin="10,0,0,5" />
-                <local:MultilistEditorControl
+                <moddescinieditor:MultilistEditorControl
                     Header="BASEGAME"
                     x:Name="basegame_multilists_editor" />
                 <TextBlock
@@ -53,4 +56,4 @@
             </StackPanel>
         </DockPanel>
     </ScrollViewer>
-</local:ModdescEditorControlBase>
+</moddescinieditor:ModdescEditorControlBase>

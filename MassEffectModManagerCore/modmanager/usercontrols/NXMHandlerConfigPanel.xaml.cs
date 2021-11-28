@@ -2,16 +2,16 @@
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
-using MassEffectModManagerCore.modmanager.objects;
-using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Misc;
-using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.modmanager.nexusmodsintegration;
+using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.nexusmodsintegration;
+using ME3TweaksModManager.modmanager.objects;
+using ME3TweaksModManager.ui;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 
-namespace MassEffectModManagerCore.modmanager.usercontrols
+namespace ME3TweaksModManager.modmanager.usercontrols
 {
     /// <summary>
     /// Interaction logic for LogUploader.xaml

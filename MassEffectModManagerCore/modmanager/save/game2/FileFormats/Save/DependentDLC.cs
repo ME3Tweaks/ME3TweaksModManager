@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MassEffectModManagerCore.modmanager.save.game2.FileFormats.Save
+namespace ME3TweaksModManager.modmanager.save.game2.FileFormats.Save
 {
     // 00BAB3B0
     public class DependentDLC : IUnrealSerializable

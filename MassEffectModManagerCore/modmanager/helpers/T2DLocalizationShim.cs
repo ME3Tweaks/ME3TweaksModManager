@@ -1,7 +1,7 @@
-﻿using MassEffectModManagerCore.modmanager.localizations;
-using LegendaryExplorerCore.Unreal.Classes;
+﻿using LegendaryExplorerCore.Unreal.Classes;
+using ME3TweaksModManager.modmanager.localizations;
 
-namespace MassEffectModManagerCore.modmanager.helpers
+namespace ME3TweaksModManager.modmanager.helpers
 {
     /// <summary>
     /// Class that provides user facing localizations for ME3Explorer's Texture2D.cs class, which can throw exceptions we need to be able to localize

@@ -1,11 +1,11 @@
-﻿<local:MMBusyPanelBase x:Class="MassEffectModManagerCore.modmanager.usercontrols.ExternalToolLauncher"
+﻿<usercontrols:MMBusyPanelBase x:Class="ME3TweaksModManager.modmanager.usercontrols.ExternalToolLauncher"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols"
         xmlns:fa5="http://schemas.fontawesome.com/icons/"
         xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+        xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
         mc:Ignorable="d"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         Height="Auto" Width="300">
@@ -15,4 +15,4 @@
         <TextBlock HorizontalAlignment="Center" TextAlignment="Center" FontSize="25" FontWeight="Light" Text="{Binding PercentDownloaded, StringFormat='{}{0}%'}" Visibility="{Binding PercentVisibility}"/>
         <TextBlock HorizontalAlignment="Center" TextAlignment="Center" FontSize="16" FontWeight="Light" Text="{Binding Action}" TextWrapping="Wrap"/>
     </StackPanel>
-</local:MMBusyPanelBase>
+</usercontrols:MMBusyPanelBase>

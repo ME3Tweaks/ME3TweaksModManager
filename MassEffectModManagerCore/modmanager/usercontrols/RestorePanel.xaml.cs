@@ -1,16 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
-using MassEffectModManagerCore.modmanager.helpers;
-using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.Services.Backup;
-using ME3TweaksCore.Services.Restore;
 using ME3TweaksCoreWPF;
+using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.objects;
+using ME3TweaksModManager.ui;
 
-namespace MassEffectModManagerCore.modmanager.usercontrols
+namespace ME3TweaksModManager.modmanager.usercontrols
 {
     /// <summary>
     /// Interaction logic for RestorePanel.xaml

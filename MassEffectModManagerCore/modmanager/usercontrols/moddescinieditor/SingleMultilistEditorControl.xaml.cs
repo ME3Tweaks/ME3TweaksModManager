@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel;
 using System.Linq;
 using System.Windows.Controls;
-using MassEffectModManagerCore.ui;
+using ME3TweaksModManager.ui;
 
-namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
+namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
 {
     /// <summary>
     /// Editor control for a multilist

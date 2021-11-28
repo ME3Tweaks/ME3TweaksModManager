@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 //from https://stackoverflow.com/questions/317071/how-do-i-find-out-which-process-is-locking-a-file-using-net
-namespace MassEffectModManagerCore.modmanager.helpers
+namespace ME3TweaksModManager.modmanager.helpers
 {
     static public class FileLockedTracer
     {

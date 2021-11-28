@@ -3,7 +3,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using PropertyChanged;
 
-namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alternates
+namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor.alternates
 {
     /// <summary>
     /// Interaction logic for AlternateItemsControl.xaml

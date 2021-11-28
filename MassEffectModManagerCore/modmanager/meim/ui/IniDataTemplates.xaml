@@ -15,8 +15,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:meim="clr-namespace:MassEffectModManagerCore.modmanager.meim"
-                    x:Class="MassEffectModManagerCore.modmanager.meim.ui.IniDataTemplates"
+                    xmlns:meim="clr-namespace:ME3TweaksModManager.modmanager.meim"
+                    x:Class="ME3TweaksModManager.modmanager.meim.ui.IniDataTemplates"
                     >
     <!-- ValidatingControl Style -->
     <Style TargetType="{x:Type FrameworkElement}" x:Key="ValidatingControl">

@@ -4,16 +4,16 @@
 //using System.Windows.Input;
 //using LegendaryExplorerCore.Gammtek.Extensions;
 //using LegendaryExplorerCore.Misc;
-//using MassEffectModManagerCore.modmanager.localizations;
-//using MassEffectModManagerCore.modmanager.objects;
-//using MassEffectModManagerCore.ui;
+//using ME3TweaksModManager.modmanager.localizations;
+//using ME3TweaksModManager.modmanager.objects;
+//using ME3TweaksModManager.ui;
 //using LegendaryExplorerCore.Packages;
 //using ME3TweaksCore.NativeMods;
 //using ME3TweaksCore.Targets;
 //using ME3TweaksCoreWPF;
 //using PropertyChanged;
 
-//namespace MassEffectModManagerCore.modmanager.asi
+//namespace ME3TweaksModManager.modmanager.asi
 //{
 //    /// <summary>
 //    /// ASI Manager UI controller for single game

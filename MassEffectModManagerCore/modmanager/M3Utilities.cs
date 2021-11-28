@@ -15,13 +15,13 @@ using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
-using MassEffectModManagerCore.modmanager.diagnostics;
-using MassEffectModManagerCore.modmanager.helpers;
-using MassEffectModManagerCore.modmanager.localizations;
 using ME3TweaksCoreWPF;
+using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.helpers;
+using ME3TweaksModManager.modmanager.localizations;
 using Microsoft.Win32;
 
-namespace MassEffectModManagerCore.modmanager
+namespace ME3TweaksModManager.modmanager
 {
     [Localizable(false)]
     public static class M3Utilities
@@ -195,7 +195,7 @@ namespace MassEffectModManagerCore.modmanager
                 string exe = GetCachedExecutablePath("PermissionsGranter.exe");
                 try
                 {
-                    M3Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.me3tweaks.PermissionsGranter.exe", exe, true);
+                    M3Utilities.ExtractInternalFile("ME3TweaksModManager.modmanager.me3tweaks.PermissionsGranter.exe", exe, true);
                 }
                 catch (Exception e)
                 {
@@ -205,7 +205,7 @@ namespace MassEffectModManagerCore.modmanager
                     try
                     {
                         exe = Path.Combine(Path.GetTempPath(), "PermissionsGranter");
-                        M3Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.me3tweaks.PermissionsGranter.exe", exe, true);
+                        M3Utilities.ExtractInternalFile("ME3TweaksModManager.modmanager.me3tweaks.PermissionsGranter.exe", exe, true);
                     }
                     catch (Exception ex)
                     {
@@ -295,7 +295,7 @@ namespace MassEffectModManagerCore.modmanager
                 }
 
                 string exe = GetCachedExecutablePath("PermissionsGranter.exe");
-                M3Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.me3tweaks.PermissionsGranter.exe", exe, true);
+                M3Utilities.ExtractInternalFile("ME3TweaksModManager.modmanager.me3tweaks.PermissionsGranter.exe", exe, true);
                 args = $"\"{System.Security.Principal.WindowsIdentity.GetCurrent().Name}\" " + args;
                 //need to run write permissions program
                 if (IsAdministrator())
@@ -1063,25 +1063,25 @@ namespace MassEffectModManagerCore.modmanager
             {
                 var obinkPath = Path.Combine(target.TargetPath, "Binaries", "binkw23.dll");
                 File.Delete(obinkPath);
-                M3Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me1.binkw23.dll", binkPath, true);
+                M3Utilities.ExtractInternalFile("ME3TweaksModManager.modmanager.binkw32.me1.binkw23.dll", binkPath, true);
             }
             else if (target.Game == MEGame.ME2)
             {
                 var obinkPath = Path.Combine(target.TargetPath, "Binaries", "binkw23.dll");
                 File.Delete(obinkPath);
-                M3Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me2.binkw23.dll", binkPath, true);
+                M3Utilities.ExtractInternalFile("ME3TweaksModManager.modmanager.binkw32.me2.binkw23.dll", binkPath, true);
             }
             else if (target.Game == MEGame.ME3)
             {
                 var obinkPath = Path.Combine(target.TargetPath, "Binaries", "win32", "binkw23.dll");
                 File.Delete(obinkPath);
-                M3Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw32.me3.binkw23.dll", binkPath, true);
+                M3Utilities.ExtractInternalFile("ME3TweaksModManager.modmanager.binkw32.me3.binkw23.dll", binkPath, true);
             }
             else if (target.Game.IsLEGame())
             {
                 var obinkPath = Path.Combine(target.TargetPath, "Binaries", "Win64", "bink2w64_original.dll");
                 File.Delete(obinkPath);
-                M3Utilities.ExtractInternalFile("MassEffectModManagerCore.modmanager.binkw64.bink2w64_original.dll", binkPath, true);
+                M3Utilities.ExtractInternalFile("ME3TweaksModManager.modmanager.binkw64.bink2w64_original.dll", binkPath, true);
 
             }
 

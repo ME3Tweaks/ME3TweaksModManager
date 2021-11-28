@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using LegendaryExplorerCore.Helpers;
-using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.modmanager.objects.mod.merge.v1;
+using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.objects.mod.merge.v1;
 
-namespace MassEffectModManagerCore.modmanager.objects.mod.merge
+namespace ME3TweaksModManager.modmanager.objects.mod.merge
 {
     public class MergeModLoader
     {

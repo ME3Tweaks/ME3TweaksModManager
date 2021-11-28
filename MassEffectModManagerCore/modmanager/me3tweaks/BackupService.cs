@@ -7,11 +7,11 @@
 //using FontAwesome.WPF;
 //using LegendaryExplorerCore.Misc;
 //using LegendaryExplorerCore.Packages;
-//using MassEffectModManagerCore.modmanager.diagnostics;
-//using MassEffectModManagerCore.modmanager.helpers;
-//using MassEffectModManagerCore.modmanager.localizations;
-//using MassEffectModManagerCore.modmanager.objects;
-//using MassEffectModManagerCore.ui;
+//using ME3TweaksModManager.modmanager.diagnostics;
+//using ME3TweaksModManager.modmanager.helpers;
+//using ME3TweaksModManager.modmanager.localizations;
+//using ME3TweaksModManager.modmanager.objects;
+//using ME3TweaksModManager.ui;
 //using ME3TweaksCore.Targets;
 //using Microsoft.Win32;
 //using Serilog;
@@ -21,10 +21,10 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using MassEffectModManagerCore.modmanager.helpers;
 using ME3TweaksCore.Services.Backup;
+using ME3TweaksModManager.modmanager.helpers;
 
-namespace MassEffectModManagerCore.modmanager.me3tweaks
+namespace ME3TweaksModManager.modmanager.me3tweaks
 {
     /// <summary>
     /// Contains methods and bindable variables for accessing and displaying info about game backups 

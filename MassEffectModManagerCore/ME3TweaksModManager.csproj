@@ -12,11 +12,11 @@
 		<Version>7.1.0.124</Version>
 		<Copyright>ME3Tweaks 2012 - 2021</Copyright>
 		<Authors>Mgamerz</Authors>
-		<PackageId>MassEffectModManagerCore</PackageId>
+		<PackageId>ME3TweaksModManager</PackageId>
 		<Product>ME3Tweaks Mod Manager</Product>
 		<Description>Mod Manager for the original Mass Effect Trilogy and Legendary Edition</Description>
 		<Company>ME3Tweaks</Company>
-		<StartupObject>MassEffectModManagerCore.App</StartupObject>
+		<StartupObject>ME3TweaksModManager.App</StartupObject>
 		<ApplicationIcon>appicon.ico</ApplicationIcon>
 		<AssemblyName>ME3TweaksModManager</AssemblyName>
 		<ApplicationManifest>app.manifest</ApplicationManifest>

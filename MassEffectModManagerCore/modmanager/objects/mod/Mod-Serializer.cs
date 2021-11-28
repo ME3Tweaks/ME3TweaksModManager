@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using LegendaryExplorerCore.Misc;
-using MassEffectModManagerCore.modmanager.objects.mod.editor;
 using LegendaryExplorerCore.Packages;
+using ME3TweaksModManager.modmanager.objects.mod.editor;
 
-namespace MassEffectModManagerCore.modmanager.objects.mod
+namespace ME3TweaksModManager.modmanager.objects.mod
 {
     public partial class Mod : IMDParameterMap, IEquatable<Mod>
     {

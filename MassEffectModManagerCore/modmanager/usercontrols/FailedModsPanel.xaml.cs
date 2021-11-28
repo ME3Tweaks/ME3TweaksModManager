@@ -1,14 +1,14 @@
-﻿using MassEffectModManagerCore.ui;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using LegendaryExplorerCore.Misc;
-using MassEffectModManagerCore.modmanager.objects.mod;
 using LegendaryExplorerCore.Packages;
+using ME3TweaksModManager.modmanager.objects.mod;
+using ME3TweaksModManager.ui;
 
-namespace MassEffectModManagerCore.modmanager.usercontrols
+namespace ME3TweaksModManager.modmanager.usercontrols
 {
     /// <summary>
     /// Interaction logic for FailedModsPanel.xaml

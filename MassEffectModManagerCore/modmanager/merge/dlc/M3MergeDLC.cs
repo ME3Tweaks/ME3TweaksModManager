@@ -2,11 +2,9 @@
 using System.IO;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Packages;
-using MassEffectModManagerCore;
-using MassEffectModManagerCore.modmanager;
-using MassEffectModManagerCore.modmanager.windows;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCoreWPF;
+using ME3TweaksModManager.modmanager.windows;
 
 namespace ME3TweaksModManager.modmanager.merge.dlc
 {

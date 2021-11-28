@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LegendaryExplorerCore.Misc;
-using MassEffectModManagerCore.modmanager.objects;
 using PropertyChanged;
 
 namespace ME3TweaksModManager.modmanager.objects

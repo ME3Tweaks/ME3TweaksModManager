@@ -1,6 +1,6 @@
 ﻿using Microsoft.Win32;
 
-namespace MassEffectModManagerCore.modmanager.helpers
+namespace ME3TweaksModManager.modmanager.helpers
 {
     public static class RegistryHandler
     {

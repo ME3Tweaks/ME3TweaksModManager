@@ -1,4 +1,4 @@
-﻿namespace MassEffectModManagerCore.modmanager.usercontrols.interfaces
+﻿namespace ME3TweaksModManager.modmanager.usercontrols.interfaces
 {
     public interface ISizeAdjustable
     {

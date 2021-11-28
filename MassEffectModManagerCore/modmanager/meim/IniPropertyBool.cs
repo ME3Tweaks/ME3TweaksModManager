@@ -18,7 +18,7 @@ using System;
 using System.ComponentModel;
 using LegendaryExplorerCore.Misc;
 
-namespace MassEffectModManagerCore.modmanager.meim
+namespace ME3TweaksModManager.modmanager.meim
 {
     [Localizable(false)]
     public class IniPropertyBool : IniPropertyMaster

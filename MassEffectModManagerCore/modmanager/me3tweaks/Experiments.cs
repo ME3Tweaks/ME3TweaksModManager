@@ -6,10 +6,10 @@ using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using System.Xml.Serialization;
-using MassEffectModManagerCore.modmanager.helpers;
 using LegendaryExplorerCore.Helpers;
+using ME3TweaksModManager.modmanager.helpers;
 
-namespace MassEffectModManagerCore.modmanager.me3tweaks
+namespace ME3TweaksModManager.modmanager.me3tweaks
 {
     [Localizable(false)]
     public class Experiments

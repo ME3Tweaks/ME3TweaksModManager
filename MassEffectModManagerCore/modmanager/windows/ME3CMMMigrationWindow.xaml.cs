@@ -7,17 +7,17 @@ using System.Windows;
 using IniParser;
 using IniParser.Model;
 using LegendaryExplorerCore.Misc;
-using MassEffectModManagerCore.modmanager.helpers;
-using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore.Packages;
-using MassEffectModManagerCore.modmanager.diagnostics;
 using ME3TweaksCoreWPF;
+using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.helpers;
+using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.ui;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using PropertyChanged;
 
-namespace MassEffectModManagerCore.modmanager.windows
+namespace ME3TweaksModManager.modmanager.windows
 {
     /// <summary>
     /// Interaction logic for ME3CMMMigrationWindow.xaml
@@ -333,7 +333,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                             // Install redirect to ensure user shortcuts continue to work
                             var me3cmmPath = Path.Combine(exeDir, @"ME3CMM.exe");
                             M3Log.Information(@"Writing redirector to " + me3cmmPath);
-                            M3Utilities.ExtractInternalFile(@"MassEffectModManagerCore.updater.ME3CMM.exe", me3cmmPath, true);
+                            M3Utilities.ExtractInternalFile(@"ME3TweaksModManager.updater.ME3CMM.exe", me3cmmPath, true);
 
                         }
                         else

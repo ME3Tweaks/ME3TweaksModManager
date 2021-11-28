@@ -6,7 +6,7 @@ using System.IO;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Packages;
 
-namespace MassEffectModManagerCore.modmanager.save.game2.FileFormats
+namespace ME3TweaksModManager.modmanager.save.game2.FileFormats
 {
     public class UnrealStream : IUnrealStream
     {

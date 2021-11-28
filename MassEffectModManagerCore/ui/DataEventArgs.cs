@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MassEffectModManagerCore.ui
+namespace ME3TweaksModManager.ui
 {
     public class DataEventArgs : EventArgs
     {

@@ -5,14 +5,14 @@ using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.Services;
 
-namespace MassEffectModManagerCore.modmanager.gamemd5
+namespace ME3TweaksModManager.modmanager.gamemd5
 {
     class MD5Gen
     {
 
         public static void UpdateMD5Map(MEGame game, string directory, string outName)
         {
-            var outF = $@"C:\Users\mgame\source\repos\ME3Tweaks\MassEffectModManager\MassEffectModManagerCore\modmanager\gamemd5\{outName}";
+            var outF = $@"C:\Users\mgame\source\repos\ME3Tweaks\MassEffectModManager\ME3TweaksModManager\modmanager\gamemd5\{outName}";
             var db = VanillaDatabaseService.LoadDatabaseFor(game, false);
 
             if (game.IsLEGame())
@@ -103,7 +103,7 @@ namespace MassEffectModManagerCore.modmanager.gamemd5
             outStream.WriteStringASCII(@"MD5T");
             outStream.WriteInt32((int)mapStream.Length);
             outStream.Write(compBytes);
-            outStream.WriteToFile($@"C:\Users\mgame\source\repos\ME3Tweaks\MassEffectModManager\MassEffectModManagerCore\modmanager\gamemd5\{outName}");
+            outStream.WriteToFile($@"C:\Users\mgame\source\repos\ME3Tweaks\MassEffectModManager\ME3TweaksModManager\modmanager\gamemd5\{outName}");
 
         }
 

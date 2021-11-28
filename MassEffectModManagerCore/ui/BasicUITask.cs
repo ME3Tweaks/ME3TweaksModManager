@@ -1,9 +1,8 @@
-﻿using System.ComponentModel;
-using System.Windows.Media;
+﻿using System.Windows.Media;
 using FontAwesome5;
 using PropertyChanged;
 
-namespace MassEffectModManagerCore.ui
+namespace ME3TweaksModManager.ui
 {
     /// <summary>
     /// Class defining a basic UI task, that defaults to an gray hourglass, no spin, with no text.

@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Pathoschild.FluentNexus.Models;
 
-namespace MassEffectModManagerCore.modmanager.objects.nexusfiledb
+namespace ME3TweaksModManager.modmanager.objects.nexusfiledb
 {
     public class NMFileInfo
     {

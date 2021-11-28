@@ -1,9 +1,9 @@
 ﻿using System.IO;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Packages;
-using MassEffectModManagerCore.modmanager.save.game3;
+using ME3TweaksModManager.modmanager.save.game3;
 
-namespace MassEffectModManagerCore.modmanager.save
+namespace ME3TweaksModManager.modmanager.save
 {
     public class SaveFileLoader
     {

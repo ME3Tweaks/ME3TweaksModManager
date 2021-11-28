@@ -2,9 +2,9 @@
 using System.ComponentModel;
 using System.Globalization;
 using System.Windows.Data;
-using MassEffectModManagerCore.modmanager.localizations;
+using ME3TweaksModManager.modmanager.localizations;
 
-namespace MassEffectModManagerCore.modmanager.converters
+namespace ME3TweaksModManager.modmanager.converters
 {
     [Localizable(false)]
     public class LocalizationConverter : IValueConverter

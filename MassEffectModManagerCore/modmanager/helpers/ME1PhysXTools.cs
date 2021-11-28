@@ -1,8 +1,8 @@
 ﻿using System.IO;
-using MassEffectModManagerCore.modmanager.diagnostics;
 using ME3TweaksCoreWPF;
+using ME3TweaksModManager.modmanager.diagnostics;
 
-namespace MassEffectModManagerCore.modmanager.helpers
+namespace ME3TweaksModManager.modmanager.helpers
 {
     public class ME1PhysXTools
     {

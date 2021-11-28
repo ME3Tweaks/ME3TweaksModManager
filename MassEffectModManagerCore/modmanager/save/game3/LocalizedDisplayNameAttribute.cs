@@ -23,7 +23,7 @@
 using System;
 using System.ComponentModel;
 
-namespace MassEffectModManagerCore.modmanager.save.game3
+namespace ME3TweaksModManager.modmanager.save.game3
 {
     [AttributeUsage(AttributeTargets.Property |
                     AttributeTargets.Event |

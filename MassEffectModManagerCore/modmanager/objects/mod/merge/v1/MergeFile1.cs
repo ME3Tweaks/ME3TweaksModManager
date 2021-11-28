@@ -6,13 +6,13 @@ using System.Linq;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Packages.CloningImportingAndRelinking;
-using MassEffectModManagerCore.modmanager.diagnostics;
-using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.modmanager.windows;
 using ME3TweaksCoreWPF;
+using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.windows;
 using Newtonsoft.Json;
 
-namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
+namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
 {
     public class MergeFile1
     {

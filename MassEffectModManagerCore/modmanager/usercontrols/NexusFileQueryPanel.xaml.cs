@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 using System.Windows.Documents;
 using System.Windows.Input;
 using LegendaryExplorerCore.Misc;
-using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.modmanager.nexusmodsintegration;
-using MassEffectModManagerCore.modmanager.objects.nexusfiledb;
-using MassEffectModManagerCore.ui;
-using MassEffectModManagerCore.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.nexusmodsintegration;
+using ME3TweaksModManager.modmanager.objects.nexusfiledb;
+using ME3TweaksModManager.ui;
 using Pathoschild.FluentNexus.Models;
 
-namespace MassEffectModManagerCore.modmanager.usercontrols
+namespace ME3TweaksModManager.modmanager.usercontrols
 {
     /// <summary>
     /// Interaction logic for NexusFileQueryPanel.xaml

@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Windows.Data;
 using LegendaryExplorerCore.Packages;
 
-namespace MassEffectModManagerCore.modmanager.save.game2.UI
+namespace ME3TweaksModManager.modmanager.save.game2.UI
 {
     [Localizable(false)]
     public class LevelNameStringConverter : IValueConverter

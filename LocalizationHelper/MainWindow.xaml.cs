@@ -12,7 +12,7 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Xml;
 using System.Xml.Linq;
-using MassEffectModManagerCore.modmanager.objects;
+using ME3TweaksModManager.modmanager.objects;
 using Path = System.IO.Path;
 
 namespace LocalizationHelper

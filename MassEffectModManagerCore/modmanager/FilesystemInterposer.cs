@@ -7,7 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using SevenZip;
 
-namespace MassEffectModManagerCore.modmanager
+namespace ME3TweaksModManager.modmanager
 {
     [Localizable(false)]
     /// <summary>

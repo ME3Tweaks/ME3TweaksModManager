@@ -1,8 +1,8 @@
-﻿using LegendaryExplorerCore.Packages;
-using System.Linq;
+﻿using System.Linq;
+using LegendaryExplorerCore.Packages;
 using PropertyChanged;
 
-namespace MassEffectModManagerCore.modmanager.helpers
+namespace ME3TweaksModManager.modmanager.helpers
 {
     [AddINotifyPropertyChangedInterface]
     public class MEGameSelector

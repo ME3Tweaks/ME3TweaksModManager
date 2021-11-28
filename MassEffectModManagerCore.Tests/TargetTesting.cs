@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Text;
-using MassEffectModManagerCore.modmanager;
-using MassEffectModManagerCore.modmanager.objects;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.Targets;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

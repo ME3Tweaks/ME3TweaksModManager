@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace MassEffectModManagerCore.ui
+namespace ME3TweaksModManager.ui
 {
     public class StretchingTreeView : TreeView
     {

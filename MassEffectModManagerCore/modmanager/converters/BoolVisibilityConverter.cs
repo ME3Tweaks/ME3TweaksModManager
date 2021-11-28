@@ -6,7 +6,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 
-namespace MassEffectModManagerCore.modmanager.converters
+namespace ME3TweaksModManager.modmanager.converters
 {
     [Localizable(false)]
     [ValueConversion(typeof(bool), typeof(Visibility))]

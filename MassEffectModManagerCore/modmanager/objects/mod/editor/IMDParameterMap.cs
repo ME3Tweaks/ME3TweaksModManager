@@ -1,6 +1,6 @@
 ﻿using LegendaryExplorerCore.Misc;
 
-namespace MassEffectModManagerCore.modmanager.objects.mod.editor
+namespace ME3TweaksModManager.modmanager.objects.mod.editor
 {
     /// <summary>
     /// Serialization interface for moddesc.ini

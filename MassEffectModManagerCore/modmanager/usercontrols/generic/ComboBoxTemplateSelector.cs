@@ -4,7 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Markup;
 using System.Windows.Media;
 
-namespace MassEffectModManagerCore.modmanager.usercontrols.generic
+namespace ME3TweaksModManager.modmanager.usercontrols.generic
 {
     public class ComboBoxTemplateSelector : DataTemplateSelector
     {

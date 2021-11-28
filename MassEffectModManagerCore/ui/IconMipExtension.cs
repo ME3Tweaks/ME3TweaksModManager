@@ -6,7 +6,7 @@ using System.Windows.Media.Imaging;
 
 // From https://stackoverflow.com/questions/952080/how-do-you-select-the-right-size-icon-from-a-multi-resolution-ico-file-in-wpf
 
-namespace MassEffectModManagerCore.ui
+namespace ME3TweaksModManager.ui
 {
     /// <summary>
     /// Simple extension for icon, to let you choose icon with specific size.

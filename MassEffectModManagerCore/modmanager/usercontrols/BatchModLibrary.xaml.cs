@@ -1,5 +1,4 @@
-﻿using MassEffectModManagerCore.ui;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -7,16 +6,17 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using LegendaryExplorerCore.Misc;
-using MassEffectModManagerCore.modmanager.objects.mod;
-using MassEffectModManagerCore.modmanager.windows;
 using LegendaryExplorerCore.Packages;
-using MassEffectModManagerCore.modmanager.localizations;
 using ME3TweaksCoreWPF;
 using ME3TweaksModManager.modmanager.loaders;
+using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.objects.mod;
+using ME3TweaksModManager.modmanager.windows;
+using ME3TweaksModManager.ui;
 using Microsoft.AppCenter.Analytics;
-using MemoryAnalyzer = MassEffectModManagerCore.modmanager.memoryanalyzer.MemoryAnalyzer;
+using MemoryAnalyzer = ME3TweaksModManager.modmanager.memoryanalyzer.MemoryAnalyzer;
 
-namespace MassEffectModManagerCore.modmanager.usercontrols
+namespace ME3TweaksModManager.modmanager.usercontrols
 {
     /// <summary>
     /// Interaction logic for BatchModLibrary.xaml

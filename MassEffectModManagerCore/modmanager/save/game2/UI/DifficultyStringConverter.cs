@@ -2,9 +2,9 @@
 using System.ComponentModel;
 using System.Globalization;
 using System.Windows.Data;
-using MassEffectModManagerCore.modmanager.save.game2.FileFormats.Save;
+using ME3TweaksModManager.modmanager.save.game2.FileFormats.Save;
 
-namespace MassEffectModManagerCore.modmanager.save.game2.UI
+namespace ME3TweaksModManager.modmanager.save.game2.UI
 {
     [Localizable(false)]
     public class DifficultyStringConverter : IValueConverter

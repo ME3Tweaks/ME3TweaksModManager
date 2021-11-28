@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using MassEffectModManagerCore.modmanager.me3tweaks;
 using ME3TweaksCore.Services;
 using ME3TweaksCore.Services.BasegameFileIdentification;
+using ME3TweaksModManager.modmanager.me3tweaks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MassEffectModManagerCore.Tests

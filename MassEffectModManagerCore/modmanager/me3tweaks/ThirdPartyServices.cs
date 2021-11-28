@@ -3,7 +3,7 @@
 //using System.Linq;
 //using LegendaryExplorerCore.Packages;
 
-//namespace MassEffectModManagerCore.modmanager.me3tweaks
+//namespace ME3TweaksModManager.modmanager.me3tweaks
 //{
 //    [Localizable(false)]
 //    public class ThirdPartyServices

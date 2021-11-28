@@ -17,7 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System.ComponentModel;
 using LegendaryExplorerCore.Misc;
 
-namespace MassEffectModManagerCore.modmanager.meim
+namespace ME3TweaksModManager.modmanager.meim
 {
     [Localizable(false)]
     public class IniPropertyFloat : IniPropertyMaster

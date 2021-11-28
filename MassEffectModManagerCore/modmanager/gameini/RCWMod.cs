@@ -7,9 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using LegendaryExplorerCore.Misc;
-using MassEffectModManagerCore.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.diagnostics;
 
-namespace MassEffectModManagerCore.modmanager.gameini
+namespace ME3TweaksModManager.modmanager.gameini
 {
     [Localizable(false)]
     [DebuggerDisplay("RCWMod {ModName} by {Author}, {Files.Count} files")]

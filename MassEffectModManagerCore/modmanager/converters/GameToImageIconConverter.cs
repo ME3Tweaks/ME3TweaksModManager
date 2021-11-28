@@ -5,10 +5,10 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 using LegendaryExplorerCore.Packages;
-using MassEffectModManagerCore.modmanager.helpers;
-using MassEffectModManagerCore.ui;
+using ME3TweaksModManager.modmanager.helpers;
+using ME3TweaksModManager.ui;
 
-namespace MassEffectModManagerCore.modmanager.converters
+namespace ME3TweaksModManager.modmanager.converters
 {
     [Localizable(false)]
     public class GameToImageIconConverter : IValueConverter

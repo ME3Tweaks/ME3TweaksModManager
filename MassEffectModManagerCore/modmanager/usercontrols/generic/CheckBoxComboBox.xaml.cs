@@ -7,11 +7,11 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using LegendaryExplorerCore.Misc;
-using MassEffectModManagerCore.modmanager.localizations;
+using ME3TweaksModManager.modmanager.localizations;
 using PropertyChanged;
-using CheckBoxSelectionPair = MassEffectModManagerCore.ui.CheckBoxSelectionPair;
+using CheckBoxSelectionPair = ME3TweaksModManager.ui.CheckBoxSelectionPair;
 
-namespace MassEffectModManagerCore.modmanager.usercontrols.generic
+namespace ME3TweaksModManager.modmanager.usercontrols.generic
 {
     /// <summary>
     /// Interaction logic for CheckBoxComboBox.xaml

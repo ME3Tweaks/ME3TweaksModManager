@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Data;
 using ME3TweaksCoreWPF;
 
-namespace MassEffectModManagerCore.modmanager.converters
+namespace ME3TweaksModManager.modmanager.converters
 {
     public class GameIconVisibilityConverter : IValueConverter
     {

@@ -1,11 +1,11 @@
-﻿using MassEffectModManagerCore.modmanager.localizations;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using ME3TweaksModManager.modmanager.localizations;
 
-namespace MassEffectModManagerCore.modmanager.objects
+namespace ME3TweaksModManager.modmanager.objects
 {
     /// <summary>
     /// MixIns are patches that can be stacked onto the same file multipe times as long as the file size does not change.

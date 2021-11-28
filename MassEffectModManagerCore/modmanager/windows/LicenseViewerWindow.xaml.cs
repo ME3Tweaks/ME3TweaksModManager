@@ -1,7 +1,7 @@
 ﻿using System.Windows;
-using MassEffectModManagerCore.ui;
+using ME3TweaksModManager.ui;
 
-namespace MassEffectModManagerCore.modmanager.windows
+namespace ME3TweaksModManager.modmanager.windows
 {
     /// <summary>
     /// Interaction logic for LicenseViewerWindow.xaml

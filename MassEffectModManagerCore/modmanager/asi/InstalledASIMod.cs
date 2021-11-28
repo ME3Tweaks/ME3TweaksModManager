@@ -4,12 +4,12 @@
 //using System.Linq;
 //using System.Text;
 //using System.Windows.Media;
-//using MassEffectModManagerCore.modmanager.localizations;
+//using ME3TweaksModManager.modmanager.localizations;
 //using LegendaryExplorerCore.Packages;
-//using MassEffectModManagerCore.modmanager.diagnostics;
+//using ME3TweaksModManager.modmanager.diagnostics;
 //using Serilog;
 
-//namespace MassEffectModManagerCore.modmanager.asi
+//namespace ME3TweaksModManager.modmanager.asi
 //{
 
 //    /// <summary>

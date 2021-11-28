@@ -7,17 +7,17 @@
 //using FontAwesome.WPF;
 //using FontAwesome5;
 //using LegendaryExplorerCore.Helpers;
-//using MassEffectModManagerCore.modmanager.localizations;
-//using MassEffectModManagerCore.modmanager.objects;
-//using MassEffectModManagerCore.modmanager.objects.mod;
+//using ME3TweaksModManager.modmanager.localizations;
+//using ME3TweaksModManager.modmanager.objects;
+//using ME3TweaksModManager.modmanager.objects.mod;
 //using LegendaryExplorerCore.Compression;
 //using LegendaryExplorerCore.GameFilesystem;
 //using LegendaryExplorerCore.Gammtek.Extensions;
 //using LegendaryExplorerCore.Misc;
 //using LegendaryExplorerCore.Packages;
 //using LegendaryExplorerCore.Unreal;
-//using MassEffectModManagerCore.modmanager.diagnostics;
-//using MassEffectModManagerCore.modmanager.me3tweaks;
+//using ME3TweaksModManager.modmanager.diagnostics;
+//using ME3TweaksModManager.modmanager.me3tweaks;
 //using ME3TweaksCore.GameFilesystem;
 //using ME3TweaksCore.Services.Backup;
 //using ME3TweaksCore.Targets;
@@ -25,7 +25,7 @@
 //using ME3TweaksCoreWPF.Services.Backup;
 //using Serilog;
 
-//namespace MassEffectModManagerCore.modmanager.helpers
+//namespace ME3TweaksModManager.modmanager.helpers
 //{
 //    /// <summary>
 //    /// Class for querying information about game and fetching vanilla files.

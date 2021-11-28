@@ -1,13 +1,13 @@
-﻿<local:MMBusyPanelBase
-    x:Class="MassEffectModManagerCore.modmanager.usercontrols.BackupFileFetcher" 
+﻿<usercontrols:MMBusyPanelBase
+    x:Class="ME3TweaksModManager.modmanager.usercontrols.BackupFileFetcher" 
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-    xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" 
     xmlns:fa5="http://schemas.fontawesome.com/icons/" 
     xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+    xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
     mc:Ignorable="d"
     d:DesignHeight="450"
     d:DesignWidth="800"
@@ -89,7 +89,7 @@
                     </DataTemplate>
                 </TabControl.ItemTemplate>
                 <TabControl.ContentTemplate>
-                    <DataTemplate DataType="{x:Type local:BackupFileFetcher+BackupFetcherGame}">
+                    <DataTemplate DataType="{x:Type usercontrols:BackupFileFetcher+BackupFetcherGame}">
                         <DockPanel>
                             <DockPanel DockPanel.Dock="Bottom">
                                 <Button
@@ -125,4 +125,4 @@
             </TabControl>
         </Grid>
     </DockPanel>
-</local:MMBusyPanelBase>
+</usercontrols:MMBusyPanelBase>

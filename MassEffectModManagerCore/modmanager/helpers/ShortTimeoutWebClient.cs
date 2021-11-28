@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net;
 
-namespace MassEffectModManagerCore.modmanager.helpers
+namespace ME3TweaksModManager.modmanager.helpers
 {
     public class ShortTimeoutWebClient : WebClient
     {

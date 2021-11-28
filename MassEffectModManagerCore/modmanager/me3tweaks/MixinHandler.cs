@@ -1,21 +1,21 @@
-﻿using MassEffectModManagerCore.modmanager.objects;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Runtime;
 using System.Text;
 using System.Xml.Linq;
-using MassEffectModManagerCore.modmanager.memoryanalyzer;
-using Microsoft.IO;
-using System.Runtime;
-using MassEffectModManagerCore.modmanager.diagnostics;
-using MassEffectModManagerCore.modmanager.localizations;
 using ME3TweaksCore.Helpers;
+using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.memoryanalyzer;
+using ME3TweaksModManager.modmanager.objects;
 using Microsoft.AppCenter.Crashes;
+using Microsoft.IO;
 
-namespace MassEffectModManagerCore.modmanager.me3tweaks
+namespace ME3TweaksModManager.modmanager.me3tweaks
 {
     [Localizable(false)]
     /// <summary>

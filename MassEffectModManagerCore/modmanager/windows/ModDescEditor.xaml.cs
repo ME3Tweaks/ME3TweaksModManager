@@ -5,14 +5,14 @@ using System.IO;
 using System.Windows;
 using System.Windows.Media;
 using IniParser.Model;
-using MassEffectModManagerCore.modmanager.diagnostics;
-using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.modmanager.objects.mod;
-using MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor;
-using MassEffectModManagerCore.ui;
+using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.loaders;
+using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.objects.mod;
+using ME3TweaksModManager.modmanager.usercontrols.moddescinieditor;
+using ME3TweaksModManager.ui;
 
-namespace MassEffectModManagerCore.modmanager.windows
+namespace ME3TweaksModManager.modmanager.windows
 {
     /// <summary>
     /// Interaction logic for ModDescEditor.xaml

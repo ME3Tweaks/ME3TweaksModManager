@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MassEffectModManagerCore.modmanager.save.game2.FileFormats.Save
+namespace ME3TweaksModManager.modmanager.save.game2.FileFormats.Save
 {
     // 00BB0C50
     public class KismetBool : IUnrealSerializable

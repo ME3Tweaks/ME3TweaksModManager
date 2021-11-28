@@ -9,10 +9,10 @@ using System.Security.Cryptography;
 using System.Text;
 using IniParser;
 using IniParser.Model;
-using MassEffectModManagerCore.modmanager.diagnostics;
-using MassEffectModManagerCore.modmanager.nexusmodsintegration;
+using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.nexusmodsintegration;
 
-namespace MassEffectModManagerCore.modmanager
+namespace ME3TweaksModManager.modmanager
 {
     [Localizable(false)]
     public static class Settings

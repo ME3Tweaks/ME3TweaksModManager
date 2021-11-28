@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace MassEffectModManagerCore.modmanager.usercontrols
+namespace ME3TweaksModManager.modmanager.usercontrols
 {
     /// <summary>
     /// Interaction logic for MEMInstallerPanel.xaml

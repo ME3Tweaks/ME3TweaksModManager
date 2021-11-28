@@ -2,7 +2,7 @@
 using System.Windows.Input;
 using Microsoft.Xaml.Behaviors;
 
-namespace MassEffectModManagerCore.ui
+namespace ME3TweaksModManager.ui
 {
     /// <summary>
     /// Captures and eats MouseWheel events so that a nested ListBox does not

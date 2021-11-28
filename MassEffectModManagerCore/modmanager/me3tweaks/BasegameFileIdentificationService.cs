@@ -5,12 +5,12 @@
 //using LegendaryExplorerCore.Gammtek.Extensions;
 //using LegendaryExplorerCore.Misc;
 //using LegendaryExplorerCore.Packages;
-//using MassEffectModManagerCore.modmanager.diagnostics;
-//using MassEffectModManagerCore.modmanager.objects.mod;
+//using ME3TweaksModManager.modmanager.diagnostics;
+//using ME3TweaksModManager.modmanager.objects.mod;
 //using ME3TweaksCoreWPF;
 //using Newtonsoft.Json;
 
-//namespace MassEffectModManagerCore.modmanager.me3tweaks
+//namespace ME3TweaksModManager.modmanager.me3tweaks
 //{
 //    public class BasegameFileIdentificationService
 //    {

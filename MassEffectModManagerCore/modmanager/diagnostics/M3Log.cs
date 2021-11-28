@@ -1,11 +1,10 @@
 ﻿using System;
 using System.IO;
-using System.Windows;
 using ME3TweaksCore.Helpers;
 using Serilog;
 using Serilog.Sinks.RollingFile.Extension;
 
-namespace MassEffectModManagerCore.modmanager.diagnostics
+namespace ME3TweaksModManager.modmanager.diagnostics
 {
     /// <summary>
     /// Interposer used to prefix M3Log messages with their source component. Call only from M3 code

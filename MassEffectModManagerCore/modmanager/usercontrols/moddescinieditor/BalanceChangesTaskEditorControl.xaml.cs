@@ -1,11 +1,11 @@
 ﻿using System.ComponentModel;
 using System.Windows;
 using IniParser.Model;
-using MassEffectModManagerCore.modmanager.objects;
-using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore.Packages;
+using ME3TweaksModManager.modmanager.objects;
+using ME3TweaksModManager.ui;
 
-namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
+namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
 {
     /// <summary>
     /// Interaction logic for BalanceChangesTaskEditorControl.xaml

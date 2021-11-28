@@ -3,12 +3,12 @@ using System.Linq;
 using System.Windows;
 using IniParser.Model;
 using LegendaryExplorerCore.Misc;
-using MassEffectModManagerCore.modmanager.helpers;
-using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.modmanager.objects;
-using MassEffectModManagerCore.ui;
+using ME3TweaksModManager.modmanager.helpers;
+using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.objects;
+using ME3TweaksModManager.ui;
 
-namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alternates
+namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor.alternates
 {
     /// <summary>
     /// Interaction logic for AlternateDLCBuilder.xaml

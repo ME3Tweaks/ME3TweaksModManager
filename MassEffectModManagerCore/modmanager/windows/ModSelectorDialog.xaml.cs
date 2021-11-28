@@ -2,12 +2,12 @@
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
-using MassEffectModManagerCore.modmanager.objects.mod;
-using MassEffectModManagerCore.ui;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Misc;
+using ME3TweaksModManager.modmanager.objects.mod;
+using ME3TweaksModManager.ui;
 
-namespace MassEffectModManagerCore.modmanager.windows
+namespace ME3TweaksModManager.modmanager.windows
 {
     /// <summary>
     /// Interaction logic for ModSelectorDialog.xaml

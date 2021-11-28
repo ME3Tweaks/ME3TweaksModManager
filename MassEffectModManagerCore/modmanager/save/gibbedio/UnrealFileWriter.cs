@@ -1,4 +1,4 @@
-﻿namespace MassEffectModManagerCore.modmanager.save.gibbedio
+﻿namespace ME3TweaksModManager.modmanager.save.gibbedio
 {
     class UnrealFileWriter
     {

@@ -2,9 +2,9 @@
 using System.Windows;
 using LegendaryExplorerCore.Misc;
 using PropertyChanged;
-using CheckBoxSelectionPair = MassEffectModManagerCore.ui.CheckBoxSelectionPair;
+using CheckBoxSelectionPair = ME3TweaksModManager.ui.CheckBoxSelectionPair;
 
-namespace MassEffectModManagerCore.modmanager.windows
+namespace ME3TweaksModManager.modmanager.windows
 {
     /// <summary>
     /// Interaction logic for CheckBoxDialog.xaml

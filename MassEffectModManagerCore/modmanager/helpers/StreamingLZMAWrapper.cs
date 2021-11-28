@@ -3,7 +3,7 @@ using LegendaryExplorerCore.Compression;
 using LegendaryExplorerCore.Helpers;
 using SevenZip;
 
-namespace MassEffectModManagerCore.modmanager.helpers
+namespace ME3TweaksModManager.modmanager.helpers
 {
     /// <summary>
     /// Wrapper class that can decompress an LZMA stream. Works with Streaming and NonStreaming LZMA (LegendaryExplorerCore can only do LZMA)

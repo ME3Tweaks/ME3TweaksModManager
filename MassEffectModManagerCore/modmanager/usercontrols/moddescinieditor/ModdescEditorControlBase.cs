@@ -2,10 +2,10 @@
 using System.Windows;
 using System.Windows.Controls;
 using IniParser.Model;
-using MassEffectModManagerCore.modmanager.objects.mod;
-using MassEffectModManagerCore.modmanager.windows;
+using ME3TweaksModManager.modmanager.objects.mod;
+using ME3TweaksModManager.modmanager.windows;
 
-namespace MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor
+namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
 {
     public abstract class ModdescEditorControlBase : UserControl, INotifyPropertyChanged
     {

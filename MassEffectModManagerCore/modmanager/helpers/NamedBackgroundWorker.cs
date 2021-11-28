@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Threading;
 
-namespace MassEffectModManagerCore.modmanager.helpers
+namespace ME3TweaksModManager.modmanager.helpers
 {
     public class NamedBackgroundWorker : BackgroundWorker
     {

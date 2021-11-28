@@ -1,10 +1,10 @@
 ﻿using System;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
-using MassEffectModManagerCore.modmanager.helpers;
-using MassEffectModManagerCore.modmanager.objects.mod;
 using ME3TweaksCoreWPF;
+using ME3TweaksModManager.modmanager.helpers;
+using ME3TweaksModManager.modmanager.objects.mod;
 
-namespace MassEffectModManagerCore.modmanager.objects
+namespace ME3TweaksModManager.modmanager.objects
 {
 
     /// <summary>

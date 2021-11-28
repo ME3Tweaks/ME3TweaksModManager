@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
-using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.modmanager.usercontrols;
 using LegendaryExplorerCore.Misc;
+using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.usercontrols;
 
-
-namespace MassEffectModManagerCore.modmanager.windows
+namespace ME3TweaksModManager.modmanager.windows
 {
     /// <summary>
     /// Dialog that has copy button, designed for showing lists of short lines of text

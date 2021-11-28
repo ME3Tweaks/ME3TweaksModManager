@@ -4,10 +4,10 @@ using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Data;
-using MassEffectModManagerCore.modmanager.windows;
 using LegendaryExplorerCore.Packages;
+using ME3TweaksModManager.modmanager.windows;
 
-namespace MassEffectModManagerCore.modmanager.converters
+namespace ME3TweaksModManager.modmanager.converters
 {
     [Localizable(false)]
 

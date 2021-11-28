@@ -4,16 +4,14 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using MassEffectModManagerCore.modmanager;
-using MassEffectModManagerCore.modmanager.me3tweaks;
-using MassEffectModManagerCore.modmanager.objects;
-using MassEffectModManagerCore.modmanager.usercontrols;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
+using ME3TweaksModManager.modmanager.me3tweaks;
+using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.usercontrols;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Serilog;
-using Mod = MassEffectModManagerCore.modmanager.objects.mod.Mod;
+using Mod = ME3TweaksModManager.modmanager.objects.mod.Mod;
 
 namespace MassEffectModManagerCore.Tests
 {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Input;
 
-namespace MassEffectModManagerCore.ui
+namespace ME3TweaksModManager.ui
 {
 
     //from https://stackoverflow.com/questions/10280763/why-is-canexecute-invoked-after-the-command-source-is-removed-from-the-ui
