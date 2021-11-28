@@ -22,7 +22,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             DataContext = this;
             LoadCommands();
-            InitializeComponent();
         }
 
         public bool LoadingInProgress { get; set; } = true;
@@ -49,6 +48,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
+            InitializeComponent();
             LoadMEMDBs();
             LoadingInProgress = false;
         }

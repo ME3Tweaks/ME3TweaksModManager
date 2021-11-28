@@ -10,12 +10,9 @@ using PropertyChanged;
 
 namespace MassEffectModManagerCore.modmanager.objects
 {
-    public abstract class AlternateOption : INotifyPropertyChanged, IMDParameterMap
+    [AddINotifyPropertyChangedInterface]
+    public abstract class AlternateOption : IMDParameterMap
     {
-        //Fody uses this property on weaving
-#pragma warning disable
-        public event PropertyChangedEventHandler PropertyChanged;
-#pragma warning restore
         public string ApplicableAutoText { get; private set; }
         public string NotApplicableAutoText { get; private set; }
         /// <summary>

@@ -9,7 +9,7 @@
 		<PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
 		<UseWPF>true</UseWPF>
 		<Platforms>x64</Platforms>
-		<Version>7.0.5.123</Version>
+		<Version>7.1.0.124</Version>
 		<Copyright>ME3Tweaks 2012 - 2021</Copyright>
 		<Authors>Mgamerz</Authors>
 		<PackageId>MassEffectModManagerCore</PackageId>
@@ -65,12 +65,6 @@
 		<None Remove="modmanager\asi\manifest.xml" />
 		<None Remove="modmanager\asi\ME1-DLC-ModEnabler-v1.0.asi" />
 		<None Remove="modmanager\asi\ME3Logger_truncating-v1.0.asi" />
-		<None Remove="modmanager\binkw32\me1\binkw23.dll" />
-		<None Remove="modmanager\binkw32\me1\binkw32.dll" />
-		<None Remove="modmanager\binkw32\me2\binkw23.dll" />
-		<None Remove="modmanager\binkw32\me2\binkw32.dll" />
-		<None Remove="modmanager\binkw32\me3\binkw23.dll" />
-		<None Remove="modmanager\binkw32\me3\binkw32.dll" />
 		<None Remove="modmanager\executables\vpat.exe" />
 		<None Remove="modmanager\gamemd5\me1.bin" />
 		<None Remove="modmanager\gamemd5\me1pl.bin" />
@@ -139,12 +133,10 @@
 	<ItemGroup>
 		<EmbeddedResource Include="modmanager\asi\ME1-DLC-ModEnabler-v1.0.asi" />
 		<EmbeddedResource Include="modmanager\asi\ME3Logger_truncating-v1.0.asi" />
-		<EmbeddedResource Include="modmanager\binkw32\**\*.dll" />
-		<EmbeddedResource Include="modmanager\binkw64\**\*.dll" />
     <EmbeddedResource Include="modmanager\gamemd5\*.bin" />
     <EmbeddedResource Include="modmanager\squadmates\**\*.txt" />
     <EmbeddedResource Include="modmanager\squadmates\**\*.pcc" />
-  	<EmbeddedResource Include="modmanager\emailmerge\**\*.pcc" />
+  	<EmbeddedResource Include="modmanager\merge\game2email\**\*.pcc" />
     <EmbeddedResource Include="modmanager\licenses\minhook.txt" />
     <EmbeddedResource Include="modmanager\me3tweaks\LiveIni.bin" />
 		<EmbeddedResource Include="modmanager\me3tweaks\PermissionsGranter.exe" />
@@ -170,9 +162,7 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="FontAwesome.WPF" Version="4.7.0.9">
-			<NoWarn>NU1701</NoWarn>
-		</PackageReference>
+		<PackageReference Include="FontAwesome5" Version="2.1.6" />
 		<PackageReference Include="Microsoft.AppCenter" Version="4.4.0" />
 		<PackageReference Include="Microsoft.AppCenter.Analytics" Version="4.4.0" />
 		<PackageReference Include="Microsoft.AppCenter.Crashes" Version="4.4.0" />
@@ -218,7 +208,7 @@
     <Resource Include="modmanager\toolicons\*.png" />
     <Resource Include="modmanager\toolicons\*.ico" />
     <EmbeddedResource Include="modmanager\plotmanager\**\*.pcc" />
-    <EmbeddedResource Include="modmanager\mergedlc\**\*.pcc" />
+    <EmbeddedResource Include="modmanager\merge\dlc\**\*.pcc" />
     <EmbeddedResource Include="modmanager\plotmanager\**\*.u*" />
   </ItemGroup>
 
@@ -268,9 +258,6 @@
     </ContentWithTargetPath>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="modmanager\binkw64\" />
-    <Folder Include="modmanager\emailmerge\LE2\" />
-    <Folder Include="modmanager\emailmerge\ME2\" />
     <Folder Include="modmanager\squadmates\LE3\" />
   </ItemGroup>
 

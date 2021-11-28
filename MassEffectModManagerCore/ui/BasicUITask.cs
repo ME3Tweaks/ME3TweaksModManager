@@ -1,13 +1,15 @@
 ﻿using System.ComponentModel;
 using System.Windows.Media;
-using FontAwesome.WPF;
+using FontAwesome5;
+using PropertyChanged;
 
 namespace MassEffectModManagerCore.ui
 {
     /// <summary>
     /// Class defining a basic UI task, that defaults to an gray hourglass, no spin, with no text.
     /// </summary>
-    public class BasicUITask : INotifyPropertyChanged
+    [AddINotifyPropertyChangedInterface]
+    public class BasicUITask
     {
         public BasicUITask(string tasktext)
         {
@@ -15,26 +17,23 @@ namespace MassEffectModManagerCore.ui
         }
 
         public BasicUITask() { }
-        //Fody uses this property on weaving
-#pragma warning disable
-public event PropertyChangedEventHandler PropertyChanged;
-#pragma warning restore
+
         public string TaskText { get; set; }
         public bool Spin { get; set; } = false;
         public Brush Foreground { get; set; } = Brushes.Gray;
-        public FontAwesomeIcon Icon { get; set; } = FontAwesomeIcon.Hourglass;
+        public EFontAwesomeIcon Icon { get; set; } = EFontAwesomeIcon.Regular_Hourglass;
 
         public void SetDone()
         {
             Spin = false;
-            Icon = FontAwesomeIcon.CheckCircleOutline;
+            Icon = EFontAwesomeIcon.Regular_CheckCircle;
             Foreground = Brushes.Green;
         }
 
         public void SetInProgress()
         {
             Spin = true;
-            Icon = FontAwesomeIcon.Spinner;
+            Icon = EFontAwesomeIcon.Solid_Spinner;
             Foreground = Brushes.SaddleBrown;
         }
     }

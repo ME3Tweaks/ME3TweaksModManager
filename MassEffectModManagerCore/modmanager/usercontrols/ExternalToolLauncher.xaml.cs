@@ -59,8 +59,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     case ME2R:
                         return @"/modmanager/toolicons/masseffectrandomizer_big.png";
                     case LegendaryExplorer:
-                    case LegendaryExplorer_Beta:
                         return @"/modmanager/toolicons/lex_big.png";
+                    case LegendaryExplorer_Beta:
+                        return @"/modmanager/toolicons/lex_big_nightly.png";
                     case MEM:
                     case MEM_LE:
                         return @"/modmanager/toolicons/masseffectmodder_big.png";
@@ -81,7 +82,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             DataContext = this;
             this.tool = tool;
             this.arguments = arguments;
-            InitializeComponent();
         }
 
         public static void DownloadToolME3Tweaks(string tool, string url, Version version, string executable,
@@ -444,6 +444,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
+            InitializeComponent();
             BackgroundWorker bw = new BackgroundWorker();
             #region callbacks
             void failedToDownload(string failureMessage)

@@ -10,6 +10,7 @@ using LegendaryExplorerCore.Unreal;
 using MassEffectModManagerCore.modmanager.mergedlc;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCoreWPF;
+using ME3TweaksModManager.modmanager.merge.dlc;
 using Newtonsoft.Json;
 using BioStateEventMap = LegendaryExplorerCore.Unreal.BinaryConverters.BioStateEventMap;
 
@@ -142,12 +143,12 @@ namespace MassEffectModManagerCore.modmanager.emailmerge
             using IMEPackage pcc = MEPackageHandler.OpenMEPackage(loadedFiles[@"BioD_Nor103_Messages.pcc"]);
 
             // Path to Message templates file - different files for ME2/LE2
-            string ResourcesFilePath = $@"MassEffectModManagerCore.modmanager.emailmerge.{target.Game}.103Message_Template_{target.Game}";
+            string ResourcesFilePath = $@"ME3TweaksModManager.modmanager.emailmerge.{target.Game}.103Message_Template_{target.Game}";
             using IMEPackage resources = MEPackageHandler.OpenMEPackageFromStream(M3Utilities.GetResourceStream(ResourcesFilePath));
 
             // Startup file to place conditionals and transitions into
             using IMEPackage startup = MEPackageHandler.OpenMEPackageFromStream(M3Utilities.GetResourceStream(
-                $@"MassEffectModManagerCore.modmanager.mergedlc.{target.Game}.Startup_{M3MergeDLC.MERGE_DLC_FOLDERNAME}.pcc"));
+                $@"ME3TweaksModManager.modmanager.mergedlc.{target.Game}.Startup_{M3MergeDLC.MERGE_DLC_FOLDERNAME}.pcc"));
 
 
             var emailInfos = new List<ME2EmailMergeFile>();
@@ -171,13 +172,13 @@ namespace MassEffectModManagerCore.modmanager.emailmerge
 
             if (emailInfos.Any(e => e.Game != target.Game))
             {
-                throw new Exception("ME2 email merge manifest targets incorrect game");
+                throw new Exception("Game 2 email merge manifest targets incorrect game");
             }
 
             // Startup File
             // Could replace this with full instanced path in M3 implementation
             ExportEntry stateEventMapExport = startup.Exports
-                .First(e => e.ClassName == "BioStateEventMap" && e.ObjectName == "StateTransitionMap");
+                .First(e => e.ClassName == @"BioStateEventMap" && e.ObjectName == @"StateTransitionMap");
             BioStateEventMap StateEventMap = stateEventMapExport.GetBinaryData<BioStateEventMap>();
             ExportEntry ConditionalClass =
                 startup.FindExport($@"PlotManager{M3MergeDLC.MERGE_DLC_FOLDERNAME}.BioAutoConditionals");
@@ -233,7 +234,7 @@ namespace MassEffectModManagerCore.modmanager.emailmerge
 
             foreach (var emailMod in emailInfos)
             {
-                string modName = "DLC_MOD_" + emailMod.ModName;
+                string modName = @"DLC_MOD_" + emailMod.ModName;
 
                 foreach (var email in emailMod.Emails)
                 {

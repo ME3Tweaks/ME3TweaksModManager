@@ -167,7 +167,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
             var manifestText = File.ReadAllText(manifestFile);
 
             // VALIDATE JSON SCHEMA
-            JSchema schema = JSchema.Parse(new StreamReader(M3Utilities.ExtractInternalFileToStream(@"MassEffectModManagerCore.modmanager.objects.mod.merge.v1.schema.json")).ReadToEnd());
+            JSchema schema = JSchema.Parse(new StreamReader(M3Utilities.ExtractInternalFileToStream(@"ME3TweaksModManager.modmanager.objects.mod.merge.v1.schema.json")).ReadToEnd());
 
             JObject person = JObject.Parse(manifestText);
 

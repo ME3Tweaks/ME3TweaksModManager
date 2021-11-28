@@ -1,5 +1,5 @@
 ﻿<local:MMBusyPanelBase
-    x:Class="MassEffectModManagerCore.modmanager.usercontrols.NexusModsLogin" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:fa="http://schemas.fontawesome.io/icons/" xmlns:modmanager="clr-namespace:MassEffectModManagerCore.modmanager"
+    x:Class="MassEffectModManagerCore.modmanager.usercontrols.NexusModsLogin" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:fa5="http://schemas.fontawesome.com/icons/" xmlns:modmanager="clr-namespace:MassEffectModManagerCore.modmanager"
     mc:Ignorable="d"
     DataContext="{Binding RelativeSource={RelativeSource Self}}"
     Width="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.8_400_650', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualWidth}"
@@ -82,7 +82,7 @@
                     <Button.Content>
                         <StackPanel
                             Orientation="Horizontal">
-                            <fa:ImageAwesome
+                            <fa5:ImageAwesome
                                 Height="12"
                                 Icon="{Binding ActiveIcon}"
                                 Spin="{Binding SpinIcon}"

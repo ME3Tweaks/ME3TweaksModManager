@@ -7,7 +7,7 @@
                        xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
                        DataContext="{Binding RelativeSource={RelativeSource Self}}"
                        Width="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.9_400_900', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualWidth}"
-                       Height="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.8_400', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualHeight}">
+                       Height="{Binding Self, Converter={StaticResource GenerationsSizeAdjustedPercentageConverter}, ConverterParameter='0.0_200_700_230_270'}">
     <DockPanel>
         <StackPanel DockPanel.Dock="Top">
             <TextBlock Text="{DynamicResource string_consoleKeyKeybinder}" FontSize="20" FontWeight="Bold" TextAlignment="Center" DockPanel.Dock="Top" />

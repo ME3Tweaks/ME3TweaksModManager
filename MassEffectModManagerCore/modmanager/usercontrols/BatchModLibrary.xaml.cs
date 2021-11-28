@@ -4,12 +4,15 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Windows;
 using System.Windows.Input;
 using LegendaryExplorerCore.Misc;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.modmanager.windows;
 using LegendaryExplorerCore.Packages;
+using MassEffectModManagerCore.modmanager.localizations;
 using ME3TweaksCoreWPF;
+using ME3TweaksModManager.modmanager.loaders;
 using Microsoft.AppCenter.Analytics;
 using MemoryAnalyzer = MassEffectModManagerCore.modmanager.memoryanalyzer.MemoryAnalyzer;
 
@@ -28,12 +31,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             MemoryAnalyzer.AddTrackedMemoryItem(@"Batch Mod Installer Panel", new WeakReference(this));
             LoadCommands();
-            InitializeComponent();
         }
         public ICommand CloseCommand { get; private set; }
         public ICommand CreateNewGroupCommand { get; private set; }
         public ICommand InstallGroupCommand { get; private set; }
         public ICommand EditGroupCommand { get; private set; }
+        public ICommand DeleteGroupCommand { get; private set; }
         public bool CanCompressPackages => SelectedBatchQueue != null && SelectedBatchQueue.Game is MEGame.ME2 or MEGame.ME3;
 
         private void LoadCommands()
@@ -41,12 +44,24 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             CloseCommand = new GenericCommand(ClosePanel);
             CreateNewGroupCommand = new GenericCommand(CreateNewGroup);
             InstallGroupCommand = new GenericCommand(InstallGroup, CanInstallGroup);
-            EditGroupCommand = new GenericCommand(EditGroup, CanEditGroup);
+            EditGroupCommand = new GenericCommand(EditGroup, BatchQueueSelected);
+            DeleteGroupCommand = new GenericCommand(DeleteGroup, BatchQueueSelected);
+        }
+
+        private void DeleteGroup()
+        {
+            var result = M3L.ShowDialog(mainwindow, $"Delete the '{SelectedBatchQueue.QueueName}' install group?", "Confirm deletion", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (result == MessageBoxResult.Yes)
+            {
+                File.Delete(Path.Combine(M3Utilities.GetBatchInstallGroupsFolder(), SelectedBatchQueue.BackingFilename));
+                AvailableBatchQueues.Remove(SelectedBatchQueue);
+                SelectedBatchQueue = null;
+            }
         }
 
         private void EditGroup()
         {
-            var editGroupUI = new BatchModQueueEditor(mainwindow.AllLoadedMods.ToList(), mainwindow, SelectedBatchQueue);
+            var editGroupUI = new BatchModQueueEditor(M3LoadedMods.Instance.AllLoadedMods.ToList(), mainwindow, SelectedBatchQueue);
             editGroupUI.ShowDialog();
             var newPath = editGroupUI.SavedPath;
             if (newPath != null)
@@ -56,7 +71,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
         }
 
-        private bool CanEditGroup() => SelectedBatchQueue != null;
+        private bool BatchQueueSelected() => SelectedBatchQueue != null;
 
         private void InstallGroup()
         {
@@ -76,7 +91,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void CreateNewGroup()
         {
-            var editGroupUI = new BatchModQueueEditor(mainwindow.AllLoadedMods.ToList(), mainwindow);
+            var editGroupUI = new BatchModQueueEditor(M3LoadedMods.Instance.AllLoadedMods.ToList(), mainwindow);
             editGroupUI.ShowDialog();
             var newPath = editGroupUI.SavedPath;
             if (newPath != null)
@@ -101,6 +116,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
+            InitializeComponent();
             parseBatchFiles();
         }
 
@@ -114,7 +130,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 var extension = Path.GetExtension(file);
                 if (extension == @".biq" || extension == @".txt")
                 {
-                    var queue = BatchLibraryInstallQueue.ParseInstallQueue(file, mainwindow.AllLoadedMods.ToList());
+                    var queue = BatchLibraryInstallQueue.ParseInstallQueue(file, M3LoadedMods.Instance.AllLoadedMods.ToList());
                     if (queue != null)
                     {
                         AvailableBatchQueues.Add(queue);
@@ -174,6 +190,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     public class BatchLibraryInstallQueue : INotifyPropertyChanged
     {
         public bool InstallCompressed { get; set; }
+        /// <summary>
+        /// The name of the batch queue file. This does not include the path.
+        /// </summary>
         public string BackingFilename { get; set; }
         public ObservableCollectionExtended<Mod> ModsToInstall { get; } = new ObservableCollectionExtended<Mod>();
         public ObservableCollectionExtended<string> ModsMissing { get; } = new ObservableCollectionExtended<string>();

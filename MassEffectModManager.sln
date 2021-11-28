@@ -5,14 +5,14 @@ VisualStudioVersion = 16.0.29215.179
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SevenZip", "SevenZip\SevenZip.csproj", "{B52C5EB3-296B-4FA3-B0CD-3318D8AB5BD5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MassEffectModManagerCore", "MassEffectModManagerCore\MassEffectModManagerCore.csproj", "{728B680F-349C-4CC8-9344-600EF0BC47C6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ME3TweaksModManager", "MassEffectModManagerCore\ME3TweaksModManager.csproj", "{728B680F-349C-4CC8-9344-600EF0BC47C6}"
 	ProjectSection(ProjectDependencies) = postProject
 		{A4D4392C-93C9-45F1-9A15-8A5F98FC7C8D} = {A4D4392C-93C9-45F1-9A15-8A5F98FC7C8D}
 		{B52C5EB3-296B-4FA3-B0CD-3318D8AB5BD5} = {B52C5EB3-296B-4FA3-B0CD-3318D8AB5BD5}
 		{D2A21FE1-68B5-4371-823D-D5F67A74D5FA} = {D2A21FE1-68B5-4371-823D-D5F67A74D5FA}
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MassEffectModManagerCore.Tests", "MassEffectModManagerCore.Tests\MassEffectModManagerCore.Tests.csproj", "{B153E541-F50A-4901-929D-F0874A3E32FB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ME3TweaksModManager.Tests", "MassEffectModManagerCore.Tests\ME3TweaksModManager.Tests.csproj", "{B153E541-F50A-4901-929D-F0874A3E32FB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestDirectoryGenerator", "TestDirectoryGenerator\TestDirectoryGenerator.csproj", "{E6B48DD5-6806-45F5-BA06-1EE155E48FE5}"
 EndProject

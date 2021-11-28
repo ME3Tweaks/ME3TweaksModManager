@@ -93,12 +93,12 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                                     switch (altFile.Operation)
                                     {
                                         case AlternateFile.AltFileOperation.OP_NOINSTALL:
-                                            CLog.Information($@"Not installing {sourceFile} for Alternate File {altFile.FriendlyName} due to operation OP_NOINSTALL", Settings.LogModInstallation);
+                                            M3Log.Information($@"Not installing {sourceFile} for Alternate File {altFile.FriendlyName} due to operation OP_NOINSTALL", Settings.LogModInstallation);
                                             //we simply don't map as we just do a continue below.
                                             altApplied = true;
                                             break;
                                         case AlternateFile.AltFileOperation.OP_SUBSTITUTE:
-                                            CLog.Information($@"Repointing {sourceFile} to {altFile.AltFile} for Alternate File {altFile.FriendlyName} due to operation OP_SUBSTITUTE", Settings.LogModInstallation);
+                                            M3Log.Information($@"Repointing {sourceFile} to {altFile.AltFile} for Alternate File {altFile.FriendlyName} due to operation OP_SUBSTITUTE", Settings.LogModInstallation);
                                             if (job.JobDirectory != null && altFile.AltFile.StartsWith((string)job.JobDirectory))
                                             {
                                                 installationMapping[sourceFile] = new InstallSourceFile(altFile.AltFile.Substring(job.JobDirectory.Length).TrimStart('/', '\\'))
@@ -115,7 +115,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                                             break;
                                         case AlternateFile.AltFileOperation.OP_INSTALL:
                                             //same logic as substitute, just different logging.
-                                            CLog.Information($@"Adding {sourceFile} to install (from {altFile.AltFile}) as part of Alternate File {altFile.FriendlyName} due to operation OP_INSTALL", Settings.LogModInstallation);
+                                            M3Log.Information($@"Adding {sourceFile} to install (from {altFile.AltFile}) as part of Alternate File {altFile.FriendlyName} due to operation OP_INSTALL", Settings.LogModInstallation);
                                             if (job.JobDirectory != null && altFile.AltFile.StartsWith((string)job.JobDirectory))
                                             {
                                                 installationMapping[sourceFile] = new InstallSourceFile(altFile.AltFile.Substring(job.JobDirectory.Length).TrimStart('/', '\\'))
@@ -150,7 +150,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                                 foreach (var fileToAdd in filesToAdd)
                                 {
                                     var destFile = Path.Combine(altdlc.DestinationDLCFolder, fileToAdd.Substring(altdlc.AlternateDLCFolder.Length).TrimStart('\\', '/'));
-                                    CLog.Information($@"Adding extra CustomDLC file ({fileToAdd} => {destFile}) due to Alternate DLC {altdlc.FriendlyName}'s {altdlc.Operation}", Settings.LogModInstallation);
+                                    M3Log.Information($@"Adding extra CustomDLC file ({fileToAdd} => {destFile}) due to Alternate DLC {altdlc.FriendlyName}'s {altdlc.Operation}", Settings.LogModInstallation);
 
                                     installationMapping[destFile] = new InstallSourceFile(fileToAdd) { AltApplied = true };
                                 }
@@ -162,7 +162,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                                 {
                                     var sourceFile = FilesystemInterposer.PathCombine(IsInArchive, alternatePathRoot, fileToAdd).Substring(ModPath.Length).TrimStart('\\');
                                     var destFile = Path.Combine(altdlc.DestinationDLCFolder, fileToAdd.TrimStart('\\', '/'));
-                                    CLog.Information($@"Adding extra CustomDLC file (MultiList) ({sourceFile} => {destFile}) due to Alternate DLC {altdlc.FriendlyName}'s {altdlc.Operation}", Settings.LogModInstallation);
+                                    M3Log.Information($@"Adding extra CustomDLC file (MultiList) ({sourceFile} => {destFile}) due to Alternate DLC {altdlc.FriendlyName}'s {altdlc.Operation}", Settings.LogModInstallation);
 
                                     installationMapping[destFile] = new InstallSourceFile(sourceFile) { AltApplied = true };
                                 }
@@ -175,13 +175,13 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         {
                             foreach (var multifile in altFile.MultiListSourceFiles)
                             {
-                                CLog.Information($@"Attempting to remove multilist file {multifile} from install (from {altFile.MultiListTargetPath}) as part of Alternate File {altFile.FriendlyName} due to operation OP_NOINSTALL_MULTILISTFILES", Settings.LogModInstallation);
+                                M3Log.Information($@"Attempting to remove multilist file {multifile} from install (from {altFile.MultiListTargetPath}) as part of Alternate File {altFile.FriendlyName} due to operation OP_NOINSTALL_MULTILISTFILES", Settings.LogModInstallation);
                                 string relativeSourcePath = altFile.MultiListRootPath + '\\' + multifile;
 
                                 var targetPath = altFile.MultiListTargetPath + '\\' + multifile;
                                 if (installationMapping.Remove(targetPath))
                                 {
-                                    CLog.Information($@" > Removed multilist file {targetPath} from installation",
+                                    M3Log.Information($@" > Removed multilist file {targetPath} from installation",
                                     Settings.LogModInstallation);
                                 }
                             }
@@ -281,7 +281,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
 
         private void buildInstallationQueue(ModJob job, CaseInsensitiveDictionary<InstallSourceFile> installationMapping, bool isSFAR)
         {
-            CLog.Information(@"Building installation queue for " + job.Header, Settings.LogModInstallation);
+            M3Log.Information(@"Building installation queue for " + job.Header, Settings.LogModInstallation);
             foreach (var entry in job.FilesToInstall)
             {
                 //Key is destination, value is source file
@@ -303,12 +303,12 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         switch (altFile.Operation)
                         {
                             case AlternateFile.AltFileOperation.OP_NOINSTALL:
-                                CLog.Information($@"Not installing {destFile} for Alternate File {altFile.FriendlyName} due to operation OP_NOINSTALL", Settings.LogModInstallation);
+                                M3Log.Information($@"Not installing {destFile} for Alternate File {altFile.FriendlyName} due to operation OP_NOINSTALL", Settings.LogModInstallation);
                                 //we simply don't map as we just do a continue below.
                                 altApplied = true;
                                 break;
                             case AlternateFile.AltFileOperation.OP_SUBSTITUTE:
-                                CLog.Information($@"Repointing {destFile} to {altFile.AltFile} for Alternate File {altFile.FriendlyName} due to operation OP_SUBSTITUTE", Settings.LogModInstallation);
+                                M3Log.Information($@"Repointing {destFile} to {altFile.AltFile} for Alternate File {altFile.FriendlyName} due to operation OP_SUBSTITUTE", Settings.LogModInstallation);
                                 if (job.JobDirectory != null && (altFile.AltFile.StartsWith(job.JobDirectory) && job.Header == ModJob.JobHeader.CUSTOMDLC))
                                 {
                                     installationMapping[destFile] = new InstallSourceFile(altFile.AltFile.Substring(job.JobDirectory.Length).TrimStart('/', '\\'))
@@ -330,7 +330,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                                 break;
                             case AlternateFile.AltFileOperation.OP_INSTALL:
                                 //same logic as substitute, just different logging.
-                                CLog.Information($@"Adding {sourceFile} to install (from {altFile.AltFile}) as part of Alternate File {altFile.FriendlyName} due to operation OP_INSTALL", Settings.LogModInstallation);
+                                M3Log.Information($@"Adding {sourceFile} to install (from {altFile.AltFile}) as part of Alternate File {altFile.FriendlyName} due to operation OP_INSTALL", Settings.LogModInstallation);
                                 if (job.JobDirectory != null && (altFile.AltFile.StartsWith(job.JobDirectory) && job.Header == ModJob.JobHeader.CUSTOMDLC))
                                 {
                                     installationMapping[destFile] = new InstallSourceFile(altFile.AltFile.Substring(job.JobDirectory.Length).TrimStart('/', '\\'))
@@ -359,7 +359,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
 
 
                 installationMapping[destFile] = new InstallSourceFile(sourceFile);
-                CLog.Information($@"Adding {job.Header} file to installation {(isSFAR ? @"SFAR" : @"unpacked")} queue: {entry.Value} -> {destFile}", Settings.LogModInstallation); //do not localize
+                M3Log.Information($@"Adding {job.Header} file to installation {(isSFAR ? @"SFAR" : @"unpacked")} queue: {entry.Value} -> {destFile}", Settings.LogModInstallation); //do not localize
 
             }
 
@@ -369,7 +369,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             {
                 foreach (var multifile in altFile.MultiListSourceFiles)
                 {
-                    CLog.Information(
+                    M3Log.Information(
                         $@"Adding multilist file {multifile} to install (from {altFile.MultiListRootPath}) as part of Alternate File {altFile.FriendlyName} due to operation OP_APPLY_MULTILISTFILES",
                         Settings.LogModInstallation);
                     string relativeSourcePath = altFile.MultiListRootPath + '\\' + multifile;
@@ -399,7 +399,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             {
                 foreach (var multifile in altFile.MultiListSourceFiles)
                 {
-                    CLog.Information(
+                    M3Log.Information(
                         $@"Attempting to remove multilist file {multifile} from install (from {altFile.MultiListRootPath}) as part of Alternate File {altFile.FriendlyName} due to operation OP_NOINSTALL_MULTILISTFILES",
                         Settings.LogModInstallation);
                     string relativeSourcePath = altFile.MultiListRootPath + '\\' + multifile;
@@ -407,7 +407,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     var targetPath = altFile.MultiListTargetPath + '\\' + multifile;
                     if (installationMapping.Remove(targetPath))
                     {
-                        CLog.Information($@" > Removed multilist file {targetPath} from installation",
+                        M3Log.Information($@" > Removed multilist file {targetPath} from installation",
                         Settings.LogModInstallation);
                     }
                     else

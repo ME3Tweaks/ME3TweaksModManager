@@ -10,6 +10,7 @@ using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.modmanager.usercontrols;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
+using ME3TweaksModManager.modmanager.usercontrols;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Serilog;
 using Mod = MassEffectModManagerCore.modmanager.objects.mod.Mod;

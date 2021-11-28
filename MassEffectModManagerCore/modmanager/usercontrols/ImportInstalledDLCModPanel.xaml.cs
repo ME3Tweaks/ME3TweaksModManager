@@ -37,7 +37,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public ImportInstalledDLCModPanel()
         {
             LoadCommands();
-            InitializeComponent();
         }
         public string ModSiteText { get; set; }
         public string ModNameText { get; set; }
@@ -317,6 +316,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
+            InitializeComponent();
             InstallationTargets.ReplaceAll(mainwindow.InstallationTargets.Where(x => x.Selectable && x.Game != MEGame.LELauncher));
             SelectedTarget = InstallationTargets.FirstOrDefault();
         }

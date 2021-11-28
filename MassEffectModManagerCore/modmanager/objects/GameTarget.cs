@@ -98,7 +98,7 @@
 //            {
 //                if (Directory.Exists(TargetPath))
 //                {
-//                    CLog.Information(@"Getting game source for target " + TargetPath, logInfo);
+//                    M3Log.Information(@"Getting game source for target " + TargetPath, logInfo);
 //                    var hashCheckResult = VanillaDatabaseService.GetGameSource(this, reverseME1Executable);
 
 //                    GameSource = hashCheckResult.result;
@@ -106,7 +106,7 @@
 
 //                    if (ExecutableHash.Length != 32)
 //                    {
-//                        CLog.Error($@"Issue getting game source: {ExecutableHash}", logInfo);
+//                        M3Log.Error($@"Issue getting game source: {ExecutableHash}", logInfo);
 //                    }
 //                    else
 //                    {
@@ -114,7 +114,7 @@
 //                        if (GameSource == null)
 //                        {
 //                            // No source is listed
-//                            CLog.Error(@"Unknown source or illegitimate installation: " + hashCheckResult.hash,
+//                            M3Log.Error(@"Unknown source or illegitimate installation: " + hashCheckResult.hash,
 //                                logInfo);
 //                        }
 //                        else
@@ -133,7 +133,7 @@
 //                                }
 //                            }
 
-//                            CLog.Information(@"Source: " + GameSource, logInfo);
+//                            M3Log.Information(@"Source: " + GameSource, logInfo);
 //                        }
 //                    }
 
@@ -163,7 +163,7 @@
 //                        IsPolishME1 = Game == MEGame.ME1 && File.Exists(Path.Combine(TargetPath, @"BioGame", @"CookedPC", @"Movies", @"niebieska_pl.bik"));
 //                        if (IsPolishME1)
 //                        {
-//                            CLog.Information(@"ME1 Polish Edition detected", logInfo);
+//                            M3Log.Information(@"ME1 Polish Edition detected", logInfo);
 //                        }
 
 //                        if (RegistryActive && (Settings.AutoUpdateLODs2K || Settings.AutoUpdateLODs4K) &&

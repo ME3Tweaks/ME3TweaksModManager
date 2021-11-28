@@ -28,5 +28,19 @@ namespace MassEffectModManagerCore.modmanager.helpers
 
         public static MEGame[] GetEnabledGames() => GetGameSelectors().Select(x => x.Game).ToArray();
         public static MEGame[] GetEnabledGamesIncludingLauncher() => GetGameSelectorsIncludingLauncher().Select(x => x.Game).ToArray();
+
+        /// <summary>
+        /// If the game is enabled in M3 by Generational settings
+        /// </summary>
+        /// <param name="argGame"></param>
+        /// <returns></returns>
+        public static bool IsGenerationEnabledGame(MEGame game)
+        {
+            if (game.IsOTGame())
+                return Settings.GenerationSettingOT;
+            if (game.IsLEGame() || game == MEGame.LELauncher)
+                return Settings.GenerationSettingLE;
+            return false;
+        }
     }
 }

@@ -290,7 +290,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     var vpat = M3Utilities.GetCachedExecutablePath(@"vpat.exe");
                     if (!testRun)
                     {
-                        M3Utilities.ExtractInternalFile(@"MassEffectModManagerCore.modmanager.executables.vpat.exe", vpat, true);
+                        M3Utilities.ExtractInternalFile(@"ME3TweaksModManager.modmanager.executables.vpat.exe", vpat, true);
                     }
                     //Handle VPatching
                     foreach (var transform in ExeExtractionTransform.VPatches)

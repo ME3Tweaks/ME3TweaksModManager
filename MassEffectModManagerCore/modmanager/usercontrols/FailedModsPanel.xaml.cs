@@ -20,7 +20,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             DataContext = this;
             this.FailedMods.ReplaceAll(FailedMods);
             LoadCommands();
-            InitializeComponent();
         }
 
         public Mod SelectedMod { get; set; }
@@ -107,7 +106,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
-
+            InitializeComponent();
         }
     }
 }

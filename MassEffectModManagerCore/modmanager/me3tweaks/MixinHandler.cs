@@ -80,14 +80,14 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     //make sure finalizer is last
                     if (mixin.IsFinalizer)
                     {
-                        CLog.Information(
+                        M3Log.Information(
                             $@"Adding finalizer mixin to mixin list for file {Path.GetFileName(mixin.TargetFile)}: {mixin.PatchName}",
                             Settings.LogModMakerCompiler);
                         mixinListForFile.Add(mixin);
                     }
                     else
                     {
-                        CLog.Information(
+                        M3Log.Information(
                             $@"Adding mixin to mixin list for file {Path.GetFileName(mixin.TargetFile)}: {mixin.PatchName}",
                             Settings.LogModMakerCompiler);
                         mixinListForFile.Insert(0, mixin);
@@ -240,7 +240,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         {
             foreach (var mixin in mixins)
             {
-                CLog.Information($@"Applying mixin: {mixin.PatchName} on {mixin.TargetFile}", logMixinApplication);
+                M3Log.Information($@"Applying mixin: {mixin.PatchName} on {mixin.TargetFile}", logMixinApplication);
                 if (decompressedStream.Length == mixin.TargetSize)
                 {
                     decompressedStream.Position = 0;
@@ -253,7 +253,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     }
                     else
                     {
-                        CLog.Information(@"Applied mixin: " + mixin.PatchName, logMixinApplication);
+                        M3Log.Information(@"Applied mixin: " + mixin.PatchName, logMixinApplication);
                         decompressedStream.Dispose();
                         decompressedStream = outStream; //pass through
                     }

@@ -82,7 +82,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             M3Log.Information($@"Update available: {LatestVersion}. Prompting user");
             LoadCommands();
-            InitializeComponent();
         }
 
         public bool UpdateInProgress { get; set; }
@@ -441,6 +440,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
+            InitializeComponent();
         }
     }
 }

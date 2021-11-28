@@ -1,41 +1,53 @@
-﻿<local:MMBusyPanelBase x:Class="MassEffectModManagerCore.modmanager.usercontrols.BackupNagSystem" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:fa="http://schemas.fontawesome.io/icons/"
+﻿<local:MMBusyPanelBase x:Class="ME3TweaksModManager.modmanager.usercontrols.BackupNagSystem" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:fa5="http://schemas.fontawesome.com/icons/"
                        xmlns:helpers="clr-namespace:MassEffectModManagerCore.modmanager.helpers"
                        xmlns:ui="clr-namespace:MassEffectModManagerCore.ui"
                        xmlns:me3Tweaks="clr-namespace:MassEffectModManagerCore.modmanager.me3tweaks"
+                       xmlns:backup="clr-namespace:ME3TweaksCore.Services.Backup;assembly=ME3TweaksCore"
+                       xmlns:me3Tweaks1="clr-namespace:ME3TweaksCoreWPF.Services.Backup;assembly=ME3TweaksCoreWPF"
                        mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800"
+                       DataContext="{Binding RelativeSource={RelativeSource Self}}"
                        Width="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.8_500_700', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualWidth}"
-                       Height="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.8_200_300', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualHeight}">
+                       Height="{Binding Self, Converter={StaticResource GenerationsSizeAdjustedPercentageConverter}, ConverterParameter='0.0_200_425_100_100'}">
+    <UserControl.Resources>
+        <DataTemplate DataType="{x:Type backup:GameBackupStatus}">
+            <DockPanel LastChildFill="False" Margin="7,0">
+                <TextBlock DockPanel.Dock="Bottom" Text="{Binding BackupStatus}" HorizontalAlignment="Center" MaxWidth="170" TextWrapping="Wrap" TextAlignment="Center" />
+                <TextBlock Text="{Binding GameName}" TextWrapping="Wrap" MaxWidth="120" TextAlignment="Center"  FontWeight="Bold" DockPanel.Dock="Bottom" HorizontalAlignment="Center" />
+                <fa5:ImageAwesome DockPanel.Dock="Bottom" Icon="Solid_CheckCircle" Width="16" Height="16" Foreground="ForestGreen" Visibility="{Binding BackedUp, Converter={StaticResource BoolToVisibilityConverter}}" Margin="0,3,0,0"/>
+                <fa5:ImageAwesome DockPanel.Dock="Bottom" Icon="{Binding Path=(me3Tweaks1:BackupServiceWPF.ME3ActivityIcon)}" Width="16" Height="16" SpinDuration="1" Spin="{Binding BackupActivity}" Foreground="Red" Visibility="{Binding BackedUp, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}" Margin="0,3,0,0"/>
+                <Image DockPanel.Dock="Top" Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Height="32"/>
+            </DockPanel>
+        </DataTemplate>
+    </UserControl.Resources>
     <DockPanel>
         <DockPanel DockPanel.Dock="Top" LastChildFill="False" HorizontalAlignment="Center">
-            <fa:ImageAwesome Icon="Warning" Width="24" Height="24" Foreground="Orange" DockPanel.Dock="Left" Visibility="{Binding Path=(me3Tweaks:BackupService.AnyGameMissingBackup), Converter={StaticResource BoolToVisibilityConverter}}" />
+            <fa5:ImageAwesome Icon="Solid_ExclamationTriangle" Width="24" Height="24" Foreground="Orange" DockPanel.Dock="Left" Visibility="{Binding Path=(me3Tweaks:M3BackupService.AnyGameMissingBackup), Converter={StaticResource BoolToVisibilityConverter}}" />
             <TextBlock Text="{Binding Title}" FontWeight="Bold" FontSize="20" TextAlignment="Center" VerticalAlignment="Center" Margin="10,0" />
-            <fa:ImageAwesome Icon="Warning" Width="24" Height="24" Foreground="Orange" Visibility="{Binding Path=(me3Tweaks:BackupService.AnyGameMissingBackup), Converter={StaticResource BoolToVisibilityConverter}}" />
+            <fa5:ImageAwesome Icon="Solid_ExclamationTriangle" Width="24" Height="24" Foreground="Orange" Visibility="{Binding Path=(me3Tweaks:M3BackupService.AnyGameMissingBackup), Converter={StaticResource BoolToVisibilityConverter}}" />
         </DockPanel>
         <TextBlock Text="{DynamicResource string_description_vanillaBackupRequired}" TextWrapping="Wrap" TextAlignment="Center" DockPanel.Dock="Top" />
+        
+        <!-- ROW 1 -->
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
-            <DockPanel LastChildFill="False" Margin="7,0" Visibility="{Binding ME1Installed,Converter={StaticResource BoolToVisibilityConverter}}">
-                <TextBlock DockPanel.Dock="Bottom" Text="{Binding Path=(me3Tweaks:BackupService.ME1BackupStatus)}" ToolTip="{Binding Path=(me3Tweaks:BackupService.ME1BackupStatusTooltip)}" HorizontalAlignment="Center" MaxWidth="170" TextWrapping="Wrap" />
-                <TextBlock Text="Mass Effect" FontWeight="Bold" DockPanel.Dock="Bottom" HorizontalAlignment="Center" />
-                <fa:ImageAwesome DockPanel.Dock="Bottom" Icon="CheckCircle" Width="16" Height="16" Foreground="ForestGreen" Visibility="{Binding Path=(me3Tweaks:BackupService.ME1BackedUp), Converter={StaticResource BoolToVisibilityConverter}}" Margin="0,3,0,0"/>
-                <fa:ImageAwesome DockPanel.Dock="Bottom" Icon="{Binding Path=(me3Tweaks:BackupService.ME1ActivityIcon)}" Width="16" Height="16" SpinDuration="1" Spin="{Binding Path=(me3Tweaks:BackupService.ME1BackupActivity)}" Foreground="Red" Visibility="{Binding Path=(me3Tweaks:BackupService.ME1BackedUp), Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}" Margin="0,3,0,0"/>
-                <Image DockPanel.Dock="Top" Source="{ui:MippedIcon Source={StaticResource me1gameiconpath}, Size=32}" Height="32" />
-            </DockPanel>
-            <DockPanel LastChildFill="False" Margin="7,0" Visibility="{Binding ME2Installed,Converter={StaticResource BoolToVisibilityConverter}}">
-                <TextBlock DockPanel.Dock="Bottom" Text="{Binding Path=(me3Tweaks:BackupService.ME2BackupStatus)}" ToolTip="{Binding Path=(me3Tweaks:BackupService.ME2BackupStatusTooltip)}" HorizontalAlignment="Center"  MaxWidth="170" TextWrapping="Wrap" TextAlignment="Center" />
-                <TextBlock Text="Mass Effect 2"   FontWeight="Bold" DockPanel.Dock="Bottom" HorizontalAlignment="Center" />
-                <fa:ImageAwesome DockPanel.Dock="Bottom" Icon="CheckCircle" Width="16" Height="16" Foreground="ForestGreen" Visibility="{Binding Path=(me3Tweaks:BackupService.ME2BackedUp), Converter={StaticResource BoolToVisibilityConverter}}"  Margin="0,3,0,0"/>
-                <fa:ImageAwesome DockPanel.Dock="Bottom" Icon="{Binding Path=(me3Tweaks:BackupService.ME2ActivityIcon)}" Width="16" Height="16" SpinDuration="1" Spin="{Binding Path=(me3Tweaks:BackupService.ME2BackupActivity)}" Foreground="Red" Visibility="{Binding Path=(me3Tweaks:BackupService.ME2BackedUp), Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}" Margin="0,3,0,0"/>
-                <Image DockPanel.Dock="Top" Source="{ui:MippedIcon Source={StaticResource me2gameiconpath}, Size=32}" Height="32" />
-            </DockPanel>
-            <DockPanel LastChildFill="False" Margin="7,0" Visibility="{Binding ME3Installed,Converter={StaticResource BoolToVisibilityConverter}}">
-                <TextBlock DockPanel.Dock="Bottom" Text="{Binding Path=(me3Tweaks:BackupService.ME3BackupStatus)}" ToolTip="{Binding Path=(me3Tweaks:BackupService.ME3BackupStatusTooltip)}" HorizontalAlignment="Center" MaxWidth="170" TextWrapping="Wrap" TextAlignment="Center" />
-                <TextBlock Text="Mass Effect 3"   FontWeight="Bold" DockPanel.Dock="Bottom" HorizontalAlignment="Center" />
-                <fa:ImageAwesome DockPanel.Dock="Bottom" Icon="CheckCircle" Width="16" Height="16" Foreground="ForestGreen" Visibility="{Binding Path=(me3Tweaks:BackupService.ME3BackedUp), Converter={StaticResource BoolToVisibilityConverter}}" Margin="0,3,0,0"/>
-                <fa:ImageAwesome DockPanel.Dock="Bottom" Icon="{Binding Path=(me3Tweaks:BackupService.ME3ActivityIcon)}" Width="16" Height="16" SpinDuration="1" Spin="{Binding Path=(me3Tweaks:BackupService.ME3BackupActivity)}" Foreground="Red" Visibility="{Binding Path=(me3Tweaks:BackupService.ME3BackedUp), Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}" Margin="0,3,0,0"/>
-                <Image DockPanel.Dock="Top" Source="{ui:MippedIcon Source={StaticResource me3gameiconpath}, Size=32}" Height="32" />
-            </DockPanel>
+            <ItemsControl ItemsSource="{Binding BackupStatusesOT}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
         </StackPanel>
-        <TextBlock Text="{DynamicResource string_description_missingBackupWillLimitFeatures}" TextWrapping="Wrap" TextAlignment="Center" DockPanel.Dock="Top" />
+        <!-- ROW 2-->
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+            <ItemsControl ItemsSource="{Binding BackupStatusesLE}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </StackPanel>
+            <TextBlock Text="{DynamicResource string_description_missingBackupWillLimitFeatures}" TextWrapping="Wrap" TextAlignment="Center" DockPanel.Dock="Top" />
         <DockPanel Dock="Bottom" Margin="0,10,0,0">
             <Button Content="{DynamicResource string_close}" HorizontalAlignment="Right" Command="{Binding CloseCommand}" DockPanel.Dock="Left" />
             <Button Content="{DynamicResource string_openBackupManager}" HorizontalAlignment="Right" Command="{Binding OpenBackupPanelCommand}" Padding="12,4" />

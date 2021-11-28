@@ -5,7 +5,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.windows"
         xmlns:fa5="http://schemas.fontawesome.com/icons/"
-        xmlns:fa="http://schemas.fontawesome.io/icons/"
         mc:Ignorable="d"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterOwner"
@@ -25,7 +24,7 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <fa:ImageAwesome Icon="{Binding ModalIcon}" Foreground="{Binding ModalColor}" VerticalAlignment="Center" HorizontalAlignment="Center" Width="64" Height="64" Grid.RowSpan="3" />
+        <fa5:ImageAwesome Icon="{Binding ModalIcon}" Foreground="{Binding ModalColor}" VerticalAlignment="Center" HorizontalAlignment="Center" Width="64" Height="64" Grid.RowSpan="3" />
         <Image Source="{Binding ResourceImage, TargetNullValue={x:Null}}" Grid.Row="0" Grid.Column="1"/>
         <TextBlock Text="{Binding ModalText}" VerticalAlignment="Center" Grid.Column="1" Grid.Row="1" TextWrapping="Wrap"/>
         <Button Content="{DynamicResource string_ok}" Grid.Column="1" Grid.Row="2" Width="60" HorizontalAlignment="Right" Click="OK_Click"/>

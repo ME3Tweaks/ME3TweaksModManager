@@ -47,7 +47,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             DataContext = this;
             Directory.CreateDirectory(ASIManager.CachedASIsFolder);
             LoadCommands();
-            InitializeComponent();
             this.preselectedTarget = preselectedTarget;
         }
 
@@ -246,6 +245,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
+            InitializeComponent();
+
             //This has to be done here as mainwindow will not be available until this is called
             MEGame[] gameEnum = new[] { MEGame.ME1, MEGame.ME2, MEGame.ME3, MEGame.LE1, MEGame.LE2, MEGame.LE3 };
             int index = 0;

@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.windows" 
         xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" 
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" 
-        xmlns:fa="http://schemas.fontawesome.io/icons/"
+        xmlns:fa5="http://schemas.fontawesome.com/icons/"
         xmlns:ui="clr-namespace:MassEffectModManagerCore.ui"
         xmlns:helpers="clr-namespace:MassEffectModManagerCore.modmanager.helpers"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
@@ -122,7 +122,7 @@
             <Button Grid.Row="5" Grid.Column="0" Margin="0,5,0,0" Grid.ColumnSpan="6" HorizontalAlignment="Right" Command="{Binding AddToInstallGroupCommand}">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="{DynamicResource string_addModToInstallGroup}" />
-                    <fa:ImageAwesome Icon="ArrowCircleRight" Height="12" Margin="5,0,0,0" Foreground="GreenYellow" />
+                    <fa5:ImageAwesome Icon="Solid_ArrowCircleRight" Height="12" Margin="5,0,0,0" Foreground="GreenYellow" />
                 </StackPanel>
             </Button>
         </Grid>
@@ -149,19 +149,19 @@
                 <DockPanel DockPanel.Dock="Bottom">
                     <Button DockPanel.Dock="Left" Command="{Binding RemoveFromInstallGroupCommand}">
                         <StackPanel Orientation="Horizontal">
-                            <fa:ImageAwesome Icon="ArrowCircleLeft" Height="12" Margin="0,0,5,0" Foreground="Red" />
+                            <fa5:ImageAwesome Icon="Solid_ArrowCircleLeft" Height="12" Margin="0,0,5,0" Foreground="Red" />
                             <TextBlock Text="{DynamicResource string_removeModFromInstallGroup}" />
                         </StackPanel>
                     </Button>
                     <Button DockPanel.Dock="Right" Margin="5,0,0,0" Command="{Binding MoveDownCommand}">
                         <StackPanel Orientation="Horizontal">
-                            <fa:ImageAwesome Icon="ArrowCircleDown" Height="12" Margin="0,0,5,0" Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
+                            <fa5:ImageAwesome Icon="Solid_ArrowCircleDown" Height="12" Margin="0,0,5,0" Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
                             <TextBlock Text="{DynamicResource string_moveDown}" />
                         </StackPanel>
                     </Button>
                     <Button HorizontalAlignment="Right" Command="{Binding MoveUpCommand}">
                         <StackPanel Orientation="Horizontal">
-                            <fa:ImageAwesome Icon="ArrowCircleUp" Height="12" Margin="0,0,5,0" Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
+                            <fa5:ImageAwesome Icon="Solid_ArrowCircleUp" Height="12" Margin="0,0,5,0" Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
                             <TextBlock Text="{DynamicResource string_moveUp}" />
                         </StackPanel>
                     </Button>

@@ -58,7 +58,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public NexusFileQueryPanel()
         {
             LoadCommands();
-            InitializeComponent();
         }
 
         public RelayCommand DownloadModCommand { get; private set; }
@@ -208,6 +207,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
+            InitializeComponent();
             CategoryOptionsCBL.SetSelectedItems(Enum.GetValues<FileCategory>().Where(x => x != FileCategory.Deleted).OfType<object>());
             Task.Run(() =>
             {

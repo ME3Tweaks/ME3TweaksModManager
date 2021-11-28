@@ -3,6 +3,7 @@ using System.Windows.Input;
 using MassEffectModManagerCore.modmanager.diagnostics;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.ui;
+using ME3TweaksModManager.modmanager.loaders;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using PropertyChanged;
@@ -19,7 +20,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             LibraryDir = M3Utilities.GetModsDirectory();
             LoadCommands();
-            InitializeComponent();
         }
 
 
@@ -36,7 +36,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void ChangeLibraryDir()
         {
 
-            if (mainwindow.ChooseModLibraryPath(false))
+            if (M3LoadedMods.ChooseModLibraryPath(window, false))
             {
                 Result.ReloadMods = true;
                 LibraryDir = Settings.ModLibraryPath;
@@ -53,7 +53,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
-
+            InitializeComponent();
         }
 
         private void ChangeTheme_Dark_Clicked(object sender, RoutedEventArgs e)

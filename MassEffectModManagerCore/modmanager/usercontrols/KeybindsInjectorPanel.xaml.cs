@@ -39,7 +39,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public KeybindsInjectorPanel()
         {
             LoadCommands();
-            InitializeComponent();
         }
 
         public ICommand CloseCommand { get; private set; }
@@ -153,6 +152,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
+            InitializeComponent();
             var kbFiles = Directory.GetFiles(M3Utilities.GetKeybindsOverrideFolder(), @"*.*");
             foreach (var v in kbFiles)
             {

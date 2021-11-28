@@ -46,7 +46,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             MemoryAnalyzer.AddTrackedMemoryItem(@"ModMaker Panel", new WeakReference(this));
             DataContext = this;
             LoadCommands();
-            InitializeComponent();
             GetTopMods();
         }
 
@@ -312,6 +311,7 @@ MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
 
         public override async void OnPanelVisible()
         {
+            InitializeComponent();
             CanInjectKeybinds = File.Exists(KeybindsInjectorPanel.GetDefaultKeybindsOverride(MEGame.ME3));
             if (BackupService.GetGameBackupPath(MEGame.ME3) == null)
             {

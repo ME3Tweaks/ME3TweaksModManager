@@ -12,6 +12,7 @@ using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksCore.Targets;
 using ME3TweaksCoreWPF;
+using ME3TweaksModManager.modmanager.usercontrols;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SevenZip;
 using Mod = MassEffectModManagerCore.modmanager.objects.mod.Mod;

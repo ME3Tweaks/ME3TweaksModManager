@@ -7,6 +7,8 @@ using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Packages;
 using MassEffectModManagerCore.modmanager.diagnostics;
 using ME3TweaksCore.GameFilesystem;
+using ME3TweaksCore.Helpers;
+using ME3TweaksCore.Targets;
 using ME3TweaksCoreWPF;
 
 namespace MassEffectModManagerCore.modmanager.helpers
@@ -110,14 +112,15 @@ namespace MassEffectModManagerCore.modmanager.helpers
                 }
             }
 
-            if (Settings.SkipLELauncher && target.Game.IsLEGame())
+            if (Settings.SkipLELauncher && target.Game.IsLEGame() && !MUtilities.IsGameRunning(MEGame.LELauncher))
             {
-                var binkPath = Path.Combine(target.TargetPath, @"..", @"Launcher", @"bink2w64.dll");
-                var launcherExe = Path.Combine(target.TargetPath, @"..", @"Launcher", @"MassEffectLauncher.exe");
-                if (File.Exists(launcherExe))
+                var launcherPath = Path.Combine(target.TargetPath, @"..", @"Launcher");
+                var launcherTarget = new GameTargetWPF(MEGame.LELauncher, launcherPath, false);
+                var failedValidationReason = launcherTarget.ValidateTarget();
+                if (failedValidationReason == null)
                 {
                     // Ensure bypass is installed
-                    M3Utilities.InstallBinkBypass(binkPath, Path.Combine(target.TargetPath, @"..", @"Launcher"), MEGame.LELauncher);
+                    launcherTarget.InstallBinkBypass();
                 }
                 commandLineArgs.Add($@"-game"); // Autoboot dll
                 commandLineArgs.Add((target.Game.ToGameNum() - 3).ToString());

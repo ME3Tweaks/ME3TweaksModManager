@@ -1,8 +1,7 @@
 ﻿using System.IO;
 using System.Windows;
 using System.Windows.Media;
-using FontAwesome.WPF;
-
+using FontAwesome5;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 
 namespace MassEffectModManagerCore.modmanager.windows
@@ -14,7 +13,7 @@ namespace MassEffectModManagerCore.modmanager.windows
     {
         public string ModalTitle { get; }
         public string ModalText { get; }
-        public FontAwesomeIcon ModalIcon { get; }
+        public EFontAwesomeIcon ModalIcon { get; }
         public Brush ModalColor { get; }
         public string ResourceImage { get; }
 
@@ -26,16 +25,16 @@ namespace MassEffectModManagerCore.modmanager.windows
             switch (shi.ModalIcon)
             {
                 case @"WARNING":
-                    ModalIcon = FontAwesomeIcon.ExclamationTriangle;
+                    ModalIcon = EFontAwesomeIcon.Solid_ExclamationTriangle;
                     ModalColor = Brushes.DarkOrange;
                     break;
                 default:
                 case @"INFO":
-                    ModalIcon = FontAwesomeIcon.InfoCircle;
+                    ModalIcon = EFontAwesomeIcon.Solid_InfoCircle;
                     ModalColor = Brushes.RoyalBlue;
                     break;
                 case @"ERROR":
-                    ModalIcon = FontAwesomeIcon.Times;
+                    ModalIcon = EFontAwesomeIcon.Solid_Times;
                     ModalColor = Brushes.Red;
                     break;
             }

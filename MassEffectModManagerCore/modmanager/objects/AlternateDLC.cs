@@ -438,7 +438,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 }
             }
 
-            CLog.Information($@"AlternateDLC loaded and validated: {FriendlyName}", Settings.LogModStartup);
+            M3Log.Information($@"AlternateDLC loaded and validated: {FriendlyName}", Settings.LogModStartup);
             ValidAlternate = true;
         }
 
@@ -500,7 +500,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                         // Mods targeting Moddesc 6 or 6.1 will possibly be bugged if they used this feature
                         IsSelected = false;
                     }
-                    CLog.Information($@" > AlternateDLC SetupInitialSelection() {FriendlyName}: UISelectable: {UIIsSelectable}, conducted DLCRequirements check.", Settings.LogModInstallation);
+                    M3Log.Information($@" > AlternateDLC SetupInitialSelection() {FriendlyName}: UISelectable: {UIIsSelectable}, conducted DLCRequirements check.", Settings.LogModInstallation);
 
                 }
                 else

@@ -26,7 +26,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public OfficialDLCToggler()
         {
             LoadCommands();
-            InitializeComponent();
         }
 
         public ObservableCollectionExtended<GameTargetWPF> AvailableTargets { get; } = new ObservableCollectionExtended<GameTargetWPF>();
@@ -75,6 +74,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
+            InitializeComponent();
             AvailableTargets.ReplaceAll(mainwindow.InstallationTargets.Where(x => x.Selectable && x.Game.IsOTGame()));
             SelectedTarget = AvailableTargets.FirstOrDefault();
         }

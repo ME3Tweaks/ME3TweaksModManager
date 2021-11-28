@@ -15,7 +15,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             DataContext = this;
             UpdateTitle = title;
             UpdateMessage = message;
-            InitializeComponent();
         }
 
         public string UpdateTitle { get; }
@@ -32,7 +31,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
-            //throw new NotImplementedException();
+            InitializeComponent();
         }
 
         private void Close_Clicked(object sender, RoutedEventArgs e)

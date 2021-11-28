@@ -1,14 +1,17 @@
-﻿using MassEffectModManagerCore.modmanager.usercontrols.interfaces;
-using System;
+﻿using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.Windows.Data;
+using MassEffectModManagerCore.modmanager;
+using MassEffectModManagerCore.modmanager.usercontrols.interfaces;
 
-namespace MassEffectModManagerCore.modmanager.converters
+namespace ME3TweaksModManager.modmanager.converters
 {
     public class SizePercentageConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
+            Debug.WriteLine("SIZEPERCENTAGECONVERTER!");
             if (value is double fullSize)
             {
                 if (parameter == null)
@@ -92,8 +95,9 @@ namespace MassEffectModManagerCore.modmanager.converters
             return 50;
         }
 
-        internal (double percentLimiter, double minSize, double maxSize, double otSizePx, double leSizePx)
-            ParseGenParms(string parameter)
+
+
+        internal (double percentLimiter, double minSize, double maxSize, double otSizePx, double leSizePx) ParseGenParms(string parameter)
         {
             var split = parameter.Split('_');
             double percent = double.Parse(split[0], CultureInfo.InvariantCulture);
@@ -128,6 +132,9 @@ namespace MassEffectModManagerCore.modmanager.converters
         }
     }
 
+    /// <summary>
+    /// Generational-specific size converter that also accounts for generations on and off for offsets.
+    /// </summary>
     public class GenerationsSizeAdjustedPercentageConverter : GenerationsSizePercentageConverter, IValueConverter
     {
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)

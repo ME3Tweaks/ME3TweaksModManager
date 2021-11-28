@@ -43,7 +43,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             DataContext = this;
             InstallationTargets.AddRange(targetsList);
             LoadCommands();
-            InitializeComponent();
             SelectedTarget = selectedTarget;
         }
         public ICommand RestoreAllModifiedSFARs { get; set; }
@@ -796,6 +795,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
+            InitializeComponent();
         }
 
         private void OpenASIManager_Click(object sender, RequestNavigateEventArgs e)

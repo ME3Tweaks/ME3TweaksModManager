@@ -145,7 +145,7 @@ public event PropertyChangedEventHandler PropertyChanged;
             string result = string.Empty;
 
             using Stream stream = this.GetType().Assembly.
-                GetManifestResourceStream($@"MassEffectModManagerCore.modmanager.meim.propertymaps.{filename}");
+                GetManifestResourceStream($@"ME3TweaksModManager.modmanager.meim.propertymaps.{filename}");
             using StreamReader sr = new StreamReader(stream);
             result = sr.ReadToEnd();
             return result;

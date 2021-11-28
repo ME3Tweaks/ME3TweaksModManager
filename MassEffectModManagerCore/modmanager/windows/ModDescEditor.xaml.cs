@@ -10,6 +10,7 @@ using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects.mod;
 using MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor;
 using MassEffectModManagerCore.ui;
+using ME3TweaksModManager.modmanager.loaders;
 
 namespace MassEffectModManagerCore.modmanager.windows
 {
@@ -104,7 +105,7 @@ namespace MassEffectModManagerCore.modmanager.windows
 
         //Fody uses this property on weaving
 #pragma warning disable
-public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged;
 #pragma warning restore
 
         private void Close_Click(object sender, RoutedEventArgs e)
@@ -163,11 +164,12 @@ public event PropertyChangedEventHandler PropertyChanged;
             {
                 // wow
                 StatusMessage = M3L.GetString(M3L.string_modLoadedSuccessfully);
-                if (Application.Current.MainWindow is MainWindow mw)
-                {
-                    mw.VisibleFilteredMods.Add(m);
-                    mw.SelectedMod = m;
-                }
+                //if (Application.Current.MainWindow is MainWindow mw)
+                //{
+                // This should probably be improved.
+                M3LoadedMods.Instance.VisibleFilteredMods.Add(m);
+                M3LoadedMods.Instance.SelectModCallback?.Invoke(m);
+                //}
 
                 editor_tabcontrol.SelectedItem = results_tab;
             }

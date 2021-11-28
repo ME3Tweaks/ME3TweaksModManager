@@ -24,7 +24,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             pendingLink = initialNxmLink;
             LoadCommands();
-            InitializeComponent();
         }
 
 
@@ -49,6 +48,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
+            InitializeComponent();
             AddDownload(pendingLink);
         }
 

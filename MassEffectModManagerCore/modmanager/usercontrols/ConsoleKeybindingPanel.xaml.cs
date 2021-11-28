@@ -21,6 +21,7 @@ using LegendaryExplorerCore.Coalesced;
 using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Misc;
 using MassEffectModManagerCore.modmanager.diagnostics;
+using MassEffectModManagerCore.modmanager.usercontrols.interfaces;
 using MassEffectModManagerCore.modmanager.windows;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCoreWPF;
@@ -31,7 +32,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// <summary>
     /// Interaction logic for ConsoleKeybindingPanel.xaml
     /// </summary>
-    public partial class ConsoleKeybindingPanel : MMBusyPanelBase
+    public partial class ConsoleKeybindingPanel : MMBusyPanelBase, ISizeAdjustable
     {
         public bool IsListeningForKey { get; set; }
 
@@ -51,8 +52,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public ConsoleKeybindingPanel()
         {
             DataContext = this;
+            Self = this;
             LoadCommands();
-            InitializeComponent();
         }
 
         [AddINotifyPropertyChangedInterface]
@@ -558,6 +559,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
+            InitializeComponent();
             foreach (var game in Enum.GetValues<MEGame>())
             {
                 if ((game.IsOTGame() || game.IsLEGame()) && game.IsEnabledGeneration())
@@ -785,5 +787,9 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             return null; //Not usable
         }
+
+        public double Adjustment { get; set; }
+        public double FullSize => mainwindow?.RootDisplayObject.ActualHeight ?? 0;
+        public ISizeAdjustable Self { get; init; }
     }
 }

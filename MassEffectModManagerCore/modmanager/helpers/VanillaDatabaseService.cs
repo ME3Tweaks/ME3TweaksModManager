@@ -44,9 +44,9 @@
 
 //        public static CaseInsensitiveDictionary<List<(int size, string md5)>> LoadDatabaseFor(MEGame game, bool isMe1PL = false)
 //        {
-//            string assetPrefix = $@"MassEffectModManagerCore.modmanager.gamemd5.{game.ToString().ToLower()}";
+//            string assetPrefix = $@"ME3TweaksModManager.modmanager.gamemd5.{game.ToString().ToLower()}";
 //            if (game == MEGame.LELauncher)
-//                assetPrefix = $@"MassEffectModManagerCore.modmanager.gamemd5.lel";
+//                assetPrefix = $@"ME3TweaksModManager.modmanager.gamemd5.lel";
 
 //            switch (game)
 //            {

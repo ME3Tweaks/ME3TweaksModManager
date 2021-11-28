@@ -21,6 +21,7 @@ using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.TLK.ME2ME3;
 using MassEffectModManagerCore.modmanager.diagnostics;
+using ME3TweaksCore.Diagnostics;
 using ME3TweaksCore.Services;
 using ME3TweaksCore.Services.Backup;
 using Microsoft.AppCenter.Analytics;
@@ -261,7 +262,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                             if (matchingref != null)
                             {
                                 matchingref.Data = strnode.Value;
-                                CLog.Information($@"{loggingPrefix}Set {id} to {matchingref.Data}",
+                                M3Log.Information($@"{loggingPrefix}Set {id} to {matchingref.Data}",
                                     Settings.LogModMakerCompiler);
                             }
                             else
@@ -275,9 +276,9 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         string outfolder = Path.Combine(mod.ModPath, @"BASEGAME", @"CookedPCConsole");
                         Directory.CreateDirectory(outfolder);
                         string outfile = Path.Combine(outfolder, filename);
-                        CLog.Information($@"{loggingPrefix} Saving TLK", Settings.LogModMakerCompiler);
+                        M3Log.Information($@"{loggingPrefix} Saving TLK", Settings.LogModMakerCompiler);
                         HuffmanCompression.SaveToTlkFile(outfile, tf.StringRefs);
-                        CLog.Information($@"{loggingPrefix} Saved TLK to mod BASEGAME folder",
+                        M3Log.Information($@"{loggingPrefix} Saved TLK to mod BASEGAME folder",
                             Settings.LogModMakerCompiler);
                         SetCurrentValueCallback?.Invoke(Interlocked.Increment(ref numDoneTLKSteps)); //recomp
                     }
@@ -294,7 +295,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
             else
             {
-                CLog.Information(@"This mod does not have a TLKData section. TLKs will not be compiled.", Settings.LogModMakerCompiler);
+                M3Log.Information(@"This mod does not have a TLKData section. TLKs will not be compiled.", Settings.LogModMakerCompiler);
             }
         }
 
@@ -394,7 +395,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                         Path.GetFileName(file.Key));
                                 using var decompressedStream = MEPackage.GetDecompressedPackageStream(packageAsStream, true);
                                 using var finalStream = MixinHandler.ApplyMixins(decompressedStream, file.Value, Settings.LogModMakerCompiler, completedSingleApplicationCallback);
-                                CLog.Information(@"Compressing package to mod directory: " + file.Key, Settings.LogModMakerCompiler);
+                                M3Log.Information(@"Compressing package to mod directory: " + file.Key, Settings.LogModMakerCompiler);
                                 finalStream.Position = 0;
                                 var package = MEPackageHandler.OpenMEPackageFromStream(finalStream);
                                 var outfile = Path.Combine(outdir, Path.GetFileName(file.Key));
@@ -412,7 +413,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                 using var packageAsStream = VanillaDatabaseService.FetchFileFromVanillaSFAR(dlcFolderName, file.Key, forcedDLC: dlcPackage);
                                 using var finalStream = MixinHandler.ApplyMixins(packageAsStream, file.Value, Settings.LogModMakerCompiler, completedSingleApplicationCallback);
                                 //as file comes from backup, we don't need to decompress it, it will always be decompressed in sfar
-                                CLog.Information(@"Compressing package to mod directory: " + file.Key, Settings.LogModMakerCompiler);
+                                M3Log.Information(@"Compressing package to mod directory: " + file.Key, Settings.LogModMakerCompiler);
                                 finalStream.Position = 0;
                                 var package = MEPackageHandler.OpenMEPackageFromStream(finalStream);
                                 var outfile = Path.Combine(outdir, Path.GetFileName(file.Key));
@@ -421,11 +422,11 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         }*/
                     });
                 MixinHandler.FreeME3TweaksPatchData();
-                CLog.Information(@"Finished compiling Mixins.", Settings.LogModMakerCompiler);
+                M3Log.Information(@"Finished compiling Mixins.", Settings.LogModMakerCompiler);
             }
             else
             {
-                CLog.Information(@"This modmaker mod does not have a MixinData section. Skipping mixin compiler.", Settings.LogModMakerCompiler);
+                M3Log.Information(@"This modmaker mod does not have a MixinData section. Skipping mixin compiler.", Settings.LogModMakerCompiler);
             }
         }
 
@@ -443,7 +444,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 {
                     if (job is XElement node)
                     {
-                        CLog.Information(@"Found coalesced modifier for DLC: " + node.Name,
+                        M3Log.Information(@"Found coalesced modifier for DLC: " + node.Name,
                             Settings.LogModMakerCompiler);
                         var foldername = ModmakerChunkNameToDLCFoldername(job.Name.LocalName);
                         if (job.Name.LocalName == @"BASEGAME" || job.Name.LocalName == @"BALANCE_CHANGES" || job.Name.LocalName == @"TESTPATCH" || DLCFolders.Contains(foldername, StringComparer.InvariantCultureIgnoreCase))
@@ -466,7 +467,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                         : Environment.ProcessorCount
                 }, (xmlChunk) => compileCoalescedChunk(xmlChunk, mod));
             Debug.WriteLine($@"Progress at end of coalesced chunking: {OverallProgressValue}");
-            CLog.Information(@"Finished compiling coalesceds.", Settings.LogModMakerCompiler);
+            M3Log.Information(@"Finished compiling coalesceds.", Settings.LogModMakerCompiler);
         }
 
         private bool compileCoalescedChunk(XElement xmlChunk, Mod mod)
@@ -498,7 +499,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
             else if (chunkName == @"BALANCE_CHANGES")
             {
-                var serverCoalesced = M3Utilities.ExtractInternalFileToStream(@"MassEffectModManagerCore.modmanager.me3tweaks.LiveIni.bin");
+                var serverCoalesced = M3Utilities.ExtractInternalFileToStream(@"ME3TweaksModManager.modmanager.me3tweaks.LiveIni.bin");
                 coalescedFilemapping = CoalescedConverter.DecompileGame3ToMemory(serverCoalesced);
                 coalescedFilename = @"ServerCoalesced.bin";
             }
@@ -536,7 +537,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     coalescedFilemapping[@"BioInput.xml"] = File.ReadAllText(KeybindsInjectorPanel.GetDefaultKeybindsOverride(MEGame.ME3));
                 }
 
-                CLog.Information($@"{loggingPrefix} Recompiling coalesced file", Settings.LogModMakerCompiler);
+                M3Log.Information($@"{loggingPrefix} Recompiling coalesced file", Settings.LogModMakerCompiler);
                 var newFileStream = CoalescedConverter.CompileFromMemory(coalescedFilemapping);
 
 
@@ -551,7 +552,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 newFileStream.WriteToFile(outFile);
                 Interlocked.Add(ref OverallProgressValue, COALESCED_CHUNK_OVERALL_WEIGHT);
                 SetOverallValueCallback?.Invoke(OverallProgressValue);
-                CLog.Information($@"{loggingPrefix} Compiled coalesced file, chunk finished", Settings.LogModMakerCompiler);
+                M3Log.Information($@"{loggingPrefix} Compiled coalesced file, chunk finished", Settings.LogModMakerCompiler);
             }
 
             return true;
@@ -583,7 +584,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     var newSection = new XElement(@"Section");
                     newSection.SetAttributeValue(@"name", sectionName);
                     sectionsGroup.Add(newSection);
-                    CLog.Information($@"{loggingPrefix}Added section: {sectionName}", Settings.LogModMakerCompiler);
+                    M3Log.Information($@"{loggingPrefix}Added section: {sectionName}", Settings.LogModMakerCompiler);
                 }
                 else if (operation == OP_SUBTRACTION)
                 {
@@ -591,11 +592,11 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     if (targetSection != null)
                     {
                         targetSection.Remove();
-                        CLog.Warning($@"{loggingPrefix}Removed section: {sectionName}", Settings.LogModMakerCompiler);
+                        M3Log.Warning($@"{loggingPrefix}Removed section: {sectionName}", Settings.LogModMakerCompiler);
                     }
                     else
                     {
-                        CLog.Warning($@"{loggingPrefix}Could not find section to remove: {sectionName}", Settings.LogModMakerCompiler);
+                        M3Log.Warning($@"{loggingPrefix}Could not find section to remove: {sectionName}", Settings.LogModMakerCompiler);
                     }
                 }
             }
@@ -623,12 +624,12 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     {
                         targetElement.Value = value;
                         //targetElement.Attribute("type").Value = type; //i don't think this is necessary but is part of old modmaker code.
-                        CLog.Information($@"{loggingPrefix}Assigned new value to property {sectionName} => {propertyName}, new value: {value}", Settings.LogModMakerCompiler);
+                        M3Log.Information($@"{loggingPrefix}Assigned new value to property {sectionName} => {propertyName}, new value: {value}", Settings.LogModMakerCompiler);
                     }
                     else
                     {
                         //Not assigned, same value.
-                        CLog.Information($@"{loggingPrefix}Skipping same-value for {sectionName} => {propertyName}", Settings.LogModMakerCompiler);
+                        M3Log.Information($@"{loggingPrefix}Skipping same-value for {sectionName} => {propertyName}", Settings.LogModMakerCompiler);
                     }
                 }
             }
@@ -645,19 +646,19 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 var targetElement = targetDocument.XPathSelectElement($@"/CoalesceAsset/Sections/Section[@name='{sectionName}']/Property[@name='{propertyName}']");
                 if (targetElement == null)
                 {
-                    CLog.Warning($@"{loggingPrefix}Could not find property to remove: {sectionName} => {propertyName}", Settings.LogModMakerCompiler);
+                    M3Log.Warning($@"{loggingPrefix}Could not find property to remove: {sectionName} => {propertyName}", Settings.LogModMakerCompiler);
                 }
                 else
                 {
                     if (targetElement.Value == value)
                     {
                         targetElement.Remove();
-                        CLog.Information($@"{loggingPrefix}Removed property {sectionName} => {propertyName}", Settings.LogModMakerCompiler);
+                        M3Log.Information($@"{loggingPrefix}Removed property {sectionName} => {propertyName}", Settings.LogModMakerCompiler);
                     }
                     else
                     {
                         //Not assigned, same value.
-                        CLog.Warning($@"{loggingPrefix}Did not remove property, values did not match! {sectionName} => {propertyName}. Expected '{value}', found '{targetElement.Value}'", Settings.LogModMakerCompiler);
+                        M3Log.Warning($@"{loggingPrefix}Did not remove property, values did not match! {sectionName} => {propertyName}. Expected '{value}', found '{targetElement.Value}'", Settings.LogModMakerCompiler);
                     }
                 }
             }
@@ -675,7 +676,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                 var targetElement = targetDocument.XPathSelectElement($@"/CoalesceAsset/Sections/Section[@name='{sectionName}']");
                 if (targetElement == null)
                 {
-                    CLog.Warning($@"{loggingPrefix}Could not find property to remove: {sectionName} => {propertyName}", Settings.LogModMakerCompiler);
+                    M3Log.Warning($@"{loggingPrefix}Could not find property to remove: {sectionName} => {propertyName}", Settings.LogModMakerCompiler);
                 }
                 else
                 {
@@ -683,7 +684,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     newSection.SetAttributeValue(@"name", propertyName);
                     newSection.SetAttributeValue(@"type", type);
                     targetElement.Add(newSection);
-                    CLog.Information($@"{loggingPrefix}Added property {sectionName} => {propertyName}", Settings.LogModMakerCompiler);
+                    M3Log.Information($@"{loggingPrefix}Added property {sectionName} => {propertyName}", Settings.LogModMakerCompiler);
                 }
             }
             #endregion
@@ -717,7 +718,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                             var newArrayElement = new XElement(@"Value", value);
                             newArrayElement.SetAttributeValue(@"type", type);
                             arrayContainer.Add(newArrayElement);
-                            CLog.Information($@"{loggingPrefix}Added array element {sectionName} => {propertyName} -> type({type}): {value}", Settings.LogModMakerCompiler);
+                            M3Log.Information($@"{loggingPrefix}Added array element {sectionName} => {propertyName} -> type({type}): {value}", Settings.LogModMakerCompiler);
                         }
                         else if (operation == OP_SUBTRACTION)
                         {
@@ -727,13 +728,13 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                 matchingAlgorithm, matchOnType, value);
                             if (matchingItem == null)
                             {
-                                CLog.Warning($@"{loggingPrefix}Could not find array element to remove: {sectionName} => {propertyName} -> type({matchOnType}): {value}",
+                                M3Log.Warning($@"{loggingPrefix}Could not find array element to remove: {sectionName} => {propertyName} -> type({matchOnType}): {value}",
                                     Settings.LogModMakerCompiler);
                             }
                             else
                             {
                                 matchingItem.Remove();
-                                CLog.Information($@"{loggingPrefix}Removed array element: {sectionName} => {propertyName} -> type({matchOnType}): {value}",
+                                M3Log.Information($@"{loggingPrefix}Removed array element: {sectionName} => {propertyName} -> type({matchOnType}): {value}",
                                     Settings.LogModMakerCompiler);
                             }
                         }
@@ -746,7 +747,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                 matchingAlgorithm, matchOnType, value);
                             if (matchingItem == null)
                             {
-                                CLog.Warning($@"Could not find matching element: {sectionName} => {propertyName}, type({type}), algorithm {matchingAlgorithm}",
+                                M3Log.Warning($@"Could not find matching element: {sectionName} => {propertyName}, type({type}), algorithm {matchingAlgorithm}",
                                     Settings.LogModMakerCompiler);
                             }
                             else
@@ -822,7 +823,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                 return element;
                             }
                         }
-                        CLog.Warning(@"Could not find element using ID algorithm for value " + value, Settings.LogModMakerCompiler);
+                        M3Log.Warning(@"Could not find element using ID algorithm for value " + value, Settings.LogModMakerCompiler);
                         break;
                     }
                 case @"wavecost":
@@ -836,7 +837,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                 return element;
                             }
                         }
-                        CLog.Warning(@"Could not find element using enemytype/wavecost algorithm for value " + value, Settings.LogModMakerCompiler);
+                        M3Log.Warning(@"Could not find element using enemytype/wavecost algorithm for value " + value, Settings.LogModMakerCompiler);
                         break;
                     }
                 case @"biodifficulty":
@@ -849,7 +850,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                 return element;
                             }
                         }
-                        CLog.Warning(@"Could not find element using category algorithm for value " + value, Settings.LogModMakerCompiler);
+                        M3Log.Warning(@"Could not find element using category algorithm for value " + value, Settings.LogModMakerCompiler);
                     }
                     break;
                 case @"wavelist":
@@ -868,7 +869,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                 return element;
                             }
                         }
-                        CLog.Warning(@"Could not find element using wavelist algorithm for value " + value, Settings.LogModMakerCompiler);
+                        M3Log.Warning(@"Could not find element using wavelist algorithm for value " + value, Settings.LogModMakerCompiler);
                     }
                     break;
                 case @"possessionwaves":
@@ -883,7 +884,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                 return element;
                             }
                         }
-                        CLog.Warning(@"Could not find element using shareddifficulty/wavebudget/possessionwaves algorithm for value " + value, Settings.LogModMakerCompiler);
+                        M3Log.Warning(@"Could not find element using shareddifficulty/wavebudget/possessionwaves algorithm for value " + value, Settings.LogModMakerCompiler);
                     }
                     break;
                 case @"waveclass":
@@ -897,7 +898,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                             }
                         }
                     }
-                    CLog.Warning(@"Could not find element using enemytype algorithm for value " + value, Settings.LogModMakerCompiler);
+                    M3Log.Warning(@"Could not find element using enemytype algorithm for value " + value, Settings.LogModMakerCompiler);
                     break;
                 default:
                     M3Log.Error($@"Unknown array value matching algorithm: { matchingAlgorithm}. Ths modification of this value will be skipped: {sectionName} -> {propertyName} for {value}");
@@ -951,7 +952,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             }
 
             ini[@"ModInfo"][@"compiledagainst"] = doc.XPathSelectElement(@"/ModMaker/ModInfo/ModMakerVersion").Value;
-            CLog.Information(@"Writing finalized moddesc to library", Settings.LogModMakerCompiler);
+            M3Log.Information(@"Writing finalized moddesc to library", Settings.LogModMakerCompiler);
             File.WriteAllText(mod.ModDescPath, ini.ToString());
         }
 
@@ -1096,7 +1097,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             ini[@"ModInfo"][@"modsite"] = @"https://me3tweaks.com/modmaker/mods/" + code;
 
             var outputDir = modPathOverride ?? Path.Combine(M3Utilities.GetME3ModsDirectory(), M3Utilities.SanitizePath(modName));
-            CLog.Information(@"Generating new mod directory: " + outputDir, Settings.LogModMakerCompiler);
+            M3Log.Information(@"Generating new mod directory: " + outputDir, Settings.LogModMakerCompiler);
             if (Directory.Exists(outputDir))
             {
                 M3Utilities.DeleteFilesAndFoldersRecursively(outputDir);

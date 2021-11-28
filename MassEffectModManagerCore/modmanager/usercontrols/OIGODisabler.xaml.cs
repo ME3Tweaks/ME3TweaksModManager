@@ -32,7 +32,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             MemoryAnalyzer.AddTrackedMemoryItem(@"Origin in-game overlay disabler panel", new WeakReference(this));
             DataContext = this;
             LoadCommands();
-            InitializeComponent();
         }
 
         public ObservableCollectionExtended<OIGGame> Games { get; } = new ObservableCollectionExtended<OIGGame>();
@@ -258,6 +257,7 @@ public event PropertyChangedEventHandler PropertyChanged;
 
         public override void OnPanelVisible()
         {
+            InitializeComponent();
             Games.Add(new OIGGame(MEGame.ME1, mainwindow.InstallationTargets.Where(x => x.Game == MEGame.ME1 && !x.IsCustomOption && x.GameSource != null && x.GameSource.Contains(@"Origin"))));
             Games.Add(new OIGGame(MEGame.ME2, mainwindow.InstallationTargets.Where(x => x.Game == MEGame.ME2 && !x.IsCustomOption && x.GameSource != null && x.GameSource.Contains(@"Origin"))));
             Games.Add(new OIGGame(MEGame.ME3, mainwindow.InstallationTargets.Where(x => x.Game == MEGame.ME3 && !x.IsCustomOption && x.GameSource != null && x.GameSource.Contains(@"Origin"))));

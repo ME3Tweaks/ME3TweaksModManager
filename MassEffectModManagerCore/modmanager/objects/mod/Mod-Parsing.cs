@@ -625,7 +625,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
 
             #endregion
 
-            CLog.Information($@"Read modmaker update code (or used default): {ModClassicUpdateCode}",
+            M3Log.Information($@"Read modmaker update code (or used default): {ModClassicUpdateCode}",
                 Settings.LogModStartup);
             if (ModClassicUpdateCode > 0 && ModModMakerID > 0)
             {
@@ -640,14 +640,14 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             if (!string.IsNullOrWhiteSpace(unofficialStr))
             {
                 IsUnofficial = true;
-                CLog.Information($@"Found unofficial descriptor. Marking mod as unofficial. This will block deployment of the mod until it is removed.",
+                M3Log.Information($@"Found unofficial descriptor. Marking mod as unofficial. This will block deployment of the mod until it is removed.",
                     Settings.LogModStartup);
 
             }
 
             if (bool.TryParse(iniData[@"ModInfo"][@"prefercompressed"], out var pCompressed))
             {
-                CLog.Information($@"Found prefercompressed descriptor. The mod will default the compress packages flag to {pCompressed} in the mod import panel.",
+                M3Log.Information($@"Found prefercompressed descriptor. The mod will default the compress packages flag to {pCompressed} in the mod import panel.",
                     Settings.LogModStartup);
                 PreferCompressed = pCompressed;
             }
@@ -696,7 +696,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     //Check if this is in ME3 game directory. If it's null, it might be a legacy mod
                     if (game == null)
                     {
-                        CLog.Warning(@"Game indicator is null. This may be mod from pre-Mod Manager 6, or developer did not specify the game. Defaulting to ME3", Settings.LogModStartup);
+                        M3Log.Warning(@"Game indicator is null. This may be mod from pre-Mod Manager 6, or developer did not specify the game. Defaulting to ME3", Settings.LogModStartup);
                         Game = MEGame.ME3;
                     }
                     else
@@ -732,7 +732,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     ValidMod = true;
                 }
 
-                CLog.Information($@"---MOD--------END OF {ModName} STARTUP-----------", Settings.LogModStartup);
+                M3Log.Information($@"---MOD--------END OF {ModName} STARTUP-----------", Settings.LogModStartup);
                 return;
             }
 
@@ -755,7 +755,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
 
             //This was in Java version - I believe this was to ensure only tenth version of precision would be used. E.g no moddesc 4.52
             ModDescTargetVersion = Math.Round(ModDescTargetVersion * 10) / 10;
-            CLog.Information(@"Parsing mod using moddesc version: " + ModDescTargetVersion, Settings.LogModStartup);
+            M3Log.Information(@"Parsing mod using moddesc version: " + ModDescTargetVersion, Settings.LogModStartup);
 
             // End of version rounding
 
@@ -812,8 +812,8 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 if (jobSubdirectory != null)
                 {
                     jobSubdirectory = jobSubdirectory.Replace('/', '\\').TrimStart('\\');
-                    CLog.Information(@"Found INI header with moddir specified: " + headerAsString, Settings.LogModStartup);
-                    CLog.Information(@"Subdirectory (moddir): " + jobSubdirectory, Settings.LogModStartup);
+                    M3Log.Information(@"Found INI header with moddir specified: " + headerAsString, Settings.LogModStartup);
+                    M3Log.Information(@"Subdirectory (moddir): " + jobSubdirectory, Settings.LogModStartup);
                     //string fullSubPath = FilesystemInterposer.PathCombine(IsInArchive, ModPath, jobSubdirectory);
 
                     if (TargetsLELauncher)
@@ -870,7 +870,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                             return;
                         }
 
-                        CLog.Information($@"Parsing replacefiles/newfiles on {headerAsString}. Found {replaceFilesTargetSplit.Count} items in lists", Settings.LogModStartup);
+                        M3Log.Information($@"Parsing replacefiles/newfiles on {headerAsString}. Found {replaceFilesTargetSplit.Count} items in lists", Settings.LogModStartup);
                     }
 
                     //Don't support add/remove files on anything except ME3 (due to legacy implementation), unless basegame.
@@ -893,7 +893,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                                 return;
                             }
 
-                            CLog.Information($@"Parsing addfiles/addfilestargets on {headerAsString}. Found {addFilesTargetSplit.Count} items in lists", Settings.LogModStartup);
+                            M3Log.Information($@"Parsing addfiles/addfilestargets on {headerAsString}. Found {addFilesTargetSplit.Count} items in lists", Settings.LogModStartup);
                         }
 
                         //Add files read only targets
@@ -921,7 +921,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         //        return;
                         //    }
                         //    //TODO: IMPLEMENT INSTALLER LOGIC FOR THIS.
-                        //    CLog.Information($@"Parsing addfilesreadonlytargets on {headerAsString}. Found {addFilesReadOnlySplit.Count} items in list", Settings.LogModStartup);
+                        //    M3Log.Information($@"Parsing addfilesreadonlytargets on {headerAsString}. Found {addFilesReadOnlySplit.Count} items in list", Settings.LogModStartup);
                         //}
 
                         //Ensure TESTPATCH is supported by making sure we are at least on ModDesc 3 if using TESTPATCH header.
@@ -938,7 +938,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     //This was introduced in Mod Manager 4.1 but is considered applicable to all moddesc versions as it doesn't impact installation and is only for user convenience
                     //In Java Mod Manager, this required 4.1 moddesc
                     string jobRequirement = iniData[headerAsString][@"jobdescription"];
-                    CLog.Information($@"Read job requirement text: {jobRequirement}", Settings.LogModStartup && jobRequirement != null);
+                    M3Log.Information($@"Read job requirement text: {jobRequirement}", Settings.LogModStartup && jobRequirement != null);
 
                     ModJob headerJob = new ModJob(header, this);
                     // Editor only stuff
@@ -978,7 +978,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                                         {
                                             // We use trimstart here as the split might be an empty string.
                                             var destFile = destGameDirectory + Path.DirectorySeparatorChar + file.Substring(replaceFilesSourceSplit[i].Length).TrimStart('\\', '/');
-                                            CLog.Information($@"Adding file to job replace files list: {file} => {destFile}", Settings.LogModStartup);
+                                            M3Log.Information($@"Adding file to job replace files list: {file} => {destFile}", Settings.LogModStartup);
                                             string failurereason = headerJob.AddPreparsedFileToInstall(destFile, file, this);
                                             if (failurereason != null)
                                             {
@@ -1009,7 +1009,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                             else
                             {
                                 string destFile = replaceFilesTargetSplit[i];
-                                CLog.Information($@"Adding file to job installation queue: {replaceFilesSourceSplit[i]} => {destFile}", Settings.LogModStartup);
+                                M3Log.Information($@"Adding file to job installation queue: {replaceFilesSourceSplit[i]} => {destFile}", Settings.LogModStartup);
                                 string failurereason = headerJob.AddFileToInstall(destFile, replaceFilesSourceSplit[i], this);
                                 if (failurereason != null)
                                 {
@@ -1029,7 +1029,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         for (int i = 0; i < addFilesSourceSplit.Count; i++)
                         {
                             string destFile = addFilesTargetSplit[i];
-                            CLog.Information($@"Adding file to installation queue (addition): {addFilesSourceSplit[i]} => {destFile}", Settings.LogModStartup);
+                            M3Log.Information($@"Adding file to installation queue (addition): {addFilesSourceSplit[i]} => {destFile}", Settings.LogModStartup);
                             string failurereason = headerJob.AddAdditionalFileToInstall(destFile, addFilesSourceSplit[i], this); //add files are layered on top
                             if (failurereason != null)
                             {
@@ -1044,7 +1044,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                     {
                         for (int i = 0; i < addFilesReadOnlySplit.Count; i++)
                         {
-                            CLog.Information($@"Adding read-only item to post-installation step): {addFilesSourceSplit[i]}", Settings.LogModStartup);
+                            M3Log.Information($@"Adding read-only item to post-installation step): {addFilesSourceSplit[i]}", Settings.LogModStartup);
 
                             string failurereason = headerJob.AddReadOnlyIndicatorForFile(addFilesSourceSplit[i], this);
                             if (failurereason != null)
@@ -1098,7 +1098,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                             var mergeMod = LoadMergeMod(fullPath);
                             if (mergeMod == null)
                                 return; // Load failed, handled in LoadMergeMod()
-                            CLog.Information($@"Loaded merge mod {fullPath}", Settings.LogMixinStartup);
+                            M3Log.Information($@"Loaded merge mod {fullPath}", Settings.LogMixinStartup);
                             headerJob.MergeMods.Add(mergeMod);
                         }
                     }
@@ -1135,7 +1135,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         return;
                     }
 
-                    CLog.Information($@"Successfully made mod job for {headerAsString}", Settings.LogModStartup);
+                    M3Log.Information($@"Successfully made mod job for {headerAsString}", Settings.LogModStartup);
                     InstallationJobs.Add(headerJob);
                 }
             }
@@ -1155,7 +1155,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
 
                 if ((customDLCSourceDirsStr != null && customDLCDestDirsStr != null) || !string.IsNullOrEmpty(altdlcstr))
                 {
-                    CLog.Information(@"Found CUSTOMDLC header", Settings.LogModStartup);
+                    M3Log.Information(@"Found CUSTOMDLC header", Settings.LogModStartup);
                     ModJob customDLCjob = new ModJob(ModJob.JobHeader.CUSTOMDLC, this);
 
                     if (customDLCSourceDirsStr != null && customDLCDestDirsStr != null)
@@ -1295,7 +1295,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         return;
                     }
 
-                    CLog.Information($@"Successfully made mod job for CUSTOMDLC", Settings.LogModStartup);
+                    M3Log.Information($@"Successfully made mod job for CUSTOMDLC", Settings.LogModStartup);
                     InstallationJobs.Add(customDLCjob);
                 }
                 else if ((customDLCSourceDirsStr != null) != (customDLCDestDirsStr != null))
@@ -1313,8 +1313,8 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             var balanceChangesDirectory = (Game == MEGame.ME3 && ModDescTargetVersion >= 4.3) ? iniData[ModJob.JobHeader.BALANCE_CHANGES.ToString()][@"moddir"] : null;
             if (balanceChangesDirectory != null)
             {
-                CLog.Information(@"Found BALANCE_CHANGES header", Settings.LogModStartup);
-                CLog.Information(@"Subdirectory (moddir): " + balanceChangesDirectory, Settings.LogModStartup);
+                M3Log.Information(@"Found BALANCE_CHANGES header", Settings.LogModStartup);
+                M3Log.Information(@"Subdirectory (moddir): " + balanceChangesDirectory, Settings.LogModStartup);
                 //string fullSubPath = FilesystemInterposer.PathCombine(IsInArchive, ModPath, jobSubdirectory);
 
                 //In MM5.1 or lower you would have to specify the target. In MM6 you can only specify a single source and it must be a .bin file.
@@ -1336,7 +1336,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         }
                         ModJob balanceJob = new ModJob(ModJob.JobHeader.BALANCE_CHANGES);
                         balanceJob.JobDirectory = balanceChangesDirectory;
-                        CLog.Information($@"Adding file to job installation queue: {balanceFile} => Binaries\win32\asi\ServerCoalesced.bin", Settings.LogModStartup);
+                        M3Log.Information($@"Adding file to job installation queue: {balanceFile} => Binaries\win32\asi\ServerCoalesced.bin", Settings.LogModStartup);
 
                         string failurereason = balanceJob.AddFileToInstall(@"Binaries\win32\asi\ServerCoalesced.bin", balanceFile, this);
                         if (failurereason != null)
@@ -1345,7 +1345,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                             LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_genericErrorCreatingBalanceChangeJob, failurereason);
                             return;
                         }
-                        CLog.Information($@"Successfully made mod job for {balanceJob.Header}", Settings.LogModStartup);
+                        M3Log.Information($@"Successfully made mod job for {balanceJob.Header}", Settings.LogModStartup);
                         InstallationJobs.Add(balanceJob);
                         balanceJob.BalanceChangesFileRaw = balanceFile;
                     }
@@ -1400,7 +1400,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                                 return;
                             }
                         }
-                        CLog.Information($@"Successfully made mod job for {ModJob.JobHeader.ME1_CONFIG}", Settings.LogModStartup);
+                        M3Log.Information($@"Successfully made mod job for {ModJob.JobHeader.ME1_CONFIG}", Settings.LogModStartup);
                         InstallationJobs.Add(me1ConfigJob);
                         me1ConfigJob.ConfigFilesRaw = configfilesStr;
                     }
@@ -1436,7 +1436,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         ModJob rcwJob = new ModJob(ModJob.JobHeader.ME2_RCWMOD);
                         rcwJob.RCW = rcwMods[0];
                         InstallationJobs.Add(rcwJob);
-                        CLog.Information(@"Successfully made RCW mod job for " + rcwJob.RCW.ModName, Settings.LogModStartup);
+                        M3Log.Information(@"Successfully made RCW mod job for " + rcwJob.RCW.ModName, Settings.LogModStartup);
                     }
                 }
             }
@@ -1567,7 +1567,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                             if (Enum.TryParse(reqDLCss, out ModJob.JobHeader header1) && ModJob.GetHeadersToDLCNamesMap(MEGame.ME1).TryGetValue(header1, out var foldername1))
                             {
                                 list.Add(foldername1);
-                                CLog.Information(@"Adding DLC requirement to mod: " + foldername1, Settings.LogModStartup);
+                                M3Log.Information(@"Adding DLC requirement to mod: " + foldername1, Settings.LogModStartup);
                                 continue;
                             }
                             break;
@@ -1575,7 +1575,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                             if (Enum.TryParse(reqDLCss, out ModJob.JobHeader header2) && ModJob.GetHeadersToDLCNamesMap(MEGame.ME2).TryGetValue(header2, out var foldername2))
                             {
                                 list.Add(foldername2);
-                                CLog.Information(@"Adding DLC requirement to mod: " + foldername2, Settings.LogModStartup);
+                                M3Log.Information(@"Adding DLC requirement to mod: " + foldername2, Settings.LogModStartup);
                                 continue;
                             }
                             break;
@@ -1583,7 +1583,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                             if (Enum.TryParse(reqDLCss, out ModJob.JobHeader header3) && ModJob.GetHeadersToDLCNamesMap(MEGame.ME3).TryGetValue(header3, out var foldername3))
                             {
                                 list.Add(foldername3);
-                                CLog.Information(@"Adding DLC requirement to mod: " + foldername3, Settings.LogModStartup);
+                                M3Log.Information(@"Adding DLC requirement to mod: " + foldername3, Settings.LogModStartup);
                                 continue;
                             }
                             break;
@@ -1597,7 +1597,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_invalidRequiredDLCSpecified, reqDLC);
                         return;
                     }
-                    CLog.Information(@"Adding DLC requirement to mod: " + reqDLCss, Settings.LogModStartup);
+                    M3Log.Information(@"Adding DLC requirement to mod: " + reqDLCss, Settings.LogModStartup);
                     list.Add(reqDLCss);
                 }
             }
@@ -1710,10 +1710,10 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
             //method of checking in place.
             if (modCoalFlag != null && Int32.TryParse(modCoalFlag, out int modCoalInt) && modCoalInt != 0)
             {
-                CLog.Information(@"Mod targets ModDesc 2.0, found modcoal flag", Settings.LogModStartup);
+                M3Log.Information(@"Mod targets ModDesc 2.0, found modcoal flag", Settings.LogModStartup);
                 if (!CheckAndCreateLegacyCoalescedJob())
                 {
-                    CLog.Information($@"---MOD--------END OF {ModName} STARTUP-----------", Settings.LogModStartup);
+                    M3Log.Information($@"---MOD--------END OF {ModName} STARTUP-----------", Settings.LogModStartup);
                     return;
                 }
             }
@@ -1863,7 +1863,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
 
             if (InstallationJobs.Count > 0)
             {
-                CLog.Information($@"Finalizing: {InstallationJobs.Count} installation job(s) were found.", Settings.LogModStartup);
+                M3Log.Information($@"Finalizing: {InstallationJobs.Count} installation job(s) were found.", Settings.LogModStartup);
                 ValidMod = true;
             }
             else if (!blankLoad)
@@ -1873,7 +1873,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                 return;
             }
 
-            CLog.Information($@"---MOD--------END OF {ModName} STARTUP-----------", Settings.LogModStartup);
+            M3Log.Information($@"---MOD--------END OF {ModName} STARTUP-----------", Settings.LogModStartup);
         }
 
         /// <summary>

@@ -39,7 +39,7 @@
 
   <ItemGroup Condition="'$(Configuration)'=='Debug'">
 
-    <ProjectReference Include="..\MassEffectModManagerCore\MassEffectModManagerCore.csproj" />
+    <ProjectReference Include="..\MassEffectModManagerCore\ME3TweaksModManager.csproj" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)'=='Release'">
     <None Include="MainWindow.xaml" />

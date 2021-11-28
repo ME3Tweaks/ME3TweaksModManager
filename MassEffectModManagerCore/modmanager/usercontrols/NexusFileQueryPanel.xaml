@@ -1,5 +1,5 @@
 ﻿<local:MMBusyPanelBase
-    x:Class="MassEffectModManagerCore.modmanager.usercontrols.NexusFileQueryPanel" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" xmlns:fa="http://schemas.fontawesome.io/icons/" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+    x:Class="MassEffectModManagerCore.modmanager.usercontrols.NexusFileQueryPanel" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" xmlns:fa5="http://schemas.fontawesome.com/icons/" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
     xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:ui="clr-namespace:MassEffectModManagerCore.ui"
     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
@@ -101,8 +101,8 @@
                 VerticalAlignment="Center"
                 HorizontalAlignment="Stretch"
                 Visibility="{Binding QueryInProgress, Converter={StaticResource BoolToVisibilityConverter}}">
-                <fa:ImageAwesome
-                    Icon="Spinner"
+                <fa5:ImageAwesome
+                    Icon="Solid_Spinner"
                     Spin="True"
                     SpinDuration="1.5"
                     Height="32"
@@ -145,7 +145,7 @@
                                             BorderThickness="0"
                                             Command="{Binding DownloadModCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:NexusFileQueryPanel}}}" 
                                             CommandParameter="{Binding}">
-                                        <fa:ImageAwesome Icon="Download" Width="12" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>
+                                        <fa5:ImageAwesome Icon="Solid_Download" Width="12" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>
                                     </Button>
                                 </StackPanel>
                                 <DockPanel
@@ -176,7 +176,7 @@
                                         </TextBlock>
                                     </DockPanel>
                                     <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
-                                        <fa:ImageAwesome Icon="Play" Width="10" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Margin="2,0,4,0"/>
+                                        <fa5:ImageAwesome Icon="Solid_Play" Width="10" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Margin="2,0,4,0"/>
                                         <TextBlock 
                                     ToolTip="{Binding Instance.FileID}"
                                     DockPanel.Dock="Top">

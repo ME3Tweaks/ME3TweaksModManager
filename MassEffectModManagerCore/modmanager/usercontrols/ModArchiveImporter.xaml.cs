@@ -1,35 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using IniParser.Model;
-using MassEffectModManagerCore.modmanager.helpers;
-using SevenZip;
-using MassEffectModManagerCore.modmanager.me3tweaks;
-using MassEffectModManagerCore.ui;
-using System.Diagnostics;
-using System.Globalization;
-using System.Xml.Linq;
-using SevenZip.EventArguments;
-using MassEffectModManagerCore.modmanager.gameini;
 using System.Windows.Media.Animation;
-using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.modmanager.objects;
-using MassEffectModManagerCore.modmanager.objects.mod;
+using System.Xml.Linq;
+using IniParser.Model;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
+using MassEffectModManagerCore;
+using MassEffectModManagerCore.modmanager;
 using MassEffectModManagerCore.modmanager.diagnostics;
+using MassEffectModManagerCore.modmanager.gameini;
+using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.localizations;
+using MassEffectModManagerCore.modmanager.me3tweaks;
+using MassEffectModManagerCore.modmanager.objects;
+using MassEffectModManagerCore.modmanager.objects.mod;
+using MassEffectModManagerCore.modmanager.usercontrols;
+using MassEffectModManagerCore.ui;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using Microsoft.AppCenter.Analytics;
+using SevenZip;
+using SevenZip.EventArguments;
 using MemoryAnalyzer = MassEffectModManagerCore.modmanager.memoryanalyzer.MemoryAnalyzer;
 
-namespace MassEffectModManagerCore.modmanager.usercontrols
+namespace ME3TweaksModManager.modmanager.usercontrols
 {
     /// <summary>
     /// Interaction logic for ModArchiveImporter.xaml
@@ -83,7 +86,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             ArchiveFilePath = file;
             ArchiveStream = archiveStream;
             LoadCommands();
-            InitializeComponent();
         }
 
 
@@ -1123,6 +1125,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
+            InitializeComponent();
             InspectArchiveFile(ArchiveFilePath);
         }
 

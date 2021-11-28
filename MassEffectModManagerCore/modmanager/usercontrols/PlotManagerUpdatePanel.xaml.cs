@@ -35,7 +35,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public PlotManagerUpdatePanel(GameTargetWPF target)
         {
             this.PlotManagerUpdateTarget = target ?? throw new Exception(@"Null target specified for PlotManagerUpdatePanel");
-            InitializeComponent();
         }
 
         public static bool RunPlotManagerUpdate(GameTargetWPF target)
@@ -122,7 +121,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
 
             var pmPath = GetPlotManagerPath(target);
-            var vpm = M3Utilities.ExtractInternalFileToStream($@"MassEffectModManagerCore.modmanager.plotmanager.{target.Game}.PlotManager.{(target.Game == MEGame.ME1 ? @"u" : @"pcc")}"); // do not localize
+            var vpm = M3Utilities.ExtractInternalFileToStream($@"ME3TweaksModManager.modmanager.plotmanager.{target.Game}.PlotManager.{(target.Game == MEGame.ME1 ? @"u" : @"pcc")}"); // do not localize
             if (funcMap.Any())
             {
                 var plotManager = MEPackageHandler.OpenMEPackageFromStream(vpm, $@"PlotManager.{(target.Game == MEGame.ME1 ? @"u" : @"pcc")}"); // do not localize
@@ -153,11 +152,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         uf.Children = 0;
                         exp.WriteBinary(uf);
                         relinkChain = true;
-                        CLog.Information($@"Generated new conditional entry: {exp.UIndex} {pmKey}", Settings.LogModInstallation);
+                        M3Log.Information($@"Generated new conditional entry: {exp.UIndex} {pmKey}", Settings.LogModInstallation);
                     }
                     else
                     {
-                        CLog.Information($@"Updating conditional entry: {pmKey}", Settings.LogModInstallation);
+                        M3Log.Information($@"Updating conditional entry: {pmKey}", Settings.LogModInstallation);
                     }
 
                     (_, MessageLog log) = UnrealScriptCompiler.CompileFunction(exp, v.Value, fl);
@@ -222,6 +221,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
+            InitializeComponent();
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"PlotManagerUpdate");
             nbw.DoWork += (a, b) =>
             {

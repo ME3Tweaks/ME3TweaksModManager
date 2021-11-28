@@ -214,7 +214,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                 var qPackage = MEPackageHandler.QuickOpenMEPackage(fpath);
                                 if (qPackage.IsCompressed)
                                 {
-                                    CLog.Information(
+                                    M3Log.Information(
                                         $" >> Decompressing compressed package for update comparison check: {fpath}",
                                         Settings.LogModUpdater);
                                     try
@@ -262,12 +262,12 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                             {
                                 if (indexInfo.MD5 == serverFile.hash)
                                 {
-                                    CLog.Information(@" >> File is up to date", Settings.LogModUpdater);
+                                    M3Log.Information(@" >> File is up to date", Settings.LogModUpdater);
                                     calculatedOp = true;
                                 }
                                 else if (indexInfo.CompressedMD5 != null && indexInfo.CompressedMD5 == serverFile.hash)
                                 {
-                                    CLog.Information(@" >> Compressed package file is up to date",
+                                    M3Log.Information(@" >> Compressed package file is up to date",
                                         Settings.LogModUpdater);
                                     calculatedOp = true;
                                 }
@@ -285,7 +285,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                         .ToList();
                                 if (existingFilesThatMatchServerHash.Any())
                                 {
-                                    CLog.Information(
+                                    M3Log.Information(
                                         $" >> Server file can be cloned from local file {existingFilesThatMatchServerHash[0].Value.RelativeFilepath} as it has same hash",
                                         Settings.LogModUpdater);
                                     modUpdateInfo.cloneOperations[serverFile] =
@@ -295,7 +295,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                 else if (indexInfo == null)
                                 {
                                     // we don't have file hashed (new file)
-                                    CLog.Information(
+                                    M3Log.Information(
                                         $" >> Applicable for updates, File does not exist locally",
                                         Settings.LogModUpdater);
                                     modUpdateInfo.applicableUpdates.Add(serverFile);
@@ -303,7 +303,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                                 else
                                 {
                                     // Existing file has wrong hash
-                                    CLog.Information($" >> Applicable for updates, hash has changed",
+                                    M3Log.Information($" >> Applicable for updates, hash has changed",
                                         Settings.LogModUpdater);
                                     modUpdateInfo.applicableUpdates.Add(serverFile);
                                 }

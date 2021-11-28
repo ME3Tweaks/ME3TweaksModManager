@@ -37,7 +37,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             DataContext = this;
             LoadCommands();
-            InitializeComponent();
         }
 
         public bool ForceTrue
@@ -260,6 +259,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
+            InitializeComponent();
             InitLogUploaderUI();
         }
 

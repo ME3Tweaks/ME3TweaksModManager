@@ -45,14 +45,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             DataContext = this;
             this.mod = mod;
             LoadCommands();
-            InitializeComponent();
         }
 
         public UpdaterServicePanel()
         {
             DataContext = this;
             LoadCommands();
-            InitializeComponent();
         }
 
         public bool OperationInProgress { get; set; }
@@ -183,6 +181,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
+            InitializeComponent();
             Username = Settings.UpdaterServiceUsername;
             LZMAStoragePath = Settings.UpdaterServiceLZMAStoragePath;
             ManifestStoragePath = Settings.UpdaterServiceManifestStoragePath;

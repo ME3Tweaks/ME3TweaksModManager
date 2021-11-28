@@ -47,7 +47,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 Games.Add(new BackupFetcherGame(MEGame.LE2, window));
                 Games.Add(new BackupFetcherGame(MEGame.LE3, window));
             }
-            InitializeComponent();
         }
 
         public bool LoadingInProgress { get; set; } = true;
@@ -302,6 +301,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
+            InitializeComponent();
+
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"BackupFileFetcher-Load");
             nbw.DoWork += (a, b) =>
             {

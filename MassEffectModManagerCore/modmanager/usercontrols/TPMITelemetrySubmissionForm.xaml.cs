@@ -33,7 +33,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             DataContext = this;
             TelemetryMod = telemetryMod;
             LoadCommands();
-            InitializeComponent();
         }
 
         public ICommand CloseCommand { get; set; }
@@ -61,6 +60,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
+            InitializeComponent();
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"telemetrydatagathering");
             nbw.DoWork += GatherTelemetryDataBGThread;
             nbw.RunWorkerCompleted += (a, b) =>

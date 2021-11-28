@@ -479,7 +479,7 @@ namespace MassEffectModManagerCore.modmanager.objects
                 CheckedByDefault = cbd;
             }
 
-            CLog.Information($@"Alternate file loaded and validated: {FriendlyName}", Settings.LogModStartup);
+            M3Log.Information($@"Alternate file loaded and validated: {FriendlyName}", Settings.LogModStartup);
             ValidAlternate = true;
         }
 

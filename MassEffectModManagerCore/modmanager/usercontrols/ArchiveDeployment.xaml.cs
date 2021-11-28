@@ -1,5 +1,4 @@
-﻿using FontAwesome.WPF;
-using MassEffectModManagerCore.modmanager.helpers;
+﻿using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.objects;
@@ -32,6 +31,7 @@ using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using FontAwesome5;
 using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages.CloningImportingAndRelinking;
@@ -42,6 +42,7 @@ using ME3TweaksCore.Services;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksCore.Targets;
 using ME3TweaksCoreWPF;
+using ME3TweaksModManager.modmanager.loaders;
 using Brushes = System.Windows.Media.Brushes;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -68,7 +69,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             });
             initialMod = mod;
             LoadCommands();
-            InitializeComponent();
         }
 
         public ConcurrentQueue<EncompassingModDeploymentCheck> PendingChecks { get; } = new ConcurrentQueue<EncompassingModDeploymentCheck>();
@@ -970,7 +970,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void AddModToDeploymentWrapper()
         {
-            var m = mainwindow.AllLoadedMods.Except(ModsInDeployment.Select(x => x.ModBeingDeployed));
+            var m = M3LoadedMods.Instance.AllLoadedMods.Except(ModsInDeployment.Select(x => x.ModBeingDeployed));
             ModSelectorDialog msd = new ModSelectorDialog(window, m.ToList());
             var result = msd.ShowDialog();
             if (result.HasValue && result.Value)
@@ -1374,7 +1374,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             // Bindings
             public string ItemText { get; set; }
             public SolidColorBrush Foreground { get; private set; }
-            public FontAwesomeIcon Icon { get; private set; }
+            public EFontAwesomeIcon Icon { get; private set; }
             public bool Spinning { get; private set; }
             public bool DeploymentBlocking { get; private set; }
             public string ToolTip { get; set; }
@@ -1392,7 +1392,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             private void Initialize()
             {
-                Icon = FontAwesomeIcon.Spinner;
+                Icon = EFontAwesomeIcon.Solid_Spinner;
                 Spinning = true;
                 Foreground = Application.Current.FindResource(AdonisUI.Brushes.DisabledAccentForegroundBrush) as SolidColorBrush;
                 ToolTip = M3L.GetString(M3L.string_validationInProgress);
@@ -1412,22 +1412,22 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (!HasAnyMessages())
                 {
                     Foreground = Brushes.Green;
-                    Icon = FontAwesomeIcon.CheckCircle;
+                    Icon = EFontAwesomeIcon.Solid_CheckCircle;
                 }
                 else if (GetBlockingErrors().Any())
                 {
                     Foreground = Brushes.Red;
-                    Icon = FontAwesomeIcon.TimesCircle;
+                    Icon = EFontAwesomeIcon.Solid_TimesCircle;
                 }
                 else if (GetSignificantIssues().Any())
                 {
                     Foreground = Brushes.Orange;
-                    Icon = FontAwesomeIcon.Warning;
+                    Icon = EFontAwesomeIcon.Solid_ExclamationTriangle;
                 }
                 else if (GetInfoWarnings().Any())
                 {
                     Foreground = Brushes.DodgerBlue;
-                    Icon = FontAwesomeIcon.InfoCircle;
+                    Icon = EFontAwesomeIcon.Solid_InfoCircle;
                 }
 
                 SetDone();
@@ -1450,7 +1450,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             public void SetAbandoned()
             {
                 Foreground = Brushes.Gray;
-                Icon = FontAwesomeIcon.Ban;
+                Icon = EFontAwesomeIcon.Solid_Ban;
                 Spinning = false;
             }
         }
@@ -1474,6 +1474,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
+            InitializeComponent();
             AddModToDeployment(initialMod);
             initialMod = null;
         }

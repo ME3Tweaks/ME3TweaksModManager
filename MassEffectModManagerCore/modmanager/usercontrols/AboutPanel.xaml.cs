@@ -41,7 +41,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public AboutPanel()
         {
             SetupLibCredits();
-            InitializeComponent();
             BuildDate = App.BuildDate;
         }
 
@@ -94,13 +93,14 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
+            InitializeComponent();
         }
 
         private void Navigate_Click(object sender, RequestNavigateEventArgs e)
         {
             if (e.Uri.AbsoluteUri == @"internal://minhook-license/")
             {
-                new LicenseViewerWindow(new StreamReader(M3Utilities.GetResourceStream(@"MassEffectModManagerCore.modmanager.licenses.minhook.txt")).ReadToEnd()).Show();
+                new LicenseViewerWindow(new StreamReader(M3Utilities.GetResourceStream(@"ME3TweaksModManager.modmanager.licenses.minhook.txt")).ReadToEnd()).Show();
                 return;
             }
             M3Utilities.OpenWebpage(e.Uri.AbsoluteUri);

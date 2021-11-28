@@ -1,6 +1,8 @@
 ﻿<local:MMBusyPanelBase x:Class="MassEffectModManagerCore.modmanager.usercontrols.RestorePanel" 
                        DataContext="{Binding RelativeSource={RelativeSource Self}}"
-                       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" mc:Ignorable="d"
+                       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+                       xmlns:objects="clr-namespace:ME3TweaksModManager.modmanager.objects"
+                       mc:Ignorable="d"
                        Width="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.7_400_900', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualWidth}"
                        Height="{Binding Converter={StaticResource GenerationsSizePercentageConverter}, ConverterParameter='0.4_200_800_110_200', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualHeight}">
     <DockPanel>
@@ -16,7 +18,7 @@
                     </Style>
                 </ItemsControl.ItemContainerStyle>
                 <ItemsControl.ItemTemplate>
-                    <DataTemplate>
+                    <DataTemplate DataType="objects:GameRestoreWrapper">
                         <Grid Margin="0,5,5,5">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="54" />
@@ -31,17 +33,17 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
-                            <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}, ConverterParameter='48'}" Width="48" VerticalAlignment="Top" Height="48" HorizontalAlignment="Left" />
+                            <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" Source="{Binding RestoreController.Game, Converter={StaticResource GameToImageIconConverter}, ConverterParameter='48'}" Width="48" VerticalAlignment="Top" Height="48" HorizontalAlignment="Left" />
                             <TextBlock Grid.Column="1" Grid.Row="0" FontWeight="Bold" Text="{Binding GameTitle}" />
-                            <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding BackupStatus}" />
-                            <TextBlock Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="2" Text="{Binding BackupStatusLine2}" />
+                            <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding BackupStatus.BackupStatus}" />
+                            <TextBlock Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="2" Text="{Binding BackupStatus.BackupLocationStatus}" />
                             <local:TargetSelector Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" IsEnabled="{Binding CanOpenDropdown}"
-                                  Name="InstallationTargetsME3_ComboBox" AvailableTargets="{Binding AvailableBackupSources}" 
+                                  AvailableTargets="{Binding AvailableRestoreTargets}" 
                                   SelectedGameTarget="{Binding RestoreTarget}" HorizontalContentAlignment="Stretch" 
-                                  Visibility="{Binding BackupLocation, Converter={StaticResource NullVisibilityConverter}}"/>
-                            <Button Content="{Binding RestoreButtonText}" Padding="3,0" Command="{Binding RestoreButtonCommand}" Grid.Row="3" Grid.Column="3" Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}" Visibility="{Binding BackupLocation, Converter={StaticResource NullVisibilityConverter}}"/>
-                            <ProgressBar IsIndeterminate="{Binding ProgressIndeterminate, FallbackValue=True}" Value="{Binding ProgressValue}" Height="6" Maximum="{Binding ProgressMax}" Visibility="{Binding RestoreInProgress, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}" Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="3" />
-                            <TextBlock Text="{DynamicResource string_restoringTextureLODs}" TextWrapping="Wrap" Grid.Row="5" Grid.ColumnSpan="3" Visibility="{Binding RestoreTarget.TextureModded, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}"/>
+                                  Visibility="{Binding BackupStatus.BackedUp, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                            <Button Content="{Binding RestoreButtonText}" Padding="3,0" Command="{Binding RestoreButtonCommand}" Grid.Row="3" Grid.Column="3" Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"/>
+                            <ProgressBar IsIndeterminate="{Binding ProgressIndeterminate, FallbackValue=True}" Value="{Binding RestoreController.ProgressValue}" Height="6" Maximum="{Binding RestoreController.ProgressMax}" Visibility="{Binding RestoreController.RestoreInProgress, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}" Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="3" />
+                            <TextBlock Text="{DynamicResource string_restoringTextureLODs}" TextWrapping="Wrap" Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="3" Visibility="{Binding WillRestoreTextureLODs, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}"/>
                         </Grid>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>

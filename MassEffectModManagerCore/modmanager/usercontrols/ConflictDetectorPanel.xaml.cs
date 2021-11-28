@@ -26,7 +26,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             MemoryAnalyzer.AddTrackedMemoryItem(@"Custom DLC Conflict Detector Panel", new WeakReference(this));
             LoadCommands();
-            InitializeComponent();
         }
         public ICommand CloseCommand { get; set; }
 
@@ -91,6 +90,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
+            InitializeComponent();
             ConflictTargets.ReplaceAll(mainwindow.InstallationTargets.Where(x => x.Selectable && x.Game.IsEnabledGeneration()));
             SelectedTarget = ConflictTargets.FirstOrDefault();
         }

@@ -29,12 +29,12 @@ using ME3TweaksCore.Services.Backup;
 using ME3TweaksCore.Services.BasegameFileIdentification;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksCoreWPF;
+using ME3TweaksModManager.modmanager.objects;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using Newtonsoft.Json;
 using SevenZip;
 using MemoryAnalyzer = MassEffectModManagerCore.modmanager.memoryanalyzer.MemoryAnalyzer;
-using MetaCMM = MassEffectModManagerCore.modmanager.objects.MetaCMM;
 using Mod = MassEffectModManagerCore.modmanager.objects.mod.Mod;
 
 namespace MassEffectModManagerCore.modmanager.usercontrols
@@ -47,7 +47,19 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public static readonly int PERCENT_REFRESH_COOLDOWN = 125;
         private readonly ReadOnlyOption me1ConfigReadOnlyOption = new ReadOnlyOption();
 
+        /// <summary>
+        /// All configurable options to display to the user.
+        /// </summary>
+        public ObservableCollectionExtended<object> AllAlternateOptions { get; } = new ObservableCollectionExtended<object>();
+
+        /// <summary>
+        /// Alternate options that don't have a group assigned to them
+        /// </summary>
         public ObservableCollectionExtended<AlternateOption> AlternateOptions { get; } = new ObservableCollectionExtended<AlternateOption>();
+        /// <summary>
+        /// Alternate options that do have a group assigned to them
+        /// </summary>
+        public ObservableCollectionExtended<AlternateGroup> AlternateGroups { get; } = new ObservableCollectionExtended<AlternateGroup>();
         public ObservableCollectionExtended<GameTargetWPF> InstallationTargets { get; } = new ObservableCollectionExtended<GameTargetWPF>();
         public Mod ModBeingInstalled { get; }
         public bool CompressInstalledPackages { get; set; }
@@ -75,7 +87,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             selectedGameTarget.ReloadGameTarget(false); //Reload so we can have consistent state with ALOT on disk
             Action = M3L.GetString(M3L.string_preparingToInstall);
             CompressInstalledPackages = (installCompressed ?? modBeingInstalled.PreferCompressed) && modBeingInstalled.Game > MEGame.ME1;
-            InitializeComponent();
 
             if (!ModBeingInstalled.IsInArchive)
             {
@@ -232,11 +243,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 return;
             }
 
-            M3Utilities.InstallBinkBypass(SelectedGameTarget); //Always install binkw32, don't bother checking if it is already ASI version.
+            SelectedGameTarget.InstallBinkBypass(); //Always install binkw32, don't bother checking if it is already ASI version.
             if (ModBeingInstalled.Game.IsLEGame())
             {
                 GameTargetWPF gt = new GameTargetWPF(MEGame.LELauncher, Path.Combine(Directory.GetParent(SelectedGameTarget.TargetPath).FullName, @"Launcher"), false, skipInit: true);
-                M3Utilities.InstallBinkBypass(gt);
+                gt.InstallBinkBypass();
             }
 
             if (ModBeingInstalled.Game == MEGame.ME2 && ModBeingInstalled.GetJob(ModJob.JobHeader.ME2_RCWMOD) != null && installationJobs.Count == 1)
@@ -454,7 +465,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
                     if (readOnlyTargets.Contains(originalMapping.Key))
                     {
-                        CLog.Information(@"Adding resolved read only target: " + originalMapping.Key + @" -> " + fullPathMappingDisk[sourceFile], Settings.LogModInstallation);
+                        M3Log.Information(@"Adding resolved read only target: " + originalMapping.Key + @" -> " + fullPathMappingDisk[sourceFile], Settings.LogModInstallation);
                         mappedReadOnlyTargets.Add(fullPathMappingDisk[sourceFile]);
                     }
                 }
@@ -508,12 +519,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     {
                         //we are installing this file
                         requiredSpaceToInstall += (long)f.Size;
-                        CLog.Information(@"Adding to size calculation: " + f.FileName + @", size " + f.Size, Settings.LogModInstallation);
+                        M3Log.Information(@"Adding to size calculation: " + f.FileName + @", size " + f.Size, Settings.LogModInstallation);
 
                     }
                     else
                     {
-                        CLog.Information(@"Skip adding to size calculation: " + f.FileName, Settings.LogModInstallation);
+                        M3Log.Information(@"Skip adding to size calculation: " + f.FileName, Settings.LogModInstallation);
                     }
                 }
             }
@@ -588,7 +599,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 numdone++;
                 targetPath = targetPath.Replace('/', '\\').TrimStart('\\');
                 var fileMapping = sfarMapping.FirstOrDefault(x => x.Key == targetPath);
-                CLog.Information($@"[{numdone}/{numFilesToInstall}] Installed: {fileMapping.Value.FilePath} -> (SFAR) {targetPath}", Settings.LogModInstallation);
+                M3Log.Information($@"[{numdone}/{numFilesToInstall}] Installed: {fileMapping.Value.FilePath} -> (SFAR) {targetPath}", Settings.LogModInstallation);
                 //Debug.WriteLine(@"Installed: " + target);
                 Action = M3L.GetString(M3L.string_installing);
                 var now = DateTime.Now;
@@ -605,7 +616,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 numdone++;
                 var fileMapping = fullPathMappingDisk.FirstOrDefault(x => x.Value == targetPath);
-                CLog.Information($@"[{numdone}/{numFilesToInstall}] Installed: {fileMapping.Key} -> {targetPath}", Settings.LogModInstallation);
+                M3Log.Information($@"[{numdone}/{numFilesToInstall}] Installed: {fileMapping.Key} -> {targetPath}", Settings.LogModInstallation);
                 //Debug.WriteLine(@"Installed: " + target);
                 Action = M3L.GetString(M3L.string_installing);
 
@@ -702,7 +713,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     if (args.FileInfo.IsDirectory) return; //ignore
                     if (!fullPathMappingArchive.ContainsKey(args.FileInfo.Index))
                     {
-                        CLog.Information(@"Skipping extraction of archive file: " + args.FileInfo.FileName, Settings.LogModInstallation);
+                        M3Log.Information(@"Skipping extraction of archive file: " + args.FileInfo.FileName, Settings.LogModInstallation);
                         return; //archive extracted this file (in memory) but did not do anything with this file (7z)
                     }
                     FileInstalledCallback(fullPathMappingArchive[args.FileInfo.Index]); //put dest filename here as this func logs the mapping based on the destination
@@ -976,7 +987,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private ModInstallCompletedStatus InstallAttachedRCWMod()
         {
-            CLog.Information(@"Installing attached RCW mod. Checking Coalesced.ini first to make sure this mod can be safely applied", Settings.LogModInstallation);
+            M3Log.Information(@"Installing attached RCW mod. Checking Coalesced.ini first to make sure this mod can be safely applied", Settings.LogModInstallation);
             ME2Coalesced me2c = null;
             try
             {
@@ -1082,7 +1093,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             var entry = section.Entries[i];
                             if (entry.Key == itemToDelete.Key && entry.Value == itemToDelete.Value) //case sensitive
                             {
-                                CLog.Information($@"Removing ini entry {entry.RawText} in section {section.Header} of file {me2cF.Key}", Settings.LogModInstallation);
+                                M3Log.Information($@"Removing ini entry {entry.RawText} in section {section.Header} of file {me2cF.Key}", Settings.LogModInstallation);
                                 section.Entries.RemoveAt(i);
                                 deletedSomething = true;
                             }
@@ -1099,7 +1110,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         if (existingEntries.Count <= 0)
                         {
                             //just add it
-                            CLog.Information($@"Adding ini entry {itemToAdd.RawText} in section {section.Header} of file {me2cF.Key}", Settings.LogModInstallation);
+                            M3Log.Information($@"Adding ini entry {itemToAdd.RawText} in section {section.Header} of file {me2cF.Key}", Settings.LogModInstallation);
                             section.Entries.Add(itemToAdd);
                         }
                         else if (existingEntries.Count > 1)
@@ -1108,12 +1119,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             if (existingEntries.Any(x => x.Value == itemToAdd.Value)) //case sensitive
                             {
                                 //Duplicate.
-                                CLog.Information($@"Not adding duplicate ini entry {itemToAdd.RawText} in section {section.Header} of file {me2cF.Key}", Settings.LogModInstallation);
+                                M3Log.Information($@"Not adding duplicate ini entry {itemToAdd.RawText} in section {section.Header} of file {me2cF.Key}", Settings.LogModInstallation);
                             }
                             else
                             {
                                 //Not duplicate - installing key
-                                CLog.Information($@"Adding ini entry {itemToAdd.RawText} in section {section.Header} of file {me2cF.Key}", Settings.LogModInstallation);
+                                M3Log.Information($@"Adding ini entry {itemToAdd.RawText} in section {section.Header} of file {me2cF.Key}", Settings.LogModInstallation);
                                 section.Entries.Add(itemToAdd);
                             }
                         }
@@ -1126,12 +1137,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 if (existingEntries.Any(x => x.Value == itemToAdd.Value)) //case sensitive
                                 {
                                     //Duplicate.
-                                    CLog.Information($@"Not adding duplicate ini entry {itemToAdd.RawText} in section {section.Header} of file {me2cF.Key}", Settings.LogModInstallation);
+                                    M3Log.Information($@"Not adding duplicate ini entry {itemToAdd.RawText} in section {section.Header} of file {me2cF.Key}", Settings.LogModInstallation);
                                 }
                                 else
                                 {
                                     //Not duplicate - installing key
-                                    CLog.Information($@"Adding ini entry {itemToAdd.RawText} in section {section.Header} of file {me2cF.Key}", Settings.LogModInstallation);
+                                    M3Log.Information($@"Adding ini entry {itemToAdd.RawText} in section {section.Header} of file {me2cF.Key}", Settings.LogModInstallation);
                                     section.Entries.Add(itemToAdd);
                                 }
                             }
@@ -1173,7 +1184,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 if (index >= 0)
                 {
                     dlc.ReplaceEntry(sourcePath, index);
-                    CLog.Information(@"Replaced file within SFAR: " + entry.Key, Settings.LogModInstallation);
+                    M3Log.Information(@"Replaced file within SFAR: " + entry.Key, Settings.LogModInstallation);
                 }
                 else
                 {
@@ -1187,7 +1198,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         });
                     }
                     dlc.AddFileQuick(sourcePath, entryPath);
-                    CLog.Information(@"Added new file to SFAR: " + entry.Key, Settings.LogModInstallation);
+                    M3Log.Information(@"Added new file to SFAR: " + entry.Key, Settings.LogModInstallation);
                 }
                 FileInstalledCallback?.Invoke(sfarJob.fileMapping, entryPath);
             }
@@ -1263,7 +1274,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
                 else
                 {
-                    CLog.Information(@"Official headers check passed for header " + job.Header, Settings.LogModInstallation);
+                    M3Log.Information(@"Official headers check passed for header " + job.Header, Settings.LogModInstallation);
                 }
             }
 
@@ -1518,6 +1529,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public override void OnPanelVisible()
         {
             GC.Collect(); //this should help with the oddities of missing radio button's somehow still in the visual tree from busyhost
+            InitializeComponent();
             SetupOptions(true);
         }
 
@@ -1636,13 +1648,29 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             foreach (var job in ModBeingInstalled.InstallationJobs)
             {
-                AlternateOptions.AddRange(job.AlternateDLCs);
-                AlternateOptions.AddRange(job.AlternateFiles);
+                // GROUP OPTIONS COME FIRST.
+                var alternateDLCGroups = job.AlternateDLCs.Where(x => x.GroupName != null).Select(x => x.GroupName).Distinct().ToList();
+                var alternateFileGroups = job.AlternateFiles.Where(x => x.GroupName != null).Select(x => x.GroupName).Distinct().ToList();
+
+                foreach (var adlcg in alternateDLCGroups)
+                {
+                    AlternateGroups.Add(new AlternateGroup(job.AlternateDLCs.Where(x => x.GroupName == adlcg).OfType<AlternateOption>().ToList()));
+                }
+
+                foreach (var afileg in alternateFileGroups)
+                {
+                    AlternateGroups.Add(new AlternateGroup(job.AlternateFiles.Where(x => x.GroupName == afileg).OfType<AlternateOption>().ToList()));
+                }
+
+
+                // NON GROUP OPTIONS COME NEXT.
+                AlternateOptions.AddRange(job.AlternateDLCs.Where(x => x.GroupName == null));
+                AlternateOptions.AddRange(job.AlternateFiles.Where(x => x.GroupName == null));
             }
 
             SortOptions();
 
-            foreach (AlternateOption o in AlternateOptions)
+            void internalSetupInitialSelection(AlternateOption o)
             {
                 if (o is AlternateDLC altdlc)
                 {
@@ -1656,18 +1684,32 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 }
             }
 
-            if (AlternateOptions.Count == 0)
+
+            foreach (AlternateOption o in AlternateOptions)
+            {
+                internalSetupInitialSelection(o);
+            }
+
+            foreach (AlternateGroup group in AlternateGroups)
+            {
+                foreach (AlternateOption o in group.AlternateOptions)
+                {
+                    internalSetupInitialSelection(o);
+                }
+            }
+
+            if (AlternateOptions.Count == 0 && AlternateGroups.Count == 0)
             {
                 AllOptionsAreAutomatic = false; //Don't show the UI for this
             }
 
             var targets = mainwindow.InstallationTargets.Where(x => x.Game == ModBeingInstalled.Game).ToList();
-            if (ModBeingInstalled.IsInArchive && targets.Count == 1 && AlternateOptions.Count == 0)
+            if (ModBeingInstalled.IsInArchive && targets.Count == 1 && AllOptionsAreAutomatic)
             {
                 // All available options were chosen already (compression would come from import dialog)
                 BeginInstallingMod();
             }
-            else if ((targets.Count == 1 || BatchMode) && AlternateOptions.Count == 0 && (BatchMode || Settings.PreferCompressingPackages || ModBeingInstalled.Game == MEGame.ME1 || ModBeingInstalled.Game.IsLEGame()))
+            else if ((targets.Count == 1 || BatchMode) && AlternateOptions.Count == 0 && AlternateGroups.Count == 0 && (BatchMode || Settings.PreferCompressingPackages || ModBeingInstalled.Game == MEGame.ME1 || ModBeingInstalled.Game.IsLEGame()))
             {
                 // ME1 and LE can't compress. If user has elected to compress packages, and there are no alternates/additional targets, just begin installation
                 CompressInstalledPackages = Settings.PreferCompressingPackages && ModBeingInstalled.Game > MEGame.ME1;
@@ -1675,11 +1717,18 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
             else
             {
+                // Populate the list of all alternates.
+                AllAlternateOptions.AddRange(AlternateGroups);
+                AllAlternateOptions.AddRange(AlternateOptions);
+
                 // Set the list of targets.
                 InstallationTargets.ReplaceAll(targets);
             }
         }
 
+        /// <summary>
+        /// If a target change must occur before you can install the mod (the current target is not valid)
+        /// </summary>
         public bool PreventInstallUntilTargetChange { get; set; }
 
         public void OnSelectedGameTargetChanged(object oldT, object newT)

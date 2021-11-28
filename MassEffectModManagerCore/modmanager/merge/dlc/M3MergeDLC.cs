@@ -2,12 +2,13 @@
 using System.IO;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Packages;
+using MassEffectModManagerCore;
+using MassEffectModManagerCore.modmanager;
 using MassEffectModManagerCore.modmanager.windows;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCoreWPF;
-using MetaCMM = MassEffectModManagerCore.modmanager.objects.MetaCMM;
 
-namespace MassEffectModManagerCore.modmanager.mergedlc
+namespace ME3TweaksModManager.modmanager.merge.dlc
 {
     public class M3MergeDLC
     {
@@ -44,9 +45,13 @@ namespace MassEffectModManagerCore.modmanager.mergedlc
             MetaCMM mcmm = new MetaCMM()
             {
                 ModName = @"ME3Tweaks Mod Manager Auto-Generated Merge DLC",
-                Version = @"1.0"
+                Version = @"1.0",
+                ExtendedAttributes =
+                {
+                    { @"MergeDLCGUID", Guid.NewGuid().ToString() }// A new GUID is generated
+                }
             };
-            mcmm.WriteMetaCMM(Path.Combine(M3Directories.GetDLCPath(target), MERGE_DLC_FOLDERNAME, @"_metacmm.txt"));
+            mcmm.WriteMetaCMM(Path.Combine(M3Directories.GetDLCPath(target), MERGE_DLC_FOLDERNAME, @"_metacmm.txt"), App.AppVersionHR);
         }
     }
 }

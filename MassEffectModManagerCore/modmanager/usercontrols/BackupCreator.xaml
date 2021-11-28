@@ -94,12 +94,12 @@
                             <TextBlock
                             Grid.Column="1"
                             Grid.Row="1"
-                            Text="{Binding BackupStatus}"
+                            Text="{Binding BackupStatus.BackupStatus}"
                             TextWrapping="Wrap"/>
                             <TextBlock
                             Grid.Column="1"
                             Grid.Row="2"
-                            Text="{Binding BackupStatusLine2}"
+                            Text="{Binding BackupStatus.BackupLocationStatus}"
                             TextWrapping="Wrap"/>
                             <local:TargetSelector Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2"
                             IsEnabled="{Binding BackupInProgress, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}"

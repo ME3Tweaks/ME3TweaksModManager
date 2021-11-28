@@ -5,12 +5,11 @@
                        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
                        xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols"
                        xmlns:fa5="http://schemas.fontawesome.com/icons/"
-                       xmlns:fa="http://schemas.fontawesome.io/icons/"
                        xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
                        mc:Ignorable="d" 
                        d:DesignHeight="200" d:DesignWidth="300">
     <StackPanel VerticalAlignment="Center">
-        <fa:ImageAwesome Icon="Spinner" Spin="True" SpinDuration="1" Width="32" Height="32" Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" Margin="10" />
+        <fa5:ImageAwesome Icon="Solid_Spinner" Spin="True" SpinDuration="1" Width="32" Height="32" Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" Margin="10" />
         <TextBlock HorizontalAlignment="Center" FontSize="25" FontWeight="Light" Text="{Binding Percent, StringFormat='{}{0}%'}" Visibility="{Binding PercentVisibility}"/>
         <TextBlock HorizontalAlignment="Center" FontSize="16" FontWeight="Light" Text="{Binding ActionText}" TextWrapping="Wrap" TextAlignment="Center"/>
     </StackPanel>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -9,23 +10,26 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using LegendaryExplorerCore.Misc;
+using MassEffectModManagerCore.modmanager;
 using MassEffectModManagerCore.modmanager.diagnostics;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
 using MassEffectModManagerCore.modmanager.objects.mod;
+using MassEffectModManagerCore.modmanager.usercontrols;
 using MassEffectModManagerCore.ui;
 using ME3TweaksCore.Services.Backup;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.WindowsAPICodePack.Taskbar;
+using PropertyChanged;
 
-
-namespace MassEffectModManagerCore.modmanager.usercontrols
+namespace ME3TweaksModManager.modmanager.usercontrols
 {
     /// <summary>
     /// Interaction logic for ModUpdateInformation.xaml
     /// </summary>
-    public partial class ModUpdateInformation : MMBusyPanelBase
+    [AddINotifyPropertyChangedInterface]
+    public partial class ModUpdateInformationPanel : MMBusyPanelBase
     {
 
         public ObservableCollectionExtended<OnlineContent.ModUpdateInfo> UpdatableMods { get; } = new ObservableCollectionExtended<OnlineContent.ModUpdateInfo>();
@@ -34,7 +38,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public bool OperationInProgress { get; set; }
 
-        public ModUpdateInformation(List<OnlineContent.ModUpdateInfo> modsWithUpdates)
+        public ModUpdateInformationPanel(List<OnlineContent.ModUpdateInfo> modsWithUpdates)
         {
             modsWithUpdates.ForEach(x =>
             {
@@ -54,7 +58,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             });
             UpdatableMods.ReplaceAll(modsWithUpdates);
             LoadCommands();
-            InitializeComponent();
         }
 
         private bool CanApplyUpdateToMod(object obj)
@@ -359,7 +362,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
-
+            InitializeComponent();
         }
     }
 }

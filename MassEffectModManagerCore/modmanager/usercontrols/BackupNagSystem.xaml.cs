@@ -2,25 +2,40 @@
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Input;
-using MassEffectModManagerCore.modmanager.localizations;
-using MassEffectModManagerCore.ui;
+using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
+using MassEffectModManagerCore.modmanager;
+using MassEffectModManagerCore.modmanager.helpers;
+using MassEffectModManagerCore.modmanager.localizations;
+using MassEffectModManagerCore.modmanager.objects;
+using MassEffectModManagerCore.modmanager.usercontrols;
+using MassEffectModManagerCore.modmanager.usercontrols.interfaces;
+using MassEffectModManagerCore.ui;
 using ME3TweaksCore.Services.Backup;
 using ME3TweaksCoreWPF;
 
-namespace MassEffectModManagerCore.modmanager.usercontrols
+namespace ME3TweaksModManager.modmanager.usercontrols
 {
     /// <summary>
     /// Interaction logic for BackupNagSystem.xaml
     /// </summary>
-    public partial class BackupNagSystem : MMBusyPanelBase
+    public partial class BackupNagSystem : MMBusyPanelBase, ISizeAdjustable
     {
-        public bool ME1Installed { get; set; }
-        public bool ME2Installed { get; set; }
-        public bool ME3Installed { get; set; }
-        public bool LE1Installed { get; set; }
-        public bool LE2Installed { get; set; }
-        public bool LE3Installed { get; set; }
+        private bool ME1Installed { get; set; }
+        private bool ME2Installed { get; set; }
+        private bool ME3Installed { get; set; }
+        private bool LE1Installed { get; set; }
+        private bool LE2Installed { get; set; }
+        private bool LE3Installed { get; set; }
+
+        /// <summary>
+        /// Row 1 items
+        /// </summary>
+        public ObservableCollectionExtended<GameBackupStatus> BackupStatusesOT { get; } = new();
+        /// <summary>
+        /// Row 2 items
+        /// </summary>
+        public ObservableCollectionExtended<GameBackupStatus> BackupStatusesLE { get; } = new();
 
         public string Title
         {
@@ -50,15 +65,23 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             }
         }
 
-        public BackupNagSystem(bool me1Installed, bool me2Installed, bool me3Installed)
+        public ISizeAdjustable Self { get; init; }
+
+        public BackupNagSystem(List<GameTargetWPF> availableTargets)
         {
+            Self = this;
             BackupService.StaticBackupStateChanged += NotifyBackupStatusChanged;
-            DataContext = this;
-            ME1Installed = me1Installed;
-            ME2Installed = me2Installed;
-            ME3Installed = me3Installed;
+            ME1Installed = availableTargets.Any(x => x.Game == MEGame.ME1);
+            ME2Installed = availableTargets.Any(x => x.Game == MEGame.ME2);
+            ME3Installed = availableTargets.Any(x => x.Game == MEGame.ME3);
+            LE1Installed = availableTargets.Any(x => x.Game == MEGame.LE1);
+            LE2Installed = availableTargets.Any(x => x.Game == MEGame.LE2);
+            LE3Installed = availableTargets.Any(x => x.Game == MEGame.LE3);
+
+            BackupStatusesOT.ReplaceAll(BackupService.GameBackupStatuses.Where(x => x.Game.IsOTGame() && MEGameSelector.IsGenerationEnabledGame(x.Game)));
+            BackupStatusesLE.ReplaceAll(BackupService.GameBackupStatuses.Where(x => x.Game.IsLEGame() && MEGameSelector.IsGenerationEnabledGame(x.Game)));
+
             LoadCommands();
-            InitializeComponent();
         }
 
         private void NotifyBackupStatusChanged(object sender, PropertyChangedEventArgs e)
@@ -70,59 +93,27 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             if (Settings.GenerationSettingOT)
             {
-                if (targets.Any(x => x.Game == MEGame.ME1))
-                {
-                    if (BackupService.GetGameBackupPath(MEGame.ME1) == null)
-                    {
-                        return true;
-                    }
-                }
-
-                if (targets.Any(x => x.Game == MEGame.ME2))
-                {
-                    if (BackupService.GetGameBackupPath(MEGame.ME2) == null)
-                    {
-                        return true;
-                    }
-                }
-
-                if (targets.Any(x => x.Game == MEGame.ME3))
-                {
-                    if (BackupService.GetGameBackupPath(MEGame.ME3) == null)
-                    {
-                        return true;
-                    }
-                }
+                if (targets.Any(x => x.Game == MEGame.ME1) && BackupService.GetGameBackupPath(MEGame.ME1) == null)
+                    return true;
+                if (targets.Any(x => x.Game == MEGame.ME2) && BackupService.GetGameBackupPath(MEGame.ME2) == null)
+                    return true;
+                if (targets.Any(x => x.Game == MEGame.ME3) && BackupService.GetGameBackupPath(MEGame.ME3) == null)
+                    return true;
             }
 
             if (Settings.GenerationSettingLE)
             {
-                if (targets.Any(x => x.Game == MEGame.LE1))
-                {
-                    if (BackupService.GetGameBackupPath(MEGame.LE1) == null)
-                    {
-                        return true;
-                    }
-                }
+                if (targets.Any(x => x.Game == MEGame.LE1) && BackupService.GetGameBackupPath(MEGame.LE1) == null)
+                    return true;
+                if (targets.Any(x => x.Game == MEGame.LE2) && BackupService.GetGameBackupPath(MEGame.LE2) == null)
+                    return true;
+                if (targets.Any(x => x.Game == MEGame.LE3) && BackupService.GetGameBackupPath(MEGame.LE3) == null)
+                    return true;
 
-                if (targets.Any(x => x.Game == MEGame.LE2))
-                {
-                    if (BackupService.GetGameBackupPath(MEGame.LE2) == null)
-                    {
-                        return true;
-                    }
-                }
-
-                if (targets.Any(x => x.Game == MEGame.LE3))
-                {
-                    if (BackupService.GetGameBackupPath(MEGame.LE3) == null)
-                    {
-                        return true;
-                    }
-                }
+                // We don't really care about the launcher.
             }
 
-            return false;
+            return true;
         }
 
         private void LoadCommands()
@@ -132,13 +123,12 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         }
 
         public ICommand CloseCommand { get; set; }
-
         public ICommand OpenBackupPanelCommand { get; set; }
 
         private void OpenBackupPanel()
         {
-            BackupService.StaticBackupStateChanged -= NotifyBackupStatusChanged;
-            OnClosing(new DataEventArgs(true));
+            Result.PanelToOpen = EPanelID.BACKUP_CREATOR;
+            ClosePanel();
         }
 
         private void ClosePanel()
@@ -158,7 +148,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
+            InitializeComponent();
             BackupService.RefreshBackupStatus();
         }
+
+        public double Adjustment { get; set; }
+        public double FullSize => mainwindow?.RootDisplayObject.ActualHeight ?? 0;
     }
 }

@@ -89,7 +89,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             ResetMixinsUIState();
             LoadCommands();
-            InitializeComponent();
         }
 
         private void MixinUIStatusChanging(object sender, EventArgs e)
@@ -262,7 +261,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         //packageAsStream.WriteToFile(@"C:\users\dev\desktop\compressed.pcc");
                         using var decompressedStream = MEPackage.GetDecompressedPackageStream(packageAsStream, false, true);
                         using var finalStream = MixinHandler.ApplyMixins(decompressedStream, file.Value, true, completedSingleApplicationCallback, failedApplicationCallback);
-                        CLog.Information(@"Compressing package to mod directory: " + file.Key, Settings.LogModMakerCompiler);
+                        M3Log.Information(@"Compressing package to mod directory: " + file.Key, Settings.LogModMakerCompiler);
                         finalStream.Position = 0;
                         var package = MEPackageHandler.OpenMEPackageFromStream(finalStream);
                         var outfile = Path.Combine(outdir, Path.GetFileName(file.Key));
@@ -295,7 +294,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             // TestPatch is never unpacked. So there is not really point to 
                             // compressing it's rather small files. The other DLC jobs likely will be packed still, but this will save some disk space.
 
-                            CLog.Information($@"Compressing package to mod directory: {outfile}", Settings.LogModMakerCompiler);
+                            M3Log.Information($@"Compressing package to mod directory: {outfile}", Settings.LogModMakerCompiler);
                             finalStream.Position = 0;
                             var package = MEPackageHandler.OpenMEPackageFromStream(finalStream);
                             package.Save(outfile, true);
@@ -606,6 +605,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
+            InitializeComponent();
             AvailableInstallTargets.ReplaceAll(mainwindow.InstallationTargets.Where(x => x.Game == MEGame.ME3));
             SelectedInstallTarget = AvailableInstallTargets.FirstOrDefault();
         }

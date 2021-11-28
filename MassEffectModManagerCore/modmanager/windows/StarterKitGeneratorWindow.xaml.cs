@@ -25,6 +25,7 @@ using LegendaryExplorerCore.TLK;
 using LegendaryExplorerCore.TLK.ME1;
 using MassEffectModManagerCore.modmanager.diagnostics;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
+using ME3TweaksModManager.modmanager.loaders;
 using Microsoft.AppCenter.Analytics;
 using MvvmValidation;
 using MemoryAnalyzer = MassEffectModManagerCore.modmanager.memoryanalyzer.MemoryAnalyzer;
@@ -416,10 +417,10 @@ namespace MassEffectModManagerCore.modmanager.windows
             {
 
                 IsBusy = false;
-                if (Owner is MainWindow w)
-                {
-                    w.LoadMods(obj);
-                }
+                //if (Owner is MainWindow w)
+                //{
+                    M3LoadedMods.Instance.LoadMods(obj);
+                //}
 
                 Close();
                 if (!Settings.DeveloperMode)
@@ -543,7 +544,7 @@ namespace MassEffectModManagerCore.modmanager.windows
                 {
                     var langExt = lang.filecode == @"INT" ? "" : $@"_{lang.filecode}";
                     var tlkPath = $@"{tlkGlobalFile}{langExt}.{extension}";
-                    M3Utilities.ExtractInternalFile($@"MassEffectModManagerCore.modmanager.starterkit.BlankTlkFile.{extension}", tlkPath, true);
+                    M3Utilities.ExtractInternalFile($@"ME3TweaksModManager.modmanager.starterkit.BlankTlkFile.{extension}", tlkPath, true);
 
                     var tlkFile = MEPackageHandler.OpenMEPackage(tlkPath);
                     var tlk1 = new ME1TalkFile(tlkFile.GetUExport(1));
@@ -584,11 +585,11 @@ namespace MassEffectModManagerCore.modmanager.windows
                     if (skOption.ModGame == MEGame.ME3)
                     {
                         //Extract Default.Sfar
-                        M3Utilities.ExtractInternalFile(@"MassEffectModManagerCore.modmanager.starterkit.Default.sfar", Path.Combine(cookedDir, @"Default.sfar"), true);
+                        M3Utilities.ExtractInternalFile(@"ME3TweaksModManager.modmanager.starterkit.Default.sfar", Path.Combine(cookedDir, @"Default.sfar"), true);
                     }
 
                     //Generate Coalesced.bin for mod
-                    var memory = M3Utilities.ExtractInternalFileToStream(@"MassEffectModManagerCore.modmanager.starterkit.Default_DLC_MOD_StarterKit.bin");
+                    var memory = M3Utilities.ExtractInternalFileToStream(@"ME3TweaksModManager.modmanager.starterkit.Default_DLC_MOD_StarterKit.bin");
                     var files = CoalescedConverter.DecompileGame3ToMemory(memory);
                     //Modify coal files for this mod.
                     files[@"BioEngine.xml"] = files[@"BioEngine.xml"].Replace(@"StarterKit", skOption.ModDLCFolderNameSuffix); //update bioengine

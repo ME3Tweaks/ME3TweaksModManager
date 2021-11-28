@@ -16,19 +16,21 @@ using Microsoft.AppCenter.Crashes;
 using System.Runtime.InteropServices;
 using MassEffectModManagerCore.modmanager;
 using MassEffectModManagerCore.modmanager.helpers;
-using MassEffectModManagerCore.modmanager.me3tweaks;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Windows.Data;
 using AuthenticodeExaminer;
+using LegendaryExplorerCore.Compression;
+using LegendaryExplorerCore.Helpers;
 using MassEffectModManagerCore.modmanager.windows;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using SingleInstanceCore;
 using MassEffectModManagerCore.modmanager.diagnostics;
 using MassEffectModManagerCore.modmanager.objects;
-using ME3TweaksCore.Services.Backup;
+using ME3TweaksCore.Diagnostics;
+using Microsoft.AppCenter;
 
 namespace MassEffectModManagerCore
 {
@@ -288,25 +290,6 @@ namespace MassEffectModManagerCore
                     M3Log.Error(@"Unable to get the list of installed antivirus products: " + e.Message);
                 }
 
-                // Todo: Initialize library here?
-
-                // Build 118 settings migration for backups
-                BackupService.MigrateBackupPaths();
-
-                M3Log.Information(@"The following backup paths are listed in the registry:");
-                M3Log.Information(@"Mass Effect ======");
-                M3Log.Information(BackupService.GetGameBackupPath(MEGame.ME1, true, true));
-                M3Log.Information(@"Mass Effect 2 ====");
-                M3Log.Information(BackupService.GetGameBackupPath(MEGame.ME2, true, true));
-                M3Log.Information(@"Mass Effect 3 ====");
-                M3Log.Information(BackupService.GetGameBackupPath(MEGame.ME3, true, true));
-                M3Log.Information(@"Mass Effect LE ======");
-                M3Log.Information(BackupService.GetGameBackupPath(MEGame.LE1, true, true));
-                M3Log.Information(@"Mass Effect 2 LE ====");
-                M3Log.Information(BackupService.GetGameBackupPath(MEGame.LE2, true, true));
-                M3Log.Information(@"Mass Effect 3 LE ====");
-                M3Log.Information(BackupService.GetGameBackupPath(MEGame.LE3, true, true));
-
                 //Build 104 changed location of settings from AppData to ProgramData.
                 if (!AppDataExistedAtBoot)
                 {
@@ -441,7 +424,7 @@ namespace MassEffectModManagerCore
                     string errorMessage = "ME3Tweaks Mod Manager has crashed! This is the exception that caused the crash:";
                     M3Log.Fatal(report.StackTrace);
                     M3Log.Fatal(errorMessage);
-                    string log = LogCollector.CollectLatestLog(true);
+                    string log = LogCollector.CollectLatestLog(M3Log.LogDir, true);
                     if (log.Length < FileSize.MebiByte * 7)
                     {
                         attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, @"crashlog.txt"));
@@ -456,9 +439,11 @@ namespace MassEffectModManagerCore
                 };
                 M3Log.Information(@"Initializing AppCenter");
                 AppCenter.Start(APIKeys.AppCenterKey, typeof(Analytics), typeof(Crashes));
-            } else {
+            }
+            else
+            {
                 M3Log.Error(@"This build is not configured correctly for AppCenter!");
-            }           
+            }
 #else
             if (!APIKeys.HasAppCenterKey)
             {
@@ -663,6 +648,20 @@ namespace MassEffectModManagerCore
             OperatingSystem os = Environment.OSVersion;
             return os.Version >= App.MIN_SUPPORTED_OS;
         }
+
+#if DEBUG
+        private static void ForceImports()
+        {
+            // This method makes references to some imports that are only actually used by !DEBUG
+            // This method is purposely never called. It is so when unnecessary imports are removed,
+            // the ones needed by the items in the !DEBUG block remain
+            Crashes.TrackError(new Exception("TEST DUMMY"));
+            LZMA.Compress(new byte[0], 0);
+            var nothing = LogCollector.SessionStartString;
+            var nothing2 = FileSize.GibiByte;
+            var nothing3 = AppCenter.Configured;
+        }
+#endif
     }
 
     class Options

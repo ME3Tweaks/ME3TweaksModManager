@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor.alternates"
-             xmlns:fa="http://schemas.fontawesome.io/icons/"
+             xmlns:fa5="http://schemas.fontawesome.com/icons/"
              xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
              xmlns:moddescinieditor="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols.moddescinieditor"
              mc:Ignorable="d" 
@@ -20,7 +20,7 @@
                 ToolTip="{Binding TaskHeader}">
             <Button.Content>
                 <StackPanel Orientation="Horizontal">
-                    <fa:ImageAwesome Icon="Plus" Width="12" Height="12" Margin="0,0,5,0"  
+                    <fa5:ImageAwesome Icon="Solid_Plus" Width="12" Height="12" Margin="0,0,5,0"  
                                      Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>
                     <TextBlock Text="{DynamicResource string_addNewAlternateFile}"/>
                 </StackPanel>

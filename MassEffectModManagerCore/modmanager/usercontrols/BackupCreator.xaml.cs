@@ -34,7 +34,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             this.targetsList = targetsList;
             LoadCommands();
-            InitializeComponent();
             Self = this;
         }
 
@@ -69,6 +68,8 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
+            InitializeComponent();
+
             window.SizeChanged += OnBackupStatusChanged;
             if (Settings.GenerationSettingLE)
             {
@@ -672,7 +673,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             {
                 BackupLocation = BackupService.GetGameBackupPath(Game, refresh: forceRefresh);
                 BackupService.RefreshBackupStatus(game: Game);
-                //BackupStatus = BackupService.GetBackupStatus(Game); // this is dynamic object that should be bound to in ui
+                BackupStatus = BackupService.GetBackupStatus(Game); // this is dynamic object that should be bound to in ui
                 backupStatusChangedDelegate?.Invoke();
             }
 
@@ -683,7 +684,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 get;
                 set;
             }
-            public BackupService.GameBackupStatus BackupStatus { get; set; }
+            public GameBackupStatus BackupStatus { get; set; }
             public int ProgressMax { get; set; } = 100;
             public int ProgressValue { get; set; } = 0;
             public bool ProgressIndeterminate { get; set; } = true;
@@ -700,7 +701,5 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         public double Adjustment { get; set; }
         public double FullSize => mainwindow?.RootDisplayObject.ActualHeight ?? 0;
         public ISizeAdjustable Self { get; init; }
-
-
     }
 }

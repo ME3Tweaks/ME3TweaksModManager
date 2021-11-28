@@ -109,7 +109,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         TLKStringRef strRef = talkFile.StringRefs.FirstOrDefault(x => x.StringID == tlkId);
                         if (strRef == null)
                         {
-                            CLog.Information($@"Adding new TLK id {tlkId}", Settings.LogModInstallation);
+                            M3Log.Information($@"Adding new TLK id {tlkId}", Settings.LogModInstallation);
                             strRefs.Add(new TLKStringRef(tlkId, flags, data));
                         }
                         else

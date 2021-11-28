@@ -1,5 +1,6 @@
 ﻿<Window
-    x:Class="MassEffectModManagerCore.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local="clr-namespace:MassEffectModManagerCore" xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:fa="http://schemas.fontawesome.io/icons/" xmlns:modmanager="clr-namespace:MassEffectModManagerCore.modmanager" xmlns:usercontrols="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" xmlns:packages="clr-namespace:LegendaryExplorerCore.Packages;assembly=LegendaryExplorerCore" xmlns:ui="clr-namespace:MassEffectModManagerCore.ui" xmlns:objects="clr-namespace:MassEffectModManagerCore.modmanager.objects" xmlns:mod="clr-namespace:MassEffectModManagerCore.modmanager.objects.mod"
+    x:Class="MassEffectModManagerCore.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local="clr-namespace:MassEffectModManagerCore" xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:fa5="http://schemas.fontawesome.com/icons/" xmlns:modmanager="clr-namespace:MassEffectModManagerCore.modmanager" xmlns:usercontrols="clr-namespace:MassEffectModManagerCore.modmanager.usercontrols" xmlns:packages="clr-namespace:LegendaryExplorerCore.Packages;assembly=LegendaryExplorerCore" xmlns:ui="clr-namespace:MassEffectModManagerCore.ui" xmlns:objects="clr-namespace:MassEffectModManagerCore.modmanager.objects" xmlns:mod="clr-namespace:MassEffectModManagerCore.modmanager.objects.mod"
+    xmlns:loaders="clr-namespace:ME3TweaksModManager.modmanager.loaders"
     mc:Ignorable="d"
     Closing="ModManagerWindow_Closing"
     ContentRendered="ModManager_ContentRendered"
@@ -46,9 +47,9 @@
                 Command="{Binding SelectedModCheckForUpdatesCommand}"
                 ToolTip="{DynamicResource string_tooltip_checksForUpdatesToThisMod}">
                 <MenuItem.Icon>
-                    <fa:ImageAwesome
+                    <fa5:ImageAwesome
                         Style="{StaticResource EnableDisableImageStyle}"
-                        Icon="Cloud"
+                        Icon="Solid_Cloud"
                         Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                         Height="16"
                         Width="16" />
@@ -59,9 +60,9 @@
                 Command="{Binding RestoreModFromME3TweaksCommand}"
                 ToolTip="{DynamicResource string_tooltip_forcesUpdateCheck}">
                 <MenuItem.Icon>
-                    <fa:ImageAwesome
+                    <fa5:ImageAwesome
                         Style="{StaticResource EnableDisableImageStyle}"
-                        Icon="CloudDownload"
+                        Icon="Solid_CloudDownloadAlt"
                         Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                         Height="16"
                         Width="16"
@@ -73,9 +74,9 @@
                 Click="ListAllInstallableFiles_Click"
                 ToolTip="{DynamicResource string_tooltip_listFilesThisModCanInstall}">
                 <MenuItem.Icon>
-                    <fa:ImageAwesome
+                    <fa5:ImageAwesome
                         Style="{StaticResource EnableDisableImageStyle}"
-                        Icon="Search"
+                        Icon="Solid_Search"
                         Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                         Height="16"
                         Width="16"
@@ -88,9 +89,9 @@
                 Click="OpenModFolder_Click"
                 ToolTip="{Binding SelectedMod.ModPath}">
                 <MenuItem.Icon>
-                    <fa:ImageAwesome
+                    <fa5:ImageAwesome
                         Style="{StaticResource EnableDisableImageStyle}"
-                        Icon="FolderOpen"
+                        Icon="Solid_FolderOpen"
                         Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                         Height="16"
                         Width="16"
@@ -102,9 +103,9 @@
                 Command="{Binding DeleteModFromLibraryCommand}"
                 ToolTip="{DynamicResource string_tooltip_removesThisModFromYourLibrary}">
                 <MenuItem.Icon>
-                    <fa:ImageAwesome
+                    <fa5:ImageAwesome
                         Style="{StaticResource EnableDisableImageStyle}"
-                        Icon="Close"
+                        Icon="Solid_WindowClose"
                         Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                         Height="16"
                         Width="16"
@@ -120,9 +121,9 @@
                 Command="{Binding ModdescEditorCommand}"
                 Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}">
                 <MenuItem.Icon>
-                    <fa:ImageAwesome
+                    <fa5:ImageAwesome
                         Style="{StaticResource EnableDisableImageStyle}"
-                        Icon="Wrench"
+                        Icon="Solid_Wrench"
                         Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                         Height="16"
                         Width="16"
@@ -135,9 +136,9 @@
                 Command="{Binding OpenModDescCommand}"
                 Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}">
                 <MenuItem.Icon>
-                    <fa:ImageAwesome
+                    <fa5:ImageAwesome
                         Style="{StaticResource EnableDisableImageStyle}"
-                        Icon="Pencil"
+                        Icon="Solid_PencilAlt"
                         Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                         Height="16"
                         Width="16"
@@ -154,9 +155,9 @@
                 Command="{Binding DeployModCommand}"
                 Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}">
                 <MenuItem.Icon>
-                    <fa:ImageAwesome
+                    <fa5:ImageAwesome
                         Style="{StaticResource EnableDisableImageStyle}"
-                        Icon="FileZipOutline"
+                        Icon="Solid_FileArchive"
                         Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                         Height="16"
                         Width="16"
@@ -173,9 +174,9 @@
                 ToolTip="{DynamicResource string_tooltip_uploadToUpdaterService}"
                 Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}">
                 <MenuItem.Icon>
-                    <fa:ImageAwesome
+                    <fa5:ImageAwesome
                         Style="{StaticResource EnableDisableImageStyle}"
-                        Icon="CloudUpload"
+                        Icon="Solid_CloudUploadAlt"
                         Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                         Height="16"
                         Width="16"
@@ -197,9 +198,9 @@
                 ToolTip="{DynamicResource string_tooltip_submitTPMI}"
                 Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}">
                 <MenuItem.Icon>
-                    <fa:ImageAwesome
+                    <fa5:ImageAwesome
                         Style="{StaticResource EnableDisableImageStyle}"
-                        Icon="Info"
+                        Icon="Solid_Info"
                         Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                         Height="16"
                         Width="16"
@@ -216,9 +217,9 @@
                 Command="{Binding CreateTestArchiveCommand}"
                 Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}">
                 <MenuItem.Icon>
-                    <fa:ImageAwesome
+                    <fa5:ImageAwesome
                         Style="{StaticResource EnableDisableImageStyle}"
-                        Icon="Bug"
+                        Icon="Solid_Bug"
                         Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                         Height="16"
                         Width="16"
@@ -248,9 +249,9 @@
                         Click="OpenME3Tweaks_Click"
                         ToolTip="{DynamicResource string_OpensME3Tweaks}">
                         <MenuItem.Icon>
-                            <fa:ImageAwesome
+                            <fa5:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"
-                                Icon="Globe"
+                                Icon="Solid_Globe"
                                 Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                                 Height="16"
                                 Width="16"
@@ -261,14 +262,24 @@
                         Header="{DynamicResource string_OpenMemoryAnalyzer}"
                         IsEnabled="True"
                         Click="OpenMemoryAnalyzer_Click"
-                        Visibility="{x:Static local:App.IsDebugVisibility}" />
-                    <MenuItem
+                        Visibility="{x:Static local:App.IsDebugVisibility}" >
+                        <MenuItem.Icon>
+                        <fa5:ImageAwesome
+                            Style="{StaticResource EnableDisableImageStyle}"
+                            Icon="Solid_Memory"
+                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                            Height="16"
+                            Width="16"
+                            RenderOptions.BitmapScalingMode="HighQuality" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                        <MenuItem
                         Command="{Binding ModManagerOptionsCommand}"
                         Header="{DynamicResource string_Options}">
                         <MenuItem.Icon>
-                            <fa:ImageAwesome
+                            <fa5:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"
-                                Icon="List"
+                                Icon="Solid_List"
                                 Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                                 Height="16"
                                 Width="16"
@@ -278,10 +289,19 @@
                     <MenuItem
                         Header="{DynamicResource string_Language}">
                         <MenuItem.Icon>
+                            <fa5:ImageAwesome
+                                Style="{StaticResource EnableDisableImageStyle}"
+                                Icon="Solid_Language"
+                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                Height="16"
+                                Width="16"
+                                RenderOptions.BitmapScalingMode="HighQuality" />
+                        </MenuItem.Icon>
+                        <!--<MenuItem.Icon>
                             <Image
                                 Source="/modmanager/localizations/icons/languageselector.png"
                                 RenderOptions.BitmapScalingMode="HighQuality" />
-                        </MenuItem.Icon>
+                        </MenuItem.Icon>-->
                         <!--<MenuItem Name="LanguageCZE_MenuItem" Header="Polski" Click="ChangeLanguage_Clicked" StaysOpenOnClick="True" Visibility="Collapsed">
                                 <MenuItem.Icon>
                                     <Image Source="/modmanager/localizations/icons/czech.png" />
@@ -389,9 +409,9 @@
                         Command="{Binding CheckForContentUpdatesCommand}"
                         ToolTip="{DynamicResource string_ChecksME3Tweaksforupdatestovariousservices}">
                         <MenuItem.Icon>
-                            <fa:ImageAwesome
+                            <fa5:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"
-                                Icon="Cloud"
+                                Icon="Solid_Cloud"
                                 Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                                 Height="16"
                                 Width="16"
@@ -403,9 +423,9 @@
                         Command="{Binding ReloadModsCommand}"
                         ToolTip="{DynamicResource string_tooltip_reloadModsFromLibrary}">
                         <MenuItem.Icon>
-                            <fa:ImageAwesome
+                            <fa5:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"
-                                Icon="Refresh"
+                                Icon="Solid_SyncAlt"
                                 Spin="{Binding IsLoadingMods}"
                                 SpinDuration="1"
                                 Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
@@ -427,9 +447,9 @@
                     <MenuItem
                         Header="{DynamicResource string_ImportMod}">
                         <MenuItem.Icon>
-                            <fa:ImageAwesome
+                            <fa5:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"
-                                Icon="FilesOutline"
+                                Icon="Regular_File"
                                 Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                                 Height="16"
                                 Width="16" />
@@ -455,9 +475,9 @@
                         Click="OpenME3TweaksModMaker_Click"
                         ToolTip="{DynamicResource string_tooltip_createME3TweaksModMakerMod}">
                         <MenuItem.Icon>
-                            <fa:ImageAwesome
+                            <fa5:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"
-                                Icon="Edit"
+                                Icon="Solid_Edit"
                                 Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                                 Height="16"
                                 Width="16" />
@@ -468,9 +488,9 @@
                         Command="{Binding CheckAllModsForUpdatesCommand}"
                         ToolTip="{DynamicResource string_tooltip_checksForUpdatesToModsThatSupportCheckingForUpdates}">
                         <MenuItem.Icon>
-                            <fa:ImageAwesome
+                            <fa5:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"
-                                Icon="Retweet"
+                                Icon="Solid_Retweet"
                                 Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                                 Height="16"
                                 Width="16" />
@@ -481,9 +501,9 @@
                         Command="{Binding OpenASIManagerCommand}"
                         ToolTip="{DynamicResource string_ASIManagerTooltip}">
                         <MenuItem.Icon>
-                            <fa:ImageAwesome
+                            <fa5:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"
-                                Icon="CodeFork"
+                                Icon="Solid_CodeBranch"
                                 Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                                 Height="16"
                                 Width="16"
@@ -495,9 +515,9 @@
                         Command="{Binding MixinLibraryCommand}"
                         ToolTip="{DynamicResource string_tooltip_mixinLibrary}">
                         <MenuItem.Icon>
-                            <fa:ImageAwesome
+                            <fa5:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"
-                                Icon="Book"
+                                Icon="Solid_Book"
                                 Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                                 Height="16"
                                 Width="16"
@@ -509,9 +529,9 @@
                         Command="{Binding BatchModInstallerCommand}"
                         ToolTip="{DynamicResource string_tooltip_batchModInstaller}">
                         <MenuItem.Icon>
-                            <fa:ImageAwesome
+                            <fa5:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"
-                                Icon="Cubes"
+                                Icon="Solid_Cubes"
                                 Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                                 Height="16"
                                 Width="16"
@@ -526,9 +546,9 @@
                         Click="OpenModsDirectory_Click"
                         ToolTip="{DynamicResource string_Opensthemodlibraryfolder}">
                         <MenuItem.Icon>
-                            <fa:ImageAwesome
+                            <fa5:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"
-                                Icon="FolderOpen"
+                                Icon="Solid_FolderOpen"
                                 Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                                 Height="16"
                                 Width="16"
@@ -544,9 +564,9 @@
                         Command="{Binding ConflictDetectorCommand}"
                         Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}">
                         <MenuItem.Icon>
-                            <fa:ImageAwesome
+                            <fa5:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"
-                                Icon="Search"
+                                Icon="Solid_Search"
                                 Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                                 Height="16"
                                 Width="16"
@@ -558,9 +578,9 @@
                         Header="{DynamicResource string_officialDLCToggler}"
                         Command="{Binding OfficialDLCTogglerCommand}">
                         <MenuItem.Icon>
-                            <fa:ImageAwesome
+                            <fa5:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"
-                                Icon="ToggleOn"
+                                Icon="Solid_ToggleOn"
                                 Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                                 Height="16"
                                 Width="16"
@@ -580,9 +600,9 @@
                         ui:SharedUIBindings.GenerationOT="True"
                         Header="{DynamicResource string_Runofficialgameconfigurationtool}">
                         <MenuItem.Icon>
-                            <fa:ImageAwesome
+                            <fa5:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"
-                                Icon="Gears"
+                                Icon="Solid_Cogs"
                                 Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                                 Height="16"
                                 Width="16"
@@ -627,9 +647,9 @@
                     <MenuItem
                         Header="{DynamicResource string_GenerateStarterKit}">
                         <MenuItem.Icon>
-                            <fa:ImageAwesome
+                            <fa5:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"
-                                Icon="PlayCircle"
+                                Icon="Solid_PlayCircle"
                                 Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                                 Height="16"
                                 Width="16"
@@ -718,9 +738,9 @@
                     <MenuItem
                         Header="{DynamicResource string_Binkw32Bypasses}">
                         <MenuItem.Icon>
-                            <fa:ImageAwesome
+                            <fa5:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"
-                                Icon="Link"
+                                Icon="Solid_Link"
                                 Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                                 Height="16"
                                 Width="16" />
@@ -806,9 +826,9 @@
                     <MenuItem
                         Header="{DynamicResource string_autoTOC}">
                         <MenuItem.Icon>
-                            <fa:ImageAwesome
+                            <fa5:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"
-                                Icon="Indent"
+                                Icon="Solid_Indent"
                                 Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                                 Height="16"
                                 Width="16" />
@@ -869,9 +889,9 @@
                     <MenuItem
                         Header="{DynamicResource string_syncPlotManager}">
                         <MenuItem.Icon>
-                            <fa:ImageAwesome
+                            <fa5:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"
-                                Icon="Compress"
+                                Icon="Solid_Compress"
                                 Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                                 Height="16"
                                 Width="16" />
@@ -935,9 +955,9 @@
                         Command="{Binding GrantWriteAccessCommand}"
                         ToolTip="{DynamicResource string_Grantswritepermissionstogamedirectories}">
                         <MenuItem.Icon>
-                            <fa:ImageAwesome
+                            <fa5:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"
-                                Icon="HddOutline"
+                                Icon="Regular_Hdd"
                                 Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                                 Height="16"
                                 Width="16"
@@ -949,9 +969,9 @@
                         Command="{Binding ConsoleKeyKeybinderCommand}"
                         ToolTip="{DynamicResource string_tooltip_consoleCommandKeybinder}">
                         <MenuItem.Icon>
-                            <fa:ImageAwesome
+                            <fa5:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"
-                                Icon="Terminal"
+                                Icon="Solid_Terminal"
                                 Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                                 Height="16"
                                 Width="16"
@@ -964,9 +984,9 @@
                         Command="{Binding CustomKeybindsInjectorCommand}"
                         ToolTip="{DynamicResource string_tooltip_installsCustomKeybindsOfYourDesignIntoTheGame}">
                         <MenuItem.Icon>
-                            <fa:ImageAwesome
+                            <fa5:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"
-                                Icon="KeyboardOutline"
+                                Icon="Regular_Keyboard"
                                 Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                                 Height="16"
                                 Width="16"
@@ -979,9 +999,9 @@
                         Command="{Binding OriginInGameOverlayDisablerCommand}"
                         ToolTip="{DynamicResource string_tooltip_oigDisabler}">
                         <MenuItem.Icon>
-                            <fa:ImageAwesome
+                            <fa5:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"
-                                Icon="Ban"
+                                Icon="Solid_Ban"
                                 Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                                 Height="16"
                                 Width="16"
@@ -1126,9 +1146,9 @@
                         Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}"
                         ToolTip="{DynamicResource string_tooltip_backupFileFetcher}">
                         <MenuItem.Icon>
-                            <fa:ImageAwesome
+                            <fa5:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"
-                                Icon="Download"
+                                Icon="Solid_Download"
                                 Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                                 Height="16"
                                 Width="16" />
@@ -1140,9 +1160,9 @@
                         Visibility="{Binding Path=(modmanager:Settings.DeveloperMode), Converter={StaticResource BoolToVisibilityConverter}}"
                         ToolTip="{DynamicResource string_tooltip_nexusFileSearch}">
                         <MenuItem.Icon>
-                            <fa:ImageAwesome
+                            <fa5:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"
-                                Icon="Search"
+                                Icon="Solid_Search"
                                 Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                                 Height="16"
                                 Width="16" />
@@ -1157,9 +1177,9 @@
                         Command="{Binding BackupCommand}"
                         ToolTip="{DynamicResource string_Createentiregamebackups}">
                         <MenuItem.Icon>
-                            <fa:ImageAwesome
+                            <fa5:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"
-                                Icon="Database"
+                                Icon="Solid_Database"
                                 Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                                 Height="16"
                                 Width="16"
@@ -1171,9 +1191,9 @@
                         Command="{Binding RestoreCommand}"
                         ToolTip="{DynamicResource string_Restoreagamefrombackup}">
                         <MenuItem.Icon>
-                            <fa:ImageAwesome
+                            <fa5:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"
-                                Icon="Repeat"
+                                Icon="Solid_Undo"
                                 Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                                 Height="16"
                                 Width="16"
@@ -1271,9 +1291,9 @@
                         Click="UploadLog_Click"
                         ToolTip="{DynamicResource string_TroubleshootingtoolsforME3Tweaks}">
                         <MenuItem.Icon>
-                            <fa:ImageAwesome
+                            <fa5:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"
-                                Icon="Stethoscope"
+                                Icon="Solid_Stethoscope"
                                 Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                                 Height="16"
                                 Width="16" />
@@ -1286,9 +1306,9 @@
                         Header="{DynamicResource string_debug_showIntroTutorial}"
                         Command="{Binding OpenTutorialCommand}">
                         <MenuItem.Icon>
-                            <fa:ImageAwesome
+                            <fa5:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"
-                                Icon="MapOutline"
+                                Icon="Regular_Map"
                                 Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                                 Height="16"
                                 Width="16" />
@@ -1299,9 +1319,9 @@
                         Command="{Binding EndorseM3OnNexusCommand}"
                         ToolTip="{DynamicResource string_tooltip_endorseM3OnNexus}">
                         <MenuItem.Icon>
-                            <fa:ImageAwesome
+                            <fa5:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"
-                                Icon="Heart"
+                                Icon="Solid_Heart"
                                 Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                                 Height="16"
                                 Width="16" />
@@ -1312,9 +1332,9 @@
                         Click="Donations_Click"
                         ToolTip="{DynamicResource string_tooltip_opensTheME3TweaksDonationsInformationPage}">
                         <MenuItem.Icon>
-                            <fa:ImageAwesome
+                            <fa5:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"
-                                Icon="HandshakeOutline"
+                                Icon="Regular_Handshake"
                                 Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                                 Height="16"
                                 Width="16" />
@@ -1325,9 +1345,9 @@
                         Click="Documentation_Click"
                         ToolTip="{DynamicResource string_ReferenceinformationModdesc}">
                         <MenuItem.Icon>
-                            <fa:ImageAwesome
+                            <fa5:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"
-                                Icon="Book"
+                                Icon="Solid_Book"
                                 Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                                 Height="16"
                                 Width="16" />
@@ -1338,9 +1358,9 @@
                         Click="About_Click"
                         ToolTip="{DynamicResource string_Aboutthisprogram}">
                         <MenuItem.Icon>
-                            <fa:ImageAwesome
+                            <fa5:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"
-                                Icon="InfoCircle"
+                                Icon="Solid_InfoCircle"
                                 Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                                 Height="16"
                                 Width="16" />
@@ -1556,7 +1576,7 @@
                         <DockPanel
                             DockPanel.Dock="Bottom">
                             <ItemsControl
-                                ItemsSource="{Binding GameFilters}">
+                                ItemsSource="{Binding GameFilters, Source={x:Static loaders:M3LoadedMods.Instance}}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <StackPanel
@@ -1581,8 +1601,8 @@
                                 BorderThickness="2"
                                 Command="{Binding ReloadModsCommand}"
                                 ToolTip="{DynamicResource string_Reloadsmodsfromthemodlibrary}">
-                                <fa:ImageAwesome
-                                    Icon="Refresh"
+                                <fa5:ImageAwesome
+                                    Icon="Solid_SyncAlt"
                                     VerticalAlignment="Center"
                                     HorizontalAlignment="Center"
                                     Width="10"
@@ -1617,14 +1637,14 @@
                     <Grid>
                         <ListBox
                             Name="ModsList_ListBox"
-                            ItemsSource="{Binding VisibleFilteredMods}"
+                            ItemsSource="{Binding VisibleFilteredMods, Source={x:Static loaders:M3LoadedMods.Instance}}"
                             Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
                             SelectedItem="{Binding SelectedMod}"
                             IsEnabled="{Binding IsLoadingMods, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}"
                             BorderThickness="1"
                             IsTextSearchEnabled="True"
                             TextSearch.TextPath="ModName"
-                            Visibility="{Binding VisibleFilteredMods.Any, Converter={StaticResource BoolToVisibilityConverter}}"
+                            Visibility="{Binding VisibleFilteredMods.Any, Source={x:Static loaders:M3LoadedMods.Instance}, Converter={StaticResource BoolToVisibilityConverter}}"
                             Tag="{Binding DataContext}">
                             <ListBox.ItemTemplate>
                                 <DataTemplate
@@ -1731,7 +1751,7 @@
                             BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1HighlightBorderBrush}}">
                             <DockPanel
                                 Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
-                                Visibility="{Binding VisibleFilteredMods.Any, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}">
+                                Visibility="{Binding VisibleFilteredMods.Any, Source={x:Static loaders:M3LoadedMods.Instance}, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}">
                                 <StackPanel
                                     Margin="2,0">
                                     <TextBlock
@@ -1753,7 +1773,7 @@
                                                             Value="{DynamicResource string_pleaseWait}" />
                                                     </DataTrigger>
                                                     <DataTrigger
-                                                        Binding="{Binding AllGamesHidden}"
+                                                        Binding="{Binding AllGamesHidden, Source={x:Static loaders:M3LoadedMods.Instance}}"
                                                         Value="True">
                                                         <Setter
                                                             Property="Text"
@@ -1780,7 +1800,7 @@
                                                             Value="{DynamicResource string_pleaseWait_startup}" />
                                                     </DataTrigger>
                                                     <DataTrigger
-                                                        Binding="{Binding AllGamesHidden}"
+                                                        Binding="{Binding AllGamesHidden, Source={x:Static loaders:M3LoadedMods.Instance}}"
                                                         Value="True">
                                                         <Setter
                                                             Property="Text"

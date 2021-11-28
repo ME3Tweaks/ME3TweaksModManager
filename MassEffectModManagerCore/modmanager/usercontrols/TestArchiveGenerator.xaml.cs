@@ -26,7 +26,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             DataContext = this;
             ModForArchive = mod;
-            InitializeComponent();
         }
 
 
@@ -37,6 +36,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
+            InitializeComponent();
             SaveFileDialog d = new SaveFileDialog
             {
                 Filter = $@"{M3L.GetString(M3L.string_7zipArchiveFile)}|*.7z",

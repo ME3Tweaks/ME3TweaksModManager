@@ -18,35 +18,47 @@
 //using Application = System.Windows.Application;
 
 
-//namespace MassEffectModManagerCore.modmanager.me3tweaks
-//{
-//    /// <summary>
-//    /// Contains methods and bindable variables for accessing and displaying info about game backups 
-//    /// </summary>
-//    public static class BackupService
-//    {
-//        #region Static Property Changed
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using MassEffectModManagerCore.modmanager.helpers;
+using ME3TweaksCore.Services.Backup;
 
-//        public static event PropertyChangedEventHandler StaticPropertyChanged;
-//        public static event PropertyChangedEventHandler StaticBackupStateChanged;
+namespace MassEffectModManagerCore.modmanager.me3tweaks
+{
+    /// <summary>
+    /// Contains methods and bindable variables for accessing and displaying info about game backups 
+    /// </summary>
+    public static class M3BackupService
+    {
+        #region Static Property Changed
 
-//        /// <summary>
-//        /// Sets given property and notifies listeners of its change. IGNORES setting the property to same value.
-//        /// Should be called in property setters.
-//        /// </summary>
-//        /// <typeparam name="T">Type of given property.</typeparam>
-//        /// <param name="field">Backing field to update.</param>
-//        /// <param name="value">New value of property.</param>
-//        /// <param name="propertyName">Name of property.</param>
-//        /// <returns>True if success, false if backing field and new value aren't compatible.</returns>
-//        private static bool SetProperty<T>(ref T field, T value, [CallerMemberName] string propertyName = "")
-//        {
-//            if (EqualityComparer<T>.Default.Equals(field, value)) return false;
-//            field = value;
-//            StaticPropertyChanged?.Invoke(null, new PropertyChangedEventArgs(propertyName));
-//            return true;
-//        }
-//        #endregion
+        public static event PropertyChangedEventHandler StaticPropertyChanged;
+        public static event PropertyChangedEventHandler StaticBackupStateChanged;
+
+        /// <summary>
+        /// Sets given property and notifies listeners of its change. IGNORES setting the property to same value.
+        /// Should be called in property setters.
+        /// </summary>
+        /// <typeparam name="T">Type of given property.</typeparam>
+        /// <param name="field">Backing field to update.</param>
+        /// <param name="value">New value of property.</param>
+        /// <param name="propertyName">Name of property.</param>
+        /// <returns>True if success, false if backing field and new value aren't compatible.</returns>
+        private static bool SetProperty<T>(ref T field, T value, [CallerMemberName] string propertyName = "")
+        {
+            if (EqualityComparer<T>.Default.Equals(field, value)) return false;
+            field = value;
+            StaticPropertyChanged?.Invoke(null, new PropertyChangedEventArgs(propertyName));
+            return true;
+        }
+        #endregion
+
+        public static bool AnyGameMissingBackup => BackupService.AnyGameMissingBackup(MEGameSelector.GetEnabledGames()); // We do not check the launcher.
+
+    }
+}
+
 
 //        private static bool _me1Installed;
 //        public static bool ME1Installed
@@ -114,22 +126,22 @@
 //            private set => SetProperty(ref _me3BackupActivity, value);
 //        }
 
-//        private static FontAwesomeIcon _me1ActivityIcon = FontAwesomeIcon.TimesCircle;
-//        public static FontAwesomeIcon ME1ActivityIcon
+//        private static EFontAwesomeIcon _me1ActivityIcon = EFontAwesomeIcon.TimesCircle;
+//        public static EFontAwesomeIcon ME1ActivityIcon
 //        {
 //            get => _me1ActivityIcon;
 //            private set => SetProperty(ref _me1ActivityIcon, value);
 //        }
 
-//        private static FontAwesomeIcon _me2ActivityIcon = FontAwesomeIcon.TimesCircle;
-//        public static FontAwesomeIcon ME2ActivityIcon
+//        private static EFontAwesomeIcon _me2ActivityIcon = EFontAwesomeIcon.TimesCircle;
+//        public static EFontAwesomeIcon ME2ActivityIcon
 //        {
 //            get => _me2ActivityIcon;
 //            private set => SetProperty(ref _me2ActivityIcon, value);
 //        }
 
-//        private static FontAwesomeIcon _me3ActivityIcon = FontAwesomeIcon.TimesCircle;
-//        public static FontAwesomeIcon ME3ActivityIcon
+//        private static EFontAwesomeIcon _me3ActivityIcon = EFontAwesomeIcon.TimesCircle;
+//        public static EFontAwesomeIcon ME3ActivityIcon
 //        {
 //            get => _me3ActivityIcon;
 //            private set => SetProperty(ref _me3ActivityIcon, value);
@@ -215,22 +227,22 @@
 //            private set => SetProperty(ref _le3BackupActivity, value);
 //        }
 
-//        private static FontAwesomeIcon _le1ActivityIcon = FontAwesomeIcon.TimesCircle;
-//        public static FontAwesomeIcon LE1ActivityIcon
+//        private static EFontAwesomeIcon _le1ActivityIcon = EFontAwesomeIcon.TimesCircle;
+//        public static EFontAwesomeIcon LE1ActivityIcon
 //        {
 //            get => _le1ActivityIcon;
 //            private set => SetProperty(ref _le1ActivityIcon, value);
 //        }
 
-//        private static FontAwesomeIcon _le2ActivityIcon = FontAwesomeIcon.TimesCircle;
-//        public static FontAwesomeIcon LE2ActivityIcon
+//        private static EFontAwesomeIcon _le2ActivityIcon = EFontAwesomeIcon.TimesCircle;
+//        public static EFontAwesomeIcon LE2ActivityIcon
 //        {
 //            get => _le2ActivityIcon;
 //            private set => SetProperty(ref _le2ActivityIcon, value);
 //        }
 
-//        private static FontAwesomeIcon _le3ActivityIcon = FontAwesomeIcon.TimesCircle;
-//        public static FontAwesomeIcon LE3ActivityIcon
+//        private static EFontAwesomeIcon _le3ActivityIcon = EFontAwesomeIcon.TimesCircle;
+//        public static EFontAwesomeIcon LE3ActivityIcon
 //        {
 //            get => _le3ActivityIcon;
 //            private set => SetProperty(ref _le3ActivityIcon, value);
@@ -537,7 +549,7 @@
 
 //        }
 
-//        public static void SetIcon(MEGame game, FontAwesomeIcon p1)
+//        public static void SetIcon(MEGame game, EFontAwesomeIcon p1)
 //        {
 //            switch (game)
 //            {
@@ -638,7 +650,7 @@
 
 //        public static void ResetIcon(MEGame game)
 //        {
-//            SetIcon(game, FontAwesomeIcon.TimesCircle);
+//            SetIcon(game, EFontAwesomeIcon.TimesCircle);
 //        }
 
 //        public static void SetBackedUp(MEGame game, bool b)

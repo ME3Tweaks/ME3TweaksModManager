@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Input;
-using FontAwesome.WPF;
+using FontAwesome5;
 using MassEffectModManagerCore.modmanager.diagnostics;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
@@ -37,7 +37,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             DataContext = this;
             LoadCommands();
-            InitializeComponent();
         }
 
         private void SetAuthorized(bool authorized)
@@ -51,7 +50,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             VisibleIcon = authorized;
             if (authorized)
             {
-                ActiveIcon = FontAwesomeIcon.CheckCircle;
+                ActiveIcon = EFontAwesomeIcon.Solid_CheckCircle;
             }
             AuthorizeToNexusText = authenticatedString;
         }
@@ -88,7 +87,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public bool ManualMode { get; set; }
         public string WatermarkText { get; set; } = M3L.GetString(M3L.string_yourAPIKeyWillAppearHere);
-        public FontAwesomeIcon ActiveIcon { get; set; }
+        public EFontAwesomeIcon ActiveIcon { get; set; }
         public bool SpinIcon { get; set; }
         public bool VisibleIcon { get; set; }
 
@@ -107,7 +106,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 IsAuthorizing = true;
                 VisibleIcon = true;
                 SpinIcon = true;
-                ActiveIcon = FontAwesomeIcon.Spinner;
+                ActiveIcon = EFontAwesomeIcon.Solid_Spinner;
                 AuthorizeCommand.RaiseCanExecuteChanged();
                 CloseCommand.RaiseCanExecuteChanged();
                 AuthorizeToNexusText = M3L.GetString(M3L.string_pleaseWait);
@@ -169,7 +168,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 VisibleIcon = IsAuthorized;
                 if (IsAuthorized)
                 {
-                    ActiveIcon = FontAwesomeIcon.CheckCircle;
+                    ActiveIcon = EFontAwesomeIcon.Solid_CheckCircle;
                 }
                 SpinIcon = false;
                 AuthorizeCommand.RaiseCanExecuteChanged();
@@ -199,6 +198,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
+            InitializeComponent();
             try
             {
                 string currentKey = NexusModsUtilities.DecryptNexusmodsAPIKeyFromDisk();

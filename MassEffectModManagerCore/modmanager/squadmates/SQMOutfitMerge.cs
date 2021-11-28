@@ -22,6 +22,7 @@ using MassEffectModManagerCore.modmanager.mergedlc;
 using MassEffectModManagerCore.modmanager.objects;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCoreWPF;
+using ME3TweaksModManager.modmanager.merge.dlc;
 using Newtonsoft.Json;
 
 namespace MassEffectModManagerCore.modmanager.squadmates
@@ -316,7 +317,7 @@ namespace MassEffectModManagerCore.modmanager.squadmates
                 {
                     var startupF = Path.Combine(cookedDir, $@"Startup_{M3MergeDLC.MERGE_DLC_FOLDERNAME}.pcc");
                     var startup = MEPackageHandler.OpenMEPackageFromStream(M3Utilities.GetResourceStream(
-                        $@"MassEffectModManagerCore.modmanager.mergedlc.{target.Game}.Startup_{M3MergeDLC.MERGE_DLC_FOLDERNAME}.pcc"));
+                        $@"ME3TweaksModManager.modmanager.mergedlc.{target.Game}.Startup_{M3MergeDLC.MERGE_DLC_FOLDERNAME}.pcc"));
                     var conditionalClass =
                         startup.FindExport($@"PlotManager{M3MergeDLC.MERGE_DLC_FOLDERNAME}.BioAutoConditionals");
 
@@ -341,7 +342,7 @@ namespace MassEffectModManagerCore.modmanager.squadmates
                             func.indexValue = 0;
 
                             var scText = new StreamReader(M3Utilities.GetResourceStream(
-                                    $@"MassEffectModManagerCore.modmanager.squadmates.{target.Game}.HasOutfitOnConditional.txt"))
+                                    $@"ME3TweaksModManager.modmanager.squadmates.{target.Game}.HasOutfitOnConditional.txt"))
                                 .ReadToEnd();
 
                             scText = scText.Replace(@"%CONDITIONALNUM%", outfit.ConditionalIndex.ToString());

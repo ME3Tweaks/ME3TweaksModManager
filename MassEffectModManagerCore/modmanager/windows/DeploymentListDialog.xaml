@@ -7,7 +7,7 @@
         WindowStartupLocation="CenterOwner"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
-        xmlns:fa="http://schemas.fontawesome.io/icons/"
+        xmlns:fa5="http://schemas.fontawesome.com/icons/"
         Title="{Binding DCI.DialogTitle}"
         Width="640" Height="480">
     <Window.Style>
@@ -42,26 +42,26 @@
                 <DataTemplate>
                     <DockPanel>
                         <DockPanel Margin="0,5,5,5">
-                            <fa:ImageAwesome Width="16" DockPanel.Dock="Left" Margin="5,0,5,0">
-                                <fa:ImageAwesome.Style>
-                                    <Style TargetType="fa:ImageAwesome">
+                            <fa5:ImageAwesome Width="16" DockPanel.Dock="Left" Margin="5,0,5,0">
+                                <fa5:ImageAwesome.Style>
+                                    <Style TargetType="fa5:ImageAwesome">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding Severity}" Value="SIGNIFICANTISSUE">
-                                                <Setter Property="Icon" Value="Warning" />
+                                                <Setter Property="Icon" Value="Solid_ExclamationTriangle" />
                                                 <Setter Property="Foreground" Value="Orange" />
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding Severity}" Value="INFO">
-                                                <Setter Property="Icon" Value="InfoCircle" />
+                                                <Setter Property="Icon" Value="Solid_InfoCircle" />
                                                 <Setter Property="Foreground" Value="DodgerBlue" />
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding Severity}" Value="BLOCKING">
-                                                <Setter Property="Icon" Value="TimesCircle" />
+                                                <Setter Property="Icon" Value="Solid_TimesCircle" />
                                                 <Setter Property="Foreground" Value="Red" />
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
-                                </fa:ImageAwesome.Style>
-                            </fa:ImageAwesome>
+                                </fa5:ImageAwesome.Style>
+                            </fa5:ImageAwesome>
                             <TextBlock Text="{Binding Message}" TextWrapping="Wrap"/>
                         </DockPanel>
                         <DockPanel.Style>

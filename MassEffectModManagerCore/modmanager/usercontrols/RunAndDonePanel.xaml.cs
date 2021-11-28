@@ -17,7 +17,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             ActionText = actionText;
             this.runAndDoneDelegate = runAndDoneDelegate;
-            InitializeComponent();
         }
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
@@ -27,6 +26,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
+            InitializeComponent();
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"RunAndDoneThread");
             nbw.DoWork += (a, b) =>
             {

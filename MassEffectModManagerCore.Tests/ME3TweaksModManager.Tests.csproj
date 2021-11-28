@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MassEffectModManagerCore\MassEffectModManagerCore.csproj" />
+    <ProjectReference Include="..\MassEffectModManagerCore\ME3TweaksModManager.csproj" />
   </ItemGroup>
 
   <ItemGroup>

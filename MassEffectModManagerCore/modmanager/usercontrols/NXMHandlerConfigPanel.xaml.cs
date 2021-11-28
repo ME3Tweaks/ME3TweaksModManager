@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Linq;
+using System.Windows;
 using System.Windows.Input;
 using MassEffectModManagerCore.modmanager.objects;
 using MassEffectModManagerCore.ui;
@@ -21,7 +22,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         {
             DataContext = this;
             LoadCommands();
-            InitializeComponent();
         }
 
         public ICommand AddOtherAppCommand { get; set; }
@@ -40,6 +40,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
         private void RegisterM3()
         {
             NexusModsUtilities.SetupNXMHandling();
+            M3L.ShowDialog(window, "Set ME3Tweaks Mod Manager to handle nxm:// links. You can forward these links to other applications by adding other applications.", "Configured nxm:// handling", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private void RemoveApp(object obj)
@@ -145,6 +146,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
+            InitializeComponent();
             OtherGameHandlers.AddRange(App.NexusDomainHandlers);
             foreach (var handler in OtherGameHandlers)
             {

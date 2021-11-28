@@ -4,11 +4,12 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Input;
-using FontAwesome.WPF;
+using FontAwesome5;
 using MassEffectModManagerCore.modmanager.diagnostics;
 using MassEffectModManagerCore.modmanager.helpers;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.nexusmodsintegration;
+using ME3TweaksModManager.modmanager.loaders;
 using Microsoft.AppCenter.Analytics;
 using Pathoschild.Http.Client;
 
@@ -19,7 +20,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
     /// </summary>
     public partial class FirstRunPanel : MMBusyPanelBase
     {
-        public FontAwesomeIcon ActiveIcon { get; set; }
+        public EFontAwesomeIcon ActiveIcon { get; set; }
         public bool SpinIcon { get; set; }
         public bool VisibleIcon { get; set; }
 
@@ -29,7 +30,6 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             DataContext = this;
             LibraryDir = M3Utilities.GetModsDirectory();
             LoadCommands();
-            InitializeComponent();
         }
 
         public bool IsAuthorized { get; set; }
@@ -50,7 +50,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         private void ChangeLibraryDir()
         {
-            if (mainwindow.ChooseModLibraryPath(false))
+            if (M3LoadedMods.ChooseModLibraryPath(window, false))
             {
                 LibraryDir = Settings.ModLibraryPath;
             }
@@ -83,6 +83,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
         public override void OnPanelVisible()
         {
+            InitializeComponent();
         }
 
         private void JoinDiscord_Click(object sender, RoutedEventArgs e)
@@ -176,7 +177,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 IsAuthorizing = true;
                 VisibleIcon = true;
                 SpinIcon = true;
-                ActiveIcon = FontAwesomeIcon.Spinner;
+                ActiveIcon = EFontAwesomeIcon.Solid_Spinner;
                 AuthorizeCommand.RaiseCanExecuteChanged();
                 CloseCommand.RaiseCanExecuteChanged();
                 AuthorizeToNexusText = M3L.GetString(M3L.string_pleaseWait);
@@ -234,7 +235,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 VisibleIcon = IsAuthorized;
                 if (IsAuthorized)
                 {
-                    ActiveIcon = FontAwesomeIcon.CheckCircle;
+                    ActiveIcon = EFontAwesomeIcon.Solid_CheckCircle;
                 }
                 SpinIcon = false;
                 AuthorizeCommand.RaiseCanExecuteChanged();
@@ -253,7 +254,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             VisibleIcon = authorized;
             if (authorized)
             {
-                ActiveIcon = FontAwesomeIcon.CheckCircle;
+                ActiveIcon = EFontAwesomeIcon.Solid_CheckCircle;
             }
             AuthorizeToNexusText = authenticatedString;
         }

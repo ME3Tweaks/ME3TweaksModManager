@@ -1,10 +1,12 @@
 ﻿using System.ComponentModel;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.objects.mod;
+using PropertyChanged;
 
 namespace MassEffectModManagerCore.modmanager.objects
 {
-    public class ReadOnlyOption : AlternateOption, INotifyPropertyChanged
+    [AddINotifyPropertyChangedInterface]
+    public class ReadOnlyOption : AlternateOption
     {
         public override string Description { get; internal set; } = M3L.GetString(M3L.string_descriptionSetConfigFilesReadOnly);
         public override string FriendlyName { get; internal set; } = M3L.GetString(M3L.string_makeConfigFilesReadonly);

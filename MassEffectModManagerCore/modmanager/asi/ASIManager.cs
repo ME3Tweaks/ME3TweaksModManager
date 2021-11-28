@@ -111,7 +111,7 @@
 //                var outfile = Path.Combine(CachedASIsFolder, file);
 //                if (!File.Exists(outfile))
 //                {
-//                    Utilities.ExtractInternalFile(@"MassEffectModManagerCore.modmanager.asi." + file, outfile, true);
+//                    Utilities.ExtractInternalFile(@"ME3TweaksModManager.modmanager.asi." + file, outfile, true);
 //                }
 //            }
 //        }

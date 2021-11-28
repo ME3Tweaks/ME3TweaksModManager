@@ -6,8 +6,9 @@
                     xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters"
                     xmlns:helpers="clr-namespace:MassEffectModManagerCore.modmanager.helpers"
                     xmlns:system="clr-namespace:System;assembly=System.Runtime"
-                    xmlns:fa="http://schemas.fontawesome.io/icons/"
-                    xmlns:targets="clr-namespace:ME3TweaksCore.Targets;assembly=ME3TweaksCore">
+                    xmlns:fa5="http://schemas.fontawesome.com/icons/"
+                    xmlns:targets="clr-namespace:ME3TweaksCore.Targets;assembly=ME3TweaksCore"
+                    xmlns:converters1="clr-namespace:ME3TweaksModManager.modmanager.converters">
     <converters:GameToImageIconConverter x:Key="GameToImageIconConverter"/>
     <converters:BootTargetSourceVisibilityConverter x:Key="BootTargetSourceVisibilityConverter"/>
     <converters:GameIconVisibilityConverter x:Key="GameIconVisibilityConverter"/>
@@ -23,9 +24,9 @@
     <converters:GameToVisibilityConverter x:Key="GameToVisibilityConverter" />
     <helpers:FlightingVisibilityConverter x:Key="FlightingVisibilityConverter"/>
     <converters:LocalizationConverter x:Key="LocalizationConverter" />
-    <converters:SizePercentageConverter x:Key="SizePercentageConverter" />
-    <converters:GenerationsSizePercentageConverter x:Key="GenerationsSizePercentageConverter" />
-    <converters:GenerationsSizeAdjustedPercentageConverter x:Key="GenerationsSizeAdjustedPercentageConverter" />
+    <converters1:SizePercentageConverter x:Key="SizePercentageConverter" />
+    <converters1:GenerationsSizePercentageConverter x:Key="GenerationsSizePercentageConverter" />
+    <converters1:GenerationsSizeAdjustedPercentageConverter x:Key="GenerationsSizeAdjustedPercentageConverter" />
     <converters:StringMatchToBoolConverter x:Key="StringMatchToBoolConverter"/>
     <converters:GameToTextureModdedIconConverter x:Key="GameToTextureModdedIconConverter"/>
     <DataTemplate x:Key="TargetSelectorTemplate" DataType="{x:Type targets:GameTarget}">
@@ -77,7 +78,7 @@
     </Style>
     <Style
         x:Key="EnableDisableImageStyle"
-        TargetType="{x:Type fa:ImageAwesome}">
+        TargetType="{x:Type fa5:ImageAwesome}">
         <Style.Triggers>
             <Trigger
                 Property="IsEnabled"
