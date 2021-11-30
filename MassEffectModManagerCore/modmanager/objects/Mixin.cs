@@ -11,7 +11,7 @@ namespace MassEffectModManagerCore.modmanager.objects
     /// MixIns are patches that can be stacked onto the same file multipe times as long as the file size does not change.
     /// They are powered by JojoDiff patch files and applied through the JPatch class
     /// </summary>
-    [DebuggerDisplay("Mixin - {PatchName} - v{PatchVersion}")] //do not localize
+    [DebuggerDisplay("Mixin #{ME3TweaksID} - {PatchName} - v{PatchVersion}")] //do not localize
     public class Mixin : INotifyPropertyChanged
     {
         public event EventHandler UIStatusChanging;
