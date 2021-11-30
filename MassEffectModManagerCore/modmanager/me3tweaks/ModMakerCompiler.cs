@@ -40,6 +40,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
         public Action<bool> SetCurrentTaskIndeterminateCallback;
         public Action<string> SetCurrentTaskStringCallback;
         public Action<string> SetModNameCallback;
+        public Action<string> ShowErrorMessageCallback;
         public Func<List<string>, bool> NotifySomeDLCIsMissing;
         public Action SetCompileStarted;
         public Action SetModNotFoundCallback;
@@ -347,7 +348,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
                         || dlcFolders.Contains(ModmakerChunkNameToDLCFoldername(x.TargetModule.ToString()))).ToList();
                 }
 
-                var compilingListsPerModule = MixinHandler.GetMixinApplicationList(allmixins);
+                var compilingListsPerModule = MixinHandler.GetMixinApplicationList(allmixins, ShowErrorMessageCallback);
                 int totalMixinsToApply = compilingListsPerModule.Sum(x => x.Value.Values.Sum(y => y.Count()));
                 int numMixinsApplied = 0;
                 SetCurrentMaxCallback?.Invoke(totalMixinsToApply);

@@ -213,6 +213,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     compiler.SetCompileStarted = CompilationInProgress;
                     compiler.SetModNotFoundCallback = ModNotFound;
                     compiler.NotifySomeDLCIsMissing = NotifySomeDLCIsMissing;
+                    compiler.ShowErrorMessageCallback = ShowErrorMessage;
                     var m = compiler.DownloadAndCompileMod(modDelta);
                     if (m != null && !LocalFileOption)
                     {
@@ -242,6 +243,14 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
             };
             nbw.RunWorkerAsync();
+        }
+
+        private void ShowErrorMessage(string obj)
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                M3L.ShowDialog(window, obj, M3L.GetString(M3L.string_error), MessageBoxButton.OK, MessageBoxImage.Error);
+            });
         }
 
         private bool NotifySomeDLCIsMissing(List<string> listItems)
