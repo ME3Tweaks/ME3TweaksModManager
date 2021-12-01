@@ -4,6 +4,8 @@
                        xmlns:targets="clr-namespace:ME3TweaksCore.Targets;assembly=ME3TweaksCore"
                        xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
                        xmlns:converters="clr-namespace:ME3TweaksModManager.modmanager.converters"
+                       xmlns:targets1="clr-namespace:ME3TweaksCoreWPF.Targets;assembly=ME3TweaksCoreWPF"
+                       xmlns:gametarget="clr-namespace:ME3TweaksModManager.modmanager.objects.gametarget"
                        x:Class="ME3TweaksModManager.modmanager.usercontrols.InstallationInformation" mc:Ignorable="d" d:DesignHeight="550" DataContext="{Binding RelativeSource={RelativeSource Self}}" d:DesignWidth="800" Width="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.8_500', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualWidth}" Height="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.8_500', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualHeight}">
     <UserControl.Resources>
         <converters:InstallationInformationTabVisibilityConverter x:Key="InstallationInformationTabVisibilityConverter" />
@@ -31,7 +33,7 @@
                     <ScrollViewer Padding="0" VerticalAlignment="Stretch">
                         <ItemsControl ItemsSource="{Binding UIInstalledDLCMods}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" AlternationCount="2" Padding="0">
                             <ItemsControl.ItemTemplate>
-                                <DataTemplate DataType="{x:Type targets:InstalledDLCMod}">
+                                <DataTemplate DataType="{x:Type gametarget:M3InstalledDLCMod}">
                                     <DockPanel>
                                         <DockPanel.Resources>
                                             <Style TargetType="{x:Type DockPanel}">
@@ -91,7 +93,7 @@
                         <TextBlock Text="{DynamicResource string_cannotShowModifiedBasegameFilesTextureModded}" Visibility="{Binding TextureModded, Converter={StaticResource BoolToVisibilityConverter}}" HorizontalAlignment="Center" VerticalAlignment="Center" Width="300" TextWrapping="Wrap" TextAlignment="Center" />
                         <ItemsControl ItemsSource="{Binding ModifiedBasegameFilesView}" Visibility="{Binding TextureModded, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" AlternationCount="2" VirtualizingStackPanel.IsVirtualizing="True" ScrollViewer.CanContentScroll="True">
                             <ItemsControl.ItemTemplate>
-                                <DataTemplate>
+                                <DataTemplate DataType="{x:Type targets1:ModifiedFileObjectWPF}">
                                     <DockPanel>
                                         <DockPanel.Resources>
                                             <Style TargetType="{x:Type DockPanel}">
@@ -143,7 +145,7 @@
                     </DockPanel>
                     <ItemsControl ItemsSource="{Binding ModifiedSFARFiles}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" AlternationCount="2">
                         <ItemsControl.ItemTemplate>
-                            <DataTemplate>
+                            <DataTemplate DataType="{x:Type targets1:SFARObjectWPF}">
                                 <DockPanel>
                                     <DockPanel.Resources>
                                         <Style TargetType="{x:Type DockPanel}">
