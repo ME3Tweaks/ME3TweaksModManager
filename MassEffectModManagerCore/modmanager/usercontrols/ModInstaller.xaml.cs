@@ -205,6 +205,16 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 Directory.CreateDirectory(gameDLCPath); //me1/me2 missing dlc might not have this folder
             }
 
+            // Configure the alternates that are in groups.
+            foreach (var group in AlternateGroups)
+            {
+                // Selected Item is selected. All others are not.
+                foreach (var v in group.AlternateOptions)
+                {
+                    v.IsSelected = group.SelectedOption == v; // 
+                }
+            }
+
             //Check we can install
             var missingRequiredDLC = ModBeingInstalled.ValidateRequiredModulesAreInstalled(SelectedGameTarget);
             if (missingRequiredDLC.Count > 0)
@@ -1755,6 +1765,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 ao.ReleaseLoadedImageAsset();
             }
             AlternateOptions.ClearEx(); //remove collection of items
+            AllAlternateOptions.ClearEx();
+            AlternateGroups.ClearEx();
 
             if (ModBeingInstalled.Archive != null)
             {

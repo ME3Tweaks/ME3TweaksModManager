@@ -5,6 +5,7 @@ using System.IO;
 using System.Xml;
 using LegendaryExplorerCore.Helpers;
 using ME3TweaksCore.Diagnostics;
+using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Services;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
@@ -31,7 +32,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
                 catch (Exception e)
                 {
                     var attachments = new List<ErrorAttachmentLog>();
-                    string log = LogCollector.CollectLatestLog(M3Log.LogDir, true);
+                    string log = LogCollector.CollectLatestLog(MCoreFilesystem.GetLogDir(), true);
                     if (log.Length < FileSize.MebiByte * 7)
                     {
                         attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, "applog.txt"));

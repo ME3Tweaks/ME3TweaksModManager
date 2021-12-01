@@ -11,6 +11,7 @@ using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.Diagnostics;
+using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Misc;
 using ME3TweaksCoreWPF;
 using ME3TweaksModManager.modmanager.diagnostics;
@@ -19,6 +20,7 @@ using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.ui;
 using Microsoft.WindowsAPICodePack.Taskbar;
 using GenericCommand = ME3TweaksModManager.ui.GenericCommand;
+using NamedBackgroundWorker = ME3TweaksModManager.modmanager.helpers.NamedBackgroundWorker;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
@@ -51,7 +53,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         private void InitLogUploaderUI()
         {
             AvailableLogs.ClearEx();
-            var directory = new DirectoryInfo(M3Log.LogDir);
+            var directory = new DirectoryInfo(MCoreFilesystem.GetLogDir());
             var logfiles = directory.GetFiles(@"modmanagerlog*.txt").OrderByDescending(f => f.LastWriteTime).ToList();
             AvailableLogs.Add(new LogItem(M3L.GetString(M3L.string_selectAnApplicationLog)) { Selectable = false });
             AvailableLogs.AddRange(logfiles.Select(x => new LogItem(x.FullName)));
@@ -127,90 +129,22 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     nbw.ReportProgress(-1, state);
                 }
 
-                StringBuilder logUploadText = new StringBuilder();
-                if (SelectedDiagnosticTarget != null && !SelectedDiagnosticTarget.IsCustomOption && SelectedDiagnosticTarget.Game > MEGame.Unknown)
+                LogUploadPackage package = new LogUploadPackage()
                 {
-                    Debug.WriteLine(@"Selected game target: " + SelectedDiagnosticTarget.TargetPath);
-                    logUploadText.Append("[MODE]diagnostics\n"); //do not localize
-                    logUploadText.Append(LogCollector.PerformDiagnostic(SelectedDiagnosticTarget, TextureCheck, updateStatusCallback, updateProgressCallback, updateTaskbarProgressStateCallback));
-                    logUploadText.Append("\n"); //do not localize
-                }
-
-                if (SelectedLog != null && SelectedLog.Selectable)
-                {
-                    Debug.WriteLine(@"Selected log: " + SelectedLog.filepath);
-                    logUploadText.Append("[MODE]logs\n"); //do not localize
-                    logUploadText.AppendLine(LogCollector.CollectLogs(SelectedLog.filepath));
-                    logUploadText.Append("\n"); //do not localize
-                }
-
-                var logtext = logUploadText.ToString();
-                if (logtext != null)
-                {
-                    CollectionStatusMessage = M3L.GetString(M3L.string_compressingForUpload);
-                    var lzmalog = LZMA.CompressToLZMAFile(Encoding.UTF8.GetBytes(logtext));
-                    try
-                    {
-                        //this doesn't need to technically be async, but library doesn't have non-async method.
-                        //DEBUG ONLY!!!
-                        CollectionStatusMessage = M3L.GetString(M3L.string_uploadingToME3Tweaks);
-
+                    DiagnosticTarget = SelectedDiagnosticTarget,
+                    SelectedLog = SelectedLog,
+                    PerformFullTexturesCheck = TextureCheck,
+                    UpdateTaskbarProgressStateCallback = updateTaskbarProgressStateCallback,
+                    UpdateProgressCallback = updateProgressCallback,
+                    UpdateStatusCallback = updateStatusCallback,
 #if DEBUG
-                        string responseString = @"https://me3tweaks.com/modmanager/logservice/logupload2.php".PostUrlEncodedAsync(new { LogData = Convert.ToBase64String(lzmalog), ModManagerVersion = App.BuildNumber, CrashLog = isPreviousCrashLog }).ReceiveString().Result;
+                    UploadEndpoint = @"https://me3tweaks.com/modmanager/logservice/logupload"
 #else
-                        string responseString = @"https://me3tweaks.com/modmanager/logservice/logupload.php".PostUrlEncodedAsync(new { LogData = Convert.ToBase64String(lzmalog), ModManagerVersion = App.BuildNumber, CrashLog = isPreviousCrashLog }).ReceiveString().Result;
+                    UploadEndpoint = @"https://me3tweaks.com/modmanager/logservice/logupload"
 #endif
-                        Uri uriResult;
-                        bool result = Uri.TryCreate(responseString, UriKind.Absolute, out uriResult)
-                                      && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
-                        if (result)
-                        {
-                            //should be valid URL.
-                            //diagnosticsWorker.ReportProgress(0, new ThreadCommand(SET_DIAGTASK_ICON_GREEN, Image_Upload));
-                            //e.Result = responseString;
-                            M3Log.Information(@"Result from server for log upload: " + responseString);
-                            b.Result = responseString;
-                            return;
-                        }
-                        else
-                        {
-                            M3Log.Error(@"Error uploading log. The server responded with: " + responseString);
-                            b.Result = M3L.GetString(M3L.string_interp_serverRejectedTheUpload, responseString);
-                        }
-                    }
-                    catch (AggregateException e)
-                    {
-                        Exception ex = e.InnerException;
-                        string exmessage = ex.Message;
-                        b.Result = M3L.GetString(M3L.string_interp_logWasUnableToUpload, exmessage);
-                    }
-                    catch (FlurlHttpTimeoutException)
-                    {
-                        // FlurlHttpTimeoutException derives from FlurlHttpException; catch here only
-                        // if you want to handle timeouts as a special case
-                        M3Log.Error(@"Request timed out while uploading log.");
-                        b.Result = M3L.GetString(M3L.string_interp_requestTimedOutUploading);
+                };
 
-                    }
-                    catch (Exception ex)
-                    {
-                        // ex.Message contains rich details, including the URL, verb, response status,
-                        // and request and response bodies (if available)
-                        M3Log.Error(@"Handled error uploading log: " + App.FlattenException(ex));
-                        string exmessage = ex.Message;
-                        var index = exmessage.IndexOf(@"Request body:");
-                        if (index > 0)
-                        {
-                            exmessage = exmessage.Substring(0, index);
-                        }
-
-                        b.Result = M3L.GetString(M3L.string_interp_logWasUnableToUpload, exmessage);
-                    }
-                }
-                else
-                {
-                    //Log pull failed
-                }
+                b.Result = LogCollector.SubmitDiagnosticLog(package);
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {
@@ -260,22 +194,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             InitializeComponent();
             InitLogUploaderUI();
-        }
-
-        public class LogItem
-        {
-            public bool Selectable { get; set; } = true;
-            public string filepath;
-            public LogItem(string filepath)
-            {
-                this.filepath = filepath;
-            }
-
-            public override string ToString()
-            {
-                if (!Selectable) return filepath;
-                return Path.GetFileName(filepath) + @" - " + FileSize.FormatSize(new FileInfo(filepath).Length);
-            }
         }
     }
 }

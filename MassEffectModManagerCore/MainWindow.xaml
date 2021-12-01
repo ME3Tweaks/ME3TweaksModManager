@@ -432,7 +432,7 @@
                             <fa5:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"
                                 Icon="Solid_SyncAlt"
-                                Spin="{Binding IsLoadingMods}"
+                                Spin="{Binding IsLoadingMods, Source={x:Static loaders:M3LoadedMods.Instance}}"
                                 SpinDuration="1"
                                 Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                                 Height="16"
@@ -1613,7 +1613,7 @@
                                     HorizontalAlignment="Center"
                                     Width="10"
                                     Height="10"
-                                    Spin="{Binding IsLoadingMods}"
+                                    Spin="{Binding IsLoadingMods, Source={x:Static loaders:M3LoadedMods.Instance}}"
                                     SpinDuration="1"
                                     Foreground="{DynamicResource {x:Static adonisUi:Brushes.HyperlinkBrush}}" />
                             </Button>
@@ -1646,7 +1646,7 @@
                             ItemsSource="{Binding VisibleFilteredMods, Source={x:Static loaders:M3LoadedMods.Instance}}"
                             Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
                             SelectedItem="{Binding SelectedMod}"
-                            IsEnabled="{Binding IsLoadingMods, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}"
+                            IsEnabled="{Binding IsLoadingMods, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not', Source={x:Static loaders:M3LoadedMods.Instance}}"
                             BorderThickness="1"
                             IsTextSearchEnabled="True"
                             TextSearch.TextPath="ModName"

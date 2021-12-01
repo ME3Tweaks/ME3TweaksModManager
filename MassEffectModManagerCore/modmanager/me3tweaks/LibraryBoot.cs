@@ -7,6 +7,7 @@ using System.Windows;
 using LegendaryExplorerCore.Helpers;
 using ME3TweaksCore;
 using ME3TweaksCore.Diagnostics;
+using ME3TweaksCore.Helpers;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using Microsoft.AppCenter.Analytics;
@@ -31,7 +32,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
                 UploadErrorLogCallback = (e, data) =>
                 {
                     var attachments = new List<ErrorAttachmentLog>();
-                    string log = LogCollector.CollectLatestLog(M3Log.LogDir, true);
+                    string log = LogCollector.CollectLatestLog(MCoreFilesystem.GetLogDir(), true);
                     if (log != null && log.Length < FileSize.MebiByte * 7)
                     {
                         attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, @"applog.txt"));
@@ -39,7 +40,8 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
 
                     Crashes.TrackError(e, data);
                 },
-                LECPackageSaveFailedCallback = x => M3Log.Error($@"Error saving package: {x}")
+                LECPackageSaveFailedCallback = x => M3Log.Error($@"Error saving package: {x}"),
+                CreateLogger = M3Log.CreateLogger
             };
         }
 

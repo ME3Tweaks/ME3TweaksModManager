@@ -767,7 +767,7 @@ namespace ME3TweaksModManager
             ShowBusyControl(consoleKeybindingPanel);
         }
 
-        private bool CanOpenImportFromUI() => !IsLoadingMods;
+        private bool CanOpenImportFromUI() => !M3LoadedMods.Instance.IsLoadingMods;
 
         private void OpenImportFromGameUI()
         {
@@ -782,7 +782,7 @@ namespace ME3TweaksModManager
 
         private bool CanOpenBatchModPanel()
         {
-            return !IsLoadingMods;
+            return !M3LoadedMods.Instance.IsLoadingMods;
         }
 
         private void OpenBatchModPanel()
@@ -1785,13 +1785,12 @@ namespace ME3TweaksModManager
             PerformStartupNetworkFetches(false);
         }
 
-        public bool IsLoadingMods { get; set; }
         public List<string> LoadedTips { get; } = new List<string>();
         public GameTargetWPF SelectedGameTarget { get; set; }
 
         private bool CanReloadMods()
         {
-            return !IsLoadingMods;
+            return !M3LoadedMods.Instance.IsLoadingMods;
         }
 
         private bool CanApplyMod()

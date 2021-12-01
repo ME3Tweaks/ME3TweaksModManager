@@ -21,6 +21,7 @@ using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.Diagnostics;
+using ME3TweaksCore.Helpers;
 using ME3TweaksModManager.modmanager;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
@@ -84,7 +85,7 @@ namespace ME3TweaksModManager
         {
             @"Windows 8.1",
             @"Windows 10 (not EOL versions)",
-            //@"Windows 11"
+            @"Windows 11 (not EOL versions)"
         };
 
         [DllImport(@"kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
@@ -121,6 +122,8 @@ namespace ME3TweaksModManager
                     BindingOperations.EnableCollectionSynchronization(collection, syncLock);
                 });
 
+            // We use our own implementation of this as we store data in ProgramData.
+            MCoreFilesystem.GetAppDataFolder = M3Utilities.GetAppDataFolder; // Do not change
 
             var settingsExist = File.Exists(Settings.SettingsPath); //for init language
             try
@@ -424,7 +427,7 @@ namespace ME3TweaksModManager
                     string errorMessage = "ME3Tweaks Mod Manager has crashed! This is the exception that caused the crash:";
                     M3Log.Fatal(report.StackTrace);
                     M3Log.Fatal(errorMessage);
-                    string log = LogCollector.CollectLatestLog(M3Log.LogDir, true);
+                    string log = LogCollector.CollectLatestLog(MCoreFilesystem.GetLogDir(), true);
                     if (log.Length < FileSize.MebiByte * 7)
                     {
                         attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, @"crashlog.txt"));

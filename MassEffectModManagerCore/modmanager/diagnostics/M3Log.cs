@@ -12,7 +12,6 @@ namespace ME3TweaksModManager.modmanager.diagnostics
     public static class M3Log
     {
         private const string Prefix = @"M3";
-        public static string LogDir { get; set; }
 
         public static void Exception(Exception exception, string preMessage, bool fatal = false, bool condition = true)
         {
@@ -101,7 +100,7 @@ namespace ME3TweaksModManager.modmanager.diagnostics
         /// <returns></returns>
         public static ILogger CreateLogger()
         {
-            return new LoggerConfiguration().WriteTo.SizeRollingFile(Path.Combine(MCoreFilesystem.GetAppDataFolder(), @"logs", @"modmanagerlog.txt"),
+            return new LoggerConfiguration().WriteTo.SizeRollingFile(Path.Combine(MCoreFilesystem.GetLogDir(), @"modmanagerlog.txt"),
                                     retainedFileDurationLimit: TimeSpan.FromDays(14),
                                     fileSizeLimitBytes: 1024 * 1024 * 10) // 10MB  
 #if DEBUG

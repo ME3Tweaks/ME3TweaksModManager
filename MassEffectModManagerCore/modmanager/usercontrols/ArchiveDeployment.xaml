@@ -76,7 +76,7 @@
                                     Visibility="{Binding CanReRun,                                      Converter={StaticResource BoolToVisibilityConverter}}">
                                     <Button.Content>
                                         <fa5:ImageAwesome
-                                            Icon="Solid_Refresh"
+                                            Icon="Solid_Sync"
                                             Foreground="{DynamicResource {x:Static adonisUi:Brushes.HyperlinkBrush}}"
                                             Height="12" />
                                     </Button.Content>

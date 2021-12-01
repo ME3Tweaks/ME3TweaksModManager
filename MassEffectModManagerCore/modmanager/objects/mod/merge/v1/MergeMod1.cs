@@ -6,6 +6,7 @@ using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
+using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCoreWPF;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.localizations;
@@ -90,6 +91,14 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
         {
             M3Log.Information($@"Applying {MergeModFilename}");
             var loadedFiles = MELoadedFiles.GetFilesLoadedInGame(target.Game, true, gameRootOverride: target.TargetPath);
+
+            if (target.Game == MEGame.LE2)
+            {
+                // SPECIAL CASE: LE2 EntryMenu is loaded before DLC version so first load of the file
+                // will be basegame one. The majority of time this is likely the desirable
+                // file so we only target this one instead.
+                loadedFiles[@"EntryMenu.pcc"] = Path.Combine(M3Directories.GetCookedPath(target), @"EntryMenu.pcc");
+            }
 
             int numDone = 0;
             foreach (var mf in FilesToMergeInto)
