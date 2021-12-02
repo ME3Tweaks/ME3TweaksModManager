@@ -9,7 +9,7 @@
 		<PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
 		<UseWPF>true</UseWPF>
 		<Platforms>x64</Platforms>
-		<Version>7.1.0.124</Version>
+		<Version>7.0.6.124</Version>
 		<Copyright>ME3Tweaks 2012 - 2021</Copyright>
 		<Authors>Mgamerz</Authors>
 		<PackageId>ME3TweaksModManager</PackageId>
