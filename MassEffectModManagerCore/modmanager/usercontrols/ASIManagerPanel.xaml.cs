@@ -149,7 +149,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private void RefreshASIStates(MEGame gameToRefresh = MEGame.Unknown)
         {
-            ddforeach (var game in Games)
+            foreach (var game in Games)
             {
                 if (gameToRefresh == MEGame.Unknown || gameToRefresh == game.Game)
                     game.RefreshASIStates();

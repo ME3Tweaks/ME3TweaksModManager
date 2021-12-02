@@ -28,8 +28,12 @@ namespace ME3TweaksModManager.modmanager.converters
         }
     }
 
+    /// <summary>
+    /// Checks that all bools are true to set visibility to visible
+    /// </summary>
     [Localizable(false)]
     [ValueConversion(typeof(bool), typeof(Visibility))]
+    
     public class MultiBoolToVisibilityConverter : IMultiValueConverter
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
@@ -42,9 +46,9 @@ namespace ME3TweaksModManager.modmanager.converters
             }
             if (parameter is string str && (str is "Inverse" or "Not"))
             {
-                return allBools.Any(x => x) ? Visibility.Collapsed : Visibility.Visible;
+                return allBools.All(x => x) ? Visibility.Collapsed : Visibility.Visible;
             }
-            return allBools.Any(x => x) ? Visibility.Visible : Visibility.Collapsed;
+            return allBools.All(x => x) ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)

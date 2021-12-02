@@ -21,6 +21,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
     /// <summary>
     /// Interaction logic for OfficialDLCToggler.xaml
     /// </summary>
+    [AddINotifyPropertyChangedInterface]
     public partial class OfficialDLCToggler : MMBusyPanelBase
     {
         public OfficialDLCToggler()
@@ -28,8 +29,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             LoadCommands();
         }
 
-        public ObservableCollectionExtended<GameTargetWPF> AvailableTargets { get; } = new ObservableCollectionExtended<GameTargetWPF>();
-        public ObservableCollectionExtended<InstalledDLC> InstalledDLCs { get; } = new ObservableCollectionExtended<InstalledDLC>();
+        public ObservableCollectionExtended<GameTargetWPF> AvailableTargets { get; } = new();
+        public ObservableCollectionExtended<InstalledDLC> InstalledDLCs { get; } = new();
         public GameTargetWPF SelectedTarget { get; set; }
         public ICommand CloseCommand { get; set; }
 

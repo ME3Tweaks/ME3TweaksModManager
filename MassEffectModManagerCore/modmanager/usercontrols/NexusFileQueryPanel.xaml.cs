@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
+using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.localizations;
@@ -12,6 +15,7 @@ using ME3TweaksModManager.modmanager.nexusmodsintegration;
 using ME3TweaksModManager.modmanager.objects.nexusfiledb;
 using ME3TweaksModManager.ui;
 using Pathoschild.FluentNexus.Models;
+using PropertyChanged;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
@@ -21,8 +25,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
     public partial class NexusFileQueryPanel : MMBusyPanelBase, INotifyPropertyChanged
     {
         /// <summary>
-        /// The API endpoint for searching. Append an encoded filename to search.
+        /// If the database loaded or not
         /// </summary>
+        private bool QPLoaded;
         public string SearchTerm { get; set; }
         public bool QueryInProgress { get; set; } = true; // Defaults to true on open.
         public string BusyStatusText { get; set; } = M3L.GetString(M3L.string_pleaseWait);
@@ -34,6 +39,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private void UpdateFilters()
         {
+            if (!QPLoaded)
+                return;
             var newNames = new List<string>();
             IEnumerable<string> getFilenamesForGame(string domain)
             {
@@ -47,7 +54,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             newNames = newNames.Distinct().OrderBy(x => x).ToList();
             AllSearchableNames.ReplaceAll(newNames);
         }
-        
+
         public void OnSearchME1Changed() { UpdateFilters(); }
         public void OnSearchME2Changed() { UpdateFilters(); }
         public void OnSearchME3Changed() { UpdateFilters(); }
@@ -57,6 +64,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         public NexusFileQueryPanel()
         {
+            FileCategories = new ObservableCollectionExtended<FileCategory>(Enum.GetValues<FileCategory>());
             LoadCommands();
         }
 
@@ -71,7 +79,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
 
         public ObservableCollectionExtended<SearchedItemResult> Results { get; } = new ObservableCollectionExtended<SearchedItemResult>();
-        public ObservableCollectionExtended<FileCategory> FileCategories { get; } = new ObservableCollectionExtended<FileCategory>(Enum.GetValues<FileCategory>());
+        public ObservableCollectionExtended<FileCategory> FileCategories { get; }
         public ObservableCollectionExtended<FileCategory> SelectedFileCategories { get; } = new ObservableCollectionExtended<FileCategory>(Enum.GetValues<FileCategory>()); // all by default
 
         private bool CanSearch() => !QueryInProgress && !string.IsNullOrWhiteSpace(SearchTerm) && (SearchME1 || SearchME2 || SearchME3 || SearchLE) && HasCategory();
@@ -167,7 +175,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                                 Domain = domain,
                                 Filename = db.NameTable[x.FilenameId],
                                 AssociatedDB = db
-                            }));
+                            }).ToList()); // We do tolist because it forces all items to be added at once
                             //});
                         }
                     }
@@ -208,7 +216,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public override void OnPanelVisible()
         {
             InitializeComponent();
-            CategoryOptionsCBL.SetSelectedItems(Enum.GetValues<FileCategory>().Where(x => x != FileCategory.Deleted).OfType<object>());
             Task.Run(() =>
             {
                 try
@@ -227,6 +234,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                             }
                         }
                     }
+
+                    QPLoaded = true;
                 }
                 catch (Exception e)
                 {
@@ -236,6 +245,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 // No longer busy
                 QueryInProgress = false;
                 BusyStatusText = M3L.GetString(M3L.string_searching);
+            }).ContinueWithOnUIThread(x =>
+            {
+                CategoryOptionsCBL.SetSelectedItems(Enum.GetValues<FileCategory>().Where(x => x != FileCategory.Archived && x != FileCategory.Deleted).OfType<object>());
+                if (Settings.GenerationSettingLE && !Settings.GenerationSettingOT)
+                {
+                    SearchLE = true; // Automatically set this as it's the only option in this mode
+                }
             });
         }
 
@@ -245,7 +261,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             OnClosing(DataEventArgs.Empty);
         }
 
-        public class SearchedItemResult : INotifyPropertyChanged
+        [AddINotifyPropertyChangedInterface]
+        public class SearchedItemResult
         {
             public FileInstance Instance { get; internal set; }
             public string Domain { get; internal set; }
@@ -296,10 +313,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             public NMFileInfo FileInfo => AssociatedDB.ModFileInfos[Instance.FileID];
 
             public string DownloadModText => NexusModsUtilities.UserInfo != null && NexusModsUtilities.UserInfo.IsPremium ? M3L.GetString(M3L.string_tooltip_downloadThisMod) : M3L.GetString(M3L.string_tooltip_premiumRequiredForDownload);
-
-#pragma warning disable
-            public event PropertyChangedEventHandler PropertyChanged;
-#pragma warning restore
         }
 
         private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
@@ -308,6 +321,28 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 var outboundUrl = $@"https://nexusmods.com/{sir.Domain}/mods/{sir.Instance.ModID}?tab=files"; // do not localize
                 M3Utilities.OpenWebpage(outboundUrl);
+            }
+        }
+
+        private void UIElement_OnPreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            ScrollViewer scv = (ScrollViewer)sender;
+            scv.ScrollToVerticalOffset(scv.VerticalOffset - e.Delta);
+            e.Handled = true;
+        }
+
+        private void HandleMouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
+        {
+            // This forces scrolling to bubble up
+            // cause expander eats it
+            if (!e.Handled)
+            {
+                e.Handled = true;
+                var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta);
+                eventArg.RoutedEvent = UIElement.MouseWheelEvent;
+                eventArg.Source = sender;
+                var parent = (((Control)sender).TemplatedParent ?? ((Control)sender).Parent) as UIElement;
+                parent.RaiseEvent(eventArg);
             }
         }
     }
