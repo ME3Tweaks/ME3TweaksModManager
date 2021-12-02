@@ -31,6 +31,7 @@ using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.TLK.ME2ME3;
 using LegendaryExplorerCore.Unreal;
 using ME3TweaksCore;
+using ME3TweaksCore.Helpers;
 using ME3TweaksCore.NativeMods;
 using ME3TweaksCore.Services;
 using ME3TweaksCore.Services.Backup;
@@ -3760,5 +3761,16 @@ namespace ME3TweaksModManager
             }
 #endif
         }
+
+#if DEBUG
+        /// <summary>
+        /// This method forces the inclusion of Using statements when cleaning them up. This method is purposely never called
+        /// </summary>
+        private void ForceImports()
+        {
+            var localmd5 = MUtilities.CalculateMD5("null");
+
+        }
+#endif
     }
 }
