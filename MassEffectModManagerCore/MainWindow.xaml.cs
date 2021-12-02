@@ -37,6 +37,7 @@ using ME3TweaksCore.Services.Backup;
 using ME3TweaksCore.Services.BasegameFileIdentification;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksCoreWPF;
+using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
@@ -1861,7 +1862,7 @@ namespace ME3TweaksModManager
 
         private void ReloadMods()
         {
-            M3LoadedMods.Instance.LoadMods();
+            M3LoadedMods.Instance.LoadMods(SelectedMod);
         }
 
         private void CheckTargetPermissions(bool promptForConsent = true, bool showDialogEvenIfNone = false)
@@ -3045,7 +3046,7 @@ namespace ME3TweaksModManager
             {
                 {@"Invocation method", @"Menu"}
             });
-            var exLauncher = new ASIManagerPanel();
+            var exLauncher = new ASIManagerPanel(SelectedGameTarget);
             exLauncher.Close += (a, b) => { ReleaseBusyControl(); };
             ShowBusyControl(exLauncher);
         }

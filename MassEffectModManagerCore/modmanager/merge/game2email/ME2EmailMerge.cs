@@ -9,6 +9,7 @@ using LegendaryExplorerCore.Packages.CloningImportingAndRelinking;
 using LegendaryExplorerCore.Unreal;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCoreWPF;
+using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.merge.dlc;
 using Newtonsoft.Json;
 using BioStateEventMap = LegendaryExplorerCore.Unreal.BinaryConverters.BioStateEventMap;

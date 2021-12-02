@@ -1,6 +1,7 @@
 ﻿using System;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using ME3TweaksCoreWPF;
+using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.objects.mod;
 

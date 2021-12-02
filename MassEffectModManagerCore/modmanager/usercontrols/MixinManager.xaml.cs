@@ -17,6 +17,7 @@ using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.Services;
 using ME3TweaksCore.Services.Backup;
 using ME3TweaksCoreWPF;
+using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;

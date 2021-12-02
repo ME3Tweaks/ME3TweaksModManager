@@ -3,6 +3,7 @@ using System.Windows.Input;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Unreal;
 using ME3TweaksCoreWPF;
+using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.objects.mod;

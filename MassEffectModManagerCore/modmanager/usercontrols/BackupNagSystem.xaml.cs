@@ -6,6 +6,7 @@ using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.Services.Backup;
 using ME3TweaksCoreWPF;
+using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects;
@@ -111,7 +112,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 // We don't really care about the launcher.
             }
 
-            return true;
+            return false;
         }
 
         private void LoadCommands()

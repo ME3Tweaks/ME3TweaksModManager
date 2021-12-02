@@ -16,6 +16,7 @@ using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksCoreWPF;
+using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
@@ -1058,32 +1059,8 @@ namespace ME3TweaksModManager.modmanager
         internal static bool UninstallBinkBypass(GameTargetWPF target)
         {
             if (target == null) return false;
-            var binkPath = GetBinkFile(target);
-            if (target.Game == MEGame.ME1)
-            {
-                var obinkPath = Path.Combine(target.TargetPath, "Binaries", "binkw23.dll");
-                File.Delete(obinkPath);
-                M3Utilities.ExtractInternalFile("ME3TweaksModManager.modmanager.binkw32.me1.binkw23.dll", binkPath, true);
-            }
-            else if (target.Game == MEGame.ME2)
-            {
-                var obinkPath = Path.Combine(target.TargetPath, "Binaries", "binkw23.dll");
-                File.Delete(obinkPath);
-                M3Utilities.ExtractInternalFile("ME3TweaksModManager.modmanager.binkw32.me2.binkw23.dll", binkPath, true);
-            }
-            else if (target.Game == MEGame.ME3)
-            {
-                var obinkPath = Path.Combine(target.TargetPath, "Binaries", "win32", "binkw23.dll");
-                File.Delete(obinkPath);
-                M3Utilities.ExtractInternalFile("ME3TweaksModManager.modmanager.binkw32.me3.binkw23.dll", binkPath, true);
-            }
-            else if (target.Game.IsLEGame())
-            {
-                var obinkPath = Path.Combine(target.TargetPath, "Binaries", "Win64", "bink2w64_original.dll");
-                File.Delete(obinkPath);
-                M3Utilities.ExtractInternalFile("ME3TweaksModManager.modmanager.binkw64.bink2w64_original.dll", binkPath, true);
-
-            }
+            target.UninstallBinkBypass();
+            
 
             return true;
         }

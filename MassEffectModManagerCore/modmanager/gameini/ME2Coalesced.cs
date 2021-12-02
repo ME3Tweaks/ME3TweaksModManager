@@ -5,6 +5,7 @@ using System.IO;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCoreWPF;
+using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.diagnostics;
 
 namespace ME3TweaksModManager.modmanager.gameini

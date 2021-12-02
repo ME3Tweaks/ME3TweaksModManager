@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCoreWPF;
+using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.objects;
 
 namespace ME3TweaksModManager.modmanager

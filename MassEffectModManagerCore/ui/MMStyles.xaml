@@ -5,7 +5,8 @@
                     xmlns:fa5="http://schemas.fontawesome.com/icons/"
                     xmlns:targets="clr-namespace:ME3TweaksCore.Targets;assembly=ME3TweaksCore"
                     xmlns:converters1="clr-namespace:ME3TweaksModManager.modmanager.converters"
-                    xmlns:helpers="clr-namespace:ME3TweaksModManager.modmanager.helpers">
+                    xmlns:helpers="clr-namespace:ME3TweaksModManager.modmanager.helpers"
+                    xmlns:converters="clr-namespace:ME3TweaksCoreWPF.Converters;assembly=ME3TweaksCoreWPF">
     <converters1:GameToImageIconConverter x:Key="GameToImageIconConverter"/>
     <converters1:BootTargetSourceVisibilityConverter x:Key="BootTargetSourceVisibilityConverter"/>
     <converters1:GameIconVisibilityConverter x:Key="GameIconVisibilityConverter"/>
@@ -26,6 +27,7 @@
     <converters1:GenerationsSizeAdjustedPercentageConverter x:Key="GenerationsSizeAdjustedPercentageConverter" />
     <converters1:StringMatchToBoolConverter x:Key="StringMatchToBoolConverter"/>
     <converters1:GameToTextureModdedIconConverter x:Key="GameToTextureModdedIconConverter"/>
+    <converters:GameTargetConverter x:Key="GameTargetConverter"/>
     <DataTemplate x:Key="TargetSelectorTemplate" DataType="{x:Type targets:GameTarget}">
         <DockPanel HorizontalAlignment="Stretch">
             <Image DockPanel.Dock="Left" Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16"/>

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksCoreWPF;
+using ME3TweaksCoreWPF.Targets;
 
 namespace ME3TweaksModManager.modmanager.objects.mod.merge
 {

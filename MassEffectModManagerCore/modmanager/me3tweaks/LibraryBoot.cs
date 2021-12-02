@@ -8,6 +8,8 @@ using LegendaryExplorerCore.Helpers;
 using ME3TweaksCore;
 using ME3TweaksCore.Diagnostics;
 using ME3TweaksCore.Helpers;
+using ME3TweaksCore.NativeMods;
+using ME3TweaksCoreWPF.NativeMods;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
@@ -47,7 +49,9 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
                 GenerateInstalledDlcModDelegate = M3InstalledDLCMod.GenerateInstalledDLCMod,
                 GenerateInstalledExtraFileDelegate = InstalledExtraFileWPF.GenerateInstalledExtraFileWPF,
                 GenerateSFARObjectDelegate = SFARObjectWPF.GenerateSFARObjectWPF,
-                GenerateModifiedFileObjectDelegate = ModifiedFileObjectWPF.GenerateModifiedFileObjectWPF
+                GenerateModifiedFileObjectDelegate = ModifiedFileObjectWPF.GenerateModifiedFileObjectWPF,
+                GenerateKnownInstalledASIModDelegate = KnownInstalledASIModWPF.GenerateKnownInstalledASIModWPF,
+                GenerateUnknownInstalledASIModDelegate = UnknownInstalledASIModWPF.GenerateUnknownInstalledASIModWPF,
             };
         }
 

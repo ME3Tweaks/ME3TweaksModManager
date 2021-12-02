@@ -12,6 +12,7 @@ using ME3TweaksCore.Services.Backup;
 using ME3TweaksCore.Services.Restore;
 using ME3TweaksCore.Targets;
 using ME3TweaksCoreWPF;
+using ME3TweaksCoreWPF.Targets;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.localizations;
 using Microsoft.WindowsAPICodePack.Dialogs;

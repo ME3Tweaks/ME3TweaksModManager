@@ -2,6 +2,8 @@
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Services.BasegameFileIdentification;
 using ME3TweaksCore.Targets;
+using ME3TweaksCoreWPF;
+using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.objects.mod;
 
 namespace ME3TweaksModManager.me3tweakscoreextended
@@ -11,7 +13,7 @@ namespace ME3TweaksModManager.me3tweakscoreextended
     /// </summary>
     public class M3BasegameFileRecord : BasegameFileRecord
     {
-        public M3BasegameFileRecord(string fullfilepath, int size, GameTarget gameTarget, Mod modBeingInstalled, string md5 = null)
+        public M3BasegameFileRecord(string fullfilepath, int size, GameTargetWPF gameTarget, Mod modBeingInstalled, string md5 = null)
         {
             this.file = fullfilepath.Substring(gameTarget.TargetPath.Length + 1);
             this.hash = md5 ?? MUtilities.CalculateMD5(fullfilepath);

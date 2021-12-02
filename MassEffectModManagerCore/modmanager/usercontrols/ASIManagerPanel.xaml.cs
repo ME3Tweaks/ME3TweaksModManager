@@ -7,21 +7,24 @@ using System.Windows.Input;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.NativeMods;
+using ME3TweaksCore.NativeMods.Interfaces;
 using ME3TweaksCoreWPF;
 using ME3TweaksCoreWPF.NativeMods;
+using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.ui;
+using PropertyChanged;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
     /// <summary>
     /// Interaction logic for ASIManager.xaml
     /// </summary>
+    [AddINotifyPropertyChangedInterface]
     public partial class ASIManagerPanel : MMBusyPanelBase
     {
-
         public int SelectedTabIndex { get; set; }
         private object SelectedASIObject { get; set; }
         public string SelectedASIDescription { get; set; }
@@ -43,8 +46,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             MemoryAnalyzer.AddTrackedMemoryItem(@"ASI Manager", new WeakReference(this));
             M3Log.Information(@"Opening ASI Manager");
-
-            DataContext = this;
             Directory.CreateDirectory(ASIManager.CachedASIsFolder);
             LoadCommands();
             this.preselectedTarget = preselectedTarget;
@@ -75,7 +76,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 M3Utilities.OpenWebpage(asi.LatestVersion.SourceCodeLink);
             }
-            else if (SelectedASIObject is KnownInstalledASIMod kasi && kasi.AssociatedManifestItem != null)
+            else if (SelectedASIObject is IKnownInstalledASIMod kasi && kasi.AssociatedManifestItem != null)
             {
                 M3Utilities.OpenWebpage(kasi.AssociatedManifestItem.SourceCodeLink);
             }
@@ -83,10 +84,10 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private void InstallUninstallASI()
         {
-            if (SelectedASIObject is InstalledASIMod instASI)
+            if (SelectedASIObject is IInstalledASIMod instASI)
             {
                 //Unknown ASI
-                if (instASI is KnownInstalledASIMod kam && kam.Outdated)
+                if (instASI is IKnownInstalledASIMod kam && kam.Outdated)
                 {
                     internalInstallASI(kam.AssociatedManifestItem.OwningMod.LatestVersion);
                 }
@@ -110,7 +111,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"ASIInstallWorker");
             nbw.DoWork += (a, b) =>
             {
-                b.Result = ASIManager.InstallASIToTarget(asi, target.SelectedTarget);
+                b.Result = ASIManager.InstallASIToTarget(asi, target.CurrentGameTarget);
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {
@@ -148,7 +149,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private void RefreshASIStates(MEGame gameToRefresh = MEGame.Unknown)
         {
-            foreach (var game in Games)
+            ddforeach (var game in Games)
             {
                 if (gameToRefresh == MEGame.Unknown || gameToRefresh == game.Game)
                     game.RefreshASIStates();
@@ -196,7 +197,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
                 SelectedASISubtext = subtext;
             }
-            else if (v is KnownInstalledASIMod kaim)
+            else if (v is IKnownInstalledASIMod kaim)
             {
                 SelectedASIDescription = kaim.AssociatedManifestItem.Description;
                 SelectedASIName = kaim.AssociatedManifestItem.Name;
@@ -214,9 +215,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 }
                 SelectedASISubtext = subtext;
             }
-            else if (v is UnknownInstalledASIMod nonManifestAsiMod)
+            else if (v is IUnknownInstalledASIMod nonManifestAsiMod)
             {
-                SelectedASIDescription = M3L.GetString(M3L.string_unknownASIDescription);
+                SelectedASIDescription = nonManifestAsiMod.DllDescription;
                 SelectedASIName = nonManifestAsiMod.UnmappedFilename;
                 SelectedASISubtext = M3L.GetString(M3L.string_SSINotPresentInManifest);
                 InstallButtonText = M3L.GetString(M3L.string_uninstallASI);
@@ -230,9 +231,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 InstallButtonText = M3L.GetString(M3L.string_noASISelected);
             }
         }
-
-
-
 
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
@@ -263,8 +261,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
                     if (preselectedTarget != null && preselectedTarget.Game == game)
                     {
-                        asiGame.SelectedTarget = preselectedTarget;
+                        asiGame.CurrentGameTargetWPF = preselectedTarget;
                         SelectedTabIndex = index;
+                    }
+                    else
+                    {
+                        asiGame.CurrentGameTargetWPF = asiGame.GameTargetsWPF.FirstOrDefault();
                     }
                 }
 
@@ -276,14 +278,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (e.AddedItems.Count > 0)
-            {
-                var newtab = e.AddedItems[0];
-
-                //    var selectedItem = lb.SelectedItem;
-                //    UpdateSelectionTexts(selectedItem);
-            }
+            //if (e.AddedItems.Count > 0)
+            //{
+            //    var newtab = e.AddedItems[0];
+            //    var selectedItem = lb.SelectedItem;
+            //    UpdateSelectionTexts(selectedItem);
+            //}
         }
-
     }
 }

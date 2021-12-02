@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Net.Mime;
 using System.Text;
@@ -13,8 +14,7 @@ using PropertyChanged;
 
 namespace ME3TweaksModManager.modmanager.objects.gametarget
 {
-    [AddINotifyPropertyChangedInterface]
-    public class M3InstalledDLCMod : InstalledDLCModWPF
+    public class M3InstalledDLCMod : InstalledDLCModWPF, INotifyPropertyChanged
     {
         private static readonly SolidColorBrush DisabledBrushLightMode = new SolidColorBrush(Color.FromArgb(0xff, 232, 26, 26));
         private static readonly SolidColorBrush DisabledBrushDarkMode = new SolidColorBrush(Color.FromArgb(0xff, 247, 88, 77));
@@ -30,6 +30,13 @@ namespace ME3TweaksModManager.modmanager.objects.gametarget
                 }
                 return Application.Current.FindResource(AdonisUI.Brushes.ForegroundBrush) as SolidColorBrush;
             }
+        }
+
+        public override void OnDLCFolderNameChanged()
+        {
+            base.OnDLCFolderNameChanged();
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TextColor)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(EnableDisableText))); // this is hack to make it work since it doesn't seem to fire...
         }
 
         public M3InstalledDLCMod(string dlcFolderPath, MEGame game, Func<InstalledDLCMod, bool> deleteConfirmationCallback, Action notifyDeleted, Action notifyToggled, bool modNamePrefersTPMI) : base(dlcFolderPath, game, deleteConfirmationCallback, notifyDeleted, notifyToggled, modNamePrefersTPMI)
@@ -50,5 +57,9 @@ namespace ME3TweaksModManager.modmanager.objects.gametarget
         {
             return new M3InstalledDLCMod(dlcFolderPath, game, deleteConfirmationCallback, notifyDeleted, notifyToggled, modNamePrefersTPMI);
         }
+
+#pragma warning disable
+        public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning enable
     }
 }

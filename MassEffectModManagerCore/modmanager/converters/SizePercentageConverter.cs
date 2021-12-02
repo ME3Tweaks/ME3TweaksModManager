@@ -10,7 +10,6 @@ namespace ME3TweaksModManager.modmanager.converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            Debug.WriteLine("SIZEPERCENTAGECONVERTER!");
             if (value is double fullSize)
             {
                 if (parameter == null)

@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 using ME3TweaksCoreWPF;
+using ME3TweaksCoreWPF.Targets;
 
 namespace ME3TweaksModManager.modmanager.converters
 {

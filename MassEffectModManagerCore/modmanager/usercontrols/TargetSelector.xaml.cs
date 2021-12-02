@@ -6,6 +6,7 @@ using System.Windows.Data;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCore.Targets;
 using ME3TweaksCoreWPF;
+using ME3TweaksCoreWPF.Targets;
 using PropertyChanged;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
@@ -51,7 +52,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         /// Which target is selected
         /// </summary>
         public static readonly DependencyProperty SelectedGameTargetProperty =
-            DependencyProperty.Register(@"SelectedGameTarget", typeof(GameTarget),
+            DependencyProperty.Register(@"SelectedGameTarget", typeof(GameTargetWPF),
                 typeof(TargetSelector), new FrameworkPropertyMetadata(
                     null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
@@ -130,11 +131,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is GameTargetWPF gt && parameter is TargetSelector ts)
+            // LEAVE AS GAMETARGET!
+            if (value is GameTarget gt && parameter is TargetSelector ts)
             {
                 return (ts.ShowTextureInfo && gt.TextureModded) ? Visibility.Visible : Visibility.Collapsed;
             }
-            return null;
+            return Visibility.Collapsed;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
