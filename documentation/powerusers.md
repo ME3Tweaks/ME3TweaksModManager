@@ -50,12 +50,8 @@ Mod Manager for nearly a decade has supported drag and drop for Coalesced and TL
  - Sideload ModMaker XML mod definition files
  - DEBUG BUILDS ONLY: .bin (TOC file): Dumps TOC information to the debug console
 
-
 ### MergeMod Files
 Compilation and decompilation of merge mods is done via drag and drop onto the interface.
  - .json -> Compiles mergemod to .m3m file
  - .m3m -> Decompiles the file to its .json and support asset files (if any)
 
-
-
- - 
