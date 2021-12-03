@@ -36,7 +36,7 @@ Only .7z files are fully supported. Older original trilogy mods that were shippe
 - .me2mod
 
 ### Texture mod files
-Dropping the following file formats onto the interface will redirect you to install the files with ALOT Installer, as ME3Tweaks Mod Manager does not install textures.
+Dropping the following file formats onto the interface will redirect you to install the files with ALOT Installer, as ME3Tweaks Mod Manager does not install textures. At the time of writing this documentation (December 2021), ALOT Installer does not support Legendary Edition.
  - .tpf
  - .mod
  - .mem
