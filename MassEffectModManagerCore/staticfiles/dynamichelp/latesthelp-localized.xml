@@ -24,8 +24,17 @@
       <helpitem title="Restored game files but a DLC is still not authorizing" modalicon="INFO" modaltitle="DLC still not authorizing">If a mod you installed has Custom DLC (mod that is installed into game's DLC folder), some options in Mod Manager do not remove them. If you attempted to restore your game but still get issues with authorizing a DLC, go to 'Manage Target' and delete any DLC folders listed in the 'Installed DLC mods' tab.</helpitem>
     </list>
     <list title="Changelogs">
-      <helpitem title="ME3Tweaks Mod Manager 6.3 (Build 117)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.3.0.117" />
+      <helpitem title="ME3Tweaks Mod Manager 7.0.6 BETA ONLY (Build 124)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/275" />
+      <helpitem title="ME3Tweaks Mod Manager 7.0.5 (Build 123)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/266" />
+      <helpitem title="ME3Tweaks Mod Manager 7.0.4 (Build 122)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/262" />
+      <helpitem title="ME3Tweaks Mod Manager 7.0.3 (Build 121)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/246" />
+      <helpitem title="ME3Tweaks Mod Manager 7.0.2 BETA 4 (Build 120)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/241" />
+      <helpitem title="ME3Tweaks Mod Manager 7.0.1 BETA 3 (Build 119)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/240" />
+      <helpitem title="ME3Tweaks Mod Manager 7.0 BETA (Build 118)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/7.0.0.118" />
       <list title="Older changelogs" sort="low">
+        <list title="Mod Manager 6.3">
+              <helpitem title="ME3Tweaks Mod Manager 6.3 (Build 117)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.3.0.117" />
+        </list>
         <list title="Mod Manager 6.2">
           <helpitem title="ME3Tweaks Mod Manager 6.2.2 (Build 116)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.2.2.116" />
           <helpitem title="ME3Tweaks Mod Manager 6.2.1 (Build 115)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.2.1.115" />
