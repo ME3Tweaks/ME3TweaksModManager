@@ -1,12 +1,16 @@
 ![Documentation Image](images/documentation_header.png)
 
-This documentation is current as of Build 122.
+This documentation is current as of Build 123.
 
 ME3Tweaks Mod Manager (which will be written as M3 from now on in this document) allows users to organize mods as well as install them into the each game of the Mass Effect Trilogy. It is designed to be friendly for users and powerful for developers - for example, as a developer, you do not need to worry about users not installing the binkw32 bypass or running AutoTOC - M3 takes care of this all in the background for users. You can focus on developing your mods and my program will take care of the user side of things.
 
 **The documentation in this article is specific to M3** and should not be applied to Mass Effect 3 Mod Manager, that program is no longer supported.
 
-## Documentation pages
+## Features for end users
+ - [Power user features](powerusers.md)
+   - Details power user features that allow you to perform certain tasks faster and easier 
+
+## moddesc.ini documentation for mod developers
  - [moddesc.ini: Data types](datatypes.md)
    - Describes headers, descriptors, and other data types that are used in moddesc.ini files
 - [moddesc.ini - the definition of an M3 mod](moddesc.ini.md)
@@ -28,7 +32,7 @@ ME3Tweaks Mod Manager (which will be written as M3 from now on in this document)
 - [Adding outfits to squadmates in Game 3 using Squadmate Outfit Merge](squadmate_outfit_merge.md)
    - Contains information about the squadmate merge feature, and how to use it so you can add outfits without replacing existing ones for Mass Effect 3 (OT + LE)
 
-As of Mod Manager 6.2, there is a built-in moddesc editor that can be used on existing mods. Right click your mod while in developer mode and select `moddesc.ini editor`. Currently this only works on mods that are loaded, and cannot be used for creating the initial mod.
+Mod Manager includes a built-in moddesc editor that can be used on existing mods. Right click your mod while in developer mode and select `moddesc.ini editor`. Currently this only works on mods that are loaded, and cannot be used for creating the initial mod.
 
 ## Why use M3? Why not just use a zip or an exe installer?
 I've dealt with end-users for years and worked with many to help fix issues with problems arising to incorrect installation of mods. It is very easy to think like a developer and say well you just do X Y and Z, in that order. Many end users simply don't read or _do not understand_ what developers have written because a lot of documentation is written by people who assume that end users are familiar with the modding scene.
