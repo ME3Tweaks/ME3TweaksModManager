@@ -6,7 +6,7 @@
         xmlns:ui="clr-namespace:ME3TweaksModManager.modmanager.meim.ui"
         mc:Ignorable="d"
         Loaded="Window_Loaded"
-        Icon="Solid_/modmanager/toolicons/masseffectinimodder_32.png"
+        Icon="/modmanager/toolicons/masseffectinimodder_32.png"
         Title="Mass Effect Ini Modder" Height="500" Width="1000">
     <Window.Style>
         <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
