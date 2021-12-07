@@ -7,6 +7,7 @@ using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.Services.Backup;
 using ME3TweaksCoreWPF;
 using ME3TweaksCoreWPF.Targets;
+using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects;
@@ -69,7 +70,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public BackupNagSystem(List<GameTargetWPF> availableTargets)
         {
             Self = this;
-            BackupService.StaticBackupStateChanged += NotifyBackupStatusChanged;
+            BackupService.StaticPropertyChanged += NotifyBackupStatusChanged;
             ME1Installed = availableTargets.Any(x => x.Game == MEGame.ME1);
             ME2Installed = availableTargets.Any(x => x.Game == MEGame.ME2);
             ME3Installed = availableTargets.Any(x => x.Game == MEGame.ME3);
@@ -132,7 +133,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private void ClosePanel()
         {
-            BackupService.StaticBackupStateChanged -= NotifyBackupStatusChanged;
+            BackupService.StaticPropertyChanged -= NotifyBackupStatusChanged;
             OnClosing(new DataEventArgs(false));
         }
 
@@ -140,7 +141,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             if (e.Key == Key.Escape)
             {
-                BackupService.StaticBackupStateChanged -= NotifyBackupStatusChanged;
+                BackupService.StaticPropertyChanged -= NotifyBackupStatusChanged;
                 OnClosing(DataEventArgs.Empty);
             }
         }

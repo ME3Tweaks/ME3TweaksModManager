@@ -39,6 +39,7 @@ using ME3TweaksCore.Services.BasegameFileIdentification;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksCoreWPF;
 using ME3TweaksCoreWPF.Targets;
+using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
@@ -58,7 +59,6 @@ using Microsoft.Win32;
 using Pathoschild.FluentNexus.Models;
 using MemoryAnalyzer = ME3TweaksModManager.modmanager.memoryanalyzer.MemoryAnalyzer;
 using Mod = ME3TweaksModManager.modmanager.objects.mod.Mod;
-using NamedBackgroundWorker = ME3TweaksModManager.modmanager.helpers.NamedBackgroundWorker;
 
 namespace ME3TweaksModManager
 {

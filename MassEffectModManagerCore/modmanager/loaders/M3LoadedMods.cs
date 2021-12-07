@@ -6,6 +6,7 @@ using System.Linq;
 using System.Windows;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
+using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Services;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;

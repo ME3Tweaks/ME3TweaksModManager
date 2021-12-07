@@ -2,6 +2,7 @@
 using System.IO;
 using System.Windows;
 using LegendaryExplorerCore.Misc;
+using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.ui;
 

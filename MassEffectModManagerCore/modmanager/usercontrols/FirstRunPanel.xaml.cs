@@ -4,6 +4,8 @@ using System.IO;
 using System.Windows;
 using System.Windows.Input;
 using FontAwesome5;
+using ME3TweaksCore.Helpers;
+using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.loaders;

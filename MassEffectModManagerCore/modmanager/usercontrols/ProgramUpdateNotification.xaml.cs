@@ -13,6 +13,7 @@ using AuthenticodeExaminer;
 using LegendaryExplorerCore.Compression;
 using LegendaryExplorerCore.Helpers;
 using ME3TweaksCore.Helpers;
+using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.me3tweaks;
@@ -20,7 +21,6 @@ using ME3TweaksModManager.ui;
 using Microsoft.AppCenter.Analytics;
 using Serilog;
 using SevenZip;
-using NamedBackgroundWorker = ME3TweaksModManager.modmanager.helpers.NamedBackgroundWorker;
 using Path = System.IO.Path;
 
 namespace ME3TweaksModManager.modmanager.usercontrols

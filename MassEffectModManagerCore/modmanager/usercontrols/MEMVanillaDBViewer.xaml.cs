@@ -7,6 +7,7 @@ using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.Services;
+using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.ui;
 using PropertyChanged;
 

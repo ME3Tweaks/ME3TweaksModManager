@@ -2,6 +2,7 @@
 using System.Windows;
 using IniParser.Model;
 using LegendaryExplorerCore.Misc;
+using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.ui;
 

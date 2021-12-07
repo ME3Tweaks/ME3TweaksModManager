@@ -13,6 +13,8 @@ using System.Windows.Media.Animation;
 using System.Xml;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Packages;
+using ME3TweaksCore.Helpers;
+using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;

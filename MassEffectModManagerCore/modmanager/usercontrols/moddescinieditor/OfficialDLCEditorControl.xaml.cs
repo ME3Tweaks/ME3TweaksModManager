@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using IniParser.Model;
 using LegendaryExplorerCore.Misc;
+using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Input;
+using ME3TweaksCore.Helpers;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.ui;

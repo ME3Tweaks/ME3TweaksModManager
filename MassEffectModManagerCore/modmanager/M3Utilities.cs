@@ -1994,22 +1994,6 @@ namespace ME3TweaksModManager.modmanager
             M3Log.Information(@"User aborted selecting executable");
             return null;
         }
-        /// <summary>
-        /// Given a game and executable path, returns the basepath of the installation.
-        /// </summary>
-        /// <param name="game">What game this exe is for</param>
-        /// <param name="exe">Executable path</param>
-        /// <returns></returns>
-        public static string GetGamePathFromExe(MEGame game, string exe)
-        {
-            string result = Path.GetDirectoryName(exe);
-            if (game == MEGame.LELauncher)
-                return result;
-            result = Path.GetDirectoryName(result); //binaries, <GAME>
-            if (game == MEGame.ME3 || game.IsLEGame())
-                result = Path.GetDirectoryName(result); //up one more because of win32/win64 directory.
-            return result;
-        }
 
         public static string GetKeybindsOverrideFolder()
         {

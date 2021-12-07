@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
+using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.ui;
 
 namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor

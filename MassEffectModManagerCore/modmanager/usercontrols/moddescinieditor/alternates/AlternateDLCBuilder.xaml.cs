@@ -3,6 +3,7 @@ using System.Linq;
 using System.Windows;
 using IniParser.Model;
 using LegendaryExplorerCore.Misc;
+using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.ui;
@@ -83,7 +84,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor.alternate
         {
             Alternates.Add(new AlternateDLC($@"Alternate DLC {Alternates.Count + 1}")); // As this is noun in mod manager terminology it shouldn't be localized, i think
         }
-
 
         public GenericCommand AddAlternateDLCCommand { get; set; }
     }

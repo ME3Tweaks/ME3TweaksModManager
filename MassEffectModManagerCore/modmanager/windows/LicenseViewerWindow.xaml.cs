@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.ui;
 
 namespace ME3TweaksModManager.modmanager.windows

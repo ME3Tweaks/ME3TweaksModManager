@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
+using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.me3tweaks;
 using ME3TweaksModManager.ui;
 

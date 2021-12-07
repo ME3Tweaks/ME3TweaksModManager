@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Windows;
 using IniParser.Model;
+using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.ui;
 

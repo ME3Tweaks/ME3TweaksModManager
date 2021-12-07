@@ -119,11 +119,11 @@
                             Grid.Column="2"
                             Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}" />
                             <ProgressBar
-                            IsIndeterminate="{Binding ProgressIndeterminate, FallbackValue=True}"
-                            Value="{Binding ProgressValue}"
+                            IsIndeterminate="{Binding BackupHandler.ProgressIndeterminate, FallbackValue=True}"
+                            Value="{Binding BackupHandler.ProgressValue}"
                             Height="10"
-                            Maximum="{Binding ProgressMax}"
-                            Visibility="{Binding ProgressVisible, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}"
+                            Maximum="{Binding BackupHandler.ProgressMax}"
+                            Visibility="{Binding BackupHandler.BackupInProgress, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}"
                             Grid.Column="0"
                             Grid.Row="4"
                             Grid.ColumnSpan="3" />

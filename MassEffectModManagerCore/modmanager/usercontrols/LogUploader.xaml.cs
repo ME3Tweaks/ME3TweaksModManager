@@ -1,27 +1,20 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Input;
-using Flurl.Http;
-using LegendaryExplorerCore.Compression;
-using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.Diagnostics;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Misc;
-using ME3TweaksCoreWPF;
 using ME3TweaksCoreWPF.Targets;
+using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.ui;
 using Microsoft.WindowsAPICodePack.Taskbar;
-using GenericCommand = ME3TweaksModManager.ui.GenericCommand;
-using NamedBackgroundWorker = ME3TweaksModManager.modmanager.helpers.NamedBackgroundWorker;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
