@@ -181,7 +181,7 @@
 	<system:String x:Key="string_notBackedUp">Архив не создан</system:String>
 	<system:String x:Key="string_inconsistentDLCDetectedUnofficialGame">Обнаружено несогласованное DLC. Это может быть вызвано использованием неофициальной копии игры.</system:String>
 	<system:String x:Key="string_movies">Видеоролики</system:String>
-	<system:String x:Key="string_basegame">Базовая игра</system:String>
+	<system:String x:Key="string_basegame">Исходная игра</system:String>
 	<system:String x:Key="string_dialogInsufficientDiskSpace" xml:space="preserve">Недостаточно свободного места на {0} для создания архива.\n\nДоступно места: {1}\nТребуется места: {2}</system:String>
 	<!-- 0=drive letter path (e.g. C:\)  1=filepath 2=filepath -->
 	<system:String x:Key="string_dialogBackupCannotBeSubdirectoryOfGame" xml:space="preserve">Архив не может быть создан внутри директории выбранной игры.\n\nУказанный путь: {0}\nКонфликт с путем: {1}</system:String>
@@ -368,7 +368,7 @@
 	<system:String x:Key="string_interp_couldNotFindReferencedAFC">{0} - {1}: Невозможно найти указанный кэш аудиофайла: {2}</system:String>
 	<!-- 0 = filepath, 1=export path in-package, 2=AFC cache name (like wwise_biosnd_end002) -->
 	<system:String x:Key="string_interp_invalidAudioPointer">{0} - {1}: Недопустимый указатель аудио, нет ссылки на заголок RIFF</system:String>
-	<system:String x:Key="string_interp_audioStoredInOfficialAFC">{0} - {1}: Этот аудиофайл находится в AFC базовой игры/DLC, но не является оригинальным. Он будет недоступен для конечных пользователей. Используйте AFC Сompactor в Legendary Explorer, чтобы поместить аудиофайл внутрь AFC данного мода.</system:String>
+	<system:String x:Key="string_interp_audioStoredInOfficialAFC">{0} - {1}: Этот аудиофайл находится в AFC исходной игры/DLC, но не является оригинальным. Он будет недоступен для конечных пользователей. Используйте AFC Сompactor в Legendary Explorer, чтобы поместить аудиофайл внутрь AFC данного мода.</system:String>
 	<!-- 0 = filepath, 1=export path in-package -->
 	<system:String x:Key="string_errorValidatingAudioReference">{0} - {1}: Ошибка валидации ссылки на аудиофайл: {2}</system:String>
 	<!-- 0 = filepath, 1=export path in-package, 2=error message -->
@@ -681,12 +681,12 @@
 	<!-- 0 = noun of tool (alot installer, mod manager, etc) -->
 	<system:String x:Key="string_notInstalledByModManager">Не установлено через Mod Manager</system:String>
 	<system:String x:Key="string_installationInformation">Информация об Установке</system:String>
-	<system:String x:Key="string_installationInformationSubheader">Файлы, установленные в базовой игре или официальные DLC не могут быть отслежены</system:String>
+	<system:String x:Key="string_installationInformationSubheader">Файлы, установленные в исходной игре или официальные DLC не могут быть отслежены</system:String>
 	<system:String x:Key="string_installedDLCmods">Установленные DLC-моды</system:String>
 	<system:String x:Key="string_delete">Удалить</system:String>
-	<system:String x:Key="string_modifiedBasegameFiles">Модифицированные файлы базовой игры</system:String>
-	<system:String x:Key="string_willAttemptToRestoreAllModifiedBasegameUnpackedFiles">Будет выполнена попытка восстановить все модифицированные файлы базовой игры и распакованных файлов DLC (ME2).</system:String>
-	<system:String x:Key="string_restoreallmodifiedbasegamefiles">Восстановить все модифицированные файлы базовой игры</system:String>
+	<system:String x:Key="string_modifiedBasegameFiles">Модифицированные файлы исходной игры</system:String>
+	<system:String x:Key="string_willAttemptToRestoreAllModifiedBasegameUnpackedFiles">Будет выполнена попытка восстановить все модифицированные файлы исходной игры и распакованных файлов DLC (ME2).</system:String>
+	<system:String x:Key="string_restoreallmodifiedbasegamefiles">Восстановить все модифицированные файлы исходной игры</system:String>
 	<system:String x:Key="string_modifiedDLCarchivesSFAR">Модифицированные архивы DLC (SFAR)</system:String>
 	<system:String x:Key="string_willAttemptToRestoreAllModifiedSFARs">Будет выполнена попытка восстановить все модифицированные SFAR. Также будут удалены все распакованные файлы.</system:String>
 	<system:String x:Key="string_willAttemptToRestoreSPModifiedSFARs">Будет выполнена попытка восстановить все модифицированные SFAR одиночной игры. Также будут удалены все распакованные файлы.</system:String>
@@ -728,7 +728,7 @@
 	<system:String x:Key="string_addModToDeployment">Добавить мод к преобразованию</system:String>
 	<system:String x:Key="string_validationTargets">Цели для валидации</system:String>
 	<system:String x:Key="string_tooltip_rerunCheckOnMod">Перепроверить мод</system:String>
-	<system:String x:Key="string_cannotShowModifiedBasegameFilesTextureModded">Невозможно отобразить модифицированные файлы базовой игры в игре с измененными текстурами, поскольку тогда все файлы будут модифицированы</system:String>
+	<system:String x:Key="string_cannotShowModifiedBasegameFilesTextureModded">Невозможно отобразить модифицированные файлы исходной игры в игре с измененными текстурами, поскольку тогда все файлы будут модифицированы</system:String>
 	<system:String x:Key="string_showInstalledOptions">Показать установленные опции</system:String>
 	<system:String x:Key="string_hideInstalledOptions">Скрть установленные опции</system:String>
 
@@ -1052,7 +1052,7 @@
 	<system:String x:Key="string_tooltip_removesThisModFromYourLibrary" xml:space="preserve">Удаляет данный мод из библиотеки модов,&#10;Это НЕ удаляет мод из любых установленных игр.</system:String>
 	<system:String x:Key="string_developerTools">Инструменты разработчика</system:String>
 	<system:String x:Key="string_backupFileFetcher">Backup File Fetcher</system:String>
-	<system:String x:Key="string_tooltip_backupFileFetcher">Поиск и выгрузка файлов из Базовой игры и DLC, включая SFAR</system:String>
+	<system:String x:Key="string_tooltip_backupFileFetcher">Поиск и выгрузка файлов из Исходной игры и DLC, включая SFAR</system:String>
 	<system:String x:Key="string_debug">Debug</system:String>
 	<system:String x:Key="string_requiresSelectedMod">Require selected mod</system:String>
 	<system:String x:Key="string_reloadSelectedMod">Reload selected mod</system:String>
@@ -1876,7 +1876,7 @@
 	<system:String x:Key="string_interp_nexusModsReturnedAnErrorX" xml:space="preserve">NexusMods вернул ошибку:\n{0}</system:String>
 	<!-- 0 = error message -->
 	<system:String x:Key="string_errorAuthenticatingToNexusMods">Ошибка авторизации на NexusMods</system:String>
-	<system:String x:Key="string_nexusModsLoginHeader">ME3Tweaks Mod Manager имеет встроенную поддержку функций NexusMods, например, одобрение модов, отслеживание обновлений и "Загрузка через Manager". Вам требуется авторизоваться в NexusMods через ME3Tweaks Mod Manager для использования данных функций.</system:String>
+	<system:String x:Key="string_nexusModsLoginHeader">ME3Tweaks Mod Manager имеет встроенную поддержку функций NexusMods, например, одобрение модов, отслеживание обновлений и 'Загрузка через Manager'. Вам требуется авторизоваться в NexusMods через ME3Tweaks Mod Manager для использования данных функций.</system:String>
 	<system:String x:Key="string_directions">Указания</system:String>
 	<system:String x:Key="string_nexusModsDirections">Выполните вход в NexusMods, нажав "Авторизоваться на NexusMods" внизу.  авторизуйте ME3Tweaks Mod Manager. Альтернативно, вы можете авторизоваться вручную, вставив ваш API-ключ NexusMods после выбора "Ввести API-ключ вручную". Ваш API-ключ можно найти в настройках аккаунта NexusMods.</system:String>
 	<system:String x:Key="string_caution">Внимание</system:String>
@@ -1998,7 +1998,7 @@
 	<system:String x:Key="string_interp_restoringX">Восстановление {0}</system:String>
 	<!-- 0 = filename or item like DLC name -->
 	<system:String x:Key="string_restoringMovies">Восстановление Movies</system:String>
-	<system:String x:Key="string_restoringBasegame">Восстановление Базовой игры</system:String>
+	<system:String x:Key="string_restoringBasegame">Восстановление Исходной игры</system:String>
 	<system:String x:Key="string_restoringGame">Восстановление игры</system:String>
 	<system:String x:Key="string_dialogCouldNotCreateGameDirectoryAfterDeletion">Невозможно создать директорию игры после удаления из-за ошибки. Вы можете попробовать указать путь вручную, чтобы выбрать исходную папку для восстановления архива. Подробности можно посмотреть в логах в меню Справка.</system:String>
 	<system:String x:Key="string_errorRestoringGame">Ошибка восстановления игры</system:String>
@@ -2014,7 +2014,7 @@
 	<system:String x:Key="string_fullGameRestore">Полное восстановление игры</system:String>
 	<system:String x:Key="string_restoringTextureLODs">Восстановление из архива сбросит ваши настройки качества текстур на значения по умолчанию. Удостоверьтесь, что запускаете игру через ModManager для установки корректного уровня детализации текстур.</system:String>
 	<system:String x:Key="string_entireGameDirectoryWillBeDeleted">Директория игры будет полностью удалена. Если вы пытаетесь выполнить частичное восстановление, включая удаление DLC-модов, восстановление отдельных файлов или SFAR, используйте опции восстановления по нажатию кнопки Настройка Игры</system:String>
-	<system:String x:Key="string_youMaySeeElevationPromptOnRestore">При попытке восстановления игры может появиться всплывающее сообщение. Это индикация того,  ME3Tweaks Mod Manager дает вашей учетной записи правда доступа в новой директории игры после удаления старой.</system:String>
+	<system:String x:Key="string_youMaySeeElevationPromptOnRestore">При попытке восстановления игры может появиться всплывающее сообщение. Это индикация того, что ME3Tweaks Mod Manager дает вашей учетной записи права доступа к новой директории игры после удаления старой.</system:String>
 	<system:String x:Key="string_dialog_restoringXWillDeleteGameDir" xml:space="preserve">Восстановление {0} полностью удалит директорию игры и затем скопирует содержимое архива по исходному пути.\n\nУдалить данную игру и восстановить ее из архива?</system:String>
 	<!-- 0=Utilities.GetGameName(Game) -->
 	<system:String x:Key="string_gameTargetWillBeDeleted">Указанная игра будет удалена</system:String>
