@@ -419,7 +419,7 @@ namespace ME3TweaksModManager.modmanager.windows
                 IsBusy = false;
                 //if (Owner is MainWindow w)
                 //{
-                    M3LoadedMods.Instance.LoadMods(obj);
+                M3LoadedMods.Instance.LoadMods(obj);
                 //}
 
                 Close();
@@ -558,11 +558,11 @@ namespace ME3TweaksModManager.modmanager.windows
 
                     var huff = new HuffmanCompression();
                     huff.LoadInputData(tlk1.StringRefs.ToList());
-                    huff.serializeTalkfileToExport(tlkFile.GetUExport(1));
+                    huff.SerializeTalkfileToExport(tlkFile.GetUExport(1));
 
                     huff = new HuffmanCompression();
                     huff.LoadInputData(tlk2.StringRefs.ToList());
-                    huff.serializeTalkfileToExport(tlkFile.GetUExport(2));
+                    huff.SerializeTalkfileToExport(tlkFile.GetUExport(2));
                     M3Log.Information($@"Saving {tlkPath} TLK package");
                     tlkFile.Save();
                 }
@@ -626,19 +626,19 @@ namespace ME3TweaksModManager.modmanager.windows
                 foreach (var lang in languages)
                 {
                     List<TLKStringRef> strs = new List<TLKStringRef>();
-                    strs.Add(new TLKStringRef(skOption.ModInternalTLKID, 0, skOption.ModInternalName));
+                    strs.Add(new TLKStringRef(skOption.ModInternalTLKID, skOption.ModInternalName));
                     if (skOption.ModGame.IsGame2())
                     {
-                        strs.Add(new TLKStringRef(skOption.ModInternalTLKID + 1, 1, @"DLC_" + skOption.ModModuleNumber));
+                        strs.Add(new TLKStringRef(skOption.ModInternalTLKID + 1, @"DLC_" + skOption.ModModuleNumber));
                     }
                     else
                     {
-                        strs.Add(new TLKStringRef(skOption.ModInternalTLKID + 1, 1, @"DLC_MOD_" + skOption.ModDLCFolderNameSuffix));
+                        strs.Add(new TLKStringRef(skOption.ModInternalTLKID + 1, @"DLC_MOD_" + skOption.ModDLCFolderNameSuffix));
                     }
 
-                    strs.Add(new TLKStringRef(skOption.ModInternalTLKID + 2, 2, lang.langcode));
-                    strs.Add(new TLKStringRef(skOption.ModInternalTLKID + 3, 3, @"Male"));
-                    strs.Add(new TLKStringRef(skOption.ModInternalTLKID + 3, 4, @"Female"));
+                    strs.Add(new TLKStringRef(skOption.ModInternalTLKID + 2, lang.langcode.ToString()));
+                    strs.Add(new TLKStringRef(skOption.ModInternalTLKID + 3, @"Male"));
+                    strs.Add(new TLKStringRef(skOption.ModInternalTLKID + 3, @"Female"));
 
                     foreach (var str in strs)
                     {

@@ -109,7 +109,7 @@ namespace ME3TweaksModManager.modmanager.objects
             List<MELanguage> langs = new List<MELanguage>();
             foreach (var lang in allGameLangauges)
             {
-                langs.Add(new MELanguage(MEDirectories.GetLocalizationFromFileName(lang)));
+                langs.Add(new MELanguage(lang.GetUnrealLocalization()));
             }
             return langs.ToArray();
         }
