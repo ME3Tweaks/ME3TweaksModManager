@@ -37,7 +37,7 @@ namespace ME3TweaksModManager.modmanager
                             var id = int.Parse(substr.Attribute(@"id").Value);
                             var data = substr.Value;
                             if (id > 0) data += '\0';
-                            strings.Add(new TLKStringRef(id, position, data));
+                            strings.Add(new TLKStringRef(id, data));
                             position++;
                         }
                     }
@@ -80,7 +80,7 @@ namespace ME3TweaksModManager.modmanager
                 var id = int.Parse(substr.Attribute(@"id").Value);
                 var data = substr.Value;
                 if (id > 0) data += '\0';
-                strings.Add(new TLKStringRef(id, position, data));
+                strings.Add(new TLKStringRef(id, data));
                 position++;
             }
 
@@ -113,7 +113,7 @@ namespace ME3TweaksModManager.modmanager
                 var id = int.Parse(substr.Attribute(@"id").Value);
                 var data = substr.Value;
                 if (id > 0) data += '\0';
-                strings.Add(new TLKStringRef(id, position, data));
+                strings.Add(new TLKStringRef(id, data));
                 position++;
             }
 

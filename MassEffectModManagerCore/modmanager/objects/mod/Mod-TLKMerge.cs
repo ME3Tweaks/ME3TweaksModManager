@@ -103,14 +103,13 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     foreach (var node in stringNodes)
                     {
                         var tlkId = int.Parse(node.Element(@"id").Value);
-                        var flags = int.Parse(node.Element(@"flags").Value);
                         var data = node.Element(@"data").Value;
 
                         TLKStringRef strRef = talkFile.StringRefs.FirstOrDefault(x => x.StringID == tlkId);
                         if (strRef == null)
                         {
                             M3Log.Information($@"Adding new TLK id {tlkId}", Settings.LogModInstallation);
-                            strRefs.Add(new TLKStringRef(tlkId, flags, data));
+                            strRefs.Add(new TLKStringRef(tlkId, data));
                         }
                         else
                         {
@@ -123,7 +122,6 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                                 }
                             }
                             strRef.Data = data;
-                            strRef.Flags = flags;
                         }
 
                         numDone++;
@@ -131,7 +129,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 
                     HuffmanCompression huff = new HuffmanCompression();
                     huff.LoadInputData(strRefs);
-                    huff.serializeTalkfileToExport(exp);
+                    huff.SerializeTalkfileToExport(exp);
                     if (savePackage && package.IsModified)
                     {
                         M3Log.Information($@"Saving TLKMerged package {packagePath}");
