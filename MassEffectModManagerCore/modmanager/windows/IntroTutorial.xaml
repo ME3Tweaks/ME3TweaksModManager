@@ -3,8 +3,9 @@
     xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:fa5="http://schemas.fontawesome.com/icons/"
     mc:Ignorable="d"
     Title="{DynamicResource string_title_quickTutorial}"
-    Height="650"
-    Width="800">
+    DataContext="{Binding RelativeSource={RelativeSource Self}}"
+    SizeToContent="WidthAndHeight"
+    >
     <Window.Style>
         <Style
             TargetType="Window"
@@ -57,7 +58,8 @@
                 HorizontalAlignment="Left"
                 Command="{Binding SkipTutorialCommand}" />
         </DockPanel>
-        <Grid>
+        <Grid Width="786"
+              Height="623">
             <Grid.Background>
                 <ImageBrush
                     ImageSource="{Binding CurrentStep.UIImagePath}" />
@@ -106,7 +108,9 @@
                 <ColumnDefinition
                     Width="1*" />
             </Grid.ColumnDefinitions>
+            <!-- Center the text block (but not the text alignment) -->
             <TextBlock
+                HorizontalAlignment="Center"
                 Foreground="Black"
                 Grid.Row="{Binding CurrentStep.rowindex}"
                 Grid.Column="{Binding CurrentStep.columnindex}"

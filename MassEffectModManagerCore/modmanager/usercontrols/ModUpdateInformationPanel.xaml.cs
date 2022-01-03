@@ -32,13 +32,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols
     public partial class ModUpdateInformationPanel : MMBusyPanelBase
     {
 
-        public ObservableCollectionExtended<OnlineContent.ModUpdateInfo> UpdatableMods { get; } = new ObservableCollectionExtended<OnlineContent.ModUpdateInfo>();
+        public ObservableCollectionExtended<M3OnlineContent.ModUpdateInfo> UpdatableMods { get; } = new ObservableCollectionExtended<M3OnlineContent.ModUpdateInfo>();
 
         private List<Mod> updatedMods = new();
 
         public bool OperationInProgress { get; set; }
 
-        public ModUpdateInformationPanel(List<OnlineContent.ModUpdateInfo> modsWithUpdates)
+        public ModUpdateInformationPanel(List<M3OnlineContent.ModUpdateInfo> modsWithUpdates)
         {
             modsWithUpdates.ForEach(x =>
             {
@@ -62,7 +62,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private bool CanApplyUpdateToMod(object obj)
         {
-            if (obj is OnlineContent.ModUpdateInfo ui)
+            if (obj is M3OnlineContent.ModUpdateInfo ui)
             {
                 if (ui.mod.ModModMakerID > 0 && BackupService.GetGameBackupPath(ui.mod.Game) == null)
                 {
@@ -75,11 +75,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private void ApplyUpdateToMod(object obj)
         {
-            if (obj is OnlineContent.ModMakerModUpdateInfo mui)
+            if (obj is M3OnlineContent.ModMakerModUpdateInfo mui)
             {
                 UpdateModMakerMod(mui, null);
             }
-            else if (obj is OnlineContent.ModUpdateInfo ui)
+            else if (obj is M3OnlineContent.ModUpdateInfo ui)
             {
                 if (ui.updatecode > 0)
                 {
@@ -92,7 +92,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
         }
 
-        private void UpdateModMakerMod(OnlineContent.ModMakerModUpdateInfo mui, Action downloadCompleted)
+        private void UpdateModMakerMod(M3OnlineContent.ModMakerModUpdateInfo mui, Action downloadCompleted)
         {
             //throw new NotImplementedException();
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"ModmakerModUpdaterThread-" + mui.mod.ModName);
@@ -113,7 +113,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 mui.Indeterminate = false;
 
                 mui.UIStatusString = M3L.GetString(M3L.string_downloadingDelta);
-                var normalEndpoint = OnlineContent.ModmakerModsEndpoint + mui.ModMakerId;
+                var normalEndpoint = M3OnlineContent.ModmakerModsEndpoint + mui.ModMakerId;
                 var lzmaEndpoint = normalEndpoint + @"&method=lzma";
 
                 string modDelta = null;
@@ -121,7 +121,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 //Try LZMA first
                 try
                 {
-                    var download = OnlineContent.DownloadToMemory(lzmaEndpoint);
+                    var download = M3OnlineContent.DownloadToMemory(lzmaEndpoint);
                     if (download.errorMessage == null)
                     {
                         mui.UIStatusString = M3L.GetString(M3L.string_decompressingDelta);
@@ -142,7 +142,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 if (modDelta == null)
                 {
                     //failed to download LZMA.
-                    var download = OnlineContent.DownloadToMemory(normalEndpoint);
+                    var download = M3OnlineContent.DownloadToMemory(normalEndpoint);
                     if (download.errorMessage == null)
                     {
                         //OK
@@ -227,7 +227,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             nbw.RunWorkerAsync();
         }
 
-        private void UpdateClassicMod(OnlineContent.ModUpdateInfo ui, Action downloadCompleted)
+        private void UpdateClassicMod(M3OnlineContent.ModUpdateInfo ui, Action downloadCompleted)
         {
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"ModUpdaterThread-" + ui.mod.ModName);
             nbw.WorkerReportsProgress = true;
@@ -262,7 +262,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     }
                 }
                 var stagingDirectory = Directory.CreateDirectory(Path.Combine(M3Utilities.GetTempPath(), Path.GetFileName(ui.mod.ModPath))).FullName;
-                var modUpdated = OnlineContent.UpdateMod(ui, stagingDirectory, errorCallback);
+                var modUpdated = M3OnlineContent.UpdateMod(ui, stagingDirectory, errorCallback);
                 ui.UpdateInProgress = false;
                 ui.CanUpdate = !modUpdated;
                 updatedMods.Add(ui.mod);
@@ -322,7 +322,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
                 foreach (var update in updates)
                 {
-                    if (update is OnlineContent.ModMakerModUpdateInfo mui)
+                    if (update is M3OnlineContent.ModMakerModUpdateInfo mui)
                     {
                         UpdateModMakerMod(mui, updateDone);
                         lock (syncObj)

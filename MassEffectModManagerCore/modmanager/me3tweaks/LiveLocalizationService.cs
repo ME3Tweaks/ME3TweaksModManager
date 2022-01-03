@@ -10,7 +10,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
     /// <summary>
     /// Service handler for loading localizations from ME3Tweaks/cache for the specific build. Allows localization updates outside of releases
     /// </summary>
-    public partial class OnlineContent
+    public partial class M3OnlineContent
     {
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
         {
             var livelocmd5 = App.ServerManifest[$@"livelocalization-{lang}"]; // this was checked previously
             var url = LocalizationEndpoint + $@"?lang={lang}&build={App.BuildNumber}";
-            var result = OnlineContent.DownloadToMemory(url, hash: livelocmd5);
+            var result = M3OnlineContent.DownloadToMemory(url, hash: livelocmd5);
             if (result.errorMessage == null)
             {
                 // OK!

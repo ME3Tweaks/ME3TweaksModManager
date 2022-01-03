@@ -78,7 +78,7 @@ namespace ME3TweaksModManager.modmanager.objects
 
                 var downloadUri = DownloadLinks[0].Uri;
 
-                var downloadResult = OnlineContent.DownloadToStream(downloadUri.ToString(), OnDownloadProgress, null, true, DownloadedStream, cancellationToken);
+                var downloadResult = M3OnlineContent.DownloadToStream(downloadUri.ToString(), OnDownloadProgress, null, true, DownloadedStream, cancellationToken);
                 if (downloadResult.errorMessage != null)
                 {
                     DownloadedStream?.Dispose();

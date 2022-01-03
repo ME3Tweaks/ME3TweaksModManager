@@ -330,7 +330,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 {
                     //fetch online moddesc for this mod.
                     M3Log.Information(@"Fetching post-transform third party moddesc.");
-                    var moddesc = OnlineContent.FetchThirdPartyModdesc(ExeExtractionTransform.PostTransformModdesc);
+                    var moddesc = M3OnlineContent.FetchThirdPartyModdesc(ExeExtractionTransform.PostTransformModdesc);
                     if (!testRun)
                     {
                         File.WriteAllText(Path.Combine(ModPath, @"moddesc.ini"), moddesc);

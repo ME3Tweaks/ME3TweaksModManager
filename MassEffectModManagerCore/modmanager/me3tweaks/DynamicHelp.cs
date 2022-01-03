@@ -14,7 +14,7 @@ using Microsoft.AppCenter.Crashes;
 namespace ME3TweaksModManager.modmanager.me3tweaks
 {
     [Localizable(false)]
-    partial class OnlineContent
+    partial class M3OnlineContent
     {
         //private static readonly string LatestHelpFileLink = StaticFilesBaseURL_Github + "dynamichelp/latesthelp-localized.xml";
         //internal static readonly string HelpResourcesBaseURL = StaticFilesBaseURL_Github + "dynamichelp/resources";
@@ -54,7 +54,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
 
             if (!localHelpExists || overrideThrottling || MOnlineContent.CanFetchContentThrottleCheck())
             {
-                foreach (var staticendpoint in OnlineContent.StaticFileBaseEndpoints.GetAllLinks())
+                foreach (var staticendpoint in M3OnlineContent.StaticFileBaseEndpoints.GetAllLinks())
                 {
                     using var wc = new System.Net.WebClient();
                     try
@@ -165,7 +165,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
                 if (!File.Exists(localFile))
                 {
                     //Download
-                    foreach (var staticendpoint in OnlineContent.StaticFileBaseEndpoints.GetAllLinks())
+                    foreach (var staticendpoint in M3OnlineContent.StaticFileBaseEndpoints.GetAllLinks())
                     {
                         var fullURL = staticendpoint + "dynamichelp/resources/" + ResourceName;
 

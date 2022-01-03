@@ -1,17 +1,20 @@
 ﻿using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.ui;
+using PropertyChanged;
 
 namespace ME3TweaksModManager.modmanager.windows
 {
     /// <summary>
     /// Interaction logic for IntroTutorial.xaml
     /// </summary>
-    public partial class IntroTutorial : Window, INotifyPropertyChanged
+    [AddINotifyPropertyChangedInterface]
+    public partial class IntroTutorial : Window
     {
         public ObservableCollectionExtended<TutorialStep> TutorialSteps { get; } = new ObservableCollectionExtended<TutorialStep>();
 
@@ -52,7 +55,6 @@ namespace ME3TweaksModManager.modmanager.windows
         public int CurrentStepIndex { get; set; }
         public IntroTutorial()
         {
-            DataContext = this;
             TutorialSteps.ReplaceAll(App.TutorialService);
 
             //Setup languages.
@@ -61,6 +63,7 @@ namespace ME3TweaksModManager.modmanager.windows
                 switch (Settings.Language)
                 {
                     case @"int":
+                        Debug.WriteLine(tutorialStep.lang_int);
                         tutorialStep.UIString = tutorialStep.lang_int;
                         break;
                     case @"rus":
@@ -127,10 +130,5 @@ namespace ME3TweaksModManager.modmanager.windows
         public GenericCommand PreviousCommand { get; set; }
 
         public GenericCommand SkipTutorialCommand { get; set; }
-
-        //Fody uses this property on weaving
-#pragma warning disable
-public event PropertyChangedEventHandler PropertyChanged;
-#pragma warning restore
     }
 }

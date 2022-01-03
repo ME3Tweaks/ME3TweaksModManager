@@ -44,6 +44,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
 
                     Crashes.TrackError(e, data);
                 },
+                CanFetchContentThrottleCheck = M3OnlineContent.CanFetchContentThrottleCheck,
                 LECPackageSaveFailedCallback = x => M3Log.Error($@"Error saving package: {x}"),
                 CreateLogger = M3Log.CreateLogger,
                 GenerateInstalledDlcModDelegate = M3InstalledDLCMod.GenerateInstalledDLCMod,

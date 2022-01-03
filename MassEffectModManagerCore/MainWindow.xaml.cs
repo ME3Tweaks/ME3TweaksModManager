@@ -2557,7 +2557,7 @@ namespace ME3TweaksModManager
                     UpdateBinkStatus(MEGame.LE2);
                     UpdateBinkStatus(MEGame.LE3);
                     bgTask = BackgroundTaskEngine.SubmitBackgroundJob(@"EnsureCriticalFiles", M3L.GetString(M3L.string_downloadingRequiredFiles), M3L.GetString(M3L.string_requiredFilesDownloaded));
-                    if (!OnlineContent.EnsureCriticalFiles())
+                    if (!M3OnlineContent.EnsureCriticalFiles())
                     {
                         //Critical files not loaded!
 
@@ -2572,7 +2572,7 @@ namespace ME3TweaksModManager
                     var updateCheckTask = BackgroundTaskEngine.SubmitBackgroundJob(@"UpdateCheck", M3L.GetString(M3L.string_checkingForModManagerUpdates), M3L.GetString(M3L.string_completedModManagerUpdateCheck));
                     try
                     {
-                        OnlineContent.FetchOnlineStartupManifest(Settings.BetaMode);
+                        M3OnlineContent.FetchOnlineStartupManifest(Settings.BetaMode);
                         if (App.ServerManifest != null && int.TryParse(App.ServerManifest[@"latest_build_number"], out var latestServerBuildNumer))
                         {
                             if (latestServerBuildNumer > App.BuildNumber)
@@ -2634,7 +2634,7 @@ namespace ME3TweaksModManager
                             if (!MixinHandler.IsMixinPackageUpToDate())
                             {
                                 //Download new package.
-                                var memoryPackage = OnlineContent.DownloadToMemory(MixinHandler.MixinPackageEndpoint, hash: MixinHandler.ServerMixinHash);
+                                var memoryPackage = M3OnlineContent.DownloadToMemory(MixinHandler.MixinPackageEndpoint, hash: MixinHandler.ServerMixinHash);
                                 if (memoryPackage.errorMessage != null)
                                 {
                                     M3Log.Error(@"Error fetching mixin package: " + memoryPackage.errorMessage);
@@ -2662,7 +2662,7 @@ namespace ME3TweaksModManager
 
                         BackgroundTaskEngine.SubmitJobCompletion(bgTask);
 
-                        var hasUpdatedLocalization = OnlineContent.HasUpdatedLocalization(App.CurrentLanguage);
+                        var hasUpdatedLocalization = M3OnlineContent.HasUpdatedLocalization(App.CurrentLanguage);
                         if (hasUpdatedLocalization.HasValue)
                         {
                             SetApplicationLanguage(App.CurrentLanguage, false); //Force update of localization
@@ -2686,12 +2686,12 @@ namespace ME3TweaksModManager
                 //BackgroundTaskEngine.SubmitJobCompletion(bgTask);
 
                 bgTask = BackgroundTaskEngine.SubmitBackgroundJob(@"LoadTutorialService", M3L.GetString(M3L.string_checkingTutorialAssets), M3L.GetString(M3L.string_checkedTutorialAssets));
-                App.TutorialService = OnlineContent.FetchTutorialManifest(!firstStartupCheck);
-                OnlineContent.TouchupTutorial();
+                App.TutorialService = M3OnlineContent.FetchTutorialManifest(!firstStartupCheck);
+                M3OnlineContent.TouchupTutorial();
                 BackgroundTaskEngine.SubmitJobCompletion(bgTask);
 
                 bgTask = BackgroundTaskEngine.SubmitBackgroundJob(@"LoadDynamicHelp", M3L.GetString(M3L.string_loadingDynamicHelp), M3L.GetString(M3L.string_loadingDynamicHelp));
-                var helpItemsLoading = OnlineContent.FetchLatestHelp(App.CurrentLanguage, false, !firstStartupCheck);
+                var helpItemsLoading = M3OnlineContent.FetchLatestHelp(App.CurrentLanguage, false, !firstStartupCheck);
                 bw.ReportProgress(0, helpItemsLoading);
                 BackgroundTaskEngine.SubmitJobCompletion(bgTask);
 
@@ -2705,7 +2705,7 @@ namespace ME3TweaksModManager
                 bgTask = BackgroundTaskEngine.SubmitBackgroundJob(@"LoadTipsService", M3L.GetString(M3L.string_loadingTipsService), M3L.GetString(M3L.string_loadedTipsService));
                 try
                 {
-                    App.TipsService = OnlineContent.FetchTipsService(!firstStartupCheck);
+                    App.TipsService = M3OnlineContent.FetchTipsService(!firstStartupCheck);
                     SetTipsForLanguage();
                 }
                 catch (Exception e)
@@ -3637,14 +3637,14 @@ namespace ME3TweaksModManager
             Application.Current.Dispatcher.Invoke(async () =>
             {
                 //Set language.
-                Task.Run(async () => { await OnlineContent.InternalSetLanguage(lang, forcedDictionary, startup); }).Wait();
+                Task.Run(async () => { await M3OnlineContent.InternalSetLanguage(lang, forcedDictionary, startup); }).Wait();
 
                 App.CurrentLanguage = Settings.Language = lang;
                 SetTipsForLanguage();
                 RefreshNexusStatus(true);
                 try
                 {
-                    var localizedHelpItems = OnlineContent.FetchLatestHelp(lang, true, false);
+                    var localizedHelpItems = M3OnlineContent.FetchLatestHelp(lang, true, false);
                     setDynamicHelpMenu(localizedHelpItems);
                 }
                 catch (Exception e)

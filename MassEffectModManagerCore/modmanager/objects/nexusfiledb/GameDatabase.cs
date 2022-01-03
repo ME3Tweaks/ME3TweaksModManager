@@ -46,7 +46,7 @@ namespace ME3TweaksModManager.modmanager.objects.nexusfiledb
 
         private static void DownloadDB(string nexusDBPath)
         {
-            var downloadResult = OnlineContent.DownloadME3TweaksStaticAsset(@"nexusfiledb.zip");
+            var downloadResult = M3OnlineContent.DownloadME3TweaksStaticAsset(@"nexusfiledb.zip");
             if (downloadResult.errorMessage == null)
             {
                 downloadResult.download.WriteToFile(nexusDBPath);

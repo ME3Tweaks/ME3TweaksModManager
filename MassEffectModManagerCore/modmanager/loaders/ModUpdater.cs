@@ -45,7 +45,7 @@ namespace ME3TweaksModManager.modmanager.loaders
                 BackgroundTaskEngine.SubmitBackgroundTaskUpdate(bgTask, newStr);
             }
 
-            var updateManifestModInfos = OnlineContent.CheckForModUpdates(updatableMods, restoreMode, updateCheckProgressCallback);
+            var updateManifestModInfos = M3OnlineContent.CheckForModUpdates(updatableMods, restoreMode, updateCheckProgressCallback);
             if (updateManifestModInfos != null)
             {
                 //Calculate CLASSIC Updates
@@ -58,7 +58,7 @@ namespace ME3TweaksModManager.modmanager.loaders
                 //Calculate MODMAKER Updates
                 foreach (var mm in updatableMods.Where(x => x.ModModMakerID > 0))
                 {
-                    var matchingServerMod = updateManifestModInfos.FirstOrDefault(x => x is OnlineContent.ModMakerModUpdateInfo mmui && mmui.ModMakerId == mm.ModModMakerID);
+                    var matchingServerMod = updateManifestModInfos.FirstOrDefault(x => x is M3OnlineContent.ModMakerModUpdateInfo mmui && mmui.ModMakerId == mm.ModModMakerID);
                     if (matchingServerMod != null)
                     {
                         var serverVer = Version.Parse(matchingServerMod.versionstr + @".0"); //can't have single digit version
@@ -82,7 +82,7 @@ namespace ME3TweaksModManager.modmanager.loaders
                 //Calculate NEXUSMOD Updates
                 foreach (var mm in updatableMods.Where(x => x.NexusModID > 0 && x.ModClassicUpdateCode == 0)) //check zero as Mgamerz's mods will list me3tweaks with a nexus code still for integrations
                 {
-                    var matchingUpdateInfoForMod = updateManifestModInfos.OfType<OnlineContent.NexusModUpdateInfo>().FirstOrDefault(x => x.NexusModsId == mm.NexusModID
+                    var matchingUpdateInfoForMod = updateManifestModInfos.OfType<M3OnlineContent.NexusModUpdateInfo>().FirstOrDefault(x => x.NexusModsId == mm.NexusModID
                                                                                                                                    && M3Utilities.GetGameFromNumber(x.GameId) == mm.Game
                                                                                                                                    && updates.All(y => !y.mod.Equals(x.mod)));
                     if (matchingUpdateInfoForMod != null)
@@ -92,7 +92,7 @@ namespace ME3TweaksModManager.modmanager.loaders
                             if (serverVer > mm.ParsedModVersion)
                             {
                                 // We need to make a clone in the event a mod uses duplicate code, such as Project Variety
-                                OnlineContent.NexusModUpdateInfo clonedInfo = new OnlineContent.NexusModUpdateInfo(matchingUpdateInfoForMod) { mod = mm };
+                                M3OnlineContent.NexusModUpdateInfo clonedInfo = new M3OnlineContent.NexusModUpdateInfo(matchingUpdateInfoForMod) { mod = mm };
                                 updates.Add(clonedInfo);
                                 clonedInfo.SetLocalizedInfo();
                                 M3Log.Information($@"NexusMods mod out of date: {mm.ModName} {mm.ParsedModVersion}, server version: {serverVer}");

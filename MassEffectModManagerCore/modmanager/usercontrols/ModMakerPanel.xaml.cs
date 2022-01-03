@@ -33,7 +33,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public bool LocalFileOption { get; set; }
         public string LocalFilePath { get; set; }
         public string ModMakerCode { get; set; }
-        public OnlineContent.ServerModMakerModInfo SelectedTopMod { get; set; }
+        public M3OnlineContent.ServerModMakerModInfo SelectedTopMod { get; set; }
         public long CurrentTaskValue { get; private set; }
         public long CurrentTaskMaximum { get; private set; } = 100;
         public bool CurrentTaskIndeterminate { get; private set; }
@@ -56,7 +56,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"ModMaker-TopModsFetch");
             nbw.DoWork += (a, b) =>
             {
-                b.Result = OnlineContent.FetchTopModMakerMods();
+                b.Result = M3OnlineContent.FetchTopModMakerMods();
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {
@@ -64,7 +64,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 {
                     M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                 }
-                if (b.Error == null && b.Result is List<OnlineContent.ServerModMakerModInfo> topMods)
+                if (b.Error == null && b.Result is List<M3OnlineContent.ServerModMakerModInfo> topMods)
                 {
                     TopMods.ReplaceAll(topMods);
                 }
@@ -72,7 +72,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             nbw.RunWorkerAsync();
         }
 
-        public ObservableCollectionExtended<OnlineContent.ServerModMakerModInfo> TopMods { get; } = new ObservableCollectionExtended<OnlineContent.ServerModMakerModInfo>();
+        public ObservableCollectionExtended<M3OnlineContent.ServerModMakerModInfo> TopMods { get; } = new ObservableCollectionExtended<M3OnlineContent.ServerModMakerModInfo>();
 
         public ICommand DownloadCompileCommand { get; private set; }
         public ICommand CloseCommand { get; private set; }
@@ -141,14 +141,14 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 if (int.TryParse(ModMakerCode, out var code))
                 {
                     DownloadAndModNameText = M3L.GetString(M3L.string_downloadingModDeltaFromME3Tweaks);
-                    var normalEndpoint = OnlineContent.ModmakerModsEndpoint + code;
+                    var normalEndpoint = M3OnlineContent.ModmakerModsEndpoint + code;
                     var lzmaEndpoint = normalEndpoint + @"&method=lzma";
                     M3Log.Information($@"Downloading modmaker mod {code}");
 
                     //Try LZMA first
                     try
                     {
-                        var download = OnlineContent.DownloadToMemory(lzmaEndpoint, (done, total) =>
+                        var download = M3OnlineContent.DownloadToMemory(lzmaEndpoint, (done, total) =>
                         {
                             if (total != -1)
                             {
@@ -179,7 +179,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     if (modDelta == null)
                     {
                         //failed to download LZMA.
-                        var download = OnlineContent.DownloadToMemory(normalEndpoint, (done, total) =>
+                        var download = M3OnlineContent.DownloadToMemory(normalEndpoint, (done, total) =>
                         {
                             var suffix = $" {(done * 100.0 / total).ToString(@"0")}%"; //do not localize
                             DownloadAndModNameText = M3L.GetString(M3L.string_downloadingModDeltaFromME3Tweaks) + suffix;

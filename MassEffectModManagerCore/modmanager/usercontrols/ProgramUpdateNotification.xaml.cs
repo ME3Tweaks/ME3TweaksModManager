@@ -170,7 +170,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     foreach (var downloadInfo in downloadInfoMirrors)
                     {
                         M3Log.Information($@"Downloading patch file {downloadInfo.downloadLink}");
-                        var patchUpdate = OnlineContent.DownloadToMemory(downloadInfo.downloadLink, pCallback,
+                        var patchUpdate = M3OnlineContent.DownloadToMemory(downloadInfo.downloadLink, pCallback,
                             downloadInfo.downloadhash);
                         if (patchUpdate.errorMessage != null)
                         {
@@ -201,7 +201,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             string errorMessage = null;
             foreach (var downloadLink in downloadLinks)
             {
-                var updateFile = OnlineContent.DownloadToMemory(downloadLink, pCallback);
+                var updateFile = M3OnlineContent.DownloadToMemory(downloadLink, pCallback);
                 ProgressText = M3L.GetString(M3L.string_preparingToApplyUpdate);
                 if (updateFile.errorMessage == null)
                 {

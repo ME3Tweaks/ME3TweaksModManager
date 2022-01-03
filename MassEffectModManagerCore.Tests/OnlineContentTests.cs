@@ -16,20 +16,20 @@ namespace MassEffectModManagerCore.Tests
         public void ValidateOnlineFetches()
         {
             GlobalTest.Init();
-            var helpItems = OnlineContent.FetchLatestHelp("int", false, true);
+            var helpItems = M3OnlineContent.FetchLatestHelp("int", false, true);
             Assert.AreNotEqual(0, helpItems.Count, "FetchLatestHelp failed: No items were parsed, the list is empty!");
             helpItems.Sort();
 
-            var tips = OnlineContent.FetchTipsService(true);
+            var tips = M3OnlineContent.FetchTipsService(true);
             Assert.AreNotEqual(0, tips.Count, "FetchTipsService failed: No items were parsed, the list is empty!");
 
-            var tpmiService = OnlineContent.FetchThirdPartyImportingService(true);
+            var tpmiService = M3OnlineContent.FetchThirdPartyImportingService(true);
             Assert.AreNotEqual(0, tpmiService.Count, "FetchThirdPartyImportingService failed: No items were parsed, the list is empty!");
 
             BasegameFileIdentificationService.LoadService();
             Assert.AreNotEqual(0, BasegameFileIdentificationService.GetAllServerEntries().Count, "FetchBasegameIdentificationServiceManifest failed: No items were parsed, the list is empty!");
 
-            var startupManifest = OnlineContent.FetchOnlineStartupManifest(true);
+            var startupManifest = M3OnlineContent.FetchOnlineStartupManifest(true);
             Assert.AreNotEqual(0, startupManifest.Count, "FetchOnlineStartupManifest failed: No items were parsed, the list is empty!");
 
         }
