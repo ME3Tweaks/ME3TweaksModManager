@@ -50,7 +50,7 @@
             AlternationCount="{Binding RelativeSource={RelativeSource Self}, Path=Items.Count}">
             <ItemsControl.Resources>
                 <DataTemplate
-                    DataType="{x:Type me3Tweaks:OnlineContent+ModUpdateInfo}">
+                    DataType="{x:Type me3Tweaks:M3OnlineContent+ModUpdateInfo}">
                     <StackPanel
                         Margin="0,5,5,5">
                         <Grid>
@@ -166,7 +166,7 @@
                     </DataTemplate.Triggers>
                 </DataTemplate>
                 <DataTemplate
-                    DataType="{x:Type me3Tweaks:OnlineContent+ModMakerModUpdateInfo}">
+                    DataType="{x:Type me3Tweaks:M3OnlineContent+ModMakerModUpdateInfo}">
                     <Grid
                         Margin="0,5,5,5"
                         HorizontalAlignment="Stretch">
@@ -253,7 +253,7 @@
                     </DataTemplate.Triggers>
                 </DataTemplate>
                 <DataTemplate
-                    DataType="{x:Type me3Tweaks:OnlineContent+NexusModUpdateInfo}">
+                    DataType="{x:Type me3Tweaks:M3OnlineContent+NexusModUpdateInfo}">
                     <Grid
                         Margin="0,5,5,5"
                         HorizontalAlignment="Stretch">

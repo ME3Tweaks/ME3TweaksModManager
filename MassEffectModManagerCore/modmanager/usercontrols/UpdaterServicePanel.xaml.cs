@@ -25,7 +25,7 @@ using ME3TweaksModManager.ui;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.WindowsAPICodePack.Taskbar;
 using Renci.SshNet;
-using static ME3TweaksModManager.modmanager.me3tweaks.OnlineContent;
+using static ME3TweaksModManager.modmanager.me3tweaks.M3OnlineContent;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
@@ -371,7 +371,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
             #region get current production version to see if we should prompt user
 
-            var latestVersionOnServer = OnlineContent.GetLatestVersionOfModOnUpdaterService(mod.ModClassicUpdateCode);
+            var latestVersionOnServer = M3OnlineContent.GetLatestVersionOfModOnUpdaterService(mod.ModClassicUpdateCode);
             if (latestVersionOnServer != null)
             {
                 if (latestVersionOnServer >= mod.ParsedModVersion)
@@ -469,7 +469,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             CurrentActionText = M3L.GetString(M3L.string_compressingModForUpdaterService);
             progressCallback?.Invoke(0);
             setTaskbarProgressState?.Invoke(TaskbarProgressBarState.Normal);
-            var lzmaStagingPath = OnlineContent.StageModForUploadToUpdaterService(mod, files, totalModSizeUncompressed, canceledCheckCallback, updateCurrentTextCallback, progressCallback);
+            var lzmaStagingPath = M3OnlineContent.StageModForUploadToUpdaterService(mod, files, totalModSizeUncompressed, canceledCheckCallback, updateCurrentTextCallback, progressCallback);
 
             #endregion
 

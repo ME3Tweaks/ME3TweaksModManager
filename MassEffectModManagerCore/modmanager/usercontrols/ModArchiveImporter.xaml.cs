@@ -529,7 +529,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 if (importingInfo?.exetransform != null)
                 {
                     M3Log.Information(@"TPIS lists exe transform for this mod: " + importingInfo.exetransform);
-                    transform = new ExeTransform(OnlineContent.FetchExeTransform(importingInfo.exetransform));
+                    transform = new ExeTransform(M3OnlineContent.FetchExeTransform(importingInfo.exetransform));
                 }
 
                 string custommoddesc = null;
@@ -541,7 +541,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     string loadFailedReason = null;
                     try
                     {
-                        custommoddesc = OnlineContent.FetchThirdPartyModdesc(importingInfo.servermoddescname ?? transform.PostTransformModdesc);
+                        custommoddesc = M3OnlineContent.FetchThirdPartyModdesc(importingInfo.servermoddescname ?? transform.PostTransformModdesc);
                     }
                     catch (Exception e)
                     {
@@ -635,7 +635,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     //see if server has information on version number
                     currentOperationTextCallback?.Invoke(M3L.GetString(M3L.string_gettingAdditionalInformationAboutFileFromME3Tweaks));
                     M3Log.Information(@"Querying ME3Tweaks for additional information for this file...");
-                    var modInfo = OnlineContent.QueryModRelay(md5, archiveSize);
+                    var modInfo = M3OnlineContent.QueryModRelay(md5, archiveSize);
                     //todo: make this work offline.
                     if (modInfo != null && modInfo.TryGetValue(@"version", out string value))
                     {
@@ -731,7 +731,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                             var importingInfos = TPIService.GetImportingInfosBySize(archiveSize);
                             if (importingInfos.Count == 1 && importingInfos[0].GetParsedRequiredDLC().Count > 0)
                             {
-                                OnlineContent.QueryModRelay(importingInfos[0].md5, archiveSize); //Tell telemetry relay we are accessing the TPIS for an existing item so it can update latest for tracking
+                                M3OnlineContent.QueryModRelay(importingInfos[0].md5, archiveSize); //Tell telemetry relay we are accessing the TPIS for an existing item so it can update latest for tracking
                                 virtualModDesc[@"ModInfo"][@"requireddlc"] = importingInfos[0].requireddlc;
                             }
 

@@ -24,7 +24,7 @@ using Microsoft.AppCenter.Crashes;
 namespace ME3TweaksModManager.modmanager.me3tweaks
 {
     //Localizable(false) //do not remove for localizer!
-    public partial class OnlineContent
+    public partial class M3OnlineContent
     {
         public const string UpdaterServiceManifestEndpoint = "https://me3tweaks.com/mods/getlatest_batch"; //2 = debug
         public const string UpdaterServiceCodeValidationEndpoint = "https://me3tweaks.com/mods/latestxml/updatecodevalidation";
@@ -423,7 +423,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
                     }
 
                     string fullurl = serverRoot + sourcefile.relativefilepath.Replace('\\', '/') + @".lzma";
-                    var downloadedFile = OnlineContent.DownloadToMemory(fullurl, downloadProgressCallback, sourcefile.lzmahash, true);
+                    var downloadedFile = M3OnlineContent.DownloadToMemory(fullurl, downloadProgressCallback, sourcefile.lzmahash, true);
                     if (downloadedFile.errorMessage != null && !cancelDownloading)
                     {
                         errorMessageCallback?.Invoke(downloadedFile.errorMessage);

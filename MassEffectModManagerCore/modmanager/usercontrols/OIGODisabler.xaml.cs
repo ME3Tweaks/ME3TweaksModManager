@@ -185,7 +185,7 @@ public event PropertyChangedEventHandler PropertyChanged;
                                         if (latestRel != null)
                                         {
                                             var downloadUrl = latestRel.Assets[0].BrowserDownloadUrl;
-                                            var downloadedZipAsset = OnlineContent.DownloadToMemory(downloadUrl);
+                                            var downloadedZipAsset = M3OnlineContent.DownloadToMemory(downloadUrl);
                                             using var zf = new ZipArchive(downloadedZipAsset.result);
                                             var d3d9 = zf.Entries.First(x => x.FullName == @"d3d9.dll");
                                             if (d3d9 != null)

@@ -22,7 +22,7 @@ using ShortTimeoutWebClient = ME3TweaksModManager.modmanager.helpers.ShortTimeou
 namespace ME3TweaksModManager.modmanager.me3tweaks
 {
 
-    partial class OnlineContent
+    partial class M3OnlineContent
     {
         #region FALLBACKS
         /// <summary>
@@ -64,16 +64,16 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
         public static readonly string ModmakerModsEndpoint = @"https://me3tweaks.com/modmaker/download.php?id=";
 
 
-        ///// <summary>
-        ///// Checks if we can perform an online content fetch. This value is updated when manually checking for content updates, and on automatic 1-day intervals (if no previous manual check has occurred)
-        ///// </summary>
-        ///// <returns></returns>
-        //internal static bool CanFetchContentThrottleCheck()
-        //{
-        //    var lastContentCheck = Settings.LastContentCheck;
-        //    var timeNow = DateTime.Now;
-        //    return (timeNow - lastContentCheck).TotalDays > 1;
-        //}
+        /// <summary>
+        /// Checks if we can perform an online content fetch. This value is updated when manually checking for content updates, and on automatic 1-day intervals (if no previous manual check has occurred)
+        /// </summary>
+        /// <returns></returns>
+        internal static bool CanFetchContentThrottleCheck()
+        {
+            var lastContentCheck = Settings.LastContentCheck;
+            var timeNow = DateTime.Now;
+            return (timeNow - lastContentCheck).TotalDays > 1;
+        }
 
         public static Dictionary<string, string> FetchOnlineStartupManifest(bool betamode)
         {
@@ -336,6 +336,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
         /// </summary>
         public static void TouchupTutorial()
         {
+            return; // DONT DO ANYTHING TESTIN
             var fileRootPath = M3Utilities.GetTutorialServiceCache();
             foreach (var step in App.TutorialService)
             {
@@ -350,7 +351,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
 
                         var fullurl = endpoint + @"tutorial/" + step.imagename;
                         M3Log.Information($@"Downloading {step.imagename} from endpoint {host}");
-                        var downloadedImage = OnlineContent.DownloadToMemory(fullurl, null, step.imagemd5);
+                        var downloadedImage = M3OnlineContent.DownloadToMemory(fullurl, null, step.imagemd5);
                         if (downloadedImage.errorMessage == null)
                         {
                             try
@@ -607,33 +608,34 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
                 }
             }
 
-            if (!File.Exists(M3Utilities.GetTutorialServiceCacheFile()) || overrideThrottling || MOnlineContent.CanFetchContentThrottleCheck())
-            {
-                foreach (var staticurl in TutorialServiceManifestURL.GetAllLinks())
-                {
-                    Uri myUri = new Uri(staticurl);
-                    string host = myUri.Host;
+            // TODO: UNCOMMENT FOR PRODUCTION
+            //if (!File.Exists(M3Utilities.GetTutorialServiceCacheFile()) || overrideThrottling || MOnlineContent.CanFetchContentThrottleCheck())
+            //{
+            //    foreach (var staticurl in TutorialServiceManifestURL.GetAllLinks())
+            //    {
+            //        Uri myUri = new Uri(staticurl);
+            //        string host = myUri.Host;
 
-                    try
-                    {
-                        using var wc = new ShortTimeoutWebClient();
-                        string json = WebClientExtensions.DownloadStringAwareOfEncoding(wc, staticurl);
-                        File.WriteAllText(M3Utilities.GetTutorialServiceCacheFile(), json);
-                        return JsonConvert.DeserializeObject<List<IntroTutorial.TutorialStep>>(json);
-                    }
-                    catch (Exception e)
-                    {
-                        //Unable to fetch latest help.
-                        M3Log.Error($@"Error fetching latest tutorial service file from endpoint {host}: {e.Message}");
-                    }
-                }
+            //        try
+            //        {
+            //            using var wc = new ShortTimeoutWebClient();
+            //            string json = WebClientExtensions.DownloadStringAwareOfEncoding(wc, staticurl);
+            //            File.WriteAllText(M3Utilities.GetTutorialServiceCacheFile(), json);
+            //            return JsonConvert.DeserializeObject<List<IntroTutorial.TutorialStep>>(json);
+            //        }
+            //        catch (Exception e)
+            //        {
+            //            //Unable to fetch latest help.
+            //            M3Log.Error($@"Error fetching latest tutorial service file from endpoint {host}: {e.Message}");
+            //        }
+            //    }
 
-                if (cached == null)
-                {
-                    M3Log.Error(@"Unable to fetch latest tutorial service file from server and local file doesn't exist. Returning a blank copy.");
-                    return new List<IntroTutorial.TutorialStep>();
-                }
-            }
+            //    if (cached == null)
+            //    {
+            //        M3Log.Error(@"Unable to fetch latest tutorial service file from server and local file doesn't exist. Returning a blank copy.");
+            //        return new List<IntroTutorial.TutorialStep>();
+            //    }
+            //}
 
             M3Log.Information(@"Using cached tutorial service file");
 
