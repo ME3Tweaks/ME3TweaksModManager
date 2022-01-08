@@ -98,7 +98,11 @@ namespace ME3TweaksModManager.modmanager.merge.game2email
 
         public static void RunGame2EmailMerge(GameTargetWPF target)
         {
+            M3MergeDLC.RemoveMergeDLC(target);
             var loadedFiles = MELoadedFiles.GetFilesLoadedInGame(target.Game, gameRootOverride: target.TargetPath);
+
+            // Temp - need to find a way of persisting merge DLC between email and sqm merge
+            M3MergeDLC.GenerateMergeDLC(target, Guid.NewGuid());
 
             // File to base modifications on
             loadedFiles.TryGetValue(@"BioD_Nor_103Messages.pcc", out var pccFile);
@@ -147,7 +151,6 @@ namespace ME3TweaksModManager.modmanager.merge.game2email
             // Setup conditionals
             ExportEntry ConditionalClass = startup.FindExport($@"PlotManager{M3MergeDLC.MERGE_DLC_FOLDERNAME}.BioAutoConditionals");
             FileLib fl = new FileLib(startup);
-            var gameRootPath = M3Directories.GetBioGamePath(target);
             bool initialized = fl.Initialize(new RelativePackageCache() { RootPath = M3Directories.GetBioGamePath(target) });
             if (!initialized)
             {
@@ -413,12 +416,31 @@ namespace ME3TweaksModManager.modmanager.merge.game2email
 
             // Save Messages file into DLC
             var mergeDlcCookedDir = Path.Combine(M3Directories.GetDLCPath(target), M3MergeDLC.MERGE_DLC_FOLDERNAME, target.Game.CookedDirName());
-            var outMessages = Path.Combine(mergeDlcCookedDir, @"BioD_Nor103_Messages.pcc");
+            var outMessages = Path.Combine(mergeDlcCookedDir, @"BioD_Nor_103Messages.pcc");
             pcc.Save(outMessages);
 
             // Save Startup file into DLC
             var startupF = Path.Combine(mergeDlcCookedDir, StartupFileName);
             startup.Save(startupF);
+
+            // Make sure lines are written to BIOEngine.ini and BIOGame.ini
+            var bioGameText = new StreamReader(M3Utilities.GetResourceStream(
+                    $@"ME3TweaksModManager.modmanager.merge.dlc.{target.Game}.BIOGame.ini"))
+                .ReadToEnd();
+            File.WriteAllText(Path.Combine(mergeDlcCookedDir, @"BIOGame.ini"), bioGameText);
+
+            var bioEngineTextToAdd = new StreamReader(M3Utilities.GetResourceStream(
+                    $@"ME3TweaksModManager.modmanager.merge.dlc.{target.Game}.BIOEngineStartupPackages.ini"))
+                .ReadToEnd();
+            var bioEnginePath = Path.Combine(mergeDlcCookedDir, @"BIOEngine.ini");
+            if (File.Exists(bioEnginePath))
+            {
+                var currentBioEngine = File.ReadAllText(bioEnginePath);
+                if (!currentBioEngine.Contains(@"[Engine.StartupPackages]"))
+                {
+                    File.WriteAllText(bioEnginePath, currentBioEngine + bioEngineTextToAdd);
+                }
+            }
         }
 
         /// <summary>
@@ -438,7 +460,7 @@ namespace ME3TweaksModManager.modmanager.merge.game2email
             if (conditionalId <= 0) conditionalId = STARTING_EMAIL_CONDITIONAL;
 
             var funcToClone = conditionalClass.FileRef.FindExport($@"{conditionalClass.InstancedFullPath}.TemplateFunction");
-            var func = EntryCloner.CloneEntry(funcToClone);
+            var func = EntryCloner.CloneTree(funcToClone);
             func.ObjectName = $@"F{conditionalId}";
             func.indexValue = 0;
 

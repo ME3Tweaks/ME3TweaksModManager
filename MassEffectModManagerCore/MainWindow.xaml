@@ -1639,6 +1639,7 @@
                             ToolTip="{DynamicResource string_tooltip_someModsFailed}">
               <Hyperlink
                                 RequestNavigate="FailedMods_LinkClick"
+                                NavigateUri="internal://trigger"
                                 Foreground="Red">
                 <TextBlock
                                     Text="{Binding FailedModsString}" />
