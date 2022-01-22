@@ -80,31 +80,22 @@ namespace ME3TweaksModManager.modmanager
             return principal.IsInRole(WindowsBuiltInRole.Administrator);
         }
 
-        public static bool IsNetRuntimeInstalled(int minVer)
+        public static bool IsNetRuntimeInstalled(int minVer, string platformName)
         {
-            var baseKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\dotnet\Setup\InstalledVersions");
-            if (baseKey == null || baseKey.SubKeyCount == 0)
+            var platform = Registry.LocalMachine.OpenSubKey($@"SOFTWARE\dotnet\Setup\InstalledVersions\{platformName}");
+            if (platform == null || platform.SubKeyCount == 0)
                 return false;
+            Debug.WriteLine($"Platform: {platform.Name.Substring(platform.Name.LastIndexOf("\\") + 1)}");
 
-            foreach (var platformKey in baseKey.GetSubKeyNames())
+            var sharedHost = platform.OpenSubKey("sharedhost");
+            foreach (var version in sharedHost.GetValueNames())
             {
-                using (var platform = baseKey.OpenSubKey(platformKey))
+                var v = ((string)sharedHost.GetValue(@"Version"))?.Split("-")?.FirstOrDefault();
+                if (v != null && Version.TryParse(v, out var netVersion))
                 {
-                    Debug.WriteLine($"Platform: {platform.Name.Substring(platform.Name.LastIndexOf("\\") + 1)}");
-                    if (platform.SubKeyCount == 0)
-                        continue;
-
-                    var sharedHost = platform.OpenSubKey("sharedhost");
-                    foreach (var version in sharedHost.GetValueNames())
+                    if (netVersion > new Version($"{minVer}.0.0.0"))
                     {
-                        var v = ((string)sharedHost.GetValue(@"Version"))?.Split("-")?.FirstOrDefault();
-                        if (v != null && Version.TryParse(v, out var netVersion))
-                        {
-                            if (netVersion > new Version($"{minVer}.0.0.0"))
-                            {
-                                return true;
-                            }
-                        }
+                        return true;
                     }
                 }
             }
@@ -1060,7 +1051,7 @@ namespace ME3TweaksModManager.modmanager
         {
             if (target == null) return false;
             target.UninstallBinkBypass();
-            
+
 
             return true;
         }

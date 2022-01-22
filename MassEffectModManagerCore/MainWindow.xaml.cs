@@ -349,6 +349,15 @@ namespace ME3TweaksModManager
             // MOD LIST
             M3LoadedMods.InitializeModLoader(this, x =>
             {
+                if (x != null && MEGameSelector.IsGenerationEnabledGame(x.Game))
+                {
+                    var matchingFilter = M3LoadedMods.Instance.GameFilters.FirstOrDefault(y => y.Game == x.Game);
+                    if (matchingFilter != null)
+                    {
+                        // Turn on the filter.
+                        matchingFilter.IsEnabled = true;
+                    }
+                }
                 SelectedMod = x;
                 ModsList_ListBox.ScrollIntoView(x);
             });
@@ -537,6 +546,7 @@ namespace ME3TweaksModManager
         public ICommand ModdescEditorCommand { get; set; }
         public ICommand LaunchEGMSettingsCommand { get; set; }
         public ICommand LaunchEGMSettingsLECommand { get; set; }
+        public ICommand LaunchFVBCCUCommand { get; set; }
         public ICommand OfficialDLCTogglerCommand { get; set; }
         public ICommand ImportArchiveCommand { get; set; }
         public ICommand ReloadModsCommand { get; set; }
@@ -616,6 +626,7 @@ namespace ME3TweaksModManager
             OfficialDLCTogglerCommand = new GenericCommand(OpenOfficialDLCToggler);
             LaunchEGMSettingsCommand = new GenericCommand(() => LaunchEGMSettings(), CanLaunchEGMSettings);
             LaunchEGMSettingsLECommand = new GenericCommand(() => LaunchEGMSettingsLE(), CanLaunchEGMSettingsLE);
+            LaunchFVBCCUCommand = new GenericCommand(() => LaunchFVBCCU(), CanLaunchFVBCCU);
             OpenModDescCommand = new GenericCommand(OpenModDesc);
             CheckAllModsForUpdatesCommand = new GenericCommand(CheckAllModsForUpdatesWrapper, () => M3LoadedMods.Instance.ModsLoaded);
             CustomKeybindsInjectorCommand = new GenericCommand(OpenKeybindsInjector, () => M3LoadedMods.Instance.ModsLoaded && InstallationTargets.Any(x => x.Game == MEGame.ME3));
@@ -640,6 +651,15 @@ namespace ME3TweaksModManager
             if (target != null)
             {
                 LaunchExternalTool(ExternalToolLauncher.EGMSettingsLE, $"\"{target.TargetPath}\""); // do not localize
+            }
+        }
+
+        private void LaunchFVBCCU(GameTargetWPF target = null)
+        {
+            target ??= InternalGetFVBCCCTarget();
+            if (target != null)
+            {
+                LaunchExternalTool(ExternalToolLauncher.FVBCCU, $"\"{target.TargetPath}\""); // do not localize
             }
         }
 
@@ -716,6 +736,10 @@ namespace ME3TweaksModManager
             }
         }
 
+        /// <summary>
+        /// EGM Settings OT check
+        /// </summary>
+        /// <returns></returns>
         private bool CanLaunchEGMSettings()
         {
             var target = GetCurrentTarget(MEGame.ME3);
@@ -726,6 +750,10 @@ namespace ME3TweaksModManager
             return false;
         }
 
+        /// <summary>
+        /// EGM Settings LE check
+        /// </summary>
+        /// <returns></returns>
         private bool CanLaunchEGMSettingsLE()
         {
             var target = GetCurrentTarget(MEGame.LE3);
@@ -733,6 +761,49 @@ namespace ME3TweaksModManager
             {
                 return target.GetInstalledDLC().Contains(@"DLC_MOD_EGM");
             }
+            return false;
+        }
+
+        /// <summary>
+        /// Femshep vs BroShep: Clone Configuration Utility check
+        /// </summary>
+        /// <returns></returns>
+        private bool CanLaunchFVBCCU()
+        {
+            return InternalGetFVBCCCTarget() != null;
+        }
+
+        private GameTargetWPF InternalGetFVBCCCTarget()
+        {
+            var firstTarget = SelectedGameTarget;
+            if (firstTarget != null && firstTarget.Game.IsGame3())
+            {
+                // We check using the current selected target.
+                if (InternalCanLaunchFVBCCC(firstTarget)) return firstTarget;
+            }
+
+            // TEST ME3
+            var target = GetCurrentTarget(MEGame.ME3);
+            if (target != null && firstTarget != target)
+            {
+                if (InternalCanLaunchFVBCCC(target)) return target;
+            }
+
+            // TEST LE3
+            target = GetCurrentTarget(MEGame.LE3);
+            if (target != null && firstTarget != target)
+            {
+                if (InternalCanLaunchFVBCCC(target)) return target;
+            }
+
+            return null;
+        }
+
+        private bool InternalCanLaunchFVBCCC(GameTargetWPF target)
+        {
+            var installedDLC = target.GetInstalledDLC();
+            if (target.Game == MEGame.ME3) return installedDLC.Contains(@"DLC_MOD_FSvBS") || installedDLC.Contains(@"DLC_MOD_FSvBS_V");
+            if (target.Game == MEGame.LE3) return installedDLC.Contains(@"DLC_MOD_FSvBSLE") || installedDLC.Contains(@"DLC_MOD_FSvBSLE_V");
             return false;
         }
 
@@ -1283,7 +1354,7 @@ namespace ME3TweaksModManager
                     }
                     else
                     {
-                        BootToolPathPassthrough(result.ToolToLaunch);
+                        BootToolPathPassthrough(result.ToolToLaunch, result.SelectedTarget);
                     }
                 }
             });
@@ -1343,16 +1414,16 @@ namespace ME3TweaksModManager
         /// Boots the specified tool ID, passes through the current active targets in M3, if they are supported.
         /// </summary>
         /// <param name="toolname"></param>
-        private void BootToolPathPassthrough(string toolname)
+        private void BootToolPathPassthrough(string toolname, GameTargetWPF forcedTarget = null)
         {
             var arguments = "";
-            var me1Target = GetCurrentTarget(MEGame.ME1);
-            var me2Target = GetCurrentTarget(MEGame.ME2);
-            var me3Target = GetCurrentTarget(MEGame.ME3);
+            var me1Target = forcedTarget?.Game == MEGame.ME1 ? forcedTarget : GetCurrentTarget(MEGame.ME1);
+            var me2Target = forcedTarget?.Game == MEGame.ME2 ? forcedTarget : GetCurrentTarget(MEGame.ME2);
+            var me3Target = forcedTarget?.Game == MEGame.ME3 ? forcedTarget : GetCurrentTarget(MEGame.ME3);
 
-            var le1Target = GetCurrentTarget(MEGame.LE1);
-            var le2Target = GetCurrentTarget(MEGame.LE2);
-            var le3Target = GetCurrentTarget(MEGame.LE3);
+            var le1Target = forcedTarget?.Game == MEGame.LE1 ? forcedTarget : GetCurrentTarget(MEGame.LE1);
+            var le2Target = forcedTarget?.Game == MEGame.LE2 ? forcedTarget : GetCurrentTarget(MEGame.LE2);
+            var le3Target = forcedTarget?.Game == MEGame.LE3 ? forcedTarget : GetCurrentTarget(MEGame.LE3);
             if (me1Target != null && me1Target.Supported)
             {
                 arguments += $"--me1path \"{me1Target.TargetPath}\" "; //do not localize

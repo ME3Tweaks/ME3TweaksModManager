@@ -228,7 +228,7 @@ namespace ME3TweaksModManager.modmanager.loaders
 
                 if (modpathToHighlight != null)
                 {
-                    args.Result = VisibleFilteredMods.FirstOrDefault(x => x.ModPath == modpathToHighlight);
+                    args.Result = AllLoadedMods.FirstOrDefault(x => x.ModPath == modpathToHighlight);
 
                     //telemetry for importing issues
                     var targetMod = AllLoadedMods.FirstOrDefault(x => x.ModPath == modpathToHighlight);

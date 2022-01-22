@@ -1327,6 +1327,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 }
                 else if (e.Result is ModInstallCompletedStatus mcis)
                 {
+                    Result.SelectedTarget = SelectedGameTarget;
                     telemetryResult = mcis;
                     //Success, canceled (generic and handled), ALOT canceled
                     InstallationSucceeded = mcis == ModInstallCompletedStatus.INSTALL_SUCCESSFUL;

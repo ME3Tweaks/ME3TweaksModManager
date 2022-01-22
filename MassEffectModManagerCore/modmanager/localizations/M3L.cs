@@ -35,7 +35,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 			return ShowDialog(owner, message, "", MessageBoxButton.OK);
 		}
 
-        internal static MessageBoxResult ShowDialog(Window owner, string message, string caption, MessageBoxButton buttons, MessageBoxImage image, MessageBoxResult defaultResult)
+        internal static MessageBoxResult ShowDialog(Window owner, string message, string caption, MessageBoxButton buttons, MessageBoxImage image, MessageBoxResult defaultResult, string yesContent = null, string noContent = null, string okContent = null, string cancelContent = null)
         {
             var msgBox = new Xceed.Wpf.Toolkit.MessageBox();
             msgBox.InitializeMessageBox(owner, IntPtr.Zero, message, caption, buttons, image, defaultResult);
@@ -45,15 +45,15 @@ namespace ME3TweaksModManager.modmanager.localizations
             //{
             //    msgBox.Style = messageBoxStyle;
             //}
-            msgBox.YesButtonContent = GetString(string_yes);
-            msgBox.NoButtonContent = GetString(string_no);
-            msgBox.OkButtonContent = GetString(string_ok);
-            msgBox.CancelButtonContent = GetString(string_cancel);
+            msgBox.YesButtonContent = yesContent ??GetString(string_yes);
+            msgBox.NoButtonContent = noContent ?? GetString(string_no);
+            msgBox.OkButtonContent = okContent ?? GetString(string_ok);
+            msgBox.CancelButtonContent = cancelContent ?? GetString(string_cancel);
             msgBox.ShowDialog();
             return msgBox.MessageBoxResult;
         }
 
-        internal static string GetString(string resourceKey, params object[] interpolationItems)
+		internal static string GetString(string resourceKey, params object[] interpolationItems)
         {
         	if (Application.Current == null) return @"TESTRUN"; //running in test mode
             try

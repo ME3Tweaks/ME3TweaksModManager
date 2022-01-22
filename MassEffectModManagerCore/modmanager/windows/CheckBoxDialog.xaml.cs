@@ -49,10 +49,17 @@ namespace ME3TweaksModManager.modmanager.windows
             return Items.Where(x => x.IsChecked).Select(x => x.Item).ToArray();
         }
 
-
         private void CloseDialog(object sender, RoutedEventArgs e)
         {
             Close();
+        }
+
+        private void CheckAll(object sender, RoutedEventArgs e)
+        {
+            foreach (var v in Items)
+            {
+                v.IsChecked = true;
+            }
         }
     }
 }

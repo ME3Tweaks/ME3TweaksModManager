@@ -8,6 +8,7 @@ using System.Windows.Input;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Packages.CloningImportingAndRelinking;
+using LegendaryExplorerCore.Unreal;
 using LegendaryExplorerCore.Unreal.BinaryConverters;
 using LegendaryExplorerCore.UnrealScript;
 using LegendaryExplorerCore.UnrealScript.Compiling.Errors;
@@ -64,6 +65,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                             if (sb != null)
                             {
                                 funcMap[currentFuncNum] = sb.ToString();
+                                M3Log.Information($@"PlotSync: Adding function {currentFuncNum} from {pmuDLCName}");
                                 currentFuncNum = null;
                             }
 
@@ -117,6 +119,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     if (sb != null)
                     {
                         funcMap[currentFuncNum] = sb.ToString();
+                        M3Log.Information($@"PlotSync: Adding function {currentFuncNum} from {pmuDLCName}");
                     }
                 }
             }
@@ -126,9 +129,40 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             if (funcMap.Any())
             {
                 var plotManager = MEPackageHandler.OpenMEPackageFromStream(vpm, $@"PlotManager.{(target.Game == MEGame.ME1 ? @"u" : @"pcc")}"); // do not localize
+                var clonableFunction = plotManager.Exports.FirstOrDefault(x => x.ClassName == @"Function");
+
+                // STEP 1: ADD ALL NEW FUNCTIONS BEFORE WE INITIALIZE THE FILELIB.
+                foreach (var v in funcMap)
+                {
+                    var pmKey = $@"BioAutoConditionals.F{v.Key}";
+                    var exp = plotManager.FindExport(pmKey);
+                    if (exp == null)
+                    {
+                        // Adding a new conditional
+                        exp = EntryCloner.CloneEntry(clonableFunction);
+                        exp.ObjectName = new NameReference($@"F{v.Key}", 0);
+                        exp.FileRef.InvalidateLookupTable(); // We changed the name.
+
+                        // Reduces trash
+                        UFunction uf = ObjectBinary.From<UFunction>(exp);
+                        uf.Children = 0;
+                        uf.ScriptBytes = Array.Empty<byte>(); // No script data
+                        exp.WriteBinary(uf);
+                        M3Log.Information($@"Generated new blank conditional function export: {exp.UIndex} {exp.InstancedFullPath}", Settings.LogModInstallation);
+                    }
+                }
+
+                // Relink child chain
+                UClass uc = ObjectBinary.From<UClass>(plotManager.FindExport(@"BioAutoConditionals"));
+                uc.UpdateChildrenChain();
+                uc.UpdateLocalFunctions();
+                uc.Export.WriteBinary(uc);
+
+
+                // STEP 2: UPDATE FUNCTIONS
                 Stopwatch sw = Stopwatch.StartNew();
                 var fl = new FileLib(plotManager);
-                bool initialized = fl.Initialize(new RelativePackageCache() { RootPath = M3Directories.GetBioGamePath(target) });
+                bool initialized = fl.Initialize(new RelativePackageCache() { RootPath = M3Directories.GetBioGamePath(target) }, target.TargetPath, canUseBinaryCache: false);
                 if (!initialized)
                 {
                     M3Log.Error(@"Error initializing FileLib for plot manager sync:");
@@ -142,23 +176,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 foreach (var v in funcMap)
                 {
                     var pmKey = $@"BioAutoConditionals.F{v.Key}";
+                    M3Log.Information($@"Updating conditional entry: {pmKey}", Settings.LogModInstallation);
                     var exp = plotManager.FindExport(pmKey);
-                    if (exp == null)
-                    {
-                        // Adding a new conditional
-                        var expToClone = plotManager.Exports.FirstOrDefault(x => x.ClassName == @"Function");
-                        exp = EntryCloner.CloneEntry(expToClone);
-                        // Reduces trash
-                        UFunction uf = ObjectBinary.From<UFunction>(exp);
-                        uf.Children = 0;
-                        exp.WriteBinary(uf);
-                        relinkChain = true;
-                        M3Log.Information($@"Generated new conditional entry: {exp.UIndex} {pmKey}", Settings.LogModInstallation);
-                    }
-                    else
-                    {
-                        M3Log.Information($@"Updating conditional entry: {pmKey}", Settings.LogModInstallation);
-                    }
 
                     (_, MessageLog log) = UnrealScriptCompiler.CompileFunction(exp, v.Value, fl);
                     if (log.AllErrors.Any())
@@ -174,14 +193,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     }
                 }
 
-                if (relinkChain)
-                {
-                    UClass uc = ObjectBinary.From<UClass>(plotManager.FindExport(@"BioAutoConditionals"));
-                    uc.UpdateChildrenChain();
-                    uc.UpdateLocalFunctions();
-                    uc.Export.WriteBinary(uc);
-                }
-
                 if (plotManager.IsModified)
                 {
                     plotManager.Save(pmPath, true);
@@ -195,7 +206,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 // Just write out vanilla.
                 vpm.WriteToFile(pmPath);
             }
-
 
             return true;
         }
