@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -27,8 +28,7 @@ using NamedBackgroundWorker = ME3TweaksCore.Helpers.NamedBackgroundWorker;
 
 namespace ME3TweaksModManager.modmanager.objects
 {
-    [AddINotifyPropertyChangedInterface]
-    public class GameBackupWrapper
+    public class GameBackupWrapper : INotifyPropertyChanged
     {
         /// <summary>
         /// Game this wrapper is for
@@ -65,6 +65,7 @@ namespace ME3TweaksModManager.modmanager.objects
                 SelectGameBackupFolderDestination = M3PromptCallbacks.SelectDirectory,
                 BlockingListCallback = M3PromptCallbacks.ShowErrorListCallback,
                 SelectGameLanguagesCallback = SelectBackupLanguages,
+                WarningActionYesNoCallback = M3PromptCallbacks.ShowWarningYesNoCallback,
             };
             ResetBackupStatus(true);
         }
@@ -189,6 +190,7 @@ namespace ME3TweaksModManager.modmanager.objects
             nbw.DoWork += (a, b) =>
             {
                 b.Result = BackupHandler.PerformBackup(BackupSourceTarget, targets);
+                ResetBackupStatus(true); // Updates some WPF things
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {
@@ -312,6 +314,7 @@ namespace ME3TweaksModManager.modmanager.objects
         {
             BackupService.RefreshBackupStatus(game: Game);
             BackupStatus = BackupService.GetBackupStatus(Game); // this is dynamic object that should be bound to in ui
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(BackupOptionsVisible)));
         }
 
         public string GameTitle { get; }
@@ -326,6 +329,7 @@ namespace ME3TweaksModManager.modmanager.objects
         public bool BackupOptionsVisible => BackupStatus.MarkedBackupLocation == null;
         public bool BackupInProgress { get; set; }
 
+        public event PropertyChangedEventHandler? PropertyChanged;
     }
 
 }

@@ -1032,29 +1032,42 @@
                                 RenderOptions.BitmapScalingMode="HighQuality" />
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem
-                        ui:SharedUIBindings.GenerationOT="True"
-                        Header="{DynamicResource string_egmSettings}"
-                        ToolTip="{DynamicResource string_tooltip_egmSettings}"
-                        Command="{Binding LaunchEGMSettingsCommand}">
-                        <MenuItem.Icon>
-                            <Image
-                                Source="/modmanager/toolicons/egmsettings_32.png"
-                                Width="16"
-                                RenderOptions.BitmapScalingMode="Linear" />
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem
-                        ui:SharedUIBindings.GenerationLE="True"
-                        Header="{DynamicResource string_eGMSettingsLegendaryEdition}"
-                        ToolTip="{DynamicResource string_tooltip_egmSettings}"
-                        Command="{Binding LaunchEGMSettingsLECommand}">
-                        <MenuItem.Icon>
-                            <Image
-                                Source="/modmanager/toolicons/egmsettings_32.png"
-                                Width="16"
-                                RenderOptions.BitmapScalingMode="Linear" />
-                        </MenuItem.Icon>
+                    <MenuItem Header="Configuration tools for specific mods">
+                        <MenuItem
+                            ui:SharedUIBindings.GenerationOT="True"
+                            Header="{DynamicResource string_egmSettings}"
+                            ToolTip="{DynamicResource string_tooltip_egmSettings}"
+                            Command="{Binding LaunchEGMSettingsCommand}">
+                            <MenuItem.Icon>
+                                <Image
+                                    Source="/modmanager/toolicons/egmsettings_32.png"
+                                    Width="16"
+                                    RenderOptions.BitmapScalingMode="Linear" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem
+                            ui:SharedUIBindings.GenerationLE="True"
+                            Header="{DynamicResource string_eGMSettingsLegendaryEdition}"
+                            ToolTip="{DynamicResource string_tooltip_egmSettings}"
+                            Command="{Binding LaunchEGMSettingsLECommand}">
+                            <MenuItem.Icon>
+                                <Image
+                                    Source="/modmanager/toolicons/egmsettings_32.png"
+                                    Width="16"
+                                    RenderOptions.BitmapScalingMode="Linear" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem
+                            Header="FemShep vs BroShep: Clone Configuration Utility"
+                            ToolTip="Allows you to configure the look of the clone in ME3/LE3"
+                            Command="{Binding LaunchFVBCCUCommand}">
+                            <MenuItem.Icon>
+                                <Image
+                                    Source="/modmanager/toolicons/fvbccu.png"
+                                    Width="16"
+                                    RenderOptions.BitmapScalingMode="Linear" />
+                            </MenuItem.Icon>
+                        </MenuItem>
                     </MenuItem>
                     <MenuItem
                         ui:SharedUIBindings.GenerationOT="True"

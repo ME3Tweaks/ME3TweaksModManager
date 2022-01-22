@@ -89,7 +89,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private void BackupServiceStateChanged(object? sender, EventArgs eventArgs)
         {
-            
+            OnBackupStatusChanged();
         }
 
         private void OnBackupStatusChanged(object sender, SizeChangedEventArgs e)

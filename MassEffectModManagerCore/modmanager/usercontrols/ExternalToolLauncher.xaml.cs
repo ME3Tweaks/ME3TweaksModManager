@@ -39,6 +39,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public const string MEM_LE_CMD = @"Mass Effect Modder No Gui LE"; // LE Only
         public const string MER = @"Mass Effect Randomizer";
         public const string ME2R = @"Mass Effect 2 Randomizer";
+        public const string FVBCCU = @"FVBCCU"; // Femshep vs BroShep Clone Configuration Utility
         private string tool;
 
         public static List<string> ToolsCheckedForUpdatesInThisSession = new List<string>();
@@ -70,6 +71,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     case EGMSettings:
                     case EGMSettingsLE:
                         return @"/modmanager/toolicons/egmsettings_big.png";
+                    case FVBCCU:
+                        return @"/modmanager/toolicons/fvbccu_big.png";
+
                     default:
                         return null;
                 }
@@ -263,6 +267,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         M3L.GetString(M3L.string_errorLaunchingTool));
                 }
             };
+            //downloadLink = new Uri(@"https://github.com/ME3Tweaks/ME3TweaksAssets/releases/download/nexusfiledb/FSvBSC3_1.0.0.7z"); // TESTING ONLY!!!!
             M3Log.Information(@"Downloading file: " + downloadLink);
             downloadClient.DownloadDataAsync(downloadLink);
         }
@@ -413,6 +418,10 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 case EGMSettingsLE:
                     toolGithubOwner = @"Kinkojiro";
                     toolGithubRepoName = @"EGM-Settings";
+                    break;
+                case FVBCCU:
+                    toolGithubOwner = @"Exkywor";
+                    toolGithubRepoName = @"FSvBSCustomCloneConfigurator";
                     break;
             }
 
@@ -625,9 +634,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                                 needsDownloading = true;
                             }
                         }
-
-
-
+                        
                         if (!needsDownloading)
                         {
                             resultingExecutableStringCallback?.Invoke(localExecutable);
@@ -665,11 +672,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             switch (toolname)
             {
+                case LegendaryExplorer:
                 case LegendaryExplorer_Beta:
                     {
-                        if (!M3Utilities.IsNetRuntimeInstalled(5))
+                        if (!M3Utilities.IsNetRuntimeInstalled(5, "x64"))
                         {
-                            return M3L.GetString(M3L.string_error_net5RuntimeMissing);
+                            return M3L.GetString(M3L.string_error_net5RuntimeMissing); // TODO: Change this to interpolated
                         }
                         break;
                     }
@@ -767,6 +775,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             if (toolname == MEM_LE) return @"MassEffectModder.exe";
             if (toolname == MEM_LE_CMD) return @"MassEffectModderNoGui.exe";
             if (toolname == EGMSettingsLE) return @"EGMSettings.exe";
+            if (toolname == FVBCCU) return @"FSvBSC3.exe";
             return toolname.Replace(@" ", @"") + @".exe";
         }
 

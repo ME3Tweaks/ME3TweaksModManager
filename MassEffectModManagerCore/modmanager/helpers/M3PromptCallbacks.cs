@@ -39,6 +39,35 @@ namespace ME3TweaksModManager.modmanager.helpers
         }
 
         /// <summary>
+        /// Shown when a warning message should appear. Shows only the OK option.
+        /// </summary>
+        /// <param name="title"></param>
+        /// <param name="message"></param>
+        public static bool ShowWarningYesNoCallback(string title, string message, bool defaultResponse, string yesMessage, string noMessage)
+        {
+            bool result = defaultResponse;
+            //object syncObj = new object();
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                if (Application.Current.MainWindow is Window window)
+                {
+                    result = M3L.ShowDialog(window, message, title, MessageBoxButton.YesNo, MessageBoxImage.Warning, defaultResponse ? MessageBoxResult.Yes : MessageBoxResult.No, yesContent: yesMessage, noContent: noMessage) == MessageBoxResult.Yes;
+                }
+                //lock (syncObj)
+               // {
+                //    Monitor.Pulse(syncObj);
+                //}
+            });
+            //lock (syncObj)
+            //{
+            //    Monitor.Wait(syncObj);
+            //}
+
+            return result;
+        }
+
+
+        /// <summary>
         /// Shown when an error has occurred, with an attached supplementary list of data.
         /// </summary>
         /// <param name="title"></param>
@@ -72,20 +101,20 @@ namespace ME3TweaksModManager.modmanager.helpers
         /// <returns></returns>
         public static string SelectGameExecutable(MEGame game)
         {
-            object syncObj = new object();
+            //object syncObj = new object();
             string result = null;
             Application.Current.Dispatcher.Invoke(() =>
             {
                 result = M3Utilities.PromptForGameExecutable(new[] { game });
-                lock (syncObj)
-                {
-                    Monitor.Pulse(syncObj);
-                }
+                //lock (syncObj)
+                //{
+                //    Monitor.Pulse(syncObj);
+                //}
             });
-            lock (syncObj)
-            {
-                Monitor.Wait(syncObj);
-            }
+            //lock (syncObj)
+            //{
+            //    Monitor.Wait(syncObj);
+            //}
             return result;
         }
 

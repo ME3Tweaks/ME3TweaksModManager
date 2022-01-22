@@ -23,7 +23,8 @@
         </Border>
         <DockPanel  Margin="5">
 
-        <Button DockPanel.Dock="Bottom" Content="{DynamicResource string_ok}" Click="CloseDialog" HorizontalAlignment="Right" Padding="20,3"/>
+            <Button DockPanel.Dock="Bottom" Content="Check all" Click="CheckAll" HorizontalAlignment="Left" Padding="20,3"/>
+            <Button DockPanel.Dock="Bottom" Content="{DynamicResource string_ok}" Click="CloseDialog" HorizontalAlignment="Right" Padding="20,3"/>
         <ItemsControl ItemsSource="{Binding Items}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="{x:Type ui:CheckBoxSelectionPair}">
