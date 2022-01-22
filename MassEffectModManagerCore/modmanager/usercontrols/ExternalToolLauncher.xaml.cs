@@ -362,7 +362,11 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             Log.Information($@"Launching: {localExecutable} {arguments}");
             try
             {
-                Process.Start(localExecutable, arguments);
+                var psi = new ProcessStartInfo(localExecutable, arguments)
+                {
+                    WorkingDirectory = Directory.GetParent(localExecutable).FullName,
+                };
+                Process.Start(psi);
                 Thread.Sleep(2500);
 
             }
