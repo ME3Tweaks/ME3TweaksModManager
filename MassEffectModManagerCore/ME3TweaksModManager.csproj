@@ -209,6 +209,7 @@
     <Resource Include="modmanager\toolicons\*.ico" />
     <EmbeddedResource Include="modmanager\plotmanager\**\*.pcc" />
     <EmbeddedResource Include="modmanager\merge\dlc\**\*.pcc" />
+	<EmbeddedResource Include="modmanager\merge\dlc\**\*.ini" />
     <EmbeddedResource Include="modmanager\plotmanager\**\*.u*" />
   </ItemGroup>
 

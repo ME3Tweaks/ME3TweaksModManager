@@ -317,7 +317,7 @@ namespace ME3TweaksModManager.modmanager.squadmates
                 {
                     var startupF = Path.Combine(cookedDir, $@"Startup_{M3MergeDLC.MERGE_DLC_FOLDERNAME}.pcc");
                     var startup = MEPackageHandler.OpenMEPackageFromStream(M3Utilities.GetResourceStream(
-                        $@"ME3TweaksModManager.modmanager.mergedlc.{target.Game}.Startup_{M3MergeDLC.MERGE_DLC_FOLDERNAME}.pcc"));
+                        $@"ME3TweaksModManager.modmanager.merge.dlc.{target.Game}.Startup_{M3MergeDLC.MERGE_DLC_FOLDERNAME}.pcc"));
                     var conditionalClass =
                         startup.FindExport($@"PlotManager{M3MergeDLC.MERGE_DLC_FOLDERNAME}.BioAutoConditionals");
 

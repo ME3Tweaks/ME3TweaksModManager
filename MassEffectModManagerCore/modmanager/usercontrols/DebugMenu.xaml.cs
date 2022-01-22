@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksModManager.modmanager.gamemd5;
+using ME3TweaksModManager.modmanager.merge.game2email;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.save.game2.UI;
 using ME3TweaksModManager.modmanager.squadmates;
@@ -26,6 +27,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             if (sender == nameof(MainWindow.ShowBackupNag_MenuItem)) ShowBackupNag_Click(window);
             if (sender == nameof(MainWindow.TestCode_MenuItem)) TestCode_Click(window);
             if (sender == nameof(MainWindow.DebugSquadmateMerge_MenuItem)) TestSquadmateMerge_Click(window);
+            if (sender == nameof(MainWindow.DebugEmailMerge_MenuItem)) TestEmailMerge_Click(window);
             if (sender == nameof(MainWindow.UpdateMD5DB_MenuItem)) UpdateMD5Map(window);
             if (sender == nameof(MainWindow.StampCurrentTargetWithALOTMarker_MenuItem)) StampCurrentTargetWithALOT_Click(window);
             if (sender == nameof(MainWindow.StripCurrentTargetWithALOTMarker_MenuItem)) StripCurrentTargetALOTMarker_Click(window);
@@ -60,6 +62,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             var target = window.SelectedGameTarget;
             SQMOutfitMerge.BuildBioPGlobal(target);
+        }
+
+        private static void TestEmailMerge_Click(MainWindow window)
+        {
+            var target = window.SelectedGameTarget;
+            ME2EmailMerge.RunGame2EmailMerge(target);
         }
 
         private static void ShowMEMViewer(MainWindow window)

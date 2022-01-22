@@ -7,6 +7,8 @@
     xmlns:local="clr-namespace:ME3TweaksModManager"
     xmlns:ui="clr-namespace:ME3TweaksModManager.ui"
     xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
+    xmlns:objects="clr-namespace:ME3TweaksModManager.modmanager.objects"
+    xmlns:mod="clr-namespace:ME3TweaksModManager.modmanager.objects.mod"
     mc:Ignorable="d"
     Closing="ModManagerWindow_Closing"
     ContentRendered="ModManager_ContentRendered"
@@ -1232,6 +1234,10 @@
                     <MenuItem
                         Header="{DynamicResource string_testSquadmateMerge}"
                         Name="DebugSquadmateMerge_MenuItem"
+                        Click="RouteDebugCall" />
+                    <MenuItem
+                        Header="Test Email Merge"
+                        Name="DebugEmailMerge_MenuItem"
                         Click="RouteDebugCall" />
                     <MenuItem
                         Header="{DynamicResource string_stampCurrentTargetWithALOTMarker}"
