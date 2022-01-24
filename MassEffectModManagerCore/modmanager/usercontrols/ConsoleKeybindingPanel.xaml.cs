@@ -114,8 +114,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
 
             private void ResetKeybinds()
             {
-
-                LoadKeys();
+                SetKeyWithThread(@"Tilde", @"Tab", true);
             }
 
             private bool CanResetKeybinds() => !SharedIsListeningForKey && !OperationInProgress;
