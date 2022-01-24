@@ -67,9 +67,8 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
                     using var wc = new System.Net.WebClient();
                     try
                     {
-                        //string xml = wc.DownloadStringAwareOfEncoding(staticendpoint + @"dynamichelp/latesthelp-localized2.xml");
-                        //File.WriteAllText(M3Utilities.GetLocalHelpFile(), xml);
-                        string xml = File.ReadAllText(@"B:\Documents\latesthelp-localized2.txt"); // TEST ONLY
+                        string xml = wc.DownloadStringAwareOfEncoding(staticendpoint + @"dynamichelp/latesthelp-localized2.xml");
+                        File.WriteAllText(M3Utilities.GetLocalHelpFile(), xml);
                         return ParseLocalHelp(xml, language);
                     }
                     catch (Exception e)
