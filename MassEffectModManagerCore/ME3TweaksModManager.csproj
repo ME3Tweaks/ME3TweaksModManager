@@ -3,14 +3,14 @@
 		<OutputType>WinExe</OutputType>
 		<PublishTrimmed>false</PublishTrimmed>
 		<PublishReadyToRun>false</PublishReadyToRun>
-		<PublishSingleFile>true</PublishSingleFile>
-		<TargetFrameworks>net5.0-windows8.0</TargetFrameworks>
+		<PublishSingleFile Condition="'$(Configuration)' == 'Release'">true</PublishSingleFile>
+		<TargetFrameworks>net6.0-windows8.0</TargetFrameworks>
 		<RuntimeIdentifier>win10-x64</RuntimeIdentifier>
 		<PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
 		<UseWPF>true</UseWPF>
 		<Platforms>x64</Platforms>
 		<Version>7.0.6.124</Version>
-		<Copyright>ME3Tweaks 2012 - 2021</Copyright>
+		<Copyright>ME3Tweaks 2012 - 2022</Copyright>
 		<Authors>Mgamerz</Authors>
 		<PackageId>ME3TweaksModManager</PackageId>
 		<Product>ME3Tweaks Mod Manager</Product>

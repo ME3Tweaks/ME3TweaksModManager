@@ -462,7 +462,7 @@ namespace ME3TweaksModManager.modmanager
 
         internal static string GetLocalHelpFile()
         {
-            return Path.Combine(GetME3TweaksServicesCache(), "cachedhelp.xml");
+            return Path.Combine(GetME3TweaksServicesCache(), "cachedhelp-v2.xml");
         }
 
         internal static string GetObjectInfoFolder()
