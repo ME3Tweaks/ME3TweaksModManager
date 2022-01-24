@@ -731,7 +731,7 @@
       <description>This ASI draws the list of streaming levels on the top left of the screen, as well as their current loaded state. It additionally shows the amount of memory the process is currently using, as well as as the maximum.  The HUD can be toggled on and off by pressing CTRL + T.</description>
       <version>1</version>
       <hash>c6884c322f5104dc8dd166b5b2aeb71c</hash>
-      <sourcecode>https://github.com/ME3Tweaks/LE2-ASI-Plugins/tree/main/LE2StreamingLevelsHUD</sourcecode>
+      <sourcecode>https://github.com/ME3Tweaks/LE2-ASI-Plugins/tree/master/LE2StreamingLevelsHUD</sourcecode>
       <downloadlink>https://github.com/ME3Tweaks/LE2-ASI-Plugins/releases/download/LE2StreamingLevelsHUD-v1.0/LE2StreamingLevelsHUD-1.0.asi</downloadlink>
       <autoremovegroups/>
     </asimod>
@@ -742,7 +742,7 @@
       <description>This ASI draws the list of streaming levels on the top left of the screen, as well as their current loaded state. It also includes the last touched BioTriggerStream. It additionally shows the amount of memory the process is currently using, as well as as the maximum, and the text size scales based on the resolution of your screen.  The HUD can be toggled on and off by pressing CTRL + T.</description>
       <version>2</version>
       <hash>8f032b028e85fb3a91cb64d1022ddae7</hash>
-      <sourcecode>https://github.com/ME3Tweaks/LE2-ASI-Plugins/tree/main/LE2StreamingLevelsHUD</sourcecode>
+      <sourcecode>https://github.com/ME3Tweaks/LE2-ASI-Plugins/tree/master/LE2StreamingLevelsHUD</sourcecode>
       <downloadlink>https://github.com/ME3Tweaks/LE2-ASI-Plugins/releases/download/LE2StreamingLevelsHUD-v2.0/LE2StreamingLevelsHUD-v2.0.asi</downloadlink>
       <autoremovegroups/>
     </asimod>
@@ -755,8 +755,19 @@
       <description>This ASI draws the list of streaming levels on the top left of the screen, as well as their current loaded state. It additionally shows the amount of memory the process is currently using, as well as as the maximum.  The HUD can be toggled on and off by pressing CTRL + T.</description>
       <version>1</version>
       <hash>5cc18d4af6272eed15d749f5fe43334b</hash>
-      <sourcecode>https://github.com/ME3Tweaks/LE3-ASI-Plugins/tree/main/LE3StreamingLevelsHUD</sourcecode>
+      <sourcecode>https://github.com/ME3Tweaks/LE3-ASI-Plugins/tree/master/LE3StreamingLevelsHUD</sourcecode>
       <downloadlink>https://github.com/ME3Tweaks/LE3-ASI-Plugins/releases/download/LE3SteamingLevelsHUD-v1.0/LE3StreamingLevelsHUD-v1.0.asi</downloadlink>
+      <autoremovegroups/>
+    </asimod>
+    <asimod>
+      <name>Streaming Levels HUD</name>
+      <installedname>StreamingLevelsHUD</installedname>
+      <author>Mgamerz</author>
+      <description>This ASI draws the list of streaming levels on the top left of the screen, as well as their current loaded state. It additionally shows the amount of memory the process is currently using, as well as as the maximum.  The HUD can be toggled on and off by pressing CTRL + T.</description>
+      <version>2</version>
+      <hash>7513d1fe15259323ebefe3567f749e52</hash>
+      <sourcecode>https://github.com/ME3Tweaks/LE3-ASI-Plugins/tree/master/LE3StreamingLevelsHUD</sourcecode>
+      <downloadlink>https://github.com/ME3Tweaks/LE3-ASI-Plugins/releases/download/LE3StreamingLevelsHUD-v2.0/LE3StreamingLevelsHUD-v2.0.asi</downloadlink>
       <autoremovegroups/>
     </asimod>
   </updategroup>
@@ -786,6 +797,32 @@
       <autoremovegroups/>
     </asimod>
   </updategroup>
+  <updategroup groupid="42" game="4" hidden="0">
+    <asimod>
+      <name>LE1 LEX Interop</name>
+      <installedname>LE1LEXInterop</installedname>
+      <author>henbagle</author>
+      <description>This ASI allows Legendary Explorer to communicate with Mass Effect (Legendary Edition) so tools such as Live Level Editor can be used. This ASI does nothing on its own.</description>
+      <version>1</version>
+      <hash>1e0e463a10a598265c380fde97f9c8d8</hash>
+      <sourcecode>https://github.com/ME3Tweaks/LE1-ASI-Plugins/tree/main/LE1LEXInterop</sourcecode>
+      <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LE1LEXInterop-v1.0/ZZZ_LEXInteropLE1.asi</downloadlink>
+      <autoremovegroups/>
+    </asimod>
+  </updategroup>
+  <updategroup groupid="43" game="4" hidden="0">
+    <asimod>
+      <name>2DA Printer</name>
+      <installedname>LE12DAPrinter</installedname>
+      <author>Mgamerz</author>
+      <description>This ASI dumps the loaded Bio2DA and Bio2DANumberedRows objects from memory to a file named '2DAPrintLog.txt', next to the game executable. To initiate the print, press CTRL + 2 when the main rendering interface is on screen (e.g, not during a prerendered video).</description>
+      <version>1</version>
+      <hash>abc74cc701493959e52a3ad4193e8fa6</hash>
+      <sourcecode>https://github.com/ME3Tweaks/LE1-ASI-Plugins/tree/main/2DAPrinter</sourcecode>
+      <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LE12DAPrinter-v1.0/2DAPrinter-v1.0.asi</downloadlink>
+      <autoremovegroups/>
+    </asimod>
+  </updategroup>
   <updategroup groupid="70" game="4" hidden="0">
     <asimod>
       <name>Debug Logger</name>
@@ -796,6 +833,17 @@
       <hash>018912d35d95afeb4130883cf1b9852b</hash>
       <sourcecode>https://github.com/ME3Tweaks/LE1-ASI-Plugins/tree/LEDebugLogger-v1.0/SelfDebugger</sourcecode>
       <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LEDebugLogger-v1.0/LEDebugLogger-v.1.0.asi</downloadlink>
+      <autoremovegroups/>
+    </asimod>
+    <asimod>
+      <name>Debug Logger</name>
+      <installedname>LE1DebugLogger</installedname>
+      <author>ME3Tweaks</author>
+      <description>This ASI works logs all text written to the debug console (which the game does), as well as logs all imports that fail to resolve. Note that some imports failng to resolve are normal engine behavior due to how the game is compiled. The log is located in DebugLogger.txt next to the game executable.</description>
+      <version>2</version>
+      <hash>2d500c8632ba6a2d26ccf08b8d6992bd</hash>
+      <sourcecode>https://github.com/ME3Tweaks/LE1-ASI-Plugins/tree/main/LE1DebugLogger</sourcecode>
+      <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LE1DebugLogger-v2.0/LE1DebugLogger.asi</downloadlink>
       <autoremovegroups/>
     </asimod>
   </updategroup>
@@ -811,6 +859,17 @@
       <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LEDebugLogger-v1.0/LEDebugLogger-v.1.0.asi</downloadlink>
       <autoremovegroups/>
     </asimod>
+    <asimod>
+      <name>Debug Logger</name>
+      <installedname>LE2DebugLogger</installedname>
+      <author>ME3Tweaks</author>
+      <description>This ASI works logs all text written to the debug console (which the game does), as well as logs all imports that fail to resolve. Note that some imports failng to resolve are normal engine behavior due to how the game is compiled. The log is located in DebugLogger.txt next to the game executable.</description>
+      <version>2</version>
+      <hash>1ceaa0ca38d4994bc5be257ca895b1c1</hash>
+      <sourcecode>https://github.com/ME3Tweaks/LE2-ASI-Plugins/tree/master/LE2DebugLogger</sourcecode>
+      <downloadlink>https://github.com/ME3Tweaks/LE2-ASI-Plugins/releases/download/LE2DebugLogger-v2.0/LE2DebugLogger.asi</downloadlink>
+      <autoremovegroups/>
+    </asimod>
   </updategroup>
   <updategroup groupid="72" game="6" hidden="0">
     <asimod>
@@ -824,17 +883,15 @@
       <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LEDebugLogger-v1.0/LEDebugLogger-v.1.0.asi</downloadlink>
       <autoremovegroups/>
     </asimod>
-  </updategroup>
-  <updategroup groupid="80" game="4" hidden="0">
     <asimod>
-      <name>LE1 LEX Interop</name>
-      <installedname>LE1LEXInterop</installedname>
-      <author>henbagle</author>
-      <description>This ASI allows Legendary Explorer to communicate with Mass Effect (Legendary Edition) so tools such as Live Level Editor can be used. This ASI does nothing on its own.</description>
-      <version>1</version>
-      <hash>1e0e463a10a598265c380fde97f9c8d8</hash>
-      <sourcecode>https://github.com/ME3Tweaks/LE1-ASI-Plugins/tree/main/LE1LEXInterop</sourcecode>
-      <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LE1LEXInterop-v1.0/ZZZ_LEXInteropLE1.asi</downloadlink>
+      <name>Debug Logger</name>
+      <installedname>LE3DebugLogger</installedname>
+      <author>ME3Tweaks</author>
+      <description>This ASI works logs all text written to the debug console (which the game does), as well as logs all imports that fail to resolve. Note that some imports failng to resolve are normal engine behavior due to how the game is compiled. The log is located in DebugLogger.txt next to the game executable.</description>
+      <version>2</version>
+      <hash>c1cef0c60a7603fb98318c31b99732a9</hash>
+      <sourcecode>https://github.com/ME3Tweaks/LE3-ASI-Plugins/tree/master/LE3DebugLogger</sourcecode>
+      <downloadlink>https://github.com/ME3Tweaks/LE3-ASI-Plugins/releases/download/LE3DebugLogger-v2.0/LE3DebugLogger.asi</downloadlink>
       <autoremovegroups/>
     </asimod>
   </updategroup>
