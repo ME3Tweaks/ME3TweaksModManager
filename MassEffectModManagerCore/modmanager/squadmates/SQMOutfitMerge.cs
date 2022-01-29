@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
@@ -155,6 +156,7 @@ namespace ME3TweaksModManager.modmanager.squadmates
 
         private static int GetSquadmateOutfitInt(string squadmateName, MEGame game)
         {
+            M3Log.Information($@"SQMMERGE: Generating outfit int for {game} {squadmateName}");
             if (game.IsGame2())
             {
                 switch (squadmateName)
@@ -198,9 +200,11 @@ namespace ME3TweaksModManager.modmanager.squadmates
             //var mergeFiles = loadedFiles.Where(x =>
             //    x.Key.StartsWith(@"BioH_") && x.Key.Contains(@"_DLC_MOD_") && x.Key.EndsWith(@".pcc") && !x.Key.Contains(@"_LOC_") && !x.Key.Contains(@"_Explore."));
 
+            M3Log.Information($@"SQMMERGE: Building BioP_Global");
             var appearanceInfo = new CaseInsensitiveDictionary<List<SquadmateInfoSingle>>();
 
             int appearanceId = 255; // starting
+            int currentConditional = STARTING_OUTFIT_CONDITIONAL;
 
             // Scan squadmate merge files
             var sqmSupercedances = M3Directories.GetFileSupercedances(target, new[] { @".sqm" });
@@ -209,6 +213,8 @@ namespace ME3TweaksModManager.modmanager.squadmates
                 infoList.Reverse();
                 foreach (var dlc in infoList)
                 {
+                    M3Log.Information($@"SQMMERGE: Processing {dlc}");
+
                     var jsonFile = Path.Combine(M3Directories.GetDLCPath(target), dlc, target.Game.CookedDirName(), SQUADMATE_MERGE_MANIFEST_FILE);
                     var infoPackage = JsonConvert.DeserializeObject<SquadmateMergeInfo>(File.ReadAllText(jsonFile));
                     if (!infoPackage.Validate(dlc, target, loadedFiles))
@@ -216,20 +222,26 @@ namespace ME3TweaksModManager.modmanager.squadmates
                         continue; // skip this
                     }
 
+                    // Enumerate all outfits listed for a single squadmate
                     foreach (var outfit in infoPackage.Outfits)
                     {
                         List<SquadmateInfoSingle> list;
+
+                        // See if we already have an outfit list for this squadmate, maybe from another mod...
                         if (!appearanceInfo.TryGetValue(outfit.HenchName, out list))
                         {
                             list = new List<SquadmateInfoSingle>();
                             appearanceInfo[outfit.HenchName] = list;
                         }
 
-                        outfit.ConditionalIndex = STARTING_OUTFIT_CONDITIONAL + list.Count;
+                        outfit.ConditionalIndex = currentConditional++; // This is always incremented, so it might appear out of order in game files depending on how mod order is processed, that should be okay though.
                         outfit.AppearanceId = appearanceId++; // may need adjusted
                         outfit.DLCName = dlc;
                         list.Add(outfit);
+                        M3Log.Information($@"SQMMERGE: ConditionalIndex for {outfit.HenchName} appearanceid {outfit.AppearanceId}: {outfit.ConditionalIndex}");
                     }
+
+                    Debug.WriteLine("hi");
                 }
             }
 
