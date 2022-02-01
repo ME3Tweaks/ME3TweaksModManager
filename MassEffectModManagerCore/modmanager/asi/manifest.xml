@@ -823,6 +823,45 @@
       <autoremovegroups/>
     </asimod>
   </updategroup>
+  <updategroup groupid="44" game="4" hidden="0">
+    <asimod>
+      <name>PNG ScreenShots</name>
+      <installedname>LE1PNGScreenShots</installedname>
+      <author>Mgamerz</author>
+      <description>This ASI makes screenshots (either through photo mode, or its backing console command 'screenshot') save as .png files instead of .bmp files. This saves significant disk space and makes them easier to share. Files are named PNGLE1ScreenShot&lt;Number&gt;.png to help differentiate the source game.</description>
+      <version>1</version>
+      <hash>38029821ac3a00d26570b4e21cd32056</hash>
+      <sourcecode>https://github.com/ME3Tweaks/LE1-ASI-Plugins/tree/main/PNGScreenshots</sourcecode>
+      <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LE1PNGScreenShots-v1.0/LE1PNGScreenShots-v1.0.asi</downloadlink>
+      <autoremovegroups/>
+    </asimod>
+  </updategroup>
+  <updategroup groupid="45" game="5" hidden="0">
+    <asimod>
+      <name>PNG ScreenShots</name>
+      <installedname>LE2PNGScreenShots</installedname>
+      <author>Mgamerz</author>
+      <description>This ASI makes screenshots (either through photo mode, or its backing console command 'screenshot') save as .png files instead of .bmp files. This saves significant disk space and makes them easier to share. Files are named PNGLE2ScreenShot&lt;Number&gt;.png to help differentiate the source game.</description>
+      <version>1</version>
+      <hash>314252f9ffc2a200df11e8fc81c7780b</hash>
+      <sourcecode>https://github.com/ME3Tweaks/LE2-ASI-Plugins/tree/master/LE2PNGScreenshots</sourcecode>
+      <downloadlink>https://github.com/ME3Tweaks/LE2-ASI-Plugins/releases/download/LE2PNGScreenShots-v1.0/LE2PNGScreenShots-v1.0.asi</downloadlink>
+      <autoremovegroups/>
+    </asimod>
+  </updategroup>
+  <updategroup groupid="46" game="6" hidden="0">
+    <asimod>
+      <name>PNG ScreenShots</name>
+      <installedname>LE3PNGScreenShots</installedname>
+      <author>Mgamerz</author>
+      <description>This ASI makes screenshots (either through photo mode, or its backing console command 'screenshot') save as .png files instead of .bmp files. This saves significant disk space and makes them easier to share. Files are named PNGLE3ScreenShot&lt;Number&gt;.png to help differentiate the source game.</description>
+      <version>1</version>
+      <hash>f4322b4be564b683ac35fa6e893a59dd</hash>
+      <sourcecode>https://github.com/ME3Tweaks/LE3-ASI-Plugins/tree/master/LE3PNGScreenshots</sourcecode>
+      <downloadlink>https://github.com/ME3Tweaks/LE3-ASI-Plugins/releases/download/LE3PNGScreenShots-v1.0/LE3PNGScreenShots-v1.0.asi</downloadlink>
+      <autoremovegroups/>
+    </asimod>
+  </updategroup>
   <updategroup groupid="70" game="4" hidden="0">
     <asimod>
       <name>Debug Logger</name>
