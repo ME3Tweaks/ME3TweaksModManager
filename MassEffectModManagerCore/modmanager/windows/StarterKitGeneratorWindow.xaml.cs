@@ -279,8 +279,14 @@ namespace ME3TweaksModManager.modmanager.windows
                 if (!reg.IsMatch(ModDLCFolderName))
                 {
                     return RuleResult.Invalid(M3L.GetString(M3L.string_dLCFolderNameCanOnlyConsistOf));
-
                 }
+
+                // 02/02/2022 - Discovered that LE3 rejects DLC foldernames containing case sensitive 'MP'
+                if (Game == MEGame.LE3 && ModDLCFolderName.Contains(@"MP"))
+                {
+                    return RuleResult.Invalid("DLC mod foldername cannot contain case sensitive string 'MP' due to code in DLC loader for LE3");
+                }
+
                 return RuleResult.Valid();
             });
             Validator.AddRule(nameof(ModURL), () =>
