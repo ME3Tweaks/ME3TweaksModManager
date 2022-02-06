@@ -157,7 +157,7 @@ namespace ME3TweaksModManager.modmanager.objects
         {
             Task.Run(() =>
             {
-                RestoreController.PerformRestore(RestoreTarget, RestoreTarget.TargetPath);
+                RestoreController.PerformRestore(RestoreTarget, RestoreTarget.IsCustomOption ? null : RestoreTarget.TargetPath);
             });
         }
     }
