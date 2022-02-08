@@ -5,89 +5,53 @@
     xmlns:objects1="clr-namespace:ME3TweaksModManager.modmanager.objects"
     xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
     xmlns:converters="clr-namespace:ME3TweaksModManager.modmanager.converters"
+    xmlns:modinstaller="clr-namespace:ME3TweaksModManager.modmanager.usercontrols.modinstaller"
     mc:Ignorable="d"
     DataContext="{Binding RelativeSource={RelativeSource Self}}"
-    Height="Auto"
-    MinWidth="300"
-    MaxWidth="500">
+    Width="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.8_300_650', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualWidth}"
+    Height="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.7_600', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualHeight}"
+>
     <usercontrols:MMBusyPanelBase.Resources>
         <converters:GroupNameToColorConverter
             x:Key="GroupNameToColorConverter" />
         <converters:ImageTooltipVerticalOffsetConverter
             x:Key="ImageTooltipVerticalOffsetConverter" />
     </usercontrols:MMBusyPanelBase.Resources>
-    <StackPanel
+    <Grid
         VerticalAlignment="Center">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
         <Image
+            Grid.Row="0"
             Source="{Binding ModBeingInstalled.BannerBitmap}"
             Visibility="{Binding ModBeingInstalled.BannerBitmap, Converter= {StaticResource NullVisibilityConverter}}"
             RenderOptions.BitmapScalingMode="HighQuality" />
-        <DockPanel
+        <Grid
+            Grid.Row="1"
             Visibility="{Binding ModIsInstalling, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Inverse'}"
             VerticalAlignment="Center">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
             <TextBlock
                 TextAlignment="Center"
                 FontSize="16"
                 FontWeight="Bold"
                 Text="{DynamicResource string_ui_title_selectInstallationOptions}"
                 Margin="0,5,0,0"
-                DockPanel.Dock="Top" />
+                Grid.Row="0"/>
             <TextBlock
                 TextAlignment="Center"
                 Text="{Binding ModBeingInstalled.ModName}"
-                DockPanel.Dock="Top"
+                Grid.Row="1"
                 Margin="0,0,0,10" />
-            <!-- Bottom stuff-->
-            <DockPanel
-                DockPanel.Dock="Bottom">
-                <TextBlock
-                    Visibility="{Binding AllOptionsAreAutomatic, Converter={StaticResource BoolToVisibilityConverter}}"
-                    DockPanel.Dock="Top"
-                    TextWrapping="Wrap"
-                    HorizontalAlignment="Left"
-                    Text="{DynamicResource string_ui_allAlternatesAreAutomatic}" />
-                <TextBlock
-                    Text="{DynamicResource string_installTo}"
-                    FontWeight="Bold"
-                    DockPanel.Dock="Top" />
-                <usercontrols:TargetSelector
-                    ShowTextureInfo="False"
-                    ToolTip="{DynamicResource string_tooltip_targetThatTheModWillBeInstalledTo}"
-                    DockPanel.Dock="Top"
-                    AvailableTargets="{Binding InstallationTargets}"
-                    SelectedGameTarget="{Binding SelectedGameTarget, Mode=TwoWay}"
-                    MinWidth="350" />
-                <Button
-                    Content="{DynamicResource string_install}"
-                    DockPanel.Dock="Right"
-                    Padding="40,4"
-                    Command="{Binding InstallCommand}"
-                    Margin="0,4,0,0"
-                    ToolTip="{DynamicResource string_installMod}" />
-                <Button
-                    Content="{DynamicResource string_cancel}"
-                    DockPanel.Dock="Right"
-                    Padding="5,4"
-                    Margin="5,4,5,0"
-                    Click="InstallCancel_Click"
-                    ToolTip="{DynamicResource string_abortInstallingMod}" />
-                <!-- Dirty hack so we don't have to extend GameToVisibilityConverter -->
-                <CheckBox
-                    Content="{DynamicResource string_compressPackages}"
-                    Visibility="{Binding ModBeingInstalled.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='ME2'}"
-                    ToolTip="{DynamicResource string_tooltip_modinstaller_compressPackages}"
-                    IsChecked="{Binding CompressInstalledPackages}"
-                    Margin="0,4,0,0" />
-                <CheckBox
-                    Content="{DynamicResource string_compressPackages}"
-                    Visibility="{Binding ModBeingInstalled.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='ME3'}"
-                    ToolTip="{DynamicResource string_tooltip_modinstaller_compressPackages}"
-                    IsChecked="{Binding CompressInstalledPackages}"
-                    Margin="0,4,0,0" />
-            </DockPanel>
-            <!-- End bottom stuff -->
             <ScrollViewer
-                MaxHeight="400"
+                Grid.Row="2"
                 BorderThickness="0"
                 Padding="0"
                 Focusable="False"
@@ -95,165 +59,9 @@
                 <ItemsControl
                     ItemsSource="{Binding AllAlternateOptions}">
                     <ItemsControl.Resources>
-                        <DataTemplate
-                            DataType="{x:Type objects1:AlternateGroup}">
-                            <ComboBox ItemsSource="{Binding AlternateOptions}" SelectedItem="{Binding SelectedOption}"/>
-                            <!--<Grid
-                                Margin="0,0,0,5"
-                                MouseUp="AlternateItem_MouseUp"
-                                ToolTipService.IsEnabled="{Binding ImageBitmap, Converter={StaticResource NotNullToBoolConverter}}"
-                                ToolTipService.InitialShowDelay="0"
-                                ToolTipService.BetweenShowDelay="0">
-                                <Grid.ToolTip>
-                                    <ToolTip
-                                        Placement="Right"
-                                        Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"
-                                        BorderThickness="0"
-                                        VerticalOffset="{Binding ImageHeight, Converter={StaticResource ImageTooltipVerticalOffsetConverter}}">
-                                        <DockPanel>
-                                            <Image
-                                                Source="{Binding ImageBitmap}"
-                                                Height="{Binding ImageHeight}" />
-                                        </DockPanel>
-                                    </ToolTip>
-                                </Grid.ToolTip>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition
-                                        Height="Auto" />
-                                    <RowDefinition
-                                        Height="Auto" />
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition
-                                        Width="25" />
-                                    <ColumnDefinition
-                                        Width="*" />
-                                    <ColumnDefinition
-                                        Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <CheckBox
-                                    Grid.Row="0"
-                                    Grid.Column="0"
-                                    Grid.RowSpan="2"
-                                    IsEnabled="{Binding UIIsSelectable}"
-                                    Margin="5,0,0,0"
-                                    IsChecked="{Binding IsSelected, Mode=TwoWay}"
-                                    Visibility="{Binding GroupName, Converter={StaticResource NullVisibilityConverter}, ConverterParameter='Reversed'}"
-                                    DockPanel.Dock="Left"
-                                    VerticalContentAlignment="Center"
-                                    VerticalAlignment="Center"
-                                    Padding="0,0,5,0"
-                                    Opacity="{Binding CheckboxOpacity}" />
-                                <RadioButton
-                                    Grid.Row="0"
-                                    Grid.Column="0"
-                                    Grid.RowSpan="2"
-                                    IsEnabled="{Binding UIIsSelectable}"
-                                    Margin="5,0,0,0"
-                                    IsChecked="{Binding IsSelected, Mode=TwoWay}"
-                                    GroupName="{Binding GroupName}"
-                                    Visibility="{Binding GroupName, Converter={StaticResource NullVisibilityConverter}}"
-                                    DockPanel.Dock="Left"
-                                    VerticalContentAlignment="Center"
-                                    VerticalAlignment="Center"
-                                    Padding="0,0,5,0"
-                                    Opacity="{Binding CheckboxOpacity}" />
-                                <Grid
-                                    DockPanel.Dock="Top"
-                                    Background="Transparent"
-                                    Grid.Row="0"
-                                    Grid.Column="1">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition
-                                            Height="Auto" />
-                                        <RowDefinition
-                                            Height="Auto" />
-                                        <RowDefinition
-                                            Height="Auto" />
-                                    </Grid.RowDefinitions>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition
-                                            Width="Auto" />
-                                        <ColumnDefinition
-                                            Width="Auto" />
-                                    </Grid.ColumnDefinitions>
-                                    <StackPanel
-                                        Orientation="Horizontal">
-                                        <TextBlock
-                                            Text="{Binding FriendlyName}"
-                                            VerticalAlignment="Center"
-                                            DockPanel.Dock="Left"
-                                            FontWeight="Bold"
-                                            Opacity="{Binding TextOpacity}" />
-                                        <TextBlock
-                                            Foreground="LimeGreen"
-                                            Text="{Binding ApplicableAutoText, StringFormat=' - {0}'}"
-                                            VerticalAlignment="Center"
-                                            FontWeight="Bold"
-                                            Visibility="{Binding UIRequired, Converter={StaticResource BoolToVisibilityConverter}}"
-                                            Opacity="{Binding TextOpacity}" />
-                                        <TextBlock
-                                            Foreground="Red"
-                                            Text="{Binding NotApplicableAutoText, StringFormat=' - {0}'}"
-                                            VerticalAlignment="Center"
-                                            FontWeight="Bold"
-                                            Visibility="{Binding UINotApplicable, Converter={StaticResource BoolToVisibilityConverter}}"
-                                            Opacity="{Binding TextOpacity}" />
-                                    </StackPanel>
-                                    <TextBlock
-                                        Text="{Binding GroupName, Converter={StaticResource LocalizationConverter}, ConverterParameter='string_interp_optionGroupX'}"
-                                        FontSize="10"
-                                        Foreground="{Binding GroupName, Converter={StaticResource GroupNameToColorConverter}}"
-                                        Grid.Row="1"
-                                        Grid.Column="0"
-                                        Visibility="{Binding GroupName, Converter={StaticResource NullVisibilityConverter}}" />
-                                    <TextBlock
-                                        Grid.Row="2"
-                                        Grid.Column="0"
-                                        Grid.ColumnSpan="2"
-                                        DockPanel.Dock="Bottom"
-                                        Text="{Binding Description}"
-                                        VerticalAlignment="Center"
-                                        HorizontalAlignment="Left"
-                                        TextWrapping="Wrap"
-                                        Foreground="{DynamicResource {x:Static adonisUi:Brushes.SlightlyDimmedForegroundBrush}}"
-                                        MaxWidth="410"
-                                        FontSize="11"
-                                        Padding="0,0,20,0"
-                                        Opacity="{Binding TextOpacity}" />
-                                </Grid>
-                                <DockPanel
-                                    Grid.RowSpan="2"
-                                    Grid.Row="0"
-                                    Grid.Column="2"
-                                    Background="Transparent">
-                                    <fa5:ImageAwesome
-                                        Icon="Solid_Image"
-                                        Height="16"
-                                        Margin="10,0"
-                                        Opacity="0.75"
-                                        VerticalAlignment="Center"
-                                        Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
-                                        Visibility="{Binding ImageBitmap, Converter={StaticResource NullVisibilityConverter}}" />
-                                </DockPanel>
-                                <Grid.Style>
-                                    <Style
-                                        TargetType="{x:Type Grid}">
-                                        <Style.Triggers>
-                                            <Trigger
-                                                Property="IsMouseOver"
-                                                Value="True">
-                                                <Setter
-                                                    Property="Background"
-                                                    Value="{DynamicResource {x:Static adonisUi:Brushes.HoverBackgroundBrush}}" />
-                                                <Setter
-                                                    Property="Cursor"
-                                                    Value="Hand" />
-                                            </Trigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Grid.Style>
-                            </Grid>-->
+                        <DataTemplate DataType="{x:Type objects1:AlternateGroup}">
+                            <modinstaller:AlternateOptionSelector/>
+                            <!-- DataContext is the AlternateGroup -->
                         </DataTemplate>
 
                         <DataTemplate
@@ -418,8 +226,58 @@
                     </ItemsControl.Resources>
                 </ItemsControl>
             </ScrollViewer>
-        </DockPanel>
+            <DockPanel
+                Grid.Row="3">
+                <TextBlock
+                    Visibility="{Binding AllOptionsAreAutomatic, Converter={StaticResource BoolToVisibilityConverter}}"
+                    DockPanel.Dock="Top"
+                    TextWrapping="Wrap"
+                    HorizontalAlignment="Left"
+                    Text="{DynamicResource string_ui_allAlternatesAreAutomatic}" />
+                <TextBlock
+                    Text="{DynamicResource string_installTo}"
+                    FontWeight="Bold"
+                    DockPanel.Dock="Top" />
+                <usercontrols:TargetSelector
+                    ShowTextureInfo="False"
+                    ToolTip="{DynamicResource string_tooltip_targetThatTheModWillBeInstalledTo}"
+                    DockPanel.Dock="Top"
+                    AvailableTargets="{Binding InstallationTargets}"
+                    SelectedGameTarget="{Binding SelectedGameTarget, Mode=TwoWay}"
+                    MinWidth="350" />
+                <Button
+                    Content="{DynamicResource string_install}"
+                    DockPanel.Dock="Right"
+                    Padding="40,4"
+                    Command="{Binding InstallCommand}"
+                    Margin="0,4,0,0"
+                    ToolTip="{DynamicResource string_installMod}" />
+                <Button
+                    Content="{DynamicResource string_cancel}"
+                    DockPanel.Dock="Right"
+                    Padding="5,4"
+                    Margin="5,4,5,0"
+                    Click="InstallCancel_Click"
+                    ToolTip="{DynamicResource string_abortInstallingMod}" />
+                <!-- Dirty hack so we don't have to extend GameToVisibilityConverter -->
+                <CheckBox
+                    Content="{DynamicResource string_compressPackages}"
+                    Visibility="{Binding ModBeingInstalled.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='ME2'}"
+                    ToolTip="{DynamicResource string_tooltip_modinstaller_compressPackages}"
+                    IsChecked="{Binding CompressInstalledPackages}"
+                    Margin="0,4,0,0" />
+                <CheckBox
+                    Content="{DynamicResource string_compressPackages}"
+                    Visibility="{Binding ModBeingInstalled.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='ME3'}"
+                    ToolTip="{DynamicResource string_tooltip_modinstaller_compressPackages}"
+                    IsChecked="{Binding CompressInstalledPackages}"
+                    Margin="0,4,0,0" />
+            </DockPanel>
+            <!-- End bottom stuff -->
+
+        </Grid>
         <StackPanel
+            Grid.Row="1"
             Visibility="{Binding ModIsInstalling, Converter={StaticResource BoolToVisibilityConverter}}"
             VerticalAlignment="Center">
             <fa5:ImageAwesome
@@ -451,5 +309,5 @@
                 TextWrapping="Wrap"
                 TextAlignment="Center" />
         </StackPanel>
-    </StackPanel>
+    </Grid>
 </usercontrols:MMBusyPanelBase>
