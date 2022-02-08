@@ -439,6 +439,15 @@ namespace MassEffectModManagerCore.modmanager.asi
         public static bool InstallASIToTargetByGroupID(int updateGroup, string nameForLogging, GameTarget gameTarget)
         {
             var group = GetASIModsByGame(gameTarget.Game).FirstOrDefault(x => x.UpdateGroupId == updateGroup);
+
+            // Transition code: Testing Autoload Enabler
+            if (Settings.BetaMode && updateGroup == 73 && group == null) // Autoload Enabler (TESTING)
+            {
+                // testing asi was removed from manifest, it moved to production
+                updateGroup = 32; // Autoload Enabler standard
+                group = GetASIModsByGame(gameTarget.Game).FirstOrDefault(x => x.UpdateGroupId == updateGroup);
+            }
+
             if (group == null)
             {
                 // Cannot find ASI!

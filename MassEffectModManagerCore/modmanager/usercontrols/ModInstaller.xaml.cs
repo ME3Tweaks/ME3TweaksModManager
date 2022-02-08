@@ -910,7 +910,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             else if (ModBeingInstalled.Game == MEGame.LE1)
             {
                 ASIManager.InstallASIToTargetByGroupID(29, @"AutoTOC_LE", SelectedGameTarget);
-                ASIManager.InstallASIToTargetByGroupID(32, @"AutoloadEnabler", SelectedGameTarget);
+                ASIManager.InstallASIToTargetByGroupID(Settings.BetaMode ? 73 : 32, @"AutoloadEnabler", SelectedGameTarget); // REMOVE THIS CODE WHEN AUTOLOAD IS DONE
             }
             else if (ModBeingInstalled.Game == MEGame.LE2)
             {
