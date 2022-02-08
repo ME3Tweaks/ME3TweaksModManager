@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using LegendaryExplorerCore.Packages;
+using LegendaryExplorerCore.TLK;
 using LegendaryExplorerCore.TLK.ME1;
 using MassEffectModManagerCore.modmanager.localizations;
 using MassEffectModManagerCore.modmanager.me3tweaks;
@@ -102,24 +103,24 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                         var flags = int.Parse(node.Element(@"flags").Value);
                         var data = node.Element(@"data").Value;
 
-                        ME1TalkFile.TLKStringRef strRef = talkFile.StringRefs.FirstOrDefault(x => x.StringID == tlkId);
+                        var strRef = talkFile.StringRefs.FirstOrDefault(x => x.StringID == tlkId);
                         if (strRef == null)
                         {
                             CLog.Information($@"Adding new TLK id {tlkId}", Settings.LogModInstallation);
-                            strRefs.Add(new ME1TalkFile.TLKStringRef(tlkId, flags, data));
+                            strRefs.Add(new TLKStringRef(tlkId, data, flags));
                         }
                         else
                         {
-                            if (numDone <= 25)
-                            {
-                                //CLog.Information($@"Updating TLK id {tlkId}", Settings.LogModInstallation);
-                                if (numDone == 25)
-                                {
-                                    //CLog.Information($@"Remaining updates will not be logged for this TLK to trim log size...", Settings.LogModInstallation);
-                                }
-                            }
+                            //if (numDone <= 25)
+                            //{
+                            //    //CLog.Information($@"Updating TLK id {tlkId}", Settings.LogModInstallation);
+                            //    if (numDone == 25)
+                            //    {
+                            //        //CLog.Information($@"Remaining updates will not be logged for this TLK to trim log size...", Settings.LogModInstallation);
+                            //    }
+                            //}
                             strRef.Data = data;
-                            strRef.Flags = flags;
+                            // Flags update was removed here
                         }
 
                         numDone++;
@@ -127,7 +128,7 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
 
                     HuffmanCompression huff = new HuffmanCompression();
                     huff.LoadInputData(strRefs);
-                    huff.serializeTalkfileToExport(exp);
+                    huff.SerializeTalkfileToExport(exp);
                     if (savePackage && package.IsModified)
                     {
                         Log.Information($@"Saving TLKMerged package {packagePath}");

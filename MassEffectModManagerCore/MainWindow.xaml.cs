@@ -3649,9 +3649,9 @@ namespace MassEffectModManagerCore
                             {
                                 var dest = Path.Combine(Directory.GetParent(files[0]).FullName, Path.GetFileNameWithoutExtension(files[0]) + @".xml");
                                 Log.Information($@"Decompiling TLK file: {files[0]} -> {dest}");
-                                var tf = new TalkFile();
+                                var tf = new ME2ME3TalkFile();
                                 tf.LoadTlkData(files[0]);
-                                tf.DumpToFile(dest);
+                                tf.SaveToXML(dest);
                                 Log.Information(@"Decompiled TLK file");
                             };
                             nbw.RunWorkerCompleted += (a, b) =>

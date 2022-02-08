@@ -250,7 +250,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
                     var vanillaTLK = VanillaDatabaseService.FetchBasegameFile(MEGame.ME3, filename);
                     if (vanillaTLK != null)
                     {
-                        var tf = new TalkFile();
+                        var tf = new ME2ME3TalkFile();
                         tf.LoadTlkDataFromStream(vanillaTLK);
                         SetCurrentValueCallback?.Invoke(Interlocked.Increment(ref numDoneTLKSteps)); //decomp
                         foreach (var strnode in newstringnodes)

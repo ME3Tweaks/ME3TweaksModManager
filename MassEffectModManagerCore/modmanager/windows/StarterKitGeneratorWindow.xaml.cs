@@ -22,6 +22,7 @@ using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
+using LegendaryExplorerCore.TLK;
 using LegendaryExplorerCore.TLK.ME1;
 using Microsoft.AppCenter.Analytics;
 using MvvmValidation;
@@ -563,11 +564,11 @@ namespace MassEffectModManagerCore.modmanager.windows
 
                     var huff = new HuffmanCompression();
                     huff.LoadInputData(tlk1.StringRefs.ToList());
-                    huff.serializeTalkfileToExport(tlkFile.GetUExport(1));
+                    huff.SerializeTalkfileToExport(tlkFile.GetUExport(1));
 
                     huff = new HuffmanCompression();
                     huff.LoadInputData(tlk2.StringRefs.ToList());
-                    huff.serializeTalkfileToExport(tlkFile.GetUExport(2));
+                    huff.SerializeTalkfileToExport(tlkFile.GetUExport(2));
                     Log.Information($@"Saving {tlkPath} TLK package");
                     tlkFile.Save();
                 }
@@ -630,20 +631,20 @@ namespace MassEffectModManagerCore.modmanager.windows
                 var languages = GetLanguagesForGame(skOption.ModGame);
                 foreach (var lang in languages)
                 {
-                    List<ME1TalkFile.TLKStringRef> strs = new List<ME1TalkFile.TLKStringRef>();
-                    strs.Add(new ME1TalkFile.TLKStringRef(skOption.ModInternalTLKID, 0, skOption.ModInternalName));
+                    List<TLKStringRef> strs = new List<TLKStringRef>();
+                    strs.Add(new TLKStringRef(skOption.ModInternalTLKID, skOption.ModInternalName));
                     if (skOption.ModGame.IsGame2())
                     {
-                        strs.Add(new ME1TalkFile.TLKStringRef(skOption.ModInternalTLKID + 1, 1, @"DLC_" + skOption.ModModuleNumber));
+                        strs.Add(new TLKStringRef(skOption.ModInternalTLKID + 1, @"DLC_" + skOption.ModModuleNumber));
                     }
                     else
                     {
-                        strs.Add(new ME1TalkFile.TLKStringRef(skOption.ModInternalTLKID + 1, 1, @"DLC_MOD_" + skOption.ModDLCFolderNameSuffix));
+                        strs.Add(new TLKStringRef(skOption.ModInternalTLKID + 1, @"DLC_MOD_" + skOption.ModDLCFolderNameSuffix));
                     }
 
-                    strs.Add(new ME1TalkFile.TLKStringRef(skOption.ModInternalTLKID + 2, 2, lang.langcode));
-                    strs.Add(new ME1TalkFile.TLKStringRef(skOption.ModInternalTLKID + 3, 3, @"Male"));
-                    strs.Add(new ME1TalkFile.TLKStringRef(skOption.ModInternalTLKID + 3, 4, @"Female"));
+                    strs.Add(new TLKStringRef(skOption.ModInternalTLKID + 2, lang.langcode));
+                    strs.Add(new TLKStringRef(skOption.ModInternalTLKID + 3, @"Male"));
+                    strs.Add(new TLKStringRef(skOption.ModInternalTLKID + 3, @"Female"));
 
                     foreach (var str in strs)
                     {

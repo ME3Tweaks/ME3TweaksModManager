@@ -104,7 +104,7 @@ namespace MassEffectModManagerCore.modmanager.emailmerge
             transition.Elements = new List<BioStateEventMap.BioStateEventElement>();
 
             // Set Unread_Messages_Exist to true
-            transition.Elements.Add( new BioStateEventMap.BioStateEventElementBool
+            transition.Elements.Add(new BioStateEventMap.BioStateEventElementBool
             {
                 GlobalBool = 4328,
                 NewState = true,
@@ -112,7 +112,7 @@ namespace MassEffectModManagerCore.modmanager.emailmerge
             });
 
             // Set Yeoman_Needs_To_Comment to true
-            transition.Elements.Add( new BioStateEventMap.BioStateEventElementBool
+            transition.Elements.Add(new BioStateEventMap.BioStateEventElementBool
             {
                 GlobalBool = 4321,
                 NewState = true,
@@ -149,7 +149,7 @@ namespace MassEffectModManagerCore.modmanager.emailmerge
             // Startup file to place conditionals and transitions into
             using IMEPackage startup = MEPackageHandler.OpenMEPackageFromStream(Utilities.GetResourceStream(
                 $@"MassEffectModManagerCore.modmanager.mergedlc.{target.Game}.Startup_{M3MergeDLC.MERGE_DLC_FOLDERNAME}.pcc"));
-            
+
 
             var emailInfos = new List<ME2EmailMergeFile>();
             var jsonSupercedances = M3Directories.GetFileSupercedances(target, new[] { @".json" });
@@ -170,7 +170,7 @@ namespace MassEffectModManagerCore.modmanager.emailmerge
                 return;
             }
 
-            if(emailInfos.Any(e => e.Game != target.Game))
+            if (emailInfos.Any(e => e.Game != target.Game))
             {
                 throw new Exception("ME2 email merge manifest targets incorrect game");
             }
@@ -212,7 +212,7 @@ namespace MassEffectModManagerCore.modmanager.emailmerge
                 pcc.FindExport(@"TheWorld.PersistentLevel.Main_Sequence.Display_Messages");
             ExportEntry DisplayMessageOutLink =
                 pcc.FindExport(@"TheWorld.PersistentLevel.Main_Sequence.Display_Messages.SeqCond_CompareBool_0");
-            
+
             ExportEntry LastDisplayMessage = SeqTools.FindOutboundConnectionsToNode(DisplayMessageOutLink, KismetHelper.GetSequenceObjects(DisplayMessageContainer).OfType<ExportEntry>())[0];
             KismetHelper.RemoveOutputLinks(LastDisplayMessage);
             var DisplayMessageVariableLinks = LastDisplayMessage.GetProperty<ArrayProperty<StructProperty>>("VariableLinks");
@@ -231,7 +231,7 @@ namespace MassEffectModManagerCore.modmanager.emailmerge
 
             int messageID = KismetHelper.GetOutboundLinksOfNode(ArchiveSwitch).Count + 1;
             int currentSwCount = ArchiveSwitch.GetProperty<IntProperty>("LinkCount").Value;
-            
+
             foreach (var emailMod in emailInfos)
             {
                 string modName = "DLC_MOD_" + emailMod.ModName;
@@ -252,8 +252,7 @@ namespace MassEffectModManagerCore.modmanager.emailmerge
                     // Create seq object
                     var SMTemp = emailMod.InMemoryBool.HasValue ? TemplateSendMessageBoolCheck : TemplateSendMessage;
                     EntryImporter.ImportAndRelinkEntries(EntryImporter.PortingOption.CloneTreeAsChild,
-                        SMTemp,
-                        pcc, SendMessageContainer, true, out var outSendEntry);
+                        SMTemp, pcc, SendMessageContainer, true, new RelinkerOptionsPackage(), out var outSendEntry);
 
                     var newSend = outSendEntry as ExportEntry;
 
@@ -261,7 +260,7 @@ namespace MassEffectModManagerCore.modmanager.emailmerge
                     newSend.ObjectName = new NameReference(emailName);
                     KismetHelper.AddObjectToSequence(newSend, SendMessageContainer);
                     KismetHelper.SetComment(newSend, emailName);
-                    if(target.Game == MEGame.ME2) newSend.WriteProperty(new StrProperty(emailName, "ObjName"));
+                    if (target.Game == MEGame.ME2) newSend.WriteProperty(new StrProperty(emailName, "ObjName"));
 
                     // Set Trigger Conditional
                     var pmCheckConditionalSM = newSend.GetChildren()
@@ -271,7 +270,7 @@ namespace MassEffectModManagerCore.modmanager.emailmerge
                         conditional.WriteProperty(new IntProperty(conditionalId, "m_nIndex"));
                         KismetHelper.SetComment(conditional, "Time for "+email.EmailName+"?");
                     }
-                    
+
                     // Set Send Transition
                     var pmExecuteTransitionSM = newSend.GetChildren()
                         .FirstOrDefault(e => e.ClassName == "BioSeqAct_PMExecuteTransition" && e is ExportEntry);
@@ -306,14 +305,14 @@ namespace MassEffectModManagerCore.modmanager.emailmerge
                     // Create seq object
                     var MRTemp = email.ReadTransition.HasValue ? TemplateMarkReadTransition : TemplateMarkRead;
                     EntryImporter.ImportAndRelinkEntries(EntryImporter.PortingOption.CloneTreeAsChild,
-                        MRTemp, pcc, MarkReadContainer, true, out var outMarkReadEntry);
+                        MRTemp, pcc, MarkReadContainer, true, new RelinkerOptionsPackage(), out var outMarkReadEntry);
                     var newMarkRead = outMarkReadEntry as ExportEntry;
 
                     // Set name, comment, add to sequence
                     newMarkRead.ObjectName = new NameReference(emailName);
                     KismetHelper.AddObjectToSequence(newMarkRead, MarkReadContainer);
                     KismetHelper.SetComment(newMarkRead, emailName);
-                    if(target.Game == MEGame.ME2) newMarkRead.WriteProperty(new StrProperty(emailName, "ObjName"));
+                    if (target.Game == MEGame.ME2) newMarkRead.WriteProperty(new StrProperty(emailName, "ObjName"));
 
                     // Set Plot Int
                     var storyManagerIntMR = newMarkRead.GetChildren()
@@ -347,7 +346,7 @@ namespace MassEffectModManagerCore.modmanager.emailmerge
 
                     // Create seq object
                     EntryImporter.ImportAndRelinkEntries(EntryImporter.PortingOption.CloneTreeAsChild,
-                        TemplateDisplayMessage, pcc, DisplayMessageContainer, true, out var outDisplayMessage);
+                        TemplateDisplayMessage, pcc, DisplayMessageContainer, true, new RelinkerOptionsPackage(), out var outDisplayMessage);
                     var newDisplayMessage = outDisplayMessage as ExportEntry;
 
                     // Set name, comment, variable links, add to sequence
@@ -355,7 +354,7 @@ namespace MassEffectModManagerCore.modmanager.emailmerge
                     KismetHelper.AddObjectToSequence(newDisplayMessage, DisplayMessageContainer);
                     newDisplayMessage.WriteProperty(DisplayMessageVariableLinks);
                     KismetHelper.SetComment(newDisplayMessage, emailName);
-                    if(target.Game == MEGame.ME2) newDisplayMessage.WriteProperty(new StrProperty(emailName, "ObjName"));
+                    if (target.Game == MEGame.ME2) newDisplayMessage.WriteProperty(new StrProperty(emailName, "ObjName"));
 
                     var displayChildren = newDisplayMessage.GetChildren();
 
@@ -413,7 +412,7 @@ namespace MassEffectModManagerCore.modmanager.emailmerge
                     NewPlotInt.WriteProperty(new StrProperty(emailName, "m_sRefName"));
 
                     var linkedVars = SeqTools.GetVariableLinksOfNode(NewSetInt);
-                    linkedVars[0].LinkedNodes = new List<IEntry>() {NewPlotInt};
+                    linkedVars[0].LinkedNodes = new List<IEntry>() { NewPlotInt };
                     SeqTools.WriteVariableLinksToNode(NewSetInt, linkedVars);
 
                     messageID++;

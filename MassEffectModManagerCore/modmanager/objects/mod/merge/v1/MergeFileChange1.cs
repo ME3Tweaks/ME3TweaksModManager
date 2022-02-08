@@ -239,9 +239,11 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
             }
 
             var resultst = EntryImporter.ImportAndRelinkEntries(EntryImporter.PortingOption.ReplaceSingular,
-                sourceEntry, targetExport.FileRef, targetExport, true, out _,
-                errorOccuredCallback: x => throw new Exception(M3L.GetString(M3L.string_interp_mergefile_errorMergingAssetsX, x)),
-                importExportDependencies: true);
+                sourceEntry, targetExport.FileRef, targetExport, true, new RelinkerOptionsPackage()
+                {
+                    ErrorOccurredCallback =
+                        x => throw new Exception(M3L.GetString(M3L.string_interp_mergefile_errorMergingAssetsX, x))
+                }, out _);
             if (resultst.Any())
             {
                 throw new Exception(M3L.GetString(M3L.string_interp_mergefile_errorsOccurredMergingAsset, AssetName, EntryName, string.Join('\n', resultst.Select(x => x.Message))));

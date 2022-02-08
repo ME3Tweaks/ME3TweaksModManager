@@ -38,6 +38,7 @@ using System.Windows.Media;
 using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages.CloningImportingAndRelinking;
+using LegendaryExplorerCore.TLK;
 using LegendaryExplorerCore.Unreal.ObjectInfo;
 using Brushes = System.Windows.Media.Brushes;
 using ExportEntry = LegendaryExplorerCore.Packages.ExportEntry;
@@ -374,7 +375,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                         }
 
                         var tlkBasePath = ModBeingDeployed.Game.IsGame2() ? $@"DLC_{moduleNum}" : customDLC;
-                        Dictionary<string, List<ME1TalkFile.TLKStringRef>> tlkMappings = new Dictionary<string, List<ME1TalkFile.TLKStringRef>>();
+                        Dictionary<string, List<TLKStringRef>> tlkMappings = new Dictionary<string, List<TLKStringRef>>();
                         foreach (var language in languages)
                         {
                             if (CheckCancelled) return;
@@ -382,13 +383,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                             if (File.Exists(tlkLangPath))
                             {
                                 //inspect
-                                TalkFile tf = new TalkFile();
+                                var tf = new ME2ME3TalkFile();
                                 tf.LoadTlkData(tlkLangPath);
                                 tlkMappings[language.filecode] = tf.StringRefs;
 
                                 //Check string order
-                                var malestringRefsInRightOrder = tf.StringRefs.Take(tf.Header.MaleEntryCount).IsAscending((x, y) => x.CalculatedID.CompareTo(y.CalculatedID)); //male strings
-                                var femalestringRefsInRightOrder = tf.StringRefs.Skip(tf.Header.MaleEntryCount).Take(tf.Header.FemaleEntryCount).IsAscending((x, y) => x.CalculatedID.CompareTo(y.CalculatedID)); //male strings
+                                var malestringRefsInRightOrder = tf.StringRefs.Take(tf.MaleEntryCount).IsAscending((x, y) => x.CalculatedID.CompareTo(y.CalculatedID)); //male strings
+                                var femalestringRefsInRightOrder = tf.StringRefs.Skip(tf.MaleEntryCount).Take(tf.FemaleEntryCount).IsAscending((x, y) => x.CalculatedID.CompareTo(y.CalculatedID)); //male strings
                                 string gender = M3L.GetString(M3L.string_male);
                                 if (!malestringRefsInRightOrder)
                                 {
@@ -404,7 +405,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                 }
 
                                 // Check to make sure TLK contains the mount file TLK ID
-                                var referencedStr = tf.findDataById(mount.TLKID);
+                                var referencedStr = tf.FindDataById(mount.TLKID);
                                 if (referencedStr == null || referencedStr == @"No Data")
                                 {
                                     // TLK STRING REF NOT FOUND
@@ -483,7 +484,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                                     }
 
                                     ME1TalkFile tf = new ME1TalkFile(tfExp);
-                                    var str = tf.findDataById(tlkid);
+                                    var str = tf.FindDataById(tlkid);
                                     if (str == null || str == @"No Data")
                                     {
                                         // INVALID
@@ -1071,7 +1072,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                     if (b.Error == null && b.Result is List<Mod> modsForTPMISubmission && modsForTPMISubmission.Any())
                     {
                         var nonSubmittableMods = modsForTPMISubmission.Where(x => x.ModWebsite == Mod.DefaultWebsite).ToList();
-                        modsForTPMISubmission.Remove(x => x.ModWebsite == Mod.DefaultWebsite);
+                        modsForTPMISubmission.RemoveAll(x => x.ModWebsite == Mod.DefaultWebsite);
 
                         if (nonSubmittableMods.Any())
                         {
