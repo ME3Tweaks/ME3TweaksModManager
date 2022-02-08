@@ -91,7 +91,14 @@ namespace MassEffectModManagerCore.modmanager.objects.mod.merge.v1
         {
             Log.Information($@"Applying {MergeModFilename}");
             var loadedFiles = MELoadedFiles.GetFilesLoadedInGame(target.Game, true, gameRootOverride: target.TargetPath);
-
+            if (target.Game == MEGame.LE2)
+            {
+                // SPECIAL CASE: LE2 EntryMenu is loaded before DLC version so first load of the file
+                // will be basegame one. The majority of time this is likely the desirable
+                // file so we only target this one instead.
+                loadedFiles[@"EntryMenu.pcc"] = Path.Combine(M3Directories.GetCookedPath(target), @"EntryMenu.pcc");
+            }
+            
             int numDone = 0;
             foreach (var mf in FilesToMergeInto)
             {
