@@ -2,6 +2,7 @@
 using System.Windows.Data;
 using MassEffectModManagerCore.modmanager;
 using MassEffectModManagerCore.modmanager.converters;
+using ME3TweaksModManager.modmanager.converters;
 
 namespace MassEffectModManagerCore.ui
 {

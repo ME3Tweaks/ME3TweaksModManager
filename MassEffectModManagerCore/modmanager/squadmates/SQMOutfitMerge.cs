@@ -155,7 +155,7 @@ namespace MassEffectModManagerCore.modmanager.squadmates
 
         private static int GetSquadmateOutfitInt(string squadmateName, MEGame game)
         {
-            M3Log.Information($@"SQMMERGE: Generating outfit int for {game} {squadmateName}");
+            Log.Information($@"SQMMERGE: Generating outfit int for {game} {squadmateName}");
             if (game.IsGame2())
             {
                 switch (squadmateName)
@@ -199,7 +199,7 @@ namespace MassEffectModManagerCore.modmanager.squadmates
             //var mergeFiles = loadedFiles.Where(x =>
             //    x.Key.StartsWith(@"BioH_") && x.Key.Contains(@"_DLC_MOD_") && x.Key.EndsWith(@".pcc") && !x.Key.Contains(@"_LOC_") && !x.Key.Contains(@"_Explore."));
 
-            M3Log.Information($@"SQMMERGE: Building BioP_Global");
+            Log.Information($@"SQMMERGE: Building BioP_Global");
             var appearanceInfo = new CaseInsensitiveDictionary<List<SquadmateInfoSingle>>();
 
             int appearanceId = 255; // starting
@@ -212,7 +212,7 @@ namespace MassEffectModManagerCore.modmanager.squadmates
                 infoList.Reverse();
                 foreach (var dlc in infoList)
                 {
-                    M3Log.Information($@"SQMMERGE: Processing {dlc}");
+                    Log.Information($@"SQMMERGE: Processing {dlc}");
 
                     var jsonFile = Path.Combine(M3Directories.GetDLCPath(target), dlc, target.Game.CookedDirName(), SQUADMATE_MERGE_MANIFEST_FILE);
                     var infoPackage = JsonConvert.DeserializeObject<SquadmateMergeInfo>(File.ReadAllText(jsonFile));
@@ -237,10 +237,8 @@ namespace MassEffectModManagerCore.modmanager.squadmates
                         outfit.AppearanceId = appearanceId++; // may need adjusted
                         outfit.DLCName = dlc;
                         list.Add(outfit);
-                        M3Log.Information($@"SQMMERGE: ConditionalIndex for {outfit.HenchName} appearanceid {outfit.AppearanceId}: {outfit.ConditionalIndex}");
+                        Log.Information($@"SQMMERGE: ConditionalIndex for {outfit.HenchName} appearanceid {outfit.AppearanceId}: {outfit.ConditionalIndex}");
                     }
-
-                    Debug.WriteLine("hi");
                 }
             }
 

@@ -6,12 +6,13 @@
                     xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters"
                     xmlns:helpers="clr-namespace:MassEffectModManagerCore.modmanager.helpers"
                     xmlns:system="clr-namespace:System;assembly=System.Runtime"
-                    xmlns:fa="http://schemas.fontawesome.io/icons/">
+                    xmlns:fa="http://schemas.fontawesome.io/icons/"
+                    xmlns:converters1="clr-namespace:ME3TweaksModManager.modmanager.converters">
     <converters:GameToImageIconConverter x:Key="GameToImageIconConverter"/>
     <converters:BootTargetSourceVisibilityConverter x:Key="BootTargetSourceVisibilityConverter"/>
     <converters:GameIconVisibilityConverter x:Key="GameIconVisibilityConverter"/>
-    <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-    <converters:BoolToHiddenVisibleConverter x:Key="BoolToHiddenVisibleConverter"/>
+    <converters1:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    <converters1:BoolToHiddenVisibleConverter x:Key="BoolToHiddenVisibleConverter"/>
     <converters:BoolEnabledConverter x:Key="BoolEnabledConverter"/>
     <converters:NullVisibilityConverter x:Key="NullVisibilityConverter"/>
     <converters:NullHiddenConverter x:Key="NullHiddenConverter"/>

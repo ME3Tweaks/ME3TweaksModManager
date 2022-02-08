@@ -7,6 +7,7 @@
         xmlns:ui="clr-namespace:MassEffectModManagerCore.modmanager.save.game2.UI"
         xmlns:converters="clr-namespace:MassEffectModManagerCore.modmanager.converters"
         xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+        xmlns:converters1="clr-namespace:ME3TweaksModManager.modmanager.converters"
         mc:Ignorable="d"
         WindowStartupLocation="CenterOwner"
         ContentRendered="SSContent_Rendered"
@@ -21,7 +22,7 @@
         <ui:DifficultyStringConverter x:Key="DifficultyStringConverter"/>
         <ui:LevelNameStringConverter x:Key="LevelNameStringConverter"/>
         <ui:SaveGameNameConverter x:Key="SaveGameNameConverter"/>
-        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <converters1:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <converters:NullVisibilityConverter x:Key="NullVisibility"/>
         <Style  TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
             <Style.Triggers>
