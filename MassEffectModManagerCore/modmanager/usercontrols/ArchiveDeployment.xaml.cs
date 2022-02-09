@@ -236,12 +236,13 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 var packageFiles = referencedFiles.Where(x=>x.RepresentsPackageFilePath());
                 foreach (var p in packageFiles)
                 {
-                    if (Utilities.HasALOTMarker(p))
+                    var fullPath = Path.Combine(ModBeingDeployed.ModPath, p);
+                    if (Utilities.HasALOTMarker(fullPath))
                     {
                         item.AddBlockingError(M3L.GetString(M3L.string_interp_error_textureTaggedFileFound, p));
                     }
 
-                    var package = MEPackageHandler.QuickOpenMEPackage(p);
+                    var package = MEPackageHandler.QuickOpenMEPackage(fullPath);
                     {
                         if (package.NameCount == 0)
                         {
