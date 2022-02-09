@@ -41,10 +41,9 @@ namespace ME3TweaksModManager.modmanager.windows
         private static (string filecode, string langcode)[] me2languages = { (@"INT", @"en-us"), (@"ESN", @"es-es"), (@"DEU", @"de-de"), (@"RUS", @"ru-ru"), (@"FRA", @"fr-fr"), (@"ITA", @"it-it"), (@"POL", @"pl-pl"), (@"HUN", @"hu-hu"), (@"CZE", @"cs-cz") };
         private static (string filecode, string langcode)[] me3languages = { (@"INT", @"en-us"), (@"ESN", @"es-es"), (@"DEU", @"de-de"), (@"RUS", @"ru-ru"), (@"FRA", @"fr-fr"), (@"ITA", @"it-it"), (@"POL", @"pl-pl"), (@"JPN", @"jp-jp") };
 
-        private static (string filecode, string langcode)[] le1languages = { (@"INT", @"en-us"), (@"ES", @"es-es"), (@"DE", @"de-de"), (@"RA", @"ru-ru"), (@"FR", @"fr-fr"), (@"IT", @"it-it"), (@"PLPC", @"pl-pl"), (@"JA", @"jp-jp") };
+        private static (string filecode, string langcode)[] le1languages = { (@"INT", @"en-us"), (@"ES", @"es-es"), (@"DE", @"de-de"), (@"RA", @"ru-ru"), (@"FR", @"fr-fr"), (@"IT", @"it-it"), (@"PLPC", @"pl-pl"), (@"JA", @"jp-jp"), /* English VO */  (@"GE", @"de-de"), (@"RU", @"ru-ru"), (@"FE", @"fr-fr"), (@"IE", @"it-it"), (@"PL", @"pl-pl") };
         private static (string filecode, string langcode)[] le2languages = { (@"INT", @"en-us"), (@"ESN", @"es-es"), (@"DEU", @"de-de"), (@"RUS", @"ru-ru"), (@"FRA", @"fr-fr"), (@"ITA", @"it-it"), (@"POL", @"pl-pl"), (@"JPN", @"jp-jp") };
         private static (string filecode, string langcode)[] le3languages = { (@"INT", @"en-us"), (@"ESN", @"es-es"), (@"DEU", @"de-de"), (@"RUS", @"ru-ru"), (@"FRA", @"fr-fr"), (@"ITA", @"it-it"), (@"POL", @"pl-pl"), (@"JPN", @"jp-jp") };
-
 
         public int MaxMountForGame
         {
