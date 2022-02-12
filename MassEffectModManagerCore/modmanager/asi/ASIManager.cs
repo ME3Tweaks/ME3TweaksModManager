@@ -230,7 +230,7 @@ namespace MassEffectModManagerCore.modmanager.asi
                                             Game = intToGame((int)e.Attribute(@"game")), // use e element to pull from outer group
                                             _otherGroupsToDeleteOnInstallInternal = z.Element(@"autoremovegroups")?.Value,
 
-                                        }).ToList()
+                                        }).OrderBy(x=>x.Version).ToList()
                                     }).ToList();
                 foreach (var v in updateGroups)
                 {
