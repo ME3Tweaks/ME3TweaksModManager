@@ -62,6 +62,7 @@
 		<None Remove="modmanager\asi\AutoTOC_LE-v2.0.asi" />
 		<None Remove="modmanager\asi\BalanceChangesReplacer-v3.0.asi" />
 		<None Remove="modmanager\asi\LE1AutoloadEnabler-v1.0.asi" />
+		<None Remove="modmanager\asi\LE1AutoloadEnabler-v4.0.asi" />
 		<None Remove="modmanager\asi\manifest.xml" />
 		<None Remove="modmanager\asi\ME1-DLC-ModEnabler-v1.0.asi" />
 		<None Remove="modmanager\asi\ME3Logger_truncating-v1.0.asi" />
@@ -132,7 +133,7 @@
 	<ItemGroup>
 		<EmbeddedResource Include="modmanager\asi\AutoTOC_LE-v2.0.asi" />
 		<EmbeddedResource Include="modmanager\asi\BalanceChangesReplacer-v3.0.asi" />
-		<EmbeddedResource Include="modmanager\asi\LE1AutoloadEnabler-v1.0.asi" />
+		<EmbeddedResource Include="modmanager\asi\LE1AutoloadEnabler-v4.0.asi" />
 		<EmbeddedResource Include="modmanager\asi\manifest.xml" />
 	</ItemGroup>
 
