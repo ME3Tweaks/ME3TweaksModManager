@@ -607,10 +607,10 @@
       <installedname>AutoloadEnablerTesting</installedname>
       <author>d00t/Mgamerz</author>
       <description>This ASI enables the autoload.ini feature, which is a fairly critical component for LE1 DLC mods. Without this, DLC cannot fully mount. This version is for testing only; it registers TFC and ISB files from DLC mods at game startup.</description>
-      <version>3</version>
-      <hash>cd21e87d1cce7e7742a1581ee13478d1</hash>
+      <version>4</version>
+      <hash>f4fdf2fbb528cf877fcec3d69e08b6c0</hash>
       <sourcecode>https://github.com/ME3Tweaks/LE1-ASI-Plugins/tree/main/LE1AutoloadEnabler</sourcecode>
-      <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LE1AutoloadEnabler-v3.0/LE1AutoloadEnabler-v3.0.asi</downloadlink>
+      <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LE1AutoloadEnabler-v4.0/LE1AutoloadEnabler-v4.0.asi</downloadlink>
       <autoremovegroups>32,34</autoremovegroups>
     </asimod>
     <asimod>
@@ -955,6 +955,17 @@
       <hash>6427ed47952e6a02b98acf03921aa574</hash>
       <sourcecode>https://github.com/ME3Tweaks/LE1-ASI-Plugins/tree/main/LE1AutoloadEnabler</sourcecode>
       <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LE1AutoloadEnabler-v2.0/LE1AutoloadEnabler-v2.0.asi</downloadlink>
+      <autoremovegroups>32,34</autoremovegroups>
+    </asimod>
+    <asimod>
+      <name>Autoload Enabler (TESTING)</name>
+      <installedname>AutoloadEnablerTesting</installedname>
+      <author>d00t/Mgamerz</author>
+      <description>This ASI enables the autoload.ini feature, which is a fairly critical component for LE1 DLC mods. Without this, DLC cannot fully mount. This version is for testing only; it registers TFC and ISB files from DLC mods at game startup.</description>
+      <version>3</version>
+      <hash>cd21e87d1cce7e7742a1581ee13478d1</hash>
+      <sourcecode>https://github.com/ME3Tweaks/LE1-ASI-Plugins/tree/main/LE1AutoloadEnabler</sourcecode>
+      <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LE1AutoloadEnabler-v3.0/LE1AutoloadEnabler-v3.0.asi</downloadlink>
       <autoremovegroups>32,34</autoremovegroups>
     </asimod>
   </updategroup>
