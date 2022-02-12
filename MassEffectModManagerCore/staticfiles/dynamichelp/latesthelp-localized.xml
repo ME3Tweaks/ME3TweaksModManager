@@ -24,7 +24,8 @@
       <helpitem title="Restored game files but a DLC is still not authorizing" modalicon="INFO" modaltitle="DLC still not authorizing">If a mod you installed has Custom DLC (mod that is installed into game's DLC folder), some options in Mod Manager do not remove them. If you attempted to restore your game but still get issues with authorizing a DLC, go to 'Manage Target' and delete any DLC folders listed in the 'Installed DLC mods' tab.</helpitem>
     </list>
     <list title="Changelogs">
-      <helpitem title="ME3Tweaks Mod Manager 7.0.6 BETA ONLY (Build 124)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/275" />
+      <helpitem title="ME3Tweaks Mod Manager 7.X BETA ONLY (Build 125)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/275" />
+      <helpitem title="ME3Tweaks Mod Manager 7.0.6 BETA ONLY (Build 124)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/281" />
       <helpitem title="ME3Tweaks Mod Manager 7.0.5 (Build 123)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/266" />
       <helpitem title="ME3Tweaks Mod Manager 7.0.4 (Build 122)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/262" />
       <helpitem title="ME3Tweaks Mod Manager 7.0.3 (Build 121)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/246" />
