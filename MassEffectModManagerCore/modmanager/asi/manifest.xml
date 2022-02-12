@@ -436,22 +436,22 @@
       <name>Streaming Levels HUD</name>
       <installedname>StreamingLevelsHUD</installedname>
       <author>Mgamerz</author>
-      <description>This ASI draws the list of streaming levels on the top left of the screen, as well as their current loaded state. It additionally shows the amount of memory the process is currently using, as well as as the maximum. When the amount nears the crashing point (3.5GiB), it turns, yellow, red, then begins to flash red. The HUD can be toggled on and off by pressing CTRL + T.</description>
-      <version>2</version>
-      <hash>4e8ee823fe0b3a2c8df73d3748b2a03f</hash>
+      <description>This ASI draws the list of streaming levels on the top left of the screen, as well as their current loaded state. It additionally shows the amount of memory the process is currently using, as well as as the maximum. When the amount nears the crashing point (3.5GiB), it turns, yellow, red, then begins to flash red.</description>
+      <version>1</version>
+      <hash>a7c4c4877481a36783dbd696146fb663</hash>
       <sourcecode>https://github.com/ME3Tweaks/ME3-ASI-Plugins/tree/master/SteamingLevelsHUD</sourcecode>
-      <downloadlink>https://github.com/ME3Tweaks/ME3-ASI-Plugins/releases/download/v2.0-StreamingLevelsHUD/StreamingLevelsHUD-v2.0.asi</downloadlink>
+      <downloadlink>https://github.com/ME3Tweaks/ME3-ASI-Plugins/releases/download/v1.0-StreamingLevelsHUD/StreamingLevelsHUD-v1.0.asi</downloadlink>
       <autoremovegroups/>
     </asimod>
     <asimod>
       <name>Streaming Levels HUD</name>
       <installedname>StreamingLevelsHUD</installedname>
       <author>Mgamerz</author>
-      <description>This ASI draws the list of streaming levels on the top left of the screen, as well as their current loaded state. It additionally shows the amount of memory the process is currently using, as well as as the maximum. When the amount nears the crashing point (3.5GiB), it turns, yellow, red, then begins to flash red.</description>
-      <version>1</version>
-      <hash>a7c4c4877481a36783dbd696146fb663</hash>
+      <description>This ASI draws the list of streaming levels on the top left of the screen, as well as their current loaded state. It additionally shows the amount of memory the process is currently using, as well as as the maximum. When the amount nears the crashing point (3.5GiB), it turns, yellow, red, then begins to flash red. The HUD can be toggled on and off by pressing CTRL + T.</description>
+      <version>2</version>
+      <hash>4e8ee823fe0b3a2c8df73d3748b2a03f</hash>
       <sourcecode>https://github.com/ME3Tweaks/ME3-ASI-Plugins/tree/master/SteamingLevelsHUD</sourcecode>
-      <downloadlink>https://github.com/ME3Tweaks/ME3-ASI-Plugins/releases/download/v1.0-StreamingLevelsHUD/StreamingLevelsHUD-v1.0.asi</downloadlink>
+      <downloadlink>https://github.com/ME3Tweaks/ME3-ASI-Plugins/releases/download/v2.0-StreamingLevelsHUD/StreamingLevelsHUD-v2.0.asi</downloadlink>
       <autoremovegroups/>
     </asimod>
   </updategroup>
@@ -472,10 +472,10 @@
       <installedname>StreamingLevelsHUD</installedname>
       <author>Mgamerz</author>
       <description>This ASI draws the list of streaming levels on the top left of the screen, as well as their current loaded state. It additionally shows the amount of memory the process is currently using, as well as as the maximum. When the amount nears the crashing point (3.5GiB), it turns, yellow, red, then begins to flash red.</description>
-      <version>2</version>
-      <hash>302dbb9b254978ba0de80896b7eddafc</hash>
+      <version>1</version>
+      <hash>52477ccc1973864616e86d49d276afbf</hash>
       <sourcecode>https://github.com/ME3Tweaks/ME2-ASI-Plugins/tree/master/SteamingLevelsHUD</sourcecode>
-      <downloadlink>https://github.com/ME3Tweaks/ME2-ASI-Plugins/releases/download/v2.0-StreamingLevelsHUD/StreamingLevelsHUD-v2.0.asi</downloadlink>
+      <downloadlink>https://github.com/ME3Tweaks/ME2-ASI-Plugins/releases/download/v1.0-StreamingLevelsHUD/StreamingLevelsHUD-v1.0.asi</downloadlink>
       <autoremovegroups/>
     </asimod>
     <asimod>
@@ -483,10 +483,10 @@
       <installedname>StreamingLevelsHUD</installedname>
       <author>Mgamerz</author>
       <description>This ASI draws the list of streaming levels on the top left of the screen, as well as their current loaded state. It additionally shows the amount of memory the process is currently using, as well as as the maximum. When the amount nears the crashing point (3.5GiB), it turns, yellow, red, then begins to flash red.</description>
-      <version>1</version>
-      <hash>52477ccc1973864616e86d49d276afbf</hash>
+      <version>2</version>
+      <hash>302dbb9b254978ba0de80896b7eddafc</hash>
       <sourcecode>https://github.com/ME3Tweaks/ME2-ASI-Plugins/tree/master/SteamingLevelsHUD</sourcecode>
-      <downloadlink>https://github.com/ME3Tweaks/ME2-ASI-Plugins/releases/download/v1.0-StreamingLevelsHUD/StreamingLevelsHUD-v1.0.asi</downloadlink>
+      <downloadlink>https://github.com/ME3Tweaks/ME2-ASI-Plugins/releases/download/v2.0-StreamingLevelsHUD/StreamingLevelsHUD-v2.0.asi</downloadlink>
       <autoremovegroups/>
     </asimod>
   </updategroup>
@@ -603,15 +603,15 @@
   </updategroup>
   <updategroup groupid="32" game="4" hidden="0">
     <asimod>
-      <name>Autoload Enabler (TESTING)</name>
-      <installedname>AutoloadEnablerTesting</installedname>
+      <name>Autoload Enabler</name>
+      <installedname>AutoloadEnabler</installedname>
       <author>d00t/Mgamerz</author>
       <description>This ASI enables the autoload.ini feature, which is a fairly critical component for LE1 DLC mods. Without this, DLC cannot fully mount. This version is for testing only; it registers TFC and ISB files from DLC mods at game startup.</description>
       <version>4</version>
       <hash>f4fdf2fbb528cf877fcec3d69e08b6c0</hash>
       <sourcecode>https://github.com/ME3Tweaks/LE1-ASI-Plugins/tree/main/LE1AutoloadEnabler</sourcecode>
       <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LE1AutoloadEnabler-v4.0/LE1AutoloadEnabler-v4.0.asi</downloadlink>
-      <autoremovegroups>32,34</autoremovegroups>
+      <autoremovegroups>34</autoremovegroups>
     </asimod>
     <asimod>
       <name>Autoload Enabler</name>
@@ -622,7 +622,7 @@
       <hash>0a7b5fafb17b47b4f8014ffeb796280f</hash>
       <sourcecode>https://github.com/d00telemental/LENativeExperiments/tree/main/LE1AutoloadEnabler</sourcecode>
       <downloadlink>https://github.com/d00telemental/LENativeExperiments/releases/download/LE1AutoloadEnabler-0.2.1/LE1AutoloadEnabler.asi</downloadlink>
-      <autoremovegroups>34,73</autoremovegroups>
+      <autoremovegroups>34</autoremovegroups>
     </asimod>
   </updategroup>
   <updategroup groupid="33" game="3" hidden="0">
@@ -648,7 +648,7 @@
       <hash>ddd0d822c0a9c6ccfdcaa1cc5e9796e9</hash>
       <sourcecode>https://github.com/d00telemental/LENativeExperiments/tree/main/LE1AutoloadEnabler</sourcecode>
       <downloadlink>https://github.com/d00telemental/LENativeExperiments/releases/download/LE1AutoloadEnabler-0.2.1/LE1AutoloadEnabler-Debug.asi</downloadlink>
-      <autoremovegroups>33,73</autoremovegroups>
+      <autoremovegroups>33</autoremovegroups>
     </asimod>
   </updategroup>
   <updategroup groupid="35" game="4" hidden="0">
@@ -656,11 +656,11 @@
       <name>Streaming Levels HUD</name>
       <installedname>StreamingLevelsHUD</installedname>
       <author>Mgamerz</author>
-      <description>This ASI draws the list of streaming levels on the top left of the screen, as well as their current loaded state. It additionally shows the amount of memory the process is currently using, as well as as the maximum.  The HUD can be toggled on and off by pressing CTRL + T.</description>
-      <version>1</version>
-      <hash>be86ed353176e5457645733380e58fde</hash>
+      <description>This ASI draws the list of streaming levels on the top left of the screen, as well as their current loaded state. It also includes the last touched BioTriggerStream. It additionally shows the amount of memory the process is currently using, as well as as the maximum, and the text size scales based on the resolution of your screen.  The HUD can be toggled on and off by pressing CTRL + T.</description>
+      <version>3</version>
+      <hash>05ed5710b09261d8769e7c7a4ea2d3f6</hash>
       <sourcecode>https://github.com/ME3Tweaks/LE1-ASI-Plugins/tree/main/LE1StreamingLevelsHUD</sourcecode>
-      <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LE1StreamingLevelsHUD-v1.0/LE1StreamingLevelsHUD.asi</downloadlink>
+      <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LE1StreamingLevelsHUD-v3.0/LE1StreamingLevelsHUD-v3.0.asi</downloadlink>
       <autoremovegroups/>
     </asimod>
     <asimod>
@@ -678,11 +678,11 @@
       <name>Streaming Levels HUD</name>
       <installedname>StreamingLevelsHUD</installedname>
       <author>Mgamerz</author>
-      <description>This ASI draws the list of streaming levels on the top left of the screen, as well as their current loaded state. It also includes the last touched BioTriggerStream. It additionally shows the amount of memory the process is currently using, as well as as the maximum, and the text size scales based on the resolution of your screen.  The HUD can be toggled on and off by pressing CTRL + T.</description>
-      <version>3</version>
-      <hash>05ed5710b09261d8769e7c7a4ea2d3f6</hash>
+      <description>This ASI draws the list of streaming levels on the top left of the screen, as well as their current loaded state. It additionally shows the amount of memory the process is currently using, as well as as the maximum.  The HUD can be toggled on and off by pressing CTRL + T.</description>
+      <version>1</version>
+      <hash>be86ed353176e5457645733380e58fde</hash>
       <sourcecode>https://github.com/ME3Tweaks/LE1-ASI-Plugins/tree/main/LE1StreamingLevelsHUD</sourcecode>
-      <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LE1StreamingLevelsHUD-v3.0/LE1StreamingLevelsHUD-v3.0.asi</downloadlink>
+      <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LE1StreamingLevelsHUD-v1.0/LE1StreamingLevelsHUD.asi</downloadlink>
       <autoremovegroups/>
     </asimod>
   </updategroup>
@@ -692,10 +692,10 @@
       <installedname>KismetLogger</installedname>
       <author>henbagle</author>
       <description>This plugin logs kismet sequence object activations to the console and to a file named KismetLog.txt. You can trace the execution of this log with Legendary Explorer's Sequence Editor.</description>
-      <version>1</version>
-      <hash>69f5d843a3c1e82ec44c065f5b301766</hash>
+      <version>2</version>
+      <hash>590e69f0f2ca0fb9473677be7925827d</hash>
       <sourcecode>https://github.com/ME3Tweaks/LE1-ASI-Plugins/tree/main/KismetLogger</sourcecode>
-      <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LE1KismetLogger-v1/KismetLogger-v1.asi</downloadlink>
+      <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LE1KismetLogger-v2/KismetLogger-v2.asi</downloadlink>
       <autoremovegroups/>
     </asimod>
     <asimod>
@@ -703,10 +703,10 @@
       <installedname>KismetLogger</installedname>
       <author>henbagle</author>
       <description>This plugin logs kismet sequence object activations to the console and to a file named KismetLog.txt. You can trace the execution of this log with Legendary Explorer's Sequence Editor.</description>
-      <version>2</version>
-      <hash>590e69f0f2ca0fb9473677be7925827d</hash>
+      <version>1</version>
+      <hash>69f5d843a3c1e82ec44c065f5b301766</hash>
       <sourcecode>https://github.com/ME3Tweaks/LE1-ASI-Plugins/tree/main/KismetLogger</sourcecode>
-      <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LE1KismetLogger-v2/KismetLogger-v2.asi</downloadlink>
+      <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LE1KismetLogger-v1/KismetLogger-v1.asi</downloadlink>
       <autoremovegroups/>
     </asimod>
   </updategroup>
@@ -764,10 +764,10 @@
       <installedname>StreamingLevelsHUD</installedname>
       <author>Mgamerz</author>
       <description>This ASI draws the list of streaming levels on the top left of the screen, as well as their current loaded state. It additionally shows the amount of memory the process is currently using, as well as as the maximum.  The HUD can be toggled on and off by pressing CTRL + T.</description>
-      <version>2</version>
-      <hash>7513d1fe15259323ebefe3567f749e52</hash>
+      <version>1</version>
+      <hash>5cc18d4af6272eed15d749f5fe43334b</hash>
       <sourcecode>https://github.com/ME3Tweaks/LE3-ASI-Plugins/tree/master/LE3StreamingLevelsHUD</sourcecode>
-      <downloadlink>https://github.com/ME3Tweaks/LE3-ASI-Plugins/releases/download/LE3StreamingLevelsHUD-v2.0/LE3StreamingLevelsHUD-v2.0.asi</downloadlink>
+      <downloadlink>https://github.com/ME3Tweaks/LE3-ASI-Plugins/releases/download/LE3SteamingLevelsHUD-v1.0/LE3StreamingLevelsHUD-v1.0.asi</downloadlink>
       <autoremovegroups/>
     </asimod>
     <asimod>
@@ -775,10 +775,10 @@
       <installedname>StreamingLevelsHUD</installedname>
       <author>Mgamerz</author>
       <description>This ASI draws the list of streaming levels on the top left of the screen, as well as their current loaded state. It additionally shows the amount of memory the process is currently using, as well as as the maximum.  The HUD can be toggled on and off by pressing CTRL + T.</description>
-      <version>1</version>
-      <hash>5cc18d4af6272eed15d749f5fe43334b</hash>
+      <version>2</version>
+      <hash>7513d1fe15259323ebefe3567f749e52</hash>
       <sourcecode>https://github.com/ME3Tweaks/LE3-ASI-Plugins/tree/master/LE3StreamingLevelsHUD</sourcecode>
-      <downloadlink>https://github.com/ME3Tweaks/LE3-ASI-Plugins/releases/download/LE3SteamingLevelsHUD-v1.0/LE3StreamingLevelsHUD-v1.0.asi</downloadlink>
+      <downloadlink>https://github.com/ME3Tweaks/LE3-ASI-Plugins/releases/download/LE3StreamingLevelsHUD-v2.0/LE3StreamingLevelsHUD-v2.0.asi</downloadlink>
       <autoremovegroups/>
     </asimod>
   </updategroup>
@@ -924,17 +924,6 @@
   <updategroup groupid="72" game="6" hidden="0">
     <asimod>
       <name>Debug Logger</name>
-      <installedname>LEDebugLogger</installedname>
-      <author>ME3Tweaks</author>
-      <description>This ASI logs the debug print from the game executable that can normally only be read with a debugger attached. This occassionally shows useful information, such as bad name index and entry indexes. The log is stored next to the game executable in a file named DebugLogger.txt.</description>
-      <version>1</version>
-      <hash>018912d35d95afeb4130883cf1b9852b</hash>
-      <sourcecode>https://github.com/ME3Tweaks/LE1-ASI-Plugins/tree/LEDebugLogger-v1.0/SelfDebugger</sourcecode>
-      <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LEDebugLogger-v1.0/LEDebugLogger-v.1.0.asi</downloadlink>
-      <autoremovegroups/>
-    </asimod>
-    <asimod>
-      <name>Debug Logger</name>
       <installedname>LE3DebugLogger</installedname>
       <author>ME3Tweaks</author>
       <description>This ASI works logs all text written to the debug console (which the game does), as well as logs all imports that fail to resolve. Note that some imports failng to resolve are normal engine behavior due to how the game is compiled. The log is located in DebugLogger.txt next to the game executable.</description>
@@ -944,29 +933,16 @@
       <downloadlink>https://github.com/ME3Tweaks/LE3-ASI-Plugins/releases/download/LE3DebugLogger-v2.0/LE3DebugLogger.asi</downloadlink>
       <autoremovegroups/>
     </asimod>
-  </updategroup>
-  <updategroup groupid="73" game="4" hidden="0">
     <asimod>
-      <name>Autoload Enabler (TESTING)</name>
-      <installedname>AutoloadEnablerTesting</installedname>
-      <author>d00t/Mgamerz</author>
-      <description>This ASI enables the autoload.ini feature, which is a fairly critical component for LE1 DLC mods. Without this, DLC cannot fully mount. This version is for testing only; it registers TFC files from DLC mods at game startup.</description>
-      <version>2</version>
-      <hash>6427ed47952e6a02b98acf03921aa574</hash>
-      <sourcecode>https://github.com/ME3Tweaks/LE1-ASI-Plugins/tree/main/LE1AutoloadEnabler</sourcecode>
-      <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LE1AutoloadEnabler-v2.0/LE1AutoloadEnabler-v2.0.asi</downloadlink>
-      <autoremovegroups>32,34</autoremovegroups>
-    </asimod>
-    <asimod>
-      <name>Autoload Enabler (TESTING)</name>
-      <installedname>AutoloadEnablerTesting</installedname>
-      <author>d00t/Mgamerz</author>
-      <description>This ASI enables the autoload.ini feature, which is a fairly critical component for LE1 DLC mods. Without this, DLC cannot fully mount. This version is for testing only; it registers TFC and ISB files from DLC mods at game startup.</description>
-      <version>3</version>
-      <hash>cd21e87d1cce7e7742a1581ee13478d1</hash>
-      <sourcecode>https://github.com/ME3Tweaks/LE1-ASI-Plugins/tree/main/LE1AutoloadEnabler</sourcecode>
-      <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LE1AutoloadEnabler-v3.0/LE1AutoloadEnabler-v3.0.asi</downloadlink>
-      <autoremovegroups>32,34</autoremovegroups>
+      <name>Debug Logger</name>
+      <installedname>LEDebugLogger</installedname>
+      <author>ME3Tweaks</author>
+      <description>This ASI logs the debug print from the game executable that can normally only be read with a debugger attached. This occassionally shows useful information, such as bad name index and entry indexes. The log is stored next to the game executable in a file named DebugLogger.txt.</description>
+      <version>1</version>
+      <hash>018912d35d95afeb4130883cf1b9852b</hash>
+      <sourcecode>https://github.com/ME3Tweaks/LE1-ASI-Plugins/tree/LEDebugLogger-v1.0/SelfDebugger</sourcecode>
+      <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LEDebugLogger-v1.0/LEDebugLogger-v.1.0.asi</downloadlink>
+      <autoremovegroups/>
     </asimod>
   </updategroup>
 </ASIManifest>
