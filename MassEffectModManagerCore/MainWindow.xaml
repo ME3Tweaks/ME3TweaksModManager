@@ -1610,13 +1610,23 @@
                                 </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate
-                                        DataType="objects:GameFilter">
+                                        DataType="objects:GameFilterLoader">
                                         <ToggleButton
                                             Style="{DynamicResource {x:Static adonisUi:Styles.DefaultToAccentToggleButton}}"
                                             IsChecked="{Binding IsEnabled}"
+                                            Foreground="{Binding ForegroundColor}"
                                             Visibility="{Binding IsVisible, Converter={StaticResource BoolToVisibilityConverter}}"
-                                            Content="{Binding Game}"
-                                            Click="GameFilter_Click" />
+                                            Click="GameFilter_Click" >
+                                            <ToggleButton.Content>
+                                                <Grid>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto"/>
+                                                    </Grid.RowDefinitions>
+                                                    <Border Background="{Binding BackgroundColor}" Height="2" VerticalAlignment="Bottom"/>
+                                                    <TextBlock Text="{Binding Game}" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>
+                                                </Grid>
+                                            </ToggleButton.Content>
+                                        </ToggleButton>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>

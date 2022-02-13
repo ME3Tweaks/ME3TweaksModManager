@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using LegendaryExplorerCore.Helpers;
 using ME3TweaksModManager.modmanager;
 using SevenZip;
 

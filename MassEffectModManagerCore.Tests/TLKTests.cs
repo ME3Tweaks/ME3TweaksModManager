@@ -19,10 +19,10 @@ namespace MassEffectModManagerCore.Tests
             var tlksToTestOn = Directory.GetFiles(tlksDir, "*.tlk", SearchOption.AllDirectories);
             foreach (var tlk in tlksToTestOn)
             {
-                TalkFile talkFileMe2 = new TalkFile();
+                var talkFileMe2 = new ME2ME3TalkFile();
                 talkFileMe2.LoadTlkData(tlk);
                 var tlkStream = LegendaryExplorerCore.TLK.ME2ME3.HuffmanCompression.SaveToTlkStream(talkFileMe2.StringRefs);
-                var reloadedTlk = new TalkFile();
+                var reloadedTlk = new ME2ME3TalkFile();
                 tlkStream.Position = 0;
                 reloadedTlk.LoadTlkDataFromStream(tlkStream);
 

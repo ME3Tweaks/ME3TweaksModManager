@@ -33,7 +33,7 @@ namespace ME3TweaksModManager.modmanager.loaders
         /// <summary>
         /// List of game filters that are applied to the VisibleFilteredMods collection view.
         /// </summary>
-        public ObservableCollectionExtended<GameFilter> GameFilters { get; } = new();
+        public ObservableCollectionExtended<GameFilterLoader> GameFilters { get; } = new();
 
         /// <summary>
         /// Callback to indicate a mod should be selected in the mod list
@@ -87,7 +87,7 @@ namespace ME3TweaksModManager.modmanager.loaders
 
         public static void InitializeModLoader(MainWindow window, Action<Mod> selectedModCallback)
         {
-            Instance = new M3LoadedMods() { window = window, SelectModCallback = selectedModCallback};
+            Instance = new M3LoadedMods() { window = window, SelectModCallback = selectedModCallback };
             Settings.StaticPropertyChanged += Instance.SettingChanged;
         }
 
@@ -207,9 +207,19 @@ namespace ME3TweaksModManager.modmanager.loaders
                     modDescsToLoad.AddRange(leLaunchermodDescsToLoad);
                 }
 
+                MEGame loadingGame = MEGame.Unknown;
                 foreach (var moddesc in modDescsToLoad)
                 {
                     var mod = new Mod(moddesc.path, moddesc.game);
+                    if (loadingGame < mod.Game)
+                    {
+                        // Update the loader UI
+                        var loader = Instance.GameFilters.FirstOrDefault(x => x.Game == loadingGame);
+                        if (loader != null) loader.IsLoading = false;
+                        loader = Instance.GameFilters.FirstOrDefault(x => x.Game == mod.Game);
+                        if (loader != null) loader.IsLoading = true;
+                        loadingGame = mod.Game;
+                    }
                     if (mod.ValidMod)
                     {
                         AllLoadedMods.Add(mod);
@@ -222,6 +232,12 @@ namespace ME3TweaksModManager.modmanager.loaders
                     {
                         FailedMods.Add(mod);
                     }
+                }
+
+                // Ensure nothing is set to loading.
+                foreach(var gf in Instance.GameFilters)
+                {
+                    gf.IsLoading = false;
                 }
 
                 Application.Current.Dispatcher.Invoke(delegate { VisibleFilteredMods.Sort(x => x.ModName); });

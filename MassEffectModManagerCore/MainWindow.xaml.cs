@@ -285,7 +285,7 @@ namespace ME3TweaksModManager
             {
                 if (g is MEGame.UDK or MEGame.Unknown)
                     continue;
-                var gf = new GameFilter(g);
+                var gf = new GameFilterLoader(g);
                 if (enabledFilters.Any() && !enabledFilters.Contains(g))
                 {
                     gf.IsEnabled = false;
@@ -1904,23 +1904,24 @@ namespace ME3TweaksModManager
             if (!M3Utilities.IsGameRunning(mod.Game))
             {
                 BackgroundTask modInstallTask = BackgroundTaskEngine.SubmitBackgroundJob(@"ModInstall", M3L.GetString(M3L.string_interp_installingMod, mod.ModName), M3L.GetString(M3L.string_interp_installedMod, mod.ModName));
-                var modInstaller = new ModInstaller(mod, forcedTarget ?? SelectedGameTarget, installCompressed, batchMode: batchMode);
+                var modInstaller = new ModInstallOptionsPanel(mod, forcedTarget ?? SelectedGameTarget, installCompressed, batchMode: batchMode);
+                //var modInstaller = new ModInstaller(mod, forcedTarget ?? SelectedGameTarget, installCompressed, batchMode: batchMode);
                 modInstaller.Close += (a, b) =>
                 {
                     // Panel Result will handle post-install
-                    if (!modInstaller.InstallationSucceeded)
-                    {
-                        if (modInstaller.InstallationCancelled)
-                        {
-                            modInstallTask.FinishedUIText = M3L.GetString(M3L.string_installationAborted);
-                        }
-                        else
-                        {
-                            modInstallTask.FinishedUIText = M3L.GetString(M3L.string_interp_failedToInstallMod, mod.ModName);
-                        }
-                    }
+                    //if (!modInstaller.InstallationSucceeded)
+                    //{
+                    //    if (modInstaller.InstallationCancelled)
+                    //    {
+                    //        modInstallTask.FinishedUIText = M3L.GetString(M3L.string_installationAborted);
+                    //    }
+                    //    else
+                    //    {
+                    //        modInstallTask.FinishedUIText = M3L.GetString(M3L.string_interp_failedToInstallMod, mod.ModName);
+                    //    }
+                    //}
                     BackgroundTaskEngine.SubmitJobCompletion(modInstallTask);
-                    installCompletedCallback?.Invoke(modInstaller.InstallationSucceeded);
+                    //installCompletedCallback?.Invoke(modInstaller.InstallationSucceeded);
                     ReleaseBusyControl();
                 };
                 ShowBusyControl(modInstaller);
@@ -2030,6 +2031,10 @@ namespace ME3TweaksModManager
                 PopulateTargets();
             }).ContinueWithOnUIThread(x =>
             {
+                if (x.Exception != null)
+                {
+                    Debug.WriteLine(@"Exception!");
+                }
                 IsEnabled = true;
                 if (!Settings.ShowedPreviewPanel)
                 {
