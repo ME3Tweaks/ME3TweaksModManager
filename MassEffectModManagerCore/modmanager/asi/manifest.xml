@@ -606,7 +606,7 @@
       <name>Autoload Enabler</name>
       <installedname>AutoloadEnabler</installedname>
       <author>d00t/Mgamerz</author>
-      <description>This ASI enables the autoload.ini feature, which is a fairly critical component for LE1 DLC mods. Without this, DLC cannot fully mount. This version is for testing only; it registers TFC and ISB files from DLC mods at game startup.</description>
+      <description>This ASI enables the autoload.ini feature, which is a fairly critical component for LE1 DLC mods. Without this, DLC cannot fully mount. This version additionally registers TFC and ISB files for use by the game, so you can include these files in your DLC mod folder.</description>
       <version>4</version>
       <hash>f4fdf2fbb528cf877fcec3d69e08b6c0</hash>
       <sourcecode>https://github.com/ME3Tweaks/LE1-ASI-Plugins/tree/main/LE1AutoloadEnabler</sourcecode>
