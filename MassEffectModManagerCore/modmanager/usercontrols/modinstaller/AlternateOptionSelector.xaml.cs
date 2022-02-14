@@ -23,11 +23,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols.modinstaller
     [AddINotifyPropertyChangedInterface]
     public partial class AlternateOptionSelector : UserControl
     {
-        /// <summary>
-        /// The group containing the options that this selector can present. If the group has only one item, it is converted to a checkbox. The group will be the datacontext
-        /// </summary>
-        //private AlternateGroup Group => DataContext as AlternateGroup;
-
         public AlternateOptionSelector()
         {
             InitializeComponent();

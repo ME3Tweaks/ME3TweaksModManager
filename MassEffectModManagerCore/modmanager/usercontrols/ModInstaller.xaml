@@ -5,7 +5,6 @@
     xmlns:objects1="clr-namespace:ME3TweaksModManager.modmanager.objects"
     xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
     xmlns:converters="clr-namespace:ME3TweaksModManager.modmanager.converters"
-    xmlns:modinstaller="clr-namespace:ME3TweaksModManager.modmandinager.usercontrols.modinstaller"
     mc:Ignorable="d"
     DataContext="{Binding RelativeSource={RelativeSource Self}}"
     Width="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.8_300_650', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualWidth}"

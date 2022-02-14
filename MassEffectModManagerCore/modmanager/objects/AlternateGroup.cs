@@ -31,10 +31,17 @@ namespace ME3TweaksModManager.modmanager.objects
         public AlternateOption SelectedOption { get; set; }
 
         /// <summary>
-        /// The displayed group name
+        /// The name of the option group (interpolated into title)
         /// </summary>
         public string GroupName { get; init; }
 
+        public string GroupNameTitleText => $"{GroupName} - {AlternateOptions.Count} options(s)";
+
+        /// <summary>
+        /// Creates an option group with multiple options (dropdown selector mode)
+        /// </summary>
+        /// <param name="options"></param>
+        /// <exception cref="Exception"></exception>
         public AlternateGroup(List<AlternateOption> options)
         {
             // Find the already selected one
@@ -46,6 +53,22 @@ namespace ME3TweaksModManager.modmanager.objects
             SelectedOption = AlternateOptions.FirstOrDefault();
         }
 
+        /// <summary>
+        /// Creates an option group with only one option (checkbox mode)
+        /// </summary>
+        /// <param name="singleOption"></param>
+        public AlternateGroup(AlternateOption singleOption)
+        {
+            // Find the already selected one
+            if (singleOption == null)
+                throw new Exception(@"AlternateGroup being generated with null option!");
+            if (singleOption.GroupName != null)
+                throw new Exception(@"AlternateGroup cannot be generated from a single item that has a group name!");
+
+            AlternateOptions.Add(singleOption);
+            SelectedOption = singleOption; // Single option groups always point to the option object
+        }
+
         public void OnSelectedOptionChanged()
         {
             var optionsList = AlternateOptions.Where(x => x != SelectedOption).ToList();
@@ -53,6 +76,14 @@ namespace ME3TweaksModManager.modmanager.objects
 
 
             OtherOptions.ReplaceAll(optionsList);
+        }
+
+        internal void ReleaseAssets()
+        {
+            foreach (var ao in AlternateOptions)
+            {
+                ao.ReleaseLoadedImageAsset();
+            }
         }
     }
 }

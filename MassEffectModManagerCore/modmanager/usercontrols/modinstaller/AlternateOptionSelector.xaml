@@ -8,19 +8,30 @@
              mc:Ignorable="d" 
              Loaded="AlternateOptionSelector_OnLoaded"
              d:DesignHeight="450" d:DesignWidth="800">
-    <DockPanel Margin="10">
-        <!-- Single Selector: Option is at top in bold, with the text directly below it -->
-        <TextBlock Text="{Binding SelectedOption.FriendlyName, StringFormat='Option: {0}'}" FontStyle="Italic" DockPanel.Dock="Top" FontWeight="Bold" Visibility="{Binding GroupName, Converter={StaticResource NullVisibilityConverter}, ConverterParameter='Not'}"/>
-        <!-- Single Selector: Option is at top in bold, with the text directly below it -->
-        <TextBlock Text="{Binding GroupName}" TextWrapping="Wrap" Visibility="{Binding GroupName, Converter={StaticResource NullVisibilityConverter}}" FontWeight="Bold" DockPanel.Dock="Top"/>
-        <CheckBox DockPanel.Dock="Left" Visibility="{Binding GroupName, Converter={StaticResource NullVisibilityConverter}, ConverterParameter='Reversed'}"/>
-        <xctk:DropDownButton DockPanel.Dock="Right">
+    <Grid Margin="0">
+        <!-- Single Selector -->
+        <DockPanel Visibility="{Binding GroupName, Converter={StaticResource NullVisibilityConverter}, ConverterParameter='Reversed'}">
+            <CheckBox DockPanel.Dock="Left"/>
+            <local:SingleAlternateOptionPanel Option="{Binding SelectedOption}"/>
+        </DockPanel>
+
+        <!-- Multi Selector -->
+        <xctk:DropDownButton Visibility="{Binding GroupName, Converter={StaticResource NullVisibilityConverter}}" HorizontalContentAlignment="Stretch">
+            <DockPanel>
+                <TextBlock Text="{Binding GroupNameTitleText}" TextWrapping="Wrap" Visibility="{Binding GroupName, Converter={StaticResource NullVisibilityConverter}}" FontWeight="Bold" DockPanel.Dock="Top"/>
+                <local:SingleAlternateOptionPanel DataContext="{Binding SelectedOption}"/>
+            </DockPanel>
             <xctk:DropDownButton.DropDownContent>
-                <ItemsControl ItemsSource="{Binding OtherOptions}"/>
+                <ItemsControl ItemsSource="{Binding OtherOptions}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <local:SingleAlternateOptionPanel DataContext="{Binding}"/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
             </xctk:DropDownButton.DropDownContent>
         </xctk:DropDownButton>
-        <TextBlock Text="{Binding SelectedOption.Description}" TextWrapping="Wrap"/>
-    </DockPanel>
+    </Grid>
     <!--<Grid
         Margin="0,0,0,5"
         MouseUp="AlternateItem_MouseUp"

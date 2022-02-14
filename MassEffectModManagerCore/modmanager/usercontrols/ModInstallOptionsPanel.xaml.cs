@@ -42,14 +42,14 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         /// <summary>
         /// All configurable options to display to the user.
         /// </summary>
-        public ObservableCollectionExtended<object> AllAlternateOptions { get; } = new ObservableCollectionExtended<object>();
+        //public ObservableCollectionExtended<object> AllAlternateOptions { get; } = new ObservableCollectionExtended<object>();
 
         /// <summary>
         /// Alternate options that don't have a group assigned to them
         /// </summary>
-        public ObservableCollectionExtended<AlternateOption> AlternateOptions { get; } = new ObservableCollectionExtended<AlternateOption>();
+        //public ObservableCollectionExtended<AlternateOption> AlternateOptions { get; } = new ObservableCollectionExtended<AlternateOption>();
         /// <summary>
-        /// Alternate options that do have a group assigned to them
+        /// All alternate options to show to the user (groups can have 1 or more items)
         /// </summary>
         public ObservableCollectionExtended<AlternateGroup> AlternateGroups { get; } = new ObservableCollectionExtended<AlternateGroup>();
         /// <summary>
@@ -123,7 +123,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private void SetupOptions(bool initialSetup)
         {
-            AlternateOptions.ClearEx();
+            AlternateGroups.ClearEx();
 
             //Write check
             var canWrite = M3Utilities.IsDirectoryWritable(SelectedGameTarget.TargetPath);
@@ -231,7 +231,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             if (ModBeingInstalled.GetJob(ModJob.JobHeader.ME1_CONFIG) != null)
             {
                 me1ConfigReadOnlyOption.IsSelected = true;
-                AlternateOptions.Add(me1ConfigReadOnlyOption);
+                AlternateGroups.Add(new AlternateGroup(me1ConfigReadOnlyOption));
                 AllOptionsAreAutomatic = false;
             }
 
@@ -251,10 +251,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     AlternateGroups.Add(new AlternateGroup(job.AlternateFiles.Where(x => x.GroupName == afileg).OfType<AlternateOption>().ToList()));
                 }
 
-
                 // NON GROUP OPTIONS COME NEXT.
-                AlternateOptions.AddRange(job.AlternateDLCs.Where(x => x.GroupName == null));
-                AlternateOptions.AddRange(job.AlternateFiles.Where(x => x.GroupName == null));
+                AlternateGroups.AddRange(job.AlternateDLCs.Where(x => x.GroupName == null).Select(x=>new AlternateGroup(x)));
+                AlternateGroups.AddRange(job.AlternateFiles.Where(x => x.GroupName == null).Select(x => new AlternateGroup(x)));
             }
 
             SortOptions();
@@ -274,10 +273,10 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
 
 
-            foreach (AlternateOption o in AlternateOptions)
+            /*foreach (AlternateOption o in AlternateOptions)
             {
                 internalSetupInitialSelection(o);
-            }
+            }*/
 
             foreach (AlternateGroup group in AlternateGroups)
             {
@@ -287,7 +286,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 }
             }
 
-            if (AlternateOptions.Count == 0 && AlternateGroups.Count == 0)
+            if (AlternateGroups.Count == 0)
             {
                 AllOptionsAreAutomatic = false; //Don't show the UI for this
             }
@@ -298,7 +297,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 // All available options were chosen already (compression would come from import dialog)
                 BeginInstallingMod();
             }
-            else if ((targets.Count == 1 || BatchMode) && AlternateOptions.Count == 0 && AlternateGroups.Count == 0 && (BatchMode || Settings.PreferCompressingPackages || ModBeingInstalled.Game == MEGame.ME1 || ModBeingInstalled.Game.IsLEGame()))
+            else if ((targets.Count == 1 || BatchMode) && AlternateGroups.Count == 0 && (BatchMode || Settings.PreferCompressingPackages || ModBeingInstalled.Game == MEGame.ME1 || ModBeingInstalled.Game.IsLEGame()))
             {
                 // ME1 and LE can't compress. If user has elected to compress packages, and there are no alternates/additional targets, just begin installation
                 CompressInstalledPackages = Settings.PreferCompressingPackages && ModBeingInstalled.Game > MEGame.ME1;
@@ -306,10 +305,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
             else
             {
-                // Populate the list of all alternates.
-                AllAlternateOptions.AddRange(AlternateGroups);
-                AllAlternateOptions.AddRange(AlternateOptions);
-
                 // Set the list of targets.
                 InstallationTargets.ReplaceAll(targets);
             }
@@ -317,11 +312,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private void SortOptions()
         {
-            List<AlternateOption> newOptions = new List<AlternateOption>();
-            newOptions.AddRange(AlternateOptions.Where(x => x.IsAlways));
-            newOptions.AddRange(AlternateOptions.Where(x => x is ReadOnlyOption));
-            newOptions.AddRange(AlternateOptions.Where(x => !x.IsAlways && !(x is ReadOnlyOption)));
-            AlternateOptions.ReplaceAll(newOptions);
+            // Todo: Reimplement sorting
+            //List<AlternateGroup> newOptions = new List<AlternateGroup>();
+            //newOptions.AddRange(AlternateOptions.Where(x => x.IsAlways));
+            //newOptions.AddRange(AlternateOptions.Where(x => x is ReadOnlyOption));
+            //newOptions.AddRange(AlternateOptions.Where(x => !x.IsAlways && !(x is ReadOnlyOption)));
+            //AlternateGroups.ReplaceAll(newOptions);
         }
 
 
@@ -354,12 +350,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         protected override void OnClosing(DataEventArgs e)
         {
-            foreach (var ao in AlternateOptions)
+            base.OnClosing(e);
+            foreach (var ao in AlternateGroups)
             {
-                ao.ReleaseLoadedImageAsset();
+                ao.ReleaseAssets();
             }
-            AlternateOptions.ClearEx(); //remove collection of items
-            AllAlternateOptions.ClearEx();
             AlternateGroups.ClearEx();
         }
 
@@ -370,7 +365,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private void InstallCancel_Click(object sender, RoutedEventArgs e)
         {
-
+            OnClosing(DataEventArgs.Empty);
         }
     }
 }
