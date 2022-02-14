@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,13 +24,20 @@ namespace ME3TweaksModManager.modmanager.usercontrols.modinstaller
     [AddINotifyPropertyChangedInterface]
     public partial class AlternateOptionSelector : UserControl
     {
+        public bool IsDropdownOpen { get; set; }
         public AlternateOptionSelector()
         {
             InitializeComponent();
         }
 
-        private void AlternateOptionSelector_OnLoaded(object sender, RoutedEventArgs e)
+        private void AlternateItem_MouseUp(object sender, MouseButtonEventArgs e)
         {
+            var newItem = (AlternateOption)((FrameworkElement)sender).DataContext;
+            if (DataContext is AlternateGroup group && group.SelectedOption != newItem)
+            {
+                group.SelectedOption = newItem;
+                IsDropdownOpen = false;
+            }
         }
     }
 }

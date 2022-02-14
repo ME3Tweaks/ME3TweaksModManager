@@ -5,18 +5,18 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ME3TweaksModManager.modmanager.usercontrols.modinstaller"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-             mc:Ignorable="d" 
-             Loaded="AlternateOptionSelector_OnLoaded"
+             mc:Ignorable="d"
+             x:Name="AOS"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid Margin="0">
         <!-- Single Selector -->
         <DockPanel Visibility="{Binding GroupName, Converter={StaticResource NullVisibilityConverter}, ConverterParameter='Reversed'}">
             <CheckBox DockPanel.Dock="Left"/>
-            <local:SingleAlternateOptionPanel Option="{Binding SelectedOption}"/>
+            <local:SingleAlternateOptionPanel DataContext="{Binding SelectedOption}"/>
         </DockPanel>
 
         <!-- Multi Selector -->
-        <xctk:DropDownButton Visibility="{Binding GroupName, Converter={StaticResource NullVisibilityConverter}}" HorizontalContentAlignment="Stretch">
+        <xctk:DropDownButton IsOpen="{Binding IsDropdownOpen, ElementName=AOS}" Visibility="{Binding GroupName, Converter={StaticResource NullVisibilityConverter}}" HorizontalContentAlignment="Stretch">
             <DockPanel>
                 <TextBlock Text="{Binding GroupNameTitleText}" TextWrapping="Wrap" Visibility="{Binding GroupName, Converter={StaticResource NullVisibilityConverter}}" FontWeight="Bold" DockPanel.Dock="Top"/>
                 <local:SingleAlternateOptionPanel DataContext="{Binding SelectedOption}"/>
@@ -25,7 +25,7 @@
                 <ItemsControl ItemsSource="{Binding OtherOptions}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <local:SingleAlternateOptionPanel DataContext="{Binding}"/>
+                            <local:SingleAlternateOptionPanel DataContext="{Binding}" MouseUp="AlternateItem_MouseUp"/>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>

@@ -45,5 +45,22 @@
                 </DockPanel>
             </ToolTip>
         </DockPanel.ToolTip>
+        <DockPanel.Style>
+            <Style
+                TargetType="{x:Type DockPanel}">
+                <Style.Triggers>
+                    <Trigger
+                        Property="IsMouseOver"
+                        Value="True">
+                        <Setter
+                            Property="Background"
+                            Value="{DynamicResource {x:Static adonisUi:Brushes.HoverBackgroundBrush}}" />
+                        <Setter
+                            Property="Cursor"
+                            Value="Hand" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+        </DockPanel.Style>
     </DockPanel>
 </UserControl>

@@ -31,6 +31,11 @@ namespace ME3TweaksModManager.modmanager.loaders
         public static M3LoadedMods Instance { get; private set; }
 
         /// <summary>
+        /// Invoked when loading progress has changed, or been set to 0 (inactive)
+        /// </summary>
+        public static event EventHandler LoadingProgressChanged;
+
+        /// <summary>
         /// List of game filters that are applied to the VisibleFilteredMods collection view.
         /// </summary>
         public ObservableCollectionExtended<GameFilterLoader> GameFilters { get; } = new();
@@ -49,6 +54,15 @@ namespace ME3TweaksModManager.modmanager.loaders
         /// If the mods list has been loaded. Mod loading does not occur immediately on application boot.
         /// </summary>
         public bool ModsLoaded { get; private set; }
+
+        /// <summary>
+        /// FOR PROGRESS BARS
+        /// </summary>
+        public int NumModsLoaded { get; private set; }
+        /// <summary>
+        /// FOR PROGRESS BARS
+        /// </summary>
+        public int NumTotalMods { get; private set; }
 
         /// <summary>
         /// Mods currently visible according to the GAmeFilters list
@@ -207,10 +221,14 @@ namespace ME3TweaksModManager.modmanager.loaders
                     modDescsToLoad.AddRange(leLaunchermodDescsToLoad);
                 }
 
+                NumTotalMods = modDescsToLoad.Count;
+                NumModsLoaded = 0;
+                //LoadingProgressChanged?.Invoke(this, null);
                 MEGame loadingGame = MEGame.Unknown;
                 foreach (var moddesc in modDescsToLoad)
                 {
                     var mod = new Mod(moddesc.path, moddesc.game);
+                    NumModsLoaded++;
                     if (loadingGame < mod.Game)
                     {
                         // Update the loader UI
@@ -262,6 +280,8 @@ namespace ME3TweaksModManager.modmanager.loaders
                 BackgroundTaskEngine.SubmitJobCompletion(uiTask);
                 //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NoModSelectedText)));
 
+                NumTotalMods = 0; // we are no longer loading so set this to zero.
+                NumModsLoaded = 0;
                 ModsLoaded = true;
                 if (canAutoCheckForModUpdates)
                 {
