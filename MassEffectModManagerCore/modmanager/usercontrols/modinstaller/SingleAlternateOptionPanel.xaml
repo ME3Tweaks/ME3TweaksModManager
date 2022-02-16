@@ -7,7 +7,11 @@
              xmlns:local="clr-namespace:ME3TweaksModManager.modmanager.usercontrols.modinstaller" xmlns:converters="clr-namespace:ME3TweaksModManager.modmanager.converters" xmlns:fa5="http://schemas.fontawesome.com/icons/"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
-             x:Name="SAOP">
+             x:Name="SAOP"
+             ToolTipService.IsEnabled="{Binding ImageBitmap, Converter={StaticResource NotNullToBoolConverter}}"
+             ToolTipService.InitialShowDelay="0"
+             ToolTipService.BetweenShowDelay="0"
+             MouseLeave="SAOP_MouseLeave">
     <UserControl.Resources>
         <converters:GroupNameToColorConverter
             x:Key="GroupNameToColorConverter" />
@@ -15,11 +19,11 @@
             x:Key="ImageTooltipVerticalOffsetConverter" />
     </UserControl.Resources>
     <!-- DataContext is the AlternateOption object itself!-->
-    <DockPanel
-        ToolTipService.IsEnabled="{Binding ImageBitmap, Converter={StaticResource NotNullToBoolConverter}}"
-        ToolTipService.InitialShowDelay="0"
-        ToolTipService.BetweenShowDelay="0">
-        <fa5:ImageAwesome
+    <Border
+        Name="BorderElement"
+        Padding="5,3">
+        <DockPanel>
+            <fa5:ImageAwesome
                 Icon="Solid_Image"
                 Height="16"
                 Margin="10,0"
@@ -28,39 +32,42 @@
                 VerticalAlignment="Center"
                 Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                 Visibility="{Binding ImageBitmap, Converter={StaticResource NullVisibilityConverter}}" />
-        <TextBlock Text="{Binding FriendlyName}" FontStyle="Italic" DockPanel.Dock="Top" FontWeight="Bold" TextAlignment="Left"/>
-        <TextBlock Text="{Binding Description}" TextWrapping="Wrap"/>
-        
-        <DockPanel.ToolTip>
-            <ToolTip
-                DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}"
-                Placement="Right"
-                Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"
-                BorderThickness="0"
-                VerticalOffset="{Binding ImageHeight, Converter={StaticResource ImageTooltipVerticalOffsetConverter}}">
-                <DockPanel>
-                    <Image
-                        Source="{Binding ImageBitmap}"
-                        Height="{Binding ImageHeight}" />
-                </DockPanel>
-            </ToolTip>
-        </DockPanel.ToolTip>
-        <DockPanel.Style>
+            <TextBlock Text="{Binding FriendlyName}" FontStyle="Italic" DockPanel.Dock="Top" FontWeight="Bold" TextAlignment="Left"/>
+            <TextBlock Text="{Binding Description}" TextWrapping="Wrap"/>
+        </DockPanel>
+        <Border.Style>
             <Style
-                TargetType="{x:Type DockPanel}">
+                TargetType="{x:Type Border}">
+                <Setter Property="Background" Value="Transparent"/>
                 <Style.Triggers>
-                    <Trigger
-                        Property="IsMouseOver"
-                        Value="True">
+                    <MultiDataTrigger>
+                        <MultiDataTrigger.Conditions>
+                            <Condition Binding="{Binding ShowMouseoverHighlightOnMain, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:AlternateOptionSelector}}}" Value="True"  />
+                            <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=IsMouseOver}" Value="true" />
+                        </MultiDataTrigger.Conditions>
                         <Setter
                             Property="Background"
                             Value="{DynamicResource {x:Static adonisUi:Brushes.HoverBackgroundBrush}}" />
                         <Setter
                             Property="Cursor"
                             Value="Hand" />
-                    </Trigger>
+                    </MultiDataTrigger>
                 </Style.Triggers>
             </Style>
-        </DockPanel.Style>
-    </DockPanel>
+        </Border.Style>
+    </Border>
+    <UserControl.ToolTip>
+        <ToolTip
+            DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}"
+            Placement="Right"
+            Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"
+            BorderThickness="0"
+            VerticalOffset="{Binding ImageHeight, Converter={StaticResource ImageTooltipVerticalOffsetConverter}}">
+            <DockPanel>
+                <Image
+                    Source="{Binding ImageBitmap}"
+                    Height="{Binding ImageHeight}" />
+            </DockPanel>
+        </ToolTip>
+    </UserControl.ToolTip>
 </UserControl>

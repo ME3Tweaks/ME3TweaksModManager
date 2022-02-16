@@ -38,5 +38,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols.modinstaller
         {
             InitializeComponent();
         }
+
+        private void SAOP_MouseLeave(object sender, MouseEventArgs e)
+        {
+            if (ToolTip is ToolTip tp)
+                tp.IsOpen = false; // Close the image preview.
+        }
     }
 }
