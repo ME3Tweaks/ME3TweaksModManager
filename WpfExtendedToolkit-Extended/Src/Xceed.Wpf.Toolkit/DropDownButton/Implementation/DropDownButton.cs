@@ -16,6 +16,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -191,6 +192,7 @@ namespace Xceed.Wpf.Toolkit
       }
       set
       {
+          Debug.WriteLine($@"NewValue: {value}");
         SetValue( IsOpenProperty, value );
       }
     }
@@ -208,6 +210,9 @@ namespace Xceed.Wpf.Toolkit
         RaiseRoutedEvent( DropDownButton.OpenedEvent );
       else
         RaiseRoutedEvent( DropDownButton.ClosedEvent );
+
+      // Mgamerz: 02/15/2022: Fixes IsOpen never actually being set
+      IsOpen = newValue;
     }
 
     #endregion //IsOpen
