@@ -156,17 +156,17 @@
 		<PackageReference Include="AuthenticodeExaminer" Version="0.3.0" />
 		<PackageReference Include="CommandLineParser" Version="2.8.0" />
 		<PackageReference Include="ComputerInfo" Version="0.1.0-prerelease" />
-		<PackageReference Include="CliWrap" Version="3.3.3" />
-		<PackageReference Include="Flurl" Version="3.0.2" />
-		<PackageReference Include="Flurl.Http" Version="3.2.0" />
+		<PackageReference Include="CliWrap" Version="3.4.1" />
+		<PackageReference Include="Flurl" Version="3.0.4" />
+		<PackageReference Include="Flurl.Http" Version="3.2.2" />
 		<PackageReference Include="Fody" Version="6.6.0">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="FontAwesome5" Version="2.1.6" />
-		<PackageReference Include="Microsoft.AppCenter" Version="4.4.0" />
-		<PackageReference Include="Microsoft.AppCenter.Analytics" Version="4.4.0" />
-		<PackageReference Include="Microsoft.AppCenter.Crashes" Version="4.4.0" />
+		<PackageReference Include="Microsoft.AppCenter" Version="4.5.0" />
+		<PackageReference Include="Microsoft.AppCenter.Analytics" Version="4.5.0" />
+		<PackageReference Include="Microsoft.AppCenter.Crashes" Version="4.5.0" />
 		<PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="2.2.0" />
 		<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
 		<PackageReference Include="MvvmValidation" Version="3.1.2" />
@@ -181,7 +181,7 @@
 		<PackageReference Include="SingleInstanceCore" Version="2.2.1" />
 		<PackageReference Include="SSH.NET" Version="2020.0.1" />
 		<PackageReference Include="Trinet.Core.IO.Ntfs" Version="4.1.1" />
-		<PackageReference Include="WatsonWebsocket" Version="2.3.2.1" />
+		<PackageReference Include="WatsonWebsocket" Version="2.3.2.5" />
     <PackageReference Include="WinCopies.WindowsAPICodePack.Shell" Version="2.10.2" />
   </ItemGroup>
 	<ItemGroup>
