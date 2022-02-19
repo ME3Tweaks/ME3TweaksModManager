@@ -1908,21 +1908,23 @@ namespace ME3TweaksModManager
                 //var modInstaller = new ModInstaller(mod, forcedTarget ?? SelectedGameTarget, installCompressed, batchMode: batchMode);
                 modInstaller.Close += (a, b) =>
                 {
-                    // Panel Result will handle post-install
-                    //if (!modInstaller.InstallationSucceeded)
-                    //{
-                    //    if (modInstaller.InstallationCancelled)
-                    //    {
-                    //        modInstallTask.FinishedUIText = M3L.GetString(M3L.string_installationAborted);
-                    //    }
-                    //    else
-                    //    {
-                    //        modInstallTask.FinishedUIText = M3L.GetString(M3L.string_interp_failedToInstallMod, mod.ModName);
-                    //    }
-                    //}
-                    BackgroundTaskEngine.SubmitJobCompletion(modInstallTask);
-                    //installCompletedCallback?.Invoke(modInstaller.InstallationSucceeded);
                     ReleaseBusyControl();
+                    if (b.Data is ModInstallOptionsPackage miop)
+                    {
+                        ModInstaller mi = new ModInstaller(miop);
+                        mi.Close += (c, d) =>
+                        {
+                            BackgroundTaskEngine.SubmitJobCompletion(modInstallTask);
+                            // Todo: Batch mode?
+                        };
+                        ShowBusyControl(mi);
+                    }
+                    else
+                    {
+                        // TODO: UPDATE TO CANCELED
+                        BackgroundTaskEngine.SubmitJobCompletion(modInstallTask);
+                    }
+                    //installCompletedCallback?.Invoke(modInstaller.InstallationSucceeded);
                 };
                 ShowBusyControl(modInstaller);
             }
