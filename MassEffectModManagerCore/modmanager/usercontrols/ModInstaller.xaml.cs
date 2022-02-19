@@ -94,12 +94,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             MemoryAnalyzer.AddTrackedMemoryItem(@"Mod Installer", new WeakReference(this));
             M3Log.Information($@">>>>>>> Starting mod installer for mod: {package.ModBeingInstalled.ModName} {package.ModBeingInstalled.ModVersionString} for game {package.ModBeingInstalled.Game}. Install source: {(package.ModBeingInstalled.IsInArchive ? @"Archive" : @"Library (disk)")}"); //do not localize
+            InstallOptionsPackage = package;
             LoadCommands();
             lastPercentUpdateTime = DateTime.Now;
             package.InstallTarget.ReloadGameTarget(false); //Reload so we can have consistent state with ALOT on disk
             Action = M3L.GetString(M3L.string_preparingToInstall);
-
-
         }
 
         private void LoadCommands()
@@ -1060,14 +1059,16 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     {
                         try
                         {
-
-                            if (keyCount.TryGetValue(key.Key, out var existingCount))
+                            if (key != null)
                             {
-                                keyCount[key.Key] = existingCount + 1;
-                            }
-                            else
-                            {
-                                keyCount[key.Key] = 1;
+                                if (keyCount.TryGetValue(key.Key, out var existingCount))
+                                {
+                                    keyCount[key.Key] = existingCount + 1;
+                                }
+                                else
+                                {
+                                    keyCount[key.Key] = 1;
+                                }
                             }
                         }
                         catch (Exception e)
@@ -1537,6 +1538,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             GC.Collect(); //this should help with the oddities of missing radio button's somehow still in the visual tree from busyhost
             InitializeComponent();
+            BeginInstallingMod();
         }
 
         protected override void OnClosing(DataEventArgs e)
