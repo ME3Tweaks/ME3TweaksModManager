@@ -256,35 +256,17 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 AlternateGroups.AddRange(job.AlternateFiles.Where(x => x.GroupName == null).Select(x => new AlternateGroup(x)));
             }
 
-            SortOptions();
-
-            void internalSetupInitialSelection(AlternateOption o)
-            {
-                if (o is AlternateDLC altdlc)
-                {
-                    altdlc.SetupInitialSelection(SelectedGameTarget, ModBeingInstalled);
-                    if (altdlc.IsManual) AllOptionsAreAutomatic = false;
-                }
-                else if (o is AlternateFile altfile)
-                {
-                    altfile.SetupInitialSelection(SelectedGameTarget, ModBeingInstalled);
-                    if (altfile.IsManual) AllOptionsAreAutomatic = false;
-                }
-            }
-
-
-            /*foreach (AlternateOption o in AlternateOptions)
+            // Set the initial states
+            foreach (AlternateGroup o in AlternateGroups)
             {
                 internalSetupInitialSelection(o);
-            }*/
-
-            foreach (AlternateGroup group in AlternateGroups)
-            {
-                foreach (AlternateOption o in group.AlternateOptions)
-                {
-                    internalSetupInitialSelection(o);
-                }
             }
+
+            SortOptions();
+
+
+            // Done calculating options
+
 
             if (AlternateGroups.Count == 0)
             {
@@ -307,6 +289,31 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 // Set the list of targets.
                 InstallationTargets.ReplaceAll(targets);
+            }
+        }
+
+        void internalSetupInitialSelection(AlternateGroup o)
+        {
+            if (o.AlternateOptions.Count == 1)
+            {
+                // Single mode
+            }
+            else
+            {
+                // Multi mode
+            }
+            foreach (var option in o.AlternateOptions)
+            {
+                if (option is AlternateDLC altdlc)
+                {
+                    altdlc.SetupInitialSelection(SelectedGameTarget, ModBeingInstalled);
+                    if (altdlc.IsManual) AllOptionsAreAutomatic = false;
+                }
+                else if (option is AlternateFile altfile)
+                {
+                    altfile.SetupInitialSelection(SelectedGameTarget, ModBeingInstalled);
+                    if (altfile.IsManual) AllOptionsAreAutomatic = false;
+                }
             }
         }
 

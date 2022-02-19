@@ -71,10 +71,10 @@ namespace ME3TweaksModManager.modmanager.usercontrols.modinstaller
                         tp.IsOpen = false; // Close the tooltip
                 }
 
-                if (group.AlternateOptions.Count == 1)
+                if (group.AlternateOptions.Count == 1 && !group.SelectedOption.IsAlways)
                 {
                     // Single mode
-                    group.SingleOptionIsSelected = !group.SingleOptionIsSelected;
+                    group.SelectedOption.IsSelected = !group.SelectedOption.IsSelected;
                 }
             }
         }

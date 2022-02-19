@@ -34,7 +34,7 @@ namespace ME3TweaksModManager.modmanager.objects
         /// <summary>
         /// If the checkbox (when in single mode) is selected or not. This must be populated when the alternate group is generated for the initial selection to be correct
         /// </summary>
-        public bool SingleOptionIsSelected { get; set; }
+        //public bool SingleOptionIsSelected { get; set; }
 
         /// <summary>
         /// The name of the option group (interpolated into title)
