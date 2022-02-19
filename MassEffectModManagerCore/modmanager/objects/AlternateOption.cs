@@ -45,6 +45,9 @@ namespace ME3TweaksModManager.modmanager.objects
         public abstract bool UINotApplicable { get; }
         [SuppressPropertyChangedWarnings]
         public abstract bool UIIsSelectable { get; set; }
+        /// <summary>
+        /// Indicates that the option is in a read-only state; that it is not a manual option.
+        /// </summary>
         public abstract bool IsAlways { get; }
         public abstract void BuildParameterMap(Mod mod);
         public virtual string GroupName { get; internal set; }

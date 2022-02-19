@@ -20,6 +20,7 @@ using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.mod;
 using Microsoft.AppCenter.Crashes;
+using PropertyChanged;
 
 namespace ME3TweaksModManager.modmanager.me3tweaks
 {
@@ -633,7 +634,8 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
 
         [Localizable(true)]
         [DebuggerDisplay("ModUpdateInfo | {mod?.ModName} with {filesToDelete?.Count} FTDelete and {applicableUpdates?.Count} FTDownload")]
-        public class ModUpdateInfo : INotifyPropertyChanged, IEquatable<ModUpdateInfo>
+        [AddINotifyPropertyChangedInterface]
+        public class ModUpdateInfo : IEquatable<ModUpdateInfo>
         {
             public ModUpdateInfo()
             {
@@ -671,10 +673,6 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
             public int updatecode;
             public string versionstr { get; set; }
             public Version version;
-            //Fody uses this property on weaving
-#pragma warning disable
-public event PropertyChangedEventHandler PropertyChanged;
-#pragma warning restore
             public bool UpdateInProgress { get; set; }
             public ICommand ApplyUpdateCommand { get; set; }
             public long TotalBytesToDownload { get; set; }
