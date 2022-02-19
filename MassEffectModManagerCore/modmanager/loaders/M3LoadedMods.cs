@@ -289,7 +289,7 @@ namespace ME3TweaksModManager.modmanager.loaders
                 }
                 else if (forceUpdateCheckOnCompletion && args.Result is Mod highlightedMod && highlightedMod.IsUpdatable)
                 {
-                    ModUpdater.Instance.CheckModsForUpdates(new List<Mod>(new[] { highlightedMod }));
+                    ModUpdater.Instance.CheckModsForUpdates(scopedModsToCheckForUpdates);
                 }
             };
             bw.RunWorkerCompleted += (a, b) =>
