@@ -323,12 +323,20 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private bool CanInstall()
         {
-            return false;
+            // Todo
+            return true;
         }
 
         private void BeginInstallingMod()
         {
-
+            // Todo: Fill out selected options
+            ModInstallOptionsPackage moip = new ModInstallOptionsPackage()
+            {
+                CompressInstalledPackages = CompressInstalledPackages,
+                InstallTarget = SelectedGameTarget,
+                ModBeingInstalled = ModBeingInstalled,                
+            };
+            OnClosing(new DataEventArgs(moip));
         }
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
