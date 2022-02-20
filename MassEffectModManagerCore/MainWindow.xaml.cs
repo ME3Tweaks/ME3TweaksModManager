@@ -1908,21 +1908,24 @@ namespace ME3TweaksModManager
                 //var modInstaller = new ModInstaller(mod, forcedTarget ?? SelectedGameTarget, installCompressed, batchMode: batchMode);
                 modInstaller.Close += (a, b) =>
                 {
-                    // Panel Result will handle post-install
-                    //if (!modInstaller.InstallationSucceeded)
-                    //{
-                    //    if (modInstaller.InstallationCancelled)
-                    //    {
-                    //        modInstallTask.FinishedUIText = M3L.GetString(M3L.string_installationAborted);
-                    //    }
-                    //    else
-                    //    {
-                    //        modInstallTask.FinishedUIText = M3L.GetString(M3L.string_interp_failedToInstallMod, mod.ModName);
-                    //    }
-                    //}
-                    BackgroundTaskEngine.SubmitJobCompletion(modInstallTask);
-                    //installCompletedCallback?.Invoke(modInstaller.InstallationSucceeded);
                     ReleaseBusyControl();
+                    if (b.Data is ModInstallOptionsPackage miop)
+                    {
+                        ModInstaller mi = new ModInstaller(miop);
+                        mi.Close += (c, d) =>
+                        {
+                            BackgroundTaskEngine.SubmitJobCompletion(modInstallTask);
+                            ReleaseBusyControl();
+                            // Todo: Batch mode?
+                        };
+                        ShowBusyControl(mi);
+                    }
+                    else
+                    {
+                        // TODO: UPDATE TO CANCELED
+                        BackgroundTaskEngine.SubmitJobCompletion(modInstallTask);
+                    }
+                    //installCompletedCallback?.Invoke(modInstaller.InstallationSucceeded);
                 };
                 ShowBusyControl(modInstaller);
             }
@@ -3269,7 +3272,7 @@ namespace ME3TweaksModManager
                             using var fs = new FileStream(files[0], FileMode.Open, FileAccess.Read);
                             var magic = fs.ReadInt32();
                             fs.Dispose();
-                            if (magic is 0x666D726D or 0x1B or 0x1E) //fmrm (backwards) (ME3), 0x1B (LE1), 0x1E (LE2) (sigh)
+                            if (magic is 0x666D726D or 0x1B or 0x1C or 0x1E) //fmrm (backwards) (ME3), 0x1B (LE1), 0x1C (LE2 count or something...) 0x1E (LE2) (sigh)
                             {
 
                                 NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"Coalesced Decompiler");

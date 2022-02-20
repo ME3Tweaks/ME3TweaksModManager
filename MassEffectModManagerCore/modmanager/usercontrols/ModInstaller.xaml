@@ -17,8 +17,8 @@
         </Grid.RowDefinitions>
         <Image
             Grid.Row="0"
-            Source="{Binding ModBeingInstalled.BannerBitmap}"
-            Visibility="{Binding ModBeingInstalled.BannerBitmap, Converter= {StaticResource NullVisibilityConverter}}"
+            Source="{Binding InstallOptionsPackage.ModBeingInstalled.BannerBitmap}"
+            Visibility="{Binding InstallOptionsPackage.ModBeingInstalled.BannerBitmap, Converter= {StaticResource NullVisibilityConverter}}"
             RenderOptions.BitmapScalingMode="HighQuality" />
         <StackPanel
             Grid.Row="1"
@@ -48,7 +48,7 @@
                 HorizontalAlignment="Center"
                 FontSize="14"
                 FontWeight="Light"
-                Text="{Binding ModBeingInstalled.ModName}"
+                Text="{Binding InstallOptionsPackage.ModBeingInstalled.ModName}"
                 TextWrapping="Wrap"
                 TextAlignment="Center" />
         </StackPanel>

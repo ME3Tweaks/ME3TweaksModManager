@@ -283,7 +283,23 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         case @"masseffect3":
                             return @"/images/gameicons/ME3_48.ico";
                         case @"masseffectlegendaryedition":
-                            return @"/images/gameicons/LEL_Icon.ico";
+                            {
+                                if (Instance.LEGames != null && Instance.LEGames.Length == 1)
+                                {
+                                    switch (Instance.LEGames[0])
+                                    {
+                                        case LegendaryExplorerCore.Packages.MEGame.LE1:
+                                            return @"/images/gameicons/LE1_48.ico";
+                                        case LegendaryExplorerCore.Packages.MEGame.LE2:
+                                            return @"/images/gameicons/LE2_48.ico";
+                                        case LegendaryExplorerCore.Packages.MEGame.LE3:
+                                            return @"/images/gameicons/LE3_48.ico";
+                                    }
+                                }
+                                // Don't have the info. Set it to the launcher icon as we have no idea what game this file is for
+                                return @"/images/gameicons/LEL_Icon.ico";
+
+                            }
                     }
 
                     return null;
