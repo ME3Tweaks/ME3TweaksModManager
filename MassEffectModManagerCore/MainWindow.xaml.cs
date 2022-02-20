@@ -1915,6 +1915,7 @@ namespace ME3TweaksModManager
                         mi.Close += (c, d) =>
                         {
                             BackgroundTaskEngine.SubmitJobCompletion(modInstallTask);
+                            ReleaseBusyControl();
                             // Todo: Batch mode?
                         };
                         ShowBusyControl(mi);
