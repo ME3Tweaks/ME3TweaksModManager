@@ -1,4 +1,8 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using LegendaryExplorerCore.Packages;
 using Newtonsoft.Json;
 
 namespace ME3TweaksModManager.modmanager.objects.nexusfiledb
@@ -38,8 +42,26 @@ namespace ME3TweaksModManager.modmanager.objects.nexusfiledb
 
         [JsonProperty(@"size")]
         public string Size { get; set; }
-        
+
         [JsonProperty(@"fullfilepath")]
         public string DebugFullName { get; set; }
+
+        /// <summary>
+        /// Setter for deserializing the list of LEGames. Access through <see cref="LEGames"/>.
+        /// </summary>
+        [JsonProperty(@"legames")]
+        public string InternalLEGames
+        {
+            set
+            {
+                LEGames = value.Split(',').Select(x=>Enum.Parse<MEGame>(x)).ToArray();
+            }
+        }
+
+        /// <summary>
+        /// The list of Legendary Edition games this mod is for. This depends on tags. This will be null if none are defined!
+        /// </summary>
+        [JsonIgnore]
+        public MEGame[] LEGames { get; set; }
     }
 }
