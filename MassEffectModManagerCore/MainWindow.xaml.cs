@@ -3804,6 +3804,20 @@ namespace ME3TweaksModManager
             }
         }
 
+        private void ListPossibleDirectlyConflictingMods_Click(object sender, RoutedEventArgs e)
+        {
+            if (SelectedMod != null)
+            {
+                var files = SelectedMod.GetAllInstallableFiles();
+                
+                // Load Nexus Database and query it.
+
+
+                ListDialog l = new ListDialog(files, M3L.GetString(M3L.string_interp_allInstallableFiles, SelectedMod.ModName), M3L.GetString(M3L.string_description_allInstallableFiles), this);
+                l.Show();
+            }
+        }
+
         private void GameFilter_Click(object sender, RoutedEventArgs e)
         {
             if (Keyboard.Modifiers == ModifierKeys.Shift)
