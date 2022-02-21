@@ -367,8 +367,8 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
                                                NexusModsId = (int)e.Attribute("id"),
                                                GameId = (int)e.Attribute("game"),
                                                versionstr = (string)e.Attribute("version"),
-                                               UpdatedTime = DateTimeOffset.FromUnixTimeSeconds((long)e.Attribute("updated_timestamp"))
-                                                   .DateTime
+                                               UpdatedTime = DateTimeOffset.FromUnixTimeSeconds((long)e.Attribute("updated_timestamp")).DateTime,
+                                               changelog = (string)e.Attribute("changelog") // This will be null if not set
                                            }).ToList();
                 modUpdateInfos.AddRange(nexusModsUpdateInfo);
 
@@ -628,7 +628,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
                 var updatedTime = UpdatedTime.ToString(@"d"); //doing this outside of statement makes it easier for localizer tool
                 UIStatusString = M3L.GetString(M3L.string_interp_updatedDateX, updatedTime);
                 DownloadButtonText = M3L.GetString(M3L.string_openNexusModsPage);
-                changelog = M3L.GetString(M3L.string_nexusModsUpdateInstructions);
+                changelog ??= M3L.GetString(M3L.string_nexusModsUpdateInstructions);
             }
         }
 
