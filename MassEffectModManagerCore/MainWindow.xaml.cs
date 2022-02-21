@@ -1904,9 +1904,9 @@ namespace ME3TweaksModManager
             if (!M3Utilities.IsGameRunning(mod.Game))
             {
                 BackgroundTask modInstallTask = BackgroundTaskEngine.SubmitBackgroundJob(@"ModInstall", M3L.GetString(M3L.string_interp_installingMod, mod.ModName), M3L.GetString(M3L.string_interp_installedMod, mod.ModName));
-                var modInstaller = new ModInstallOptionsPanel(mod, forcedTarget ?? SelectedGameTarget, installCompressed, batchMode: batchMode);
+                var modOptionsPicker = new ModInstallOptionsPanel(mod, forcedTarget ?? SelectedGameTarget, installCompressed, batchMode: batchMode);
                 //var modInstaller = new ModInstaller(mod, forcedTarget ?? SelectedGameTarget, installCompressed, batchMode: batchMode);
-                modInstaller.Close += (a, b) =>
+                modOptionsPicker.Close += (a, b) =>
                 {
                     ReleaseBusyControl();
                     if (b.Data is ModInstallOptionsPackage miop)
@@ -1914,7 +1914,9 @@ namespace ME3TweaksModManager
                         ModInstaller mi = new ModInstaller(miop);
                         mi.Close += (c, d) =>
                         {
+
                             BackgroundTaskEngine.SubmitJobCompletion(modInstallTask);
+                            installCompletedCallback?.Invoke(mi.InstallationSucceeded);
                             ReleaseBusyControl();
                             // Todo: Batch mode?
                         };
@@ -1922,12 +1924,13 @@ namespace ME3TweaksModManager
                     }
                     else
                     {
-                        // TODO: UPDATE TO CANCELED
+                        // User canceled the options
+                        installCompletedCallback?.Invoke(false); // Canceled
+                        modInstallTask.FinishedUIText = M3L.GetString(M3L.string_installationAborted);
                         BackgroundTaskEngine.SubmitJobCompletion(modInstallTask);
                     }
-                    //installCompletedCallback?.Invoke(modInstaller.InstallationSucceeded);
                 };
-                ShowBusyControl(modInstaller);
+                ShowBusyControl(modOptionsPicker);
             }
             else
             {
