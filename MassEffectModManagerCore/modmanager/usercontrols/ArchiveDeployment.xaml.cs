@@ -236,7 +236,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 }
 
                 // Check for ALOT markers
-                var packageFiles = referencedFiles.Where(x=>x.RepresentsPackageFilePath());
+                var packageFiles = referencedFiles.Where(x => x.RepresentsPackageFilePath());
                 foreach (var p in packageFiles)
                 {
                     if (M3Utilities.HasALOTMarker(p))
@@ -745,6 +745,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 // if (ModBeingDeployed.Game >= MEGame.ME2)
                 //{
+
+                // CHECK REFERENCES
                 item.ItemText = M3L.GetString(M3L.string_checkingTexturesInMod);
                 var referencedFiles = ModBeingDeployed.GetAllRelativeReferences().Select(x => Path.Combine(ModBeingDeployed.ModPath, x)).ToList();
                 var allTFCs = referencedFiles.Where(x => Path.GetExtension(x) == @".tfc").ToList();
@@ -856,6 +858,18 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     }
                 }
 
+                // LE1: TFC in basegame
+                if (ModBeingDeployed.Game == MEGame.LE1)
+                {
+                    var installableFiles = ModBeingDeployed.GetAllInstallableFiles();
+                    var basegameTFCs = installableFiles.Where(x => x.StartsWith("/BioGame/CookedPCConsole/", StringComparison.InvariantCultureIgnoreCase) && x.EndsWith(".tfc")).ToList();
+                    foreach (var basegameTFC in basegameTFCs)
+                    {
+                        M3Log.Error($@"Found basegame TFC being deployed for LE1: {basegameTFC}");
+                        item.AddBlockingError($"Cannot install TFC {Path.GetFileName(basegameTFC)} to /BIOGame/CookedPCConsole in LE1. Additional game TFCs must be added through a Custom DLC folder.");
+                    }
+                }
+
                 if (!item.HasAnyMessages())
                 {
                     item.ItemText = M3L.GetString(M3L.string_noBrokenTexturesWereFound);
@@ -890,8 +904,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         //foreach (var f in referencedFiles)
                         {
                             if (CheckCancelled) return;
-                            // Mostly ported from ME3Explorer
-                            var lnumChecked = Interlocked.Increment(ref numChecked);
+                // Mostly ported from ME3Explorer
+                var lnumChecked = Interlocked.Increment(ref numChecked);
                             item.ItemText = M3L.GetString(M3L.string_checkingNameAndObjectReferences) + $@" [{lnumChecked - 1}/{referencedFiles.Count}]";
 
                             var relativePath = f.Substring(ModBeingDeployed.ModPath.Length + 1);
@@ -1235,20 +1249,20 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             DateTime lastPercentUpdateTime = DateTime.Now;
             compressor.Progressing += (a, b) =>
             {
-                //Debug.WriteLine(b.AmountCompleted + "/" + b.TotalAmount);
-                ProgressMax = b.TotalAmount;
+        //Debug.WriteLine(b.AmountCompleted + "/" + b.TotalAmount);
+        ProgressMax = b.TotalAmount;
                 ProgressValue = b.AmountCompleted;
                 var now = DateTime.Now;
                 if ((now - lastPercentUpdateTime).Milliseconds > ModInstaller.PERCENT_REFRESH_COOLDOWN)
                 {
-                    //Don't update UI too often. Once per second is enough.
-                    var progValue = ProgressValue * 100.0 / ProgressMax;
+            //Don't update UI too often. Once per second is enough.
+            var progValue = ProgressValue * 100.0 / ProgressMax;
                     string percent = progValue.ToString(@"0.00");
                     OperationText = $@"[{currentDeploymentStep}] {M3L.GetString(M3L.string_deploymentInProgress)} {percent}%";
                     lastPercentUpdateTime = now;
                 }
-                //Debug.WriteLine(ProgressValue + "/" + ProgressMax);
-            };
+        //Debug.WriteLine(ProgressValue + "/" + ProgressMax);
+    };
             compressor.FileCompressionStarted += (a, b) => { Debug.WriteLine(b.FileName); };
 
             // Pass 2: Compressed items and empty folders
@@ -1527,8 +1541,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 DeploymentBlocked = emc.DeploymentChecklistItems.Any(x => x.DeploymentBlocking);
                 if (DeploymentBlocked)
                 {
-                    // Deployment has been blocked
-                    OperationText = M3L.GetString(M3L.string_deploymentBlockedUntilAboveItemsAreFixed);
+            // Deployment has been blocked
+            OperationText = M3L.GetString(M3L.string_deploymentBlockedUntilAboveItemsAreFixed);
                     DeployButtonText = M3L.GetString(M3L.string_deploymentBlocked);
 
                     while (!PendingChecks.IsEmpty)
@@ -1542,13 +1556,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 }
                 else if (PendingChecks.TryDequeue(out var emc_next))
                 {
-                    // Run the next check
-                    StartCheck(emc_next);
+            // Run the next check
+            StartCheck(emc_next);
                 }
                 else
                 {
-                    // No more checks and deployment not blocked
-                    DeployButtonText = M3L.GetString(M3L.string_deploy);
+            // No more checks and deployment not blocked
+            DeployButtonText = M3L.GetString(M3L.string_deploy);
                     OperationText = M3L.GetString(M3L.string_verifyAboveItemsBeforeDeployment);
                     EndChecks();
                 }
