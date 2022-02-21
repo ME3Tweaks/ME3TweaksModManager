@@ -7,6 +7,7 @@ using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.GameFilesystem;
+using ME3TweaksCore.Objects;
 using ME3TweaksCoreWPF;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.diagnostics;
@@ -152,15 +153,15 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                 {
                     var targetnameBase = Path.GetFileNameWithoutExtension(v.FileName);
                     var targetExtension = Path.GetExtension(v.FileName);
-                    var localizations = StarterKitGeneratorWindow.GetLanguagesForGame(Game);
+                    var localizations = GameLanguage.GetLanguagesForGame(Game);
 
                     // Ensure end name is not present on base
                     foreach (var l in localizations)
                     {
-                        if (targetnameBase.EndsWith($@"_{l.filecode}", StringComparison.InvariantCultureIgnoreCase))
-                            targetnameBase = targetnameBase.Substring(0, targetnameBase.Length - (l.filecode.Length + 1));
+                        if (targetnameBase.EndsWith($@"_{l.FileCode}", StringComparison.InvariantCultureIgnoreCase))
+                            targetnameBase = targetnameBase.Substring(0, targetnameBase.Length - (l.FileCode.Length + 1));
 
-                        targets.Add($@"{targetnameBase}_{l.filecode}{targetExtension}");
+                        targets.Add($@"{targetnameBase}_{l.FileCode}{targetExtension}");
                     }
                 }
             }

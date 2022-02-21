@@ -16,6 +16,7 @@ using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.Helpers;
+using ME3TweaksCore.Objects;
 using ME3TweaksCoreWPF;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksCoreWPF.UI;
@@ -420,10 +421,10 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             private void SetLE1LE2ConsoleKeybinds(string consoleKeyStr, string typeKeyStr)
             {
                 var cookedPath = M3Directories.GetCookedPath(SelectedTarget);
-                var langs = StarterKitGeneratorWindow.GetLanguagesForGame(Game);
+                var langs = GameLanguage.GetLanguagesForGame(Game);
                 foreach (var lang in langs)
                 {
-                    var fname = Path.Combine(cookedPath, $@"Coalesced_{lang.filecode}.bin");
+                    var fname = Path.Combine(cookedPath, $@"Coalesced_{lang.FileCode}.bin");
                     if (File.Exists(fname))
                     {
                         using var fs = File.OpenRead(fname);

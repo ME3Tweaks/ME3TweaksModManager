@@ -6,6 +6,7 @@ using System.Linq;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Packages.CloningImportingAndRelinking;
+using ME3TweaksCore.Objects;
 using ME3TweaksCoreWPF;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.diagnostics;
@@ -45,18 +46,18 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
             {
                 var targetnameBase = Path.GetFileNameWithoutExtension(FileName);
                 var targetExtension = Path.GetExtension(FileName);
-                var localizations = StarterKitGeneratorWindow.GetLanguagesForGame(associatedMod.Game);
+                var localizations = GameLanguage.GetLanguagesForGame(associatedMod.Game);
 
                 // Ensure end name is not present on base
                 foreach (var l in localizations)
                 {
-                    if (targetnameBase.EndsWith($@"_{l.filecode}", StringComparison.InvariantCultureIgnoreCase))
-                        targetnameBase = targetnameBase.Substring(0, targetnameBase.Length - (l.filecode.Length + 1)); //_FileCode
+                    if (targetnameBase.EndsWith($@"_{l.FileCode}", StringComparison.InvariantCultureIgnoreCase))
+                        targetnameBase = targetnameBase.Substring(0, targetnameBase.Length - (l.FileCode.Length + 1)); //_FileCode
                 }
 
                 foreach (var l in localizations)
                 {
-                    var targetname = $@"{targetnameBase}_{l.filecode}{targetExtension}";
+                    var targetname = $@"{targetnameBase}_{l.FileCode}{targetExtension}";
                     if (loadedFiles.TryGetValue(targetname, out var fullpath))
                     {
                         targetFiles.Add(fullpath);
@@ -126,7 +127,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
             }
         }
 
-        public int GetMergeCount() => ApplyToAllLocalizations ? StarterKitGeneratorWindow.GetLanguagesForGame(OwningMM.Game).Length : 1;
+        public int GetMergeCount() => ApplyToAllLocalizations ? GameLanguage.GetLanguagesForGame(OwningMM.Game).Length : 1;
 
 
         /// <summary>

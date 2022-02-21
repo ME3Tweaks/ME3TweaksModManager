@@ -75,23 +75,23 @@ namespace ME3TweaksModManager.modmanager.helpers
         /// <param name="listItems"></param>
         public static void ShowErrorListCallback(string title, string message, List<string> listItems)
         {
-            object syncObj = new object();
+            //object syncObj = new object();
             Application.Current.Dispatcher.Invoke(() =>
             {
                 if (Application.Current.MainWindow is Window window)
                 {
                     ListDialog ld = new ListDialog(listItems, title, message, window);
-                    ld.Show();
-                    lock (syncObj)
-                    {
-                        Monitor.Pulse(syncObj);
-                    }
+                    ld.ShowDialog();
+                    //lock (syncObj)
+                    //{
+                    //    Monitor.Pulse(syncObj);
+                    //}
                 }
             });
-            lock (syncObj)
-            {
-                Monitor.Wait(syncObj);
-            }
+            //lock (syncObj)
+            //{
+            //    Monitor.Wait(syncObj);
+            //}
         }
 
         /// <summary>
