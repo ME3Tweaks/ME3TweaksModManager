@@ -611,8 +611,8 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 {@"DLCRequirements", DLCRequirementsForManual},
                 {@"ImageAssetName", ImageAssetName},
                 {@"ImageHeight", ImageHeight > 0 ? ImageHeight.ToString() : null},
-                {@"OptionKey", HasDefinedOptionKey ? OptionKey : null}
-
+                {@"OptionKey", HasDefinedOptionKey ? OptionKey : null},
+                {@"DependsOnKeys", string.Join(';',DependsOnKeys.Select(x=>x.ToString()))}
             };
 
             ParameterMap.ReplaceAll(MDParameter.MapIntoParameterMap(parameterDictionary));
