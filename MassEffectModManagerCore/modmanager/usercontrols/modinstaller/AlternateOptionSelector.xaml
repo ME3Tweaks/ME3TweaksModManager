@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ME3TweaksModManager.modmanager.usercontrols.modinstaller"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
              mc:Ignorable="d"
              x:Name="AOS"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -16,7 +17,8 @@
         </DockPanel>
 
         <!-- Multi Selector -->
-        <xctk:DropDownButton IsOpen="{Binding IsDropdownOpen, ElementName=AOS, Mode=TwoWay}" Visibility="{Binding GroupName, Converter={StaticResource NullVisibilityConverter}}" HorizontalContentAlignment="Stretch" 
+        <xctk:DropDownButton x:Name="DropDownButtonHost"
+                             IsOpen="{Binding IsDropdownOpen, ElementName=AOS, Mode=TwoWay}" Visibility="{Binding GroupName, Converter={StaticResource NullVisibilityConverter}}" HorizontalContentAlignment="Stretch" 
                              PreviewMouseLeftButtonUp="DropdownButton_OnPreviewMouseLeftButtonUp"
                              PreviewMouseLeftButtonDown="DropdownButton_OnPreviewMouseLeftButtonDown">
             <DockPanel>
@@ -24,7 +26,8 @@
                 <local:SingleAlternateOptionPanel DataContext="{Binding SelectedOption}"/>
             </DockPanel>
             <xctk:DropDownButton.DropDownContent>
-                <ItemsControl ItemsSource="{Binding OtherOptions}">
+                <ItemsControl ItemsSource="{Binding OtherOptions}" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}"
+                              HorizontalAlignment="Center">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <local:SingleAlternateOptionPanel DataContext="{Binding}" MouseUp="AlternateItem_MouseUp"/>
@@ -32,6 +35,11 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </xctk:DropDownButton.DropDownContent>
+            <xctk:DropDownButton.Resources>
+                <Style TargetType="xctk:DropDownButton" BasedOn="{StaticResource {x:Type xctk:DropDownButton}}">
+                    <Setter Property="DropDownContentBackground" Value="{StaticResource {x:Static adonisUi:Brushes.AccentInteractionBorderBrush}}" />
+                </Style>
+            </xctk:DropDownButton.Resources>
         </xctk:DropDownButton>
     </Grid>
     <!--<Grid

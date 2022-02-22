@@ -15,6 +15,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ME3TweaksModManager.modmanager.objects;
 using PropertyChanged;
+using Xceed.Wpf.Toolkit;
 
 namespace ME3TweaksModManager.modmanager.usercontrols.modinstaller
 {
@@ -94,19 +95,24 @@ namespace ME3TweaksModManager.modmanager.usercontrols.modinstaller
 
         private void DropdownButton_OnPreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            if (!IsDropdownOpen)
-            {
-                var timeDelta = DateTime.Now - LastCloseTime;
-                if (timeDelta < new TimeSpan(0, 0, 0, 0, 200))
-                {
-                    e.Handled = true;
-                    Debug.WriteLine("Suppressed re-click on dropdown");
-                }
+            //if (!IsDropdownOpen)
+            //{
+            //    var timeDelta = DateTime.Now - LastCloseTime;
+            //    if (timeDelta < new TimeSpan(0, 0, 0, 0, 200))
+            //    {
+            //        e.Handled = true;
+            //        if (sender is DropDownButton obj)
+            //        {
+            //            // This prevents it from capturing the next mouse input event
+            //            obj.ReleaseMouseCapture();
+            //        }
+            //        Debug.WriteLine("Suppressed re-click on dropdown");
+            //    }
 
-                Debug.WriteLine($"Time Delta: {timeDelta.Milliseconds}");
-                //if (IsDropdownOpen)
-                // e.Handled = true;
-            }
+            //    Debug.WriteLine($"Time Delta: {timeDelta.Milliseconds}");
+            //    //if (IsDropdownOpen)
+            //    // e.Handled = true;
+            //}
         }
     }
 }

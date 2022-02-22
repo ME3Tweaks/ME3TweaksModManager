@@ -191,8 +191,8 @@ namespace Xceed.Wpf.Toolkit
         return ( bool )GetValue( IsOpenProperty );
       }
       set
-      {
-          Debug.WriteLine($@"NewValue: {value}");
+      { 
+        //Debug.WriteLine($@"NewValue: {value}");
         SetValue( IsOpenProperty, value );
       }
     }
@@ -212,7 +212,10 @@ namespace Xceed.Wpf.Toolkit
         RaiseRoutedEvent( DropDownButton.ClosedEvent );
 
       // Mgamerz: 02/15/2022: Fixes IsOpen never actually being set
-      IsOpen = newValue;
+      // Mgamerz: 02/21/2022: Disabled code due to it capturing events again on click for some reason when suppressed
+      
+      //Debug.WriteLine($"OnIsOpenChanged(): {oldValue} -> {newValue}");
+      //IsOpen = newValue;
     }
 
     #endregion //IsOpen
@@ -380,6 +383,7 @@ namespace Xceed.Wpf.Toolkit
 
     private void OnMouseDownOutsideCapturedElement( object sender, MouseButtonEventArgs e )
     {
+        Debug.WriteLine($"MouseOutsideCasptured. MouseOver: {IsMouseOver}");
       if (!IsMouseOver)
         CloseDropDown(true);
     }
