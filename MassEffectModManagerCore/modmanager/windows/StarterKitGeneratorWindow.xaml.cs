@@ -18,6 +18,7 @@ using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.TLK;
 using LegendaryExplorerCore.TLK.ME1;
+using ME3TweaksCore.Objects;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.diagnostics;
@@ -37,15 +38,6 @@ namespace ME3TweaksModManager.modmanager.windows
     /// </summary>
     public partial class StarterKitGeneratorWindow : ValidatableWindowBase
     {
-        private static (string filecode, string langcode)[] me1languages = { (@"INT", @"en-us"), (@"ES", @"es-es"), (@"DE", @"de-de"), (@"RA", @"ru-ru"), (@"FR", @"fr-fr"), (@"IT", @"it-it"), (@"PLPC", @"pl-pl"), (@"JA", @"jp-jp") };
-        private static (string filecode, string langcode)[] me2languages = { (@"INT", @"en-us"), (@"ESN", @"es-es"), (@"DEU", @"de-de"), (@"RUS", @"ru-ru"), (@"FRA", @"fr-fr"), (@"ITA", @"it-it"), (@"POL", @"pl-pl"), (@"HUN", @"hu-hu"), (@"CZE", @"cs-cz") };
-        private static (string filecode, string langcode)[] me3languages = { (@"INT", @"en-us"), (@"ESN", @"es-es"), (@"DEU", @"de-de"), (@"RUS", @"ru-ru"), (@"FRA", @"fr-fr"), (@"ITA", @"it-it"), (@"POL", @"pl-pl"), (@"JPN", @"jp-jp") };
-
-        private static (string filecode, string langcode)[] le1languages = { (@"INT", @"en-us"), (@"ES", @"es-es"), (@"DE", @"de-de"), (@"RA", @"ru-ru"), (@"FR", @"fr-fr"), (@"IT", @"it-it"), (@"PLPC", @"pl-pl"), (@"JA", @"jp-jp") };
-        private static (string filecode, string langcode)[] le2languages = { (@"INT", @"en-us"), (@"ESN", @"es-es"), (@"DEU", @"de-de"), (@"RUS", @"ru-ru"), (@"FRA", @"fr-fr"), (@"ITA", @"it-it"), (@"POL", @"pl-pl"), (@"JPN", @"jp-jp") };
-        private static (string filecode, string langcode)[] le3languages = { (@"INT", @"en-us"), (@"ESN", @"es-es"), (@"DEU", @"de-de"), (@"RUS", @"ru-ru"), (@"FRA", @"fr-fr"), (@"ITA", @"it-it"), (@"POL", @"pl-pl"), (@"JPN", @"jp-jp") };
-
-
         public int MaxMountForGame
         {
             get
@@ -546,9 +538,9 @@ namespace ME3TweaksModManager.modmanager.windows
                     : cookedDir;
                 var tlkGlobalFile = Path.Combine(dialogdir, $@"{dlcFolderName}_GlobalTlk");
                 var extension = skOption.ModGame == MEGame.ME1 ? @"upk" : @"pcc";
-                foreach (var lang in le1languages)
+                foreach (var lang in GameLanguage.GetLanguagesForGame(skOption.ModGame))
                 {
-                    var langExt = lang.filecode == @"INT" ? "" : $@"_{lang.filecode}";
+                    var langExt = lang.FileCode == @"INT" ? "" : $@"_{lang.FileCode}";
                     var tlkPath = $@"{tlkGlobalFile}{langExt}.{extension}";
                     M3Utilities.ExtractInternalFile($@"ME3TweaksModManager.modmanager.starterkit.BlankTlkFile.{extension}", tlkPath, true);
 
@@ -628,7 +620,7 @@ namespace ME3TweaksModManager.modmanager.windows
 
                 var tlkFilePrefix = skOption.ModGame.IsGame3() ? dlcFolderName : $@"DLC_{skOption.ModModuleNumber}";
 
-                var languages = GetLanguagesForGame(skOption.ModGame);
+                var languages = GameLanguage.GetLanguagesForGame(skOption.ModGame);
                 foreach (var lang in languages)
                 {
                     List<TLKStringRef> strs = new List<TLKStringRef>();
@@ -642,7 +634,7 @@ namespace ME3TweaksModManager.modmanager.windows
                         strs.Add(new TLKStringRef(skOption.ModInternalTLKID + 1, @"DLC_MOD_" + skOption.ModDLCFolderNameSuffix));
                     }
 
-                    strs.Add(new TLKStringRef(skOption.ModInternalTLKID + 2, lang.langcode.ToString()));
+                    strs.Add(new TLKStringRef(skOption.ModInternalTLKID + 2, lang.LanguageCode.ToString()));
                     strs.Add(new TLKStringRef(skOption.ModInternalTLKID + 3, @"Male"));
                     strs.Add(new TLKStringRef(skOption.ModInternalTLKID + 3, @"Female"));
 
@@ -651,7 +643,7 @@ namespace ME3TweaksModManager.modmanager.windows
                         str.Data += '\0';
                     }
 
-                    var tlk = Path.Combine(cookedDir, $@"{tlkFilePrefix}_{lang.filecode}.tlk");
+                    var tlk = Path.Combine(cookedDir, $@"{tlkFilePrefix}_{lang.FileCode}.tlk");
                     M3Log.Information(@"Saving TLK file: " + tlk);
                     LegendaryExplorerCore.TLK.ME2ME3.HuffmanCompression.SaveToTlkFile(tlk, strs);
                 }
@@ -763,19 +755,6 @@ namespace ME3TweaksModManager.modmanager.windows
                 SetGame(PendingGame.Value);
                 PendingGame = null;
             }
-        }
-
-        public static (string filecode, string langcode)[] GetLanguagesForGame(MEGame game)
-        {
-            if (game is MEGame.ME1) return me1languages;
-            if (game is MEGame.ME2) return me2languages;
-            if (game is MEGame.ME3) return me3languages;
-            if (game is MEGame.LE1) return le1languages;
-            if (game is MEGame.LE2) return le2languages;
-            if (game is MEGame.LE3) return le3languages;
-
-            throw new Exception($@"Cannot get language for game {game}");
-            return null;
         }
     }
 }

@@ -10,6 +10,7 @@
         ResizeMode="NoResize"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         Title="{Binding Caption}"
+        SizeToContent="{Binding RequestedSizeToContent}"
         Width="{Binding RequestedWidth}"
         Height="{Binding RequestedHeight}">
     <Window.Style>
@@ -22,16 +23,17 @@
             <TextBlock DockPanel.Dock="Top" Margin="5" Text="{Binding Message}" TextWrapping="Wrap"/>
         </Border>
         <DockPanel  Margin="5">
-
-            <Button DockPanel.Dock="Bottom" Content="Check all" Click="CheckAll" HorizontalAlignment="Left" Padding="20,3"/>
-            <Button DockPanel.Dock="Bottom" Content="{DynamicResource string_ok}" Click="CloseDialog" HorizontalAlignment="Right" Padding="20,3"/>
-        <ItemsControl ItemsSource="{Binding Items}">
-            <ItemsControl.ItemTemplate>
-                <DataTemplate DataType="{x:Type ui:CheckBoxSelectionPair}">
-                    <CheckBox Content="{Binding Item}" IsChecked="{Binding IsChecked}" IsEnabled="{Binding IsEnabled}"/>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
+            <DockPanel DockPanel.Dock="Bottom" Margin="0,5,0,0">
+                <Button DockPanel.Dock="Left" Content="Check all" Click="CheckAll" HorizontalAlignment="Left" Padding="20,3"/>
+                <Button Content="{DynamicResource string_ok}" Click="CloseDialog" HorizontalAlignment="Right" Padding="20,3"/>
+            </DockPanel>
+             <ItemsControl ItemsSource="{Binding Items}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type ui:CheckBoxSelectionPair}">
+                        <CheckBox Content="{Binding Item}" IsChecked="{Binding IsChecked}" IsEnabled="{Binding IsEnabled}"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
         </DockPanel>
     </DockPanel>
 </Window>

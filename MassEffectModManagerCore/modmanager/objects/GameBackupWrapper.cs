@@ -100,21 +100,6 @@ namespace ME3TweaksModManager.modmanager.objects
             return BackupSourceTarget != null && !BackupHandler.BackupInProgress;
         }
 
-        /// <summary>
-        /// Gets the list of supported languages for backup
-        /// </summary>
-        /// <returns></returns>
-        private MELanguage[] GetLanguages()
-        {
-            string[] allGameLangauges = BackupSourceTarget.Game != MEGame.LELauncher ? StarterKitGeneratorWindow.GetLanguagesForGame(BackupSourceTarget.Game).Select(x => x.filecode).ToArray() : null;
-            List<MELanguage> langs = new List<MELanguage>();
-            foreach (var lang in allGameLangauges)
-            {
-                langs.Add(new MELanguage(lang.GetUnrealLocalization()));
-            }
-            return langs.ToArray();
-        }
-
         private void BeginBackup()
         {
             //string[] allGameLangauges = BackupSourceTarget.Game != MEGame.LELauncher ? StarterKitGeneratorWindow.GetLanguagesForGame(BackupSourceTarget.Game).Select(x => x.filecode).ToArray() : null;
@@ -194,6 +179,7 @@ namespace ME3TweaksModManager.modmanager.objects
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {
+                //BackupInProgress = false; // Ensure we return to correct UI state
                 if (b.Error != null)
                 {
                     M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
@@ -204,13 +190,18 @@ namespace ME3TweaksModManager.modmanager.objects
             nbw.RunWorkerAsync();
         }
 
-        private MELanguage[] SelectBackupLanguages(string title, string message)
+        private GameLanguage[] SelectBackupLanguages(string title, string message)
         {
-            var availableLangs = GetLanguages();
-            var forcedOptions = new[] { availableLangs.First(x => x.Localization == MELocalization.INT) }; // INT is first
-            CheckBoxDialog cbd = new CheckBoxDialog(window, message, title, availableLangs, forcedOptions, forcedOptions);
-            cbd.ShowDialog();
-            return cbd.GetSelectedItems().OfType<MELanguage>().ToArray();
+            GameLanguage[] languages = null;
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                var availableLangs = GameLanguage.GetLanguagesForGame(Game);
+                var forcedOptions = new[] { availableLangs.First(x => x.Localization == MELocalization.INT) }; // INT is first
+                CheckBoxDialog cbd = new CheckBoxDialog(window, message, title, availableLangs, forcedOptions, forcedOptions, requestedSizeToContent: SizeToContent.Height);
+                cbd.ShowDialog();
+                languages = cbd.GetSelectedItems().OfType<GameLanguage>().ToArray();
+            });
+            return languages;
         }
 
         //private bool validateBackupPath(string backupPath, GameTargetWPF targetToBackup)
@@ -327,7 +318,7 @@ namespace ME3TweaksModManager.modmanager.objects
         public ICommand BackupButtonCommand { get; set; }
         public ICommand UnlinkBackupCommand { get; set; }
         public bool BackupOptionsVisible => BackupStatus.MarkedBackupLocation == null;
-        public bool BackupInProgress { get; set; }
+        //public bool BackupInProgress { get; set; }
 
         public event PropertyChangedEventHandler? PropertyChanged;
     }

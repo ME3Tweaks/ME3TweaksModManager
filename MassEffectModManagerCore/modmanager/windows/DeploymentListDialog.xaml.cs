@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.objects.deployment.checks;
 using ME3TweaksModManager.modmanager.usercontrols;
 
 namespace ME3TweaksModManager.modmanager.windows
@@ -14,7 +15,7 @@ namespace ME3TweaksModManager.modmanager.windows
     /// </summary>
     public partial class DeploymentListDialog : Window, INotifyPropertyChanged
     {
-        public ArchiveDeployment.DeploymentChecklistItem DCI { get; }
+        public DeploymentChecklistItem DCI { get; }
         public string StatusText { get; set; }
         public ObservableCollectionExtended<DCIMessage> Messages { get; } = new ObservableCollectionExtended<DCIMessage>();
 
@@ -39,7 +40,7 @@ namespace ME3TweaksModManager.modmanager.windows
             public string ToRawString() => $@"{Severity}: {Message}";
         }
 
-        public DeploymentListDialog(ArchiveDeployment.DeploymentChecklistItem dci, Window owner)
+        public DeploymentListDialog(DeploymentChecklistItem dci, Window owner)
         {
             DCI = dci;
             SetupMessages();

@@ -12,9 +12,9 @@ namespace ME3TweaksModManager.modmanager.windows
     [AddINotifyPropertyChangedInterface]
     public partial class CheckBoxDialog : Window
     {
-
+        public SizeToContent RequestedSizeToContent { get; set; } = SizeToContent.Manual;
         public ObservableCollectionExtended<CheckBoxSelectionPair> Items { get; } = new();
-        public CheckBoxDialog(Window owningWindow, string message, string caption, object[] options, object[] preselectedOptions = null, object[] disabledOptions = null, int requestedWidth = 400, int requestedHeight = 250)
+        public CheckBoxDialog(Window owningWindow, string message, string caption, object[] options, object[] preselectedOptions = null, object[] disabledOptions = null, int requestedWidth = 400, int requestedHeight = 250, SizeToContent requestedSizeToContent = SizeToContent.Manual)
         {
             Owner = owningWindow;
             Message = message;
@@ -22,6 +22,7 @@ namespace ME3TweaksModManager.modmanager.windows
 
             RequestedWidth = requestedWidth;
             RequestedHeight = requestedHeight;
+            RequestedSizeToContent = requestedSizeToContent;
 
             foreach (var o in options)
             {
