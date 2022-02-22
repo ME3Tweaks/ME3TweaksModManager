@@ -1,4 +1,4 @@
-﻿using ME3TweaksModManager.modmanager.objects;
+﻿using ME3TweaksModManager.modmanager.objects.alternates;
 using System;
 using System.Collections.Generic;
 using System.Linq;

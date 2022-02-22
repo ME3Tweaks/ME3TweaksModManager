@@ -13,7 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using ME3TweaksModManager.modmanager.objects;
+using ME3TweaksModManager.modmanager.objects.alternates;
 using PropertyChanged;
 using Xceed.Wpf.Toolkit;
 

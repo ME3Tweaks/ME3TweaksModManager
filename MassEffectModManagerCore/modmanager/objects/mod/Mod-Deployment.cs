@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using ME3TweaksModManager.modmanager.objects.alternates;
 using ME3TweaksModManager.modmanager.usercontrols;
 using SevenZip;
 

@@ -16,6 +16,7 @@ using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.gameini;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.objects.alternates;
 using Microsoft.AppCenter.Analytics;
 using PropertyChanged;
 using SevenZip;
@@ -1128,7 +1129,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                         }
                     }
 
-                    if (!headerJob.ValidateAlternates(out string failureReason))
+                    if (!headerJob.ValidateAlternates(this, out string failureReason))
                     {
                         LoadFailedReason = failureReason;
                         return;
@@ -1288,7 +1289,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     //Custom DLC names: Mod Manager 6 (but can be part of any spec as it's only cosmetic)
                     HumanReadableCustomDLCNames = iniData[@"CUSTOMDLC"].Where(x => x.KeyName.StartsWith(@"DLC_")).ToDictionary(mc => mc.KeyName, mc => mc.Value);
 
-                    if (!customDLCjob.ValidateAlternates(out string failureReason))
+                    if (!customDLCjob.ValidateAlternates(this, out string failureReason))
                     {
                         LoadFailedReason = failureReason;
                         return;

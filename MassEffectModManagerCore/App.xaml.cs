@@ -38,6 +38,9 @@ namespace ME3TweaksModManager
     [Localizable(false)]
     public partial class App : Application, ISingleInstance
     {
+        /// <summary>
+        /// If the appdata folder existed at boot time. If it didn't, this is a very fresh install
+        /// </summary>
         public static bool AppDataExistedAtBoot = Directory.Exists(M3Utilities.GetAppDataFolder(false)); //alphabetically this must come first in App!
 
         /// <summary>
@@ -45,9 +48,19 @@ namespace ME3TweaksModManager
         /// </summary>
         internal const string REGISTRY_KEY_ME3TWEAKS = @"HKEY_CURRENT_USER\Software\ME3Tweaks";
 
-
+        /// <summary>
+        /// If we have begun loading the interface
+        /// </summary>
         private static bool POST_STARTUP = false;
+
+        /// <summary>
+        /// The link to the Discord server
+        /// </summary>
         public const string DISCORD_INVITE_LINK = "https://discord.gg/s8HA6dc";
+
+        /// <summary>
+        /// If this boot is upgrading from ME3CMM
+        /// </summary>
         public static bool UpgradingFromME3CMM;
 
         // PENDING THINGS
@@ -76,7 +89,7 @@ namespace ME3TweaksModManager
         /// <summary>
         /// The highest version of ModDesc that this version of Mod Manager can support.
         /// </summary>
-        public const double HighestSupportedModDesc = 7.0;
+        public const double HighestSupportedModDesc = 8.0;
 
         //Windows 8.1 Update 1
         public static readonly Version MIN_SUPPORTED_OS = new Version(@"6.3.9600");

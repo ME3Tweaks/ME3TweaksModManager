@@ -11,7 +11,7 @@ using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.mod.editor;
 using ME3TweaksModManager.modmanager.objects.mod.merge;
 
-namespace ME3TweaksModManager.modmanager.objects
+namespace ME3TweaksModManager.modmanager.objects.alternates
 {
     [DebuggerDisplay(@"AlternateFile | {Condition} {Operation}, ConditionalDLC: {ConditionalDLC}, ModFile: {ModFile}, AltFile: {AltFile}")]
     public sealed class AlternateFile : AlternateOption
@@ -85,7 +85,7 @@ namespace ME3TweaksModManager.modmanager.objects
 
         public override bool UIIsSelectable
         {
-            get => (!IsAlways && !UIRequired && !UINotApplicable) || IsManual;
+            get => !IsAlways && !UIRequired && !UINotApplicable || IsManual;
             set { } //you can't set these for altfiles
         }
 
@@ -100,7 +100,7 @@ namespace ME3TweaksModManager.modmanager.objects
             BuildParameterMap(null);
         }
 
-        public AlternateFile(string alternateFileText, ModJob associatedJob, mod.Mod modForValidating)
+        public AlternateFile(string alternateFileText, ModJob associatedJob, Mod modForValidating)
         {
             var properties = StringStructParser.GetCommaSplitValues(alternateFileText);
             if (properties.TryGetValue(@"FriendlyName", out string friendlyName))
@@ -462,18 +462,10 @@ namespace ME3TweaksModManager.modmanager.objects
                 }
             }
 
-            if (!ReadImageAssetOptions(modForValidating, properties))
+            if (!ReadSharedOptions(modForValidating, properties))
             {
                 return; // Failed in super call
             }
-
-            ReadAutoApplicableText(properties);
-
-            if (modForValidating.ModDescTargetVersion >= 6.0)
-            {
-                GroupName = properties.TryGetValue(@"OptionGroup", out string groupName) ? groupName : null;
-            }
-
 
             if (Condition == AltFileCondition.COND_MANUAL && properties.TryGetValue(@"CheckedByDefault", out string checkedByDefault) && bool.TryParse(checkedByDefault, out bool cbd))
             {
@@ -525,14 +517,14 @@ namespace ME3TweaksModManager.modmanager.objects
         {
             var parameterDictionary = new Dictionary<string, object>()
             {
-                {@"Condition", Condition},
-                {@"ConditionalDLC", ConditionalDLC},
-                {@"ModOperation", Operation},
-                {@"AltFile", AltFile},
-                {@"ModFile", ModFile},
-                {@"MergeFiles", MergeMods != null  ? string.Join(';',MergeMods.Select(x=>x.MergeModFilename)) : ""},
-                {@"FriendlyName", FriendlyName},
-                {@"Description", Description},
+                { @"Condition", Condition},
+                { @"ConditionalDLC", ConditionalDLC},
+                { @"ModOperation", Operation},
+                { @"AltFile", AltFile},
+                { @"ModFile", ModFile},
+                { @"MergeFiles", MergeMods != null  ? string.Join(';',MergeMods.Select(x=>x.MergeModFilename)) : ""},
+                { @"FriendlyName", FriendlyName},
+                { @"Description", Description},
                 { @"CheckedByDefault", CheckedByDefault ? @"True" : null}, //don't put checkedbydefault in if it is not set to true.
                 { @"OptionGroup", GroupName},
                 { @"ApplicableAutoText", ApplicableAutoTextRaw},
@@ -541,7 +533,8 @@ namespace ME3TweaksModManager.modmanager.objects
                 { @"MultiListRootPath", MultiListRootPath},
                 { @"MultiListTargetPath", MultiListTargetPath},
                 { @"ImageAssetName", ImageAssetName},
-                { @"ImageHeight", ImageHeight > 0 ? ImageHeight.ToString() : null}
+                { @"ImageHeight", ImageHeight > 0 ? ImageHeight.ToString() : null},
+                { @"OptionKey", HasDefinedOptionKey ? OptionKey : null}
             };
 
             ParameterMap.ReplaceAll(MDParameter.MapIntoParameterMap(parameterDictionary));

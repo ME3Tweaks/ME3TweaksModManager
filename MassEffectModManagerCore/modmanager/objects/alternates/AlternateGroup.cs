@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using LegendaryExplorerCore.Misc;
 using PropertyChanged;
 
-namespace ME3TweaksModManager.modmanager.objects
+namespace ME3TweaksModManager.modmanager.objects.alternates
 {
     /// <summary>
     /// Bindable UI object that contains a list of same-group Alternates.
@@ -75,11 +75,13 @@ namespace ME3TweaksModManager.modmanager.objects
             SelectedOption = singleOption; // Single option groups always point to the option object
         }
 
+        /// <summary>
+        /// Called when the value of the dropdown changes. This doesn't get called in Single Mode.
+        /// </summary>
         public void OnSelectedOptionChanged()
         {
             var optionsList = AlternateOptions.Where(x => x != SelectedOption).ToList();
             // Todo: Sort non-selectable to the bottom
-
 
             OtherOptions.ReplaceAll(optionsList);
         }
@@ -89,6 +91,20 @@ namespace ME3TweaksModManager.modmanager.objects
             foreach (var ao in AlternateOptions)
             {
                 ao.ReleaseLoadedImageAsset();
+            }
+        }
+
+
+        // TODO: FIND A WAY TO CALL THIS METHOD
+
+        /// <summary>
+        /// Called when the selection state of an option has changed.
+        /// </summary>
+        internal void UpdateSelectabilityStates()
+        {
+            foreach (var o in AlternateOptions)
+            {
+                o.UpdateSelectability(AlternateOptions);
             }
         }
     }

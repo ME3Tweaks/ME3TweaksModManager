@@ -7,6 +7,7 @@ using LegendaryExplorerCore.TLK.ME2ME3;
 using ME3TweaksCore.Objects;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.objects.alternates;
 using ME3TweaksModManager.modmanager.windows;
 using System;
 using System.Collections.Generic;

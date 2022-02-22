@@ -10,6 +10,7 @@ using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCoreWPF;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.objects.alternates;
 using SevenZip;
 
 namespace ME3TweaksModManager.modmanager.objects.mod

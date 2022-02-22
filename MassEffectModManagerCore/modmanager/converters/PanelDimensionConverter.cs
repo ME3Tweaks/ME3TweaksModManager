@@ -11,7 +11,6 @@ namespace ME3TweaksModManager.modmanager.converters
 {
     public class PanelDimensionConverter : IMultiValueConverter
     {
-
         public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             if (values.Length != 3)

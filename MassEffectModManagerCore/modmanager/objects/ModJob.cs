@@ -11,6 +11,7 @@ using LegendaryExplorerCore.Packages;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.gameini;
 using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.objects.alternates;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.mod.editor;
 using ME3TweaksModManager.modmanager.objects.mod.merge;
@@ -532,10 +533,10 @@ namespace ME3TweaksModManager.modmanager.objects
             return null;
         }
 
-        public bool ValidateAlternates(out string failureReason)
+        public bool ValidateAlternates(Mod modForValidating, out string failureReason)
         {
+            // Validate option groups
             var optionGroups = AlternateFiles.Select(x => x.GroupName).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct().ToList();
-
             foreach (var group in optionGroups)
             {
                 var checkedByDefaultForGroups = AlternateFiles.Count(x => x.CheckedByDefault && x.GroupName == group);
@@ -575,6 +576,30 @@ namespace ME3TweaksModManager.modmanager.objects
                         failureReason = M3L.GetString(M3L.string_interp_validation_modjob_altdlc_optionGroupMayOnlyHaveOneItemWithCheckedByDefault, group);
                         return false;
                     }
+                }
+            }
+
+            // Validate OptionKeys are all unique
+            var optionKeys = AlternateFiles.Select(x => x.OptionKey).ToList();
+            if (Header == JobHeader.CUSTOMDLC)
+            {
+                optionKeys.AddRange(AlternateDLCs.Select(x => x.OptionKey));
+            }
+
+            var duplicates = optionKeys.GroupBy(x => x).Where(g => g.Count() > 1).ToList();
+            if (duplicates.Any())
+            {
+                // On Moddesc 8.0 and higher this will cause the mod to fail to load
+                if (modForValidating.ModDescTargetVersion >= 8.0)
+                {
+                    M3Log.Error($@"There are alternates with duplicate OptionKey values. This is due to them either having a duplicate OptionKey values set on them, or different options have the same FriendlyName value. The following values have duplicates: {string.Join(',', duplicates)}");
+                    failureReason = $"There are alternates with duplicate OptionKey values. This is due to them either having a duplicate OptionKey values set on them, or different options have the same FriendlyName value. The following values have duplicates: {string.Join(',', duplicates)}";
+                    return false;
+                }
+                else
+                {
+                    // Moddesc 7.0 and below didn't have option keys, so there was no way to enforce unique option names.
+                    M3Log.Warning($@"There are alternates with duplicate OptionKey values. This is due to them either having a duplicate OptionKey values set on them, or different options have the same FriendlyName value. The following values have duplicates: {string.Join(',', duplicates)}. This may result in broken saved alternate choices!");
                 }
             }
 

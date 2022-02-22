@@ -1,4 +1,5 @@
 ﻿using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.objects.alternates;
 using ME3TweaksModManager.modmanager.objects.mod;
 using PropertyChanged;
 

@@ -11,7 +11,7 @@ using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.mod.editor;
 
-namespace ME3TweaksModManager.modmanager.objects
+namespace ME3TweaksModManager.modmanager.objects.alternates
 {
     [DebuggerDisplay(@"AlternateDLC | {Condition} {Operation}, ConditionalDLC: {ConditionalDLC}, DestDLC: {DestinationDLCFolder}, AltDLC: {AlternateDLCFolder}")]
     public sealed class AlternateDLC : AlternateOption
@@ -76,7 +76,7 @@ namespace ME3TweaksModManager.modmanager.objects
             BuildParameterMap(null); //Alternates don't need a mod, as nothing is game specific
         }
 
-        public AlternateDLC(string alternateDLCText, mod.Mod modForValidating, ModJob job)
+        public AlternateDLC(string alternateDLCText, Mod modForValidating, ModJob job)
         {
             var properties = StringStructParser.GetCommaSplitValues(alternateDLCText);
 
@@ -410,16 +410,10 @@ namespace ME3TweaksModManager.modmanager.objects
                 }
             }
 
-            if (!ReadImageAssetOptions(modForValidating, properties))
+
+            if (!ReadSharedOptions(modForValidating, properties))
             {
                 return; // Failed in super call
-            }
-
-            ReadAutoApplicableText(properties);
-
-            if (modForValidating.ModDescTargetVersion >= 6.0)
-            {
-                GroupName = properties.TryGetValue(@"OptionGroup", out string groupName) ? groupName : null;
             }
 
             if (Condition == AltDLCCondition.COND_MANUAL && properties.TryGetValue(@"CheckedByDefault", out string checkedByDefault) && bool.TryParse(checkedByDefault, out bool cbd))
@@ -616,7 +610,9 @@ namespace ME3TweaksModManager.modmanager.objects
                 {@"RequiredFileSizes", RequiredSpecificFiles.Values.ToList()}, // List of relative sizes
                 {@"DLCRequirements", DLCRequirementsForManual},
                 {@"ImageAssetName", ImageAssetName},
-                {@"ImageHeight", ImageHeight > 0 ? ImageHeight.ToString() : null}
+                {@"ImageHeight", ImageHeight > 0 ? ImageHeight.ToString() : null},
+                {@"OptionKey", HasDefinedOptionKey ? OptionKey : null}
+
             };
 
             ParameterMap.ReplaceAll(MDParameter.MapIntoParameterMap(parameterDictionary));
