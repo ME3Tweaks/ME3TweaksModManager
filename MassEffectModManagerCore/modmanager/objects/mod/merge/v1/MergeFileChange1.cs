@@ -275,8 +275,21 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
 
         public bool ApplyUpdate(IMEPackage package, ExportEntry targetExport, MergeAssetCache1 assetsCache, Mod installingMod, GameTargetWPF gameTarget)
         {
-            FileLib fl;
-            if (!assetsCache.FileLibs.TryGetValue(package.FilePath, out fl))
+            if (assetsCache.FileLibs.TryGetValue(package.FilePath, out FileLib fl))
+            {
+                bool reInitialized = fl.ReInitializeFile();
+                if (!reInitialized)
+                {
+                    M3Log.Error($@"FileLib re-initialization failed for package {targetExport.InstancedFullPath} ({targetExport.FileRef.FilePath}):");
+                    foreach (var v in fl.InitializationLog.AllErrors)
+                    {
+                        M3Log.Error(v.Message);
+                    }
+
+                    throw new Exception(M3L.GetString(M3L.string_interp_fileLibInitMergeMod1Script, targetExport.InstancedFullPath, string.Join(Environment.NewLine, fl.InitializationLog.AllErrors)));
+                }
+            }
+            else
             {
                 fl = new FileLib(package);
                 bool initialized = fl.Initialize(new RelativePackageCache() { RootPath = M3Directories.GetBioGamePath(gameTarget) }, gameTarget.TargetPath);
