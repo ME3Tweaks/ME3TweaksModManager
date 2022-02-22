@@ -15,6 +15,9 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
         <Image
             Grid.Row="0"
             Source="{Binding InstallOptionsPackage.ModBeingInstalled.BannerBitmap}"
