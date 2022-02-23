@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using LegendaryExplorerCore.Helpers;
+using ME3TweaksCore.Localization;
 using ME3TweaksModManager.modmanager.diagnostics;
 
 namespace ME3TweaksModManager.modmanager.me3tweaks
@@ -84,7 +85,19 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
                 // Pick uri from configuration
                 Source = new Uri(uriSource, UriKind.Absolute)
             };
-            Application.Current.Resources.MergedDictionaries.Add(resourceDictionary);
+            Application.Current.Resources.MergedDictionaries.Add(resourceDictionary); //Todo: Remove non-INT dictionaries. For example if user changes languages a bunch.
+
+            // Update the core localization.
+            LC.SetLanguage(lang);
+
+            // Install localization core strings into the WPF application in the event we bind to the strings, I guess.
+            // Not really sure if this is necessary once the dictionaries are properly split
+            var coreLocalization = LC.GetLocalizationDictionary();
+            foreach (var locStr in coreLocalization)
+            {
+                App.Current.Resources[locStr.Key] = locStr.Value;
+            }
+
             return Task.CompletedTask;
         }
 
