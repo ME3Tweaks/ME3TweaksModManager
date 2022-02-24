@@ -277,11 +277,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     switch (Domain)
                     {
                         case @"masseffect":
-                            return @"/images/gameicons/ME1_48.ico";
+                            return @"/images/gameicons/ME1_Icon.ico";
                         case @"masseffect2":
-                            return @"/images/gameicons/ME2_48.ico";
+                            return @"/images/gameicons/ME2_Icon.ico";
                         case @"masseffect3":
-                            return @"/images/gameicons/ME3_48.ico";
+                            return @"/images/gameicons/ME3_Icon.ico";
                         case @"masseffectlegendaryedition":
                             {
                                 if (Instance.LEGames != null && Instance.LEGames.Length == 1)
@@ -289,11 +289,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                                     switch (Instance.LEGames[0])
                                     {
                                         case LegendaryExplorerCore.Packages.MEGame.LE1:
-                                            return @"/images/gameicons/LE1_48.ico";
+                                            return @"/images/gameicons/LE1_Icon.ico";
                                         case LegendaryExplorerCore.Packages.MEGame.LE2:
-                                            return @"/images/gameicons/LE2_48.ico";
+                                            return @"/images/gameicons/LE2_Icon.ico";
                                         case LegendaryExplorerCore.Packages.MEGame.LE3:
-                                            return @"/images/gameicons/LE3_48.ico";
+                                            return @"/images/gameicons/LE3_Icon.ico";
                                     }
                                 }
                                 // Don't have the info. Set it to the launcher icon as we have no idea what game this file is for
