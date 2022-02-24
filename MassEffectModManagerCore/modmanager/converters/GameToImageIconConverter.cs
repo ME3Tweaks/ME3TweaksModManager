@@ -21,6 +21,7 @@ namespace ME3TweaksModManager.modmanager.converters
         private static string le3IconPath;
         private static string leLauncherIconPath;
         private static string unknownIconPath;
+
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             init();
@@ -40,6 +41,12 @@ namespace ME3TweaksModManager.modmanager.converters
             else if (parameter != null)
             {
                 Debug.WriteLine($"SPECIFIED MIPPED ICON SIZE IS NOT A FLOAT: {parameter}");
+            }
+
+            // DPI Aware Asset request
+            if (DPIScaling.ScalingFactor >= 1)
+            {
+                size *= DPIScaling.ScalingFactor;
             }
 
             MEGame game = MEGame.Unknown;

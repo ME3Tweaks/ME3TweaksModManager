@@ -1993,6 +1993,7 @@ namespace ME3TweaksModManager
 
         private void ModManager_ContentRendered(object sender, EventArgs e)
         {
+            DPIScaling.SetScalingFactor(this);
 #if PRERELEASE
             MessageBox.Show(M3L.GetString(M3L.string_prereleaseNotice));
 #endif

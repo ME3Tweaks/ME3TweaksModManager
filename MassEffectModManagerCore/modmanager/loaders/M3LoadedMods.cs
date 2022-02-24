@@ -26,6 +26,11 @@ namespace ME3TweaksModManager.modmanager.loaders
     public class M3LoadedMods
     {
         /// <summary>
+        /// If the mod list hasn't actually booted once
+        /// </summary>
+        public bool IsFirstLoad { get; private set; } = true;
+
+        /// <summary>
         /// Gets the singleton instance of the LoadedMods object.
         /// </summary>
         public static M3LoadedMods Instance { get; private set; }
@@ -48,7 +53,7 @@ namespace ME3TweaksModManager.modmanager.loaders
         /// <summary>
         /// If mods are currently loading
         /// </summary>
-        public bool IsLoadingMods { get; private set; }
+        public bool IsLoadingMods { get; private set; } = true; // This makes the spinner activate while program is starting up.
 
         /// <summary>
         /// If the mods list has been loaded. Mod loading does not occur immediately on application boot.
@@ -62,7 +67,7 @@ namespace ME3TweaksModManager.modmanager.loaders
         /// <summary>
         /// FOR PROGRESS BARS
         /// </summary>
-        public int NumTotalMods { get; private set; }
+        public int NumTotalMods { get; private set; } = 2; // This is so the loader appears empty at the start
 
         /// <summary>
         /// Mods currently visible according to the GAmeFilters list
@@ -152,8 +157,10 @@ namespace ME3TweaksModManager.modmanager.loaders
         /// <param name="modpathToHighlight"></param>
         public void LoadMods(string modpathToHighlight, bool forceUpdateCheckOnCompletion = false, List<Mod> scopedModsToCheckForUpdates = null)
         {
-            if (IsLoadingMods)
+            if (IsLoadingMods && !IsFirstLoad)
                 return; // Do not accept another load in the middle of load
+
+            IsFirstLoad = false; // We have begun loading mods for the first time
 
             try
             {
