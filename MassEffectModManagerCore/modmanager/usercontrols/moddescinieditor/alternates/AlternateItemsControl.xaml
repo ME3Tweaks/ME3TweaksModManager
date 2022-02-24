@@ -3,13 +3,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:objects="clr-namespace:ME3TweaksModManager.modmanager.objects"
+             xmlns:alternates="clr-namespace:ME3TweaksModManager.modmanager.objects.alternates"
              xmlns:moddescinieditor="clr-namespace:ME3TweaksModManager.modmanager.usercontrols.moddescinieditor"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <ItemsControl ItemsSource="{Binding Alternates}">
         <ItemsControl.ItemTemplate>
-            <DataTemplate DataType="{x:Type objects:AlternateOption}">
+            <DataTemplate DataType="{x:Type alternates:AlternateOption}">
                 <Expander
                     x:Name="altExpander"
                     Header="{Binding FriendlyName}"
