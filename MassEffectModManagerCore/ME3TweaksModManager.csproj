@@ -46,9 +46,6 @@
 		<None Remove="appicon.ico" />
 	  <None Remove="images\darktheme.png" />
 		<None Remove="images\dvd.png" />
-		<None Remove="images\gameicons\ME1_48.ico" />
-		<None Remove="images\gameicons\ME2_48.ico" />
-		<None Remove="images\gameicons\ME3_48.ico" />
 		<None Remove="images\gameicons\Unknown_48.ico" />
 		<None Remove="images\lighttheme.png" />
 		<None Remove="images\loadingspinner.png" />
