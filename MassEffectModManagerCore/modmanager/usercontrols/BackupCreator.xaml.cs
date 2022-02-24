@@ -69,7 +69,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             // Todo: Subscribe to BackupService events so we know when BackedUp changes
             BackupService.StaticBackupStateChanged += BackupServiceStateChanged;
 
-            window.SizeChanged += OnBackupStatusChanged;
+            //window.SizeChanged += OnBackupStatusChanged;
             if (Settings.GenerationSettingLE)
             {
                 GameBackups.Add(new GameBackupWrapper(MEGame.LELauncher, targetsList.Where(x => x.Game == MEGame.LELauncher), mainwindow));

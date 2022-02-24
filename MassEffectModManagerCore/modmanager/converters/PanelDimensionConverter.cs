@@ -16,13 +16,12 @@ namespace ME3TweaksModManager.modmanager.converters
             if (values.Length != 3)
                 return 400; // Default I guess
 
-            double elementDimension = (double)values[0];
-            double windowDimension = (double)values[1];
-            double windowDimensionMaxPercent = (double)values[2];
-
-            //Debug.WriteLine($"Dimensions: {(isHeight ? "Height" : "Width")} {windowDimension}W {elementDimension}E");
-            var maxWindowSize = windowDimension * windowDimensionMaxPercent;
-            return Math.Min(elementDimension, maxWindowSize) + 2; // Margins are 8,8,8,8. This is kind of a hack but I doubt this will change.
+            if (values[0] is double elementDimension && values[1] is double windowDimension && values[2] is double windowDimensionMaxPercent)
+            {
+                var maxWindowSize = windowDimension * windowDimensionMaxPercent;
+                return Math.Min(elementDimension, maxWindowSize) + 2; // Margins are 8,8,8,8. This is kind of a hack but I doubt this will change.
+            }
+            return 20;
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture)

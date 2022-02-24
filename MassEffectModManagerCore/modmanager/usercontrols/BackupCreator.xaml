@@ -3,42 +3,57 @@
     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
     xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
     xmlns:ui="clr-namespace:ME3TweaksModManager.ui"
+    xmlns:system="clr-namespace:System;assembly=System.Runtime"
     mc:Ignorable="d"
     d:DesignHeight="450"
     d:DesignWidth="600"
-    DataContext="{Binding RelativeSource={RelativeSource Self}}"
-    Width="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.7_400_900', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualWidth}"
-    Height="{Binding Self, Converter={StaticResource GenerationsSizeAdjustedPercentageConverter}, ConverterParameter='0.0_200_1150_270_350'}">
-    <DockPanel>
+    MaxWidth="900"
+    DataContext="{Binding RelativeSource={RelativeSource Self}}">
+    <usercontrols:MMBusyPanelBase.Width>
+        <MultiBinding Converter="{StaticResource PanelDimensionConverter}">
+            <!-- Take the minimum of either the width (0) or the window width % -->
+            <Binding ElementName="BackupPanel" Mode="OneWay" Path="ActualWidth"/>
+            <Binding RelativeSource="{RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}}" Path="ActualWidth"/>
+            <Binding>
+                <Binding.Source>
+                    <system:Double>0.8</system:Double>
+                </Binding.Source>
+            </Binding>
+        </MultiBinding>
+    </usercontrols:MMBusyPanelBase.Width>
+    <usercontrols:MMBusyPanelBase.Height>
+        <MultiBinding Converter="{StaticResource PanelDimensionConverter}">
+            <!-- Take the minimum of either the width (0) or the window width % -->
+            <Binding ElementName="BackupPanel" Mode="OneWay" Path="ActualHeight"/>
+            <Binding RelativeSource="{RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}}" Path="ActualHeight"/>
+            <Binding>
+                <Binding.Source>
+                    <system:Double>0.85</system:Double>
+                </Binding.Source>
+            </Binding>
+        </MultiBinding>
+    </usercontrols:MMBusyPanelBase.Height>
+    <Grid x:Name="BackupPanel" VerticalAlignment="Center" HorizontalAlignment="Center">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
         <TextBlock
-            DockPanel.Dock="Top"
+            Grid.Row="0"
             Text="{DynamicResource string_Backup}"
             FontSize="24"
             FontWeight="Bold"
             TextAlignment="Center"
             Margin="0,5" />
         <TextBlock
-            DockPanel.Dock="Top"
+            Grid.Row="1"
             Text="{DynamicResource string_backupsAreUsedToRestoreYourGame}"
             TextWrapping="Wrap" />
-        <Button
-            DockPanel.Dock="Bottom"
-            Content="{DynamicResource string_close}"
-            Command="{Binding CloseCommand}"
-            HorizontalAlignment="Right"
-            Padding="7,5"
-            Margin="0,5,0,0" />
-        <TextBlock
-            DockPanel.Dock="Bottom"
-            Text="{DynamicResource string_backupsMustBeCreatedFresh}"
-            TextWrapping="Wrap"
-            Visibility="{Binding AnyGameMissingBackup, Converter={StaticResource BoolToVisibilityConverter}}" />
-        <TextBlock
-            DockPanel.Dock="Bottom"
-            Text="{DynamicResource string_backupsAreShared}"
-            TextWrapping="Wrap"
-            Margin="0,5" />
-        <ScrollViewer>
+        <ScrollViewer Grid.Row="2">
             <ItemsControl
             ItemsSource="{Binding GameBackups}">
                 <ItemsControl.ItemContainerStyle>
@@ -105,7 +120,7 @@
                             Text="{Binding BackupStatus.BackupLocationStatus}"
                             TextWrapping="Wrap"/>
                             <usercontrols:TargetSelector Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2"
-                            IsEnabled="{Binding BackupInProgress, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}"
+                            IsEnabled="{Binding BackupHandler.BackupInProgress, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}"
                             AvailableTargets="{Binding AvailableBackupSources}"
                             SelectedGameTarget="{Binding BackupSourceTarget}"
                             HorizontalContentAlignment="Stretch"
@@ -132,6 +147,24 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </ScrollViewer>
-
-    </DockPanel>
+        <TextBlock
+            Grid.Row="4"
+            VerticalAlignment="Center"
+            Text="{DynamicResource string_backupsAreShared}"
+            TextWrapping="Wrap"
+            Margin="0,5" />
+        <TextBlock
+            Grid.Row="4"
+            VerticalAlignment="Center"
+            Text="{DynamicResource string_backupsMustBeCreatedFresh}"
+            TextWrapping="Wrap"
+            Visibility="{Binding AnyGameMissingBackup, Converter={StaticResource BoolToVisibilityConverter}}" />
+        <Button
+            Grid.Row="5"
+            Content="{DynamicResource string_close}"
+            Command="{Binding CloseCommand}"
+            HorizontalAlignment="Right"
+            Padding="7,5"
+            Margin="0,5,0,0" />
+    </Grid>
 </usercontrols:MMBusyPanelBase>
