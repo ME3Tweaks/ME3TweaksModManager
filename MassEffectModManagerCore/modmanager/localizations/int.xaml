@@ -230,7 +230,7 @@
     <system:String x:Key="string_importAndManageMods">Import + manage mods</system:String>
     <system:String x:Key="string_libraryManagement">Library management</system:String>
     <system:String x:Key="string_optIntoBetaUpdates">Opt into beta updates</system:String>
-    <system:String xml:space="preserve" x:Key="string_tooltip_optIntoBetaUpdates">Enables beta updates, overriding soak testing settings from ME3Tweaks. These builds may be less stable but have features that need to be tested.</system:String>
+    <system:String xml:space="preserve" x:Key="string_tooltip_optIntoBetaUpdates">Enables beta updates, overriding soak testing settings from ME3Tweaks. These builds may be less stable but have features that need to be tested. Only takes effect after the application is restarted.</system:String>
     <system:String x:Key="string_tooltip_toggleTelemetry">Enables/disables submission of analytics and crash logs</system:String>
     <system:String x:Key="string_tooltip_logModLoading">Log detailed information about mods loading from the library or archives</system:String>
     <system:String x:Key="string_tooltip_logModMakerCompiler">Log detailed information when ModMaker compiler is running</system:String>
@@ -357,7 +357,7 @@
     <system:String  x:Key="string_tooltip_listFilesThisModCanInstall">Lists all files this mod can potentially install</system:String>
     <system:String  x:Key="string_editModInfo">Edit mod info</system:String>
     <system:String  x:Key="string_compressPackagesOnInstall">Compress packages on install</system:String>
-    <system:String  x:Key="string_tooltip_compressPackagesOnInstall">Sets the default option for compressing packages on install to true, which saves disk space at the cost of slightly increased install time.</system:String>
+    <system:String  x:Key="string_tooltip_compressPackagesOnInstall">Sets the default option for compressing packages on install to true, which saves disk space at the cost of slightly increased install time. This setting only applies to the Original Trilogy, Legendary Edition packages are always compressed.</system:String>
     <system:String  x:Key="string_nexusFileSearch">NexusMods File Search</system:String>
     <system:String  x:Key="string_tooltip_nexusFileSearch">Search for files contained in archive downloads on NexusMods</system:String>
     <system:String x:Key="string_interp_allInstallableFiles">All installable files for {0}</system:String>

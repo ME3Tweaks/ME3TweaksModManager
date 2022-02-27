@@ -134,15 +134,14 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         private void ClosePanel()
         {
             BackupService.StaticPropertyChanged -= NotifyBackupStatusChanged;
-            OnClosing(new DataEventArgs(false));
+            OnClosing(new DataEventArgs(DataEventArgs.Empty));
         }
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Escape)
             {
-                BackupService.StaticPropertyChanged -= NotifyBackupStatusChanged;
-                OnClosing(DataEventArgs.Empty);
+                ClosePanel();
             }
         }
 

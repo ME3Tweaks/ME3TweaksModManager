@@ -74,11 +74,11 @@ namespace ME3TweaksModManager
         /// <summary>
         /// Content of the current Busy Indicator modal
         /// </summary>
-        public object BusyContent { get; set; }
+        public object BusyContentM3 { get; set; }
 
 #if DEBUG
 
-        public void OnBusyContentChanged(object old, object newB)
+        public void OnBusyContentM3Changed(object old, object newB)
         {
             Debug.WriteLine($"Changing busy panels: {old} -> {newB}");
         }
@@ -1227,7 +1227,7 @@ namespace ME3TweaksModManager
             if (queuedUserControls.Count == 0 && !IsBusy)
             {
                 IsBusy = true;
-                BusyContent = control;
+                BusyContentM3 = new SingleItemPanel(control);
             }
             else
             {
@@ -1241,16 +1241,18 @@ namespace ME3TweaksModManager
         /// <param name="control">Control to show or queue</param>
         internal void ReleaseBusyControl()
         {
-            var closingPanel = BusyContent as MMBusyPanelBase;
-            BusyContent = null;
-            if (closingPanel != null)
+            var closingPanel = BusyContentM3 as SingleItemPanel;
+            closingPanel?.DetatchControl();
+
+            var closingPanel2 = closingPanel.Content as MMBusyPanelBase;
+            BusyContentM3 = null;
+            if (closingPanel2 != null)
             {
-                HandlePanelResult(closingPanel.Result);
+                HandlePanelResult(closingPanel2.Result);
             }
 
             if (queuedUserControls.Count == 0)
             {
-                BusyContent = null;
                 IsBusy = false;
                 System.Threading.Tasks.Task.Factory.StartNew(() =>
                 {
@@ -1265,7 +1267,7 @@ namespace ME3TweaksModManager
             {
                 if (queuedUserControls.TryDequeue(out var control))
                 {
-                    BusyContent = control;
+                    BusyContentM3 = new SingleItemPanel(control);
                 }
             }
         }
@@ -3816,7 +3818,7 @@ namespace ME3TweaksModManager
             if (SelectedMod != null)
             {
                 var files = SelectedMod.GetAllInstallableFiles();
-                
+
                 // Load Nexus Database and query it.
 
 

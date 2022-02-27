@@ -62,6 +62,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols.modinstaller
         {
             var element = (FrameworkElement)sender;
             var newItem = (AlternateOption)element.DataContext;
+            if (!newItem.UIIsSelectable) return; // Do nothing. This option is not selectable.
             if (DataContext is AlternateGroup group)
             {
                 if (group.SelectedOption != newItem)

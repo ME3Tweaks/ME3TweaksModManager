@@ -261,6 +261,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             foreach (AlternateGroup o in AlternateGroups)
             {
                 internalSetupInitialSelection(o);
+                if (o.GroupName != null)
+                {
+                    // Deselect so UI doesn't show selected. This is only really for single mode since we dont' use 'IsSelected' in multi mode
+                    foreach (var v in o.AlternateOptions) v.IsSelected = false;
+                }
             }
 
             SortOptions();
@@ -320,12 +325,20 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private void SortOptions()
         {
-            // Todo: Reimplement sorting
-            //List<AlternateGroup> newOptions = new List<AlternateGroup>();
-            //newOptions.AddRange(AlternateOptions.Where(x => x.IsAlways));
-            //newOptions.AddRange(AlternateOptions.Where(x => x is ReadOnlyOption));
-            //newOptions.AddRange(AlternateOptions.Where(x => !x.IsAlways && !(x is ReadOnlyOption)));
-            //AlternateGroups.ReplaceAll(newOptions);
+            return;
+            // ModDesc 8: Sorting option disable?
+
+            List<AlternateGroup> newOptions = new List<AlternateGroup>();
+            newOptions.AddRange(AlternateGroups.Where(x => x.GroupName != null));
+            newOptions.AddRange(AlternateGroups.Where(x => x.GroupName == null && x.SelectedOption.UIIsSelectable));
+            newOptions.AddRange(AlternateGroups.Where(x => x.GroupName == null && !x.SelectedOption.UIIsSelectable));
+
+#if DEBUG
+            if (newOptions.Count != AlternateGroups.Count)
+                throw new Exception(@"Error sorting options! The results was not the same length as the input.");
+#endif
+
+            AlternateGroups.ReplaceAll(newOptions);
         }
 
 
