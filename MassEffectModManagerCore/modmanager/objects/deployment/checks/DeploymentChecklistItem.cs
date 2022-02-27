@@ -28,10 +28,15 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
         public SolidColorBrush Foreground { get; private set; }
         public EFontAwesomeIcon Icon { get; private set; }
         public bool Spinning { get; private set; }
+
         /// <summary>
         /// If there is a blocking issue with the deployment
         /// </summary>
-        public bool DeploymentBlocking { get; private set; }
+        public bool DeploymentBlocking => GetBlockingErrors().Any();
+
+        /// <summary>
+        /// String to show when you mouse over the checklist item.
+        /// </summary>
         public string ToolTip { get; set; }
 
         /// <summary>

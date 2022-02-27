@@ -27,6 +27,9 @@ namespace ME3TweaksModManager.modmanager.objects.deployment
         public Mod ModBeingDeployed { get; }
         public ICommand RerunChecksCommand { get; }
 
+        /// <summary>
+        /// Invoked when CheckCancelled changes.
+        /// </summary>
         public void OnCheckCancelledChanged()
         {
             if (CheckCancelled)

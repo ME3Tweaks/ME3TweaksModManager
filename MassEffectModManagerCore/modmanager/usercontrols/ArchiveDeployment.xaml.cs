@@ -152,7 +152,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private static readonly string[] IndividualCompressExtensions = new string[] { /*@".xml" */};
 
-
         private void StartDeployment()
         {
             var premadeName = "";
@@ -498,12 +497,21 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         }
 
         public bool CanChangeValidationTarget => !DeploymentInProgress && ModBeingChecked == null;
-
         public bool PrecheckCompleted { get; private set; }
+
         [AlsoNotifyFor(nameof(CanChangeValidationTarget))]
         public bool DeploymentInProgress { get; private set; }
+        /// <summary>
+        /// Maximum on the progress bar
+        /// </summary>
         public ulong ProgressMax { get; set; } = 100;
+        /// <summary>
+        /// The current value of the progress bar
+        /// </summary>
         public ulong ProgressValue { get; set; } = 0;
+        /// <summary>
+        /// The bottom left text that describes the current operation
+        /// </summary>
         public string OperationText { get; set; } = M3L.GetString(M3L.string_checkingModBeforeDeployment);
         //M3L.GetString(M3L.string_verifyAboveItemsBeforeDeployment);
         public ConcurrentQueue<EncompassingModDeploymentCheck> PendingChecks { get; } = new ConcurrentQueue<EncompassingModDeploymentCheck>();
