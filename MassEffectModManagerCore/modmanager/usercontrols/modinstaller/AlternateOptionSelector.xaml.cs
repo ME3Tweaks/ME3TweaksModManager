@@ -75,7 +75,10 @@ namespace ME3TweaksModManager.modmanager.usercontrols.modinstaller
                 if (group.AlternateOptions.Count == 1 && !group.SelectedOption.IsAlways)
                 {
                     // Single mode
+                    group.SelectedOption.isUserSelecting = true;
                     group.SelectedOption.IsSelected = !group.SelectedOption.IsSelected;
+                    group.SelectedOption.isUserSelecting = false;
+
                 }
             }
         }

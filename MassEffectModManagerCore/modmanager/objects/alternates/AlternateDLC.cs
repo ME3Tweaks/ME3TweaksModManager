@@ -22,6 +22,10 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
             OP_ADD_CUSTOMDLC,
             OP_ADD_FOLDERFILES_TO_CUSTOMDLC,
             OP_ADD_MULTILISTFILES_TO_CUSTOMDLC,
+            /// <summary>
+            /// On mod install, an ini file(s) is merged into the DLCs. This is game dependent.
+            /// </summary>
+            OP_MERGE_INI,
             OP_NOTHING
         }
 
@@ -45,7 +49,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         /// <summary>
         /// Requirements for this manual option to be able to be picked
         /// </summary>
-        public string[] DLCRequirementsForManual { get; }
+        public PlusMinusKey[] DLCRequirementsForManual { get; }
 
         public override bool IsAlways => false; //AlternateDLC doesn't support this
         public List<string> ConditionalDLC = new List<string>();
@@ -358,7 +362,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 }
 
 
-                DLCRequirementsForManual = reqList.ToArray();
+                DLCRequirementsForManual = reqList.Select(x=>new PlusMinusKey(x)).ToArray();
             }
 
             if (Condition == AltDLCCondition.COND_SPECIFIC_SIZED_FILES)
@@ -442,22 +446,20 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
 
         public override bool IsManual => Condition == AltDLCCondition.COND_MANUAL;
 
-        public override bool UIIsSelectable { get; set; }
-
-        public override bool UINotApplicable
-        {
-            get
-            {
-                if (IsManual)
-                {
-                    return !UIIsSelectable; //SetupInitialSelection() will set this. If it's false, it means this is not applicable, so set UI to reflect that
-                }
-                else
-                {
-                    return !IsSelected;
-                }
-            }
-        }
+        //public override bool UINotApplicable
+        //{
+        //    get
+        //    {
+        //        if (IsManual)
+        //        {
+        //            return !UIIsSelectable; //SetupInitialSelection() will set this. If it's false, it means this is not applicable, so set UI to reflect that
+        //        }
+        //        else
+        //        {
+        //            return !IsSelected;
+        //        }
+        //    }
+        //}
 
         internal bool HasRelativeFiles()
         {
@@ -479,14 +481,14 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
 
                     if (mod.ModDescTargetVersion >= 6.3)
                     {
-                        var requiredDLC = DLCRequirementsForManual.Where(x => !x.StartsWith(@"-") || x.StartsWith(@"+")).Select(x => x.TrimStart('+')); // none or + means 'must exist'
-                        var notPresentDLCRequired = DLCRequirementsForManual.Where(x => x.StartsWith(@"-")).Select(x => x.TrimStart('-'));
+                        var requiredDLC = DLCRequirementsForManual.Where(x => x.IsPlus == null || x.IsPlus.Value).Select(x => x.Key); // none or + means 'must exist'
+                        var notPresentDLCRequired = DLCRequirementsForManual.Where(x => x.IsPlus != null && !x.IsPlus.Value).Select(x => x.Key);
                         UIIsSelectable = dlc.ContainsAll(requiredDLC, StringComparer.InvariantCultureIgnoreCase) && dlc.ContainsNone(notPresentDLCRequired, StringComparer.InvariantCultureIgnoreCase);
                     }
                     else
                     {
                         // Previous logic. Left here to ensure nothing changes.
-                        UIIsSelectable = dlc.ContainsAll(DLCRequirementsForManual, StringComparer.InvariantCultureIgnoreCase);
+                        UIIsSelectable = dlc.ContainsAll(DLCRequirementsForManual.Select(x=>x.ToString()), StringComparer.InvariantCultureIgnoreCase);
                     }
 
                     if (!UIIsSelectable && mod.ModDescTargetVersion >= 6.2)
@@ -569,24 +571,6 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         }
 
         /// <summary>
-        /// Builds the editable parameter map for use in moddesc.ini editor
-        /// </summary>
-        /// <param name="properties"></param>
-        //private void buildParameterMap(Dictionary<string, string> properties)
-        //{
-        //    var parms = properties.Select(x => new AlternateOption.Parameter() { Key = x.Key, Value = x.Value }).ToList();
-        //    foreach (var v in AllParameters)
-        //    {
-        //        if (parms.All(x => x.Key != v))
-        //        {
-        //            parms.Add(new MDParameter(v, ""));
-        //        }
-        //    }
-
-        //    ParameterMap.ReplaceAll(parms.OrderBy(x => x.Key));
-        //}
-
-        /// <summary>
         /// List of all keys in the altdlc struct that are publicly parsable
         /// </summary>
         public override void BuildParameterMap(Mod mod)
@@ -617,66 +601,5 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
 
             ParameterMap.ReplaceAll(MDParameter.MapIntoParameterMap(parameterDictionary));
         }
-
-        ///// <summary>
-        ///// Serializes this object to it's moddesc.ini representation
-        ///// </summary>
-        ///// <returns></returns>
-        //public string Serialize()
-        //{
-        //    var props = new Dictionary<string, string>();
-        //    props[@"Condition"] = Condition.ToString(); //always set
-        //    props[@"ConditionalDLC"] = string.Join(';', ConditionalDLC);
-        //    props[@"ModOperation"] = Operation.ToString(); //always set
-        //    props[@"ModAltDLC"] = AlternateDLCFolder;
-        //    props[@"ModDestDLC"] = DestinationDLCFolder;
-        //    props[@"FriendlyName"] = FriendlyName;
-        //    props[@"Description"] = Description;
-        //    if (CheckedByDefault)
-        //    {
-        //        props[@"CheckedByDefault"] = CheckedByDefault.ToString();
-        //    }
-
-        //    if (!string.IsNullOrWhiteSpace(GroupName))
-        //    {
-        //        props[@"OptionGroup"] = GroupName;
-        //    }
-        //    if (!string.IsNullOrWhiteSpace(ApplicableAutoText))
-        //    {
-        //        props[@"ApplicableAutoText"] = ApplicableAutoText;
-        //    }
-        //    if (!string.IsNullOrWhiteSpace(NotApplicableAutoText))
-        //    {
-        //        props[@"NotApplicableAutoText"] = NotApplicableAutoText;
-        //    }
-
-        //    if (!string.IsNullOrWhiteSpace(MultiListRootPath))
-        //    {
-        //        props[@"MultiListRootPath"] = MultiListRootPath;
-        //    }
-
-        //    if (!string.IsNullOrWhiteSpace(MultiListRootPath))
-        //    {
-        //        props[@"MultiListId"] = MultiListId.ToString();
-        //    }
-
-        //    if (RequiredSpecificFiles.Any())
-        //    {
-        //        var paths = "";
-        //        var sizes = "";
-        //        foreach (var v in RequiredSpecificFiles)
-        //        {
-        //            if (paths != @"") paths += @";";
-        //            if (sizes != @"") sizes += @";";
-        //            paths += v.Key; // should we check for spaces? Can game files support spaces?
-        //            sizes += v.Value;
-        //        }
-        //        props[@"RequiredFileRelativePaths"] = paths;
-        //        props[@"RequiredFileSizes"] = sizes;
-        //    }
-
-
-        //    return StringStructParser.BuildCommaSeparatedSplitValueList(props);
-        //}
     }
 }

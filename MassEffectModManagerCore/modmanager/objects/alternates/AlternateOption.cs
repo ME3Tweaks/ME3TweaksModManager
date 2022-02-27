@@ -9,6 +9,7 @@ using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.mod.editor;
+using ME3TweaksModManager.ui;
 using Microsoft.AppCenter.Crashes;
 using PropertyChanged;
 
@@ -20,6 +21,11 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
     [AddINotifyPropertyChangedInterface]
     public abstract class AlternateOption : IMDParameterMap
     {
+        /// <summary>
+        /// Invoked when the user MANUALLY changes the selection state of the alternate. Initial setup does not propogate this.
+        /// </summary>
+        public event EventHandler IsSelectedChanged;
+
         /// <summary>
         /// Text to show next to an option when it automatically marked as applicable
         /// </summary>
@@ -69,11 +75,21 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         }
 
         /// <summary>
-        /// If this is 
+        /// If this option is required (automatic and checked). This does not apply if the condition is OP_ALWAYS. 
         /// </summary>
         public virtual bool UIRequired => !IsManual && !IsAlways && IsSelected;
-        public abstract bool UINotApplicable { get; }
-        public abstract bool UIIsSelectable { get; set; }
+        
+        /// <summary>
+        /// If this option can be selected on or off by the end-user
+        /// </summary>
+        public virtual bool UIIsSelectable { get; set; }
+
+        //public abstract bool UINotApplicable { get; }
+        /// <summary>
+        /// If this option is not applicable to the installation
+        /// </summary>
+        public virtual bool UINotApplicable => !IsManual && !IsSelected && !IsAlways;
+
         #endregion
 
         /// <summary>
@@ -88,7 +104,16 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         public bool IsSelected { get; set; }
 
         /// <summary>
-        /// MAY BE WRONG Indicates that the option is in a read-only state; that it is not a manual option.
+        /// Called by fody when IsSelected changes
+        /// </summary>
+        public void OnIsSelectedChanged()
+        {
+            if (isUserSelecting)
+                IsSelectedChanged?.Invoke(this, new DataEventArgs(IsSelected));
+        }
+
+        /// <summary>
+        /// If this option is always selected and forced on. Used to put an option that always is checked, often with OP_NOTHING.
         /// </summary>
         public abstract bool IsAlways { get; }
         public abstract void BuildParameterMap(Mod mod);
@@ -109,11 +134,11 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         public virtual string Description { get; internal set; }
 
         /// <summary>
-        /// If this alternate is valid or not
+        /// If this alternate is valid or not.
         /// </summary>
         public bool ValidAlternate;
         /// <summary>
-        /// Why this alternate is invalid
+        /// Why this alternate is invalid.
         /// </summary>
         public string LoadFailedReason;
         /// <summary>
@@ -121,7 +146,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         /// </summary>
         public virtual string ImageAssetName { get; internal set; }
         /// <summary>
-        /// The loaded image asset
+        /// The loaded image asset.
         /// </summary>
         public BitmapSource ImageBitmap { get; set; }
 
@@ -137,6 +162,12 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
 
 
         private string _optionKey;
+
+        /// <summary>
+        /// Internal only: If changes to IsSelected are from the user or from programatic changes
+        /// </summary>
+        internal bool isUserSelecting;
+
         /// <summary>
         /// A key that can be used to reference this alternate. If one is not specified in the moddesc.ini, one is automatically generated from the CRC of the unicode friendlyname of the alternate.
         /// </summary>
@@ -160,14 +191,17 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         }
 
         /// <summary>
-        /// Updates the selection states for the option
-        /// <returns>True if the selection state was changed; false if not. This is used to determine if there needs to be another call to update selections again</returns>
+        /// Updates the selection and applicability states for this alternate option.
         /// </summary>
-        internal bool UpdateSelectability(IEnumerable<AlternateOption> allOptions)
+        /// <param name="allOptions"></param>
+        /// <returns>True if the selection state was changed; false if not. This is used to determine if there needs to be another call to update selections again</returns>
+        internal virtual bool UpdateSelectability(IEnumerable<AlternateOption> allOptions)
         {
             if (DependsOnKeys.Count == 0) return false; // Nothing changes as we don't depend on any other options
 
             bool changed = false;
+
+            // Depends On Keys
             foreach (var key in DependsOnKeys)
             {
                 var option = allOptions.FirstOrDefault(x => x.OptionKey == key.Key);
@@ -201,6 +235,8 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 }
             }
 
+
+
             return changed;
         }
 
@@ -210,10 +246,10 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         public List<PlusMinusKey> DependsOnKeys { get; } = new List<PlusMinusKey>(0); // Default to size 0 as most mods will not use this feature
 
         /// <summary>
-        /// Loads the image asset for the specified mod. If this method is called on an archive based mod, it must be done while the archive is still open.
+        /// Loads the image asset for this alternate. If this method is called on an archive based mod, it must be done while the archive is still open.
         /// </summary>
-        /// <param name="mod"></param>
-        /// <param name="initializingAssetName"></param>
+        /// <param name="mod">Mod that this alternate is associated with</param>
+        /// <param name="initializingAssetName">The asset name to load. If null, the parsed value is used instead.</param>
         /// <returns></returns>
         public BitmapSource LoadImageAsset(Mod mod, string initializingAssetName = null)
         {
@@ -235,7 +271,11 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
             return assetData;
         }
 
-        public void ReadAutoApplicableText(Dictionary<string, string> properties)
+        /// <summary>
+        /// Reads the auto applicable text options.
+        /// </summary>
+        /// <param name="properties"></param>
+        private void ReadAutoApplicableText(Dictionary<string, string> properties)
         {
             properties.TryGetValue(@"ApplicableAutoText", out string applicableText);
             ApplicableAutoText = applicableText ?? M3L.GetString(M3L.string_autoApplied);
@@ -245,8 +285,14 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
             NotApplicableAutoText = notApplicableText ?? M3L.GetString(M3L.string_notApplicable);
             NotApplicableAutoTextRaw = notApplicableText;
         }
-
-        public bool ReadImageAssetOptions(Mod modForValidating, Dictionary<string, string> properties)
+        
+        /// <summary>
+        /// Reads the image asset options.
+        /// </summary>
+        /// <param name="modForValidating"></param>
+        /// <param name="properties"></param>
+        /// <returns></returns>
+        private bool ReadImageAssetOptions(Mod modForValidating, Dictionary<string, string> properties)
         {
             if (modForValidating.ModDescTargetVersion >= 6.2)
             {
@@ -369,6 +415,9 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         /// </summary>
         public ObservableCollectionExtended<MDParameter> ParameterMap { get; } = new ObservableCollectionExtended<MDParameter>();
 
+        /// <summary>
+        /// Drops references to image assets so they can be garbage collected at a later time.
+        /// </summary>
         public void ReleaseLoadedImageAsset()
         {
             ImageBitmap = null; //Lose the reference so we don't hold memory

@@ -30,6 +30,9 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
 
         public enum AltFileCondition
         {
+            /// <summary>
+            /// If condition is not set. This is always an invalid condition.
+            /// </summary>
             INVALID_CONDITION,
             COND_MANUAL,
             COND_ALWAYS,
@@ -44,7 +47,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         public override bool IsAlways => Condition == AltFileCondition.COND_ALWAYS;
 
         public override bool UIRequired => !IsManual && IsSelected && !IsAlways;
-        public override bool UINotApplicable => !IsManual && !IsSelected && !IsAlways;
+        //public override bool UINotApplicable => !IsManual && !IsSelected && !IsAlways;
         public List<string> ConditionalDLC = new List<string>();
 
         /// <summary>
@@ -83,11 +86,18 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         /// </summary>
         public string SubstituteFile;
 
-        public override bool UIIsSelectable
-        {
-            get => !IsAlways && !UIRequired && !UINotApplicable || IsManual;
-            set { } //you can't set these for altfiles
-        }
+        //public override bool UIIsSelectable
+        //{
+        //    // Logic:
+        //    // It's not always chosen
+        //    // It's not required
+        //    // It's not not applicable
+        //    // OR ^|v
+        //    // It's manual
+        //    // This logic should probably be updated to ensure DLCRequirements...
+        //    get => !IsAlways && !UIRequired && !UINotApplicable || IsManual;
+        //    set { } //you can't set these for altfiles
+        //}
 
         /// <summary>
         /// ONLY FOR USE IN MODDESC.INI EDITOR

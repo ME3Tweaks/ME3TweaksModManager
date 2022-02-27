@@ -2,6 +2,7 @@
 using ME3TweaksModManager.modmanager.objects.alternates;
 using ME3TweaksModManager.modmanager.objects.mod;
 using PropertyChanged;
+using System.Collections.Generic;
 
 namespace ME3TweaksModManager.modmanager.objects
 {
@@ -23,5 +24,9 @@ namespace ME3TweaksModManager.modmanager.objects
         public override bool UINotApplicable => false;
 
         public override bool UIIsSelectable { get => true; set { } }
+
+        // This method does nothing for ReadOnlyOption.
+        internal override bool UpdateSelectability(IEnumerable<AlternateOption> allOptions) { return false; }
+
     }
 }

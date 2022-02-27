@@ -253,7 +253,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                         {
                             foreach (var manualTrigger in altdlc.DLCRequirementsForManual)
                             {
-                                autoConfigs.Add(manualTrigger.TrimStart('-', '+'));
+                                autoConfigs.Add(manualTrigger.Key);
                             }
                         }
 
