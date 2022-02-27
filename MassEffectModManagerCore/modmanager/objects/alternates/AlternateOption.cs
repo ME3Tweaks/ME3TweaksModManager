@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Windows.Media.Imaging;
@@ -75,10 +76,18 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         }
 
         /// <summary>
+        /// Raises the IsSelectedChanged event.
+        /// </summary>
+        internal void RaiseIsSelectedChanged()
+        {
+            IsSelectedChanged?.Invoke(this, new DataEventArgs(IsSelected));
+        }
+
+        /// <summary>
         /// If this option is required (automatic and checked). This does not apply if the condition is OP_ALWAYS. 
         /// </summary>
         public virtual bool UIRequired => !IsManual && !IsAlways && IsSelected;
-        
+
         /// <summary>
         /// If this option can be selected on or off by the end-user
         /// </summary>
@@ -102,15 +111,6 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         /// If this option is selected for installation
         /// </summary>
         public bool IsSelected { get; set; }
-
-        /// <summary>
-        /// Called by fody when IsSelected changes
-        /// </summary>
-        public void OnIsSelectedChanged()
-        {
-            if (isUserSelecting)
-                IsSelectedChanged?.Invoke(this, new DataEventArgs(IsSelected));
-        }
 
         /// <summary>
         /// If this option is always selected and forced on. Used to put an option that always is checked, often with OP_NOTHING.
@@ -164,11 +164,6 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         private string _optionKey;
 
         /// <summary>
-        /// Internal only: If changes to IsSelected are from the user or from programatic changes
-        /// </summary>
-        internal bool isUserSelecting;
-
-        /// <summary>
         /// A key that can be used to reference this alternate. If one is not specified in the moddesc.ini, one is automatically generated from the CRC of the unicode friendlyname of the alternate.
         /// </summary>
         public string OptionKey
@@ -198,12 +193,15 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         internal virtual bool UpdateSelectability(IEnumerable<AlternateOption> allOptions)
         {
             if (DependsOnKeys.Count == 0) return false; // Nothing changes as we don't depend on any other options
-
+            Debug.WriteLine($@"UpdateSelectability on {FriendlyName} with DependsOnKeys!");
             bool changed = false;
-
+            bool keepParsing = true;
             // Depends On Keys
             foreach (var key in DependsOnKeys)
             {
+                if (!keepParsing)
+                    continue;
+
                 var option = allOptions.FirstOrDefault(x => x.OptionKey == key.Key);
                 if (option == null)
                 {
@@ -218,6 +216,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                     UIIsSelectable = false;
                     if (IsSelected) changed = true; // We are changing states
                     IsSelected = false;
+                    keepParsing = false;
                 }
                 else if (!option.IsSelected && key.IsPlus.Value)
                 {
@@ -225,6 +224,12 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                     UIIsSelectable = false;
                     if (IsSelected) changed = true; // We are changing states
                     IsSelected = false;
+                    keepParsing = false;
+                }
+                else if (!option.IsSelected ^ key.IsPlus.Value) 
+                {
+                    // Unlock the option
+                    UIIsSelectable = true;
                 }
 
                 // If we are an option group, we reset to the default option
@@ -285,7 +290,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
             NotApplicableAutoText = notApplicableText ?? M3L.GetString(M3L.string_notApplicable);
             NotApplicableAutoTextRaw = notApplicableText;
         }
-        
+
         /// <summary>
         /// Reads the image asset options.
         /// </summary>

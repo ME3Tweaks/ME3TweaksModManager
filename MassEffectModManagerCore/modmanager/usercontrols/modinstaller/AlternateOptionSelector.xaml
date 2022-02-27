@@ -19,10 +19,7 @@
         </DockPanel>
 
         <!-- Multi Selector -->
-        <xctk:DropDownButton x:Name="DropDownButtonHost"
-                             IsOpen="{Binding IsDropdownOpen, ElementName=AOS, Mode=TwoWay}" Visibility="{Binding GroupName, Converter={StaticResource NullVisibilityConverter}}" HorizontalContentAlignment="Stretch" 
-                             PreviewMouseLeftButtonUp="DropdownButton_OnPreviewMouseLeftButtonUp"
-                             PreviewMouseLeftButtonDown="DropdownButton_OnPreviewMouseLeftButtonDown">
+        <xctk:DropDownButton x:Name="DropDownButtonHost" Visibility="{Binding GroupName, Converter={StaticResource NullVisibilityConverter}}" HorizontalContentAlignment="Stretch" >
             <DockPanel>
                 <TextBlock Text="{Binding GroupNameTitleText}" TextWrapping="Wrap" Visibility="{Binding GroupName, Converter={StaticResource NullVisibilityConverter}}" FontWeight="Bold" DockPanel.Dock="Top"/>
                 <local:SingleAlternateOptionPanel DataContext="{Binding SelectedOption}"/>

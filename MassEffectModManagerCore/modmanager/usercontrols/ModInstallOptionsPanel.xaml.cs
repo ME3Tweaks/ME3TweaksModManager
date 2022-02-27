@@ -253,13 +253,14 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 }
 
                 // NON GROUP OPTIONS COME NEXT.
-                AlternateGroups.AddRange(job.AlternateDLCs.Where(x => x.GroupName == null).Select(x=>new AlternateGroup(x)));
+                AlternateGroups.AddRange(job.AlternateDLCs.Where(x => x.GroupName == null).Select(x => new AlternateGroup(x)));
                 AlternateGroups.AddRange(job.AlternateFiles.Where(x => x.GroupName == null).Select(x => new AlternateGroup(x)));
             }
 
             // Set the initial states
             foreach (AlternateGroup o in AlternateGroups)
             {
+                o.SetIsSelectedChangeHandler(OnAlternateSelectionChanged);
                 internalSetupInitialSelection(o);
                 if (o.GroupName != null)
                 {
@@ -269,7 +270,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
 
             SortOptions();
-
+            UpdateOptions(); // Update for DependsOnKeys.
 
             // Done calculating options
 
@@ -341,6 +342,24 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             AlternateGroups.ReplaceAll(newOptions);
         }
 
+        private void OnAlternateSelectionChanged(object sender, EventArgs data)
+        {
+            if (sender is AlternateOption ao && data is DataEventArgs args && args.Data is bool newState)
+            {
+                // An alternate option was changed by the user.
+                UpdateOptions();
+            }
+        }
+
+        private void UpdateOptions()
+        {
+            var allOptions = AlternateGroups.SelectMany(x => x.AlternateOptions).ToList();
+            foreach (var v in allOptions)
+            {
+                v.UpdateSelectability(allOptions);
+            }
+        }
+
 
         private bool CanInstall()
         {
@@ -355,7 +374,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 CompressInstalledPackages = CompressInstalledPackages,
                 InstallTarget = SelectedGameTarget,
-                ModBeingInstalled = ModBeingInstalled,                
+                ModBeingInstalled = ModBeingInstalled,
             };
             OnClosing(new DataEventArgs(moip));
         }

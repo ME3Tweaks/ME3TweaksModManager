@@ -67,26 +67,23 @@ namespace ME3TweaksModManager.modmanager.usercontrols.modinstaller
             {
                 if (group.SelectedOption != newItem)
                 {
+                    group.SelectedOption.IsSelected = false;
                     group.SelectedOption = newItem;
+                    group.SelectedOption.IsSelected = true;
+
                     IsDropdownOpen = false; // Multi mode
                     if (element.ToolTip is ToolTip tp)
                         tp.IsOpen = false; // Close the tooltip
+                    group.SelectedOption.RaiseIsSelectedChanged();
                 }
 
                 if (group.AlternateOptions.Count == 1 && !group.SelectedOption.IsAlways)
                 {
                     // Single mode
-                    group.SelectedOption.isUserSelecting = true;
                     group.SelectedOption.IsSelected = !group.SelectedOption.IsSelected;
-                    group.SelectedOption.isUserSelecting = false;
-
+                    group.SelectedOption.RaiseIsSelectedChanged();
                 }
             }
-        }
-
-        public void OnIsDropdownOpenChanged()
-        {
-            Debug.WriteLine($"Now {IsDropdownOpen}");
         }
 
         private void DropdownButton_OnPreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -95,28 +92,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols.modinstaller
                 LastCloseTime = DateTime.Now;
             //if (IsDropdownOpen)
             // e.Handled = true;
-        }
-
-        private void DropdownButton_OnPreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            //if (!IsDropdownOpen)
-            //{
-            //    var timeDelta = DateTime.Now - LastCloseTime;
-            //    if (timeDelta < new TimeSpan(0, 0, 0, 0, 200))
-            //    {
-            //        e.Handled = true;
-            //        if (sender is DropDownButton obj)
-            //        {
-            //            // This prevents it from capturing the next mouse input event
-            //            obj.ReleaseMouseCapture();
-            //        }
-            //        Debug.WriteLine("Suppressed re-click on dropdown");
-            //    }
-
-            //    Debug.WriteLine($"Time Delta: {timeDelta.Milliseconds}");
-            //    //if (IsDropdownOpen)
-            //    // e.Handled = true;
-            //}
         }
     }
 }

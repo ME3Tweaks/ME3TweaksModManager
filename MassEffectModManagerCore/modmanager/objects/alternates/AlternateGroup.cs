@@ -94,17 +94,11 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
             }
         }
 
-
-        // TODO: FIND A WAY TO CALL THIS METHOD
-
-        /// <summary>
-        /// Called when the selection state of an option has changed.
-        /// </summary>
-        internal void UpdateSelectabilityStates()
+        internal void SetIsSelectedChangeHandler(EventHandler onAlternateSelectionChanged)
         {
             foreach (var o in AlternateOptions)
             {
-                o.UpdateSelectability(AlternateOptions);
+                o.IsSelectedChanged += onAlternateSelectionChanged;
             }
         }
     }
