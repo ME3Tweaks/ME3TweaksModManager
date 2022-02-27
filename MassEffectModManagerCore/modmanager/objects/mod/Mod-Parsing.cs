@@ -149,6 +149,11 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         }
 
         /// <summary>
+        /// If alternate options should be sorted on initial setup to put NotApplicable items at the bottom
+        /// </summary>
+        public bool SortAlternateOptions { get; set; } = true;
+
+        /// <summary>
         /// Indicates if this mod has the relevant information attached to it for updates. That is, classic update code, modmaker id, or nexusmods ID
         /// </summary>
         public bool IsUpdatable
@@ -656,6 +661,12 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             {
                 // Only used for ME1 AMD Lighting Fix
                 RequiresAMD = bRequiresAMD;
+            }
+
+            // ModDesc 8.0: Allow disable alternate sorting
+            if (ModDescTargetVersion >= 8.0 && bool.TryParse(iniData[@"ModInfo"][@"sortalternates"], out var bSortAlternates))
+            {
+                SortAlternateOptions = bSortAlternates;
             }
 
             string game = iniData[@"ModInfo"][@"game"];

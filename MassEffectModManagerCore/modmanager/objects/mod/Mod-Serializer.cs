@@ -42,6 +42,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 {@"nexuscode", NexusModID > 0 ? NexusModID.ToString() : null},
                 {@"requireddlc", RequiredDLC},
                 {@"bannerimagename", BannerImageName},
+                {@"sortalternates", SortAlternateOptions},
             };
 
 

@@ -38,10 +38,15 @@
                         >
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="{x:Type editor:MDParameter}" >
-                    <DockPanel Margin="0,0,0,3">
-                        <TextBlock DockPanel.Dock="Left" Text="{Binding Key}" Width="160"/>
-                        <TextBox Text="{Binding Value}" AcceptsReturn="{Binding AcceptsNewLines}" TextWrapping="Wrap"/>
-                    </DockPanel>
+                    <Grid MinHeight="24" Margin="0,0,0,3">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="160"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="{Binding Key}" Width="160" VerticalAlignment="Center"/>
+                        <TextBox Grid.Column="1" Text="{Binding Value}" AcceptsReturn="{Binding AcceptsNewLines}" TextWrapping="Wrap" Visibility="{Binding UsesSetValuesList, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}"/>
+                        <ComboBox Grid.Column="1" ItemsSource="{Binding AllowedValues}" SelectedItem="{Binding Value}" Visibility="{Binding UsesSetValuesList, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                    </Grid>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
             <b:Interaction.Behaviors>

@@ -15,7 +15,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor.alternate
     /// <summary>
     /// Interaction logic for AlternateDLCBuilder.xaml
     /// </summary>
-    public partial class AlternateFileBuilder : ModdescEditorControlBase, INotifyPropertyChanged
+    public partial class AlternateFileBuilder : AlternateBuilderBaseControl, INotifyPropertyChanged
     {
         public string DirectionsText
         {
@@ -32,13 +32,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor.alternate
         }
 
         public static readonly DependencyProperty TaskHeaderProperty = DependencyProperty.Register(@"TaskHeader", typeof(ModJob.JobHeader?), typeof(AlternateFileBuilder));
-
-        public ModJob AttachedJob { get; set; }
-        /// <summary>
-        /// List of editing Alternate DLCs. These have to be extracted out of the job as they are not bindable in job
-        /// </summary>
-        public ObservableCollectionExtended<AlternateFile> Alternates { get; } = new ObservableCollectionExtended<AlternateFile>();
-
+        
         public override void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
         {
             if (!HasLoaded)

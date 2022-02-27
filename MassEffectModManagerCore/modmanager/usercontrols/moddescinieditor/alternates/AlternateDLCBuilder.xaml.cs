@@ -14,22 +14,16 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor.alternate
     /// <summary>
     /// Interaction logic for AlternateDLCBuilder.xaml
     /// </summary>
-    public partial class AlternateDLCBuilder : ModdescEditorControlBase, INotifyPropertyChanged
+    public partial class AlternateDLCBuilder : AlternateBuilderBaseControl, INotifyPropertyChanged
     {
-        public ModJob CustomDLCJob { get; set; }
-        /// <summary>
-        /// List of editing Alternate DLCs. These have to be extracted out of the job as they are not bindable in job
-        /// </summary>
-        public ObservableCollectionExtended<AlternateDLC> Alternates { get; } = new ObservableCollectionExtended<AlternateDLC>();
-
         public override void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
         {
             if (!HasLoaded)
             {
-                CustomDLCJob = EditingMod?.GetJob(ModJob.JobHeader.CUSTOMDLC);
-                if (CustomDLCJob != null)
+                AttachedJob = EditingMod?.GetJob(ModJob.JobHeader.CUSTOMDLC);
+                if (AttachedJob != null)
                 {
-                    Alternates.ReplaceAll(CustomDLCJob.AlternateDLCs);
+                    Alternates.ReplaceAll(AttachedJob.AlternateDLCs);
                     foreach (var a in Alternates)
                     {
                         a.BuildParameterMap(EditingMod);
@@ -46,7 +40,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor.alternate
 
         public override void Serialize(IniData ini)
         {
-            if (CustomDLCJob != null && Alternates.Any())
+            if (AttachedJob != null && Alternates.Any())
             {
                 string outStr = "(";
                 bool isFirst = true;

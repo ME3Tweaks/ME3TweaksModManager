@@ -132,6 +132,11 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         /// If this option is always selected and forced on. Used to put an option that always is checked, often with OP_NOTHING.
         /// </summary>
         public abstract bool IsAlways { get; }
+
+        /// <summary>
+        /// Builds the moddesc.ini parameter map
+        /// </summary>
+        /// <param name="mod"></param>
         public abstract void BuildParameterMap(Mod mod);
 
         /// <summary>
@@ -222,6 +227,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 if (option == null)
                 {
                     // This shouldn't happen!
+                    Debug.WriteLine($@"DependsOnKey not found in list of all options: {key}! This shouldn't happen.");
                     Crashes.TrackError(new Exception($@"DependsOnKey not found in list of all options: {key}! This shouldn't happen."));
                     continue;
                 }
@@ -534,25 +540,39 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 }
 
                 // If the user has a choice in configuring this option we should show the conditions required for the user to select the option
-                if (DependsOnMetAction != EDependsOnAction.ACTION_DISALLOW_SELECT && DependsOnMetAction != EDependsOnAction.ACTION_DISALLOW_SELECT_CHECKED)
+                //if (DependsOnMetAction != EDependsOnAction.ACTION_DISALLOW_SELECT && DependsOnMetAction != EDependsOnAction.ACTION_DISALLOW_SELECT_CHECKED)
                 {
                     var isPlus = dependsOnKey.IsPlus.Value;
 
                     if (isPlus)
                     {
-                        condition += $"Requires option: {alt.FriendlyName}\n";
+                        if (alt.GroupName != null)
+                        {
+                            condition += $"Requires {alt.GroupName} option: {alt.FriendlyName}\n";
+                        }
+                        else
+                        {
+                            condition += $"Requires option: {alt.FriendlyName}\n";
+                        }
                     }
                     else
                     {
-                        condition += $"Must not select option: {alt.FriendlyName}\n";
+                        if (alt.GroupName != null)
+                        {
+                            condition += $"Must not select {alt.GroupName} option: {alt.FriendlyName}\n";
+                        }
+                        else
+                        {
+                            condition += $"Must not select option: {alt.FriendlyName}\n";
+                        }
                     }
                 }
             }
 
-            if (DependsOnMetAction != EDependsOnAction.ACTION_DISALLOW_SELECT && DependsOnMetAction != EDependsOnAction.ACTION_DISALLOW_SELECT_CHECKED)
-            {
+            //if (DependsOnMetAction != EDependsOnAction.ACTION_DISALLOW_SELECT && DependsOnMetAction != EDependsOnAction.ACTION_DISALLOW_SELECT_CHECKED)
+            //{
                 DependsOnText = condition.Trim();
-            }
+            //}
 
             return true;
         }

@@ -13,7 +13,7 @@ using ME3TweaksModManager.modmanager.objects.mod.editor;
 
 namespace ME3TweaksModManager.modmanager.objects.alternates
 {
-    [DebuggerDisplay(@"AlternateDLC | {Condition} {Operation}, ConditionalDLC: {ConditionalDLC}, DestDLC: {DestinationDLCFolder}, AltDLC: {AlternateDLCFolder}")]
+    [DebuggerDisplay(@"AlternateDLC | {FriendlyName} | {Condition} {Operation}, ConditionalDLC: {ConditionalDLC}, DestDLC: {DestinationDLCFolder}, AltDLC: {AlternateDLCFolder}")]
     public sealed class AlternateDLC : AlternateOption
     {
         public enum AltDLCOperation
@@ -575,11 +575,15 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         /// </summary>
         public override void BuildParameterMap(Mod mod)
         {
+            var conditions = Enum.GetValues<AltDLCCondition>().Where(x => x != AltDLCCondition.INVALID_CONDITION).Select(x => x.ToString());
+            var operations = Enum.GetValues<AltDLCOperation>().Where(x => x != AltDLCOperation.INVALID_OPERATION).Select(x => x.ToString());
+
             var parameterDictionary = new Dictionary<string, object>()
             {
-                {@"Condition", Condition},
+                // List of available conditions
+                {@"Condition", new MDParameter(@"string", @"Condition", Condition.ToString(), conditions, AltDLCCondition.COND_MANUAL.ToString())},
                 {@"ConditionalDLC", ConditionalDLC},
-                {@"ModOperation", Operation},
+                {@"ModOperation", new MDParameter(@"string", @"ModOperation", Operation.ToString(), operations, AltDLCOperation.OP_NOTHING.ToString())},
                 {@"ModAltDLC", AlternateDLCFolder},
                 {@"ModDestDLC", DestinationDLCFolder},
                 {@"FriendlyName", FriendlyName},
@@ -601,7 +605,6 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 {@"DependsOnKeys", string.Join(';',DependsOnKeys.Select(x=>x.ToString()))},
                 {@"DependsOnMetAction", DependsOnMetAction!= EDependsOnAction.ACTION_INVALID ? DependsOnMetAction : null},
                 {@"DependsOnNotMetAction", DependsOnNotMetAction!= EDependsOnAction.ACTION_INVALID ? DependsOnNotMetAction : null},
-
             };
 
             ParameterMap.ReplaceAll(MDParameter.MapIntoParameterMap(parameterDictionary));
