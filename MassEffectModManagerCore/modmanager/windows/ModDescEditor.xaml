@@ -65,13 +65,13 @@
             </TabItem>
             <TabItem
                 Header="{DynamicResource string_customDLC}"
-                Visibility="{Binding EditingMod.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Not_LE1_Not_LELauncher'}">
+                Visibility="{Binding EditingMod.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Not_LELauncher'}">
                 <moddescinieditor:CustomDLCEditorControl
                     x:Name="customdlcEditor_control" />
             </TabItem>
             <TabItem
                 Header="{DynamicResource string_alternateFilesCustomDLC}"
-                Visibility="{Binding EditingMod.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Not_LE1_Not_LELauncher'}">
+                Visibility="{Binding EditingMod.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Not_LELauncher'}">
                 <ScrollViewer
                     HorizontalScrollBarVisibility="Disabled"
                     Margin="-8">
@@ -83,7 +83,7 @@
             </TabItem>
             <TabItem
                 Header="{DynamicResource string_alternateDLCCustomDLC}"
-                Visibility="{Binding EditingMod.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Not_LELauncher_Not_LE1'}">
+                Visibility="{Binding EditingMod.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Not_LELauncher'}">
                 <alternates:AlternateDLCBuilder
                     x:Name="customdlc_alternateDlcEditor_control" />
             </TabItem>
