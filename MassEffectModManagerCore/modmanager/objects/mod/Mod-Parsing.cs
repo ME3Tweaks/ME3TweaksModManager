@@ -1539,6 +1539,23 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 
             #endregion
 
+            #region Additional Alternates Validation (requires jobs to have loaded)
+            // Validate and resolve names of all alternate dependencies now that the mod has loaded all jobs and alternates (Mod Manager 8.0)
+            if (ModDescTargetVersion >= 8.0)
+            {
+                var allAlternates = InstallationJobs.SelectMany(x => x.GetAllAlternates()).ToList();
+                foreach (var alternate in allAlternates)
+                {
+                    if (!alternate.SetupAndValidateDependsOnText(this, allAlternates))
+                    {
+                        // Validation message is set in the validation method, so we only return here.
+                        return;
+                    }
+                    
+                }
+            }
+            #endregion
+
             #endregion
 
             #region Additional Mod Items

@@ -31,6 +31,7 @@ using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.alternates;
+using ME3TweaksModManager.modmanager.objects.installer;
 using ME3TweaksModManager.ui;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
@@ -41,48 +42,34 @@ using Mod = ME3TweaksModManager.modmanager.objects.mod.Mod;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
-    public class ModInstallOptionsPackage
-    {
-        /// <summary>
-        /// If ME1 config files should be set to read only after install
-        /// </summary>
-        public bool SetME1ReadOnlyConfigFiles { get; init; }
-        /// <summary>
-        /// The mod being installed
-        /// </summary>
-        public Mod ModBeingInstalled { get; init; }
-        /// <summary>
-        /// ME2/ME3 only: Should packages be resaved as compressed
-        /// </summary>
-        public bool CompressInstalledPackages { get; init; }
-        /// <summary>
-        /// The target to install to
-        /// </summary>
-        public GameTargetWPF InstallTarget { get; init; }
-        /// <summary>
-        /// If this installation is occuring in batch-mode
-        /// </summary>
-        public bool BatchMode { get; init; }
-
-        /// <summary>
-        /// The list of selected installation options mapped by each header
-        /// </summary>
-        public Dictionary<ModJob.JobHeader, List<AlternateOption>> SelectedOptions { get; } = new();
-
-    }
     /// <summary>
     /// Interaction logic for ModInstaller.xaml
     /// </summary>
     public partial class ModInstaller : MMBusyPanelBase, INotifyPropertyChanged
     {
+        /// <summary>
+        /// The time between percent updates in ms.
+        /// </summary>
         public static readonly int PERCENT_REFRESH_COOLDOWN = 125;
 
-
+        /// <summary>
+        /// Options for the installer.
+        /// </summary>
         public ModInstallOptionsPackage InstallOptionsPackage { get; private set; }
 
+        /// <summary>
+        /// If installation of the mod succeeded; to be read by whatever invoked this panel
+        /// </summary>
         public bool InstallationSucceeded { get; private set; }
+
+        /// <summary>
+        /// If installation of the mod was canceled; maybe the game was running. Maybe this should be an interface...
+        /// </summary>
+        public bool InstallationCancelled { get; private set; }
+
+
+        // Todo: Is this still necessary now that it's split?
         public bool ModIsInstalling { get; set; }
-        public bool AllOptionsAreAutomatic { get; private set; }
 
         /// <summary>
         /// Initializes the Mod Installer panel.
@@ -104,13 +91,15 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private void LoadCommands()
         {
-
+            // Has no commands anymore
         }
 
 
         private DateTime lastPercentUpdateTime;
-        public bool InstallationCancelled;
 
+        /// <summary>
+        /// Describes the result of the mod installation.
+        /// </summary>
         public enum ModInstallCompletedStatus
         {
             INSTALL_SUCCESSFUL,
@@ -134,8 +123,18 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             INSTALL_FAILED_EXCEPTION_APPLYING_MERGE_MOD
         }
 
+        /// <summary>
+        /// The current ongoing action to display to the user.
+        /// </summary>
         public string Action { get; set; }
+        /// <summary>
+        /// The current percentage to show the user.
+        /// </summary>
         public int Percent { get; set; }
+
+        /// <summary>
+        /// The bound percentage visibility.
+        /// </summary>
         public Visibility PercentVisibility { get; set; } = Visibility.Collapsed;
 
         private void BeginInstallingMod()
@@ -201,19 +200,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 Directory.CreateDirectory(gameDLCPath); //me1/me2 missing dlc might not have this folder
             }
 
-            // Configure the alternates that are in groups.
-            /*
-            foreach (var group in AlternateGroups)
-            {
-                // Selected Item is selected. All others are not.
-                foreach (var v in group.AlternateOptions)
-                {
-                    v.IsSelected = group.SelectedOption == v; // 
-                }
-            }*/
-            Debug.WriteLine(@"CODE COMMENTED OUT FOR ALTERNATES, FIX THIS!!!=======================================");
-
             //Check we can install
+            // Todo: Also put this in ModOptions dialog. Maybe with a SharedModInstaller.cs?
             var missingRequiredDLC = InstallOptionsPackage.ModBeingInstalled.ValidateRequiredModulesAreInstalled(InstallOptionsPackage.InstallTarget);
             if (missingRequiredDLC.Count > 0)
             {
@@ -265,12 +253,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
 
             //Prepare queues
+            // Todo: Move these to objects because this is way too hard to read.
             M3Log.Information(@"Building installation queues");
-            (Dictionary<ModJob, (Dictionary<string, Mod.InstallSourceFile> fileMapping, List<string> dlcFoldersBeingInstalled)> unpackedJobMappings,
-                List<(ModJob job, string sfarPath, Dictionary<string, Mod.InstallSourceFile> sfarInstallationMapping)> sfarJobs) installationQueues = default;
+            InstallMapping installationQueues = null;
             try
             {
-                installationQueues = InstallOptionsPackage.ModBeingInstalled.GetInstallationQueues(InstallOptionsPackage.InstallTarget);
+                installationQueues = InstallOptionsPackage.ModBeingInstalled.GetInstallationQueues(InstallOptionsPackage);
             }
             catch (Exception ex)
             {
@@ -286,34 +274,31 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 //Check if any packages are being installed. If there are, we will block this installation.
                 bool installsPackageFile = false;
-                foreach (var jobMappings in installationQueues.unpackedJobMappings)
+                foreach (var jobMappings in installationQueues.UnpackedJobMappings)
                 {
                     installsPackageFile |= jobMappings.Key.MergeMods.Any(); // merge mods will modify packages
                     installsPackageFile |= jobMappings.Key.AlternateFiles.Any(x => x.IsSelected && x.Operation == AlternateFile.AltFileOperation.OP_APPLY_MERGEMODS); // merge mods will modify packages
                     installsPackageFile |= jobMappings.Key.Game1TLKXmls != null && jobMappings.Key.Game1TLKXmls.Any(); // TLK merge will modify packages
-                    installsPackageFile |= jobMappings.Value.fileMapping.Keys.Any(x => x.EndsWith(@".pcc", StringComparison.InvariantCultureIgnoreCase));
-                    installsPackageFile |= jobMappings.Value.fileMapping.Keys.Any(x => x.EndsWith(@".u", StringComparison.InvariantCultureIgnoreCase));
-                    installsPackageFile |= jobMappings.Value.fileMapping.Keys.Any(x => x.EndsWith(@".upk", StringComparison.InvariantCultureIgnoreCase));
-                    installsPackageFile |= jobMappings.Value.fileMapping.Keys.Any(x => x.EndsWith(@".sfm", StringComparison.InvariantCultureIgnoreCase));
+                    installsPackageFile |= jobMappings.Value.FileMapping.Keys.Any(x => x.EndsWith(@".pcc", StringComparison.InvariantCultureIgnoreCase));
+                    installsPackageFile |= jobMappings.Value.FileMapping.Keys.Any(x => x.EndsWith(@".u", StringComparison.InvariantCultureIgnoreCase));
+                    installsPackageFile |= jobMappings.Value.FileMapping.Keys.Any(x => x.EndsWith(@".upk", StringComparison.InvariantCultureIgnoreCase));
+                    installsPackageFile |= jobMappings.Value.FileMapping.Keys.Any(x => x.EndsWith(@".sfm", StringComparison.InvariantCultureIgnoreCase));
                 }
 
-                foreach (var jobMappings in installationQueues.sfarJobs)
+                foreach (var jobMappings in installationQueues.SFARJobs)
                 {
                     //Only check if it's not TESTPATCH. TestPatch is classes only and will have no bearing on ALOT
-                    if (Path.GetFileName(jobMappings.sfarPath) != @"Patch_001.sfar")
+                    if (Path.GetFileName(jobMappings.SFARPath) != @"Patch_001.sfar")
                     {
-                        installsPackageFile |= jobMappings.sfarInstallationMapping.Keys.Any(x => x.EndsWith(@".pcc", StringComparison.InvariantCultureIgnoreCase));
-                        installsPackageFile |= jobMappings.sfarInstallationMapping.Keys.Any(x => x.EndsWith(@".u", StringComparison.InvariantCultureIgnoreCase));
-                        installsPackageFile |= jobMappings.sfarInstallationMapping.Keys.Any(x => x.EndsWith(@".upk", StringComparison.InvariantCultureIgnoreCase));
-                        installsPackageFile |= jobMappings.sfarInstallationMapping.Keys.Any(x => x.EndsWith(@".sfm", StringComparison.InvariantCultureIgnoreCase));
+                        installsPackageFile |= jobMappings.SFARInstallationMapping.Keys.Any(x => x.EndsWith(@".pcc", StringComparison.InvariantCultureIgnoreCase));
+                        installsPackageFile |= jobMappings.SFARInstallationMapping.Keys.Any(x => x.EndsWith(@".u", StringComparison.InvariantCultureIgnoreCase));
+                        installsPackageFile |= jobMappings.SFARInstallationMapping.Keys.Any(x => x.EndsWith(@".upk", StringComparison.InvariantCultureIgnoreCase));
+                        installsPackageFile |= jobMappings.SFARInstallationMapping.Keys.Any(x => x.EndsWith(@".sfm", StringComparison.InvariantCultureIgnoreCase));
                     }
                 }
 
                 if (installsPackageFile)
                 {
-                    // Todo: LE warn only
-                    // ME1/ME2/ME3 trigger abort
-
                     if (InstallOptionsPackage.ModBeingInstalled.Game.IsLEGame())
                     {
                         M3Log.Warning(
@@ -331,10 +316,10 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         if (cancel)
                         {
                             e.Result = ModInstallCompletedStatus.USER_CANCELED_INSTALLATION;
-                            M3Log.Information(@"<<<<<<< Exiting modinstaller");
+                            M3Log.Information(@"<<<<<<< Exiting modinstaller.");
                             return;
                         }
-                        M3Log.Warning(@"User installing mod anyways even with textures installed");
+                        M3Log.Warning(@"User installing mod anyways even with textures installed. If they complain, it's their own fault!");
                     }
                     else
                     {
@@ -358,7 +343,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                                 return;
                             }
 
-                            M3Log.Warning(@"User installing mod anyways even with textures installed");
+                            M3Log.Warning(@"User installing mod anyways even with textures installed. IF they compalin, it's their own fault!");
                         }
                         else
                         {
@@ -384,8 +369,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             int numdone = 0;
 
             //Calculate number of installation tasks beforehand
-            int numFilesToInstall = installationQueues.unpackedJobMappings.Select(x => x.Value.fileMapping.Count).Sum();
-            numFilesToInstall += installationQueues.sfarJobs.Select(x => x.sfarInstallationMapping.Count).Sum() * (InstallOptionsPackage.ModBeingInstalled.IsInArchive ? 2 : 1); //*2 as we have to extract and install
+            int numFilesToInstall = installationQueues.UnpackedJobMappings.Select(x => x.Value.FileMapping.Count).Sum();
+            numFilesToInstall += installationQueues.SFARJobs.Select(x => x.SFARInstallationMapping.Count).Sum() * (InstallOptionsPackage.ModBeingInstalled.IsInArchive ? 2 : 1); //*2 as we have to extract and install
             Debug.WriteLine(@"Number of expected installation tasks: " + numFilesToInstall);
 
 
@@ -397,11 +382,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             SortedSet<string> customDLCsBeingInstalled = new SortedSet<string>();
             List<string> mappedReadOnlyTargets = new List<string>();
 
-            foreach (var unpackedQueue in installationQueues.unpackedJobMappings)
+            foreach (var unpackedQueue in installationQueues.UnpackedJobMappings)
             {
                 M3Log.Information(@"Building map of unpacked file destinations");
 
-                foreach (var originalMapping in unpackedQueue.Value.fileMapping)
+                foreach (var originalMapping in unpackedQueue.Value.FileMapping)
                 {
                     //always unpacked
                     //if (unpackedQueue.Key == ModJob.JobHeader.CUSTOMDLC || unpackedQueue.Key == ModJob.JobHeader.BALANCE_CHANGES || unpackedQueue.Key == ModJob.JobHeader.BASEGAME)
@@ -478,13 +463,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
 
             //Substage: Add SFAR staging targets
-            string sfarStagingDirectory = (InstallOptionsPackage.ModBeingInstalled.IsInArchive && installationQueues.sfarJobs.Count > 0) ? Directory.CreateDirectory(Path.Combine(M3Utilities.GetTempPath(), @"SFARJobStaging")).FullName : null; //don't make directory if we don't need one
+            string sfarStagingDirectory = (InstallOptionsPackage.ModBeingInstalled.IsInArchive && installationQueues.SFARJobs.Count > 0) ? Directory.CreateDirectory(Path.Combine(M3Utilities.GetTempPath(), @"SFARJobStaging")).FullName : null; //don't make directory if we don't need one
             if (sfarStagingDirectory != null)
             {
                 M3Log.Information(@"Building list of SFAR staging targets");
-                foreach (var sfarJob in installationQueues.sfarJobs)
+                foreach (var sfarJob in installationQueues.SFARJobs)
                 {
-                    foreach (var fileToInstall in sfarJob.sfarInstallationMapping)
+                    foreach (var fileToInstall in sfarJob.SFARInstallationMapping)
                     {
                         string sourceFile = null;
                         if (fileToInstall.Value.IsFullRelativeFilePath)
@@ -493,7 +478,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         }
                         else
                         {
-                            sourceFile = FilesystemInterposer.PathCombine(InstallOptionsPackage.ModBeingInstalled.IsInArchive, InstallOptionsPackage.ModBeingInstalled.ModPath, sfarJob.job.JobDirectory, fileToInstall.Value.FilePath);
+                            sourceFile = FilesystemInterposer.PathCombine(InstallOptionsPackage.ModBeingInstalled.IsInArchive, InstallOptionsPackage.ModBeingInstalled.ModPath, sfarJob.Job.JobDirectory, fileToInstall.Value.FilePath);
                         }
                         int archiveIndex = InstallOptionsPackage.ModBeingInstalled.Archive.ArchiveFileNames.IndexOf(sourceFile, StringComparer.InvariantCultureIgnoreCase);
                         if (archiveIndex == -1)
@@ -501,7 +486,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                             M3Log.Error($@"Archive Index is -1 for file {sourceFile}. This will probably throw an exception!");
                             Debugger.Break();
                         }
-                        string destFile = Path.Combine(sfarStagingDirectory, sfarJob.job.JobDirectory, fileToInstall.Value.FilePath);
+                        string destFile = Path.Combine(sfarStagingDirectory, sfarJob.Job.JobDirectory, fileToInstall.Value.FilePath);
                         if (fileToInstall.Value.IsFullRelativeFilePath)
                         {
                             destFile = Path.Combine(sfarStagingDirectory, fileToInstall.Value.FilePath);
@@ -768,9 +753,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
             //Write MetaCMM for Custom DLC
             List<string> addedDLCFolders = new List<string>();
-            foreach (var v in installationQueues.unpackedJobMappings)
+            foreach (var v in installationQueues.UnpackedJobMappings)
             {
-                addedDLCFolders.AddRange(v.Value.dlcFoldersBeingInstalled);
+                addedDLCFolders.AddRange(v.Value.DLCFoldersBeingInstalled);
             }
             foreach (var addedDLCFolder in addedDLCFolders)
             {
@@ -803,7 +788,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
 
             //Stage: SFAR Installation
-            foreach (var sfarJob in installationQueues.sfarJobs)
+            foreach (var sfarJob in installationQueues.SFARJobs)
             {
                 InstallIntoSFAR(sfarJob, InstallOptionsPackage.ModBeingInstalled, FileInstalledIntoSFARCallback, InstallOptionsPackage.ModBeingInstalled.IsInArchive ? sfarStagingDirectory : null);
             }
@@ -920,27 +905,27 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 if (InstallOptionsPackage.ModBeingInstalled.GetJob(ModJob.JobHeader.BALANCE_CHANGES) != null)
                 {
-                    ASIManager.InstallASIToTargetByGroupID(5, @"Balance Changes Replacer", InstallOptionsPackage.InstallTarget);
+                    ASIManager.InstallASIToTargetByGroupID(ASIModIDs.ME3_BALANCE_CHANGES_REPLACER, @"Balance Changes Replacer", InstallOptionsPackage.InstallTarget);
                 }
 
                 if (InstallOptionsPackage.InstallTarget.Supported)
                 {
-                    ASIManager.InstallASIToTargetByGroupID(9, @"AutoTOC", InstallOptionsPackage.InstallTarget);
-                    ASIManager.InstallASIToTargetByGroupID(8, @"ME3Logger-Truncating", InstallOptionsPackage.InstallTarget);
+                    ASIManager.InstallASIToTargetByGroupID(ASIModIDs.ME3_AUTOTOC, @"AutoTOC", InstallOptionsPackage.InstallTarget);
+                    ASIManager.InstallASIToTargetByGroupID(ASIModIDs.ME3_LOGGER, @"ME3Logger-Truncating", InstallOptionsPackage.InstallTarget);
                 }
             }
             else if (InstallOptionsPackage.ModBeingInstalled.Game == MEGame.LE1)
             {
-                ASIManager.InstallASIToTargetByGroupID(29, @"AutoTOC_LE", InstallOptionsPackage.InstallTarget);
-                ASIManager.InstallASIToTargetByGroupID(32, @"AutoloadEnabler", InstallOptionsPackage.InstallTarget);
+                ASIManager.InstallASIToTargetByGroupID(ASIModIDs.LE1_AUTOTOC, @"AutoTOC_LE", InstallOptionsPackage.InstallTarget);
+                ASIManager.InstallASIToTargetByGroupID(ASIModIDs.LE1_AUTOLOAD_ENABLER, @"AutoloadEnabler", InstallOptionsPackage.InstallTarget);
             }
             else if (InstallOptionsPackage.ModBeingInstalled.Game == MEGame.LE2)
             {
-                ASIManager.InstallASIToTargetByGroupID(30, @"AutoTOC", InstallOptionsPackage.InstallTarget);
+                ASIManager.InstallASIToTargetByGroupID(ASIModIDs.LE2_AUTOTOC, @"AutoTOC", InstallOptionsPackage.InstallTarget);
             }
             else if (InstallOptionsPackage.ModBeingInstalled.Game == MEGame.LE3)
             {
-                ASIManager.InstallASIToTargetByGroupID(31, @"AutoTOC", InstallOptionsPackage.InstallTarget);
+                ASIManager.InstallASIToTargetByGroupID(ASIModIDs.LE3_AUTOTOC, @"AutoTOC", InstallOptionsPackage.InstallTarget);
             }
 
             if (sfarStagingDirectory != null)
@@ -1167,24 +1152,24 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             return ModInstallCompletedStatus.INSTALL_SUCCESSFUL;
         }
 
-        private bool InstallIntoSFAR((ModJob job, string sfarPath, Dictionary<string, Mod.InstallSourceFile> fileMapping) sfarJob, Mod mod, Action<Dictionary<string, Mod.InstallSourceFile>, string> FileInstalledCallback = null, string ForcedSourcePath = null)
+        private bool InstallIntoSFAR(SFARFileMapping sfarJob, Mod mod, Action<Dictionary<string, Mod.InstallSourceFile>, string> FileInstalledCallback = null, string ForcedSourcePath = null)
         {
 
-            int numfiles = sfarJob.fileMapping.Count;
+            int numfiles = sfarJob.SFARInstallationMapping.Count;
 
             //Open SFAR
-            M3Log.Information($@"Installing {sfarJob.fileMapping.Count} files into {sfarJob.sfarPath}");
-            DLCPackage dlc = new DLCPackage(sfarJob.sfarPath);
+            M3Log.Information($@"Installing {sfarJob.SFARInstallationMapping.Count} files into {sfarJob.SFARPath}");
+            DLCPackage dlc = new DLCPackage(sfarJob.SFARPath);
 
             //Add or Replace file install
-            foreach (var entry in sfarJob.fileMapping)
+            foreach (var entry in sfarJob.SFARInstallationMapping)
             {
                 string entryPath = entry.Key.Replace('\\', '/');
                 if (!entryPath.StartsWith('/')) entryPath = '/' + entryPath; //Ensure path starts with /
                 int index = dlc.FindFileEntry(entryPath);
                 //Todo: For archive to immediate installation we will need to modify this ModPath value to point to some temporary directory
                 //where we have extracted files destined for SFAR files as we cannot unpack solid archives to streams.
-                var sourcePath = Path.Combine(ForcedSourcePath ?? mod.ModPath, sfarJob.job.JobDirectory, entry.Value.FilePath);
+                var sourcePath = Path.Combine(ForcedSourcePath ?? mod.ModPath, sfarJob.Job.JobDirectory, entry.Value.FilePath);
                 if (entry.Value.IsFullRelativeFilePath)
                 {
                     sourcePath = Path.Combine(ForcedSourcePath ?? mod.ModPath, entry.Value.FilePath);
@@ -1196,7 +1181,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 }
                 else
                 {
-                    if (sfarJob.job.Header == ModJob.JobHeader.TESTPATCH)
+                    if (sfarJob.Job.Header == ModJob.JobHeader.TESTPATCH)
                     {
                         Debugger.Break();
                         M3Log.Fatal(@"Installing a NEW file into TESTPATCH! This will break the game. This should be immediately reported to Mgamerz on Discord.");
@@ -1208,7 +1193,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     dlc.AddFileQuick(sourcePath, entryPath);
                     M3Log.Information(@"Added new file to SFAR: " + entry.Key, Settings.LogModInstallation);
                 }
-                FileInstalledCallback?.Invoke(sfarJob.fileMapping, entryPath);
+                FileInstalledCallback?.Invoke(sfarJob.SFARInstallationMapping, entryPath);
             }
 
             return true;
@@ -1556,26 +1541,26 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         private void DebugPrintInstallationQueue_Click(object sender, RoutedEventArgs e)
         {
 #if DEBUG
-            if (InstallOptionsPackage.ModBeingInstalled != null)
-            {
-                var queues = InstallOptionsPackage.ModBeingInstalled.GetInstallationQueues(InstallOptionsPackage.InstallTarget);
-                Debug.WriteLine(@"Installation Queue:");
-                foreach (var job in queues.Item1)
-                {
-                    foreach (var file in job.Value.unpackedJobMapping)
-                    {
-                        Debug.WriteLine($@"[UNPACKED {job.Key.Header.ToString()}] {file.Value.FilePath} => {file.Key}");
-                    }
-                }
+            //if (InstallOptionsPackage.ModBeingInstalled != null)
+            //{
+            //    var queues = InstallOptionsPackage.ModBeingInstalled.GetInstallationQueues(InstallOptionsPackage.InstallTarget);
+            //    Debug.WriteLine(@"Installation Queue:");
+            //    foreach (var job in queues.Item1)
+            //    {
+            //        foreach (var file in job.Value.unpackedJobMapping)
+            //        {
+            //            Debug.WriteLine($@"[UNPACKED {job.Key.Header.ToString()}] {file.Value.FilePath} => {file.Key}");
+            //        }
+            //    }
 
-                foreach (var job in queues.Item2)
-                {
-                    foreach (var file in job.Item3)
-                    {
-                        Debug.WriteLine($@"[SFAR {job.job.Header.ToString()}] {file.Value.FilePath} => {file.Key}");
-                    }
-                }
-            }
+            //    foreach (var job in queues.Item2)
+            //    {
+            //        foreach (var file in job.Item3)
+            //        {
+            //            Debug.WriteLine($@"[SFAR {job.job.Header.ToString()}] {file.Value.FilePath} => {file.Key}");
+            //        }
+            //    }
+            //}
 #endif
         }
     }

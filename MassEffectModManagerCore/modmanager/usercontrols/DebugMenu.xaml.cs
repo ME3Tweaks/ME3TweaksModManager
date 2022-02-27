@@ -182,26 +182,26 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private static void DebugPrintInstallationQueue_Click(MainWindow mw)
         {
-            if (mw.SelectedMod != null)
-            {
-                var queues = mw.SelectedMod.GetInstallationQueues(mw.InstallationTargets.FirstOrDefault(x => x.Game == mw.SelectedMod.Game));
-                Debug.WriteLine(@"Installation Queue:");
-                foreach (var job in queues.Item1)
-                {
-                    foreach (var file in job.Value.unpackedJobMapping)
-                    {
-                        Debug.WriteLine($@"[UNPACKED {job.Key.Header.ToString()}] {file.Value.FilePath} => {file.Key}");
-                    }
-                }
+            //if (mw.SelectedMod != null)
+            //{
+            //    var queues = mw.SelectedMod.GetInstallationQueues(mw.InstallationTargets.FirstOrDefault(x => x.Game == mw.SelectedMod.Game));
+            //    Debug.WriteLine(@"Installation Queue:");
+            //    foreach (var job in queues.Item1)
+            //    {
+            //        foreach (var file in job.Value.unpackedJobMapping)
+            //        {
+            //            Debug.WriteLine($@"[UNPACKED {job.Key.Header.ToString()}] {file.Value.FilePath} => {file.Key}");
+            //        }
+            //    }
 
-                foreach (var job in queues.Item2)
-                {
-                    foreach (var file in job.Item3)
-                    {
-                        Debug.WriteLine($@"[SFAR {job.job.Header.ToString()}] {file.Value.FilePath} => {file.Key}");
-                    }
-                }
-            }
+            //    foreach (var job in queues.Item2)
+            //    {
+            //        foreach (var file in job.Item3)
+            //        {
+            //            Debug.WriteLine($@"[SFAR {job.job.Header.ToString()}] {file.Value.FilePath} => {file.Key}");
+            //        }
+            //    }
+            //}
         }
 
         private static void ShowBackupNag_Click(MainWindow mw)

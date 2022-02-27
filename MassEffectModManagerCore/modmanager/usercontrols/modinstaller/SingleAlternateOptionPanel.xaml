@@ -40,35 +40,55 @@
                            TextAlignment="Left" 
                            Opacity="{Binding TextOpacity}"/>
 
-                <!-- Always applicable -->
-                <StackPanel Orientation="Horizontal"
-                            Margin="3,0,0,0"
-                            Visibility="{Binding UIRequired, Converter={StaticResource BoolToVisibilityConverter}}"
-                            Opacity="{Binding TextOpacity}">
-                    <fa5:ImageAwesome Icon="Solid_CheckCircle" Height="12" Foreground="LimeGreen" VerticalAlignment="Center"/>
-                    <TextBlock
-                        Foreground="LimeGreen"
-                        Text="{Binding ApplicableAutoText}"
-                        VerticalAlignment="Center"
-                        FontWeight="Bold" />
-                </StackPanel>
-                <!-- Not applicable -->
-                <StackPanel Orientation="Horizontal"
-                            Margin="3,0,0,0"
-                            Visibility="{Binding UINotApplicable, Converter={StaticResource BoolToVisibilityConverter}}"
-                            Opacity="{Binding TextOpacity}">
-                    <fa5:ImageAwesome Icon="Solid_TimesCircle" Height="12" Foreground="Red" VerticalAlignment="Center" Margin="0,1,0,0"/>
-                    <TextBlock
-                        Foreground="Red"
-                        Text="{Binding NotApplicableAutoText}"
-                        VerticalAlignment="Center"
-                        FontWeight="Bold" />
-                </StackPanel>
+
+            </StackPanel>
+            <!-- Always applicable -->
+            <StackPanel 
+                        DockPanel.Dock="Bottom"
+
+                        Orientation="Horizontal"
+                        Margin="3,0,0,0"
+                        Visibility="{Binding UIRequired, Converter={StaticResource BoolToVisibilityConverter}}"
+                        Opacity="{Binding TextOpacity}">
+                <fa5:ImageAwesome Icon="Solid_CheckCircle" Height="12" Foreground="LimeGreen" VerticalAlignment="Center"/>
+                <TextBlock
+                    Foreground="LimeGreen"
+                    Text="{Binding ApplicableAutoText}"
+                    VerticalAlignment="Center"
+                    FontWeight="Bold" />
+            </StackPanel>
+            <!-- Not applicable -->
+            <StackPanel 
+                        DockPanel.Dock="Bottom"
+                        Orientation="Horizontal"
+                        Margin="3,0,0,0"
+                        Visibility="{Binding UINotApplicable, Converter={StaticResource BoolToVisibilityConverter}}"
+                        Opacity="{Binding TextOpacity}">
+                <fa5:ImageAwesome Icon="Solid_TimesCircle" Height="12" Foreground="Red" VerticalAlignment="Center" Margin="0,1,0,0"/>
+                <TextBlock
+                    Foreground="Red"
+                    Text="{Binding NotApplicableAutoText}"
+                    VerticalAlignment="Center"
+                    FontWeight="Bold" />
+            </StackPanel>
+            <!-- Depends On requirements -->
+            <StackPanel 
+                DockPanel.Dock="Bottom"
+                Orientation="Horizontal"
+                Margin="3,0,0,0"
+                Visibility="{Binding DependsOnText, Converter={StaticResource NullVisibilityConverter}}"
+                Opacity="{Binding TextOpacity}">
+                <fa5:ImageAwesome Icon="Solid_InfoCircle" Height="12" Foreground="CornflowerBlue" VerticalAlignment="Center" Margin="0,1,3,0"/>
+                <TextBlock
+                    Text="{Binding DependsOnText}"
+                    VerticalAlignment="Center"
+                    FontWeight="Bold" />
             </StackPanel>
             <TextBlock Text="{Binding Description}" 
                        TextWrapping="Wrap" 
                        IsEnabled="{Binding UIIsSelectable}"
                        Opacity="{Binding TextOpacity}"/>
+
         </DockPanel>
         <Border.Style>
             <Style
@@ -78,6 +98,7 @@
                     <!-- IsSelected background -->
                     <MultiDataTrigger>
                         <MultiDataTrigger.Conditions>
+                            <Condition Binding="{Binding ShowMouseoverHighlightOnMain, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:AlternateOptionSelector}}}" Value="True"  />
                             <Condition Binding="{Binding IsSelected}" Value="true" />
                         </MultiDataTrigger.Conditions>
                         <Setter

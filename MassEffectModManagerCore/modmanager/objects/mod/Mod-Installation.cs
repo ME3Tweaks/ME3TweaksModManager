@@ -11,6 +11,7 @@ using ME3TweaksCoreWPF;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.objects.alternates;
+using ME3TweaksModManager.modmanager.objects.installer;
 using SevenZip;
 
 namespace ME3TweaksModManager.modmanager.objects.mod
@@ -18,14 +19,15 @@ namespace ME3TweaksModManager.modmanager.objects.mod
     public partial class Mod
     {
         /// <summary>
-        /// Builds the installation queues for the mod. Item 1 is the unpacked job mappings (per modjob) along with the list of custom dlc folders being installed. Item 2 is the list of modjobs, their sfar paths, and the list of source files to install for SFAR jobs.
+        /// Builds the installation mapping for the mod.
         /// </summary>
         /// <param name="gameTarget"></param>
         /// <returns></returns>
-        public (Dictionary<ModJob, (Dictionary<string, InstallSourceFile> unpackedJobMapping, List<string> dlcFoldersBeingInstalled)>, List<(ModJob job, string sfarPath, Dictionary<string, InstallSourceFile>)>) GetInstallationQueues(GameTargetWPF gameTarget)
+        public InstallMapping GetInstallationQueues(ModInstallOptionsPackage options)
         {
             if (IsInArchive)
             {
+                // This is a hack to try to keep archive ready for use. It's not very reliable though...
 #if DEBUG
                 if (Archive.IsDisposed())
                 {
@@ -43,7 +45,9 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 }
             }
 
-            var gameDLCPath = M3Directories.GetDLCPath(gameTarget);
+            InstallMapping installmapping = new InstallMapping();
+
+            var gameDLCPath = M3Directories.GetDLCPath(options.InstallTarget);
             var customDLCMapping = InstallationJobs.FirstOrDefault(x => x.Header == ModJob.JobHeader.CUSTOMDLC)?.CustomDLCFolderMapping;
             if (customDLCMapping != null)
             {
@@ -51,20 +55,24 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 customDLCMapping = new Dictionary<string, string>(customDLCMapping); //prevent altering the source object
             }
 
-            var unpackedJobInstallationMapping = new Dictionary<ModJob, (Dictionary<string, InstallSourceFile> mapping, List<string> dlcFoldersBeingInstalled)>();
-            var sfarInstallationJobs = new List<(ModJob job, string sfarPath, Dictionary<string, InstallSourceFile> installationMapping)>();
             foreach (var job in InstallationJobs)
             {
                 M3Log.Information($@"Preprocessing installation job: {job.Header}");
-                var alternateFiles = job.AlternateFiles.Where(x => x.IsSelected && x.Operation != AlternateFile.AltFileOperation.OP_NOTHING
-                                                                                               && x.Operation != AlternateFile.AltFileOperation.OP_NOINSTALL_MULTILISTFILES).ToList();
-                var alternateDLC = job.AlternateDLCs.Where(x => x.IsSelected).ToList();
+
+                // Not sure why we check the ops here and not for alternate DLC...
+                var alternateFiles = options.SelectedOptions[job.Header].OfType<AlternateFile>().Where(x => x.Operation != AlternateFile.AltFileOperation.OP_NOTHING
+                                                                                                                                && x.Operation != AlternateFile.AltFileOperation.OP_NOINSTALL_MULTILISTFILES).ToList();
+
+                var alternateDLC = options.SelectedOptions[job.Header].OfType<AlternateDLC>().ToList();
                 if (job.Header == ModJob.JobHeader.CUSTOMDLC)
                 {
                     #region Installation: CustomDLC
+                    UnpackedFileMapping unpackedMapping = new UnpackedFileMapping();
+                    var installationMapping = unpackedMapping.FileMapping; // This is just shortcut variable to make code a bit easier to read.
+
                     //Key = destination file, value = source file to install
-                    var installationMapping = new Dictionary<string, InstallSourceFile>();
-                    unpackedJobInstallationMapping[job] = (installationMapping, new List<string>());
+                    //var installationMapping = new Dictionary<string, InstallSourceFile>();
+                    //unpackedJobInstallationMapping[job] = (installationMapping, new List<string>());
                     foreach (var altdlc in alternateDLC)
                     {
                         if (altdlc.Operation == AlternateDLC.AltDLCOperation.OP_ADD_CUSTOMDLC)
@@ -73,6 +81,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                         }
                     }
 
+                    // Enumerate over all DLC folders to be installed.
                     foreach (var mapping in customDLCMapping)
                     {
                         //Mapping is done as DESTINATIONFILE = SOURCEFILE so you can override keys
@@ -81,7 +90,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 
                         //get list of all normal files we will install
                         var allSourceDirFiles = FilesystemInterposer.DirectoryGetFiles(source, "*", SearchOption.AllDirectories, Archive).Select(x => x.Substring(ModPath.Length).TrimStart('\\')).ToList();
-                        unpackedJobInstallationMapping[job].dlcFoldersBeingInstalled.Add(target);
+                        unpackedMapping.DLCFoldersBeingInstalled.Add(target);
                         //loop over every file 
                         foreach (var sourceFile in allSourceDirFiles)
                         {
@@ -189,32 +198,32 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                             }
                         }
                     }
+
+                    installmapping.UnpackedJobMappings[job] = unpackedMapping; // Map to installation of jobs.
+
                     #endregion
                 }
                 else if (job.Header == ModJob.JobHeader.LOCALIZATION)
                 {
                     #region Installation: LOCALIZATION
-                    var installationMapping = new CaseInsensitiveDictionary<InstallSourceFile>();
-                    unpackedJobInstallationMapping[job] = (installationMapping, new List<string>());
-                    buildInstallationQueue(job, installationMapping, false);
+                    installmapping.UnpackedJobMappings[job] = new UnpackedFileMapping();
+                    buildInstallationQueue(job, installmapping.UnpackedJobMappings[job].FileMapping, false);
                     #endregion
                 }
                 else if (job.Header is ModJob.JobHeader.BASEGAME or ModJob.JobHeader.BALANCE_CHANGES or ModJob.JobHeader.ME1_CONFIG)
                 {
                     #region Installation: BASEGAME, BALANCE CHANGES, ME1 CONFIG
-                    var installationMapping = new CaseInsensitiveDictionary<InstallSourceFile>();
-                    unpackedJobInstallationMapping[job] = (installationMapping, new List<string>());
-                    buildInstallationQueue(job, installationMapping, false);
+                    installmapping.UnpackedJobMappings[job] = new UnpackedFileMapping();
+                    buildInstallationQueue(job, installmapping.UnpackedJobMappings[job].FileMapping, false);
                     #endregion
                 }
                 else if (Game == MEGame.ME3 && ModJob.ME3SupportedNonCustomDLCJobHeaders.Contains(job.Header)) //previous else if will catch BASEGAME
                 {
                     #region Installation: DLC Unpacked and SFAR (ME3 ONLY)
 
-                    if (gameTarget.IsOfficialDLCInstalled(job.Header))
+                    if (options.InstallTarget.IsOfficialDLCInstalled(job.Header))
                     {
-                        string sfarPath = job.Header == ModJob.JobHeader.TESTPATCH ? M3Directories.GetTestPatchSFARPath(gameTarget) : Path.Combine(gameDLCPath, ModJob.GetHeadersToDLCNamesMap(MEGame.ME3)[job.Header], @"CookedPCConsole", @"Default.sfar");
-
+                        string sfarPath = job.Header == ModJob.JobHeader.TESTPATCH ? M3Directories.GetTestPatchSFARPath(options.InstallTarget) : Path.Combine(gameDLCPath, ModJob.GetHeadersToDLCNamesMap(MEGame.ME3)[job.Header], @"CookedPCConsole", @"Default.sfar");
 
                         if (File.Exists(sfarPath))
                         {
@@ -222,15 +231,15 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                             if (new FileInfo(sfarPath).Length == 32)
                             {
                                 //Unpacked
-                                unpackedJobInstallationMapping[job] = (installationMapping, new List<string>());
-                                buildInstallationQueue(job, installationMapping, false);
+                                installmapping.UnpackedJobMappings[job] = new UnpackedFileMapping();
+                                buildInstallationQueue(job, installmapping.UnpackedJobMappings[job].FileMapping, false);
                             }
                             else
                             {
                                 //Packed
-                                //unpackedJobInstallationMapping[job] = installationMapping;
+                                var SfarMapping = new SFARFileMapping() { Job = job, SFARPath = sfarPath };
                                 buildInstallationQueue(job, installationMapping, true);
-                                sfarInstallationJobs.Add((job, sfarPath, installationMapping));
+                                installmapping.SFARJobs.Add(SfarMapping);
                             }
                         }
                     }
@@ -244,11 +253,10 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 {
                     #region Installation: DLC Unpacked (ME1/ME2 ONLY)
                     //Unpacked
-                    if (gameTarget.IsOfficialDLCInstalled(job.Header))
+                    if (options.InstallTarget.IsOfficialDLCInstalled(job.Header))
                     {
-                        var installationMapping = new CaseInsensitiveDictionary<InstallSourceFile>();
-                        unpackedJobInstallationMapping[job] = (installationMapping, new List<string>());
-                        buildInstallationQueue(job, installationMapping, false);
+                        installmapping.UnpackedJobMappings[job] = new UnpackedFileMapping();
+                        buildInstallationQueue(job, installmapping.UnpackedJobMappings[job].FileMapping, false);
                     }
                     else
                     {
@@ -260,9 +268,8 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 else if (job.Header == ModJob.JobHeader.LELAUNCHER && Game == MEGame.LELauncher)
                 {
                     #region Installation: LELAUNCHER
-                    var installationMapping = new CaseInsensitiveDictionary<InstallSourceFile>();
-                    unpackedJobInstallationMapping[job] = (installationMapping, new List<string>());
-                    buildInstallationQueue(job, installationMapping, false);
+                    installmapping.UnpackedJobMappings[job] = new UnpackedFileMapping();
+                    buildInstallationQueue(job, installmapping.UnpackedJobMappings[job].FileMapping, false);
                     #endregion
                 }
                 else if (job.Header == ModJob.JobHeader.GAME1_EMBEDDED_TLK)
@@ -274,11 +281,11 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 else
                 {
                     //?? Header
-                    throw new Exception(@"Unsupported installation job header! " + job.Header);
+                    throw new Exception($@"Unsupported installation job header: {job.Header} for game {Game}");
                 }
             }
 
-            return (unpackedJobInstallationMapping, sfarInstallationJobs);
+            return installmapping;
         }
 
         private void buildInstallationQueue(ModJob job, CaseInsensitiveDictionary<InstallSourceFile> installationMapping, bool isSFAR)

@@ -362,7 +362,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 }
 
 
-                DLCRequirementsForManual = reqList.Select(x=>new PlusMinusKey(x)).ToArray();
+                DLCRequirementsForManual = reqList.Select(x => new PlusMinusKey(x)).ToArray();
             }
 
             if (Condition == AltDLCCondition.COND_SPECIFIC_SIZED_FILES)
@@ -488,7 +488,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                     else
                     {
                         // Previous logic. Left here to ensure nothing changes.
-                        UIIsSelectable = dlc.ContainsAll(DLCRequirementsForManual.Select(x=>x.ToString()), StringComparer.InvariantCultureIgnoreCase);
+                        UIIsSelectable = dlc.ContainsAll(DLCRequirementsForManual.Select(x => x.ToString()), StringComparer.InvariantCultureIgnoreCase);
                     }
 
                     if (!UIIsSelectable && mod.ModDescTargetVersion >= 6.2)
@@ -595,8 +595,13 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 {@"DLCRequirements", DLCRequirementsForManual},
                 {@"ImageAssetName", ImageAssetName},
                 {@"ImageHeight", ImageHeight > 0 ? ImageHeight.ToString() : null},
+
+                // DependsOn
                 {@"OptionKey", HasDefinedOptionKey ? OptionKey : null},
-                {@"DependsOnKeys", string.Join(';',DependsOnKeys.Select(x=>x.ToString()))}
+                {@"DependsOnKeys", string.Join(';',DependsOnKeys.Select(x=>x.ToString()))},
+                {@"DependsOnMetAction", DependsOnMetAction!= EDependsOnAction.ACTION_INVALID ? DependsOnMetAction : null},
+                {@"DependsOnNotMetAction", DependsOnNotMetAction!= EDependsOnAction.ACTION_INVALID ? DependsOnNotMetAction : null},
+
             };
 
             ParameterMap.ReplaceAll(MDParameter.MapIntoParameterMap(parameterDictionary));

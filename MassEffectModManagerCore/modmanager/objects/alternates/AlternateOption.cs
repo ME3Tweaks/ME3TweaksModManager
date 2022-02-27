@@ -36,6 +36,22 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         /// Text to show next to an option when it is automatically marked as not applicable
         /// </summary>
         public string NotApplicableAutoText { get; private set; }
+
+        /// <summary>
+        /// Text to show next to an option that requires other options to be selected specifically.
+        /// </summary>
+        public string DependsOnText { get; private set; }
+
+        /// <summary>
+        /// The action that is taken when the depends on action is met.
+        /// </summary>
+        public EDependsOnAction DependsOnMetAction { get; private set; }
+
+        /// <summary>
+        /// The action that is taken when the depends on action is met.
+        /// </summary>
+        public EDependsOnAction DependsOnNotMetAction { get; private set; }
+
         /// <summary>
         /// For moddesc.ini editor only
         /// </summary>
@@ -60,7 +76,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         /// <summary>
         /// UI-only
         /// </summary>
-        public virtual double CheckboxOpacity => !UIIsSelectable ? .5 : 1;
+        public virtual double CheckboxOpacity => !UIIsSelectable ? .65 : 1;
 
         /// <summary>
         /// UI-only
@@ -213,36 +229,82 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 if (option.IsSelected && !key.IsPlus.Value)
                 {
                     // The DependsOnKey option is selected, but we need -
-                    UIIsSelectable = false;
-                    if (IsSelected) changed = true; // We are changing states
-                    IsSelected = false;
+                    changed = ApplyDependsOnNotMet();
                     keepParsing = false;
                 }
                 else if (!option.IsSelected && key.IsPlus.Value)
                 {
                     // The DependsOnKey option is not selected, but we need +
-                    UIIsSelectable = false;
-                    if (IsSelected) changed = true; // We are changing states
-                    IsSelected = false;
+                    changed = ApplyDependsOnNotMet();
                     keepParsing = false;
                 }
-                else if (!option.IsSelected ^ key.IsPlus.Value) 
+                else if (!option.IsSelected ^ key.IsPlus.Value)
                 {
                     // Unlock the option
-                    UIIsSelectable = true;
+                    ApplyDependsOnMet();
                 }
 
+                // Todo: This implementation needs updated for multi-mode.
+                // This should probably be moved to AlternateGroup.
                 // If we are an option group, we reset to the default option
-                if (GroupName != null && changed)
-                {
-                    var defaultOption = allOptions.FirstOrDefault(x => x.CheckedByDefault && x.GroupName == GroupName);
-                    defaultOption.IsSelected = true;
-                }
+                //if (GroupName != null && changed)
+                //{
+                //    var defaultOption = allOptions.FirstOrDefault(x => x.CheckedByDefault && x.GroupName == GroupName);
+                //    defaultOption.IsSelected = true;
+                //}
             }
 
 
 
             return changed;
+        }
+
+        /// <summary>
+        /// Called when the DependsOnKeys conditions are not met.
+        /// </summary>
+        /// <returns></returns>
+        private bool ApplyDependsOnNotMet()
+        {
+            return InternalApplyDepends(DependsOnNotMetAction);
+        }
+
+        /// <summary>
+        /// Called when the DependsOnKeys conditions are met.
+        /// </summary>
+        /// <returns></returns>
+        private bool ApplyDependsOnMet()
+        {
+            return InternalApplyDepends(DependsOnMetAction);
+        }
+
+        /// <summary>
+        /// The internal implementation of applying the Depends actions.
+        /// </summary>
+        /// <param name="dependsAction">Action to perform</param>
+        /// <returns>True if changed states, false if not</returns>
+        /// <exception cref="NotImplementedException"></exception>
+        private bool InternalApplyDepends(EDependsOnAction dependsAction)
+        {
+            var initialSelection = IsSelected;
+
+            // Can we select?
+            var hasUserChoice = dependsAction is EDependsOnAction.ACTION_ALLOW_SELECT or EDependsOnAction.ACTION_ALLOW_SELECT_CHECKED;
+            var alreadyHasUserChoice = UIIsSelectable;
+
+            if (!hasUserChoice)
+            {
+                // We're going to lock the option.
+                IsSelected = dependsAction == EDependsOnAction.ACTION_DISALLOW_SELECT_CHECKED;
+            }
+            else if (!alreadyHasUserChoice)
+            {
+                // If the user is gaining the ability to make a decision, we will follow the action by the developer. We don't want to modify the existing user choice if they have a choice
+                // and this update doesn't change the ability for the user to make a choice
+                IsSelected = dependsAction == EDependsOnAction.ACTION_ALLOW_SELECT_CHECKED; // Other option is unchecked.
+            }
+
+            UIIsSelectable = hasUserChoice; // Make option selectable if it provider user choice
+            return initialSelection != IsSelected;
         }
 
         /// <summary>
@@ -409,6 +471,29 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
 
                         DependsOnKeys.Add(dependskey);
                     }
+
+                    // We have to read criteria met and not met.
+                    if (properties.TryGetValue(@"DependsOnMetAction", out string dependsOnMetStr) && Enum.TryParse<EDependsOnAction>(dependsOnMetStr, out var dependsOnMet) && dependsOnMet != EDependsOnAction.ACTION_INVALID)
+                    {
+                        DependsOnMetAction = dependsOnMet;
+                    }
+                    else
+                    {
+                        M3Log.Error($@"Alternate {FriendlyName} uses DependsOnKeys but does not define the DependsOnMetAction attribute. This attribute is required.");
+                        LoadFailedReason = $"Alternate {FriendlyName} uses DependsOnKeys but does not define the DependsOnMetAction attribute. This attribute is required.";
+                        return false;
+                    }
+
+                    if (properties.TryGetValue(@"DependsOnNotMetAction", out string dependsOnNotMetStr) && Enum.TryParse<EDependsOnAction>(dependsOnNotMetStr, out var dependsOnNotMet) && dependsOnNotMet != EDependsOnAction.ACTION_INVALID)
+                    {
+                        DependsOnNotMetAction = dependsOnNotMet;
+                    }
+                    else
+                    {
+                        M3Log.Error($@"Alternate {FriendlyName} uses DependsOnKeys but does not define the DependsOnNotMetAction attribute. This attribute is required.");
+                        LoadFailedReason = $"Alternate {FriendlyName} uses DependsOnKeys but does not define the DependsOnNotMetAction attribute. This attribute is required.";
+                        return false;
+                    }
                 }
             }
 
@@ -426,6 +511,50 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         public void ReleaseLoadedImageAsset()
         {
             ImageBitmap = null; //Lose the reference so we don't hold memory
+        }
+
+        /// <summary>
+        /// Configures the <see cref="DependsOnText"/> value. Additionally validates that the key exists.
+        /// </summary>
+        /// <param name="allAlternates">The list of all alternates that is used to resolve the text.</param>
+        public bool SetupAndValidateDependsOnText(Mod modForValidating, List<AlternateOption> allAlternates)
+        {
+            if (DependsOnKeys.Count == 0)
+                return true; // Do nothing, validated.
+
+            string condition = "";
+            foreach (var dependsOnKey in DependsOnKeys)
+            {
+                var alt = allAlternates.FirstOrDefault(x => x.OptionKey == dependsOnKey.Key);
+                if (alt == null)
+                {
+                    M3Log.Error($"Alternate {FriendlyName} specifies a DependsOnKey value '{dependsOnKey.Key}' that is not defined by any Alternate in this mod.");
+                    modForValidating.LoadFailedReason = $"Alternate {FriendlyName} specifies a DependsOnKey value '{dependsOnKey.Key}' that is not defined by any Alternate in this mod.";
+                    return false;
+                }
+
+                // If the user has a choice in configuring this option we should show the conditions required for the user to select the option
+                if (DependsOnMetAction != EDependsOnAction.ACTION_DISALLOW_SELECT && DependsOnMetAction != EDependsOnAction.ACTION_DISALLOW_SELECT_CHECKED)
+                {
+                    var isPlus = dependsOnKey.IsPlus.Value;
+
+                    if (isPlus)
+                    {
+                        condition += $"Requires option: {alt.FriendlyName}\n";
+                    }
+                    else
+                    {
+                        condition += $"Must not select option: {alt.FriendlyName}\n";
+                    }
+                }
+            }
+
+            if (DependsOnMetAction != EDependsOnAction.ACTION_DISALLOW_SELECT && DependsOnMetAction != EDependsOnAction.ACTION_DISALLOW_SELECT_CHECKED)
+            {
+                DependsOnText = condition.Trim();
+            }
+
+            return true;
         }
     }
 }

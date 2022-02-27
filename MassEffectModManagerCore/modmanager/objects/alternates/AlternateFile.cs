@@ -544,8 +544,12 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 { @"MultiListTargetPath", MultiListTargetPath},
                 { @"ImageAssetName", ImageAssetName},
                 { @"ImageHeight", ImageHeight > 0 ? ImageHeight.ToString() : null},
+
+                // DependsOn
                 { @"OptionKey", HasDefinedOptionKey ? OptionKey : null},
-                { @"DependsOnKeys", string.Join(';',DependsOnKeys.Select(x=>x.ToString()))}
+                { @"DependsOnKeys", string.Join(';',DependsOnKeys.Select(x=>x.ToString()))},
+                { @"DependsOnMetAction", DependsOnMetAction != EDependsOnAction.ACTION_INVALID ? DependsOnMetAction : null},
+                { @"DependsOnNotMetAction", DependsOnNotMetAction != EDependsOnAction.ACTION_INVALID ? DependsOnNotMetAction : null},
             };
 
             ParameterMap.ReplaceAll(MDParameter.MapIntoParameterMap(parameterDictionary));

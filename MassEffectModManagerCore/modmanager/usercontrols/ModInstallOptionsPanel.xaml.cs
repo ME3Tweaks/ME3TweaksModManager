@@ -23,6 +23,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ME3TweaksModManager.modmanager.objects.exceptions;
+using ME3TweaksModManager.modmanager.objects.installer;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
@@ -270,7 +272,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
 
             SortOptions();
-            UpdateOptions(); // Update for DependsOnKeys.
+            int numAttemptsRemaining = 15;
+            UpdateOptions(ref numAttemptsRemaining); // Update for DependsOnKeys.
 
             // Done calculating options
 
@@ -347,16 +350,37 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             if (sender is AlternateOption ao && data is DataEventArgs args && args.Data is bool newState)
             {
                 // An alternate option was changed by the user.
-                UpdateOptions();
+                int numRemainingAttempts = 15;
+                try
+                {
+                    UpdateOptions(ref numRemainingAttempts);
+                }
+                catch (CircularDependencyException)
+                {
+                    MessageBox.Show(@"A circular dependency was detected. Please notify the developer of the options you attempted to select so they can fix this.", "Circular dependency", MessageBoxButton.OK, MessageBoxImage.Error);
+                    InstallationCancelled = true;
+                    OnClosing(DataEventArgs.Empty);
+                }
             }
         }
 
-        private void UpdateOptions()
+        private void UpdateOptions(ref int numAttemptsRemaining)
         {
+            numAttemptsRemaining--;
+            if (numAttemptsRemaining <= 0)
+            {
+                // Tried too many times. This is probably some circular dependency the dev set
+                throw new CircularDependencyException();
+            }
             var allOptions = AlternateGroups.SelectMany(x => x.AlternateOptions).ToList();
             foreach (var v in allOptions)
             {
-                v.UpdateSelectability(allOptions);
+                var stateChanged = v.UpdateSelectability(allOptions);
+                if (stateChanged)
+                {
+                    UpdateOptions(ref numAttemptsRemaining);
+                    break; // Don't parse it again.
+                }
             }
         }
 
@@ -369,12 +393,30 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private void BeginInstallingMod()
         {
-            // Todo: Fill out selected options
+            // Create a map of jobs to headers based on the selection options.
+            var optionsMap = new Dictionary<ModJob.JobHeader, List<AlternateOption>>();
+
+            foreach (var job in ModBeingInstalled.InstallationJobs)
+            {
+                optionsMap[job.Header] = new List<AlternateOption>();
+                foreach (var alt in job.AlternateFiles.Where(x => x.IsSelected))
+                    optionsMap[job.Header].Add(alt);
+                if (job.Header == ModJob.JobHeader.CUSTOMDLC)
+                {
+                    // Custom DLC: add alternate dlc option.
+                    foreach (var alt in job.AlternateDLCs.Where(x => x.IsSelected))
+                        optionsMap[job.Header].Add(alt);
+
+                }
+            }
+
+
             ModInstallOptionsPackage moip = new ModInstallOptionsPackage()
             {
                 CompressInstalledPackages = CompressInstalledPackages,
                 InstallTarget = SelectedGameTarget,
                 ModBeingInstalled = ModBeingInstalled,
+                SelectedOptions = optionsMap
             };
             OnClosing(new DataEventArgs(moip));
         }

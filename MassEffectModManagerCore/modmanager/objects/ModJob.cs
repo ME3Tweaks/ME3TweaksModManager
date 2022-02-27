@@ -871,5 +871,18 @@ namespace ME3TweaksModManager.modmanager.objects
         }
 
         public ObservableCollectionExtended<MDParameter> ParameterMap { get; } = new ObservableCollectionExtended<MDParameter>();
+
+        /// <summary>
+        /// Gets a list of all AlternateFiles and AlternateDLC objects attached to this job.
+        /// </summary>
+        /// <returns></returns>
+        public List<AlternateOption> GetAllAlternates()
+        {
+            List<AlternateOption> options = new List<AlternateOption>();
+            options.AddRange(AlternateFiles);
+            if (Header == JobHeader.CUSTOMDLC)
+                options.AddRange(AlternateDLCs);
+            return options;
+        }
     }
 }
