@@ -66,7 +66,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                     {
                         M3Log.Warning($@"File not found in game: {targetname}, skipping...");
                         numMergesCompleted++;
-                        mergeProgressDelegate?.Invoke(numMergesCompleted, numMergesCompleted, null, null);
+                        mergeProgressDelegate?.Invoke(numMergesCompleted, numTotalMerges, null, null);
                     }
                 }
             }
@@ -80,10 +80,9 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                 {
                     M3Log.Warning($@"File not found in game: {FileName}, skipping...");
                     numMergesCompleted++;
-                    mergeProgressDelegate?.Invoke(numMergesCompleted, numMergesCompleted, null, null);
+                    mergeProgressDelegate?.Invoke(numMergesCompleted, numTotalMerges, null, null);
                 }
             }
-
 
             MergeAssetCache1 mac = new MergeAssetCache1();
             foreach (var f in targetFiles)
