@@ -1,8 +1,10 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using ME3TweaksModManager.modmanager.memoryanalyzer;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.ui;
 
@@ -17,11 +19,20 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         protected MMBusyPanelBase()
         {
+#if DEBUG
+            var methodInfo = new StackTrace().GetFrame(1).GetMethod();
+            var className = methodInfo.ReflectedType.Name;
+            MemoryAnalyzer.AddTrackedMemoryItem($@"MMBPB: {className}", new WeakReference(this));
+
+#endif
             Loaded += UserControl_Loaded;
             Unloaded += UserControl_Unloaded;
         }
 
-        protected Window window;
+        /// <summary>
+        /// Reference to the containing window
+        /// </summary>
+        public Window window { get; set; }
         protected MainWindow mainwindow;
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
@@ -43,16 +54,17 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         protected virtual void OnClosing(DataEventArgs e)
         {
             Close?.Invoke(this, e);
-            Application.Current.Dispatcher.Invoke(delegate
-            {
-                DataContext = null;
-            });
+            //Application.Current.Dispatcher.Invoke(delegate
+            //{
+            //    DataContext = null;
+            //});
         }
 
         private void UserControl_Unloaded(object sender, RoutedEventArgs e)
         {
             window.KeyDown -= HandleKeyPress;
             window = null; //lose reference
+            mainwindow = null; // lose reference
         }
 
         public void TriggerPropertyChangedFor(string propertyname)

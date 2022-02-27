@@ -238,7 +238,7 @@
     </Window.Resources>
     <xctk:BusyIndicator
         IsBusy="{Binding IsBusy}"
-        BusyContent="{Binding BusyContent}">
+        BusyContent="{Binding BusyContentM3}">
         <DockPanel Name="RootDisplayObject">
             <Menu
                 DockPanel.Dock="Top">

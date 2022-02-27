@@ -32,18 +32,64 @@
                 VerticalAlignment="Center"
                 Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                 Visibility="{Binding ImageBitmap, Converter={StaticResource NullVisibilityConverter}}" />
-            <TextBlock Text="{Binding FriendlyName}" FontStyle="Italic" DockPanel.Dock="Top" FontWeight="Bold" TextAlignment="Left"/>
-            <TextBlock Text="{Binding Description}" TextWrapping="Wrap"/>
+            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+                <TextBlock Text="{Binding FriendlyName}" 
+                           DockPanel.Dock="Top"
+                           FontSize="13"
+                           FontWeight="Bold" 
+                           TextAlignment="Left" 
+                           Opacity="{Binding TextOpacity}"/>
+
+                <!-- Always applicable -->
+                <StackPanel Orientation="Horizontal"
+                            Margin="3,0,0,0"
+                            Visibility="{Binding UIRequired, Converter={StaticResource BoolToVisibilityConverter}}"
+                            Opacity="{Binding TextOpacity}">
+                    <fa5:ImageAwesome Icon="Solid_CheckCircle" Height="12" Foreground="LimeGreen" VerticalAlignment="Center"/>
+                    <TextBlock
+                        Foreground="LimeGreen"
+                        Text="{Binding ApplicableAutoText}"
+                        VerticalAlignment="Center"
+                        FontWeight="Bold" />
+                </StackPanel>
+                <!-- Not applicable -->
+                <StackPanel Orientation="Horizontal"
+                            Margin="3,0,0,0"
+                            Visibility="{Binding UINotApplicable, Converter={StaticResource BoolToVisibilityConverter}}"
+                            Opacity="{Binding TextOpacity}">
+                    <fa5:ImageAwesome Icon="Solid_TimesCircle" Height="12" Foreground="Red" VerticalAlignment="Center" Margin="0,1,0,0"/>
+                    <TextBlock
+                        Foreground="Red"
+                        Text="{Binding NotApplicableAutoText}"
+                        VerticalAlignment="Center"
+                        FontWeight="Bold" />
+                </StackPanel>
+            </StackPanel>
+            <TextBlock Text="{Binding Description}" 
+                       TextWrapping="Wrap" 
+                       IsEnabled="{Binding UIIsSelectable}"
+                       Opacity="{Binding TextOpacity}"/>
         </DockPanel>
         <Border.Style>
             <Style
                 TargetType="{x:Type Border}">
                 <Setter Property="Background" Value="Transparent"/>
                 <Style.Triggers>
+                    <!-- IsSelected background -->
+                    <MultiDataTrigger>
+                        <MultiDataTrigger.Conditions>
+                            <Condition Binding="{Binding IsSelected}" Value="true" />
+                        </MultiDataTrigger.Conditions>
+                        <Setter
+                            Property="Background"
+                            Value="#4400CC00"/>
+                    </MultiDataTrigger>
+                    <!-- Mouseover -->
                     <MultiDataTrigger>
                         <MultiDataTrigger.Conditions>
                             <Condition Binding="{Binding ShowMouseoverHighlightOnMain, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:AlternateOptionSelector}}}" Value="True"  />
                             <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=IsMouseOver}" Value="true" />
+                            <Condition Binding="{Binding UIIsSelectable}" Value="true" />
                         </MultiDataTrigger.Conditions>
                         <Setter
                             Property="Background"
@@ -51,6 +97,32 @@
                         <Setter
                             Property="Cursor"
                             Value="Hand" />
+                    </MultiDataTrigger>
+
+                    <!-- Mouseover for not applicable -->
+                    <MultiDataTrigger>
+                        <MultiDataTrigger.Conditions>
+                            <Condition Binding="{Binding UINotApplicable}" Value="true" />
+                        </MultiDataTrigger.Conditions>
+                        <Setter
+                            Property="ToolTip"
+                            Value="Based on conditions set by the mod developer, this option is not applicable based on your game's current setup"/>
+                        <Setter
+                            Property="Cursor"
+                            Value="No" />
+                    </MultiDataTrigger>
+
+                    <!-- Mouseover for applicable -->
+                    <MultiDataTrigger>
+                        <MultiDataTrigger.Conditions>
+                            <Condition Binding="{Binding UIRequired}" Value="true" />
+                        </MultiDataTrigger.Conditions>
+                        <Setter
+                            Property="ToolTip"
+                            Value="Based on conditions set by the mod developer, this option must be applied based on your game's current setup"/>
+                        <Setter
+                            Property="Cursor"
+                            Value="No" />
                     </MultiDataTrigger>
                 </Style.Triggers>
             </Style>

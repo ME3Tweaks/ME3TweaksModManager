@@ -12,7 +12,9 @@
     <Grid Margin="0">
         <!-- Single Selector -->
         <DockPanel Visibility="{Binding GroupName, Converter={StaticResource NullVisibilityConverter}, ConverterParameter='Reversed'}">
-            <CheckBox DockPanel.Dock="Left" IsChecked="{Binding SelectedOption.IsSelected}" IsEnabled="{Binding SelectedOption.IsAlways, Converter={StaticResource BoolToEnabledConverter}, ConverterParameter='Not'}"/>
+            <CheckBox DockPanel.Dock="Left" 
+                      IsEnabled="{Binding SelectedOption.UIIsSelectable}"
+                      IsChecked="{Binding SelectedOption.IsSelected, Mode=TwoWay}"/>
             <local:SingleAlternateOptionPanel DataContext="{Binding SelectedOption}" MouseUp="AlternateItem_MouseUp"/>
         </DockPanel>
 
@@ -80,8 +82,9 @@
             Grid.Column="0"
             Grid.RowSpan="2"
             IsEnabled="{Binding UIIsSelectable}"
-            Margin="5,0,0,0"
             IsChecked="{Binding IsSelected, Mode=TwoWay}"
+
+    Margin="5,0,0,0"
             Visibility="{Binding GroupName, Converter={StaticResource NullVisibilityConverter}, ConverterParameter='Reversed'}"
             DockPanel.Dock="Left"
             VerticalContentAlignment="Center"

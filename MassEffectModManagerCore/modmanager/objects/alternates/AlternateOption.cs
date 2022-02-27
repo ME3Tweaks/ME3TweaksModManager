@@ -69,10 +69,16 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         }
 
         /// <summary>
-        /// If this is 
+        /// This option is required and cannot be deselected 
         /// </summary>
         public virtual bool UIRequired => !IsManual && !IsAlways && IsSelected;
+        /// <summary>
+        /// This option is not applicable to the current setup
+        /// </summary>
         public abstract bool UINotApplicable { get; }
+        /// <summary>
+        /// This option can be chosen by the user manually
+        /// </summary>
         public abstract bool UIIsSelectable { get; set; }
         #endregion
 

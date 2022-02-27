@@ -4,11 +4,34 @@
     xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
     xmlns:modmanager="clr-namespace:ME3TweaksModManager.modmanager"
     xmlns:ui="clr-namespace:ME3TweaksModManager.ui"
+    xmlns:system="clr-namespace:System;assembly=System.Runtime"
     mc:Ignorable="d"
-    DataContext="{Binding RelativeSource={RelativeSource Self}}"
-    Width="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.7_400_900', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualWidth}"
-    Height="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.7_400', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualHeight}">
-    <DockPanel>
+    DataContext="{Binding RelativeSource={RelativeSource Self}}">
+    <UserControl.Width>
+        <MultiBinding Converter="{StaticResource PanelDimensionConverter}">
+            <!-- Take the minimum of either the width (0) or the window width % -->
+            <Binding ElementName="OptionPanel" Mode="OneWay" Path="ActualWidth"/>
+            <Binding RelativeSource="{RelativeSource FindAncestor, AncestorType=Window}" Path="ActualWidth"/>
+            <Binding>
+                <Binding.Source>
+                    <system:Double>0.8</system:Double>
+                </Binding.Source>
+            </Binding>
+        </MultiBinding>
+    </UserControl.Width>
+    <UserControl.Height>
+        <MultiBinding Converter="{StaticResource PanelDimensionConverter}">
+            <!-- Take the minimum of either the width (0) or the window width % -->
+            <Binding ElementName="OptionPanel" Mode="OneWay" Path="ActualHeight"/>
+            <Binding RelativeSource="{RelativeSource FindAncestor, AncestorType=Window}" Path="ActualHeight"/>
+            <Binding>
+                <Binding.Source>
+                    <system:Double>0.8</system:Double>
+                </Binding.Source>
+            </Binding>
+        </MultiBinding>
+    </UserControl.Height>
+    <DockPanel Name="OptionPanel" HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="920">
         <TextBlock
             DockPanel.Dock="Top"
             Text="{DynamicResource string_me3tweaksModManagerOptions}"
@@ -157,6 +180,7 @@
                             DockPanel.Dock="Top"
                             IsChecked="{Binding Path=(modmanager:Settings.EnableTelemetry)}" />
                         <TextBlock
+                            MaxWidth="450"
                             Margin="0,0,10,0"
                             Text="{DynamicResource string_wp_description_telemetry}"
                             TextWrapping="Wrap" />
@@ -170,6 +194,7 @@
                             DockPanel.Dock="Top"
                             IsChecked="{Binding Path=(modmanager:Settings.DeveloperMode)}" />
                         <TextBlock
+                            MaxWidth="450"
                             Margin="0,0,10,0"
                             Text="{DynamicResource string_wp_description_developermod}"
                             TextWrapping="Wrap" />
@@ -187,6 +212,7 @@
                             <TextBlock Text="{DynamicResource string_optIntoBetaUpdates}" TextWrapping="Wrap"/>
                         </CheckBox>
                         <TextBlock
+                            MaxWidth="450"
                             Margin="0,0,10,0"
                             Text="{DynamicResource string_tooltip_optIntoBetaUpdates}"
                             TextWrapping="Wrap" />
@@ -202,6 +228,7 @@
                             <TextBlock Text="{DynamicResource string_configureNxmHandlerOnBoot}" TextWrapping="Wrap"/>
                         </CheckBox>
                         <TextBlock
+                            MaxWidth="450"
                             Margin="0,0,10,0"
                             Text="{DynamicResource string_tooltip_configureNxmHandlerOnBoot}"
                             TextWrapping="Wrap" />
@@ -217,6 +244,7 @@
                             DockPanel.Dock="Top"
                             IsChecked="{Binding Path=(modmanager:Settings.PreferCompressingPackages)}" />
                         <TextBlock
+                            MaxWidth="450"
                             Margin="0,0,10,0"
                             Text="{DynamicResource string_tooltip_compressPackagesOnInstall}"
                             TextWrapping="Wrap" />
@@ -285,6 +313,7 @@
                             <TextBlock Text="{DynamicResource string_autoAddControllerMixinsToModMakerMods}" TextWrapping="Wrap"/>
                         </CheckBox>
                         <TextBlock
+                            MaxWidth="450"
                             Margin="0,0,10,0"
                             Text="{DynamicResource string_tooltip_autoAddControllerMixinsToModMakerMods}"
                             TextWrapping="Wrap" />
@@ -301,6 +330,7 @@
                             <TextBlock Text="{DynamicResource string_autoInjectCustomKeybindsIntoModMakerMods}" TextWrapping="Wrap"/>
                         </CheckBox>
                         <TextBlock
+                            MaxWidth="450"
                             Margin="0,0,10,0"
                             Text="{DynamicResource string_tooltip_autoInjectCustomKeybinds}"
                             TextWrapping="Wrap" />
@@ -316,6 +346,7 @@
                         Margin="0,10,0,0"
                         FontWeight="Bold" />
                     <TextBlock
+                        MaxWidth="900"
                         ui:SharedUIBindings.GenerationOT="true"
                         Grid.Row="16"
                         Grid.ColumnSpan="2"
@@ -334,8 +365,10 @@
                             DockPanel.Dock="Top"
                             IsChecked="{Binding Path=(modmanager:Settings.AutoUpdateLODs2K)}" />
                         <TextBlock
+                            MaxWidth="450"
                             Margin="0,0,10,0"
                             Text="{DynamicResource string_tooltip_autoLods2K}"
+                            TextAlignment="Left"
                             TextWrapping="Wrap" />
                     </StackPanel>
                     <StackPanel
@@ -349,8 +382,10 @@
                             DockPanel.Dock="Top"
                             IsChecked="{Binding Path=(modmanager:Settings.AutoUpdateLODs4K)}" />
                         <TextBlock
+                            MaxWidth="450"
                             Margin="0,0,10,0"
                             Text="{DynamicResource string_tooltip_autoLods4K}"
+                            TextAlignment="Left"
                             TextWrapping="Wrap" />
                     </StackPanel>
                     <TextBlock
@@ -378,8 +413,10 @@
                             DockPanel.Dock="Top"
                             IsChecked="{Binding Path=(modmanager:Settings.LogModStartup)}" />
                         <TextBlock
+                            MaxWidth="450"
                             Margin="0,0,10,0"
                             Text="{DynamicResource string_tooltip_logModLoading}"
+                            TextAlignment="Left"
                             TextWrapping="Wrap" />
                     </StackPanel>
                     <StackPanel
@@ -392,8 +429,10 @@
                             DockPanel.Dock="Top"
                             IsChecked="{Binding Path=(modmanager:Settings.LogModInstallation)}" />
                         <TextBlock
+                            MaxWidth="450"
                             Margin="0,0,10,0"
                             Text="{DynamicResource string_tooltip_logModInstaller}"
+                            TextAlignment="Left"
                             TextWrapping="Wrap" />
                     </StackPanel>
                     <StackPanel
@@ -406,6 +445,7 @@
                             DockPanel.Dock="Top"
                             IsChecked="{Binding Path=(modmanager:Settings.LogModUpdater)}" />
                         <TextBlock
+                            MaxWidth="450"
                             Margin="0,0,10,0"
                             Text="{DynamicResource string_tooltip_logModUpdater}"
                             TextWrapping="Wrap" />
@@ -420,8 +460,10 @@
                             DockPanel.Dock="Top"
                             IsChecked="{Binding Path=(modmanager:Settings.LogModMakerCompiler)}" />
                         <TextBlock
+                            MaxWidth="450"
                             Margin="0,0,10,0"
                             Text="{DynamicResource string_tooltip_logModMakerCompiler}"
+                            TextAlignment="Left"
                             TextWrapping="Wrap" />
                     </StackPanel>
                 </Grid>
