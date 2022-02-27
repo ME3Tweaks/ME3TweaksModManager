@@ -1088,7 +1088,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         private bool CanInstallCompressedMod()
         {
             //This will have to pass some sort of validation code later.
-            return CompressedMods_ListBox != null && CompressedMods_ListBox.SelectedItem is Mod cm &&
+            return IsPanelOpen && CompressedMods_ListBox != null && CompressedMods_ListBox.SelectedItem is Mod cm &&
                    cm.ExeExtractionTransform == null && cm.ValidMod
                    && !TaskRunning /*&& !CompressPackages*/ && mainwindow.InstallationTargets.Any(x => x.Game == cm.Game);
         }

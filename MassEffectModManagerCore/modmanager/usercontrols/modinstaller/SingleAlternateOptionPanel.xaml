@@ -45,12 +45,11 @@
             <!-- Always applicable -->
             <StackPanel 
                         DockPanel.Dock="Bottom"
-
                         Orientation="Horizontal"
                         Margin="3,0,0,0"
                         Visibility="{Binding UIRequired, Converter={StaticResource BoolToVisibilityConverter}}"
                         Opacity="{Binding TextOpacity}">
-                <fa5:ImageAwesome Icon="Solid_CheckCircle" Height="12" Foreground="LimeGreen" VerticalAlignment="Center"/>
+                <fa5:ImageAwesome Icon="Solid_CheckCircle" Height="12" Foreground="LimeGreen" VerticalAlignment="Center" Margin="0,1,3,0"/>
                 <TextBlock
                     Foreground="LimeGreen"
                     Text="{Binding ApplicableAutoText}"
@@ -64,9 +63,8 @@
                         Margin="3,0,0,0"
                         Visibility="{Binding UINotApplicable, Converter={StaticResource BoolToVisibilityConverter}}"
                         Opacity="{Binding TextOpacity}">
-                <fa5:ImageAwesome Icon="Solid_TimesCircle" Height="12" Foreground="Red" VerticalAlignment="Center" Margin="0,1,0,0"/>
+                <fa5:ImageAwesome Icon="Solid_TimesCircle" Height="12" Foreground="Red" VerticalAlignment="Center" Margin="0,1,3,0"/>
                 <TextBlock
-                    Foreground="Red"
                     Text="{Binding NotApplicableAutoText}"
                     VerticalAlignment="Center"
                     FontWeight="Bold" />

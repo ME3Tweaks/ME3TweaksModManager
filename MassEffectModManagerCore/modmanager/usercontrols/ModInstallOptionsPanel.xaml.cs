@@ -11,6 +11,7 @@ using ME3TweaksModManager.ui;
 using PropertyChanged;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -273,8 +274,14 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
             SortOptions();
             int numAttemptsRemaining = 15;
-            UpdateOptions(ref numAttemptsRemaining); // Update for DependsOnKeys.
+            try
+            {
+                UpdateOptions(ref numAttemptsRemaining); // Update for DependsOnKeys.
+            }
+            catch (CircularDependencyException)
+            {
 
+            }
             // Done calculating options
 
 
@@ -329,42 +336,49 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private void SortOptions()
         {
-            return;
             // ModDesc 8: Sorting option disable?
-
-            List<AlternateGroup> newOptions = new List<AlternateGroup>();
-            newOptions.AddRange(AlternateGroups.Where(x => x.GroupName != null));
-            newOptions.AddRange(AlternateGroups.Where(x => x.GroupName == null && x.SelectedOption.UIIsSelectable));
-            newOptions.AddRange(AlternateGroups.Where(x => x.GroupName == null && !x.SelectedOption.UIIsSelectable));
+            if (ModBeingInstalled.SortAlternateOptions)
+            {
+                List<AlternateGroup> newOptions = new List<AlternateGroup>();
+                newOptions.AddRange(AlternateGroups.Where(x => x.GroupName != null));
+                newOptions.AddRange(AlternateGroups.Where(x => x.GroupName == null && x.SelectedOption.UIIsSelectable));
+                newOptions.AddRange(AlternateGroups.Where(x => x.GroupName == null && !x.SelectedOption.UIIsSelectable));
 
 #if DEBUG
-            if (newOptions.Count != AlternateGroups.Count)
-                throw new Exception(@"Error sorting options! The results was not the same length as the input.");
+                if (newOptions.Count != AlternateGroups.Count)
+                    throw new Exception(@"Error sorting options! The results was not the same length as the input.");
 #endif
 
-            AlternateGroups.ReplaceAll(newOptions);
+                AlternateGroups.ReplaceAll(newOptions);
+            }
         }
 
         private void OnAlternateSelectionChanged(object sender, EventArgs data)
         {
             if (sender is AlternateOption ao && data is DataEventArgs args && args.Data is bool newState)
             {
-                // An alternate option was changed by the user.
-                int numRemainingAttempts = 15;
-                try
+                var altsToUpdate = findOptionsDependentOn(ao);
+
+                if (altsToUpdate.Any())
                 {
-                    UpdateOptions(ref numRemainingAttempts);
-                }
-                catch (CircularDependencyException)
-                {
-                    MessageBox.Show(@"A circular dependency was detected. Please notify the developer of the options you attempted to select so they can fix this.", "Circular dependency", MessageBoxButton.OK, MessageBoxImage.Error);
-                    InstallationCancelled = true;
-                    OnClosing(DataEventArgs.Empty);
+                    altsToUpdate.Add(ao); // This is required for lookup
+                    // An alternate option was changed by the user.
+                    int numRemainingAttempts = 15;
+                    try
+                    {
+                        UpdateOptions(ref numRemainingAttempts, altsToUpdate);
+                    }
+                    catch (CircularDependencyException)
+                    {
+                        MessageBox.Show(@"A circular dependency was detected. Please notify the developer of the options you attempted to select so they can fix this.", "Circular dependency", MessageBoxButton.OK, MessageBoxImage.Error);
+                        InstallationCancelled = true;
+                        OnClosing(DataEventArgs.Empty);
+                    }
                 }
             }
         }
 
-        private void UpdateOptions(ref int numAttemptsRemaining)
+        private void UpdateOptions(ref int numAttemptsRemaining, List<AlternateOption> optionsToUpdate = null)
         {
             numAttemptsRemaining--;
             if (numAttemptsRemaining <= 0)
@@ -372,16 +386,38 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 // Tried too many times. This is probably some circular dependency the dev set
                 throw new CircularDependencyException();
             }
-            var allOptions = AlternateGroups.SelectMany(x => x.AlternateOptions).ToList();
-            foreach (var v in allOptions)
+
+            // If none were passed in, we parse all of them.
+            optionsToUpdate ??=AlternateGroups.SelectMany(x => x.AlternateOptions).ToList();
+
+            List<AlternateOption> secondPassOptions = new List<AlternateOption>();
+            foreach (var v in optionsToUpdate)
             {
-                var stateChanged = v.UpdateSelectability(allOptions);
+                var stateChanged = v.UpdateSelectability(optionsToUpdate);
                 if (stateChanged)
                 {
-                    UpdateOptions(ref numAttemptsRemaining);
-                    break; // Don't parse it again.
+                    Debug.WriteLine($@"State changed: {v.FriendlyName} to {v.IsSelected}");
+                    secondPassOptions.AddRange(findOptionsDependentOn(v));
+                    //UpdateOptions(ref numAttemptsRemaining, findOptionsDependentOn(v));
+                    //break; // Don't parse it again.
                 }
             }
+
+            // If anything depends on options that changed, re-evaluate those specific options.
+            if (secondPassOptions.Any())
+            {
+                UpdateOptions(ref numAttemptsRemaining, secondPassOptions.Distinct().ToList());
+            }
+        }
+
+        /// <summary>
+        /// Gets a list of alternates that have a state dependency on the specified key
+        /// </summary>
+        /// <param name="alternateOption"></param>
+        /// <returns></returns>
+        private List<AlternateOption> findOptionsDependentOn(AlternateOption alternateOption)
+        {
+            return AlternateGroups.SelectMany(x => x.AlternateOptions).Where(x => x.DependsOnKeys.Any(x => x.Key == alternateOption.OptionKey)).ToList();
         }
 
 

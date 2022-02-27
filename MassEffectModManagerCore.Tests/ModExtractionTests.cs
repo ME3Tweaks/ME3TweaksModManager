@@ -10,6 +10,7 @@ using ME3TweaksCore.Targets;
 using ME3TweaksCoreWPF;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager;
+using ME3TweaksModManager.modmanager.objects.installer;
 using ME3TweaksModManager.modmanager.usercontrols;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SevenZip;
@@ -138,10 +139,15 @@ namespace MassEffectModManagerCore.Tests
                         var targetsForMod = targets.Where(x => x.Game == mod.Game).ToList();
                         foreach (var target in targetsForMod)
                         {
-                            var queue = mod.GetInstallationQueues(target);
-                            foreach (var jobMapping in queue.Item1)
+                            ModInstallOptionsPackage package = new ModInstallOptionsPackage()
                             {
-                                foreach (var unpackedItem in jobMapping.Value.unpackedJobMapping)
+                                ModBeingInstalled = mod,
+                                InstallTarget = target
+                            };
+                            var queue = mod.GetInstallationQueues(package);
+                            foreach (var jobMapping in queue.UnpackedJobMappings)
+                            {
+                                foreach (var unpackedItem in jobMapping.Value.FileMapping)
                                 {
                                     string sourceFile;
                                     if (jobMapping.Key.JobDirectory == null || unpackedItem.Value.IsFullRelativeFilePath)
