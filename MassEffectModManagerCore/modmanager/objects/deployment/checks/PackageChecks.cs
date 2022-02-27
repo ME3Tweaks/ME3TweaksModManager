@@ -63,6 +63,40 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                         var package = MEPackageHandler.OpenMEPackage(Path.Combine(item.ModToValidateAgainst.ModPath, f));
                         EntryChecker.CheckReferences(item, package, M3L.GetString, relativePath);
                     });
+
+                // Check mergemod references
+
+                var mergeMods = item.ModToValidateAgainst.GetJob(ModJob.JobHeader.BASEGAME)?.MergeMods;
+                if (mergeMods != null && mergeMods.Any())
+                {
+
+                    Parallel.ForEach(mergeMods,
+                        new ParallelOptions()
+                        {
+                            MaxDegreeOfParallelism = Math.Min(3, Environment.ProcessorCount)
+                        },
+                        f =>
+                        //foreach (var f in referencedFiles)
+                        {
+                            if (item.CheckDone) return;
+                            // Mostly ported from ME3Explorer
+                            var lnumChecked = Interlocked.Increment(ref numChecked);
+                            item.ItemText = $"Checking references in mergemods [{lnumChecked - 1}/{mergeMods.Count}]";
+
+                            var relativePath = $@"MergeMods\{f.MergeModFilename}";
+                            M3Log.Information($@"Checking package and name references in mergemod {relativePath}");
+
+                            foreach (var v in f.Assets)
+                            {
+                                if (v.Key.RepresentsPackageFilePath())
+                                {
+
+                                    //var package = MEPackageHandler.OpenMEPackage(Path.Combine(item.ModToValidateAgainst.ModPath, f));
+                                    //EntryChecker.CheckReferences(item, package, M3L.GetString, relativePath);
+                                }
+                            }
+                        });
+                }
             }
             catch (Exception e)
             {

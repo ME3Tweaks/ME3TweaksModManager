@@ -37,7 +37,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
         public List<MergeFile1> FilesToMergeInto;
 
         [JsonIgnore]
-        public CaseInsensitiveDictionary<MergeAsset> Assets;
+        public CaseInsensitiveDictionary<MergeAsset> Assets { get; set; }
 
         private MergeMod1() { }
         public static MergeMod1 ReadMergeMod(Stream mergeFileStream, string mergeModName, bool loadAssets)

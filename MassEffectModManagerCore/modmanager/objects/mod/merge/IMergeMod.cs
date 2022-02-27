@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksCoreWPF;
 using ME3TweaksCoreWPF.Targets;
@@ -17,6 +18,11 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge
         /// Game this merge mod is for
         /// </summary>
         public MEGame Game { get; set; }
+
+        /// <summary>
+        /// List of asset files that are part of this merge mod
+        /// </summary>
+        public CaseInsensitiveDictionary<MergeAsset> Assets { get; set; }
 
         /// <summary>
         /// Applies the merge mod to the target

@@ -219,20 +219,21 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
         public bool ApplyUpdate(IMEPackage package, ExportEntry targetExport, Mod installingMod)
         {
             Stream binaryStream;
+            string sourcePath = null;
             if (OwningMM.Assets[AssetName].AssetBinary != null)
             {
                 binaryStream = new MemoryStream(OwningMM.Assets[AssetName].AssetBinary);
             }
             else
             {
-                var sourcePath = FilesystemInterposer.PathCombine(installingMod.IsInArchive, installingMod.ModPath, Mod.MergeModFolderName, OwningMM.MergeModFilename);
+                sourcePath = FilesystemInterposer.PathCombine(installingMod.IsInArchive, installingMod.ModPath, Mod.MergeModFolderName, OwningMM.MergeModFilename);
                 using var fileS = File.OpenRead(sourcePath);
                 fileS.Seek(OwningMM.Assets[AssetName].FileOffset, SeekOrigin.Begin);
                 binaryStream = fileS.
                     ReadToMemoryStream(OwningMM.Assets[AssetName].FileSize);
             }
 
-            using var sourcePackage = MEPackageHandler.OpenMEPackageFromStream(binaryStream);
+            using var sourcePackage = MEPackageHandler.OpenMEPackageFromStream(binaryStream, sourcePath);
             var sourceEntry = sourcePackage.FindExport(EntryName);
             if (sourceEntry == null)
             {

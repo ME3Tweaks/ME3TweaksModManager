@@ -22,7 +22,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge
         public int FileSize { get; set; }
 
         /// <summary>
-        /// Asset binary data
+        /// Asset binary data. This is only loaded when needed - mods loaded from archive will have this populated, mods loaded from disk will not.
         /// </summary>
         [JsonIgnore]
         public byte[] AssetBinary;
@@ -33,6 +33,10 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge
         [JsonIgnore] 
         public int FileOffset;
 
+        /// <summary>
+        /// Reads the asset binary data into the <see cref="AssetBinary"/> byte array. Seeks and reads from the specified stream.
+        /// </summary>
+        /// <param name="mergeFileStream">The stream to read from.</param>
         public void ReadAssetBinary(Stream mergeFileStream)
         {
             if (FileOffset != 0)
