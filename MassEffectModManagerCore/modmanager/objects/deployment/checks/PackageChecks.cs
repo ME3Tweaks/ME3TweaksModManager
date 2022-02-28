@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using ME3TweaksModManager.modmanager.objects.mod;
 
 namespace ME3TweaksModManager.modmanager.objects.deployment.checks
 {
@@ -66,6 +67,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
 
                 // Check mergemod references
 
+                numChecked = 0;
                 var mergeMods = item.ModToValidateAgainst.GetJob(ModJob.JobHeader.BASEGAME)?.MergeMods;
                 if (mergeMods != null && mergeMods.Any())
                 {
@@ -75,7 +77,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                         {
                             MaxDegreeOfParallelism = Math.Min(3, Environment.ProcessorCount)
                         },
-                        f =>
+                        mergeMod =>
                         //foreach (var f in referencedFiles)
                         {
                             if (item.CheckDone) return;
@@ -83,16 +85,32 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                             var lnumChecked = Interlocked.Increment(ref numChecked);
                             item.ItemText = $"Checking references in mergemods [{lnumChecked - 1}/{mergeMods.Count}]";
 
-                            var relativePath = $@"MergeMods\{f.MergeModFilename}";
+                            var relativePath = $@"{Mod.MergeModFolderName}\{mergeMod.MergeModFilename}";
                             M3Log.Information($@"Checking package and name references in mergemod {relativePath}");
 
-                            foreach (var v in f.Assets)
-                            {
-                                if (v.Key.RepresentsPackageFilePath())
-                                {
+                            var mergeModPath = Path.Combine(item.ModToValidateAgainst.ModPath, Mod.MergeModFolderName, mergeMod.MergeModFilename);
+                            using var mergeStream = File.OpenRead(mergeModPath);
 
-                                    //var package = MEPackageHandler.OpenMEPackage(Path.Combine(item.ModToValidateAgainst.ModPath, f));
-                                    //EntryChecker.CheckReferences(item, package, M3L.GetString, relativePath);
+                            foreach (var assetInfo in mergeMod.Assets)
+                            {
+                                if (assetInfo.Key.RepresentsPackageFilePath())
+                                {
+                                    if (assetInfo.Value.AssetBinary == null)
+                                    {
+                                        assetInfo.Value.ReadAssetBinary(mergeStream);
+                                    }
+
+                                    var package = MEPackageHandler.OpenMEPackageFromStream(new MemoryStream(assetInfo.Value.AssetBinary), $@"{assetInfo.Key}");
+
+                                    // Warnings in Merge assets are treated as blocking errors.
+                                    ReferenceCheckPackage rcp = new ReferenceCheckPackage();
+                                    EntryChecker.CheckReferences(rcp, package, M3L.GetString, relativePath);
+
+                                    foreach (var si in rcp.GetSignificantIssues().Concat(rcp.GetBlockingErrors()))
+                                    {
+                                        // Entry checker uses relative path. Our relative path is set to the m3m though.
+                                        item.AddBlockingError($"{assetInfo.Key}: {si.Message}", si.Entry);
+                                    }
                                 }
                             }
                         });
