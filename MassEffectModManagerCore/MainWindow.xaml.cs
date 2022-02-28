@@ -1228,7 +1228,7 @@ namespace ME3TweaksModManager
             if (queuedUserControls.Count == 0 && !IsBusy)
             {
                 IsBusy = true;
-                BusyContentM3 = new SingleItemPanel(control);
+                BusyContentM3 = new SingleItemPanel2(control);
             }
             else
             {
@@ -1242,7 +1242,7 @@ namespace ME3TweaksModManager
         /// <param name="control">Control to show or queue</param>
         internal void ReleaseBusyControl()
         {
-            var closingPanel = BusyContentM3 as SingleItemPanel;
+            var closingPanel = BusyContentM3 as SingleItemPanel2;
             closingPanel?.DetatchControl();
 
             var closingPanel2 = closingPanel.Content as MMBusyPanelBase;
@@ -1268,7 +1268,7 @@ namespace ME3TweaksModManager
             {
                 if (queuedUserControls.TryDequeue(out var control))
                 {
-                    BusyContentM3 = new SingleItemPanel(control);
+                    BusyContentM3 = new SingleItemPanel2(control);
                 }
             }
         }
@@ -3868,9 +3868,18 @@ namespace ME3TweaksModManager
         /// </summary>
         private void ForceImports()
         {
-            var localmd5 = MUtilities.CalculateMD5("null");
+            var localmd5 = MUtilities.CalculateMD5(@"null");
 
         }
 #endif
+        /// <summary>
+        /// Raises the PropertyChanged event for the named property.
+        /// </summary>
+        /// <param name="propertyName"></param>
+        /// <exception cref="NotImplementedException"></exception>
+        public void RaisePropertyChangedFor(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 }

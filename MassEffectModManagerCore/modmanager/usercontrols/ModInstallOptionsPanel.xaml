@@ -11,32 +11,7 @@
              xmlns:fa5="http://schemas.fontawesome.com/icons/" 
              xmlns:modinstaller="clr-namespace:ME3TweaksModManager.modmanager.usercontrols.modinstaller" 
              xmlns:system="clr-namespace:System;assembly=System.Runtime"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <local:MMBusyPanelBase.Width>
-        <MultiBinding Converter="{StaticResource PanelDimensionConverter}">
-            <!-- Take the minimum of either the width (0) or the window width % -->
-            <Binding ElementName="OptionsPanel" Mode="OneWay" Path="ActualWidth"/>
-            <Binding RelativeSource="{RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}}" Path="ActualWidth"/>
-            <Binding>
-                <Binding.Source>
-                    <system:Double>0.8</system:Double>
-                </Binding.Source>
-            </Binding>
-        </MultiBinding>
-    </local:MMBusyPanelBase.Width>
-    <local:MMBusyPanelBase.Height>
-        <MultiBinding Converter="{StaticResource PanelDimensionConverter}">
-            <!-- Take the minimum of either the width (0) or the window width % -->
-            <Binding ElementName="OptionsPanel" Mode="OneWay" Path="ActualHeight"/>
-            <Binding RelativeSource="{RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}}" Path="ActualHeight"/>
-            <Binding>
-                <Binding.Source>
-                    <system:Double>0.8</system:Double>
-                </Binding.Source>
-            </Binding>
-        </MultiBinding>
-    </local:MMBusyPanelBase.Height>
+             mc:Ignorable="d" >
     <Grid VerticalAlignment="Center" HorizontalAlignment="Center"  x:Name="OptionsPanel">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>

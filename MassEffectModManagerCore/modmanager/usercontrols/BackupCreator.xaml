@@ -9,9 +9,9 @@
     d:DesignWidth="600"
     MaxWidth="900"
     DataContext="{Binding RelativeSource={RelativeSource Self}}">
-    <usercontrols:MMBusyPanelBase.Width>
+    <!--<usercontrols:MMBusyPanelBase.Width>
         <MultiBinding Converter="{StaticResource PanelDimensionConverter}">
-            <!-- Take the minimum of either the width (0) or the window width % -->
+            --><!-- Take the minimum of either the width (0) or the window width % --><!--
             <Binding ElementName="BackupPanel" Mode="OneWay" Path="ActualWidth"/>
             <Binding RelativeSource="{RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}}" Path="ActualWidth"/>
             <Binding>
@@ -23,7 +23,7 @@
     </usercontrols:MMBusyPanelBase.Width>
     <usercontrols:MMBusyPanelBase.Height>
         <MultiBinding Converter="{StaticResource PanelDimensionConverter}">
-            <!-- Take the minimum of either the width (0) or the window width % -->
+            --><!-- Take the minimum of either the width (0) or the window width % --><!--
             <Binding ElementName="BackupPanel" Mode="OneWay" Path="ActualHeight"/>
             <Binding RelativeSource="{RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}}" Path="ActualHeight"/>
             <Binding>
@@ -32,7 +32,7 @@
                 </Binding.Source>
             </Binding>
         </MultiBinding>
-    </usercontrols:MMBusyPanelBase.Height>
+    </usercontrols:MMBusyPanelBase.Height>-->
     <Grid x:Name="BackupPanel" VerticalAlignment="Center" HorizontalAlignment="Center">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
