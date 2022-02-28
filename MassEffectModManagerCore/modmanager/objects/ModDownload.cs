@@ -159,7 +159,9 @@ namespace ME3TweaksModManager.modmanager.objects
                                 {
                                     // Check to see file has moddesc.ini the listing
                                     var fileListing = NexusModsUtilities.GetFileListing(ModFile);
-                                    if (fileListing == null || !HasModdescIni(fileListing))
+
+                                    // 02/27/2022: We check for TPISService SizeInBytes. It's not 100% accurate since we don't have an MD5 to check against. But it's pretty likely it's supported.
+                                    if (fileListing == null || !HasModdescIni(fileListing) && ModFile.SizeInBytes != null && TPIService.GetImportingInfosBySize(ModFile.SizeInBytes.Value).Count == 0)
                                     {
                                         M3Log.Error($@"This file is not whitelisted for download and does not contain a moddesc.ini file, this is not a mod manager mod: {ModFile.FileName}");
                                         Initialized = true;
