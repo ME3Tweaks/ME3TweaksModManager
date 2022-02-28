@@ -77,7 +77,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor.alternate
 
         private void AddAlternateDLC()
         {
-            Alternates.Add(new AlternateDLC($@"Alternate DLC {Alternates.Count + 1}")); // As this is noun in mod manager terminology it shouldn't be localized, i think
+            Alternates.Add(new AlternateDLC($@"Alternate DLC {Alternates.Count + 1}", AlternateDLC.AltDLCCondition.COND_MANUAL, AlternateDLC.AltDLCOperation.OP_NOTHING)); // As this is noun in mod manager terminology it shouldn't be localized, i think
         }
 
         public GenericCommand AddAlternateDLCCommand { get; set; }

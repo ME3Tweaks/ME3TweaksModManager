@@ -10,10 +10,12 @@ using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.mod.editor;
 using ME3TweaksModManager.modmanager.objects.mod.merge;
+using PropertyChanged;
 
 namespace ME3TweaksModManager.modmanager.objects.alternates
 {
     [DebuggerDisplay(@"AlternateFile | {Condition} {Operation}, ConditionalDLC: {ConditionalDLC}, ModFile: {ModFile}, AltFile: {AltFile}")]
+    [AddINotifyPropertyChangedInterface]
     public sealed class AlternateFile : AlternateOption
     {
         public enum AltFileOperation
@@ -40,8 +42,8 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
             COND_DLC_NOT_PRESENT
         }
 
-        public AltFileCondition Condition;
-        public AltFileOperation Operation;
+        public AltFileCondition Condition { get; set; }
+        public AltFileOperation Operation { get; set; }
 
         public override bool IsManual => Condition == AltFileCondition.COND_MANUAL;
         public override bool IsAlways => Condition == AltFileCondition.COND_ALWAYS;
@@ -104,9 +106,11 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         /// Creates a new, blank Alternate DLC object
         /// </summary>
         /// <param name="alternateName"></param>
-        public AlternateFile(string alternateName)
+        public AlternateFile(string alternateName, AltFileCondition condition, AltFileOperation operation)
         {
             FriendlyName = alternateName;
+            Condition = condition;
+            Operation = operation;
             BuildParameterMap(null);
         }
 
@@ -128,13 +132,15 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
 
             if (properties.TryGetValue(@"Condition", out string altCond))
             {
-                if (!Enum.TryParse(altCond, out Condition) || Condition == AltFileCondition.INVALID_CONDITION)
+                if (!Enum.TryParse<AltFileCondition>(altCond, out var cond) || cond == AltFileCondition.INVALID_CONDITION)
                 {
                     M3Log.Error($@"Alternate File specifies unknown/unsupported condition: {altCond}"); //do not localize
                     ValidAlternate = false;
                     LoadFailedReason = $@"{M3L.GetString(M3L.string_validation_altfile_unknownCondition)} {altCond}";
                     return;
                 }
+
+                Condition = cond;
             }
 
             if (properties.TryGetValue(@"ConditionalDLC", out string conditionalDlc))
@@ -162,7 +168,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
 
             if (properties.TryGetValue(@"ModOperation", out var modOp))
             {
-                if (!Enum.TryParse(modOp, out Operation) || Operation == AltFileOperation.INVALID_OPERATION)
+                if (!Enum.TryParse<AltFileOperation>(modOp, out var op) || op == AltFileOperation.INVALID_OPERATION)
                 {
                     M3Log.Error(@"Alternate File specifies unknown/unsupported operation: " +
                               modOp);
@@ -170,6 +176,8 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                     LoadFailedReason = $@"{M3L.GetString(M3L.string_validation_altfile_unknownOperation)} {modOp}";
                     return;
                 }
+
+                Operation = op;
             }
             else
             {
@@ -525,17 +533,23 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         /// </summary>
         public override void BuildParameterMap(Mod mod)
         {
+            var conditions = Enum.GetValues<AltFileCondition>().Where(x => x != AltFileCondition.INVALID_CONDITION).Select(x => x.ToString());
+            var operations = Enum.GetValues<AltFileOperation>().Where(x => x != AltFileOperation.INVALID_OPERATION).Select(x => x.ToString());
+
+            var dependsActions = Enum.GetValues<EDependsOnAction>().Where(x => x != EDependsOnAction.ACTION_INVALID).Select(x => x.ToString()).Prepend("").ToList();
+
             var parameterDictionary = new Dictionary<string, object>()
             {
-                { @"Condition", Condition},
-                { @"ConditionalDLC", ConditionalDLC},
-                { @"ModOperation", Operation},
+                {@"Condition", new MDParameter(@"string", @"Condition", Condition.ToString(), conditions, AltFileCondition.COND_MANUAL.ToString())},
+                {@"ConditionalDLC", ConditionalDLC},
+                {@"ModOperation", new MDParameter(@"string", @"ModOperation", Operation.ToString(), operations, AltFileOperation.OP_NOTHING.ToString())},
+
                 { @"AltFile", AltFile},
                 { @"ModFile", ModFile},
                 { @"MergeFiles", MergeMods != null  ? string.Join(';',MergeMods.Select(x=>x.MergeModFilename)) : ""},
                 { @"FriendlyName", FriendlyName},
                 { @"Description", Description},
-                { @"CheckedByDefault", CheckedByDefault ? @"True" : null}, //don't put checkedbydefault in if it is not set to true.
+                {@"CheckedByDefault", new MDParameter(@"string", @"CheckedByDefault", CheckedByDefault ? @"True" : @"", new [] {@"", @"True", @"False"}, "")}, //don't put checkedbydefault in if it is not set to true.
                 { @"OptionGroup", GroupName},
                 { @"ApplicableAutoText", ApplicableAutoTextRaw},
                 { @"NotApplicableAutoText", NotApplicableAutoTextRaw},
@@ -548,8 +562,8 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 // DependsOn
                 { @"OptionKey", HasDefinedOptionKey ? OptionKey : null},
                 { @"DependsOnKeys", string.Join(';',DependsOnKeys.Select(x=>x.ToString()))},
-                { @"DependsOnMetAction", DependsOnMetAction != EDependsOnAction.ACTION_INVALID ? DependsOnMetAction : null},
-                { @"DependsOnNotMetAction", DependsOnNotMetAction != EDependsOnAction.ACTION_INVALID ? DependsOnNotMetAction : null},
+                { @"DependsOnMetAction", new MDParameter(@"string", @"DependsOnMetAction", DependsOnMetAction != EDependsOnAction.ACTION_INVALID ? DependsOnMetAction.ToString() : "", dependsActions, "")},
+                { @"DependsOnNotMetAction", new MDParameter(@"string", @"DependsOnNotMetAction", DependsOnNotMetAction != EDependsOnAction.ACTION_INVALID ? DependsOnNotMetAction.ToString() : "", dependsActions, "")},
             };
 
             ParameterMap.ReplaceAll(MDParameter.MapIntoParameterMap(parameterDictionary));

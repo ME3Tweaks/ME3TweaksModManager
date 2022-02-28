@@ -10,10 +10,12 @@ using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.mod.editor;
+using PropertyChanged;
 
 namespace ME3TweaksModManager.modmanager.objects.alternates
 {
     [DebuggerDisplay(@"AlternateDLC | {FriendlyName} | {Condition} {Operation}, ConditionalDLC: {ConditionalDLC}, DestDLC: {DestinationDLCFolder}, AltDLC: {AlternateDLCFolder}")]
+    [AddINotifyPropertyChangedInterface]
     public sealed class AlternateDLC : AlternateOption
     {
         public enum AltDLCOperation
@@ -43,8 +45,8 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
             COND_SPECIFIC_DLC_SETUP //Auto - Apply only if the specified DLC exists OR not exists, using +/-
         }
 
-        public AltDLCCondition Condition;
-        public AltDLCOperation Operation;
+        public AltDLCCondition Condition { get; set; }
+        public AltDLCOperation Operation { get; set; }
 
         /// <summary>
         /// Requirements for this manual option to be able to be picked
@@ -74,9 +76,11 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         /// Creates a new, blank Alternate DLC object
         /// </summary>
         /// <param name="alternateDLCFriendlyName"></param>
-        public AlternateDLC(string alternateDLCFriendlyName)
+        public AlternateDLC(string friendlyName, AltDLCCondition condition, AltDLCOperation operation)
         {
-            FriendlyName = alternateDLCFriendlyName;
+            FriendlyName = friendlyName;
+            Condition = condition;
+            Operation = operation;
             BuildParameterMap(null); //Alternates don't need a mod, as nothing is game specific
         }
 
@@ -99,7 +103,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 return;
             }
 
-            if (!Enum.TryParse(properties[@"Condition"], out Condition) || Condition == AltDLCCondition.INVALID_CONDITION)
+            if (!Enum.TryParse<AltDLCCondition>(properties[@"Condition"], out var cond) || cond == AltDLCCondition.INVALID_CONDITION)
             {
                 M3Log.Error($@"Alternate DLC specifies unknown/unsupported condition: {properties[@"Condition"]}"); //do not localize
                 ValidAlternate = false;
@@ -108,7 +112,9 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 return;
             }
 
-            if (!Enum.TryParse(properties[@"ModOperation"], out Operation) || Operation == AltDLCOperation.INVALID_OPERATION)
+            Condition = cond;
+
+            if (!Enum.TryParse<AltDLCOperation>(properties[@"ModOperation"], out var op) || op == AltDLCOperation.INVALID_OPERATION)
             {
                 M3Log.Error($@"Alternate DLC specifies unknown/unsupported operation: {properties[@"ModOperation"]}"); //do not localize
                 ValidAlternate = false;
@@ -116,6 +122,8 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 LoadFailedReason = $@"{M3L.GetString(M3L.string_validation_altdlc_unknownOperation)} {operation}";
                 return;
             }
+
+            Operation = op;
 
             if (properties.TryGetValue(@"Description", out string description))
             {
@@ -577,6 +585,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         {
             var conditions = Enum.GetValues<AltDLCCondition>().Where(x => x != AltDLCCondition.INVALID_CONDITION).Select(x => x.ToString());
             var operations = Enum.GetValues<AltDLCOperation>().Where(x => x != AltDLCOperation.INVALID_OPERATION).Select(x => x.ToString());
+            var dependsActions = Enum.GetValues<EDependsOnAction>().Where(x => x != EDependsOnAction.ACTION_INVALID).Select(x => x.ToString()).Prepend("").ToList();
 
             var parameterDictionary = new Dictionary<string, object>()
             {
@@ -588,7 +597,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 {@"ModDestDLC", DestinationDLCFolder},
                 {@"FriendlyName", FriendlyName},
                 {@"Description", Description},
-                {@"CheckedByDefault", CheckedByDefault ? @"True" : null}, //don't put checkedbydefault in if it is not set to true.
+                {@"CheckedByDefault", new MDParameter(@"string", @"CheckedByDefault", CheckedByDefault ? @"True" : @"", new [] {@"", @"True", @"False"}, "")}, //don't put checkedbydefault in if it is not set to true.
                 {@"OptionGroup", GroupName},
                 {@"ApplicableAutoText", ApplicableAutoTextRaw},
                 {@"NotApplicableAutoText", NotApplicableAutoTextRaw},
@@ -603,8 +612,8 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 // DependsOn
                 {@"OptionKey", HasDefinedOptionKey ? OptionKey : null},
                 {@"DependsOnKeys", string.Join(';',DependsOnKeys.Select(x=>x.ToString()))},
-                {@"DependsOnMetAction", DependsOnMetAction!= EDependsOnAction.ACTION_INVALID ? DependsOnMetAction : null},
-                {@"DependsOnNotMetAction", DependsOnNotMetAction!= EDependsOnAction.ACTION_INVALID ? DependsOnNotMetAction : null},
+                {@"DependsOnMetAction", new MDParameter(@"string", @"DependsOnMetAction", DependsOnMetAction != EDependsOnAction.ACTION_INVALID ? DependsOnMetAction.ToString() : "", dependsActions, "")},
+                {@"DependsOnNotMetAction", new MDParameter(@"string", @"DependsOnNotMetAction", DependsOnNotMetAction != EDependsOnAction.ACTION_INVALID ? DependsOnNotMetAction.ToString() : "", dependsActions, "")},
             };
 
             ParameterMap.ReplaceAll(MDParameter.MapIntoParameterMap(parameterDictionary));

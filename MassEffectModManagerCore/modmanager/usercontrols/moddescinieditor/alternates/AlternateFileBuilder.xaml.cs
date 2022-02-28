@@ -32,7 +32,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor.alternate
         }
 
         public static readonly DependencyProperty TaskHeaderProperty = DependencyProperty.Register(@"TaskHeader", typeof(ModJob.JobHeader?), typeof(AlternateFileBuilder));
-        
+
         public override void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
         {
             if (!HasLoaded)
@@ -95,7 +95,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor.alternate
 
         private void AddAlternateFile()
         {
-            Alternates.Add(new AlternateFile(M3L.GetString(M3L.string_interp_alternateFileX, Alternates.Count + 1)));
+            Alternates.Add(new AlternateFile(M3L.GetString(M3L.string_interp_alternateFileX, Alternates.Count + 1), AlternateFile.AltFileCondition.COND_MANUAL, AlternateFile.AltFileOperation.OP_NOTHING));
         }
 
 
