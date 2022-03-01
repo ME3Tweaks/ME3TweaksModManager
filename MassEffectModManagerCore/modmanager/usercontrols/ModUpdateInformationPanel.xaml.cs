@@ -85,9 +85,24 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 {
                     UpdateClassicMod(ui, null);
                 }
-                else
+                else if (ui is M3OnlineContent.NexusModUpdateInfo nmui)
                 {
-                    M3Utilities.OpenWebpage(ui.mod.ModWebsite);
+                    var domain = @"masseffectlegendaryedition";
+                    switch (nmui.GameId)
+                    {
+                        case 1:
+                            domain = @"masseffect";
+                            break;
+                        case 3:
+                            domain = @"masseffect2";
+                            break;
+                        case 2:
+                            domain = @"masseffect3";
+                            break;
+                    }
+
+                    var url = $@"https://nexusmods.com/{domain}/mods/{nmui.NexusModsId}?tab=files";
+                    M3Utilities.OpenWebpage(url);
                 }
             }
         }
