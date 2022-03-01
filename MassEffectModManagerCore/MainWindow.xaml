@@ -1686,6 +1686,7 @@
                                 <DataTemplate
                                     DataType="mod:Mod">
                                     <Border
+                                        MouseDown="ModLibraryMod_MouseDown"
                                         Padding="5,4">
                                         <Border.Style>
                                             <Style

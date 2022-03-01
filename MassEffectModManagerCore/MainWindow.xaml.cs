@@ -3881,5 +3881,19 @@ namespace ME3TweaksModManager
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        private void ModLibraryMod_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            // Double click to install feature.
+            if (Settings.DoubleClickModInstall && e.ClickCount >= 2 && sender is FrameworkElement fwe && fwe.DataContext is Mod m)
+            {
+                GameTargetWPF t = GetCurrentTarget(m.Game);
+                if (t != null)
+                {
+                    M3Log.Information($@"DoubleClickModInstall triggered for {m.ModName}");
+                    ApplyMod(m, t);
+                }
+            }
+        }
     }
 }

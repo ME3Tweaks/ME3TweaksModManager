@@ -211,9 +211,24 @@
                     </StackPanel>
                     <StackPanel
                         Margin="0,10,0,0"
-                        ui:SharedUIBindings.GenerationOT="true"
                         Grid.Row="3"
                         Grid.Column="0">
+                        <CheckBox
+                            FontWeight="Bold"
+                            Content="Double click mod in library to install"
+                            DockPanel.Dock="Top"
+                            IsChecked="{Binding Path=(modmanager:Settings.DoubleClickModInstall)}" />
+                        <TextBlock
+                            MaxWidth="450"
+                            Margin="0,0,10,0"
+                            Text="When double clicking a mod in the mod library list, perform the same action as pressing 'Apply Mod'. If the correct game is not currently the installation target, the current active one will be used. For mods that don't have options this will immediately trigger an installation."
+                            TextWrapping="Wrap" />
+                    </StackPanel>
+                    <StackPanel
+                        Margin="0,10,0,0"
+                        ui:SharedUIBindings.GenerationOT="true"
+                        Grid.Row="3"
+                        Grid.Column="1">
                         <CheckBox
                             FontWeight="Bold"
                             Content="{DynamicResource string_compressPackagesOnInstall}"
