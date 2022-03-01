@@ -20,7 +20,7 @@ This feature is not part of moddesc.ini specifically; rather it is a feature aut
 There are several packages that must be included:
  - Your squadmate's outfit(s), including the \_Explore version, and the localization files for each. 
     - These need to be uniquely named as BioH_\[Squadmate Base Name]\_[DLC Folder Name]\_[Number].pcc. This ensures that a developer doesn't produce a same named package as another mod might.
-    - The localizations don't need to be modified except for renaming them to match the base filename. You must include localization files for all languages the game ships; that is is INT/FRA/ITA/DEU/RUS. Not shipping these localizations will result in combat banter being silent for the squadmate when wearing that outfit, when the voiceover language is in that specific language.
+    - The localizations don't need to be modified except for renaming them to match the base filename. You must include localization files for all languages the game ships; that is INT/FRA/ITA/DEU. Not shipping these localizations will result in combat banter being silent for the squadmate when wearing that outfit, when the voiceover language is in that specific language.
     - Object instances (exports) in your new outfit package should be renamed to match your DLC name, such as changing the `SFXGameContent` package export name to `SFXGameContent_DLC_MOD_MyOutfit`. This ensures memory uniqueness, so if another outfit is loaded, there won't be collisions in memory, which yields undefined game behavior.
  - A package file containing the images to use for the squad selection UI must be present. This file must be named SFXHenchImages_\[DLC Folder Name].pcc
 
