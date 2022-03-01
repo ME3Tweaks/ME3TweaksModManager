@@ -7,6 +7,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LegendaryExplorerCore.ME1.Unreal.UnhoodBytecode;
+using ME3TweaksModManager.modmanager.squadmates;
+using Newtonsoft.Json;
 
 namespace ME3TweaksModManager.modmanager.objects.deployment.checks
 {
@@ -26,7 +29,177 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                 DialogTitle = M3L.GetString(M3L.string_detectedMiscellaneousIssues),
                 ValidationFunction = CheckModForMiscellaneousIssues
             });
+
+            // Remove this if check if this ever works in ME2/LE2.
+            if (check.ModBeingDeployed.Game.IsGame3())
+            {
+                var installableFiles = check.ModBeingDeployed.GetAllInstallableFiles();
+                if (installableFiles.Any(x => Path.GetFileName(x).Equals(SQMOutfitMerge.SQUADMATE_MERGE_MANIFEST_FILE)))
+                {
+                    // This mod can install potentially a SquadmateOutfitMerge file. We must ensure all localizations are here.
+                    check.DeploymentChecklistItems.Add(new DeploymentChecklistItem()
+                    {
+                        ItemText = "Squadmate Outfit Merge",
+                        ModToValidateAgainst = check.ModBeingDeployed,
+                        DialogMessage = "The following issues were found in relation to the Squadmate Outfit Merge feature, which your mod appears to use due to inclusion of a SquadmateMergeInfo.sqm file.",
+                        DialogTitle = "Squadmate Outfit Merge issues",
+                        ValidationFunction = CheckModForSquadmateOutfitMergeIssues
+                    });
+                }
+            }
         }
+
+        #region Squadmate Outfit Merge
+        private static void CheckModForSquadmateOutfitMergeIssues(DeploymentChecklistItem item)
+        {
+            item.ItemText = "Checking for Squadmate Outfit Merge issues";
+
+            // Validate files
+            var installableFiles = item.ModToValidateAgainst.GetAllRelativeReferences();
+            var mergeManifests = installableFiles.Where(x => Path.GetFileName(x).Equals(SQMOutfitMerge.SQUADMATE_MERGE_MANIFEST_FILE) && x.Contains(item.ModToValidateAgainst.Game.CookedDirName())).Select(x => Path.Combine(item.ModToValidateAgainst.ModPath, x)).ToList();
+            var dlcNames = mergeManifests.Select(x => Directory.GetParent(x).Parent.Name).Distinct().ToArray();
+
+            foreach (var mergeManifest in mergeManifests)
+            {
+                SQMOutfitMerge.SquadmateMergeInfo mergeInfo = JsonConvert.DeserializeObject<SQMOutfitMerge.SquadmateMergeInfo>(File.ReadAllText(mergeManifest));
+
+                foreach (var henchOutfit in mergeInfo.Outfits)
+                {
+                    sqmMergeCheckHenchName(item, henchOutfit, item.ModToValidateAgainst.Game);
+                    sqmMergeCheckHenchPackages(item, henchOutfit, installableFiles);
+                    sqmMergeCheckHenchImages(item, henchOutfit, dlcNames, installableFiles);
+                }
+            }
+
+            //end setup
+            if (!item.HasAnyMessages())
+            {
+                item.ItemText = "No Squadmate Outfit Merge issues detected";
+                item.ToolTip = M3L.GetString(M3L.string_validationOK);
+            }
+            else
+            {
+                item.ItemText = "Detected Squadmate Outfit Merge issues";
+                item.ToolTip = "Deployment found issues with Squadmate Outfit Merge files";
+            }
+        }
+
+        private static void sqmMergeCheckHenchPackages(DeploymentChecklistItem item, SQMOutfitMerge.SquadmateInfoSingle henchOutfit, List<string> installableFiles)
+        {
+            // Localizations that must be included.
+            var packageBases = new[]
+            {
+                henchOutfit.HenchPackage,
+                $@"{henchOutfit.HenchPackage}_Explore",
+            };
+
+            // Make sure base package exist
+            foreach (var packageBase in packageBases)
+            {
+                // Check package exists.
+                var fullPath = installableFiles.FirstOrDefault(x => Path.GetFileNameWithoutExtension(x) == packageBase && Path.GetExtension(x) == @".pcc");
+                if (fullPath == null)
+                {
+                    item.AddBlockingError($"Squadmate outfit package '{packageBase}' does not appear to install along with the mod.");
+                }
+            }
+
+
+            // Localizations check
+            var locs = new[] { @"INT", @"FRA", @"ITA", @"DEU" };
+            foreach (var packageBase in packageBases)
+            {
+                foreach (var loc in locs)
+                {
+                    var locName = $@"{packageBase}_LOC_{loc}";
+                    // Check package exists.
+                    var fullPath = installableFiles.FirstOrDefault(x => Path.GetFileNameWithoutExtension(x) == locName && Path.GetExtension(x) == @".pcc");
+                    if (fullPath == null)
+                    {
+                        item.AddBlockingError($"Localization '{loc}' is missing for hench package {packageBase}.");
+                    }
+                }
+            }
+        }
+
+        private static void sqmMergeCheckHenchImages(DeploymentChecklistItem item, SQMOutfitMerge.SquadmateInfoSingle henchOutfit, string[] dlcNames, List<string> installableFiles)
+        {
+            string[] images = new[] { henchOutfit.AvailableImage, henchOutfit.HighlightImage }; // silhouetteimage is unlikely to be modified so don't bother checking it.
+            foreach (var imageExportPath in images)
+            {
+                bool found = false;
+                bool foundDlcNamePackage = false;
+                foreach (var dlcName in dlcNames)
+                {
+                    var packageFile = $@"SFXHenchImages_{dlcName}";
+
+                    // Check package exists.
+                    var paths = installableFiles.Where(x => Path.GetFileNameWithoutExtension(x) == packageFile && Path.GetExtension(x) == @".pcc").Select(x => Path.Combine(item.ModToValidateAgainst.ModPath, x)).ToList();
+                    if (paths.Count == 0)
+                    {
+                        // We will check at end of loop
+                        continue;
+                    }
+
+                    foundDlcNamePackage = true;
+
+                    foreach (var fullpath in paths)
+                    {
+
+                        // Check image exists in package and is of class Texture2D.
+                        using var package = MEPackageHandler.OpenMEPackage(fullpath);
+                        var export = package.FindExport(imageExportPath);
+                        if (export == null)
+                        {
+                            // We won't check this again until all have been checked due to alternates.
+                            continue;
+                        }
+
+                        found = true;
+                        if (export.ClassName != @"Texture2D")
+                        {
+                            item.AddBlockingError($"Invalid image value '{imageExportPath}': Export must be of type 'Texture2D', the referenced one is of type '{export.ClassName}'.");
+                        }
+
+                        break;
+                    }
+
+                    if (!found)
+                    {
+                        item.AddBlockingError($"Invalid image value '{imageExportPath}': No installable version of '{packageFile}' contains an export with instanced full path of '{imageExportPath}'.");
+                    }
+                }
+
+                if (!foundDlcNamePackage)
+                {
+                    item.AddBlockingError($"Hench images package file not found. The package should be named SFXHenchImages_[DLC_MOD_YourModName].");
+                }
+            }
+        }
+
+        private static void sqmMergeCheckHenchName(DeploymentChecklistItem item, SQMOutfitMerge.SquadmateInfoSingle henchOutfit, MEGame game)
+        {
+            if (game.IsGame3())
+            {
+                switch (henchOutfit.HenchName)
+                {
+                    case "Prothean":
+                    case "Marine":
+                    case "Tali":
+                    case "Liara":
+                    case "EDI":
+                    case "Garrus":
+                    case "Kaidan":
+                    case "Ashley":
+                        break;
+                    default:
+                        item.AddBlockingError($"Unknown 'henchname': {henchOutfit.HenchName}. Values are case sensitive.");
+                        break;
+                }
+            }
+        }
+
+        #endregion
 
 
         /// <summary>

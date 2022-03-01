@@ -30,7 +30,7 @@ namespace ME3TweaksModManager.modmanager.squadmates
 {
     public class SQMOutfitMerge
     {
-        private const string SQUADMATE_MERGE_MANIFEST_FILE = @"SquadmateMergeInfo.sqm";
+        public const string SQUADMATE_MERGE_MANIFEST_FILE = @"SquadmateMergeInfo.sqm";
         public const int STARTING_OUTFIT_CONDITIONAL = 10000;
 
         internal class SquadmateMergeInfo
