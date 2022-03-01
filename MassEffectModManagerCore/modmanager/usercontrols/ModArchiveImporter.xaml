@@ -8,9 +8,7 @@
     xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
     xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
     mc:Ignorable="d"
-    DataContext="{Binding RelativeSource={RelativeSource Self}}"
-    Width="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.8_500_1400', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualWidth, UpdateSourceTrigger=PropertyChanged}"
-    Height="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.7_500', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualHeight, UpdateSourceTrigger=PropertyChanged}">
+    DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <DockPanel
         Margin="0,0">
         <TextBlock

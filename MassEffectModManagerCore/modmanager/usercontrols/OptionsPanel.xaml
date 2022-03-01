@@ -7,30 +7,6 @@
     xmlns:system="clr-namespace:System;assembly=System.Runtime"
     mc:Ignorable="d"
     DataContext="{Binding RelativeSource={RelativeSource Self}}">
-    <UserControl.Width>
-        <MultiBinding Converter="{StaticResource PanelDimensionConverter}">
-            <!-- Take the minimum of either the width (0) or the window width % -->
-            <Binding ElementName="OptionPanel" Mode="OneWay" Path="ActualWidth"/>
-            <Binding RelativeSource="{RelativeSource FindAncestor, AncestorType=Window}" Path="ActualWidth"/>
-            <Binding>
-                <Binding.Source>
-                    <system:Double>0.8</system:Double>
-                </Binding.Source>
-            </Binding>
-        </MultiBinding>
-    </UserControl.Width>
-    <UserControl.Height>
-        <MultiBinding Converter="{StaticResource PanelDimensionConverter}">
-            <!-- Take the minimum of either the width (0) or the window width % -->
-            <Binding ElementName="OptionPanel" Mode="OneWay" Path="ActualHeight"/>
-            <Binding RelativeSource="{RelativeSource FindAncestor, AncestorType=Window}" Path="ActualHeight"/>
-            <Binding>
-                <Binding.Source>
-                    <system:Double>0.8</system:Double>
-                </Binding.Source>
-            </Binding>
-        </MultiBinding>
-    </UserControl.Height>
     <DockPanel Name="OptionPanel" HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="920">
         <TextBlock
             DockPanel.Dock="Top"

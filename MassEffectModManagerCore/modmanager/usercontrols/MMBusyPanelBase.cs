@@ -41,16 +41,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             mainwindow = window as MainWindow;
             window.KeyDown += HandleKeyPress;
             OnPanelVisible();
-
-            // This is a hack to make it know how much to size the content...
-            var timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(60) };
-            timer.Start();
-            timer.Tick += (sender, args) =>
-            {
-                timer.Stop();
-                mainwindow.RaisePropertyChangedFor(@"ActualHeight");
-                mainwindow.RaisePropertyChangedFor(@"ActualWidth");
-            };
         }
 
         /// <summary>

@@ -5,9 +5,7 @@
                        mc:Ignorable="d" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" 
                        xmlns:extensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
                        xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
-                       xmlns:ui="clr-namespace:ME3TweaksModManager.ui"
-                       Width="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.8_500_1400', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualWidth}"
-                       Height="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.7_500', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualHeight}">
+                       xmlns:ui="clr-namespace:ME3TweaksModManager.ui">
     <DockPanel>
         <TextBlock DockPanel.Dock="Top" Text="{DynamicResource string_batchModInstaller}" FontSize="20" FontWeight="Bold" TextAlignment="Center" />
         <TextBlock DockPanel.Dock="Top" Text="{DynamicResource string_description_batchModInstallerAllowsSerialInstall}" TextWrapping="Wrap" TextAlignment="Center" />

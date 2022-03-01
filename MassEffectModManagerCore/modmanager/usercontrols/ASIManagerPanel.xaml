@@ -11,9 +11,7 @@
                        xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
                        xmlns:nativeMods1="clr-namespace:ME3TweaksCoreWPF.NativeMods;assembly=ME3TweaksCoreWPF"
                        DataContext="{Binding RelativeSource={RelativeSource Self}}"
-                       mc:Ignorable="d"
-                       Width="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter=0.9, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualWidth}"
-                       Height="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter=0.8, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualHeight}">
+                       mc:Ignorable="d">
     <UserControl.Resources>
         <DataTemplate DataType="{x:Type nativeMods:ASIMod}">
             <Grid Margin="3" HorizontalAlignment="Stretch">

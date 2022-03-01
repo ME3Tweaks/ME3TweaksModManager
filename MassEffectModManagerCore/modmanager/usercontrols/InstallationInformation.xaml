@@ -6,7 +6,9 @@
                        xmlns:converters="clr-namespace:ME3TweaksModManager.modmanager.converters"
                        xmlns:targets1="clr-namespace:ME3TweaksCoreWPF.Targets;assembly=ME3TweaksCoreWPF"
                        xmlns:gametarget="clr-namespace:ME3TweaksModManager.modmanager.objects.gametarget"
-                       x:Class="ME3TweaksModManager.modmanager.usercontrols.InstallationInformation" mc:Ignorable="d" d:DesignHeight="550" DataContext="{Binding RelativeSource={RelativeSource Self}}" d:DesignWidth="800" Width="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.8_500', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualWidth}" Height="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.8_500', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualHeight}">
+                       x:Class="ME3TweaksModManager.modmanager.usercontrols.InstallationInformation" mc:Ignorable="d" d:DesignHeight="550" 
+                       DataContext="{Binding RelativeSource={RelativeSource Self}}" 
+                       d:DesignWidth="800">
     <UserControl.Resources>
         <converters:InstallationInformationTabVisibilityConverter x:Key="InstallationInformationTabVisibilityConverter" />
     </UserControl.Resources>

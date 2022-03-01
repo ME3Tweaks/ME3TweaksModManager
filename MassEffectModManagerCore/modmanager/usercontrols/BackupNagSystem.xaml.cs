@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Input;
@@ -19,7 +20,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
     /// <summary>
     /// Interaction logic for BackupNagSystem.xaml
     /// </summary>
-    public partial class BackupNagSystem : MMBusyPanelBase, ISizeAdjustable
+    public partial class BackupNagSystem : MMBusyPanelBase
     {
         private bool ME1Installed { get; set; }
         private bool ME2Installed { get; set; }
@@ -65,11 +66,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
         }
 
-        public ISizeAdjustable Self { get; init; }
 
         public BackupNagSystem(List<GameTargetWPF> availableTargets)
         {
-            Self = this;
             BackupService.StaticPropertyChanged += NotifyBackupStatusChanged;
             ME1Installed = availableTargets.Any(x => x.Game == MEGame.ME1);
             ME2Installed = availableTargets.Any(x => x.Game == MEGame.ME2);
@@ -150,8 +149,5 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             InitializeComponent();
             BackupService.RefreshBackupStatus();
         }
-
-        public double Adjustment { get; set; }
-        public double FullSize => mainwindow?.RootDisplayObject.ActualHeight ?? 0;
     }
 }

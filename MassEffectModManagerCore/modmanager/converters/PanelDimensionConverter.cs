@@ -7,28 +7,67 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using ME3TweaksModManager.modmanager.usercontrols;
+using ME3TweaksModManager.modmanager.usercontrols.interfaces;
 using ME3TweaksModManager.ui;
 
 namespace ME3TweaksModManager.modmanager.converters
 {
     public class PanelDimensionConverter : IMultiValueConverter
     {
+        /// <summary>
+        /// The max window dimension default
+        /// </summary>
+        private static readonly double defaultMaxDimensionMultiplier = 0.8;
+
+        /// <summary>
+        /// The 'MaxWidth/MaxHeight' value.
+        /// </summary>
+        private static readonly double defaultMaxDimensionValue = double.NaN;
+
+
         public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            if (values.Length != 2)
+            if (values.Length != 3)
                 return double.NaN; // Default I guess
 
             if (values[0] is SingleItemPanel2 sip2 && sip2.Content is MMBusyPanelBase panel && values[1] is double windowDimension && parameter is string axis)
             {
                 var window = panel.window;
                 Size windowSize = new Size(window.ActualWidth, window.ActualHeight);
-                
-                panel.Measure(windowSize);
-                var panelDesiredSize = panel.DesiredSize; // Requested content size.
-                var maxWindowDimension = windowDimension * 0.8;
-                var panelDesiredDimension = axis == @"W" ? panelDesiredSize.Width : panelDesiredSize.Height;
-                
-                return Math.Min(panelDesiredDimension, maxWindowDimension); // If the desired size is less than the max window dimension, use that. Otherwise use the maximum.
+                panel.Measure(windowSize); // Update DesiredSize.
+
+                bool isWidth = axis == @"W";
+                var panelDesiredDimension = isWidth ? panel.DesiredSize.Width : panel.DesiredSize.Height;
+
+                if (panel is ISizeAdjustable sizeAdjustable)
+                {
+                    // This panel has specific limits set on it.
+                    var maxWindowDimension = windowDimension * (isWidth ? sizeAdjustable.MaxWindowWidthPercent : sizeAdjustable.MaxWindowHeightPercent);
+                    var result = Math.Min(panelDesiredDimension, maxWindowDimension);
+
+                    var maxAllowedSize = isWidth ? sizeAdjustable.MaxControlWidth : sizeAdjustable.MaxControlHeight;
+                    if (maxAllowedSize > 0)
+                    {
+                        // Do not let value be bigger than max allowed size.
+                        result = Math.Min(maxAllowedSize, result);
+                    }
+
+                    var minAllowedSize = isWidth ? sizeAdjustable.MinControlWidth : sizeAdjustable.MinControlHeight;
+                    if (minAllowedSize > 0)
+                    {
+                        result = Math.Max(minAllowedSize, result);
+                    }
+
+                    return result;
+                }
+                else
+                {
+                    // Default implementation
+                    var maxWindowDimension = windowDimension * defaultMaxDimensionMultiplier;
+                    return Math.Min(panelDesiredDimension, maxWindowDimension); // If the desired size is less than the max window dimension, use that. Otherwise use the maximum.
+                }
+
+
             }
 
             return double.NaN; // Not compatible.

@@ -5,9 +5,7 @@
                        xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
                        xmlns:me3Tweaks="clr-namespace:ME3TweaksModManager.modmanager.me3tweaks"
                        mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800"
-                       DataContext="{Binding RelativeSource={RelativeSource Self}}"
-                       Width="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.8_500_700', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualWidth}"
-                       Height="{Binding Self, Converter={StaticResource GenerationsSizeAdjustedPercentageConverter}, ConverterParameter='0.0_200_425_100_100'}">
+                       DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <UserControl.Resources>
         <DataTemplate DataType="{x:Type backup:GameBackupStatus}">
             <DockPanel LastChildFill="False" Margin="7,0">

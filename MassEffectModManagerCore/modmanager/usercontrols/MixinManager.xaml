@@ -5,9 +5,7 @@
                        mc:Ignorable="d" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
                        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" 
                        xmlns:fa5="http://schemas.fontawesome.com/icons/"
-                       xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
-                       Width="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.8_500_1400', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualWidth}"
-                       Height="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.7_500', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualHeight}">
+                       xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols">
     <DockPanel>
         <DockPanel DockPanel.Dock="Bottom" Margin="0,5,0,0">
             <Button MinWidth="70" Content="{DynamicResource string_close}" Margin="5,0,0,0" Command="{Binding CloseCommand}" Padding="7,4" DockPanel.Dock="Right" />

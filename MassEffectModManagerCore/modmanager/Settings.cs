@@ -295,6 +295,13 @@ namespace ME3TweaksModManager.modmanager
             set => SetProperty(ref _skipLELauncher, value);
         }
 
+        private static bool _doubleClickModInstall = false;
+        public static bool DoubleClickModInstall
+        {
+            get => _doubleClickModInstall;
+            set => SetProperty(ref _doubleClickModInstall, value);
+        }
+
         public static readonly string SettingsPath = Path.Combine(M3Utilities.GetAppDataFolder(), "settings.ini");
 
         public static void Load()
@@ -343,6 +350,7 @@ namespace ME3TweaksModManager.modmanager
             DarkTheme = LoadSettingBool(settingsIni, "UI", "DarkTheme", false);
 
             ConfigureNXMHandlerOnBoot = LoadSettingBool(settingsIni, "ModManager", "ConfigureNXMHandlerOnBoot", true);
+            DoubleClickModInstall = LoadSettingBool(settingsIni, "ModManager", "DoubleClickModInstall", false);
 
             // LEGENDARY
             SkipLELauncher = LoadSettingBool(settingsIni, "ModManager", "SkipLELauncher", true);
@@ -519,6 +527,7 @@ namespace ME3TweaksModManager.modmanager
                 SaveSettingBool(settingsIni, "ModManager", "GenerationSettingOT", GenerationSettingOT);
                 SaveSettingBool(settingsIni, "ModManager", "GenerationSettingLE", GenerationSettingLE);
                 SaveSettingString(settingsIni, "ModManager", "SelectedFilters", SelectedFilters);
+                SaveSettingBool(settingsIni, "ModManager", "DoubleClickModInstall", DoubleClickModInstall);
 
                 SaveSettingBool(settingsIni, "ModMaker", "AutoAddControllerMixins", ModMakerControllerModOption);
                 SaveSettingBool(settingsIni, "ModMaker", "AutoInjectCustomKeybinds", ModMakerAutoInjectCustomKeybindsOption);

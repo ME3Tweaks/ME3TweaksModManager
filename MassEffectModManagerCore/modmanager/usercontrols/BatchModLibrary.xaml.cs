@@ -13,6 +13,7 @@ using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.loaders;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.mod;
+using ME3TweaksModManager.modmanager.usercontrols.interfaces;
 using ME3TweaksModManager.modmanager.windows;
 using ME3TweaksModManager.ui;
 using Microsoft.AppCenter.Analytics;
@@ -23,7 +24,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
     /// <summary>
     /// Interaction logic for BatchModLibrary.xaml
     /// </summary>
-    public partial class BatchModLibrary : MMBusyPanelBase
+    public partial class BatchModLibrary : MMBusyPanelBase, ISizeAdjustable
     {
         public BatchLibraryInstallQueue SelectedBatchQueue { get; set; }
         public Mod SelectedModInGroup { get; set; }
@@ -187,6 +188,14 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 ModDescriptionText = SelectedModInGroup.DisplayedModDescription;
             }
         }
+
+        // ISizeAdjustbale Interface
+        public double MaxWindowWidthPercent { get; set; } = 0.85;
+        public double MaxWindowHeightPercent { get; set; } = 0.85;
+        public double MaxControlWidth { get; set; } = double.NaN;
+        public double MaxControlHeight { get; set; } = double.NaN;
+        public double MinControlWidth { get; set; } = 0;
+        public double MinControlHeight { get; set; } = 550;
     }
 
     public class BatchLibraryInstallQueue : INotifyPropertyChanged

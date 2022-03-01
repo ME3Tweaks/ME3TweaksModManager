@@ -4,6 +4,7 @@
                        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
                        xmlns:objects="clr-namespace:ME3TweaksModManager.modmanager.objects"
                        xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
+                       MaxWidth="900"
                        mc:Ignorable="d">
     <DockPanel>
         <TextBlock DockPanel.Dock="Top" Text="{DynamicResource string_fullGameRestore}" FontSize="24" FontWeight="Bold" TextAlignment="Center" Margin="0,5" />

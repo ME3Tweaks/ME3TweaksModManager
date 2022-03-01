@@ -8,9 +8,7 @@
     xmlns:modmanager="clr-namespace:ME3TweaksModManager.modmanager"
     mc:Ignorable="d"
     d:DesignHeight="450"
-    d:DesignWidth="800"
-    Width="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.8_500_900', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualWidth}"
-    Height="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.5_500', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualHeight}">
+    d:DesignWidth="800">
     <UserControl.Resources>
         <Storyboard
             x:Key="OpenProgressPanel"

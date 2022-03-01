@@ -4,17 +4,18 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ME3TweaksModManager.ui"
-             xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
              xmlns:system="clr-namespace:System;assembly=System.Runtime"
              mc:Ignorable="d" 
              VerticalContentAlignment="Center"
              HorizontalContentAlignment="Center"
              d:DesignHeight="450" d:DesignWidth="800">
     <ContentControl.Width>
-        <MultiBinding Converter="{StaticResource PanelDimensionConverter}" ConverterParameter="W" diag:PresentationTraceSources.TraceLevel="High">
+        <MultiBinding Converter="{StaticResource PanelDimensionConverter}" ConverterParameter="W">
             <!-- Take the minimum of either the width (0) or the window width % -->
             <Binding RelativeSource="{RelativeSource Self}"/>
-            <Binding RelativeSource="{RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}}" Path="ActualWidth" UpdateSourceTrigger="PropertyChanged"/>
+            <Binding RelativeSource="{RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}}" Path="ActualWidth"/>
+            <Binding Path="DummyProperty"/>
+
             <!--
             <Binding>
                 <Binding.Source>
@@ -28,6 +29,7 @@
             <!-- Take the minimum of either the width (0) or the window width % -->
             <Binding RelativeSource="{RelativeSource Self}"/>
             <Binding RelativeSource="{RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}}" Path="ActualHeight" UpdateSourceTrigger="PropertyChanged"/>
+            <Binding Path="DummyProperty"/>
             <!--
             <Binding>
                 <Binding.Source>

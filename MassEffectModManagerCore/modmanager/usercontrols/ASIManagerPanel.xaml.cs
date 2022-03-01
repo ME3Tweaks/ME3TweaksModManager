@@ -16,6 +16,7 @@ using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.usercontrols.interfaces;
 using ME3TweaksModManager.ui;
 using PropertyChanged;
 
@@ -25,7 +26,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
     /// Interaction logic for ASIManager.xaml
     /// </summary>
     [AddINotifyPropertyChangedInterface]
-    public partial class ASIManagerPanel : MMBusyPanelBase
+    public partial class ASIManagerPanel : MMBusyPanelBase, ISizeAdjustable
     {
         public int SelectedTabIndex { get; set; }
         private object SelectedASIObject { get; set; }
@@ -287,5 +288,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             //    UpdateSelectionTexts(selectedItem);
             //}
         }
+
+        public double MaxWindowWidthPercent { get; set; } = 0.85;
+        public double MaxWindowHeightPercent { get; set; } = 0.85;
+        public double MaxControlWidth { get; set; } = 990;
+        public double MaxControlHeight { get; set; } = double.NaN;
+        public double MinControlWidth { get; set; } = 0;
+        public double MinControlHeight { get; set; } = 550;
     }
 }

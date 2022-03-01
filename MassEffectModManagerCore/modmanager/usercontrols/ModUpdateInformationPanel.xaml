@@ -7,8 +7,6 @@
     mc:Ignorable="d"
     d:DesignHeight="500"
     d:DesignWidth="500"
-    Width="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.8_500_900', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualWidth}"
-    Height="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.7_500', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualHeight}"
     DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <UserControl.Resources>
         <converters:BoolToVisibilityConverter

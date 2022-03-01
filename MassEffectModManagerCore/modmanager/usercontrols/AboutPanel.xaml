@@ -5,9 +5,7 @@
                        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
                        xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
                        xmlns:modmanagercore="clr-namespace:ME3TweaksModManager"
-                       xmlns:ui="clr-namespace:ME3TweaksModManager.ui"
-                       Width="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.8_500_600', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualWidth}"
-                       Height="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.5_500_700', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualHeight}">
+                       xmlns:ui="clr-namespace:ME3TweaksModManager.ui">
     <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0" Background="#115688">
         <Grid.RowDefinitions>
             <RowDefinition Height="128" />

@@ -29,7 +29,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             this.targetsList = targetsList;
             LoadCommands();
-            Self = this;
         }
 
         public ICommand CloseCommand { get; set; }
@@ -58,8 +57,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private void OnBackupStatusChanged()
         {
-            Adjustment = -26 * GameBackups.Count(x => !x.BackupOptionsVisible);
-            TriggerPropertyChangedFor(nameof(Self));
+
         }
 
         public override void OnPanelVisible()
@@ -96,8 +94,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             OnBackupStatusChanged();
         }
-        public double Adjustment { get; set; }
-        public double FullSize => mainwindow?.RootDisplayObject.ActualHeight ?? 0;
-        public ISizeAdjustable Self { get; init; }
+
+        // ISizeAdjustable Interface
+        public double MaxWindowWidthPercent { get; set; } = 0.8;
+        public double MaxWindowHeightPercent { get; set; } = 0.85;
+        public double MaxControlWidth { get; set; } = 875;
+        public double MaxControlHeight { get; set; } = Double.NaN;
+        public double MinControlWidth { get; set; } = 0;
+        public double MinControlHeight { get; set; } = 600;
     }
 }

@@ -5,9 +5,7 @@
                        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                        xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
                        xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
-                       DataContext="{Binding RelativeSource={RelativeSource Self}}"
-                       Width="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.9_400_900', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualWidth}"
-                       Height="{Binding Self, Converter={StaticResource GenerationsSizeAdjustedPercentageConverter}, ConverterParameter='0.0_200_700_230_270'}">
+                       DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <DockPanel>
         <StackPanel DockPanel.Dock="Top">
             <TextBlock Text="{DynamicResource string_consoleKeyKeybinder}" FontSize="20" FontWeight="Bold" TextAlignment="Center" DockPanel.Dock="Top" />

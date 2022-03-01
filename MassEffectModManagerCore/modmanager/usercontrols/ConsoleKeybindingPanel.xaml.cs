@@ -36,7 +36,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
     /// <summary>
     /// Interaction logic for ConsoleKeybindingPanel.xaml
     /// </summary>
-    public partial class ConsoleKeybindingPanel : MMBusyPanelBase, ISizeAdjustable
+    public partial class ConsoleKeybindingPanel : MMBusyPanelBase
     {
         public bool IsListeningForKey { get; set; }
 
@@ -56,7 +56,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public ConsoleKeybindingPanel()
         {
             DataContext = this;
-            Self = this;
             LoadCommands();
         }
 
@@ -790,9 +789,5 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
             return null; //Not usable
         }
-
-        public double Adjustment { get; set; }
-        public double FullSize => mainwindow?.RootDisplayObject.ActualHeight ?? 0;
-        public ISizeAdjustable Self { get; init; }
     }
 }

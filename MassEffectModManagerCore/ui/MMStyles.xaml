@@ -22,10 +22,7 @@
     <converters1:GameToVisibilityConverter x:Key="GameToVisibilityConverter" />
     <helpers:FlightingVisibilityConverter x:Key="FlightingVisibilityConverter"/>
     <converters1:LocalizationConverter x:Key="LocalizationConverter" />
-    <converters1:SizePercentageConverter x:Key="SizePercentageConverter" />
     <converters1:PanelDimensionConverter x:Key="PanelDimensionConverter"/>
-    <converters1:GenerationsSizePercentageConverter x:Key="GenerationsSizePercentageConverter" />
-    <converters1:GenerationsSizeAdjustedPercentageConverter x:Key="GenerationsSizeAdjustedPercentageConverter" />
     <converters1:StringMatchToBoolConverter x:Key="StringMatchToBoolConverter"/>
     <converters1:GameToTextureModdedIconConverter x:Key="GameToTextureModdedIconConverter"/>
     <converters:GameTargetConverter x:Key="GameTargetConverter"/>

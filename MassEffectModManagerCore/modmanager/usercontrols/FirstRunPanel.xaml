@@ -5,9 +5,7 @@
     xmlns:modmanager="clr-namespace:ME3TweaksModManager.modmanager"
     mc:Ignorable="d"
     d:DesignHeight="450"
-    DataContext="{Binding RelativeSource={RelativeSource Self}}"
-    Width="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.8_500_750', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualWidth}"
-    Height="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.8_400_550', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualHeight}">
+    DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <DockPanel>
         <StackPanel
             Orientation="Horizontal"

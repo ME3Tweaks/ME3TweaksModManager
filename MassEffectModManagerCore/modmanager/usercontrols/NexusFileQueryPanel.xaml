@@ -7,10 +7,7 @@
     xmlns:ui="clr-namespace:ME3TweaksModManager.ui"
     xmlns:generic="clr-namespace:ME3TweaksModManager.modmanager.usercontrols.generic"
     mc:Ignorable="d"
-    DataContext="{Binding RelativeSource={RelativeSource Self}}"
-    Width="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.8_500_1200', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualWidth}"
-    Height="{Binding Converter={StaticResource SizePercentageConverter}, ConverterParameter='0.85_500', RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}},Path=ActualHeight}">
-
+    DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <DockPanel>
         <TextBlock
             TextAlignment="Center"
