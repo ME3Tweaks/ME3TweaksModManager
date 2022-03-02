@@ -24,6 +24,7 @@ using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.merge.dlc;
 using ME3TweaksModManager.modmanager.objects;
+using ME3TweaksModManager.modmanager.objects.merge.squadmate;
 using Newtonsoft.Json;
 
 namespace ME3TweaksModManager.modmanager.squadmates
@@ -72,77 +73,6 @@ namespace ME3TweaksModManager.modmanager.squadmates
             }
         }
 
-
-        public class SquadmateInfoSingle
-        {
-            [JsonProperty(@"henchname")]
-            public string HenchName { get; set; }
-
-            [JsonProperty(@"henchpackage")]
-            public string HenchPackage { get; set; }
-
-            [JsonProperty(@"highlightimage")]
-            public string HighlightImage { get; set; }
-
-            [JsonProperty(@"availableimage")]
-            public string AvailableImage { get; set; }
-
-            //[JsonProperty(@"deadimage")]
-            //public string DeadImage { get; set; }
-
-            [JsonProperty(@"silhouetteimage")]
-            public string SilhouetteImage { get; set; }
-
-            [JsonProperty(@"descriptiontext0")]
-            public int DescriptionText0 { get; set; }
-
-            [JsonProperty(@"customtoken0")]
-            public int CustomToken0 { get; set; }
-
-            /// <summary>
-            /// The index of the conditional function to check if this outfit is the selected one when loading
-            /// </summary>
-            [JsonIgnore]
-            public int ConditionalIndex { get; set; }
-
-            /// <summary>
-            /// The outfit index that uniquely identifies this outfit
-            /// </summary>
-            [JsonIgnore]
-            public int AppearanceId { get; set; }
-
-            /// <summary>
-            /// The outfit index that is set in the conditionals to define this outfit
-            /// </summary>
-            [JsonIgnore]
-            public int MemberAppearanceValue { get; set; }
-
-            /// <summary>
-            /// Used to add values to inis
-            /// </summary>
-            [JsonIgnore]
-            public string DLCName { get; set; }
-
-            public Dictionary<string, string> ToPropertyDictionary()
-            {
-                var dict = new Dictionary<string, string>
-                {
-                    [@"AppearanceId"] = AppearanceId.ToString(),
-                    [@"MemberAppearanceValue"] = MemberAppearanceValue.ToString(),
-                    [@"MemberTag"] = $@"hench_{HenchName.ToLower()}",
-                    [@"MemberAppearancePlotLabel"] = $@"Appearance{HenchName}",
-                    [@"HighlightImage"] = HighlightImage,
-                    [@"AvailableImage"] = AvailableImage,
-                    [@"DeadImage"] = @"GUI_Henchmen_Images.PlaceHolder", // Game 3
-                    [@"SilhouetteImage"] = SilhouetteImage,
-                    [@"DescriptionText[0]"] = DescriptionText0.ToString(),
-                    [@"CustomToken0[0]"] = CustomToken0.ToString()
-                };
-                return dict;
-            }
-        }
-
-
         private static StructProperty GeneratePlotStreamingElement(string packageName, int conditionalNum)
         {
             PropertyCollection pc = new PropertyCollection();
@@ -159,6 +89,7 @@ namespace ME3TweaksModManager.modmanager.squadmates
             M3Log.Information($@"SQMMERGE: Generating outfit int for {game} {squadmateName}");
             if (game.IsGame2())
             {
+                // This is if we ever implement it into Game 2
                 switch (squadmateName)
                 {
                     case @"Convict": return 314;
@@ -193,10 +124,28 @@ namespace ME3TweaksModManager.modmanager.squadmates
             throw new Exception(M3L.GetString(M3L.string_interp_invalidHenchNameSquadmateNameValueIsCaseSensitive, squadmateName));
         }
 
-        public static void BuildBioPGlobal(GameTargetWPF target)
+        /// <summary>
+        /// Returns if the specified target has any squadmate outfit merge files.
+        /// </summary>
+        /// <param name="target"></param>
+        public static bool NeedsMergedGame3(GameTargetWPF target)
         {
-            M3MergeDLC.RemoveMergeDLC(target);
-            var loadedFiles = MELoadedFiles.GetFilesLoadedInGame(target.Game, gameRootOverride: target.TargetPath);
+            if (!target.Game.IsGame3()) return false;
+            var sqmSupercedances = M3Directories.GetFileSupercedances(target, new[] { @".sqm" });
+            return sqmSupercedances.TryGetValue(SQUADMATE_MERGE_MANIFEST_FILE, out var infoList) && infoList.Count > 0;
+        }
+
+        /// <summary>
+        /// Generates squadmate outfit information for Game 3. The merge DLC must be already generated.
+        /// </summary>
+        /// <param name="mergeDLC"></param>
+        /// <exception cref="Exception"></exception>
+        public static void RunGame3SquadmateOutfitMerge(M3MergeDLC mergeDLC)
+        {
+            if (!mergeDLC.Generated)
+                return; // Do not run on non-generated. It may be that a prior check determined this merge was not necessary 
+
+            var loadedFiles = MELoadedFiles.GetFilesLoadedInGame(mergeDLC.Target.Game, gameRootOverride: mergeDLC.Target.TargetPath);
             //var mergeFiles = loadedFiles.Where(x =>
             //    x.Key.StartsWith(@"BioH_") && x.Key.Contains(@"_DLC_MOD_") && x.Key.EndsWith(@".pcc") && !x.Key.Contains(@"_LOC_") && !x.Key.Contains(@"_Explore."));
 
@@ -207,7 +156,7 @@ namespace ME3TweaksModManager.modmanager.squadmates
             int currentConditional = STARTING_OUTFIT_CONDITIONAL;
 
             // Scan squadmate merge files
-            var sqmSupercedances = M3Directories.GetFileSupercedances(target, new[] { @".sqm" });
+            var sqmSupercedances = M3Directories.GetFileSupercedances(mergeDLC.Target, new[] { @".sqm" });
             if (sqmSupercedances.TryGetValue(SQUADMATE_MERGE_MANIFEST_FILE, out var infoList))
             {
                 infoList.Reverse();
@@ -215,9 +164,9 @@ namespace ME3TweaksModManager.modmanager.squadmates
                 {
                     M3Log.Information($@"SQMMERGE: Processing {dlc}");
 
-                    var jsonFile = Path.Combine(M3Directories.GetDLCPath(target), dlc, target.Game.CookedDirName(), SQUADMATE_MERGE_MANIFEST_FILE);
+                    var jsonFile = Path.Combine(M3Directories.GetDLCPath(mergeDLC.Target), dlc, mergeDLC.Target.Game.CookedDirName(), SQUADMATE_MERGE_MANIFEST_FILE);
                     var infoPackage = JsonConvert.DeserializeObject<SquadmateMergeInfo>(File.ReadAllText(jsonFile));
-                    if (!infoPackage.Validate(dlc, target, loadedFiles))
+                    if (!infoPackage.Validate(dlc, mergeDLC.Target, loadedFiles))
                     {
                         continue; // skip this
                     }
@@ -260,7 +209,7 @@ namespace ME3TweaksModManager.modmanager.squadmates
                         var newLSK = EntryCloner.CloneEntry(lsk);
                         newLSK.WriteProperty(new NameProperty(fName, @"PackageName"));
 
-                        if (target.Game.IsGame3())
+                        if (mergeDLC.Target.Game.IsGame3())
                         {
                             // Game 3 has _Explore files too
                             fName += @"_Explore";
@@ -283,10 +232,10 @@ namespace ME3TweaksModManager.modmanager.squadmates
                     foreach (var outfit in sqm)
                     {
                         // find item to add to
-                        buildPlotElementObject(plotStreaming, outfit, target.Game, false);
-                        if (target.Game.IsGame3())
+                        buildPlotElementObject(plotStreaming, outfit, mergeDLC.Target.Game, false);
+                        if (mergeDLC.Target.Game.IsGame3())
                         {
-                            buildPlotElementObject(plotStreaming, outfit, target.Game, true);
+                            buildPlotElementObject(plotStreaming, outfit, mergeDLC.Target.Game, true);
                         }
                     }
                 }
@@ -298,16 +247,13 @@ namespace ME3TweaksModManager.modmanager.squadmates
 
                 bioWorldInfo.WriteProperties(props);
 
-
-                M3MergeDLC.GenerateMergeDLC(target, Guid.NewGuid());
-
                 // Save BioP_Global into DLC
-                var cookedDir = Path.Combine(M3Directories.GetDLCPath(target), M3MergeDLC.MERGE_DLC_FOLDERNAME, target.Game.CookedDirName());
+                var cookedDir = Path.Combine(M3Directories.GetDLCPath(mergeDLC.Target), M3MergeDLC.MERGE_DLC_FOLDERNAME, mergeDLC.Target.Game.CookedDirName());
                 var outP = Path.Combine(cookedDir, @"BioP_Global.pcc");
                 biopGlobal.Save(outP);
 
                 // Generate conditionals file
-                if (target.Game.IsGame3())
+                if (mergeDLC.Target.Game.IsGame3())
                 {
                     CNDFile cnd = new CNDFile();
                     cnd.ConditionalEntries = new List<CNDFile.ConditionalEntry>();
@@ -316,7 +262,7 @@ namespace ME3TweaksModManager.modmanager.squadmates
                     {
                         foreach (var outfit in sqm)
                         {
-                            var scText = $@"(plot.ints[{GetSquadmateOutfitInt(outfit.HenchName, target.Game)}] == i{outfit.MemberAppearanceValue})";
+                            var scText = $@"(plot.ints[{GetSquadmateOutfitInt(outfit.HenchName, mergeDLC.Target.Game)}] == i{outfit.MemberAppearanceValue})";
                             var compiled = ME3ConditionalsCompiler.Compile(scText);
                             cnd.ConditionalEntries.Add(new CNDFile.ConditionalEntry()
                             { Data = compiled, ID = outfit.ConditionalIndex });
@@ -325,17 +271,17 @@ namespace ME3TweaksModManager.modmanager.squadmates
 
                     cnd.ToFile(Path.Combine(cookedDir, $@"Conditionals{M3MergeDLC.MERGE_DLC_FOLDERNAME}.cnd"));
                 }
-                else if (target.Game.IsGame2())
+                else if (mergeDLC.Target.Game.IsGame2())
                 {
                     var startupF = Path.Combine(cookedDir, $@"Startup_{M3MergeDLC.MERGE_DLC_FOLDERNAME}.pcc");
                     var startup = MEPackageHandler.OpenMEPackageFromStream(M3Utilities.GetResourceStream(
-                        $@"ME3TweaksModManager.modmanager.merge.dlc.{target.Game}.Startup_{M3MergeDLC.MERGE_DLC_FOLDERNAME}.pcc"));
+                        $@"ME3TweaksModManager.modmanager.merge.dlc.{mergeDLC.Target.Game}.Startup_{M3MergeDLC.MERGE_DLC_FOLDERNAME}.pcc"));
                     var conditionalClass =
                         startup.FindExport($@"PlotManager{M3MergeDLC.MERGE_DLC_FOLDERNAME}.BioAutoConditionals");
 
                     // Add Conditional Functions
                     FileLib fl = new FileLib(startup);
-                    bool initialized = fl.Initialize(new RelativePackageCache() { RootPath = M3Directories.GetBioGamePath(target) });
+                    bool initialized = fl.Initialize(new RelativePackageCache() { RootPath = M3Directories.GetBioGamePath(mergeDLC.Target) });
                     if (!initialized)
                     {
                         throw new Exception(
@@ -354,7 +300,7 @@ namespace ME3TweaksModManager.modmanager.squadmates
                             func.indexValue = 0;
 
                             var scText = new StreamReader(M3Utilities.GetResourceStream(
-                                    $@"ME3TweaksModManager.modmanager.squadmates.{target.Game}.HasOutfitOnConditional.txt"))
+                                    $@"ME3TweaksModManager.modmanager.squadmates.{mergeDLC.Target.Game}.HasOutfitOnConditional.txt"))
                                 .ReadToEnd();
 
                             scText = scText.Replace(@"%CONDITIONALNUM%", outfit.ConditionalIndex.ToString());
@@ -387,7 +333,7 @@ namespace ME3TweaksModManager.modmanager.squadmates
 
 
                 // Add startup package, member appearances
-                if (target.Game.IsGame2())
+                if (mergeDLC.Target.Game.IsGame2())
                 {
                     var bioEngine = Path.Combine(cookedDir, @"BIOEngine.ini");
                     var ini = DuplicatingIni.LoadIni(bioEngine);
@@ -401,9 +347,9 @@ namespace ME3TweaksModManager.modmanager.squadmates
 
 
                 }
-                else if (target.Game.IsGame3())
+                else if (mergeDLC.Target.Game.IsGame3())
                 {
-                    var mergeCoalFile = Path.Combine(M3Directories.GetDLCPath(target), M3MergeDLC.MERGE_DLC_FOLDERNAME, target.Game.CookedDirName(), $@"Default_{M3MergeDLC.MERGE_DLC_FOLDERNAME}.bin");
+                    var mergeCoalFile = Path.Combine(M3Directories.GetDLCPath(mergeDLC.Target), M3MergeDLC.MERGE_DLC_FOLDERNAME, mergeDLC.Target.Game.CookedDirName(), $@"Default_{M3MergeDLC.MERGE_DLC_FOLDERNAME}.bin");
                     var mergeCoal = CoalescedConverter.DecompileGame3ToMemory(new MemoryStream(File.ReadAllBytes(mergeCoalFile)));
 
                     // Member appearances

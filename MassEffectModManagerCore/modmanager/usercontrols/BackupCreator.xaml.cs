@@ -19,7 +19,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
     /// <summary>
     /// Interaction logic for BackupRestoreManager.xaml
     /// </summary>
-    public partial class BackupCreator : MMBusyPanelBase, ISizeAdjustable
+    public partial class BackupCreator : MMBusyPanelBase
     {
         public bool AnyGameMissingBackup => BackupService.AnyGameMissingBackup(MEGameSelector.GetEnabledGames()); // We do not check the launcher.
         public ObservableCollectionExtended<GameBackupWrapper> GameBackups { get; } = new ObservableCollectionExtended<GameBackupWrapper>();
@@ -96,11 +96,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         }
 
         // ISizeAdjustable Interface
-        public double MaxWindowWidthPercent { get; set; } = 0.8;
-        public double MaxWindowHeightPercent { get; set; } = 0.85;
-        public double MaxControlWidth { get; set; } = 875;
-        public double MaxControlHeight { get; set; } = Double.NaN;
-        public double MinControlWidth { get; set; } = 0;
-        public double MinControlHeight { get; set; } = 600;
+        public override double MaxWindowHeightPercent { get; set; } = 0.85;
     }
 }

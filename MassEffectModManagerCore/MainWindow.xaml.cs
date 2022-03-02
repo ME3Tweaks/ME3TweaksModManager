@@ -46,6 +46,8 @@ using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.loaders;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.me3tweaks;
+using ME3TweaksModManager.modmanager.merge.dlc;
+using ME3TweaksModManager.modmanager.merge.game2email;
 using ME3TweaksModManager.modmanager.nexusmodsintegration;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.installer;
@@ -1242,33 +1244,36 @@ namespace ME3TweaksModManager
         /// <param name="control">Control to show or queue</param>
         internal void ReleaseBusyControl()
         {
-            var closingPanel = BusyContentM3 as SingleItemPanel2;
-            closingPanel?.DetatchControl();
+            if (BusyContentM3 is SingleItemPanel2 singleItemPanel)
+            {
+                var actualClosingPanel = singleItemPanel.Content as MMBusyPanelBase;
+                singleItemPanel.DetatchControl(); // Seems to reduce memory leakage due to how ContentPresenter works in BusyHost.
+                BusyContentM3 = null; // Remove existing reference to panel. Maybe reduces memory leakage...
 
-            var closingPanel2 = closingPanel.Content as MMBusyPanelBase;
-            BusyContentM3 = null;
-            if (closingPanel2 != null)
-            {
-                HandlePanelResult(closingPanel2.Result);
-            }
+                // If somehow an empty panel was installed
+                if (actualClosingPanel != null)
+                {
+                    HandlePanelResult(actualClosingPanel.Result);
+                }
 
-            if (queuedUserControls.Count == 0)
-            {
-                IsBusy = false;
-                System.Threading.Tasks.Task.Factory.StartNew(() =>
+                if (queuedUserControls.Count == 0)
                 {
-                    // this is to force some items that are no longer relevant to be cleaned up.
-                    // for some reason commands fire even though they are no longer attached to the interface
-                    Thread.Sleep(3000);
-                    GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
-                    GC.Collect();
-                });
-            }
-            else
-            {
-                if (queuedUserControls.TryDequeue(out var control))
+                    IsBusy = false;
+                    System.Threading.Tasks.Task.Factory.StartNew(() =>
+                    {
+                        // this is to force some items that are no longer relevant to be cleaned up.
+                        // for some reason commands fire even though they are no longer attached to the interface
+                        Thread.Sleep(3000);
+                        GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
+                        GC.Collect();
+                    });
+                }
+                else
                 {
-                    BusyContentM3 = new SingleItemPanel2(control);
+                    if (queuedUserControls.TryDequeue(out var control))
+                    {
+                        BusyContentM3 = new SingleItemPanel2(control);
+                    }
                 }
             }
         }
@@ -1296,9 +1301,42 @@ namespace ME3TweaksModManager
                 SyncPlotManagerForTarget(v);
             }
 
+            // MERGE DLC
+
+            // Todo: Persistence? That sounds miserable
+            var targetMergeMapping = new Dictionary<GameTargetWPF, M3MergeDLC>();
+            if (result.NeedsMergeDLC)
+            {
+                // Remove any if existing.
+                foreach (var mergeTarget in result.GetMergeTargets())
+                {
+                    M3MergeDLC.RemoveMergeDLC(mergeTarget);
+
+                    var mergeDLC = new M3MergeDLC(mergeTarget);
+                    targetMergeMapping[mergeTarget] = mergeDLC;
+
+                    // Generate a new one - IF NECESSARY!
+                    // This is so if user deletes merge DLC it doesn't re-create itself immediately even if it's not necessary, e.g. user removed all merge DLC-eligible items.
+
+                    bool needsGenerated =
+                        SQMOutfitMerge.NeedsMergedGame3(mergeTarget)
+                        || ME2EmailMerge.NeedsMergedGame2(mergeTarget);
+                    if (needsGenerated)
+                    {
+                        mergeDLC.GenerateMergeDLC();
+                    }
+                }
+            }
+
+
             foreach (var v in result.TargetsToSquadmateMergeSync)
             {
-                ShowRunAndDone(() => SQMOutfitMerge.BuildBioPGlobal(v), M3L.GetString(M3L.string_synchronizingSquadmateOutfits), M3L.GetString(M3L.string_synchronizedSquadmateOutfits));
+                ShowRunAndDone(() => SQMOutfitMerge.RunGame3SquadmateOutfitMerge(targetMergeMapping[v]), M3L.GetString(M3L.string_synchronizingSquadmateOutfits), M3L.GetString(M3L.string_synchronizedSquadmateOutfits));
+            }
+
+            foreach (var v in result.TargetsToEmailMergeSync)
+            {
+                ShowRunAndDone(() => ME2EmailMerge.RunGame2EmailMerge(targetMergeMapping[v]), "Synchronizing Emails", "Synchronized Emails");
             }
 
             foreach (var v in result.TargetsToAutoTOC)
@@ -1365,17 +1403,14 @@ namespace ME3TweaksModManager
 
         private void ShowRunAndDone(Action action, string startStr, string endStr)
         {
-            var task = BackgroundTaskEngine.SubmitBackgroundJob($@"RunAndDone",
-                startStr, endStr);
-            var pmuUI = new RunAndDonePanel(action, M3L.GetString(M3L.string_synchronizingSquadmateOutfitFiles));
-            pmuUI.Close += (a, b) =>
+            BackgroundTask task = null;
+            var runAndDone = new RunAndDonePanel(action, startStr, endStr);
+            runAndDone.Close += (a, b) =>
             {
-                BackgroundTaskEngine.SubmitJobCompletion(task);
                 ReleaseBusyControl();
             };
-            ShowBusyControl(pmuUI);
+            ShowBusyControl(runAndDone);
         }
-
         private void ShowBackupPane()
         {
             var backupCreator = new BackupCreator(InstallationTargets.ToList(), SelectedGameTarget, this);

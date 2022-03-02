@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksModManager.modmanager.gamemd5;
+using ME3TweaksModManager.modmanager.merge.dlc;
 using ME3TweaksModManager.modmanager.merge.game2email;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.save.game2.UI;
@@ -60,14 +61,22 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 #if DEBUG
         private static void TestSquadmateMerge_Click(MainWindow window)
         {
+            // Note this is mutual exclusive, for testing only!
             var target = window.SelectedGameTarget;
-            SQMOutfitMerge.BuildBioPGlobal(target);
+            M3MergeDLC dlc = new M3MergeDLC(target);
+            M3MergeDLC.RemoveMergeDLC(target);
+            dlc.GenerateMergeDLC();
+            SQMOutfitMerge.RunGame3SquadmateOutfitMerge(dlc);
         }
 
         private static void TestEmailMerge_Click(MainWindow window)
         {
+            // Note this is mutual exclusive, for testing only!
             var target = window.SelectedGameTarget;
-            ME2EmailMerge.RunGame2EmailMerge(target);
+            M3MergeDLC dlc = new M3MergeDLC(target);
+            M3MergeDLC.RemoveMergeDLC(target);
+            dlc.GenerateMergeDLC();
+            ME2EmailMerge.RunGame2EmailMerge(dlc);
         }
 
         private static void ShowMEMViewer(MainWindow window)

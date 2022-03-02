@@ -16,22 +16,8 @@
         public double MaxWindowHeightPercent { get; set; }
 
         /// <summary>
-        /// The maximum width of the control at any time.
+        /// If set to true the panel converter will ignore MaxWindowWidth/Height and just use Auto. Good for small controls that don't need lots of space.
         /// </summary>
-        public double MaxControlWidth { get; set; }
-
-        /// <summary>
-        /// The minimum width of the control at any time.
-        /// </summary>
-        public double MaxControlHeight { get; set; }
-
-        /// <summary>
-        /// The minimum width of the control at any time.
-        /// </summary>
-        public double MinControlWidth { get; set; }
-        /// <summary>
-        /// The minimum height of the control at any time.
-        /// </summary>
-        public double MinControlHeight { get; set; }
+        public bool DisableM3AutoSizer { get; set; }
     }
 }

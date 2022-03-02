@@ -10,7 +10,7 @@
                        DataContext="{Binding RelativeSource={RelativeSource Self}}" 
                        d:DesignWidth="800"
                        MinWidth="700"
-                       MinHeight="675">
+                       MinHeight="550">
     <UserControl.Resources>
         <converters:InstallationInformationTabVisibilityConverter x:Key="InstallationInformationTabVisibilityConverter" />
     </UserControl.Resources>

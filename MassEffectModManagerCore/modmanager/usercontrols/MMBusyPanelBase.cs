@@ -7,11 +7,12 @@ using System.Windows.Input;
 using System.Windows.Threading;
 using ME3TweaksModManager.modmanager.memoryanalyzer;
 using ME3TweaksModManager.modmanager.objects;
+using ME3TweaksModManager.modmanager.usercontrols.interfaces;
 using ME3TweaksModManager.ui;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
-    public abstract class MMBusyPanelBase : UserControl, INotifyPropertyChanged
+    public abstract class MMBusyPanelBase : UserControl, INotifyPropertyChanged, ISizeAdjustable
     {
         //Fody uses this property on weaving
 #pragma warning disable
@@ -76,5 +77,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         /// If the panel is still open. This can be used to prevent command from firing on closure.
         /// </summary>
         public bool IsPanelOpen => DataContext != null;
+
+        public virtual double MaxWindowWidthPercent { get; set; }
+        public virtual double MaxWindowHeightPercent { get; set; }
+
+        /// <summary>
+        /// Set to false to disable autosizing feature
+        /// </summary>
+        public virtual bool DisableM3AutoSizer { get; set; }
     }
 }

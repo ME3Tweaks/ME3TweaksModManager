@@ -257,6 +257,7 @@
     </ContentWithTargetPath>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="modmanager\objects\merge\email\" />
     <Folder Include="modmanager\squadmates\LE3\" />
   </ItemGroup>
 

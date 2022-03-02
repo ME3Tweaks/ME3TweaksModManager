@@ -30,7 +30,7 @@ namespace ME3TweaksModManager.modmanager.converters
             if (values.Length != 3)
                 return double.NaN; // Default I guess
 
-            if (values[0] is SingleItemPanel2 sip2 && sip2.Content is MMBusyPanelBase panel && values[1] is double windowDimension && parameter is string axis)
+            if (values[0] is SingleItemPanel2 sip2 && sip2.Content is MMBusyPanelBase panel && !panel.DisableM3AutoSizer && values[1] is double windowDimension && parameter is string axis)
             {
                 var window = panel.window;
                 Size windowSize = new Size(window.ActualWidth, window.ActualHeight);
@@ -39,25 +39,11 @@ namespace ME3TweaksModManager.modmanager.converters
                 bool isWidth = axis == @"W";
                 var panelDesiredDimension = isWidth ? panel.DesiredSize.Width : panel.DesiredSize.Height;
 
-                if (panel is ISizeAdjustable sizeAdjustable)
+                if (panel.MaxWindowHeightPercent > 0 || panel.MaxWindowWidthPercent > 0)
                 {
                     // This panel has specific limits set on it.
-                    var maxWindowDimension = windowDimension * (isWidth ? sizeAdjustable.MaxWindowWidthPercent : sizeAdjustable.MaxWindowHeightPercent);
+                    var maxWindowDimension = windowDimension * (isWidth ? panel.MaxWindowWidthPercent : panel.MaxWindowHeightPercent);
                     var result = Math.Min(panelDesiredDimension, maxWindowDimension);
-
-                    var maxAllowedSize = isWidth ? sizeAdjustable.MaxControlWidth : sizeAdjustable.MaxControlHeight;
-                    if (maxAllowedSize > 0)
-                    {
-                        // Do not let value be bigger than max allowed size.
-                        result = Math.Min(maxAllowedSize, result);
-                    }
-
-                    var minAllowedSize = isWidth ? sizeAdjustable.MinControlWidth : sizeAdjustable.MinControlHeight;
-                    if (minAllowedSize > 0)
-                    {
-                        result = Math.Max(minAllowedSize, result);
-                    }
-
                     return result;
                 }
                 else

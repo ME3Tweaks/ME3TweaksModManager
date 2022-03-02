@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LegendaryExplorerCore.ME1.Unreal.UnhoodBytecode;
+using ME3TweaksModManager.modmanager.objects.merge.squadmate;
 using ME3TweaksModManager.modmanager.squadmates;
 using Newtonsoft.Json;
 
@@ -84,7 +85,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
             }
         }
 
-        private static void sqmMergeCheckHenchPackages(DeploymentChecklistItem item, SQMOutfitMerge.SquadmateInfoSingle henchOutfit, List<string> installableFiles)
+        private static void sqmMergeCheckHenchPackages(DeploymentChecklistItem item, SquadmateInfoSingle henchOutfit, List<string> installableFiles)
         {
             // Localizations that must be included.
             var packageBases = new[]
@@ -122,7 +123,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
             }
         }
 
-        private static void sqmMergeCheckHenchImages(DeploymentChecklistItem item, SQMOutfitMerge.SquadmateInfoSingle henchOutfit, string[] dlcNames, List<string> installableFiles)
+        private static void sqmMergeCheckHenchImages(DeploymentChecklistItem item, SquadmateInfoSingle henchOutfit, string[] dlcNames, List<string> installableFiles)
         {
             string[] images = new[] { henchOutfit.AvailableImage, henchOutfit.HighlightImage }; // silhouetteimage is unlikely to be modified so don't bother checking it.
             foreach (var imageExportPath in images)
@@ -177,7 +178,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
             }
         }
 
-        private static void sqmMergeCheckHenchName(DeploymentChecklistItem item, SQMOutfitMerge.SquadmateInfoSingle henchOutfit, MEGame game)
+        private static void sqmMergeCheckHenchName(DeploymentChecklistItem item, SquadmateInfoSingle henchOutfit, MEGame game)
         {
             if (game.IsGame3())
             {

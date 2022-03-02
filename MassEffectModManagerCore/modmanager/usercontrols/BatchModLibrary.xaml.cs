@@ -24,7 +24,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
     /// <summary>
     /// Interaction logic for BatchModLibrary.xaml
     /// </summary>
-    public partial class BatchModLibrary : MMBusyPanelBase, ISizeAdjustable
+    public partial class BatchModLibrary : MMBusyPanelBase
     {
         public BatchLibraryInstallQueue SelectedBatchQueue { get; set; }
         public Mod SelectedModInGroup { get; set; }
@@ -190,12 +190,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         }
 
         // ISizeAdjustbale Interface
-        public double MaxWindowWidthPercent { get; set; } = 0.85;
-        public double MaxWindowHeightPercent { get; set; } = 0.85;
-        public double MaxControlWidth { get; set; } = double.NaN;
-        public double MaxControlHeight { get; set; } = double.NaN;
-        public double MinControlWidth { get; set; } = 0;
-        public double MinControlHeight { get; set; } = 550;
+        public override double MaxWindowWidthPercent { get; set; } = 0.85;
+        public override double MaxWindowHeightPercent { get; set; } = 0.85;
     }
 
     public class BatchLibraryInstallQueue : INotifyPropertyChanged

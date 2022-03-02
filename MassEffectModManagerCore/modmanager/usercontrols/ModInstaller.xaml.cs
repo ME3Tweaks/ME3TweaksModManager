@@ -32,6 +32,7 @@ using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.alternates;
 using ME3TweaksModManager.modmanager.objects.installer;
+using ME3TweaksModManager.modmanager.usercontrols.interfaces;
 using ME3TweaksModManager.ui;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
@@ -1291,6 +1292,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 Result.TargetsToSquadmateMergeSync.Add(InstallOptionsPackage.InstallTarget);
             }
 
+            if (InstallOptionsPackage.ModBeingInstalled.Game.IsGame2())
+            {
+                Result.TargetsToEmailMergeSync.Add(InstallOptionsPackage.InstallTarget);
+            }
+
 
             if (e.Error != null)
             {
@@ -1563,5 +1569,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             //}
 #endif
         }
+
+        // ISizeAdjustable Interface
+        public override bool DisableM3AutoSizer { get; set; } = true;
     }
 }

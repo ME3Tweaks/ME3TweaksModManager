@@ -13,11 +13,14 @@ namespace ME3TweaksModManager.modmanager.usercontrols
     public partial class RunAndDonePanel : MMBusyPanelBase
     {
         private Action runAndDoneDelegate;
+
+        private readonly BackgroundTask BGTask;
         public string ActionText { get; }
-        public RunAndDonePanel(Action runAndDoneDelegate, string actionText)
+        public RunAndDonePanel(Action runAndDoneDelegate, string actionText, string endText)
         {
             ActionText = actionText;
             this.runAndDoneDelegate = runAndDoneDelegate;
+            BGTask = BackgroundTaskEngine.SubmitBackgroundJob($@"RunAndDone-{actionText}", actionText, endText);
         }
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
@@ -40,9 +43,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
                     Result.Error = b.Error;
                 }
+                BackgroundTaskEngine.SubmitJobCompletion(BGTask);
                 OnClosing(DataEventArgs.Empty);
             };
             nbw.RunWorkerAsync();
         }
+
+        public override bool DisableM3AutoSizer { get; set; } = true;
     }
 }

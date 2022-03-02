@@ -27,7 +27,8 @@ namespace ME3TweaksModManager.modmanager.merge.game2email
     {
         public const int STARTING_EMAIL_CONDITIONAL = 10100;
         private const int STARTING_EMAIL_TRANSITION = 90000;
-        private const string EMAIL_MERGE_MANIFEST_FILE = @"Game2EmailMerge.json";
+        private const string EMAIL_MERGE_MANIFEST_FILE = @"EmailMergeInfo.emm";
+        private const string EMAIL_MERGE_FILE_SUFFIX = @".emm";
 
         public class ME2EmailMergeFile
         {
@@ -96,37 +97,52 @@ namespace ME3TweaksModManager.modmanager.merge.game2email
 
         public static string StartupFileName => $@"Startup_{M3MergeDLC.MERGE_DLC_FOLDERNAME}.pcc";
 
-        public static void RunGame2EmailMerge(GameTargetWPF target)
+        /// <summary>
+        /// Returns if the specified target has any email merge files.
+        /// </summary>
+        /// <param name="target"></param>
+        public static bool NeedsMergedGame2(GameTargetWPF target)
         {
-            M3MergeDLC.RemoveMergeDLC(target);
-            var loadedFiles = MELoadedFiles.GetFilesLoadedInGame(target.Game, gameRootOverride: target.TargetPath);
+            if (!target.Game.IsGame2()) return false;
+            var emailSupercedances = M3Directories.GetFileSupercedances(target, new[] { @".emm" });
+            return emailSupercedances.TryGetValue(EMAIL_MERGE_MANIFEST_FILE, out var infoList) && infoList.Count > 0;
+        }
 
-            // Temp - need to find a way of persisting merge DLC between email and sqm merge
-            M3MergeDLC.GenerateMergeDLC(target, Guid.NewGuid());
+        /// <summary>
+        /// Runs the email merge feature for game 2. The MergeDLC must already be created for this to work.
+        /// </summary>
+        /// <param name="mergeDLC"></param>
+        /// <exception cref="Exception"></exception>
+        public static void RunGame2EmailMerge(M3MergeDLC mergeDLC)
+        {
+            if (!mergeDLC.Generated)
+                return; // Do not run on non-generated. It may be that a prior check determined this merge was not necessary 
 
+            var loadedFiles = MELoadedFiles.GetFilesLoadedInGame(mergeDLC.Target.Game, gameRootOverride: mergeDLC.Target.TargetPath);
+            
             // File to base modifications on
             loadedFiles.TryGetValue(@"BioD_Nor_103Messages.pcc", out var pccFile);
             if (pccFile is null) return;
             using IMEPackage pcc = MEPackageHandler.OpenMEPackage(pccFile);
 
             // Path to Message templates file - different files for ME2/LE2
-            var resourcesFilePath = $@"ME3TweaksModManager.modmanager.merge.game2email.{target.Game}.103Message_Templates_{target.Game}.pcc";
+            var resourcesFilePath = $@"ME3TweaksModManager.modmanager.merge.game2email.{mergeDLC.Target.Game}.103Message_Templates_{mergeDLC.Target.Game}.pcc";
             using IMEPackage resources = MEPackageHandler.OpenMEPackageFromStream(M3Utilities.GetResourceStream(resourcesFilePath));
 
             // Startup file to place conditionals and transitions into
             var startupInstalled = loadedFiles.ContainsKey(StartupFileName);
             using IMEPackage startup = startupInstalled
                 ? MEPackageHandler.OpenMEPackage(loadedFiles[StartupFileName])
-                : MEPackageHandler.OpenMEPackageFromStream(M3Utilities.GetResourceStream($@"ME3TweaksModManager.modmanager.merge.dlc.{target.Game}.{StartupFileName}"));
+                : MEPackageHandler.OpenMEPackageFromStream(M3Utilities.GetResourceStream($@"ME3TweaksModManager.modmanager.merge.dlc.{mergeDLC.Target.Game}.{StartupFileName}"));
 
             var emailInfos = new List<ME2EmailMergeFile>();
-            var jsonSupercedances = M3Directories.GetFileSupercedances(target, new[] { @".json" });
+            var jsonSupercedances = M3Directories.GetFileSupercedances(mergeDLC.Target, new[] { EMAIL_MERGE_FILE_SUFFIX });
             if (jsonSupercedances.TryGetValue(EMAIL_MERGE_MANIFEST_FILE, out var jsonList))
             {
                 jsonList.Reverse();
                 foreach (var dlc in jsonList)
                 {
-                    var jsonFile = Path.Combine(M3Directories.GetDLCPath(target), dlc, target.Game.CookedDirName(),
+                    var jsonFile = Path.Combine(M3Directories.GetDLCPath(mergeDLC.Target), dlc, mergeDLC.Target.Game.CookedDirName(),
                         EMAIL_MERGE_MANIFEST_FILE);
                     emailInfos.Add(JsonConvert.DeserializeObject<ME2EmailMergeFile>(File.ReadAllText(jsonFile)));
                 }
@@ -138,7 +154,7 @@ namespace ME3TweaksModManager.modmanager.merge.game2email
                 return;
             }
 
-            if (emailInfos.Any(e => e.Game != target.Game))
+            if (emailInfos.Any(e => e.Game != mergeDLC.Target.Game))
             {
                 throw new Exception(@"Game 2 email merge manifest targets incorrect game");
             }
@@ -151,7 +167,7 @@ namespace ME3TweaksModManager.modmanager.merge.game2email
             // Setup conditionals
             ExportEntry ConditionalClass = startup.FindExport($@"PlotManager{M3MergeDLC.MERGE_DLC_FOLDERNAME}.BioAutoConditionals");
             FileLib fl = new FileLib(startup);
-            bool initialized = fl.Initialize(new RelativePackageCache() { RootPath = M3Directories.GetBioGamePath(target) });
+            bool initialized = fl.Initialize(new RelativePackageCache() { RootPath = M3Directories.GetBioGamePath(mergeDLC.Target) });
             if (!initialized)
             {
                 throw new Exception(
@@ -241,7 +257,7 @@ namespace ME3TweaksModManager.modmanager.merge.game2email
                     newSend.ObjectName = new NameReference(emailName);
                     KismetHelper.AddObjectToSequence(newSend, SendMessageContainer);
                     KismetHelper.SetComment(newSend, emailName);
-                    if (target.Game == MEGame.ME2) newSend.WriteProperty(new StrProperty(emailName, @"ObjName"));
+                    if (mergeDLC.Target.Game == MEGame.ME2) newSend.WriteProperty(new StrProperty(emailName, @"ObjName"));
 
                     // Set Trigger Conditional
                     var pmCheckConditionalSM = newSend.GetChildren()
@@ -294,7 +310,7 @@ namespace ME3TweaksModManager.modmanager.merge.game2email
                     newMarkRead.ObjectName = new NameReference(emailName);
                     KismetHelper.AddObjectToSequence(newMarkRead, MarkReadContainer);
                     KismetHelper.SetComment(newMarkRead, emailName);
-                    if (target.Game == MEGame.ME2) newMarkRead.WriteProperty(new StrProperty(emailName, @"ObjName"));
+                    if (mergeDLC.Target.Game == MEGame.ME2) newMarkRead.WriteProperty(new StrProperty(emailName, @"ObjName"));
 
                     // Set Plot Int
                     var storyManagerIntMR = newMarkRead.GetChildren()
@@ -336,7 +352,7 @@ namespace ME3TweaksModManager.modmanager.merge.game2email
                     KismetHelper.AddObjectToSequence(newDisplayMessage, DisplayMessageContainer);
                     newDisplayMessage.WriteProperty(DisplayMessageVariableLinks);
                     KismetHelper.SetComment(newDisplayMessage, emailName);
-                    if (target.Game == MEGame.ME2) newDisplayMessage.WriteProperty(new StrProperty(emailName, @"ObjName"));
+                    if (mergeDLC.Target.Game == MEGame.ME2) newDisplayMessage.WriteProperty(new StrProperty(emailName, @"ObjName"));
 
                     var displayChildren = newDisplayMessage.GetChildren().ToList();
 
@@ -415,7 +431,7 @@ namespace ME3TweaksModManager.modmanager.merge.game2email
             ConditionalClass.WriteBinary(uc);
 
             // Save Messages file into DLC
-            var mergeDlcCookedDir = Path.Combine(M3Directories.GetDLCPath(target), M3MergeDLC.MERGE_DLC_FOLDERNAME, target.Game.CookedDirName());
+            var mergeDlcCookedDir = Path.Combine(M3Directories.GetDLCPath(mergeDLC.Target), M3MergeDLC.MERGE_DLC_FOLDERNAME, mergeDLC.Target.Game.CookedDirName());
             var outMessages = Path.Combine(mergeDlcCookedDir, @"BioD_Nor_103Messages.pcc");
             pcc.Save(outMessages);
 
@@ -425,12 +441,12 @@ namespace ME3TweaksModManager.modmanager.merge.game2email
 
             // Make sure lines are written to BIOEngine.ini and BIOGame.ini
             var bioGameText = new StreamReader(M3Utilities.GetResourceStream(
-                    $@"ME3TweaksModManager.modmanager.merge.dlc.{target.Game}.BIOGame.ini"))
+                    $@"ME3TweaksModManager.modmanager.merge.dlc.{mergeDLC.Target.Game}.BIOGame.ini"))
                 .ReadToEnd();
             File.WriteAllText(Path.Combine(mergeDlcCookedDir, @"BIOGame.ini"), bioGameText);
 
             var bioEngineTextToAdd = new StreamReader(M3Utilities.GetResourceStream(
-                    $@"ME3TweaksModManager.modmanager.merge.dlc.{target.Game}.BIOEngineStartupPackages.ini"))
+                    $@"ME3TweaksModManager.modmanager.merge.dlc.{mergeDLC.Target.Game}.BIOEngineStartupPackages.ini"))
                 .ReadToEnd();
             var bioEnginePath = Path.Combine(mergeDlcCookedDir, @"BIOEngine.ini");
             if (File.Exists(bioEnginePath))

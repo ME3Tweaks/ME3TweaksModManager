@@ -26,7 +26,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
     /// Interaction logic for ASIManager.xaml
     /// </summary>
     [AddINotifyPropertyChangedInterface]
-    public partial class ASIManagerPanel : MMBusyPanelBase, ISizeAdjustable
+    public partial class ASIManagerPanel : MMBusyPanelBase
     {
         public int SelectedTabIndex { get; set; }
         private object SelectedASIObject { get; set; }
@@ -289,11 +289,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             //}
         }
 
-        public double MaxWindowWidthPercent { get; set; } = 0.85;
-        public double MaxWindowHeightPercent { get; set; } = 0.85;
-        public double MaxControlWidth { get; set; } = 990;
-        public double MaxControlHeight { get; set; } = double.NaN;
-        public double MinControlWidth { get; set; } = 0;
-        public double MinControlHeight { get; set; } = 550;
+        public override double MaxWindowWidthPercent { get; set; } = 0.85;
+        public override double MaxWindowHeightPercent { get; set; } = 0.85;
     }
 }

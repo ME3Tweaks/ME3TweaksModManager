@@ -8,6 +8,8 @@
     xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
     xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
     mc:Ignorable="d"
+    MinWidth="700"
+    MinHeight="550"
     DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <DockPanel
         Margin="0,0">

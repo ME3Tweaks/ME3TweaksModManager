@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
+using LegendaryExplorerCore.Helpers;
 using ME3TweaksCoreWPF;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.helpers;
@@ -7,7 +10,6 @@ using ME3TweaksModManager.modmanager.objects.mod;
 
 namespace ME3TweaksModManager.modmanager.objects
 {
-
     /// <summary>
     /// Panel IDs for launching panels
     /// </summary>
@@ -39,6 +41,10 @@ namespace ME3TweaksModManager.modmanager.objects
         /// Targets to squadmate merge sync when this panel has closed
         /// </summary>
         public ConcurrentHashSet<GameTargetWPF> TargetsToSquadmateMergeSync { get; } = new();
+        /// <summary>
+        /// Targets to email merge sync when this panel has closed
+        /// </summary>
+        public ConcurrentHashSet<GameTargetWPF> TargetsToEmailMergeSync { get; } = new();
 
         /// <summary>
         /// Targets to TOC after this panel has closed
@@ -70,12 +76,18 @@ namespace ME3TweaksModManager.modmanager.objects
         public Exception Error { get; set; }
 
         /// <summary>
+        /// If this result needs any merges performed
+        /// </summary>
+        public bool NeedsMergeDLC => TargetsToEmailMergeSync.Any() || TargetsToSquadmateMergeSync.Any();
+
+        /// <summary>
         /// Merges values from this panel into the specified one
         /// </summary>
         /// <param name="batchPanelResult"></param>
         public void MergeInto(PanelResult batchPanelResult)
         {
-            batchPanelResult.TargetsToSquadmateMergeSync.AddRange(TargetsToPlotManagerSync);
+            batchPanelResult.TargetsToSquadmateMergeSync.AddRange(TargetsToSquadmateMergeSync);
+            batchPanelResult.TargetsToEmailMergeSync.AddRange(TargetsToEmailMergeSync);
             batchPanelResult.TargetsToPlotManagerSync.AddRange(TargetsToPlotManagerSync);
             batchPanelResult.TargetsToAutoTOC.AddRange(TargetsToAutoTOC);
             if (SelectedTarget != null) batchPanelResult.SelectedTarget = SelectedTarget;
@@ -85,6 +97,15 @@ namespace ME3TweaksModManager.modmanager.objects
             if (ReloadMods) batchPanelResult.ReloadMods = ReloadMods;
             if (ModToHighlightOnReload != null) batchPanelResult.ModToHighlightOnReload = ModToHighlightOnReload;
             if (ToolToLaunch != null) batchPanelResult.ToolToLaunch = ToolToLaunch;
+        }
+
+        /// <summary>
+        /// Gets a list of DLC merge mod targets for this result
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<GameTargetWPF> GetMergeTargets()
+        {
+            return TargetsToEmailMergeSync.Concat(TargetsToSquadmateMergeSync).Distinct();
         }
     }
 }
