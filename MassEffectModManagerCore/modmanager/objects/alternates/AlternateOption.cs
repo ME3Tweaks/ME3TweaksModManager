@@ -6,6 +6,7 @@ using System.Text;
 using System.Windows.Media.Imaging;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
+using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.mod;
@@ -107,7 +108,10 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         /// <summary>
         /// If this option can be selected on or off by the end-user
         /// </summary>
-        public virtual bool UIIsSelectable { get; set; }
+        public virtual bool UIIsSelectable { 
+            get; 
+            set;
+        }
 
         //public abstract bool UINotApplicable { get; }
         /// <summary>
@@ -211,7 +215,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         /// </summary>
         /// <param name="allOptions"></param>
         /// <returns>True if the selection state was changed; false if not. This is used to determine if there needs to be another call to update selections again</returns>
-        internal virtual bool UpdateSelectability(IEnumerable<AlternateOption> allOptions)
+        internal virtual bool UpdateSelectability(IEnumerable<AlternateOption> allOptions, Mod mod, GameTargetWPF target)
         {
             if (DependsOnKeys.Count == 0) return false; // Nothing changes as we don't depend on any other options
             Debug.WriteLine($@"UpdateSelectability on {FriendlyName} with DependsOnKeys!");

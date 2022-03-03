@@ -483,35 +483,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
             if (Condition == AltDLCCondition.COND_MANUAL)
             {
                 IsSelected = CheckedByDefault;
-                if (DLCRequirementsForManual != null)
-                {
-                    var dlc = target.GetInstalledDLC();
-
-                    if (mod.ModDescTargetVersion >= 6.3)
-                    {
-                        var requiredDLC = DLCRequirementsForManual.Where(x => x.IsPlus == null || x.IsPlus.Value).Select(x => x.Key); // none or + means 'must exist'
-                        var notPresentDLCRequired = DLCRequirementsForManual.Where(x => x.IsPlus != null && !x.IsPlus.Value).Select(x => x.Key);
-                        UIIsSelectable = dlc.ContainsAll(requiredDLC, StringComparer.InvariantCultureIgnoreCase) && dlc.ContainsNone(notPresentDLCRequired, StringComparer.InvariantCultureIgnoreCase);
-                    }
-                    else
-                    {
-                        // Previous logic. Left here to ensure nothing changes.
-                        UIIsSelectable = dlc.ContainsAll(DLCRequirementsForManual.Select(x => x.ToString()), StringComparer.InvariantCultureIgnoreCase);
-                    }
-
-                    if (!UIIsSelectable && mod.ModDescTargetVersion >= 6.2)
-                    {
-                        // Mod Manager 6.2: If requirements are not met this option is forcibly not checked.
-                        // Mods targeting Moddesc 6 or 6.1 will possibly be bugged if they used this feature
-                        IsSelected = false;
-                    }
-                    M3Log.Information($@" > AlternateDLC SetupInitialSelection() {FriendlyName}: UISelectable: {UIIsSelectable}, conducted DLCRequirements check.", Settings.LogModInstallation);
-
-                }
-                else
-                {
-                    UIIsSelectable = true;
-                }
+                // Mod Manager 8: DLC Requirements was moved to SetupSelectability.
 
                 return;
             }
@@ -576,6 +548,48 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
 
             UIIsSelectable = false; //autos
             //IsSelected; //autos
+        }
+
+        internal override bool UpdateSelectability(IEnumerable<AlternateOption> allOptions, Mod mod, GameTargetWPF target)
+        {
+            if (DLCRequirementsForManual != null)
+            {
+                var dlc = target.GetInstalledDLC();
+
+                if (mod.ModDescTargetVersion >= 6.3)
+                {
+                    // ModDesc 6.3: +/- system allowed different DLC setups.
+                    var requiredDLC = DLCRequirementsForManual.Where(x => x.IsPlus == null || x.IsPlus.Value).Select(x => x.Key); // none or + means 'must exist'
+                    var notPresentDLCRequired = DLCRequirementsForManual.Where(x => x.IsPlus != null && !x.IsPlus.Value).Select(x => x.Key);
+                    UIIsSelectable = dlc.ContainsAll(requiredDLC, StringComparer.InvariantCultureIgnoreCase) && dlc.ContainsNone(notPresentDLCRequired, StringComparer.InvariantCultureIgnoreCase);
+                }
+                else
+                {
+                    // Previous logic. Left here to ensure nothing changes.
+                    // ModDesc 6: All DLC must be present
+                    UIIsSelectable = dlc.ContainsAll(DLCRequirementsForManual.Select(x => x.ToString()), StringComparer.InvariantCultureIgnoreCase);
+                }
+
+                if (!UIIsSelectable && mod.ModDescTargetVersion >= 6.2)
+                {
+                    // Mod Manager 6.2: If requirements are not met this option is forcibly not checked.
+                    // Mods targeting Moddesc 6 or 6.1 would possibly be bugged if they used this feature
+                    // so this change does not affect mods targeting those versions
+                    IsSelected = false;
+                }
+                M3Log.Information($@" > AlternateDLC UpdateSelectability for {FriendlyName}: UISelectable: {UIIsSelectable}, conducted DLCRequirements check.", Settings.LogModInstallation);
+            }
+            else
+            {
+                // If this is a manual we make it selectable; otherwise it's an auto, in which case we are
+                // not selectable by the user.
+                UIIsSelectable = Condition == AltDLCCondition.COND_MANUAL;
+            }
+
+            if (DLCRequirementsForManual != null && !UIIsSelectable)
+                return false; // The user can't change the selection so we don't update the selectability states since this option is locked by DLC requirements.
+
+            return base.UpdateSelectability(allOptions, mod, target);
         }
 
         /// <summary>

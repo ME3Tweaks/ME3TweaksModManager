@@ -276,7 +276,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             int numAttemptsRemaining = 15;
             try
             {
-                UpdateOptions(ref numAttemptsRemaining); // Update for DependsOnKeys.
+                UpdateOptions(ref numAttemptsRemaining, ModBeingInstalled, SelectedGameTarget); // Update for DependsOnKeys.
             }
             catch (CircularDependencyException)
             {
@@ -319,6 +319,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 // Multi mode
             }
+
             foreach (var option in o.AlternateOptions)
             {
                 if (option is AlternateDLC altdlc)
@@ -366,11 +367,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     int numRemainingAttempts = 15;
                     try
                     {
-                        UpdateOptions(ref numRemainingAttempts, altsToUpdate);
+                        UpdateOptions(ref numRemainingAttempts, ModBeingInstalled, SelectedGameTarget, altsToUpdate);
                     }
                     catch (CircularDependencyException)
                     {
-                        MessageBox.Show(@"A circular dependency was detected. Please notify the developer of the options you attempted to select so they can fix this.", "Circular dependency", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show("A circular dependency was detected. Please notify the developer of the options you attempted to select so they can fix this.", "Circular dependency", MessageBoxButton.OK, MessageBoxImage.Error);
                         InstallationCancelled = true;
                         OnClosing(DataEventArgs.Empty);
                     }
@@ -378,7 +379,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
         }
 
-        private void UpdateOptions(ref int numAttemptsRemaining, List<AlternateOption> optionsToUpdate = null)
+        private void UpdateOptions(ref int numAttemptsRemaining, Mod mod, GameTargetWPF target, List<AlternateOption> optionsToUpdate = null)
         {
             numAttemptsRemaining--;
             if (numAttemptsRemaining <= 0)
@@ -393,7 +394,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             List<AlternateOption> secondPassOptions = new List<AlternateOption>();
             foreach (var v in optionsToUpdate)
             {
-                var stateChanged = v.UpdateSelectability(optionsToUpdate);
+                var stateChanged = v.UpdateSelectability(optionsToUpdate, mod, target);
                 if (stateChanged)
                 {
                     Debug.WriteLine($@"State changed: {v.FriendlyName} to {v.IsSelected}");
@@ -406,7 +407,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             // If anything depends on options that changed, re-evaluate those specific options.
             if (secondPassOptions.Any())
             {
-                UpdateOptions(ref numAttemptsRemaining, secondPassOptions.Distinct().ToList());
+                UpdateOptions(ref numAttemptsRemaining, mod, target, secondPassOptions.Distinct().ToList());
             }
         }
 

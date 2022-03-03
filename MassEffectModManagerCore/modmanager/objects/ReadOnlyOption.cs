@@ -3,9 +3,13 @@ using ME3TweaksModManager.modmanager.objects.alternates;
 using ME3TweaksModManager.modmanager.objects.mod;
 using PropertyChanged;
 using System.Collections.Generic;
+using ME3TweaksCoreWPF.Targets;
 
 namespace ME3TweaksModManager.modmanager.objects
 {
+    /// <summary>
+    /// Implementation of the ME1 SetConfigFilesReadOnly.
+    /// </summary>
     [AddINotifyPropertyChangedInterface]
     public class ReadOnlyOption : AlternateOption
     {
@@ -26,7 +30,7 @@ namespace ME3TweaksModManager.modmanager.objects
         public override bool UIIsSelectable { get => true; set { } }
 
         // This method does nothing for ReadOnlyOption.
-        internal override bool UpdateSelectability(IEnumerable<AlternateOption> allOptions) { return false; }
+        internal override bool UpdateSelectability(IEnumerable<AlternateOption> allOptions, Mod mod, GameTargetWPF target) { return false; }
 
     }
 }

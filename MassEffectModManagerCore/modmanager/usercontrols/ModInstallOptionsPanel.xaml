@@ -11,8 +11,9 @@
              xmlns:fa5="http://schemas.fontawesome.com/icons/" 
              xmlns:modinstaller="clr-namespace:ME3TweaksModManager.modmanager.usercontrols.modinstaller" 
              xmlns:system="clr-namespace:System;assembly=System.Runtime"
+             MinHeight="400"
              mc:Ignorable="d" >
-    <Grid VerticalAlignment="Center" HorizontalAlignment="Center"  x:Name="OptionsPanel">
+    <Grid  x:Name="OptionsPanel">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>

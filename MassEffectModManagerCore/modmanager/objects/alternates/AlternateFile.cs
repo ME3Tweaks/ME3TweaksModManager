@@ -48,7 +48,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         public override bool IsManual => Condition == AltFileCondition.COND_MANUAL;
         public override bool IsAlways => Condition == AltFileCondition.COND_ALWAYS;
 
-        public override bool UIRequired => !IsManual && IsSelected && !IsAlways;
+        //public override bool UIRequired => !IsManual && IsSelected && !IsAlways;
         //public override bool UINotApplicable => !IsManual && !IsSelected && !IsAlways;
         public List<string> ConditionalDLC = new List<string>();
 
@@ -506,6 +506,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
             }
             if (IsManual)
             {
+                UIIsSelectable = true; // Manual options can be chosen by user. A follow up pass will lock it out if it's not eligible.
                 IsSelected = CheckedByDefault;
                 return;
             }

@@ -17,6 +17,7 @@
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         <Image
+            MaxWidth="500"
             Grid.Row="0"
             Source="{Binding InstallOptionsPackage.ModBeingInstalled.BannerBitmap}"
             Visibility="{Binding InstallOptionsPackage.ModBeingInstalled.BannerBitmap, Converter= {StaticResource NullVisibilityConverter}}"

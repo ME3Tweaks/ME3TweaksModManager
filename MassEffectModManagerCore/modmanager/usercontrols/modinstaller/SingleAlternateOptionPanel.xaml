@@ -121,6 +121,7 @@
                     <!-- Mouseover for not applicable -->
                     <MultiDataTrigger>
                         <MultiDataTrigger.Conditions>
+                            <Condition Binding="{Binding UIIsSelectable}" Value="false" />
                             <Condition Binding="{Binding UINotApplicable}" Value="true" />
                         </MultiDataTrigger.Conditions>
                         <Setter
@@ -134,6 +135,7 @@
                     <!-- Mouseover for applicable -->
                     <MultiDataTrigger>
                         <MultiDataTrigger.Conditions>
+                            <Condition Binding="{Binding UIIsSelectable}" Value="false" />
                             <Condition Binding="{Binding UIRequired}" Value="true" />
                         </MultiDataTrigger.Conditions>
                         <Setter
