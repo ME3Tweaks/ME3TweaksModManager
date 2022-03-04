@@ -7,6 +7,9 @@ using Newtonsoft.Json;
 
 namespace ME3TweaksModManager.modmanager.objects.nexusfiledb
 {
+    /// <summary>
+    /// Instance of a mod file (e.g. file you can download). It's tied to a ModID
+    /// </summary>
     [DebuggerDisplay("ParentPathId {ParentPathID}, FName: {FilenameId} , FID: {FileID}")]
     public class FileInstance
     {
@@ -45,23 +48,5 @@ namespace ME3TweaksModManager.modmanager.objects.nexusfiledb
 
         [JsonProperty(@"fullfilepath")]
         public string DebugFullName { get; set; }
-
-        /// <summary>
-        /// Setter for deserializing the list of LEGames. Access through <see cref="LEGames"/>.
-        /// </summary>
-        [JsonProperty(@"legames")]
-        public string InternalLEGames
-        {
-            set
-            {
-                LEGames = value.Split(',').Select(x=>Enum.Parse<MEGame>(x)).ToArray();
-            }
-        }
-
-        /// <summary>
-        /// The list of Legendary Edition games this mod is for. This depends on tags. This will be null if none are defined!
-        /// </summary>
-        [JsonIgnore]
-        public MEGame[] LEGames { get; set; }
     }
 }

@@ -7,6 +7,8 @@
     xmlns:ui="clr-namespace:ME3TweaksModManager.ui"
     xmlns:generic="clr-namespace:ME3TweaksModManager.modmanager.usercontrols.generic"
     mc:Ignorable="d"
+    MinWidth="700"
+    MinHeight="550"
     DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <DockPanel>
         <TextBlock
@@ -37,25 +39,44 @@
                 <CheckBox
                     ui:SharedUIBindings.GenerationOT="true"
                     DockPanel.Dock="Left"
-                    Content="Mass Effect"
+                    Content="ME1"
                     IsChecked="{Binding SearchME1}"
                     Margin="0,0,5,0" />
                 <CheckBox
                     ui:SharedUIBindings.GenerationOT="true"
                     DockPanel.Dock="Left"
-                    Content="Mass Effect 2"
+                    Content="ME2"
                     IsChecked="{Binding SearchME2}"
                     Margin="0,0,5,0" />
                 <CheckBox
                     ui:SharedUIBindings.GenerationOT="true"
                     DockPanel.Dock="Left"
-                    Content="Mass Effect 3"
+                    Content="ME3"
                     IsChecked="{Binding SearchME3}"
                     Margin="0,0,5,0" />
                 <CheckBox
                     ui:SharedUIBindings.GenerationLE="true"
                     DockPanel.Dock="Left"
-                    Content="Mass Effect LE"
+                    Content="LE1"
+                    IsChecked="{Binding SearchLE1}"
+                    Margin="0,0,5,0" />
+                <CheckBox
+                    ui:SharedUIBindings.GenerationLE="true"
+                    DockPanel.Dock="Left"
+                    Content="LE2"
+                    IsChecked="{Binding SearchLE2}"
+                    Margin="0,0,5,0" />
+                <CheckBox
+                    ui:SharedUIBindings.GenerationLE="true"
+                    DockPanel.Dock="Left"
+                    Content="LE3"
+                    IsChecked="{Binding SearchLE3}"
+                    Margin="0,0,5,0" />
+                <CheckBox
+                    ui:SharedUIBindings.GenerationLE="true"
+                    DockPanel.Dock="Left"
+                    ToolTip="Due to how NexusMods stores files, it is not possible to accurately detect which game a mod file is for. Use this option to search all LE files."
+                    Content="All LE"
                     IsChecked="{Binding SearchLE}" 
                     Margin="0,0,5,0" />
                 <generic:CheckBoxComboBox

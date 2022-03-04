@@ -9,6 +9,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
+using LegendaryExplorerCore.Packages;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.localizations;
@@ -36,6 +37,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public bool SearchME1 { get; set; }
         public bool SearchME2 { get; set; }
         public bool SearchME3 { get; set; }
+        public bool SearchLE1 { get; set; }
+        public bool SearchLE2 { get; set; }
+        public bool SearchLE3 { get; set; }
         public bool SearchLE { get; set; }
 
         private void UpdateFilters()
@@ -50,7 +54,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             if (SearchME1) { newNames.AddRange(getFilenamesForGame(@"masseffect")); }
             if (SearchME2) { newNames.AddRange(getFilenamesForGame(@"masseffect2")); }
             if (SearchME3) { newNames.AddRange(getFilenamesForGame(@"masseffect3")); }
-            if (SearchLE) { newNames.AddRange(getFilenamesForGame(@"masseffectlegendaryedition")); }
+            if (SearchLE1 || SearchLE2 || SearchLE3 || SearchLE) { newNames.AddRange(getFilenamesForGame(@"masseffectlegendaryedition")); }
 
             newNames = newNames.Distinct().OrderBy(x => x).ToList();
             AllSearchableNames.ReplaceAll(newNames);
@@ -59,6 +63,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public void OnSearchME1Changed() { UpdateFilters(); }
         public void OnSearchME2Changed() { UpdateFilters(); }
         public void OnSearchME3Changed() { UpdateFilters(); }
+        public void OnSearchLE1Changed() { UpdateFilters(); }
+        public void OnSearchLE2Changed() { UpdateFilters(); }
+        public void OnSearchLE3Changed() { UpdateFilters(); }
         public void OnSearchLEChanged() { UpdateFilters(); }
 
         public ObservableCollectionExtended<string> AllSearchableNames { get; } = new ObservableCollectionExtended<string>();
@@ -83,7 +90,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public ObservableCollectionExtended<FileCategory> FileCategories { get; }
         public ObservableCollectionExtended<FileCategory> SelectedFileCategories { get; } = new ObservableCollectionExtended<FileCategory>(Enum.GetValues<FileCategory>()); // all by default
 
-        private bool CanSearch() => !QueryInProgress && !string.IsNullOrWhiteSpace(SearchTerm) && (SearchME1 || SearchME2 || SearchME3 || SearchLE) && HasCategory();
+        private bool CanSearch() => !QueryInProgress && !string.IsNullOrWhiteSpace(SearchTerm) && (SearchME1 || SearchME2 || SearchME3 ||SearchLE1 || SearchLE2 || SearchLE3 ||SearchLE) && HasCategory();
 
         private bool HasCategory()
         {
@@ -105,7 +112,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             if (SearchME1) searchGames.Add(@"masseffect");
             if (SearchME2) searchGames.Add(@"masseffect2");
             if (SearchME3) searchGames.Add(@"masseffect3");
-            if (SearchLE) searchGames.Add(@"masseffectlegendaryedition");
+            if (SearchLE1 || SearchLE2 || SearchLE3 || SearchLE) searchGames.Add(@"masseffectlegendaryedition");
             QueryInProgress = true;
             Task.Run(() =>
             {
@@ -168,6 +175,21 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         {
                             // Found
                             var instances = db.FileInstances[match.Key].Where(x => categories.Contains(db.ModFileInfos[x.FileID].Category));
+
+                            if (domain == @"masseffectlegendaryedition" && !SearchLE)
+                            {
+                                // We need to filter to game
+#if DEBUG
+                                var fails = instances.Where(x => !db.ModFileInfos.ContainsKey(x.ModID)).ToList();
+#endif
+
+                                instances = instances.Where(x => db.ModFileInfos[x.FileID].LEGames != null && 
+                                                                 (db.ModFileInfos[x.FileID].LEGames.Contains(MEGame.LE1) && SearchLE1 ||
+                                                                  db.ModFileInfos[x.FileID].LEGames.Contains(MEGame.LE2) && SearchLE2 ||
+                                                                  db.ModFileInfos[x.FileID].LEGames.Contains(MEGame.LE3) && SearchLE3)
+                                                                 && db.ModFileInfos[x.FileID].LEGames.Length == 1); // Only one game allowed in a result
+                            }
+
                             //Application.Current.Dispatcher.Invoke(() =>
                             //{
                             Results.AddRange(instances.Select(x => new SearchedItemResult()
@@ -248,16 +270,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 BusyStatusText = M3L.GetString(M3L.string_searching);
             }).ContinueWithOnUIThread(x =>
             {
-                CategoryOptionsCBL.SetSelectedItems(Enum.GetValues<FileCategory>().Where(x => x != FileCategory.Archived && x != FileCategory.Deleted).OfType<object>());
-                if (Settings.GenerationSettingLE && !Settings.GenerationSettingOT)
-                {
-                    SearchLE = true; // Automatically set this as it's the only option in this mode
-                }
+                CategoryOptionsCBL.SetSelectedItems(Enum.GetValues<FileCategory>().Where(x => x != FileCategory.Archived && x!= FileCategory.Old && x!= FileCategory.Update && x != FileCategory.Deleted).OfType<object>());
             });
         }
 
 
-        private void ClosePanel(object sender, System.Windows.RoutedEventArgs e)
+        private void ClosePanel(object sender, RoutedEventArgs e)
         {
             OnClosing(DataEventArgs.Empty);
         }
@@ -284,15 +302,15 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                             return @"/images/gameicons/ME3_Icon.ico";
                         case @"masseffectlegendaryedition":
                             {
-                                if (Instance.LEGames != null && Instance.LEGames.Length == 1)
+                                if (AssociatedDB.ModFileInfos[Instance.FileID].LEGames != null && AssociatedDB.ModFileInfos[Instance.FileID].LEGames.Length == 1)
                                 {
-                                    switch (Instance.LEGames[0])
+                                    switch (AssociatedDB.ModFileInfos[Instance.FileID].LEGames[0])
                                     {
-                                        case LegendaryExplorerCore.Packages.MEGame.LE1:
+                                        case MEGame.LE1:
                                             return @"/images/gameicons/LE1_Icon.ico";
-                                        case LegendaryExplorerCore.Packages.MEGame.LE2:
+                                        case MEGame.LE2:
                                             return @"/images/gameicons/LE2_Icon.ico";
-                                        case LegendaryExplorerCore.Packages.MEGame.LE3:
+                                        case MEGame.LE3:
                                             return @"/images/gameicons/LE3_Icon.ico";
                                     }
                                 }
@@ -348,7 +366,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             e.Handled = true;
         }
 
-        private void HandleMouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
+        private void HandleMouseWheel(object sender, MouseWheelEventArgs e)
         {
             // This forces scrolling to bubble up
             // cause expander eats it
@@ -356,7 +374,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 e.Handled = true;
                 var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta);
-                eventArg.RoutedEvent = UIElement.MouseWheelEvent;
+                eventArg.RoutedEvent = MouseWheelEvent;
                 eventArg.Source = sender;
                 var parent = (((Control)sender).TemplatedParent ?? ((Control)sender).Parent) as UIElement;
                 parent.RaiseEvent(eventArg);
