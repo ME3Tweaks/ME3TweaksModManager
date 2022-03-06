@@ -67,6 +67,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 if (b.Error == null && b.Result is List<M3OnlineContent.ServerModMakerModInfo> topMods)
                 {
                     TopMods.ReplaceAll(topMods);
+                    TriggerResize();
                 }
             };
             nbw.RunWorkerAsync();
@@ -353,11 +354,20 @@ MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
                 {
                     sb = sb.Clone();
                 }
+
+                sb.Completed += (sender, args) =>
+                {
+                    // Animation completed
+                    DisableM3AutoSizer = true;
+                    TriggerResize();
+                };
                 DownloadingProgressPanel.Height = DownloadingProgressPanel.ActualHeight;
                 Storyboard.SetTarget(sb, DownloadingProgressPanel);
                 sb.Begin();
             });
         }
+
+
 
         public void CloseProgressPanel()
         {
@@ -371,11 +381,20 @@ MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
                 {
                     sb = sb.Clone();
                 }
+
+                sb.Completed += (sender, args) =>
+                {
+                    // Animation completed
+                    DisableM3AutoSizer = true;
+                    TriggerResize();
+                };
+
                 DownloadingProgressPanel.Height = DownloadingProgressPanel.ActualHeight;
                 Storyboard.SetTarget(sb, DownloadingProgressPanel);
                 sb.Begin();
             });
         }
+
 
         private void ModMakerCodeTextBox_OnKeyDown(object sender, KeyEventArgs e)
         {
@@ -384,5 +403,8 @@ MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
                 StartCompiler();
             }
         }
+
+        // This panel changes size so do not use autosizer
+        //public override bool DisableM3AutoSizer { get; set; } = true;
     }
 }

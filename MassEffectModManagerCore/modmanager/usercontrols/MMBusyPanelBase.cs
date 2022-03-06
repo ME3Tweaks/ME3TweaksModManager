@@ -78,6 +78,17 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         /// </summary>
         public bool IsPanelOpen => DataContext != null;
 
+        /// <summary>
+        /// Triggers the resize event for the hosting SingleItemPanel2
+        /// </summary>
+        protected void TriggerResize()
+        {
+            if (Parent is SingleItemPanel2 sip2)
+            {
+                sip2.TriggerResize();
+            }
+        }
+
         public virtual double MaxWindowWidthPercent { get; set; }
         public virtual double MaxWindowHeightPercent { get; set; }
 

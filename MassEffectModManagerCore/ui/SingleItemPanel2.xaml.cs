@@ -43,20 +43,26 @@ namespace ME3TweaksModManager.ui
             if (Content is MMBusyPanelBase bp)
             {
                 bp.Loaded -= SingleItemPanel2_OnLoaded;
-
-
+                
                 // This is a hack to make it know how much to size the content...
                 var timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(60) };
                 timer.Start();
                 timer.Tick += (sender, args) =>
                 {
                     timer.Stop();
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DummyProperty)));
+                    TriggerResize();
                 };
-
             }
         }
 
-        public event PropertyChangedEventHandler? PropertyChanged;
+        /// <summary>
+        /// Triggers a resizing binding update on the panel
+        /// </summary>
+        public void TriggerResize()
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DummyProperty)));
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 }
