@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksModManager.modmanager.objects.mod.editor;
@@ -21,12 +22,16 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         {
             ParameterMap.ClearEx();
 
+
+
             var parameterDictionary = new Dictionary<string, object>()
             {
                 // ModManager
-                {@"cmmver", ModDescTargetVersion},
+                // The editor only supports saving to the current moddesc spec. So don't show the wrong version that will be edited.
+                {@"cmmver", App.HighestSupportedModDesc.ToString(CultureInfo.InvariantCulture)}, // Is set read only in mapper
                 {@"minbuild", MinimumSupportedBuild > 102 ? MinimumSupportedBuild.ToString() : null},
             };
+
             ParameterMap.AddRange(MDParameter.MapIntoParameterMap(parameterDictionary, @"ModManager"));
 
             // ModInfo
@@ -42,7 +47,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 {@"nexuscode", NexusModID > 0 ? NexusModID.ToString() : null},
                 {@"requireddlc", RequiredDLC},
                 {@"bannerimagename", BannerImageName},
-                {@"sortalternates", SortAlternateOptions},
+                {@"sortalternates", new MDParameter(@"string", @"sortalternates", SortAlternateOptions ? @"" : @"False", new [] {@"", @"True", @"False"}, "") {Header = @"ModInfo"}}, //don't put checkedbydefault in if it is not set to true.
             };
 
 
@@ -58,8 +63,8 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 parameterDictionary[@"postinstalltool"] = PostInstallToolLaunch;
             }
             // END NON PUBLIC OPTIONS
-            
-            if (Game > MEGame.ME1)
+
+            if (Game is MEGame.ME2 or MEGame.ME3)
             {
                 // This flag only makes a difference for ME2/3
                 parameterDictionary[@"prefercompressed"] = PreferCompressed ? @"True" : null;
@@ -92,7 +97,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((Mod) obj);
+            return Equals((Mod)obj);
         }
 
         public override int GetHashCode()
