@@ -73,6 +73,11 @@ namespace ME3TweaksModManager.modmanager.objects.mod.editor
         /// Which header this descriptor is under
         /// </summary>
         public string Header { get; set; }
+
+        /// <summary>
+        /// If this field is read only and cannot be edited by the developer (cmmver is one use case)
+        /// </summary>
+        public bool ReadOnly { get; set; } = false;
         
         /// <summary>
         /// Maps a mapping of strings to strings into a list of MDParameter objects.
@@ -98,6 +103,11 @@ namespace ME3TweaksModManager.modmanager.objects.mod.editor
                 if (header == @"ModInfo" && p.Key == @"moddesc")
                 {
                     param.AcceptsNewLines = true;
+                }
+
+                if (header == @"ModManager" && p.Key == @"cmmver")
+                {
+                    param.ReadOnly = true;
                 }
                 parammap.Add(param);
             }

@@ -44,7 +44,11 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="{Binding Key}" Width="160" VerticalAlignment="Center"/>
-                        <TextBox Grid.Column="1" Text="{Binding Value}" AcceptsReturn="{Binding AcceptsNewLines}" TextWrapping="Wrap" Visibility="{Binding UsesSetValuesList, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}"/>
+                        <TextBox Grid.Column="1" Text="{Binding Value}" 
+                                 IsReadOnly="{Binding ReadOnly}"
+                                 IsEnabled="{Binding ReadOnly, Converter={StaticResource BoolToEnabledConverter}, ConverterParameter='Not'}"
+                                 AcceptsReturn="{Binding AcceptsNewLines}" 
+                                 TextWrapping="Wrap" Visibility="{Binding UsesSetValuesList, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}"/>
                         <ComboBox Grid.Column="1" ItemsSource="{Binding AllowedValues}" SelectedItem="{Binding Value}" Visibility="{Binding UsesSetValuesList, Converter={StaticResource BoolToVisibilityConverter}}"/>
                     </Grid>
                 </DataTemplate>
