@@ -20,6 +20,14 @@
                 HorizontalAlignment="Left"
                 TextWrapping="Wrap"
                 DockPanel.Dock="Top" />
+            <TextBlock
+                Margin="0,5,0,0"
+                Text="{DynamicResource string_installedCustomDLCFolders}"
+                DockPanel.Dock="Top"
+                FontWeight="Bold" />
+            <TextBlock
+                Text="{DynamicResource string_mde_customdlc2}"
+                DockPanel.Dock="Top" />
             <Button
                 Command="{Binding AddCustomDLCCommand}"
                 HorizontalAlignment="Left"
@@ -39,18 +47,7 @@
                     </StackPanel>
                 </Button.Content>
             </Button>
-            <moddescinieditor:DescriptorEditorItemsControl
-                Description="{DynamicResource string_mde_dec_header_customdlc}"
-                ItemsSource="{Binding CustomDLCJob.ParameterMap}"
-                DockPanel.Dock="Top"
-                x:Name="custdlc_descriptor_editor" />
-            <TextBlock
-                Text="{DynamicResource string_installedCustomDLCFolders}"
-                DockPanel.Dock="Top"
-                FontWeight="Bold" />
-            <TextBlock
-                Text="{DynamicResource string_mde_customdlc2}"
-                DockPanel.Dock="Top" />
+
             <ItemsControl
                 DockPanel.Dock="Top"
                 ItemsSource="{Binding CustomDLCParameters}"
@@ -116,6 +113,16 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
+            <TextBlock
+                Margin="0,5,0,0"
+                Text="DLC mod control"
+                DockPanel.Dock="Top"
+                FontWeight="Bold" />
+            <moddescinieditor:DescriptorEditorItemsControl
+                Description="{DynamicResource string_mde_dec_header_customdlc}"
+                ItemsSource="{Binding CustomDLCJob.ParameterMap}"
+                DockPanel.Dock="Top"
+                x:Name="custdlc_descriptor_editor" />
             <moddescinieditor:MultilistEditorControl
                 Header="CUSTOMDLC"
                 x:Name="customdlc_multilists_editor"
