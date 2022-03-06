@@ -243,34 +243,6 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 
 
                 SortedSet<string> autoConfigs = new SortedSet<string>();
-                foreach (var InstallationJob in InstallationJobs)
-                {
-                    foreach (var altdlc in InstallationJob.AlternateDLCs)
-                    {
-                        if (altdlc.Condition != AlternateDLC.AltDLCCondition.COND_MANUAL)
-                        {
-                            foreach (var conditionaldlc in altdlc.ConditionalDLC) // Conditional DLC are not available for COND_MANUAL
-                            {
-                                autoConfigs.Add(conditionaldlc.TrimStart('-', '+'));
-                            }
-                        }
-                        else if (altdlc.Condition == AlternateDLC.AltDLCCondition.COND_MANUAL && altdlc.DLCRequirementsForManual != null && altdlc.DLCRequirementsForManual.Any())
-                        {
-                            foreach (var manualTrigger in altdlc.DLCRequirementsForManual)
-                            {
-                                autoConfigs.Add(manualTrigger.Key);
-                            }
-                        }
-
-                    }
-                    foreach (var altfile in InstallationJob.AlternateFiles)
-                    {
-                        foreach (var conditionaldlc in altfile.ConditionalDLC)
-                        {
-                            autoConfigs.Add(conditionaldlc.TrimStart('-', '+'));
-                        }
-                    }
-                }
 
                 if (autoConfigs.Count > 0)
                 {
@@ -2034,6 +2006,44 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             }
             InstallationJobs.Add(basegameJob);
             return true;
+        }
+
+        /// <summary>
+        /// Returns a list of DLC foldernames that the mod can depend on being present (or not present!) for it's alternates
+        /// </summary>
+        /// <returns></returns>
+        public SortedSet<string> GetAutoConfigs()
+        {
+            var autoConfigs = new SortedSet<string>();
+            foreach (var InstallationJob in InstallationJobs)
+            {
+                foreach (var altdlc in InstallationJob.AlternateDLCs)
+                {
+                    if (altdlc.Condition != AlternateDLC.AltDLCCondition.COND_MANUAL)
+                    {
+                        foreach (var conditionaldlc in altdlc.ConditionalDLC) // Conditional DLC are not available for COND_MANUAL
+                        {
+                            autoConfigs.Add(conditionaldlc.TrimStart('-', '+'));
+                        }
+                    }
+                    else if (altdlc.Condition == AlternateDLC.AltDLCCondition.COND_MANUAL && altdlc.DLCRequirementsForManual != null && altdlc.DLCRequirementsForManual.Any())
+                    {
+                        foreach (var manualTrigger in altdlc.DLCRequirementsForManual)
+                        {
+                            autoConfigs.Add(manualTrigger.Key);
+                        }
+                    }
+                }
+                foreach (var altfile in InstallationJob.AlternateFiles)
+                {
+                    foreach (var conditionaldlc in altfile.ConditionalDLC)
+                    {
+                        autoConfigs.Add(conditionaldlc.TrimStart('-', '+'));
+                    }
+                }
+            }
+
+            return autoConfigs;
         }
     }
 }
