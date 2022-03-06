@@ -824,6 +824,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 try
                 {
+                    Percent = (int)(doneMerges * 100.0 / totalMerges); // Make sure it's updated here so it gets to 0% on first install
+                    Action = $"Applying mergemods";
+
                     mergeMod.ApplyMergeMod(InstallOptionsPackage.ModBeingInstalled, InstallOptionsPackage.InstallTarget, ref doneMerges, totalMerges,
                         mergeProgressUpdate);
                 }
