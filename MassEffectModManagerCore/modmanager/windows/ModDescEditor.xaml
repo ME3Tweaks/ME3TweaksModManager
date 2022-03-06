@@ -21,7 +21,8 @@
             <Button
                 Content="{DynamicResource string_openModdesciniDocumentation}"
                 DockPanel.Dock="Left"
-                Click="OpenModdescDocumenation_Click" />
+                Click="OpenModdescDocumenation_Click" 
+                Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}" />
             <TextBlock
                 Text="{Binding StatusMessage}"
                 DockPanel.Dock="Left"
