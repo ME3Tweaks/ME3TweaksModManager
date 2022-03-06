@@ -62,8 +62,16 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                           M3Log.Information(@"Hashing " + sourcefile);
                           var md5 = M3Utilities.CalculateMD5(sourcefile);
                           Directory.CreateDirectory(Directory.GetParent(destfile).FullName);
-                          M3Log.Information(@"Writing blank hash file " + destfile);
-                          File.WriteAllText(destfile, md5);
+
+                          if (Path.GetExtension(destfile) == @".m3m")
+                          {
+                              File.Copy(sourcefile, destfile);
+                          }
+                          else
+                          {
+                              M3Log.Information(@"Writing blank hash file " + destfile);
+                              File.WriteAllText(destfile, md5);
+                          }
 
 
                           var done = Interlocked.Increment(ref numdone);
