@@ -5,7 +5,8 @@
                        mc:Ignorable="d" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" 
                        xmlns:extensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
                        xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
-                       xmlns:ui="clr-namespace:ME3TweaksModManager.ui">
+                       xmlns:ui="clr-namespace:ME3TweaksModManager.ui"
+                       MinHeight="550">
     <DockPanel>
         <TextBlock DockPanel.Dock="Top" Text="{DynamicResource string_batchModInstaller}" FontSize="20" FontWeight="Bold" TextAlignment="Center" />
         <TextBlock DockPanel.Dock="Top" Text="{DynamicResource string_description_batchModInstallerAllowsSerialInstall}" TextWrapping="Wrap" TextAlignment="Center" />
@@ -17,7 +18,7 @@
         </DockPanel>
         <DockPanel DockPanel.Dock="Left">
             <TextBlock Text="{DynamicResource string_installGroups}" DockPanel.Dock="Top" FontWeight="Bold" />
-            <ListBox ItemsSource="{Binding AvailableBatchQueues}" SelectedItem="{Binding SelectedBatchQueue}" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" BorderThickness="1" IsTextSearchEnabled="True" TextSearch.TextPath="QueueName" Width="180">
+            <ListBox ItemsSource="{Binding AvailableBatchQueues}" SelectedItem="{Binding SelectedBatchQueue}" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" BorderThickness="1" IsTextSearchEnabled="True" TextSearch.TextPath="QueueName" Width="180" MinHeight="280">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
@@ -32,9 +33,22 @@
             <TextBlock Text="{DynamicResource string_groupInformation}" FontWeight="Bold" DockPanel.Dock="Top" />
             <TextBlock Text="{Binding SelectedBatchQueue.QueueDescription}" DockPanel.Dock="Top" Margin="0,7" />
             <DockPanel>
+                <DockPanel DockPanel.Dock="Bottom" Margin="0,4,0,0">
+                    <Button Content="{DynamicResource string_installThisGroup}" DockPanel.Dock="Right" Command="{Binding InstallGroupCommand}" />
+                    <CheckBox Content="{DynamicResource string_compressPackages}" DockPanel.Dock="Left" Margin="5,0" IsChecked="{Binding SelectedBatchQueue.InstallCompressed}" 
+                              IsEnabled="{Binding CanCompressPackages}"
+                              ui:SharedUIBindings.VisibilityToEnabled="True"/>
+                    <usercontrols:TargetSelector AvailableTargets="{Binding InstallationTargetsForGroup}" 
+                                          SelectedGameTarget="{Binding SelectedGameTarget, Mode=TwoWay}"
+                                          IsEnabled="{Binding SelectedBatchQueue, Converter={StaticResource NullEnabledConverter}}" 
+                                          ToolTip="{DynamicResource string_tooltip_targetToInstallThisModGroupTo}"
+                                          ShowTextureInfo="False"/>
+                </DockPanel>
+                <TextBox DockPanel.Dock="Bottom" 
+                         IsReadOnly="True" IsReadOnlyCaretVisible="False" HorizontalContentAlignment="Left" HorizontalAlignment="Stretch" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" TextWrapping="Wrap" VerticalScrollBarVisibility="Visible" VerticalContentAlignment="Top" extensions:CursorSpotlightExtension.BackgroundBrush="Transparent" extensions:CursorSpotlightExtension.RelativeSpotlightSize="0" extensions:CursorSpotlightExtension.MaxBlurRadius="0" Text="{Binding ModDescriptionText}"></TextBox>
                 <ListBox ItemsSource="{Binding SelectedBatchQueue.ModsToInstall}" 
                          SelectedItem="{Binding SelectedModInGroup}" HorizontalAlignment="Stretch" 
-                         DockPanel.Dock="Top" MinHeight="73" MaxHeight="90" ScrollViewer.VerticalScrollBarVisibility="Visible"
+                         DockPanel.Dock="Top" ScrollViewer.VerticalScrollBarVisibility="Visible"
                          BorderThickness=".5">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
@@ -48,18 +62,6 @@
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
-                <DockPanel DockPanel.Dock="Bottom" Margin="0,4,0,0">
-                    <Button Content="{DynamicResource string_installThisGroup}" DockPanel.Dock="Right" Command="{Binding InstallGroupCommand}" />
-                    <CheckBox Content="{DynamicResource string_compressPackages}" DockPanel.Dock="Left" Margin="5,0" IsChecked="{Binding SelectedBatchQueue.InstallCompressed}" 
-                              IsEnabled="{Binding CanCompressPackages}"
-                              ui:SharedUIBindings.VisibilityToEnabled="True"/>
-                    <usercontrols:TargetSelector AvailableTargets="{Binding InstallationTargetsForGroup}" 
-                                          SelectedGameTarget="{Binding SelectedGameTarget, Mode=TwoWay}"
-                                          IsEnabled="{Binding SelectedBatchQueue, Converter={StaticResource NullEnabledConverter}}" 
-                                          ToolTip="{DynamicResource string_tooltip_targetToInstallThisModGroupTo}"
-                                          ShowTextureInfo="False"/>
-                </DockPanel>
-                <TextBox IsReadOnly="True" IsReadOnlyCaretVisible="False" HorizontalContentAlignment="Left" HorizontalAlignment="Stretch" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" TextWrapping="Wrap" VerticalScrollBarVisibility="Visible" VerticalContentAlignment="Top" extensions:CursorSpotlightExtension.BackgroundBrush="Transparent" extensions:CursorSpotlightExtension.RelativeSpotlightSize="0" extensions:CursorSpotlightExtension.MaxBlurRadius="0" Text="{Binding ModDescriptionText}"></TextBox>
             </DockPanel>
         </DockPanel>
     </DockPanel>

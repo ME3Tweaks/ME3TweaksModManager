@@ -65,6 +65,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         private void EditGroup()
         {
             var editGroupUI = new BatchModQueueEditor(M3LoadedMods.Instance.AllLoadedMods.ToList(), mainwindow, SelectedBatchQueue);
+            // Original code.
             editGroupUI.ShowDialog();
             var newPath = editGroupUI.SavedPath;
             if (newPath != null)
@@ -72,6 +73,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 //file was saved, reload
                 parseBatchFiles(newPath);
             }
+
+
+#if DEBUG
+            // Debug code. Requires commenting out the above.
+            //editGroupUI.Show();
+#endif
         }
 
         private bool BatchQueueSelected() => SelectedBatchQueue != null;
@@ -206,11 +213,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public MEGame Game { get; private set; }
         public string QueueName { get; private set; }
         public string QueueDescription { get; private set; }
-        
+
         //Fody uses this property on weaving
-        #pragma warning disable
+#pragma warning disable
         public event PropertyChangedEventHandler PropertyChanged;
-        #pragma warning restore
+#pragma warning restore
         public static BatchLibraryInstallQueue ParseInstallQueue(string queueFile, List<Mod> allLoadedMods)
         {
             if (!File.Exists(queueFile)) return null;

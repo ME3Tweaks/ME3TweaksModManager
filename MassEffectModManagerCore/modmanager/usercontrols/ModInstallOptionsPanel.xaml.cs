@@ -13,17 +13,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using ME3TweaksModManager.modmanager.objects.exceptions;
 using ME3TweaksModManager.modmanager.objects.installer;
 
@@ -111,7 +102,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
 
         /// <summary>
-        /// Weave-calld when SelectedGameTarget changes
+        /// Weave-called when SelectedGameTarget changes
         /// </summary>
         /// <param name="oldT"></param>
         /// <param name="newT"></param>
@@ -124,7 +115,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 SetupOptions(false);
             }
         }
-
+        
         private void SetupOptions(bool initialSetup)
         {
             AlternateGroups.ClearEx();
@@ -394,7 +385,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             List<AlternateOption> secondPassOptions = new List<AlternateOption>();
             foreach (var v in optionsToUpdate)
             {
-                var stateChanged = v.UpdateSelectability(optionsToUpdate, mod, target);
+                // Add the list of options this one depends on so we can pass them through to the validation function, even if that one is not being updated.
+                var allDependentOptions = AlternateGroups.SelectMany(x => x.AlternateOptions).Where(x => v.DependsOnKeys.Any(y => y.Key == x.OptionKey)).Concat(optionsToUpdate).Distinct().ToList();
+                var stateChanged = v.UpdateSelectability(allDependentOptions, mod, target);
                 if (stateChanged)
                 {
                     Debug.WriteLine($@"State changed: {v.FriendlyName} to {v.IsSelected}");
