@@ -50,7 +50,6 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
 
         //public override bool UIRequired => !IsManual && IsSelected && !IsAlways;
         //public override bool UINotApplicable => !IsManual && !IsSelected && !IsAlways;
-        public List<string> ConditionalDLC = new List<string>();
 
         /// <summary>
         /// Alternate file to use, if the operation uses an alternate file
@@ -215,7 +214,9 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                         LoadFailedReason = $@"Alternate File ({FriendlyName}) specifies operation OP_APPLY_MULTILISTFILES on the CUSTOM DLC task - this operation is not supported on this header. Use the altdlc version instead, see the moddesc.ini documentation.";
                         return;
                     }
-                    if (properties.TryGetValue(@"MultiListRootPath", out var rootpath))
+                    // ModDesc 8.0 change: Require MultiListRootPath not be an empty string.
+                    // This checks because EGM LE did not set it so this would break loading that mod on future builds
+                    if (properties.TryGetValue(@"MultiListRootPath", out var rootpath) && (modForValidating.ModDescTargetVersion < 8.0 || !string.IsNullOrWhiteSpace(rootpath)))
                     {
                         MultiListRootPath = rootpath.TrimStart('\\', '/').Replace('/', '\\');
                     }
@@ -537,36 +538,21 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
             var conditions = Enum.GetValues<AltFileCondition>().Where(x => x != AltFileCondition.INVALID_CONDITION).Select(x => x.ToString());
             var operations = Enum.GetValues<AltFileOperation>().Where(x => x != AltFileOperation.INVALID_OPERATION).Select(x => x.ToString());
 
-            var dependsActions = Enum.GetValues<EDependsOnAction>().Where(x => x != EDependsOnAction.ACTION_INVALID).Select(x => x.ToString()).Prepend("").ToList();
 
             var parameterDictionary = new Dictionary<string, object>()
             {
-                {@"Condition", new MDParameter(@"string", @"Condition", Condition.ToString(), conditions, AltFileCondition.COND_MANUAL.ToString())},
-                {@"ConditionalDLC", ConditionalDLC},
-                {@"ModOperation", new MDParameter(@"string", @"ModOperation", Operation.ToString(), operations, AltFileOperation.OP_NOTHING.ToString())},
-
+                { @"Condition", new MDParameter(@"string", @"Condition", Condition.ToString(), conditions, AltFileCondition.COND_MANUAL.ToString())},
+                { @"ConditionalDLC", ConditionalDLC},
+                { @"ModOperation", new MDParameter(@"string", @"ModOperation", Operation.ToString(), operations, AltFileOperation.OP_NOTHING.ToString())},
                 { @"AltFile", AltFile},
                 { @"ModFile", ModFile},
                 { @"MergeFiles", MergeMods != null  ? string.Join(';',MergeMods.Select(x=>x.MergeModFilename)) : ""},
-                { @"FriendlyName", FriendlyName},
-                { @"Description", Description},
-                {@"CheckedByDefault", new MDParameter(@"string", @"CheckedByDefault", CheckedByDefault ? @"True" : @"", new [] {@"", @"True", @"False"}, "")}, //don't put checkedbydefault in if it is not set to true.
-                { @"OptionGroup", GroupName},
-                { @"ApplicableAutoText", ApplicableAutoTextRaw},
-                { @"NotApplicableAutoText", NotApplicableAutoTextRaw},
                 { @"MultiListId", MultiListId > 0 ? MultiListId.ToString() : null},
                 { @"MultiListRootPath", MultiListRootPath},
                 { @"MultiListTargetPath", MultiListTargetPath},
-                { @"ImageAssetName", ImageAssetName},
-                { @"ImageHeight", ImageHeight > 0 ? ImageHeight.ToString() : null},
-
-                // DependsOn
-                { @"OptionKey", HasDefinedOptionKey ? OptionKey : null},
-                { @"DependsOnKeys", string.Join(';',DependsOnKeys.Select(x=>x.ToString()))},
-                { @"DependsOnMetAction", new MDParameter(@"string", @"DependsOnMetAction", DependsOnMetAction != EDependsOnAction.ACTION_INVALID ? DependsOnMetAction.ToString() : "", dependsActions, "")},
-                { @"DependsOnNotMetAction", new MDParameter(@"string", @"DependsOnNotMetAction", DependsOnNotMetAction != EDependsOnAction.ACTION_INVALID ? DependsOnNotMetAction.ToString() : "", dependsActions, "")},
             };
 
+            BuildSharedParameterMap(parameterDictionary);
             ParameterMap.ReplaceAll(MDParameter.MapIntoParameterMap(parameterDictionary));
         }
     }

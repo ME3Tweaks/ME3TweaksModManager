@@ -24,10 +24,10 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
             OP_ADD_CUSTOMDLC,
             OP_ADD_FOLDERFILES_TO_CUSTOMDLC,
             OP_ADD_MULTILISTFILES_TO_CUSTOMDLC,
-            /// <summary>
-            /// On mod install, an ini file(s) is merged into the DLCs. This is game dependent.
-            /// </summary>
-            OP_MERGE_INI,
+            //// <summary>
+            //// On mod install, an ini file(s) is merged into the DLCs. This is game dependent.
+            //// </summary>
+            //OP_MERGE_INI,
             OP_NOTHING
         }
 
@@ -222,7 +222,9 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 int multilistid = -1;
                 if (Operation == AltDLCOperation.OP_ADD_MULTILISTFILES_TO_CUSTOMDLC)
                 {
-                    if (properties.TryGetValue(@"MultiListRootPath", out var rootpath))
+                    // ModDesc 8.0 change: Require MultiListRootPath not be an empty string.
+                    // This checks because EGM LE did not set it so this would break loading that mod on future builds
+                    if (properties.TryGetValue(@"MultiListRootPath", out var rootpath) && (modForValidating.ModDescTargetVersion < 8.0 || !string.IsNullOrWhiteSpace(rootpath)))
                     {
                         MultiListRootPath = rootpath.TrimStart('\\', '/').Replace('/', '\\');
                     }
@@ -336,28 +338,24 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
             var dlcReqs = properties.TryGetValue(@"DLCRequirements", out string _dlcReqs) ? _dlcReqs.Split(';') : null;
             if (dlcReqs != null)
             {
-                var reqList = new List<string>();
+                var reqList = new List<PlusMinusKey>();
                 foreach (var originalReq in dlcReqs)
                 {
-                    var testreq = originalReq;
-                    string prefix = "";
-                    if (modForValidating.ModDescTargetVersion >= 6.3)
+                    var testreq = new PlusMinusKey(originalReq);
+                    if (modForValidating.ModDescTargetVersion < 6.3)
                     {
-                        if (testreq.StartsWith("-") || testreq.StartsWith("+"))
-                        {
-                            prefix = testreq[0].ToString();
-                        }
-                        testreq = testreq.TrimStart('-', '+');
+                        // ModDesc < 6.3 did not support +/-, so we strip it off.
+                        testreq.IsPlus = null;
                     }
                     //official headers
-                    if (Enum.TryParse(testreq, out ModJob.JobHeader header) && ModJob.GetHeadersToDLCNamesMap(modForValidating.Game).TryGetValue(header, out var foldername))
+                    if (Enum.TryParse(testreq.Key, out ModJob.JobHeader header) && ModJob.GetHeadersToDLCNamesMap(modForValidating.Game).TryGetValue(header, out var foldername))
                     {
-                        reqList.Add(prefix + foldername);
+                        reqList.Add(testreq);
                         continue;
                     }
 
                     //dlc mods
-                    if (!testreq.StartsWith(@"DLC_"))
+                    if (!testreq.Key.StartsWith(@"DLC_"))
                     {
                         M3Log.Error($@"An item in Alternate DLC's ({FriendlyName}) DLCRequirements doesn't start with DLC_ or is not official header. Bad value: {originalReq}");
                         LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altdlc_dlcRequirementInvalid, FriendlyName, originalReq);
@@ -365,12 +363,12 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                     }
                     else
                     {
-                        reqList.Add(originalReq);
+                        reqList.Add(testreq);
                     }
                 }
 
 
-                DLCRequirementsForManual = reqList.Select(x => new PlusMinusKey(x)).ToArray();
+                DLCRequirementsForManual = reqList.ToArray();
             }
 
             if (Condition == AltDLCCondition.COND_SPECIFIC_SIZED_FILES)
@@ -576,7 +574,13 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                     // Mods targeting Moddesc 6 or 6.1 would possibly be bugged if they used this feature
                     // so this change does not affect mods targeting those versions
                     IsSelected = false;
+                    ForceNotApplicable = true; // This option is not applicable
                 }
+                else
+                {
+                    ForceNotApplicable = false; // This option is not forced not-applicable
+                }
+
                 M3Log.Information($@" > AlternateDLC UpdateSelectability for {FriendlyName}: UISelectable: {UIIsSelectable}, conducted DLCRequirements check.", Settings.LogModInstallation);
             }
             else
@@ -599,7 +603,6 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         {
             var conditions = Enum.GetValues<AltDLCCondition>().Where(x => x != AltDLCCondition.INVALID_CONDITION).Select(x => x.ToString());
             var operations = Enum.GetValues<AltDLCOperation>().Where(x => x != AltDLCOperation.INVALID_OPERATION).Select(x => x.ToString());
-            var dependsActions = Enum.GetValues<EDependsOnAction>().Where(x => x != EDependsOnAction.ACTION_INVALID).Select(x => x.ToString()).Prepend("").ToList();
 
             var parameterDictionary = new Dictionary<string, object>()
             {
@@ -609,26 +612,16 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 {@"ModOperation", new MDParameter(@"string", @"ModOperation", Operation.ToString(), operations, AltDLCOperation.OP_NOTHING.ToString())},
                 {@"ModAltDLC", AlternateDLCFolder},
                 {@"ModDestDLC", DestinationDLCFolder},
-                {@"FriendlyName", FriendlyName},
-                {@"Description", Description},
-                {@"CheckedByDefault", new MDParameter(@"string", @"CheckedByDefault", CheckedByDefault ? @"True" : @"", new [] {@"", @"True", @"False"}, "")}, //don't put checkedbydefault in if it is not set to true.
-                {@"OptionGroup", GroupName},
-                {@"ApplicableAutoText", ApplicableAutoTextRaw},
-                {@"NotApplicableAutoText", NotApplicableAutoTextRaw},
+                
+
                 {@"MultiListId", MultiListId > 0 ? MultiListId.ToString() : null},
                 {@"MultiListRootPath", MultiListRootPath},
                 {@"RequiredFileRelativePaths", RequiredSpecificFiles.Keys.ToList()}, // List of relative paths
                 {@"RequiredFileSizes", RequiredSpecificFiles.Values.ToList()}, // List of relative sizes
                 {@"DLCRequirements", DLCRequirementsForManual},
-                {@"ImageAssetName", ImageAssetName},
-                {@"ImageHeight", ImageHeight > 0 ? ImageHeight.ToString() : null},
-
-                // DependsOn
-                {@"OptionKey", HasDefinedOptionKey ? OptionKey : null},
-                {@"DependsOnKeys", string.Join(';',DependsOnKeys.Select(x=>x.ToString()))},
-                {@"DependsOnMetAction", new MDParameter(@"string", @"DependsOnMetAction", DependsOnMetAction != EDependsOnAction.ACTION_INVALID ? DependsOnMetAction.ToString() : "", dependsActions, "")},
-                {@"DependsOnNotMetAction", new MDParameter(@"string", @"DependsOnNotMetAction", DependsOnNotMetAction != EDependsOnAction.ACTION_INVALID ? DependsOnNotMetAction.ToString() : "", dependsActions, "")},
             };
+
+            BuildSharedParameterMap(parameterDictionary);
 
             ParameterMap.ReplaceAll(MDParameter.MapIntoParameterMap(parameterDictionary));
         }
