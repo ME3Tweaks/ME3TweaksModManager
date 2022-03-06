@@ -30,6 +30,10 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         /// </summary>
         public AlternateOption SelectedOption { get; set; }
 
+        /// <summary>
+        /// The first option's sort index (multi mode) or the SortIndex itself on the option (single mode)
+        /// </summary>
+        public int SortIndex => AlternateOptions?.FirstOrDefault()?.SortIndex ?? 0;
 
         /// <summary>
         /// If the checkbox (when in single mode) is selected or not. This must be populated when the alternate group is generated for the initial selection to be correct

@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Windows.Media.Imaging;
+using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCoreWPF.Targets;
@@ -80,6 +81,12 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         public virtual double CheckboxOpacity => !UIIsSelectable ? .65 : 1;
 
         /// <summary>
+        /// The list of DLC to be checked against with the specified condition (defined in subclasses of AlternateOption)
+        /// </summary>
+        public List<string> ConditionalDLC = new List<string>();
+
+
+        /// <summary>
         /// UI-only
         /// </summary>
         public virtual double TextOpacity
@@ -101,6 +108,11 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         }
 
         /// <summary>
+        /// Forcibly sets the option to not be applicable in the UI.
+        /// </summary>
+        public bool ForceNotApplicable { get; protected set; }
+
+        /// <summary>
         /// If this option is required (automatic and checked). This does not apply if the condition is OP_ALWAYS. 
         /// </summary>
         public virtual bool UIRequired => !IsManual && !IsAlways && IsSelected;
@@ -108,8 +120,9 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         /// <summary>
         /// If this option can be selected on or off by the end-user
         /// </summary>
-        public virtual bool UIIsSelectable { 
-            get; 
+        public virtual bool UIIsSelectable
+        {
+            get;
             set;
         }
 
@@ -117,7 +130,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         /// <summary>
         /// If this option is not applicable to the installation
         /// </summary>
-        public virtual bool UINotApplicable => !IsManual && !IsSelected && !IsAlways;
+        public virtual bool UINotApplicable => ForceNotApplicable || (!IsManual && !IsSelected && !IsAlways);
 
         #endregion
 
@@ -136,6 +149,8 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         /// If this option is always selected and forced on. Used to put an option that always is checked, often with OP_NOTHING.
         /// </summary>
         public abstract bool IsAlways { get; }
+
+        public int SortIndex { get; set; }
 
         /// <summary>
         /// Builds the moddesc.ini parameter map
@@ -448,7 +463,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 GroupName = properties.TryGetValue(@"OptionGroup", out string groupName) ? groupName : null;
             }
 
-            // ModDesc 8.0: Read dev-defined OptionKey
+            // ModDesc 8.0: Read dev-defined OptionKey, SortOrder
             if (modForValidating.ModDescTargetVersion >= 8.0)
             {
                 if (properties.TryGetValue(@"OptionKey", out string optionKey) && !string.IsNullOrWhiteSpace(optionKey))
@@ -482,6 +497,10 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                         DependsOnKeys.Add(dependskey);
                     }
 
+
+                    // THERE ARE TWO ALMOST DUPLICATE BLOCKS HERE
+                    // BUT THEY DO DIFFERENT THINGS!
+                    // ==========================================================
                     // We have to read criteria met and not met.
                     if (properties.TryGetValue(@"DependsOnMetAction", out string dependsOnMetStr) && Enum.TryParse<EDependsOnAction>(dependsOnMetStr, out var dependsOnMet) && dependsOnMet != EDependsOnAction.ACTION_INVALID)
                     {
@@ -504,7 +523,28 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                         LoadFailedReason = $"Alternate {FriendlyName} uses DependsOnKeys but does not define the DependsOnNotMetAction attribute. This attribute is required.";
                         return false;
                     }
+                    // ==========================================================
+
+                    // Read the sorting index
+                    if (properties.TryGetValue(@"SortIndex", out string sortIndexStr))
+                    {
+                        if (int.TryParse(sortIndexStr, out var sortIndex) && sortIndex > 0)
+                        {
+                            SortIndex = sortIndex;
+                        }
+                        else
+                        {
+                            // SortIndex collisions are also validated in a later pass
+                            M3Log.Error($@"Alternate {FriendlyName} specifies an invalid 'sortindex' attribute: {sortIndexStr}. Valid values are greater than 0 and less than {int.MaxValue}");
+                            LoadFailedReason = $@"Alternate {FriendlyName} specifies an invalid 'sortindex' attribute: {sortIndexStr}. Valid values are greater than 0 and less than {int.MaxValue}";
+                            return false;
+                        }
+
+                    }
+
+
                 }
+
             }
 
             return true; //Succeeded (or older moddesc that does not support this)
@@ -521,6 +561,50 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         public void ReleaseLoadedImageAsset()
         {
             ImageBitmap = null; //Lose the reference so we don't hold memory
+        }
+
+        /// <summary>
+        /// Installs shared options into the parameter map for moddesc.ini editor
+        /// </summary>
+        /// <param name="parameterMap"></param>
+        public void BuildSharedParameterMap(Dictionary<string, object> parameterMap)
+        {
+            var dependsActions = Enum.GetValues<EDependsOnAction>().Where(x => x != EDependsOnAction.ACTION_INVALID).Select(x => x.ToString()).Prepend("").ToList();
+
+            var sharedMap = new Dictionary<string, object>()
+            {
+                // ConditionalDLC is not added here since it needs to appear next to Condition, which is class specific.
+
+                // Basic metadata
+                {@"FriendlyName", FriendlyName},
+                {@"Description", Description},
+
+                // Initially selected
+                {@"CheckedByDefault", new MDParameter(@"string", @"CheckedByDefault", CheckedByDefault ? @"True" : @"", new [] {@"", @"True", @"False"}, "")}, //don't put checkedbydefault in if it is not set to true.
+
+                // Mutually exclusive groups
+                {@"OptionGroup", GroupName},
+
+                // Auto Apply text
+                { @"ApplicableAutoText", ApplicableAutoTextRaw},
+                { @"NotApplicableAutoText", NotApplicableAutoTextRaw},
+
+                // Images
+                { @"ImageAssetName", ImageAssetName },
+                { @"ImageHeight", ImageHeight > 0 ? ImageHeight.ToString() : null },
+
+                // DependsOn
+                { @"OptionKey", HasDefinedOptionKey ? OptionKey : null },
+                { @"DependsOnKeys", string.Join(';', DependsOnKeys.Select(x => x.ToString())) },
+                { @"DependsOnMetAction", new MDParameter(@"string", @"DependsOnMetAction", DependsOnMetAction != EDependsOnAction.ACTION_INVALID ? DependsOnMetAction.ToString() : "", dependsActions, "") },
+                { @"DependsOnNotMetAction", new MDParameter(@"string", @"DependsOnNotMetAction", DependsOnNotMetAction != EDependsOnAction.ACTION_INVALID ? DependsOnNotMetAction.ToString() : "", dependsActions, "") },
+
+                // Sorting
+                { @"SortIndex", SortIndex > 0 ? SortIndex.ToString() : "" } // If not defined don't put into map
+            };
+
+            // Merge the shared map into the parameter map
+            parameterMap.AddRange(sharedMap);
         }
 
         /// <summary>
@@ -575,7 +659,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
 
             //if (DependsOnMetAction != EDependsOnAction.ACTION_DISALLOW_SELECT && DependsOnMetAction != EDependsOnAction.ACTION_DISALLOW_SELECT_CHECKED)
             //{
-                DependsOnText = condition.Trim();
+            DependsOnText = condition.Trim();
             //}
 
             return true;

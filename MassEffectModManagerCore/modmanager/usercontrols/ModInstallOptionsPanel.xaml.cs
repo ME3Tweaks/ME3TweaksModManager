@@ -115,7 +115,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 SetupOptions(false);
             }
         }
-        
+
         private void SetupOptions(bool initialSetup)
         {
             AlternateGroups.ClearEx();
@@ -331,10 +331,26 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             // ModDesc 8: Sorting option disable?
             if (ModBeingInstalled.SortAlternateOptions)
             {
+                var remainingOptionsToSort = new List<AlternateGroup>(AlternateGroups);
                 List<AlternateGroup> newOptions = new List<AlternateGroup>();
-                newOptions.AddRange(AlternateGroups.Where(x => x.GroupName != null));
-                newOptions.AddRange(AlternateGroups.Where(x => x.GroupName == null && x.SelectedOption.UIIsSelectable));
-                newOptions.AddRange(AlternateGroups.Where(x => x.GroupName == null && !x.SelectedOption.UIIsSelectable));
+
+                // Read only option is always top (ME1 only)
+                var readOnly = remainingOptionsToSort.FirstOrDefault(x => x.AlternateOptions.Count == 1 && x.AlternateOptions[0] is ReadOnlyOption);
+                if (readOnly != null)
+                {
+                    newOptions.Add(readOnly);
+                    remainingOptionsToSort.Remove(readOnly);
+                }
+
+                // Put indexed items at the top in ascending order.
+                var indexedOptions = remainingOptionsToSort.Where(x => x.SortIndex > 0);
+                newOptions.AddRange(indexedOptions.OrderBy(x => x.SortIndex));
+                remainingOptionsToSort = remainingOptionsToSort.Except(indexedOptions).ToList();
+                
+                // Put remaining options at the bottom.
+                newOptions.AddRange(remainingOptionsToSort.Where(x => x.GroupName != null));
+                newOptions.AddRange(remainingOptionsToSort.Where(x => x.GroupName == null && x.SelectedOption.UIIsSelectable));
+                newOptions.AddRange(remainingOptionsToSort.Where(x => x.GroupName == null && !x.SelectedOption.UIIsSelectable));
 
 #if DEBUG
                 if (newOptions.Count != AlternateGroups.Count)

@@ -1527,6 +1527,8 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             if (ModDescTargetVersion >= 8.0)
             {
                 var allAlternates = InstallationJobs.SelectMany(x => x.GetAllAlternates()).ToList();
+
+                // Validate the depends on
                 foreach (var alternate in allAlternates)
                 {
                     if (!alternate.SetupAndValidateDependsOnText(this, allAlternates))
@@ -1534,7 +1536,19 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                         // Validation message is set in the validation method, so we only return here.
                         return;
                     }
-                    
+                }
+
+                // Validate the sort orders being unique.
+                var indexedAlternates = allAlternates.Where(x => x.SortIndex > 0);
+                foreach (var indexedAlternate in indexedAlternates)
+                {
+                    var collision = indexedAlternates.FirstOrDefault(x => x.SortIndex == indexedAlternate.SortIndex && x != indexedAlternate);
+                    if (collision != null)
+                    {
+                        M3Log.Error($@"Alternate {indexedAlternate.FriendlyName} specifies a non-unique sortindex value '{indexedAlternate.SortIndex}'. {collision.FriendlyName} also uses this sortindex value, these values must be unique.");
+                        LoadFailedReason = $"Alternate {indexedAlternate.FriendlyName} specifies a non-unique sortindex value '{indexedAlternate.SortIndex}'. {collision.FriendlyName} also uses this sortindex value, these values must be unique.";
+                        return;
+                    }
                 }
             }
             #endregion
