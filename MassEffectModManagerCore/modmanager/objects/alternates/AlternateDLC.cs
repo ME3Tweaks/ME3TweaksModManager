@@ -550,7 +550,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
             //IsSelected; //autos
         }
 
-        internal override bool UpdateSelectability(IEnumerable<AlternateOption> allOptions, Mod mod, GameTargetWPF target)
+        internal override bool UpdateSelectability(IEnumerable<AlternateOption> allOptionsDependedOn, Mod mod, GameTargetWPF target)
         {
             if (DLCRequirementsForManual != null)
             {
@@ -588,8 +588,8 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
 
             if (DLCRequirementsForManual != null && !UIIsSelectable)
                 return false; // The user can't change the selection so we don't update the selectability states since this option is locked by DLC requirements.
-
-            return base.UpdateSelectability(allOptions, mod, target);
+            
+            return base.UpdateSelectability(allOptionsDependedOn, mod, target);
         }
 
         /// <summary>

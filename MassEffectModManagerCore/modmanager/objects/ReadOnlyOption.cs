@@ -30,7 +30,7 @@ namespace ME3TweaksModManager.modmanager.objects
         public override bool UIIsSelectable { get => true; set { } }
 
         // This method does nothing for ReadOnlyOption.
-        internal override bool UpdateSelectability(IEnumerable<AlternateOption> allOptions, Mod mod, GameTargetWPF target) { return false; }
+        internal override bool UpdateSelectability(IEnumerable<AlternateOption> allOptionsDependedOn, Mod mod, GameTargetWPF target) { return false; }
 
     }
 }
