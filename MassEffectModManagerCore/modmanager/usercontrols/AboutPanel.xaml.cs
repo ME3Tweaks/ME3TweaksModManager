@@ -48,28 +48,40 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             var libraries = new List<LibraryCredit>
             {
-                new LibraryCredit(@"AdonisUI", @"https://github.com/benruehl/adonis-ui", M3L.GetString(M3L.string_library_adonisui)),
-                new LibraryCredit(@"SevenZipSharp", @"https://github.com/squid-box/SevenZipSharp", M3L.GetString(M3L.string_library_sevenzipsharp)),
-                new LibraryCredit(@"ini-parser", @"https://github.com/rickyah/ini-parser", M3L.GetString(M3L.string_library_iniparser)),
+                // M3 version
+                new LibraryCredit(@"AdonisUI*", @"https://github.com/benruehl/adonis-ui", M3L.GetString(M3L.string_library_adonisui)),
+                
+                // M3 version
+                new LibraryCredit(@"SevenZipSharp*", @"https://github.com/squid-box/SevenZipSharp", M3L.GetString(M3L.string_library_sevenzipsharp)),
+                
+                // M3 version
+                new LibraryCredit(@"ini-parser*", @"https://github.com/rickyah/ini-parser", M3L.GetString(M3L.string_library_iniparser)),
                 new LibraryCredit(@"Flurl", @"https://flurl.dev", M3L.GetString(M3L.string_library_flurl)),
                 new LibraryCredit(@"Fody", @"https://github.com/Fody/Fody", M3L.GetString(M3L.string_library_fody)),
-                new LibraryCredit(@"FontAwesome.WPF", @"https://github.com/charri/Font-Awesome-WPF", M3L.GetString(M3L.string_library_fontawesome)),
+                new LibraryCredit(@"FontAwesome5", @"https://github.com/MartinTopfstedt/FontAwesome5", M3L.GetString(M3L.string_library_fontawesome)),
                 new LibraryCredit(@"AppCenter", @"https://appcenter.ms", M3L.GetString(M3L.string_library_appcenter)),
                 new LibraryCredit(@"MvvmValidation", @"https://github.com/pglazkov/MvvmValidation", M3L.GetString(M3L.string_library_mvvmvalidation)),
                 new LibraryCredit(@"Newtonsoft.Json", @"https://www.newtonsoft.com/json", M3L.GetString(M3L.string_library_newtonsoft)),
                 new LibraryCredit(@"Octokit", @"https://github.com/octokit/octokit.net", M3L.GetString(M3L.string_library_octokit)),
                 new LibraryCredit(@"Serilog", @"https://serilog.net", M3L.GetString(M3L.string_library_serilog)),
-                new LibraryCredit(@"WPF Extended Toolkit", @"https://github.com/dotnetprojects/WpfExtendedToolkit", M3L.GetString(M3L.string_library_wpftoolkitextended)),
+                
+                // M3 version
+                new LibraryCredit(@"WPF Extended Toolkit*", @"https://github.com/dotnetprojects/WpfExtendedToolkit", M3L.GetString(M3L.string_library_wpftoolkitextended)),
                 new LibraryCredit(@"LegendaryExplorerCore", @"https://github.com/ME3Tweaks/ME3Explorer", M3L.GetString(M3L.string_library_LegendaryExplorerCore)),
                 new LibraryCredit(@"AuthenticodeExaminer", @"https://github.com/vcsjones/AuthenticodeExaminer", M3L.GetString(M3L.string_library_authenticodeexaminer)),
                 new LibraryCredit(@"CliWrap", @"https://github.com/Tyrrrz/CliWrap", M3L.GetString(M3L.string_library_cliwrap)),
                 new LibraryCredit(@"CommandLineParser", @"https://github.com/commandlineparser/commandline", M3L.GetString(M3L.string_library_commandlineparser)),
-                new LibraryCredit(@"ComputerInfo", @"https://github.com/NickStrupat/ComputerInfo", M3L.GetString(M3L.string_library_computerinfo)),
-                new LibraryCredit(@"FluentNexus", @"https://github.com/Pathoschild/FluentNexus", M3L.GetString(M3L.string_library_fluentnexus)),
+                
+                // M3 version
+                new LibraryCredit(@"ComputerInfo*", @"https://github.com/NickStrupat/ComputerInfo", M3L.GetString(M3L.string_library_computerinfo)),
+                
+                // M3 version
+                new LibraryCredit(@"FluentNexus*", @"https://github.com/Pathoschild/FluentNexus", M3L.GetString(M3L.string_library_fluentnexus)),
                 new LibraryCredit(@"RecyclableMemoryStream", @"https://github.com/Microsoft/Microsoft.IO.RecyclableMemoryStream", M3L.GetString(M3L.string_library_recyclablememorystream)),
                 new LibraryCredit(@"SSH.NET", @"https://github.com/sshnet/SSH.NET", M3L.GetString(M3L.string_library_sshnet)),
                 new LibraryCredit(@"WatsonWebsocket", @"https://github.com/jchristn/WatsonWebsocket", M3L.GetString(M3L.string_library_watsonwebsocket)),
-                new LibraryCredit(@"NTFS-Streams", @"https://github.com/RichardD2/NTFS-Streams", M3L.GetString(M3L.string_library_ntfsstreams)),
+                new LibraryCredit(@"SingleInstanceCore", @"https://github.com/soheilkd/SingleInstanceCore", "Enables single-instancing of an application"),
+                new LibraryCredit(@"RoboSharp*", @"https://github.com/tjscience/RoboSharp", "Wrapper for robycopy command in C#"),
             };
 
 

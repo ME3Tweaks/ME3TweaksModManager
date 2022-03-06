@@ -152,7 +152,6 @@
 	<ItemGroup>
 		<PackageReference Include="AuthenticodeExaminer" Version="0.3.0" />
 		<PackageReference Include="CommandLineParser" Version="2.8.0" />
-		<PackageReference Include="ComputerInfo" Version="0.1.0-prerelease" />
 		<PackageReference Include="CliWrap" Version="3.4.1" />
 		<PackageReference Include="Flurl" Version="3.0.4" />
 		<PackageReference Include="Flurl.Http" Version="3.2.2" />

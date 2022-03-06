@@ -5,6 +5,7 @@
                        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
                        xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
                        xmlns:modmanagercore="clr-namespace:ME3TweaksModManager"
+                       Width="700"
                        xmlns:ui="clr-namespace:ME3TweaksModManager.ui">
     <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0" Background="#115688">
         <Grid.RowDefinitions>
@@ -59,9 +60,9 @@
                     <ColumnDefinition Width="1*" />
                     <ColumnDefinition Width="1*" />
                 </Grid.ColumnDefinitions>
-                <TextBlock Text="{DynamicResource string_libraries}" Foreground="White" TextAlignment="Center" Grid.ColumnSpan="3" FontWeight="Bold" FontSize="16" Margin="0,0,0,10" />
-
-                <ItemsControl Grid.Row="1" Grid.ColumnSpan="3" ItemsSource="{Binding Libraries}">
+                <TextBlock Text="{DynamicResource string_libraries}" Foreground="White" TextAlignment="Center" Grid.ColumnSpan="3" FontWeight="Bold" FontSize="16"  />
+                <TextBlock Text="* = ME3Tweaks forked version" Grid.Column="0" Foreground="White" Margin="0,0,0,10" TextAlignment="Center" Grid.Row="1" Grid.ColumnSpan="3" />
+                <ItemsControl Grid.Row="2" Grid.ColumnSpan="3" ItemsSource="{Binding Libraries}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate DataType="{x:Type usercontrols:AboutPanel+LibraryCredit}">
                             <TextBlock ToolTip="{Binding Tooltip}" 
@@ -78,6 +79,7 @@
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                 </ItemsControl>
+
 
                 <TextBlock Text="{DynamicResource string_translators}" Foreground="White" Margin="0,15,0,10" TextAlignment="Center" Grid.Row="6" Grid.ColumnSpan="3" FontWeight="Bold" FontSize="16" />
                 <TextBlock Foreground="White" Grid.Row="7" Grid.Column="0" TextWrapping="Wrap" Text="English" TextAlignment="Center" FontWeight="Bold" />
@@ -109,9 +111,10 @@
                 <TextBlock Foreground="White" Grid.Row="15" Grid.Column="1" Grid.ColumnSpan="2" TextWrapping="Wrap" Text="SirCxytryx" TextAlignment="Center" FontWeight="Bold" />
                 <TextBlock Foreground="White" Grid.Row="16" Grid.Column="0" Grid.ColumnSpan="2" TextWrapping="Wrap" Text="Erik JS" TextAlignment="Center" FontWeight="Bold" />
                 <TextBlock Foreground="White" Grid.Row="16" Grid.Column="1" Grid.ColumnSpan="2" TextWrapping="Wrap" Text="aquadran" TextAlignment="Center" FontWeight="Bold" />
+                <TextBlock Foreground="White" Grid.Row="17" Grid.Column="0" Grid.ColumnSpan="2" TextWrapping="Wrap" Text="HenBagle" TextAlignment="Center" FontWeight="Bold" />
                 <TextBlock Foreground="White" Grid.Row="18" Grid.Column="0" TextWrapping="Wrap" Grid.ColumnSpan="3" Text="{DynamicResource string_youTheEndUser}" TextAlignment="Center" FontWeight="Bold" />
                 <TextBlock Text="{DynamicResource string_license}" Foreground="White" Margin="0,15,0,10" TextAlignment="Center" Grid.Row="19" Grid.ColumnSpan="3" FontWeight="Bold" FontSize="16" />
-                <TextBlock Foreground="White" Grid.ColumnSpan="3" Grid.Row="20" TextWrapping="Wrap" Text="Copyright (C) 2012 - 2021 ME3Tweaks&#xA;&#xA;This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.&#xA;&#xA;Mass Effect is a registered trademark of EA INTERNATIONAL (STUDIO AND PUBLISHING) LTD. This program has no affiliation with BioWare or Electronic Arts." />
+                <TextBlock Foreground="White" Grid.ColumnSpan="3" Grid.Row="20" TextWrapping="Wrap" Text="Copyright (C) 2012 - 2022 ME3Tweaks&#xA;&#xA;This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.&#xA;&#xA;Mass Effect is a registered trademark of EA INTERNATIONAL (STUDIO AND PUBLISHING) LTD. This program has no affiliation with BioWare or Electronic Arts." />
                 <TextBlock Text="Telemetry key not present in this build" Visibility="{Binding TelemetryKeyAvailable, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}" Foreground="White" Grid.ColumnSpan="3" Grid.Row="21" TextAlignment="Center" Margin="0,10"/>
 
             </Grid>
