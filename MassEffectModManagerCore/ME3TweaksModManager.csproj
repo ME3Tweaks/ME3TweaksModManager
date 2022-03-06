@@ -176,7 +176,6 @@
 		<PackageReference Include="Serilog.Sinks.RollingFile.Extension" Version="2.0.2" />
 		<PackageReference Include="SingleInstanceCore" Version="2.2.1" />
 		<PackageReference Include="SSH.NET" Version="2020.0.1" />
-		<PackageReference Include="Trinet.Core.IO.Ntfs" Version="4.1.1" />
 		<PackageReference Include="WatsonWebsocket" Version="2.3.2.5" />
     <PackageReference Include="WinCopies.WindowsAPICodePack.Shell" Version="2.10.2" />
   </ItemGroup>
