@@ -1,21 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Input;
+using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.objects;
+using ME3TweaksModManager.modmanager.objects.alternates;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.usercontrols;
 using ME3TweaksModManager.ui;
 using Microsoft.AppCenter.Analytics;
+using PropertyChanged;
+using WinCopies.Util;
 using MemoryAnalyzer = ME3TweaksModManager.modmanager.memoryanalyzer.MemoryAnalyzer;
 
 namespace ME3TweaksModManager.modmanager.windows
@@ -23,7 +29,8 @@ namespace ME3TweaksModManager.modmanager.windows
     /// <summary>
     /// Interaction logic for BatchModQueueEditor.xaml
     /// </summary>
-    public partial class BatchModQueueEditor : Window, INotifyPropertyChanged
+    [AddINotifyPropertyChangedInterface]
+    public partial class BatchModQueueEditor : Window
     {
         private List<Mod> allMods;
         public ObservableCollectionExtended<Mod> VisibleFilteredMods { get; } = new ObservableCollectionExtended<Mod>();
@@ -67,6 +74,7 @@ namespace ME3TweaksModManager.modmanager.windows
         public ICommand AddToInstallGroupCommand { get; set; }
         public ICommand MoveUpCommand { get; set; }
         public ICommand MoveDownCommand { get; set; }
+        public ICommand AutosortCommand { get; set; }
 
         private void LoadCommands()
         {
@@ -76,6 +84,105 @@ namespace ME3TweaksModManager.modmanager.windows
             AddToInstallGroupCommand = new GenericCommand(AddToInstallGroup, CanAddToInstallGroup);
             MoveUpCommand = new GenericCommand(MoveUp, CanMoveUp);
             MoveDownCommand = new GenericCommand(MoveDown, CanMoveDown);
+            AutosortCommand = new GenericCommand(Autosort, CanAutosort);
+        }
+
+        private bool CanAutosort()
+        {
+            return ModsInGroup.Count > 1;
+        }
+
+        class ModDependencies
+        {
+
+            public List<string> HardDependencies = new List<string>(); // requireddlc
+
+            /// <summary>
+            /// List of DLC folders the mod can depend on for configuration.
+            /// </summary>
+            public List<string> DependencyDLCs = new List<string>();
+
+            /// <summary>
+            /// List of all folders the mod mapped to this can install
+            /// </summary>
+            public List<string> InstallableDLCFolders = new List<string>();
+
+            /// <summary>
+            /// The mod associated with this dependencies
+            /// </summary>
+            public Mod mod;
+
+            public void DebugPrint()
+            {
+                Debug.WriteLine($@"{mod.ModName}");
+                Debug.WriteLine($@"  HARD DEPENDENCIES: {string.Join(',', HardDependencies)}");
+                Debug.WriteLine($@"  SOFT DEPENDENCIES: {string.Join(',', DependencyDLCs)}");
+                Debug.WriteLine($@"  DLC FOLDERS:       {string.Join(',', InstallableDLCFolders)}");
+            }
+        }
+
+        private void Autosort()
+        {
+            // DOESN'T REALLY WORK!!!!!!!!
+            // Just leaving here in the event that someday it becomes useful...
+
+#if DEBUG
+            // This attempts to order mods by dependencies on others, with mods that have are not depended on being installed first
+            // This REQUIRES mod developers to properly flag their alternates!
+
+            var dependencies = new List<ModDependencies>();
+
+            foreach (var mod in ModsInGroup)
+            {
+                var depends = new ModDependencies();
+
+                // These items MUST be installed first or this mod simply won't install.
+                // Official DLC is not counted as mod manager cannot install those.
+                depends.HardDependencies = mod.RequiredDLC.Where(x => !MEDirectories.OfficialDLC(mod.Game).Contains(x)).ToList();
+                depends.DependencyDLCs = mod.GetAutoConfigs().ToList(); // These items must be installed prior to install or options will be unavailable to the user.
+                var custDlcJob = mod.GetJob(ModJob.JobHeader.CUSTOMDLC);
+                if (custDlcJob != null)
+                {
+                    var customDLCFolders = custDlcJob.CustomDLCFolderMapping.Keys.ToList();
+                    customDLCFolders.AddRange(custDlcJob.AlternateDLCs.Where(x => x.Operation == AlternateDLC.AltDLCOperation.OP_ADD_CUSTOMDLC).Select(x => x.AlternateDLCFolder));
+                    depends.InstallableDLCFolders.ReplaceAll(customDLCFolders);
+                }
+
+                depends.mod = mod;
+                dependencies.Add(depends);
+            }
+
+            var fullList = dependencies;
+
+            List<Mod> finalOrder = new List<Mod>();
+
+            // Mods with no dependencies go first.
+            var noDependencyMods = dependencies.Where(x => x.HardDependencies.Count == 0 && x.DependencyDLCs.Count == 0).ToList();
+            finalOrder.AddRange(noDependencyMods.Select(x => x.mod));
+            dependencies = dependencies.Except(noDependencyMods).ToList(); // Remove the added items
+
+            // Mods that are marked as requireddlc in other mods go next. 
+            var requiredDlcs = dependencies.SelectMany(x => x.HardDependencies).ToList();
+            var modsHardDependedOn = dependencies.Where(x => x.DependencyDLCs.Intersect(requiredDlcs).Any());
+
+
+            finalOrder.AddRange(modsHardDependedOn);
+            dependencies = dependencies.Except(modsHardDependedOn).ToList(); // Remove the added items
+
+            // Add the rest (TEMP)
+            finalOrder.AddRange(dependencies.Select(x => x.mod));
+
+
+            // DEBUG: PRINT IT OUT
+
+            foreach (var m in finalOrder)
+            {
+                var depend = fullList.Find(x => x.mod == m);
+                depend.DebugPrint();
+            }
+
+            ModsInGroup.ReplaceAll(finalOrder);
+#endif
         }
 
         private bool CanRemoveFromInstallGroup() => SelectedInstallGroupMod != null;
@@ -120,6 +227,15 @@ namespace ME3TweaksModManager.modmanager.windows
                 ModsInGroup.Insert(newIndex, mod);
                 SelectedInstallGroupMod = mod;
             }
+        }
+
+        // Hack. m)ove somewhere more useful
+        public static bool ContainsAny(string s, List<string> substrings)
+        {
+            if (string.IsNullOrEmpty(s) || substrings == null)
+                return false;
+
+            return substrings.Any(substring => s.Contains(substring, StringComparison.CurrentCultureIgnoreCase));
         }
 
         private void MoveUp()
@@ -227,16 +343,19 @@ namespace ME3TweaksModManager.modmanager.windows
             Close();
         }
 
-        //Fody uses this property on weaving
-#pragma warning disable 0067
-        public event PropertyChangedEventHandler PropertyChanged;
-#pragma warning restore 0067
         public MEGame SelectedGame { get; set; }
         public Mod SelectedInstallGroupMod { get; set; }
         public Mod SelectedAvailableMod { get; set; }
 
         public void OnSelectedGameChanged()
         {
+            // Set the selector
+            foreach (var selector in Games)
+            {
+                selector.IsSelected = selector.Game == SelectedGame;
+            }
+
+            // Update the filtered list
             if (SelectedGame != MEGame.Unknown)
             {
                 VisibleFilteredMods.ReplaceAll(allMods.Where(x => x.Game == SelectedGame));

@@ -6,6 +6,7 @@
         xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" 
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" 
         xmlns:fa5="http://schemas.fontawesome.com/icons/"
+        xmlns:helpers="clr-namespace:ME3TweaksModManager.modmanager.helpers"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         mc:Ignorable="d" 
         WindowStartupLocation="CenterOwner" Title="{DynamicResource string_title_installGroupEditor}" Height="650" Width="1000">
@@ -106,7 +107,7 @@
             </ItemsControl>
 
             <TextBlock Text="{DynamicResource string_availableModsForGroup}" FontWeight="Bold" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="6" Margin="0,10,0,0" />
-            <ListBox Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="6" ItemsSource="{Binding VisibleFilteredMods}" SelectedItem="{Binding SelectedAvailableMod}" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" BorderThickness="1" IsTextSearchEnabled="True" TextSearch.TextPath="ModName">
+            <ListBox Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="6" SelectionMode="Extended" ItemsSource="{Binding VisibleFilteredMods}" SelectedItem="{Binding SelectedAvailableMod}" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" BorderThickness="1" IsTextSearchEnabled="True" TextSearch.TextPath="ModName">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
@@ -150,6 +151,13 @@
                             <TextBlock Text="{DynamicResource string_removeModFromInstallGroup}" />
                         </StackPanel>
                     </Button>
+                    <!-- This is not really reliable because modders don't properly use the autos system -->
+                    <!--<Button DockPanel.Dock="Left" Command="{Binding AutosortCommand}" Margin="5,0,0,0">
+                        <StackPanel Orientation="Horizontal">
+                            <fa5:ImageAwesome Icon="Solid_Sort" Height="12" Margin="0,0,5,0" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
+                            <TextBlock Text="Autosort (experimental)" />
+                        </StackPanel>
+                    </Button>-->
                     <Button DockPanel.Dock="Right" Margin="5,0,0,0" Command="{Binding MoveDownCommand}">
                         <StackPanel Orientation="Horizontal">
                             <fa5:ImageAwesome Icon="Solid_ArrowCircleDown" Height="12" Margin="0,0,5,0" Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
