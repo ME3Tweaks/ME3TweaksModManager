@@ -191,6 +191,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             ActionText = M3L.GetString(M3L.string_interp_openingX, ScanningFile);
 
             var archive = e.Argument as string;
+
             M3Log.Information($@"Scanning archive for mods: {archive}");
             void AddCompressedModCallback(Mod m)
             {
@@ -216,6 +217,29 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 Application.Current.Dispatcher.Invoke(delegate { NoModSelectedText += M3L.GetString(M3L.string_interp_XfailedToLoadY, m.ModName, m.LoadFailedReason); });
             }
 
+            var archiveSize = ArchiveStream != null ? ArchiveStream.Length : new FileInfo(archive).Length;
+
+            // ModManager 8: Blacklisting files by size/hash
+            string calculatedMD5 = null; // If we calc it here don't calc it later
+
+            var blacklistings = BlacklistingService.GetBlacklistings(archiveSize);
+            if (blacklistings.Any())
+            {
+                calculatedMD5 = ArchiveStream != null ? M3Utilities.CalculateMD5(ArchiveStream) : M3Utilities.CalculateMD5(archive);
+                if (blacklistings.Any(x => x.MD5 == calculatedMD5))
+                {
+                    // This archive is blacklisted
+                    AddCompressedModCallback(new Mod(false)
+                    {
+                        ModName = "Blacklisted mod",
+                        ModDeveloper = "N/A",
+                        LoadFailedReason = "The developers of ME3Tweaks Mod Manager have blacklisted this file for one of the following reasons:\n - The mod(s) in this file are known to not work and have been abandoned\n - The mod(s) in this file are destructive to the game for end users"
+                    });
+                    return;
+                }
+            }
+
+
             // We consider .me2mod an archive file since it can be segmented
             if (Path.GetExtension(archive) == @".me2mod")
             {
@@ -229,7 +253,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
 
             //Embedded executables.
-            var archiveSize = ArchiveStream != null ? ArchiveStream.Length : new FileInfo(archive).Length;
+            
+
+
             var knownModsOfThisSize = TPIService.GetImportingInfosBySize(archiveSize);
             string pathOverride = null;
             if (knownModsOfThisSize.Count > 0 && knownModsOfThisSize.Any(x => x.zippedexepath != null))
@@ -271,53 +297,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 }
             }
 
-            // Telemetry data to help find source of mods
-            // This should only run if we need to somehow look up source, like if mod is not in TPMI
-            /*try
-            {
-                // note: This currently doesn't do anything as it just parses it out. It doesn't actually send anything or use the results of it
-                if (Settings.EnableTelemetry && archive != null)
-                {
-                    FileInfo fi = new FileInfo(archive);
-                    if (fi.AlternateDataStreamExists(@"Zone.Identifier"))
-                    {
-                        var s = fi.GetAlternateDataStream(@"Zone.Identifier", FileMode.Open);
-                        string fullText = string.Empty;
-                        using var reader = s.OpenText();
-                        fullText = string.Format(reader.ReadToEnd());
-                        // The Zone Identifier is an ini file
-                        try
-                        {
-                            DuplicatingIni ini = DuplicatingIni.ParseIni(fullText);
-                            var zoneId = ini[@"ZoneTransfer"][@"ZoneId"]?.Value;
-                            if (zoneId == @"3")
-                            {
-                                // File came from internet
-                                // Get the download url. We can identify which mod on nexus this is by it's CDN scheme
-                                var hostUrl = ini[@"ZoneTransfer"][@"HostUrl"]?.Value;
-                                if (hostUrl != null)
-                                {
-                                    // Grab the pre-calculated MD5.
-                                    // Make sure to NOT read any other parameters - they contain sensitive info!
-                                    var uri = new Uri(hostUrl);
-                                    var downloadLinkSanitized = $@"{uri.Scheme}://{uri.Authority}{uri.AbsolutePath}";
-
-                                    var parameters = HttpUtility.ParseQueryString(uri.Query);
-                                    string nexusMd5 = parameters[@"md5"];
-                                }
-                            }
-                        }
-                        catch
-                        {
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                M3Log.Error($@"Error doing preinspection, it will be skipped. Error: {ex.Message}");
-            }*/
-
             void ActionTextUpdateCallback(string newText)
             {
                 ActionText = newText;
@@ -327,7 +306,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 TextureFilesImported = true;
             }
-            InspectArchive(pathOverride ?? archive, AddCompressedModCallback, CompressedModFailedCallback, ActionTextUpdateCallback, ShowALOTLauncher, archiveStream: ArchiveStream);
+            InspectArchive(pathOverride ?? archive, AddCompressedModCallback, CompressedModFailedCallback, ActionTextUpdateCallback, ShowALOTLauncher, archiveStream: ArchiveStream, forcedMD5: calculatedMD5);
         }
 
         //this should be private but no way to test it private for now...

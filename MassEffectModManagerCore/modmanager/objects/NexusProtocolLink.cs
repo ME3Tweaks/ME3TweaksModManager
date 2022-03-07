@@ -2,6 +2,9 @@
 
 namespace ME3TweaksModManager.modmanager.objects
 {
+    /// <summary>
+    /// C# representation of an nxm:// link
+    /// </summary>
     public class NexusProtocolLink
     {
         public static NexusProtocolLink Parse(string link)

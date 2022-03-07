@@ -15,6 +15,9 @@ using ShortTimeoutWebClient = ME3TweaksCore.Misc.ShortTimeoutWebClient;
 
 namespace ME3TweaksModManager.modmanager.me3tweaks
 {
+    /// <summary>
+    /// Third Party Importing Service, used for importing mods that do not include a moddesc.ini
+    /// </summary>
     public class TPIService
     {
         /// <summary>

@@ -2821,6 +2821,8 @@ namespace ME3TweaksModManager
                 BasegameFileIdentificationService.LoadService(!firstStartupCheck);
                 TPIService.LoadService(!firstStartupCheck);
                 ASIManager.LoadManifest(false, !firstStartupCheck);
+                BlacklistingService.LoadService(!firstStartupCheck);
+
                 BackgroundTaskEngine.SubmitJobCompletion(bgTask);
 
                 bgTask = BackgroundTaskEngine.SubmitBackgroundJob(@"LoadTipsService", M3L.GetString(M3L.string_loadingTipsService), M3L.GetString(M3L.string_loadedTipsService));

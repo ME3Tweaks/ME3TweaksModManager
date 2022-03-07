@@ -147,6 +147,16 @@ namespace ME3TweaksModManager.modmanager.objects
                         return;
                     }
 
+                    // Mod Manager 8: Blacklisting files
+                    if (BlacklistingService.IsNXMBlacklisted(ProtocolLink))
+                    {
+                        M3Log.Error($@"File is blacklisted by ME3Tweaks: {ProtocolLink?.Domain} file {ProtocolLink.FileId}");
+                        Initialized = true;
+                        ProgressIndeterminate = false;
+                        OnModDownloadError?.Invoke(this, "The developers of ME3Tweaks Mod Manager have blacklisted this file for one of the following reasons:\n - The mod(s) in this file are known to not work and have been abandoned\n - The mod(s) in this file are destructive to the game for end users");
+                        return;
+                    }
+
                     ModFile = NexusModsUtilities.GetClient().ModFiles.GetModFile(ProtocolLink.Domain, ProtocolLink.ModId, ProtocolLink.FileId).Result;
                     if (ModFile != null)
                     {
