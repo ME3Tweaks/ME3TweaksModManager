@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "NexusModTestGenerator": {
+      "commandName": "Project"
+    },
+    "Run NexusTestGenerator": {
+      "commandName": "Project",
+      "commandLineArgs": "--nexusapikeyfilepath \"\\\\MGAMERZ-VEEAM\\Users\\mgame\\Documents\\NexusTestGenerator\\info\\nexusapikey\"  --nexusapicachepath \"\\\\MGAMERZ-VEEAM\\Users\\mgame\\Documents\\NexusIndexer\\cache\" --testarchiveoutputpath \"\\\\MGAMERZ-VEEAM\\Users\\mgame\\Documents\\NexusTestGenerator\\output\" --indexerpath \"\\\\MGAMERZ-VEEAM\\Users\\mgame\\Documents\\NexusTestGenerator\\info\\indexer.json\" --temppath \"C:\\Users\\Public\\NexusTestGeneratorTemp\""
+    }
+  }
+}

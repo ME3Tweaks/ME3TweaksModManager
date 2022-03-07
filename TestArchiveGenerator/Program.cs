@@ -8,7 +8,7 @@ using System.Threading;
 
 namespace TestArchiveGenerator
 {
-    class Program
+    public class TestArchiveGeneratorProgram
     {
         private static string SourceArchive;
         private static string SourceDir;
@@ -17,7 +17,8 @@ namespace TestArchiveGenerator
             ParseArguments(args);
             if (SourceArchive == null && SourceDir == null)
             {
-                if (args.Count() == 1 && File.Exists(args[0])) {
+                if (args.Count() == 1 && File.Exists(args[0]))
+                {
                     SourceArchive = args[0];
                 }
                 else
@@ -58,36 +59,42 @@ namespace TestArchiveGenerator
 
             foreach (var archive in archives)
             {
-                CreateBlankArchive(archive);
+                CreateBlankArchive(archive, Directory.GetParent(archive).FullName);
             }
 
         }
 
-        private static void CreateBlankArchive(string archivePath)
+        /// <summary>
+        /// Generates a blank mod archive 
+        /// </summary>
+        /// <param name="inputArchivePath">Input archive to scan and generate</param>
+        /// <param name="outputPath">Directory where to place resulting archive</param>
+        /// <param name="tempPath">Directory to extract files to for staging before recompress</param>
+        public static void CreateBlankArchive(string inputArchivePath, string outputPath, string tempPath = null)
         {
-            var size = new FileInfo(archivePath).Length;
-            var md5 = CalculateMD5(archivePath);
+            var size = new FileInfo(inputArchivePath).Length;
+            var md5 = CalculateMD5(inputArchivePath);
 
-            string fnamenoExt = $"{Path.GetFileNameWithoutExtension(archivePath)}";
-            string ext = Path.GetExtension(archivePath);
+            string fnamenoExt = $"{Path.GetFileNameWithoutExtension(inputArchivePath)}";
+            string ext = Path.GetExtension(inputArchivePath);
             if (ext == ".rar") ext = ".zip";
-            var fullname = Path.Combine(Directory.GetParent(archivePath).FullName, fnamenoExt + ext);
-            Console.WriteLine("Creating blank archives " + archivePath + " -> " + fullname);
+            var fullname = Path.Combine(Directory.GetParent(inputArchivePath).FullName, fnamenoExt + ext);
+            Console.WriteLine("Creating blank archives " + inputArchivePath + " -> " + fullname);
 
-            var extractionStaging = Path.Combine(Path.GetTempPath(), "BlankMMArchive");
+            var extractionStaging = tempPath ?? Path.Combine(Path.GetTempPath(), "BlankMMArchive");
             if (Directory.Exists(extractionStaging)) DeleteFilesAndFoldersRecursively(extractionStaging);
             Directory.CreateDirectory(extractionStaging);
-            SevenZipExtractor archive = new SevenZipExtractor(archivePath);
+            SevenZipExtractor archive = new SevenZipExtractor(inputArchivePath);
             Console.WriteLine("Extracting archive...");
             archive.ExtractArchive(extractionStaging);
             var files = Directory.GetFiles(extractionStaging, "*", SearchOption.AllDirectories);
             int expectedAmount = 0;
             foreach (var file in files)
             {
-                if (Path.GetFileName(file) != "moddesc.ini")
+                if (shouldZeroFile(file))
                 {
                     //write blank with guid
-                    File.WriteAllText(file, Guid.NewGuid().ToString());
+                    File.WriteAllText(file, @"blank");
                 }
                 else
                 {
@@ -96,11 +103,26 @@ namespace TestArchiveGenerator
             }
 
             if (expectedAmount == 0) expectedAmount = 1;
-            fullname = $"{Path.GetFileNameWithoutExtension(archivePath)}-{expectedAmount}-{size}-{md5}{ext}";
+            fullname = $"{Path.GetFileNameWithoutExtension(inputArchivePath)}-{expectedAmount}-{size}-{md5}{ext}";
 
             Console.WriteLine("Compressing archive...");
             SevenZipCompressor svc = new SevenZipCompressor();
-            svc.CompressDirectory(extractionStaging, Path.Combine(Directory.GetParent(archivePath).FullName, fullname));
+            // Do not compress any files.
+            svc.CompressionLevel = CompressionLevel.None; 
+            svc.CompressionMode = CompressionMode.Create;
+            svc.CompressionMethod = CompressionMethod.Copy;
+            svc.CompressDirectory(extractionStaging, Path.Combine(outputPath, fullname));
+            DeleteFilesAndFoldersRecursively(extractionStaging);
+        }
+
+        private static bool shouldZeroFile(string file)
+        {
+            if (Path.GetExtension(file) == @".m3m") return false;
+
+            var filename = Path.GetFileName(file);
+            if (filename == "moddesc.ini") return false;
+
+            return true;
         }
 
         public static void ParseArguments(string[] args)
