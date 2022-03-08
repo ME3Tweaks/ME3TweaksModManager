@@ -25,7 +25,7 @@ resources:
 steps: # Steps begin following this
 
 - checkout: self
-  submodules: true 
+  submodules: recursive 
   displayName: Checkout code
   fetchDepth: 1 # Only fetch the latest commit (faster)
   
