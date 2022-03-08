@@ -12,7 +12,7 @@ pool:
 variables:
   solution: '**/*.sln'
   buildPlatform: 'x64'
-  buildConfiguration: 'WinRelease'
+  buildConfiguration: 'WinAzureTest'
   framework: 'net6.0'
 
 resources:
@@ -46,7 +46,7 @@ steps: # Steps begin following this
   inputs:
     command: 'build'
     projects: 'ME3TweaksModManager/MassEffectModManagerCore/ME3TweaksModManager.csproj'
-    arguments: '-c $(BuildConfiguration)'
+    arguments: '-c $(BuildConfiguration) /p:DefineConstants="AZURE"'
 
 # Clone the test repository
 - checkout: ModTestingData
@@ -59,7 +59,7 @@ steps: # Steps begin following this
   displayName: Test M3
   inputs:
     command: 'test'
-    projects: 'MassEffectModManagerCore.Tests\\MassEffectModManagerCore.Tests.csproj'
+    projects: 'ME3TweaksModManager\\MassEffectModManagerCore.Tests\\ME3TweaksModManager.Tests.csproj'
     arguments: '--configuration $(BuildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:Include=ME3TweaksModManager'
 
 # Generate the report using ReportGenerator (https://github.com/danielpalme/ReportGenerator)
