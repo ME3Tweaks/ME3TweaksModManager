@@ -66,8 +66,12 @@ namespace MassEffectModManagerCore.Tests
                 var testDataPath = Path.Combine(dir.FullName, TESTDATA_REPO_NAME);
                 if (Directory.Exists(testDataPath))
                 {
-                    TestDataPath = testDataPath;
-                    return;
+                    var testdata = Path.Combine(testDataPath, TESTDATA_FOLDER_NAME);
+                    if (Directory.Exists(testdata))
+                    {
+                        TestDataPath = testdata;
+                        return;
+                    }
                 }
             }
 
