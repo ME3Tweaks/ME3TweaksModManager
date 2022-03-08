@@ -11,6 +11,8 @@ using ME3TweaksCoreWPF;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager;
 using ME3TweaksModManager.modmanager.me3tweaks;
+using ME3TweaksModManager.modmanager.objects;
+using ME3TweaksModManager.modmanager.objects.alternates;
 using ME3TweaksModManager.modmanager.objects.installer;
 using ME3TweaksModManager.modmanager.usercontrols;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -141,10 +143,16 @@ namespace MassEffectModManagerCore.Tests
                         var targetsForMod = targets.Where(x => x.Game == mod.Game).ToList();
                         foreach (var target in targetsForMod)
                         {
+                            var headerMapping = new Dictionary<ModJob.JobHeader, List<AlternateOption>>();
+                            foreach (var job in mod.InstallationJobs)
+                            {
+                                headerMapping[job.Header] = new List<AlternateOption>();
+                            }
                             ModInstallOptionsPackage package = new ModInstallOptionsPackage()
                             {
                                 ModBeingInstalled = mod,
-                                InstallTarget = target
+                                InstallTarget = target,
+                                SelectedOptions = headerMapping, // Blank
                             };
                             var queue = mod.GetInstallationQueues(package);
                             foreach (var jobMapping in queue.UnpackedJobMappings)
