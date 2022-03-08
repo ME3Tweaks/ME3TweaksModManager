@@ -20,7 +20,7 @@ resources:
   - repository: TestingDataRepo # The name used to reference this repository in the checkout step
     type: github
     endpoint: ME3Tweaks
-    name: ME3Tweaks/TestingDataRepo
+    name: TestingDataRepo
 
 steps: # Steps begin following this
 
