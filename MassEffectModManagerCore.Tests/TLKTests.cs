@@ -1,9 +1,9 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
 using System.IO;
 using LegendaryExplorerCore.TLK.ME2ME3;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace MassEffectModManagerCore.Tests
+namespace ME3TweaksModManager.Tests
 {
     [TestClass]
     public class TLKTests

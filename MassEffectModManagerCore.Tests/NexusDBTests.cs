@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using ME3TweaksModManager.modmanager.me3tweaks;
 using ME3TweaksModManager.modmanager.objects.nexusfiledb;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace MassEffectModManagerCore.Tests
+namespace ME3TweaksModManager.Tests
 {
     [TestClass]
     public class NexusDBTests

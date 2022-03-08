@@ -3338,7 +3338,7 @@ namespace ME3TweaksModManager
                                 };
                                 nbw.RunWorkerAsync();
                             }
-#if DEBUG
+#if DEBUG && !AZURE
                             // TOC DUMP
                             else if (magic is 0x3AB70C13)
                             {

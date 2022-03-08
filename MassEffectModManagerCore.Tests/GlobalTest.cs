@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -7,13 +6,12 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using LegendaryExplorerCore;
 using LegendaryExplorerCore.Packages;
-using ME3TweaksModManager;
 using ME3TweaksModManager.modmanager;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using Serilog;
 
-namespace MassEffectModManagerCore.Tests
+namespace ME3TweaksModManager.Tests
 {
     public static class GlobalTest
     {
@@ -45,7 +43,11 @@ namespace MassEffectModManagerCore.Tests
                 Crashes.SetEnabledAsync(false);
                 Settings.LogModStartup = true;
                 App.BuildNumber = 125; //THIS NEEDS TO BE UPDATED FOR EVERY MOD THAT TARGETS A NEWER RELEASE. Not really a convenient way to update it constantly though...
+#if !AZURE
                 Log.Logger = new LoggerConfiguration().WriteTo.Console().WriteTo.Debug().CreateLogger();
+#else
+                Log.Logger = new LoggerConfiguration().WriteTo.Console().CreateLogger();
+#endif
                 DeleteScratchDir();
 
                 //BackupService.RefreshBackupStatus(null); // used in mixin testing

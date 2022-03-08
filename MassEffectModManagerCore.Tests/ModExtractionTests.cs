@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
-using ME3TweaksCore.Targets;
-using ME3TweaksCoreWPF;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager;
 using ME3TweaksModManager.modmanager.me3tweaks;
@@ -19,7 +15,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SevenZip;
 using Mod = ME3TweaksModManager.modmanager.objects.mod.Mod;
 
-namespace MassEffectModManagerCore.Tests
+namespace ME3TweaksModManager.Tests
 {
     [TestClass]
 
@@ -103,6 +99,11 @@ namespace MassEffectModManagerCore.Tests
                 var archiveZ = new SevenZipExtractor(archive);
                 foreach (var mod in modsFoundInArchive)
                 {
+                    if (!mod.ValidMod)
+                    {
+                        Console.WriteLine($@"Skipping invalid mod: {mod.ModName} at {mod.ModDescPath}");
+                        continue;
+                    }
                     bool altsOn = false;
                     while (true)
                     {
@@ -199,6 +200,11 @@ namespace MassEffectModManagerCore.Tests
                     var archiveZ = new SevenZipExtractor(exe, InArchiveFormat.Nsis);
                     foreach (var mod in modsFoundInArchive)
                     {
+                        if (!mod.ValidMod)
+                        {
+                            Console.WriteLine($@"Skipping invalid mod: {mod.ModName} at {mod.ModDescPath}");
+                            continue;
+                        }
                         foreach (var job in mod.InstallationJobs)
                         {
                             List<string> selectedGroups = new List<string>();

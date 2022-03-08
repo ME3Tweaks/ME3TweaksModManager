@@ -9,7 +9,7 @@ using ME3TweaksModManager.modmanager.me3tweaks;
 using ME3TweaksModManager.modmanager.usercontrols;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace MassEffectModManagerCore.Tests
+namespace ME3TweaksModManager.Tests
 {
     [TestClass]
     public class MixinTests

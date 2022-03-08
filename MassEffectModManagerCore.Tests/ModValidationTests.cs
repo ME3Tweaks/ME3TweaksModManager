@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text.RegularExpressions;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
@@ -10,10 +9,9 @@ using ME3TweaksModManager.modmanager.me3tweaks;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.usercontrols;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Serilog;
 using Mod = ME3TweaksModManager.modmanager.objects.mod.Mod;
 
-namespace MassEffectModManagerCore.Tests
+namespace ME3TweaksModManager.Tests
 {
     [TestClass]
     public class ModValidationTests

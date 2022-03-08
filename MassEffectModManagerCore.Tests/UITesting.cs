@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using System.Threading;
-using System.Windows;
 using System.Windows.Markup;
 using System.Xml;
-using ME3TweaksModManager;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace MassEffectModManagerCore.Tests
+namespace ME3TweaksModManager.Tests
 {
     [TestClass]
     public class UITesting

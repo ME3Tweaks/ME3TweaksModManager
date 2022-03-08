@@ -376,7 +376,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 ImageBitmap = assetData;
             }
 #else
-            M3Log.Information(@"AZURE: Skipping image load of {initializingAssetName}");
+            M3Log.Information($@"AZURE: Skipping image load of {initializingAssetName}");
 #endif
             return assetData;
         }

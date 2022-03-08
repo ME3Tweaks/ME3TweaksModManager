@@ -362,12 +362,12 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             try
             {
                 loadMod(iniText, MEGame.Unknown);
+                SizeRequiredtoExtract = GetRequiredSpaceForExtraction();
             }
             catch (Exception e)
             {
                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_errorOccuredParsingArchiveModdescini, moddescArchiveEntry.FileName, e.Message);
             }
-            SizeRequiredtoExtract = GetRequiredSpaceForExtraction();
             MemoryAnalyzer.AddTrackedMemoryItem(@"Mod (Archive) - " + ModName, new WeakReference(this));
 
             //Retain reference to archive as we might need this.
@@ -421,15 +421,16 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             }
             catch (Exception e)
             {
+                ValidMod = false;
                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_errorOccuredParsingVirtualizedModdescini, e.Message);
             }
 
-            if (archive != null)
+            if (archive != null && ValidMod)
             {
                 SizeRequiredtoExtract = GetRequiredSpaceForExtraction();
+                MemoryAnalyzer.AddTrackedMemoryItem(@"Mod (Virtualized) - " + ModName, new WeakReference(this));
             }
 
-            MemoryAnalyzer.AddTrackedMemoryItem(@"Mod (Virtualized) - " + ModName, new WeakReference(this));
         }
 
         private readonly string[] GameFileExtensions = { @".u", @".upk", @".sfm", @".pcc", @".bin", @".tlk", @".cnd", @".ini", @".afc", @".tfc", @".dlc", @".sfar", @".txt", @".bik", @".bmp", @".usf", @".isb" };
@@ -679,12 +680,15 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     //Check if this is in ME3 game directory. If it's null, it might be a legacy mod
                     if (game == null)
                     {
+#if !AZURE 
+                        // Don't log on azure since there's a ton of mods that will generate this and just clog things up
                         M3Log.Warning(@"Game indicator is null. This may be mod from pre-Mod Manager 6, or developer did not specify the game. Defaulting to ME3", Settings.LogModStartup);
+#endif
                         Game = MEGame.ME3;
                     }
                     else
                     {
-                        M3Log.Error($@"{ModName} has unknown game ID set for ModInfo descriptor 'game'. Valid values are ME1, ME2 or ME3. Value provided: {game}");
+                        M3Log.Error($@"{ModName} has unknown game ID set for ModInfo descriptor 'game'. Valid values are ME1, ME2, ME3, LE1, LE2, LE3, and LELAUNCHER. Value provided: {game}");
                         LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_unknownGameId, game);
                         return;
                     }

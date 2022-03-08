@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using ME3TweaksCore.Services;
-using ME3TweaksCore.Services.BasegameFileIdentification;
+﻿using ME3TweaksCore.Services.BasegameFileIdentification;
 using ME3TweaksModManager.modmanager.me3tweaks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace MassEffectModManagerCore.Tests
+namespace ME3TweaksModManager.Tests
 {
     [TestClass]
     public class OnlineContentTests

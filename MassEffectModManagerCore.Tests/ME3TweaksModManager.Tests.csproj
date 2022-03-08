@@ -3,15 +3,35 @@
     <TargetFrameworks>net6.0-windows8.0</TargetFrameworks>
     <IsPackable>false</IsPackable>
     <Platforms>x64</Platforms>
+    <Configurations>Debug;Release;WinAzureTest</Configurations>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="testdata\**" />
-    <EmbeddedResource Remove="testdata\**" />
-    <None Remove="testdata\**" />
-  </ItemGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+		<DebugType>embedded</DebugType>
+		<DebugSymbols>true</DebugSymbols>
+		<DefineConstants>DEBUG;TRACE</DefineConstants>
+	</PropertyGroup>
 
-  <ItemGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+		<DebugType>embedded</DebugType>
+		<DebugSymbols>true</DebugSymbols>
+	</PropertyGroup>
+
+	<!-- Azure pipelines debugging locally -->
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='WinAzureTest|x64'">
+		<DebugType>embedded</DebugType>
+		<DebugSymbols>true</DebugSymbols>
+		<DefineConstants>DEBUG;AZURE</DefineConstants>
+	</PropertyGroup>
+
+	<!-- Azure pipelines test run -->
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='WinAzureRelease|x64'">
+		<DebugType>embedded</DebugType>
+		<DebugSymbols>true</DebugSymbols>
+		<DefineConstants>AZURE</DefineConstants>
+	</PropertyGroup>
+
+	<ItemGroup>
     <PackageReference Include="coverlet.msbuild" Version="3.1.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

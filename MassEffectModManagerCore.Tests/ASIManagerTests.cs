@@ -8,7 +8,7 @@ using ME3TweaksCore.Targets;
 using ME3TweaksModManager.modmanager;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace MassEffectModManagerCore.Tests
+namespace ME3TweaksModManager.Tests
 {
     [TestClass]
     public class ASIManagerTests

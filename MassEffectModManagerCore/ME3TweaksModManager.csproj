@@ -25,7 +25,7 @@
 		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 		<PublishTrimmed>False</PublishTrimmed>
 		<Nullable>disable</Nullable>
-		<Configurations>Debug;Release;WinAzureTest</Configurations>
+		<Configurations>Debug;Release;WinAzureTest;WinAzureRelease</Configurations>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -40,10 +40,17 @@
 	</PropertyGroup>
 
 	<!-- Azure pipelines build and test -->
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='WinAzureTest|x64'">
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='WinAzureRelease|x64'">
 		<DebugType>embedded</DebugType>
 		<DebugSymbols>true</DebugSymbols>
 		<DefineConstants>AZURE</DefineConstants>
+	</PropertyGroup>
+
+	<!-- Azure pipelines debugging locally -->
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='WinAzureTest|x64'">
+		<DebugType>embedded</DebugType>
+		<DebugSymbols>true</DebugSymbols>
+		<DefineConstants>DEBUG;AZURE</DefineConstants>
 	</PropertyGroup>
 
 	<ItemGroup>
