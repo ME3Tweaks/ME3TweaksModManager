@@ -82,7 +82,7 @@ namespace MassEffectModManagerCore.Tests
             TPIService.LoadService();
             TPMIService.LoadService();
 
-            var compressedModsDirectory = Path.Combine(GlobalTest.FindDirectoryInParentDirectories(GlobalTest.TESTDATA_FOLDER_NAME), "compressedmods");
+            var compressedModsDirectory = GlobalTest.GetTestingDataDirectoryFor(@"compressedmods");
             List<Mod> modsFoundInArchive = new List<Mod>();
 
             void addModCallback(Mod m)

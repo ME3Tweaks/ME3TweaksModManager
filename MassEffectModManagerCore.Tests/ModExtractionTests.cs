@@ -10,6 +10,7 @@ using ME3TweaksCore.Targets;
 using ME3TweaksCoreWPF;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager;
+using ME3TweaksModManager.modmanager.me3tweaks;
 using ME3TweaksModManager.modmanager.objects.installer;
 using ME3TweaksModManager.modmanager.usercontrols;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -31,11 +32,12 @@ namespace MassEffectModManagerCore.Tests
 
             Console.WriteLine("Fetching third party services");
             TPMIService.LoadService();
-            //TPISService.LoadService();
-            throw new Exception("TPISService not implemented!");
+            TPIService.LoadService();
+            //throw new Exception("TPISService not implemented!");
+
             //App.ThirdPartyIdentificationService = OnlineContent.FetchThirdPartyIdentificationManifest();
 
-            var compressedModsDirectory = Path.Combine(GlobalTest.FindDirectoryInParentDirectories(GlobalTest.TESTDATA_FOLDER_NAME), "compressedmods");
+            var compressedModsDirectory = GlobalTest.GetTestingDataDirectoryFor(@"compressedmods");
             List<Mod> modsFoundInArchive = new List<Mod>();
 
             void addModCallback(Mod m)
@@ -176,7 +178,7 @@ namespace MassEffectModManagerCore.Tests
             }
 
             //EXE mods
-            var exeModsDirectory = Path.Combine(GlobalTest.FindDirectoryInParentDirectories(GlobalTest.TESTDATA_FOLDER_NAME), "exemods");
+            var exeModsDirectory = GlobalTest.GetTestingDataDirectoryFor(@"exemods");
 
             if (Directory.Exists(exeModsDirectory))
             {

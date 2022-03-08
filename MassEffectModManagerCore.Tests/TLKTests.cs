@@ -14,7 +14,7 @@ namespace MassEffectModManagerCore.Tests
             GlobalTest.Init();
 
             Console.WriteLine(@"Testing TLK operations");
-            var tlksDir = Path.Combine(GlobalTest.FindDirectoryInParentDirectories(GlobalTest.TESTDATA_FOLDER_NAME), "tlk", "me3");
+            var tlksDir = Path.Combine(GlobalTest.GetTestingDataDirectoryFor("tlk"), "me3");
 
             var tlksToTestOn = Directory.GetFiles(tlksDir, "*.tlk", SearchOption.AllDirectories);
             foreach (var tlk in tlksToTestOn)
