@@ -13,30 +13,47 @@ variables:
   solution: '**/*.sln'
   buildPlatform: 'x64'
   buildConfiguration: 'WinRelease'
-  framework: 'netcoreapp3.1'
+  framework: 'net6.0'
 
-steps:
+resources:
+  repositories:
+  - repository: TestingDataRepo # The name used to reference this repository in the checkout step
+    type: github
+    endpoint: ME3Tweaks
+    name: ME3Tweaks/TestingDataRepo
+
+steps: # Steps begin following this
+
 - checkout: self
   submodules: true 
+  displayName: Checkout code
+  fetchDepth: 1 # Only fetch the latest commit (faster)
   
 - task: UseDotNet@2
-  displayName: Install .NET 5.0 SDK
+  displayName: Install .NET 6.0 SDK
   inputs:
     packageType: 'sdk'
-    version: '5.0.x' 
+    version: '6.0.x' 
 
-- task: UseDotNet@2
-  displayName: Install .NET Core 3.1 SDK
-  inputs:
-    packageType: 'sdk'
-    version: '3.1.x' 
+#- task: UseDotNet@2
+#  displayName: Install .NET Core 3.1 SDK
+#  inputs:
+#    packageType: 'sdk'
+#    version: '3.1.x' 
 
 - task: DotNetCoreCLI@2
   displayName: Build M3
   inputs:
     command: 'build'
-    projects: 'MassEffectModManagerCore/MassEffectModManagerCore.csproj'
+    projects: 'MassEffectModManagerCore/ME3TweaksModManager.csproj'
     arguments: '-c $(BuildConfiguration)'
+
+# Clone the test repository
+- checkout: TestingDataRepo
+  displayName: Checkout testing data
+  submodules: false
+  fetchDepth: 1 # Only fetch the latest commit (faster)
+
 
 - task: DotNetCoreCLI@2
   displayName: Test M3
