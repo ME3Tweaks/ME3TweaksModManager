@@ -50,7 +50,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             if (LoadedImageAssets.TryGetValue(assetName, out var loaded)) return loaded;
 
 
-#if AZURE
+#if !AZURE
             // Azure should not attempt to load images as it will often simply not work
             Stream loadStream = null;
 
