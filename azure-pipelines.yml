@@ -60,7 +60,7 @@ steps: # Steps begin following this
   inputs:
     command: 'test'
     projects: 'ME3TweaksModManager\\MassEffectModManagerCore.Tests\\ME3TweaksModManager.Tests.csproj'
-    arguments: '--configuration $(BuildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:Include=ME3TweaksModManager'
+    arguments: '/p:DefineConstants="WINDOWS%3BAZURE" /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:Include=ME3TweaksModManager'
 
 # Generate the report using ReportGenerator (https://github.com/danielpalme/ReportGenerator)
 # First install the tool on the machine, then run it

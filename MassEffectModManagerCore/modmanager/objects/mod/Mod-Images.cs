@@ -27,7 +27,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         /// Mapping of current loaded assets names to their bitmap data.
         /// Call InvalidateBitmapCache(); to empty this list.
         /// </summary>
-        private CaseInsensitiveDictionary<BitmapImage> LoadedImageAssets { get; } = new CaseInsensitiveDictionary<BitmapImage>();
+        private CaseInsensitiveDictionary<BitmapImage> LoadedImageAssets { get; } = new();
 
         public void InvalidateBitmapCache()
         {
