@@ -17,10 +17,10 @@ variables:
 
 resources:
   repositories:
-  - repository: TestingDataRepo # The name used to reference this repository in the checkout step
+  - repository: ModTestingData # The name used to reference this repository in the checkout step
     type: github
     endpoint: ME3Tweaks
-    name: TestingDataRepo
+    name: ME3Tweaks/ModTestingData
 
 steps: # Steps begin following this
 
