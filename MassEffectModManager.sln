@@ -48,7 +48,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ME3TweaksCoreWPF", "submodu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ComputerInfo", "submodules\ME3TweaksCore\ME3TweaksCore\submodules\ComputerInfo\ComputerInfo\ComputerInfo.csproj", "{E38B3BE0-6B88-4675-BD1A-DBD676803ACF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusModTestGenerator", "NexusModTestGenerator\NexusModTestGenerator.csproj", "{1FBE4A2D-BB32-49D5-BD15-095C4BED56D6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusModTestGenerator", "NexusModTestGenerator\NexusModTestGenerator.csproj", "{1FBE4A2D-BB32-49D5-BD15-095C4BED56D6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -152,8 +152,8 @@ Global
 		{728B680F-349C-4CC8-9344-600EF0BC47C6}.WinAzureRelease|x64.Build.0 = Release|x64
 		{728B680F-349C-4CC8-9344-600EF0BC47C6}.WinAzureTest|Any CPU.ActiveCfg = Release|x64
 		{728B680F-349C-4CC8-9344-600EF0BC47C6}.WinAzureTest|Any CPU.Build.0 = Release|x64
-		{728B680F-349C-4CC8-9344-600EF0BC47C6}.WinAzureTest|x64.ActiveCfg = Release|x64
-		{728B680F-349C-4CC8-9344-600EF0BC47C6}.WinAzureTest|x64.Build.0 = Release|x64
+		{728B680F-349C-4CC8-9344-600EF0BC47C6}.WinAzureTest|x64.ActiveCfg = WinAzureTest|x64
+		{728B680F-349C-4CC8-9344-600EF0BC47C6}.WinAzureTest|x64.Build.0 = WinAzureTest|x64
 		{728B680F-349C-4CC8-9344-600EF0BC47C6}.WinDebug|Any CPU.ActiveCfg = Release|x64
 		{728B680F-349C-4CC8-9344-600EF0BC47C6}.WinDebug|Any CPU.Build.0 = Release|x64
 		{728B680F-349C-4CC8-9344-600EF0BC47C6}.WinDebug|x64.ActiveCfg = Debug|x64

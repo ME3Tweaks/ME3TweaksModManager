@@ -25,6 +25,7 @@
 		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 		<PublishTrimmed>False</PublishTrimmed>
 		<Nullable>disable</Nullable>
+		<Configurations>Debug;Release;WinAzureTest</Configurations>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

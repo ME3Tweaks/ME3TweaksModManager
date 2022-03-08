@@ -46,7 +46,7 @@ steps: # Steps begin following this
   inputs:
     command: 'build'
     projects: 'ME3TweaksModManager/MassEffectModManagerCore/ME3TweaksModManager.csproj'
-    arguments: '-c $(BuildConfiguration) /p:DefineConstants="AZURE"'
+    arguments: '-c WinAzureTest'
 
 # Clone the test repository
 - checkout: ModTestingData
