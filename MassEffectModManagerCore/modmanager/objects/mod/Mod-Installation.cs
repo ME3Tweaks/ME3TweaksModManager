@@ -171,8 +171,17 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                                 string alternatePathRoot = FilesystemInterposer.PathCombine(IsInArchive, ModPath, altdlc.MultiListRootPath);
                                 foreach (var fileToAdd in altdlc.MultiListSourceFiles)
                                 {
-                                    var sourceFile = FilesystemInterposer.PathCombine(IsInArchive, alternatePathRoot, fileToAdd).Substring(ModPath.Length).TrimStart('\\');
-                                    var destFile = Path.Combine(altdlc.DestinationDLCFolder, fileToAdd.TrimStart('\\', '/'));
+                                    var realFileToAdd = fileToAdd;
+                                    var sourceFile = FilesystemInterposer.PathCombine(IsInArchive, alternatePathRoot, realFileToAdd).Substring(ModPath.Length).TrimStart('\\');
+
+                                    // ModDesc 8: Flattening output allows you to draw from multiple folders
+                                    // and have a single output directory
+                                    if (altdlc.FlattenMultilistOutput)
+                                    {
+                                        realFileToAdd = Path.GetFileName(fileToAdd);
+                                    }
+
+                                    var destFile = Path.Combine(altdlc.DestinationDLCFolder, realFileToAdd.TrimStart('\\', '/'));
                                     M3Log.Information($@"Adding extra CustomDLC file (MultiList) ({sourceFile} => {destFile}) due to Alternate DLC {altdlc.FriendlyName}'s {altdlc.Operation}", Settings.LogModInstallation);
 
                                     installationMapping[destFile] = new InstallSourceFile(sourceFile) { AltApplied = true };
@@ -378,28 +387,24 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             {
                 foreach (var multifile in altFile.MultiListSourceFiles)
                 {
-                    M3Log.Information(
-                        $@"Adding multilist file {multifile} to install (from {altFile.MultiListRootPath}) as part of Alternate File {altFile.FriendlyName} due to operation OP_APPLY_MULTILISTFILES",
+                    var realMultiFile = multifile;
+                    M3Log.Information($@"Adding multilist file {realMultiFile} to install (from {altFile.MultiListRootPath}) as part of Alternate File {altFile.FriendlyName} due to operation OP_APPLY_MULTILISTFILES",
                         Settings.LogModInstallation);
-                    string relativeSourcePath = altFile.MultiListRootPath + '\\' + multifile;
+                    string relativeSourcePath = altFile.MultiListRootPath + '\\' + realMultiFile;
 
-                    var targetPath = altFile.MultiListTargetPath + '\\' + multifile;
+                    // ModDesc 8: Allow flattening output directory
+                    if (altFile.FlattenMultilistOutput)
+                    {
+                        realMultiFile = Path.GetFileName(realMultiFile);
+                    }
+                    var targetPath = altFile.MultiListTargetPath + '\\' + realMultiFile;
+
+                    // Map the installation mapping of this source file.
                     installationMapping[targetPath] = new InstallSourceFile(relativeSourcePath)
                     {
                         AltApplied = true,
                         IsFullRelativeFilePath = true
-                    }; //use alternate file as key instead
-                       //}
-
-                    //not sure if there should be an else case here.
-                    //else
-                    //{
-                    //    installationMapping[destFile] = new InstallSourceFile(multifile)
-                    //    {
-                    //        AltApplied = true,
-                    //        IsFullRelativeFilePath = true
-                    //    }; //use alternate file as key instead
-                    //}
+                    };
                 }
             }
 
@@ -540,7 +545,14 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     {
                         foreach (var mlFile in v.MultiListSourceFiles)
                         {
-                            list.Add(v.MultiListTargetPath + @"\" + mlFile);
+                            if (v.FlattenMultilistOutput)
+                            {
+                                list.Add(v.MultiListTargetPath + @"\" + Path.GetFileName(mlFile));
+                            }
+                            else
+                            {
+                                list.Add(v.MultiListTargetPath + @"\" + mlFile);
+                            }
                         }
                     }
                     else if (v.Operation == AlternateFile.AltFileOperation.OP_APPLY_MERGEMODS)
@@ -551,6 +563,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                         }
                     }
                 }
+
 
                 foreach (var v in job.AlternateDLCs)
                 {
@@ -565,7 +578,14 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     {
                         foreach (var mlFile in v.MultiListSourceFiles)
                         {
-                            list.Add(v.DestinationDLCFolder + @"\" + mlFile);
+                            if (v.FlattenMultilistOutput)
+                            {
+                                list.Add($@"{MEDirectories.GetDLCPath(Game, @"")}\{v.DestinationDLCFolder}\{Path.GetFileName(mlFile)}");
+                            }
+                            else
+                            {
+                                list.Add($@"{MEDirectories.GetDLCPath(Game, @"")}\{v.DestinationDLCFolder}\{mlFile}");
+                            }
                         }
                     }
                 }

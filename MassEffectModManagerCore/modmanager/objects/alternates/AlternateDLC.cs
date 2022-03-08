@@ -259,6 +259,25 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                         LoadFailedReason = M3L.GetString(M3L.string_interp_altdlc_multilistIdNotIntegerOrMissing, FriendlyName);
                         return;
                     }
+
+                    // ModDesc 8.0: Allow flattening output of multilist output.
+                    if (modForValidating.ModDescTargetVersion >= 8.0)
+                    {
+                        if (properties.TryGetValue(@"FlattenMultiListOutput", out var multiListFlattentStr) && !string.IsNullOrWhiteSpace(multiListFlattentStr))
+                        {
+                            if (bool.TryParse(multiListFlattentStr, out var multiListFlatten))
+                            {
+                                FlattenMultilistOutput = multiListFlatten;
+                            }
+                            else
+                            {
+                                M3Log.Error($@"Alternate DLC ({FriendlyName}) specifies 'FlattenMultiListOutput' descriptor, but the value is not 'true' or 'false': {multiListFlattentStr}");
+                                ValidAlternate = false;
+                                LoadFailedReason = $"Alternate DLC ({FriendlyName}) specifies 'FlattenMultiListOutput' descriptor, but the value is not 'true' or 'false': {multiListFlattentStr}";
+                                return;
+                            }
+                        }
+                    }
                 }
                 else
                 {
@@ -447,9 +466,6 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
             ValidAlternate = true;
         }
 
-        public string[] MultiListSourceFiles { get; }
-        public string MultiListRootPath { get; }
-
         public override bool IsManual => Condition == AltDLCCondition.COND_MANUAL;
 
         //public override bool UINotApplicable
@@ -592,7 +608,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
 
             if (DLCRequirementsForManual != null && !UIIsSelectable)
                 return false; // The user can't change the selection so we don't update the selectability states since this option is locked by DLC requirements.
-            
+
             return base.UpdateSelectability(allOptionsDependedOn, mod, target);
         }
 
@@ -613,9 +629,9 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 {@"ModAltDLC", AlternateDLCFolder},
                 {@"ModDestDLC", DestinationDLCFolder},
                 
-
                 {@"MultiListId", MultiListId > 0 ? MultiListId.ToString() : null},
                 {@"MultiListRootPath", MultiListRootPath},
+                {@"FlattenMultiListOutput", new MDParameter(@"FlattenMultiListOutput", FlattenMultilistOutput, false)},
                 {@"RequiredFileRelativePaths", RequiredSpecificFiles.Keys.ToList()}, // List of relative paths
                 {@"RequiredFileSizes", RequiredSpecificFiles.Values.ToList()}, // List of relative sizes
                 {@"DLCRequirements", DLCRequirementsForManual},

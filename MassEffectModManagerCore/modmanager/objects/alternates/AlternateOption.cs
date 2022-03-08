@@ -85,7 +85,6 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         /// </summary>
         public List<string> ConditionalDLC = new List<string>();
 
-
         /// <summary>
         /// UI-only
         /// </summary>
@@ -98,6 +97,22 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 return 1;
             }
         }
+
+        /// <summary>
+        /// The root path where the multilists (if used) for this alternate is stored at
+        /// </summary>
+        public string MultiListRootPath { get; init; }
+
+        /// <summary>
+        /// The list of multilist source files, relative to the MultiListRootPath (if used)
+        /// </summary>
+        public string[] MultiListSourceFiles { get; init; }
+
+        /// <summary>
+        /// If, when applying the multilist, the output files should be flattened to the target directory, instead of retaining their relative paths
+        /// </summary>
+        public bool FlattenMultilistOutput { get; init; }
+
 
         /// <summary>
         /// Raises the IsSelectedChanged event.
@@ -346,6 +361,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         public BitmapSource LoadImageAsset(Mod mod, string initializingAssetName = null)
         {
             var assetData = mod.LoadModImageAsset(initializingAssetName ?? ImageAssetName);
+#if !AZURE
             if (assetData == null)
             {
                 M3Log.Error($@"Alternate {FriendlyName} lists image asset {initializingAssetName}, but the asset could not be loaded.");
@@ -359,7 +375,9 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
             {
                 ImageBitmap = assetData;
             }
-
+#else
+            M3Log.Information(@"AZURE: Skipping image load of {initializingAssetName}");
+#endif
             return assetData;
         }
 
@@ -394,7 +412,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                     var iap = FilesystemInterposer.PathCombine(modForValidating.Archive != null, modForValidating.ModImageAssetsPath, imageAssetName);
                     if (!FilesystemInterposer.FileExists(iap, modForValidating.Archive))
                     {
-                        M3Log.Error($@"Alternate file {FriendlyName} lists image asset {imageAssetName}, but the asset does not exist in the mods {Mod.ModImageAssetFolderName} directory.");
+                        M3Log.Error($@"Alternate {FriendlyName} lists image asset {imageAssetName}, but the asset does not exist in the mod's {Mod.ModImageAssetFolderName} directory.");
                         ValidAlternate = false;
                         LoadFailedReason = M3L.GetString(M3L.string_validation_alt_imageAssetNotFound, FriendlyName, ImageAssetName, Mod.ModImageAssetFolderName);
                         return false;
@@ -405,10 +423,15 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                     {
                         // We need to load this asset cause it's not going to have an open archive until we begin install, if user tries to do install
                         ImageBitmap = LoadImageAsset(modForValidating, imageAssetName);
+#if !AZURE
+                        // If we're on Azure, the images will be blank stubs.
+                        // In this case we do not want it to fail to load,
+                        // since it always would
                         if (ImageBitmap == null)
                         {
                             return false; // Loading failed. 
                         }
+#endif
                     }
 
                     ImageAssetName = imageAssetName;
@@ -580,7 +603,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 {@"Description", Description},
 
                 // Initially selected
-                {@"CheckedByDefault", new MDParameter(@"string", @"CheckedByDefault", CheckedByDefault ? @"True" : @"", new [] {@"", @"True", @"False"}, "")}, //don't put checkedbydefault in if it is not set to true.
+                {@"CheckedByDefault", new MDParameter( @"CheckedByDefault", CheckedByDefault, false)},
 
                 // Mutually exclusive groups
                 {@"OptionGroup", GroupName},

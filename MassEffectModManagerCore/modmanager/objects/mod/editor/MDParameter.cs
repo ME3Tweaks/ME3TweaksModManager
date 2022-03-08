@@ -7,6 +7,21 @@ using LegendaryExplorerCore.Misc;
 
 namespace ME3TweaksModManager.modmanager.objects.mod.editor
 {
+    public enum MDParameterType
+    {
+        /// <summary>
+        /// The value type is True/False with a default value when blank.
+        /// </summary>
+        BOOL,
+        /// <summary>
+        /// The value type is an integer (such as minbuild)
+        /// </summary>
+        INT,
+        /// <summary>
+        /// The value type is a string
+        /// </summary>
+        STRING
+    }
 
     /// <summary>
     /// A single parameter mapping that is used for various items in moddesc.ini 
@@ -38,6 +53,27 @@ namespace ME3TweaksModManager.modmanager.objects.mod.editor
         }
 
         /// <summary>
+        /// Generates an MDParameter boolean descriptor that allows true/false/blank.
+        /// </summary>
+        /// <param name="keyname"></param>
+        /// <param name="value"></param>
+        /// <param name="defaultBlankValue"></param>
+        public MDParameter(string keyname, bool value, bool defaultValue)
+        {
+            ValueType = @"string";
+            Key = keyname;
+            if (value != defaultValue)
+            {
+                // Set the value if it is not the default value.
+                Value = value.ToString().ToLower();
+            }
+
+            AllowedValues.ReplaceAll(new[] { "", "true", "false" });
+            UsesSetValuesList = true;
+            UnsetValueItem = "";
+        }
+
+        /// <summary>
         /// The type of parameter. The value must be able to be parsed into this type, for example, "bool" must be true or false. "bool?" can be true, false, or Not Set.
         /// </summary>
         public string ValueType { get; set; }
@@ -58,12 +94,12 @@ namespace ME3TweaksModManager.modmanager.objects.mod.editor
         /// If the editor should display a list of predefined values.
         /// </summary>
         public bool UsesSetValuesList { get; set; } = false;
-        
+
         /// <summary>
         /// The list of allowed values. Requires UsesSetValuesList to be true.
         /// </summary>
         public ObservableCollectionExtended<string> AllowedValues { get; } = new();
-        
+
         /// <summary>
         /// The item in AllowedValues that represents blank.
         /// </summary>
@@ -78,7 +114,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.editor
         /// If this field is read only and cannot be edited by the developer (cmmver is one use case)
         /// </summary>
         public bool ReadOnly { get; set; } = false;
-        
+
         /// <summary>
         /// Maps a mapping of strings to strings into a list of MDParameter objects.
         /// </summary>
@@ -96,7 +132,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.editor
                     parammap.Add(param);
                     continue;
                 }
-                
+
                 // Generate one
                 param = new MDParameter(GetMDType(p), p.Key, GetValue(p));
                 param.Header = header;

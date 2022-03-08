@@ -65,8 +65,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         /// In-game relative path that will be operated on according to the specified operation
         /// </summary>
         public string ModFile { get; private set; }
-        public string MultiListRootPath { get; }
-        public string[] MultiListSourceFiles { get; }
+
         /// <summary>
         /// In-game relative path that will be targeted as the root. It's like ModFile but more descriptive for multilist implementations.
         /// </summary>
@@ -263,6 +262,26 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                         LoadFailedReason = M3L.GetString(M3L.string_interp_altfile_multilistIdNotIntegerOrMissing, FriendlyName);
                         return;
                     }
+
+                    // ModDesc 8.0: Allow flattening output of multilist output.
+                    if (modForValidating.ModDescTargetVersion >= 8.0)
+                    {
+                        if (properties.TryGetValue(@"FlattenMultiListOutput", out var multiListFlattentStr) && !string.IsNullOrWhiteSpace(multiListFlattentStr))
+                        {
+                            if (bool.TryParse(multiListFlattentStr, out var multiListFlatten))
+                            {
+                                FlattenMultilistOutput = multiListFlatten;
+                            }
+                            else
+                            {
+                                M3Log.Error($@"Alternate File ({FriendlyName}) specifies 'FlattenMultiListOutput' descriptor, but the value is not 'true' or 'false': {multiListFlattentStr}");
+                                ValidAlternate = false;
+                                LoadFailedReason = $"Alternate File ({FriendlyName}) specifies 'FlattenMultiListOutput' descriptor, but the value is not 'true' or 'false': {multiListFlattentStr}";
+                                return;
+                            }
+                        }
+                    }
+
                     #endregion
                 }
                 else if (Operation == AltFileOperation.OP_NOINSTALL_MULTILISTFILES)
@@ -550,6 +569,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 { @"MultiListId", MultiListId > 0 ? MultiListId.ToString() : null},
                 { @"MultiListRootPath", MultiListRootPath},
                 { @"MultiListTargetPath", MultiListTargetPath},
+                { @"FlattenMultiListOutput", new MDParameter(@"FlattenMultiListOutput", FlattenMultilistOutput, false)},
             };
 
             BuildSharedParameterMap(parameterDictionary);
