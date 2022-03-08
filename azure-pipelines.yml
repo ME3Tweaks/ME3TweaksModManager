@@ -45,7 +45,7 @@ steps: # Steps begin following this
   displayName: Build M3
   inputs:
     command: 'build'
-    projects: 'MassEffectModManagerCore/ME3TweaksModManager.csproj'
+    projects: 'ME3TweaksModManager/MassEffectModManagerCore/ME3TweaksModManager.csproj'
     arguments: '-c $(BuildConfiguration)'
 
 # Clone the test repository
