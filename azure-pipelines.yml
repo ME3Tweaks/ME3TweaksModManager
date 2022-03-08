@@ -49,7 +49,7 @@ steps: # Steps begin following this
     arguments: '-c $(BuildConfiguration)'
 
 # Clone the test repository
-- checkout: TestingDataRepo
+- checkout: ModTestingData
   displayName: Checkout testing data
   submodules: false
   fetchDepth: 1 # Only fetch the latest commit (faster)
