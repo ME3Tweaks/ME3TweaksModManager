@@ -59,7 +59,7 @@ steps: # Steps begin following this
   displayName: Test M3
   inputs:
     command: 'test'
-    projects: 'ME3TweaksModManager\\MassEffectModManagerCore.Tests\\MassEffectModManagerCore.Tests.csproj'
+    projects: 'ME3TweaksModManager\\MassEffectModManagerCore.Tests\\ME3TweaksModManager.Tests.csproj'
     arguments: '--configuration $(BuildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:Include=ME3TweaksModManager'
 
 # Generate the report using ReportGenerator (https://github.com/danielpalme/ReportGenerator)
