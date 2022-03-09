@@ -822,7 +822,8 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     string addFilesTargetList = ModDescTargetVersion >= 4.1 ? iniData[headerAsString][@"addfilestargets"] : null;
 
                     //Add files Read-Only (ModDesc 4.3)
-                    string addFilesTargetReadOnlyList = ModDescTargetVersion >= 4.3 ? iniData[headerAsString][@"addfilesreadonlytargets"] : null;
+                    // Never did anything since Mod Manager 6, removed commented out code in Mod Manager 8
+                    //string addFilesTargetReadOnlyList = ModDescTargetVersion >= 4.3 ? iniData[headerAsString][@"addfilesreadonlytargets"] : null;
 
                     //Remove files (ModDesc 4.1) - REMOVED IN MOD MANAGER 6
 
@@ -883,33 +884,9 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                             M3Log.Information($@"Parsing addfiles/addfilestargets on {headerAsString}. Found {addFilesTargetSplit.Count} items in lists", Settings.LogModStartup);
                         }
 
-                        //Add files read only targets
-                        // Disabled in MM7 since it never did anything since MM6
-                        //if (addFilesTargetReadOnlyList != null)
-                        //{
-                        //    addFilesReadOnlySplit = addFilesTargetList.Split(';').Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
-
-                        //    //Ensure add targets list contains this list
-                        //    if (addFilesTargetSplit != null)
-                        //    {
-                        //        if (!addFilesTargetSplit.ContainsAll(addFilesReadOnlySplit, StringComparer.InvariantCultureIgnoreCase))
-                        //        {
-                        //            //readonly list contains elements not contained in the targets list
-                        //            M3Log.Error($@"Mod has job header ({headerAsString}) that has addfilesreadonlytargets descriptor set, however it contains items that are not part of the addfilestargets list. This is not allowed.");
-                        //            LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_headerSpecifiesNotAddedReadOnlyTarget, headerAsString);
-                        //            return;
-                        //        }
-                        //    }
-                        //    else
-                        //    {
-                        //        //readonly target specified but nothing in the addfilestargets list/unspecified
-                        //        M3Log.Error($@"Mod has job header ({headerAsString}) that has addfilesreadonlytargets descriptor set, however there is no addfilestargets specified.");
-                        //        LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_headerCantSetReadOnlyWithoutAddFilesList, headerAsString);
-                        //        return;
-                        //    }
-                        //    //TODO: IMPLEMENT INSTALLER LOGIC FOR THIS.
-                        //    M3Log.Information($@"Parsing addfilesreadonlytargets on {headerAsString}. Found {addFilesReadOnlySplit.Count} items in list", Settings.LogModStartup);
-                        //}
+                        // Mod Manager 8: Remove code for 'addfilesreadonlytargets'. It was never implemented in Mod Manager 6
+                        // and thus hasn't worked for years. It was only used by Expanded Galaxy Mod in Original Trilogy and doesn't
+                        // have a functional impact on mod installs
 
                         //Ensure TESTPATCH is supported by making sure we are at least on ModDesc 3 if using TESTPATCH header.
                         //ME3 only
