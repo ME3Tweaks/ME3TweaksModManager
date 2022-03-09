@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using LegendaryExplorerCore.GameFilesystem;
+using LegendaryExplorerCore.Packages;
 using ME3TweaksCoreWPF;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.diagnostics;
@@ -373,6 +375,15 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                         continue;
                     }
 
+                    // Moddesc 8: You can no longer DLCRequirements on vanilla LE DLC, since they're always present,
+                    // and removing vanilla DLCs is not supported.
+                    if (modForValidating.ModDescTargetVersion >= 8.0 && modForValidating.Game.IsLEGame() && MEDirectories.OfficialDLC(modForValidating.Game).Contains(testreq.Key, StringComparer.InvariantCultureIgnoreCase))
+                    {
+                        M3Log.Error($@"Alternate DLC ({FriendlyName}) DLCRequirements specifies a DLC that ships in Legendary Edition. Legendary Edition mods targeting moddesc 8.0 and higher cannot set DLCRequirements on vanilla DLC, as Mod Manager does not support games that do not have the vanilla DLC. Unsupported value: {originalReq}");
+                        LoadFailedReason = $"Alternate DLC ({FriendlyName}) DLCRequirements specifies a DLC that ships in Legendary Edition. Legendary Edition mods targeting moddesc 8.0 and higher cannot set DLCRequirements on vanilla DLC, as Mod Manager does not support games that do not have the vanilla DLC. Unsupported value: {originalReq}";
+                        return;
+                    }
+
                     //dlc mods
                     if (!testreq.Key.StartsWith(@"DLC_"))
                     {
@@ -628,7 +639,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 {@"ModOperation", new MDParameter(@"string", @"ModOperation", Operation.ToString(), operations, AltDLCOperation.OP_NOTHING.ToString())},
                 {@"ModAltDLC", AlternateDLCFolder},
                 {@"ModDestDLC", DestinationDLCFolder},
-                
+
                 {@"MultiListId", MultiListId > 0 ? MultiListId.ToString() : null},
                 {@"MultiListRootPath", MultiListRootPath},
                 {@"FlattenMultiListOutput", new MDParameter(@"FlattenMultiListOutput", FlattenMultilistOutput, false)},

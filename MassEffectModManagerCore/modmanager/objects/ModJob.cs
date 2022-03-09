@@ -369,13 +369,13 @@ namespace ME3TweaksModManager.modmanager.objects
         }
 
 
-        private readonly static IReadOnlyDictionary<JobHeader, string> ME1HeadersToDLCNamesMap = new Dictionary<JobHeader, string>
+        private static readonly IReadOnlyDictionary<JobHeader, string> ME1HeadersToDLCNamesMap = new Dictionary<JobHeader, string>
         {
             [JobHeader.BRING_DOWN_THE_SKY] = @"DLC_UNC",
             [JobHeader.PINNACLE_STATION] = @"DLC_Vegas"
         };
 
-        private readonly static IReadOnlyDictionary<JobHeader, string> ME2HeadersToDLCNamesMap = new Dictionary<JobHeader, string>
+        private static readonly IReadOnlyDictionary<JobHeader, string> ME2HeadersToDLCNamesMap = new Dictionary<JobHeader, string>
         {
             [JobHeader.AEGIS_PACK] = @"DLC_CER_02",
             [JobHeader.APPEARANCE_PACK_1] = @"DLC_CON_Pack01",
@@ -402,7 +402,7 @@ namespace ME3TweaksModManager.modmanager.objects
             [JobHeader.ZAEED] = @"DLC_HEN_VT"
         };
 
-        private readonly static IReadOnlyDictionary<JobHeader, string> ME3HeadersToDLCNamesMap = new Dictionary<JobHeader, string>
+        private static readonly IReadOnlyDictionary<JobHeader, string> ME3HeadersToDLCNamesMap = new Dictionary<JobHeader, string>
         {
             [JobHeader.COLLECTORS_EDITION] = @"DLC_OnlinePassHidCE",
             [JobHeader.RESURGENCE] = @"DLC_CON_MP1",
@@ -428,7 +428,7 @@ namespace ME3TweaksModManager.modmanager.objects
         /// <summary>
         /// There are no supported headers since all DLC is assumed to be installed already
         /// </summary>
-        private readonly static IReadOnlyDictionary<JobHeader, string> LEHeadersToDLCNamesMap = new Dictionary<JobHeader, string> { };
+        private static readonly IReadOnlyDictionary<JobHeader, string> LEHeadersToDLCNamesMap = new Dictionary<JobHeader, string> { };
 
         internal static IReadOnlyDictionary<JobHeader, string> GetHeadersToDLCNamesMap(MEGame game)
         {
