@@ -497,15 +497,6 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 {
                     list.AddRange(job.FilesToInstall.Keys);
                 }
-                else
-                {
-                    foreach (var item in job.ReadOnlyIndicators)
-                    {
-                        var destPath = job.FilesToInstall.FirstOrDefault(x => x.Value.Equals(item, StringComparison.InvariantCultureIgnoreCase));
-                        if (destPath.Key == null) M3Log.Error(@"Error: Bug triggered: destPath for addreadonly files returned null!");
-                        list.Add(destPath.Key); //pathcombine?
-                    }
-                }
             }
             return list;
         }

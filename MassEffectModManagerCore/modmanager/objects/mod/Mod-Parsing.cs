@@ -861,10 +861,9 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                         M3Log.Information($@"Parsing replacefiles/newfiles on {headerAsString}. Found {replaceFilesTargetSplit.Count} items in lists", Settings.LogModStartup);
                     }
 
-                    //Don't support add/remove files on anything except ME3 (due to legacy implementation), unless basegame.
+                    //Don't support add files on anything except ME3 (due to legacy implementation), unless basegame.
                     List<string> addFilesSourceSplit = null;
                     List<string> addFilesTargetSplit = null;
-                    List<string> addFilesReadOnlySplit = null;
                     if (Game == MEGame.ME3 || header == ModJob.JobHeader.BASEGAME)
                     {
 
@@ -884,7 +883,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                             M3Log.Information($@"Parsing addfiles/addfilestargets on {headerAsString}. Found {addFilesTargetSplit.Count} items in lists", Settings.LogModStartup);
                         }
 
-                        // Mod Manager 8: Remove code for 'addfilesreadonlytargets'. It was never implemented in Mod Manager 6
+                        // Mod Manager 8: Removed code for 'addfilesreadonlytargets'. It was never implemented in Mod Manager 6
                         // and thus hasn't worked for years. It was only used by Expanded Galaxy Mod in Original Trilogy and doesn't
                         // have a functional impact on mod installs
 
@@ -999,22 +998,6 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                             {
                                 M3Log.Error($@"Error occurred while parsing the add files lists for {headerAsString}: {failurereason}");
                                 LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_genericFailedToParseAddFilesLists, headerAsString, failurereason);
-                                return;
-                            }
-                        }
-                    }
-
-                    if (addFilesReadOnlySplit != null && !directoryMatchesGameStructure)
-                    {
-                        for (int i = 0; i < addFilesReadOnlySplit.Count; i++)
-                        {
-                            M3Log.Information($@"Adding read-only item to post-installation step): {addFilesSourceSplit[i]}", Settings.LogModStartup);
-
-                            string failurereason = headerJob.AddReadOnlyIndicatorForFile(addFilesSourceSplit[i], this);
-                            if (failurereason != null)
-                            {
-                                M3Log.Error($@"Error occurred while parsing the addfilesreadonlytargtes list for {headerAsString}: {failurereason}");
-                                LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_genericFailedToParseAddFilesReadOnlyTargets, headerAsString, failurereason);
                                 return;
                             }
                         }

@@ -461,11 +461,7 @@ namespace ME3TweaksModManager.modmanager.objects
         /// List of Alternate dlc objects for this header. This is only supported on the CUSTOMDLC header.
         /// </summary>
         public ObservableCollection<AlternateDLC> AlternateDLCs { get; } = new ObservableCollection<AlternateDLC>();
-        /// <summary>
-        /// List of files that should be set to read-only on install. Used for exec files for EGM
-        /// </summary>
-        public List<string> ReadOnlyIndicators = new List<string>();
-
+        
         /// <summary>
         /// List of xml files in the Game1Tlk job directory. Ensure you check for null before accessing this variable.
         /// </summary>
@@ -520,17 +516,6 @@ namespace ME3TweaksModManager.modmanager.objects
                 default:
                     throw new Exception(@"Can't get supported list of dlc headers for unknown game type.");
             }
-        }
-
-        internal string AddReadOnlyIndicatorForFile(string sourceRelativePath, Mod mod)
-        {
-            if (!FilesToInstall.Any(x => x.Value.Equals(sourceRelativePath, StringComparison.InvariantCultureIgnoreCase)))
-            {
-                return M3L.GetString(M3L.string_interp_validation_modjob_readOnlyTargetNotSpeficiedInAddFilesList, sourceRelativePath);
-            }
-
-            ReadOnlyIndicators.Add(sourceRelativePath);
-            return null;
         }
 
         public bool ValidateAlternates(Mod modForValidating, out string failureReason)
@@ -828,7 +813,6 @@ namespace ME3TweaksModManager.modmanager.objects
                     // Add files
                     parameterDictionary[@"addfiles"] = AddFilesRaw;
                     parameterDictionary[@"addfilestargets"] = AddFilesTargetsRaw;
-                    parameterDictionary[@"addfilesreadonlytargets"] = ReadOnlyIndicators;
                 }
 
                 if (Header == JobHeader.BASEGAME)
