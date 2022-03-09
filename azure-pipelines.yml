@@ -5,6 +5,7 @@
 
 trigger:
 - master
+- M3Core
 
 pool:
   vmImage: 'windows-latest'
