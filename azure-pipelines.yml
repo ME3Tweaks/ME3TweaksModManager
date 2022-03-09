@@ -55,12 +55,13 @@ steps: # Steps begin following this
   fetchDepth: 1 # Only fetch the latest commit (faster)
 
 
+# The configuration MUST contain the word 'Azure' or LEC will fail to build if the compilation symbol 'AZURE' is defined!
 - task: DotNetCoreCLI@2
   displayName: Test M3
   inputs:
     command: 'test'
     projects: 'ME3TweaksModManager\\MassEffectModManagerCore.Tests\\ME3TweaksModManager.Tests.csproj'
-    arguments: '/p:DefineConstants="WINDOWS%3BAZURE" /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:Include=ME3TweaksModManager'
+    arguments: '/p:DefineConstants="WINDOWS%3BAZURE" /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:Include=ME3TweaksModManager -c WinAzureRelease'
 
 # Generate the report using ReportGenerator (https://github.com/danielpalme/ReportGenerator)
 # First install the tool on the machine, then run it
