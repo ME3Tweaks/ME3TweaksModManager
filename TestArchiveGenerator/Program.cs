@@ -88,27 +88,29 @@ namespace TestArchiveGenerator
             Console.WriteLine("Extracting archive...");
             archive.ExtractArchive(extractionStaging);
             var files = Directory.GetFiles(extractionStaging, "*", SearchOption.AllDirectories);
-            int expectedAmount = 0;
+            int expectedFileCount = 0;
             foreach (var file in files)
             {
                 if (shouldZeroFile(file))
                 {
                     //write blank with guid
                     File.WriteAllText(file, @"blank");
+                    if (Path.GetFileName(file) != "moddesc.ini")
+                        expectedFileCount++; // Amount of files expected
                 }
                 else
                 {
-                    expectedAmount++;
+                    expectedFileCount++;
                 }
             }
 
-            if (expectedAmount == 0) expectedAmount = 1;
-            fullname = $"{Path.GetFileNameWithoutExtension(inputArchivePath)}-{expectedAmount}-{size}-{md5}{ext}";
+            if (expectedFileCount == 0) expectedFileCount = 1;
+            fullname = $"{Path.GetFileNameWithoutExtension(inputArchivePath)}-{expectedFileCount}-{size}-{md5}{ext}";
 
             Console.WriteLine("Compressing archive...");
             SevenZipCompressor svc = new SevenZipCompressor();
             // Do not compress any files.
-            svc.CompressionLevel = CompressionLevel.None; 
+            svc.CompressionLevel = CompressionLevel.None;
             svc.CompressionMode = CompressionMode.Create;
             svc.CompressionMethod = CompressionMethod.Copy;
             svc.CompressDirectory(extractionStaging, Path.Combine(outputPath, fullname));
