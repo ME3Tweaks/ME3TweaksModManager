@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net6.0-windows8.0</TargetFramework>
     <PublishTrimmed>true</PublishTrimmed>
     <PublishSingleFile>true</PublishSingleFile>
     <PublishReadyToRun>true</PublishReadyToRun>
@@ -12,7 +12,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SevenZip\SevenZip.csproj" />
+	  <ProjectReference Include="..\SevenZip\SevenZip.csproj" />
+	  <ProjectReference Include="..\MassEffectModManagerCore\ME3TweaksModManager.csproj" />
   </ItemGroup>
 
   <ItemGroup>

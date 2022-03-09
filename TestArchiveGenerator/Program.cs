@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Threading;
+using ME3TweaksModManager.modmanager.objects.mod.merge;
 
 namespace TestArchiveGenerator
 {
@@ -91,15 +92,19 @@ namespace TestArchiveGenerator
             int expectedFileCount = 0;
             foreach (var file in files)
             {
-                if (shouldZeroFile(file))
+                if (Path.GetFileName(file) == "moddesc.ini")
                 {
                     //write blank with guid
                     File.WriteAllText(file, @"blank");
-                    if (Path.GetFileName(file) != "moddesc.ini")
-                        expectedFileCount++; // Amount of files expected
                 }
                 else
                 {
+                    var extension = Path.GetExtension(file);
+                    if (extension == ".m3m")
+                    {
+                        // Wipe out asset files, since we test cases don't actually use these and they consume disk space.
+                        zeroMergeModAssets(file);
+                    }
                     expectedFileCount++;
                 }
             }
@@ -115,6 +120,37 @@ namespace TestArchiveGenerator
             svc.CompressionMethod = CompressionMethod.Copy;
             svc.CompressDirectory(extractionStaging, Path.Combine(outputPath, fullname));
             DeleteFilesAndFoldersRecursively(extractionStaging);
+        }
+
+        private static void zeroMergeModAssets(string file)
+        {
+            var mergeMod = MergeModLoader.LoadMergeMod(new MemoryStream(File.ReadAllBytes(file)), file, false);
+
+            if (mergeMod.Assets.Count > 0)
+            {
+                // Decompile
+                var dir = Directory.GetParent(file).FullName;
+                MergeModLoader.DecompileM3M(file);
+
+                // Zero files.
+                foreach (var v in mergeMod.Assets.Keys)
+                {
+                    Console.WriteLine($@"Zeroing merge mod asset {v} in {Path.GetFileName(file)}");
+                    var assetFile = Path.Combine(dir, v);
+                    File.WriteAllText(assetFile, @"blank merge mod asset");
+                }
+
+                // Reserialize
+                Console.WriteLine($@"Reserializing merge mod {Path.GetFileName(file)}");
+                var inFile = Path.Combine(dir, $"{Path.GetFileNameWithoutExtension(file)}.json");
+                MergeModLoader.SerializeManifest(inFile, 1);
+
+                // Delete the extra files.
+                foreach (var v in mergeMod.Assets.Keys)
+                {
+                    File.Delete(Path.Combine(dir, v));
+                }
+            }
         }
 
         private static bool shouldZeroFile(string file)
