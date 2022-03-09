@@ -36,9 +36,11 @@ ME3CMM sometimes allowed these mods to still load as the code to parse various i
 The most common issue I have seen with the new parser not accepting older mods is in the `moddesc` attribute. In the older ME3CMM mod parser, you could use newlines, which would give the appearance of it being correct in the moddesc, however ME3CMM would not actually display anything not on the line for `moddesc`, as invalid lines in the ini file were ignored. In M3, these lines are no longer ignored and will cause the ini to fail to parse, which will result in an invalid mod.
 
 ## Version Targeting
-ME3Tweaks Mod Manager is fully backwards compatible with mods targeting older versions of moddesc (that followed the spec), but upgrading a mod's moddesc version without upgrading the contents of the file may not work properly as different moddesc versions are parsed differently. 
+ME3Tweaks Mod Manager is fully backwards compatible with mods targeting older versions of moddesc, but upgrading a mod's moddesc version without upgrading the contents of the file may not work properly as different moddesc versions are parsed differently. 
 
-_There is one notable exception to this backwards compatibility - files that do not fully conform to the moddesc.ini spec but worked due to a bug in the parser may break when being used with ME3Tweaks Mod Manager. **Item lists that are surrounded by ( and ) must have the correct amount of parenthesis or M3 will mark the mod as invalid!**_
+_**There is one notable exception to this backwards compatibility** - moddesc.ini files that do not conform to the specification but worked due to a bug in ME3CMM's parser may break when being used with ME3Tweaks Mod Manager. 
+ - Item lists that are surrounded by `(` and `)` must have the correct amount of parenthesis or M3 will mark the mod as invalid! 
+ - Lines that aren't whitespace, a section header, or a descriptor will cause the parser to throw an error and the mod will fail to load.
 
 M3 will refuse to load mods higher than it's listed supported moddesc version. This is not really an issue you should worry about as I typically restrict developers from releasing mods with new moddesc features until the userbase has full access to a supported version of M3 through it's built-in updater.
 
