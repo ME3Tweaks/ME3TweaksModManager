@@ -63,7 +63,7 @@ The [ModManager] header is a required header for all moddesc.ini files. It suppo
 | minbuild   | Integer   | This descriptor is used to specify that a mod is only allowed to load on a specific build. For example, if a mod depends on features only present in Build 104, minbuild can be used to ensure users on Build 103 or lower cannot attempt to load the mod.                                                                                                                                                                     | No       | 6.0 (Build 104+)   |
 
 #### What cmmver should I pick?
-You typically will want to simply target the latest version. The moddesc.ini editor built into Mod Manager will cannot save against older versions of moddesc, and the majority of users will be on the latest version due to the built in update prompts in Mod Manager.
+You typically will want to simply target the latest version. The moddesc.ini editor built into Mod Manager cannot save against older versions of moddesc, and the majority of users will be on the latest version due to the built in update prompts in Mod Manager.
 
 Valid values for cmmver are listed below with the main highlights of that release:
 
