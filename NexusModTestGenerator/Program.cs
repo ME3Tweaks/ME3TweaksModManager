@@ -104,7 +104,8 @@ public class Program
                 var mainFiles = modFileList.Files.Where(x => x.Category == FileCategory.Main).ToList();
 
                 // Files that are not in the download list 
-                var fileIdsToDownload = mainFiles.Select(x => x.FileID).Except(ProcessedFiles[domain]).Select(x => mainFiles.Find(y => y.FileID == x)).ToList();
+                //var fileIdsToDownload = mainFiles.Select(x => x.FileID).Except(ProcessedFiles[domain]).Select(x => mainFiles.Find(y => y.FileID == x)).ToList();
+                var fileIdsToDownload = mainFiles.Select(x => x.FileID).Select(x => mainFiles.Find(y => y.FileID == x)).ToList();
                 var storageBaseName = $"{domainPrefix(domain)}-{SanitizeName(modInfo.Name)}";
 
                 foreach (var v in fileIdsToDownload)
@@ -117,7 +118,9 @@ public class Program
                     if (File.Exists(fileListing))
                     {
                         var contentPreview = JsonConvert.DeserializeObject<ContentPreview>(File.ReadAllText(fileListing));
-                        if (contentPreview.Children != null && DownloadHelper.HasModdescIni(contentPreview)
+                        if (contentPreview.Children != null
+                            && DownloadHelper.HasModdescIni(contentPreview)
+                            && DownloadHelper.HasFilesMatching(contentPreview, x => Path.GetExtension(x) == @".m3m")
                             && v.SizeInBytes != null && v.SizeInBytes < (1024 * 1024 * 400) // < 400MB
                             )
                         {
@@ -127,13 +130,13 @@ public class Program
                                 storageName += $@"-{SanitizeName(v.Name)}";
                             }
                             storageName += v.FileVersion;
-                            //Console.WriteLine($"File needs downloaded: {v.Name}");
+                            Console.WriteLine($"File needs downloaded: {v.Name}");
                             DownloadMod(storageName, Path.GetExtension(v.FileName), domain, modId, v.FileID);
                             NumDownloadsRemaining--;
                         }
                         else
                         {
-                            Debug.WriteLine($"Skipping {v.Name}");
+                            //Debug.WriteLine($"Skipping {v.Name}");
                         }
                     }
                     else

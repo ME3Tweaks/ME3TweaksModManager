@@ -82,4 +82,33 @@ public class DownloadHelper
             }
         }
     }
+
+    internal static bool HasFilesMatching(ContentPreview fileListing, Func<string, bool> p)
+    {
+        foreach (var e in fileListing.Children)
+        {
+            if (HasFileRecursive(e, p))
+                return true;
+        }
+
+        return false;
+    }
+
+    private static bool HasFileRecursive(ContentPreviewEntry entry, Func<string, bool> predicate)
+    {
+        // Directory
+        if (entry.Type == ContentPreviewEntryType.Directory)
+        {
+            foreach (var e in entry.Children)
+            {
+                if (HasFileRecursive(e, predicate))
+                    return true;
+            }
+
+            return false;
+        }
+
+        // File
+        return predicate(entry.Path);
+    }
 }

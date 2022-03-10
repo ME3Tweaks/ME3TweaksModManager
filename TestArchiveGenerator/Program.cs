@@ -80,7 +80,6 @@ namespace TestArchiveGenerator
             string ext = Path.GetExtension(inputArchivePath);
             if (ext == ".rar") ext = ".zip";
             var fullname = Path.Combine(Directory.GetParent(inputArchivePath).FullName, fnamenoExt + ext);
-            Console.WriteLine("Creating blank archives " + inputArchivePath + " -> " + fullname);
 
             var extractionStaging = tempPath ?? Path.Combine(Path.GetTempPath(), "BlankMMArchive");
             if (Directory.Exists(extractionStaging)) DeleteFilesAndFoldersRecursively(extractionStaging);
@@ -89,15 +88,10 @@ namespace TestArchiveGenerator
             Console.WriteLine("Extracting archive...");
             archive.ExtractArchive(extractionStaging);
             var files = Directory.GetFiles(extractionStaging, "*", SearchOption.AllDirectories);
-            int expectedFileCount = 0;
+            int expectedModCount = 0;
             foreach (var file in files)
             {
-                if (Path.GetFileName(file) == "moddesc.ini")
-                {
-                    //write blank with guid
-                    File.WriteAllText(file, @"blank");
-                }
-                else
+                if (Path.GetFileName(file) != "moddesc.ini")
                 {
                     var extension = Path.GetExtension(file);
                     if (extension == ".m3m")
@@ -105,14 +99,21 @@ namespace TestArchiveGenerator
                         // Wipe out asset files, since we test cases don't actually use these and they consume disk space.
                         zeroMergeModAssets(file);
                     }
-                    expectedFileCount++;
+                    else
+                    {
+                        //write blank with guid
+                        File.WriteAllText(file, @"blank");
+                    }
+                }
+                else
+                {
+                    expectedModCount++;
                 }
             }
 
-            if (expectedFileCount == 0) expectedFileCount = 1;
-            fullname = $"{Path.GetFileNameWithoutExtension(inputArchivePath)}-{expectedFileCount}-{size}-{md5}{ext}";
-
-            Console.WriteLine("Compressing archive...");
+            if (expectedModCount == 0) expectedModCount = 1;
+            fullname = $"{Path.GetFileNameWithoutExtension(inputArchivePath)}-{expectedModCount}-{size}-{md5}{ext}";
+            Console.WriteLine("Creating blank archive " + inputArchivePath + " -> " + fullname);
             SevenZipCompressor svc = new SevenZipCompressor();
             // Do not compress any files.
             svc.CompressionLevel = CompressionLevel.None;
@@ -125,7 +126,6 @@ namespace TestArchiveGenerator
         private static void zeroMergeModAssets(string file)
         {
             var mergeMod = MergeModLoader.LoadMergeMod(new MemoryStream(File.ReadAllBytes(file)), file, false);
-
             if (mergeMod.Assets.Count > 0)
             {
                 // Decompile
