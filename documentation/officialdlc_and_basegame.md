@@ -1,11 +1,12 @@
 ![Documentation Image](images/documentation_header.png)
 
 ### Official DLC Task Headers
-Mod Manager 2.0 (cmmver 2) and above added support for modding official game DLC. M3 added support for ME1 and ME2 modding, which has an additional set of headers that are supported. 
+Mod Manager 2.0 (cmmver 2) and above added support for modding official game DLC. M3 added support for ME1 and ME2 modding, which has an additional set of headers that are supported. You often can accomplish the same thing in a DLC mod rather than directly editing an official DLC, unless you're doing multiplayer modding.
 
 The following headers are supported, with their supported descriptors in the table below. BASEGAME is technically not a DLC (vanilla game) but keeps the same format. There are a few special task headers that will be explained further down in this document.
 
 #### Supported Headers for Mass Effect 3
+Note: Only `BASEGAME` is supported on Mass Effect 3 Legendary Edition.
 |Header name|DLC Folder|Supported Versions|
 |--- |--- |--- |
 |BASEGAME|BIOGame/CookedPCConsole|3.0+|
@@ -41,6 +42,7 @@ newfiles = ServerCoalesced.bin
 **WARNING: DO NOT USE ANY COALESCED FILE THAT IS NOT DERIVED FROM THE ORIGINAL SERVER COALESCED FILE. You may completely ruin your online profile with no way to recover it without purchasing a new copy of Mass Effect 3.**
 
 #### Supported Headers for Mass Effect 2
+Note: Only `BASEGAME` is supported on Mass Effect 2 Legendary Edition.
 |Header name|DLC Folder|Supported Versions|
 |--- |--- |--- |
 |BASEGAME|BIOGame/CookedPC|6.0+|
@@ -71,6 +73,7 @@ newfiles = ServerCoalesced.bin
 `ME2_RCWMOD` is a special header that is used for **R**oad**C**rew**W**orker's ME2 Mod Manager's .me2mod files. These files are delta files for the Coalesced.ini file. M3 can handle these files using this task. The only supported descriptor for this task is `modfile`, which is the filename of the .me2mod that resides next to the moddesc.ini file. RCW mods in Mod Manager must only contain a single 'mod' in their .me2mod file description. Multiple `###mod` directives in the .me2mod file is not allowed - import the .me2mod through Mod Manager to split them into multiple single mods.
 
 #### Supported Headers for Mass Effect
+Note: Only `BASEGAME` is supported on Mass Effect Legendary Edition.
 |Header name|Game Folder|Supported Versions|
 |--- |--- |--- |
 |BASEGAME|BIOGame/CookedPC|6.0+|
