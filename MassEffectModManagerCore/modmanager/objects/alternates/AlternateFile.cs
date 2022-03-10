@@ -81,11 +81,6 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
             return AltFile != null;
         }
 
-        /// <summary>
-        /// BACKWARDS COMPATIBLILITY ONLY: ModDesc 4.5 used SubstituteFile but was removed from support in 5.0
-        /// </summary>
-        public string SubstituteFile;
-
         //public override bool UIIsSelectable
         //{
         //    // Logic:
@@ -464,12 +459,18 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                         AltFile = maltfile.TrimStart('\\', '/'); ;
                     }
 
-                    properties.TryGetValue(@"SubstituteFile", out SubstituteFile); //Only used in 4.5. In 5.0 and above this became AltFile.
 
                     //workaround for 4.5
-                    if (modForValidating.ModDescTargetVersion == 4.5 && Operation == AltFileOperation.OP_SUBSTITUTE && SubstituteFile != null)
+                    if (modForValidating.ModDescTargetVersion == 4.5)
                     {
-                        AltFile = SubstituteFile; // not trimming start to avoid logic change
+                        // BACKWARDS COMPATIBLILITY ONLY: ModDesc 4.5 used SubstituteFile but was removed from support in 5.0
+                        // In 5.0 and above this became AltFile.
+                        properties.TryGetValue(@"SubstituteFile", out var substituteFile); 
+
+                        if (Operation == AltFileOperation.OP_SUBSTITUTE && substituteFile != null)
+                        {
+                            AltFile = substituteFile; // not trimming start to avoid logic change
+                        }
                     }
 
                     if (!string.IsNullOrEmpty(AltFile))

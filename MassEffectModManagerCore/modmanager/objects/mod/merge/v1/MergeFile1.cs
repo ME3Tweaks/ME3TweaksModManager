@@ -135,9 +135,8 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
         public void Validate()
         {
             if (FileName == null) throw new Exception(M3L.GetString(M3L.string_filenameCannotBeNullInAMergeManifestFile!));
-            var safeFiles = EntryImporter.FilesSafeToImportFrom(OwningMM.Game).ToList();
-            safeFiles.Add(@"EntryMenu.pcc"); // ME2+
-            safeFiles.Add(@"EntryMenu.SFM"); // ME1
+            var safeFiles = MergeModLoader.GetAllowedMergeTargetFilenames(Parent.Game);
+
             if (!safeFiles.Any(x => FileName.StartsWith(Path.GetFileNameWithoutExtension(x), StringComparison.InvariantCultureIgnoreCase)))
             {
                 // Does this catch DLC startups? 

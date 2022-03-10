@@ -11,6 +11,9 @@ using LegendaryExplorerCore.ME1.Unreal.UnhoodBytecode;
 using ME3TweaksModManager.modmanager.objects.merge.squadmate;
 using ME3TweaksModManager.modmanager.squadmates;
 using Newtonsoft.Json;
+using ME3TweaksModManager.modmanager.objects.mod.merge.v1;
+using ME3TweaksModManager.modmanager.objects.mod.merge;
+using ME3TweaksModManager.modmanager.objects.alternates;
 
 namespace ME3TweaksModManager.modmanager.objects.deployment.checks
 {
@@ -275,6 +278,75 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
             if (item.ModToValidateAgainst.ModName.Length > 40)
             {
                 item.AddInfoWarning(M3L.GetString(M3L.string_interp_infoModNameTooLong, item.ModToValidateAgainst.ModName, item.ModToValidateAgainst.ModName.Length));
+            }
+
+            // Check if our mod contains any basegame only files that are hot merge mod targets.
+            var basegameJob = item.ModToValidateAgainst.GetJob(ModJob.JobHeader.BASEGAME);
+            if (basegameJob != null)
+            {
+
+
+                // Get files installed into CookedPC of basegame (without extension)
+                var basegameCookedPrefix = $@"BioGame/{item.ModToValidateAgainst.Game.CookedDirName()}/";
+
+                // Job files.
+                var cookedDirTargets = basegameJob.FilesToInstall.Keys.Where(x => x.Replace("\\", "/").TrimStart('/').StartsWith(basegameCookedPrefix, StringComparison.InvariantCultureIgnoreCase) && x.RepresentsPackageFilePath()).Select(x => Path.GetFileNameWithoutExtension(x)).ToList();
+
+                // Find alternates that may target this directory.
+                var alts = basegameJob.AlternateFiles.Where(
+                    x => x.Operation
+                is AlternateFile.AltFileOperation.OP_SUBSTITUTE
+                or AlternateFile.AltFileOperation.OP_INSTALL
+                or AlternateFile.AltFileOperation.OP_APPLY_MULTILISTFILES
+                ).ToList();
+
+                foreach (var alt in alts)
+                {
+                    switch (alt.Operation)
+                    {
+                        case AlternateFile.AltFileOperation.OP_SUBSTITUTE:
+                        case AlternateFile.AltFileOperation.OP_INSTALL:
+                            var testPath = alt.ModFile.Replace("\\", "/").TrimStart('/');
+                            if (testPath.StartsWith(basegameCookedPrefix, StringComparison.InvariantCultureIgnoreCase) && testPath.RepresentsPackageFilePath())
+                            {
+                                cookedDirTargets.Add(Path.GetFileNameWithoutExtension(alt.ModFile));
+                            }
+                            break;
+                        case AlternateFile.AltFileOperation.OP_APPLY_MULTILISTFILES:
+                            foreach (var mlFile in alt.MultiListSourceFiles)
+                            {
+                                string destPath;
+                                if (alt.FlattenMultilistOutput)
+                                {
+                                    destPath = alt.MultiListTargetPath + @"\" + Path.GetFileName(mlFile);
+                                }
+                                else
+                                {
+                                    destPath = alt.MultiListTargetPath + @"\" + mlFile;
+                                }
+
+                                destPath = destPath.Replace(@"\", @"//").TrimStart('/');
+
+                                if (destPath.StartsWith(basegameCookedPrefix, StringComparison.InvariantCultureIgnoreCase) && destPath.RepresentsPackageFilePath())
+                                {
+                                    cookedDirTargets.Add(Path.GetFileNameWithoutExtension(destPath));
+                                }
+                            }
+                            break;
+                    }
+                }
+
+                // Get list of files that our merge mod supports.
+                var mergeTargets = MergeModLoader.GetAllowedMergeTargetFilenames(item.ModToValidateAgainst.Game).Select(x => Path.GetFileNameWithoutExtension(x).StripUnrealLocalization()).ToList();
+
+                // 
+                foreach (var mt in mergeTargets)
+                {
+                    if (cookedDirTargets.Contains(mt, StringComparer.InvariantCultureIgnoreCase))
+                    {
+                        item.AddSignificantIssue($"Mod potentially installs file targetable by mergemods: {mt}. Consider changing this mod to use mergemods for this file to be more compatible with other mods.");
+                    }
+                }
             }
 
             //end setup
