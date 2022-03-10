@@ -92,4 +92,5 @@ Note that `newfiles` and `replacefiles` behavior differs if `gamedirectorystruct
 |multilist\[x]|Unquoted semicolon split list (relative file paths)|Use to denote a list of relative file paths to optionally add into a mod, so you can share files across alternate installation options. The \[x] denotes a number starting from 1 and counting up (yes, this is indexed starting at 1). This descriptor is only used in conjunction with `altdlc` and `altfiles` descriptors. See the section on [MultiLists](alternates.md#multilists) below for how to use this advanced feature.|No|6.0+|
 
 #### Descriptors not supported by M3 that were supported in ME3CMM
- - **removefiletargets** - This descriptor could be dangerous if used incorrectly. There are no known mods that used this descriptor.
+ - **removefiletargets** - Removed in Mod Manager 6.0 - This descriptor could be dangerous if used incorrectly. There are no known mods that used this descriptor.
+ - **addfilesreadonlytargets** - Removed in Mod Manager 8.0 - This descriptor was parsed but never set any values; as such, it did nothing in ME3Tweaks Mod Manager. It was only used by one mod that no longer uses it, and has no functional impact on the game.
