@@ -23,6 +23,10 @@ namespace ME3TweaksModManager.modmanager.objects
     [AddINotifyPropertyChangedInterface]
     public class ModDownload
     {
+        /// <summary>
+        /// The maximum size of an archive that can be downloaded and loaded from memory.
+        /// </summary>
+        private static readonly long DOWNLOAD_TO_MEMORY_SIZE_CAP = 100 * FileSize.MebiByte;
         public string NXMLink { get; set; }
         public List<ModFileDownloadLink> DownloadLinks { get; } = new List<ModFileDownloadLink>();
         public ModFile ModFile { get; private set; }
@@ -61,11 +65,15 @@ namespace ME3TweaksModManager.modmanager.objects
             NXMLink = nxmlink;
         }
 
+        /// <summary>
+        /// Begins downloading of the mod to disk or memory.
+        /// </summary>
+        /// <param name="cancellationToken">Token to indicate the download has been canceled.</param>
         public void StartDownload(CancellationToken cancellationToken)
         {
             Task.Run(() =>
             {
-                if (ProgressMaximum < 100 * FileSize.MebiByte)
+                if (ProgressMaximum < DOWNLOAD_TO_MEMORY_SIZE_CAP)
                 {
                     DownloadedStream = new MemoryStream();
                     MemoryAnalyzer.AddTrackedMemoryItem(@"NXM Download MemoryStream", new WeakReference(DownloadedStream));
@@ -160,11 +168,28 @@ namespace ME3TweaksModManager.modmanager.objects
                     ModFile = NexusModsUtilities.GetClient().ModFiles.GetModFile(ProtocolLink.Domain, ProtocolLink.ModId, ProtocolLink.FileId).Result;
                     if (ModFile != null)
                     {
+                        if (ModFile.SizeInBytes != null && ModFile.SizeInBytes.Value > DOWNLOAD_TO_MEMORY_SIZE_CAP && M3Utilities.GetDiskFreeSpaceEx(M3Utilities.GetModDownloadCacheDirectory(), out var free, out var total, out var totalFree))
+                        {
+                            // Check free disk space.
+                            if (totalFree < ModFile.SizeInBytes * 1.2) // 20% buffer.
+                            //if (totalFree < ModFile.SizeInBytes * 100000.0) // Debug code
+                            {
+                                M3Log.Error($@"There is not enough free space on {Path.GetPathRoot(M3Utilities.GetModDownloadCacheDirectory())} to download {ModFile.FileName}. We need {FileSize.FormatSize(ModFile.SizeInBytes.Value)} but only {FileSize.FormatSize(totalFree)} is available.");
+                                Initialized = true;
+                                ProgressIndeterminate = false;
+                                OnModDownloadError?.Invoke(this, $"There is not enough free space on {Path.GetPathRoot(M3Utilities.GetModDownloadCacheDirectory())} to download {ModFile.FileName}.\n\nRequired space: {FileSize.FormatSize(ModFile.SizeInBytes.Value)}\nFree space: {FileSize.FormatSize(totalFree)}");
+                                return;
+                            }
+                        }
+
+
                         if (ModFile.Category != FileCategory.Deleted)
                         {
                             if (ProtocolLink.Key != null)
                             {
                                 // Website click
+
+
                                 if (ProtocolLink.Domain is @"masseffect" or @"masseffect2" && !IsDownloadWhitelisted(ProtocolLink.Domain, ModFile))
                                 {
                                     // Check to see file has moddesc.ini the listing
@@ -189,7 +214,7 @@ namespace ME3TweaksModManager.modmanager.objects
                             }
                             else
                             {
-                                // premium?
+                                // premium? no parameters were supplied...
                                 if (!NexusModsUtilities.UserInfo.IsPremium)
                                 {
                                     M3Log.Error(

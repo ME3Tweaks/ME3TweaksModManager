@@ -105,7 +105,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             if (sender is ModDownload initializedItem)
             {
-                M3Log.Information($@"Mod has initialized: {initializedItem.ModFile.Name}");
+                M3Log.Information($@"ModDownload has initialized: {initializedItem.ModFile.Name}");
                 var nextDownload = Downloads.FirstOrDefault(x => !x.Downloaded);
                 nextDownload?.StartDownload(cancellationTokenSource.Token);
             }
