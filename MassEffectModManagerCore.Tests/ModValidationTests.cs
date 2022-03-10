@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -74,6 +75,11 @@ namespace ME3TweaksModManager.Tests
         [TestMethod]
         public void ValidateArchiveModLoading()
         {
+#if !AZURE
+            Console.WriteLine("ValidateArchiveModLoading() must be run with AZURE compilation flag defined or tests will fail due to dummy data. Test skipped.");
+            return;
+            #endif
+
             GlobalTest.Init();
 
             Console.WriteLine("Fetching third party services");

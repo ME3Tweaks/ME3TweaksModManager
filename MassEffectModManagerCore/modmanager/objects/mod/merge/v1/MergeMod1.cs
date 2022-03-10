@@ -56,6 +56,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
             }
 
             var assetCount = mergeFileStream.ReadInt32();
+            mm.Assets = new CaseInsensitiveDictionary<MergeAsset>(assetCount);
             if (assetCount > 0)
             {
                 for (int i = 0; i < assetCount; i++)
@@ -81,7 +82,6 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                         mergeFileStream.Skip(ma.FileSize);
                     }
 
-                    mm.Assets ??= new CaseInsensitiveDictionary<MergeAsset>();
                     mm.Assets[assetName] = ma;
                 }
             }

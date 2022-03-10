@@ -3,7 +3,7 @@
     <TargetFrameworks>net6.0-windows8.0</TargetFrameworks>
     <IsPackable>false</IsPackable>
     <Platforms>x64</Platforms>
-    <Configurations>Debug;Release;WinAzureTest</Configurations>
+    <Configurations>Debug;Release;WinAzureTest;WinAzureRelease</Configurations>
   </PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

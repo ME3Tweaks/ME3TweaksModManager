@@ -194,8 +194,8 @@ Global
 		{B153E541-F50A-4901-929D-F0874A3E32FB}.Release|x64.Build.0 = Release|x64
 		{B153E541-F50A-4901-929D-F0874A3E32FB}.WinAzureRelease|Any CPU.ActiveCfg = Release|x64
 		{B153E541-F50A-4901-929D-F0874A3E32FB}.WinAzureRelease|Any CPU.Build.0 = Release|x64
-		{B153E541-F50A-4901-929D-F0874A3E32FB}.WinAzureRelease|x64.ActiveCfg = Release|x64
-		{B153E541-F50A-4901-929D-F0874A3E32FB}.WinAzureRelease|x64.Build.0 = Release|x64
+		{B153E541-F50A-4901-929D-F0874A3E32FB}.WinAzureRelease|x64.ActiveCfg = WinAzureRelease|x64
+		{B153E541-F50A-4901-929D-F0874A3E32FB}.WinAzureRelease|x64.Build.0 = WinAzureRelease|x64
 		{B153E541-F50A-4901-929D-F0874A3E32FB}.WinAzureTest|Any CPU.ActiveCfg = Release|x64
 		{B153E541-F50A-4901-929D-F0874A3E32FB}.WinAzureTest|Any CPU.Build.0 = Release|x64
 		{B153E541-F50A-4901-929D-F0874A3E32FB}.WinAzureTest|x64.ActiveCfg = WinAzureTest|x64
