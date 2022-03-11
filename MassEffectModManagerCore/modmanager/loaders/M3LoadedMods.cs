@@ -141,21 +141,22 @@ namespace ME3TweaksModManager.modmanager.loaders
         }
 
         /// <summary>
-        /// Initiates a complete reload of the mod list.
+        /// Initiates a reload of mods.
         /// </summary>
         /// <param name="modToHighlight">Mod to automatically reselect when mod loading has completed</param>
         /// <param name="forceUpdateCheckOnCompletion">If an update check should be forced when mod loading has completed</param>
         /// <param name="scopedModsToCheckForUpdates">If an update check is forced, this list scopes which mods will be checked</param>
-        public void LoadMods(Mod modToHighlight = null, bool forceUpdateCheckOnCompletion = false, List<Mod> scopedModsToCheckForUpdates = null)
+        /// <param name="gamesToLoad">If not null, only load moddescs for the specified games</param>
+        public void LoadMods(Mod modToHighlight = null, bool forceUpdateCheckOnCompletion = false, List<Mod> scopedModsToCheckForUpdates = null, MEGame[] gamesToLoad = null)
         {
-            LoadMods(modToHighlight?.ModPath, forceUpdateCheckOnCompletion, scopedModsToCheckForUpdates);
+            LoadMods(modToHighlight?.ModPath, forceUpdateCheckOnCompletion, scopedModsToCheckForUpdates, gamesToLoad);
         }
 
         /// <summary>
         /// Reload mods. Highlight the specified mod that matches the path if any
         /// </summary>
         /// <param name="modpathToHighlight"></param>
-        public void LoadMods(string modpathToHighlight, bool forceUpdateCheckOnCompletion = false, List<Mod> scopedModsToCheckForUpdates = null)
+        public void LoadMods(string modpathToHighlight, bool forceUpdateCheckOnCompletion = false, List<Mod> scopedModsToCheckForUpdates = null, MEGame[] gamesToLoad = null)
         {
             if (IsLoadingMods && !IsFirstLoad)
                 return; // Do not accept another load in the middle of load
@@ -187,9 +188,30 @@ namespace ME3TweaksModManager.modmanager.loaders
                 return;
             }
 
-            VisibleFilteredMods.ClearEx();
-            AllLoadedMods.ClearEx();
-            FailedMods.ClearEx();
+            if (gamesToLoad != null)
+            {
+                // Clear only specific games
+                VisibleFilteredMods.ClearEx();
+                AllLoadedMods.ClearEx();
+                foreach (var game in gamesToLoad)
+                {
+                    // .ToList() because we are going to be modifying the collection during the operation so we have to collect
+                    // the results first
+
+                    // remove all mods that have games matching the list of games to load
+                    VisibleFilteredMods.ReplaceAll(VisibleFilteredMods.Where(x => !gamesToLoad.Contains(game)).ToList());
+                    AllLoadedMods.ReplaceAll(AllLoadedMods.Where(x => !gamesToLoad.Contains(game)).ToList());
+                    FailedMods.ReplaceAll(FailedMods.Where(x => !gamesToLoad.Contains(game)).ToList());
+                }
+            }
+            else
+            {
+                // Clear everything
+                VisibleFilteredMods.ClearEx();
+                AllLoadedMods.ClearEx();
+                FailedMods.ClearEx();
+            }
+
             IsLoadingMods = true;
 
             NamedBackgroundWorker bw = new NamedBackgroundWorker(@"ModLoaderThread");
@@ -215,17 +237,24 @@ namespace ME3TweaksModManager.modmanager.loaders
                 List<(MEGame game, string path)> modDescsToLoad = new();
                 if (Settings.GenerationSettingOT)
                 {
-                    modDescsToLoad.AddRange(me1modDescsToLoad);
-                    modDescsToLoad.AddRange(me2modDescsToLoad);
-                    modDescsToLoad.AddRange(me3modDescsToLoad);
+                    if (gamesToLoad == null || gamesToLoad.Contains(MEGame.ME1))
+                        modDescsToLoad.AddRange(me1modDescsToLoad);
+                    if (gamesToLoad == null || gamesToLoad.Contains(MEGame.ME2))
+                        modDescsToLoad.AddRange(me2modDescsToLoad);
+                    if (gamesToLoad == null || gamesToLoad.Contains(MEGame.ME3))
+                        modDescsToLoad.AddRange(me3modDescsToLoad);
                 }
 
                 if (Settings.GenerationSettingLE)
                 {
-                    modDescsToLoad.AddRange(le1modDescsToLoad);
-                    modDescsToLoad.AddRange(le2modDescsToLoad);
-                    modDescsToLoad.AddRange(le3modDescsToLoad);
-                    modDescsToLoad.AddRange(leLaunchermodDescsToLoad);
+                    if (gamesToLoad == null || gamesToLoad.Contains(MEGame.LE1))
+                        modDescsToLoad.AddRange(le1modDescsToLoad);
+                    if (gamesToLoad == null || gamesToLoad.Contains(MEGame.LE2))
+                        modDescsToLoad.AddRange(le2modDescsToLoad);
+                    if (gamesToLoad == null || gamesToLoad.Contains(MEGame.LE3))
+                        modDescsToLoad.AddRange(le3modDescsToLoad);
+                    if (gamesToLoad == null || gamesToLoad.Contains(MEGame.LELauncher))
+                        modDescsToLoad.AddRange(leLaunchermodDescsToLoad);
                 }
 
                 NumTotalMods = modDescsToLoad.Count;
@@ -260,7 +289,7 @@ namespace ME3TweaksModManager.modmanager.loaders
                 }
 
                 // Ensure nothing is set to loading.
-                foreach(var gf in Instance.GameFilters)
+                foreach (var gf in Instance.GameFilters)
                 {
                     gf.IsLoading = false;
                 }
@@ -294,7 +323,7 @@ namespace ME3TweaksModManager.modmanager.loaders
                 {
                     ModUpdater.Instance.CheckAllModsForUpdates();
                 }
-                else if (forceUpdateCheckOnCompletion && args.Result is Mod highlightedMod && highlightedMod.IsUpdatable)
+                else if (forceUpdateCheckOnCompletion && scopedModsToCheckForUpdates != null)
                 {
                     ModUpdater.Instance.CheckModsForUpdates(scopedModsToCheckForUpdates);
                 }

@@ -52,6 +52,11 @@ namespace ME3TweaksModManager.modmanager.objects
         public ConcurrentHashSet<GameTargetWPF> TargetsToAutoTOC { get; } = new();
 
         /// <summary>
+        /// Mods that should have updates checked for when the panel result is handled
+        /// </summary>
+        public ConcurrentHashSet<Mod> ModsToCheckForUpdates { get; } = new();
+
+        /// <summary>
         /// Panel to open after close
         /// </summary>
         public EPanelID? PanelToOpen { get; set; }
@@ -90,6 +95,7 @@ namespace ME3TweaksModManager.modmanager.objects
             batchPanelResult.TargetsToEmailMergeSync.AddRange(TargetsToEmailMergeSync);
             batchPanelResult.TargetsToPlotManagerSync.AddRange(TargetsToPlotManagerSync);
             batchPanelResult.TargetsToAutoTOC.AddRange(TargetsToAutoTOC);
+            batchPanelResult.ModsToCheckForUpdates.AddRange(ModsToCheckForUpdates);
             if (SelectedTarget != null) batchPanelResult.SelectedTarget = SelectedTarget;
             if (Error != null) batchPanelResult.Error = Error;
             if (PanelToOpen != null) batchPanelResult.PanelToOpen = PanelToOpen;

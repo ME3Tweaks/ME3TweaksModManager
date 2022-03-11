@@ -758,8 +758,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 TaskRunning = false;
                 if (b.Result is List<Mod> modList)
                 {
-                    OnClosing(new DataEventArgs(modList));
-                    return;
+                    Result.ReloadMods = true;
+                    Result.ModsToCheckForUpdates.AddRange(modList);
                 }
 
 
