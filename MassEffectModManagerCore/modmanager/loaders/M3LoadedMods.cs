@@ -191,8 +191,6 @@ namespace ME3TweaksModManager.modmanager.loaders
             if (gamesToLoad != null)
             {
                 // Clear only specific games
-                VisibleFilteredMods.ClearEx();
-                AllLoadedMods.ClearEx();
                 foreach (var game in gamesToLoad)
                 {
                     // .ToList() because we are going to be modifying the collection during the operation so we have to collect
