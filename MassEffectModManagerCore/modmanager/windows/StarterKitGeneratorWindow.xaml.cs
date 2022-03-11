@@ -417,7 +417,7 @@ namespace ME3TweaksModManager.modmanager.windows
                 IsBusy = false;
                 //if (Owner is MainWindow w)
                 //{
-                M3LoadedMods.Instance.LoadMods(obj);
+                M3LoadedMods.Instance.LoadMods(obj, gamesToLoad: new[] { Game });
                 //}
 
                 Close();
