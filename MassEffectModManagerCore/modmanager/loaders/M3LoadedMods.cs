@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.Helpers;
@@ -188,6 +189,10 @@ namespace ME3TweaksModManager.modmanager.loaders
                 return;
             }
 
+            List<Mod> cachedVisibleMods = new List<Mod>();
+            List<Mod> cachedLoadedMods = new List<Mod>();
+            List<Mod> cachedFailedMods = new List<Mod>();
+
             if (gamesToLoad != null)
             {
                 // Clear only specific games
@@ -197,18 +202,16 @@ namespace ME3TweaksModManager.modmanager.loaders
                     // the results first
 
                     // remove all mods that have games matching the list of games to load
-                    VisibleFilteredMods.ReplaceAll(VisibleFilteredMods.Where(x => !gamesToLoad.Contains(game)).ToList());
-                    AllLoadedMods.ReplaceAll(AllLoadedMods.Where(x => !gamesToLoad.Contains(game)).ToList());
-                    FailedMods.ReplaceAll(FailedMods.Where(x => !gamesToLoad.Contains(game)).ToList());
+                    cachedVisibleMods.ReplaceAll(VisibleFilteredMods.Where(x => !gamesToLoad.Contains(x.Game)));
+                    cachedLoadedMods.ReplaceAll(AllLoadedMods.Where(x => !gamesToLoad.Contains(x.Game)));
+                    cachedFailedMods.ReplaceAll(FailedMods.Where(x => !gamesToLoad.Contains(x.Game)));
                 }
             }
-            else
-            {
-                // Clear everything
-                VisibleFilteredMods.ClearEx();
-                AllLoadedMods.ClearEx();
-                FailedMods.ClearEx();
-            }
+            
+            // Clear everything
+            VisibleFilteredMods.ClearEx();
+            AllLoadedMods.ClearEx();
+            FailedMods.ClearEx();
 
             IsLoadingMods = true;
 
@@ -291,6 +294,11 @@ namespace ME3TweaksModManager.modmanager.loaders
                 {
                     gf.IsLoading = false;
                 }
+
+                // Restore any cached mods
+                AllLoadedMods.AddRange(cachedLoadedMods);
+                VisibleFilteredMods.AddRange(cachedVisibleMods);
+                FailedMods.AddRange(cachedFailedMods);
 
                 Application.Current.Dispatcher.Invoke(delegate { VisibleFilteredMods.Sort(x => x.ModName); });
 
