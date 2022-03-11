@@ -28,7 +28,8 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                 ModToValidateAgainst = check.ModBeingDeployed,
                 DialogMessage = M3L.GetString(M3L.string_texturesCheckDetectedErrors),
                 DialogTitle = M3L.GetString(M3L.string_textureErrorsInMod),
-                ValidationFunction = CheckTextures
+                ValidationFunction = CheckTextures,
+                internalValidationTarget = check.internalValidationTarget,
             });
         }
 

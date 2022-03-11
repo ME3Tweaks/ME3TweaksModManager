@@ -280,12 +280,11 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                 item.AddInfoWarning(M3L.GetString(M3L.string_interp_infoModNameTooLong, item.ModToValidateAgainst.ModName, item.ModToValidateAgainst.ModName.Length));
             }
 
+            #region Check for full-file mergemod targets
             // Check if our mod contains any basegame only files that are hot merge mod targets.
             var basegameJob = item.ModToValidateAgainst.GetJob(ModJob.JobHeader.BASEGAME);
             if (basegameJob != null)
             {
-
-
                 // Get files installed into CookedPC of basegame (without extension)
                 var basegameCookedPrefix = $@"BioGame/{item.ModToValidateAgainst.Game.CookedDirName()}/";
 
@@ -348,8 +347,24 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                     }
                 }
             }
+            #endregion
 
-            //end setup
+            #region Check for misc development files such as decompiled folders and other .bin files.
+
+            var installableFiles = item.ModToValidateAgainst.GetAllInstallableFiles();
+
+            var developmentOnlyFiles = new[] { @".xml", @".dds", @".png" }; // Should maybe check for duplicate coalesceds...
+            var devFiles = installableFiles.Where(x => developmentOnlyFiles.Contains(Path.GetExtension(x))).ToList();
+            foreach (var file in devFiles)
+            {
+                var ext = Path.GetExtension(file);
+
+                item.AddSignificantIssue($"{ext} file may be installed with the mod: {file}. This file should be removed as the game will never use it. If you wish to include extra files such as this, use 'additionaldeploymentfolders' from the [UPDATES] header.");
+            }
+            #endregion
+
+
+            // End of check
             if (!item.HasAnyMessages())
             {
                 item.ItemText = M3L.GetString(M3L.string_noMiscellaneousIssuesDetected);

@@ -49,7 +49,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                 Parallel.ForEach(referencedFiles,
                     new ParallelOptions()
                     {
-                        MaxDegreeOfParallelism = Math.Min(3, Environment.ProcessorCount)
+                        MaxDegreeOfParallelism = Math.Max(3, Environment.ProcessorCount)
                     },
                     f =>
                     //foreach (var f in referencedFiles)

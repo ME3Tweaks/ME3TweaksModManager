@@ -1,11 +1,12 @@
 ![Documentation Image](images/documentation_header.png)
 
 ### Official DLC Task Headers
-Mod Manager 2.0 (cmmver 2) and above added support for modding official game DLC. M3 added support for ME1 and ME2 modding, which has an additional set of headers that are supported. 
+Mod Manager 2.0 (cmmver 2) and above added support for modding official game DLC. M3 added support for ME1 and ME2 modding, which has an additional set of headers that are supported. You often can accomplish the same thing in a DLC mod rather than directly editing an official DLC, unless you're doing multiplayer modding.
 
 The following headers are supported, with their supported descriptors in the table below. BASEGAME is technically not a DLC (vanilla game) but keeps the same format. There are a few special task headers that will be explained further down in this document.
 
 #### Supported Headers for Mass Effect 3
+Note: Only `BASEGAME` is supported on Mass Effect 3 Legendary Edition, with an install folder of `BioGame/CookedPCConsole`.
 |Header name|DLC Folder|Supported Versions|
 |--- |--- |--- |
 |BASEGAME|BIOGame/CookedPCConsole|3.0+|
@@ -41,7 +42,8 @@ newfiles = ServerCoalesced.bin
 **WARNING: DO NOT USE ANY COALESCED FILE THAT IS NOT DERIVED FROM THE ORIGINAL SERVER COALESCED FILE. You may completely ruin your online profile with no way to recover it without purchasing a new copy of Mass Effect 3.**
 
 #### Supported Headers for Mass Effect 2
-|Header name|DLC Folder|Supported Versions|
+Note: Only `BASEGAME` is supported on Mass Effect 2 Legendary Edition, with an install folder of `BioGame/CookedPCConsole`.
+|Header name|Install Folder|Supported Versions|
 |--- |--- |--- |
 |BASEGAME|BIOGame/CookedPC|6.0+|
 |AEGIS_PACK|BIOGame/DLC/DLC_CER_02|6.0+|
@@ -71,6 +73,7 @@ newfiles = ServerCoalesced.bin
 `ME2_RCWMOD` is a special header that is used for **R**oad**C**rew**W**orker's ME2 Mod Manager's .me2mod files. These files are delta files for the Coalesced.ini file. M3 can handle these files using this task. The only supported descriptor for this task is `modfile`, which is the filename of the .me2mod that resides next to the moddesc.ini file. RCW mods in Mod Manager must only contain a single 'mod' in their .me2mod file description. Multiple `###mod` directives in the .me2mod file is not allowed - import the .me2mod through Mod Manager to split them into multiple single mods.
 
 #### Supported Headers for Mass Effect
+Note: Only `BASEGAME` is supported on Mass Effect Legendary Edition, with an install folder of `BioGame/CookedPCConsole`.
 |Header name|Game Folder|Supported Versions|
 |--- |--- |--- |
 |BASEGAME|BIOGame/CookedPC|6.0+|
@@ -86,11 +89,11 @@ Note that `newfiles` and `replacefiles` behavior differs if `gamedirectorystruct
 |newfiles|Unquoted Semicolon Separated List (String)|List of filenames in the moddir that are files that will be installed into this DLC.|if using replacefiles|2.0+|
 |replacefiles|Unquoted Semicolon Separated List (String)|File targets that will be replaced in this DLC. The paths should be relative to the base Mass Effect 3 folder. For example, you could put in /BIOGame/DLC/DLC_CON_MP1/CookedPCConsole/Asari_Commando_MP.pcc. The order of these files to replace MUST match the newfiles list or they will install to the wrong place.|if using newfiles|2.0+|
 |gamedirectorystructure|Boolean string|Tells M3 to parse the newfiles and replacefiles values as directory mapping. `newfiles` becomes your source directory within `moddir`, which will map to the `replacefiles` directory within the game, from the root. See below for more info.|No|6.0+|
-|addfiles|Unquoted Semicolon Separated List (String)|List of filenames in the moddir that that will be added to this DLC.|if using addfilestargets|4.1+, All games BASEGAME, Official DLC ME3 only|
-|addfilestargets|Unquoted Semicolon Separated List (String)|File targets that will be added to this DLC. The paths should be relative to the base Mass Effect 3 folder. For example, you could put in /BIOGame/DLC/DLC_CON_MP4/CookedPCConsole/SFXPawn_ChubbyHusk.pcc. The order of these files to replace MUST match the addfiles list or they will install to the wrong place.|if using addfiles|4.1+, All games BASEGAME, Official DLC ME3 only|
-|addfilesreadonlytargets|Unquoted Semicolon Separated List (String)|File targets that should be set to read only on installation. This only works on files you are adding, not replacing. The paths should be relative to the base Mass Effect 3 folder and match items from addfilestargets exactly. The order does not matter. Making files read only makes it more difficult for users to modify them as programs will say they can't modify it, however it does not stop users from modifying them. This is useful to protect files that are used by the exec command.|No|4.3+, All games BASEGAME, Official DLC ME3 only|
-|jobdescription|Unquoted String|Description of the job, and why it is necessary. This text is shown if the DLC this job applies to is not installed. An example of this being used is with Interface Scaling Mod modifying the Retaliation MP DLC - the DLC may not be installed, but if the user does not play MP, it is not relevant. You should include a string saying is okay to skip this task if this DLC is not installed.|No|All|
+|addfiles|Unquoted Semicolon Separated List (String)|**This descriptor is deprecated. Use `newfiles` instead.** List of filenames in the moddir that that will be added to this DLC.|if using addfilestargets|4.1+, All games BASEGAME, Official DLC ME3 only|
+|addfilestargets|Unquoted Semicolon Separated List (String)|**This descriptor is deprecated. Use `replacefiles` instead.** File targets that will be added to this DLC. The paths should be relative to the base Mass Effect 3 folder. For example, you could put in /BIOGame/DLC/DLC_CON_MP4/CookedPCConsole/SFXPawn_ChubbyHusk.pcc. The order of these files to replace MUST match the addfiles list or they will install to the wrong place.|if using addfiles|4.1+, All games BASEGAME, Official DLC ME3 only|
+|jobdescription|Unquoted String|Description of the job, and why it is necessary. This text is shown if the DLC this job applies to is not installed. An example of this being used is with Interface Scaling Mod modifying the Retaliation MP DLC - the DLC may not be installed, but if the user does not play MP, it is not relevant. You should include a string saying is okay to skip this task if this DLC is not installed.|No|All, OT only|
 |multilist\[x]|Unquoted semicolon split list (relative file paths)|Use to denote a list of relative file paths to optionally add into a mod, so you can share files across alternate installation options. The \[x] denotes a number starting from 1 and counting up (yes, this is indexed starting at 1). This descriptor is only used in conjunction with `altdlc` and `altfiles` descriptors. See the section on [MultiLists](alternates.md#multilists) below for how to use this advanced feature.|No|6.0+|
 
 #### Descriptors not supported by M3 that were supported in ME3CMM
- - **removefiletargets** - This descriptor could be dangerous if used incorrectly. There are no known mods that used this descriptor.
+ - **removefiletargets** - Removed in Mod Manager 6.0 - This descriptor could be dangerous if used incorrectly. There are no known mods that used this descriptor.
+ - **addfilesreadonlytargets** - Removed in Mod Manager 8.0 - This descriptor was parsed but never set any values; as such, it did nothing in ME3Tweaks Mod Manager. It was only used by one mod that no longer uses it, and has no functional impact on the game.
