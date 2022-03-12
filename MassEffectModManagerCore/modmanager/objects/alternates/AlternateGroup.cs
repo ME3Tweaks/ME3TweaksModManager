@@ -105,5 +105,13 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 o.IsSelectedChanged += onAlternateSelectionChanged;
             }
         }
+
+        public void RemoveIsSelectedChangeHandler(EventHandler onAlternateSelectionChanged)
+        {
+            foreach (var o in AlternateOptions)
+            {
+                o.IsSelectedChanged -= onAlternateSelectionChanged;
+            }
+        }
     }
 }

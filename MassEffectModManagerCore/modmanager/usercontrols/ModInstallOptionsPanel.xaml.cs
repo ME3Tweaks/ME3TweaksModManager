@@ -490,15 +490,10 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             foreach (var ao in AlternateGroups)
             {
                 ao.ReleaseAssets();
+                ao.RemoveIsSelectedChangeHandler(OnAlternateSelectionChanged);
             }
             AlternateGroups.ClearEx();
         }
-
-        private void AlternateItem_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-
-        }
-
         private void InstallCancel_Click(object sender, RoutedEventArgs e)
         {
             OnClosing(DataEventArgs.Empty);
