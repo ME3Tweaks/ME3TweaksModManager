@@ -6,6 +6,7 @@
                        xmlns:converters="clr-namespace:ME3TweaksModManager.modmanager.converters"
                        xmlns:targets1="clr-namespace:ME3TweaksCoreWPF.Targets;assembly=ME3TweaksCoreWPF"
                        xmlns:gametarget="clr-namespace:ME3TweaksModManager.modmanager.objects.gametarget"
+                       xmlns:objects="clr-namespace:ME3TweaksCore.Objects;assembly=ME3TweaksCore"
                        x:Class="ME3TweaksModManager.modmanager.usercontrols.InstallationInformation" mc:Ignorable="d" d:DesignHeight="550" 
                        DataContext="{Binding RelativeSource={RelativeSource Self}}" 
                        d:DesignWidth="800"
@@ -250,7 +251,7 @@
                                             <TextBlock Text="{DynamicResource string_filesInstalledInSession}" DockPanel.Dock="Top" />
                                             <ItemsControl ItemsSource="{Binding InstalledTextureMods}">
                                                 <ItemsControl.ItemTemplate>
-                                                    <DataTemplate DataType="{x:Type targets:TextureModInstallationInfo+InstalledTextureMod}">
+                                                    <DataTemplate DataType="{x:Type objects:InstalledTextureMod}">
                                                         <DockPanel Margin="5,0,5,0">
                                                             <DockPanel.Resources>
                                                                 <Style TargetType="{x:Type DockPanel}">
