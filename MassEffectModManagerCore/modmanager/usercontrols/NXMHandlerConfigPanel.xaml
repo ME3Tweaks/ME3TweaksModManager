@@ -55,13 +55,21 @@
                 </StackPanel>
             </Button.Content>
         </Button>
-        <Button
-            DockPanel.Dock="Bottom"
-            Content="{DynamicResource string_close}"
+        <DockPanel DockPanel.Dock="Bottom">
+            <Button
+                DockPanel.Dock="Left"
+                Content="{DynamicResource string_cancel}"
+                Command="{Binding CancelCommand}"
+                Width="100"
+                Margin="0,5,0,0" />
+            <Button
+            Content="{DynamicResource string_save}"
             Command="{Binding CloseCommand}"
             Width="100"
             Margin="0,5,0,0"
             HorizontalAlignment="Right" />
+        </DockPanel>
+
         <ItemsControl
             ItemsSource="{Binding OtherGameHandlers}">
             <ItemsControl.ItemTemplate>
@@ -91,7 +99,7 @@
                                 Margin="5,0"
                                 FontWeight="Bold" />
                         </StackPanel>
-                        <TextBlock Foreground="Red"  DockPanel.Dock="Bottom" Text="{Binding ValidationMessage}" Visibility="{Binding ValidationMessage, Converter={StaticResource NullVisibilityConverter}}"/>
+                        <TextBlock Foreground="Red" TextWrapping="Wrap"  DockPanel.Dock="Bottom" Text="{Binding ValidationMessage}" Visibility="{Binding ValidationMessage, Converter={StaticResource NullHiddenConverter}}"/>
                         <Grid
                             HorizontalAlignment="Stretch">
                             <Grid.ColumnDefinitions>
@@ -135,7 +143,7 @@
                             <TextBox
                                 Grid.Row="2"
                                 Grid.Column="1"
-                                Text="{Binding DomainsEditable}"
+                                Text="{Binding DomainsEditable, UpdateSourceTrigger=PropertyChanged}"
                                 HorizontalAlignment="Stretch" />
                         </Grid>
                     </DockPanel>

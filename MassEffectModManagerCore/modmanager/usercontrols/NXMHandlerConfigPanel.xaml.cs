@@ -25,17 +25,27 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             LoadCommands();
         }
 
+        /// <summary>
+        /// If the values should serialize on close or be discarded
+        /// </summary>
+        private bool SaveOnClose;
         public ICommand AddOtherAppCommand { get; set; }
         public ICommand CloseCommand { get; set; }
         public ICommand RegisterCommand { get; set; }
         public ICommand RemoveAppCommand { get; set; }
+        public ICommand CancelCommand { get; set; }
 
         private void LoadCommands()
         {
             RemoveAppCommand = new RelayCommand(RemoveApp);
             RegisterCommand = new GenericCommand(RegisterM3);
             AddOtherAppCommand = new GenericCommand(AddNXMApp, CanAddNXMApp);
-            CloseCommand = new GenericCommand(() => OnClosing(DataEventArgs.Empty), CanClose);
+            CloseCommand = new GenericCommand(() =>
+            {
+                SaveOnClose = true;
+                OnClosing(DataEventArgs.Empty);
+            }, CanClose);
+            CancelCommand = new GenericCommand(() => OnClosing(DataEventArgs.Empty));
         }
 
         private void RegisterM3()
@@ -72,7 +82,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             var result = ofd.ShowDialog();
             if (result.HasValue && result.Value)
             {
-                OtherGameHandlers.Add(new NexusDomainHandler() { ProgramPath = ofd.FileName, Arguments = GetDefaultArgumentsForApp(Path.GetFileNameWithoutExtension(ofd.FileName))});
+                OtherGameHandlers.Add(new NexusDomainHandler() { ProgramPath = ofd.FileName, Arguments = GetDefaultArgumentsForApp(Path.GetFileNameWithoutExtension(ofd.FileName)) });
             }
         }
 
@@ -98,12 +108,27 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private bool ValidateAll()
         {
+            bool hasWildcard = false;
             foreach (var d in OtherGameHandlers)
             {
                 if (!d.Validate())
                 {
                     TriggerResize();
                     return false;
+                }
+
+                // Check only one wildcard
+                // We have to use editable as the Domains object is not committed
+                if (d.DomainsEditable.Trim() == @"*")
+                {
+                    if (hasWildcard)
+                    {
+                        TriggerResize();
+                        d.ValidationMessage = "Cannot have multiple entries that use * wildcard";
+                        return false;
+                    }
+
+                    hasWildcard = true;
                 }
             }
 
@@ -116,16 +141,18 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Escape && ValidateAll())
+            if (e.Key == Key.Escape)
             {
                 e.Handled = true;
+                // Do not save on close.
+                SaveOnClose = false;
                 OnClosing(DataEventArgs.Empty);
             }
         }
 
         protected override void OnClosing(DataEventArgs args)
         {
-            if (ValidateAll())
+            if (SaveOnClose && ValidateAll())
             {
                 // Save
                 SaveAndCommit();
@@ -137,7 +164,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             foreach (var v in OtherGameHandlers)
             {
-                v.Domains = v.DomainsEditable.Split(',').ToList();
+                v.Domains = v.DomainsEditable.Split(',').Select(x => x.Trim()).ToList();
             }
             App.NexusDomainHandlers.ReplaceAll(OtherGameHandlers);
             File.WriteAllText(M3Utilities.GetExternalNexusHandlersFile(), JsonConvert.SerializeObject(OtherGameHandlers));

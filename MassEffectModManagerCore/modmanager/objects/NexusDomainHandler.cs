@@ -25,6 +25,12 @@ namespace ME3TweaksModManager.modmanager.objects
         [JsonProperty(@"arguments")]
         public string Arguments { get; set; }
 
+        /// <summary>
+        /// If this is the wildcard handler
+        /// </summary>
+        [JsonIgnore]
+        public bool IsWildcard => Domains != null && Domains.Any(x => x == @"*");
+
         [JsonIgnore] public string DomainsEditable { get; set; }
 
         /// <summary>
@@ -39,6 +45,13 @@ namespace ME3TweaksModManager.modmanager.objects
         {
             DomainsEditable = string.Join(',', Domains);
         }
+
+        /// <summary>
+        /// Invokes this domain handler with the specified nxmlink
+        /// </summary>
+        /// <param name="domain"></param>
+        /// <param name="nxmLink"></param>
+        /// <returns></returns>
         public string Invoke(string domain, string nxmLink)
         {
             try
@@ -71,6 +84,11 @@ namespace ME3TweaksModManager.modmanager.objects
             }
         }
 
+        /// <summary>
+        /// Handles an nxmlink with an external application, if one is registered
+        /// </summary>
+        /// <param name="nxmLink"></param>
+        /// <returns></returns>
         public static bool HandleExternalLink(string nxmLink)
         {
             return HandleExternalLink(NexusProtocolLink.Parse(nxmLink));
@@ -80,6 +98,7 @@ namespace ME3TweaksModManager.modmanager.objects
         {
             if (npl == null) return false;
             var handler = App.NexusDomainHandlers.FirstOrDefault(x => x.Domains.Contains(npl.Domain));
+            if (handler == null) handler = App.NexusDomainHandlers.FirstOrDefault(x => x.IsWildcard);
             if (handler != null)
             {
                 handler.Invoke(npl.Domain, npl.Link);
@@ -97,7 +116,7 @@ namespace ME3TweaksModManager.modmanager.objects
         {
             if (string.IsNullOrWhiteSpace(ProgramPath))
             {
-                ValidationMessage = $"Application path must be specified";
+                ValidationMessage = "Application path must be specified";
                 return false; // Can't be empty
             }
             if (!File.Exists(ProgramPath))
@@ -106,15 +125,47 @@ namespace ME3TweaksModManager.modmanager.objects
                 return false;
             }
 
+            if (Path.GetFileName(ProgramPath).Equals(@"ME3TweaksModManager.exe", StringComparison.InvariantCultureIgnoreCase))
+            {
+                ValidationMessage = $"Cannot set ME3TweaksModManager.exe as an external handler";
+                return false;
+            }
+
+
             if (!Arguments.Contains(@"%1"))
             {
-                ValidationMessage = $"Arguments must include %1 to pass through the link";
+                ValidationMessage = "Arguments must include %1 to pass through the link";
                 return false;
             }
 
             if (string.IsNullOrWhiteSpace(DomainsEditable))
             {
-                ValidationMessage = $"Domains must be specified (separate domains with ,)";
+                ValidationMessage = "Domains must be specified (separate domains with ,)";
+                return false;
+            }
+
+            var domains = DomainsEditable.Split(',');
+            if (domains.Any(x => x == @"masseffect"))
+            {
+                ValidationMessage = "'masseffect' domain is already handled by ME3Tweaks Mod Manager";
+                return false;
+            }
+
+            if (domains.Any(x => x == @"masseffect2"))
+            {
+                ValidationMessage = "'masseffect2' domain is already handled by ME3Tweaks Mod Manager";
+                return false;
+            }
+
+            if (domains.Any(x => x == @"masseffect3"))
+            {
+                ValidationMessage = "'masseffect3' domain is already handled by ME3Tweaks Mod Manager";
+                return false;
+            }
+
+            if (domains.Any(x => x == @"masseffectlegendaryedition"))
+            {
+                ValidationMessage = "'masseffectlegendaryedition' domain is already handled by ME3Tweaks Mod Manager";
                 return false;
             }
 
