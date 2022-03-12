@@ -28,6 +28,11 @@ namespace ME3TweaksModManager.modmanager.objects
         [JsonIgnore] public string DomainsEditable { get; set; }
 
         /// <summary>
+        /// The message shown for validation
+        /// </summary>
+        public string ValidationMessage { get; set; }
+
+        /// <summary>
         /// Loads DomainsEditable
         /// </summary>
         public void LoadEditable()
@@ -82,6 +87,39 @@ namespace ME3TweaksModManager.modmanager.objects
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Validates the domain handler
+        /// </summary>
+        /// <returns></returns>
+        public bool Validate()
+        {
+            if (string.IsNullOrWhiteSpace(ProgramPath))
+            {
+                ValidationMessage = $"Application path must be specified";
+                return false; // Can't be empty
+            }
+            if (!File.Exists(ProgramPath))
+            {
+                ValidationMessage = $"Application doesn't exist: {ProgramPath}";
+                return false;
+            }
+
+            if (!Arguments.Contains(@"%1"))
+            {
+                ValidationMessage = $"Arguments must include %1 to pass through the link";
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(DomainsEditable))
+            {
+                ValidationMessage = $"Domains must be specified (separate domains with ,)";
+                return false;
+            }
+
+            ValidationMessage = null;
+            return true;
         }
     }
 }

@@ -100,16 +100,14 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             foreach (var d in OtherGameHandlers)
             {
-                if (string.IsNullOrWhiteSpace(d.ProgramPath))
-                    return false; // Can't be empty
-                if (!File.Exists(d.ProgramPath))
+                if (!d.Validate())
+                {
+                    TriggerResize();
                     return false;
-                if (!d.Arguments.Contains(@"%1"))
-                    return false;
-                if (string.IsNullOrWhiteSpace(d.DomainsEditable))
-                    return false;
+                }
             }
 
+            TriggerResize();
             return true;
         }
 

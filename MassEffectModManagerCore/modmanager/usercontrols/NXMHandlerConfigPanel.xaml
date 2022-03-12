@@ -91,6 +91,7 @@
                                 Margin="5,0"
                                 FontWeight="Bold" />
                         </StackPanel>
+                        <TextBlock Foreground="Red"  DockPanel.Dock="Bottom" Text="{Binding ValidationMessage}" Visibility="{Binding ValidationMessage, Converter={StaticResource NullVisibilityConverter}}"/>
                         <Grid
                             HorizontalAlignment="Stretch">
                             <Grid.ColumnDefinitions>
