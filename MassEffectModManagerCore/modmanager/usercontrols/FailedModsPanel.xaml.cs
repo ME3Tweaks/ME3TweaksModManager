@@ -28,12 +28,24 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public ICommand DebugReloadCommand { get; set; }
         public ICommand DeleteModCommand { get; set; }
         public ICommand VisitWebsiteCommand { get; set; }
+        public ICommand EditModdescCommand { get; set; }
         private void LoadCommands()
         {
             RestoreSelectedModCommand = new GenericCommand(CloseToRestoreMod, CanRestoreMod);
             DebugReloadCommand = new GenericCommand(DebugReloadMod, CanDebugReload);
-            DeleteModCommand = new GenericCommand(DeleteMod, () => SelectedMod != null);
+            DeleteModCommand = new GenericCommand(DeleteMod, ModIsSelected);
             VisitWebsiteCommand = new GenericCommand(VisitWebsite, CanVisitWebsite);
+            EditModdescCommand = new GenericCommand(EditModdesc, ModIsSelected);
+        }
+
+        private void EditModdesc()
+        {
+            M3Utilities.ShellOpenFile(SelectedMod?.ModDescPath);
+        }
+
+        private bool ModIsSelected()
+        {
+            return SelectedMod != null;
         }
 
         private void VisitWebsite()

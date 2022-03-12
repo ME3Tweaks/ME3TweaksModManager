@@ -1,5 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<usercontrols:MMBusyPanelBase
+﻿<usercontrols:MMBusyPanelBase
     x:Class="ME3TweaksModManager.modmanager.usercontrols.FailedModsPanel" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     mc:Ignorable="d" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
     xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
@@ -7,8 +6,9 @@
     xmlns:mm="clr-namespace:ME3TweaksModManager"
     d:DesignHeight="450"
     d:DesignWidth="800"
-    Width="700"
-    Height="500">
+    DataContext="{Binding RelativeSource={RelativeSource Self}}"
+    MinWidth="640"
+    MinHeight="480">
     <UserControl.Resources>
         <converters:GameToImageIconConverter
             x:Key="GameToImageIconConverter" />
@@ -34,6 +34,13 @@
                 Padding="7,4" />
             <Button
                 MinWidth="70"
+                Content="{DynamicResource string_openModdesciniFile}"
+                Margin="5,0,0,0"
+                Command="{Binding EditModdescCommand}"
+                Padding="7,4"/>
+            <Button
+                MinWidth="70"
+                ToolTip="{Binding SelectedMod.ModWebsite}"
                 Content="{DynamicResource string_visitWebsite}"
                 Margin="5,0,0,0"
                 Command="{Binding VisitWebsiteCommand}"

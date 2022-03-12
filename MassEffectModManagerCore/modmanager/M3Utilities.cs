@@ -2084,5 +2084,20 @@ namespace ME3TweaksModManager.modmanager
         {
             // TODO: EXTRACT DEFAULT EMBEDDED ASIS
         }
+
+        /// <summary>
+        /// Opens the specified file with the default shell file handler. The file must exist on the filesystem.
+        /// </summary>
+        /// <param name="file"></param>
+        public static void ShellOpenFile(string file)
+        {
+            if (file != null && File.Exists(file))
+            {
+                using Process shellOpener = new Process();
+                shellOpener.StartInfo.FileName = file;
+                shellOpener.StartInfo.UseShellExecute = true;
+                shellOpener.Start();
+            }
+        }
     }
 }

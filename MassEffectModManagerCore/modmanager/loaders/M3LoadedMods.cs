@@ -37,11 +37,6 @@ namespace ME3TweaksModManager.modmanager.loaders
         public static M3LoadedMods Instance { get; private set; }
 
         /// <summary>
-        /// Invoked when loading progress has changed, or been set to 0 (inactive)
-        /// </summary>
-        public static event EventHandler LoadingProgressChanged;
-
-        /// <summary>
         /// List of game filters that are applied to the VisibleFilteredMods collection view.
         /// </summary>
         public ObservableCollectionExtended<GameFilterLoader> GameFilters { get; } = new();

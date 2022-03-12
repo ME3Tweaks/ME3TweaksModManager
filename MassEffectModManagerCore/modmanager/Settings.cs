@@ -302,6 +302,13 @@ namespace ME3TweaksModManager.modmanager
             set => SetProperty(ref _doubleClickModInstall, value);
         }
 
+        private static bool _showModListNotInstalledModsMessage = true;
+        public static bool ShowModListNotInstalledModsMessage
+        {
+            get => _showModListNotInstalledModsMessage;
+            set => SetProperty(ref _showModListNotInstalledModsMessage, value);
+        }
+
         public static readonly string SettingsPath = Path.Combine(M3Utilities.GetAppDataFolder(), "settings.ini");
 
         public static void Load()
@@ -356,6 +363,10 @@ namespace ME3TweaksModManager.modmanager
             SkipLELauncher = LoadSettingBool(settingsIni, "ModManager", "SkipLELauncher", true);
             GenerationSettingLE = LoadSettingBool(settingsIni, "ModManager", "GenerationSettingLE", true);
             GenerationSettingOT = LoadSettingBool(settingsIni, "ModManager", "GenerationSettingOT", true);
+
+            // Dismiss messages
+            ShowModListNotInstalledModsMessage = LoadSettingBool(settingsIni, "ModManager", "ShowModListNotInstalledModsMessage", true);
+
 
             Loaded = true;
         }
@@ -528,6 +539,7 @@ namespace ME3TweaksModManager.modmanager
                 SaveSettingBool(settingsIni, "ModManager", "GenerationSettingLE", GenerationSettingLE);
                 SaveSettingString(settingsIni, "ModManager", "SelectedFilters", SelectedFilters);
                 SaveSettingBool(settingsIni, "ModManager", "DoubleClickModInstall", DoubleClickModInstall);
+                SaveSettingBool(settingsIni, "ModManager", "ShowModListNotInstalledModsMessage", ShowModListNotInstalledModsMessage);
 
                 SaveSettingBool(settingsIni, "ModMaker", "AutoAddControllerMixins", ModMakerControllerModOption);
                 SaveSettingBool(settingsIni, "ModMaker", "AutoInjectCustomKeybinds", ModMakerAutoInjectCustomKeybindsOption);

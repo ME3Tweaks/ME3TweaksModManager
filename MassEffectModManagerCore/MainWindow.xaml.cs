@@ -494,10 +494,11 @@ namespace ME3TweaksModManager
         }
 
         /// <summary>
-        /// Sets up listeners for the 'mod failed to load' text
+        /// Sets up listeners for the 'mod failed to load' text, public property changed listeners
         /// </summary>
         private void AttachListeners()
         {
+            // Failed mods listener
             M3LoadedMods.Instance.FailedMods.PublicPropertyChanged += (a, b) =>
             {
                 if (b.PropertyName == @"BindableCount")
@@ -515,22 +516,14 @@ namespace ME3TweaksModManager
 
                     if (isclosing || isopening)
                     {
-                        Application.Current.Dispatcher.Invoke(delegate
-                        {
-                            Storyboard sb = this.FindResource(isopening ? @"OpenWebsitePanel" : @"CloseWebsitePanel") as Storyboard;
-                            if (sb.IsSealed)
-                            {
-                                sb = sb.Clone();
-                            }
-
-                            Storyboard.SetTarget(sb, FailedModsPopupPanel);
-                            sb.Begin();
-                        });
+                        ShowHideSlideup(FailedModsPopupPanel, isopening);
                     }
 
                     oldFailedBindableCount = M3LoadedMods.Instance.FailedMods.BindableCount;
                 }
             };
+
+            // Setting changed listener.
             Settings.StaticPropertyChanged += SettingChanged;
         }
 
@@ -544,6 +537,24 @@ namespace ME3TweaksModManager
             {
                 OrderAndSetTargets(InternalLoadedTargets, SelectedGameTarget);
             }
+            else if (e.PropertyName == nameof(Settings.ShowModListNotInstalledModsMessage))
+            {
+                ShowHideSlideup(ModLibraryNotInstalledModsPanel, Settings.ShowModListNotInstalledModsMessage);
+            }
+        }
+        private void ShowHideSlideup(FrameworkElement panelToMove, bool show)
+        {
+            Application.Current.Dispatcher.Invoke(delegate
+            {
+                Storyboard sb = this.FindResource(show ? @"OpenWebsitePanel" : @"CloseWebsitePanel") as Storyboard;
+                if (sb.IsSealed)
+                {
+                    sb = sb.Clone();
+                }
+
+                Storyboard.SetTarget(sb, panelToMove);
+                sb.Begin();
+            });
         }
 
         public ICommand OpenASIManagerCommand { get; set; }
@@ -733,13 +744,7 @@ namespace ME3TweaksModManager
 
         private void OpenModDesc()
         {
-            if (File.Exists(SelectedMod.ModDescPath))
-            {
-                using Process shellOpener = new Process();
-                shellOpener.StartInfo.FileName = SelectedMod.ModDescPath;
-                shellOpener.StartInfo.UseShellExecute = true;
-                shellOpener.Start();
-            }
+            M3Utilities.ShellOpenFile(SelectedMod.ModDescPath);
         }
 
         /// <summary>
@@ -2597,14 +2602,7 @@ namespace ME3TweaksModManager
 
         private void SetWebsitePanelVisibility(bool open)
         {
-            Storyboard sb = this.FindResource(open ? @"OpenWebsitePanel" : @"CloseWebsitePanel") as Storyboard;
-            if (sb.IsSealed)
-            {
-                sb = sb.Clone();
-            }
-
-            Storyboard.SetTarget(sb, VisitWebsitePanel);
-            sb.Begin();
+            ShowHideSlideup(VisitWebsitePanel, open);
         }
 
         private void RequestNavigate(object sender, RequestNavigateEventArgs e)
@@ -2860,7 +2858,12 @@ namespace ME3TweaksModManager
                     if (Settings.ConfigureNXMHandlerOnBoot)
                     {
                         NexusModsUtilities.SetupNXMHandling();
+                    }
 
+                    // This only needs run once, so it's done during startup
+                    if (Settings.ShowModListNotInstalledModsMessage)
+                    {
+                        ShowHideSlideup(ModLibraryNotInstalledModsPanel, true);
                     }
                 }
 
@@ -3236,7 +3239,6 @@ namespace ME3TweaksModManager
 
         public string CurrentModEndorsementStatus { get; private set; } = M3L.GetString(M3L.string_endorseMod);
         public bool IsEndorsingMod { get; private set; }
-
         public bool CanOpenMEIM()
         {
             //ensure not already open
@@ -3956,6 +3958,27 @@ namespace ME3TweaksModManager
                     ApplyMod(m, t);
                 }
             }
+        }
+
+        /// <summary>
+        /// Called when a dismiss (X) is invoked on a one-time message in the UI
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DismissOneTimeMessage(object sender, RoutedEventArgs e)
+        {
+            if (sender == ModLibraryNotInstalledModsDismissButton) Settings.ShowModListNotInstalledModsMessage = false;
+        }
+
+        /// <summary>
+        /// Restores one-time notification prompts
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void RestoreOneTimeMessages(object sender, RoutedEventArgs e)
+        {
+            // Put other settings here as they are added.
+            Settings.ShowModListNotInstalledModsMessage = true;
         }
     }
 }
