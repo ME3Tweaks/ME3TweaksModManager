@@ -196,18 +196,15 @@ namespace ME3TweaksModManager.modmanager.loaders
             if (gamesToLoad != null)
             {
                 // Clear only specific games
-                foreach (var game in gamesToLoad)
-                {
-                    // .ToList() because we are going to be modifying the collection during the operation so we have to collect
-                    // the results first
+                // .ToList() because we are going to be modifying the collection during the operation so we have to collect
+                // the results first
 
-                    // remove all mods that have games matching the list of games to load
-                    cachedVisibleMods.ReplaceAll(VisibleFilteredMods.Where(x => !gamesToLoad.Contains(x.Game)));
-                    cachedLoadedMods.ReplaceAll(AllLoadedMods.Where(x => !gamesToLoad.Contains(x.Game)));
-                    cachedFailedMods.ReplaceAll(FailedMods.Where(x => !gamesToLoad.Contains(x.Game)));
-                }
+                // remove all mods that have games matching the list of games to load
+                cachedVisibleMods.ReplaceAll(VisibleFilteredMods.Where(x => !gamesToLoad.Contains(x.Game)));
+                cachedLoadedMods.ReplaceAll(AllLoadedMods.Where(x => !gamesToLoad.Contains(x.Game)));
+                cachedFailedMods.ReplaceAll(FailedMods.Where(x => !gamesToLoad.Contains(x.Game)));
             }
-            
+
             // Clear everything
             VisibleFilteredMods.ClearEx();
             AllLoadedMods.ClearEx();
