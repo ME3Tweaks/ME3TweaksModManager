@@ -3,6 +3,7 @@
     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:fa5="http://schemas.fontawesome.com/icons/"
     xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
     mc:Ignorable="d"
+    MaxWidth="640"
     DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <DockPanel>
         <StackPanel
