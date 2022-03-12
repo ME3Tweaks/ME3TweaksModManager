@@ -1603,6 +1603,7 @@
                             <ProgressBar DockPanel.Dock="Bottom" Height="3" Visibility="{Binding IsLoadingMods, Source={x:Static loaders:M3LoadedMods.Instance}, Converter={StaticResource BoolToVisibilityConverter}}"
                                 IsIndeterminate="{Binding IsFirstLoad, Source={x:Static loaders:M3LoadedMods.Instance}, Mode=OneWay}" Value="{Binding NumModsLoaded, Source={x:Static loaders:M3LoadedMods.Instance}, Mode=OneWay}" Maximum="{Binding NumTotalMods, Source={x:Static loaders:M3LoadedMods.Instance}, Mode=OneWay}"/>
                             <ItemsControl
+                                IsEnabled="{Binding IsLoadingMods, Source={x:Static loaders:M3LoadedMods.Instance}, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}"
                                 ItemsSource="{Binding GameFilters, Source={x:Static loaders:M3LoadedMods.Instance}}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
