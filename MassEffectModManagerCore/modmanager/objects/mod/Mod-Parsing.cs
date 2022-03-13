@@ -1568,6 +1568,8 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                                 continue;
                             }
                             break;
+
+                        // Headers for official jobs are not supported in LE games
                     }
 
 
@@ -1577,6 +1579,17 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                         M3Log.Error(@"Required DLC does not match officially supported header or start with DLC_.");
                         LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_loadfailed_invalidRequiredDLCSpecified, reqDLC);
                         return;
+                    }
+
+                    // ModDesc 8.0: LE games cannot depend on vanilla DLC being installed.
+                    if (Game.IsLEGame() && ModDescTargetVersion >= 8.0)
+                    {
+                        if (MEDirectories.OfficialDLC(Game).Contains(reqDLCss, StringComparer.InvariantCultureIgnoreCase))
+                        {
+                            M3Log.Error($@"Legendary Edition mods targeting moddesc 8.0 or higher cannot mark official vanilla DLC as a dependency, as Mod Manager does not support these DLC being removed. Remove vanilla DLC items from 'requireddlc'. Invalid value: {reqDLCss}");
+                            LoadFailedReason = $"Legendary Edition mods targeting moddesc 8.0 or higher cannot mark official vanilla DLC as a dependency, as Mod Manager does not support these DLC being removed. Remove vanilla DLC items from 'requireddlc'. Invalid value: {reqDLCss}";
+                            return;
+                        }
                     }
                     M3Log.Information(@"Adding DLC requirement to mod: " + reqDLCss, Settings.LogModStartup);
                     list.Add(reqDLCss);
