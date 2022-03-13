@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Media.Imaging;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Helpers;
@@ -569,6 +570,25 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 }
 
             }
+
+            // Mod Manager 8 (not moddesc 8): FriendlyName, OptionGroup can't contain ; (it will mess up MetaCMM):
+            if (FriendlyName != null && FriendlyName.Contains(@";"))
+            {
+                M3Log.Error($@"Alternate attribute 'FriendlyName' cannot contain a ';' character. Invalid value: {FriendlyName}");
+                LoadFailedReason = $@"Alternate attribute 'FriendlyName' cannot contain a ';' character. Invalid value: {FriendlyName}";
+                ValidAlternate = false;
+                return false;
+
+            }
+
+            if (GroupName != null && GroupName.Contains(@";"))
+            {
+                M3Log.Error($@"Alternate attribute 'GroupName' cannot contain a ';' character. Invalid value: {GroupName}");
+                LoadFailedReason = $@"Alternate attribute 'GroupName' cannot contain a ';' character. Invalid value: {GroupName}";
+                ValidAlternate = false;
+                return false;
+            }
+
 
             return true; //Succeeded (or older moddesc that does not support this)
         }
