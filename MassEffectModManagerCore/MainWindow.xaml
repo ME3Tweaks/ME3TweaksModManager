@@ -1665,7 +1665,7 @@
                         <ui:Clipper 
                             HorizontalAlignment="Left"
                             Constraint="Width"
-                                    DockPanel.Dock="Bottom">
+                            DockPanel.Dock="Bottom">
                             <DockPanel
                                 Margin="0,0,0,2"
                                 Name="OneTimeMessagePanel_HowToManageMods"
@@ -1696,7 +1696,7 @@
                                     TextWrapping="Wrap"
                                     Text="This is the list of mods available to install. This is not the list of installed mods. To view installed mods, click 'Manage Target'."
                                     Foreground="{DynamicResource {x:Static adonisUi:Brushes.HyperlinkBrush}}"/>
-                                
+
                             </DockPanel>
                         </ui:Clipper>
                         <TextBlock
@@ -1705,12 +1705,16 @@
                             FontWeight="Bold"
                             VerticalAlignment="Center" />
                     </DockPanel>
-                    <StackPanel
-                        Name="FailedModsPopupPanel"
-                        DockPanel.Dock="Bottom"
+                    <ui:Clipper 
                         HorizontalAlignment="Center"
-                        Height="0">
+                        VerticalAlignment="Bottom"
+                        Constraint="Width"
+                        DockPanel.Dock="Bottom">
                         <TextBlock
+                            VerticalAlignment="Bottom"
+                            HorizontalAlignment="Center"
+                            ui:Clipper.WidthFraction="1"
+                            Name="FailedModsPopupPanel"
                             ToolTip="{DynamicResource string_tooltip_someModsFailed}">
                           <Hyperlink
                                 RequestNavigate="FailedMods_LinkClick"
@@ -1720,7 +1724,7 @@
                                 Text="{Binding FailedModsString}" />
                           </Hyperlink>
                         </TextBlock>
-                    </StackPanel>
+                    </ui:Clipper>
                     <Grid>
                         <ListBox
                             Name="ModsList_ListBox"

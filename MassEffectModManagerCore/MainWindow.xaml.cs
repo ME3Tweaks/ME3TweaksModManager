@@ -85,7 +85,10 @@ namespace ME3TweaksModManager
 
         public void OnBusyContentM3Changed(object old, object newB)
         {
-            Debug.WriteLine($"Changing busy panels: {old} -> {newB}");
+            if (newB is SingleItemPanel2 sip2)
+            {
+                Debug.WriteLine($@"Changing busy panels to {sip2.Content}");
+            }
         }
 
 #endif
@@ -447,7 +450,7 @@ namespace ME3TweaksModManager
         private void SetNexusNotAuthorizedUI()
         {
             NexusLoginInfoString = M3L.GetString(M3L.string_loginToNexusMods);
-            ME1NexusEndorsed = ME2NexusEndorsed = ME3NexusEndorsed = false;
+            ME1NexusEndorsed = ME2NexusEndorsed = ME3NexusEndorsed = LENexusEndorsed = false;
             EndorseM3String = M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
         }
 
@@ -457,7 +460,7 @@ namespace ME3TweaksModManager
             {
                 if (NexusModsUtilities.UserInfo != null)
                 {
-                    EndorseM3String = (ME1NexusEndorsed || ME2NexusEndorsed || ME3NexusEndorsed) ? M3L.GetString(M3L.string_endorsedME3TweaksModManagerOnNexusMods) : M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
+                    EndorseM3String = (ME1NexusEndorsed || ME2NexusEndorsed || ME3NexusEndorsed || LENexusEndorsed) ? M3L.GetString(M3L.string_endorsedME3TweaksModManagerOnNexusMods) : M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
                 }
                 else
                 {
@@ -484,7 +487,11 @@ namespace ME3TweaksModManager
                 var me3Status = await NexusModsUtilities.GetEndorsementStatusForFile(@"masseffect3", 373);
                 ME3NexusEndorsed = me3Status ?? false;
 
-                EndorseM3String = (ME1NexusEndorsed || ME2NexusEndorsed || ME3NexusEndorsed) ? M3L.GetString(M3L.string_endorsedME3TweaksModManagerOnNexusMods) : M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
+                //LE
+                var leStatus = await NexusModsUtilities.GetEndorsementStatusForFile(@"masseffectlegendaryedition", 2);
+                LENexusEndorsed = leStatus ?? false;
+
+                EndorseM3String = (ME1NexusEndorsed || ME2NexusEndorsed || ME3NexusEndorsed || LENexusEndorsed) ? M3L.GetString(M3L.string_endorsedME3TweaksModManagerOnNexusMods) : M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
             }
             else
             {
@@ -518,7 +525,8 @@ namespace ME3TweaksModManager
 
                     if (isclosing || isopening)
                     {
-                        ShowHideSlideup(FailedModsPopupPanel, isopening);
+                        Debug.WriteLine($@"FailedMods: {isopening}");
+                        ClipperHelper.ShowHideVerticalContent(FailedModsPopupPanel, isopening);
                     }
 
                     oldFailedBindableCount = M3LoadedMods.Instance.FailedMods.BindableCount;
@@ -536,37 +544,10 @@ namespace ME3TweaksModManager
             else if (e.PropertyName == nameof(Settings.GenerationSettingLE))
                 OrderAndSetTargets(InternalLoadedTargets, SelectedGameTarget);
             else if (e.PropertyName == nameof(Settings.OneTimeMessage_ModListIsNotListOfInstalledMods))
-                ShowHideOneTimeMessage(OneTimeMessagePanel_HowToManageMods, Settings.OneTimeMessage_ModListIsNotListOfInstalledMods);
+                ClipperHelper.ShowHideVerticalContent(OneTimeMessagePanel_HowToManageMods, Settings.OneTimeMessage_ModListIsNotListOfInstalledMods);
             else if (e.PropertyName == nameof(Settings.OneTimeMessage_ModListIsNotListOfInstalledMods))
-                ShowHideOneTimeMessage(OneTimeMessagePanel_HowToManageMods, Settings.OneTimeMessage_ModListIsNotListOfInstalledMods);
+                ClipperHelper.ShowHideVerticalContent(OneTimeMessagePanel_HowToManageMods, Settings.OneTimeMessage_ModListIsNotListOfInstalledMods);
 
-        }
-
-        private void ShowHideOneTimeMessage(FrameworkElement clippedPanel, bool show, bool isInitial = false)
-        {
-            if (isInitial && !show) return; // Don't do any animation since it's already closed
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                if (show)
-                {
-                    // Show the panel but set the height to zero
-                    //clippedPanel.Height = 0;
-                    clippedPanel.Visibility = Visibility.Visible;
-                }
-
-                var from = show ? 0.0 : 1.0;
-                var to = show ? 1.0 : 0.0;
-                DoubleAnimation animation = new DoubleAnimation(from, to, new Duration(TimeSpan.FromSeconds(0.15)));
-                if (!show)
-                {
-                    animation.Completed += (sender, args) =>
-                    {
-                        clippedPanel.Visibility = Visibility.Collapsed; // Collapse so renderer doesn't try to do anything with it
-                    };
-                }
-
-                clippedPanel.BeginAnimation(Clipper.HeightFractionProperty, animation);
-            });
         }
 
         private void ShowHideSlideup(FrameworkElement panelToMove, bool show)
@@ -637,7 +618,7 @@ namespace ME3TweaksModManager
             ReloadModsCommand = new GenericCommand(ReloadMods, CanReloadMods);
             ApplyModCommand = new GenericCommand(CallApplyMod, CanApplyMod);
             CheckForContentUpdatesCommand = new GenericCommand(CheckForContentUpdates, NetworkThreadNotRunning);
-            AddTargetCommand = new GenericCommand(AddTarget, () => M3LoadedMods.Instance.ModsLoaded);
+            AddTargetCommand = new GenericCommand(AddTarget, () => !RepopulatingTargets);
             RunGameConfigToolCommand = new RelayCommand(RunGameConfigTool, CanRunGameConfigTool);
             Binkw32Command = new RelayCommand(ToggleBinkw32, CanToggleBinkw32);
             StartGameCommand = new GenericCommand(StartGame, CanStartGame);
@@ -2629,7 +2610,7 @@ namespace ME3TweaksModManager
 
         private void SetWebsitePanelVisibility(bool open)
         {
-            ShowHideSlideup(VisitWebsitePanel, open);
+            ClipperHelper.ShowHideVerticalContent(VisitWebsitePanel, open);
         }
 
         private void RequestNavigate(object sender, RequestNavigateEventArgs e)
@@ -2888,7 +2869,7 @@ namespace ME3TweaksModManager
                     }
 
                     // Setup initial tutorial messages.
-                    ShowHideOneTimeMessage(OneTimeMessagePanel_HowToManageMods, Settings.OneTimeMessage_ModListIsNotListOfInstalledMods, true);
+                    ClipperHelper.ShowHideVerticalContent(OneTimeMessagePanel_HowToManageMods, Settings.OneTimeMessage_ModListIsNotListOfInstalledMods, true);
                 }
 
                 // Todo: Move to ME3TweaksCore?
