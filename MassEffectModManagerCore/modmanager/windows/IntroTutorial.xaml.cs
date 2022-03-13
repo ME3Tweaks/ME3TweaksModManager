@@ -99,7 +99,6 @@ namespace ME3TweaksModManager.modmanager.windows
                     Debug.WriteLine($@"OK -- File not found for tutorial: {tutorialStep.UIImagePath}");
                 }
 #else
-                Fix me pls
                 tutorialStep.UIImagePath = Path.Combine(M3Utilities.GetTutorialServiceCache(), tutorialStep.imagename);
 #endif
             }

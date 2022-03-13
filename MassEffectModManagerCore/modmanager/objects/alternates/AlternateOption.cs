@@ -578,7 +578,6 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 LoadFailedReason = $@"Alternate attribute 'FriendlyName' cannot contain a ';' character. Invalid value: {FriendlyName}";
                 ValidAlternate = false;
                 return false;
-
             }
 
             if (GroupName != null && GroupName.Contains(@";"))
@@ -588,8 +587,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 ValidAlternate = false;
                 return false;
             }
-
-
+            
             return true; //Succeeded (or older moddesc that does not support this)
         }
 

@@ -1997,8 +1997,11 @@ namespace ME3TweaksModManager.modmanager
             // DEBUG ONLY!
             return @"C:\ProgramData\ME3TweaksModManager\ME3TweaksServicesCache\tutorialservice\new\tutorialservice.json";
             return Path.Combine(GetME3TweaksServicesCache(), "tutorialservice.json");
-#else
+#elif PRERELEASE
+            return Path.Combine(GetME3TweaksServicesCache(), "tutorialservice.json");
+#else 
             You forgot to fix me bruh
+
 #endif
         }
 
