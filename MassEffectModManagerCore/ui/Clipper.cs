@@ -7,10 +7,64 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 
 namespace ME3TweaksModManager.ui
 {
+    public static class ClipperHelper
+    {
+        /// <summary>
+        /// Hides or shows vertical content, with the assumption the content is closed by default.
+        /// </summary>
+        /// <param name="clippedPanel"></param>
+        /// <param name="show"></param>
+        /// <param name="completed"></param>
+        /// <param name="isInitial"></param>
+        /// <param name="animTime"></param>
+        public static void ShowHideVerticalContent(FrameworkElement clippedPanel, bool show, bool isInitial = false, double animTime = 0.15, Action completionDelegate = null)
+        {
+            if (isInitial && !show) return; // Don't do any animation since it's already closed
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                if (show)
+                {
+                    // Show the panel but set the height to zero
+                    //clippedPanel.Height = 0;
+                    clippedPanel.Visibility = Visibility.Visible;
+                }
+
+                var from = show ? 0.0 : 1.0;
+                var to = show ? 1.0 : 0.0;
+                DoubleAnimation animation = new DoubleAnimation(from, to, new Duration(TimeSpan.FromSeconds(animTime)));
+                
+                // We put this here in the event multiple animations play at once
+                // (Such as failed mods panel) as it might make it collapsed due to timing.
+                animation.Completed += (sender, args) =>
+                {
+                    clippedPanel.Visibility = show ? Visibility.Visible : Visibility.Collapsed; // Collapse so renderer doesn't try to do anything with it
+                    completionDelegate?.Invoke();
+                };
+
+                clippedPanel.BeginAnimation(Clipper.HeightFractionProperty, animation);
+            });
+        }
+    }
+
     // From https://stackoverflow.com/a/59376318/800318
+
+    /**
+     * Note the Constraint property: it determines what the child control considers "Auto" dimensions.
+     * For example, if your control is static (has Height and Width set explicitly), you should set
+     * Constraint to Nothing to clip the fraction of the entire element. If your control is WrapPanel
+     * with Orientation set to Horizontal, Constraint should be set to Width, etc. If you are getting
+     * wrong clipping, try out out different constraints. Note also that Clipper respects you control's
+     * alignment, which can potentially be exploited in an animation (for example, while animating
+     * HeightFraction from 0 to 1, VerticalAlignment.Bottom will mean that the control "slides down",
+     * VerticalAlignment.Center - "opens up").
+     *
+     * Mgamerz Note: You seem to have to set the alignments for this to animate properly.
+     */
+
     public sealed class Clipper : Decorator
     {
         public static readonly DependencyProperty WidthFractionProperty = DependencyProperty.RegisterAttached("WidthFraction", typeof(double), typeof(Clipper), new PropertyMetadata(1d, OnClippingInvalidated), IsFraction);
