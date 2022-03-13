@@ -267,29 +267,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         public void OnCurrentModInTPMIChanged()
         {
-            Application.Current.Dispatcher.Invoke(delegate
-            {
-                Storyboard animation = null;
-                if (!CurrentModInTPMI)
-                {
-                    animation = FindResource(@"ShowInfoPanel") as Storyboard;
-                }
-                else
-                {
-                    animation = FindResource(@"CloseInfoPanel") as Storyboard;
-                }
-
-                if (animation != null)
-                {
-                    Storyboard.SetTarget(animation, TPMI_Panel);
-                    animation.Completed += (sender, args) =>
-                    {
-                        ListEnabled = true;
-                    };
-                    ListEnabled = false;
-                    animation.Begin();
-                }
-            });
+            // Disable clicking while it's animating.
+            ListEnabled = false;
+            ClipperHelper.ShowHideVerticalContent(TPMI_Panel, !CurrentModInTPMI, completionDelegate: () => ListEnabled = true);
         }
 
         public void OnSelectedTargetChanged()
