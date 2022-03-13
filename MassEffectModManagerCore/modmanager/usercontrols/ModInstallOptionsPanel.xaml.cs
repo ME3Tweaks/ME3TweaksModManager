@@ -267,7 +267,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             int numAttemptsRemaining = 15;
             try
             {
-                UpdateOptions(ref numAttemptsRemaining, ModBeingInstalled, SelectedGameTarget); // Update for DependsOnKeys.
+                UpdateOptions(ref numAttemptsRemaining, ModBeingInstalled, SelectedGameTarget, initialSetup: true); // Update for DependsOnKeys.
             }
             catch (CircularDependencyException)
             {
@@ -302,17 +302,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         void internalSetupInitialSelection(AlternateGroup o)
         {
-            if (o.AlternateOptions.Count == 1)
-            {
-                // Single mode
-            }
-            else
-            {
-                // Multi mode
-            }
-
             foreach (var option in o.AlternateOptions)
             {
+                // Suboptions.
                 if (option is AlternateDLC altdlc)
                 {
                     altdlc.SetupInitialSelection(SelectedGameTarget, ModBeingInstalled);
@@ -324,6 +316,19 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     if (altfile.IsManual) AllOptionsAreAutomatic = false;
                 }
             }
+
+
+
+
+            //if (o.AlternateOptions.Count == 1)
+            //{
+            //    // Single mode
+            //}
+            //else
+            //{
+            //    // Multi mode
+            //}
+
         }
 
         private void SortOptions()
@@ -346,7 +351,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 var indexedOptions = remainingOptionsToSort.Where(x => x.SortIndex > 0);
                 newOptions.AddRange(indexedOptions.OrderBy(x => x.SortIndex));
                 remainingOptionsToSort = remainingOptionsToSort.Except(indexedOptions).ToList();
-                
+
                 // Put remaining options at the bottom.
                 newOptions.AddRange(remainingOptionsToSort.Where(x => x.GroupName != null));
                 newOptions.AddRange(remainingOptionsToSort.Where(x => x.GroupName == null && x.SelectedOption.UIIsSelectable));
@@ -386,7 +391,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
         }
 
-        private void UpdateOptions(ref int numAttemptsRemaining, Mod mod, GameTargetWPF target, List<AlternateOption> optionsToUpdate = null)
+        private void UpdateOptions(ref int numAttemptsRemaining, Mod mod, GameTargetWPF target, List<AlternateOption> optionsToUpdate = null, bool initialSetup = false)
         {
             numAttemptsRemaining--;
             if (numAttemptsRemaining <= 0)
@@ -418,6 +423,23 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 UpdateOptions(ref numAttemptsRemaining, mod, target, secondPassOptions.Distinct().ToList());
             }
+
+            if (initialSetup)
+            {
+                foreach (var group in AlternateGroups.Where(x => x.IsMultiSelector))
+                {
+                    if (group.SelectedOption.UINotApplicable)
+                    {
+                        // Find first option that is not marked as not-applicable
+                        var option = group.AlternateOptions.FirstOrDefault(x => !x.UINotApplicable);
+                        if (option != null)
+                        {
+                            // This is a bad setup in moddesc!
+                            group.SelectedOption = option;
+                        }
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -433,7 +455,19 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private bool CanInstall()
         {
-            // Todo
+            foreach (var group in AlternateGroups)
+            {
+                if (group.IsMultiSelector)
+                {
+                    // Multi mode
+                    if (group.SelectedOption.UINotApplicable) return false; // Option must be selectable by user in order for it to be chosen by multi selector
+                }
+                else
+                {
+                    // Single mode
+                }
+            }
+
             return true;
         }
 

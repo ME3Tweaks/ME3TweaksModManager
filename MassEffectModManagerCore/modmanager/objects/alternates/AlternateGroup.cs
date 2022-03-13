@@ -46,6 +46,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         public string GroupName { get; init; }
 
         public string GroupNameTitleText => $"{GroupName} - {AlternateOptions.Count} options(s)";
+        public bool IsMultiSelector => AlternateOptions.Count > 1;
 
         /// <summary>
         /// Creates an option group with multiple options (dropdown selector mode)
@@ -84,10 +85,12 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         /// </summary>
         public void OnSelectedOptionChanged()
         {
-            var optionsList = AlternateOptions.Where(x => x != SelectedOption).ToList();
-            // Todo: Sort non-selectable to the bottom
-
-            OtherOptions.ReplaceAll(optionsList);
+            if (AlternateOptions.Count > 0)
+            {
+                var optionsList = AlternateOptions.Where(x => x != SelectedOption).ToList();
+                // Todo: Sort non-selectable to the bottom
+                OtherOptions.ReplaceAll(optionsList);
+            }
         }
 
         internal void ReleaseAssets()

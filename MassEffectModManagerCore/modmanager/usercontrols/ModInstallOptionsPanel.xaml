@@ -12,6 +12,7 @@
              xmlns:modinstaller="clr-namespace:ME3TweaksModManager.modmanager.usercontrols.modinstaller" 
              xmlns:system="clr-namespace:System;assembly=System.Runtime"
              MinHeight="400"
+             MaxWidth="900"
              mc:Ignorable="d" >
     <Grid  x:Name="OptionsPanel">
         <Grid.RowDefinitions>
