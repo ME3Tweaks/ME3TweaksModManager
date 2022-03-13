@@ -25,7 +25,8 @@ using ME3TweaksModManager.ui;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.WindowsAPICodePack.Taskbar;
 using Renci.SshNet;
-using static ME3TweaksModManager.modmanager.me3tweaks.M3OnlineContent;
+using static ME3TweaksModManager.modmanager.me3tweaks.services.M3OnlineContent;
+using M3OnlineContent = ME3TweaksModManager.modmanager.me3tweaks.services.M3OnlineContent;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {

@@ -24,7 +24,7 @@ using System.Runtime.CompilerServices;
 using ME3TweaksCore.Services.Backup;
 using ME3TweaksModManager.modmanager.helpers;
 
-namespace ME3TweaksModManager.modmanager.me3tweaks
+namespace ME3TweaksModManager.modmanager.me3tweaks.services
 {
     /// <summary>
     /// Contains methods and bindable variables for accessing and displaying info about game backups 

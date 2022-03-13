@@ -2,20 +2,16 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using LegendaryExplorerCore.Helpers;
-using ME3TweaksCore.Diagnostics;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Misc;
 using ME3TweaksCore.Services;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.objects;
-using Microsoft.AppCenter.Crashes;
 using Newtonsoft.Json;
-using Serilog;
 using ShortTimeoutWebClient = ME3TweaksCore.Misc.ShortTimeoutWebClient;
 
-namespace ME3TweaksModManager.modmanager.me3tweaks
+namespace ME3TweaksModManager.modmanager.me3tweaks.services
 {
     /// <summary>
     /// Defines a blacklisted file for importing

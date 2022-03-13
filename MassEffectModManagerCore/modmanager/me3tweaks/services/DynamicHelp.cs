@@ -12,7 +12,7 @@ using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using Microsoft.AppCenter.Crashes;
 
-namespace ME3TweaksModManager.modmanager.me3tweaks
+namespace ME3TweaksModManager.modmanager.me3tweaks.services
 {
     [Localizable(false)]
     partial class M3OnlineContent

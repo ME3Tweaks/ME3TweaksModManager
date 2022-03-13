@@ -19,7 +19,7 @@ using Microsoft.AppCenter.Crashes;
 using Newtonsoft.Json;
 using ShortTimeoutWebClient = ME3TweaksModManager.modmanager.helpers.ShortTimeoutWebClient;
 
-namespace ME3TweaksModManager.modmanager.me3tweaks
+namespace ME3TweaksModManager.modmanager.me3tweaks.services
 {
 
     partial class M3OnlineContent
@@ -35,15 +35,6 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
         };
 
         /// <summary>
-        /// Tutorial manifest URLs
-        /// </summary>
-        public static FallbackLink TutorialServiceManifestURL = new FallbackLink()
-        {
-            MainURL = @"https://me3tweaks.com/modmanager/services/tutorialservice",
-            FallbackURL = @"https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/master/ME3TweaksModManager/staticfiles/tutorialservice.json"
-        };
-
-        /// <summary>
         /// Endpoint (base URL) for downloading static assets
         /// </summary>
         internal static FallbackLink StaticFileBaseEndpoints { get; } = new()
@@ -54,7 +45,6 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
 
         #endregion
 
-        private const string ThirdPartyImportingServiceURL = @"https://me3tweaks.com/modmanager/services/thirdpartyimportingservice?allgames=true";
         private const string ThirdPartyModDescURL = @"https://me3tweaks.com/mods/dlc_mods/importingmoddesc/";
         private const string ExeTransformBaseURL = @"https://me3tweaks.com/mods/dlc_mods/importingexetransforms/";
         private const string ModInfoRelayEndpoint = @"https://me3tweaks.com/modmanager/services/relayservice";
@@ -268,134 +258,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
             }
         }
 
-        public static Dictionary<long, List<ThirdPartyImportingInfo>> FetchThirdPartyImportingService(bool overrideThrottling = false)
-        {
-            string cached = null;
-            if (File.Exists(M3Utilities.GetThirdPartyImportingCachedFile()))
-            {
-                try
-                {
-                    cached = File.ReadAllText(M3Utilities.GetThirdPartyImportingCachedFile());
-                }
-                catch (Exception e)
-                {
-                    var attachments = new List<ErrorAttachmentLog>();
-                    string log = LogCollector.CollectLatestLog(MCoreFilesystem.GetLogDir(), true);
-                    if (log != null && log.Length < FileSize.MebiByte * 7)
-                    {
-                        attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, @"applog.txt"));
-                    }
-                    Crashes.TrackError(e, new Dictionary<string, string>()
-                    {
-                        {@"Error type", @"Error reading cached online content" },
-                        {@"Service", @"Third Party Importing Service" },
-                        {@"Message", e.Message }
-                    }, attachments.ToArray());
-                }
-            }
-
-            if (!File.Exists(M3Utilities.GetThirdPartyImportingCachedFile()) || overrideThrottling || MOnlineContent.CanFetchContentThrottleCheck())
-            {
-                try
-                {
-                    using var wc = new ShortTimeoutWebClient();
-
-                    string json = WebClientExtensions.DownloadStringAwareOfEncoding(wc, ThirdPartyImportingServiceURL);
-                    File.WriteAllText(M3Utilities.GetThirdPartyImportingCachedFile(), json);
-                    return JsonConvert.DeserializeObject<Dictionary<long, List<ThirdPartyImportingInfo>>>(json);
-                }
-                catch (Exception e)
-                {
-                    //Unable to fetch latest help.
-                    M3Log.Error(@"Error fetching latest importing service file: " + e.Message);
-
-                    if (cached != null)
-                    {
-                        M3Log.Warning(@"Using cached third party importing service file instead");
-                    }
-                    else
-                    {
-                        M3Log.Error(@"Unable to fetch latest third party importing service file from server and local file doesn't exist. Returning a blank copy.");
-                        return new Dictionary<long, List<ThirdPartyImportingInfo>>();
-                    }
-                }
-            }
-            try
-            {
-                return JsonConvert.DeserializeObject<Dictionary<long, List<ThirdPartyImportingInfo>>>(cached);
-            }
-            catch (Exception e)
-            {
-                M3Log.Error(@"Unable to parse cached importing service file: " + e.Message);
-                return new Dictionary<long, List<ThirdPartyImportingInfo>>();
-            }
-        }
-
-        /// <summary>
-        /// Touches up any existing tutorial assets or downloads missing ones.
-        /// </summary>
-        public static void TouchupTutorial()
-        {
-            return; // DONT DO ANYTHING TESTIN
-            var fileRootPath = M3Utilities.GetTutorialServiceCache();
-            foreach (var step in App.TutorialService)
-            {
-                var imagePath = Path.Combine(fileRootPath, step.imagename);
-                bool download = !File.Exists(imagePath) || M3Utilities.CalculateMD5(imagePath) != step.imagemd5;
-                if (download)
-                {
-                    foreach (var endpoint in StaticFileBaseEndpoints.GetAllLinks())
-                    {
-                        Uri myUri = new Uri(endpoint);
-                        string host = myUri.Host;
-
-                        var fullurl = endpoint + @"tutorial/" + step.imagename;
-                        M3Log.Information($@"Downloading {step.imagename} from endpoint {host}");
-                        var downloadedImage = M3OnlineContent.DownloadToMemory(fullurl, null, step.imagemd5);
-                        if (downloadedImage.errorMessage == null)
-                        {
-                            try
-                            {
-                                downloadedImage.result.WriteToFile(imagePath);
-                            }
-                            catch (Exception e)
-                            {
-                                M3Log.Error($@"Error writing tutorial image {imagePath}: {e.Message}");
-                            }
-
-                            break;
-                        }
-                        else
-                        {
-                            M3Log.Error($@"Unable to download {step.imagename} from endpoint {host}: {downloadedImage.errorMessage}");
-                        }
-                    }
-                }
-            }
-        }
-
-        public static Dictionary<string, string> QueryModRelay(string md5, long size)
-        {
-            //Todo: Finish implementing relay service
-            string finalRelayURL = $@"{ModInfoRelayEndpoint}?modmanagerversion={App.BuildNumber}&md5={md5.ToLowerInvariant()}&size={size}";
-            try
-            {
-                using (var wc = new ShortTimeoutWebClient())
-                {
-                    Debug.WriteLine(finalRelayURL);
-                    string json = WebClientExtensions.DownloadStringAwareOfEncoding(wc, finalRelayURL);
-                    //todo: Implement response format serverside
-                    return JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
-                }
-            }
-            catch (Exception e)
-            {
-                M3Log.Error(@"Error querying relay service from ME3Tweaks: " + App.FlattenException(e));
-            }
-
-            return null;
-        }
-
+     
         public static bool EnsureCriticalFiles()
         {
             try
@@ -476,13 +339,40 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
         }
 
         /// <summary>
+        /// Queries the ME3Tweaks Mod Relay for information about a file with the specified md5 and size.
+        /// </summary>
+        /// <param name="md5"></param>
+        /// <param name="size"></param>
+        /// <returns>Dictionary of information about the file, if any.</returns>
+        public static Dictionary<string, string> QueryModRelay(string md5, long size)
+        {
+            //Todo: Finish implementing relay service
+            string finalRelayURL = $@"{ModInfoRelayEndpoint}?modmanagerversion={App.BuildNumber}&md5={md5.ToLowerInvariant()}&size={size}";
+            try
+            {
+                using (var wc = new ShortTimeoutWebClient())
+                {
+                    Debug.WriteLine(finalRelayURL);
+                    string json = WebClientExtensions.DownloadStringAwareOfEncoding(wc, finalRelayURL);
+                    //todo: Implement response format serverside
+                    return JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+                }
+            }
+            catch (Exception e)
+            {
+                M3Log.Error(@"Error querying relay service from ME3Tweaks: " + App.FlattenException(e));
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// Downloads from a URL to memory. This is a blocking call and must be done on a background thread.
         /// </summary>
         /// <param name="url">URL to download from</param>
         /// <param name="progressCallback">Progress information clalback</param>
         /// <param name="hash">Hash check value (md5). Leave null if no hash check</param>
         /// <returns></returns>
-
         public static (MemoryStream result, string errorMessage) DownloadToMemory(string url, Action<long, long> progressCallback = null, string hash = null, bool logDownload = false, Stream destStreamOverride = null, CancellationToken cancellationToken = default)
         {
             var resultV = DownloadToStreamInternal(url, progressCallback, hash, logDownload, cancellationToken: cancellationToken);
@@ -578,76 +468,6 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
 
             public string UIRevisionString => M3L.GetString(M3L.string_interp_revisionX, revision);
             public string UICodeString => M3L.GetString(M3L.string_interp_codeX, mod_id);
-        }
-
-        public static List<IntroTutorial.TutorialStep> FetchTutorialManifest(bool overrideThrottling = false)
-        {
-            M3Log.Information(@"Fetching tutorial manifest");
-            string cached = null;
-            // Read cached first.
-            if (File.Exists(M3Utilities.GetTutorialServiceCacheFile()))
-            {
-                try
-                {
-                    cached = File.ReadAllText(M3Utilities.GetTutorialServiceCacheFile());
-                }
-                catch (Exception e)
-                {
-                    var attachments = new List<ErrorAttachmentLog>();
-                    string log = LogCollector.CollectLatestLog(MCoreFilesystem.GetLogDir(), true);
-                    if (log != null && log.Length < FileSize.MebiByte * 7)
-                    {
-                        attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, @"applog.txt"));
-                    }
-                    Crashes.TrackError(e, new Dictionary<string, string>()
-                    {
-                        {@"Error type", @"Error reading cached online content" },
-                        {@"Service", @"Tutorial Service" },
-                        {@"Message", e.Message }
-                    }, attachments.ToArray());
-                }
-            }
-
-            // TODO: UNCOMMENT FOR PRODUCTION
-            //if (!File.Exists(M3Utilities.GetTutorialServiceCacheFile()) || overrideThrottling || MOnlineContent.CanFetchContentThrottleCheck())
-            //{
-            //    foreach (var staticurl in TutorialServiceManifestURL.GetAllLinks())
-            //    {
-            //        Uri myUri = new Uri(staticurl);
-            //        string host = myUri.Host;
-
-            //        try
-            //        {
-            //            using var wc = new ShortTimeoutWebClient();
-            //            string json = WebClientExtensions.DownloadStringAwareOfEncoding(wc, staticurl);
-            //            File.WriteAllText(M3Utilities.GetTutorialServiceCacheFile(), json);
-            //            return JsonConvert.DeserializeObject<List<IntroTutorial.TutorialStep>>(json);
-            //        }
-            //        catch (Exception e)
-            //        {
-            //            //Unable to fetch latest help.
-            //            M3Log.Error($@"Error fetching latest tutorial service file from endpoint {host}: {e.Message}");
-            //        }
-            //    }
-
-            //    if (cached == null)
-            //    {
-            //        M3Log.Error(@"Unable to fetch latest tutorial service file from server and local file doesn't exist. Returning a blank copy.");
-            //        return new List<IntroTutorial.TutorialStep>();
-            //    }
-            //}
-
-            M3Log.Information(@"Using cached tutorial service file");
-
-            try
-            {
-                return JsonConvert.DeserializeObject<List<IntroTutorial.TutorialStep>>(cached);
-            }
-            catch (Exception e)
-            {
-                M3Log.Error(@"Unable to parse cached importing service file: " + e.Message);
-                return new List<IntroTutorial.TutorialStep>();
-            }
         }
     }
 }

@@ -2,6 +2,7 @@
 using ME3TweaksModManager.modmanager.me3tweaks;
 using ME3TweaksModManager.modmanager.objects.nexusfiledb;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using M3OnlineContent = ME3TweaksModManager.modmanager.me3tweaks.services.M3OnlineContent;
 
 namespace ME3TweaksModManager.Tests
 {
@@ -23,6 +24,7 @@ namespace ME3TweaksModManager.Tests
             searchGames.Add(@"masseffect");
             searchGames.Add(@"masseffect2");
             searchGames.Add(@"masseffect3");
+            searchGames.Add(@"masseffectlegendaryedition");
 
             foreach (var domain in searchGames)
             {

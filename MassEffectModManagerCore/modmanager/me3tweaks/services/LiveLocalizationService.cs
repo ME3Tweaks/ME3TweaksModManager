@@ -6,7 +6,7 @@ using LegendaryExplorerCore.Helpers;
 using ME3TweaksCore.Localization;
 using ME3TweaksModManager.modmanager.diagnostics;
 
-namespace ME3TweaksModManager.modmanager.me3tweaks
+namespace ME3TweaksModManager.modmanager.me3tweaks.services
 {
     /// <summary>
     /// Service handler for loading localizations from ME3Tweaks/cache for the specific build. Allows localization updates outside of releases
@@ -105,7 +105,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
         {
             var livelocmd5 = App.ServerManifest[$@"livelocalization-{lang}"]; // this was checked previously
             var url = LocalizationEndpoint + $@"?lang={lang}&build={App.BuildNumber}";
-            var result = M3OnlineContent.DownloadToMemory(url, hash: livelocmd5);
+            var result =M3OnlineContent.DownloadToMemory(url, hash: livelocmd5);
             if (result.errorMessage == null)
             {
                 // OK!

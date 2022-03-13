@@ -5,6 +5,8 @@ using System.Windows;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.me3tweaks.services;
+using ME3TweaksModManager.modmanager.objects.tutorial;
 using ME3TweaksModManager.ui;
 using PropertyChanged;
 
@@ -16,54 +18,44 @@ namespace ME3TweaksModManager.modmanager.windows
     [AddINotifyPropertyChangedInterface]
     public partial class IntroTutorial : Window
     {
+        /// <summary>
+        /// The list of all steps in the tutorial
+        /// </summary>
         public ObservableCollectionExtended<TutorialStep> TutorialSteps { get; } = new ObservableCollectionExtended<TutorialStep>();
 
+        /// <summary>
+        /// The current step the tutorial is on
+        /// </summary>
         public TutorialStep CurrentStep { get; set; }
-        //public class TutorialStep
-        //{
-        //    public string StringKey { get; set; }
-        //    public string UIString { get; set; }
-        //    public string ImagePath { get; set; }
-        //    public int ColumnIndex { get; set; }
-        //    public int RowIndex { get; set; }
-        //    public int ColumnSpan { get; set; }
-        //    public int RowSpan { get; set; }
-        //}
 
-
-        public class TutorialStep
-        {
-            public string step { get; set; }
-            public string internalname { get; set; }
-            public string imagename { get; set; }
-            public string imagemd5 { get; set; }
-            public string columnindex { get; set; }
-            public string rowindex { get; set; }
-            public string columnspan { get; set; }
-            public string rowspan { get; set; }
-            public string lang_int { get; set; }
-            public string lang_rus { get; set; }
-            public string lang_pol { get; set; }
-            public string lang_deu { get; set; }
-            public string lang_fra { get; set; }
-            public string lang_esn { get; set; }
-            public string UIString { get; set; } //What's actually shown on screen.
-            public string UIImagePath { get; set; } //image path
-
-        }
-
+        /// <summary>
+        /// The index of the current step (for stepping through the step list)
+        /// </summary>
         public int CurrentStepIndex { get; set; }
+
+
         public IntroTutorial()
         {
-            TutorialSteps.ReplaceAll(App.TutorialService);
+            PrepareSteps();
 
+            CurrentStep = TutorialSteps[0];
+            LoadCommands();
+            InitializeComponent();
+        }
+
+        /// <summary>
+        /// Prepares the step list from the tutorial service.
+        /// </summary>
+        private void PrepareSteps()
+        {
+            TutorialSteps.ReplaceAll(TutorialService.GetTutorialSteps());
             //Setup languages.
             foreach (var tutorialStep in TutorialSteps)
             {
                 switch (Settings.Language)
                 {
                     case @"int":
-                        Debug.WriteLine(tutorialStep.lang_int);
+                        //Debug.WriteLine(tutorialStep.lang_int);
                         tutorialStep.UIString = tutorialStep.lang_int;
                         break;
                     case @"rus":
@@ -92,13 +84,25 @@ namespace ME3TweaksModManager.modmanager.windows
                     tutorialStep.UIString = tutorialStep.lang_int;
                 }
 
-                tutorialStep.UIString = tutorialStep.UIString.Replace(@"\n", "\n"); //do not localize
+                if (tutorialStep.UIString != null)
+                {
+                    tutorialStep.UIString = tutorialStep.UIString.Replace(@"\n", "\n"); //do not localize
+                }
+#if DEBUG
+                tutorialStep.UIImagePath = Path.Combine(@"C:\ProgramData\ME3TweaksModManager\ME3TweaksServicesCache\tutorialservice\new", tutorialStep.imagename);
+                if (!File.Exists(tutorialStep.UIImagePath))
+                {
+                    Debug.WriteLine($@"File not found for tutorial: {tutorialStep.UIImagePath}");
+                }
+                else
+                {
+                    Debug.WriteLine($@"OK -- File not found for tutorial: {tutorialStep.UIImagePath}");
+                }
+#else
+                Fix me pls
                 tutorialStep.UIImagePath = Path.Combine(M3Utilities.GetTutorialServiceCache(), tutorialStep.imagename);
+#endif
             }
-
-            CurrentStep = TutorialSteps[0];
-            LoadCommands();
-            InitializeComponent();
         }
 
         private void LoadCommands()
@@ -106,6 +110,30 @@ namespace ME3TweaksModManager.modmanager.windows
             SkipTutorialCommand = new GenericCommand(Close);
             NextCommand = new GenericCommand(MoveForward, CanMoveForward);
             PreviousCommand = new GenericCommand(MoveBackwards, CanMoveBackwards);
+            ReloadTutorialCommand = new GenericCommand(ReloadTutorial, CanReloadTutorial);
+        }
+
+        private void ReloadTutorial()
+        {
+#if DEBUG
+            TutorialService.LoadService(true);
+            PrepareSteps();
+
+            // Restore the state
+            if (TutorialSteps.Count >= CurrentStepIndex)
+            {
+                CurrentStep = TutorialSteps[CurrentStepIndex];
+            }
+            else
+            {
+                CurrentStep = TutorialSteps[0];
+                CurrentStepIndex = 0;
+            }
+#endif
+        }
+        private bool CanReloadTutorial()
+        {
+            return App.IsDebug;
         }
 
         private void MoveBackwards()
@@ -120,15 +148,13 @@ namespace ME3TweaksModManager.modmanager.windows
 
         private void MoveForward()
         {
-
             CurrentStepIndex++;
             CurrentStep = TutorialSteps[CurrentStepIndex];
         }
 
         public GenericCommand NextCommand { get; set; }
-
         public GenericCommand PreviousCommand { get; set; }
-
         public GenericCommand SkipTutorialCommand { get; set; }
+        public GenericCommand ReloadTutorialCommand { get; set; }
     }
 }

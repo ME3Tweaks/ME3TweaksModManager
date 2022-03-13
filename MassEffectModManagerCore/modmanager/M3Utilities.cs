@@ -1993,7 +1993,13 @@ namespace ME3TweaksModManager.modmanager
 
         internal static string GetTutorialServiceCacheFile()
         {
+#if DEBUG
+            // DEBUG ONLY!
+            return @"C:\ProgramData\ME3TweaksModManager\ME3TweaksServicesCache\tutorialservice\new\tutorialservice.json";
             return Path.Combine(GetME3TweaksServicesCache(), "tutorialservice.json");
+#else
+            You forgot to fix me bruh
+#endif
         }
 
         public static string GetTutorialServiceCache()

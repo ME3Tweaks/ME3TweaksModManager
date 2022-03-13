@@ -4,6 +4,7 @@
                        xmlns:me3Tweaks1="clr-namespace:ME3TweaksCoreWPF.Services.Backup;assembly=ME3TweaksCoreWPF"
                        xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
                        xmlns:me3Tweaks="clr-namespace:ME3TweaksModManager.modmanager.me3tweaks"
+                       xmlns:services="clr-namespace:ME3TweaksModManager.modmanager.me3tweaks.services"
                        mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800"
                        DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <UserControl.Resources>
@@ -19,9 +20,9 @@
     </UserControl.Resources>
     <DockPanel>
         <DockPanel DockPanel.Dock="Top" LastChildFill="False" HorizontalAlignment="Center">
-            <fa5:ImageAwesome Icon="Solid_ExclamationTriangle" Width="24" Height="24" Foreground="Orange" DockPanel.Dock="Left" Visibility="{Binding Path=(me3Tweaks:M3BackupService.AnyGameMissingBackup), Converter={StaticResource BoolToVisibilityConverter}}" />
+            <fa5:ImageAwesome Icon="Solid_ExclamationTriangle" Width="24" Height="24" Foreground="Orange" DockPanel.Dock="Left" Visibility="{Binding Path=(services:M3BackupService.AnyGameMissingBackup), Converter={StaticResource BoolToVisibilityConverter}}" />
             <TextBlock Text="{Binding Title}" FontWeight="Bold" FontSize="20" TextAlignment="Center" VerticalAlignment="Center" Margin="10,0" />
-            <fa5:ImageAwesome Icon="Solid_ExclamationTriangle" Width="24" Height="24" Foreground="Orange" Visibility="{Binding Path=(me3Tweaks:M3BackupService.AnyGameMissingBackup), Converter={StaticResource BoolToVisibilityConverter}}" />
+            <fa5:ImageAwesome Icon="Solid_ExclamationTriangle" Width="24" Height="24" Foreground="Orange" Visibility="{Binding Path=(services:M3BackupService.AnyGameMissingBackup), Converter={StaticResource BoolToVisibilityConverter}}" />
         </DockPanel>
         <TextBlock Text="{DynamicResource string_description_vanillaBackupRequired}" TextWrapping="Wrap" TextAlignment="Center" DockPanel.Dock="Top" />
         

@@ -21,6 +21,7 @@ using ME3TweaksModManager.ui;
 using Microsoft.AppCenter.Analytics;
 using Serilog;
 using SevenZip;
+using M3OnlineContent = ME3TweaksModManager.modmanager.me3tweaks.services.M3OnlineContent;
 using Path = System.IO.Path;
 
 namespace ME3TweaksModManager.modmanager.usercontrols

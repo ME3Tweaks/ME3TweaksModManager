@@ -19,6 +19,7 @@ using ME3TweaksModManager.modmanager.me3tweaks;
 using Microsoft.AppCenter.Crashes;
 using SevenZip;
 using SevenZip.EventArguments;
+using M3OnlineContent = ME3TweaksModManager.modmanager.me3tweaks.services.M3OnlineContent;
 
 namespace ME3TweaksModManager.modmanager.objects.mod
 {

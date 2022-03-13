@@ -22,7 +22,7 @@ using ME3TweaksModManager.modmanager.objects.mod;
 using Microsoft.AppCenter.Crashes;
 using PropertyChanged;
 
-namespace ME3TweaksModManager.modmanager.me3tweaks
+namespace ME3TweaksModManager.modmanager.me3tweaks.services
 {
     //Localizable(false) //do not remove for localizer!
     public partial class M3OnlineContent

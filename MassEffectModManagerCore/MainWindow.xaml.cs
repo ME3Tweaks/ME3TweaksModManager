@@ -46,6 +46,7 @@ using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.loaders;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.me3tweaks;
+using ME3TweaksModManager.modmanager.me3tweaks.services;
 using ME3TweaksModManager.modmanager.merge.dlc;
 using ME3TweaksModManager.modmanager.merge.game2email;
 using ME3TweaksModManager.modmanager.nexusmodsintegration;
@@ -60,6 +61,7 @@ using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using Microsoft.Win32;
 using Pathoschild.FluentNexus.Models;
+using M3OnlineContent = ME3TweaksModManager.modmanager.me3tweaks.services.M3OnlineContent;
 using MemoryAnalyzer = ME3TweaksModManager.modmanager.memoryanalyzer.MemoryAnalyzer;
 using Mod = ME3TweaksModManager.modmanager.objects.mod.Mod;
 
@@ -530,18 +532,43 @@ namespace ME3TweaksModManager
         private void SettingChanged(object? sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(Settings.GenerationSettingOT))
-            {
                 OrderAndSetTargets(InternalLoadedTargets, SelectedGameTarget);
-            }
             else if (e.PropertyName == nameof(Settings.GenerationSettingLE))
-            {
                 OrderAndSetTargets(InternalLoadedTargets, SelectedGameTarget);
-            }
-            else if (e.PropertyName == nameof(Settings.ShowModListNotInstalledModsMessage))
-            {
-                ShowHideSlideup(ModLibraryNotInstalledModsPanel, Settings.ShowModListNotInstalledModsMessage);
-            }
+            else if (e.PropertyName == nameof(Settings.OneTimeMessage_ModListIsNotListOfInstalledMods))
+                ShowHideOneTimeMessage(OneTimeMessagePanel_HowToManageMods, Settings.OneTimeMessage_ModListIsNotListOfInstalledMods);
+            else if (e.PropertyName == nameof(Settings.OneTimeMessage_ModListIsNotListOfInstalledMods))
+                ShowHideOneTimeMessage(OneTimeMessagePanel_HowToManageMods, Settings.OneTimeMessage_ModListIsNotListOfInstalledMods);
+
         }
+
+        private void ShowHideOneTimeMessage(FrameworkElement clippedPanel, bool show, bool isInitial = false)
+        {
+            if (isInitial && !show) return; // Don't do any animation since it's already closed
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                if (show)
+                {
+                    // Show the panel but set the height to zero
+                    //clippedPanel.Height = 0;
+                    clippedPanel.Visibility = Visibility.Visible;
+                }
+
+                var from = show ? 0.0 : 1.0;
+                var to = show ? 1.0 : 0.0;
+                DoubleAnimation animation = new DoubleAnimation(from, to, new Duration(TimeSpan.FromSeconds(0.15)));
+                if (!show)
+                {
+                    animation.Completed += (sender, args) =>
+                    {
+                        clippedPanel.Visibility = Visibility.Collapsed; // Collapse so renderer doesn't try to do anything with it
+                    };
+                }
+
+                clippedPanel.BeginAnimation(Clipper.HeightFractionProperty, animation);
+            });
+        }
+
         private void ShowHideSlideup(FrameworkElement panelToMove, bool show)
         {
             Application.Current.Dispatcher.Invoke(delegate
@@ -649,7 +676,7 @@ namespace ME3TweaksModManager
             CustomKeybindsInjectorCommand = new GenericCommand(OpenKeybindsInjector, () => M3LoadedMods.Instance.ModsLoaded && InstallationTargets.Any(x => x.Game == MEGame.ME3));
             ModdescEditorCommand = new GenericCommand(OpenModDescEditor, CanOpenModdescEditor);
             OriginInGameOverlayDisablerCommand = new GenericCommand(OpenOIGDisabler, () => M3LoadedMods.Instance.ModsLoaded && InstallationTargets.Any());
-            OpenTutorialCommand = new GenericCommand(OpenTutorial, () => App.TutorialService != null && App.TutorialService.Any());
+            OpenTutorialCommand = new GenericCommand(OpenTutorial, () => TutorialService.ServiceLoaded);
             OpenASIManagerCommand = new GenericCommand(OpenASIManager, NetworkThreadNotRunning);
             NexusModsFileSearchCommand = new GenericCommand(OpenNexusSearch); // no conditions for this
         }
@@ -2159,7 +2186,7 @@ namespace ME3TweaksModManager
             {
                 ReleaseBusyControl();
                 // if user speeds through, this might not be available yet. oh well
-                if (App.TutorialService != null && App.TutorialService.Any())
+                if (TutorialService.ServiceLoaded)
                 {
                     new IntroTutorial().Show();
                 }
@@ -2819,8 +2846,8 @@ namespace ME3TweaksModManager
                 //BackgroundTaskEngine.SubmitJobCompletion(bgTask);
 
                 bgTask = BackgroundTaskEngine.SubmitBackgroundJob(@"LoadTutorialService", M3L.GetString(M3L.string_checkingTutorialAssets), M3L.GetString(M3L.string_checkedTutorialAssets));
-                App.TutorialService = M3OnlineContent.FetchTutorialManifest(!firstStartupCheck);
-                M3OnlineContent.TouchupTutorial();
+                TutorialService.LoadService(!firstStartupCheck);
+                TutorialService.TouchupTutorial();
                 BackgroundTaskEngine.SubmitJobCompletion(bgTask);
 
                 bgTask = BackgroundTaskEngine.SubmitBackgroundJob(@"LoadDynamicHelp", M3L.GetString(M3L.string_loadingDynamicHelp), M3L.GetString(M3L.string_loadingDynamicHelp));
@@ -2860,11 +2887,8 @@ namespace ME3TweaksModManager
                         NexusModsUtilities.SetupNXMHandling();
                     }
 
-                    // This only needs run once, so it's done during startup
-                    if (Settings.ShowModListNotInstalledModsMessage)
-                    {
-                        ShowHideSlideup(ModLibraryNotInstalledModsPanel, true);
-                    }
+                    // Setup initial tutorial messages.
+                    ShowHideOneTimeMessage(OneTimeMessagePanel_HowToManageMods, Settings.OneTimeMessage_ModListIsNotListOfInstalledMods, true);
                 }
 
                 // Todo: Move to ME3TweaksCore?
@@ -3967,7 +3991,7 @@ namespace ME3TweaksModManager
         /// <param name="e"></param>
         private void DismissOneTimeMessage(object sender, RoutedEventArgs e)
         {
-            if (sender == ModLibraryNotInstalledModsDismissButton) Settings.ShowModListNotInstalledModsMessage = false;
+            if (sender == ModLibraryNotInstalledModsDismissButton) Settings.OneTimeMessage_ModListIsNotListOfInstalledMods = false;
         }
 
         /// <summary>
@@ -3978,7 +4002,7 @@ namespace ME3TweaksModManager
         private void RestoreOneTimeMessages(object sender, RoutedEventArgs e)
         {
             // Put other settings here as they are added.
-            Settings.ShowModListNotInstalledModsMessage = true;
+            Settings.OneTimeMessage_ModListIsNotListOfInstalledMods = true;
         }
     }
 }

@@ -26,6 +26,7 @@ using ME3TweaksModManager.modmanager;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.objects;
+using ME3TweaksModManager.modmanager.objects.tutorial;
 using ME3TweaksModManager.modmanager.windows;
 using Microsoft.AppCenter;
 using Microsoft.AppCenter.Analytics;
@@ -586,7 +587,6 @@ namespace ME3TweaksModManager
 
         #endregion
 
-        public static List<IntroTutorial.TutorialStep> TutorialService { get; set; } = new List<IntroTutorial.TutorialStep>(); //in case it takes long time to load
         public static List<NexusDomainHandler> NexusDomainHandlers { get; } = new();
 
         /// <summary>

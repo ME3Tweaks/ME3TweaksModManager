@@ -1662,32 +1662,43 @@
                                     Foreground="{DynamicResource {x:Static adonisUi:Brushes.HyperlinkBrush}}" />
                             </Button>
                         </DockPanel>
-                        <DockPanel
-                            Name="ModLibraryNotInstalledModsPanel"
-                            DockPanel.Dock="Bottom"
-                            Height="0">
-                            <TextBlock
-                                DockPanel.Dock="Left"
-                                TextWrapping="Wrap"
-                                Text="This is the list of mods available to install. This is not the list of installed mods. To view installed mods, click 'Manage Target'"
-                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.HyperlinkBrush}}"/>
-                            <Button
-                                Name="ModLibraryNotInstalledModsDismissButton"
-                                HorizontalAlignment="Right"
-                                Background="Transparent"
-                                BorderThickness="2"
-                                BorderBrush="Transparent"
-                                Click="DismissOneTimeMessage">
-                                <fa5:ImageAwesome
-                                    Icon="Solid_Times"
-                                    Opacity=".5"
-                                    VerticalAlignment="Center"
-                                    HorizontalAlignment="Center"
-                                    Width="10"
-                                    Height="10"
-                                    Foreground="{DynamicResource {x:Static adonisUi:Brushes.HyperlinkBrush}}" />
-                            </Button>
-                        </DockPanel>
+                        <ui:Clipper 
+                            HorizontalAlignment="Left"
+                            Constraint="Width"
+                                    DockPanel.Dock="Bottom">
+                            <DockPanel
+                                Margin="0,0,0,2"
+                                Name="OneTimeMessagePanel_HowToManageMods"
+                                ui:Clipper.HeightFraction="0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top">
+                                <Button
+                                    DockPanel.Dock="Right"
+                                    Width="20"
+                                    Name="ModLibraryNotInstalledModsDismissButton"
+                                    HorizontalAlignment="Right"
+                                    BorderThickness="0"
+                                    BorderBrush="Transparent"
+                                    Padding="0"
+                                    Click="DismissOneTimeMessage">
+                                    <fa5:ImageAwesome
+                                        Icon="Solid_Times"
+                                        Opacity=".5"
+                                        VerticalAlignment="Center"
+                                        HorizontalAlignment="Center"
+                                        Width="10"
+                                        Height="10"
+                                        Foreground="{DynamicResource {x:Static adonisUi:Brushes.HyperlinkBrush}}" />
+                                </Button>
+                                <TextBlock
+                                    HorizontalAlignment="Left"
+                                    TextAlignment="Left"
+                                    TextWrapping="Wrap"
+                                    Text="This is the list of mods available to install. This is not the list of installed mods. To view installed mods, click 'Manage Target'."
+                                    Foreground="{DynamicResource {x:Static adonisUi:Brushes.HyperlinkBrush}}"/>
+                                
+                            </DockPanel>
+                        </ui:Clipper>
                         <TextBlock
                             Text="{DynamicResource string_AvailableMods}"
                             ToolTip="{DynamicResource string_tooltip_modLibrary}"

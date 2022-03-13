@@ -57,6 +57,11 @@
                 Content="{DynamicResource string_skipTutorial}"
                 HorizontalAlignment="Left"
                 Command="{Binding SkipTutorialCommand}" />
+            <Button
+                Margin="5,0"
+                Content="Reload tutorial"
+                HorizontalAlignment="Left"
+                Command="{Binding ReloadTutorialCommand}" />
         </DockPanel>
         <Grid Width="786"
               Height="623">

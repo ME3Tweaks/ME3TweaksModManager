@@ -7,6 +7,7 @@ using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager;
 using ME3TweaksModManager.modmanager.me3tweaks;
+using ME3TweaksModManager.modmanager.me3tweaks.services;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.alternates;
 using ME3TweaksModManager.modmanager.objects.installer;

@@ -8,11 +8,13 @@ using LegendaryExplorerCore.Helpers;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.me3tweaks;
+using ME3TweaksModManager.modmanager.me3tweaks.services;
 using ME3TweaksModManager.modmanager.nexusmodsintegration;
 using ME3TweaksModManager.ui;
 using Microsoft.AppCenter.Analytics;
 using Pathoschild.FluentNexus.Models;
 using PropertyChanged;
+using M3OnlineContent = ME3TweaksModManager.modmanager.me3tweaks.services.M3OnlineContent;
 using MemoryAnalyzer = ME3TweaksModManager.modmanager.memoryanalyzer.MemoryAnalyzer;
 
 namespace ME3TweaksModManager.modmanager.objects

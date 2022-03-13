@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Media;
 using FontAwesome5;
 using ME3TweaksModManager.modmanager.me3tweaks;
+using ME3TweaksModManager.modmanager.me3tweaks.services;
 
 namespace ME3TweaksModManager.modmanager.windows
 {

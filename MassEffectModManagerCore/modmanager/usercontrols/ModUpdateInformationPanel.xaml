@@ -4,6 +4,7 @@
     xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
     xmlns:converters="clr-namespace:ME3TweaksModManager.modmanager.converters"
     xmlns:me3Tweaks="clr-namespace:ME3TweaksModManager.modmanager.me3tweaks"
+    xmlns:services="clr-namespace:ME3TweaksModManager.modmanager.me3tweaks.services"
     mc:Ignorable="d"
     d:DesignHeight="500"
     d:DesignWidth="500"
@@ -51,7 +52,7 @@
             AlternationCount="{Binding RelativeSource={RelativeSource Self}, Path=Items.Count}">
             <ItemsControl.Resources>
                 <DataTemplate
-                    DataType="{x:Type me3Tweaks:M3OnlineContent+ModUpdateInfo}">
+                    DataType="{x:Type services:M3OnlineContent+ModUpdateInfo}">
                     <StackPanel
                         Margin="0,5,5,5">
                         <Grid>
@@ -167,7 +168,7 @@
                     </DataTemplate.Triggers>
                 </DataTemplate>
                 <DataTemplate
-                    DataType="{x:Type me3Tweaks:M3OnlineContent+ModMakerModUpdateInfo}">
+                    DataType="{x:Type services:M3OnlineContent+ModMakerModUpdateInfo}">
                     <Grid
                         Margin="0,5,5,5"
                         HorizontalAlignment="Stretch">
@@ -254,7 +255,7 @@
                     </DataTemplate.Triggers>
                 </DataTemplate>
                 <DataTemplate
-                    DataType="{x:Type me3Tweaks:M3OnlineContent+NexusModUpdateInfo}">
+                    DataType="{x:Type services:M3OnlineContent+NexusModUpdateInfo}">
                     <Grid
                         Margin="0,5,5,5"
                         HorizontalAlignment="Stretch">

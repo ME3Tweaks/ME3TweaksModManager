@@ -1,19 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using LegendaryExplorerCore.Helpers;
-using ME3TweaksCore.Diagnostics;
+using System.Linq;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Misc;
 using ME3TweaksCore.Services;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.objects;
-using Microsoft.AppCenter.Crashes;
 using Newtonsoft.Json;
 using Serilog;
 using ShortTimeoutWebClient = ME3TweaksCore.Misc.ShortTimeoutWebClient;
 
-namespace ME3TweaksModManager.modmanager.me3tweaks
+namespace ME3TweaksModManager.modmanager.me3tweaks.services
 {
     /// <summary>
     /// Third Party Importing Service, used for importing mods that do not include a moddesc.ini
@@ -26,6 +24,12 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
         private static Dictionary<long, List<ThirdPartyImportingInfo>> Database;
 
         public static bool ServiceLoaded { get; set; }
+
+        /// <summary>
+        /// The amount of loaded entries in total (used for testing)
+        /// </summary>
+        public static int EntryCount => ServiceLoaded ? Database.Sum(x => x.Value.Count) : 0;
+
 
         private const string ThirdPartyImportingServiceURL = @"https://me3tweaks.com/modmanager/services/thirdpartyimportingservice?allgames=true";
 

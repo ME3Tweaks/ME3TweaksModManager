@@ -302,11 +302,11 @@ namespace ME3TweaksModManager.modmanager
             set => SetProperty(ref _doubleClickModInstall, value);
         }
 
-        private static bool _showModListNotInstalledModsMessage = true;
-        public static bool ShowModListNotInstalledModsMessage
+        private static bool _oneTimeMessageModListIsNotListOfInstalledMods = true;
+        public static bool OneTimeMessage_ModListIsNotListOfInstalledMods
         {
-            get => _showModListNotInstalledModsMessage;
-            set => SetProperty(ref _showModListNotInstalledModsMessage, value);
+            get => _oneTimeMessageModListIsNotListOfInstalledMods;
+            set => SetProperty(ref _oneTimeMessageModListIsNotListOfInstalledMods, value);
         }
 
         public static readonly string SettingsPath = Path.Combine(M3Utilities.GetAppDataFolder(), "settings.ini");
@@ -365,7 +365,7 @@ namespace ME3TweaksModManager.modmanager
             GenerationSettingOT = LoadSettingBool(settingsIni, "ModManager", "GenerationSettingOT", true);
 
             // Dismiss messages
-            ShowModListNotInstalledModsMessage = LoadSettingBool(settingsIni, "ModManager", "ShowModListNotInstalledModsMessage", true);
+            OneTimeMessage_ModListIsNotListOfInstalledMods = LoadSettingBool(settingsIni, "ModManager", "ShowModListNotInstalledModsMessage", true);
 
 
             Loaded = true;
@@ -539,7 +539,7 @@ namespace ME3TweaksModManager.modmanager
                 SaveSettingBool(settingsIni, "ModManager", "GenerationSettingLE", GenerationSettingLE);
                 SaveSettingString(settingsIni, "ModManager", "SelectedFilters", SelectedFilters);
                 SaveSettingBool(settingsIni, "ModManager", "DoubleClickModInstall", DoubleClickModInstall);
-                SaveSettingBool(settingsIni, "ModManager", "ShowModListNotInstalledModsMessage", ShowModListNotInstalledModsMessage);
+                SaveSettingBool(settingsIni, "ModManager", "ShowModListNotInstalledModsMessage", OneTimeMessage_ModListIsNotListOfInstalledMods);
 
                 SaveSettingBool(settingsIni, "ModMaker", "AutoAddControllerMixins", ModMakerControllerModOption);
                 SaveSettingBool(settingsIni, "ModMaker", "AutoInjectCustomKeybinds", ModMakerAutoInjectCustomKeybindsOption);

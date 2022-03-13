@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksModManager.modmanager.me3tweaks;
+using ME3TweaksModManager.modmanager.me3tweaks.services;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.usercontrols;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
