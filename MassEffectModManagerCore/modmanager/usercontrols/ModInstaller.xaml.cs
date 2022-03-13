@@ -777,12 +777,17 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     metaOutLines.Add($@"{MetaCMM.PrefixIncompatibleDLC}{string.Join(';', InstallOptionsPackage.ModBeingInstalled.IncompatibleDLC)}");
                 }
 
-                var alternates = InstallOptionsPackage.ModBeingInstalled.GetAllAlternates().Where(x => x.IsSelected).ToList();
+                var alternates = InstallOptionsPackage.SelectedOptions.SelectMany(x=>x.Value).ToList();
                 if (alternates.Any())
                 {
                     // I hope this covers all cases. Mods targeting moddesc 6 or lower don't need friendlyname or description, but virtually all of them did
                     // as MM4/5 autonaming was ugly
-                    metaOutLines.Add($@"{MetaCMM.PrefixOptionsSelectedOnInstall}{string.Join(';', alternates.Where(x => !string.IsNullOrWhiteSpace(x.FriendlyName)).Select(x => x.FriendlyName))}");
+                    var entries = alternates.Where(x => !string.IsNullOrWhiteSpace(x.FriendlyName)).Select(x =>
+                    {
+                        if (x.GroupName != null) return $@"{x.GroupName}: {x.FriendlyName}";
+                        return x.FriendlyName;
+                    });
+                    metaOutLines.Add($@"{MetaCMM.PrefixOptionsSelectedOnInstall}{string.Join(';', entries)}");
                 }
 
                 File.WriteAllLines(metacmm, metaOutLines);
