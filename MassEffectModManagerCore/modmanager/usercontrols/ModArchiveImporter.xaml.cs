@@ -846,7 +846,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
 
 
-
             foreach (var mod in mods)
             {
                 //Todo: Extract files

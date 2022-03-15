@@ -30,7 +30,8 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
         {
             return new ME3TweaksCoreLibInitPackage()
             {
-                LoadAuxillaryServices = false,
+                // We will manually load auxiliary services
+                LoadAuxiliaryServices = false,
                 RunOnUiThreadDelegate = action => Application.Current.Dispatcher.Invoke(action),
                 TrackEventCallback = (eventName, properties) => { Analytics.TrackEvent(eventName, properties); },
                 TrackErrorCallback = (eventName, properties) => { Crashes.TrackError(eventName, properties); },

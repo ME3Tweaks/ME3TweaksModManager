@@ -5,6 +5,7 @@ using System.Windows;
 using LegendaryExplorerCore.Helpers;
 using ME3TweaksCore.Localization;
 using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.helpers;
 
 namespace ME3TweaksModManager.modmanager.me3tweaks.services
 {
@@ -41,7 +42,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
             return null; //can't be found or no manifest
         }
 
-        private static string getCachedLocalizationFile(string lang) => Path.Combine(M3Utilities.GetCachedLocalizationFolder(), $@"{lang}-{App.BuildNumber}.xaml");
+        private static string getCachedLocalizationFile(string lang) => Path.Combine(M3Filesystem.GetCachedLocalizationFolder(), $@"{lang}-{App.BuildNumber}.xaml");
 
         /// <summary>
         /// Sets the application's strings based on the language. This call should be run on a background thread (or awaited) as it will block if there is a new localization file to fetch.

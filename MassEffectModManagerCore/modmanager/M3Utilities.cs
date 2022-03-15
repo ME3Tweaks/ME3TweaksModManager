@@ -1986,52 +1986,9 @@ namespace ME3TweaksModManager.modmanager
             return null;
         }
 
-        public static string GetKeybindsOverrideFolder()
-        {
-            return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "keybindsoverride")).FullName;
-        }
-
-        internal static string GetTutorialServiceCacheFile()
-        {
-#if DEBUG
-            // DEBUG ONLY!
-            return @"C:\ProgramData\ME3TweaksModManager\ME3TweaksServicesCache\tutorialservice\new\tutorialservice.json";
-            return Path.Combine(GetME3TweaksServicesCache(), "tutorialservice.json");
-#elif PRERELEASE
-            return Path.Combine(GetME3TweaksServicesCache(), "tutorialservice.json");
-#else 
-            You forgot to fix me bruh
-
-#endif
-        }
-
-        public static string GetTutorialServiceCache()
-        {
-            return Directory.CreateDirectory(Path.Combine(GetME3TweaksServicesCache(), "tutorialservice")).FullName;
-        }
-
         public static string GetOriginOverlayDisableFile()
         {
             return Path.Combine(GetME3TweaksServicesCache(), "d3d9.dll");
-        }
-
-        public static string GetCachedLocalizationFolder()
-        {
-            return Directory.CreateDirectory(Path.Combine(GetME3TweaksServicesCache(), "livelocalization")).FullName;
-        }
-
-        /// <summary>
-        /// Where downloaded mods are cached if they are larger than the in-memory size.
-        /// </summary>
-        /// <returns></returns>
-        public static string GetModDownloadCacheDirectory()
-        {
-            return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "downloadedmodscache")).FullName;
-        }
-
-        public static string GetLocalBasegameIdentificationServiceFile()
-        {
-            return Path.Combine(GetME3TweaksServicesCache(), "localbasegamefileidentificationservice.json");
         }
 
         public static MEGame GetGameFromNumber(string gameNum)
@@ -2055,25 +2012,7 @@ namespace ME3TweaksModManager.modmanager
             7 => MEGame.LELauncher,
             _ => MEGame.Unknown
         };
-
-        /// <summary>
-        /// Directory for LE Launcher stuff
-        /// </summary>
-        /// <returns></returns>
-        public static string GetLELaunchToolsDir()
-        {
-            return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "LELauncherTools")).FullName;
-        }
-
-        /// <summary>
-        /// Directory for LE Launcher stuff
-        /// </summary>
-        /// <returns></returns>
-        public static string GetLELaunchToolsGameBootDir()
-        {
-            return Directory.CreateDirectory(Path.Combine(GetLELaunchToolsDir(), "GameBoot")).FullName;
-        }
-
+        
         /// <summary>
         /// Writes the location of this exe to the registry. This allows external tools to locate Mod Manager without having them have to specify it.
         /// </summary>

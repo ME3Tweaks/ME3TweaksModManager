@@ -275,7 +275,7 @@ namespace ME3TweaksModManager.modmanager.windows
                             var filesInKBDir = Directory.EnumerateFiles(overrideDir, @"*.xml").ToList();
                             foreach (var file in filesInKBDir)
                             {
-                                var keybindDir = Path.Combine(M3Utilities.GetKeybindsOverrideFolder(), @"me3-" + Path.GetFileName(file));
+                                var keybindDir = Path.Combine(M3Filesystem.GetKeybindsOverrideFolder(), @"me3-" + Path.GetFileName(file));
                                 M3Log.Information($@"Migrating keybinds override: {file} -> {keybindDir}");
                                 File.Move(file, keybindDir, true);
                                 M3Log.Information(@"Migrated " + Path.GetFileName(file));

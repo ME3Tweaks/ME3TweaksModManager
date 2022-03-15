@@ -261,6 +261,8 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
      
         public static bool EnsureCriticalFiles()
         {
+            // This method does nothing currently but is left here as a stub
+            return true;
             try
             {
                 /*

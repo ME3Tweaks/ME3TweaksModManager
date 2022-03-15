@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using LegendaryExplorerCore.Helpers;
 using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.me3tweaks;
 using ME3TweaksModManager.modmanager.me3tweaks.services;
@@ -82,7 +83,7 @@ namespace ME3TweaksModManager.modmanager.objects
                 }
                 else
                 {
-                    DownloadedStream = new FileStream(Path.Combine(M3Utilities.GetModDownloadCacheDirectory(), ModFile.FileName), FileMode.Create);
+                    DownloadedStream = new FileStream(Path.Combine(M3Filesystem.GetModDownloadCacheDirectory(), ModFile.FileName), FileMode.Create);
                     MemoryAnalyzer.AddTrackedMemoryItem(@"NXM Download FileStream", new WeakReference(DownloadedStream));
                 }
 
@@ -170,16 +171,16 @@ namespace ME3TweaksModManager.modmanager.objects
                     ModFile = NexusModsUtilities.GetClient().ModFiles.GetModFile(ProtocolLink.Domain, ProtocolLink.ModId, ProtocolLink.FileId).Result;
                     if (ModFile != null)
                     {
-                        if (ModFile.SizeInBytes != null && ModFile.SizeInBytes.Value > DOWNLOAD_TO_MEMORY_SIZE_CAP && M3Utilities.GetDiskFreeSpaceEx(M3Utilities.GetModDownloadCacheDirectory(), out var free, out var total, out var totalFree))
+                        if (ModFile.SizeInBytes != null && ModFile.SizeInBytes.Value > DOWNLOAD_TO_MEMORY_SIZE_CAP && M3Utilities.GetDiskFreeSpaceEx(M3Filesystem.GetModDownloadCacheDirectory(), out var free, out var total, out var totalFree))
                         {
                             // Check free disk space.
                             if (totalFree < ModFile.SizeInBytes * 1.2) // 20% buffer.
                             //if (totalFree < ModFile.SizeInBytes * 100000.0) // Debug code
                             {
-                                M3Log.Error($@"There is not enough free space on {Path.GetPathRoot(M3Utilities.GetModDownloadCacheDirectory())} to download {ModFile.FileName}. We need {FileSize.FormatSize(ModFile.SizeInBytes.Value)} but only {FileSize.FormatSize(totalFree)} is available.");
+                                M3Log.Error($@"There is not enough free space on {Path.GetPathRoot(M3Filesystem.GetModDownloadCacheDirectory())} to download {ModFile.FileName}. We need {FileSize.FormatSize(ModFile.SizeInBytes.Value)} but only {FileSize.FormatSize(totalFree)} is available.");
                                 Initialized = true;
                                 ProgressIndeterminate = false;
-                                OnModDownloadError?.Invoke(this, $"There is not enough free space on {Path.GetPathRoot(M3Utilities.GetModDownloadCacheDirectory())} to download {ModFile.FileName}.\n\nRequired space: {FileSize.FormatSize(ModFile.SizeInBytes.Value)}\nFree space: {FileSize.FormatSize(totalFree)}");
+                                OnModDownloadError?.Invoke(this, $"There is not enough free space on {Path.GetPathRoot(M3Filesystem.GetModDownloadCacheDirectory())} to download {ModFile.FileName}.\n\nRequired space: {FileSize.FormatSize(ModFile.SizeInBytes.Value)}\nFree space: {FileSize.FormatSize(totalFree)}");
                                 return;
                             }
                         }

@@ -643,7 +643,7 @@ namespace ME3TweaksModManager
             {
                 try
                 {
-                    M3Utilities.DeleteFilesAndFoldersRecursively(M3Utilities.GetModDownloadCacheDirectory(), false);
+                    M3Utilities.DeleteFilesAndFoldersRecursively(M3Filesystem.GetModDownloadCacheDirectory(), false);
                     M3Log.Information(@"Deleted mod download cache");
                 }
                 catch (Exception ex)

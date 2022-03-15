@@ -46,6 +46,7 @@ using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.loaders;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.me3tweaks;
+using ME3TweaksModManager.modmanager.me3tweaks.online;
 using ME3TweaksModManager.modmanager.me3tweaks.services;
 using ME3TweaksModManager.modmanager.merge.dlc;
 using ME3TweaksModManager.modmanager.merge.game2email;
@@ -2688,27 +2689,27 @@ namespace ME3TweaksModManager
                 M3Log.Information(@"Start of content check network thread. First startup check: " + firstStartupCheck);
 
                 BackgroundTask bgTask;
+                #region STARTUP ONLY (ONE TIME)
                 if (firstStartupCheck)
                 {
-
+                    // First boot does this in the background
                     UpdateBinkStatus(MEGame.ME1);
                     UpdateBinkStatus(MEGame.ME2);
                     UpdateBinkStatus(MEGame.ME3);
                     UpdateBinkStatus(MEGame.LE1);
                     UpdateBinkStatus(MEGame.LE2);
                     UpdateBinkStatus(MEGame.LE3);
-                    bgTask = BackgroundTaskEngine.SubmitBackgroundJob(@"EnsureCriticalFiles", M3L.GetString(M3L.string_downloadingRequiredFiles), M3L.GetString(M3L.string_requiredFilesDownloaded));
-                    if (!M3OnlineContent.EnsureCriticalFiles())
-                    {
-                        //Critical files not loaded!
+                    //bgTask = BackgroundTaskEngine.SubmitBackgroundJob(@"EnsureCriticalFiles", M3L.GetString(M3L.string_downloadingRequiredFiles), M3L.GetString(M3L.string_requiredFilesDownloaded));
+                    //if (!M3OnlineContent.EnsureCriticalFiles())
+                    //{
+                    //    //Critical files not loaded!
+                    //    b.Result = STARTUP_FAIL_CRITICAL_FILES_MISSING;
+                    //    bgTask.FinishedUIText = M3L.GetString(M3L.string_failedToDownloadRequiredFiles);
+                    //    BackgroundTaskEngine.SubmitJobCompletion(bgTask);
+                    //    return;
+                    //}
 
-                        b.Result = STARTUP_FAIL_CRITICAL_FILES_MISSING;
-                        bgTask.FinishedUIText = M3L.GetString(M3L.string_failedToDownloadRequiredFiles);
-                        BackgroundTaskEngine.SubmitJobCompletion(bgTask);
-                        return;
-                    }
-
-                    BackgroundTaskEngine.SubmitJobCompletion(bgTask);
+                    //BackgroundTaskEngine.SubmitJobCompletion(bgTask);
 
                     var updateCheckTask = BackgroundTaskEngine.SubmitBackgroundJob(@"UpdateCheck", M3L.GetString(M3L.string_checkingForModManagerUpdates), M3L.GetString(M3L.string_completedModManagerUpdateCheck));
                     try
@@ -2767,47 +2768,7 @@ namespace ME3TweaksModManager
 
                     if (App.ServerManifest != null)
                     {
-                        bgTask = BackgroundTaskEngine.SubmitBackgroundJob(@"MixinFetch", M3L.GetString(M3L.string_loadingMixins), M3L.GetString(M3L.string_loadedMixins));
-                        try
-                        {
-                            //Mixins
-                            MixinHandler.ServerMixinHash = App.ServerManifest[@"mixinpackagemd5"];
-                            if (!MixinHandler.IsMixinPackageUpToDate())
-                            {
-                                //Download new package.
-                                var memoryPackage = M3OnlineContent.DownloadToMemory(MixinHandler.MixinPackageEndpoint, hash: MixinHandler.ServerMixinHash);
-                                if (memoryPackage.errorMessage != null)
-                                {
-                                    M3Log.Error(@"Error fetching mixin package: " + memoryPackage.errorMessage);
-                                    bgTask.FinishedUIText = M3L.GetString(M3L.string_failedToUpdateMixinPackage);
-                                }
-                                else
-                                {
-                                    File.WriteAllBytes(MixinHandler.MixinPackagePath, memoryPackage.result.ToArray());
-                                    M3Log.Information(@"Wrote ME3Tweaks Mixin Package to disk");
-                                    MixinHandler.LoadME3TweaksPackage();
-                                }
-                            }
-                            else
-                            {
-                                M3Log.Information(@"ME3Tweaks Mixin Package is up to date");
-                                MixinHandler.LoadME3TweaksPackage();
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            M3Log.Error(@"Error fetching mixin package: " + e.Message);
-                            bgTask.FinishedUIText = M3L.GetString(M3L.string_errorLoadingMixinPackage);
-
-                        }
-
-                        BackgroundTaskEngine.SubmitJobCompletion(bgTask);
-
-                        var hasUpdatedLocalization = M3OnlineContent.HasUpdatedLocalization(App.CurrentLanguage);
-                        if (hasUpdatedLocalization.HasValue)
-                        {
-                            SetApplicationLanguage(App.CurrentLanguage, false); //Force update of localization
-                        }
+                        M3ServiceLoader.TouchupServerManifest(this);
                     }
                     else
                     {
@@ -2816,47 +2777,9 @@ namespace ME3TweaksModManager
                     }
                 }
 
-                //bgTask = BackgroundTaskEngine.SubmitBackgroundJob(@"EnsureStaticFiles", M3L.GetString(M3L.string_downloadingStaticFiles), M3L.GetString(M3L.string_staticFilesDownloaded));
-                //success = OnlineContent.EnsureStaticAssets();
-                //if (!success)
-                //{
-                //    Application.Current.Dispatcher.Invoke(delegate { M3L.ShowDialog(this, M3L.GetString(M3L.string_dialogCouldNotDownloadStaticAssets), M3L.GetString(M3L.string_missingAssets), MessageBoxButton.OK, MessageBoxImage.Error); });
-                //    bgTask.FinishedUIText = M3L.GetString(M3L.string_failedToDownloadStaticFiles);
-                //}
+                #endregion
 
-                //BackgroundTaskEngine.SubmitJobCompletion(bgTask);
-
-                bgTask = BackgroundTaskEngine.SubmitBackgroundJob(@"LoadTutorialService", M3L.GetString(M3L.string_checkingTutorialAssets), M3L.GetString(M3L.string_checkedTutorialAssets));
-                TutorialService.LoadService(!firstStartupCheck);
-                TutorialService.TouchupTutorial();
-                BackgroundTaskEngine.SubmitJobCompletion(bgTask);
-
-                bgTask = BackgroundTaskEngine.SubmitBackgroundJob(@"LoadDynamicHelp", M3L.GetString(M3L.string_loadingDynamicHelp), M3L.GetString(M3L.string_loadingDynamicHelp));
-                var helpItemsLoading = M3OnlineContent.FetchLatestHelp(App.CurrentLanguage, false, !firstStartupCheck);
-                bw.ReportProgress(0, helpItemsLoading);
-                BackgroundTaskEngine.SubmitJobCompletion(bgTask);
-
-                bgTask = BackgroundTaskEngine.SubmitBackgroundJob(@"ThirdPartyServicesFetch", M3L.GetString(M3L.string_loadingThirdPartyServices), M3L.GetString(M3L.string_loadedThirdPartyServices));
-                TPMIService.LoadService(!firstStartupCheck);
-                BasegameFileIdentificationService.LoadService(!firstStartupCheck);
-                TPIService.LoadService(!firstStartupCheck);
-                ASIManager.LoadManifest(false, !firstStartupCheck);
-                BlacklistingService.LoadService(!firstStartupCheck);
-
-                BackgroundTaskEngine.SubmitJobCompletion(bgTask);
-
-                bgTask = BackgroundTaskEngine.SubmitBackgroundJob(@"LoadTipsService", M3L.GetString(M3L.string_loadingTipsService), M3L.GetString(M3L.string_loadedTipsService));
-                try
-                {
-                    App.TipsService = M3OnlineContent.FetchTipsService(!firstStartupCheck);
-                    SetTipsForLanguage();
-                }
-                catch (Exception e)
-                {
-                    M3Log.Error(@"Failed to load tips service: " + e.Message);
-                }
-                BackgroundTaskEngine.SubmitJobCompletion(bgTask);
-
+                M3ServiceLoader.LoadServices(this, bw);
 
                 if (firstStartupCheck)
                 {
@@ -2912,31 +2835,30 @@ namespace ME3TweaksModManager
                         handleInitialPending();
                     }
 
-                    NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"BackupCheck");
-                    nbw.DoWork += (a, b) =>
-                {
-                    var me1CheckRequired = BackupService.GetGameBackupPath(MEGame.ME1) == null && BackupService.GetGameBackupPath(MEGame.ME1, false) != null;
-                    var me2CheckRequired = BackupService.GetGameBackupPath(MEGame.ME2) == null && BackupService.GetGameBackupPath(MEGame.ME2, false) != null;
-                    var me3CheckRequired = BackupService.GetGameBackupPath(MEGame.ME3) == null && BackupService.GetGameBackupPath(MEGame.ME3, false) != null;
-
-                    if (me1CheckRequired || me2CheckRequired || me3CheckRequired)
+                    if (Settings.GenerationSettingOT)
                     {
-                        var bgTask = BackgroundTaskEngine.SubmitBackgroundJob(@"BackupCheck", M3L.GetString(M3L.string_checkingBackups), M3L.GetString(M3L.string_finishedCheckingBackups));
-                        // TODO: NEEDS ACTIVITY SET!
-                        if (me1CheckRequired) VanillaDatabaseService.CheckAndTagBackup(MEGame.ME1);
-                        if (me2CheckRequired) VanillaDatabaseService.CheckAndTagBackup(MEGame.ME2);
-                        if (me3CheckRequired) VanillaDatabaseService.CheckAndTagBackup(MEGame.ME3);
+                        NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"BackupCheck");
+                        nbw.DoWork += (a, b) =>
+                        {
+                            var me1CheckRequired = BackupService.GetGameBackupPath(MEGame.ME1) == null && BackupService.GetGameBackupPath(MEGame.ME1, false) != null;
+                            var me2CheckRequired = BackupService.GetGameBackupPath(MEGame.ME2) == null && BackupService.GetGameBackupPath(MEGame.ME2, false) != null;
+                            var me3CheckRequired = BackupService.GetGameBackupPath(MEGame.ME3) == null && BackupService.GetGameBackupPath(MEGame.ME3, false) != null;
 
-                        BackgroundTaskEngine.SubmitJobCompletion(bgTask);
+                            if (me1CheckRequired || me2CheckRequired || me3CheckRequired)
+                            {
+                                var bgTask = BackgroundTaskEngine.SubmitBackgroundJob(@"BackupCheck", M3L.GetString(M3L.string_checkingBackups), M3L.GetString(M3L.string_finishedCheckingBackups));
+                                // TODO: NEEDS ACTIVITY SET!
+                                if (me1CheckRequired) VanillaDatabaseService.CheckAndTagBackup(MEGame.ME1);
+                                if (me2CheckRequired) VanillaDatabaseService.CheckAndTagBackup(MEGame.ME2);
+                                if (me3CheckRequired) VanillaDatabaseService.CheckAndTagBackup(MEGame.ME3);
+
+                                BackgroundTaskEngine.SubmitJobCompletion(bgTask);
+                            }
+                        };
+                        nbw.RunWorkerAsync();
                     }
-                };
-                    nbw.RunWorkerAsync();
-                    CommandManager.InvalidateRequerySuggested(); //refresh bindings that depend on this
 
-                    //byte[] bytes = File.ReadAllBytes(@"C:\Users\mgame\Source\Repos\ME3Tweaks\MassEffectModManager\ME3TweaksModManager\Deployment\Releases\ME3TweaksModManagerExtractor_6.0.0.99.exe");
-                    //MemoryStream ms = new MemoryStream(bytes);
-                    //SevenZipExtractor sve = new SevenZipExtractor(ms);
-                    //sve.ExtractArchive(@"C:\users\public\documents");
+                    CommandManager.InvalidateRequerySuggested(); //refresh bindings that depend on this
                 };
             ContentCheckInProgress = true;
             bw.RunWorkerAsync();
@@ -3076,7 +2998,7 @@ namespace ME3TweaksModManager
             }
         }
 
-        private void SetTipsForLanguage()
+        internal void SetTipsForLanguage()
         {
             if (App.TipsService != null)
             {
