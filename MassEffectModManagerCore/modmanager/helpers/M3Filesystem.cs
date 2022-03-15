@@ -37,6 +37,10 @@ namespace ME3TweaksModManager.modmanager.helpers
             return Directory.CreateDirectory(Path.Combine(MCoreFilesystem.GetAppDataFolder(), "downloadedmodscache")).FullName;
         }
 
+        internal static string GetNexusModsUpdateServiceCachedFile()
+        {
+            return Path.Combine(MCoreFilesystem.GetME3TweaksServicesCache(), @"nexusmodsupdaterservice.json");
+        }
 
         public static string GetKeybindsOverrideFolder()
         {

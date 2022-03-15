@@ -96,6 +96,8 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.online
         // Mod Manager specific service loaders
         private static Dictionary<string, MCoreServiceLoader.OnlineServiceLoader> M3ServiceLoaders = new()
         {
+            { @"nexusupdaterservice", NexusUpdaterService.LoadService },
+
             { @"thirdpartyimportingservice", TPIService.LoadService },
             { @"blacklistingservice", BlacklistingService.LoadService },
             { @"tutorialservice", TutorialService.LoadService },

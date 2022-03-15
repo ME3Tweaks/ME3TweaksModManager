@@ -16,6 +16,7 @@ using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.gameini;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.me3tweaks.services;
 using ME3TweaksModManager.modmanager.objects.alternates;
 using Microsoft.AppCenter.Analytics;
 using PropertyChanged;
@@ -162,7 +163,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             {
                 if (ModClassicUpdateCode > 0) return true;
                 if (ModModMakerID > 0) return true;
-                if (NexusModID > 0 && NexusUpdateCheck) return true;
+                if (NexusModID > 0 && NexusUpdateCheck && NexusUpdaterService.IsNexusCodeWhitelisted(Game, NexusModID)) return true;
                 return false;
             }
         }

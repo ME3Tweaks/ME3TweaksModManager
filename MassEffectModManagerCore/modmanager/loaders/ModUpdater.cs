@@ -4,7 +4,6 @@ using System.Linq;
 using System.Windows;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.localizations;
-using ME3TweaksModManager.modmanager.me3tweaks;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.usercontrols;
 using M3OnlineContent = ME3TweaksModManager.modmanager.me3tweaks.services.M3OnlineContent;
@@ -133,6 +132,5 @@ namespace ME3TweaksModManager.modmanager.loaders
         {
             Instance = new ModUpdater() { mainWindow = mainWindow };
         }
-
     }
 }
