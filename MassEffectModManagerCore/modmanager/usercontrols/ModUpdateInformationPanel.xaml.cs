@@ -199,7 +199,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     {
                         try
                         {
-                            File.WriteAllText(System.IO.Path.Combine(M3Utilities.GetModmakerDefinitionsCache(), mui.ModMakerId + @".xml"), modDelta);
+                            File.WriteAllText(Path.Combine(M3Filesystem.GetModmakerDefinitionsCache(), mui.ModMakerId + @".xml"), modDelta);
                         }
                         catch (Exception e)
                         {
@@ -277,7 +277,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         );
                     }
                 }
-                var stagingDirectory = Directory.CreateDirectory(Path.Combine(M3Utilities.GetTempPath(), Path.GetFileName(ui.mod.ModPath))).FullName;
+                var stagingDirectory = Directory.CreateDirectory(Path.Combine(M3Filesystem.GetTempPath(), Path.GetFileName(ui.mod.ModPath))).FullName;
                 var modUpdated = M3OnlineContent.UpdateMod(ui, stagingDirectory, errorCallback);
                 ui.UpdateInProgress = false;
                 ui.CanUpdate = !modUpdated;

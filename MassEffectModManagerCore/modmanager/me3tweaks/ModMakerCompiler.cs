@@ -63,7 +63,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
             else if (code != 0)
             {
                 //Try cache
-                string cachedFilename = Path.Combine(M3Utilities.GetModmakerDefinitionsCache(), code + @".xml");
+                string cachedFilename = Path.Combine(M3Filesystem.GetModmakerDefinitionsCache(), code + @".xml");
                 if (File.Exists(cachedFilename))
                 {
                     //Going to compile cached item

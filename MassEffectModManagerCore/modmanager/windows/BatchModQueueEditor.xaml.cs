@@ -281,7 +281,7 @@ namespace ME3TweaksModManager.modmanager.windows
                 sb.AppendLine(m.ModDescPath.Substring(libraryRoot.Length + 1)); //STORE RELATIVE!
             }
 
-            var batchfolder = M3Utilities.GetBatchInstallGroupsFolder();
+            var batchfolder = M3Filesystem.GetBatchInstallGroupsFolder();
             if (existingFilename != null)
             {
                 var existingPath = Path.Combine(batchfolder, existingFilename);
@@ -306,7 +306,7 @@ namespace ME3TweaksModManager.modmanager.windows
 
         private string getSaveName(string groupName)
         {
-            var batchfolder = M3Utilities.GetBatchInstallGroupsFolder();
+            var batchfolder = M3Filesystem.GetBatchInstallGroupsFolder();
             var newFname = M3Utilities.SanitizePath(groupName);
             if (string.IsNullOrWhiteSpace(newFname))
             {

@@ -5,6 +5,7 @@ using System.Windows.Input;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCoreWPF.UI;
+using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.nexusmodsintegration;
 using ME3TweaksModManager.modmanager.objects;
@@ -167,7 +168,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 v.Domains = v.DomainsEditable.Split(',').Select(x => x.Trim()).ToList();
             }
             App.NexusDomainHandlers.ReplaceAll(OtherGameHandlers);
-            File.WriteAllText(M3Utilities.GetExternalNexusHandlersFile(), JsonConvert.SerializeObject(OtherGameHandlers));
+            File.WriteAllText(M3Filesystem.GetExternalNexusHandlersFile(), JsonConvert.SerializeObject(OtherGameHandlers));
         }
 
         public override void OnPanelVisible()

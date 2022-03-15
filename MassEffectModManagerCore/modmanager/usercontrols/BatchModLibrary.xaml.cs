@@ -10,6 +10,7 @@ using LegendaryExplorerCore.Packages;
 using ME3TweaksCoreWPF;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksCoreWPF.UI;
+using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.loaders;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.mod;
@@ -56,7 +57,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             var result = M3L.ShowDialog(mainwindow, $"Delete the '{SelectedBatchQueue.QueueName}' install group?", "Confirm deletion", MessageBoxButton.YesNo, MessageBoxImage.Warning);
             if (result == MessageBoxResult.Yes)
             {
-                File.Delete(Path.Combine(M3Utilities.GetBatchInstallGroupsFolder(), SelectedBatchQueue.BackingFilename));
+                File.Delete(Path.Combine(M3Filesystem.GetBatchInstallGroupsFolder(), SelectedBatchQueue.BackingFilename));
                 AvailableBatchQueues.Remove(SelectedBatchQueue);
                 SelectedBatchQueue = null;
             }
@@ -133,7 +134,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         private void parseBatchFiles(string pathToHighlight = null)
         {
             AvailableBatchQueues.ClearEx();
-            var batchDir = M3Utilities.GetBatchInstallGroupsFolder();
+            var batchDir = M3Filesystem.GetBatchInstallGroupsFolder();
             var files = Directory.GetFiles(batchDir);
             foreach (var file in files)
             {

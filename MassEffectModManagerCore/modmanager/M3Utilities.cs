@@ -103,25 +103,6 @@ namespace ME3TweaksModManager.modmanager
             return false;
         }
 
-        /// <summary>
-        /// Gets the path for the nexus mods integration data folder. This is NOT where mods are stored during donwload.
-        /// </summary>
-        /// <returns></returns>
-        internal static string GetNexusModsCache()
-        {
-            return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "nexusmodsintegration")).FullName;
-        }
-
-        internal static string GetExternalNexusHandlersFile()
-        {
-            return Path.Combine(GetNexusModsCache(), "othernexushandlers.json");
-        }
-
-        internal static string GetBatchInstallGroupsFolder()
-        {
-            return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "batchmodqueues")).FullName;
-        }
-
         // Pinvoke for API function
         [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         [return: MarshalAs(UnmanagedType.Bool)]
@@ -184,7 +165,7 @@ namespace ME3TweaksModManager.modmanager
             {
                 //Must have admin rights.
                 M3Log.Information("We need admin rights to create this directory");
-                string exe = GetCachedExecutablePath("PermissionsGranter.exe");
+                string exe = M3Filesystem.GetCachedExecutablePath("PermissionsGranter.exe");
                 try
                 {
                     M3Utilities.ExtractInternalFile("ME3TweaksModManager.modmanager.me3tweaks.PermissionsGranter.exe", exe, true);
@@ -286,7 +267,7 @@ namespace ME3TweaksModManager.modmanager
                     args += $"\"{target}\"";
                 }
 
-                string exe = GetCachedExecutablePath("PermissionsGranter.exe");
+                string exe = M3Filesystem.GetCachedExecutablePath("PermissionsGranter.exe");
                 M3Utilities.ExtractInternalFile("ME3TweaksModManager.modmanager.me3tweaks.PermissionsGranter.exe", exe, true);
                 args = $"\"{System.Security.Principal.WindowsIdentity.GetCurrent().Name}\" " + args;
                 //need to run write permissions program
@@ -334,31 +315,6 @@ namespace ME3TweaksModManager.modmanager
             }
 
             return false;
-        }
-
-        /// <summary>
-        /// Gets the path where the specified static executable would be. This call does not check if that file exists.
-        /// If no path is specified, it returns the cached executables directory.
-        /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        public static string GetCachedExecutablePath(string path = null)
-        {
-            var lpath = Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "executables")).FullName;
-            if (path != null)
-            {
-                return Path.Combine(lpath, path);
-            }
-            return lpath;
-        }
-
-        /// <summary>
-        /// Returns Temp/VPatchRedirects
-        /// </summary>
-        /// <returns></returns>
-        internal static string GetVPatchRedirectsFolder()
-        {
-            return Path.Combine(M3Utilities.GetTempPath(), "VPatchRedirects");
         }
 
         //(Exception e)
@@ -460,14 +416,9 @@ namespace ME3TweaksModManager.modmanager
             System.Diagnostics.Process.Start("explorer.exe", argument);
         }
 
-        internal static string GetLocalHelpFile()
-        {
-            return Path.Combine(GetME3TweaksServicesCache(), "cachedhelp-v2.xml");
-        }
-
         internal static string GetObjectInfoFolder()
         {
-            return Directory.CreateDirectory(Path.Combine(M3Utilities.GetAppDataFolder(), "ObjectInfo")).FullName;
+            return Directory.CreateDirectory(Path.Combine(M3Filesystem.GetAppDataFolder(), "ObjectInfo")).FullName;
         }
 
         internal static string GetDataDirectory()
@@ -495,11 +446,6 @@ namespace ME3TweaksModManager.modmanager
             {
                 return null;
             }
-        }
-
-        internal static string GetUpdaterServiceUploadStagingPath()
-        {
-            return Directory.CreateDirectory(Path.Combine(GetTempPath(), "UpdaterServiceStaging")).FullName;
         }
 
         /// <summary>
@@ -711,11 +657,6 @@ namespace ME3TweaksModManager.modmanager
             return null;
         }
 
-        public static string GetDllDirectory()
-        {
-            return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "dlls")).FullName;
-        }
-
         internal static void EnsureModDirectories()
         {
             //Todo: Ensure these are not under any game targets.
@@ -726,16 +667,6 @@ namespace ME3TweaksModManager.modmanager
             Directory.CreateDirectory(GetLE2ModsDirectory());
             Directory.CreateDirectory(GetLE3ModsDirectory());
             Directory.CreateDirectory(GetLELauncherModsDirectory());
-        }
-
-        internal static string GetME3TweaksServicesCache()
-        {
-            return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "ME3TweaksServicesCache")).FullName;
-        }
-
-        internal static string GetLocalHelpResourcesDirectory()
-        {
-            return Directory.CreateDirectory(Path.Combine(GetME3TweaksServicesCache(), "HelpResources")).FullName;
         }
 
         public static string CalculateMD5(string filename)
@@ -792,26 +723,6 @@ namespace ME3TweaksModManager.modmanager
             return file.ToArray();
         }
 
-        internal static string GetTipsServiceFile()
-        {
-            return Path.Combine(GetME3TweaksServicesCache(), "tipsservice.json");
-        }
-
-        internal static string GetThirdPartyImportingCachedFile()
-        {
-            return Path.Combine(GetME3TweaksServicesCache(), "thirdpartyimportingservice.json");
-        }
-
-        internal static string GetBasegameIdentificationCacheFile()
-        {
-            return Path.Combine(GetME3TweaksServicesCache(), "basegamefileidentificationservice.json");
-        }
-
-        internal static string GetThirdPartyIdentificationCachedFile()
-        {
-            return Path.Combine(GetME3TweaksServicesCache(), "thirdpartyidentificationservice.json");
-        }
-
         /**
      * Replaces all break (br between <>) lines with a newline character. Used
      * to add newlines to ini4j.
@@ -832,16 +743,6 @@ namespace ME3TweaksModManager.modmanager
         public static string GetLE2ModsDirectory() => Path.Combine(GetModsDirectory(), "LE2");
         public static string GetLE1ModsDirectory() => Path.Combine(GetModsDirectory(), "LE1");
         public static string GetLELauncherModsDirectory() => Path.Combine(GetModsDirectory(), "LELAUNCHER");
-
-        /// <summary>
-        /// Returns location where we will store the 7z.dll. Does not check for existence
-        /// </summary>
-        /// <returns></returns>
-        internal static string Get7zDllPath()
-        {
-            return Path.Combine(GetDllDirectory(), "7z.dll");
-        }
-
 
         public static void OpenWebpage(string uri)
         {
@@ -944,27 +845,7 @@ namespace ME3TweaksModManager.modmanager
             return Process.GetProcesses().Any(x => x.ProcessName.Equals(processName, StringComparison.InvariantCultureIgnoreCase));
         }
 
-        internal static string GetAppDataFolder(bool createIfMissing = true)
-        {
-            var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "ME3TweaksModManager");
-            if (createIfMissing && !Directory.Exists(folder))
-            {
-                Directory.CreateDirectory(folder);
-            }
 
-            return folder;
-        }
-
-        internal static string GetPre104DataFolder()
-        {
-            var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MassEffectModManager");
-            if (Directory.Exists(folder))
-            {
-                return folder;
-            }
-
-            return null;
-        }
 
         public static Stream GetResourceStream(string assemblyResource, Assembly assembly = null)
         {
@@ -1028,14 +909,7 @@ namespace ME3TweaksModManager.modmanager
             return av;
         }
 
-        /// <summary>
-        /// Gets scratch space directory
-        /// </summary>
-        /// <returns>AppData/Temp</returns>
-        internal static string GetTempPath()
-        {
-            return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "Temp")).FullName;
-        }
+
 
         internal static string GetBinkFile(GameTargetWPF target)
         {
@@ -1056,11 +930,6 @@ namespace ME3TweaksModManager.modmanager
             return true;
         }
 
-        internal static string GetCachedTargetsFile(MEGame game)
-        {
-            return Path.Combine(GetAppDataFolder(), $"GameTargets{game}.txt");
-        }
-
         //internal static string GetCachedLETargetsFile()
         //{
         //    return Path.Combine(GetAppDataFolder(), "GameTargetsLE.txt");
@@ -1075,7 +944,7 @@ namespace ME3TweaksModManager.modmanager
         /// <returns></returns>
         internal static List<GameTargetWPF> GetCachedTargets(MEGame game, List<GameTargetWPF> existingTargets = null)
         {
-            var cacheFile = GetCachedTargetsFile(game);
+            var cacheFile = M3Filesystem.GetCachedTargetsFile(game);
             if (File.Exists(cacheFile))
             {
                 var targets = new OrderedSet<GameTargetWPF>();
@@ -1131,7 +1000,7 @@ namespace ME3TweaksModManager.modmanager
 
         internal static void AddCachedTarget(GameTargetWPF target)
         {
-            var cachefile = GetCachedTargetsFile(target.Game);
+            var cachefile = M3Filesystem.GetCachedTargetsFile(target.Game);
             bool creatingFile = !File.Exists(cachefile);
             var savedTargets = creatingFile ? new List<string>() : M3Utilities.WriteSafeReadAllLines(cachefile).ToList();
             var path = Path.GetFullPath(target.TargetPath); //standardize
@@ -1167,7 +1036,7 @@ namespace ME3TweaksModManager.modmanager
 
         internal static void RemoveCachedTarget(GameTargetWPF target)
         {
-            var cachefile = GetCachedTargetsFile(target.Game);
+            var cachefile = M3Filesystem.GetCachedTargetsFile(target.Game);
             if (!File.Exists(cachefile)) return; //can't do anything.
             var savedTargets = M3Utilities.WriteSafeReadAllLines(cachefile).ToList();
             var path = Path.GetFullPath(target.TargetPath); //standardize
@@ -1921,23 +1790,7 @@ namespace ME3TweaksModManager.modmanager
 
         #endregion
 
-        /// <summary>
-        /// Gets folder containing #.xml files (definition of modmaker mods)
-        /// </summary>
-        /// <returns></returns>
-        internal static string GetModmakerDefinitionsCache()
-        {
-            return Directory.CreateDirectory(Path.Combine(M3Utilities.GetModMakerCache(), "moddefinitions")).FullName;
-        }
 
-        /// <summary>
-        /// Gets cache directory for modmaker files
-        /// </summary>
-        /// <returns></returns>
-        private static string GetModMakerCache()
-        {
-            return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "ModMakerCache")).FullName;
-        }
 
         /// <summary>
         /// Prompts the user to select a game executable, with the specified list of accepted games. Logs if the user selected or did not seelct it.
@@ -1986,11 +1839,6 @@ namespace ME3TweaksModManager.modmanager
             return null;
         }
 
-        public static string GetOriginOverlayDisableFile()
-        {
-            return Path.Combine(GetME3TweaksServicesCache(), "d3d9.dll");
-        }
-
         public static MEGame GetGameFromNumber(string gameNum)
         {
             return GetGameFromNumber(int.Parse(gameNum));
@@ -2012,7 +1860,7 @@ namespace ME3TweaksModManager.modmanager
             7 => MEGame.LELauncher,
             _ => MEGame.Unknown
         };
-        
+
         /// <summary>
         /// Writes the location of this exe to the registry. This allows external tools to locate Mod Manager without having them have to specify it.
         /// </summary>

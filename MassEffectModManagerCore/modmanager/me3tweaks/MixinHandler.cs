@@ -9,6 +9,7 @@ using System.Text;
 using System.Xml.Linq;
 using ME3TweaksCore.Helpers;
 using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.memoryanalyzer;
 using ME3TweaksModManager.modmanager.objects;
@@ -31,7 +32,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
         public static RecyclableMemoryStreamManager MixinMemoryStreamManager { get; private set; }
         public static string ServerMixinHash;
         public static readonly string MixinPackageEndpoint = @"https://me3tweaks.com/mixins/mixinlibrary.zip";
-        public static readonly string MixinPackagePath = Path.Combine(Directory.CreateDirectory(Path.Combine(M3Utilities.GetAppDataFolder(), @"Mixins", @"me3tweaks")).FullName, @"mixinlibrary.zip");
+        public static readonly string MixinPackagePath = Path.Combine(Directory.CreateDirectory(Path.Combine(M3Filesystem.GetAppDataFolder(), @"Mixins", @"me3tweaks")).FullName, @"mixinlibrary.zip");
 
         public static bool IsMixinPackageUpToDate()
         {

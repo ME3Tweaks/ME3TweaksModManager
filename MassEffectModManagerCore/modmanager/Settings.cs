@@ -10,6 +10,7 @@ using System.Text;
 using IniParser;
 using IniParser.Model;
 using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.nexusmodsintegration;
 
 namespace ME3TweaksModManager.modmanager
@@ -309,7 +310,7 @@ namespace ME3TweaksModManager.modmanager
             set => SetProperty(ref _oneTimeMessageModListIsNotListOfInstalledMods, value);
         }
 
-        public static readonly string SettingsPath = Path.Combine(M3Utilities.GetAppDataFolder(), "settings.ini");
+        public static readonly string SettingsPath = Path.Combine(M3Filesystem.GetAppDataFolder(), "settings.ini");
 
         public static void Load()
         {

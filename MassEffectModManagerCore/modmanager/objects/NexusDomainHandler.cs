@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using Newtonsoft.Json;
 using PropertyChanged;
@@ -77,10 +78,10 @@ namespace ME3TweaksModManager.modmanager.objects
 
         public static void LoadExternalHandlers()
         {
-            if (File.Exists(M3Utilities.GetExternalNexusHandlersFile()))
+            if (File.Exists(M3Filesystem.GetExternalNexusHandlersFile()))
             {
                 M3Log.Information(@"Loading external nxm handler info");
-                App.NexusDomainHandlers.ReplaceAll(JsonConvert.DeserializeObject<List<NexusDomainHandler>>(File.ReadAllText(M3Utilities.GetExternalNexusHandlersFile())));
+                App.NexusDomainHandlers.ReplaceAll(JsonConvert.DeserializeObject<List<NexusDomainHandler>>(File.ReadAllText(M3Filesystem.GetExternalNexusHandlersFile())));
             }
         }
 

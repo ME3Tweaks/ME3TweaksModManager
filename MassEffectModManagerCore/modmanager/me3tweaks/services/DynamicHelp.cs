@@ -29,13 +29,13 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
         /// <returns></returns>
         public static List<SortableHelpElement> FetchLatestHelp(string language, bool preferLocal, bool overrideThrottling = false)
         {
-            var localHelpExists = File.Exists(M3Utilities.GetLocalHelpFile());
+            var localHelpExists = File.Exists(M3Filesystem.GetLocalHelpFile());
             string cached = null;
             if (localHelpExists)
             {
                 try
                 {
-                    cached = File.ReadAllText(M3Utilities.GetLocalHelpFile());
+                    cached = File.ReadAllText(M3Filesystem.GetLocalHelpFile());
                 }
                 catch (Exception e)
                 {
@@ -68,7 +68,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
                     try
                     {
                         string xml = wc.DownloadStringAwareOfEncoding(staticendpoint + @"dynamichelp/latesthelp-localized2.xml");
-                        File.WriteAllText(M3Utilities.GetLocalHelpFile(), xml);
+                        File.WriteAllText(M3Filesystem.GetLocalHelpFile(), xml);
                         return ParseLocalHelp(xml, language);
                     }
                     catch (Exception e)
@@ -240,7 +240,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
             if (ResourceName != null)
             {
                 //Validate locally
-                var localFile = Path.Combine(M3Utilities.GetLocalHelpResourcesDirectory(), ResourceName);
+                var localFile = Path.Combine(M3Filesystem.GetLocalHelpResourcesDirectory(), ResourceName);
                 if (!File.Exists(localFile))
                 {
                     //Download

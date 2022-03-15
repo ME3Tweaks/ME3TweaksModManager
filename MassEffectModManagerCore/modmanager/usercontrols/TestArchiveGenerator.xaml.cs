@@ -49,7 +49,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 var nbw = new NamedBackgroundWorker(@"TestArchiveGenerator");
                 nbw.DoWork += (a, b) =>
                 {
-                    var stagingPath = Directory.CreateDirectory(Path.Combine(M3Utilities.GetTempPath(), @"TestGenerator")).FullName;
+                    var stagingPath = Directory.CreateDirectory(Path.Combine(M3Filesystem.GetTempPath(), @"TestGenerator")).FullName;
                     var referencedFiles = ModForArchive.GetAllRelativeReferences();
                     int numdone = 0;
                     ActionText = M3L.GetString(M3L.string_hashingFiles);

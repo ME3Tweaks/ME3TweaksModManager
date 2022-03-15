@@ -195,8 +195,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         var authInfo = NexusModsUtilities.AuthToNexusMods(apiKeyReceived).Result;
                         if (authInfo != null)
                         {
-                            using FileStream fs = new FileStream(System.IO.Path.Combine(M3Utilities.GetNexusModsCache(), @"nexusmodsapikey"), FileMode.Create);
-                            File.WriteAllBytes(System.IO.Path.Combine(M3Utilities.GetNexusModsCache(), @"entropy"), NexusModsUtilities.EncryptStringToStream(apiKeyReceived, fs));
+                            using FileStream fs = new FileStream(System.IO.Path.Combine(M3Filesystem.GetNexusModsCache(), @"nexusmodsapikey"), FileMode.Create);
+                            File.WriteAllBytes(System.IO.Path.Combine(M3Filesystem.GetNexusModsCache(), @"entropy"), NexusModsUtilities.EncryptStringToStream(apiKeyReceived, fs));
                             fs.Close();
                             SetAuthorized(true);
                             mainwindow.RefreshNexusStatus();

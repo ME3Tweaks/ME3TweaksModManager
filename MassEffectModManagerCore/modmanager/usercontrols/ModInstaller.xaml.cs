@@ -145,7 +145,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 if (InstallOptionsPackage.InstallTarget.Game.IsLEGame())
                 {
-                    if (!OodleHelper.EnsureOodleDll(InstallOptionsPackage.InstallTarget.TargetPath, M3Utilities.GetDllDirectory()))
+                    if (!OodleHelper.EnsureOodleDll(InstallOptionsPackage.InstallTarget.TargetPath, M3Filesystem.GetDllDirectory()))
                     {
                         M3Log.Error($@"Oodle dll could not be sourced from game: {InstallOptionsPackage.InstallTarget.TargetPath}. Installation cannot proceed");
                         InstallationSucceeded = false;
@@ -464,7 +464,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
 
             //Substage: Add SFAR staging targets
-            string sfarStagingDirectory = (InstallOptionsPackage.ModBeingInstalled.IsInArchive && installationQueues.SFARJobs.Count > 0) ? Directory.CreateDirectory(Path.Combine(M3Utilities.GetTempPath(), @"SFARJobStaging")).FullName : null; //don't make directory if we don't need one
+            string sfarStagingDirectory = (InstallOptionsPackage.ModBeingInstalled.IsInArchive && installationQueues.SFARJobs.Count > 0) ? Directory.CreateDirectory(Path.Combine(M3Filesystem.GetTempPath(), @"SFARJobStaging")).FullName : null; //don't make directory if we don't need one
             if (sfarStagingDirectory != null)
             {
                 M3Log.Information(@"Building list of SFAR staging targets");
@@ -939,7 +939,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
             if (sfarStagingDirectory != null)
             {
-                M3Utilities.DeleteFilesAndFoldersRecursively(M3Utilities.GetTempPath());
+                M3Utilities.DeleteFilesAndFoldersRecursively(M3Filesystem.GetTempPath());
             }
 
             if (numFilesToInstall == numdone)

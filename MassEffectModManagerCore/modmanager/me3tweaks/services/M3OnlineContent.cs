@@ -194,71 +194,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
             string moddesc = WebClientExtensions.DownloadStringAwareOfEncoding(wc, ExeTransformBaseURL + name);
             return moddesc;
         }
-
-        public static Dictionary<string, List<string>> FetchTipsService(bool overrideThrottling = false)
-        {
-            string cached = null;
-            if (File.Exists(M3Utilities.GetTipsServiceFile()))
-            {
-                try
-                {
-                    cached = File.ReadAllText(M3Utilities.GetTipsServiceFile());
-                }
-                catch (Exception e)
-                {
-                    var attachments = new List<ErrorAttachmentLog>();
-                    string log = LogCollector.CollectLatestLog(MCoreFilesystem.GetLogDir(), true);
-                    if (log != null && log.Length < FileSize.MebiByte * 7)
-                    {
-                        attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, @"applog.txt"));
-                    }
-                    Crashes.TrackError(e, new Dictionary<string, string>()
-                    {
-                        {@"Error type", @"Error reading cached online content" },
-                        {@"Service", @"Tips Service" },
-                        {@"Message", e.Message }
-                    }, attachments.ToArray());
-                }
-            }
-
-            if (!File.Exists(M3Utilities.GetTipsServiceFile()) || overrideThrottling || MOnlineContent.CanFetchContentThrottleCheck())
-            {
-                try
-                {
-                    using var wc = new ShortTimeoutWebClient();
-
-                    string json = WebClientExtensions.DownloadStringAwareOfEncoding(wc, TipsServiceURL);
-                    File.WriteAllText(M3Utilities.GetTipsServiceFile(), json);
-                    return JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(json);
-                }
-                catch (Exception e)
-                {
-                    //Unable to fetch latest help.
-                    M3Log.Error(@"Error fetching latest tips service file: " + e.Message);
-                    if (cached != null)
-                    {
-                        M3Log.Warning(@"Using cached tips service file instead");
-                    }
-                    else
-                    {
-                        M3Log.Error(@"Unable to fetch latest tips service file from server and local file doesn't exist. Returning a blank copy.");
-                        return new Dictionary<string, List<string>>();
-                    }
-                }
-            }
-
-            try
-            {
-                return JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(cached);
-            }
-            catch (Exception e)
-            {
-                M3Log.Error(@"Unable to parse cached tips service file: " + e.Message);
-                return new Dictionary<string, List<string>>();
-            }
-        }
-
-     
+             
         public static bool EnsureCriticalFiles()
         {
             // This method does nothing currently but is left here as a stub

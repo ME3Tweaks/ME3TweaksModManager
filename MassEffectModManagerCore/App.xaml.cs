@@ -42,7 +42,7 @@ namespace ME3TweaksModManager
         /// <summary>
         /// If the appdata folder existed at boot time. If it didn't, this is a very fresh install
         /// </summary>
-        public static bool AppDataExistedAtBoot = Directory.Exists(M3Utilities.GetAppDataFolder(false)); //alphabetically this must come first in App!
+        public static bool AppDataExistedAtBoot = Directory.Exists(M3Filesystem.GetAppDataFolder(false)); //alphabetically this must come first in App!
 
         /// <summary>
         /// ME3Tweaks Shared Registry Key
@@ -137,7 +137,7 @@ namespace ME3TweaksModManager
                 });
 
             // We use our own implementation of this as we store data in ProgramData.
-            MCoreFilesystem.GetAppDataFolder = M3Utilities.GetAppDataFolder; // Do not change
+            MCoreFilesystem.GetAppDataFolder = M3Filesystem.GetAppDataFolder; // Do not change
 
             var settingsExist = File.Exists(Settings.SettingsPath); //for init language
             try
@@ -312,13 +312,13 @@ namespace ME3TweaksModManager
                 {
                     //First time booting something that uses ProgramData
                     //see if data exists in AppData
-                    var oldDir = M3Utilities.GetPre104DataFolder();
+                    var oldDir = M3Filesystem.GetPre104DataFolder();
                     if (oldDir != null)
                     {
                         //Exists. We should migrate it
                         try
                         {
-                            CopyDir.CopyAll_ProgressBar(new DirectoryInfo(oldDir), new DirectoryInfo(M3Utilities.GetAppDataFolder()), aboutToCopyCallback: (a) =>
+                            CopyDir.CopyAll_ProgressBar(new DirectoryInfo(oldDir), new DirectoryInfo(M3Filesystem.GetAppDataFolder()), aboutToCopyCallback: (a) =>
                             {
                                 M3Log.Information(@"Migrating file from AppData to ProgramData: " + a);
                                 return true;
@@ -375,11 +375,11 @@ namespace ME3TweaksModManager
                 M3Log.Information(@"Deleting temp files (if any)");
                 try
                 {
-                    M3Utilities.DeleteFilesAndFoldersRecursively(M3Utilities.GetTempPath());
+                    M3Utilities.DeleteFilesAndFoldersRecursively(M3Filesystem.GetTempPath());
                 }
                 catch (Exception e)
                 {
-                    M3Log.Error($@"Unable to delete temporary files directory {M3Utilities.GetTempPath()}: {e.Message}");
+                    M3Log.Error($@"Unable to delete temporary files directory {M3Filesystem.GetTempPath()}: {e.Message}");
                 }
 
                 M3Log.Information(@"Mod Manager pre-UI startup has completed. The UI will now load.");
@@ -473,15 +473,28 @@ namespace ME3TweaksModManager
 #endif
         }
 
+        /// <summary>
+        /// If the application is running on an AMD processor; use for 'requireamdprocessor' flag
+        /// </summary>
         public static bool IsRunningOnAMD;
 
+        /// <summary>
+        /// The internal language codes that Mod Manager supports for UI localization (this does not mean they are implemented!)
+        /// </summary>
         public static string[] SupportedLanguages = { @"int", @"pol", @"rus", @"deu", @"fra", @"bra", @"esn", @"kor" };
 
         public static int BuildNumber = Assembly.GetEntryAssembly().GetName().Version.Revision;
         public static bool BootingUpdate;
         public static int UpdatedFrom = 0;
+
+        /// <summary>
+        /// The initial language code used on boot
+        /// </summary>
         public static string InitialLanguage = @"int";
-        internal static Dictionary<string, List<string>> TipsService;
+
+        /// <summary>
+        /// The currently used language code
+        /// </summary>
         internal static string CurrentLanguage = InitialLanguage;
 
         private static bool? _allowCompressingPackageOnImport;

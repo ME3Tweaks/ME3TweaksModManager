@@ -11,6 +11,7 @@ using System.Windows;
 using System.Windows.Input;
 using LegendaryExplorerCore.Helpers;
 using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.ui;
 using Microsoft.AppCenter.Analytics;
@@ -106,7 +107,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             WebClient downloadClient = new WebClient();
 
             downloadClient.Headers[@"user-agent"] = @"ME3TweaksModManager";
-            string temppath = M3Utilities.GetTempPath();
+            string temppath = M3Filesystem.GetTempPath();
             downloadClient.DownloadProgressChanged += (s, e) =>
             {
                 setPercentTaskDone?.Invoke(e.ProgressPercentage);
@@ -723,7 +724,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             if (tool == MEM_CMD)
             {
                 // Internal tool
-                return Path.Combine(M3Utilities.GetCachedExecutablePath());
+                return Path.Combine(M3Filesystem.GetCachedExecutablePath());
             }
 
             if (tool == EGMSettingsLE)

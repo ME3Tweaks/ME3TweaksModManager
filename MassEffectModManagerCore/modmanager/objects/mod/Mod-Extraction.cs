@@ -142,13 +142,13 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 if (ExeExtractionTransform != null && ExeExtractionTransform.PatchRedirects.Any(x => x.index == entryInfo.Index))
                 {
                     M3Log.Information(@"Extracting vpatch file at index " + entryInfo.Index);
-                    return Path.Combine(M3Utilities.GetVPatchRedirectsFolder(), ExeExtractionTransform.PatchRedirects.First(x => x.index == entryInfo.Index).outfile);
+                    return Path.Combine(M3Filesystem.GetVPatchRedirectsFolder(), ExeExtractionTransform.PatchRedirects.First(x => x.index == entryInfo.Index).outfile);
                 }
 
                 if (ExeExtractionTransform != null && ExeExtractionTransform.NoExtractIndexes.Any(x => x == entryInfo.Index))
                 {
                     M3Log.Information(@"Extracting file to trash (not used): " + entryPath);
-                    return Path.Combine(M3Utilities.GetTempPath(), @"Trash", @"trashfile");
+                    return Path.Combine(M3Filesystem.GetTempPath(), @"Trash", @"trashfile");
                 }
 
                 if (ExeExtractionTransform != null && ExeExtractionTransform.AlternateRedirects.Any(x => x.index == entryInfo.Index))
@@ -289,7 +289,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 if (ExeExtractionTransform.VPatches.Any())
                 {
                     // MEHEM uses Vpatching for its alternates.
-                    var vpat = M3Utilities.GetCachedExecutablePath(@"vpat.exe");
+                    var vpat = M3Filesystem.GetCachedExecutablePath(@"vpat.exe");
                     if (!testRun)
                     {
                         M3Utilities.ExtractInternalFile(@"ME3TweaksModManager.modmanager.executables.vpat.exe", vpat, true);
@@ -297,7 +297,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     //Handle VPatching
                     foreach (var transform in ExeExtractionTransform.VPatches)
                     {
-                        var patchfile = Path.Combine(M3Utilities.GetVPatchRedirectsFolder(), transform.patchfile);
+                        var patchfile = Path.Combine(M3Filesystem.GetVPatchRedirectsFolder(), transform.patchfile);
                         var inputfile = Path.Combine(ModPath, transform.inputfile);
                         var outputfile = Path.Combine(ModPath, transform.outputfile);
 

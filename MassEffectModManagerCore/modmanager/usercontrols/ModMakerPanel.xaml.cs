@@ -99,7 +99,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 Title = M3L.GetString(M3L.string_selectModMakerModXmlFile),
                 Filter = M3L.GetString(M3L.string_modMakerXMLFiles) + @"|*.xml",
-                InitialDirectory = M3Utilities.GetModmakerDefinitionsCache()
+                InitialDirectory = M3Filesystem.GetModmakerDefinitionsCache()
             };
             var result = m.ShowDialog(window);
             if (result.Value)
@@ -222,7 +222,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     if (m != null && !LocalFileOption)
                     {
                         var sanitizedname = M3Utilities.SanitizePath(m.ModName);
-                        File.WriteAllText(Path.Combine(M3Utilities.GetModmakerDefinitionsCache(), $@"{code}-{sanitizedname}.xml"), modDelta);
+                        File.WriteAllText(Path.Combine(M3Filesystem.GetModmakerDefinitionsCache(), $@"{code}-{sanitizedname}.xml"), modDelta);
                     }
                     b.Result = m;
                 }

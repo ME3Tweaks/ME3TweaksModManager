@@ -512,7 +512,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
         public static string StageModForUploadToUpdaterService(Mod mod, List<string> files, long totalAmountToCompress, Func<bool?> canceledCallback = null, Action<string> updateUiTextCallback = null, Action<double> setProgressCallback = null)
         {
             //create staging dir
-            var stagingPath = M3Utilities.GetUpdaterServiceUploadStagingPath();
+            var stagingPath = M3Filesystem.GetUpdaterServiceUploadStagingPath();
             if (Directory.Exists(stagingPath))
             {
                 M3Utilities.DeleteFilesAndFoldersRecursively(stagingPath);

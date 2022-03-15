@@ -94,7 +94,7 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
             return null;
         }
 
-        public static bool HasAPIKey => File.Exists(Path.Combine(M3Utilities.GetNexusModsCache(), "nexusmodsapikey"));
+        public static bool HasAPIKey => File.Exists(Path.Combine(M3Filesystem.GetNexusModsCache(), "nexusmodsapikey"));
 
         /// <summary>
         /// Wipes the nexus keys from storage and removes the UserInfo variable
@@ -103,8 +103,8 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
         public static bool WipeKeys()
         {
             UserInfo = null;
-            var keyPath = Path.Combine(M3Utilities.GetNexusModsCache(), "nexusmodsapikey");
-            var entropyf = Path.Combine(M3Utilities.GetNexusModsCache(), "entropy");
+            var keyPath = Path.Combine(M3Filesystem.GetNexusModsCache(), "nexusmodsapikey");
+            var entropyf = Path.Combine(M3Filesystem.GetNexusModsCache(), "entropy");
             if (File.Exists(keyPath)) File.Delete(keyPath);
             if (File.Exists(entropyf)) File.Delete(entropyf);
             return true;
@@ -112,8 +112,8 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
 
         public static string DecryptNexusmodsAPIKeyFromDisk()
         {
-            var keyPath = Path.Combine(M3Utilities.GetNexusModsCache(), "nexusmodsapikey");
-            var entropyf = Path.Combine(M3Utilities.GetNexusModsCache(), "entropy");
+            var keyPath = Path.Combine(M3Filesystem.GetNexusModsCache(), "nexusmodsapikey");
+            var entropyf = Path.Combine(M3Filesystem.GetNexusModsCache(), "entropy");
             if (File.Exists(keyPath) && File.Exists(entropyf))
             {
                 var entropy = File.ReadAllBytes(entropyf);

@@ -207,11 +207,10 @@ namespace ME3TweaksModManager
             get
             {
                 var retvar = M3L.GetString(M3L.string_selectModOnLeftToGetStarted);
-                //TODO: Implement Localized Tips Service
-                if (LoadedTips.Count > 0)
+                var localizedTip = TipsService.GetTip(App.CurrentLanguage);
+                if (localizedTip != null)
                 {
-                    var randomTip = LoadedTips.RandomElement();
-                    retvar += $"\n\n---------------------------------------------\n{randomTip}"; //do not localize
+                    retvar += $"\n\n---------------------------------------------\n{localizedTip}"; //do not localize
                 }
 
                 return retvar;
@@ -397,7 +396,7 @@ namespace ME3TweaksModManager
                 var result = M3L.ShowDialog(null, M3L.GetString(M3L.string_dialog_multiUserProgramDataWindowsRestrictions), M3L.GetString(M3L.string_grantingWritePermissions), MessageBoxButton.OKCancel, MessageBoxImage.Error);
                 if (result == MessageBoxResult.OK)
                 {
-                    bool done = M3Utilities.CreateDirectoryWithWritePermission(M3Utilities.GetAppDataFolder(), true);
+                    bool done = M3Utilities.CreateDirectoryWithWritePermission(M3Filesystem.GetAppDataFolder(), true);
                     if (done)
                     {
                         M3Log.Information(@"Granted permissions to ProgramData");
@@ -1924,7 +1923,6 @@ namespace ME3TweaksModManager
             PerformStartupNetworkFetches(false);
         }
 
-        public List<string> LoadedTips { get; } = new List<string>();
         public GameTargetWPF SelectedGameTarget { get; set; }
 
         private bool CanReloadMods()
@@ -2780,6 +2778,7 @@ namespace ME3TweaksModManager
                 #endregion
 
                 M3ServiceLoader.LoadServices(this, bw);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NoModSelectedText))); // Update localized tip shown
 
                 if (firstStartupCheck)
                 {
@@ -3000,19 +2999,7 @@ namespace ME3TweaksModManager
 
         internal void SetTipsForLanguage()
         {
-            if (App.TipsService != null)
-            {
-                if (App.TipsService.TryGetValue(App.CurrentLanguage, out var tips))
-                {
-                    LoadedTips.ReplaceAll(tips);
-                }
-                else
-                {
-                    LoadedTips.Clear();
-                }
 
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NoModSelectedText)));
-            }
         }
 
         private List<MenuItem> RecursiveBuildDynamicHelpMenuItems(List<SortableHelpElement> sortableHelpItems)
@@ -3717,7 +3704,7 @@ namespace ME3TweaksModManager
                 Task.Run(async () => { await M3OnlineContent.InternalSetLanguage(lang, forcedDictionary, startup); }).Wait();
 
                 App.CurrentLanguage = Settings.Language = lang;
-                SetTipsForLanguage();
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NoModSelectedText))); // Update localized tip shown
                 RefreshNexusStatus(true);
                 try
                 {

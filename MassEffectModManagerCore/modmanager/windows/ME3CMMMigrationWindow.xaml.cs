@@ -213,7 +213,7 @@ namespace ME3TweaksModManager.modmanager.windows
                             var modmakerXmls = Directory.GetFiles(modmakerCacheDir, @"*.xml");
                             if (modmakerXmls.Any())
                             {
-                                var mmNewCacheDir = M3Utilities.GetModmakerDefinitionsCache();
+                                var mmNewCacheDir = M3Filesystem.GetModmakerDefinitionsCache();
                                 M3Log.Information(@"Migrating ME3Tweaks ModMaker cached files");
                                 foreach (var f in modmakerXmls)
                                 {
@@ -233,7 +233,7 @@ namespace ME3TweaksModManager.modmanager.windows
 
                         //MIGRATE 7z.dll - this will only perform an interim fix (maybe network failure?) as we use 19.0 and ME3MM used 18.05
                         var me3mm7z = Path.Combine(dataDir, @"tools\ModManagerCommandLine\x64\7z.dll");
-                        var target7z = M3Utilities.Get7zDllPath();
+                        var target7z = M3Filesystem.Get7zDllPath();
                         if (File.Exists(me3mm7z) && !File.Exists(target7z))
                         {
                             M3Log.Information($@"Copying ME3MM 7z.dll to ME3Tweaks Mod Manager dll location: {me3mm7z} -> {target7z}");
@@ -243,7 +243,7 @@ namespace ME3TweaksModManager.modmanager.windows
 
                         // Migrate DLC_AUTH_FAIL
                         var me3mmAuthFail = Path.Combine(dataDir, @"help\DLC_AUTH_FAIL.png");
-                        var targetAuthFail = Path.Combine(M3Utilities.GetLocalHelpResourcesDirectory(), @"DLC_AUTH_FAIL.png");
+                        var targetAuthFail = Path.Combine(M3Filesystem.GetLocalHelpResourcesDirectory(), @"DLC_AUTH_FAIL.png");
                         if (File.Exists(me3mmAuthFail) && !File.Exists(targetAuthFail))
                         {
                             M3Log.Information($@"Copying DLC_AUTH_FAIL help resource to ME3Tweaks Mod Manager help resources location: {me3mmAuthFail} -> {targetAuthFail}");
@@ -259,7 +259,7 @@ namespace ME3TweaksModManager.modmanager.windows
                             var queues = Directory.EnumerateFiles(modGroupsDir, @"*.txt").ToList();
                             foreach (var queue in queues)
                             {
-                                var biqDest = Path.Combine(M3Utilities.GetBatchInstallGroupsFolder(), Path.GetFileName(queue));
+                                var biqDest = Path.Combine(M3Filesystem.GetBatchInstallGroupsFolder(), Path.GetFileName(queue));
                                 M3Log.Information($@"Migrating mod install group: {queue} -> {biqDest}");
                                 File.Move(queue, biqDest, true);
                                 M3Log.Information(@"Migrated " + Path.GetFileName(queue));

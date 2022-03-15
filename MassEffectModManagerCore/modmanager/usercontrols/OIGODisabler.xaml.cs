@@ -158,12 +158,12 @@ public event PropertyChangedEventHandler PropertyChanged;
                         var d3d9Path = Path.Combine(M3Directories.GetExecutableDirectory(SelectedTarget), @"d3d9.dll");
                         if (!File.Exists(d3d9Path))
                         {
-                            if (File.Exists(M3Utilities.GetOriginOverlayDisableFile()))
+                            if (File.Exists(M3Filesystem.GetOriginOverlayDisableFile()))
                             {
                                 M3Log.Information(@"Installing origin overlay disabler from cache to " + d3d9Path);
                                 try
                                 {
-                                    File.Copy(M3Utilities.GetOriginOverlayDisableFile(), d3d9Path);
+                                    File.Copy(M3Filesystem.GetOriginOverlayDisableFile(), d3d9Path);
                                 }
                                 catch (Exception e)
                                 {
@@ -199,7 +199,7 @@ public event PropertyChangedEventHandler PropertyChanged;
                                                     M3Log.Information(@"Installing origin overlay disabler from memory to " + d3d9Path);
                                                     memStream.WriteToFile(d3d9Path); //install
                                                     M3Log.Information(@"Caching d3d9 disabler");
-                                                    memStream.WriteToFile(M3Utilities.GetOriginOverlayDisableFile());
+                                                    memStream.WriteToFile(M3Filesystem.GetOriginOverlayDisableFile());
                                                 }
                                                 catch (Exception e)
                                                 {

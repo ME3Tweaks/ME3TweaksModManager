@@ -15,6 +15,7 @@ using LegendaryExplorerCore.Helpers;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.me3tweaks;
 using ME3TweaksModManager.ui;
@@ -241,7 +242,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             M3Log.Information(@"Extracting update from memory");
             SevenZipExtractor sve = new SevenZipExtractor(updatearchive);
             var outDirectory = Directory
-                .CreateDirectory(Path.Combine(M3Utilities.GetTempPath(), @"update")).FullName;
+                .CreateDirectory(Path.Combine(M3Filesystem.GetTempPath(), @"update")).FullName;
             sve.ExtractArchive(outDirectory);
             return outDirectory;
         }
@@ -270,7 +271,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 if (calculatedHash == expectedFinalHash)
                 {
                     M3Log.Information(@"Patch application successful: Writing new executable to disk");
-                    var outDirectory = Directory.CreateDirectory(Path.Combine(M3Utilities.GetTempPath(), @"update"))
+                    var outDirectory = Directory.CreateDirectory(Path.Combine(M3Filesystem.GetTempPath(), @"update"))
                         .FullName;
                     var updateFile = Path.Combine(outDirectory, @"ME3TweaksModManager.exe");
                     outStream.WriteToFile(updateFile);

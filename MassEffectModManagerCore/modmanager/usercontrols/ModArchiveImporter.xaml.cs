@@ -287,7 +287,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
                                 M3Log.Information(@"Reading embedded executable file in archive: " + embeddedExePath);
                                 ActionText = M3L.GetString(M3L.string_readingZippedExecutable);
-                                pathOverride = Path.Combine(M3Utilities.GetTempPath(), Path.GetFileName(embeddedExePath));
+                                pathOverride = Path.Combine(M3Filesystem.GetTempPath(), Path.GetFileName(embeddedExePath));
                                 using var outstream = new FileStream(pathOverride, FileMode.Create);
                                 sve.Extracting += (o, pea) => { ActionText = $@"{M3L.GetString(M3L.string_readingZippedExecutable)} {pea.PercentDone}%"; };
                                 sve.ExtractFile(embeddedExePath, outstream);

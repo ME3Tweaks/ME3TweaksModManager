@@ -30,12 +30,12 @@ namespace ME3TweaksModManager.modmanager.loaders
 
         internal void CheckModsForUpdates(List<Mod> updatableMods, bool restoreMode = false)
         {
-            M3Log.Information($@"Checking {updatableMods.Count} mods for updates.");
+            M3Log.Information($@"Checking {updatableMods.Count} eligible mods for updates.");
             if (Settings.LogModUpdater)
             {
                 foreach (var m in updatableMods)
                 {
-                    M3Log.Information($@" >> Checking for updates to {m.ModName} {m.ParsedModVersion}");
+                    M3Log.Information($@" >> Checking for updates to {m.Game} {m.ModName} {m.ParsedModVersion}");
                 }
             }
 

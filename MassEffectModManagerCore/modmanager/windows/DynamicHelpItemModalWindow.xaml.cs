@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Media;
 using FontAwesome5;
+using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.me3tweaks;
 using ME3TweaksModManager.modmanager.me3tweaks.services;
 
@@ -42,7 +43,7 @@ namespace ME3TweaksModManager.modmanager.windows
 
             if (shi.ResourceName != null)
             {
-                string resPath = Path.Combine(M3Utilities.GetLocalHelpResourcesDirectory(), shi.ResourceName);
+                string resPath = Path.Combine(M3Filesystem.GetLocalHelpResourcesDirectory(), shi.ResourceName);
                 if (File.Exists(resPath))
                 {
                     ResourceImage = resPath;
