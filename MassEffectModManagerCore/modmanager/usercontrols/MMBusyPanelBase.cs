@@ -55,10 +55,15 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public event EventHandler<DataEventArgs> Close;
         protected virtual void OnClosing(DataEventArgs e)
         {
-            Close?.Invoke(this, e);
+            // This is done on the UI thread as it might require UI interaction to release things
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                Close?.Invoke(this, e);
 
-            // This is required to run as its changes IsPanelOpen's result, which is checked for some commands.
-            DataContext = null;
+                // This is required to run as its changes IsPanelOpen's result, which is checked for some commands.
+                DataContext = null;
+            });
+
         }
 
         private void UserControl_Unloaded(object sender, RoutedEventArgs e)

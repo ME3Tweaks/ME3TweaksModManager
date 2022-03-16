@@ -239,8 +239,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 {@"Tool name", Path.GetFileName(executable)},
                 {@"Version", latestRelease.TagName}
             });
-            currentTaskUpdateCallback?.Invoke(
-                $@"{M3L.GetString(M3L.string_interp_downloadingX, tool)} {latestRelease.TagName}");
+
+            currentTaskUpdateCallback?.Invoke($@"{M3L.GetString(M3L.string_interp_downloadingX, toolToUiString(tool))} {latestRelease.TagName}");
 
             WebClient downloadClient = new WebClient();
 
@@ -273,6 +273,18 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             downloadClient.DownloadDataAsync(downloadLink);
         }
 
+        /// <summary>
+        /// Converts a tool ID to a UI string for display
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        private static string toolToUiString(string s)
+        {
+            if (s == FVBCCU) return @"Femshep vs BroShep: Clone Configuration Utility";
+            return s;
+        }
+
 
         private static void extractTool(string tool, string executable, string extension, MemoryStream downloadStream,
                 Action<string> currentTaskUpdateCallback = null, Action<bool> setPercentVisibilityCallback = null, Action<int> setPercentTaskDone = null, Action<string> resultingExecutableStringCallback = null,
@@ -302,7 +314,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         downloadStream.Position = 0;
                         using (var archiveFile = new SevenZipExtractor(downloadStream))
                         {
-                            currentTaskUpdateCallback?.Invoke(M3L.GetString(M3L.string_interp_extractingX, tool));
+
+                            currentTaskUpdateCallback?.Invoke(M3L.GetString(M3L.string_interp_extractingX, toolToUiString(tool)));
                             setPercentTaskDone?.Invoke(0);
 
                             void progressCallback(object sender, ProgressEventArgs progress)
@@ -349,7 +362,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private void LaunchTool(string localExecutable)
         {
-            Action = M3L.GetString(M3L.string_interp_launching, tool);
+
+            Action = M3L.GetString(M3L.string_interp_launching, toolToUiString(tool));
             Analytics.TrackEvent(@"Launching tool", new Dictionary<string, string>()
             {
                 {@"Tool name", Path.GetFileName(localExecutable) }
@@ -472,11 +486,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             void launchTool(string exe) => LaunchTool(exe);
             void errorExtracting(Exception e, string message, string caption)
             {
-                Application.Current.Dispatcher.Invoke(delegate
+                Application.Current.Dispatcher.Invoke(() =>
                 {
                     M3L.ShowDialog(mainwindow, message, caption, MessageBoxButton.OK, MessageBoxImage.Error);
-                    OnClosing(DataEventArgs.Empty);
                 });
+                OnClosing(DataEventArgs.Empty);
             }
             void currentTaskCallback(string s) => Action = s;
             void setPercentDone(int pd) => PercentDownloaded = pd;
@@ -639,7 +653,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                                 needsDownloading = true;
                             }
                         }
-                        
+
                         if (!needsDownloading)
                         {
                             resultingExecutableStringCallback?.Invoke(localExecutable);
@@ -795,7 +809,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             MER,
             ME2R,
             ALOTInstaller,
+            FVBCCU
         };
+
         internal static bool IsSupportedToolID(string toolId) => SupportedToolIDs.Contains(toolId);
+
+        // We use auto
+        public override bool DisableM3AutoSizer { get; set; } = true;
     }
 }

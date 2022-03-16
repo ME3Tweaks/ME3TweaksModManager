@@ -26,7 +26,7 @@
                 Margin="5,0,0,0"
                 Command="{Binding DebugReloadCommand}"
                 Padding="7,4"
-                Visibility="{x:Static mm:App.IsDebugVisibility}" />
+                Visibility="{x:Static mm:App.DebugOnlyVisibility}" />
             <Button
                 MinWidth="70"
                 Content="{DynamicResource string_deleteFromLibrary}"

@@ -169,7 +169,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         }
 
         /// <summary>
-        /// Indicates if this mod has the relevant information attached to it for updates from ME3Tweaks That is, classic update code or modmaker id
+        /// Indicates if this mod has the relevant information attached to it for updates from ME3Tweaks. That is, classic update code or modmaker id
         /// </summary>
         public bool IsME3TweaksUpdatable
         {
