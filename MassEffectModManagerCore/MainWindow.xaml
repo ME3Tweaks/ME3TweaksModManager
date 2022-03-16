@@ -270,7 +270,7 @@
                         Header="{DynamicResource string_OpenMemoryAnalyzer}"
                         IsEnabled="True"
                         Click="OpenMemoryAnalyzer_Click"
-                        Visibility="{x:Static local:App.IsDebugVisibility}" >
+                        Visibility="{x:Static local:App.DebugOnlyVisibility}" >
                         <MenuItem.Icon>
                             <fa5:ImageAwesome
                             Style="{StaticResource EnableDisableImageStyle}"

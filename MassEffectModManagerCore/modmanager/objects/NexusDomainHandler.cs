@@ -98,6 +98,7 @@ namespace ME3TweaksModManager.modmanager.objects
         public static bool HandleExternalLink(NexusProtocolLink npl)
         {
             if (npl == null) return false;
+            if (IsModManagerDomain(npl.Domain)) return false; // This is not handled externally
             var handler = App.NexusDomainHandlers.FirstOrDefault(x => x.Domains.Contains(npl.Domain));
             if (handler == null) handler = App.NexusDomainHandlers.FirstOrDefault(x => x.IsWildcard);
             if (handler != null)
@@ -146,32 +147,33 @@ namespace ME3TweaksModManager.modmanager.objects
             }
 
             var domains = DomainsEditable.Split(',');
-            if (domains.Any(x => x == @"masseffect"))
+            foreach (var domain in domains)
             {
-                ValidationMessage = "'masseffect' domain is already handled by ME3Tweaks Mod Manager";
-                return false;
-            }
-
-            if (domains.Any(x => x == @"masseffect2"))
-            {
-                ValidationMessage = "'masseffect2' domain is already handled by ME3Tweaks Mod Manager";
-                return false;
-            }
-
-            if (domains.Any(x => x == @"masseffect3"))
-            {
-                ValidationMessage = "'masseffect3' domain is already handled by ME3Tweaks Mod Manager";
-                return false;
-            }
-
-            if (domains.Any(x => x == @"masseffectlegendaryedition"))
-            {
-                ValidationMessage = "'masseffectlegendaryedition' domain is already handled by ME3Tweaks Mod Manager";
-                return false;
+                if (IsModManagerDomain(domain))
+                {
+                    ValidationMessage = $"'{domain}' domain is already handled by ME3Tweaks Mod Manager";
+                    return false;
+                }
             }
 
             ValidationMessage = null;
             return true;
+        }
+
+        /// <summary>
+        /// If ME3Tweaks Mod Manager is equipped to handle the specified NexusMods domain
+        /// </summary>
+        /// <param name="domain"></param>
+        /// <returns></returns>
+        public static bool IsModManagerDomain(string domain)
+        {
+            if (domain == null) return false;
+            domain = domain.Trim();
+            if (domain.Equals(@"masseffect", StringComparison.InvariantCultureIgnoreCase)) return true;
+            if (domain.Equals(@"masseffect2", StringComparison.InvariantCultureIgnoreCase)) return true;
+            if (domain.Equals(@"masseffect3", StringComparison.InvariantCultureIgnoreCase)) return true;
+            if (domain.Equals(@"masseffectlegendaryedition", StringComparison.InvariantCultureIgnoreCase)) return true;
+            return false;
         }
     }
 }

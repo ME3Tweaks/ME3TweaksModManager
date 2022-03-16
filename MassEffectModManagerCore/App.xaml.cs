@@ -69,10 +69,6 @@ namespace ME3TweaksModManager
         public static string PendingAutoModInstallPath;
         public static MEGame? PendingGameBoot;
 
-
-
-        public static Visibility IsDebugVisibility => IsDebug ? Visibility.Visible : Visibility.Collapsed;
-
         public static Visibility DebugOnlyVisibility
         {
 #if DEBUG
@@ -262,8 +258,7 @@ namespace ME3TweaksModManager
                 }
                 else
                 {
-                    //needs localized later.
-                    BuildDate = "WARNING: This build is not signed by ME3Tweaks";
+                    BuildDate = @"WARNING: This build is not signed by ME3Tweaks";
 #if !DEBUG
                     M3Log.Warning(@"This build is not signed by ME3Tweaks. This may not be an official build.");
 #endif
