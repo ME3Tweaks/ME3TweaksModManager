@@ -21,7 +21,7 @@ namespace ME3TweaksModManager.modmanager.converters
                     case "Other":
                         return game != MEGame.LELauncher && game != MEGame.UDK ? Visibility.Visible : Visibility.Collapsed;
                     case "OfficialDLC":
-                        return game != MEGame.LELauncher && game != MEGame.UDK && game != MEGame.LE1 ? Visibility.Visible : Visibility.Collapsed;
+                        return game.IsOTGame() ? Visibility.Visible : Visibility.Collapsed;
                     case "SFAR":
                         return game == MEGame.ME3 ? Visibility.Visible : Visibility.Collapsed;
                     case "Basegame":
