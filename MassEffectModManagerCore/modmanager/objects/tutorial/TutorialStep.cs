@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Media;
+using AdonisUI;
+using Brushes = System.Windows.Media.Brushes;
 
 namespace ME3TweaksModManager.modmanager.objects.tutorial
 {
@@ -34,5 +38,21 @@ namespace ME3TweaksModManager.modmanager.objects.tutorial
         /// </summary>
         public string UIImagePath { get; set; } //image path
 
+        public string textcolor
+        {
+            set
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    // Must be done on UI thread.
+                    internaltextcolor = (SolidColorBrush)new BrushConverter().ConvertFromString(value);
+                });
+            }
+        }
+
+        /// <summary>
+        /// The color of the text. Set through 'textcolor'.
+        /// </summary>
+        public Brush internaltextcolor { get; set; } = Brushes.Black;
     }
 }

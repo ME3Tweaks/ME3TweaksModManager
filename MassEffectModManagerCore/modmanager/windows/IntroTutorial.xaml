@@ -117,7 +117,7 @@
             <!-- Center the text block (but not the text alignment) -->
             <TextBlock
                 HorizontalAlignment="Center"
-                Foreground="Black"
+                Foreground="{Binding CurrentStep.internaltextcolor}"
                 Grid.Row="{Binding CurrentStep.rowindex}"
                 Grid.Column="{Binding CurrentStep.columnindex}"
                 Grid.RowSpan="{Binding CurrentStep.rowspan}"
