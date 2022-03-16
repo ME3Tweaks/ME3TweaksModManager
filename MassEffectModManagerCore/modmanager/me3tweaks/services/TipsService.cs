@@ -6,6 +6,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace ME3TweaksModManager.modmanager.me3tweaks.services
 {
@@ -23,6 +24,11 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
         /// If the database has been initialized by a data source (cached or online)
         /// </summary>
         public static bool ServiceLoaded { get; set; }
+
+        /// <summary>
+        /// The amount of loaded tips (used for unit testing)
+        /// </summary>
+        public static int TipCount => Database.Sum(x => x.Value.Count);
 
         /// <summary>
         /// The name of the service for logging (templated)

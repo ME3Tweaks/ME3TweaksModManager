@@ -9,6 +9,7 @@ using ME3TweaksCore.Services;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.objects;
+using ME3TweaksModManager.modmanager.objects.mod;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ShortTimeoutWebClient = ME3TweaksCore.Misc.ShortTimeoutWebClient;
@@ -117,6 +118,17 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
 
             M3Log.Information($@"Unable to load {ServiceLoggingName}: No cached content or online content was available to load");
             return false;
+        }
+
+        /// <summary>
+        /// If the mod is whitelisted in the NexusMods updater service
+        /// </summary>
+        /// <param name="mod"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public static bool IsModWhitelisted(Mod mod)
+        {
+            return IsNexusCodeWhitelisted(mod.Game, mod.NexusModID);
         }
     }
 }
