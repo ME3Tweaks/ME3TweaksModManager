@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LegendaryExplorerCore.ME1.Unreal.UnhoodBytecode;
+using ME3TweaksModManager.modmanager.me3tweaks.services;
 using ME3TweaksModManager.modmanager.objects.merge.squadmate;
 using ME3TweaksModManager.modmanager.squadmates;
 using Newtonsoft.Json;
@@ -363,6 +364,13 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
             }
             #endregion
 
+            #region Check if it is enrolled in Nexus Updater Service
+
+            if (item.ModToValidateAgainst.NexusModID > 0 && !item.ModToValidateAgainst.IsME3TweaksUpdatable && !NexusUpdaterService.IsModWhitelisted(item.ModToValidateAgainst))
+            {
+                item.AddInfoWarning($"{item.ModToValidateAgainst} is not enrolled into the NexusMods Updater Service whitelist. In order for this mod to check for updates, it must be enrolled in the updater service (due to design of NexusMods API). You can enroll this mod on the ME3Tweaks Discord, in the #nexusupdate-rules channel.");
+            }
+            #endregion
 
             // End of check
             if (!item.HasAnyMessages())
