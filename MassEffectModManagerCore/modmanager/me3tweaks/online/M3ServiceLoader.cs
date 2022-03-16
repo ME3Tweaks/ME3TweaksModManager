@@ -121,6 +121,10 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.online
             // This uses it's own system since it's not designed like other services. It uses xml (good job me) instead of json like the other services.
             ASIManager.LoadManifest(false, !useCachedContent);
 
+            // Dynamic Help - This is kind of a hack...
+            var helpItemsLoading = M3OnlineContent.FetchLatestHelp(App.CurrentLanguage, false, !useCachedContent);
+            bw.ReportProgress(0, helpItemsLoading); // The worker thread that calls this configures the UI based on the data here. This is for UI thread marshalling.
+
             // ME3Tweaks Mod Manager Specific Service Loaders
             foreach (var serviceLoader in M3ServiceLoaders)
             {

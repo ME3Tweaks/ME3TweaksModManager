@@ -64,7 +64,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
             {
                 foreach (var staticendpoint in M3OnlineContent.StaticFileBaseEndpoints.GetAllLinks())
                 {
-                    using var wc = new System.Net.WebClient();
+                    using var wc = new ShortTimeoutWebClient();
                     try
                     {
                         string xml = wc.DownloadStringAwareOfEncoding(staticendpoint + @"dynamichelp/latesthelp-localized2.xml");

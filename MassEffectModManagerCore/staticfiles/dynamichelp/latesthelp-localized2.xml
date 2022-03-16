@@ -1,7 +1,8 @@
 <localizations>
   <nonlocalizedhelpmenudefinition name="changelogs">
     <list localizedtitle="true">
-      <helpitem title="ME3Tweaks Mod Manager 7.0.6 BETA ONLY (Build 124)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/275" />
+		<helpitem title="ME3Tweaks Mod Manager 8.0 BETA (Build 125)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/275" />
+		<helpitem title="ME3Tweaks Mod Manager 7.0.6 (Build 124)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/281" />
       <helpitem title="ME3Tweaks Mod Manager 7.0.5 (Build 123)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/266" />
       <helpitem title="ME3Tweaks Mod Manager 7.0.4 (Build 122)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/262" />
       <helpitem title="ME3Tweaks Mod Manager 7.0.3 (Build 121)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/246" />
