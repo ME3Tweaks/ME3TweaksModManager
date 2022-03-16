@@ -491,7 +491,7 @@
     <system:String xml:space="preserve" x:Key="string_tooltip_modinstaller_compressPackages">Compressing packages will reduce the amount of disk space required for most mods&#10;Compressing will increase the time it takes to install a mod</system:String>
     <system:String x:Key="string_interp_error_singleRequiredDlcMissing">{0} requires at least one of the following DLC to be installed:{1}</system:String>
     <!-- 0={ModBeingInstalled.ModName} 1={list of dlc names. It starts with a newline, so do not put space between : and bracket symbol} -->
-    <system:String xml:space="preserve" x:Key="string_warningTexturesAreInstalled">Textures are installed and this mod installs or modifies package files. You can continue to install this mod, but new files will not have the updated textures that were previously installed.\n\nTexture mods should be installed after all package file mods are installed.\n\nContinue installation?</system:String>
+    <system:String xml:space="preserve" x:Key="string_warningTexturesAreInstalled">Textures are installed and this mod installs or modifies package files. You can continue to install this mod, but new files will not have the updated textures that were previously installed. Mass Effect Modder will also no longer operate on this game target.\n\nTexture mods should be installed after all package file mods are installed.\n\nContinue installation?</system:String>
     <system:String x:Key="string_warningTextureModsAreInstalled">Warning: Texture mods are installed</system:String>
     <system:String x:Key="string_interp_errorApplyingMergeModXY">An error occurred applying merge mod {0}: {1}.</system:String>
     <!-- 0={mergeMod.MergeModFilename} 1={ex.Message} -->
