@@ -30,8 +30,8 @@ namespace ME3TweaksModManager.Tests
             GlobalTest.Init();
 
             Console.WriteLine("Fetching third party services");
-            TPMIService.LoadService();
-            TPIService.LoadService();
+            TPMIService.LoadService(GlobalTest.CombinedServiceData);
+            TPIService.LoadService(GlobalTest.CombinedServiceData);
             //throw new Exception("TPISService not implemented!");
 
             //App.ThirdPartyIdentificationService = OnlineContent.FetchThirdPartyIdentificationManifest();

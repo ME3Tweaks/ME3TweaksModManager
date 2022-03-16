@@ -6,9 +6,13 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using LegendaryExplorerCore;
 using LegendaryExplorerCore.Packages;
+using ME3TweaksCore.Services;
 using ME3TweaksModManager.modmanager;
+using ME3TweaksModManager.modmanager.me3tweaks.online;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Serilog;
 
 namespace ME3TweaksModManager.Tests
@@ -26,7 +30,7 @@ namespace ME3TweaksModManager.Tests
         /// <summary>
         /// The directory 'testdata' that has been found
         /// </summary>
-        private static string TestDataPath; 
+        private static string TestDataPath;
 
         internal static void Init()
         {
@@ -52,6 +56,7 @@ namespace ME3TweaksModManager.Tests
 
                 //BackupService.RefreshBackupStatus(null); // used in mixin testing
 
+                CombinedServiceData = JsonConvert.DeserializeObject<JToken>(MOnlineContent.FetchRemoteString(M3ServiceLoader.CombinedServiceFetchURL.MainURL));
                 initialized = true;
             }
         }
@@ -131,5 +136,10 @@ namespace ME3TweaksModManager.Tests
         {
             return Path.Combine(TestDataPath, testdataDirName);
         }
+
+        /// <summary>
+        /// The cached combined services data
+        /// </summary>
+        public static JToken CombinedServiceData { get; set; }
     }
 }
