@@ -3,7 +3,7 @@
 ## Adding emails to Mass Effect 2
 In ME2 and LE2, the email system is controlled through a very complicated set of Kismet sequences in the BioD_Nor_103Messages.pcc file. Adding or modifying emails is a complicated process, and since it's all in one package file, it is a compatibility nightmare. Mod Manager 8 ships with a new Game 2 Email Merge feature to make it much easier to add emails in Game 2 without compatibility issues. The merge feature makes the necessary edits to the sequence to add new emails for you.
 
-To enable email merge, you must add a file to the CookedPCConsole folder of your DLC mod with the filename `EmailMergeInfo.emm`. This will be your email merge manifest in a JSON structure, similar to how [Squadmate Outfit Merge](squadmate_outfit_merge.md) works. No other files are needed for email merge to work, although you will need to add strings to your DLC mod's TLK file for the subject and text of your email. The rest of this document outlines the structure of this JSON file.
+To enable email merge, you must add a file to the `CookedPC` (ME2) or `CookedPCConsole` (LE2) folder of your DLC mod with the filename `EmailMergeInfo.emm`. This will be your email merge manifest in a JSON structure, similar to how [Squadmate Outfit Merge](squadmate_outfit_merge.md) works. No other files are needed for email merge to work, although you will need to add strings to your DLC mod's TLK file for the subject and text of your email. The rest of this document outlines the structure of this JSON file.
 
 An example `EmailMergeInfo.emm` file:
 
@@ -34,7 +34,7 @@ An example `EmailMergeInfo.emm` file:
 
 **game**
 
-The game this merge manifest is for. Must be either LE2 or ME2
+The game this merge manifest is for. Must be either `LE2` or `ME2`
 
 **modName**
 
