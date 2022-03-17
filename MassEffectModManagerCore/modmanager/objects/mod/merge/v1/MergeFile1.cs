@@ -12,6 +12,7 @@ using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.windows;
+using Microsoft.Win32;
 using Newtonsoft.Json;
 
 namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
@@ -39,49 +40,38 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
             }
         }
 
+
         public void ApplyChanges(GameTargetWPF gameTarget, CaseInsensitiveDictionary<string> loadedFiles, Mod associatedMod, ref int numMergesCompleted, int numTotalMerges, Action<int, int, string, string> mergeProgressDelegate = null)
         {
-            List<string> targetFiles = new List<string>();
+            var targetFiles = new SortedSet<string>();
             if (ApplyToAllLocalizations)
             {
-                var targetnameBase = Path.GetFileNameWithoutExtension(FileName);
+                var targetnameBase = Path.GetFileNameWithoutExtension(FileName).StripUnrealLocalization();
                 var targetExtension = Path.GetExtension(FileName);
                 var localizations = GameLanguage.GetLanguagesForGame(associatedMod.Game);
 
                 // Ensure end name is not present on base
-                foreach (var l in localizations)
-                {
-                    if (targetnameBase.EndsWith($@"_{l.FileCode}", StringComparison.InvariantCultureIgnoreCase))
-                        targetnameBase = targetnameBase.Substring(0, targetnameBase.Length - (l.FileCode.Length + 1)); //_FileCode
-                }
+                //foreach (var l in localizations)
+                //{
+                //    if (targetnameBase.EndsWith($@"_{l.FileCode}", StringComparison.InvariantCultureIgnoreCase))
+                //        targetnameBase = targetnameBase.Substring(0, targetnameBase.Length - (l.FileCode.Length + 1)); //_FileCode
+                //}
 
+                var hasOneFile = false;
                 foreach (var l in localizations)
                 {
                     var targetname = $@"{targetnameBase}_{l.FileCode}{targetExtension}";
-                    if (loadedFiles.TryGetValue(targetname, out var fullpath))
-                    {
-                        targetFiles.Add(fullpath);
-                    }
-                    else
-                    {
-                        M3Log.Warning($@"File not found in game: {targetname}, skipping...");
-                        numMergesCompleted++;
-                        mergeProgressDelegate?.Invoke(numMergesCompleted, numTotalMerges, null, null);
-                    }
+                    hasOneFile |= addMergeTarget(targetname, loadedFiles, targetFiles, mergeProgressDelegate, ref numMergesCompleted, ref numTotalMerges);
+                }
+
+                if (!hasOneFile)
+                {
+                    throw new Exception($"Could not find any localized files to merge into for {FileName}. This merge has 'applytoallapplications' set to true, this flag makes changes only apply to localizations of a file");
                 }
             }
             else
             {
-                if (loadedFiles.TryGetValue(FileName, out var fullpath))
-                {
-                    targetFiles.Add(fullpath);
-                }
-                else
-                {
-                    M3Log.Warning($@"File not found in game: {FileName}, skipping...");
-                    numMergesCompleted++;
-                    mergeProgressDelegate?.Invoke(numMergesCompleted, numTotalMerges, null, null);
-                }
+                addMergeTarget(FileName, loadedFiles, targetFiles, mergeProgressDelegate, ref numMergesCompleted, ref numTotalMerges);
             }
 
             MergeAssetCache1 mac = new MergeAssetCache1();
@@ -124,6 +114,22 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                 numMergesCompleted++;
                 mergeProgressDelegate?.Invoke(numMergesCompleted, numTotalMerges, track ? existingMD5 : null, track ? f : null);
             }
+        }
+
+        private bool addMergeTarget(string fileName, CaseInsensitiveDictionary<string> loadedFiles, SortedSet<string> targetFiles, Action<int, int, string, string> mergeProgressDelegate, ref int numMergesCompleted, ref int numTotalMerges)
+        {
+            if (loadedFiles.TryGetValue(fileName, out var fullpath))
+            {
+                targetFiles.Add(fullpath);
+                return true;
+            }
+            else
+            {
+                M3Log.Warning($@"File not found in game: {fileName}, skipping...");
+                numMergesCompleted++;
+                mergeProgressDelegate?.Invoke(numMergesCompleted, numTotalMerges, null, null);
+            }
+            return false;
         }
 
         public int GetMergeCount() => ApplyToAllLocalizations ? GameLanguage.GetLanguagesForGame(OwningMM.Game).Length : 1;
