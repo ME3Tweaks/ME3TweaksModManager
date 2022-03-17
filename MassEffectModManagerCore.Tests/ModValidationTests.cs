@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using LegendaryExplorerCore.Packages;
+using ME3TweaksCore.ME3Tweaks.Online;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksModManager.modmanager.me3tweaks;
 using ME3TweaksModManager.modmanager.me3tweaks.services;
@@ -23,6 +24,10 @@ namespace ME3TweaksModManager.Tests
         public void ValidateModLoading()
         {
             GlobalTest.Init();
+
+            // Services require: TPMI
+            TPMIService.LoadService(GlobalTest.CombinedServiceData[MCoreServiceLoader.TPMI_SERVICE_KEY]);
+
             Console.WriteLine("Executing path: " + GlobalTest.GetTestModsDirectory());
             var testingDataPath = GlobalTest.GetTestModsDirectory();
             Assert.IsTrue(Directory.Exists(testingDataPath), "Directory for testing doesn't exist: " + testingDataPath);
