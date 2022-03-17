@@ -4,7 +4,7 @@
 
 # Merge mods - Creating an .m3m file
 
-Merge mods, or .m3m mods, are a modding format unique to M3 that allow direct updates to basegame package files. Rather than shipping, for example, an entire SFXGame.pcc file with your edits, with merge mods you can ship a small .m3m file that contain only the values you want to change. This way, a user can install several different mods that target different parts of SFXGame.pcc and other basegame files without the need for patches or other compatibility problems. With merge mods, you update properties, scripts, and even do an asset merge, which is effectively the `Replace with relink` feature in Legendary Explorer.
+Merge mods, or .m3m mods, are a modding format unique to M3 that allow direct updates to basegame package files. Rather than shipping, for example, an entire SFXGame.pcc file with your edits, with merge mods you can ship a small .m3m file that contain only the values you want to change. This way, a user can install several different mods that target different parts of SFXGame.pcc and other basegame files without the need for patches or other compatibility problems. With merge mods, you can update properties, scripts, skip sequence objects, and perform asset merges, which are effectively the `Replace with relink` feature in Legendary Explorer. They also can apply across localizations of basegame only files, so you only need to make one set of changes to make them work with all localized versions.
 
 The merge mod system is interwoven into the moddesc.ini system, and can take full advantage of the alternates system.
 
