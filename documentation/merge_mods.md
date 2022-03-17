@@ -84,7 +84,7 @@ The JSON format for a file update in a merge mod. The files property is an array
 | Property Name           | Type          | Information                                                  |
 | ----------------------- | ------------- | ------------------------------------------------------------ |
 | filename                | string        | The full name of the file you are targeting.                 |
-| applytoalllocalizations | boolean       | Optional. Whether your merge mod should apply to all localized versions. For example, if you are updating Startup_INT, this would apply the merge to all other Startup localizations. The target file can have a localization on it (Such as Startup_INT.pcc), or just be the basename, such as Startup.pcc |
+| applytoalllocalizations | boolean       | Optional. Whether your merge mod should apply to all localized versions. For example, if you are updating Startup_INT, this would apply the merge to all other Startup localizations. The target file can have a localization on it (Such as Startup_INT.pcc), or just be the basename, such as Startup.pcc. When this value is set to true, changes ONLY apply to localized files; that is, if your target file does not have a langauge code, it should not use this flag. In Mod Manager 8, if this case is detected on installation, the merge mod will fully abort installation |
 | changes                 | array[change] | An array of desired export changes. See the change JSON format below. |
 
 **Example:**
