@@ -15,6 +15,7 @@ using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
+using ME3TweaksCore.Helpers;
 using ME3TweaksCoreWPF;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.diagnostics;
@@ -80,27 +81,10 @@ namespace ME3TweaksModManager.modmanager
             return principal.IsInRole(WindowsBuiltInRole.Administrator);
         }
 
-        public static bool IsNetRuntimeInstalled(int minVer, string platformName)
+        public static async Task<bool> IsNetRuntimeInstalled(int majorVersion)
         {
-            var platform = Registry.LocalMachine.OpenSubKey($@"SOFTWARE\dotnet\Setup\InstalledVersions\{platformName}");
-            if (platform == null || platform.SubKeyCount == 0)
-                return false;
-            Debug.WriteLine($"Platform: {platform.Name.Substring(platform.Name.LastIndexOf("\\") + 1)}");
-
-            var sharedHost = platform.OpenSubKey("sharedhost");
-            foreach (var version in sharedHost.GetValueNames())
-            {
-                var v = ((string)sharedHost.GetValue(@"Version"))?.Split("-")?.FirstOrDefault();
-                if (v != null && Version.TryParse(v, out var netVersion))
-                {
-                    if (netVersion > new Version($"{minVer}.0.0.0"))
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
+            var versions = await DotNetRuntimeVersionDetector.GetInstalledRuntimeVersions(true);
+            return versions.Any(x => x.Major == majorVersion);
         }
 
         // Pinvoke for API function

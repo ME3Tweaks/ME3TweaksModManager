@@ -521,7 +521,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 return;
             }
 
-            var prereqCheckMessage = checkToolPrerequesites(tool);
+            var prereqCheckMessage = await checkToolPrerequesites(tool);
             if (prereqCheckMessage != null)
             {
                 M3Log.Error($@"Prerequisite not met: {prereqCheckMessage}");
@@ -687,14 +687,14 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             ToolsCheckedForUpdatesInThisSession.Add(tool);
         }
 
-        private static string checkToolPrerequesites(string toolname)
+        private static async Task<string> checkToolPrerequesites(string toolname)
         {
             switch (toolname)
             {
                 case LegendaryExplorer:
                 case LegendaryExplorer_Beta:
                     {
-                        if (!M3Utilities.IsNetRuntimeInstalled(5, "x64"))
+                        if (!await M3Utilities.IsNetRuntimeInstalled(5)) // This should probably be defined in the manifest...
                         {
                             return M3L.GetString(M3L.string_error_net5RuntimeMissing); // TODO: Change this to interpolated
                         }
