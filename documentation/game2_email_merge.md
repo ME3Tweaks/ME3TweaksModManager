@@ -81,7 +81,6 @@ The TLK string ID of the in-game text of your email. This must be added to your 
 Optional: The ID of a plot transition to be fired when your email is read.
 
 ### When merge takes place
-
-Upon installation of mods containing the `EmailMergeInfo.emm` file, merge will take place. When disabling or removing a DLC mod, squadmate merge also will re-run.
+Upon installation of any mod, if any in-game DLC folders contain a `EmailMergeInfo.emm` file, email merge will take place to ensure the game reflects the installed email merge files. When disabling or removing a DLC mod, email merge also will re-run.
 
 Emails from all installed mods will be merged into a single BioD_Nor_103Messages.pcc file, and this file will be placed in a high-mounting DLC folder created by M3.
