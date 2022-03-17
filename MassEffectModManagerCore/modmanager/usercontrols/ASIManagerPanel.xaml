@@ -11,6 +11,9 @@
                        xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
                        xmlns:nativeMods1="clr-namespace:ME3TweaksCoreWPF.NativeMods;assembly=ME3TweaksCoreWPF"
                        DataContext="{Binding RelativeSource={RelativeSource Self}}"
+                       MinWidth="640"
+                       MinHeight="480"
+                       MaxWidth="1000"
                        mc:Ignorable="d">
     <UserControl.Resources>
         <DataTemplate DataType="{x:Type nativeMods:ASIMod}">

@@ -28,7 +28,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
         /// <summary>
         /// The amount of loaded tips (used for unit testing)
         /// </summary>
-        public static int TipCount => Database.Sum(x => x.Value.Count);
+        public static int TipCount => Database == null ? 0 : Database.Sum(x => x.Value.Count);
 
         /// <summary>
         /// The name of the service for logging (templated)

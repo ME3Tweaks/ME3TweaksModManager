@@ -92,18 +92,26 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.online
             //FallbackURL = "",
         };
 
+        public const string TIPS_SERVICE_KEY = @"tipsservice";
+        public const string TUTORIAL_SERVICE_KEY = @"tutorialservice";
+        public const string BLACKLISTING_SERVICE_KEY = @"blacklistingservice";
+        public const string TPI_SERVICE_KEY = @"thirdpartyimportingservice";
+        public const string NEXUS_UPDATER_SERVICE_KEY = @"nexusupdaterservice";
+        public const string ASI_MANIFEST_ = @"asimanifest";
+
 
         // Mod Manager specific service loaders
         private static Dictionary<string, MCoreServiceLoader.OnlineServiceLoader> M3ServiceLoaders = new()
         {
-            { @"thirdpartyimportingservice", TPIService.LoadService },
-            { @"blacklistingservice", BlacklistingService.LoadService },
-            { @"tutorialservice", TutorialService.LoadService },
-            { @"tipsservice", TipsService.LoadService },
-            { @"nexusupdaterservice", NexusUpdaterService.LoadService },
-
+            { TPI_SERVICE_KEY, TPIService.LoadService },
+            { BLACKLISTING_SERVICE_KEY, BlacklistingService.LoadService },
+            { TUTORIAL_SERVICE_KEY, TutorialService.LoadService },
+            { TIPS_SERVICE_KEY, TipsService.LoadService },
+            { NEXUS_UPDATER_SERVICE_KEY, NexusUpdaterService.LoadService },
+            { MCoreServiceLoader.ASI_MANIFEST_KEY, ASIManager.LoadService } // Mod Manager controls loading this service so we use it here.
             // Live Localization? (This is done by startup manifest right?)
         };
+
 
         /// <summary>
         /// Loads ME3Tweaks services that depend on the ME3Tweaks server
@@ -119,7 +127,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.online
             var combinedServicesManifest = MCoreServiceLoader.LoadServices(CombinedServiceFetchURL, useCachedContent);
 
             // This uses it's own system since it's not designed like other services. It uses xml (good job me) instead of json like the other services.
-            ASIManager.LoadManifest(false, !useCachedContent);
+            //ASIManager.LoadManifest(false, !useCachedContent);
 
             // Dynamic Help - This is kind of a hack...
             var helpItemsLoading = M3OnlineContent.FetchLatestHelp(App.CurrentLanguage, false, !useCachedContent);

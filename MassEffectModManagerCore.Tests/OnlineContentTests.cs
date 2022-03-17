@@ -1,4 +1,5 @@
 ﻿using LegendaryExplorerCore.Packages;
+using ME3TweaksCore.ME3Tweaks.Online;
 using ME3TweaksCore.Services.BasegameFileIdentification;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksModManager.modmanager.me3tweaks;
@@ -22,13 +23,17 @@ namespace ME3TweaksModManager.Tests
             Assert.AreNotEqual(0, helpItems.Count, "FetchLatestHelp failed: No items were parsed, the list is empty!");
             helpItems.Sort();
 
-            var tips = TipsService.LoadService(GlobalTest.CombinedServiceData);
+            var tips = TipsService.LoadService(GlobalTest.CombinedServiceData[M3ServiceLoader.TIPS_SERVICE_KEY]);
             Assert.AreNotEqual(0, TipsService.TipCount, "FetchTipsService failed: No items were parsed, the list is empty!");
 
-            TPIService.LoadService(true);
+            TPIService.LoadService(GlobalTest.CombinedServiceData[M3ServiceLoader.TPI_SERVICE_KEY]);
             Assert.AreNotEqual(0, TPIService.EntryCount, "FetchThirdPartyImportingService failed: No items were parsed, the list is empty!");
 
-            BasegameFileIdentificationService.LoadService(GlobalTest.CombinedServiceData);
+            TPMIService.LoadService(GlobalTest.CombinedServiceData[MCoreServiceLoader.TPMI_SERVICE_KEY]);
+            Assert.AreNotEqual(0, TPMIService.EntryCount, "Loading TPMI service failed: No items were parsed, the list is empty!");
+
+
+            BasegameFileIdentificationService.LoadService(GlobalTest.CombinedServiceData[MCoreServiceLoader.BGFI_SERVICE_KEY]);
             Assert.AreNotEqual(0, BasegameFileIdentificationService.GetAllServerEntries().Count, "FetchBasegameIdentificationServiceManifest failed: No items were parsed, the list is empty!");
 
             var startupManifest = M3OnlineContent.FetchOnlineStartupManifest(true);

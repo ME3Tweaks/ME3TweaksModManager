@@ -19,7 +19,7 @@ namespace ME3TweaksModManager.Tests
             GlobalTest.Init();
             Random random = new Random();
             Console.WriteLine(@"Loading ASI Manager Manifest");
-            ASIManager.LoadManifest();
+            ASIManager.LoadService(GlobalTest.CombinedServiceData["asimanifest"]);
 
             var games = new[] { MEGame.ME1, MEGame.ME2, MEGame.ME3 };
 
