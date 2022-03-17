@@ -71,7 +71,6 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
             if (false)
 #else 
             if (serviceData != null)
-            UNCOMMENT ME WHEN DONE WITH NEW TUTORIAL
 #endif
             {
                 try
@@ -81,7 +80,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
 #if DEBUG
                     File.WriteAllText(GetServiceCacheFile(), serviceData.ToString(Formatting.Indented));
 #else
-                    File.WriteAllText(GetServiceCacheFile, serviceData.ToString(Formatting.None));
+                    File.WriteAllText(GetServiceCacheFile(), serviceData.ToString(Formatting.None));
 #endif
                     M3Log.Information($@"Loaded online {ServiceLoggingName}");
                     return true;
@@ -135,46 +134,45 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
         public static void TouchupTutorial()
         {
 #if DEBUG
-            return; // DONT DO ANYTHING TESTIN
+            Debug.WriteLine(@"TouchupTutorial() DISABLED IN THIS DEBUG BUILD (see TutorialService.cs!)
+            return; // DONT DO ANYTHING, TESTIN
 #endif
-#if !DEBUG
-Tutorial service needs fixed up, the online endpoints don't look like they'd actually work...
-#endif
-            //var fileRootPath = M3Filesystem.GetTutorialServiceCache();
-            //foreach (var step in TutorialSteps)
-            //{
-            //    var imagePath = Path.Combine(fileRootPath, step.imagename);
-            //    bool download = !File.Exists(imagePath) || M3Utilities.CalculateMD5(imagePath) != step.imagemd5;
-            //    if (download)
-            //    {
-            //        foreach (var endpoint in TutorialServiceManifestURL.GetAllLinks())
-            //        {
-            //            Uri myUri = new Uri(endpoint);
-            //            string host = myUri.Host;
 
-            //            var fullurl = endpoint + @"tutorial/" + step.imagename;
-            //            M3Log.Information($@"Downloading {step.imagename} from endpoint {host}");
-            //            var downloadedImage = MOnlineContent.DownloadToMemory(fullurl, null, step.imagemd5).Result;
-            //            if (downloadedImage.errorMessage == null)
-            //            {
-            //                try
-            //                {
-            //                    downloadedImage.result.WriteToFile(imagePath);
-            //                }
-            //                catch (Exception e)
-            //                {
-            //                    M3Log.Error($@"Error writing tutorial image {imagePath}: {e.Message}");
-            //                }
+            var fileRootPath = M3Filesystem.GetTutorialServiceCache();
+        /*    foreach (var step in Database)
+            {
+                var imagePath = Path.Combine(fileRootPath, step.imagename);
+                bool download = !File.Exists(imagePath) || M3Utilities.CalculateMD5(imagePath) != step.imagemd5;
+                if (download)
+                {
+                    foreach (var endpoint in TutorialServiceManifestURL.GetAllLinks())
+                    {
+                        Uri myUri = new Uri(endpoint);
+                        string host = myUri.Host;
 
-            //                break;
-            //            }
-            //            else
-            //            {
-            //                M3Log.Error($@"Unable to download {step.imagename} from endpoint {host}: {downloadedImage.errorMessage}");
-            //            }
-            //        }
-            //    }
-            //}
-        }
+                        var fullurl = endpoint + @"tutorial/" + step.imagename;
+                        M3Log.Information($@"Downloading {step.imagename} from endpoint {host}");
+                        var downloadedImage = MOnlineContent.DownloadToMemory(fullurl, null, step.imagemd5).Result;
+                        if (downloadedImage.errorMessage == null)
+                        {
+                            try
+                            {
+                                downloadedImage.result.WriteToFile(imagePath);
+                            }
+                            catch (Exception e)
+                            {
+                                M3Log.Error($@"Error writing tutorial image {imagePath}: {e.Message}");
+                            }
+
+                            break;
+                        }
+                        else
+                        {
+                            M3Log.Error($@"Unable to download {step.imagename} from endpoint {host}: {downloadedImage.errorMessage}");
+                        }
+                    }
+                }
+            }
+        */}
     }
 }

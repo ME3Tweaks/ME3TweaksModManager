@@ -79,13 +79,13 @@ namespace ME3TweaksModManager.Tests
 #if !AZURE
             Console.WriteLine("ValidateArchiveModLoading() must be run with AZURE compilation flag defined or tests will fail due to dummy data. Test skipped.");
             return;
-            #endif
+#endif
 
             GlobalTest.Init();
 
             Console.WriteLine("Fetching third party services");
-            TPIService.LoadService();
-            TPMIService.LoadService();
+            TPIService.LoadService(GlobalTest.CombinedServiceData);
+            TPMIService.LoadService(GlobalTest.CombinedServiceData);
 
             var compressedModsDirectory = GlobalTest.GetTestingDataDirectoryFor(@"compressedmods");
             List<Mod> modsFoundInArchive = new List<Mod>();

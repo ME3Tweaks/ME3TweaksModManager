@@ -70,7 +70,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
 #if DEBUG
                     File.WriteAllText(GetServiceCacheFile(), serviceData.ToString(Formatting.Indented));
 #else
-                    File.WriteAllText(GetServiceCacheFile, serviceData.ToString(Formatting.None));
+                    File.WriteAllText(GetServiceCacheFile(), serviceData.ToString(Formatting.None));
 #endif
                     M3Log.Information($@"Loaded online {ServiceLoggingName}");
                     return true;

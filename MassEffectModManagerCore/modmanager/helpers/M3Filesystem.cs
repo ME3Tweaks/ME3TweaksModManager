@@ -149,16 +149,7 @@ namespace ME3TweaksModManager.modmanager.helpers
         /// <returns></returns>
         internal static string GetTutorialServiceCacheFile()
         {
-#if DEBUG
-            // DEBUG ONLY!
-            return @"C:\ProgramData\ME3TweaksModManager\ME3TweaksServicesCache\tutorialservice\new\tutorialservice.json";
-            return Path.Combine(MCoreFilesystem.GetME3TweaksServicesCache(), "tutorialservice.json");
-#elif PRERELEASE
             return Path.Combine(GetME3TweaksServicesCache(), "tutorialservice.json");
-#else 
-            You forgot to fix me bruh
-
-#endif
         }
 
         /// <summary>

@@ -5,6 +5,7 @@ using System.Windows;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.me3tweaks.services;
 using ME3TweaksModManager.modmanager.objects.tutorial;
 using ME3TweaksModManager.ui;
@@ -99,7 +100,7 @@ namespace ME3TweaksModManager.modmanager.windows
                     Debug.WriteLine($@"OK -- File not found for tutorial: {tutorialStep.UIImagePath}");
                 }
 #else
-                tutorialStep.UIImagePath = Path.Combine(M3Utilities.GetTutorialServiceCache(), tutorialStep.imagename);
+                tutorialStep.UIImagePath = Path.Combine(M3Filesystem.GetTutorialServiceCache(), tutorialStep.imagename);
 #endif
             }
         }
