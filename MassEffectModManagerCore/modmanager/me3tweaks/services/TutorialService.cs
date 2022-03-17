@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using LegendaryExplorerCore.Helpers;
 using ME3TweaksCore.Diagnostics;
@@ -134,18 +135,18 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
         public static void TouchupTutorial()
         {
 #if DEBUG
-            Debug.WriteLine(@"TouchupTutorial() DISABLED IN THIS DEBUG BUILD (see TutorialService.cs!)
+            Debug.WriteLine(@"TouchupTutorial() DISABLED IN THIS DEBUG BUILD (see TutorialService.cs!)");
             return; // DONT DO ANYTHING, TESTIN
 #endif
 
             var fileRootPath = M3Filesystem.GetTutorialServiceCache();
-        /*    foreach (var step in Database)
+            foreach (var step in Database)
             {
                 var imagePath = Path.Combine(fileRootPath, step.imagename);
                 bool download = !File.Exists(imagePath) || M3Utilities.CalculateMD5(imagePath) != step.imagemd5;
                 if (download)
                 {
-                    foreach (var endpoint in TutorialServiceManifestURL.GetAllLinks())
+                    foreach (var endpoint in M3OnlineContent.StaticFileBaseEndpoints.GetAllLinks())
                     {
                         Uri myUri = new Uri(endpoint);
                         string host = myUri.Host;
@@ -173,6 +174,6 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
                     }
                 }
             }
-        */}
+        }
     }
 }
