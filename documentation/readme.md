@@ -11,17 +11,17 @@ ME3Tweaks Mod Manager (which will be written as M3 from now on in this document)
    - Details power user features that allow you to perform certain tasks faster and easier 
 
 ## moddesc.ini documentation for mod developers
- - [moddesc.ini: Data types](datatypes.md)
+- [moddesc.ini: Data types](datatypes.md)
    - Describes headers, descriptors, and other data types that are used in moddesc.ini files
 - [moddesc.ini - the definition of an M3 mod](moddesc.ini.md)
    - Includes information on moddesc.ini versioning, how a mod is defined, mod restrictions, as well as descriptors for \[ModManager], \[ModInfo], and \[UPDATES]
- - [moddesc.ini: Official DLC and Basegame Headers](officialdlc_and_basegame.md)
+- [moddesc.ini: Official DLC and Basegame Headers](officialdlc_and_basegame.md)
    - Contains all the options available for use on mods targeting replacing files in the BASEGAME and Official DLC headers
- - [moddesc.ini: CUSTOMDLC Header (DLC mods)](customdlc.md)
+- [moddesc.ini: CUSTOMDLC Header (DLC mods)](customdlc.md)
    - Contains all the options available for Custom DLC mods, which are the most common type of mod in the trilogy
- - [moddesc.ini: Automatic and alternative mod installations using alternates](alternates.md)
+- [moddesc.ini: Automatic and alternative mod installations using alternates](alternates.md)
    - Contains all the options available for use in alternative installations, such as automatic patch installs
- - [moddesc.ini: Localization mods](localizations.md)
+- [moddesc.ini: Localization mods](localizations.md)
    - Contains information about how to make a localization TLK mod for ME2 and ME3 mods
 - [Merge Mods: Creating an .m3m file](merge_mods.md)
    - Contains information on how to create a merge mod, a format which can update individual exports in common basegame files with few compatibility issues.
@@ -31,6 +31,9 @@ ME3Tweaks Mod Manager (which will be written as M3 from now on in this document)
    - Contains information about how to use the GAME1_EMBEDDED_TLK header to replace strings in ME1/LE1, due to it having embedded TLK files
 - [Adding outfits to squadmates in Game 3 using Squadmate Outfit Merge](squadmate_outfit_merge.md)
    - Contains information about the squadmate merge feature, and how to use it so you can add outfits without replacing existing ones for Mass Effect 3 (OT + LE)
+- [Adding emails in Game 2 using Game 2 Email Merge](game2_email_merge.md)
+   - Contains information on using the Game 2 email merge feature
+
 
 Mod Manager includes a built-in moddesc editor that can be used on existing mods. Right click your mod while in developer mode and select `moddesc.ini editor`. Currently this only works on mods that are loaded, and cannot be used for creating the initial mod.
 
