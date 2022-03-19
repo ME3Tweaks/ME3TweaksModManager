@@ -147,43 +147,9 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.online
             }
 
             // Touchups
+            BackgroundTaskEngine.SubmitJobCompletion(bgTask);
+
             TutorialService.TouchupTutorial();
-
-
-            /*
-            var bgTask = BackgroundTaskEngine.SubmitBackgroundJob(@"LoadTutorialService", M3L.GetString(M3L.string_checkingTutorialAssets), M3L.GetString(M3L.string_checkedTutorialAssets));
-            TutorialService.LoadService(!firstStartup);
-            TutorialService.TouchupTutorial();
-            BackgroundTaskEngine.SubmitJobCompletion(bgTask);
-
-            bgTask = BackgroundTaskEngine.SubmitBackgroundJob(@"LoadDynamicHelp", M3L.GetString(M3L.string_loadingDynamicHelp), M3L.GetString(M3L.string_loadingDynamicHelp));
-            var helpItemsLoading = M3OnlineContent.FetchLatestHelp(App.CurrentLanguage, false, !firstStartup);
-            bw.ReportProgress(0, helpItemsLoading);
-            BackgroundTaskEngine.SubmitJobCompletion(bgTask);
-
-            bgTask = BackgroundTaskEngine.SubmitBackgroundJob(@"ThirdPartyServicesFetch", M3L.GetString(M3L.string_loadingThirdPartyServices), M3L.GetString(M3L.string_loadedThirdPartyServices));
-            TPMIService.LoadService(!firstStartup);
-            BasegameFileIdentificationService.LoadService(!firstStartup);
-            TPIService.LoadService(!firstStartup);
-            ASIManager.LoadManifest(false, !firstStartup);
-            BlacklistingService.LoadService(!firstStartup);
-
-            BackgroundTaskEngine.SubmitJobCompletion(bgTask);
-
-            bgTask = BackgroundTaskEngine.SubmitBackgroundJob(@"LoadTipsService", M3L.GetString(M3L.string_loadingTipsService), M3L.GetString(M3L.string_loadedTipsService));
-            try
-            {
-                App.TipsService = M3OnlineContent.FetchTipsService(!firstStartup);
-                mw.SetTipsForLanguage();
-            }
-            catch (Exception e)
-            {
-                M3Log.Error(@"Failed to load tips service: " + e.Message);
-            }*/
-
-            BackgroundTaskEngine.SubmitJobCompletion(bgTask);
-
-
         }
     }
 }

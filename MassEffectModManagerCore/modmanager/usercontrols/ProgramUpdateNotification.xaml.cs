@@ -444,5 +444,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             InitializeComponent();
         }
+
+        public override bool DisableM3AutoSizer { get; set; } = true; // This window will never need to get bigger and it's size can change.
     }
 }
