@@ -146,6 +146,10 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.online
                 }
             }
 
+            // Touchups
+            TutorialService.TouchupTutorial();
+
+
             /*
             var bgTask = BackgroundTaskEngine.SubmitBackgroundJob(@"LoadTutorialService", M3L.GetString(M3L.string_checkingTutorialAssets), M3L.GetString(M3L.string_checkedTutorialAssets));
             TutorialService.LoadService(!firstStartup);
