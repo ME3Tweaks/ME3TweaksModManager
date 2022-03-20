@@ -735,8 +735,8 @@
 	<!-- Intro Tutorial -->
 	<system:String x:Key="string_next">Далее</system:String>
 	<system:String x:Key="string_previous">Назад</system:String>
-	<system:String x:Key="string_skipTutorial">Пропустить обучение</system:String>
-	<system:String x:Key="string_title_quickTutorial">Краткое Обучение ME3Tweaks Mod Manager</system:String>
+	<system:String x:Key="string_skipTutorial">Пропустить руководство</system:String>
+	<system:String x:Key="string_title_quickTutorial">Краткое Руководство ME3Tweaks Mod Manager</system:String>
 
 	<!-- Keybinds Injector -->
 	<system:String x:Key="string_customKeybindsInjector">Custom Keybinds Injector</system:String>
@@ -1096,7 +1096,7 @@
 	<system:String x:Key="string_tooltip_me1ASILoader">Включает загрузку ASI-модов, что позволяет переопределить загрузку DLC-модов</system:String>
 	<system:String x:Key="string_tooltip_me23ASILoader">Позволяет использовать модифицированные DLC, включает консоль, включает поддержку ASI-модов</system:String>
 	<system:String x:Key="string_tooltip_leASILoader">Включает консоль, включает поддержку ASI-модов</system:String>
-	<system:String x:Key="string_debug_showIntroTutorial">Пройти Краткое Обучение</system:String>
+	<system:String x:Key="string_debug_showIntroTutorial">Показать Краткое Руководство</system:String>
 	<system:String x:Key="string_dialog_multiUserProgramDataWindowsRestrictions">Windows ограничила доступ к директории данных программы ME3Tweaks Mod Manager для текущей учетной записи. Нажмите ОК для разрешения доступа к данной папке, чтобы гарантировать корректную работу функций программы.</system:String>
 	<system:String x:Key="string_grantingWritePermissions">Разрешение доступа на запись</system:String>
 	<system:String x:Key="string_dialog_programWillNotRunCorrectly">Программа может работать некорректно без доступа к папкам настроек и кэша.</system:String>
@@ -1130,8 +1130,8 @@
 	<!-- When there is no targets at all -->
 	<system:String x:Key="string_cannotInstallToThisGame">Невозможно установить в данную игру</system:String>
 	<!-- When a target for another game than the selected mod -->
-	<system:String x:Key="string_checkingTutorialAssets">Проверка ресурсов обучения</system:String>
-	<system:String x:Key="string_checkedTutorialAssets">Ресурсы обучения проверены</system:String>
+	<system:String x:Key="string_checkingTutorialAssets">Проверка ресурсов руководства</system:String>
+	<system:String x:Key="string_checkedTutorialAssets">Ресурсы руководства проверены</system:String>
 	<system:String x:Key="string_updatingLocalization">Обновление локализации</system:String>
 	<system:String x:Key="string_updatedLocalization">Локализация обновлена</system:String>
 	<system:String x:Key="string_errorUpdatingLocalization">Ошибка обновления локализации</system:String>
@@ -1165,7 +1165,7 @@
 	<system:String x:Key="string_loadingTargets">Загрузка списка игр</system:String>
 	<!-- Shown when app is booting up and game targets are being inspected -->
 	<system:String x:Key="string_configureNxmHandlerOnBoot">Настройка обработчика nxm:// при загрузке</system:String>
-	<system:String x:Key="string_tooltip_configureNxmHandlerOnBoot" xml:space="preserve">Настравивает обработчик nxm:// NexusMods, чтобы "Download with Manager" на NexusMods загружала ME3Tweaks Mod Manager. При отключении можно включить повторно в панели NexusMods</system:String>
+	<system:String x:Key="string_tooltip_configureNxmHandlerOnBoot" xml:space="preserve">Настравивает обработчик nxm:// NexusMods, чтобы 'Download with Manager' на NexusMods загружала ME3Tweaks Mod Manager. При отключении можно включить повторно в панели NexusMods</system:String>
 	<system:String x:Key="string_dialog_nexusLoginRequiredForDownload">ME3Tweaks Mod Manager должен быть привязан к вашему аккаунту NexusMods для прямой загрузки с NexusMods. Нажмите OK для перехода на страницу авторизации NexusMods и привязки программы.</system:String>
 	<system:String x:Key="string_notSignedIn">Вход не выполнен</system:String>
 	<system:String x:Key="string_couldNotEndorseFile">Невозможно одобрить файл</system:String>
@@ -1876,7 +1876,7 @@
 	<system:String x:Key="string_interp_nexusModsReturnedAnErrorX" xml:space="preserve">NexusMods вернул ошибку:\n{0}</system:String>
 	<!-- 0 = error message -->
 	<system:String x:Key="string_errorAuthenticatingToNexusMods">Ошибка авторизации на NexusMods</system:String>
-	<system:String x:Key="string_nexusModsLoginHeader">ME3Tweaks Mod Manager имеет встроенную поддержку функций NexusMods, например, одобрение модов, отслеживание обновлений и "Загрузка через Manager". Вам требуется авторизоваться в NexusMods через ME3Tweaks Mod Manager для использования данных функций.</system:String>
+	<system:String x:Key="string_nexusModsLoginHeader">ME3Tweaks Mod Manager имеет встроенную поддержку функций NexusMods, например, одобрение модов, отслеживание обновлений и 'Download with Manager". Вам требуется авторизоваться в NexusMods через ME3Tweaks Mod Manager для использования данных функций.</system:String>
 	<system:String x:Key="string_directions">Указания</system:String>
 	<system:String x:Key="string_nexusModsDirections">Выполните вход в NexusMods, нажав "Авторизоваться на NexusMods" внизу.  авторизуйте ME3Tweaks Mod Manager. Альтернативно, вы можете авторизоваться вручную, вставив ваш API-ключ NexusMods после выбора "Ввести API-ключ вручную". Ваш API-ключ можно найти в настройках аккаунта NexusMods.</system:String>
 	<system:String x:Key="string_caution">Внимание</system:String>
@@ -1885,13 +1885,13 @@
 	<system:String x:Key="string_pasteYourAPIKeyHere">Вставьте сюда ваш API-ключ</system:String>
 	<system:String x:Key="string_manuallyEnterAPIKey">Ввести API-ключ вручную</system:String>
 	<system:String x:Key="string_yourAPIKeyWillAppearHere">Ваш API-ключ появится здесь</system:String>
-	<system:String x:Key="string_configureDownloadWithManager">Настройка функции 'Загрузка через Manager'</system:String>
+	<system:String x:Key="string_configureDownloadWithManager">Настройка функции 'Download with Manager'</system:String>
 
 	<!-- NXM Config Panel -->
 	<system:String x:Key="string_executables">Исполняемые файлы</system:String>
 	<!-- Used in context of filetype selector. 'Executables (*.exe)' -->
 	<system:String x:Key="string_nexusModsDownloaderConfiguration">Конфигурация NexusMods Downloader</system:String>
-	<system:String x:Key="string_description_downloadWithManager">Функция 'Загрузка через Manager' на NexusMods использует протокол NXM. Это означает, что единовременно может быть зарегистрирована только одно приложение. Mod Manager может зарегистрировать себя в качестве получателя и перенаправлять загрузки для неподдерживаемых игр (например Skyrim или Fallout) в другие программы по вашему выбору.</system:String>
+	<system:String x:Key="string_description_downloadWithManager">Функция 'Download with Manager' на NexusMods использует протокол NXM. Это означает, что единовременно может быть зарегистрирована только одно приложение. Mod Manager может зарегистрировать себя в качестве получателя и перенаправлять загрузки для неподдерживаемых игр (например Skyrim или Fallout) в другие программы по вашему выбору.</system:String>
 	<system:String x:Key="string_registerME3TweaksModManagerAsHandler">Регистрация ME3Tweaks Mod Manager в качестве обработчика</system:String>
 	<system:String x:Key="string_otherApps">Другие приложения</system:String>
 	<system:String x:Key="string_description_downloadWithManagerOtherApps">Вы можете зарегистрировать другие приложения для обработки других игр, кроме игр Mass Effect. Вам нужно указать домен (имя игры из ссылки NexusMods), целевое приложение и аргументы, необходимые приложению. Используйте '%1' для указания nxm:// ссылки.</system:String>
