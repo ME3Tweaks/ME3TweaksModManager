@@ -1944,7 +1944,7 @@
     <system:String x:Key="string_next">Next</system:String>
 	<system:String x:Key="string_previous">Previous</system:String>
 	<system:String x:Key="string_skipTutorial">Skip tutorial</system:String>
-    <system:String  x:Key="string_title_quickTutorial">ME3Tweaks Mod Manager Quick Tutorial</system:String>
+    <system:String  x:Key="string_title_quickTutorial">ME3Tweaks Mod Manager Tutorial</system:String>
 
     <!-- TLK Transpiler -->
     <system:String x:Key="string_interp_exceptionOccuredWhileCompilingTLKSubfileTankmaster">Exception occurred while compiling TLK subfile {0}: {1}</system:String>
