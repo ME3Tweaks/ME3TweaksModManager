@@ -161,7 +161,7 @@ namespace ME3TweaksModManager.modmanager.helpers
             return Directory.CreateDirectory(Path.Combine(MCoreFilesystem.GetME3TweaksServicesCache(), "tutorialservice")).FullName;
         }
 
-        internal static string GetLocalHelpFile()
+        internal static string GetDynamicHelpCachedFile()
         {
             return Path.Combine(GetME3TweaksServicesCache(), "cachedhelp-v2.xml");
         }

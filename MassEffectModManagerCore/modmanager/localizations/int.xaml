@@ -23,8 +23,8 @@
     <system:String x:Key="string_LogModInstallation">Log Mod Installation</system:String>
     <system:String x:Key="string_LogModMakerCompiler">Log ModMaker Compiler</system:String>
     <system:String x:Key="string_LogModUpdater">Log Mod Updater</system:String>
-    <system:String x:Key="string_Checkforcontentupdates">Check for Mod Manager content updates</system:String>
-    <system:String x:Key="string_ChecksME3Tweaksforupdatestovariousservices">Checks ME3Tweaks.com for updates to various services</system:String>
+    <system:String x:Key="string_Checkforcontentupdates">Refresh ME3Tweaks services</system:String>
+    <system:String x:Key="string_ChecksME3Tweaksforupdatestovariousservices">Downloads the latest ME3Tweaks.com service information, which is used for things such as mod identification, ASIs, etc.&#10;This is done automatically once a day</system:String>
     <system:String x:Key="string_Reloadsmodsfromthemodlibrary">Refresh the mod library</system:String>
     <system:String x:Key="string_tooltip_reloadModsFromLibrary">Refreshes the list of available mods in the mod library</system:String>
     <system:String x:Key="string_Exit">Exit</system:String>

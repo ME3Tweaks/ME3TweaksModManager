@@ -2973,7 +2973,7 @@ namespace ME3TweaksModManager
         /// Refreshes the dynamic help list
         /// </summary>
         /// <param name="sortableHelpItems"></param>
-        private void setDynamicHelpMenu(List<SortableHelpElement> sortableHelpItems)
+        private void setDynamicHelpMenu(IReadOnlyList<SortableHelpElement> sortableHelpItems)
         {
             //Replacing the dynamic help menu
             //DynamicHelp_MenuItem.Items.RemoveAll(x=>x.Tag is string str && str == "DynamicHelp");
@@ -3002,7 +3002,7 @@ namespace ME3TweaksModManager
 
         }
 
-        private List<MenuItem> RecursiveBuildDynamicHelpMenuItems(List<SortableHelpElement> sortableHelpItems)
+        private List<MenuItem> RecursiveBuildDynamicHelpMenuItems(IReadOnlyList<SortableHelpElement> sortableHelpItems)
         {
             //Todo: Localized version
             List<MenuItem> dynamicMenuItems = new List<MenuItem>();
@@ -3708,7 +3708,7 @@ namespace ME3TweaksModManager
                 RefreshNexusStatus(true);
                 try
                 {
-                    var localizedHelpItems = M3OnlineContent.FetchLatestHelp(lang, true, false);
+                    var localizedHelpItems = DynamicHelpService.GetHelpItems(lang);
                     setDynamicHelpMenu(localizedHelpItems);
                 }
                 catch (Exception e)

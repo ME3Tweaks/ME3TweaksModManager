@@ -11,106 +11,113 @@ using ME3TweaksCore.Services;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using Microsoft.AppCenter.Crashes;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace ME3TweaksModManager.modmanager.me3tweaks.services
 {
+    /// <summary>
+    /// Service that powers the dynamic help system in the Help menu of ME3Tweaks Mod Manager.
+    /// </summary>
     [Localizable(false)]
-    partial class M3OnlineContent
+    public class DynamicHelpService
     {
-        //private static readonly string LatestHelpFileLink = StaticFilesBaseURL_Github + "dynamichelp/latesthelp-localized.xml";
-        //internal static readonly string HelpResourcesBaseURL = StaticFilesBaseURL_Github + "dynamichelp/resources";
+        /// <summary>
+        /// The xml string blob used for parsing
+        /// </summary>
+        private static XmlDocument Database;
 
         /// <summary>
-        /// Fetches the latest help document (if necessary) and returns the list of help menu items used to build the UI
+        /// If the database has been initialized by a data source (cached or online)
         /// </summary>
-        /// <param name="language"></param>
-        /// <param name="preferLocal"></param>
-        /// <param name="overrideThrottling"></param>
-        /// <returns></returns>
-        public static List<SortableHelpElement> FetchLatestHelp(string language, bool preferLocal, bool overrideThrottling = false)
+        public static bool ServiceLoaded { get; set; }
+
+        /// <summary>
+        /// The name of the service for logging (templated)
+        /// </summary>
+        private const string ServiceLoggingName = @"DynamicHelp Service";
+
+        private static string GetServiceCacheFile() => M3Filesystem.GetDynamicHelpCachedFile();
+
+        public static bool LoadService(JToken data)
         {
-            var localHelpExists = File.Exists(M3Filesystem.GetLocalHelpFile());
-            string cached = null;
-            if (localHelpExists)
+            return InternalLoadService(data);
+        }
+
+        private static bool InternalLoadService(JToken serviceData)
+        {
+            // Online first
+            if (serviceData != null)
             {
                 try
                 {
-                    cached = File.ReadAllText(M3Filesystem.GetLocalHelpFile());
+                    // This is an xml service!
+                    var xml = serviceData.ToObject<string>();
+                    Database = new XmlDocument();
+                    Database.LoadXml(xml);
+                    ServiceLoaded = true;
+                    File.WriteAllText(GetServiceCacheFile(), xml);
+                    M3Log.Information($@"Loaded online {ServiceLoggingName}");
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    if (ServiceLoaded)
+                    {
+                        M3Log.Error($@"Loaded online {ServiceLoggingName}, but failed to cache to disk: {ex.Message}");
+                        return true;
+                    }
+                    else
+                    {
+                        M3Log.Error($@"Failed to load {ServiceLoggingName}: {ex.Message}");
+                        return false;
+                    }
+
+                }
+            }
+
+            // Use cached if online is not available
+            if (File.Exists(GetServiceCacheFile()))
+            {
+                try
+                {
+                    var cached = File.ReadAllText(GetServiceCacheFile());
+                    Database = new XmlDocument();
+                    Database.LoadXml(cached);
+                    ServiceLoaded = true;
+                    M3Log.Information($@"Loaded cached {ServiceLoggingName}");
+                    return true;
                 }
                 catch (Exception e)
                 {
-                    var attachments = new List<ErrorAttachmentLog>();
-                    string log = LogCollector.CollectLatestLog(MCoreFilesystem.GetLogDir(), true);
-                    if (log.Length < FileSize.MebiByte * 7)
+                    M3Log.Error($@"Failed to load cached {ServiceLoggingName}: {e.Message}");
+                    var relevantInfo = new Dictionary<string, string>()
                     {
-                        attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, "applog.txt"));
-                    }
-                    Crashes.TrackError(e, new Dictionary<string, string>()
-                    {
-                        {"Error type", "Error reading cached online content" },
-                        {"Service", "Dynamic Help" },
-                        {"Message", e.Message }
-                    }, attachments.ToArray());
+                        {@"Error type", @"Error reading cached online content"},
+                        {@"Service", ServiceLoggingName},
+                        {@"Message", e.Message}
+                    };
+                    TelemetryInterposer.UploadErrorLog(e, relevantInfo);
                 }
             }
 
-            if (localHelpExists && preferLocal)
-            {
-                return ParseLocalHelp(cached, language);
-            }
-
-
-            if (!localHelpExists || overrideThrottling || MOnlineContent.CanFetchContentThrottleCheck())
-            {
-                foreach (var staticendpoint in M3OnlineContent.StaticFileBaseEndpoints.GetAllLinks())
-                {
-                    using var wc = new ShortTimeoutWebClient();
-                    try
-                    {
-                        string xml = wc.DownloadStringAwareOfEncoding(staticendpoint + @"dynamichelp/latesthelp-localized2.xml");
-                        File.WriteAllText(M3Filesystem.GetLocalHelpFile(), xml);
-                        return ParseLocalHelp(xml, language);
-                    }
-                    catch (Exception e)
-                    {
-                        M3Log.Error($"Error fetching online help from endpoint {staticendpoint}: {e.Message}");
-                    }
-                }
-                if (cached != null)
-                {
-                    M3Log.Warning("Using cached help instead");
-                }
-                else
-                {
-                    M3Log.Error("Unable to display dynamic help: Could not fetch online asset and cached help asset does not exist.");
-                    return null;
-                }
-            }
-
-            try
-            {
-                return ParseLocalHelp(cached, language);
-            }
-            catch (Exception e)
-            {
-                M3Log.Error("Unable to parse local dynamic help file: " + e.Message);
-                return null;
-            }
+            M3Log.Information($@"Unable to load {ServiceLoggingName}: No cached content or online content was available to load");
+            return false;
         }
 
-        private static List<SortableHelpElement> ParseLocalHelp(string xml, string language)
+        public static IReadOnlyList<SortableHelpElement> GetHelpItems(string language)
         {
+            if (!ServiceLoaded || Database == null) return new List<SortableHelpElement>(0); // Nothing.
+
             //We can't use LINQ here as we have to multiselect
             //And parse things in a certain order
             try
             {
-                XmlDocument doc = new XmlDocument();
-                doc.LoadXml(xml);
                 var nonLocalizedHelpItems = new List<NonLocalizedHelpMenu>();
 
                 // Get non-localized help blocks first
                 string nlxpathExpression = $"/localizations/nonlocalizedhelpmenudefinition";
-                var nlnodes = doc.SelectNodes(nlxpathExpression);
+                var nlnodes = Database.SelectNodes(nlxpathExpression);
                 foreach (XmlNode nlnode in nlnodes)
                 {
                     var nlhm = new NonLocalizedHelpMenu() { Name = nlnode.Attributes["name"].Value };
@@ -135,7 +142,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
                 var sortableHelpItems = new List<SortableHelpElement>();
                 string xpathExpression = $"/localizations/helpmenu[@lang='{language}']/helpitem|/localizations/helpmenu[@lang='{language}']/list|/localizations/helpmenu[@lang='{language}']/nonlocalizedhelpmenu";
 
-                var nodes = doc.SelectNodes(xpathExpression);
+                var nodes = Database.SelectNodes(xpathExpression);
                 foreach (XmlNode node in nodes)
                 {
                     if (node.Name == "nonlocalizedhelpmenu")
@@ -162,6 +169,12 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
             }
         }
 
+        /// <summary>
+        /// Helper method to add items to a list
+        /// </summary>
+        /// <param name="sortableHelpItems"></param>
+        /// <param name="node"></param>
+        /// <param name="nonLocalizedHelpItems"></param>
         internal static void addNonLocalizedHelpMenuItems(List<SortableHelpElement> sortableHelpItems, XmlNode node, List<NonLocalizedHelpMenu> nonLocalizedHelpItems)
         {
             var id = node.Attributes["name"].Value;
@@ -179,6 +192,9 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
         }
     }
 
+    /// <summary>
+    /// Class representing a non-localized help item
+    /// </summary>
     public class NonLocalizedHelpMenu
     {
         /// <summary>
@@ -197,6 +213,9 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
         public SortableHelpElement LocalizedTitleNode;
     }
 
+    /// <summary>
+    /// Class representing a sortable dynamic help item
+    /// </summary>
     [Localizable(false)]
     public class SortableHelpElement : IComparable<SortableHelpElement>
     {
@@ -280,7 +299,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
                 {
                     if (v.Name == "nonlocalizedhelpmenu")
                     {
-                        M3OnlineContent.addNonLocalizedHelpMenuItems(Children, v, nonLocalizedHelpMenus);
+                        DynamicHelpService.addNonLocalizedHelpMenuItems(Children, v, nonLocalizedHelpMenus);
                     }
                     else
                     {

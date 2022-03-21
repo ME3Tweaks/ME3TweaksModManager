@@ -97,7 +97,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.online
         public const string BLACKLISTING_SERVICE_KEY = @"blacklistingservice";
         public const string TPI_SERVICE_KEY = @"thirdpartyimportingservice";
         public const string NEXUS_UPDATER_SERVICE_KEY = @"nexusupdaterservice";
-        public const string ASI_MANIFEST_ = @"asimanifest";
+        public const string DYNAMIC_HELP_SERVICE_KEY = @"dynamichelp";
 
 
         // Mod Manager specific service loaders
@@ -108,7 +108,8 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.online
             { TUTORIAL_SERVICE_KEY, TutorialService.LoadService },
             { TIPS_SERVICE_KEY, TipsService.LoadService },
             { NEXUS_UPDATER_SERVICE_KEY, NexusUpdaterService.LoadService },
-            { MCoreServiceLoader.ASI_MANIFEST_KEY, ASIManager.LoadService } // Mod Manager controls loading this service so we use it here.
+            { MCoreServiceLoader.ASI_MANIFEST_KEY, ASIManager.LoadService }, // Mod Manager controls loading this service so we use it here.
+            { DYNAMIC_HELP_SERVICE_KEY, DynamicHelpService.LoadService } // This just loads the xml document. The UI must update after init
             // Live Localization? (This is done by startup manifest right?)
         };
 
@@ -123,15 +124,11 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.online
             var useCachedContent = FirstContentCheck && !MOnlineContent.CanFetchContentThrottleCheck();
             FirstContentCheck = false; // Ensure this is false after the initial usage
 
-            var bgTask = BackgroundTaskEngine.SubmitBackgroundJob(@"FetchCombinedServiceManifest", $"Refreshing content from me3tweaks.com", $"Refreshed content from me3tweaks.com");
+            var messageStart = useCachedContent ? "Loading ME3Tweaks services" :  "Refreshing ME3Tweaks services";
+            var messageEnd = useCachedContent ? "Loaded ME3Tweaks services" : "Refreshed ME3Tweaks services";
+
+            var bgTask = BackgroundTaskEngine.SubmitBackgroundJob(@"FetchCombinedServiceManifest", messageStart, messageEnd);
             var combinedServicesManifest = MCoreServiceLoader.LoadServices(CombinedServiceFetchURL, useCachedContent);
-
-            // This uses it's own system since it's not designed like other services. It uses xml (good job me) instead of json like the other services.
-            //ASIManager.LoadManifest(false, !useCachedContent);
-
-            // Dynamic Help - This is kind of a hack...
-            var helpItemsLoading = M3OnlineContent.FetchLatestHelp(App.CurrentLanguage, false, !useCachedContent);
-            bw.ReportProgress(0, helpItemsLoading); // The worker thread that calls this configures the UI based on the data here. This is for UI thread marshalling.
 
             // ME3Tweaks Mod Manager Specific Service Loaders
             foreach (var serviceLoader in M3ServiceLoaders)
@@ -145,6 +142,10 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.online
                     serviceLoader.Value.Invoke(null);
                 }
             }
+
+            // Rebuild the localized help menu.
+            var helpItemsLoading = DynamicHelpService.GetHelpItems(App.CurrentLanguage);
+            bw.ReportProgress(0, helpItemsLoading); // The worker thread that calls this configures the UI based on the data here. This is for UI thread marshalling.
 
             /*
             var bgTask = BackgroundTaskEngine.SubmitBackgroundJob(@"LoadTutorialService", M3L.GetString(M3L.string_checkingTutorialAssets), M3L.GetString(M3L.string_checkedTutorialAssets));

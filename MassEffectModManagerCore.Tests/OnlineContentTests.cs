@@ -19,9 +19,9 @@ namespace ME3TweaksModManager.Tests
         {
             GlobalTest.Init();
 
-            var helpItems = M3OnlineContent.FetchLatestHelp("int", false, true);
+            var dynamicHelp = DynamicHelpService.LoadService(GlobalTest.CombinedServiceData[M3ServiceLoader.DYNAMIC_HELP_SERVICE_KEY]);
+            var helpItems = DynamicHelpService.GetHelpItems(@"int");
             Assert.AreNotEqual(0, helpItems.Count, "FetchLatestHelp failed: No items were parsed, the list is empty!");
-            helpItems.Sort();
 
             var tips = TipsService.LoadService(GlobalTest.CombinedServiceData[M3ServiceLoader.TIPS_SERVICE_KEY]);
             Assert.AreNotEqual(0, TipsService.TipCount, "FetchTipsService failed: No items were parsed, the list is empty!");
