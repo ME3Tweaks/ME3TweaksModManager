@@ -147,13 +147,10 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.online
             var helpItemsLoading = DynamicHelpService.GetHelpItems(App.CurrentLanguage);
             bw.ReportProgress(0, helpItemsLoading); // The worker thread that calls this configures the UI based on the data here. This is for UI thread marshalling.
 
-            /*
-            var bgTask = BackgroundTaskEngine.SubmitBackgroundJob(@"LoadTutorialService", M3L.GetString(M3L.string_checkingTutorialAssets), M3L.GetString(M3L.string_checkedTutorialAssets));
-            TutorialService.LoadService(!firstStartup);
+            // Update the tutorial assets
             TutorialService.TouchupTutorial();
-            BackgroundTaskEngine.SubmitJobCompletion(bgTask);
 
-            TutorialService.TouchupTutorial();
+            BackgroundTaskEngine.SubmitJobCompletion(bgTask);
         }
     }
 }
