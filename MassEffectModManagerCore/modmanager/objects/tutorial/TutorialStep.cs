@@ -27,8 +27,8 @@ namespace ME3TweaksModManager.modmanager.objects.tutorial
         public string lang_rus { get; set; }
         public string lang_pol { get; set; }
         public string lang_deu { get; set; }
-        public string lang_fra { get; set; }
-        public string lang_esn { get; set; }
+        public string lang_bra { get; set; }
+        public string lang_ita { get; set; }
         /// <summary>
         /// The current string being shown 
         /// </summary>

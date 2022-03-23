@@ -68,11 +68,11 @@ namespace ME3TweaksModManager.modmanager.windows
                     case @"pol":
                         tutorialStep.UIString = tutorialStep.lang_pol;
                         break;
-                    case @"esn":
-                        tutorialStep.UIString = tutorialStep.lang_esn;
+                    case @"ita":
+                        tutorialStep.UIString = tutorialStep.lang_ita;
                         break;
-                    case @"fra":
-                        tutorialStep.UIString = tutorialStep.lang_fra;
+                    case @"bra":
+                        tutorialStep.UIString = tutorialStep.lang_bra;
                         break;
                     default:
                         M3Log.Error(@"Tutorial doesn't support language: " + Settings.Language);
