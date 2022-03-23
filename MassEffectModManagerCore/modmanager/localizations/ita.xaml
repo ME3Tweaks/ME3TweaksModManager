@@ -138,7 +138,7 @@
 	<system:String x:Key="string_uninstallASI">Disinstalla la ASI</system:String>
 	<system:String x:Key="string_notInstalled">Non installata</system:String>
 	<system:String x:Key="string_installASI">Installa la ASI</system:String>
-	<system:String x:Key="string_unknownASIDescription">Mod ASI sconosciuta. Fai attenzione qon questa ASI in quanto potrebbe contenere codice malevolo</system:String>
+	<system:String x:Key="string_unknownASIDescription">Mod ASI sconosciuta. Fai attenzione con questa ASI in quanto potrebbe contenere codice malevolo</system:String>
 	<system:String x:Key="string_SSINotPresentInManifest">La ASI non è presente nel manifest</system:String>
 	<system:String x:Key="string_selectAnASIToViewOptions">Seleziona una ASI per vedere le opzioni</system:String>
 	<system:String x:Key="string_noASISelected">Nessuna ASI selezionata</system:String>
@@ -160,7 +160,7 @@
 	<system:String x:Key="string_backupsAreShared">I backup sono condivisi tra vari strumenti di modding, tra cui Mass Effect Randomizer, l'ALOT Installer e Legendary Explorer.</system:String>
 	<system:String x:Key="string_backupsMustBeCreatedFresh">I backup devono essere creati a partire da una copia del gioco fresca e senza modifiche. I backup modificati non sono supportati.</system:String>
 	<system:String x:Key="string_backUp">Esegui il backup</system:String>
-	<system:String x:Key="string_backupsAreUsedToRestoreYourGame" xml:space="preserve">I backup vengono utilizzati per ripristinare i tuoi file di gioco e sono un passaggio importante nel processo di modding. Per scollegare un backup e farlo dimenticare dagli strumenti di modding, clicca il pulsante 'Scollega backup'. Per ripristinare da un backup usa l'opzione Ripristina nel Backup&amp;menu Ripristina, o clicca il pulsante Gestisci Obiettivo dalla finestra principale.&#10;&#10;I backup sono anche usati come sorgenti di file per certe operazioni. Alcune funzionalità avanzate richiedono un backup, in quanto necessitano di un file non modificato.</system:String>
+	<system:String x:Key="string_backupsAreUsedToRestoreYourGame" xml:space="preserve">I backup vengono utilizzati per ripristinare i tuoi file di gioco e sono un passaggio importante nel processo di modding. Per scollegare un backup e farlo dimenticare dagli strumenti di modding, clicca il pulsante 'Scollega backup'. Per ripristinare da un backup usa l'opzione Ripristina nel Backup&amp;menu Ripristina, o clicca il pulsante Gestisci Installazione dalla finestra principale.&#10;&#10;I backup sono anche usati come sorgenti di file per certe operazioni. Alcune funzionalità avanzate richiedono un backup, in quanto necessitano di un file non modificato.</system:String>
 	<system:String x:Key="string_interp_cannotBackupGameWhileRunning">Impossibile eseguire il backup di {0} mentre è in esecuzione.</system:String>
 	<!-- 0 = game name -->
 	<system:String x:Key="string_validatingBackupSource">Validamento della sorgente del backup</system:String>
@@ -173,7 +173,7 @@
 	<system:String x:Key="string_creatingBackup">Creazione del backup</system:String>
 	<system:String x:Key="string_cannotBackupModifiedGame">Impossibile eseguire il backup di un gioco modificato</system:String>
 	<system:String x:Key="string_followingFilesDoNotMatchTheVanillaDatabase">I seguenti file non corrispondono al database vanilla e sembrano essere modificati. A causa della modifica di questi file non è possibile eseguire un backup di questa installazione.</system:String>
-	<system:String x:Key="string_inconsistentDLCDetected">Rilevato DLC incosistente</system:String>
+	<system:String x:Key="string_inconsistentDLCDetected">Rilevato DLC inconsistente</system:String>
 	<system:String x:Key="string_dialogTheFollowingDLCAreInAnInconsistentState">I seguenti DLC sono in uno stato inconsistente; possiedono uno SFAR compresso ma contengono file di gioco decompressi. La configurazione di questi DLC non è supportata, i file decompressi devono essere rimossi manualmente.</system:String>
 	<system:String x:Key="string_dlcModsAreInstalled">Sono installate delle mod DLC</system:String>
 	<system:String x:Key="string_dialogDLCModsWereDetectedCannotBackup">Sono state individuate le seguenti cartelle DLC che non sono parte del gioco ufficiale di BioWare. I backup non possono includere mod DLC - il gioco non deve avere modifiche.</system:String>
@@ -184,14 +184,14 @@
 	<system:String x:Key="string_basegame">Gioco base</system:String>
 	<system:String x:Key="string_dialogInsufficientDiskSpace" xml:space="preserve">Non c'è abbastanza spazio libero in {0} per creare questo backup.\n\nSpazio libero: {1}\nSpazio richiesto: {2}</system:String>
 	<!-- 0=drive letter path (e.g. C:\)  1=filepath 2=filepath -->
-	<system:String x:Key="string_dialogBackupCannotBeSubdirectoryOfGame" xml:space="preserve">Un backup non può essere creato in una sottocartella del gioco obiettivo.\n\nPercorso selezionato: {0}\nObiettivi in conflitto: {1}</system:String>
+	<system:String x:Key="string_dialogBackupCannotBeSubdirectoryOfGame" xml:space="preserve">Un backup non può essere creato in una sottocartella del gioco.\n\nPercorso selezionato: {0}\nObiettivi in conflitto: {1}</system:String>
 	<!-- 0=filepath  1=filepath -->
 	<system:String x:Key="string_cannotCreateBackup">Impossibile creare un backup</system:String>
 	<system:String x:Key="string_someDlcNotInstalled">Alcuni DLC non sono installati</system:String>
 	<system:String x:Key="string_dialog_notAllDLCInstalled" xml:space="preserve">Questo obiettivo non ha tutti i DLC UFFICIALI installati. Assicurati di avere installato tutti i DLC UFFICALI che vuoi includere nel tuo backup, altrimenti un ripristino del gioco non li includerà tutti.\n\nIl seguente DLC non è installato:\n{0}\n\nNota che non ti servono tutti i DLC per un backup (come DLC che non hai acquistato), ma in ogni caso alcune funzionalità del Mod Manager dipendono sulla installazione di DLC specifici, come ME3Tweaks ModMaker.\n\nFare un backup di questo obiettivo?</system:String>
 	<!-- 0 = bulleted list of DLC -->
 	<system:String x:Key="string_linkBackupToAnExistingGameCopy">Associazione ad un backup esistente</system:String>
-	<system:String x:Key="string_interp_dialog_linkFailedAlreadyATarget">Questa installazione non può essere associata ad un backup, in quanto è già nella lista degli obiettivi disponibili al modding. Per collegare questa installazione ad un backup, rimuovi prima l'obiettivo dal pannello Informazioni Installazione, sotto 'Gestisci Obiettivo'.</system:String>
+	<system:String x:Key="string_interp_dialog_linkFailedAlreadyATarget">Questa installazione non può essere associata ad un backup, in quanto è già nella lista degli obiettivi disponibili al modding. Per collegare questa installazione ad un backup, rimuovi prima l'obiettivo dal pannello Informazioni Installazione, sotto 'Gestisci Installazione'.</system:String>
 	<system:String x:Key="string_cannotLinkGameCopy">Impossibile collegare la copia del gioco</system:String>
 	<system:String x:Key="string_interp_dialog_linkFailedInvalidTarget">L'installazione selezionata non può essere associata ad un backup per errori di validazione: {0}.</system:String>
 	<!-- 0=Validation failure reason -->
@@ -281,7 +281,7 @@
 	<system:String x:Key="string_noInstallsOfGameManagedByModManager">Nessuna installazione del gioco gestita dal Mod Manager</system:String>
 	<system:String x:Key="string_interp_fullConsoleBoundToConsolekeyValue">Console completa associata a {0}</system:String>
 	<!-- 0=consolekey.Value -->
-	<system:String x:Key="string_interp_miniConsoleBoundToTypekeyValue">Mini consle associata a {0}</system:String>
+	<system:String x:Key="string_interp_miniConsoleBoundToTypekeyValue">Mini console associata a {0}</system:String>
 	<!-- 0=typekey.Value -->
 	<system:String x:Key="string_consoleKeyKeybinder">Associatore di tasti per la console</system:String>
 	<!-- In game it is "Console Key", and this is keybinder, hence Console Key Keybinder -->
@@ -316,7 +316,7 @@
 	<system:String x:Key="string_legendaryEdition">Legendary Edition</system:String>
 
 	<!-- Deployment panel -->
-	<system:String x:Key="string_tooltip_multithreadDeployment" xml:space="preserve">La compressione multi thread è molto più veloce di quella single thread, ma userà molta più memoria.&#10;Se hai una mod grande (>600MB) faresti meglio a disattivarla se hai meno di 16GB di ram disponibile</system:String>
+	<system:String x:Key="string_tooltip_multithreadDeployment" xml:space="preserve">La compressione multi thread è molto più veloce di quella single thread ma userà molta più memoria.&#10;Se hai una mod grande (>600MB) faresti meglio a disattivarla se hai meno di 16GB di RAM disponibile</system:String>
 	<system:String x:Key="string_multiThreadedCompression">Compressione multi thread</system:String>
 	<system:String x:Key="string_deploy">Distribuisci a .7z</system:String>
 	<system:String x:Key="string_deploymentChecklist">Checklist di distribuzione</system:String>
@@ -345,7 +345,7 @@
 	<system:String x:Key="string_texturesCheck">Controllo delle texture</system:String>
 	<system:String x:Key="string_texturesCheckDetectedErrors">il controllo delle texture ha rilevato degli errori mentre provava a caricare tutte le texture della mod.Osserva questi problemi e correggili se possibile prima della distribuzione.</system:String>
 	<system:String x:Key="string_textureErrorsInMod">Errori delle texture nella mod</system:String>
-	<system:String x:Key="string_interp_urlIsNotValid">L'URL {0} non è un URL valido. Aggiorna il descrittore modsite nel file coalesced.ini per puntare alla pagina della tua mod in modo che gli utenti possano trovare facilmente la tua mod dopo l'importazione.</system:String>
+	<system:String x:Key="string_interp_urlIsNotValid">L'URL {0} non è un URL valido. Aggiorna il descrittore modsite nel file coalesced.ini per puntare alla pagina della tua mod in modo che gli utenti possano trovarla facilmente dopo l'importazione.</system:String>
 	<!-- 0 = url -->
 	<system:String x:Key="string_emptyOrInvalidModUrl">URL della mod vuoto o non valido</system:String>
 	<system:String x:Key="string_validationFailed">Validazione fallita</system:String>
@@ -592,7 +592,7 @@
 
 	<!-- Import Installed DLC Mod Panel -->
 	<system:String x:Key="string_importAnInstalledDLCMod">Importa una mod DLC installata</system:String>
-	<system:String x:Key="string_description_importFromGameToModManager">Puoi importarer una mod da una installazione del gioco dentro il Mod Manager usando questo importer, che ti permetterà di installare la mod in seguito in modo facile e veloce. Le mod importate in questo modo non supportano opzioni di configurazione, aggiornamenti e altre funzioni del Mod Manager. Importa le mod da archivi per il supporto completo delle funzioni.</system:String>
+	<system:String x:Key="string_description_importFromGameToModManager">Puoi importare una mod da una installazione del gioco dentro il Mod Manager usando questo importer, che ti permetterà di installare la mod in seguito in modo facile e veloce. Le mod importate in questo modo non supportano opzioni di configurazione, aggiornamenti e altre funzioni del Mod Manager. Importa le mod da archivi per il supporto completo delle funzioni.</system:String>
 	<system:String x:Key="string_modsInstalledByManagedSolutionCannotBeImported">Mod che sono state installate tramite un installer gestito (come Mod Manager o l'ALOT Installer) non possono essere importate tramite questo importer.</system:String>
 	<system:String x:Key="string_importMod">Importa mod</system:String>
 	<system:String x:Key="string_thisInstallationHasBeenTextureModded">Questa installazione ha texture moddate</system:String>
@@ -601,7 +601,7 @@
 	<system:String x:Key="string_pleaseEnterModInfoForTPMI">Questa mod non sembra essere parte del Servizio Identificazione Mod di Terze Parti di Mod Manager (TPMI in inglese). Questo servizio aiuta utenti e sviluppatori ad identificare le mod nel Mod Manager e in altri strumenti. Per favore inserisci le informazioni seguenti. Questa informazione verrà inviata a ME3Tweaks per recensione prima che sia aggiunta al servizio TPMI.</system:String>
 	<system:String x:Key="string_nameOfThisModRequired">Nome di questa mod (richiesto)</system:String>
 	<system:String x:Key="string_modURL">URL della mod</system:String>
-	<system:String x:Key="string_dialog_invalidModNameWillResolveToNothing">Il nome della mod specificata non può essere usato in quanto risulterà in un nome di cartella invalido sul filesystem Per favore scegli un nome differente</system:String>
+	<system:String x:Key="string_dialog_invalidModNameWillResolveToNothing">Il nome della mod specificata non può essere usato in quanto risulterà in un nome di cartella invalido sul filesystem. Per favore scegli un nome differente</system:String>
 	<system:String x:Key="string_invalidModName">Nome della mod non valido</system:String>
 	<system:String x:Key="string_interp_insufficientDiskSpaceToImport" xml:space="preserve">Non c'è abbastanza spazio in {0} per inportare questa mod.\n\nSpazio richiesto: {1}\nSpazio libero: {2}</system:String>
 	<!-- 0=Path to library 1=size of mod dir 2=free space on library drive -->
@@ -611,7 +611,7 @@
 	<system:String x:Key="string_sameNamedModInLibrary">Mod con lo stesso nome presente nella libreria</system:String>
 	<system:String x:Key="string_interp_couldNotDeleteExistingModDirectory">Impossibile eliminare la cartella esistente della mod: {0}</system:String>
 	<!-- 0=error message -->
-	<system:String x:Key="string_errorDeletingModFolder">Errore nella eliminzazione della cartella della mod</system:String>
+	<system:String x:Key="string_errorDeletingModFolder">Errore nella eliminazione della cartella della mod</system:String>
 	<system:String x:Key="string_importedFromGame">Importata dal gioco</system:String>
 	<system:String x:Key="string_defaultDescriptionForImportedMod">Questa mod è stata importata da una installazione di {0} alle {1}</system:String>
 	<!-- 0=game name 1=time -->
@@ -704,16 +704,16 @@
 	<system:String x:Key="string_disabled">Disabilitato</system:String>
 	<system:String x:Key="string_tooltip_disableDLC" xml:space="preserve">Disabilita questa mod DLC dal caricamento.&#10;Questo non modifica nessun file e può essere fatto tranquillamente dopo che le mod delle texture sono state installate</system:String>
 	<system:String x:Key="string_tooltip_enableDLC" xml:space="preserve">Abilita questa mod DLC per caricarla in gioco</system:String>
-	<system:String x:Key="string_tooltip_deleteDLC" xml:space="preserve">RImuove questa mod DLC dal gioco.&#10;Tieni premuto SHIFT per bypassare il dialogo di conferma (se non ci sono avvisi)</system:String>
-	<system:String x:Key="string_tooltip_openTargetInExplorer">Apre la cartella di questo gioco obiettivo nel FIle Explorer</system:String>
+	<system:String x:Key="string_tooltip_deleteDLC" xml:space="preserve">Rimuove questa mod DLC dal gioco.&#10;Tieni premuto SHIFT per bypassare il dialogo di conferma (se non ci sono avvisi)</system:String>
+	<system:String x:Key="string_tooltip_openTargetInExplorer">Apre la cartella di questo gioco obiettivo nel File Explorer</system:String>
 	<system:String x:Key="string_other">Altro</system:String>
 	<system:String x:Key="string_extraDllsFound">Dll addizionali</system:String>
 	<system:String x:Key="string_noExtraDllsWereFound">Nessun file dll addizionale trovato</system:String>
 	<system:String x:Key="string_installedASIs">ASI installati</system:String>
 	<system:String x:Key="string_tooltip_clickToOpenASIManager">Clicca per aprire il Manager ASI</system:String>
 	<system:String x:Key="string_manageASIsWithASIManager">Gestisci ASI con il Manager ASI</system:String>
-	<system:String x:Key="string_binkw32DLCBypass">DLC bypass Bwink32</system:String>
-	<system:String x:Key="string_dialog_restoringSFARWithoutBackup">Ripristinare i file SFAR senza un backup eliminerà solamente i file decompressi, in quanto non ci sono file di backup che possono essere copiati. Questo lascierà il SLC in un stato rotto e inutilizzabile. Devi fare un backup da una versione non modificata del gioco prima di poter ripristinare corretamente i file SFAR dei DLC.</system:String>
+	<system:String x:Key="string_binkw32DLCBypass">DLC Bypass Bwink32</system:String>
+	<system:String x:Key="string_dialog_restoringSFARWithoutBackup">Ripristinare i file SFAR senza un backup eliminerà solamente i file decompressi, in quanto non ci sono file di backup che possono essere copiati. Questo lascerà il SLC in un stato rotto e inutilizzabile. Devi fare un backup da una versione non modificata del gioco prima di poter ripristinare corretamente i file SFAR dei DLC.</system:String>
 	<system:String x:Key="string_backupNotAvailable">Backup non disponibile</system:String>
 	<system:String x:Key="string_textures">Texture</system:String>
 	<system:String x:Key="string_manageTextures">Installa texture con l'installer di ALOT</system:String>
@@ -772,7 +772,7 @@
 	<system:String x:Key="string_collectingME1ApplicationLogs">Raccogliendo i log applicazione di ME1</system:String>
 	<system:String x:Key="string_collectingEventLogs">Raccogliendo i log degli eventi</system:String>
 	<system:String x:Key="string_collectingME3SessionLog">Raccogliendo i log di sessione di ME3</system:String>
-	<system:String x:Key="string_gettingTextureInfo">Ottenendo informazioni sulla installazione di texture moddate</system:String>
+	<system:String x:Key="string_gettingTextureInfo">Ottenendo informazioni sull'installazione di texture moddate</system:String>
 
 	<!-- Log uploader -->
 	<system:String x:Key="string_selectALogToView">Seleziona un log da vedere sul servizio di visualizzazione dei log</system:String>
@@ -794,7 +794,7 @@
 	<system:String x:Key="string_fullTexturesCheck">Controllo totale delle texture</system:String>
 	<system:String x:Key="string_diagShareTheLink">Condividi il link risultante dal tuo log/diagnostica con il tuo recipiente. Se non sei sicuro/a di quale opzione scegliere, selezionane una da entrambe</system:String>
 	<system:String x:Key="string_selectAnApplicationLog">Seleziona un log dell'applicazione</system:String>
-	<system:String x:Key="string_selectAGameTargetToGenerateDiagnosticsFor">Selezioan un gioco come obiettivo da cui generare diagnostica</system:String>
+	<system:String x:Key="string_selectAGameTargetToGenerateDiagnosticsFor">Seleziona un gioco come obiettivo da cui generare diagnostica</system:String>
 	<system:String x:Key="string_compressingForUpload">Compressione per il caricamento</system:String>
 	<system:String x:Key="string_uploadingToME3Tweaks">Caricamento su ME3Tweaks</system:String>
 
@@ -865,8 +865,8 @@
 	<system:String x:Key="string_Grantwriteaccesstogamedirectories">Consenti l'accesso in scrittura alle cartelle dei giochi</system:String>
 	<system:String x:Key="string_Grantswritepermissionstogamedirectories">Consente i permessi di scrittura per le cartelle dei giochi</system:String>
 	<system:String x:Key="string_RunAutoTOC">Esegue l'AutoTOC sul gioco (ME3)</system:String>
-	<system:String x:Key="string_RunsAutoTOCToolTip">Esegue l'AutoTOC sul gioco ME3 attualmente selezionato (o il primo ME3 nella lista se l'obiettivo selezionato non è ME3)</system:String>
-	<system:String x:Key="string_consoleCommandKeybinder">Assiocatore di tasti per la console</system:String>
+	<system:String x:Key="string_RunsAutoTOCToolTip">Esegue l'AutoTOC sul gioco ME3 attualmente selezionato (o il primo ME3 nella lista se il gioco selezionato non è ME3)</system:String>
+	<system:String x:Key="string_consoleCommandKeybinder">Associatore di tasti per la console</system:String>
 	<system:String x:Key="string_tooltip_consoleCommandKeybinder">Ti permette di configurare quali tasti sono utilizzati per aprire la console in ogni gioco</system:String>
 	<system:String x:Key="string_Additionalmoddingtools">Strumenti per il modding addizionali</system:String>
 	<system:String x:Key="string_ALOTInstaller">ALOT Installer</system:String>
@@ -889,7 +889,7 @@
 	<system:String x:Key="string_Backup">Backup</system:String>
 	<system:String x:Key="string_Createentiregamebackups">Crea backup di interi giochi</system:String>
 	<system:String x:Key="string_Restore">Ripristino</system:String>
-	<system:String x:Key="string_Restoreagamefrombackup" xml:space="preserve">Ripristina un gioco dal backup.&#10;Per le opzioni granulari usa le opzioni di ripristino nel pannello Informazioni Installazione, disponibile cliccando su Gestisci Obiettivo</system:String>
+	<system:String x:Key="string_Restoreagamefrombackup" xml:space="preserve">Ripristina un gioco dal backup.&#10;Per le opzioni granulari usa le opzioni di ripristino nel pannello Informazioni Installazione, disponibile cliccando su Gestisci Installazione</system:String>
 	<system:String x:Key="string_Help">Aiuto</system:String>
 	<system:String x:Key="string_DynamicHelp">Aiuto Dinamico</system:String>
 	<system:String x:Key="string_Diagnostics">Diagnostiche</system:String>
@@ -905,9 +905,9 @@
 	<system:String x:Key="string_startingUp">Avvio in corso</system:String>
 	<system:String x:Key="string_selectModOnLeftToGetStarted">Seleziona una mod a sinstra per cominciare.</system:String>
 	<system:String x:Key="string_applyMod">Applica mod</system:String>
-	<system:String x:Key="string_addTarget">Aggiungi Obiettivo</system:String>
+	<system:String x:Key="string_addTarget">Aggiungi Installazione</system:String>
 	<system:String x:Key="string_startGame">Avvia gioco</system:String>
-	<system:String x:Key="string_installationTarget">Obiettivo di installazione:</system:String>
+	<system:String x:Key="string_installationTarget">Cartella di installazione:</system:String>
 	<system:String x:Key="string_binkAsiBypassNotInstalled">Bypass ASI di Bwink32 non installato</system:String>
 	<system:String x:Key="string_binkAsiBypassInstalled">Bypass ASI di Bwink32 installato</system:String>
 	<system:String x:Key="string_binkAsiLoaderNotInstalled">Caricatore ASI di Bwink32 non installato</system:String>
@@ -943,7 +943,7 @@
 	<system:String x:Key="string_allTargetsWritable">Tutte le radici delle cartelle del gioco sembrano essere scrivibili</system:String>
 	<system:String x:Key="string_errorCreatingModLibrary">Errore nella creazione della libreria delle mod</system:String>
 	<system:String x:Key="string_unableToCreateModLibrary">Impossibile creare la libreria delle mod. Il Mod Manager si chiuderà.</system:String>
-	<system:String x:Key="string_loadingMods">Caricamente delle mod</system:String>
+	<system:String x:Key="string_loadingMods">Caricamento delle mod</system:String>
 	<system:String x:Key="string_loadedMods">Mod caricate</system:String>
 	<system:String x:Key="string_checkingModsForUpdates">Controllo delle mod per aggiornamenti</system:String>
 	<system:String x:Key="string_modUpdateCheckCompleted">Controllo aggiornamenti mod completato</system:String>
@@ -953,13 +953,13 @@
 	<system:String x:Key="string_failedToDownloadRequiredFiles">Fallito il tentativo di acquisire i file richiesti</system:String>
 	<system:String x:Key="string_checkingForModManagerUpdates">Controllo degli aggiornamenti del Mod Manager</system:String>
 	<system:String x:Key="string_completedModManagerUpdateCheck">Completato il controllo aggiornamenti del Mod Manager</system:String>
-	<system:String x:Key="string_failedToCheckForUpdates">il controllo degli aggiornamenti è fallito</system:String>
+	<system:String x:Key="string_failedToCheckForUpdates">Il controllo degli aggiornamenti è fallito</system:String>
 	<system:String x:Key="string_dialogCouldNotDownloadStaticAssets">Impossibile scaricare i file componenti statici per ME3Tweaks Mod Manager. Il Mod Manager potrebbe essere instabile a causa della mancanza di questi file. Assicurati di essere in grado di connetterti a GitHub.com così che questi componenti vengano scaricati.</system:String>
 	<system:String x:Key="string_missingAssets">Componenti mancanti</system:String>
 	<system:String x:Key="string_failedToDownloadStaticFiles">Fallito il download dei componenti statici</system:String>
 	<system:String x:Key="string_downloadingStaticFiles">Scaricamento dei componenti statici</system:String>
 	<system:String x:Key="string_staticFilesDownloaded">Scaricati i componenti statici</system:String>
-	<system:String x:Key="string_dialogTurningOffTelemetry" xml:space="preserve">Disabilitare la telemetria rende più difficile correggere i bug e sviluppare nuove funzioni per ME3Tweaks Mod Manager. I dati della telemetria raccolti sono utilizzati per identificare crash, errori, vedere quali richieste ci sono per il supporto per le mod, e vedere quali operazioni sono difficili per gli utenti (come la mancanza di guida su una particolare regola del modding).\n\nPuoi continuare e disabilitarla, ma fornisce metriche importanti per gli sviluppatori di questo programma e la panoramica del modding.\n\nDisabilitare la telemetria?</system:String>
+	<system:String x:Key="string_dialogTurningOffTelemetry" xml:space="preserve">Disabilitare la telemetria rende più difficile correggere i bug e sviluppare nuove funzioni per ME3Tweaks Mod Manager. I dati della telemetria raccolti sono utilizzati per identificare crash, errori, vedere quali richieste ci sono per il supporto per le mod e vedere quali operazioni sono difficili per gli utenti (come la mancanza di guida su una particolare regola del modding).\n\nPuoi continuare e disabilitarla ma fornisce metriche importanti per gli sviluppatori di questo programma e la panoramica del modding.\n\nDisabilitare la telemetria?</system:String>
 	<system:String x:Key="string_turningOffTelemetry">Disabilitazione della telemetria</system:String>
 	<system:String x:Key="string_selectModLibraryFolder">Seleziona la cartella della libreria delle mod</system:String>
 	<system:String x:Key="string_runningAutoTOC">Esecuzione di AutoTOC</system:String>
@@ -1114,7 +1114,7 @@
 	<system:String x:Key="string_interp_errorReadingXmlFileX">Errore durante la lettura del file xml: {0}</system:String>
 	<!-- 0=Exception message -->
 	<system:String x:Key="string_errorReadingXmlFile">Errore durante la lettura del file xml</system:String>
-	<system:String x:Key="string_checkModsForUpdates">Contralla aggiornamenti delle mod</system:String>
+	<system:String x:Key="string_checkModsForUpdates">Controlla aggiornamenti delle mod</system:String>
 	<system:String x:Key="string_tooltip_checksForUpdatesToModsThatSupportCheckingForUpdates">Controlla aggiornamenti delle mod che supportano il controllo degli aggiornamenti</system:String>
 	<system:String x:Key="string_mEMVanillaDBViewer">Visualizzatore di Debug di MEM Vanilla</system:String>
 	<!-- This is only shown in Debug Mode. But might as well translate it anyways. Do not localize the term MEM (Mass Effect Modder). -->
@@ -1123,7 +1123,7 @@
 	<system:String x:Key="string_customKeybindsInjectorMenuItem">Iniettore di Associazioni di Tasti Custom</system:String>
 	<system:String x:Key="string_tooltip_installsCustomKeybindsOfYourDesignIntoTheGame">Installa associazioni di tasti modificate come desideri nel gioco</system:String>
 	<system:String x:Key="string_originIngameOverlayDisabler">Disabilita l'overlay in gioco di Origin</system:String>
-	<system:String x:Key="string_tooltip_oigDisabler">Installa un file che disabilita forzatamente l'overlay in gioco di origin</system:String>
+	<system:String x:Key="string_tooltip_oigDisabler">Installa un file che disabilita forzatamente l'overlay in gioco di Origin</system:String>
 	<system:String x:Key="string_selectMod">Seleziona mod</system:String>
 	<!-- When no mod is selected -->
 	<system:String x:Key="string_noTarget">Nessun obiettivo</system:String>
@@ -1139,7 +1139,7 @@
 	<system:String x:Key="string_allGamesHiddenTitle">Nessun gioco selezionato per la visualizzazione</system:String>
 	<system:String x:Key="string_allGamesHiddenDescription">Nessn gioco è selezionato per mostrarne le mod. Clicca su un gioco sopra per abilitare la visualizzazione delle mod per quel gioco.</system:String>
 	<!-- This is bolded text that shows up at the top of the mod library list area when there are no mods. Try to keep it short, feel free to adapt to your language. -->
-	<system:String x:Key="string_noModsInLibraryDescription" xml:space="preserve">Le mod che importi nel Mod Manager saranno elencate qui. Puoi importare delle mod trascinando e rilasciando i loro archivi che hai scaricato (.7z/.rar/.zip/.exe/.me2mod) su questa finestra.&#10;&#10;Le mod che sono installate direttamente dalla finestra di importazione NON saranno mostrate qui in quanto sono installate nel gioco, ma non importate nella libreria. Puoi vedere cosa è installato cliccando su 'Gestisici Obiettivo' in alto a destra di questa finestra.&#10;&#10;Le mod che sono importate nella libreria sono facili da reinstallare, possono essere aggiunte alle code di installazione e altro.</system:String>
+	<system:String x:Key="string_noModsInLibraryDescription" xml:space="preserve">Le mod che importi nel Mod Manager saranno elencate qui. Puoi importare delle mod trascinando e rilasciando i loro archivi che hai scaricato (.7z/.rar/.zip/.exe/.me2mod) su questa finestra.&#10;&#10;Le mod che sono installate direttamente dalla finestra di importazione NON saranno mostrate qui in quanto sono installate nel gioco, ma non importate nella libreria. Puoi vedere cosa è installato cliccando su 'Gestisci Installazione' in alto a destra di questa finestra.&#10;&#10;Le mod che sono importate nella libreria sono facili da reinstallare, possono essere aggiunte alle code di installazione e altro.</system:String>
 	<!-- This is the text shown under the no mods in library header. It shows up when there are no mods imported. Make sure Manage Target lines up with your localization of that term. -->
 	<system:String x:Key="string_interp_dialog_cannotDeployModNoTarget">Nessuna installazione per {0} trovata. La distribuzione di una mod richiede una installazione per il gioco in modo che la distribuzione possa controllare per i dati di questa installazione che non saranno disponibili in altri setup.</system:String>
 	<!-- 0=ME1/ME2/ME3 -->
@@ -1202,20 +1202,20 @@
 	<!-- 0=filename 1=inifilepath -->
 	<system:String x:Key="string_interp_dialogConfigDirectoryMissing">La cartella di configurazione di Mass Effect è mancante. Dovrebbe trovarsi in {0}. Per favore avvia il gioco almeno una volta per generare i file di default.</system:String>
 	<!-- 0=configFileFolder -->
-	<system:String x:Key="string_cannotRunMassEffectIniModder">Impossibile avviare Mass Effect ini Modder</system:String>
-	<system:String x:Key="string_interp_propertyNotSaved" xml:space="preserve">Priprietà non salvata: {0}\n\nMotivo: {1}</system:String>
+	<system:String x:Key="string_cannotRunMassEffectIniModder">Impossibile avviare Mass Effect Ini Modder</system:String>
+	<system:String x:Key="string_interp_propertyNotSaved" xml:space="preserve">Proprietà non salvata: {0}\n\nMotivo: {1}</system:String>
 	<!-- 0= config property key 1=error reason -->
-	<system:String x:Key="string_errorSavingProperties">Errore nel salvtaggio delle proprietà</system:String>
+	<system:String x:Key="string_errorSavingProperties">Errore nel salvataggio delle proprietà</system:String>
 	<system:String x:Key="string_tooltip_attributesThatModifyTheGameEngine">Attributi che modificano il motore di gioco</system:String>
 	<system:String x:Key="string_tooltip_attributesThatModifyGameplay">Attributi che modificano il gameplay</system:String>
 	<system:String x:Key="string_tooltip_attributesThatModifyYouAndYourParty">Attributi che modificano te e la tua squadra</system:String>
-	<system:String x:Key="string_makeSureToPressSaveToSaveYourChanges">Assicurati di premere salva per salvare le tue modifiche</system:String>
+	<system:String x:Key="string_makeSureToPressSaveToSaveYourChanges">Assicurati di premere Salva per salvare le tue modifiche</system:String>
 	<system:String x:Key="string_tooltip_resetsAllPropertiesThatThisToolCanModifyToDefaultValues">Ripristina tutte le proprietà che questo strumento può riportare ai valori di default</system:String>
-	<system:String x:Key="string_resetAll">Ripristina Tutto</system:String>
+	<system:String x:Key="string_resetAll">Ripristina tutto</system:String>
 	<system:String x:Key="string_tooltip_commitsYourEditsToMassEffectsConfigurationFiles">Conferma le tue modifiche al file di configurazione di Mass Effect</system:String>
 	<system:String x:Key="string_save">Salva</system:String>
 	<system:String x:Key="string_saved">Salvato</system:String>
-	<system:String x:Key="string_resetIniItemsExceptBasic">I valori dell'ini sono stati riportati a defualt (eccetto le impostazioni di base). Premi salva per confermare i cambiamenti.</system:String>
+	<system:String x:Key="string_resetIniItemsExceptBasic">I valori dell'ini sono stati riportati a default (eccetto le impostazioni di base). Premi Salva per confermare i cambiamenti.</system:String>
 
 	<!-- ME3CMM Migration -->
 	<system:String x:Key="string_migratingMods">Migrazione delle mod</system:String>
@@ -1240,7 +1240,7 @@
 	<system:String x:Key="string_filenameCannotBeNullInAMergeManifestFile">'filename' non può essere null in file merge manifest!</system:String>
 	<system:String x:Key="string_interp_targetingNonStartupFile">Impossibile fondere in un file non-startup in questo momento: {0}</system:String>
 	<!-- 0={FileName} -->
-	<system:String x:Key="string_error_mergefile_badMagic">L'asset di Merge Mod V1 non è prefissato dall'asset magic - questo file non è stato buildato correttmente!</system:String>
+	<system:String x:Key="string_error_mergefile_badMagic">L'asset di Merge Mod V1 non è prefissato dall'asset magic - questo file non è stato buildato correttamente!</system:String>
 	<!-- this is error message that can occur when parsing in an m3m file. It's a sanity check -->
 	<system:String x:Key="string_interp_error_mergefile_assetNotFoundX">Il file asset non esiste nella cartella: {0}</system:String>
 	<!-- 0={Filename}. This string shows up if file is not found locally when compiling json file -->
@@ -1388,7 +1388,7 @@
 	<system:String x:Key="string_dialog_cannotDownloadDeletedFile">Impossibile scaricare file: Cancellato da NexusMods</system:String>
 	<system:String x:Key="string_interp_errorDownloadingModX">Errore nel download della mod: {0}</system:String>
 	<!-- 0={Error message} -->
-	<system:String x:Key="string_interp_dialog_modNotForThisModManager" xml:space="preserve">Questa mod è per '{0}', che non è supportato da ME3Tweaks Mod Manager. È probabile che ti stessi aspettando che venisse utilizzato un mod manager differente , ma a causa del modo in cui i tool utilizzano il protocollo nxm://, può aprirsi la applicazione sbagliata.\n\nApri il mod manager che desideri utilizzare per gestire il download di questa mod, e dovrebbe registrarsi come il download manager per i link nxm://. Una volta aperta, prova di nuovo il tuo download.</system:String>
+	<system:String x:Key="string_interp_dialog_modNotForThisModManager" xml:space="preserve">Questa mod è per '{0}', che non è supportato da ME3Tweaks Mod Manager. È probabile che ti stessi aspettando venisse utilizzato un mod manager differente ma a causa del modo in cui i tool utilizzano il protocollo nxm://, può aprirsi l'applicazione sbagliata.\n\nApri il mod manager che desideri utilizzare per gestire il download di questa mod e dovrebbe registrarsi come il download manager per i link nxm://. Una volta aperta, prova di nuovo il tuo download.</system:String>
 	<!-- 0={domain, like 'masseffect'} -->
 
 	<!-- Mod Downloader -->
@@ -1401,8 +1401,8 @@
 
 	<!-- Mod Installer Panel -->
 	<system:String x:Key="string_preparingToInstall">Preparazione all'installazione</system:String>
-	<system:String x:Key="string_interp_devModeAlotInstalledWarning" xml:space="preserve">L'obiettivo di Installazione ha le texture moddate e questa mod installa file package. Continuare con l'installazione della mod probabilmente causerà l'apparizione in gioco di texture rotte o crash del gioco a causa di puntatori a texture invalidi e possibilmente mips vuoti. Inoltre porterà la tua installazione del gioco ad una configurazione non supportata.\n\nContinuare con l''installazione? {0}? Sei stato avvisato.</system:String>
-	<system:String x:Key="string_brokenTexturesWarning">Avviso Texture Rotte</system:String>
+	<system:String x:Key="string_interp_devModeAlotInstalledWarning" xml:space="preserve">L'obiettivo di Installazione ha le texture moddate e questa mod installa file package. Continuare con l'installazione della mod probabilmente causerà l'apparizione in gioco di texture rotte o crash del gioco a causa di puntatori a texture invalidi e possibilmente mips vuoti. Inoltre porterà la tua installazione del gioco ad una configurazione non supportata.\n\nContinuare con l'installazione? {0}? Sei stato avvisato.</system:String>
+	<system:String x:Key="string_brokenTexturesWarning">Avviso Texture rotte</system:String>
 	<system:String x:Key="string_installing">Installazione</system:String>
 	<system:String x:Key="string_loadingModArchive">Caricamento dell'archivio della mod</system:String>
 	<system:String x:Key="string_installingSupportFiles">Installazione dei file di supporto</system:String>
@@ -1415,12 +1415,12 @@
 	<!-- 0 is name of official (english only) name of DLC that is not installed (e.g. Bring Down The Sky) -->
 	<system:String x:Key="string_dialogOutdatedDLCHeader" xml:space="preserve">Le seguenti mod DLC sono indicate come non aggiornate/non più rilevanti da {0} e saranno rimosse durante l'installazione:\n</system:String>
 	<!-- 0 = name of mod being installed -->
-	<system:String x:Key="string_dialogOutdatedDLCFooter" xml:space="preserve">\n\nSeleziona Sì per continuare l'installazione di {0}, o seleziona No per annullare l'installazione.</system:String>
+	<system:String x:Key="string_dialogOutdatedDLCFooter" xml:space="preserve">\n\nSeleziona Sì per continuare l'installazione di {0} o seleziona No per annullare l'installazione.</system:String>
 	<!-- 0 = Name of mod being installed -->
 	<system:String x:Key="string_outdatedDLCDetected">DLC non aggiornato rilevato</system:String>
 	<system:String x:Key="string_dialogIncompatibleDLCDetectedHeader" xml:space="preserve">Le seguenti mod DLC sono indicate come incompatibili con {0}:\n</system:String>
 	<!-- 0 = Name of mod being installed -->
-	<system:String x:Key="string_dialogIncompatibleDLCDetectedFooter" xml:space="preserve">\n\nPer installare {0}. le mod Custom DLC elencate sopra devono essere prima rimosse.\nPuoi gestire i DLC Custom installati cliccando sul pulsante Gestisci Obiettivo.</system:String>
+	<system:String x:Key="string_dialogIncompatibleDLCDetectedFooter" xml:space="preserve">\n\nPer installare {0}. le mod Custom DLC elencate sopra devono essere prima rimosse.\nPuoi gestire i DLC Custom installati cliccando sul pulsante Gestisci Installazione.</system:String>
 	<!-- 0 = Name of mod being installed -->
 	<system:String x:Key="string_incompatibleDLCDetected">Rilevato DLC incompatibile</system:String>
 	<system:String x:Key="string_dialogNoWritePermissions">Il tuo account utente non ha i privilegi di scrittura per la cartella del gioco. Puoi garantire i privilegi al tuo account usanto l'opzione "Ottieni accesso in lettura alle cartelle del gioco" nel menu strumenti</system:String>
@@ -1429,7 +1429,7 @@
 	<system:String x:Key="string_requiredContentMissing">Contenuto richiesto mancante</system:String>
 	<system:String x:Key="string_dialogRequiredContentMissing">Questa mod richiede che siano installati i seguenti DLC/mod prima della sua installazione:{0}</system:String>
 	<!-- {0} is a list of DLC in bulleted form. It should always go at the end -->
-	<system:String x:Key="string_dialogInstallationSucceededFailedInstallCountCheck">La mod è stat installata ma non ha passato la verifica di conteggio installazioni. Questo èw probabilmente un bug del Mod Manager, riportalo per favore a Mgamerz su Discord.</system:String>
+	<system:String x:Key="string_dialogInstallationSucceededFailedInstallCountCheck">La mod è stata installata ma non ha passato la verifica di conteggio installazioni. Questo è probabilmente un bug del Mod Manager, riportalo per favore a Mgamerz su Discord.</system:String>
 	<system:String x:Key="string_dialogInstallationBlockedByALOT">L'installazione di mod che installano file package ad obiettivi le cui testure sono state moddate non è permessa. I file package devono sempre venire installati prima delle mod delle texture.</system:String>
 	<system:String x:Key="string_installationBlocked">Installazione bloccata</system:String>
 	<system:String x:Key="string_installationSucceededMaybe">Installazione avvenuta, forse</system:String>
@@ -1441,11 +1441,11 @@
 	<system:String x:Key="string_cancel">Annulla</system:String>
 	<system:String x:Key="string_installMod">Installa mod</system:String>
 	<system:String x:Key="string_abortInstallingMod">Annulla l'installazione di questa mod</system:String>
-	<system:String x:Key="string_dialogInvalidRCWFile">Il file .me2mod che questa mod usa non è valido o non può essere applicato in sicurezza alla tua installazione del gioco. L'installazione è stata annullata. Controlla i log del Mod Manager dal menu di Aiuto per maggiori informazioni.</system:String>
+	<system:String x:Key="string_dialogInvalidRCWFile">Il file .me2mod che usa questa mod non è valido o non può essere applicato in sicurezza alla tua installazione del gioco. L'installazione è stata annullata. Controlla i log del Mod Manager dal menu di Aiuto per maggiori informazioni.</system:String>
 	<system:String x:Key="string_interp_dialogNotEnoughSpaceToInstall" xml:space="preserve">Non c'è abbastanza spazio in {0} per installare {1}.\nSpazio richiesto: {2}\nSpazio disponibile: {3}</system:String>
 	<!-- 0=driveletter, 1=ModBeingInstalled.ModName 2, 3=number of bytes (in MB/KB/GB etc) -->
 	<system:String x:Key="string_dialogInvalidME2Coalesced">Il file Coalesced.ini per questa installazione di Mass Effect 2 sembra essere malformato (i byte dell'header sono sbagliati). L'installazione è stata annullata.</system:String>
-	<system:String x:Key="string_interp_dialog_noBackupForXInstallingY" xml:space="preserve">Non c'è nessun backup per {0} - installare {1} ti richiederà di riparare il gioco per rimuoverla, e ciò potrebbe invalidare altre mod che sono in uso.\n\nInstallare questa mod senza un backup?</system:String>
+	<system:String x:Key="string_interp_dialog_noBackupForXInstallingY" xml:space="preserve">Non c'è nessun backup per {0} - installare {1} ti richiederà di riparare il gioco per rimuoverla e ciò potrebbe invalidare altre mod che sono in uso.\n\nInstallare questa mod senza un backup?</system:String>
 	<!-- 0=Game name (Mass Effect, Mass Effect 2/3) 1=Mod name -->
 	<system:String x:Key="string_debugPrintQueue">Stampa della Coda di Debug</system:String>
 	<!-- This is debug mode only. "Print Queue" in this case is for printing the installation queue [list of files to install] of a mod. -->
@@ -1477,9 +1477,9 @@
 	<system:String x:Key="string_tooltip_modinstaller_compressPackages" xml:space="preserve">Comprimere i package ridurrà l'ammontare di spazio su disco richiesto per la maggior parte delle mod&#10;La compressione incrementerà il tempo necessario per installare una mod</system:String>
 	<system:String x:Key="string_interp_error_singleRequiredDlcMissing">{0} richiede almeno uno dei DLC seguenti installati:{1}</system:String>
 	<!-- 0={ModBeingInstalled.ModName} 1={list of dlc names. It starts with a newline, so do not put space between : and bracket symbol} -->
-	<system:String x:Key="string_warningTexturesAreInstalled" xml:space="preserve">Le texture sono installate e e questa mod installa o modifica file package. Puoi continuare ad installare questa mod, ma i nuovi file non avranno le texture aggiornate che erano installate precedentemente.\n\nLe mod delle texture dovrebbero essere installate dopo che tutti i file package sono stati installati.\n\nContinuare l'installazione?</system:String>
+	<system:String x:Key="string_warningTexturesAreInstalled" xml:space="preserve">Le texture sono installate e questa mod installa o modifica file package. Puoi continuare ad installare questa mod ma i nuovi file non avranno le texture aggiornate che erano installate precedentemente.\n\nLe mod delle texture dovrebbero essere installate dopo che tutti i file package sono stati installati.\n\nContinuare l'installazione?</system:String>
 	<system:String x:Key="string_warningTextureModsAreInstalled">Attenzione: Mod delle texture installate</system:String>
-	<system:String x:Key="string_interp_errorApplyingMergeModXY">C'è stao un errore durante l'applicazione della merge mod {0}: {1}.</system:String>
+	<system:String x:Key="string_interp_errorApplyingMergeModXY">C'è stato un errore durante l'applicazione della merge mod {0}: {1}.</system:String>
 	<!-- 0={mergeMod.MergeModFilename} 1={ex.Message} -->
 	<system:String x:Key="string_updatingTLKFiles">Aggiornamento dei file TLK</system:String>
 
@@ -1545,7 +1545,7 @@
 
 	<!-- Mod-NexusModsIntegration -->
 	<system:String x:Key="string_dialog_cannotEndorseNonDownloadedMod">Non puoi approvare una mod che non hai scaricato da NexusMods.</system:String>
-	<system:String x:Key="string_dialog_cannotEndorseUntil15min">Non puoi approvare una modprima di 15 minuti dall'averla scaricata.</system:String>
+	<system:String x:Key="string_dialog_cannotEndorseUntil15min">Non puoi approvare una mod prima di 15 minuti dall'averla scaricata.</system:String>
 
 	<!-- Mod-Parsing -->
 	<system:String x:Key="string_interp_modparsing_modVersion">Versione della mod: {0}</system:String>
@@ -1698,9 +1698,9 @@
 	<system:String x:Key="string_validation_modparsing_customdlcDotDotFound">destdir dell'header CUSTOMDLC contiene un valore che contiene un carattere di separazione delle cartelle, che non è consentito.</system:String>
 	<system:String x:Key="string_interp_validation_modparsing_modInstallsBlacklistedDestFile">Il job {1} di {0} installa un file che non può essere installato dal Mod Manager in quanto è stato messo in blacklist. Installare questo file provocherebbe rischi per la sicurezza o si sa che potrebbe danneggiare l'installazione di un utente.</system:String>
 	<!-- 0={ModName} 1={Header (BASEGAME, REBELLION, etc)} 2={Filename} -->
-	<system:String x:Key="string_interp_validation_modparsing_tlkMergeNoTlkXmlFound">La mod specifca il task header {0}, ma nessun file xml è stato trovato nella cartella {1}. Rimuovi questo task header se non lo stai usando, o aggiungi un file xml valido alla cartella {1}.</system:String>
+	<system:String x:Key="string_interp_validation_modparsing_tlkMergeNoTlkXmlFound">La mod specifica il task header {0}, ma nessun file xml è stato trovato nella cartella {1}. Rimuovi questo task header se non lo stai usando o aggiungi un file xml valido alla cartella {1}.</system:String>
 	<!-- 0={Header (GAME1_EMBEDDED_TLK)} 1={Embedded TLK Foldername} -->
-	<system:String x:Key="string_interp_validation_modparsing_tlkMergeInvalidTlkXmlFilenames">L'header {0} supporta solo i file della cartella {1} che contengono almeno due caratteri '.'; uno per l'estensione, e almeno uno per separare il nome del package dal percorso di esportazione. Se l'esportazione è innestata nei package potrebbero essere necessari più '.'. Valore non valido: {2}</system:String>
+	<system:String x:Key="string_interp_validation_modparsing_tlkMergeInvalidTlkXmlFilenames">L'header {0} supporta solo i file della cartella {1} che contengono almeno due caratteri '.'; uno per l'estensione e almeno uno per separare il nome del package dal percorso di esportazione. Se l'esportazione è innestata nei package potrebbero essere necessari più '.'. Valore non valido: {2}</system:String>
 	<!-- 0={Header (BASEGAME, GAME1_TLK_MERGE, etc)} 1={Foldername} 2={Filepath} -->
 	<system:String x:Key="string_validation_modparsing_foundDisallowedLauncherFileType">L'header LELAUNCHER supporta solo le estensioni di file seguenti: {0}. È stato trovato un tipo di file non supportato: {1}</system:String>
 	<!-- 0={file extension list (.txt, .afc, .tfc...) 1={file extension (.txt for example)} -->
@@ -1827,13 +1827,13 @@
 	<system:String x:Key="string_downloadingModDeltaFromME3Tweaks">Scaricamento della mod delta da ME3Tweaks</system:String>
 	<system:String x:Key="string_dialog_me3tweaksModMakerRequiresBackup">ME3Tweaks ModMaker richiede un backup di Mass Effect 3 per funzionare. Un backup non modificato del gioco non è stato trovato.</system:String>
 	<system:String x:Key="string_noBackupAvailable">Nessun backup disponibile</system:String>
-	<system:String x:Key="string_description_modmakerOnlineModCreationTool">ME3Tweaks ModMaker è uno strumento online per la creazione di mod per Mass Effect 3. Puoi creare mod con una interfaccia punta e clicca facile da usare, e ti permette di modificare migliaia di variabili del gameplay e script.</system:String>
+	<system:String x:Key="string_description_modmakerOnlineModCreationTool">ME3Tweaks ModMaker è uno strumento online per la creazione di mod per Mass Effect 3. Puoi creare mod con una interfaccia punta e clicca facile da usare e ti permette di modificare migliaia di variabili del gameplay e script.</system:String>
 	<system:String x:Key="string_openME3TweaksModMaker">Apri ME3TWeaks ModMaker</system:String>
 	<system:String x:Key="string_modMakerCode">Codice ModMaker</system:String>
 	<system:String x:Key="string_download">Download</system:String>
 	<!-- as in download mod -->
 	<system:String x:Key="string_overallProgress">Progresso generale</system:String>
-	<system:String x:Key="string_interp_modmakerDlcMissing" xml:space="preserve">Alcuni DLC richiesti per compilare questa mod non sono presenti nel backup del gioco. Puoi continuare con la compilazione, ma le modifiche ai DLC indicati verranno saltate, e parti della mod non funzioneranno.\n\nDLC mancante dal backuo:\n{0}\n\nPer aggiungere un DLC UFFICIALE al backup, ripristina il tuo gioco, elimina il bakcup, aggiungi il DLC al tuo gioco, e infine crea un nuovo backup.\n\nContinuare con la compilazione di questa mod?</system:String>
+	<system:String x:Key="string_interp_modmakerDlcMissing" xml:space="preserve">Alcuni DLC richiesti per compilare questa mod non sono presenti nel backup del gioco. Puoi continuare con la compilazione, ma le modifiche ai DLC indicati verranno saltate e parti della mod non funzioneranno.\n\nDLC mancante dal backup:\n{0}\n\nPer aggiungere un DLC UFFICIALE al backup, ripristina il tuo gioco, elimina il backup, aggiungi il DLC al tuo gioco e infine crea un nuovo backup.\n\nContinuare con la compilazione di questa mod?</system:String>
 	<!-- 0 = bulleted list of DLC names -->
 	<system:String x:Key="string_dlcMissing">DLC mancante</system:String>
 	<system:String x:Key="string_downloadAborted">Download annullato</system:String>
@@ -1845,8 +1845,8 @@
 	<system:String x:Key="string_tooltip_addControllerSupportMixinsDetailed" xml:space="preserve">Aggiunge i Mixin per assicurare le corrette funzionalità della Controller Mod, come il movimento corretto dellla telecamera, se la mod modifica gli stessi file delle mod per il Controller.&#10;Non selezionarlo se non usi una mod per il supporto al Controller. Quando usi questa impostazione, installa questa mod DOPO aver installato una mod per il supporto del Controller</system:String>
 	<system:String x:Key="string_addControllerSupportMixinsIfNecessary">Aggiunge i Mixin di supporto per il Controller, se necessario</system:String>
 	<system:String x:Key="string_tooltip_useALocalModMakerXmlFileInstead">Usa altrimenti un file xml del ModMaker locale</system:String>
-	<system:String x:Key="string_tooltip_autoInjectKeybinds" xml:space="preserve">Inietta automaticamente un file BioInput.xml modificato se disponibile nella cartella keybindsoverride.&#10;Definisci delle associazioni di tasti personalizzate nell'Iniettore di Associazioni di Tasti Personaliizate nel menu Strumenti.</system:String>
-	<system:String x:Key="string_injectCustomKeybindsIfAvailable">Inietta associazioni di tasti personalizzate (se disponibile)</system:String>
+	<system:String x:Key="string_tooltip_autoInjectKeybinds" xml:space="preserve">Inietta automaticamente un file BioInput.xml modificato se disponibile nella cartella keybindsoverride.&#10;Definisci delle associazioni di tasti personalizzati nell'Iniettore di Associazioni di Tasti Personaliizate nel menu Strumenti.</system:String>
+	<system:String x:Key="string_injectCustomKeybindsIfAvailable">Inietta associazioni di tasti personalizzati (se disponibile)</system:String>
 
 	<!-- Nexus Domain Handler -->
 	<system:String x:Key="string_interp_handlerProgramDoesNotExist">Impossibile evocare l'handler per il dominio {0}: l'applicazione specificata {1} non esiste</system:String>
@@ -1892,7 +1892,7 @@
 	<system:String x:Key="string_description_downloadWithManager">La funzionalità 'scarica con il manager' di NexusMod usa il protocollo NXM. QUesto significa che solo una applicazione alla volta può essere registrata per riceverlo. Il Mod Manager può registrarsi come ricevitore e inoltrare download per giochi non supportati (come Skyrim o Fallout) verso un manager differente a tua scelta.</system:String>
 	<system:String x:Key="string_registerME3TweaksModManagerAsHandler">Registra ME3Tweaks Mod Manager come gestore</system:String>
 	<system:String x:Key="string_otherApps">Altre applicazioni</system:String>
-	<system:String x:Key="string_description_downloadWithManagerOtherApps">Puoi registrare altre applicazioni per gestire altri giochi oltre a quelli della trilogia di Mass Effect. Dovrai fornire il dominio (che è il nome del gioco in un URL di NexusMods), l'applicaizone indicata e gli argomenti di cui l'applicazione ha bisogno. Usa '%1' per indicare il link nxm://.</system:String>
+	<system:String x:Key="string_description_downloadWithManagerOtherApps">Puoi registrare altre applicazioni per gestire altri giochi oltre a quelli della trilogia di Mass Effect. Dovrai fornire il dominio (che è il nome del gioco in un URL di NexusMods), l'applicazione indicata e gli argomenti di cui l'applicazione ha bisogno. Usa '%1' per indicare il link nxm://.</system:String>
 	<system:String x:Key="string_addOtherApp">Aggiungi un'altra applicazione</system:String>
 	<system:String x:Key="string_additionalApp">Applicazione addizionale</system:String>
 	<system:String x:Key="string_application">Applicazione</system:String>
@@ -1901,8 +1901,8 @@
 
 	<!-- Official DLC Toggler -->
 	<system:String x:Key="string_officialDLCToggler">Toggler ufficale per i DLC</system:String>
-	<system:String x:Key="string_officialDLCTogglerDescription">Gli sviluppatori possono usare questo strumento per attivare o disattivare i DLC ufficiali. È utile per vedere come si comporta una mod quando viene installata in un ambiente diverso. Puoi abilitare le mod DLC nel pannello di informazioni sull'installazioni.</system:String>
-	<system:String x:Key="string_officialDLCTogglerME1ME2Warning">I DLC abilitati per questo gioco cambieranno solamente come si comporta il Mod Manager quando rileva un DLC installato. Entrambi Mass Effect e Mass Effect 2 cercheranno di caricare il DLC da tutte le cartelle nelle rispettive cartelle DLC.</system:String>
+	<system:String x:Key="string_officialDLCTogglerDescription">Gli sviluppatori possono usare questo strumento per attivare o disattivare i DLC ufficiali. È utile per vedere come si comporta una mod quando viene installata in un ambiente diverso. Puoi abilitare le mod DLC nel pannello di informazioni sulle installazioni.</system:String>
+	<system:String x:Key="string_officialDLCTogglerME1ME2Warning">I DLC abilitati per questo gioco cambieranno solamente come si comporta il Mod Manager quando rileva un DLC installato. Mass Effect 1 e Mass Effect 2 cercheranno di caricare il DLC da tutte le cartelle nelle rispettive cartelle DLC.</system:String>
 	<system:String x:Key="string_toggleOff">Abilita</system:String>
 	<system:String x:Key="string_toggleOn">Disabilita</system:String>
 	<system:String x:Key="string_interp_errorTogglingDLC">Errore nell'impostazione del DLC: {0}</system:String>
@@ -1926,7 +1926,7 @@
 	<system:String x:Key="string_description_autobootLE">Quando si preme 'Avvia Gioco', il launcher sarà saltato e il gioco selezionato partirà automaticamente.</system:String>
 	<system:String x:Key="string_description_me3tweaksModmaker">Queste opzioni si applicano solo a ME3Tweaks ModMaker, una applicazione web per creare mod per il gameplay di Mass Effect 3</system:String>
 	<system:String x:Key="string_textureLODUpdates">Aggiornamenti per le texture LOD</system:String>
-	<system:String x:Key="string_description_textureLODs">Queste impostazioni determinano quale livello di texture LOD è impostato quando si seleziona 'Avvia Gioco' se una texture mod è rilevata come installata. puoi disattivare questa funzione non selezionando nessuna delle opzioni. Se una texture mod non è rilevata, sono applicati i LOD vanilla. Queste impostazioni funzionano solo per la Trilogia Originale, il modding delle texture della Legendary Edition non utilizza texture LOD.</system:String>
+	<system:String x:Key="string_description_textureLODs">Queste impostazioni determinano quale livello di texture LOD è impostato quando si seleziona 'Avvia Gioco' se una texture mod è rilevata come installata. Puoi disattivare questa funzione non selezionando nessuna delle opzioni. Se una texture mod non è rilevata, sono applicati i LOD vanilla. Queste impostazioni funzionano solo per la Trilogia Originale, il modding delle texture della Legendary Edition non utilizza texture LOD.</system:String>
 	<system:String x:Key="string_logging">Logging</system:String>
 	<system:String x:Key="string_description_logging">Il logging può ridurre le prestazioni dell'applicazione, ma è utile per la risoluzione di problemi.</system:String>
 	<system:String x:Key="string_applicationTheme">Tema dell'applicazione</system:String>
@@ -1941,8 +1941,8 @@
 	<system:String x:Key="string_noTargetSelected">Nessun obiettivo selezionato</system:String>
 	<system:String x:Key="string_noOriginBasedGameTargets">Nessun gioco target basato su Origin</system:String>
 	<system:String x:Key="string_origin">Origin</system:String>
-	<system:String x:Key="string_oigPanelHeader" xml:space="preserve">L'overlay in gioco di Origin è famoso per causare importanti perdite di prestazioni nei giochi di Mass Effect. Nonostante possa essere disabilitato nelle impostazioni di Origin, questa impostazione non funziona per la versione Steam di Mass Effect 3. Puoi installare un d3d9.dll facente da proxy che disabiliterà forzatamento l'overlay per il gioco selezionato.&#10;&#10;Usare altri proxy d3d9 come Reshade disabiliterà comunque l'overlay.</system:String>
-	<system:String x:Key="string_noOriginBasedTargetsInstalledForThisGame">Nessun obiettivo basato su origin è installato per questo gioco</system:String>
+	<system:String x:Key="string_oigPanelHeader" xml:space="preserve">L'overlay in gioco di Origin è famoso per causare importanti perdite di prestazioni nei giochi di Mass Effect. Nonostante possa essere disabilitato nelle impostazioni di Origin, questa impostazione non funziona per la versione Steam di Mass Effect 3. Puoi installare un file d3d9.dll facente da proxy che disabiliterà forzatamente l'overlay per il gioco selezionato.&#10;&#10;Usare altri proxy d3d9 come Reshade disabiliterà comunque l'overlay.</system:String>
+	<system:String x:Key="string_noOriginBasedTargetsInstalledForThisGame">Nessun obiettivo basato su Origin è installato per questo gioco</system:String>
 
 	<!-- Plot Manager Sync Panel -->
 	<system:String x:Key="string_syncingPlotManager">Sincronizzazione del Plot Manager</system:String>
@@ -1951,7 +1951,7 @@
 	<!-- 0={comma separated list of mod names} -->
 	<system:String x:Key="string_interp_errorCompilingFunctionReason" xml:space="preserve">Errore durante la compilazione della funzione {0}: {1}</system:String>
 	<!-- 0={export name} 1={list of log messages} -->
-	<system:String x:Key="string_interp_fileLibInitFailedPlotManager">È stato impossibile inizailizzare il FileLib per PlotManagerSync: {0}</system:String>
+	<system:String x:Key="string_interp_fileLibInitFailedPlotManager">È stato impossibile inizializzare il FileLib per PlotManagerSync: {0}</system:String>
 	<!-- 0={Newline separated list of errors} -->
 
 	<!-- Program updater -->
@@ -1981,7 +1981,7 @@
 	<!-- The downloaded file is not signed by ME3Tweaks and is therefore not trusted. This can help protect against hijack of me3tweaks.com -->
 
 	<!-- ReadOnlyOption (Mod Installer) -->
-	<system:String x:Key="string_descriptionSetConfigFilesReadOnly">Imposta i file di configurazione che questa mod installa in modalità sola lettura, per evitare che Mass Effect li resetti. Le opzioni in gioco che modificano questi file non persisteranno tra sessioni di gioco.</system:String>
+	<system:String x:Key="string_descriptionSetConfigFilesReadOnly">Imposta i file di configurazione che questa mod installa in modalità sola lettura per evitare che Mass Effect li resetti. Le opzioni in gioco che modificano questi file non persisteranno tra sessioni di gioco.</system:String>
 	<system:String x:Key="string_makeConfigFilesReadonly">Rende i file di configurazione in sola lettura</system:String>
 
 	<!-- Restore panel -->
@@ -1991,7 +1991,7 @@
 	<system:String x:Key="string_backup">Backup</system:String>
 	<system:String x:Key="string_deletingExistingGameInstallation">Eliminazione dell'installazione corrente del gioco</system:String>
 	<system:String x:Key="string_restoringGameFromBackup">Ripristino del gioco dal backup</system:String>
-	<system:String x:Key="string_interp_restoringXpercent">RIpristino {0}%</system:String>
+	<system:String x:Key="string_interp_restoringXpercent">Ripristino {0}%</system:String>
 	<!-- 0 = number -->
 	<system:String x:Key="string_interp_restoringX">Ripristino di {0}</system:String>
 	<!-- 0 = filename or item like DLC name -->
@@ -2011,12 +2011,12 @@
 	<system:String x:Key="string_error">Errore!</system:String>
 	<system:String x:Key="string_fullGameRestore">Ripristino completo del gioco</system:String>
 	<system:String x:Key="string_restoringTextureLODs">Ripristinare da un backup resetterà le tue impostazioni di qualità delle texture ai valori di default. Assicurati di avviare il gioco tramite Mod Manager in modo che vengano impostati i LOD delle texture corretti.</system:String>
-	<system:String x:Key="string_entireGameDirectoryWillBeDeleted">La cartella intera del gioco verrà eliminata. Se stai provando a fare un ripristino granulare inclusa la rimozione delle mod DLC o il ripristino di file/SFAR specifici, usa invece le opzioni di ripristino dal pulstane Gestisci Obiettivo</system:String>
+	<system:String x:Key="string_entireGameDirectoryWillBeDeleted">La cartella intera del gioco verrà eliminata. Se stai provando a fare un ripristino granulare inclusa la rimozione delle mod DLC o il ripristino di file/SFAR specifici, usa invece le opzioni di ripristino dal pulsante Gestisci Installazione</system:String>
 	<system:String x:Key="string_youMaySeeElevationPromptOnRestore">Potresti vedere una richiesta di permessi quando provi a ripristinare il tuo gioco. Questo è ME3Tweaks Mod Manager che consente al tuo account i permessi sulla nuova cartella del gioco dopo che la vecchia è stata eliminata.</system:String>
 	<system:String x:Key="string_dialog_restoringXWillDeleteGameDir" xml:space="preserve">Ripristinare {0} cancellerà completamente la cartella del gioco e poi copierà il backup nel percorso originale.\n\nCancellare questa installazione e ripristinarla dal backup?</system:String>
 	<!-- 0=Utilities.GetGameName(Game) -->
 	<system:String x:Key="string_gameTargetWillBeDeleted">Il gioco obiettivo sarà eliminato</system:String>
-	<system:String x:Key="string_beta_useNewRestoreMethod">Usare il nuovo metodo di ripristino sperimentale? È più veloce ma non è ancora stato testato appieno.</system:String>
+	<system:String x:Key="string_beta_useNewRestoreMethod">Usare il nuovo metodo di ripristino sperimentale? È più veloce ma non è ancora stato testato a pieno.</system:String>
 	<system:String x:Key="string_useBetaFeatureQuestion">Usare le funzionalità beta?</system:String>
 	<system:String x:Key="string_interp_copyingX">Copia di {0}</system:String>
 	<!-- 0={File} -->
@@ -2069,7 +2069,7 @@
 	<system:String x:Key="string_conflictingDLCModuleNumbers">Numeri di modulo dei DLC in conflitto</system:String>
 	<system:String x:Key="string_interp_dialogMountPrioirtyConflicts" xml:space="preserve">La priorità di montaggio del DLC per questa mod va in conflitto con un DLC esistente:{0}\n\nI numeri della priorità di montaggio sono usati per determinare quali file usare in caso di nomi dei package ambigui (file con lo stesso nome esistono i percorsi differenti). Valori in conflitto causeranno comportamenti indefiniti e dovrebbero essere evitati. Rilasciare mod in conflitto tra loro che non fanno parte dello stesso gruppo (come varianti delle mod) porterà probabilmente la tua mod a finire nella blacklist dei modding tools.\n\nVuoi continuare comunque?</system:String>
 	<system:String x:Key="string_conflictingDLCMountPriorityNumbers">Numeri di priorità del montaggio dei DLC in conflitto</system:String>
-	<system:String x:Key="string_dialog_discourageUseOfSPSaveRequired" xml:space="preserve">Hai scelto di rendere questa mod richiesta dal file di salvataggio. Quando un utente rimuove la tua mod (per scelta o riparazione), i salvataggi creati quando questo DLC era installato non saranno più utilizzabili dall'utente. In quasi ogni circostanza questo non è piacevole per l'utente. Dovresti scegliere questa opione solo se sai davvero quello che stai facendo.\n\nUsare questa flag di montaggio comunque?</system:String>
+	<system:String x:Key="string_dialog_discourageUseOfSPSaveRequired" xml:space="preserve">Hai scelto di rendere questa mod richiesta dal file di salvataggio. Quando un utente rimuove la tua mod (per scelta o riparazione), i salvataggi creati con questo DLC installato non saranno più utilizzabili dall'utente. In quasi ogni circostanza questo non è piacevole per l'utente. Dovresti scegliere questa opione solo se sai davvero quello che stai facendo.\n\nUsare questa flag di montaggio comunque?</system:String>
 	<system:String x:Key="string_undesirableMountFlag">Flag di montaggio non desiderabile</system:String>
 	<system:String x:Key="string_interp_dialogWillDeleteExistingMod" xml:space="preserve">Creare questa mod eliminerà una cartella esistente nella libreria delle mod:\n{0}\n\nContinuare?</system:String>
 	<!-- 0 = directory -->
@@ -2094,7 +2094,7 @@
 	<system:String x:Key="string_submitToME3Tweaks">Invio a ME3Tweaks</system:String>
 	<system:String x:Key="string_submitting">Invio in corso...</system:String>
 	<system:String x:Key="string_submitted">Inviato</system:String>
-	<system:String x:Key="string_me1MountFlagsNotSupportedInM3">ME1 non supporta correntemente le moutn flags nel Mod Manager</system:String>
+	<system:String x:Key="string_me1MountFlagsNotSupportedInM3">ME1 non supporta correntemente le mount flags nel Mod Manager</system:String>
 	<system:String x:Key="string_mE3TweaksTPMISubmission">Invio di TPI di ME3Tweaks</system:String>
 	<system:String x:Key="string_telemetryPanelHeader">Inviare le informazioni sulla tua mod al Database di Identificazione di Mod di Terze Parti permette a ME3Tweaks di fornire servizi migliori per la modding scene.</system:String>
 	<system:String x:Key="string_dLCFolderNameColon">Nome cartella del DLC:</system:String>
@@ -2139,7 +2139,7 @@
 	<system:String x:Key="string_errorValidatingSettings">Errore durante la validazione delle impostazioni</system:String>
 	<system:String x:Key="string_modMissingUpdatesDescriptor">Le mod devono avere il descrittore serverfolder impostato sotto l'header UPDATES</system:String>
 	<system:String x:Key="string_enterYourME3TweaksUpdaterServiceInformation">Inserisci le tue informazioni del Servizio di Aggiornamento di ME3Tweaks</system:String>
-	<system:String x:Key="string_pressSaveToValidateSettings">Premi salva per validare le impostazioni</system:String>
+	<system:String x:Key="string_pressSaveToValidateSettings">Premi Salva per validare le impostazioni</system:String>
 	<system:String x:Key="string_authenticatingToME3Tweaks">Autenticazione a ME3Tweaks</system:String>
 	<system:String x:Key="string_enterUpdaterServiceSettings">Apri le impostazioni del Servizio di Aggiornamento</system:String>
 	<system:String x:Key="string_checkingLZMAStorageDirectory">Controllo della cartella dello storage dei LZMA</system:String>
@@ -2189,8 +2189,8 @@
 	<system:String x:Key="string_confirmChanges">Conferma i cambiamenti</system:String>
 	<system:String x:Key="string_interp_checkingPackagesBeforeUploadX">Controllo dei package prima del caricamento {0}%</system:String>
 	<!-- 0={Percent number} -->
-	<system:String x:Key="string_uploadAborted_foundCompressedPackage">Caricamento annullato: Impossibile caricare package che sono compressi nativamente</system:String>
-	<system:String x:Key="string_dialog_uploadAborted_foundCompressedPackage" xml:space="preserve">I seguenti package sono compressi nativamente e non possono essere caricati. I file package devono essere salvati come non compressi in modo che le instanze del Mod Manager dell'utente finale possano determinar con sicurezza quali file devono essere aggiornati. Salva nuovamente questi file nel Legendary Explorer per decomprimerli.\n\n{0}</system:String>
+	<system:String x:Key="string_uploadAborted_foundCompressedPackage">Caricamento annullato: impossibile caricare package che sono compressi nativamente</system:String>
+	<system:String x:Key="string_dialog_uploadAborted_foundCompressedPackage" xml:space="preserve">I seguenti package sono compressi nativamente e non possono essere caricati. I file package devono essere salvati come non compressi in modo che le instanze del Mod Manager dell'utente finale possano determinare con sicurezza quali file devono essere aggiornati. Salva nuovamente questi file nel Legendary Explorer per decomprimerli.\n\n{0}</system:String>
 	<!-- 0=List of packages -->
 	<system:String x:Key="string_cannotUploadMod">Impossibile caricare la mod</system:String>
 	<system:String x:Key="string_interp_uploadFailedX">Caricamento fallito: {0}</system:String>
@@ -2204,10 +2204,10 @@
 	<system:String x:Key="string_checkingBackup">Controllando il backup</system:String>
 
 	<!-- Welcome panel -->
-	<system:String x:Key="string_previewPanelTitle">Benvenuto al ME3Tweaks Mod Manager</system:String>
+	<system:String x:Key="string_previewPanelTitle">Benvenuto in ME3Tweaks Mod Manager</system:String>
 	<system:String x:Key="string_selectYourLanguage">Seleziona la tua lingua</system:String>
-	<system:String x:Key="string_howToChangeLanguage">Puoi cambiare la tua lingua in ogni momento dal menu Azioni > Opzioni. Nota che che il supporto è disponibile solamente in Inglese</system:String>
-	<system:String x:Key="string_previewPanelIntro" xml:space="preserve">Benvenuto al ME3Tweaks Mod Manager, o M3 in breve. Importa le mod nel ME3Tweaks Mod Manager trascinando e rilasciando i file del loro archivio su questa finestra, una volta chiuso questo messaggio. Guarda cosa è installato selezionando Gestisci Obiettivo in alto a destra nella finestra principale.&#10;&#10;Se hai qualche problema o vuoi fornire del feedback unisciti al server Discord di ME3Tweaks con il pulsante in fondo</system:String>
+	<system:String x:Key="string_howToChangeLanguage">Puoi cambiare la tua lingua in ogni momento dal menu Azioni > Opzioni. Nota che il supporto è disponibile solamente in Inglese</system:String>
+	<system:String x:Key="string_previewPanelIntro" xml:space="preserve">Benvenuto in ME3Tweaks Mod Manager o M3 in breve. Importa le mod nel ME3Tweaks Mod Manager trascinando e rilasciando i file del loro archivio su questa finestra, una volta chiuso questo messaggio. Guarda cosa è installato selezionando Gestisci Installazione in alto a destra nella finestra principale.&#10;&#10;Se hai qualche problema o vuoi fornire del feedback, unisciti al server Discord di ME3Tweaks con il pulsante in fondo</system:String>
 	<system:String x:Key="string_joinDiscord">Unisciti al server Discord di ME3Tweaks</system:String>
 	<system:String x:Key="string_close">Chiudi</system:String>
 	<!-- Close (as in close dialog) -->
@@ -2226,7 +2226,7 @@
 	<system:String x:Key="string_startUsingModManager">Inizia ad utilizzare il Mod Manager</system:String>
 	<system:String x:Key="string_additionalOptions">Opzioni addizionali</system:String>
 	<system:String x:Key="string_enableTelemetry">Abilita la telemetria</system:String>
-	<system:String x:Key="string_wp_description_telemetry">La telementria del Mod Manager è usata dagli sviluppatori per identificare nuove mod, correggere errori nel Mod Manager, e vedere cosa gli utenti si aspettano dall'applicazione</system:String>
-	<system:String x:Key="string_developerMode">Abilitita la modalità per Sviluppatori</system:String>
-	<system:String x:Key="string_wp_description_developermod">La modalità per sviluppatori sblocca aspetti orientati agli sviluppatori, come distribuzione di mod, toggler per i DLC ufficiali, e altro. Se non sei uno sviluppatore di mod, non attivarla</system:String>
+	<system:String x:Key="string_wp_description_telemetry">La telementria del Mod Manager è usata dagli sviluppatori per identificare nuove mod, correggere errori nel Mod Manager e vedere cosa gli utenti si aspettano dall'applicazione</system:String>
+	<system:String x:Key="string_developerMode">Abilita la modalità per Sviluppatori</system:String>
+	<system:String x:Key="string_wp_description_developermod">La modalità per sviluppatori sblocca aspetti orientati agli sviluppatori, come distribuzione di mod, toggler per i DLC ufficiali e altro. Se non sei uno sviluppatore di mod, non attivarla</system:String>
 </ResourceDictionary>
