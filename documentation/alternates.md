@@ -81,6 +81,23 @@ The altdlc descriptor only works on the CUSTOMDLC job.
 | <sub><sup>RequiredFileRelativePaths</sup></sub> | Unquoted Semicolon Separated List (String) | List of filepaths from the game root that must exist, and have a specific filesize at the same index in `RequiredFileSizes` | <sup><sub>only if using `Condition` `COND_SPECIFIC_SIZED_FILES`</sub></sup> | 6.1+ |
 | RequiredFileSizes | Unquoted Semicolon Separated List (Integer) | List of filesizes in the same order and count as `RequiredFileRelativePaths`. If any files do not match their listed size, the condition will evaluate to false and the alternate will not be applicable. | <sup><sub>only if using `Condition` `COND_SPECIFIC_SIZED_FILES`</sub></sup> | 6.1+ |
 
+| OptionKey | String | A unique identifier for this alternate that can be used to identify the alternate, even after installation. All option keys must be unique. If not set, an option key will be automatically generated based on the FriendlyName of the alternate. | 8.0+ |
+| OptionKey | String | A unique identifier for this alternate that can be used to identify the alternate, even after installation. All option keys must be unique. If not set, an option key will be automatically generated based on the FriendlyName of the alternate. | 8.0+ |
+| OptionKey | String | A unique identifier for this alternate that can be used to identify the alternate, even after installation. All option keys must be unique. If not set, an option key will be automatically generated based on the FriendlyName of the alternate. | 8.0+ |
+| DependsOnActionNotMet | String | A unique identifier for this alternate that can be used to identify the alternate, even after installation. All option keys must be unique. If not set, an option key will be automatically generated based on the FriendlyName of the alternate. | 8.0+ |
+
+
+### altdlc DependsOn system
+In ModDesc 8.0, the `DependsOn` system was added. This allows options to depend on one or more other options, either checked or unchecked (or a mix). When the conditons are _all_ met, the met action is performed; when not all dependent options are not in a matching state, the not met action is run. 
+
+The following values can be used to define the action:
+
+| DependsOnAction                | Description                                                                                                                                                    |
+|--------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ACTION_ALLOW_SELECT            | Unlocks the option for the user to choose their preference. This action deselects the selection on unlock, but the user can choose to select it if they wish.  |
+| ACTION_ALLOW_SELECT_CHECKED    | Unlocks the option for the user to choose their preference. This options selects the alternate on unlock, but the user can choose to deselect it if they wish. |
+| ACTION_DISALLOW_SELECT         | Locks the option so the user cannot choose a preference. This action forcibly deselects the alternate and the user cannot change it.                           |
+| ACTION_DISALLOW_SELECT_CHECKED | Locks the option so the user cannot choose a preference. This action forcibly selects the alternate and the user cannot change it.                             |
 
 ### altdlc Examples
 Attributes have been put onto newlines for readability. 
