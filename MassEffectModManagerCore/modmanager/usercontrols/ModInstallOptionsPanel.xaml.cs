@@ -225,7 +225,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             AllOptionsAreAutomatic = true;
             if (ModBeingInstalled.GetJob(ModJob.JobHeader.ME1_CONFIG) != null)
             {
-                me1ConfigReadOnlyOption.IsSelected = true;
+                me1ConfigReadOnlyOption.UIIsSelected = true;
                 AlternateGroups.Add(new AlternateGroup(me1ConfigReadOnlyOption));
                 AllOptionsAreAutomatic = false;
             }
@@ -256,14 +256,10 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 o.SetIsSelectedChangeHandler(OnAlternateSelectionChanged);
                 internalSetupInitialSelection(o);
-                if (o.GroupName != null)
-                {
-                    // Deselect so UI doesn't show selected. This is only really for single mode since we dont' use 'IsSelected' in multi mode
-                    foreach (var v in o.AlternateOptions) v.IsSelected = false;
-                }
             }
 
             SortOptions();
+            
             int numAttemptsRemaining = 15;
             try
             {
@@ -275,6 +271,21 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
             // Done calculating options
 
+            // This has to occur after UpdateOptions, otherwise some states won't be accurately reflected.
+            foreach (var o in AlternateGroups)
+            {
+                if (o.GroupName != null)
+                {
+                    // Deselect so UI doesn't show selected. This is only really for single mode since we dont' use 'IsSelected' in multi mode
+                    foreach (var v in o.AlternateOptions)
+                    {
+                        if (o.SelectedOption != v)
+                        {
+                            v.UIIsSelected = false;
+                        }
+                    }
+                }
+            }
 
             if (AlternateGroups.Count == 0)
             {
@@ -411,7 +422,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 var stateChanged = v.UpdateSelectability(allDependentOptions, mod, target);
                 if (stateChanged)
                 {
-                    Debug.WriteLine($@"State changed: {v.FriendlyName} to {v.IsSelected}");
+                    Debug.WriteLine($@"State changed: {v.FriendlyName} to {v.UIIsSelected}");
                     secondPassOptions.AddRange(findOptionsDependentOn(v));
                     //UpdateOptions(ref numAttemptsRemaining, findOptionsDependentOn(v));
                     //break; // Don't parse it again.
@@ -428,14 +439,22 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 foreach (var group in AlternateGroups.Where(x => x.IsMultiSelector))
                 {
-                    if (group.SelectedOption.UINotApplicable)
+                    var firstAutoForced = group.AlternateOptions.FirstOrDefault(x => x.UIRequired);
+                    if (firstAutoForced != null)
                     {
-                        // Find first option that is not marked as not-applicable
-                        var option = group.AlternateOptions.FirstOrDefault(x => !x.UINotApplicable);
-                        if (option != null)
+                        group.SelectedOption = firstAutoForced;
+                    }
+                    else
+                    {
+                        if (group.SelectedOption.UINotApplicable)
                         {
-                            // This is a bad setup in moddesc!
-                            group.SelectedOption = option;
+                            // Find first option that is not marked as not-applicable
+                            var option = group.AlternateOptions.FirstOrDefault(x => !x.UINotApplicable);
+                            if (option != null)
+                            {
+                                // This is a bad setup in moddesc!
+                                group.SelectedOption = option;
+                            }
                         }
                     }
                 }
@@ -479,12 +498,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             foreach (var job in ModBeingInstalled.InstallationJobs)
             {
                 optionsMap[job.Header] = new List<AlternateOption>();
-                foreach (var alt in job.AlternateFiles.Where(x => x.IsSelected))
+                foreach (var alt in job.AlternateFiles.Where(x => x.UIIsSelected))
                     optionsMap[job.Header].Add(alt);
                 if (job.Header == ModJob.JobHeader.CUSTOMDLC)
                 {
                     // Custom DLC: add alternate dlc option.
-                    foreach (var alt in job.AlternateDLCs.Where(x => x.IsSelected))
+                    foreach (var alt in job.AlternateDLCs.Where(x => x.UIIsSelected))
                         optionsMap[job.Header].Add(alt);
 
                 }
@@ -531,6 +550,16 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         private void InstallCancel_Click(object sender, RoutedEventArgs e)
         {
             OnClosing(DataEventArgs.Empty);
+        }
+
+        private void DebugEnumerateOptions_Click(object sender, RoutedEventArgs e)
+        {
+#if DEBUG
+            foreach (var v in AlternateGroups)
+            {
+                Debug.WriteLine($@"{v.AlternateOptions.Count} options in group {v.GroupName}:");
+            }
+#endif
         }
     }
 }

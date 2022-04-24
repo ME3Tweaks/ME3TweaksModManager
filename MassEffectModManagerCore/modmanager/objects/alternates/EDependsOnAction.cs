@@ -27,6 +27,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         /// Locks the alternate option, but selected the item. This is equivalent to 'Auto applied'.
         /// </summary>
         ACTION_DISALLOW_SELECT,
+
         /// <summary>
         /// Locks the alernate option, unchecking the item. This is equivalent to 'Not applicable'.
         /// </summary>

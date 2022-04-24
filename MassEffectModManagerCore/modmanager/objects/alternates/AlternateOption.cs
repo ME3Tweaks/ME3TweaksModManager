@@ -75,16 +75,22 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         /// </summary>
         public abstract bool IsManual { get; }
 
+        /// <summary>
+        /// The list of DLC to be checked against with the specified condition (defined in subclasses of AlternateOption)
+        /// </summary>
+        public readonly List<string> ConditionalDLC = new List<string>();
+
         #region UI-Specific
+
+        /// <summary>
+        /// If true, this alternate is not shown to the user. Can be used for pivoting dependencies (depending on an option that depends on an automated state)
+        /// </summary>
+        public bool IsHidden { get; set; } = false;
+
         /// <summary>
         /// UI-only
         /// </summary>
         public virtual double CheckboxOpacity => !UIIsSelectable ? .65 : 1;
-
-        /// <summary>
-        /// The list of DLC to be checked against with the specified condition (defined in subclasses of AlternateOption)
-        /// </summary>
-        public List<string> ConditionalDLC = new List<string>();
 
         /// <summary>
         /// UI-only
@@ -93,11 +99,42 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         {
             get
             {
-                if (!UIIsSelectable && IsSelected) return 1;
-                if (!UIIsSelectable && !IsSelected) return .5;
+                if (!UIIsSelectable && UIIsSelected) return 1;
+                if (!UIIsSelectable && !UIIsSelected) return .5;
                 return 1;
             }
         }
+
+        /// <summary>
+        /// Forcibly sets the option to not be applicable in the UI.
+        /// </summary>
+        public bool ForceNotApplicable { get; protected set; }
+
+        /// <summary>
+        /// If this option is required (automatic and checked). This does not apply if the condition is OP_ALWAYS. 
+        /// </summary>
+        public virtual bool UIRequired => !IsManual && !IsAlways && UIIsSelected;
+
+        /// <summary>
+        /// If this option can be selected on or off by the end-user
+        /// </summary>
+        public virtual bool UIIsSelectable
+        {
+            get; set;
+        }
+
+        //public abstract bool UINotApplicable { get; }
+
+        /// <summary>
+        /// If this option is not applicable to the installation
+        /// </summary>
+        public virtual bool UINotApplicable => ForceNotApplicable || (!IsManual && !UIIsSelected && !IsAlways);
+
+        /// <summary>
+        /// UI ONLY - If this option is currently selected for installation
+        /// </summary>
+        public bool UIIsSelected { get; set; }
+        #endregion
 
         /// <summary>
         /// The root path where the multilists (if used) for this alternate is stored at
@@ -120,35 +157,8 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         /// </summary>
         internal void RaiseIsSelectedChanged()
         {
-            IsSelectedChanged?.Invoke(this, new DataEventArgs(IsSelected));
+            IsSelectedChanged?.Invoke(this, new DataEventArgs(UIIsSelected));
         }
-
-        /// <summary>
-        /// Forcibly sets the option to not be applicable in the UI.
-        /// </summary>
-        public bool ForceNotApplicable { get; protected set; }
-
-        /// <summary>
-        /// If this option is required (automatic and checked). This does not apply if the condition is OP_ALWAYS. 
-        /// </summary>
-        public virtual bool UIRequired => !IsManual && !IsAlways && IsSelected;
-
-        /// <summary>
-        /// If this option can be selected on or off by the end-user
-        /// </summary>
-        public virtual bool UIIsSelectable
-        {
-            get;
-            set;
-        }
-
-        //public abstract bool UINotApplicable { get; }
-        /// <summary>
-        /// If this option is not applicable to the installation
-        /// </summary>
-        public virtual bool UINotApplicable => ForceNotApplicable || (!IsManual && !IsSelected && !IsAlways);
-
-        #endregion
 
         /// <summary>
         /// The MultilistId for this alternate. This is only used in the moddesc.ini editor as
@@ -157,15 +167,13 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         public int MultiListId { get; set; } = -1;
 
         /// <summary>
-        /// If this option is selected for installation
-        /// </summary>
-        public bool IsSelected { get; set; }
-
-        /// <summary>
         /// If this option is always selected and forced on. Used to put an option that always is checked, often with OP_NOTHING.
         /// </summary>
         public abstract bool IsAlways { get; }
 
+        /// <summary>
+        /// The index value for sorting this alternate in the list
+        /// </summary>
         public int SortIndex { get; set; }
 
         /// <summary>
@@ -267,19 +275,19 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                     continue;
                 }
 
-                if (option.IsSelected && !key.IsPlus.Value)
+                if (option.UIIsSelected && !key.IsPlus.Value)
                 {
                     // The DependsOnKey option is selected, but we need -
                     changed = ApplyDependsOnNotMet();
                     keepParsing = false;
                 }
-                else if (!option.IsSelected && key.IsPlus.Value)
+                else if (!option.UIIsSelected && key.IsPlus.Value)
                 {
                     // The DependsOnKey option is not selected, but we need +
                     changed = ApplyDependsOnNotMet();
                     keepParsing = false;
                 }
-                else if (!option.IsSelected ^ key.IsPlus.Value)
+                else if (!option.UIIsSelected ^ key.IsPlus.Value)
                 {
                     // Unlock the option
                     ApplyDependsOnMet();
@@ -326,7 +334,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         /// <exception cref="NotImplementedException"></exception>
         private bool InternalApplyDepends(EDependsOnAction dependsAction)
         {
-            var initialSelection = IsSelected;
+            var initialSelection = UIIsSelected;
 
             // Can we select?
             var hasUserChoice = dependsAction is EDependsOnAction.ACTION_ALLOW_SELECT or EDependsOnAction.ACTION_ALLOW_SELECT_CHECKED;
@@ -335,17 +343,17 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
             if (!hasUserChoice)
             {
                 // We're going to lock the option.
-                IsSelected = dependsAction == EDependsOnAction.ACTION_DISALLOW_SELECT_CHECKED;
+                UIIsSelected = dependsAction == EDependsOnAction.ACTION_DISALLOW_SELECT_CHECKED;
             }
             else if (!alreadyHasUserChoice)
             {
                 // If the user is gaining the ability to make a decision, we will follow the action by the developer. We don't want to modify the existing user choice if they have a choice
                 // and this update doesn't change the ability for the user to make a choice
-                IsSelected = dependsAction == EDependsOnAction.ACTION_ALLOW_SELECT_CHECKED; // Other option is unchecked.
+                UIIsSelected = dependsAction == EDependsOnAction.ACTION_ALLOW_SELECT_CHECKED; // Other option is unchecked.
             }
 
             UIIsSelectable = hasUserChoice; // Make option selectable if it provider user choice
-            return initialSelection != IsSelected;
+            return initialSelection != UIIsSelected;
         }
 
         /// <summary>
@@ -487,9 +495,29 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 GroupName = properties.TryGetValue(@"OptionGroup", out string groupName) ? groupName : null;
             }
 
-            // ModDesc 8.0: Read dev-defined OptionKey, SortOrder
+            // ModDesc 8.0: Read dev-defined OptionKey, SortOrder, Hidden
             if (modForValidating.ModDescTargetVersion >= 8.0)
             {
+                if (properties.TryGetValue(@"Hidden", out string hiddenValue))
+                {
+                    if (bool.TryParse(hiddenValue, out var hidden))
+                    {
+                        if (hidden && GroupName != null)
+                        {
+                            M3Log.Error($@"Alternate {FriendlyName} cannot set 'Hidden' to true when using 'OptionGroup'.");
+                            LoadFailedReason = $"Alternate {FriendlyName} cannot set 'Hidden' to true when using 'OptionGroup'.";
+                            return false;
+                        }
+                        IsHidden = hidden;
+                    }
+                    else
+                    {
+                        M3Log.Error($@"Alternate {FriendlyName}'s 'Hidden' value can only be 'true' or 'false'. An invalid value was provided: {hiddenValue}");
+                        LoadFailedReason = $"Alternate {FriendlyName}'s 'Hidden' value can only be 'true' or 'false'. An invalid value was provided: {hiddenValue}";
+                        return false;
+                    }
+                }
+
                 if (properties.TryGetValue(@"OptionKey", out string optionKey) && !string.IsNullOrWhiteSpace(optionKey))
                 {
                     OptionKey = optionKey; // Later validation is done at the job level to ensure there are no collisions
@@ -587,7 +615,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 ValidAlternate = false;
                 return false;
             }
-            
+
             return true; //Succeeded (or older moddesc that does not support this)
         }
 

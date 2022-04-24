@@ -6,20 +6,33 @@
              xmlns:local="clr-namespace:ME3TweaksModManager.modmanager.usercontrols.modinstaller"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+             xmlns:alternates="clr-namespace:ME3TweaksModManager.modmanager.objects.alternates"
+             xmlns:converters="clr-namespace:ME3TweaksModManager.modmanager.converters"
              mc:Ignorable="d"
              x:Name="AOS"
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid Margin="0">
+    <UserControl.Resources>
+        <converters:SingleModeAlternateVisibilityConverter x:Key="SingleModeAlternateVisibilityConverter"/>
+    </UserControl.Resources>
+    <Grid Margin="0"
+          d:DataContext="{d:DesignInstance alternates:AlternateGroup}">
         <!-- Single Selector -->
-        <DockPanel Visibility="{Binding GroupName, Converter={StaticResource NullVisibilityConverter}, ConverterParameter='Reversed'}">
+        <DockPanel>
+            <DockPanel.Visibility>
+                <MultiBinding Converter="{StaticResource SingleModeAlternateVisibilityConverter}">
+                    <Binding Path="GroupName"/>
+                    <Binding Path="SelectedOption.IsHidden"/>
+                </MultiBinding>
+            </DockPanel.Visibility>
             <CheckBox DockPanel.Dock="Left" 
                       IsEnabled="{Binding SelectedOption.UIIsSelectable}"
-                      IsChecked="{Binding SelectedOption.IsSelected, Mode=TwoWay}"/>
+                      IsChecked="{Binding SelectedOption.UIIsSelected, Mode=TwoWay}"/>
             <local:SingleAlternateOptionPanel DataContext="{Binding SelectedOption}" MouseUp="AlternateItem_MouseUp"/>
         </DockPanel>
 
         <!-- Multi Selector -->
-        <xctk:DropDownButton x:Name="DropDownButtonHost" IsOpen="{Binding IsDropdownOpen, ElementName=AOS, Mode=TwoWay}" Visibility="{Binding GroupName, Converter={StaticResource NullVisibilityConverter}}" HorizontalContentAlignment="Stretch" >
+        <xctk:DropDownButton 
+            x:Name="DropDownButtonHost" IsOpen="{Binding IsDropdownOpen, ElementName=AOS, Mode=TwoWay}" Visibility="{Binding GroupName, Converter={StaticResource NullVisibilityConverter}}" HorizontalContentAlignment="Stretch" >
             <DockPanel>
                 <TextBlock Text="{Binding GroupNameTitleText}" TextWrapping="Wrap" Visibility="{Binding GroupName, Converter={StaticResource NullVisibilityConverter}}" FontWeight="Bold" DockPanel.Dock="Top"/>
                 <local:SingleAlternateOptionPanel DataContext="{Binding SelectedOption}"/>

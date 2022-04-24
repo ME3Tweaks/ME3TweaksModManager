@@ -190,7 +190,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                         }
 
                         // Process altfile removal of multilist, since it should be done last
-                        var fileRemoveAltFiles = job.AlternateFiles.Where(x => x.IsSelected && x.Operation == AlternateFile.AltFileOperation.OP_NOINSTALL_MULTILISTFILES);
+                        var fileRemoveAltFiles = job.AlternateFiles.Where(x => x.UIIsSelected && x.Operation == AlternateFile.AltFileOperation.OP_NOINSTALL_MULTILISTFILES);
                         foreach (var altFile in fileRemoveAltFiles)
                         {
                             foreach (var multifile in altFile.MultiListSourceFiles)
@@ -307,7 +307,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 var sourceFile = entry.Value;
 
                 bool altApplied = false;
-                foreach (var altFile in job.AlternateFiles.Where(x => x.IsSelected))
+                foreach (var altFile in job.AlternateFiles.Where(x => x.UIIsSelected))
                 {
                     Debug.WriteLine(@"Checking alt conditions for application: " + altFile.FriendlyName);
                     if (altFile.Operation == AlternateFile.AltFileOperation.OP_NOTHING) continue; //skip nothing
@@ -383,7 +383,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 
             //Apply autolist alternate files
 
-            foreach (var altFile in job.AlternateFiles.Where(x => x.IsSelected && x.Operation == AlternateFile.AltFileOperation.OP_APPLY_MULTILISTFILES))
+            foreach (var altFile in job.AlternateFiles.Where(x => x.UIIsSelected && x.Operation == AlternateFile.AltFileOperation.OP_APPLY_MULTILISTFILES))
             {
                 foreach (var multifile in altFile.MultiListSourceFiles)
                 {
@@ -409,7 +409,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             }
 
             // Remove multilist noinstall files
-            foreach (var altFile in job.AlternateFiles.Where(x => x.IsSelected && x.Operation == AlternateFile.AltFileOperation.OP_NOINSTALL_MULTILISTFILES))
+            foreach (var altFile in job.AlternateFiles.Where(x => x.UIIsSelected && x.Operation == AlternateFile.AltFileOperation.OP_NOINSTALL_MULTILISTFILES))
             {
                 foreach (var multifile in altFile.MultiListSourceFiles)
                 {

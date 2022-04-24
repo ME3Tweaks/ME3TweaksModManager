@@ -504,10 +504,10 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         public void SetupInitialSelection(GameTargetWPF target, Mod mod)
         {
             UIIsSelectable = false; //Reset
-            IsSelected = false; //Reset
+            UIIsSelected = false; //Reset
             if (Condition == AltDLCCondition.COND_MANUAL)
             {
-                IsSelected = CheckedByDefault;
+                UIIsSelected = CheckedByDefault;
                 // Mod Manager 8: DLC Requirements was moved to SetupSelectability.
 
                 return;
@@ -518,17 +518,17 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
             {
                 case AltDLCCondition.COND_DLC_NOT_PRESENT:
                 case AltDLCCondition.COND_ANY_DLC_NOT_PRESENT:
-                    IsSelected = !ConditionalDLC.All(i => installedDLC.Contains(i, StringComparer.CurrentCultureIgnoreCase));
+                    UIIsSelected = !ConditionalDLC.All(i => installedDLC.Contains(i, StringComparer.CurrentCultureIgnoreCase));
                     break;
                 case AltDLCCondition.COND_DLC_PRESENT:
                 case AltDLCCondition.COND_ANY_DLC_PRESENT:
-                    IsSelected = ConditionalDLC.Any(i => installedDLC.Contains(i, StringComparer.CurrentCultureIgnoreCase));
+                    UIIsSelected = ConditionalDLC.Any(i => installedDLC.Contains(i, StringComparer.CurrentCultureIgnoreCase));
                     break;
                 case AltDLCCondition.COND_ALL_DLC_NOT_PRESENT:
-                    IsSelected = !ConditionalDLC.Any(i => installedDLC.Contains(i, StringComparer.CurrentCultureIgnoreCase));
+                    UIIsSelected = !ConditionalDLC.Any(i => installedDLC.Contains(i, StringComparer.CurrentCultureIgnoreCase));
                     break;
                 case AltDLCCondition.COND_ALL_DLC_PRESENT:
-                    IsSelected = ConditionalDLC.All(i => installedDLC.Contains(i, StringComparer.CurrentCultureIgnoreCase));
+                    UIIsSelected = ConditionalDLC.All(i => installedDLC.Contains(i, StringComparer.CurrentCultureIgnoreCase));
                     break;
                 case AltDLCCondition.COND_SPECIFIC_SIZED_FILES:
                     {
@@ -542,7 +542,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                             }
                         }
 
-                        IsSelected = selected;
+                        UIIsSelected = selected;
                     }
                     break;
                 case AltDLCCondition.COND_SPECIFIC_DLC_SETUP:
@@ -566,7 +566,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                             }
                         }
 
-                        IsSelected = selected;
+                        UIIsSelected = selected;
                     }
                     break;
             }
@@ -600,7 +600,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                     // Mod Manager 6.2: If requirements are not met this option is forcibly not checked.
                     // Mods targeting Moddesc 6 or 6.1 would possibly be bugged if they used this feature
                     // so this change does not affect mods targeting those versions
-                    IsSelected = false;
+                    UIIsSelected = false;
                     ForceNotApplicable = true; // This option is not applicable
                 }
                 else

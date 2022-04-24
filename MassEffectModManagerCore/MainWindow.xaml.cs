@@ -612,8 +612,12 @@ namespace ME3TweaksModManager
         public ICommand CheckAllModsForUpdatesCommand { get; set; }
         public ICommand CustomKeybindsInjectorCommand { get; set; }
         public ICommand NexusModsFileSearchCommand { get; set; }
+        public ICommand SearchModsCommand { get; set; }
+        public ICommand CloseModSearchBoxCommand { get; set; }
         private void LoadCommands()
         {
+            CloseModSearchBoxCommand = new GenericCommand(CloseSearchBox);
+            SearchModsCommand = new GenericCommand(ShowSearchBox);
             ModManagerOptionsCommand = new GenericCommand(ShowOptions);
             ReloadModsCommand = new GenericCommand(ReloadMods, CanReloadMods);
             ApplyModCommand = new GenericCommand(CallApplyMod, CanApplyMod);
@@ -661,6 +665,19 @@ namespace ME3TweaksModManager
             OpenASIManagerCommand = new GenericCommand(OpenASIManager, NetworkThreadNotRunning);
             NexusModsFileSearchCommand = new GenericCommand(OpenNexusSearch); // no conditions for this
         }
+
+        private void CloseSearchBox()
+        {
+            ClipperHelper.ShowHideVerticalContent(ModListSearchBoxPanel, false);
+            M3LoadedMods.Instance.ModSearchText = null;
+        }
+
+        private void ShowSearchBox()
+        {
+            ClipperHelper.ShowHideVerticalContent(ModListSearchBoxPanel, true);
+            Keyboard.Focus(ModSearchBox);
+        }
+
         private void LaunchEGMSettings(GameTargetWPF target = null)
         {
             target ??= GetCurrentTarget(MEGame.ME3);

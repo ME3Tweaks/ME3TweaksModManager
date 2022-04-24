@@ -519,26 +519,26 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
 
         public void SetupInitialSelection(GameTargetWPF target, Mod mod)
         {
-            IsSelected = CheckedByDefault; //Reset
+            UIIsSelected = CheckedByDefault; //Reset
             if (IsAlways)
             {
-                IsSelected = true;
+                UIIsSelected = true;
                 return;
             }
             if (IsManual)
             {
                 UIIsSelectable = true; // Manual options can be chosen by user. A follow up pass will lock it out if it's not eligible.
-                IsSelected = CheckedByDefault;
+                UIIsSelected = CheckedByDefault;
                 return;
             }
             var installedDLC = target.GetInstalledDLC();
             switch (Condition)
             {
                 case AltFileCondition.COND_DLC_NOT_PRESENT:
-                    IsSelected = !ConditionalDLC.All(i => installedDLC.Contains(i, StringComparer.CurrentCultureIgnoreCase));
+                    UIIsSelected = !ConditionalDLC.All(i => installedDLC.Contains(i, StringComparer.CurrentCultureIgnoreCase));
                     break;
                 case AltFileCondition.COND_DLC_PRESENT:
-                    IsSelected = ConditionalDLC.Any(i => installedDLC.Contains(i, StringComparer.CurrentCultureIgnoreCase));
+                    UIIsSelected = ConditionalDLC.Any(i => installedDLC.Contains(i, StringComparer.CurrentCultureIgnoreCase));
                     break;
                     //The following conditions don't exist right now
                     //case AltFileCondition.COND_ALL_DLC_NOT_PRESENT:

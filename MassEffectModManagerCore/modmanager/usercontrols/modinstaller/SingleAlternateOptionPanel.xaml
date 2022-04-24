@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
              xmlns:local="clr-namespace:ME3TweaksModManager.modmanager.usercontrols.modinstaller" xmlns:converters="clr-namespace:ME3TweaksModManager.modmanager.converters" xmlns:fa5="http://schemas.fontawesome.com/icons/"
+             xmlns:alternates="clr-namespace:ME3TweaksModManager.modmanager.objects.alternates"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              x:Name="SAOP"
@@ -97,7 +98,7 @@
                     <MultiDataTrigger>
                         <MultiDataTrigger.Conditions>
                             <Condition Binding="{Binding ShowMouseoverHighlightOnMain, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:AlternateOptionSelector}}}" Value="True"  />
-                            <Condition Binding="{Binding IsSelected}" Value="true" />
+                            <Condition Binding="{Binding UIIsSelected}" Value="true" />
                         </MultiDataTrigger.Conditions>
                         <Setter
                             Property="Background"
@@ -151,6 +152,7 @@
     </Border>
     <UserControl.ToolTip>
         <ToolTip
+            d:DataContext="{d:DesignInstance alternates:AlternateOption}"
             DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}"
             Placement="Right"
             Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"

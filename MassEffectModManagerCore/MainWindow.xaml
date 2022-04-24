@@ -28,6 +28,9 @@
             TargetType="Window"
             BasedOn="{StaticResource {x:Type Window}}" />
     </Window.Style>
+    <Window.InputBindings>
+        <KeyBinding Key="F" Modifiers="Control" Command="{Binding SearchModsCommand}"/>
+    </Window.InputBindings>
     <Window.Resources>
         <Storyboard
             x:Key="OpenLoadingSpinner"
@@ -1724,6 +1727,27 @@
                                 Text="{Binding FailedModsString}" />
                           </Hyperlink>
                         </TextBlock>
+                    </ui:Clipper>
+                    <ui:Clipper 
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Bottom"
+                        Constraint="Width"
+                        DockPanel.Dock="Bottom">
+                        <DockPanel Name="ModListSearchBoxPanel"
+                                   ui:Clipper.WidthFraction="1"
+                                   ui:Clipper.HeightFraction="0"
+                                   VerticalAlignment="Bottom">
+                            <Button DockPanel.Dock="Right" Command="{Binding CloseModSearchBoxCommand}">
+                                <Button.Content>
+                                    <fa5:ImageAwesome
+                                        Icon="Solid_Times"
+                                        Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                        Height="8"
+                                        Width="8" />
+                                </Button.Content>
+                            </Button>
+                            <TextBox Name="ModSearchBox" Text="{Binding ModSearchText, Source={x:Static loaders:M3LoadedMods.Instance}, UpdateSourceTrigger=PropertyChanged}"/>
+                        </DockPanel>
                     </ui:Clipper>
                     <Grid>
                         <ListBox

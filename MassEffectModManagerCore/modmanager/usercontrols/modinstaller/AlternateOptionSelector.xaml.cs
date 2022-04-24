@@ -68,11 +68,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols.modinstaller
                 if (group.SelectedOption != newItem)
                 {
                     // Multi mode
-                    group.SelectedOption.IsSelected = false;
+                    group.SelectedOption.UIIsSelected = false;
                     group.SelectedOption.RaiseIsSelectedChanged(); // Raise that we are de-selecting this multi-option. This is so deselection logic occurs
 
                     group.SelectedOption = newItem;
-                    group.SelectedOption.IsSelected = true;
+                    group.SelectedOption.UIIsSelected = true;
 
                     IsDropdownOpen = false; // Multi mode
                     if (element.ToolTip is ToolTip tp)
@@ -83,7 +83,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols.modinstaller
                 if (group.AlternateOptions.Count == 1 && !group.SelectedOption.IsAlways)
                 {
                     // Single mode
-                    group.SelectedOption.IsSelected = !group.SelectedOption.IsSelected;
+                    group.SelectedOption.UIIsSelected = !group.SelectedOption.UIIsSelected;
                     group.SelectedOption.RaiseIsSelectedChanged();
                 }
             }

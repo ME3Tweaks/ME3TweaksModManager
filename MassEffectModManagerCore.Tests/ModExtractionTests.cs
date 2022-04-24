@@ -124,7 +124,7 @@ namespace ME3TweaksModManager.Tests
                                         selectedGroups.Add(altfile.GroupName);
                                     }
 
-                                    altfile.IsSelected = true;
+                                    altfile.UIIsSelected = true;
                                 }
                             }
                         }
@@ -220,7 +220,7 @@ namespace ME3TweaksModManager.Tests
                                     selectedGroups.Add(altfile.GroupName);
                                 }
 
-                                altfile.IsSelected = true;
+                                altfile.UIIsSelected = true;
                             }
                         }
 

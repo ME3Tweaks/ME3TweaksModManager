@@ -11,6 +11,7 @@
              xmlns:fa5="http://schemas.fontawesome.com/icons/" 
              xmlns:modinstaller="clr-namespace:ME3TweaksModManager.modmanager.usercontrols.modinstaller" 
              xmlns:system="clr-namespace:System;assembly=System.Runtime"
+             xmlns:me3TweaksModManager="clr-namespace:ME3TweaksModManager"
              MinHeight="400"
              MaxWidth="900"
              mc:Ignorable="d" >
@@ -89,6 +90,13 @@
                     Margin="5,4,5,0"
                     Click="InstallCancel_Click"
                     ToolTip="{DynamicResource string_abortInstallingMod}" />
+            <Button
+                Content="Debug: Enumerate options"
+                DockPanel.Dock="Right"
+                Padding="5,4"
+                Margin="5,4,5,0"
+                Click="DebugEnumerateOptions_Click"
+                Visibility="{x:Static me3TweaksModManager:App.DebugOnlyVisibility}"/>
             <!-- Dirty hack so we don't have to extend GameToVisibilityConverter -->
             <CheckBox
                     Content="{DynamicResource string_compressPackages}"

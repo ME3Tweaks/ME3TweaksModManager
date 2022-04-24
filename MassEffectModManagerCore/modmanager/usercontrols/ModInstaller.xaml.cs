@@ -278,7 +278,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 foreach (var jobMappings in installationQueues.UnpackedJobMappings)
                 {
                     installsPackageFile |= jobMappings.Key.MergeMods.Any(); // merge mods will modify packages
-                    installsPackageFile |= jobMappings.Key.AlternateFiles.Any(x => x.IsSelected && x.Operation == AlternateFile.AltFileOperation.OP_APPLY_MERGEMODS); // merge mods will modify packages
+                    installsPackageFile |= jobMappings.Key.AlternateFiles.Any(x => x.UIIsSelected && x.Operation == AlternateFile.AltFileOperation.OP_APPLY_MERGEMODS); // merge mods will modify packages
                     installsPackageFile |= jobMappings.Key.Game1TLKXmls != null && jobMappings.Key.Game1TLKXmls.Any(); // TLK merge will modify packages
                     installsPackageFile |= jobMappings.Value.FileMapping.Keys.Any(x => x.EndsWith(@".pcc", StringComparison.InvariantCultureIgnoreCase));
                     installsPackageFile |= jobMappings.Value.FileMapping.Keys.Any(x => x.EndsWith(@".u", StringComparison.InvariantCultureIgnoreCase));
@@ -801,7 +801,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
             //Stage: Merge Mods
             var allMMs = installationJobs.SelectMany(x => x.MergeMods).ToList();
-            allMMs.AddRange(installationJobs.SelectMany(x => x.AlternateFiles.Where(y => y.IsSelected && y.MergeMods != null).SelectMany(y => y.MergeMods)));
+            allMMs.AddRange(installationJobs.SelectMany(x => x.AlternateFiles.Where(y => y.UIIsSelected && y.MergeMods != null).SelectMany(y => y.MergeMods)));
             var totalMerges = allMMs.Sum(x => x.GetMergeCount());
             int doneMerges = 0;
 
@@ -1471,13 +1471,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 {
                     if (string.IsNullOrWhiteSpace(af.FriendlyName)) continue;
                     if (!string.IsNullOrWhiteSpace(alternateOptionsPicked)) alternateOptionsPicked += @";";
-                    alternateOptionsPicked += $@"{af.FriendlyName}={af.IsSelected.ToString()}";
+                    alternateOptionsPicked += $@"{af.FriendlyName}={af.UIIsSelected.ToString()}";
                 }
                 foreach (var ad in job.AlternateDLCs)
                 {
                     if (string.IsNullOrWhiteSpace(ad.FriendlyName)) continue;
                     if (!string.IsNullOrWhiteSpace(alternateOptionsPicked)) alternateOptionsPicked += @";";
-                    alternateOptionsPicked += $@"{ad.FriendlyName}={ad.IsSelected.ToString()}";
+                    alternateOptionsPicked += $@"{ad.FriendlyName}={ad.UIIsSelected.ToString()}";
                 }
             }
 
@@ -1517,19 +1517,19 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     }
                     if (ad.IsManual)
                     {
-                        if (ad.GroupName != null && ad.IsSelected) return; //Cannot deselect group
-                        ad.IsSelected = !ad.IsSelected;
+                        if (ad.GroupName != null && ad.UIIsSelected) return; //Cannot deselect group
+                        ad.UIIsSelected = !ad.UIIsSelected;
                     }
                 }
                 else if (grid.DataContext is AlternateFile af && af.IsManual)
                 {
-                    if (af.GroupName != null && af.IsSelected) return; //Cannot deselect group
-                    af.IsSelected = !af.IsSelected;
-                    Debug.WriteLine(@"Is selected: " + af.IsSelected);
+                    if (af.GroupName != null && af.UIIsSelected) return; //Cannot deselect group
+                    af.UIIsSelected = !af.UIIsSelected;
+                    Debug.WriteLine(@"Is selected: " + af.UIIsSelected);
                 }
                 else if (grid.DataContext is ReadOnlyOption ro)
                 {
-                    ro.IsSelected = !ro.IsSelected;
+                    ro.UIIsSelected = !ro.UIIsSelected;
                 }
             }
         }

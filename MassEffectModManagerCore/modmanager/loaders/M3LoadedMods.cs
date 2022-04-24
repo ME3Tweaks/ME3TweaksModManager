@@ -42,6 +42,11 @@ namespace ME3TweaksModManager.modmanager.loaders
         public ObservableCollectionExtended<GameFilterLoader> GameFilters { get; } = new();
 
         /// <summary>
+        /// Text used to filter mods when the search box is open
+        /// </summary>
+        public string ModSearchText { get; set; }
+
+        /// <summary>
         /// Callback to indicate a mod should be selected in the mod list
         /// </summary>
         public Action<Mod> SelectModCallback { get; set; }
@@ -377,6 +382,13 @@ namespace ME3TweaksModManager.modmanager.loaders
             FailedMods.Remove(selectedMod); //make sure to remove it from this in case it's failed mods panel calling this.
         }
 
+        public void OnModSearchTextChanged()
+        {
+            // This is probably a pretty poor performing way of doing this instead of
+            // doing a collection view
+            FilterMods();
+        }
+
         /// <summary>
         /// Updates the collection view of mods.
         /// </summary>
@@ -385,6 +397,7 @@ namespace ME3TweaksModManager.modmanager.loaders
             if (SuppressFilterMods)
                 return;
             var allMods = M3LoadedMods.Instance.AllLoadedMods.ToList(); // Makes a clone of the list
+
             bool oneVisible = false;
             foreach (var gf in M3LoadedMods.Instance.GameFilters)
             {
@@ -395,6 +408,23 @@ namespace ME3TweaksModManager.modmanager.loaders
                 else
                 {
                     oneVisible = true;
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(ModSearchText))
+            {
+                // Filter the remaining mods.
+                for (int i = allMods.Count - 1; i >= 0; i--)
+                {
+                    var mod = allMods[i];
+
+                    // FILTER CODE
+                    if (!mod.ModName.Contains(ModSearchText, StringComparison.InvariantCultureIgnoreCase)
+                        && !mod.ModDeveloper.Contains(ModSearchText, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        allMods.RemoveAt(i); // Remove the mod
+                    }
+
                 }
             }
 
