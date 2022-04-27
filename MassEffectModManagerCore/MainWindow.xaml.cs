@@ -1414,7 +1414,7 @@ namespace ME3TweaksModManager
                             control = new NXMHandlerConfigPanel();
                             break;
                         case EPanelID.BACKUP_CREATOR:
-                            control = new BackupCreator(InstallationTargets.ToList(), SelectedGameTarget, this);
+                            control = new BackupCreator(InstallationTargets.ToList());
                             break;
                         default:
                             throw new Exception($@"HandlePanelResult did not handle panelid {result.PanelToOpen}");
@@ -1457,7 +1457,7 @@ namespace ME3TweaksModManager
         }
         private void ShowBackupPane()
         {
-            var backupCreator = new BackupCreator(InstallationTargets.ToList(), SelectedGameTarget, this);
+            var backupCreator = new BackupCreator(InstallationTargets.ToList());
             backupCreator.Close += (a, b) =>
             {
                 ReleaseBusyControl();

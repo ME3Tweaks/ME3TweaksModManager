@@ -13,19 +13,21 @@ using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.usercontrols.interfaces;
 using ME3TweaksModManager.ui;
+using PropertyChanged;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
     /// <summary>
     /// Interaction logic for BackupRestoreManager.xaml
     /// </summary>
+    [AddINotifyPropertyChangedInterface]
     public partial class BackupCreator : MMBusyPanelBase
     {
         public bool AnyGameMissingBackup => BackupService.AnyGameMissingBackup(MEGameSelector.GetEnabledGames()); // We do not check the launcher.
         public ObservableCollectionExtended<GameBackupWrapper> GameBackups { get; } = new ObservableCollectionExtended<GameBackupWrapper>();
 
         private List<GameTargetWPF> targetsList;
-        public BackupCreator(List<GameTargetWPF> targetsList, GameTargetWPF selectedTarget, Window window)
+        public BackupCreator(List<GameTargetWPF> targetsList)
         {
             this.targetsList = targetsList;
             LoadCommands();
@@ -97,5 +99,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         // ISizeAdjustable Interface
         public override double MaxWindowHeightPercent { get; set; } = 0.85;
+        public override double MaxWindowWidthPercent { get; set; } = 0.85;
     }
 }

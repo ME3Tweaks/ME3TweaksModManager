@@ -39,7 +39,7 @@ namespace ME3TweaksModManager.modmanager.converters
                 bool isWidth = axis == @"W";
                 var panelDesiredDimension = isWidth ? panel.DesiredSize.Width : panel.DesiredSize.Height;
 
-                if (panel.MaxWindowHeightPercent > 0 || panel.MaxWindowWidthPercent > 0)
+                if (panel.MaxWindowHeightPercent > 0 && panel.MaxWindowWidthPercent > 0)
                 {
                     // This panel has specific limits set on it.
                     var maxWindowDimension = windowDimension * (isWidth ? panel.MaxWindowWidthPercent : panel.MaxWindowHeightPercent);
@@ -49,6 +49,13 @@ namespace ME3TweaksModManager.modmanager.converters
                 else
                 {
                     // Default implementation
+#if DEBUG
+                    if ((panel.MaxWindowHeightPercent != 0 && panel.MaxWindowWidthPercent == 0) || (panel.MaxWindowHeightPercent == 0 && panel.MaxWindowWidthPercent != 0)){
+                        // xor
+                        Debug.WriteLine(@"IMPROPERLY CONFIGURED PANEL DIMENSION CONVERTER!!!");
+                    }
+
+#endif
                     var maxWindowDimension = windowDimension * defaultMaxDimensionMultiplier;
                     return Math.Min(panelDesiredDimension, maxWindowDimension); // If the desired size is less than the max window dimension, use that. Otherwise use the maximum.
                 }

@@ -1,39 +1,16 @@
 ﻿<usercontrols:MMBusyPanelBase
-    x:Class="ME3TweaksModManager.modmanager.usercontrols.BackupCreator" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    x:Class="ME3TweaksModManager.modmanager.usercontrols.BackupCreator" 
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
     xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
     xmlns:ui="clr-namespace:ME3TweaksModManager.ui"
-    xmlns:system="clr-namespace:System;assembly=System.Runtime"
     mc:Ignorable="d"
     d:DesignHeight="450"
     d:DesignWidth="600"
     MaxWidth="900"
     DataContext="{Binding RelativeSource={RelativeSource Self}}">
-    <!--<usercontrols:MMBusyPanelBase.Width>
-        <MultiBinding Converter="{StaticResource PanelDimensionConverter}">
-            --><!-- Take the minimum of either the width (0) or the window width % --><!--
-            <Binding ElementName="BackupPanel" Mode="OneWay" Path="ActualWidth"/>
-            <Binding RelativeSource="{RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}}" Path="ActualWidth"/>
-            <Binding>
-                <Binding.Source>
-                    <system:Double>0.8</system:Double>
-                </Binding.Source>
-            </Binding>
-        </MultiBinding>
-    </usercontrols:MMBusyPanelBase.Width>
-    <usercontrols:MMBusyPanelBase.Height>
-        <MultiBinding Converter="{StaticResource PanelDimensionConverter}">
-            --><!-- Take the minimum of either the width (0) or the window width % --><!--
-            <Binding ElementName="BackupPanel" Mode="OneWay" Path="ActualHeight"/>
-            <Binding RelativeSource="{RelativeSource Mode=FindAncestor,AncestorType={x:Type Window}}" Path="ActualHeight"/>
-            <Binding>
-                <Binding.Source>
-                    <system:Double>0.85</system:Double>
-                </Binding.Source>
-            </Binding>
-        </MultiBinding>
-    </usercontrols:MMBusyPanelBase.Height>-->
-    <Grid x:Name="BackupPanel" VerticalAlignment="Center" HorizontalAlignment="Center">
+    <Grid x:Name="BackupPanel">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -164,7 +141,6 @@
             Content="{DynamicResource string_close}"
             Command="{Binding CloseCommand}"
             HorizontalAlignment="Right"
-            Padding="7,5"
-            Margin="0,5,0,0" />
+            Padding="7,5"/>
     </Grid>
 </usercontrols:MMBusyPanelBase>
