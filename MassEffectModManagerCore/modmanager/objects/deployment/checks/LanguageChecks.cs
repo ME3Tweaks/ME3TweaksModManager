@@ -103,8 +103,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                         if (File.Exists(tlkLangPath))
                         {
                             //inspect
-                            var tf = new ME2ME3TalkFile();
-                            tf.LoadTlkData(tlkLangPath);
+                            var tf = new ME2ME3TalkFile(tlkLangPath);
                             tlkMappings[language.FileCode] = tf.StringRefs;
 
                             //Check string order

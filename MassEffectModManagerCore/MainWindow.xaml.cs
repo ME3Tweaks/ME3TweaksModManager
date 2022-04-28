@@ -3467,8 +3467,7 @@ namespace ME3TweaksModManager
                                 {
                                     var dest = Path.Combine(Directory.GetParent(file).FullName, Path.GetFileNameWithoutExtension(file) + @".xml");
                                     M3Log.Information($@"Decompiling TLK file: {file} -> {dest}");
-                                    var tf = new ME2ME3TalkFile();
-                                    tf.LoadTlkData(file);
+                                    var tf = new ME2ME3TalkFile(file);
                                     tf.SaveToXML(dest);
                                     M3Log.Information(@"Decompiled TLK file");
                                 };

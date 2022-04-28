@@ -19,12 +19,10 @@ namespace ME3TweaksModManager.Tests
             var tlksToTestOn = Directory.GetFiles(tlksDir, "*.tlk", SearchOption.AllDirectories);
             foreach (var tlk in tlksToTestOn)
             {
-                var talkFileMe2 = new ME2ME3TalkFile();
-                talkFileMe2.LoadTlkData(tlk);
+                var talkFileMe2 = new ME2ME3TalkFile(tlk);
                 var tlkStream = LegendaryExplorerCore.TLK.ME2ME3.HuffmanCompression.SaveToTlkStream(talkFileMe2.StringRefs);
-                var reloadedTlk = new ME2ME3TalkFile();
                 tlkStream.Position = 0;
-                reloadedTlk.LoadTlkDataFromStream(tlkStream);
+                var reloadedTlk = new ME2ME3TalkFile(tlkStream);
 
                 foreach (var v in talkFileMe2.StringRefs)
                 {
