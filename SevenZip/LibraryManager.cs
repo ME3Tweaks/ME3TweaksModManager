@@ -138,7 +138,7 @@ namespace SevenZip
                     {
                         throw new SevenZipLibraryException($"7z DLL file does not exist: {_libraryFileName}");
                     }
-                    if ((_modulePtr = NativeMethods.LoadLibrary(_libraryFileName)) == IntPtr.Zero)
+                    if ((_modulePtr = NativeMethods.LoadLibraryW(_libraryFileName)) == IntPtr.Zero)
                     {
                         throw new SevenZipLibraryException($"failed to load library \"{_libraryFileName}\".");
                     }
