@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO.Hashing;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -237,9 +238,8 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 if (_optionKey != null) return _optionKey;
                 // Generate one one based on the name of the alternate.
                 var data = Encoding.Unicode.GetBytes(FriendlyName);
-                ParallelCRC crc = new ParallelCRC();
-                crc.Update(data, 0, data.Length);
-                _optionKey = crc.Value.ToString("X8");
+                
+                _optionKey = Convert.ToHexString(Crc32.Hash(data));
                 return _optionKey;
             }
             set
