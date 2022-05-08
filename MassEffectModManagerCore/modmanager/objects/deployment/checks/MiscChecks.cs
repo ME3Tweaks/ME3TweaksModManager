@@ -368,7 +368,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
 
             if (item.ModToValidateAgainst.NexusModID > 0 && !item.ModToValidateAgainst.IsME3TweaksUpdatable && !NexusUpdaterService.IsModWhitelisted(item.ModToValidateAgainst))
             {
-                item.AddInfoWarning($"{item.ModToValidateAgainst} is not enrolled into the NexusMods Updater Service whitelist. In order for this mod to check for updates, it must be enrolled in the updater service (due to design of NexusMods API). You can enroll this mod on the ME3Tweaks Discord, in the #nexusupdate-rules channel.");
+                item.AddInfoWarning($"{item.ModToValidateAgainst.ModName} ({item.ModToValidateAgainst.Game}) is not enrolled into the NexusMods Updater Service whitelist. In order for this mod to check for updates, it must be enrolled in the updater service (due to design of NexusMods API). You can enroll this mod on the ME3Tweaks Discord, in the #nexusupdate-rules channel.");
             }
             #endregion
 
