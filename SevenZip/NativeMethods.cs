@@ -17,7 +17,7 @@ namespace SevenZip
         #endregion
 
         [DllImport("kernel32.dll", BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern IntPtr LoadLibrary([MarshalAs(UnmanagedType.LPStr)] string fileName);
+        public static extern IntPtr LoadLibraryW([MarshalAs(UnmanagedType.LPWStr)] string fileName);
 
         [DllImport("kernel32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]

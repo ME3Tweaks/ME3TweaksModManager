@@ -39,7 +39,8 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
         /// </summary>
         internal static FallbackLink StaticFileBaseEndpoints { get; } = new()
         {
-            MainURL = @"https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/master/MassEffectModManagerCore/staticfiles/",
+            // v1 endpoint
+            MainURL = @"https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/staticfiles/liveservices/staticfiles/v1/",
             FallbackURL = @"https://me3tweaks.com/modmanager/tools/staticfiles/"
         };
 

@@ -169,7 +169,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
                         }
                         else
                         {
-                            M3Log.Error($@"Unable to download {step.imagename} from endpoint {host}: {downloadedImage.errorMessage}");
+                            M3Log.Error($@"Unable to download tutorial asset {step.imagename} from endpoint {host}: {downloadedImage.errorMessage}");
                         }
                     }
                 }
