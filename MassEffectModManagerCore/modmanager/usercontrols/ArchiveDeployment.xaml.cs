@@ -114,8 +114,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         private void AddModToDeploymentWrapper()
         {
             // Not very performant, but it works...
-            var m = M3LoadedMods.Instance.AllLoadedMods.Where(x => BackupService.GetBackupStatus(x.Game).BackedUp).Except(ModsInDeployment.Select(x => x.ModBeingDeployed));
-            ModSelectorDialog msd = new ModSelectorDialog(window, m.ToList());
+            var m = M3LoadedMods.Instance.AllLoadedMods.Where(x => BackupService.GetBackupStatus(x.Game).BackedUp).Except(ModsInDeployment.Select(x => x.ModBeingDeployed)).OrderBy(x=>x.Game).ThenBy(x=>x.ModName).ToList();
+            ModSelectorDialog msd = new ModSelectorDialog(window, m);
             var result = msd.ShowDialog();
             if (result.HasValue && result.Value)
             {
