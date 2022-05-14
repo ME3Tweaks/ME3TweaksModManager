@@ -114,7 +114,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
                 foreach (var p in CustomDLCJob.ParameterMap)
                 {
                     //sourcedirs, destdirs was already serialized, skip them
-                    if (!string.IsNullOrWhiteSpace(p.Value) && p.Key == @"incompatiblecustomdlc" || p.Key == @"requiredcustomdlc")
+                    if (!string.IsNullOrWhiteSpace(p.Value) && p.Key == @"incompatiblecustomdlc" || p.Key == @"requiredcustomdlc" || p.Key==@"outdatedcustomdlc")
                     {
                         ini[@"CUSTOMDLC"][p.Key] = p.Value;
                     }
@@ -130,7 +130,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
         public string SourcePath { get; set; } = "";
         //Fody uses this property on weaving
 #pragma warning disable
-public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged;
 #pragma warning restore
     }
 }
