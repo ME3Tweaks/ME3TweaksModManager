@@ -59,16 +59,6 @@ namespace ME3TweaksModManager
         /// </summary>
         public const string DISCORD_INVITE_LINK = "https://discord.gg/s8HA6dc";
 
-        /// <summary>
-        /// If this boot is upgrading from ME3CMM
-        /// </summary>
-        public static bool UpgradingFromME3CMM;
-
-        // PENDING THINGS
-        public static string PendingNXMLink;
-        public static string PendingAutoModInstallPath;
-        public static MEGame? PendingGameBoot;
-
         public static Visibility DebugOnlyVisibility
         {
 #if DEBUG
@@ -189,21 +179,21 @@ namespace ME3TweaksModManager
                             App.BootingUpdate = true;
                         }
 
-                        UpgradingFromME3CMM = parsedCommandLineArgs.Value.UpgradingFromME3CMM;
+                        CommandLinePending.UpgradingFromME3CMM = parsedCommandLineArgs.Value.UpgradingFromME3CMM;
 
                         if (parsedCommandLineArgs.Value.NXMLink != null)
                         {
-                            PendingNXMLink = parsedCommandLineArgs.Value.NXMLink;
+                            CommandLinePending.PendingNXMLink = parsedCommandLineArgs.Value.NXMLink;
                         }
 
                         if (parsedCommandLineArgs.Value.AutoInstallModdescPath != null)
                         {
-                            PendingAutoModInstallPath = parsedCommandLineArgs.Value.AutoInstallModdescPath;
+                            CommandLinePending.PendingAutoModInstallPath = parsedCommandLineArgs.Value.AutoInstallModdescPath;
                         }
 
-                        if (parsedCommandLineArgs.Value.GameBoot != null)
+                        if (parsedCommandLineArgs.Value.GameBoot != false)
                         {
-                            PendingGameBoot = parsedCommandLineArgs.Value.GameBoot;
+                            CommandLinePending.PendingGameBoot = parsedCommandLineArgs.Value.GameBoot;
                         }
                     }
                     else
@@ -273,7 +263,7 @@ namespace ME3TweaksModManager
                 try
                 {
                     NexusDomainHandler.LoadExternalHandlers();
-                    if (PendingNXMLink != null && NexusDomainHandler.HandleExternalLink(PendingNXMLink))
+                    if (CommandLinePending.PendingNXMLink != null && NexusDomainHandler.HandleExternalLink(CommandLinePending.PendingNXMLink))
                     {
                         M3Log.Information(@"Exiting application");
                         Environment.Exit(0);
@@ -714,8 +704,17 @@ namespace ME3TweaksModManager
         [Option(@"installmod", HelpText = "Instructs Mod Manager to automatically install the mod from the specified mod path after initialization, to the default target")]
         public string AutoInstallModdescPath { get; set; }
 
-        [Option(@"bootgame", HelpText = "Instructs Mod Manager to automatically boot the selected game after initialization")]
-        public MEGame? GameBoot { get; set; }
+        [Option(@"bootgame", HelpText = "Instructs Mod Manager to automatically boot the specified game after initialization (and after other installation options)")]
+        public bool GameBoot { get; set; }
+
+        [Option(@"game", HelpText = "Game to use with various other command line options")]
+        public MEGame? RelevantGame { get; set; }
+
+        [Option(@"installasi", HelpText = "Instructs Mod Manager to automatically install the ASI with the specified group ID to the specified game")]
+        public int AutoInstallASIGroupID { get; set; }
+
+        [Option(@"installbink", HelpText = "Instructs Mod Manager to automatically install the bink asi loader to the specified game")]
+        public bool AutoInstallBink { get; set; }
 
 
     }

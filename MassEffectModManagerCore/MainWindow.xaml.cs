@@ -37,6 +37,7 @@ using ME3TweaksCore.Services;
 using ME3TweaksCore.Services.Backup;
 using ME3TweaksCore.Services.BasegameFileIdentification;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
+using ME3TweaksCore.Targets;
 using ME3TweaksCoreWPF;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksCoreWPF.UI;
@@ -144,11 +145,15 @@ namespace ME3TweaksModManager
             if (result is Parsed<Options> parsedCommandLineArgs)
             {
                 if (parsedCommandLineArgs.Value.NXMLink != null)
-                    App.PendingNXMLink = parsedCommandLineArgs.Value.NXMLink;
+                    CommandLinePending.PendingNXMLink = parsedCommandLineArgs.Value.NXMLink;
                 if (parsedCommandLineArgs.Value.AutoInstallModdescPath != null)
-                    App.PendingAutoModInstallPath = parsedCommandLineArgs.Value.AutoInstallModdescPath;
+                    CommandLinePending.PendingAutoModInstallPath = parsedCommandLineArgs.Value.AutoInstallModdescPath;
                 if (parsedCommandLineArgs.Value.GameBoot != null)
-                    App.PendingGameBoot = parsedCommandLineArgs.Value.GameBoot;
+                    CommandLinePending.PendingGameBoot = parsedCommandLineArgs.Value.GameBoot;
+                if (parsedCommandLineArgs.Value.AutoInstallASIGroupID > 0)
+                    CommandLinePending.PendingInstallASIID = parsedCommandLineArgs.Value.AutoInstallASIGroupID;
+                if (parsedCommandLineArgs.Value.AutoInstallBink != false)
+                    CommandLinePending.PendingInstallBink = parsedCommandLineArgs.Value.AutoInstallBink;
                 handleInitialPending();
             }
         }
@@ -253,7 +258,7 @@ namespace ME3TweaksModManager
         //private ModLoader modLoadSer;
         public MainWindow()
         {
-            if (App.UpgradingFromME3CMM/* || true*/)
+            if (CommandLinePending.UpgradingFromME3CMM/* || true*/)
             {
                 App.Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
                 //Show migration window before we load the main UI
@@ -2882,21 +2887,57 @@ namespace ME3TweaksModManager
 
         private void handleInitialPending()
         {
-            if (App.PendingGameBoot is MEGame testGame && !testGame.IsLEGame() && !testGame.IsOTGame())
+            // Will do nothing if there's something else that needs done.
+            AttemptPendingGameBoot();
+
+            if (CommandLinePending.PendingGame is { } testGame && !testGame.IsLEGame() && !testGame.IsOTGame())
             {
-                M3Log.Error($@"Invalid autoboot game: {testGame}");
-                App.PendingGameBoot = null;
+                M3Log.Error($@"Invalid game specified on the command line: {testGame}");
+                CommandLinePending.PendingGameBoot = false;
+                CommandLinePending.ClearGameDependencies();
             }
             try
             {
-                if (App.PendingNXMLink != null)
+                if (CommandLinePending.PendingNXMLink != null)
                 {
-                    showNXMDownloader(App.PendingNXMLink);
+                    showNXMDownloader(CommandLinePending.PendingNXMLink);
                 }
 
-                if (App.PendingAutoModInstallPath != null && File.Exists(App.PendingAutoModInstallPath))
+                if (CommandLinePending.PendingInstallBink && CommandLinePending.PendingGame != null)
                 {
-                    Mod m = new Mod(App.PendingAutoModInstallPath, MEGame.Unknown);
+                    CommandLinePending.PendingInstallBink = false;
+                    GameTargetWPF t = GetCurrentTarget(CommandLinePending.PendingGame.Value);
+                    if (t != null)
+                    {
+                        M3Log.Information($@"Installing Bink Bypass (command line request) for {CommandLinePending.PendingGame.Value}");
+                        var task = BackgroundTaskEngine.SubmitBackgroundJob("BinkInstallAutomated", "Installing Bink ASI loader", "Installed Bink ASI loader");
+                        t.InstallBinkBypass();
+                        BackgroundTaskEngine.SubmitJobCompletion(task); // This is just so there's some visual feedback to the user
+                    }
+                    CommandLinePending.ClearGameDependencies();
+                }
+
+                if (CommandLinePending.PendingInstallASIID > 0 && CommandLinePending.PendingGame != null)
+                {
+                    var game = CommandLinePending.PendingGame.Value;
+                    if (!game.IsOTGame() && !game.IsLEGame())
+                    {
+                        M3Log.Error($@"Cannot install ASI to game {game} (command line request)!");
+                    }
+                    else
+                    {
+                        GameTargetWPF t = GetCurrentTarget(CommandLinePending.PendingGame.Value);
+                        if (t != null)
+                        {
+                            ASIManager.InstallASIToTargetByGroupID(CommandLinePending.PendingInstallASIID, @"Automated command line request", t);
+                        }
+                    }
+                    CommandLinePending.ClearGameDependencies();
+                }
+
+                if (CommandLinePending.PendingAutoModInstallPath != null && File.Exists(CommandLinePending.PendingAutoModInstallPath))
+                {
+                    Mod m = new Mod(CommandLinePending.PendingAutoModInstallPath, MEGame.Unknown);
                     if (m.ValidMod)
                     {
                         GameTargetWPF t = GetCurrentTarget(m.Game);
@@ -2904,28 +2945,16 @@ namespace ME3TweaksModManager
                         {
                             ApplyMod(m, t, installCompletedCallback: installed =>
                             {
-                                if (installed && App.PendingGameBoot != null)
+                                CommandLinePending.PendingAutoModInstallPath = null;
+                                if (installed)
                                 {
-                                    var bootTarget = GetCurrentTarget(m.Game);
-                                    if (bootTarget != null)
-                                    {
-                                        InternalStartGame(bootTarget);
-                                    }
-                                    App.PendingGameBoot = null;
+                                    // Will do nothing if there is no pending game boot.
+                                    AttemptPendingGameBoot();
                                 }
+                                CommandLinePending.ClearGameDependencies();
                             });
                         }
                     }
-                }
-                else if (App.PendingGameBoot != null)
-                {
-                    var bootTarget = GetCurrentTarget(App.PendingGameBoot.Value);
-                    if (bootTarget != null)
-                    {
-                        InternalStartGame(bootTarget);
-                    }
-
-                    App.PendingGameBoot = null;
                 }
             }
             catch (Exception e)
@@ -2934,9 +2963,26 @@ namespace ME3TweaksModManager
                 M3Log.Error(e.FlattenException());
             }
 
-            App.PendingAutoModInstallPath = null;
             //App.PendingGameBoot = null; // this is not cleared here as it will be used at end of applymod above
-            App.PendingNXMLink = null;
+            CommandLinePending.PendingNXMLink = null;
+        }
+
+        /// <summary>
+        /// Attempts to boot the game if there is any pending request to boot the game
+        /// </summary>
+        private void AttemptPendingGameBoot()
+        {
+            if (CommandLinePending.CanBootGame())
+            {
+                var bootTarget = GetCurrentTarget(CommandLinePending.PendingGame.Value);
+                if (bootTarget != null)
+                {
+                    InternalStartGame(bootTarget);
+                }
+
+                CommandLinePending.PendingGameBoot = false;
+                CommandLinePending.ClearGameDependencies();
+            }
         }
 
         //string convertKey(string pcKey, StringRef sref)
