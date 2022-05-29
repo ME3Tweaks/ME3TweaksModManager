@@ -16,7 +16,7 @@ namespace ME3TweaksModManager.modmanager.helpers
     {
         internal static string GetAppDataFolder(bool createIfMissing = true)
         {
-            var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "ME3TweaksModManager");
+            var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), @"ME3TweaksModManager");
             if (createIfMissing && !Directory.Exists(folder))
             {
                 Directory.CreateDirectory(folder);
@@ -31,7 +31,7 @@ namespace ME3TweaksModManager.modmanager.helpers
         /// <returns>null if pre-104 data folder is not found, the path otherwise</returns>
         internal static string GetPre104DataFolder()
         {
-            var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MassEffectModManager");
+            var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"MassEffectModManager");
             if (Directory.Exists(folder))
             {
                 return folder;
@@ -42,7 +42,7 @@ namespace ME3TweaksModManager.modmanager.helpers
 
         internal static string GetCachedTargetsFile(MEGame game)
         {
-            return Path.Combine(GetAppDataFolder(), $"GameTargets{game}.txt");
+            return Path.Combine(GetAppDataFolder(), $@"GameTargets{game}.txt");
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace ME3TweaksModManager.modmanager.helpers
         /// <returns></returns>
         public static string GetCachedExecutablePath(string path = null)
         {
-            var lpath = Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "executables")).FullName;
+            var lpath = Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), @"executables")).FullName;
             if (path != null)
             {
                 return Path.Combine(lpath, path);
@@ -67,12 +67,12 @@ namespace ME3TweaksModManager.modmanager.helpers
         /// <returns></returns>
         internal static string GetVPatchRedirectsFolder()
         {
-            return Path.Combine(GetTempPath(), "VPatchRedirects");
+            return Path.Combine(GetTempPath(), @"VPatchRedirects");
         }
 
         internal static string GetDllDirectory()
         {
-            return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "dlls")).FullName;
+            return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), @"dlls")).FullName;
         }
 
         /// <summary>
@@ -81,27 +81,27 @@ namespace ME3TweaksModManager.modmanager.helpers
         /// <returns></returns>
         internal static string GetNexusModsCache()
         {
-            return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "nexusmodsintegration")).FullName;
+            return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), @"nexusmodsintegration")).FullName;
         }
 
         internal static string GetExternalNexusHandlersFile()
         {
-            return Path.Combine(GetNexusModsCache(), "othernexushandlers.json");
+            return Path.Combine(GetNexusModsCache(), @"othernexushandlers.json");
         }
 
         internal static string GetBatchInstallGroupsFolder()
         {
-            return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "batchmodqueues")).FullName;
+            return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), @"batchmodqueues")).FullName;
         }
 
         internal static string GetME3TweaksServicesCache()
         {
-            return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "ME3TweaksServicesCache")).FullName;
+            return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), @"ME3TweaksServicesCache")).FullName;
         }
 
         internal static string GetLocalHelpResourcesDirectory()
         {
-            return Directory.CreateDirectory(Path.Combine(GetME3TweaksServicesCache(), "HelpResources")).FullName;
+            return Directory.CreateDirectory(Path.Combine(GetME3TweaksServicesCache(), @"HelpResources")).FullName;
         }
 
         internal static string GetThirdPartyImportingCachedFile()
@@ -111,7 +111,7 @@ namespace ME3TweaksModManager.modmanager.helpers
 
         internal static string GetTipsServiceCachedFile()
         {
-            return Path.Combine(MCoreFilesystem.GetME3TweaksServicesCache(), "tipsservice.json");
+            return Path.Combine(MCoreFilesystem.GetME3TweaksServicesCache(), @"tipsservice.json");
         }
 
         internal static string GetBlacklistingsCachedFile()
@@ -121,7 +121,7 @@ namespace ME3TweaksModManager.modmanager.helpers
 
         public static string GetCachedLocalizationFolder()
         {
-            return Directory.CreateDirectory(Path.Combine(MCoreFilesystem.GetME3TweaksServicesCache(), "livelocalization")).FullName;
+            return Directory.CreateDirectory(Path.Combine(MCoreFilesystem.GetME3TweaksServicesCache(), @"livelocalization")).FullName;
         }
 
         /// <summary>
@@ -130,7 +130,7 @@ namespace ME3TweaksModManager.modmanager.helpers
         /// <returns></returns>
         public static string GetModDownloadCacheDirectory()
         {
-            return Directory.CreateDirectory(Path.Combine(MCoreFilesystem.GetAppDataFolder(), "downloadedmodscache")).FullName;
+            return Directory.CreateDirectory(Path.Combine(MCoreFilesystem.GetAppDataFolder(), @"downloadedmodscache")).FullName;
         }
 
         internal static string GetNexusModsUpdateServiceCachedFile()
@@ -140,7 +140,7 @@ namespace ME3TweaksModManager.modmanager.helpers
 
         public static string GetKeybindsOverrideFolder()
         {
-            return Directory.CreateDirectory(Path.Combine(MCoreFilesystem.GetAppDataFolder(), "keybindsoverride")).FullName;
+            return Directory.CreateDirectory(Path.Combine(MCoreFilesystem.GetAppDataFolder(), @"keybindsoverride")).FullName;
         }
 
         /// <summary>
@@ -149,7 +149,7 @@ namespace ME3TweaksModManager.modmanager.helpers
         /// <returns></returns>
         internal static string GetTutorialServiceCacheFile()
         {
-            return Path.Combine(GetME3TweaksServicesCache(), "tutorialservice.json");
+            return Path.Combine(GetME3TweaksServicesCache(), @"tutorialservice.json");
         }
 
         /// <summary>
@@ -158,12 +158,12 @@ namespace ME3TweaksModManager.modmanager.helpers
         /// <returns></returns>
         public static string GetTutorialServiceCache()
         {
-            return Directory.CreateDirectory(Path.Combine(MCoreFilesystem.GetME3TweaksServicesCache(), "tutorialservice")).FullName;
+            return Directory.CreateDirectory(Path.Combine(MCoreFilesystem.GetME3TweaksServicesCache(), @"tutorialservice")).FullName;
         }
 
         internal static string GetDynamicHelpCachedFile()
         {
-            return Path.Combine(GetME3TweaksServicesCache(), "cachedhelp-v2.xml");
+            return Path.Combine(GetME3TweaksServicesCache(), @"cachedhelp-v2.xml");
         }
 
         /// <summary>
@@ -172,7 +172,7 @@ namespace ME3TweaksModManager.modmanager.helpers
         /// <returns></returns>
         internal static string Get7zDllPath()
         {
-            return Path.Combine(GetDllDirectory(), "7z.dll");
+            return Path.Combine(GetDllDirectory(), @"7z.dll");
         }
 
         /// <summary>
@@ -180,7 +180,7 @@ namespace ME3TweaksModManager.modmanager.helpers
         /// </summary>
         internal static string GetTempPath()
         {
-            return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "Temp")).FullName;
+            return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), @"Temp")).FullName;
         }
 
         /// <summary>
@@ -189,7 +189,7 @@ namespace ME3TweaksModManager.modmanager.helpers
         /// <returns></returns>
         internal static string GetModmakerDefinitionsCache()
         {
-            return Directory.CreateDirectory(Path.Combine(GetModMakerCache(), "moddefinitions")).FullName;
+            return Directory.CreateDirectory(Path.Combine(GetModMakerCache(), @"moddefinitions")).FullName;
         }
 
         /// <summary>
@@ -198,17 +198,17 @@ namespace ME3TweaksModManager.modmanager.helpers
         /// <returns></returns>
         private static string GetModMakerCache()
         {
-            return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), "ModMakerCache")).FullName;
+            return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), @"ModMakerCache")).FullName;
         }
 
         public static string GetOriginOverlayDisableFile()
         {
-            return Path.Combine(GetDllDirectory(), "d3d9.dll");
+            return Path.Combine(GetDllDirectory(), @"d3d9.dll");
         }
 
         internal static string GetUpdaterServiceUploadStagingPath()
         {
-            return Directory.CreateDirectory(Path.Combine(GetTempPath(), "UpdaterServiceStaging")).FullName;
+            return Directory.CreateDirectory(Path.Combine(GetTempPath(), @"UpdaterServiceStaging")).FullName;
         }
     }
 }

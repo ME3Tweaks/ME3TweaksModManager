@@ -1,13 +1,12 @@
 ﻿<usercontrols:MMBusyPanelBase
-    x:Class="ME3TweaksModManager.modmanager.usercontrols.OptionsPanel" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
-    xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
-    xmlns:modmanager="clr-namespace:ME3TweaksModManager.modmanager"
-    xmlns:ui="clr-namespace:ME3TweaksModManager.ui"
-    xmlns:system="clr-namespace:System;assembly=System.Runtime"
+    x:Class="ME3TweaksModManager.modmanager.usercontrols.OptionsPanel" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols" xmlns:modmanager="clr-namespace:ME3TweaksModManager.modmanager" xmlns:ui="clr-namespace:ME3TweaksModManager.ui" xmlns:system="clr-namespace:System;assembly=System.Runtime"
     mc:Ignorable="d"
     DataContext="{Binding RelativeSource={RelativeSource Self}}">
-    <DockPanel Name="OptionPanel" HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="920">
+    <DockPanel
+        Name="OptionPanel"
+        HorizontalAlignment="Center"
+        VerticalAlignment="Center"
+        MaxWidth="920">
         <TextBlock
             DockPanel.Dock="Top"
             Text="{DynamicResource string_me3tweaksModManagerOptions}"
@@ -185,7 +184,9 @@
                             FontWeight="Bold"
                             DockPanel.Dock="Top"
                             IsChecked="{Binding Path=(modmanager:Settings.BetaMode)}">
-                            <TextBlock Text="{DynamicResource string_optIntoBetaUpdates}" TextWrapping="Wrap"/>
+                            <TextBlock
+                                Text="{DynamicResource string_optIntoBetaUpdates}"
+                                TextWrapping="Wrap" />
                         </CheckBox>
                         <TextBlock
                             MaxWidth="450"
@@ -201,7 +202,9 @@
                             FontWeight="Bold"
                             DockPanel.Dock="Top"
                             IsChecked="{Binding Path=(modmanager:Settings.ConfigureNXMHandlerOnBoot)}">
-                            <TextBlock Text="{DynamicResource string_configureNxmHandlerOnBoot}" TextWrapping="Wrap"/>
+                            <TextBlock
+                                Text="{DynamicResource string_configureNxmHandlerOnBoot}"
+                                TextWrapping="Wrap" />
                         </CheckBox>
                         <TextBlock
                             MaxWidth="450"
@@ -215,13 +218,13 @@
                         Grid.Column="0">
                         <CheckBox
                             FontWeight="Bold"
-                            Content="Double click mod in library to install"
+                            Content="{DynamicResource string_doubleClickModInLibraryToInstall}"
                             DockPanel.Dock="Top"
                             IsChecked="{Binding Path=(modmanager:Settings.DoubleClickModInstall)}" />
                         <TextBlock
                             MaxWidth="450"
                             Margin="0,0,10,0"
-                            Text="When double clicking a mod in the mod library list, perform the same action as pressing 'Apply Mod'. If the correct game is not currently the installation target, the current active one will be used. For mods that don't have options this will immediately trigger an installation."
+                            Text="{DynamicResource string_description_doubleClickModInLibraryToInstall}"
                             TextWrapping="Wrap" />
                     </StackPanel>
                     <StackPanel
@@ -273,7 +276,6 @@
                             Text="{DynamicResource string_description_autobootLE}"
                             TextWrapping="Wrap" />
                     </StackPanel>
-
                     <!-- OT OPTIONS MODMAKER -->
                     <TextBlock
                         ui:SharedUIBindings.GenerationOT="true"
@@ -300,8 +302,10 @@
                         <CheckBox
                             FontWeight="Bold"
                             DockPanel.Dock="Top"
-                            IsChecked="{Binding Path=(modmanager:Settings.ModMakerControllerModOption)}" >
-                            <TextBlock Text="{DynamicResource string_autoAddControllerMixinsToModMakerMods}" TextWrapping="Wrap"/>
+                            IsChecked="{Binding Path=(modmanager:Settings.ModMakerControllerModOption)}">
+                            <TextBlock
+                                Text="{DynamicResource string_autoAddControllerMixinsToModMakerMods}"
+                                TextWrapping="Wrap" />
                         </CheckBox>
                         <TextBlock
                             MaxWidth="450"
@@ -318,7 +322,9 @@
                             FontWeight="Bold"
                             DockPanel.Dock="Top"
                             IsChecked="{Binding Path=(modmanager:Settings.ModMakerAutoInjectCustomKeybindsOption)}">
-                            <TextBlock Text="{DynamicResource string_autoInjectCustomKeybindsIntoModMakerMods}" TextWrapping="Wrap"/>
+                            <TextBlock
+                                Text="{DynamicResource string_autoInjectCustomKeybindsIntoModMakerMods}"
+                                TextWrapping="Wrap" />
                         </CheckBox>
                         <TextBlock
                             MaxWidth="450"

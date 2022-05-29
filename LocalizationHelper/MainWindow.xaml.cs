@@ -583,7 +583,13 @@ namespace LocalizationHelper
                         xmldoc.RemoveChild(node);
                     }
                 }
-                ResultTextBox.Text = Beautify(xmldoc);
+
+                var xmlS = Beautify(xmldoc);
+
+                if (xmlS.StartsWith("<?xml version=\"1.0\" encoding=\"utf-8\"?>"))
+                xmlS =    xmlS.Substring("<?xml version=\"1.0\" encoding=\"utf-8\"?>".Length);
+                xmlS = xmlS.Trim();
+                ResultTextBox.Text = xmlS;
             }
             catch (Exception)
             {
@@ -871,6 +877,7 @@ namespace LocalizationHelper
             if (str.Equals("Pусский", StringComparison.InvariantCultureIgnoreCase)) return false;
             if (str.Equals("Português", StringComparison.InvariantCultureIgnoreCase)) return false;
             if (str.Equals("한국어", StringComparison.InvariantCultureIgnoreCase)) return false;
+            if (str.Equals("Italiano", StringComparison.InvariantCultureIgnoreCase)) return false;
             return true;
         }
 

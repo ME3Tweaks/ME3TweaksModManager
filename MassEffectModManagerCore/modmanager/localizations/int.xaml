@@ -399,6 +399,24 @@
     <!-- 0={target.Game.ToGameName()} -->
     <system:String x:Key="string_interp_syncedPlotManagerForGame">Synced Plot Manager for {0}</system:String>
     <!-- 0={target.Game.ToGameName()} -->
+    <system:String x:Key="string_configurationToolsForSpecificMods">Configuration tools for specific mods</system:String>
+    <system:String x:Key="string_femShepVsBroShepCloneConfigurationUtility">FemShep vs BroShep: Clone Configuration Utility</system:String>
+    <system:String x:Key="string_tooltip_descriptionFemShepVsBroShepTool">Allows you to configure the look of the clone in ME3/LE3</system:String>
+    <system:String x:Key="string_testEmailMerge">Test Email Merge</system:String>
+    <system:String x:Key="string_installHeadmorph">Install Headmorph</system:String>
+    <system:String x:Key="string_restoreOnetimeTutorialMessages">Restore one-time tutorial messages</system:String>
+    <system:String x:Key="string_tooltip_restoreOnetimeTutorialMessages">Restores messages that appear in the program that don't reappear once you dismiss them</system:String>
+    <system:String x:Key="string_tutorialui_listOflibraryMods">This is the list of mods available to install. This is not the list of installed mods. To view installed mods, click 'Manage Target'.</system:String>
+    <system:String x:Key="string_synchronizingEmails">Synchronizing Emails</system:String>
+    <system:String x:Key="string_synchronizedEmails">Synchronized Emails</system:String>
+    <system:String x:Key="string_installingBinkASILoader">Installing Bink ASI loader</system:String>
+    <system:String x:Key="string_installedBinkASILoader">Installed Bink ASI loader</system:String>
+
+    <!-- M3 Service Loaders -->
+    <system:String x:Key="string_loadingME3TweaksServices">Loading ME3Tweaks services</system:String>
+    <system:String x:Key="string_refreshingME3TweaksServices">Refreshing ME3Tweaks services</system:String>
+    <system:String x:Key="string_loadedME3TweaksServices">Loaded ME3Tweaks services</system:String>
+    <system:String x:Key="string_refreshedME3TweaksServices">Refreshed ME3Tweaks services</system:String>
 
     <!-- Debug Menu -->
     <system:String x:Key="string_testSquadmateMerge">Test squadmate merge</system:String>
@@ -496,6 +514,7 @@
     <system:String x:Key="string_interp_errorApplyingMergeModXY">An error occurred applying merge mod {0}: {1}.</system:String>
     <!-- 0={mergeMod.MergeModFilename} 1={ex.Message} -->
     <system:String x:Key="string_updatingTLKFiles">Updating TLK files</system:String>
+    <system:String x:Key="string_applyingMergemods">Applying mergemods</system:String>
 
     <!-- Welcome panel -->
     <system:String x:Key="string_previewPanelTitle">Welcome to ME3Tweaks Mod Manager</system:String>
@@ -742,6 +761,12 @@
     <!-- 0={package file path} 1={Package game (ME1/2/3...)} 2={ModBeingDeployed.Game (ME1/2/3...} -->
     <system:String x:Key="string_interp_dialog_noModSiteDeployed">The following mods don't have a modsite descriptor set and are not in the Third Party Mod Info database. Mods without the modsite descriptor will not be entered into the database; as such other mods may use your mount ID.\n{0}</system:String>
     <system:String x:Key="string_dialog_noModSiteDeployed">Mods missing modsite descriptor</system:String>
+
+    <!-- Texture checks -->
+    <!-- The follow items are only for letting this localizer replace the correct strings! Remove them when done and make sure keys are identical to the stripped versions-->
+    <system:String x:Key="string_tfc">.tfc</system:String>
+    <system:String x:Key="string_interp_cannotInstallTFCToBasegameLE1">Cannot install TFC {0} to /BIOGame/CookedPCConsole in LE1. Additional game TFCs must be added through a Custom DLC folder.</system:String>
+    <!-- 0={Filepath} -->
 
     <!-- Backup Creator-->
     <system:String x:Key="string_backupsAreShared">Backups are shared across various modding tools including Mass Effect Randomizer, ALOT Installer, and Legendary Explorer.</system:String>
@@ -1002,6 +1027,8 @@
     <system:String x:Key="string_interp_xChosenOptions">{0} chosen option(s)</system:String>
     <!-- 0 = number of chosen installation options (the options that come up on mod install). Can be 0 -->
     <system:String x:Key="string_deletingExistingModInLibrary">Deleting existing mod in library</system:String>
+    <system:String x:Key="string_blacklistedMod">Blacklisted mod</system:String>
+    <system:String xml:space="preserve" x:Key="string_description_blacklistedMod">The developers of ME3Tweaks Mod Manager have blacklisted this file for one of the following reasons:\n - The mod(s) in this file are known to not work and have been abandoned\n - The mod(s) in this file are destructive to the game for end users</system:String>
 
     <!-- Mod updater -->
     <system:String x:Key="string_modupdatesavailable">Mod updates available</system:String>
@@ -1115,6 +1142,9 @@
     <system:String x:Key="string_mountPriorityColon">Mount Priority:</system:String>
     <system:String x:Key="string_mountFlagColon">Mount Flag:</system:String>
     <system:String x:Key="string_moduleNumberColon">Module Number:</system:String>
+    <system:String x:Key="string_interp_errorSubmittingModInformation">Error submitting mod information: {0}</system:String>
+    <!-- 0={Error message} -->
+    <system:String x:Key="string_errorSubmitting">Error submitting</system:String>
 
     <!-- Messageboxes -->
     <system:String x:Key="string_no">No</system:String>
@@ -1197,6 +1227,10 @@
     <!-- 0=FriendlyName -->
     <system:String x:Key="string_interp_validation_altdlc_condManualWithConditionalDLC">Alternate DLC {0} has a value for ConditionalDLC on Condition COND_MANUAL. COND_MANUAL does not use ConditionalDLC, use DLCRequirements instead.</system:String>
     <!-- 0={friendlyName} -->
+    <system:String x:Key="string_interp_validation_altdlc_flattentNotTrueOrFalse">Alternate DLC ({0}) specifies 'FlattenMultiListOutput' descriptor, but the value is not 'true' or 'false': {1}</system:String>
+    <!-- 0={Alternate FriendlyName} 1={invalid value} -->
+    <system:String x:Key="string_interp_validation_altdlc_dlcrequirementsHasOfficialLEDLC">Alternate DLC ({0}) DLCRequirements specifies a DLC that ships in Legendary Edition. Legendary Edition mods targeting moddesc 8.0 and higher cannot set DLCRequirements on vanilla DLC, as Mod Manager does not support games that do not have the vanilla DLC. Unsupported value: {1}</system:String>
+    <!-- 0={Alternate FriendlyName} 1={unsupported value} -->
 
     <!-- Alternate File -->
     <system:String x:Key="string_validation_altfile_oneAltDlcMissingFriendlyNameCmm6">At least one specified Alternate File does not specify a FriendlyName, which is required for mods targeting cmmver >= 6.0.</system:String>
@@ -1228,6 +1262,12 @@
     <!-- 0={FriendlyName} -->
     <system:String x:Key="string_interp_altfile_installToNotGuaranteedCustomDLC">Alternate file ({0}) in-mod target (ModFile) does not appear to target a DLC target this mod will (always) install: {1}</system:String>
     <!-- 0={FriendlyName} 1={File path} -->
+    <system:String x:Key="string_interp_validation_altfile_flattentNotTrueOrFalse">Alternate File ({0}) specifies 'FlattenMultiListOutput' descriptor, but the value is not 'true' or 'false': {1}</system:String>
+    <!-- 0={Alternate FriendlyName} 1={invalid value} -->
+
+    <!-- Alternate Group -->
+    <system:String x:Key="string_interp_groupNameAlternateOptionsHeader">{0} - {1} option(s)</system:String>
+    <!-- 0={GroupName} 1={AlternateOptions.Count} Localize as best you can for your language since numerics are hard to do across locales-->
 
     <!-- GameTargetWPF -->
     <system:String x:Key="string_interp_invalidTargetMissingFile">Invalid target: {0} was not found in game directory.</system:String>
@@ -1488,8 +1528,11 @@
     <system:String x:Key="string_library_ntfsstreams">Library for reading NTFS alternate data streams</system:String>
     <system:String x:Key="string_tooltip_runningOnX">Running on {0}</system:String>
     <!-- 0 = netcore3.1, net5-windows8.0, etc. Version string of .NET -->
+    <system:String x:Key="string_enablesSingleinstancingOfAnApplication">Enables single-instancing of an application</system:String>
+    <system:String x:Key="string_wrapperForRobycopyCommandInCSharp">Wrapper for robycopy command in C#</system:String>
 
-    <!-- ASI Manager Panel -->
+
+<!-- ASI Manager Panel -->
     <system:String x:Key="string_outdatedVersionInstalled">Outdated version installed</system:String>
     <system:String xml:space="preserve" x:Key="string_interp_byXVersionY">By {0} | Version {1}</system:String>
     <!-- 0 = author, 1 = version number -->
@@ -1568,8 +1611,11 @@
     <system:String x:Key="string_enableDeveloperFeaturesQuestion">Enable developer features?</system:String>
     <system:String x:Key="string_dialog_warnMustBeDeployedForFullFeatures">Mods will throw a warning when they are being opened for import/install but were not deployed through Mod Manager. Mods that use image features will not load at all if not deployed through Mod Manager. When you're ready to distribute your mod, ensure you deploy it through the Mod Utils menu when in developer mode.</system:String>
     <system:String x:Key="string_deploymentInfo">Deployment info</system:String>
+    <system:String x:Key="string_le3dlcFolderNamesMP">DLC mod foldername cannot contain case sensitive string 'MP' due to code in DLC loader for LE3</system:String>
 
-    <!-- List Dialog -->
+
+
+<!-- List Dialog -->
     <system:String xml:space="preserve" x:Key="string_dialogCouldNotSetDataToClipboard">Could not set data to clipboard:\n</system:String>
     <system:String x:Key="string_errorCopyingDataToClipboard">Error copying data to clipboard</system:String>
     <system:String x:Key="string_copyItemsToClipboard">Copy items to clipboard</system:String>
@@ -1878,6 +1924,10 @@
     <system:String x:Key="string_installThisGroup">Install this group</system:String>
     <system:String x:Key="string_editGroup">Edit group</system:String>
     <system:String x:Key="string_tooltip_targetToInstallThisModGroupTo">Target to install this mod group to</system:String>
+    <system:String x:Key="string_deleteGroup">Delete group</system:String>
+    <system:String x:Key="string_interp_deleteTheSelectedBatchQueue">Delete the '{0}' install group?</system:String>
+    <!-- 0={Name of a user-defined batch installation queue/group} -->
+
 
     <!-- Import Installed DLC Mod Panel -->
     <system:String x:Key="string_importAnInstalledDLCMod">Import an installed DLC mod</system:String>
@@ -1945,6 +1995,7 @@
 	<system:String x:Key="string_previous">Previous</system:String>
 	<system:String x:Key="string_skipTutorial">Skip tutorial</system:String>
     <system:String  x:Key="string_title_quickTutorial">ME3Tweaks Mod Manager Tutorial</system:String>
+    <system:String x:Key="string_reloadTutorial">Reload tutorial</system:String>
 
     <!-- TLK Transpiler -->
     <system:String x:Key="string_interp_exceptionOccuredWhileCompilingTLKSubfileTankmaster">Exception occurred while compiling TLK subfile {0}: {1}</system:String>
@@ -2105,7 +2156,11 @@
     <!-- This is moddesc feature. This is tab header for the [GAME1_EMBEDDED_TLK] editor -->
     <system:String x:Key="string_mde_dec_header_game1TlkMerge">The GAME1_EMBEDDED_TLK header allows you to opt into TLK merging for the first Mass Effect game. By doing this, you can update strings in packages without having to ship package files. See the moddesc documentation on how to use this feature.</system:String>
     <system:String x:Key="string_usesFeature">Uses feature</system:String>
-
+    <system:String x:Key="string_mde_deleteAlternateNamed">Delete the alternate named '{0}'?</system:String>
+    <!-- 0={Alternate Friendly Name} -->
+    <system:String x:Key="string_tooltip_removeAlternate">Remove alternate</system:String>
+    <system:String x:Key="string_tooltip_moveAlternateUp">Move alternate up</system:String>
+    <system:String x:Key="string_tooltip_moveAlternateDown">Move alternate down</system:String>
 
 
     <!-- Nexus File Search -->
@@ -2120,6 +2175,9 @@
     <!-- 0={Number of results in a search. Adjust this string as necessary to fit your language's pluralization methods.} -->
     <system:String x:Key="string_tooltip_downloadThisMod">Download this mod</system:String>
     <system:String x:Key="string_tooltip_premiumRequiredForDownload">You must be a NexusMods Premium user to download directly within Mod Manager</system:String>
+    <system:String x:Key="string_tooltip_nexusfilesqueryAllLE">Due to how NexusMods stores files, it is not possible to accurately detect which game a mod file is for.&#10;Use this option to search all LE files.</system:String>
+    <system:String x:Key="string_allLE">All LE</system:String>
+    <system:String x:Key="string_searchRequiresAtLeastOneCategory">Search requires at least one category</system:String>
 
     <!-- Mod-NexusModsIntegration -->
     <system:String x:Key="string_dialog_cannotEndorseNonDownloadedMod">You cannot endorse a mod that you have not downloaded from NexusMods.</system:String> 
@@ -2199,6 +2257,9 @@
     <system:String x:Key="string_logging">Logging</system:String>
     <system:String x:Key="string_description_logging">Logging may reduce application performance, but is useful for troubleshooting.</system:String>
     <system:String x:Key="string_applicationTheme">Application theme</system:String>
+    <system:String x:Key="string_doubleClickModInLibraryToInstall">Double click mod in library to install</system:String>
+    <system:String x:Key="string_description_doubleClickModInLibraryToInstall">When double clicking a mod in the mod library list, perform the same action as pressing 'Apply Mod'. If the correct game is not currently the installation target, the current active one will be used. For mods that don't have options this will immediately trigger an installation.</system:String>
+
 
     <!-- Check Box Combo Box Control -->
     <system:String x:Key="string_noItemsSelected">No items selected</system:String>
@@ -2235,10 +2296,17 @@
     <system:String x:Key="string_application">Application</system:String>
     <system:String x:Key="string_arguments">Arguments</system:String>
     <system:String x:Key="string_domains">Domains</system:String>
+    <system:String x:Key="string_dialog_setM3AsNXMHandler">ME3Tweaks Mod Manager has been set to handle nxm:// links from NexusMods. You can forward 'Download with Manager' requests for other games to other applications if you wish to use mod managers for other games.</system:String>
+    <system:String x:Key="string_configuredNxmHandling">Configured nxm:// handling</system:String>
+    <system:String x:Key="string_cannotHaveMultipleEntriesThatUseWildcard">Cannot have multiple entries that use * wildcard</system:String>
 
-    <!-- Nexus Domain Handler -->
+
+<!-- Nexus Domain Handler -->
     <system:String x:Key="string_interp_handlerProgramDoesNotExist">Cannot invoke handler for {0} domain: specified application {1} does not exist</system:String>
     <!-- 0={game domain (like 'skyrim')} 1={ProgramPath} -->
 
+    <!-- CheckBoxDialog -->
+    <system:String x:Key="string_checkAll">Check all</system:String>
+    <!-- As in "Check all the checkboxes", similar to 'select all' -->
 
 </ResourceDictionary>

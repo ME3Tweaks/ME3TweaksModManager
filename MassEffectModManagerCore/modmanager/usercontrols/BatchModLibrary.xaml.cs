@@ -54,7 +54,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private void DeleteGroup()
         {
-            var result = M3L.ShowDialog(mainwindow, $"Delete the '{SelectedBatchQueue.QueueName}' install group?", "Confirm deletion", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            var result = M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_interp_deleteTheSelectedBatchQueue, SelectedBatchQueue.QueueName), M3L.GetString(M3L.string_confirmDeletion), MessageBoxButton.YesNo, MessageBoxImage.Warning);
             if (result == MessageBoxResult.Yes)
             {
                 File.Delete(Path.Combine(M3Filesystem.GetBatchInstallGroupsFolder(), SelectedBatchQueue.BackingFilename));

@@ -74,7 +74,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor.alternate
         {
             if (obj is AlternateOption option && DataContext is AlternateBuilderBaseControl baseControl)
             {
-                var deleteAlternate = M3L.ShowDialog(Window.GetWindow(this), $"Delete the alternate named '{option.FriendlyName}'?", "Confirm deletion", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No);
+                var deleteAlternate = M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_mde_deleteAlternateNamed, option.FriendlyName), M3L.GetString(M3L.string_confirmDeletion), MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No);
                 if (deleteAlternate == MessageBoxResult.Yes)
                 {
                     baseControl.Alternates.Remove(option);

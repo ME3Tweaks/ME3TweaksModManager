@@ -1,12 +1,11 @@
-﻿<Window
-    x:Class="ME3TweaksModManager.modmanager.windows.IntroTutorial" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:fa5="http://schemas.fontawesome.com/icons/"
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Window
+    x:Class="ME3TweaksModManager.modmanager.windows.IntroTutorial" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:fa5="http://schemas.fontawesome.com/icons/"
     mc:Ignorable="d"
     Title="{DynamicResource string_title_quickTutorial}"
     DataContext="{Binding RelativeSource={RelativeSource Self}}"
     SizeToContent="WidthAndHeight"
-    ResizeMode="NoResize"
-    >
+    ResizeMode="NoResize">
     <Window.Style>
         <Style
             TargetType="Window"
@@ -60,12 +59,13 @@
                 Command="{Binding SkipTutorialCommand}" />
             <Button
                 Margin="5,0"
-                Content="Reload tutorial"
+                Content="{DynamicResource string_reloadTutorial}"
                 HorizontalAlignment="Left"
                 Command="{Binding ReloadTutorialCommand}" />
         </DockPanel>
-        <Grid Width="786"
-              Height="623">
+        <Grid
+            Width="786"
+            Height="623">
             <Grid.Background>
                 <ImageBrush
                     ImageSource="{Binding CurrentStep.UIImagePath}" />

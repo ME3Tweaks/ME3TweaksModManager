@@ -46,11 +46,11 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
             if (item.ModToValidateAgainst.Game == MEGame.LE1)
             {
                 var installableFiles = item.ModToValidateAgainst.GetAllInstallableFiles();
-                var basegameTFCs = installableFiles.Where(x => x.Replace('/', '\\').TrimStart('\\').StartsWith(@"BioGame\CookedPCConsole\", StringComparison.InvariantCultureIgnoreCase) && x.EndsWith(".tfc")).ToList();
+                var basegameTFCs = installableFiles.Where(x => x.Replace('/', '\\').TrimStart('\\').StartsWith(@"BioGame\CookedPCConsole\", StringComparison.InvariantCultureIgnoreCase) && x.EndsWith(@".tfc")).ToList();
                 foreach (var basegameTFC in basegameTFCs)
                 {
                     M3Log.Error($@"Found basegame TFC being deployed for LE1: {basegameTFC}");
-                    item.AddBlockingError($"Cannot install TFC {Path.GetFileName(basegameTFC)} to /BIOGame/CookedPCConsole in LE1. Additional game TFCs must be added through a Custom DLC folder.");
+                    item.AddBlockingError(M3L.GetString(M3L.string_interp_cannotInstallTFCToBasegameLE1, Path.GetFileName(basegameTFC)));
                 }
             }
 
@@ -78,6 +78,8 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
 
                         if (package.Game > MEGame.ME1)
                         {
+                            // 05/29/2022 - Does this affect LE?
+
                             // CHECK NEVERSTREAM
                             // 1. Has more than six mips.
                             // 2. Has no external mips.

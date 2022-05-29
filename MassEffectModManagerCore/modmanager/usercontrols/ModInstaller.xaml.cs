@@ -777,7 +777,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     metaOutLines.Add($@"{MetaCMM.PrefixIncompatibleDLC}{string.Join(';', InstallOptionsPackage.ModBeingInstalled.IncompatibleDLC)}");
                 }
 
-                var alternates = InstallOptionsPackage.SelectedOptions.SelectMany(x=>x.Value).ToList();
+                var alternates = InstallOptionsPackage.SelectedOptions.SelectMany(x => x.Value).ToList();
                 if (alternates.Any())
                 {
                     // I hope this covers all cases. Mods targeting moddesc 6 or lower don't need friendlyname or description, but virtually all of them did
@@ -830,7 +830,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 try
                 {
                     Percent = (int)(doneMerges * 100.0 / totalMerges); // Make sure it's updated here so it gets to 0% on first install
-                    Action = $"Applying mergemods";
+                    Action = M3L.GetString(M3L.string_applyingMergemods);
 
                     mergeMod.ApplyMergeMod(InstallOptionsPackage.ModBeingInstalled, InstallOptionsPackage.InstallTarget, ref doneMerges, totalMerges,
                         mergeProgressUpdate);

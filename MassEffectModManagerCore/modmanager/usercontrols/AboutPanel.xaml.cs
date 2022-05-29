@@ -80,8 +80,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 new LibraryCredit(@"RecyclableMemoryStream", @"https://github.com/Microsoft/Microsoft.IO.RecyclableMemoryStream", M3L.GetString(M3L.string_library_recyclablememorystream)),
                 new LibraryCredit(@"SSH.NET", @"https://github.com/sshnet/SSH.NET", M3L.GetString(M3L.string_library_sshnet)),
                 new LibraryCredit(@"WatsonWebsocket", @"https://github.com/jchristn/WatsonWebsocket", M3L.GetString(M3L.string_library_watsonwebsocket)),
-                new LibraryCredit(@"SingleInstanceCore", @"https://github.com/soheilkd/SingleInstanceCore", "Enables single-instancing of an application"),
-                new LibraryCredit(@"RoboSharp*", @"https://github.com/tjscience/RoboSharp", "Wrapper for robycopy command in C#"),
+                new LibraryCredit(@"SingleInstanceCore", @"https://github.com/soheilkd/SingleInstanceCore", M3L.GetString(M3L.string_enablesSingleinstancingOfAnApplication)),
+                new LibraryCredit(@"RoboSharp*", @"https://github.com/tjscience/RoboSharp", M3L.GetString(M3L.string_wrapperForRobycopyCommandInCSharp)),
             };
 
 

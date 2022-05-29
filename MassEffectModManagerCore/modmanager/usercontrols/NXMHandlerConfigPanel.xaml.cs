@@ -52,7 +52,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         private void RegisterM3()
         {
             NexusModsUtilities.SetupNXMHandling();
-            M3L.ShowDialog(window, "Set ME3Tweaks Mod Manager to handle nxm:// links. You can forward these links to other applications by adding other applications.", "Configured nxm:// handling", MessageBoxButton.OK, MessageBoxImage.Information);
+            M3L.ShowDialog(window, M3L.GetString(M3L.string_dialog_setM3AsNXMHandler), M3L.GetString(M3L.string_configuredNxmHandling), MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private void RemoveApp(object obj)
@@ -125,7 +125,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     if (hasWildcard)
                     {
                         TriggerResize();
-                        d.ValidationMessage = "Cannot have multiple entries that use * wildcard";
+                        d.ValidationMessage = M3L.GetString(M3L.string_cannotHaveMultipleEntriesThatUseWildcard);
                         return false;
                     }
 

@@ -190,7 +190,7 @@ namespace ME3TweaksModManager.modmanager.squadmates
                         M3Log.Information($@"SQMMERGE: ConditionalIndex for {outfit.HenchName} appearanceid {outfit.AppearanceId}: {outfit.ConditionalIndex}");
                     }
 
-                    Debug.WriteLine("hi");
+                    //Debug.WriteLine("hi");
                 }
             }
 

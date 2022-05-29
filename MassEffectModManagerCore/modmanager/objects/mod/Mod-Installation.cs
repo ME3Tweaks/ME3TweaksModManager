@@ -571,11 +571,11 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                         {
                             if (v.FlattenMultilistOutput)
                             {
-                                list.Add($@"{MEDirectories.GetDLCPath(Game, @"")}\{v.DestinationDLCFolder}\{Path.GetFileName(mlFile)}");
+                                list.Add($@"{MEDirectories.GetDLCPath(Game, @"")}\{v.DestinationDLCFolder}\{Path.GetFileName(mlFile)}"); // do not localize
                             }
                             else
                             {
-                                list.Add($@"{MEDirectories.GetDLCPath(Game, @"")}\{v.DestinationDLCFolder}\{mlFile}");
+                                list.Add($@"{MEDirectories.GetDLCPath(Game, @"")}\{v.DestinationDLCFolder}\{mlFile}"); //do not localize
                             }
                         }
                     }

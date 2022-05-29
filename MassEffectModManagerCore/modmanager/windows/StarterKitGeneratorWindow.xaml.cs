@@ -276,7 +276,7 @@ namespace ME3TweaksModManager.modmanager.windows
                 // 02/02/2022 - Discovered that LE3 rejects DLC foldernames containing case sensitive 'MP'
                 if (Game == MEGame.LE3 && ModDLCFolderName.Contains(@"MP"))
                 {
-                    return RuleResult.Invalid("DLC mod foldername cannot contain case sensitive string 'MP' due to code in DLC loader for LE3");
+                    return RuleResult.Invalid(M3L.GetString(M3L.string_le3dlcFolderNamesMP));
                 }
 
                 return RuleResult.Valid();
@@ -540,7 +540,7 @@ namespace ME3TweaksModManager.modmanager.windows
                 var extension = skOption.ModGame == MEGame.ME1 ? @"upk" : @"pcc";
                 foreach (var lang in GameLanguage.GetLanguagesForGame(skOption.ModGame))
                 {
-                    var langExt = lang.FileCode == @"INT" ? "" : $@"_{lang.FileCode}";
+                    var langExt = lang.FileCode == @"INT" ? "" : $@"_{lang.FileCode}"; // do not localize
                     var tlkPath = $@"{tlkGlobalFile}{langExt}.{extension}";
                     M3Utilities.ExtractInternalFile($@"ME3TweaksModManager.modmanager.starterkit.BlankTlkFile.{extension}", tlkPath, true);
 

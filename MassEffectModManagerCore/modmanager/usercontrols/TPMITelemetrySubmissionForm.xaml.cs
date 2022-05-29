@@ -147,7 +147,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         // DO ON UI THREAD
 
                         // Message needs URL stripped.
-                        M3L.ShowDialog(null, $"Error submitting mod information: {e.Message}", "Error submitting",
+                        M3L.ShowDialog(null, M3L.GetString(M3L.string_interp_errorSubmittingModInformation, e.Message), M3L.GetString(M3L.string_errorSubmitting),
                             MessageBoxButton.OK, MessageBoxImage.Error);
                     }
 

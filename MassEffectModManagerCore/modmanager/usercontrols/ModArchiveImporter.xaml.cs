@@ -233,9 +233,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     // This archive is blacklisted
                     AddCompressedModCallback(new Mod(false)
                     {
-                        ModName = "Blacklisted mod",
-                        ModDeveloper = "N/A",
-                        LoadFailedReason = "The developers of ME3Tweaks Mod Manager have blacklisted this file for one of the following reasons:\n - The mod(s) in this file are known to not work and have been abandoned\n - The mod(s) in this file are destructive to the game for end users"
+                        ModName = M3L.GetString(M3L.string_blacklistedMod),
+                        ModDeveloper = M3L.GetString(M3L.string_NA),
+                        LoadFailedReason = M3L.GetString(M3L.string_description_blacklistedMod)
                     });
                     return;
                 }
@@ -255,7 +255,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
 
             //Embedded executables.
-            
+
 
 
             var knownModsOfThisSize = TPIService.GetImportingInfosBySize(archiveSize);

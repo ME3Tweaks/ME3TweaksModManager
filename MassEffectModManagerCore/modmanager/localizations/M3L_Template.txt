@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Text;
 using System.Windows;
-using Serilog;
+using ME3TweaksModManager.modmanager.diagnostics;
 using Microsoft.AppCenter.Crashes;
 
 namespace ME3TweaksModManager.modmanager.localizations
@@ -36,7 +35,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 			return ShowDialog(owner, message, "", MessageBoxButton.OK);
 		}
 
-        internal static MessageBoxResult ShowDialog(Window owner, string message, string caption, MessageBoxButton buttons, MessageBoxImage image, MessageBoxResult defaultResult)
+        internal static MessageBoxResult ShowDialog(Window owner, string message, string caption, MessageBoxButton buttons, MessageBoxImage image, MessageBoxResult defaultResult, string yesContent = null, string noContent = null, string okContent = null, string cancelContent = null)
         {
             var msgBox = new Xceed.Wpf.Toolkit.MessageBox();
             msgBox.InitializeMessageBox(owner, IntPtr.Zero, message, caption, buttons, image, defaultResult);

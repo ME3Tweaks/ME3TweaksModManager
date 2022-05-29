@@ -124,8 +124,8 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.online
             var useCachedContent = FirstContentCheck && !MOnlineContent.CanFetchContentThrottleCheck();
             FirstContentCheck = false; // Ensure this is false after the initial usage
 
-            var messageStart = useCachedContent ? "Loading ME3Tweaks services" :  "Refreshing ME3Tweaks services";
-            var messageEnd = useCachedContent ? "Loaded ME3Tweaks services" : "Refreshed ME3Tweaks services";
+            var messageStart = useCachedContent ? M3L.GetString(M3L.string_loadingME3TweaksServices) : M3L.GetString(M3L.string_refreshingME3TweaksServices);
+            var messageEnd = useCachedContent ? M3L.GetString(M3L.string_loadedME3TweaksServices) : M3L.GetString(M3L.string_refreshedME3TweaksServices);
 
             var bgTask = BackgroundTaskEngine.SubmitBackgroundJob(@"FetchCombinedServiceManifest", messageStart, messageEnd);
             var combinedServicesManifest = MCoreServiceLoader.LoadServices(CombinedServiceFetchURL, useCachedContent);

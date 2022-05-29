@@ -75,15 +75,15 @@
                 <CheckBox
                     ui:SharedUIBindings.GenerationLE="true"
                     DockPanel.Dock="Left"
-                    ToolTip="Due to how NexusMods stores files, it is not possible to accurately detect which game a mod file is for. Use this option to search all LE files."
-                    Content="All LE"
+                    ToolTip="{DynamicResource string_tooltip_nexusfilesqueryAllLE}"
+                    Content="{DynamicResource string_allLE}"
                     IsChecked="{Binding SearchLE}" 
                     Margin="0,0,5,0" />
                 <generic:CheckBoxComboBox
                     x:Name="CategoryOptionsCBL"
                     HorizontalAlignment="Right" 
                     DockPanel.Dock="Right"
-                    NoItemsSelectedText="Search requires at least one category"
+                    NoItemsSelectedText="{DynamicResource string_searchRequiresAtLeastOneCategory}"
                     ItemsSource="{Binding FileCategories, RelativeSource={RelativeSource FindAncestor, AncestorType=usercontrols:NexusFileQueryPanel}}"/>
             </DockPanel>
             <ComboBox

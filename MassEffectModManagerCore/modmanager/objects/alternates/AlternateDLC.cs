@@ -275,7 +275,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                             {
                                 M3Log.Error($@"Alternate DLC ({FriendlyName}) specifies 'FlattenMultiListOutput' descriptor, but the value is not 'true' or 'false': {multiListFlattentStr}");
                                 ValidAlternate = false;
-                                LoadFailedReason = $"Alternate DLC ({FriendlyName}) specifies 'FlattenMultiListOutput' descriptor, but the value is not 'true' or 'false': {multiListFlattentStr}";
+                                LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altdlc_flattentNotTrueOrFalse, FriendlyName, multiListFlattentStr);
                                 return;
                             }
                         }
@@ -380,7 +380,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                     if (modForValidating.ModDescTargetVersion >= 8.0 && modForValidating.Game.IsLEGame() && MEDirectories.OfficialDLC(modForValidating.Game).Contains(testreq.Key, StringComparer.InvariantCultureIgnoreCase))
                     {
                         M3Log.Error($@"Alternate DLC ({FriendlyName}) DLCRequirements specifies a DLC that ships in Legendary Edition. Legendary Edition mods targeting moddesc 8.0 and higher cannot set DLCRequirements on vanilla DLC, as Mod Manager does not support games that do not have the vanilla DLC. Unsupported value: {originalReq}");
-                        LoadFailedReason = $"Alternate DLC ({FriendlyName}) DLCRequirements specifies a DLC that ships in Legendary Edition. Legendary Edition mods targeting moddesc 8.0 and higher cannot set DLCRequirements on vanilla DLC, as Mod Manager does not support games that do not have the vanilla DLC. Unsupported value: {originalReq}";
+                        LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altdlc_dlcrequirementsHasOfficialLEDLC, FriendlyName, originalReq);
                         return;
                     }
 

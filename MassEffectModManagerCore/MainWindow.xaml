@@ -1,14 +1,5 @@
 ﻿<Window
-    x:Class="ME3TweaksModManager.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:fa5="http://schemas.fontawesome.com/icons/"
-    xmlns:packages="clr-namespace:LegendaryExplorerCore.Packages;assembly=LegendaryExplorerCore"
-    xmlns:loaders="clr-namespace:ME3TweaksModManager.modmanager.loaders"
-    xmlns:modmanager="clr-namespace:ME3TweaksModManager.modmanager"
-    xmlns:local="clr-namespace:ME3TweaksModManager"
-    xmlns:ui="clr-namespace:ME3TweaksModManager.ui"
-    xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
-    xmlns:objects="clr-namespace:ME3TweaksModManager.modmanager.objects"
-    xmlns:mod="clr-namespace:ME3TweaksModManager.modmanager.objects.mod"
+    x:Class="ME3TweaksModManager.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:fa5="http://schemas.fontawesome.com/icons/" xmlns:packages="clr-namespace:LegendaryExplorerCore.Packages;assembly=LegendaryExplorerCore" xmlns:loaders="clr-namespace:ME3TweaksModManager.modmanager.loaders" xmlns:modmanager="clr-namespace:ME3TweaksModManager.modmanager" xmlns:local="clr-namespace:ME3TweaksModManager" xmlns:ui="clr-namespace:ME3TweaksModManager.ui" xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols" xmlns:objects="clr-namespace:ME3TweaksModManager.modmanager.objects" xmlns:mod="clr-namespace:ME3TweaksModManager.modmanager.objects.mod"
     mc:Ignorable="d"
     Closing="ModManagerWindow_Closing"
     ContentRendered="ModManager_ContentRendered"
@@ -29,7 +20,10 @@
             BasedOn="{StaticResource {x:Type Window}}" />
     </Window.Style>
     <Window.InputBindings>
-        <KeyBinding Key="F" Modifiers="Control" Command="{Binding SearchModsCommand}"/>
+        <KeyBinding
+            Key="F"
+            Modifiers="Control"
+            Command="{Binding SearchModsCommand}" />
     </Window.InputBindings>
     <Window.Resources>
         <Storyboard
@@ -242,7 +236,8 @@
     <xctk:BusyIndicator
         IsBusy="{Binding IsBusy}"
         BusyContent="{Binding BusyContentM3}">
-        <DockPanel Name="RootDisplayObject">
+        <DockPanel
+            Name="RootDisplayObject">
             <Menu
                 DockPanel.Dock="Top">
                 <Menu.ItemsPanel>
@@ -273,15 +268,15 @@
                         Header="{DynamicResource string_OpenMemoryAnalyzer}"
                         IsEnabled="True"
                         Click="OpenMemoryAnalyzer_Click"
-                        Visibility="{x:Static local:App.DebugOnlyVisibility}" >
+                        Visibility="{x:Static local:App.DebugOnlyVisibility}">
                         <MenuItem.Icon>
                             <fa5:ImageAwesome
-                            Style="{StaticResource EnableDisableImageStyle}"
-                            Icon="Solid_Memory"
-                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
-                            Height="16"
-                            Width="16"
-                            RenderOptions.BitmapScalingMode="HighQuality" />
+                                Style="{StaticResource EnableDisableImageStyle}"
+                                Icon="Solid_Memory"
+                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                Height="16"
+                                Width="16"
+                                RenderOptions.BitmapScalingMode="HighQuality" />
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem
@@ -912,7 +907,7 @@
                             Header="{DynamicResource string_syncPlotManagerForMassEffect}"
                             Command="{Binding SyncPlotManagerCommand}"
                             CommandParameter="{x:Static packages:MEGame.ME1}"
-                            ToolTip="{DynamicResource string_tooltip_synchronizesThePlotManagerUpdatesLocatedInDLCModsWithTheBasePlotManagerFileWhichIsUsedForStoryProgressionTracking}">
+                            ToolTip="{DynamicResource string_tooltip_syncPlotManager}">
                             <MenuItem.Icon>
                                 <Image
                                     Source="{ui:MippedIcon Source={StaticResource me1gameiconpath}, Size=16}"
@@ -925,7 +920,7 @@
                             Header="{DynamicResource string_syncPlotManagerForMassEffect2}"
                             Command="{Binding SyncPlotManagerCommand}"
                             CommandParameter="{x:Static packages:MEGame.ME2}"
-                            ToolTip="{DynamicResource string_tooltip_synchronizesThePlotManagerUpdatesLocatedInDLCModsWithTheBasePlotManagerFileWhichIsUsedForStoryProgressionTracking}">
+                            ToolTip="{DynamicResource string_tooltip_syncPlotManager}">
                             <MenuItem.Icon>
                                 <Image
                                     Source="{ui:MippedIcon Source={StaticResource me2gameiconpath}, Size=16}"
@@ -938,8 +933,7 @@
                             Header="{DynamicResource string_syncPlotManagerForMassEffectLegendaryEdition}"
                             Command="{Binding SyncPlotManagerCommand}"
                             CommandParameter="{x:Static packages:MEGame.LE1}"
-                            ToolTip="Synchronizes the plot manager updates located in DLC mods with the base plot manager file, which is used for story progression tracking">
-
+                            ToolTip="{DynamicResource string_tooltip_syncPlotManager}">
                             <MenuItem.Icon>
                                 <Image
                                     Source="{ui:MippedIcon Source={StaticResource le1gameiconpath}, Size=16}"
@@ -952,7 +946,7 @@
                             Header="{DynamicResource string_syncPlotManagerForMassEffect2LegendaryEdition}"
                             Command="{Binding SyncPlotManagerCommand}"
                             CommandParameter="{x:Static packages:MEGame.LE2}"
-                            ToolTip="{DynamicResource string_tooltip_synchronizesThePlotManagerUpdatesLocatedInDLCModsWithTheBasePlotManagerFileWhichIsUsedForStoryProgressionTracking}">
+                            ToolTip="{DynamicResource string_tooltip_syncPlotManager}">
                             <MenuItem.Icon>
                                 <Image
                                     Source="{ui:MippedIcon Source={StaticResource le2gameiconpath}, Size=16}"
@@ -1035,7 +1029,8 @@
                                 RenderOptions.BitmapScalingMode="HighQuality" />
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="Configuration tools for specific mods">
+                    <MenuItem
+                        Header="{DynamicResource string_configurationToolsForSpecificMods}">
                         <MenuItem
                             ui:SharedUIBindings.GenerationOT="True"
                             Header="{DynamicResource string_egmSettings}"
@@ -1061,8 +1056,8 @@
                             </MenuItem.Icon>
                         </MenuItem>
                         <MenuItem
-                            Header="FemShep vs BroShep: Clone Configuration Utility"
-                            ToolTip="Allows you to configure the look of the clone in ME3/LE3"
+                            Header="{DynamicResource string_femShepVsBroShepCloneConfigurationUtility}"
+                            ToolTip="{DynamicResource string_tooltip_descriptionFemShepVsBroShepTool}"
                             Command="{Binding LaunchFVBCCUCommand}">
                             <MenuItem.Icon>
                                 <Image
@@ -1252,7 +1247,7 @@
                         Name="DebugSquadmateMerge_MenuItem"
                         Click="RouteDebugCall" />
                     <MenuItem
-                        Header="Test Email Merge"
+                        Header="{DynamicResource string_testEmailMerge}"
                         Name="DebugEmailMerge_MenuItem"
                         Click="RouteDebugCall" />
                     <MenuItem
@@ -1287,7 +1282,7 @@
                         Name="ShowBackupNag_MenuItem"
                         Click="RouteDebugCall" />
                     <MenuItem
-                        Header="Install Headmorph"
+                        Header="{DynamicResource string_installHeadmorph}"
                         Name="InstallHeadMorph_MenuItem"
                         Click="RouteDebugCall" />
                     <MenuItem
@@ -1343,9 +1338,9 @@
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem
-                        Header="Restore one-time tutorial messages"
+                        Header="{DynamicResource string_restoreOnetimeTutorialMessages}"
                         Click="RestoreOneTimeMessages"
-                        ToolTip="Restores messages that appear in the program that don't reappear once you dismiss them">
+                        ToolTip="{DynamicResource string_tooltip_restoreOnetimeTutorialMessages}">
                         <MenuItem.Icon>
                             <fa5:ImageAwesome
                                 Style="{StaticResource EnableDisableImageStyle}"
@@ -1616,8 +1611,13 @@
                         DockPanel.Dock="Top">
                         <DockPanel
                             DockPanel.Dock="Bottom">
-                            <ProgressBar DockPanel.Dock="Bottom" Height="3" Visibility="{Binding IsLoadingMods, Source={x:Static loaders:M3LoadedMods.Instance}, Converter={StaticResource BoolToVisibilityConverter}}"
-                                IsIndeterminate="{Binding IsFirstLoad, Source={x:Static loaders:M3LoadedMods.Instance}, Mode=OneWay}" Value="{Binding NumModsLoaded, Source={x:Static loaders:M3LoadedMods.Instance}, Mode=OneWay}" Maximum="{Binding NumTotalMods, Source={x:Static loaders:M3LoadedMods.Instance}, Mode=OneWay}"/>
+                            <ProgressBar
+                                DockPanel.Dock="Bottom"
+                                Height="3"
+                                Visibility="{Binding IsLoadingMods, Source={x:Static loaders:M3LoadedMods.Instance}, Converter={StaticResource BoolToVisibilityConverter}}"
+                                IsIndeterminate="{Binding IsFirstLoad, Source={x:Static loaders:M3LoadedMods.Instance}, Mode=OneWay}"
+                                Value="{Binding NumModsLoaded, Source={x:Static loaders:M3LoadedMods.Instance}, Mode=OneWay}"
+                                Maximum="{Binding NumTotalMods, Source={x:Static loaders:M3LoadedMods.Instance}, Mode=OneWay}" />
                             <ItemsControl
                                 IsEnabled="{Binding IsLoadingMods, Source={x:Static loaders:M3LoadedMods.Instance}, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}"
                                 ItemsSource="{Binding GameFilters, Source={x:Static loaders:M3LoadedMods.Instance}}">
@@ -1634,14 +1634,19 @@
                                             Style="{DynamicResource {x:Static adonisUi:Styles.DefaultToAccentToggleButton}}"
                                             IsChecked="{Binding IsEnabled}"
                                             Visibility="{Binding IsVisible, Converter={StaticResource BoolToVisibilityConverter}}"
-                                            Click="GameFilter_Click" >
+                                            Click="GameFilter_Click">
                                             <ToggleButton.Content>
                                                 <Grid>
                                                     <Grid.RowDefinitions>
-                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition
+                                                            Height="Auto" />
                                                     </Grid.RowDefinitions>
-                                                    <Border Background="{Binding BackgroundColor}" Height="2" VerticalAlignment="Bottom"/>
-                                                    <TextBlock Text="{Binding Game}"/>
+                                                    <Border
+                                                        Background="{Binding BackgroundColor}"
+                                                        Height="2"
+                                                        VerticalAlignment="Bottom" />
+                                                    <TextBlock
+                                                        Text="{Binding Game}" />
                                                 </Grid>
                                             </ToggleButton.Content>
                                         </ToggleButton>
@@ -1665,7 +1670,7 @@
                                     Foreground="{DynamicResource {x:Static adonisUi:Brushes.HyperlinkBrush}}" />
                             </Button>
                         </DockPanel>
-                        <ui:Clipper 
+                        <ui:Clipper
                             HorizontalAlignment="Left"
                             Constraint="Width"
                             DockPanel.Dock="Bottom">
@@ -1697,9 +1702,8 @@
                                     HorizontalAlignment="Left"
                                     TextAlignment="Left"
                                     TextWrapping="Wrap"
-                                    Text="This is the list of mods available to install. This is not the list of installed mods. To view installed mods, click 'Manage Target'."
-                                    Foreground="{DynamicResource {x:Static adonisUi:Brushes.HyperlinkBrush}}"/>
-
+                                    Text="{DynamicResource string_tutorialui_listOflibraryMods}"
+                                    Foreground="{DynamicResource {x:Static adonisUi:Brushes.HyperlinkBrush}}" />
                             </DockPanel>
                         </ui:Clipper>
                         <TextBlock
@@ -1708,7 +1712,7 @@
                             FontWeight="Bold"
                             VerticalAlignment="Center" />
                     </DockPanel>
-                    <ui:Clipper 
+                    <ui:Clipper
                         HorizontalAlignment="Center"
                         VerticalAlignment="Bottom"
                         Constraint="Width"
@@ -1719,25 +1723,28 @@
                             ui:Clipper.WidthFraction="1"
                             Name="FailedModsPopupPanel"
                             ToolTip="{DynamicResource string_tooltip_someModsFailed}">
-                          <Hyperlink
+              <Hyperlink
                                 RequestNavigate="FailedMods_LinkClick"
                                 NavigateUri="internal://trigger"
                                 Foreground="Red">
-                            <TextBlock
-                                Text="{Binding FailedModsString}" />
-                          </Hyperlink>
-                        </TextBlock>
+                <TextBlock
+                                    Text="{Binding FailedModsString}" />
+              </Hyperlink>
+            </TextBlock>
                     </ui:Clipper>
-                    <ui:Clipper 
+                    <ui:Clipper
                         HorizontalAlignment="Center"
                         VerticalAlignment="Bottom"
                         Constraint="Width"
                         DockPanel.Dock="Bottom">
-                        <DockPanel Name="ModListSearchBoxPanel"
-                                   ui:Clipper.WidthFraction="1"
-                                   ui:Clipper.HeightFraction="0"
-                                   VerticalAlignment="Bottom">
-                            <Button DockPanel.Dock="Right" Command="{Binding CloseModSearchBoxCommand}">
+                        <DockPanel
+                            Name="ModListSearchBoxPanel"
+                            ui:Clipper.WidthFraction="1"
+                            ui:Clipper.HeightFraction="0"
+                            VerticalAlignment="Bottom">
+                            <Button
+                                DockPanel.Dock="Right"
+                                Command="{Binding CloseModSearchBoxCommand}">
                                 <Button.Content>
                                     <fa5:ImageAwesome
                                         Icon="Solid_Times"
@@ -1746,7 +1753,9 @@
                                         Width="8" />
                                 </Button.Content>
                             </Button>
-                            <TextBox Name="ModSearchBox" Text="{Binding ModSearchText, Source={x:Static loaders:M3LoadedMods.Instance}, UpdateSourceTrigger=PropertyChanged}"/>
+                            <TextBox
+                                Name="ModSearchBox"
+                                Text="{Binding ModSearchText, Source={x:Static loaders:M3LoadedMods.Instance}, UpdateSourceTrigger=PropertyChanged}" />
                         </DockPanel>
                     </ui:Clipper>
                     <Grid>

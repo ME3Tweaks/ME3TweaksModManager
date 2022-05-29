@@ -271,7 +271,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                             {
                                 M3Log.Error($@"Alternate File ({FriendlyName}) specifies 'FlattenMultiListOutput' descriptor, but the value is not 'true' or 'false': {multiListFlattentStr}");
                                 ValidAlternate = false;
-                                LoadFailedReason = $"Alternate File ({FriendlyName}) specifies 'FlattenMultiListOutput' descriptor, but the value is not 'true' or 'false': {multiListFlattentStr}";
+                                LoadFailedReason = M3L.GetString(M3L.string_interp_validation_altfile_flattentNotTrueOrFalse, FriendlyName, multiListFlattentStr);
                                 return;
                             }
                         }
@@ -465,7 +465,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                     {
                         // BACKWARDS COMPATIBLILITY ONLY: ModDesc 4.5 used SubstituteFile but was removed from support in 5.0
                         // In 5.0 and above this became AltFile.
-                        properties.TryGetValue(@"SubstituteFile", out var substituteFile); 
+                        properties.TryGetValue(@"SubstituteFile", out var substituteFile);
 
                         if (Operation == AltFileOperation.OP_SUBSTITUTE && substituteFile != null)
                         {
@@ -578,3 +578,4 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         }
     }
 }
+    

@@ -328,12 +328,12 @@ namespace ME3TweaksModManager
             // TASK ENGINE
             Storyboard openLoadingSpinner = null, closeLoadingSpinner = null;
             BackgroundTaskEngine.InitializeTaskEngine(updateText =>
+            {
+                Application.Current?.Dispatcher.Invoke(() =>
                 {
-                    Application.Current?.Dispatcher.Invoke(() =>
-                    {
-                        CurrentOperationText = updateText;
-                    });
-                },
+                    CurrentOperationText = updateText;
+                });
+            },
                 () =>
                 {
                     Application.Current.Dispatcher.Invoke(delegate
@@ -1384,7 +1384,7 @@ namespace ME3TweaksModManager
 
             foreach (var v in result.TargetsToEmailMergeSync)
             {
-                ShowRunAndDone(() => ME2EmailMerge.RunGame2EmailMerge(targetMergeMapping[v]), "Synchronizing Emails", "Synchronized Emails");
+                ShowRunAndDone(() => ME2EmailMerge.RunGame2EmailMerge(targetMergeMapping[v]), M3L.GetString(M3L.string_synchronizingEmails), M3L.GetString(M3L.string_synchronizedEmails));
             }
 
             foreach (var v in result.TargetsToAutoTOC)
@@ -2826,61 +2826,61 @@ namespace ME3TweaksModManager
                 b.Result = 0; //all good
             };
             bw.RunWorkerCompleted += (a, b) =>
+            {
+                if (b.Error != null)
                 {
-                    if (b.Error != null)
+                    M3Log.Error(@"Exception occurred in NetworkFetch thread: " + b.Error.Message);
+                    M3Log.Error(b.Error.StackTrace);
+                }
+                else if (b.Result is int i)
+                {
+                    if (i != 0)
                     {
-                        M3Log.Error(@"Exception occurred in NetworkFetch thread: " + b.Error.Message);
-                        M3Log.Error(b.Error.StackTrace);
-                    }
-                    else if (b.Result is int i)
-                    {
-                        if (i != 0)
+                        switch (i)
                         {
-                            switch (i)
-                            {
-                                case STARTUP_FAIL_CRITICAL_FILES_MISSING:
-                                    var res = M3L.ShowDialog(this, M3L.GetString(M3L.string_dialogCriticalFilesMissing), M3L.GetString(M3L.string_requiredFilesNotDownloaded), MessageBoxButton.OK, MessageBoxImage.Error);
-                                    Environment.Exit(1);
-                                    break;
-                            }
-                        }
-                        else
-                        {
-                            ContentCheckInProgress = false;
+                            case STARTUP_FAIL_CRITICAL_FILES_MISSING:
+                                var res = M3L.ShowDialog(this, M3L.GetString(M3L.string_dialogCriticalFilesMissing), M3L.GetString(M3L.string_requiredFilesNotDownloaded), MessageBoxButton.OK, MessageBoxImage.Error);
+                                Environment.Exit(1);
+                                break;
                         }
                     }
-
-                    if (firstStartupCheck)
+                    else
                     {
-                        M3Utilities.WriteExeLocation();
-                        handleInitialPending();
+                        ContentCheckInProgress = false;
                     }
+                }
 
-                    if (Settings.GenerationSettingOT)
+                if (firstStartupCheck)
+                {
+                    M3Utilities.WriteExeLocation();
+                    handleInitialPending();
+                }
+
+                if (Settings.GenerationSettingOT)
+                {
+                    NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"BackupCheck");
+                    nbw.DoWork += (a, b) =>
                     {
-                        NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"BackupCheck");
-                        nbw.DoWork += (a, b) =>
+                        var me1CheckRequired = BackupService.GetGameBackupPath(MEGame.ME1) == null && BackupService.GetGameBackupPath(MEGame.ME1, false) != null;
+                        var me2CheckRequired = BackupService.GetGameBackupPath(MEGame.ME2) == null && BackupService.GetGameBackupPath(MEGame.ME2, false) != null;
+                        var me3CheckRequired = BackupService.GetGameBackupPath(MEGame.ME3) == null && BackupService.GetGameBackupPath(MEGame.ME3, false) != null;
+
+                        if (me1CheckRequired || me2CheckRequired || me3CheckRequired)
                         {
-                            var me1CheckRequired = BackupService.GetGameBackupPath(MEGame.ME1) == null && BackupService.GetGameBackupPath(MEGame.ME1, false) != null;
-                            var me2CheckRequired = BackupService.GetGameBackupPath(MEGame.ME2) == null && BackupService.GetGameBackupPath(MEGame.ME2, false) != null;
-                            var me3CheckRequired = BackupService.GetGameBackupPath(MEGame.ME3) == null && BackupService.GetGameBackupPath(MEGame.ME3, false) != null;
+                            var bgTask = BackgroundTaskEngine.SubmitBackgroundJob(@"BackupCheck", M3L.GetString(M3L.string_checkingBackups), M3L.GetString(M3L.string_finishedCheckingBackups));
+                            // TODO: NEEDS ACTIVITY SET!
+                            if (me1CheckRequired) VanillaDatabaseService.CheckAndTagBackup(MEGame.ME1);
+                            if (me2CheckRequired) VanillaDatabaseService.CheckAndTagBackup(MEGame.ME2);
+                            if (me3CheckRequired) VanillaDatabaseService.CheckAndTagBackup(MEGame.ME3);
 
-                            if (me1CheckRequired || me2CheckRequired || me3CheckRequired)
-                            {
-                                var bgTask = BackgroundTaskEngine.SubmitBackgroundJob(@"BackupCheck", M3L.GetString(M3L.string_checkingBackups), M3L.GetString(M3L.string_finishedCheckingBackups));
-                                // TODO: NEEDS ACTIVITY SET!
-                                if (me1CheckRequired) VanillaDatabaseService.CheckAndTagBackup(MEGame.ME1);
-                                if (me2CheckRequired) VanillaDatabaseService.CheckAndTagBackup(MEGame.ME2);
-                                if (me3CheckRequired) VanillaDatabaseService.CheckAndTagBackup(MEGame.ME3);
+                            BackgroundTaskEngine.SubmitJobCompletion(bgTask);
+                        }
+                    };
+                    nbw.RunWorkerAsync();
+                }
 
-                                BackgroundTaskEngine.SubmitJobCompletion(bgTask);
-                            }
-                        };
-                        nbw.RunWorkerAsync();
-                    }
-
-                    CommandManager.InvalidateRequerySuggested(); //refresh bindings that depend on this
-                };
+                CommandManager.InvalidateRequerySuggested(); //refresh bindings that depend on this
+            };
             ContentCheckInProgress = true;
             bw.RunWorkerAsync();
         }
@@ -2910,7 +2910,7 @@ namespace ME3TweaksModManager
                     if (t != null)
                     {
                         M3Log.Information($@"Installing Bink Bypass (command line request) for {CommandLinePending.PendingGame.Value}");
-                        var task = BackgroundTaskEngine.SubmitBackgroundJob("BinkInstallAutomated", "Installing Bink ASI loader", "Installed Bink ASI loader");
+                        var task = BackgroundTaskEngine.SubmitBackgroundJob(@"BinkInstallAutomated", M3L.GetString(M3L.string_installingBinkASILoader), M3L.GetString(M3L.string_installedBinkASILoader));
                         t.InstallBinkBypass();
                         BackgroundTaskEngine.SubmitJobCompletion(task); // This is just so there's some visual feedback to the user
                     }

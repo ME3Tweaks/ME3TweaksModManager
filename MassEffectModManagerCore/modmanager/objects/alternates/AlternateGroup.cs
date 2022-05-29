@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LegendaryExplorerCore.Misc;
+using ME3TweaksModManager.modmanager.localizations;
 using PropertyChanged;
 
 namespace ME3TweaksModManager.modmanager.objects.alternates
@@ -45,7 +46,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         /// </summary>
         public string GroupName { get; init; }
 
-        public string GroupNameTitleText => $"{GroupName} - {AlternateOptions.Count} options(s)";
+        public string GroupNameTitleText => M3L.GetString(M3L.string_interp_groupNameAlternateOptionsHeader, GroupName, AlternateOptions.Count);
         public bool IsMultiSelector => AlternateOptions.Count > 1;
 
         /// <summary>
