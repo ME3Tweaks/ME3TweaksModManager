@@ -241,14 +241,15 @@ namespace LocalizationHelper
 
         private void Synchronize_Clicked(object sender, RoutedEventArgs e)
         {
-            //get out of project in debug mod
+            //get out of project in debug mode
             var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName).FullName;
-            var localizationsFolder = Path.Combine(solutionroot, "MassEffectModManagerCore", "modmanager", "localizations");
-            var m3lFile = Path.Combine(localizationsFolder, "M3L.cs");
-            var m3lTemplateFile = Path.Combine(localizationsFolder, "M3L_Template.txt");
-            var intfile = Path.Combine(localizationsFolder, "int.xaml");
+            var localizationsFolder = LocalizingM3 ? Path.Combine(solutionroot, "MassEffectModManagerCore", "modmanager", "localizations") : Path.Combine(solutionroot, "submodules", "ME3TweaksCore", "ME3TweaksCore", "Localization");
+            var keyStringsCSFile = LocalizingM3 ? Path.Combine(localizationsFolder, "M3L.cs") : Path.Combine(localizationsFolder, "LocalizationStringKeys.cs");
+            var templateFile = LocalizingM3 ? Path.Combine(localizationsFolder, "M3L_Template.txt") : Path.Combine(localizationsFolder, "LC_Template.txt");
+            ;
+            var intfile = LocalizingM3 ? Path.Combine(localizationsFolder, "int.xaml") : Path.Combine(localizationsFolder, "Dictionaries", "int.xaml");
 
-            var m3llines = File.ReadAllLines(m3lTemplateFile).ToList();
+            var m3llines = File.ReadAllLines(templateFile).ToList();
 
             var doc = XDocument.Load(intfile);
             XNamespace xnamespace = "clr-namespace:System;assembly=System.Runtime";
@@ -266,47 +267,11 @@ namespace LocalizationHelper
             m3llines.Add("\t}");
             m3llines.Add("}");
 
-            File.WriteAllLines(m3lFile, m3llines); //write back updated file
+            File.WriteAllLines(keyStringsCSFile, m3llines); //write back updated file
 
             //return;
             //Update all of the other xaml files
             return; //skip other langauges as it's now handled by localizer tool
-            /*
-            var localizationMapping = Directory.GetFiles(localizationsFolder, "*.xaml").Where(y => Path.GetFileName(y) != "int.xaml").ToDictionary(y => y, y => File.ReadAllLines(y).ToList());
-            var intlines = File.ReadAllLines(intfile);
-            for (int i = 3; i < intlines.Length - 1; i++) //-1 to avoid resource dictionary line
-            {
-                var line = intlines[i];
-                if (!line.Trim().StartsWith("<system:String")) continue;
-                if (string.IsNullOrWhiteSpace(line)) continue;
-                if (line == "</ResourceDictionary>") continue; //EOF
-
-                (bool preserveWhitespace, string key) strInfo = extractInfo(line);
-                foreach (var l in localizationMapping)
-                {
-                    if (l.Value.Count > i)
-                    {
-                        var lline = l.Value[i];
-                        if (string.IsNullOrWhiteSpace(lline)) continue;
-                        if (lline == "</ResourceDictionary>") continue; //EOF
-                        if (!lline.Trim().StartsWith("<system:String"))
-                        {
-                            Debug.WriteLine("Desync in " + Path.GetFileName(l.Key) + " on line " + i + ": " + lline);
-                            continue;
-                        }
-                        var lstrInfo = extractInfo(lline);
-                        if (strInfo.preserveWhitespace != lstrInfo.preserveWhitespace)
-                        {
-                            Debug.WriteLine(lstrInfo.key + " " + Path.GetFileName(l.Key) + " whitespace is wrong for key " + lstrInfo.key);
-                        }
-                        if (strInfo.key != lstrInfo.key)
-                        {
-                            Debug.WriteLine(lstrInfo.key + " " + l.Key + " mismatches int key! should be " + strInfo.key);
-                        }
-
-                    }
-                }
-            }*/
 
         }
 
@@ -522,14 +487,14 @@ namespace LocalizationHelper
             }
 
             var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName).FullName;
-            var M3folder = Path.Combine(solutionroot, "MassEffectModManagerCore");
+            var rootFolder = LocalizingM3 ? Path.Combine(solutionroot, "MassEffectModManagerCore") : Path.Combine(solutionroot, "submodules", "ME3TweaksCore");
 
 
             var regex = "([$@]*(\".+?\"))";
             Regex r = new Regex(regex);
             StringBuilder sb = new StringBuilder();
 
-            var lines = File.ReadAllLines(Path.Combine(M3folder, SelectedFile));
+            var lines = File.ReadAllLines(Path.Combine(rootFolder, SelectedFile));
             foreach (var line in lines)
             {
                 var newline = line;
@@ -545,7 +510,7 @@ namespace LocalizationHelper
                     if (localizedMatch != null)
                     {
 
-                        var m3lcodestr = "M3L.GetString(M3L." + localizedMatch.Attribute(x + "Key").Value;
+                        var m3lcodestr = LocalizingM3 ? "M3L.GetString(M3L." + localizedMatch.Attribute(x + "Key").Value : "LC.GetString(LC." + localizedMatch.Attribute(x + "Key").Value;
 
                         int pos = 0;
                         int openbracepos = -1;

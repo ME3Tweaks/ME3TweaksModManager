@@ -1604,8 +1604,7 @@
     <system:String x:Key="string_wrapperForRobycopyCommandInCSharp">Wrapper for robycopy command in C#</system:String>
 
 
-<!-- ASI Manager Panel -->
-    <system:String x:Key="string_outdatedVersionInstalled">Outdated version installed</system:String>
+    <!-- ASI Manager Panel -->
     <system:String xml:space="preserve" x:Key="string_interp_byXVersionY">By {0} | Version {1}</system:String>
     <!-- 0 = author, 1 = version number -->
     <system:String x:Key="string_installedOutdated">Installed, outdated</system:String>
@@ -1614,13 +1613,9 @@
     <system:String x:Key="string_uninstallASI">Uninstall ASI</system:String>
     <system:String x:Key="string_notInstalled">Not installed</system:String>
     <system:String x:Key="string_installASI">Install ASI</system:String>
-    <system:String x:Key="string_unknownASIDescription">Unknown ASI mod. You should be careful with this ASI as it may contain malicious code.</system:String>
     <system:String x:Key="string_SSINotPresentInManifest">ASI not present in manifest</system:String>
     <system:String x:Key="string_selectAnASIToViewOptions">Select an ASI to view options</system:String>
     <system:String x:Key="string_noASISelected">No ASI selected</system:String>
-    <system:String x:Key="string_aSILoaderInstalledASIModsWillLoad">ASI loader installed. ASI mods will load</system:String>
-    <system:String x:Key="string_aSILoaderNotInstalledASIModsWillNotLoad">ASI loader not installed. ASI mods will not load</system:String>
-    <system:String x:Key="string_loaderInstalled">Loader installed</system:String>
     <system:String x:Key="string_installLoader">Install loader</system:String>
     <system:String x:Key="string_unknownASIMod">Unknown ASI mod</system:String>
     <system:String x:Key="string_ASIManager">ASI Manager</system:String>
