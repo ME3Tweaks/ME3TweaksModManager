@@ -35,5 +35,6 @@
         <Button Grid.Row="2" Grid.Column="5" Content="Check newline/spaces " Click="CheckXmlSpacePreserve_Clicked"/>
         <Button Margin="0,10,0,0" Grid.Row="3" Grid.Column="5" Content="Open Localization UI " Click="OpenLoalizationUI_Clicked"/>
         <Button Margin="0,10,0,0" Grid.Row="3" Grid.ColumnSpan="2" Grid.Column="0" Content="Perform diff on two int.xamls" Click="PerformINTDiff_Clicked"/>
+        <Button Margin="0,10,0,0" Grid.Row="3" Grid.ColumnSpan="2" Grid.Column="2" Content="Switch projects" Click="SwitchProjects_Clicked"/>
     </Grid>
 </Window>

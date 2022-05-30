@@ -18,54 +18,104 @@ using Path = System.IO.Path;
 namespace LocalizationHelper
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Localizer for ME3Tweaks Mod Manager
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
+        /// <summary>
+        /// If we are operating on M3 (true) or M3Core (false)
+        /// </summary>
+        private bool LocalizingM3 = true;
+
         public ObservableCollectionExtended<string> SourceFiles { get; } = new ObservableCollectionExtended<string>();
         public string SelectedFile { get; set; }
         public MainWindow()
         {
             DataContext = this;
-            var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName).FullName;
-            var modmanagerroot = Path.Combine(solutionroot, "MassEffectModManagerCore");
-            var rootLen = modmanagerroot.Length + 1;
-            //localizable folders
-            var usercontrols = Path.Combine(modmanagerroot, "modmanager", "usercontrols");
-            var windows = Path.Combine(modmanagerroot, "modmanager", "windows");
-            var me3tweaks = Path.Combine(modmanagerroot, "modmanager", "me3tweaks");
-            var nexus = Path.Combine(modmanagerroot, "modmanager", "nexusmodsintegration");
-            var objects = Path.Combine(modmanagerroot, "modmanager", "objects");
-            var gameini = Path.Combine(modmanagerroot, "modmanager", "gameini");
-            var helpers = Path.Combine(modmanagerroot, "modmanager", "helpers");
-            var pmu = Path.Combine(modmanagerroot, "modmanager", "plotmanager");
+            ReloadData();
+            InitializeComponent();
+        }
 
+        private void ReloadData()
+        {
             List<string> files = new List<string>();
-            files.AddRange(Directory.EnumerateFiles(usercontrols, "*.xaml*", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
-            files.AddRange(Directory.EnumerateFiles(windows, "*.xaml*", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
-            files.AddRange(Directory.EnumerateFiles(me3tweaks, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
-            files.AddRange(Directory.EnumerateFiles(nexus, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
-            files.AddRange(Directory.EnumerateFiles(objects, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
-            files.AddRange(Directory.EnumerateFiles(gameini, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
-            files.AddRange(Directory.EnumerateFiles(helpers, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
-            files.AddRange(Directory.EnumerateFiles(pmu, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
+            if (LocalizingM3)
+            {
+                // ME3Tweaks Mod Manager
+                var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName).FullName;
+                var modmanagerroot = Path.Combine(solutionroot, "MassEffectModManagerCore");
+                var rootLen = modmanagerroot.Length + 1;
+                //localizable folders
+                var usercontrols = Path.Combine(modmanagerroot, "modmanager", "usercontrols");
+                var windows = Path.Combine(modmanagerroot, "modmanager", "windows");
+                var me3tweaks = Path.Combine(modmanagerroot, "modmanager", "me3tweaks");
+                var nexus = Path.Combine(modmanagerroot, "modmanager", "nexusmodsintegration");
+                var objects = Path.Combine(modmanagerroot, "modmanager", "objects");
+                var gameini = Path.Combine(modmanagerroot, "modmanager", "gameini");
+                var helpers = Path.Combine(modmanagerroot, "modmanager", "helpers");
+                var pmu = Path.Combine(modmanagerroot, "modmanager", "plotmanager");
 
-            //these files are not localized
-            files.Remove(Path.Combine(modmanagerroot, "modmanager", "me3tweaks", "JPatch.cs").Substring(rootLen));
-            files.Remove(Path.Combine(modmanagerroot, "modmanager", "me3tweaks", "DynamicHelp.cs").Substring(rootLen));
-            files.Remove(Path.Combine(modmanagerroot, "modmanager", "usercontrols", "AboutPanel.xaml").Substring(rootLen));
-            // The .cs file is localized
+                files.AddRange(Directory.EnumerateFiles(usercontrols, "*.xaml*", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
+                files.AddRange(Directory.EnumerateFiles(windows, "*.xaml*", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
+                files.AddRange(Directory.EnumerateFiles(me3tweaks, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
+                files.AddRange(Directory.EnumerateFiles(nexus, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
+                files.AddRange(Directory.EnumerateFiles(objects, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
+                files.AddRange(Directory.EnumerateFiles(gameini, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
+                files.AddRange(Directory.EnumerateFiles(helpers, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
+                files.AddRange(Directory.EnumerateFiles(pmu, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
 
-            //Special files
-            files.Add("MainWindow.xaml");
-            files.Add("MainWindow.xaml.cs");
-            files.Add(Path.Combine(modmanagerroot, "modmanager", "TLKTranspiler.cs").Substring(rootLen));
-            files.Add(Path.Combine(modmanagerroot, "modmanager", "squadmates", "SQMOutfitMerge.cs").Substring(rootLen));
-            //files.Add(Path.Combine(modmanagerroot, "gamefileformats","unreal","Texture2D.cs").Substring(rootLen));
+                //these files are not localized
+                files.Remove(Path.Combine(modmanagerroot, "modmanager", "me3tweaks", "JPatch.cs").Substring(rootLen));
+                files.Remove(Path.Combine(modmanagerroot, "modmanager", "me3tweaks", "DynamicHelp.cs").Substring(rootLen));
+                files.Remove(Path.Combine(modmanagerroot, "modmanager", "usercontrols", "AboutPanel.xaml").Substring(rootLen));
+                // The .cs file is localized
+
+                //Special files
+                files.Add("MainWindow.xaml");
+                files.Add("MainWindow.xaml.cs");
+                files.Add(Path.Combine(modmanagerroot, "modmanager", "TLKTranspiler.cs").Substring(rootLen));
+                files.Add(Path.Combine(modmanagerroot, "modmanager", "squadmates", "SQMOutfitMerge.cs").Substring(rootLen));
+                //files.Add(Path.Combine(modmanagerroot, "gamefileformats","unreal","Texture2D.cs").Substring(rootLen));
+            }
+            else
+            {
+                // ME3Tweaks Core
+                // ME3Tweaks Mod Manager
+                var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName).FullName;
+                var coreRoot = Path.Combine(solutionroot, "submodules", "ME3TweaksCore");
+                var rootLen = coreRoot.Length + 1;
+
+                // ME3TweaksCore
+                var m3coreRoot = Path.Combine(coreRoot, "ME3TweaksCore");
+                var m3coreWpfRoot = Path.Combine(coreRoot, "ME3TweaksCoreWPF");
+
+
+                files.AddRange(Directory.EnumerateFiles(m3coreRoot, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
+                files.AddRange(Directory.EnumerateFiles(m3coreWpfRoot, "*.cs", SearchOption.AllDirectories).Select(x => x.Substring(rootLen)));
+
+                // Skip localizing these files
+                // Submodules (LEX, etc)
+                files = files.Except(Directory.EnumerateFiles(Path.Combine(m3coreRoot, "submodules"), "*", SearchOption.AllDirectories).Select(x => x.Substring(rootLen))).ToList();
+                // .NET generated stuff
+                files = files.Except(Directory.EnumerateFiles(Path.Combine(m3coreRoot, "obj"), "*", SearchOption.AllDirectories).Select(x => x.Substring(rootLen))).ToList();
+                files = files.Except(Directory.EnumerateFiles(Path.Combine(m3coreWpfRoot, "obj"), "*", SearchOption.AllDirectories).Select(x => x.Substring(rootLen))).ToList();
+
+                //these files are not localized
+                //files.Remove(Path.Combine(coreRoot, "modmanager", "me3tweaks", "JPatch.cs").Substring(rootLen));
+                //files.Remove(Path.Combine(coreRoot, "modmanager", "me3tweaks", "DynamicHelp.cs").Substring(rootLen));
+                //files.Remove(Path.Combine(coreRoot, "modmanager", "usercontrols", "AboutPanel.xaml").Substring(rootLen));
+                // The .cs file is localized
+
+                //Special files
+                //files.Add("MainWindow.xaml");
+                //files.Add("MainWindow.xaml.cs");
+                //files.Add(Path.Combine(coreRoot, "modmanager", "TLKTranspiler.cs").Substring(rootLen));
+                //files.Add(Path.Combine(coreRoot, "modmanager", "squadmates", "SQMOutfitMerge.cs").Substring(rootLen));
+                //files.Add(Path.Combine(modmanagerroot, "gamefileformats","unreal","Texture2D.cs").Substring(rootLen));
+            }
 
             files.Sort();
             SourceFiles.ReplaceAll(files);
-            InitializeComponent();
         }
 
         public bool SelectedCS { get; set; }
@@ -77,9 +127,10 @@ namespace LocalizationHelper
             SelectedXAML = false;
             if (SelectedFile == null) return;
             var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName).FullName;
-            var modmanagerroot = Path.Combine(solutionroot, "MassEffectModManagerCore");
 
-            var selectedFilePath = Path.Combine(modmanagerroot, SelectedFile);
+            var pathRoot = LocalizingM3 ? Path.Combine(solutionroot, "MassEffectModManagerCore") : Path.Combine(solutionroot, "submodules", "ME3TweaksCore");
+
+            var selectedFilePath = Path.Combine(pathRoot, SelectedFile);
             if (File.Exists(selectedFilePath))
             {
                 ResultTextBox.Text = "";
@@ -322,10 +373,10 @@ namespace LocalizationHelper
                             continue; //this is a comment
                         }
 
-                        
+
                         // Otherwise, this is something like http:// as the :// index is // index - 1
                     }
-                    
+
                     var str = match.ToString();
                     if (str.StartsWith("@") || str.StartsWith("$@")) continue; //skip literals
                     var strname = "string_";
@@ -587,7 +638,7 @@ namespace LocalizationHelper
                 var xmlS = Beautify(xmldoc);
 
                 if (xmlS.StartsWith("<?xml version=\"1.0\" encoding=\"utf-8\"?>"))
-                xmlS =    xmlS.Substring("<?xml version=\"1.0\" encoding=\"utf-8\"?>".Length);
+                    xmlS =    xmlS.Substring("<?xml version=\"1.0\" encoding=\"utf-8\"?>".Length);
                 xmlS = xmlS.Trim();
                 ResultTextBox.Text = xmlS;
             }
@@ -944,6 +995,12 @@ namespace LocalizationHelper
 
             Debug.WriteLine(result);
 
+        }
+
+        private void SwitchProjects_Clicked(object sender, RoutedEventArgs e)
+        {
+            LocalizingM3 = !LocalizingM3;
+            ReloadData();
         }
     }
 }
