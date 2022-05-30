@@ -259,7 +259,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
 
             SortOptions();
-            
+
             int numAttemptsRemaining = 15;
             try
             {
@@ -394,7 +394,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     }
                     catch (CircularDependencyException)
                     {
-                        MessageBox.Show("A circular dependency was detected. Please notify the developer of the options you attempted to select so they can fix this.", "Circular dependency", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show(M3L.GetString(M3L.string_circularDependencyDialogMessage), M3L.GetString(M3L.string_circularDependency), MessageBoxButton.OK, MessageBoxImage.Error);
                         InstallationCancelled = true;
                         OnClosing(DataEventArgs.Empty);
                     }

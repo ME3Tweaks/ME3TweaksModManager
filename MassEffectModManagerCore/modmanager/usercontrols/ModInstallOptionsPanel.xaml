@@ -1,27 +1,22 @@
-﻿<local:MMBusyPanelBase x:Class="ME3TweaksModManager.modmanager.usercontrols.ModInstallOptionsPanel"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:ME3TweaksModManager.modmanager.usercontrols" 
-             DataContext="{Binding RelativeSource={RelativeSource Self}}"
-             xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI" 
-             xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
-             xmlns:alternates="clr-namespace:ME3TweaksModManager.modmanager.objects.alternates"
-             xmlns:fa5="http://schemas.fontawesome.com/icons/" 
-             xmlns:modinstaller="clr-namespace:ME3TweaksModManager.modmanager.usercontrols.modinstaller" 
-             xmlns:system="clr-namespace:System;assembly=System.Runtime"
-             xmlns:me3TweaksModManager="clr-namespace:ME3TweaksModManager"
-             MinHeight="400"
-             MaxWidth="900"
-             mc:Ignorable="d" >
-    <Grid  x:Name="OptionsPanel">
+﻿<local:MMBusyPanelBase
+    x:Class="ME3TweaksModManager.modmanager.usercontrols.ModInstallOptionsPanel" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
+    DataContext="{Binding RelativeSource={RelativeSource Self}}" xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:alternates="clr-namespace:ME3TweaksModManager.modmanager.objects.alternates" xmlns:fa5="http://schemas.fontawesome.com/icons/" xmlns:modinstaller="clr-namespace:ME3TweaksModManager.modmanager.usercontrols.modinstaller" xmlns:system="clr-namespace:System;assembly=System.Runtime" xmlns:me3TweaksModManager="clr-namespace:ME3TweaksModManager"
+    MinHeight="400"
+    MaxWidth="900"
+    mc:Ignorable="d">
+    <Grid
+        x:Name="OptionsPanel">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition
+                Height="Auto" />
+            <RowDefinition
+                Height="Auto" />
+            <RowDefinition
+                Height="Auto" />
+            <RowDefinition
+                Height="*" />
+            <RowDefinition
+                Height="Auto" />
         </Grid.RowDefinitions>
         <Image
             MaxWidth="1160"
@@ -30,86 +25,87 @@
             Visibility="{Binding ModBeingInstalled.BannerBitmap, Converter= {StaticResource NullVisibilityConverter}}"
             RenderOptions.BitmapScalingMode="HighQuality" />
         <TextBlock
-                TextAlignment="Center"
-                FontSize="16"
-                FontWeight="Bold"
-                Text="{DynamicResource string_ui_title_selectInstallationOptions}"
-                Margin="0,5,0,0"
-                Grid.Row="1"/>
+            TextAlignment="Center"
+            FontSize="16"
+            FontWeight="Bold"
+            Text="{DynamicResource string_ui_title_selectInstallationOptions}"
+            Margin="0,5,0,0"
+            Grid.Row="1" />
         <TextBlock
-                TextAlignment="Center"
-                Text="{Binding ModBeingInstalled.ModName}"
-                Grid.Row="2"
-                Margin="0,0,0,10" />
+            TextAlignment="Center"
+            Text="{Binding ModBeingInstalled.ModName}"
+            Grid.Row="2"
+            Margin="0,0,0,10" />
         <ScrollViewer
-                Grid.Row="3"
-                BorderThickness="0"
-                Padding="0"
-                Focusable="False"
-                BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1BorderBrush}}">
+            Grid.Row="3"
+            BorderThickness="0"
+            Padding="0"
+            Focusable="False"
+            BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1BorderBrush}}">
             <ItemsControl
-                    ItemsSource="{Binding AlternateGroups}">
+                ItemsSource="{Binding AlternateGroups}">
                 <ItemsControl.Resources>
-                    <DataTemplate DataType="{x:Type alternates:AlternateGroup}">
-                        <modinstaller:AlternateOptionSelector/>
+                    <DataTemplate
+                        DataType="{x:Type alternates:AlternateGroup}">
+                        <modinstaller:AlternateOptionSelector />
                         <!-- DataContext is the AlternateGroup -->
                     </DataTemplate>
                 </ItemsControl.Resources>
             </ItemsControl>
         </ScrollViewer>
         <DockPanel
-                Grid.Row="4">
+            Grid.Row="4">
             <TextBlock
-                    Visibility="{Binding AllOptionsAreAutomatic, Converter={StaticResource BoolToVisibilityConverter}}"
-                    DockPanel.Dock="Top"
-                    TextWrapping="Wrap"
-                    HorizontalAlignment="Left"
-                    Text="{DynamicResource string_ui_allAlternatesAreAutomatic}" />
+                Visibility="{Binding AllOptionsAreAutomatic, Converter={StaticResource BoolToVisibilityConverter}}"
+                DockPanel.Dock="Top"
+                TextWrapping="Wrap"
+                HorizontalAlignment="Left"
+                Text="{DynamicResource string_ui_allAlternatesAreAutomatic}" />
             <TextBlock
-                    Text="{DynamicResource string_installTo}"
-                    FontWeight="Bold"
-                    DockPanel.Dock="Top" />
+                Text="{DynamicResource string_installTo}"
+                FontWeight="Bold"
+                DockPanel.Dock="Top" />
             <local:TargetSelector
-                    ShowTextureInfo="False"
-                    ToolTip="{DynamicResource string_tooltip_targetThatTheModWillBeInstalledTo}"
-                    DockPanel.Dock="Top"
-                    AvailableTargets="{Binding InstallationTargets}"
-                    SelectedGameTarget="{Binding SelectedGameTarget, Mode=TwoWay}"
-                    MinWidth="350" />
+                ShowTextureInfo="False"
+                ToolTip="{DynamicResource string_tooltip_targetThatTheModWillBeInstalledTo}"
+                DockPanel.Dock="Top"
+                AvailableTargets="{Binding InstallationTargets}"
+                SelectedGameTarget="{Binding SelectedGameTarget, Mode=TwoWay}"
+                MinWidth="350" />
             <Button
-                    Content="{DynamicResource string_install}"
-                    DockPanel.Dock="Right"
-                    Padding="40,4"
-                    Command="{Binding InstallCommand}"
-                    Margin="0,4,0,0"
-                    ToolTip="{DynamicResource string_installMod}" />
+                Content="{DynamicResource string_install}"
+                DockPanel.Dock="Right"
+                Padding="40,4"
+                Command="{Binding InstallCommand}"
+                Margin="0,4,0,0"
+                ToolTip="{DynamicResource string_installMod}" />
             <Button
-                    Content="{DynamicResource string_cancel}"
-                    DockPanel.Dock="Right"
-                    Padding="5,4"
-                    Margin="5,4,5,0"
-                    Click="InstallCancel_Click"
-                    ToolTip="{DynamicResource string_abortInstallingMod}" />
+                Content="{DynamicResource string_cancel}"
+                DockPanel.Dock="Right"
+                Padding="5,4"
+                Margin="5,4,5,0"
+                Click="InstallCancel_Click"
+                ToolTip="{DynamicResource string_abortInstallingMod}" />
             <Button
-                Content="Debug: Enumerate options"
+                Content="{DynamicResource string_debugEnumerateOptions}"
                 DockPanel.Dock="Right"
                 Padding="5,4"
                 Margin="5,4,5,0"
                 Click="DebugEnumerateOptions_Click"
-                Visibility="{x:Static me3TweaksModManager:App.DebugOnlyVisibility}"/>
+                Visibility="{x:Static me3TweaksModManager:App.DebugOnlyVisibility}" />
             <!-- Dirty hack so we don't have to extend GameToVisibilityConverter -->
             <CheckBox
-                    Content="{DynamicResource string_compressPackages}"
-                    Visibility="{Binding ModBeingInstalled.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='ME2'}"
-                    ToolTip="{DynamicResource string_tooltip_modinstaller_compressPackages}"
-                    IsChecked="{Binding CompressInstalledPackages}"
-                    Margin="0,4,0,0" />
+                Content="{DynamicResource string_compressPackages}"
+                Visibility="{Binding ModBeingInstalled.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='ME2'}"
+                ToolTip="{DynamicResource string_tooltip_modinstaller_compressPackages}"
+                IsChecked="{Binding CompressInstalledPackages}"
+                Margin="0,4,0,0" />
             <CheckBox
-                    Content="{DynamicResource string_compressPackages}"
-                    Visibility="{Binding ModBeingInstalled.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='ME3'}"
-                    ToolTip="{DynamicResource string_tooltip_modinstaller_compressPackages}"
-                    IsChecked="{Binding CompressInstalledPackages}"
-                    Margin="0,4,0,0" />
+                Content="{DynamicResource string_compressPackages}"
+                Visibility="{Binding ModBeingInstalled.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='ME3'}"
+                ToolTip="{DynamicResource string_tooltip_modinstaller_compressPackages}"
+                IsChecked="{Binding CompressInstalledPackages}"
+                Margin="0,4,0,0" />
         </DockPanel>
         <!-- End bottom stuff -->
     </Grid>

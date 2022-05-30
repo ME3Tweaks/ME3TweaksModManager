@@ -44,10 +44,10 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                     // This mod can install potentially a SquadmateOutfitMerge file. We must ensure all localizations are here.
                     check.DeploymentChecklistItems.Add(new DeploymentChecklistItem()
                     {
-                        ItemText = "Squadmate Outfit Merge",
+                        ItemText = M3L.GetString(M3L.string_deployment_squadmateOutfitMerge),
                         ModToValidateAgainst = check.ModBeingDeployed,
-                        DialogMessage = "The following issues were found in relation to the Squadmate Outfit Merge feature, which your mod appears to use due to inclusion of a SquadmateMergeInfo.sqm file.",
-                        DialogTitle = "Squadmate Outfit Merge issues",
+                        DialogMessage = M3L.GetString(M3L.string_deployment_sqmIssuesDialogMessage),
+                        DialogTitle = M3L.GetString(M3L.string_deployment_sqmIssuesDialogTitle),
                         ValidationFunction = CheckModForSquadmateOutfitMergeIssues
                     });
                 }
@@ -57,7 +57,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
         #region Squadmate Outfit Merge
         private static void CheckModForSquadmateOutfitMergeIssues(DeploymentChecklistItem item)
         {
-            item.ItemText = "Checking for Squadmate Outfit Merge issues";
+            item.ItemText = M3L.GetString(M3L.string_deployment_sqmIssuesCheckInProgress);
 
             // Validate files
             var installableFiles = item.ModToValidateAgainst.GetAllRelativeReferences();
@@ -79,13 +79,13 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
             //end setup
             if (!item.HasAnyMessages())
             {
-                item.ItemText = "No Squadmate Outfit Merge issues detected";
+                item.ItemText = M3L.GetString(M3L.string_deployment_sqmIssuesNoneFound);
                 item.ToolTip = M3L.GetString(M3L.string_validationOK);
             }
             else
             {
-                item.ItemText = "Detected Squadmate Outfit Merge issues";
-                item.ToolTip = "Deployment found issues with Squadmate Outfit Merge files";
+                item.ItemText = M3L.GetString(M3L.string_deployment_sqmIssuesFound);
+                item.ToolTip = M3L.GetString(M3L.string_deployment_sqmIssuesFoundTooltip);
             }
         }
 
@@ -105,7 +105,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                 var fullPath = installableFiles.FirstOrDefault(x => Path.GetFileNameWithoutExtension(x) == packageBase && Path.GetExtension(x) == @".pcc");
                 if (fullPath == null)
                 {
-                    item.AddBlockingError($"Squadmate outfit package '{packageBase}' does not appear to install along with the mod.");
+                    item.AddBlockingError(M3L.GetString(M3L.string_deployment_sqmIssueReferencedPackageNotFound, packageBase));
                 }
             }
 
@@ -121,7 +121,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                     var fullPath = installableFiles.FirstOrDefault(x => Path.GetFileNameWithoutExtension(x) == locName && Path.GetExtension(x) == @".pcc");
                     if (fullPath == null)
                     {
-                        item.AddBlockingError($"Localization '{loc}' is missing for hench package {packageBase}.");
+                        item.AddBlockingError(M3L.GetString(M3L.string_deployment_sqmIssueOutfitLocalizationMissing, loc, packageBase));
                     }
                 }
             }
@@ -163,7 +163,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                         found = true;
                         if (export.ClassName != @"Texture2D")
                         {
-                            item.AddBlockingError($"Invalid image value '{imageExportPath}': Export must be of type 'Texture2D', the referenced one is of type '{export.ClassName}'.");
+                            item.AddBlockingError(M3L.GetString(M3L.string_deployment_sqmIssueInvalidOutfitImageReferenceType, imageExportPath, export.ClassName));
                         }
 
                         break;
@@ -171,13 +171,13 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
 
                     if (!found)
                     {
-                        item.AddBlockingError($"Invalid image value '{imageExportPath}': No installable version of '{packageFile}' contains an export with instanced full path of '{imageExportPath}'.");
+                        item.AddBlockingError(M3L.GetString(M3L.string_deployment_sqmIssueCouldntFindOutfitImage, imageExportPath, packageFile, imageExportPath));
                     }
                 }
 
                 if (!foundDlcNamePackage)
                 {
-                    item.AddBlockingError($"Hench images package file not found. The package should be named SFXHenchImages_[DLC_MOD_YourModName].");
+                    item.AddBlockingError(M3L.GetString(M3L.string_deployment_sqmIssueHenchImagePackageNotFound));
                 }
             }
         }
@@ -198,7 +198,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                     case @"Ashley":
                         break;
                     default:
-                        item.AddBlockingError($"Unknown 'henchname': {henchOutfit.HenchName}. Values are case sensitive.");
+                        item.AddBlockingError(M3L.GetString(M3L.string_deployment_sqmIssueInvalidHenchId, henchOutfit.HenchName));
                         break;
                 }
             }
@@ -290,7 +290,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                 var basegameCookedPrefix = $@"BioGame/{item.ModToValidateAgainst.Game.CookedDirName()}/";
 
                 // Job files.
-                var cookedDirTargets = basegameJob.FilesToInstall.Keys.Where(x => x.Replace("\\", "/").TrimStart('/').StartsWith(basegameCookedPrefix, StringComparison.InvariantCultureIgnoreCase) && x.RepresentsPackageFilePath()).Select(x => Path.GetFileNameWithoutExtension(x)).ToList();
+                var cookedDirTargets = basegameJob.FilesToInstall.Keys.Where(x => x.Replace("\\", "/").TrimStart('/').StartsWith(basegameCookedPrefix, StringComparison.InvariantCultureIgnoreCase) && x.RepresentsPackageFilePath()).Select(x => Path.GetFileNameWithoutExtension(x)).ToList(); // do not localize
 
                 // Find alternates that may target this directory.
                 var alts = basegameJob.AlternateFiles.Where(
@@ -306,7 +306,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                     {
                         case AlternateFile.AltFileOperation.OP_SUBSTITUTE:
                         case AlternateFile.AltFileOperation.OP_INSTALL:
-                            var testPath = alt.ModFile.Replace("\\", "/").TrimStart('/');
+                            var testPath = alt.ModFile.Replace("\\", "/").TrimStart('/'); // do not localize
                             if (testPath.StartsWith(basegameCookedPrefix, StringComparison.InvariantCultureIgnoreCase) && testPath.RepresentsPackageFilePath())
                             {
                                 cookedDirTargets.Add(Path.GetFileNameWithoutExtension(alt.ModFile));
@@ -344,7 +344,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                 {
                     if (cookedDirTargets.Contains(mt, StringComparer.InvariantCultureIgnoreCase))
                     {
-                        item.AddSignificantIssue($"Mod potentially installs file targetable by mergemods: {mt}. Consider changing this mod to use mergemods for this file to be more compatible with other mods.");
+                        item.AddSignificantIssue(M3L.GetString(M3L.string_deployment_basegameFullFileWarning, mt));
                     }
                 }
             }
@@ -360,7 +360,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
             {
                 var ext = Path.GetExtension(file);
 
-                item.AddSignificantIssue($"{ext} file may be installed with the mod: {file}. This file should be removed as the game will never use it. If you wish to include extra files such as this, use 'additionaldeploymentfolders' from the [UPDATES] header.");
+                item.AddSignificantIssue(M3L.GetString(M3L.string_deployment_unusedExtraFileTypeFound, ext, file));
             }
             #endregion
 
@@ -368,7 +368,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
 
             if (item.ModToValidateAgainst.NexusModID > 0 && !item.ModToValidateAgainst.IsME3TweaksUpdatable && !NexusUpdaterService.IsModWhitelisted(item.ModToValidateAgainst))
             {
-                item.AddInfoWarning($"{item.ModToValidateAgainst.ModName} ({item.ModToValidateAgainst.Game}) is not enrolled into the NexusMods Updater Service whitelist. In order for this mod to check for updates, it must be enrolled in the updater service (due to design of NexusMods API). You can enroll this mod on the ME3Tweaks Discord, in the #nexusupdate-rules channel.");
+                item.AddInfoWarning(M3L.GetString(M3L.string_deployment_nexusUpdaterServiceInfo, item.ModToValidateAgainst.ModName, item.ModToValidateAgainst.Game));
             }
             #endregion
 

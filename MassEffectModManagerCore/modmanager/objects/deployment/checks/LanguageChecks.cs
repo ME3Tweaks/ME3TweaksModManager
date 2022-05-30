@@ -198,13 +198,13 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
             {
                 if (item.CheckDone) return;
                 // Open and inspect TLK package.
-                var langExt = language.FileCode == @"INT" ? "" : $@"_{language.FileCode}";
+                var langExt = language.FileCode == @"INT" ? "" : $@"_{language.FileCode}"; // do not localize
                 var tlkFilename = tlkPackageBaseName + langExt + tlkExtension;
                 var tlkPackagePath = tlkPackages.FirstOrDefault(x => Path.GetFileName(x) == tlkFilename);
 
                 if (tlkPackagePath == null)
                 {
-                    item.AddSignificantIssue($"Localized TLK package {tlkFilename} was not found. Users who play the game with their language/voiceover set to {language.FileCode} ({language.HumanDescription}) will have blank strings from this mod. See the Mod Manager documentation for more information.");
+                    item.AddSignificantIssue(M3L.GetString(M3L.string_deployment_tlkIssueLangPackageNotFound, tlkFilename, language.FileCode, language.HumanDescription));
                 }
                 else
                 {
@@ -216,7 +216,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                     }
                     else if (tfExports.Count == 1)
                     {
-                        item.AddBlockingError($"TLK package {tlkFilename} only has 1 BioTalkFile export, it should have 2: one for male, one for female.");
+                        item.AddBlockingError(M3L.GetString(M3L.string_deployment_tlkIssueLangPackageWrongNumTLKExports, tlkFilename));
                     }
                     else
                     {
@@ -225,7 +225,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
 
                         if (maleTLK.StringRefs.Count != femaleTLK.StringRefs.Count)
                         {
-                            item.AddSignificantIssue($"TLK package {tlkFilename} has different numbers of strings in the male/female TLK exports. The count should be identical.");
+                            item.AddSignificantIssue(M3L.GetString(M3L.string_deployment_tlkIssueLangPackageMismatchedMaleFemaleCount, tlkFilename));
                         }
 
 

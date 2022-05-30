@@ -768,6 +768,44 @@
     <system:String x:Key="string_interp_cannotInstallTFCToBasegameLE1">Cannot install TFC {0} to /BIOGame/CookedPCConsole in LE1. Additional game TFCs must be added through a Custom DLC folder.</system:String>
     <!-- 0={Filepath} -->
 
+    <!-- Misc checks -->
+    <system:String x:Key="string_deployment_squadmateOutfitMerge">Squadmate Outfit Merge</system:String>
+    <system:String x:Key="string_deployment_sqmIssuesDialogMessage">The following issues were found in relation to the Squadmate Outfit Merge feature, which your mod appears to use due to inclusion of a SquadmateMergeInfo.sqm file.</system:String>
+    <system:String x:Key="string_deployment_sqmIssuesDialogTitle">Squadmate Outfit Merge issues</system:String>
+    <system:String x:Key="string_deployment_sqmIssuesCheckInProgress">Checking for Squadmate Outfit Merge issues</system:String>
+    <system:String x:Key="string_deployment_sqmIssuesNoneFound">No Squadmate Outfit Merge issues detected</system:String>
+    <system:String x:Key="string_deployment_sqmIssuesFound">Detected Squadmate Outfit Merge issues</system:String>
+    <system:String x:Key="string_deployment_sqmIssuesFoundTooltip">Deployment found issues with Squadmate Outfit Merge files</system:String>
+    <system:String x:Key="string_deployment_sqmIssueReferencedPackageNotFound">Squadmate outfit package '{0}' does not appear to install along with the mod.</system:String>
+    <!-- 0={Filepath} -->
+    <system:String x:Key="string_deployment_sqmIssueOutfitLocalizationMissing">Localization '{0}' is missing for hench package {1}.</system:String>
+    <!-- 0={Localization such as INT/POL/DEU etc} 1={Package filename} -->
+    <system:String x:Key="string_deployment_sqmIssueInvalidOutfitImageReferenceType">Invalid image value '{0}': Export must be of type 'Texture2D', the referenced one is of type '{1}'.</system:String>
+    <!-- 0={instanced path in the package file} 1={classtype of found export (e.g. 'Class', 'Package', 'Material'} -->
+    <system:String x:Key="string_deployment_sqmIssueCouldntFindOutfitImage">Invalid image value '{0}': No installable version of '{1}' contains an export with instanced full path of '{0}'.</system:String>
+    <!-- 0={full instanced export path} 1={filename of package (no extension)} 2={instanced path in the package file} -->
+    <system:String x:Key="string_deployment_sqmIssueHenchImagePackageNotFound">Hench images package file not found. The package should be named SFXHenchImages_[DLC_MOD_YourModName].</system:String>
+    <system:String x:Key="string_deployment_sqmIssueInvalidHenchId">Unknown 'henchname': {0}. Values are case sensitive.</system:String>
+    <!-- 0={Henchman ID such as jimmy, prothean, liara} -->
+    <system:String x:Key="string_deployment_basegameFullFileWarning">Mod potentially installs file targetable by mergemods: {0}. Consider changing this mod to use mergemods for this file to be more compatible with other mods.</system:String>
+    <!-- 0={mt} -->
+    <system:String x:Key="string_deployment_unusedExtraFileTypeFound">{0} file may be installed with the mod: {1}. This file should be removed as the game will never use it. If you wish to include extra files such as this, use 'additionaldeploymentfolders' from the [UPDATES] header.</system:String>
+    <!-- 0={ext} 1={file} -->
+    <system:String x:Key="string_deployment_nexusUpdaterServiceInfo">{0} ({1}) is not enrolled into the NexusMods Updater Service whitelist. In order for this mod to check for updates, it must be enrolled in the updater service (due to design of NexusMods API). You can enroll this mod on the ME3Tweaks Discord, in the #nexusupdate-rules channel.</system:String>
+    <!-- 0={Mod name} 1={game (ME1/ME2... etc)} -->
+
+    <!-- Language checks -->
+    <system:String x:Key="string_deployment_tlkIssueLangPackageNotFound">Localized TLK package {0} was not found. Users who play the game with their language/voiceover set to {1} ({2}) will have blank strings from this mod. See the Mod Manager documentation for more information.</system:String>
+    <!-- 0={TLK package filename} 1={language.FileCode} 2={language.HumanDescription} -->
+    <system:String x:Key="string_deployment_tlkIssueLangPackageWrongNumTLKExports">TLK package {0} only has 1 BioTalkFile export, it should have 2: one for male, one for female.</system:String>
+    <!-- 0={TLK package filename} -->
+    <system:String x:Key="string_deployment_tlkIssueLangPackageMismatchedMaleFemaleCount">TLK package {0} has different numbers of strings in the male/female TLK exports. The count should be identical.</system:String>
+    <!-- 0={TLK package filename} -->
+
+    <!-- Package checks -->
+    <system:String x:Key="string_deployment_mergemodPackageCheckingReferences">Checking references in mergemods [{0}/{1}]</system:String>
+    <!-- 0={Number} 1={Number} -->
+
     <!-- Backup Creator-->
     <system:String x:Key="string_backupsAreShared">Backups are shared across various modding tools including Mass Effect Randomizer, ALOT Installer, and Legendary Explorer.</system:String>
     <system:String x:Key="string_backupsMustBeCreatedFresh">Backups must be created from a fresh, unmodified copy of the game. Modified backups are not supported.</system:String>
@@ -1170,6 +1208,11 @@
     <system:String x:Key="string_manuallyEnterAPIKey">Manually enter API key</system:String>
     <system:String x:Key="string_yourAPIKeyWillAppearHere">Your API key will appear here</system:String>
     <system:String x:Key="string_configureDownloadWithManager">Configure 'Download with Manager'</system:String>
+    
+    <!-- Mod install options -->
+    <system:String x:Key="string_debugEnumerateOptions">Debug: Enumerate options</system:String>
+    <system:String x:Key="string_circularDependencyDialogMessage">A circular dependency was detected. Please notify the developer of the options you attempted to select so they can fix this.</system:String>
+    <system:String x:Key="string_circularDependency">Circular dependency</system:String>
 
     <!-- Alternates Global -->
     <system:String x:Key="string_validation_alt_imageAssetArchiveError">Alternate {0} lists image asset {1}, but the asset could not be read from the archive. The log will contain additional information.</system:String>
@@ -1339,6 +1382,11 @@
     <!-- 0=group. Shown if more than one item in group has CheckedByDefault. ALT DLC OPTION-->
     <system:String x:Key="string_interp_validation_modjob_cannotContainDotDot">Relative path {0} cannot contain '..' in it</system:String>
     <!-- 0={Relative path value} -->
+    <system:String x:Key="string_interp_validation_modjob_duplicateOptionKeys">There are alternates with duplicate OptionKey values. This is due to them either having a duplicate OptionKey values set on them, or different options have the same FriendlyName value. The following values have duplicates: {0}</system:String>
+    <!-- 0={string.Join(',', duplicates)} -->
+    <!-- The follow items are only for letting this localizer replace the correct strings! Remove them when done and make sure keys are identical to the stripped versions-->
+    <system:String x:Key="string_interp_validation_modjob_duplicateOptionKeys">There are alternates with duplicate OptionKey values. This is due to them either having a duplicate OptionKey values set on them, or different options have the same FriendlyName value. The following values have duplicates: {string.Join(',', duplicates)}</system:String>
+
 
     <!-- ReadOnlyOption (Mod Installer) -->
     <system:String x:Key="string_descriptionSetConfigFilesReadOnly">Sets the configuration files this mod installs to read-only to prevent Mass Effect from resetting them. In-game options that modify these files will not persist across play sessions.</system:String>
@@ -2225,6 +2273,9 @@
     <system:String x:Key="string_downloadError">Download error</system:String>
     <system:String x:Key="string_interp_nexusModNotCompatible">{0} is not compatible with ME3Tweaks Mod Manager. If this is a texture mod, install it with ALOT Installer.</system:String>
     <!-- 0={Mod Name (on NexusMods)} -->
+    <system:String xml:space="preserve" x:Key="string_modBlacklistedMessage">The developers of ME3Tweaks Mod Manager have blacklisted this file for one of the following reasons:\n - The mod(s) in this file are known to not work and have been abandoned\n - The mod(s) in this file are destructive to the game for end users</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_notEnoughFreeSpaceForDownload">There is not enough free space on {0} to download {1}.\n\nRequired space: {2}\nFree space: {3}</system:String>
+    <!-- 0={Drive letter (C:\, D:\ etc)} 1={Mod downloaded filename} 2={Filesize (human readable)} 3={Free spaced (human readable)} -->
 
     <!-- Plot Manager Sync Panel -->
     <system:String x:Key="string_syncingPlotManager">Syncing Plot Manager</system:String>
@@ -2329,10 +2380,17 @@
     <system:String x:Key="string_configuredNxmHandling">Configured nxm:// handling</system:String>
     <system:String x:Key="string_cannotHaveMultipleEntriesThatUseWildcard">Cannot have multiple entries that use * wildcard</system:String>
 
-
-<!-- Nexus Domain Handler -->
-    <system:String x:Key="string_interp_handlerProgramDoesNotExist">Cannot invoke handler for {0} domain: specified application {1} does not exist</system:String>
+    <!-- Nexus Domain Handler -->
+    <system:String x:Key="string_nxm_interp_handlerProgramDoesNotExist">Cannot invoke handler for {0} domain: specified application {1} does not exist</system:String>
     <!-- 0={game domain (like 'skyrim')} 1={ProgramPath} -->
+    <system:String x:Key="string_nxm_applicationPathMustBeSpecified">Application path must be specified</system:String>
+    <system:String x:Key="string_nxm_interp_applicationDoesntExistProgramPath">Application doesn't exist: {0}</system:String>
+    <!-- 0={ProgramPath} -->
+    <system:String x:Key="string_nxm_interp_cannotSetME3TweaksModManagerexeAsAnExternalHandler">Cannot set ME3TweaksModManager.exe as an external handler</system:String>
+    <system:String x:Key="string_nxm_argumentsMustIncludePercent">Arguments must include %1 to pass through the link</system:String>
+    <system:String x:Key="string_nxm_domainsMustBeSpecified">Domains must be specified (separate domains with ,)</system:String>
+    <system:String x:Key="string_nxm_interp_alreadyHandledByM3">'{0}' domain is already handled by ME3Tweaks Mod Manager</system:String>
+    <!-- 0={domain} -->
 
     <!-- CheckBoxDialog -->
     <system:String x:Key="string_checkAll">Check all</system:String>

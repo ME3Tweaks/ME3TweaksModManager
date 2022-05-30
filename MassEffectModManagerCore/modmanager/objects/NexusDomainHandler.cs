@@ -65,7 +65,7 @@ namespace ME3TweaksModManager.modmanager.objects
                 else
                 {
                     M3Log.Error($@"Cannot invoke handler for {domain} domain: specified application {ProgramPath} does not exist");
-                    return M3L.GetString(M3L.string_interp_handlerProgramDoesNotExist, domain, ProgramPath);
+                    return M3L.GetString(M3L.string_nxm_interp_handlerProgramDoesNotExist, domain, ProgramPath);
                 }
             }
             catch (Exception e)
@@ -118,31 +118,31 @@ namespace ME3TweaksModManager.modmanager.objects
         {
             if (string.IsNullOrWhiteSpace(ProgramPath))
             {
-                ValidationMessage = "Application path must be specified";
+                ValidationMessage = M3L.GetString(M3L.string_nxm_applicationPathMustBeSpecified);
                 return false; // Can't be empty
             }
             if (!File.Exists(ProgramPath))
             {
-                ValidationMessage = $"Application doesn't exist: {ProgramPath}";
+                ValidationMessage = M3L.GetString(M3L.string_nxm_interp_applicationDoesntExistProgramPath, ProgramPath);
                 return false;
             }
 
             if (Path.GetFileName(ProgramPath).Equals(@"ME3TweaksModManager.exe", StringComparison.InvariantCultureIgnoreCase))
             {
-                ValidationMessage = $"Cannot set ME3TweaksModManager.exe as an external handler";
+                ValidationMessage = M3L.GetString(M3L.string_nxm_interp_cannotSetME3TweaksModManagerexeAsAnExternalHandler);
                 return false;
             }
 
 
             if (!Arguments.Contains(@"%1"))
             {
-                ValidationMessage = "Arguments must include %1 to pass through the link";
+                ValidationMessage = M3L.GetString(M3L.string_nxm_argumentsMustIncludePercent);
                 return false;
             }
 
             if (string.IsNullOrWhiteSpace(DomainsEditable))
             {
-                ValidationMessage = "Domains must be specified (separate domains with ,)";
+                ValidationMessage = M3L.GetString(M3L.string_nxm_domainsMustBeSpecified);
                 return false;
             }
 
@@ -151,7 +151,7 @@ namespace ME3TweaksModManager.modmanager.objects
             {
                 if (IsModManagerDomain(domain))
                 {
-                    ValidationMessage = $"'{domain}' domain is already handled by ME3Tweaks Mod Manager";
+                    ValidationMessage = M3L.GetString(M3L.string_nxm_interp_alreadyHandledByM3, domain);
                     return false;
                 }
             }

@@ -164,7 +164,7 @@ namespace ME3TweaksModManager.modmanager.objects
                         M3Log.Error($@"File is blacklisted by ME3Tweaks: {ProtocolLink?.Domain} file {ProtocolLink.FileId}");
                         Initialized = true;
                         ProgressIndeterminate = false;
-                        OnModDownloadError?.Invoke(this, "The developers of ME3Tweaks Mod Manager have blacklisted this file for one of the following reasons:\n - The mod(s) in this file are known to not work and have been abandoned\n - The mod(s) in this file are destructive to the game for end users");
+                        OnModDownloadError?.Invoke(this, M3L.GetString(M3L.string_modBlacklistedMessage));
                         return;
                     }
 
@@ -180,7 +180,7 @@ namespace ME3TweaksModManager.modmanager.objects
                                 M3Log.Error($@"There is not enough free space on {Path.GetPathRoot(M3Filesystem.GetModDownloadCacheDirectory())} to download {ModFile.FileName}. We need {FileSize.FormatSize(ModFile.SizeInBytes.Value)} but only {FileSize.FormatSize(totalFree)} is available.");
                                 Initialized = true;
                                 ProgressIndeterminate = false;
-                                OnModDownloadError?.Invoke(this, $"There is not enough free space on {Path.GetPathRoot(M3Filesystem.GetModDownloadCacheDirectory())} to download {ModFile.FileName}.\n\nRequired space: {FileSize.FormatSize(ModFile.SizeInBytes.Value)}\nFree space: {FileSize.FormatSize(totalFree)}");
+                                OnModDownloadError?.Invoke(this, M3L.GetString(M3L.string_interp_notEnoughFreeSpaceForDownload, Path.GetPathRoot(M3Filesystem.GetModDownloadCacheDirectory()), ModFile.FileName, FileSize.FormatSize(ModFile.SizeInBytes.Value), FileSize.FormatSize(totalFree)));
                                 return;
                             }
                         }

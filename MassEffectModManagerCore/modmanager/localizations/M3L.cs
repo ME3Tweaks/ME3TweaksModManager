@@ -705,6 +705,26 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_dialog_noModSiteDeployed = "string_dialog_noModSiteDeployed";
 		public const string string_tfc = "string_tfc";
 		public const string string_interp_cannotInstallTFCToBasegameLE1 = "string_interp_cannotInstallTFCToBasegameLE1";
+		public const string string_deployment_squadmateOutfitMerge = "string_deployment_squadmateOutfitMerge";
+		public const string string_deployment_sqmIssuesDialogMessage = "string_deployment_sqmIssuesDialogMessage";
+		public const string string_deployment_sqmIssuesDialogTitle = "string_deployment_sqmIssuesDialogTitle";
+		public const string string_deployment_sqmIssuesCheckInProgress = "string_deployment_sqmIssuesCheckInProgress";
+		public const string string_deployment_sqmIssuesNoneFound = "string_deployment_sqmIssuesNoneFound";
+		public const string string_deployment_sqmIssuesFound = "string_deployment_sqmIssuesFound";
+		public const string string_deployment_sqmIssuesFoundTooltip = "string_deployment_sqmIssuesFoundTooltip";
+		public const string string_deployment_sqmIssueReferencedPackageNotFound = "string_deployment_sqmIssueReferencedPackageNotFound";
+		public const string string_deployment_sqmIssueOutfitLocalizationMissing = "string_deployment_sqmIssueOutfitLocalizationMissing";
+		public const string string_deployment_sqmIssueInvalidOutfitImageReferenceType = "string_deployment_sqmIssueInvalidOutfitImageReferenceType";
+		public const string string_deployment_sqmIssueCouldntFindOutfitImage = "string_deployment_sqmIssueCouldntFindOutfitImage";
+		public const string string_deployment_sqmIssueHenchImagePackageNotFound = "string_deployment_sqmIssueHenchImagePackageNotFound";
+		public const string string_deployment_sqmIssueInvalidHenchId = "string_deployment_sqmIssueInvalidHenchId";
+		public const string string_deployment_basegameFullFileWarning = "string_deployment_basegameFullFileWarning";
+		public const string string_deployment_unusedExtraFileTypeFound = "string_deployment_unusedExtraFileTypeFound";
+		public const string string_deployment_nexusUpdaterServiceInfo = "string_deployment_nexusUpdaterServiceInfo";
+		public const string string_deployment_tlkIssueLangPackageNotFound = "string_deployment_tlkIssueLangPackageNotFound";
+		public const string string_deployment_tlkIssueLangPackageWrongNumTLKExports = "string_deployment_tlkIssueLangPackageWrongNumTLKExports";
+		public const string string_deployment_tlkIssueLangPackageMismatchedMaleFemaleCount = "string_deployment_tlkIssueLangPackageMismatchedMaleFemaleCount";
+		public const string string_deployment_mergemodPackageCheckingReferences = "string_deployment_mergemodPackageCheckingReferences";
 		public const string string_backupsAreShared = "string_backupsAreShared";
 		public const string string_backupsMustBeCreatedFresh = "string_backupsMustBeCreatedFresh";
 		public const string string_backUp = "string_backUp";
@@ -1024,6 +1044,9 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_manuallyEnterAPIKey = "string_manuallyEnterAPIKey";
 		public const string string_yourAPIKeyWillAppearHere = "string_yourAPIKeyWillAppearHere";
 		public const string string_configureDownloadWithManager = "string_configureDownloadWithManager";
+		public const string string_debugEnumerateOptions = "string_debugEnumerateOptions";
+		public const string string_circularDependencyDialogMessage = "string_circularDependencyDialogMessage";
+		public const string string_circularDependency = "string_circularDependency";
 		public const string string_validation_alt_imageAssetArchiveError = "string_validation_alt_imageAssetArchiveError";
 		public const string string_validation_alt_imageAssetNotFound = "string_validation_alt_imageAssetNotFound";
 		public const string string_validation_alt_imageAssetOutOfRangeHeight = "string_validation_alt_imageAssetOutOfRangeHeight";
@@ -1118,6 +1141,8 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_interp_validation_modjob_altdlc_optionGroupMustHaveAtLeastOneItemWithCheckedByDefault = "string_interp_validation_modjob_altdlc_optionGroupMustHaveAtLeastOneItemWithCheckedByDefault";
 		public const string string_interp_validation_modjob_altdlc_optionGroupMayOnlyHaveOneItemWithCheckedByDefault = "string_interp_validation_modjob_altdlc_optionGroupMayOnlyHaveOneItemWithCheckedByDefault";
 		public const string string_interp_validation_modjob_cannotContainDotDot = "string_interp_validation_modjob_cannotContainDotDot";
+		public const string string_interp_validation_modjob_duplicateOptionKeys = "string_interp_validation_modjob_duplicateOptionKeys";
+		public const string string_interp_validation_modjob_duplicateOptionKeys = "string_interp_validation_modjob_duplicateOptionKeys";
 		public const string string_descriptionSetConfigFilesReadOnly = "string_descriptionSetConfigFilesReadOnly";
 		public const string string_makeConfigFilesReadonly = "string_makeConfigFilesReadonly";
 		public const string string_interp_compressingX = "string_interp_compressingX";
@@ -1739,6 +1764,8 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_cancelDownload = "string_cancelDownload";
 		public const string string_downloadError = "string_downloadError";
 		public const string string_interp_nexusModNotCompatible = "string_interp_nexusModNotCompatible";
+		public const string string_modBlacklistedMessage = "string_modBlacklistedMessage";
+		public const string string_interp_notEnoughFreeSpaceForDownload = "string_interp_notEnoughFreeSpaceForDownload";
 		public const string string_syncingPlotManager = "string_syncingPlotManager";
 		public const string string_interp_plotManagerSyncForX = "string_interp_plotManagerSyncForX";
 		public const string string_interp_errorCompilingFunctionReason = "string_interp_errorCompilingFunctionReason";
@@ -1799,7 +1826,13 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_dialog_setM3AsNXMHandler = "string_dialog_setM3AsNXMHandler";
 		public const string string_configuredNxmHandling = "string_configuredNxmHandling";
 		public const string string_cannotHaveMultipleEntriesThatUseWildcard = "string_cannotHaveMultipleEntriesThatUseWildcard";
-		public const string string_interp_handlerProgramDoesNotExist = "string_interp_handlerProgramDoesNotExist";
+		public const string string_nxm_interp_handlerProgramDoesNotExist = "string_nxm_interp_handlerProgramDoesNotExist";
+		public const string string_nxm_applicationPathMustBeSpecified = "string_nxm_applicationPathMustBeSpecified";
+		public const string string_nxm_interp_applicationDoesntExistProgramPath = "string_nxm_interp_applicationDoesntExistProgramPath";
+		public const string string_nxm_interp_cannotSetME3TweaksModManagerexeAsAnExternalHandler = "string_nxm_interp_cannotSetME3TweaksModManagerexeAsAnExternalHandler";
+		public const string string_nxm_argumentsMustIncludePercent = "string_nxm_argumentsMustIncludePercent";
+		public const string string_nxm_domainsMustBeSpecified = "string_nxm_domainsMustBeSpecified";
+		public const string string_nxm_interp_alreadyHandledByM3 = "string_nxm_interp_alreadyHandledByM3";
 		public const string string_checkAll = "string_checkAll";
 	}
 }

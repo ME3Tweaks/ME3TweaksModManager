@@ -68,7 +68,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.editor
                 Value = value.ToString().ToLower();
             }
 
-            AllowedValues.ReplaceAll(new[] { "", "true", "false" });
+            AllowedValues.ReplaceAll(new[] { @"", @"true", @"false" }); // do not localize (some detection bug in localizer)
             UsesSetValuesList = true;
             UnsetValueItem = "";
         }

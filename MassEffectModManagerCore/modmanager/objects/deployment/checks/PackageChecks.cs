@@ -83,7 +83,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                             if (item.CheckDone) return;
                             // Mostly ported from ME3Explorer
                             var lnumChecked = Interlocked.Increment(ref numChecked);
-                            item.ItemText = $"Checking references in mergemods [{lnumChecked - 1}/{mergeMods.Count}]";
+                            item.ItemText = M3L.GetString(M3L.string_deployment_mergemodPackageCheckingReferences, lnumChecked - 1, mergeMods.Count);
 
                             var relativePath = $@"{Mod.MergeModFolderName}\{mergeMod.MergeModFilename}";
                             M3Log.Information($@"Checking package and name references in mergemod {relativePath}");
@@ -109,7 +109,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                                     foreach (var si in rcp.GetSignificantIssues().Concat(rcp.GetBlockingErrors()))
                                     {
                                         // Entry checker uses relative path. Our relative path is set to the m3m though.
-                                        item.AddBlockingError($"{assetInfo.Key}: {si.Message}", si.Entry);
+                                        item.AddBlockingError($@"{assetInfo.Key}: {si.Message}", si.Entry);
                                     }
                                 }
                             }

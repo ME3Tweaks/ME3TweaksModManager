@@ -461,7 +461,7 @@ namespace ME3TweaksModManager.modmanager.objects
         /// List of Alternate dlc objects for this header. This is only supported on the CUSTOMDLC header.
         /// </summary>
         public ObservableCollection<AlternateDLC> AlternateDLCs { get; } = new ObservableCollection<AlternateDLC>();
-        
+
         /// <summary>
         /// List of xml files in the Game1Tlk job directory. Ensure you check for null before accessing this variable.
         /// </summary>
@@ -578,7 +578,7 @@ namespace ME3TweaksModManager.modmanager.objects
                 if (modForValidating.ModDescTargetVersion >= 8.0)
                 {
                     M3Log.Error($@"There are alternates with duplicate OptionKey values. This is due to them either having a duplicate OptionKey values set on them, or different options have the same FriendlyName value. The following values have duplicates: {string.Join(',', duplicates)}");
-                    failureReason = $"There are alternates with duplicate OptionKey values. This is due to them either having a duplicate OptionKey values set on them, or different options have the same FriendlyName value. The following values have duplicates: {string.Join(',', duplicates)}";
+                    failureReason = M3L.GetString(M3L.string_interp_validation_modjob_duplicateOptionKeys, string.Join(',', duplicates));
                     return false;
                 }
                 else
