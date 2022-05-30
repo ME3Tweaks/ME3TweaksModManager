@@ -1384,9 +1384,6 @@
     <!-- 0={Relative path value} -->
     <system:String x:Key="string_interp_validation_modjob_duplicateOptionKeys">There are alternates with duplicate OptionKey values. This is due to them either having a duplicate OptionKey values set on them, or different options have the same FriendlyName value. The following values have duplicates: {0}</system:String>
     <!-- 0={string.Join(',', duplicates)} -->
-    <!-- The follow items are only for letting this localizer replace the correct strings! Remove them when done and make sure keys are identical to the stripped versions-->
-    <system:String x:Key="string_interp_validation_modjob_duplicateOptionKeys">There are alternates with duplicate OptionKey values. This is due to them either having a duplicate OptionKey values set on them, or different options have the same FriendlyName value. The following values have duplicates: {string.Join(',', duplicates)}</system:String>
-
 
     <!-- ReadOnlyOption (Mod Installer) -->
     <system:String x:Key="string_descriptionSetConfigFilesReadOnly">Sets the configuration files this mod installs to read-only to prevent Mass Effect from resetting them. In-game options that modify these files will not persist across play sessions.</system:String>

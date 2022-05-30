@@ -1142,7 +1142,6 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_interp_validation_modjob_altdlc_optionGroupMayOnlyHaveOneItemWithCheckedByDefault = "string_interp_validation_modjob_altdlc_optionGroupMayOnlyHaveOneItemWithCheckedByDefault";
 		public const string string_interp_validation_modjob_cannotContainDotDot = "string_interp_validation_modjob_cannotContainDotDot";
 		public const string string_interp_validation_modjob_duplicateOptionKeys = "string_interp_validation_modjob_duplicateOptionKeys";
-		public const string string_interp_validation_modjob_duplicateOptionKeys = "string_interp_validation_modjob_duplicateOptionKeys";
 		public const string string_descriptionSetConfigFilesReadOnly = "string_descriptionSetConfigFilesReadOnly";
 		public const string string_makeConfigFilesReadonly = "string_makeConfigFilesReadonly";
 		public const string string_interp_compressingX = "string_interp_compressingX";
