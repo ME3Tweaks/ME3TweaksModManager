@@ -238,7 +238,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 if (_optionKey != null) return _optionKey;
                 // Generate one one based on the name of the alternate.
                 var data = Encoding.Unicode.GetBytes(FriendlyName);
-                
+
                 _optionKey = Convert.ToHexString(Crc32.Hash(data));
                 return _optionKey;
             }
@@ -505,7 +505,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                         if (hidden && GroupName != null)
                         {
                             M3Log.Error($@"Alternate {FriendlyName} cannot set 'Hidden' to true when using 'OptionGroup'.");
-                            LoadFailedReason = $"Alternate {FriendlyName} cannot set 'Hidden' to true when using 'OptionGroup'.";
+                            LoadFailedReason = M3L.GetString(M3L.string_validation_alt_cannotUseHiddenWithOptionGroup, FriendlyName);
                             return false;
                         }
                         IsHidden = hidden;
@@ -513,7 +513,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                     else
                     {
                         M3Log.Error($@"Alternate {FriendlyName}'s 'Hidden' value can only be 'true' or 'false'. An invalid value was provided: {hiddenValue}");
-                        LoadFailedReason = $"Alternate {FriendlyName}'s 'Hidden' value can only be 'true' or 'false'. An invalid value was provided: {hiddenValue}";
+                        LoadFailedReason = M3L.GetString(M3L.string_validation_alt_invalidHiddenValue, FriendlyName, hiddenValue);
                         return false;
                     }
                 }
@@ -534,7 +534,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                         if (!dependskey.IsPlus.HasValue)
                         {
                             M3Log.Error($@"Alternate {FriendlyName} has a value in its DependsOnKeys list that does not start with +/-: {key}. Values must start with a +/-.");
-                            LoadFailedReason = $"Alternate {FriendlyName} has a value in its DependsOnKeys list that does not start with +/-: {key}. Values must start with a +/-.";
+                            LoadFailedReason = M3L.GetString(M3L.string_validation_alt_dependsKeysMissingPlusMinus, FriendlyName, key);
                             return false;
                         }
 
@@ -542,7 +542,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                         if (dependskey.Key == OptionKey)
                         {
                             M3Log.Error($@"Alternate {FriendlyName} references itself in its own DependsOnKeys list, which is not supported. Key value: {key}");
-                            LoadFailedReason = $"Alternate {FriendlyName} references itself in its own DependsOnKeys list, which is not supported. Key value: {key}";
+                            LoadFailedReason = M3L.GetString(M3L.string_validation_alt_dependsSelfReference, FriendlyName, key);
                             return false;
                         }
 
@@ -561,7 +561,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                     else
                     {
                         M3Log.Error($@"Alternate {FriendlyName} uses DependsOnKeys but does not define the DependsOnMetAction attribute. This attribute is required.");
-                        LoadFailedReason = $"Alternate {FriendlyName} uses DependsOnKeys but does not define the DependsOnMetAction attribute. This attribute is required.";
+                        LoadFailedReason = M3L.GetString(M3L.string_validation_alt_dependsMissingAction, FriendlyName);
                         return false;
                     }
 
@@ -572,7 +572,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                     else
                     {
                         M3Log.Error($@"Alternate {FriendlyName} uses DependsOnKeys but does not define the DependsOnNotMetAction attribute. This attribute is required.");
-                        LoadFailedReason = $"Alternate {FriendlyName} uses DependsOnKeys but does not define the DependsOnNotMetAction attribute. This attribute is required.";
+                        LoadFailedReason = M3L.GetString(M3L.string_validation_alt_dependsMissingNotMetAction, FriendlyName);
                         return false;
                     }
                     // ==========================================================
@@ -665,8 +665,8 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 // DependsOn
                 { @"OptionKey", HasDefinedOptionKey ? OptionKey : null },
                 { @"DependsOnKeys", string.Join(';', DependsOnKeys.Select(x => x.ToString())) },
-                { @"DependsOnMetAction", new MDParameter(@"string", @"DependsOnMetAction", DependsOnMetAction != EDependsOnAction.ACTION_INVALID ? DependsOnMetAction.ToString() : "", dependsActions, "") },
-                { @"DependsOnNotMetAction", new MDParameter(@"string", @"DependsOnNotMetAction", DependsOnNotMetAction != EDependsOnAction.ACTION_INVALID ? DependsOnNotMetAction.ToString() : "", dependsActions, "") },
+                { @"DependsOnMetAction", new MDParameter(@"string", @"DependsOnMetAction", DependsOnMetAction != EDependsOnAction.ACTION_INVALID ? DependsOnMetAction.ToString() : "", dependsActions, "") }, // do not localize
+                { @"DependsOnNotMetAction", new MDParameter(@"string", @"DependsOnNotMetAction", DependsOnNotMetAction != EDependsOnAction.ACTION_INVALID ? DependsOnNotMetAction.ToString() : "", dependsActions, "") }, // do not localize
 
                 // Sorting
                 { @"SortIndex", SortIndex > 0 ? SortIndex.ToString() : "" } // If not defined don't put into map
@@ -691,8 +691,8 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 var alt = allAlternates.FirstOrDefault(x => x.OptionKey == dependsOnKey.Key);
                 if (alt == null)
                 {
-                    M3Log.Error($"Alternate {FriendlyName} specifies a DependsOnKey value '{dependsOnKey.Key}' that is not defined by any Alternate in this mod.");
-                    modForValidating.LoadFailedReason = $"Alternate {FriendlyName} specifies a DependsOnKey value '{dependsOnKey.Key}' that is not defined by any Alternate in this mod.";
+                    M3Log.Error(M3L.GetString(M3L.string_validation_alt_dependsOnKeyReferencesMissingAlternate, FriendlyName, dependsOnKey.Key));
+                    modForValidating.LoadFailedReason = M3L.GetString(M3L.string_validation_alt_dependsOnKeyReferencesMissingAlternate, FriendlyName, dependsOnKey.Key);
                     return false;
                 }
 
@@ -705,22 +705,22 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                     {
                         if (alt.GroupName != null)
                         {
-                            condition += $"Requires {alt.GroupName} option: {alt.FriendlyName}\n";
+                            condition += M3L.GetString(M3L.string_alt_groupRequiresDepends, alt.GroupName, alt.FriendlyName);
                         }
                         else
                         {
-                            condition += $"Requires option: {alt.FriendlyName}\n";
+                            condition += M3L.GetString(M3L.string_alt_singularRequiresDepends, alt.FriendlyName);
                         }
                     }
                     else
                     {
                         if (alt.GroupName != null)
                         {
-                            condition += $"Must not select {alt.GroupName} option: {alt.FriendlyName}\n";
+                            condition += M3L.GetString(M3L.string_alt_groupRequiresDependsNot, alt.GroupName, alt.FriendlyName);
                         }
                         else
                         {
-                            condition += $"Must not select option: {alt.FriendlyName}\n";
+                            condition += M3L.GetString(M3L.string_alt_singularRequiresDependsNot, alt.FriendlyName);
                         }
                     }
                 }

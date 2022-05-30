@@ -188,14 +188,14 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
             {
                 switch (henchOutfit.HenchName)
                 {
-                    case "Prothean":
-                    case "Marine":
-                    case "Tali":
-                    case "Liara":
-                    case "EDI":
-                    case "Garrus":
-                    case "Kaidan":
-                    case "Ashley":
+                    case @"Prothean":
+                    case @"Marine":
+                    case @"Tali":
+                    case @"Liara":
+                    case @"EDI":
+                    case @"Garrus":
+                    case @"Kaidan":
+                    case @"Ashley":
                         break;
                     default:
                         item.AddBlockingError($"Unknown 'henchname': {henchOutfit.HenchName}. Values are case sensitive.");

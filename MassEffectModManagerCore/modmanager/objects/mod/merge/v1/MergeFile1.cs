@@ -66,7 +66,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
 
                 if (!hasOneFile)
                 {
-                    throw new Exception($"Could not find any localized files to merge into for {FileName}. This merge has 'applytoallapplications' set to true, this flag makes changes only apply to localizations of a file");
+                    throw new Exception(M3L.GetString(M3L.string_interp_mergefile_noLocalizedFiles, FileName));
                 }
             }
             else

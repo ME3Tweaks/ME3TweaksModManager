@@ -1514,7 +1514,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     if (collision != null)
                     {
                         M3Log.Error($@"Alternate {indexedAlternate.FriendlyName} specifies a non-unique sortindex value '{indexedAlternate.SortIndex}'. {collision.FriendlyName} also uses this sortindex value, these values must be unique.");
-                        LoadFailedReason = $"Alternate {indexedAlternate.FriendlyName} specifies a non-unique sortindex value '{indexedAlternate.SortIndex}'. {collision.FriendlyName} also uses this sortindex value, these values must be unique.";
+                        LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_nonUniqueSortIndex, indexedAlternate.FriendlyName, indexedAlternate.SortIndex, collision.FriendlyName);
                         return;
                     }
                 }
@@ -1570,7 +1570,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                             }
                             break;
 
-                        // Headers for official jobs are not supported in LE games
+                            // Headers for official jobs are not supported in LE games
                     }
 
 
@@ -1588,7 +1588,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                         if (MEDirectories.OfficialDLC(Game).Contains(reqDLCss, StringComparer.InvariantCultureIgnoreCase))
                         {
                             M3Log.Error($@"Legendary Edition mods targeting moddesc 8.0 or higher cannot mark official vanilla DLC as a dependency, as Mod Manager does not support these DLC being removed. Remove vanilla DLC items from 'requireddlc'. Invalid value: {reqDLCss}");
-                            LoadFailedReason = $"Legendary Edition mods targeting moddesc 8.0 or higher cannot mark official vanilla DLC as a dependency, as Mod Manager does not support these DLC being removed. Remove vanilla DLC items from 'requireddlc'. Invalid value: {reqDLCss}";
+                            LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_cannotDependOnOfficialLEDLC, reqDLCss);
                             return;
                         }
                     }
@@ -1892,7 +1892,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     }
                     else
                     {
-                        M3Log.Error($@"The LELAUNCHER header only supports the following file extensions: {string.Join(@", ", AllowedLauncherFileTypes)} An unsupported filetype was found: {file}");
+                        M3Log.Error($@"The LELAUNCHER header only supports the following file extensions: {string.Join(@", ", AllowedLauncherFileTypes)} An unsupported filetype was found: {file}"); // do not localize
                         LoadFailedReason = M3L.GetString(M3L.string_validation_modparsing_foundDisallowedLauncherFileType, string.Join(@", ", AllowedLauncherFileTypes), file);
                         ValidMod = false;
                         return;

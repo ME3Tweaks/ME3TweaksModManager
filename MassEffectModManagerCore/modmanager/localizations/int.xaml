@@ -1180,6 +1180,29 @@
     <!-- 0={FriendlyName} 1={imageHeight} -->
     <system:String x:Key="string_validation_alt_imageAssetMissingHeight">Alternate {0} specifies an image asset but does not set (or have a valid value for) ImageHeight. ImageHeight is required to be set on alternates that specify an image asset.</system:String>
     <!-- 0={FriendlyName} -->
+    <system:String x:Key="string_validation_alt_cannotUseHiddenWithOptionGroup">Alternate {0} cannot set 'Hidden' to true when using 'OptionGroup'.</system:String>
+    <!-- 0={Alternate FriendlyName} -->
+    <system:String x:Key="string_validation_alt_invalidHiddenValue">Alternate {0}'s 'Hidden' value can only be 'true' or 'false'. An invalid value was provided: {1}</system:String>
+    <!-- 0={Alternate FriendlyName} 1={invalid value} -->
+    <system:String x:Key="string_validation_alt_dependsKeysMissingPlusMinus">Alternate {0} has a value in its DependsOnKeys list that does not start with +/-: {1}. Values must start with a +/-.</system:String>
+    <!-- 0={Alternate FriendlyName} 1={key} -->
+    <system:String x:Key="string_validation_alt_dependsSelfReference">Alternate {0} references itself in its own DependsOnKeys list, which is not supported. Key value: {1}</system:String>
+    <!-- 0={Alternate FriendlyName} 1={key} -->
+    <system:String x:Key="string_validation_alt_dependsMissingAction">Alternate {0} uses DependsOnKeys but does not define the DependsOnMetAction attribute. This attribute is required.</system:String>
+    <!-- 0={Alternate FriendlyName} -->
+    <system:String x:Key="string_validation_alt_dependsMissingNotMetAction">Alternate {0} uses DependsOnKeys but does not define the DependsOnNotMetAction attribute. This attribute is required.</system:String>
+    <!-- 0={Alternate FriendlyName} -->
+    <system:String x:Key="string_DependsActions">, dependsActions,</system:String>
+    <system:String x:Key="string_validation_alt_dependsOnKeyReferencesMissingAlternate">Alternate {0} specifies a DependsOnKey value '{1}' that is not defined by any Alternate in this mod.</system:String>
+    <!-- 0={Alternate FriendlyName} 1={dependsOnKey.Key} -->
+    <system:String xml:space="preserve" x:Key="string_alt_groupRequiresDepends">Requires {0} option: {1}\n</system:String>
+    <!-- 0={Alternate Groupname} 1={Alternate FriendlyName} -->
+    <system:String xml:space="preserve" x:Key="string_alt_singularRequiresDepends">Requires option: {0}\n</system:String>
+    <!-- 0={Alternate FriendlyName} -->
+    <system:String xml:space="preserve" x:Key="string_alt_groupRequiresDependsNot">Must not select {0} option: {1}\n</system:String>
+    <!-- 0={Alternate Groupname} 1={Alternate FriendlyName} -->
+    <system:String xml:space="preserve" x:Key="string_alt_singularRequiresDependsNot">Must not select option: {0}\n</system:String>
+    <!-- 0={Alternate FriendlyName} -->
 
     <!-- Alternate DLC -->
     <system:String x:Key="string_validation_altdlc_oneAltDlcMissingFriendlyNameCmm6">At least one specified Alternate DLC does not specify a FriendlyName, which is required for mods targeting cmmver >= 6.0.</system:String>
@@ -1494,6 +1517,10 @@
     <!-- 0={file extension list (.txt, .afc, .tfc...) 1={file extension (.txt for example)} -->
     <system:String x:Key="string_interp_validation_modparsing_leLauncherDirNotFound">{0}'s LELAUNCHER header specifies a job subdirectory (moddir) that does not exist: {1}</system:String>
     <!-- 0={ModName} 1={jobSubDir} -->
+    <system:String x:Key="string_interp_validation_modparsing_nonUniqueSortIndex">Alternate {0} specifies a non-unique sortindex value '{1}'. {2} also uses this sortindex value, these values must be unique.</system:String>
+    <!-- 0={Alternate FriendlyName} 1={SortIndex value} 2={other friendlyname} -->
+    <system:String x:Key="string_interp_validation_modparsing_cannotDependOnOfficialLEDLC">Legendary Edition mods targeting moddesc 8.0 or higher cannot mark official vanilla DLC as a dependency, as Mod Manager does not support these DLC being removed. Remove vanilla DLC items from 'requireddlc'. Invalid value: {0}</system:String>
+    <!-- 0={Invalid sort index integer} -->
 
     <!-- About Panel -->
     <system:String x:Key="string_tooltip_hello">Hello!</system:String>
@@ -2243,6 +2270,8 @@
     <system:String x:Key="string_interp_mergefile_invalidEnumPropertyValue">'propertyvalue' for EnumProperty must have a '.' in it to separate the enum type from the enum value</system:String>
     <system:String xml:space="preserve" x:Key="string_interp_fileLibInitMergeMod1Script">FileLib for script update could not initialize, cannot merge script to {0}:\n{1}</system:String>
     <!-- 0={target entry InstancedFullPath} 1={newline split list of errors} -->
+    <system:String x:Key="string_interp_mergefile_noLocalizedFiles">Could not find any localized files to merge into for {0}. This merge has 'applytoallapplications' set to true, this flag makes changes only apply to localizations of a file</system:String>
+    <!-- 0={FileName} -->
 
     <!-- Options Panel -->
     <system:String x:Key="string_me3tweaksModManagerOptions">ME3Tweaks Mod Manager Options</system:String>

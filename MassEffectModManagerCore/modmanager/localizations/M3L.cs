@@ -703,6 +703,8 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_interp_warningPackageForOtherGameFound = "string_interp_warningPackageForOtherGameFound";
 		public const string string_interp_dialog_noModSiteDeployed = "string_interp_dialog_noModSiteDeployed";
 		public const string string_dialog_noModSiteDeployed = "string_dialog_noModSiteDeployed";
+		public const string string_tfc = "string_tfc";
+		public const string string_interp_cannotInstallTFCToBasegameLE1 = "string_interp_cannotInstallTFCToBasegameLE1";
 		public const string string_backupsAreShared = "string_backupsAreShared";
 		public const string string_backupsMustBeCreatedFresh = "string_backupsMustBeCreatedFresh";
 		public const string string_backUp = "string_backUp";
@@ -1026,6 +1028,18 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_validation_alt_imageAssetNotFound = "string_validation_alt_imageAssetNotFound";
 		public const string string_validation_alt_imageAssetOutOfRangeHeight = "string_validation_alt_imageAssetOutOfRangeHeight";
 		public const string string_validation_alt_imageAssetMissingHeight = "string_validation_alt_imageAssetMissingHeight";
+		public const string string_validation_alt_cannotUseHiddenWithOptionGroup = "string_validation_alt_cannotUseHiddenWithOptionGroup";
+		public const string string_validation_alt_invalidHiddenValue = "string_validation_alt_invalidHiddenValue";
+		public const string string_validation_alt_dependsKeysMissingPlusMinus = "string_validation_alt_dependsKeysMissingPlusMinus";
+		public const string string_validation_alt_dependsSelfReference = "string_validation_alt_dependsSelfReference";
+		public const string string_validation_alt_dependsMissingAction = "string_validation_alt_dependsMissingAction";
+		public const string string_validation_alt_dependsMissingNotMetAction = "string_validation_alt_dependsMissingNotMetAction";
+		public const string string_DependsActions = "string_DependsActions";
+		public const string string_validation_alt_dependsOnKeyReferencesMissingAlternate = "string_validation_alt_dependsOnKeyReferencesMissingAlternate";
+		public const string string_alt_groupRequiresDepends = "string_alt_groupRequiresDepends";
+		public const string string_alt_singularRequiresDepends = "string_alt_singularRequiresDepends";
+		public const string string_alt_groupRequiresDependsNot = "string_alt_groupRequiresDependsNot";
+		public const string string_alt_singularRequiresDependsNot = "string_alt_singularRequiresDependsNot";
 		public const string string_validation_altdlc_oneAltDlcMissingFriendlyNameCmm6 = "string_validation_altdlc_oneAltDlcMissingFriendlyNameCmm6";
 		public const string string_validation_altdlc_unknownCondition = "string_validation_altdlc_unknownCondition";
 		public const string string_validation_altdlc_unknownOperation = "string_validation_altdlc_unknownOperation";
@@ -1070,7 +1084,6 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_interp_altfile_multilistIdNINotIntegerOrMissing = "string_interp_altfile_multilistIdNINotIntegerOrMissing";
 		public const string string_interp_altfile_installToNotGuaranteedCustomDLC = "string_interp_altfile_installToNotGuaranteedCustomDLC";
 		public const string string_interp_validation_altfile_flattentNotTrueOrFalse = "string_interp_validation_altfile_flattentNotTrueOrFalse";
-		public const string string_interp_groupNameAlternateOptionsHeader = "string_interp_groupNameAlternateOptionsHeader";
 		public const string string_interp_groupNameAlternateOptionsHeader = "string_interp_groupNameAlternateOptionsHeader";
 		public const string string_interp_invalidTargetMissingFile = "string_interp_invalidTargetMissingFile";
 		public const string string_invalidTargetProtectedByCmmvanilla = "string_invalidTargetProtectedByCmmvanilla";
@@ -1201,6 +1214,8 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_interp_validation_modparsing_tlkMergeInvalidTlkXmlFilenames = "string_interp_validation_modparsing_tlkMergeInvalidTlkXmlFilenames";
 		public const string string_validation_modparsing_foundDisallowedLauncherFileType = "string_validation_modparsing_foundDisallowedLauncherFileType";
 		public const string string_interp_validation_modparsing_leLauncherDirNotFound = "string_interp_validation_modparsing_leLauncherDirNotFound";
+		public const string string_interp_validation_modparsing_nonUniqueSortIndex = "string_interp_validation_modparsing_nonUniqueSortIndex";
+		public const string string_interp_validation_modparsing_cannotDependOnOfficialLEDLC = "string_interp_validation_modparsing_cannotDependOnOfficialLEDLC";
 		public const string string_tooltip_hello = "string_tooltip_hello";
 		public const string string_tooltip_softwareDevelopedWithLoveByME3Tweaks = "string_tooltip_softwareDevelopedWithLoveByME3Tweaks";
 		public const string string_libraries = "string_libraries";
@@ -1746,6 +1761,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_interp_mergefile_notPropertyExportConfigFlag = "string_interp_mergefile_notPropertyExportConfigFlag";
 		public const string string_interp_mergefile_invalidEnumPropertyValue = "string_interp_mergefile_invalidEnumPropertyValue";
 		public const string string_interp_fileLibInitMergeMod1Script = "string_interp_fileLibInitMergeMod1Script";
+		public const string string_interp_mergefile_noLocalizedFiles = "string_interp_mergefile_noLocalizedFiles";
 		public const string string_me3tweaksModManagerOptions = "string_me3tweaksModManagerOptions";
 		public const string string_mainOptions = "string_mainOptions";
 		public const string string_legendaryEditionOptions = "string_legendaryEditionOptions";

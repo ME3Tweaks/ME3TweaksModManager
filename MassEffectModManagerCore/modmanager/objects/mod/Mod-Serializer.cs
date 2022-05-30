@@ -47,7 +47,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 {@"nexuscode", NexusModID > 0 ? NexusModID.ToString() : null},
                 {@"requireddlc", RequiredDLC},
                 {@"bannerimagename", BannerImageName},
-                {@"sortalternates", new MDParameter(@"string", @"sortalternates", SortAlternateOptions ? @"" : @"False", new [] {@"", @"True", @"False"}, "") {Header = @"ModInfo"}}, //don't put checkedbydefault in if it is not set to true.
+                {@"sortalternates", new MDParameter(@"string", @"sortalternates", SortAlternateOptions ? @"" : @"False", new [] {@"", @"True", @"False"}, "") {Header = @"ModInfo"}}, //don't put checkedbydefault in if it is not set to true. // do not localize
             };
 
 
