@@ -5,19 +5,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Security.Cryptography;
 using System.Threading;
-using LegendaryExplorerCore.Helpers;
-using ME3TweaksCore.Diagnostics;
-using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Misc;
-using ME3TweaksCore.Services;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
-using ME3TweaksModManager.modmanager.objects;
-using ME3TweaksModManager.modmanager.windows;
-using Microsoft.AppCenter.Crashes;
 using Newtonsoft.Json;
-using ShortTimeoutWebClient = ME3TweaksModManager.modmanager.helpers.ShortTimeoutWebClient;
 
 namespace ME3TweaksModManager.modmanager.me3tweaks.services
 {

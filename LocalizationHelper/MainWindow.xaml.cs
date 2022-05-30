@@ -320,7 +320,7 @@ namespace LocalizationHelper
                 if (line.Contains("[DebuggerDisplay(")) continue; //skip these lines
                 var commentIndex = line.IndexOf("//");
                 var protocolIndex = line.IndexOf(@"://");
-                if (line.IndexOf(@" Log.") > 0)
+                if (line.IndexOf(@" M3Log.") > 0 || line.IndexOf(@" MLog.") > 0)
                 {
                     Debug.WriteLine($@"Skipping log line at {x}");
                     continue;
