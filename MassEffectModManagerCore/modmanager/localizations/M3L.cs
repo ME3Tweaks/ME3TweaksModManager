@@ -783,7 +783,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_interp_prerequisiteNotMetX = "string_interp_prerequisiteNotMetX";
 		public const string string_downloadFailed = "string_downloadFailed";
 		public const string string_error_cantDownloadNotEnoughInfoInStartupManifest = "string_error_cantDownloadNotEnoughInfoInStartupManifest";
-		public const string string_error_net5RuntimeMissing = "string_error_net5RuntimeMissing";
+		public const string string_error_netRuntimeMissing = "string_error_net5RuntimeMissing";
 		public const string string_restoreFromME3Tweaks = "string_restoreFromME3Tweaks";
 		public const string string_theFollowingModsFailedToLoad = "string_theFollowingModsFailedToLoad";
 		public const string string_failedMods = "string_failedMods";

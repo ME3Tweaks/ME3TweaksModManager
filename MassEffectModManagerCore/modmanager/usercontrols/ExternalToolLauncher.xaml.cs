@@ -689,17 +689,30 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private static async Task<string> checkToolPrerequesites(string toolname)
         {
+            int netVersion = 0;
             switch (toolname)
             {
                 case LegendaryExplorer:
+                {
+                    if (App.ServerManifest != null && App.ServerManifest.TryGetValue(@"legendaryexplorerstable_netversion", out var lexStableNetVersion) && int.TryParse(lexStableNetVersion, out netVersion))
+                    {
+                        // Nothing here, we parsed it out
+                    }
+                    break;
+                }
                 case LegendaryExplorer_Beta:
                     {
-                        if (!await M3Utilities.IsNetRuntimeInstalled(5)) // This should probably be defined in the manifest...
+                        if (App.ServerManifest != null && App.ServerManifest.TryGetValue(@"legendaryexplorernightly_netversion", out var lexBetaNetVersion) && int.TryParse(lexBetaNetVersion, out netVersion))
                         {
-                            return M3L.GetString(M3L.string_error_net5RuntimeMissing); // TODO: Change this to interpolated
+                            // Nothing here, we parsed it out
                         }
                         break;
                     }
+            }
+
+            if (netVersion > 0 && !await M3Utilities.IsNetRuntimeInstalled(netVersion)) 
+            {
+                return M3L.GetString(M3L.string_error_netRuntimeMissing, netVersion);
             }
 
             return null; // nothing wrong
