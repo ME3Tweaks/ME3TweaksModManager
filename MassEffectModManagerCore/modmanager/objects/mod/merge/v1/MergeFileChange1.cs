@@ -28,6 +28,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
         [JsonProperty(@"assetupdate")] public AssetUpdate1 AssetUpdate { get; set; }
         [JsonProperty(@"scriptupdate")] public ScriptUpdate1 ScriptUpdate { get; set; }
         [JsonProperty(@"sequenceskipupdate")] public SequenceSkipUpdate1 SequenceSkipUpdate { get; set; }
+        [JsonProperty(@"addtoclassorreplace")] public AddToClassOrReplace1 AddToClassOrReplace { get; set; }
 
         [JsonIgnore] public MergeFile1 Parent;
         [JsonIgnore] public MergeMod1 OwningMM => Parent.OwningMM;
@@ -58,6 +59,9 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
 
             // APPLY SEQUENCE SKIP UPDATE
             SequenceSkipUpdate?.ApplyUpdate(package, export, installingMod);
+
+            // APPLY ADD TO CLASS OR REPLACE
+            AddToClassOrReplace?.ApplyUpdate(package, export, assetsCache, gameTarget);
 
             // APPLY CONFIG FLAG REMOVAL
             if (DisableConfigUpdate)
@@ -100,6 +104,48 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
             AssetUpdate?.Validate();
             ScriptUpdate?.Validate();
             SequenceSkipUpdate?.Validate();
+            AddToClassOrReplace?.Validate();
+        }
+
+        public static FileLib GetFileLibForMerge(IMEPackage package, ExportEntry targetExport, MergeAssetCache1 assetsCache, GameTargetWPF gameTarget)
+        {
+            if (assetsCache.FileLibs.TryGetValue(package.FilePath, out FileLib fl))
+            {
+                ReInitializeFileLib(targetExport, fl);
+            }
+            else
+            {
+                fl = new FileLib(package);
+                bool initialized = fl.Initialize(new RelativePackageCache { RootPath = M3Directories.GetBioGamePath(gameTarget) }, gameTarget.TargetPath);
+                if (!initialized)
+                {
+                    M3Log.Error($@"FileLib loading failed for package {targetExport.InstancedFullPath} ({targetExport.FileRef.FilePath}):");
+                    foreach (var v in fl.InitializationLog.AllErrors)
+                    {
+                        M3Log.Error(v.Message);
+                    }
+
+                    throw new Exception(M3L.GetString(M3L.string_interp_fileLibInitMergeMod1Script, targetExport.InstancedFullPath, string.Join(Environment.NewLine, fl.InitializationLog.AllErrors)));
+                }
+
+                assetsCache.FileLibs[package.FilePath] = fl;
+            }
+            return fl;
+        }
+
+        public static void ReInitializeFileLib(ExportEntry targetExport, FileLib fl)
+        {
+            bool reInitialized = fl.ReInitializeFile();
+            if (!reInitialized)
+            {
+                M3Log.Error($@"FileLib re-initialization failed for package {targetExport.InstancedFullPath} ({targetExport.FileRef.FilePath}):");
+                foreach (var v in fl.InitializationLog.AllErrors)
+                {
+                    M3Log.Error(v.Message);
+                }
+
+                throw new Exception(M3L.GetString(M3L.string_interp_fileLibInitMergeMod1Script, targetExport.InstancedFullPath, string.Join(Environment.NewLine, fl.InitializationLog.AllErrors)));
+            }
         }
     }
 
@@ -276,38 +322,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
 
         public bool ApplyUpdate(IMEPackage package, ExportEntry targetExport, MergeAssetCache1 assetsCache, Mod installingMod, GameTargetWPF gameTarget)
         {
-            if (assetsCache.FileLibs.TryGetValue(package.FilePath, out FileLib fl))
-            {
-                bool reInitialized = fl.ReInitializeFile();
-                if (!reInitialized)
-                {
-                    M3Log.Error($@"FileLib re-initialization failed for package {targetExport.InstancedFullPath} ({targetExport.FileRef.FilePath}):");
-                    foreach (var v in fl.InitializationLog.AllErrors)
-                    {
-                        M3Log.Error(v.Message);
-                    }
-
-                    throw new Exception(M3L.GetString(M3L.string_interp_fileLibInitMergeMod1Script, targetExport.InstancedFullPath, string.Join(Environment.NewLine, fl.InitializationLog.AllErrors)));
-                }
-            }
-            else
-            {
-                fl = new FileLib(package);
-                bool initialized = fl.Initialize(new RelativePackageCache() { RootPath = M3Directories.GetBioGamePath(gameTarget) }, gameTarget.TargetPath);
-                if (!initialized)
-                {
-                    M3Log.Error($@"FileLib loading failed for package {targetExport.InstancedFullPath} ({targetExport.FileRef.FilePath}):");
-                    foreach (var v in fl.InitializationLog.AllErrors)
-                    {
-                        M3Log.Error(v.Message);
-                    }
-
-                    throw new Exception(M3L.GetString(M3L.string_interp_fileLibInitMergeMod1Script, targetExport.InstancedFullPath, string.Join(Environment.NewLine, fl.InitializationLog.AllErrors)));
-                }
-
-                assetsCache.FileLibs[package.FilePath] = fl;
-            }
-
+            FileLib fl = MergeFileChange1.GetFileLibForMerge(package, targetExport, assetsCache, gameTarget);
 
             (_, MessageLog log) = UnrealScriptCompiler.CompileFunction(targetExport, ScriptText, fl);
             if (log.AllErrors.Any())
@@ -319,6 +334,62 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                 }
 
                 throw new Exception(M3L.GetString(M3L.string_interp_mergefile_errorCompilingFunction, targetExport, string.Join(Environment.NewLine, log.AllErrors)));
+            }
+
+            return true;
+        }
+
+        public void Validate()
+        {
+
+        }
+    }
+
+    public class AddToClassOrReplace1
+    {
+        /// <summary>
+        /// Name of text file containing the script
+        /// </summary>
+        [JsonProperty(@"scriptfilenames")]
+        public string[] ScriptFileNames { get; set; }
+
+
+        [JsonProperty(@"scripts")]
+        public string[] Scripts { get; set; }
+
+        [JsonIgnore] public MergeFileChange1 Parent;
+        [JsonIgnore] public MergeMod1 OwningMM => Parent.OwningMM;
+
+        public bool ApplyUpdate(IMEPackage package, ExportEntry targetExport, MergeAssetCache1 assetsCache, GameTargetWPF gameTarget)
+        {
+            FileLib fl = MergeFileChange1.GetFileLibForMerge(package, targetExport, assetsCache, gameTarget);
+            
+            for (int i = 0; i < Scripts.Length; i++)
+            {
+                MessageLog log = UnrealScriptCompiler.AddOrReplaceInClass(targetExport, Scripts[i], fl);
+
+                if (log.AllErrors.Any())
+                {
+                    M3Log.Error($@"Error adding/replacing '{ScriptFileNames[i]}' to {targetExport.InstancedFullPath}:");
+                    foreach (var l in log.AllErrors)
+                    {
+                        M3Log.Error(l.Message);
+                    }
+                    //Todo: localize this message
+                    throw new Exception($"Error compiling class {targetExport.InstancedFullPath} after adding or replacing {ScriptFileNames[i]}: {string.Join(Environment.NewLine, log.AllErrors)}");
+                }
+
+                //we don't need the filelib again after the last iteration, but we still need to re-initialize it.
+                //Doing so can catch errors that are caused if this class was changed in a way that breaks others that depend on it.
+                try
+                {
+                    MergeFileChange1.ReInitializeFileLib(targetExport, fl);
+                }
+                catch
+                {
+                    M3Log.Error($@"Could not re-initialize FileLib after adding/replacing '{ScriptFileNames[i]}' to {targetExport.InstancedFullPath}.");
+                    throw;
+                }
             }
 
             return true;

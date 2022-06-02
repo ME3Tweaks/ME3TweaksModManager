@@ -176,7 +176,7 @@ The format for a single property update for an export. You may have several of t
 
 ### `scriptupdate` JSON format
 
-The format for an update to a script export. You must store your script in a plaintext file, which will be embedded into your .m3m file. Your script file must be in the same folder as your manifest file.
+The format for an update to a function export. You must store your script in a plaintext file, which will be embedded into your .m3m file. Your script file must be in the same folder as your manifest file.
 
 | Property Name  | Type   | Information                                                  |
 | -------------- | ------ | ------------------------------------------------------------ |
@@ -189,6 +189,27 @@ The format for an update to a script export. You must store your script in a pla
     "entryname": "BioInventory.IsPlotItem",
     "scriptupdate": {
         "scriptfilename":"MyPlaintextUnrealScript.uc"
+    }
+}
+```
+
+
+
+### `addtoclassorreplace` JSON format
+
+The format for adding or replacing members of a class (Enums, Structs, Variables, States, or Functions). If a member of the same name is found, it will be replaced. Otherwise it will be added to the class. You must store each member in a separate plaintext file, which will be embedded into your .m3m file. Your script files must be in the same folder as your manifest file.
+
+| Property Name   | Type          | Information                                                                                            |
+| --------------- | ------------- | ------------------------------------------------------------------------------------------------------ |
+| scriptfilenames | array[string] | The filenames of local plaintext files containing one class member each. File extension should be .uc. |
+
+**Example:**
+
+```json
+{
+    "entryname": "BioInventory",
+    "addtoclassorreplace": {
+        "scriptfilenames": ["AVariable.uc", "AnotherVariable.uc", "AStruct.uc"]
     }
 }
 ```

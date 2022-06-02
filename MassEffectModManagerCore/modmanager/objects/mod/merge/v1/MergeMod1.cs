@@ -128,6 +128,15 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                 {
                     File.WriteAllBytes(Path.Combine(outputfolder, Path.GetFileName(mc.AssetUpdate.AssetName)), Assets[mc.AssetUpdate.AssetName].AssetBinary);
                 }
+
+                if (mc.AddToClassOrReplace != null)
+                {
+                    foreach ((string script, string fileName) in mc.AddToClassOrReplace.Scripts.Zip(mc.AddToClassOrReplace.ScriptFileNames))
+                    {
+                        File.WriteAllText(Path.Combine(outputfolder, Path.GetFileName(fileName)), script);
+                    }
+                    mc.AddToClassOrReplace.Scripts = Array.Empty<string>();
+                }
             }
 
             // assets
@@ -216,6 +225,22 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                         }
 
                         mc.ScriptUpdate.ScriptText = File.ReadAllText(scriptDiskFile);
+                    }
+
+                    if (mc.AddToClassOrReplace?.ScriptFileNames is { Length: > 0 } fileNames)
+                    {
+                        mc.AddToClassOrReplace.Scripts = new string[fileNames.Length];
+                        for (int i = 0; i < fileNames.Length; i++)
+                        {
+                            string fileName = fileNames[i];
+                            string scriptDiskFile = Path.Combine(sourceDir, fileName);
+                            if (!File.Exists(scriptDiskFile))
+                            {
+                                throw new Exception(M3L.GetString(M3L.string_interp_error_mergefile_scriptNotFoundX, fileName));
+                            }
+
+                            mc.AddToClassOrReplace.Scripts[i] = File.ReadAllText(scriptDiskFile);
+                        }
                     }
                 }
             }

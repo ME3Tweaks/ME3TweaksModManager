@@ -210,6 +210,7 @@
               ],
               "oneOf": [
                 { "required": [ "scriptupdate" ] },
+                { "required": [ "addtoclassorreplace" ] },
                 { "required": [ "assetupdate" ] },
                 { "required": [ "disableconfigupdate" ] },
                 { "required": [ "propertyupdates" ] },
@@ -339,6 +340,36 @@
                       "default": "",
                       "examples": [
                         "Script.uc"
+                      ]
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "addtoclassorreplace": {
+                  "$id": "#/properties/files/items/properties/changes/items/properties/addtoclassorreplace",
+                  "type": "object",
+                  "title": "The addtoclassorreplace schema",
+                  "description": "Enums, Structs, Variables, States, or Functions you would like to add to the class, or replace if one with the same name already exists.",
+                  "default": {},
+                  "examples": [
+                    {
+                      "scriptfilenames": [ "Script.uc", "AnotherScript.uc" ]
+                    }
+                  ],
+                  "required": [ "scriptfilenames" ],
+                  "properties": {
+                    "scriptfilenames": {
+                      "$id": "#/properties/files/items/properties/changes/items/properties/addtoclassorreplace/properties/scriptfilenames",
+                      "type": "array",
+                      "title": "Script filenames",
+                      "description": "The names of plaintext files containing one class member each. They must be next to the .json file",
+                      "default": [],
+                      "minItems": 1,
+                      "examples": [
+                        [
+                          "Script.uc",
+                          "AnotherScript.uc"
+                        ]
                       ]
                     }
                   },
