@@ -659,6 +659,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 StartCheck(depMod);
             }
+            TriggerResize(); // Size of panel may change
         }
 
         public bool ProgressIndeterminate { get; set; }
