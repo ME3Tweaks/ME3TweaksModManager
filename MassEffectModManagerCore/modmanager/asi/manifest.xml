@@ -292,17 +292,6 @@
   </updategroup>
   <updategroup groupid="14" game="2" hidden="0">
     <asimod>
-      <name>Kismet Logger</name>
-      <installedname>KismetLogger</installedname>
-      <author>ME3Tweaks</author>
-      <description>This plugin logs kismet sequence object activations to the console and to a file named KismetLog.txt. You can trace the execution of this log with Legendary Explorer's Sequence Editor.</description>
-      <version>2</version>
-      <hash>c51020ccf2600e4b732b0661750938ad</hash>
-      <sourcecode>https://github.com/ME3Tweaks/ME2-ASI-Plugins/tree/master/KismetLogger</sourcecode>
-      <downloadlink>https://github.com/ME3Tweaks/ME2-ASI-Plugins/releases/download/ME2KismetLogger-v2/KismetLogger-v2.asi</downloadlink>
-      <autoremovegroups/>
-    </asimod>
-    <asimod>
       <name>Kismet Logger for ME2</name>
       <installedname>KismetLogger</installedname>
       <author>Mgamerz</author>
@@ -311,6 +300,17 @@
       <hash>965b2378c60430fb949b62a134b28414</hash>
       <sourcecode>https://github.com/ME3Tweaks/ME2-ASI-Plugins/tree/master/KismetLogger</sourcecode>
       <downloadlink>https://me3tweaks.com/mods/asi/me2/KismetLogger-v1.asi</downloadlink>
+      <autoremovegroups/>
+    </asimod>
+    <asimod>
+      <name>Kismet Logger</name>
+      <installedname>KismetLogger</installedname>
+      <author>ME3Tweaks</author>
+      <description>This plugin logs kismet sequence object activations to the console and to a file named KismetLog.txt. You can trace the execution of this log with Legendary Explorer's Sequence Editor.</description>
+      <version>2</version>
+      <hash>c51020ccf2600e4b732b0661750938ad</hash>
+      <sourcecode>https://github.com/ME3Tweaks/ME2-ASI-Plugins/tree/master/KismetLogger</sourcecode>
+      <downloadlink>https://github.com/ME3Tweaks/ME2-ASI-Plugins/releases/download/ME2KismetLogger-v2/KismetLogger-v2.asi</downloadlink>
       <autoremovegroups/>
     </asimod>
   </updategroup>
@@ -436,22 +436,22 @@
       <name>Streaming Levels HUD</name>
       <installedname>StreamingLevelsHUD</installedname>
       <author>Mgamerz</author>
-      <description>This ASI draws the list of streaming levels on the top left of the screen, as well as their current loaded state. It additionally shows the amount of memory the process is currently using, as well as as the maximum. When the amount nears the crashing point (3.5GiB), it turns, yellow, red, then begins to flash red.</description>
-      <version>1</version>
-      <hash>a7c4c4877481a36783dbd696146fb663</hash>
+      <description>This ASI draws the list of streaming levels on the top left of the screen, as well as their current loaded state. It additionally shows the amount of memory the process is currently using, as well as as the maximum. When the amount nears the crashing point (3.5GiB), it turns, yellow, red, then begins to flash red. The HUD can be toggled on and off by pressing CTRL + T.</description>
+      <version>2</version>
+      <hash>4e8ee823fe0b3a2c8df73d3748b2a03f</hash>
       <sourcecode>https://github.com/ME3Tweaks/ME3-ASI-Plugins/tree/master/SteamingLevelsHUD</sourcecode>
-      <downloadlink>https://github.com/ME3Tweaks/ME3-ASI-Plugins/releases/download/v1.0-StreamingLevelsHUD/StreamingLevelsHUD-v1.0.asi</downloadlink>
+      <downloadlink>https://github.com/ME3Tweaks/ME3-ASI-Plugins/releases/download/v2.0-StreamingLevelsHUD/StreamingLevelsHUD-v2.0.asi</downloadlink>
       <autoremovegroups/>
     </asimod>
     <asimod>
       <name>Streaming Levels HUD</name>
       <installedname>StreamingLevelsHUD</installedname>
       <author>Mgamerz</author>
-      <description>This ASI draws the list of streaming levels on the top left of the screen, as well as their current loaded state. It additionally shows the amount of memory the process is currently using, as well as as the maximum. When the amount nears the crashing point (3.5GiB), it turns, yellow, red, then begins to flash red. The HUD can be toggled on and off by pressing CTRL + T.</description>
-      <version>2</version>
-      <hash>4e8ee823fe0b3a2c8df73d3748b2a03f</hash>
+      <description>This ASI draws the list of streaming levels on the top left of the screen, as well as their current loaded state. It additionally shows the amount of memory the process is currently using, as well as as the maximum. When the amount nears the crashing point (3.5GiB), it turns, yellow, red, then begins to flash red.</description>
+      <version>1</version>
+      <hash>a7c4c4877481a36783dbd696146fb663</hash>
       <sourcecode>https://github.com/ME3Tweaks/ME3-ASI-Plugins/tree/master/SteamingLevelsHUD</sourcecode>
-      <downloadlink>https://github.com/ME3Tweaks/ME3-ASI-Plugins/releases/download/v2.0-StreamingLevelsHUD/StreamingLevelsHUD-v2.0.asi</downloadlink>
+      <downloadlink>https://github.com/ME3Tweaks/ME3-ASI-Plugins/releases/download/v1.0-StreamingLevelsHUD/StreamingLevelsHUD-v1.0.asi</downloadlink>
       <autoremovegroups/>
     </asimod>
   </updategroup>
@@ -460,11 +460,11 @@
       <name>Streaming Levels HUD</name>
       <installedname>StreamingLevelsHUD</installedname>
       <author>Mgamerz</author>
-      <description>This ASI draws the list of streaming levels on the top left of the screen, as well as their current loaded state. It additionally shows the amount of memory the process is currently using, as well as as the maximum. When the amount nears the crashing point (3.5GiB), it turns, yellow, red, then begins to flash red.</description>
-      <version>1</version>
-      <hash>52477ccc1973864616e86d49d276afbf</hash>
+      <description>This ASI draws the list of streaming levels on the top left of the screen, as well as their current loaded state. The interface can be toggled on and off by pressing CTRL+T. Additionally, it shows the amount of memory the process is currently using, as well as as the maximum. When the amount nears the crashing point (3.5GiB), it turns, yellow, red, then begins to flash red.</description>
+      <version>3</version>
+      <hash>d5dfac6ac51d038c0e19b3deade7152d</hash>
       <sourcecode>https://github.com/ME3Tweaks/ME2-ASI-Plugins/tree/master/SteamingLevelsHUD</sourcecode>
-      <downloadlink>https://github.com/ME3Tweaks/ME2-ASI-Plugins/releases/download/v1.0-StreamingLevelsHUD/StreamingLevelsHUD-v1.0.asi</downloadlink>
+      <downloadlink>https://github.com/ME3Tweaks/ME2-ASI-Plugins/releases/download/v3.0-StreamingLevelsHUD/StreamingLevelsHUD-v3.asi</downloadlink>
       <autoremovegroups/>
     </asimod>
     <asimod>
@@ -482,11 +482,11 @@
       <name>Streaming Levels HUD</name>
       <installedname>StreamingLevelsHUD</installedname>
       <author>Mgamerz</author>
-      <description>This ASI draws the list of streaming levels on the top left of the screen, as well as their current loaded state. The interface can be toggled on and off by pressing CTRL+T. Additionally, it shows the amount of memory the process is currently using, as well as as the maximum. When the amount nears the crashing point (3.5GiB), it turns, yellow, red, then begins to flash red.</description>
-      <version>3</version>
-      <hash>d5dfac6ac51d038c0e19b3deade7152d</hash>
+      <description>This ASI draws the list of streaming levels on the top left of the screen, as well as their current loaded state. It additionally shows the amount of memory the process is currently using, as well as as the maximum. When the amount nears the crashing point (3.5GiB), it turns, yellow, red, then begins to flash red.</description>
+      <version>1</version>
+      <hash>52477ccc1973864616e86d49d276afbf</hash>
       <sourcecode>https://github.com/ME3Tweaks/ME2-ASI-Plugins/tree/master/SteamingLevelsHUD</sourcecode>
-      <downloadlink>https://github.com/ME3Tweaks/ME2-ASI-Plugins/releases/download/v3.0-StreamingLevelsHUD/StreamingLevelsHUD-v3.asi</downloadlink>
+      <downloadlink>https://github.com/ME3Tweaks/ME2-ASI-Plugins/releases/download/v1.0-StreamingLevelsHUD/StreamingLevelsHUD-v1.0.asi</downloadlink>
       <autoremovegroups/>
     </asimod>
   </updategroup>
@@ -559,10 +559,10 @@
       <installedname>AutoTOCLE</installedname>
       <author>SirCxyrtyx</author>
       <description>This ASI will automatically calculate the Table of Contents (TOC) file for the game on game boot.</description>
-      <version>2</version>
-      <hash>6e0418e9208743ea9addf5cf4aa94add</hash>
+      <version>1</version>
+      <hash>5698d64ec9afb6b1100efcc86f99a1fc</hash>
       <sourcecode>https://github.com/SirCxyrtyx/AutoTOC-asi/tree/master</sourcecode>
-      <downloadlink>https://github.com/SirCxyrtyx/AutoTOC-asi/releases/download/LEv2/AutoTOC_LE-v2.asi</downloadlink>
+      <downloadlink>https://github.com/SirCxyrtyx/AutoTOC-asi/releases/download/LEv1.0/AutoTOC_LE-v1.0.asi</downloadlink>
       <autoremovegroups/>
     </asimod>
     <asimod>
@@ -570,10 +570,10 @@
       <installedname>AutoTOCLE</installedname>
       <author>SirCxyrtyx</author>
       <description>This ASI will automatically calculate the Table of Contents (TOC) file for the game on game boot.</description>
-      <version>1</version>
-      <hash>5698d64ec9afb6b1100efcc86f99a1fc</hash>
+      <version>2</version>
+      <hash>6e0418e9208743ea9addf5cf4aa94add</hash>
       <sourcecode>https://github.com/SirCxyrtyx/AutoTOC-asi/tree/master</sourcecode>
-      <downloadlink>https://github.com/SirCxyrtyx/AutoTOC-asi/releases/download/LEv1.0/AutoTOC_LE-v1.0.asi</downloadlink>
+      <downloadlink>https://github.com/SirCxyrtyx/AutoTOC-asi/releases/download/LEv2/AutoTOC_LE-v2.asi</downloadlink>
       <autoremovegroups/>
     </asimod>
   </updategroup>
@@ -624,6 +624,17 @@
       <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LE1AutoloadEnabler-v4.0/LE1AutoloadEnabler-v4.0.asi</downloadlink>
       <autoremovegroups>34</autoremovegroups>
     </asimod>
+    <asimod>
+      <name>Autoload Enabler</name>
+      <installedname>AutoloadEnabler</installedname>
+      <author>ME3Tweaks</author>
+      <description>This ASI enables the autoload.ini feature, which is a fairly critical component for LE1 DLC mods. Without this, DLC cannot fully mount. This version registers TFC and ISB files for use by the game, so you can include these files in your DLC mod folder. It also will register startup files when declared as a GlobalPackage in Autoload.ini. </description>
+      <version>6</version>
+      <hash>37bc99c13157234143e68d884a66a03f</hash>
+      <sourcecode>https://github.com/ME3Tweaks/LE1-ASI-Plugins/tree/main/LE1AutoloadEnabler</sourcecode>
+      <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LE1AutoloadEnabler-v6.0/LE1AutoloadEnabler-v6.0.asi</downloadlink>
+      <autoremovegroups>34</autoremovegroups>
+    </asimod>
   </updategroup>
   <updategroup groupid="33" game="3" hidden="0">
     <asimod>
@@ -667,17 +678,6 @@
       <name>Streaming Levels HUD</name>
       <installedname>StreamingLevelsHUD</installedname>
       <author>Mgamerz</author>
-      <description>This ASI draws the list of streaming levels on the top left of the screen, as well as their current loaded state. It additionally shows the amount of memory the process is currently using, as well as as the maximum.  The HUD can be toggled on and off by pressing CTRL + T.</description>
-      <version>2</version>
-      <hash>8577997dfeeb76a7825fbbdfe3a146c4</hash>
-      <sourcecode>https://github.com/ME3Tweaks/LE1-ASI-Plugins/tree/main/LE1StreamingLevelsHUD</sourcecode>
-      <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LE1StreamingLevelsHUD-v2.0/LE1StreamingLevelsHUD-v2.0.asi</downloadlink>
-      <autoremovegroups/>
-    </asimod>
-    <asimod>
-      <name>Streaming Levels HUD</name>
-      <installedname>StreamingLevelsHUD</installedname>
-      <author>Mgamerz</author>
       <description>This ASI draws the list of streaming levels on the top left of the screen, as well as their current loaded state. It also includes the last touched BioTriggerStream. It additionally shows the amount of memory the process is currently using, as well as as the maximum, and the text size scales based on the resolution of your screen.  The HUD can be toggled on and off by pressing CTRL + T.</description>
       <version>3</version>
       <hash>05ed5710b09261d8769e7c7a4ea2d3f6</hash>
@@ -685,17 +685,28 @@
       <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LE1StreamingLevelsHUD-v3.0/LE1StreamingLevelsHUD-v3.0.asi</downloadlink>
       <autoremovegroups/>
     </asimod>
+    <asimod>
+      <name>Streaming Levels HUD</name>
+      <installedname>StreamingLevelsHUD</installedname>
+      <author>Mgamerz</author>
+      <description>This ASI draws the list of streaming levels on the top left of the screen, as well as their current loaded state. It additionally shows the amount of memory the process is currently using, as well as as the maximum.  The HUD can be toggled on and off by pressing CTRL + T.</description>
+      <version>2</version>
+      <hash>8577997dfeeb76a7825fbbdfe3a146c4</hash>
+      <sourcecode>https://github.com/ME3Tweaks/LE1-ASI-Plugins/tree/main/LE1StreamingLevelsHUD</sourcecode>
+      <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LE1StreamingLevelsHUD-v2.0/LE1StreamingLevelsHUD-v2.0.asi</downloadlink>
+      <autoremovegroups/>
+    </asimod>
   </updategroup>
   <updategroup groupid="36" game="4" hidden="0">
     <asimod>
       <name>Kismet Logger</name>
       <installedname>KismetLogger</installedname>
-      <author>henbagle</author>
+      <author>ME3Tweaks</author>
       <description>This plugin logs kismet sequence object activations to the console and to a file named KismetLog.txt. You can trace the execution of this log with Legendary Explorer's Sequence Editor.</description>
-      <version>1</version>
-      <hash>69f5d843a3c1e82ec44c065f5b301766</hash>
+      <version>3</version>
+      <hash>c3ec20104e399913b9c79c0edf01fba2</hash>
       <sourcecode>https://github.com/ME3Tweaks/LE1-ASI-Plugins/tree/main/KismetLogger</sourcecode>
-      <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LE1KismetLogger-v1/KismetLogger-v1.asi</downloadlink>
+      <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LE1KismetLogger-v3.0/LE1KismetLogger-v3.0.asi</downloadlink>
       <autoremovegroups/>
     </asimod>
     <asimod>
@@ -709,17 +720,28 @@
       <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LE1KismetLogger-v2/KismetLogger-v2.asi</downloadlink>
       <autoremovegroups/>
     </asimod>
+    <asimod>
+      <name>Kismet Logger</name>
+      <installedname>KismetLogger</installedname>
+      <author>henbagle</author>
+      <description>This plugin logs kismet sequence object activations to the console and to a file named KismetLog.txt. You can trace the execution of this log with Legendary Explorer's Sequence Editor.</description>
+      <version>1</version>
+      <hash>69f5d843a3c1e82ec44c065f5b301766</hash>
+      <sourcecode>https://github.com/ME3Tweaks/LE1-ASI-Plugins/tree/main/KismetLogger</sourcecode>
+      <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LE1KismetLogger-v1/KismetLogger-v1.asi</downloadlink>
+      <autoremovegroups/>
+    </asimod>
   </updategroup>
   <updategroup groupid="37" game="4" hidden="0">
     <asimod>
       <name>SeqAct_Log Enabler</name>
       <installedname>SeqAct_Log-Enabler</installedname>
-      <author>henbagle</author>
+      <author>ME3Tweaks</author>
       <description>Will print the contents of SeqVars attached to SeqAct_Logs to the screen. Useful for debugging sequences.</description>
-      <version>2</version>
-      <hash>d975ec36c632d87e6a1c1aa9a093a7ac</hash>
+      <version>4</version>
+      <hash>83aa32362929fc79e7754f07a2270db5</hash>
       <sourcecode>https://github.com/ME3Tweaks/LE1-ASI-Plugins/tree/main/SeqActLog%20Enabler</sourcecode>
-      <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LE1SeqActLogEnabler-v2.0/LE1SeqActLogEnabler-v2.asi</downloadlink>
+      <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LE1SeqActLogEnabler-v4.0/LE1SeqActLogEnabler-v4.0.asi</downloadlink>
       <autoremovegroups/>
     </asimod>
     <asimod>
@@ -731,6 +753,17 @@
       <hash>61b3e8831395d665004e3fa6c58096f1</hash>
       <sourcecode>https://github.com/ME3Tweaks/LE1-ASI-Plugins/tree/main/SeqActLog%20Enabler</sourcecode>
       <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LE1SeqActLogEnabler-v1.0/LE1SeqActLogEnabler-v1.asi</downloadlink>
+      <autoremovegroups/>
+    </asimod>
+    <asimod>
+      <name>SeqAct_Log Enabler</name>
+      <installedname>SeqAct_Log-Enabler</installedname>
+      <author>henbagle</author>
+      <description>Will print the contents of SeqVars attached to SeqAct_Logs to the screen. Useful for debugging sequences.</description>
+      <version>2</version>
+      <hash>d975ec36c632d87e6a1c1aa9a093a7ac</hash>
+      <sourcecode>https://github.com/ME3Tweaks/LE1-ASI-Plugins/tree/main/SeqActLog%20Enabler</sourcecode>
+      <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LE1SeqActLogEnabler-v2.0/LE1SeqActLogEnabler-v2.asi</downloadlink>
       <autoremovegroups/>
     </asimod>
   </updategroup>
@@ -786,6 +819,17 @@
     <asimod>
       <name>Kismet Logger</name>
       <installedname>LE3KismetLogger</installedname>
+      <author>ME3Tweaks</author>
+      <description>This plugin logs kismet sequence object activations to the console and to a file named KismetLog.txt. You can trace the execution of this log with Legendary Explorer's Sequence Editor.</description>
+      <version>3</version>
+      <hash>9380681fd3a16cd3f4495ee01887ac32</hash>
+      <sourcecode>https://github.com/ME3Tweaks/LE3-ASI-Plugins/tree/master/LE3KismetLogger</sourcecode>
+      <downloadlink>https://github.com/ME3Tweaks/LE3-ASI-Plugins/releases/download/LE3KismetLogger-v3.0/LE3KismetLogger-v3.0.asi</downloadlink>
+      <autoremovegroups/>
+    </asimod>
+    <asimod>
+      <name>Kismet Logger</name>
+      <installedname>LE3KismetLogger</installedname>
       <author>Mgamerz</author>
       <description>This plugin logs kismet sequence object activations to the console and to a file named KismetLog.txt. You can trace the execution of this log with Legendary Explorer's Sequence Editor.</description>
       <version>1</version>
@@ -805,6 +849,17 @@
       <hash>fc7f408d9fc7f2d7f915593528f77881</hash>
       <sourcecode>https://github.com/ME3Tweaks/LE2-ASI-Plugins/tree/master/LE2KismetLogger</sourcecode>
       <downloadlink>https://github.com/ME3Tweaks/LE2-ASI-Plugins/releases/download/LE2KismetLogger-v1.0/LE2KismetLogger-v1.0.asi</downloadlink>
+      <autoremovegroups/>
+    </asimod>
+    <asimod>
+      <name>Kismet Logger</name>
+      <installedname>LE2KismetLogger</installedname>
+      <author>ME3Tweaks</author>
+      <description>This plugin logs kismet sequence object activations to the console and to a file named KismetLog.txt. You can trace the execution of this log with Legendary Explorer's Sequence Editor.</description>
+      <version>3</version>
+      <hash>477b3d53124253aabb481141a4a82d04</hash>
+      <sourcecode>https://github.com/ME3Tweaks/LE2-ASI-Plugins/tree/master/LE2KismetLogger</sourcecode>
+      <downloadlink>https://github.com/ME3Tweaks/LE2-ASI-Plugins/releases/download/LE2KismetLogger-v2.0/LE2KismetLogger-v2.0.asi</downloadlink>
       <autoremovegroups/>
     </asimod>
   </updategroup>
@@ -875,6 +930,17 @@
   </updategroup>
   <updategroup groupid="47" game="4" hidden="0">
     <asimod>
+      <name>Linker Printer</name>
+      <installedname>LE1LinkerPrinter</installedname>
+      <author>ME3Tweaks</author>
+      <description>This ASI internally tracks the file source of every object loaded into memory from disk. Objects with the same name already in memory are not loaded from disk; the in-memory version is used instead, which is a common problem due to asset duplication.\n\nPress CTRL + O to log all loaded objects' sources to a file named LinkerPrinter.log, next to the game executable.</description>
+      <version>2</version>
+      <hash>52269183ee3fd2e7099a76f0fdfd66ce</hash>
+      <sourcecode>https://github.com/ME3Tweaks/LE1-ASI-Plugins/tree/main/LinkerPrinter</sourcecode>
+      <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LE1LinkerPrinter-v2.0/LE1LinkerPrinter-v2.0.asi</downloadlink>
+      <autoremovegroups/>
+    </asimod>
+    <asimod>
       <name>LE1 Linker Printer</name>
       <installedname>LE1LinkerPrinter</installedname>
       <author>ME3Tweaks</author>
@@ -887,6 +953,17 @@
     </asimod>
   </updategroup>
   <updategroup groupid="48" game="5" hidden="0">
+    <asimod>
+      <name>Linker Printer</name>
+      <installedname>LE2LinkerPrinter</installedname>
+      <author>ME3Tweaks</author>
+      <description>This ASI internally tracks the file source of every object loaded into memory from disk. Objects with the same name already in memory are not loaded from disk; the in-memory version is used instead, which is a common problem due to asset duplication.\n\nPress CTRL + O to log all loaded objects' sources to a file named LinkerPrinter.log, next to the game executable.</description>
+      <version>2</version>
+      <hash>6280bc920f2154a956053731f8e985bb</hash>
+      <sourcecode>https://github.com/ME3Tweaks/LE2-ASI-Plugins/tree/master/LE2LinkerPrinter</sourcecode>
+      <downloadlink>https://github.com/ME3Tweaks/LE2-ASI-Plugins/releases/download/LE2LinkerPrinter-v2.0/LE2LinkerPrinter-v2.0.asi</downloadlink>
+      <autoremovegroups/>
+    </asimod>
     <asimod>
       <name>LE2 Linker Printer</name>
       <installedname>LE2LinkerPrinter</installedname>
@@ -911,8 +988,30 @@
       <downloadlink>https://github.com/ME3Tweaks/LE3-ASI-Plugins/releases/download/LE3LinkerPrinter-v1.0/LE3LinkerPrinter-v1.0.asi</downloadlink>
       <autoremovegroups/>
     </asimod>
+    <asimod>
+      <name>Linker Printer</name>
+      <installedname>LE3LinkerPrinter</installedname>
+      <author>ME3Tweaks</author>
+      <description>This ASI internally tracks the file source of every object loaded into memory from disk. Objects with the same name already in memory are not loaded from disk; the in-memory version is used instead, which is a common problem due to asset duplication.\n\nPress CTRL + O to log all loaded objects' sources to a file named LinkerPrinter.log, next to the game executable.</description>
+      <version>2</version>
+      <hash>281617c55b5dc46b55a00c92e5578e73</hash>
+      <sourcecode>https://github.com/ME3Tweaks/LE3-ASI-Plugins/tree/master/LE3LinkerPrinter</sourcecode>
+      <downloadlink>https://github.com/ME3Tweaks/LE3-ASI-Plugins/releases/download/LE3LinkerPrinter-v2.0/LE3LinkerPrinter-v2.0.asi</downloadlink>
+      <autoremovegroups/>
+    </asimod>
   </updategroup>
   <updategroup groupid="70" game="4" hidden="0">
+    <asimod>
+      <name>Debug Logger</name>
+      <installedname>LE1DebugLogger</installedname>
+      <author>ME3Tweaks</author>
+      <description>This ASI logs various things from the game that can be useful for development and debugging the game. It includes things such as error messages, some game crash scenarios, package loading, and failed imports. The log is stored in a file next to the game executable.</description>
+      <version>4</version>
+      <hash>1e31274de2d5c6811054c6661f0759a8</hash>
+      <sourcecode>https://github.com/ME3Tweaks/LE1-ASI-Plugins/tree/main/LE1DebugLogger</sourcecode>
+      <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LE1DebugLogger-v4.0/LE1DebugLogger-v4.0.asi</downloadlink>
+      <autoremovegroups/>
+    </asimod>
     <asimod>
       <name>Debug Logger</name>
       <installedname>LE1DebugLogger</installedname>
@@ -952,11 +1051,11 @@
       <name>Debug Logger</name>
       <installedname>LE2DebugLogger</installedname>
       <author>ME3Tweaks</author>
-      <description>This ASI works logs all text written to the debug console (which the game does), as well as logs all imports that fail to resolve. Note that some imports failng to resolve are normal engine behavior due to how the game is compiled. The log is located in DebugLogger.txt next to the game executable.</description>
-      <version>2</version>
-      <hash>1ceaa0ca38d4994bc5be257ca895b1c1</hash>
+      <description>This ASI logs various things from the game that can be useful for development and debugging the game. It includes things such as error messages, some game crash scenarios, package loading, and failed imports. The log is stored in a file next to the game executable.</description>
+      <version>3</version>
+      <hash>be85748b766279b144bab26858d2d382</hash>
       <sourcecode>https://github.com/ME3Tweaks/LE2-ASI-Plugins/tree/master/LE2DebugLogger</sourcecode>
-      <downloadlink>https://github.com/ME3Tweaks/LE2-ASI-Plugins/releases/download/LE2DebugLogger-v2.0/LE2DebugLogger.asi</downloadlink>
+      <downloadlink>https://github.com/ME3Tweaks/LE2-ASI-Plugins/releases/download/LE2DebugLogger-v3.0/LE2DebugLogger-v3.0.asi</downloadlink>
       <autoremovegroups/>
     </asimod>
     <asimod>
@@ -974,15 +1073,26 @@
       <name>Debug Logger</name>
       <installedname>LE2DebugLogger</installedname>
       <author>ME3Tweaks</author>
-      <description>This ASI logs various things from the game that can be useful for development and debugging the game. It includes things such as error messages, some game crash scenarios, package loading, and failed imports. The log is stored in a file next to the game executable.</description>
-      <version>3</version>
-      <hash>be85748b766279b144bab26858d2d382</hash>
+      <description>This ASI works logs all text written to the debug console (which the game does), as well as logs all imports that fail to resolve. Note that some imports failng to resolve are normal engine behavior due to how the game is compiled. The log is located in DebugLogger.txt next to the game executable.</description>
+      <version>2</version>
+      <hash>1ceaa0ca38d4994bc5be257ca895b1c1</hash>
       <sourcecode>https://github.com/ME3Tweaks/LE2-ASI-Plugins/tree/master/LE2DebugLogger</sourcecode>
-      <downloadlink>https://github.com/ME3Tweaks/LE2-ASI-Plugins/releases/download/LE2DebugLogger-v3.0/LE2DebugLogger-v3.0.asi</downloadlink>
+      <downloadlink>https://github.com/ME3Tweaks/LE2-ASI-Plugins/releases/download/LE2DebugLogger-v2.0/LE2DebugLogger.asi</downloadlink>
       <autoremovegroups/>
     </asimod>
   </updategroup>
   <updategroup groupid="72" game="6" hidden="0">
+    <asimod>
+      <name>Debug Logger</name>
+      <installedname>LE3DebugLogger</installedname>
+      <author>ME3Tweaks</author>
+      <description>This ASI logs various things from the game that can be useful for development and debugging the game. It includes things such as error messages, some game crash scenarios, package loading, and failed imports. The log is stored in a file next to the game executable.</description>
+      <version>3</version>
+      <hash>b0d0acc81b4abf70692c3572b349b182</hash>
+      <sourcecode>https://github.com/ME3Tweaks/LE3-ASI-Plugins/tree/master/LE3DebugLogger</sourcecode>
+      <downloadlink>https://github.com/ME3Tweaks/LE3-ASI-Plugins/releases/download/LE3DebugLogger-v3.0/LE3DebugLogger-v3.0.asi</downloadlink>
+      <autoremovegroups/>
+    </asimod>
     <asimod>
       <name>Debug Logger</name>
       <installedname>LE3DebugLogger</installedname>
@@ -1005,15 +1115,30 @@
       <downloadlink>https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/download/LEDebugLogger-v1.0/LEDebugLogger-v.1.0.asi</downloadlink>
       <autoremovegroups/>
     </asimod>
+  </updategroup>
+  <updategroup groupid="73" game="5" hidden="0">
     <asimod>
-      <name>Debug Logger</name>
-      <installedname>LE3DebugLogger</installedname>
+      <name>SeqAct_Log Enabler</name>
+      <installedname>LE2SeqAct_LogEnabler</installedname>
       <author>ME3Tweaks</author>
-      <description>This ASI logs various things from the game that can be useful for development and debugging the game. It includes things such as error messages, some game crash scenarios, package loading, and failed imports. The log is stored in a file next to the game executable.</description>
-      <version>3</version>
-      <hash>b0d0acc81b4abf70692c3572b349b182</hash>
-      <sourcecode>https://github.com/ME3Tweaks/LE3-ASI-Plugins/tree/master/LE3DebugLogger</sourcecode>
-      <downloadlink>https://github.com/ME3Tweaks/LE3-ASI-Plugins/releases/download/LE3DebugLogger-v3.0/LE3DebugLogger-v3.0.asi</downloadlink>
+      <description>Will print the contents of SeqVars attached to SeqAct_Logs to the screen. Useful for debugging sequences.</description>
+      <version>4</version>
+      <hash>5635ad85fd9b4c3ec582dfd3867d456a</hash>
+      <sourcecode>https://github.com/ME3Tweaks/LE2-ASI-Plugins/tree/master/LE2SeqAct_LogEnabler</sourcecode>
+      <downloadlink>https://github.com/ME3Tweaks/LE2-ASI-Plugins/releases/download/LE2SeqAct_LogEnabler-v.4.0/LE2SeqAct_LogEnabler-v4.0.asi</downloadlink>
+      <autoremovegroups/>
+    </asimod>
+  </updategroup>
+  <updategroup groupid="74" game="6" hidden="0">
+    <asimod>
+      <name>SeqAct_Log Enabler</name>
+      <installedname>LE3SeqAct_LogEnabler</installedname>
+      <author>ME3Tweaks</author>
+      <description>Will print the contents of SeqVars attached to SeqAct_Logs to the screen. Useful for debugging sequences.</description>
+      <version>4</version>
+      <hash>d8c966e92d0e4641f13b187b6004b114</hash>
+      <sourcecode>https://github.com/ME3Tweaks/LE3-ASI-Plugins/tree/master/LE3SeqAct_LogEnabler</sourcecode>
+      <downloadlink>https://github.com/ME3Tweaks/LE3-ASI-Plugins/releases/download/LE3SeqAct_LogEnabler-v4.0/LE3SeqAct_LogEnabler-v4.0.asi</downloadlink>
       <autoremovegroups/>
     </asimod>
   </updategroup>
