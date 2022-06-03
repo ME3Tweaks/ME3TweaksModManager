@@ -29,7 +29,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-		<DebugType>embedded</DebugType>
+		<DebugType>pdbonly</DebugType>
 		<DebugSymbols>true</DebugSymbols>
 		<DefineConstants>DEBUG;TRACE</DefineConstants>
 	</PropertyGroup>
