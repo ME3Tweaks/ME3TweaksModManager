@@ -498,7 +498,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 return;
             }
 
-            var prereqCheckMessage = checkToolPrerequesites(tool);
+            var prereqCheckMessage = await checkToolPrerequesites(tool);
             if (prereqCheckMessage != null)
             {
                 Log.Error($@"Prerequisite not met: {prereqCheckMessage}");
@@ -666,18 +666,32 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             ToolsCheckedForUpdatesInThisSession.Add(tool);
         }
 
-        private static string checkToolPrerequesites(string toolname)
+        private static async Task<string> checkToolPrerequesites(string toolname)
         {
+            int netVersion = 0;
             switch (toolname)
             {
-                case LegendaryExplorer_Beta:
+                case LegendaryExplorer:
+                {
+                    if (App.ServerManifest != null && App.ServerManifest.TryGetValue(@"legendaryexplorerstable_netversion", out var lexStableNetVersion) && int.TryParse(lexStableNetVersion, out netVersion))
                     {
-                        if (!Utilities.IsNetRuntimeInstalled(5))
-                        {
-                            return M3L.GetString(M3L.string_error_net5RuntimeMissing);
-                        }
-                        break;
+                        // Nothing here, we parsed it out
                     }
+                    break;
+                }
+                case LegendaryExplorer_Beta:
+                {
+                    if (App.ServerManifest != null && App.ServerManifest.TryGetValue(@"legendaryexplorernightly_netversion", out var lexBetaNetVersion) && int.TryParse(lexBetaNetVersion, out netVersion))
+                    {
+                        // Nothing here, we parsed it out
+                    }
+                    break;
+                }
+            }
+
+            if (netVersion > 0 && !await Utilities.IsNetRuntimeInstalled(netVersion))
+            {
+                return $"The .NET {netVersion} Desktop Runtime is not installed. Install it and try again.";
             }
 
             return null; // nothing wrong

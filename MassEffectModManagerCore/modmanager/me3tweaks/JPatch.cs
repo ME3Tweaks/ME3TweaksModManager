@@ -32,7 +32,7 @@ using System.IO;
 namespace MassEffectModManagerCore.modmanager.me3tweaks
 {
     /// <summary>
- 
+
     /// </summary>
     [Localizable(false)]
     public class JPatch
@@ -120,14 +120,16 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
         /// <param name="sourceData">The source stream to patch against</param>
         /// <param name="patchData">The patch file stream</param>
         /// <param name="outData">The resulting patch output</param>
+        /// <param name="percentDoneCallback">Function that is invoked as the patching cursor progresses through the patch file. Can be null.</param>
         /// <returns>True if successful, false otherwise</returns>
-        public static bool ApplyJPatch(Stream sourceData, Stream patchData, Stream outData)
+        public static bool ApplyJPatch(Stream sourceData, Stream patchData, Stream outData, Action<long, long> percentDoneCallback = null)
         {
             //all positions should be at 0.
             sourceData.Position = 0;
             patchData.Position = 0;
             outData.Position = 0;
 
+            long patchLen = patchData.Length;
             int readByte = 0;
             int peekChar1;
             int peekChar2;
@@ -135,6 +137,7 @@ namespace MassEffectModManagerCore.modmanager.me3tweaks
             //Read patch data.
             while (readByte != EOF) // I don't think this condition will occur unless patch is malformed
             {
+                percentDoneCallback?.Invoke(patchData.Position, patchLen);
                 // Read operator from input, unless this has already been done
                 if (readByte == 0)
                 {

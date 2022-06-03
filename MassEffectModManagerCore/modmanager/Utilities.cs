@@ -79,36 +79,10 @@ namespace MassEffectModManagerCore.modmanager
             return principal.IsInRole(WindowsBuiltInRole.Administrator);
         }
 
-        public static bool IsNetRuntimeInstalled(int minVer)
+        public static async Task<bool> IsNetRuntimeInstalled(int majorVersion)
         {
-            var baseKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\dotnet\Setup\InstalledVersions");
-            if (baseKey == null || baseKey.SubKeyCount == 0)
-                return false;
-
-            foreach (var platformKey in baseKey.GetSubKeyNames())
-            {
-                using (var platform = baseKey.OpenSubKey(platformKey))
-                {
-                    Debug.WriteLine($"Platform: {platform.Name.Substring(platform.Name.LastIndexOf("\\") + 1)}");
-                    if (platform.SubKeyCount == 0)
-                        continue;
-
-                    var sharedHost = platform.OpenSubKey("sharedhost");
-                    foreach (var version in sharedHost.GetValueNames())
-                    {
-                        var v = ((string)sharedHost.GetValue(@"Version"))?.Split("-")?.FirstOrDefault();
-                        if (v != null && Version.TryParse(v, out var netVersion))
-                        {
-                            if (netVersion > new Version($"{minVer}.0.0.0"))
-                            {
-                                return true;
-                            }
-                        }
-                    }
-                }
-            }
-
-            return false;
+            var versions = await DotNetRuntimeVersionDetector.GetInstalledRuntimeVersions(true);
+            return versions.Any(x => x.Major == majorVersion);
         }
 
         /// <summary>

@@ -262,8 +262,15 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
                 using var currentBuildStream = File.OpenRead(App.ExecutableLocation);
                 //using var currentBuildStream = File.OpenRead(@"C:\Users\Mgamerz\source\repos\ME3Tweaks\MassEffectModManager\MassEffectModManagerCore\Deployment\Staging\ME3TweaksModManager\ME3TweaksModManager.exe");
 
+                void patchBuildProgress(long pos, long size)
+                {
+                    ProgressIndeterminate = false;
+                    ProgressMax = size;
+                    ProgressValue = pos;
+                }
+
                 MemoryStream outStream = new MemoryStream();
-                JPatch.ApplyJPatch(currentBuildStream, patchStream, outStream);
+                JPatch.ApplyJPatch(currentBuildStream, patchStream, outStream, patchBuildProgress);
                 var calculatedHash = Utilities.CalculateMD5(outStream);
                 if (calculatedHash == expectedFinalHash)
                 {
@@ -309,6 +316,7 @@ namespace MassEffectModManagerCore.modmanager.usercontrols
             var updateExecutablePath = Directory.GetFiles(updateDirectory, @"ME3TweaksModManager.exe", SearchOption.AllDirectories).FirstOrDefault();
             if (updateExecutablePath != null && File.Exists(updateExecutablePath) && File.Exists(updateSwapperExecutable))
             {
+                ProgressIndeterminate = true;
                 ProgressText = M3L.GetString(M3L.string_verifyingUpdate);
                 var authenticodeInspector = new FileInspector(updateExecutablePath);
                 var validationResult = authenticodeInspector.Validate();
