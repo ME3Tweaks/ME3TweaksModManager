@@ -25,6 +25,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
     /// </summary>
     public class MergeMod1 : IMergeMod
     {
+        private const string ManifestSchemaInternalPath = @"ME3TweaksModManager.modmanager.objects.mod.merge.v1.schema.json";
         private const string MMV1_ASSETMAGIC = @"MMV1";
         [JsonIgnore]
         public string MergeModFilename { get; set; }
@@ -44,6 +45,22 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
         {
             // Version and magic will already be read by main value
             var manifest = mergeFileStream.ReadUnrealString();
+
+            // This doesn't work since serialization strips some info
+            // Just will have to trust devs
+            // 06/02/2022: Validate against the known schema to prevent future changes from being able to be 'backported' to unsupported versions
+            //var schemaText = new StreamReader(M3Utilities.ExtractInternalFileToStream(ManifestSchemaInternalPath)).ReadToEnd();
+            //var messages = JsonSchemaValidator.ValidateSchema(manifest, schemaText);
+            //if (messages != null && messages.Any())
+            //{
+            //    M3Log.Error($@"Invalid schema for mergemod manifest {mergeModName}:");
+            //    foreach (var m in messages)
+            //    {
+            //        M3Log.Error($@"  {m}");
+            //    }
+            //    throw new Exception($"The mergemod {mergeModName} manifest contains an invalid manifest. See the Mod Manager log for details.");
+            //}
+
             var mm = JsonConvert.DeserializeObject<MergeMod1>(manifest);
             MemoryAnalyzer.AddTrackedMemoryItem($@"MergeMod1 {mergeModName}", new WeakReference(mm));
             mm.MergeModFilename = mergeModName;
@@ -86,6 +103,10 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                 }
             }
 
+            if (mergeFileStream.Position != mergeFileStream.Length)
+            {
+                throw new Exception(M3L.GetString(M3L.string_interp_mergefile_serialSizeMismatch, mergeFileStream.Position, mergeFileStream.Length));
+            }
             return mm;
         }
 
@@ -187,15 +208,13 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
             var manifestText = File.ReadAllText(manifestFile);
 
             // VALIDATE JSON SCHEMA
-            JSchema schema = JSchema.Parse(new StreamReader(M3Utilities.ExtractInternalFileToStream(@"ME3TweaksModManager.modmanager.objects.mod.merge.v1.schema.json")).ReadToEnd());
-
-            JObject person = JObject.Parse(manifestText);
-
-            bool valid = person.IsValid(schema, out IList<string> messages);
-            if (!valid)
+            var schemaText = new StreamReader(M3Utilities.ExtractInternalFileToStream(ManifestSchemaInternalPath)).ReadToEnd();
+            var schemaFailureMessages = JsonSchemaValidator.ValidateSchema(manifestText, schemaText);
+            if (schemaFailureMessages != null && schemaFailureMessages.Any())
             {
-                return messages;
+                return schemaFailureMessages;
             }
+
             var mm = JsonConvert.DeserializeObject<MergeMod1>(manifestText);
 
             // Update manifest

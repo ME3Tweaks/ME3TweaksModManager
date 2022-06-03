@@ -783,7 +783,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_interp_prerequisiteNotMetX = "string_interp_prerequisiteNotMetX";
 		public const string string_downloadFailed = "string_downloadFailed";
 		public const string string_error_cantDownloadNotEnoughInfoInStartupManifest = "string_error_cantDownloadNotEnoughInfoInStartupManifest";
-		public const string string_error_netRuntimeMissing = "string_error_net5RuntimeMissing";
+		public const string string_error_netRuntimeMissing = "string_error_netRuntimeMissing";
 		public const string string_restoreFromME3Tweaks = "string_restoreFromME3Tweaks";
 		public const string string_theFollowingModsFailedToLoad = "string_theFollowingModsFailedToLoad";
 		public const string string_failedMods = "string_failedMods";
@@ -1273,7 +1273,6 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_tooltip_runningOnX = "string_tooltip_runningOnX";
 		public const string string_enablesSingleinstancingOfAnApplication = "string_enablesSingleinstancingOfAnApplication";
 		public const string string_wrapperForRobycopyCommandInCSharp = "string_wrapperForRobycopyCommandInCSharp";
-		public const string string_outdatedVersionInstalled = "string_outdatedVersionInstalled";
 		public const string string_interp_byXVersionY = "string_interp_byXVersionY";
 		public const string string_installedOutdated = "string_installedOutdated";
 		public const string string_updateASI = "string_updateASI";
@@ -1281,13 +1280,9 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_uninstallASI = "string_uninstallASI";
 		public const string string_notInstalled = "string_notInstalled";
 		public const string string_installASI = "string_installASI";
-		public const string string_unknownASIDescription = "string_unknownASIDescription";
 		public const string string_SSINotPresentInManifest = "string_SSINotPresentInManifest";
 		public const string string_selectAnASIToViewOptions = "string_selectAnASIToViewOptions";
 		public const string string_noASISelected = "string_noASISelected";
-		public const string string_aSILoaderInstalledASIModsWillLoad = "string_aSILoaderInstalledASIModsWillLoad";
-		public const string string_aSILoaderNotInstalledASIModsWillNotLoad = "string_aSILoaderNotInstalledASIModsWillNotLoad";
-		public const string string_loaderInstalled = "string_loaderInstalled";
 		public const string string_installLoader = "string_installLoader";
 		public const string string_unknownASIMod = "string_unknownASIMod";
 		public const string string_ASIManager = "string_ASIManager";
@@ -1788,6 +1783,8 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_interp_mergefile_invalidEnumPropertyValue = "string_interp_mergefile_invalidEnumPropertyValue";
 		public const string string_interp_fileLibInitMergeMod1Script = "string_interp_fileLibInitMergeMod1Script";
 		public const string string_interp_mergefile_noLocalizedFiles = "string_interp_mergefile_noLocalizedFiles";
+		public const string string_interp_mergefile_errorCompilingClassAfterEdit = "string_interp_mergefile_errorCompilingClassAfterEdit";
+		public const string string_interp_mergefile_serialSizeMismatch = "string_interp_mergefile_serialSizeMismatch";
 		public const string string_me3tweaksModManagerOptions = "string_me3tweaksModManagerOptions";
 		public const string string_mainOptions = "string_mainOptions";
 		public const string string_legendaryEditionOptions = "string_legendaryEditionOptions";

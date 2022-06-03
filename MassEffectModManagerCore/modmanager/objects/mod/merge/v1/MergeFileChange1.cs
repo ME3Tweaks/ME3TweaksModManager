@@ -363,7 +363,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
         public bool ApplyUpdate(IMEPackage package, ExportEntry targetExport, MergeAssetCache1 assetsCache, GameTargetWPF gameTarget)
         {
             FileLib fl = MergeFileChange1.GetFileLibForMerge(package, targetExport, assetsCache, gameTarget);
-            
+
             for (int i = 0; i < Scripts.Length; i++)
             {
                 MessageLog log = UnrealScriptCompiler.AddOrReplaceInClass(targetExport, Scripts[i], fl);
@@ -376,7 +376,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                         M3Log.Error(l.Message);
                     }
                     //Todo: localize this message
-                    throw new Exception($"Error compiling class {targetExport.InstancedFullPath} after adding or replacing {ScriptFileNames[i]}: {string.Join(Environment.NewLine, log.AllErrors)}");
+                    throw new Exception(M3L.GetString(M3L.string_interp_mergefile_errorCompilingClassAfterEdit, targetExport.InstancedFullPath, ScriptFileNames[i], string.Join(Environment.NewLine, log.AllErrors)));
                 }
 
                 //we don't need the filelib again after the last iteration, but we still need to re-initialize it.
