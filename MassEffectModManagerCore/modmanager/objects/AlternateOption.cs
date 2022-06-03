@@ -73,6 +73,11 @@ namespace MassEffectModManagerCore.modmanager.objects
         public BitmapSource ImageBitmap { get; set; }
 
         /// <summary>
+        /// MODDESC 8 BACKPORT: If, when applying the multilist, the output files should be flattened to the target directory, instead of retaining their relative paths
+        /// </summary>
+        public bool FlattenMultilistOutput { get; init; }
+
+        /// <summary>
         /// The height in pixels (resolution independent) of the image to show. The aspect ratio is preserved, so this will automatically product the width.
         /// </summary>
         public int ImageHeight { get; set; }

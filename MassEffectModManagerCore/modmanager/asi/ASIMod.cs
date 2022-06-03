@@ -1,11 +1,8 @@
-﻿using System;
+﻿
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using MassEffectModManagerCore.modmanager.helpers;
-using MassEffectModManagerCore.modmanager.usercontrols;
-using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Packages;
+
 
 namespace MassEffectModManagerCore.modmanager.asi
 {

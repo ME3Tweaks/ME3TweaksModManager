@@ -158,8 +158,17 @@ namespace MassEffectModManagerCore.modmanager.objects.mod
                                 string alternatePathRoot = FilesystemInterposer.PathCombine(IsInArchive, ModPath, altdlc.MultiListRootPath);
                                 foreach (var fileToAdd in altdlc.MultiListSourceFiles)
                                 {
+                                    var realFileToAdd = fileToAdd;
                                     var sourceFile = FilesystemInterposer.PathCombine(IsInArchive, alternatePathRoot, fileToAdd).Substring(ModPath.Length).TrimStart('\\');
-                                    var destFile = Path.Combine(altdlc.DestinationDLCFolder, fileToAdd.TrimStart('\\', '/'));
+
+                                    // ModDesc 8 BACKPORT FOR EGM: Flattening output allows you to draw from multiple folders
+                                    // and have a single output directory
+                                    if (altdlc.FlattenMultilistOutput)
+                                    {
+                                        realFileToAdd = Path.GetFileName(fileToAdd);
+                                    }
+
+                                    var destFile = Path.Combine(altdlc.DestinationDLCFolder, realFileToAdd.TrimStart('\\', '/'));
                                     CLog.Information($@"Adding extra CustomDLC file (MultiList) ({sourceFile} => {destFile}) due to Alternate DLC {altdlc.FriendlyName}'s {altdlc.Operation}", Settings.LogModInstallation);
 
                                     installationMapping[destFile] = new InstallSourceFile(sourceFile) { AltApplied = true };

@@ -242,6 +242,25 @@ namespace MassEffectModManagerCore.modmanager.objects
                         LoadFailedReason = M3L.GetString(M3L.string_interp_altfile_multilistIdNotIntegerOrMissing, FriendlyName);
                         return;
                     }
+
+                    // ModDesc 8.0 BACKPORT: Allow flattening output of multilist output.
+                    if (modForValidating.ModDescTargetVersion >= 7.0 && modForValidating.MinimumSupportedBuild >= 125)
+                    {
+                        if (properties.TryGetValue(@"FlattenMultiListOutput", out var multiListFlattentStr) && !string.IsNullOrWhiteSpace(multiListFlattentStr))
+                        {
+                            if (bool.TryParse(multiListFlattentStr, out var multiListFlatten))
+                            {
+                                FlattenMultilistOutput = multiListFlatten;
+                            }
+                            else
+                            {
+                                Log.Error($@"Alternate File ({FriendlyName}) specifies 'FlattenMultiListOutput' descriptor, but the value is not 'true' or 'false': {multiListFlattentStr}");
+                                ValidAlternate = false;
+                                LoadFailedReason = $@"Alternate File ({FriendlyName}) specifies 'FlattenMultiListOutput' descriptor, but the value is not 'true' or 'false': {multiListFlattentStr}"; // do not localize - this will not be merged to 8.0 branch
+                                return;
+                            }
+                        }
+                    }
                     #endregion
                 }
                 else if (Operation == AltFileOperation.OP_NOINSTALL_MULTILISTFILES)

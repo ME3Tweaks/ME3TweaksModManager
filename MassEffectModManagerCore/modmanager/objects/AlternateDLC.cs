@@ -243,6 +243,25 @@ namespace MassEffectModManagerCore.modmanager.objects
                         LoadFailedReason = M3L.GetString(M3L.string_interp_altdlc_multilistIdNotIntegerOrMissing, FriendlyName);
                         return;
                     }
+
+                    // ModDesc 8.0 BACKPORT FOR EGM: Allow flattening output of multilist output.
+                    if (modForValidating.ModDescTargetVersion >= 7.0 && modForValidating.MinimumSupportedBuild >= 125)
+                    {
+                        if (properties.TryGetValue(@"FlattenMultiListOutput", out var multiListFlattentStr) && !string.IsNullOrWhiteSpace(multiListFlattentStr))
+                        {
+                            if (bool.TryParse(multiListFlattentStr, out var multiListFlatten))
+                            {
+                                FlattenMultilistOutput = multiListFlatten;
+                            }
+                            else
+                            {
+                                Log.Error($@"Alternate DLC ({FriendlyName}) specifies 'FlattenMultiListOutput' descriptor, but the value is not 'true' or 'false': {multiListFlattentStr}");
+                                ValidAlternate = false;
+                                LoadFailedReason = $@"Alternate DLC ({FriendlyName}) specifies 'FlattenMultiListOutput' descriptor, but the value is not 'true' or 'false': {multiListFlattentStr}"; // do not localize - This branch will probably not merge into 8.0
+                                return;
+                            }
+                        }
+                    }
                 }
                 else
                 {
