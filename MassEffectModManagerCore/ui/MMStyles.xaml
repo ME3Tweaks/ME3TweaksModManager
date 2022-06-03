@@ -16,6 +16,7 @@
     <converters1:NullVisibilityConverter x:Key="NullVisibilityConverter"/>
     <converters1:NullHiddenConverter x:Key="NullHiddenConverter"/>
     <converters1:EqualIntVisibilityConverter x:Key="EqualIntVisibilityConverter"/>
+    <converters1:NonEqualIntVisibilityConverter x:Key="NonEqualIntVisibilityConverter"/>
     <converters1:NullEnabledConverter x:Key="NullEnabledConverter" />
     <converters1:BoolEnabledConverter x:Key="BoolToEnabledConverter" />
     <converters1:NotNullToBoolConverter x:Key="NotNullToBoolConverter" />
