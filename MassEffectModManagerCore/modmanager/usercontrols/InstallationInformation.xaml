@@ -239,40 +239,44 @@
                         </Button>
                     </DockPanel>
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
-                        <DockPanel HorizontalAlignment="Stretch">
-                            <!--<TextBlock Text="Mod Manager does not handle texture mods, but textures installed through ALOT Installer are shown here. Once texture mods are installed, Mod Manager will not operate on that installation." 
+                        <Grid>
+                            <TextBlock Text="No texture mods are installed" TextAlignment="Center" VerticalAlignment="Center"
+                                       Visibility="{Binding TextureInstallHistory.BindableCount, Converter={StaticResource EqualIntVisibilityConverter}, ConverterParameter=0}"/>
+                            <DockPanel HorizontalAlignment="Stretch">
+                                <!--<TextBlock Text="Mod Manager does not handle texture mods, but textures installed through ALOT Installer are shown here. Once texture mods are installed, Mod Manager will not operate on that installation." 
                                TextWrapping="Wrap"/>-->
-                            <ItemsControl ItemsSource="{Binding TextureInstallHistory}">
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate DataType="{x:Type targets:TextureModInstallationInfo}">
-                                        <DockPanel Margin="0,0,0,10">
-                                            <TextBlock Text="{Binding InstallationTimestamp,                                                  Converter={StaticResource LocalizationConverter}, ConverterParameter='string_interp_textureInstallationDate'}" FontWeight="Bold" DockPanel.Dock="Top" />
-                                            <TextBlock Text="{Binding                                                 Converter={StaticResource LocalizationConverter}, ConverterParameter='string_interp_versioningInfoX'}" DockPanel.Dock="Top" />
-                                            <TextBlock Text="{DynamicResource string_filesInstalledInSession}" DockPanel.Dock="Top" />
-                                            <ItemsControl ItemsSource="{Binding InstalledTextureMods}">
-                                                <ItemsControl.ItemTemplate>
-                                                    <DataTemplate DataType="{x:Type objects:InstalledTextureMod}">
-                                                        <DockPanel Margin="5,0,5,0">
-                                                            <DockPanel.Resources>
-                                                                <Style TargetType="{x:Type DockPanel}">
-                                                                    <Style.Triggers>
-                                                                        <Trigger Property="IsMouseOver" Value="True">
-                                                                            <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.HoverBackgroundBrush}}" />
-                                                                        </Trigger>
-                                                                    </Style.Triggers>
-                                                                </Style>
-                                                            </DockPanel.Resources>
-                                                            <TextBlock DockPanel.Dock="Right" Text="{Binding ModType}" FontStyle="Italic" Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
-                                                            <TextBlock Text="{Binding UIName}" />
-                                                        </DockPanel>
-                                                    </DataTemplate>
-                                                </ItemsControl.ItemTemplate>
-                                            </ItemsControl>
-                                        </DockPanel>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </DockPanel>
+                                <ItemsControl ItemsSource="{Binding TextureInstallHistory}" Visibility="{Binding TextureInstallHistory.BindableCount, Converter={StaticResource NonEqualIntVisibilityConverter}, ConverterParameter=0}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate DataType="{x:Type targets:TextureModInstallationInfo}">
+                                            <DockPanel Margin="0,0,0,10">
+                                                <TextBlock Text="{Binding InstallationTimestamp,                                                  Converter={StaticResource LocalizationConverter}, ConverterParameter='string_interp_textureInstallationDate'}" FontWeight="Bold" DockPanel.Dock="Top" />
+                                                <TextBlock Text="{Binding                                                 Converter={StaticResource LocalizationConverter}, ConverterParameter='string_interp_versioningInfoX'}" DockPanel.Dock="Top" />
+                                                <TextBlock Text="{DynamicResource string_filesInstalledInSession}" DockPanel.Dock="Top" />
+                                                <ItemsControl ItemsSource="{Binding InstalledTextureMods}">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate DataType="{x:Type objects:InstalledTextureMod}">
+                                                            <DockPanel Margin="5,0,5,0">
+                                                                <DockPanel.Resources>
+                                                                    <Style TargetType="{x:Type DockPanel}">
+                                                                        <Style.Triggers>
+                                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                                <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.HoverBackgroundBrush}}" />
+                                                                            </Trigger>
+                                                                        </Style.Triggers>
+                                                                    </Style>
+                                                                </DockPanel.Resources>
+                                                                <TextBlock DockPanel.Dock="Right" Text="{Binding ModType}" FontStyle="Italic" Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
+                                                                <TextBlock Text="{Binding UIName}" />
+                                                            </DockPanel>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </DockPanel>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl >
+                            </DockPanel>
+                        </Grid>
                     </ScrollViewer>
                 </DockPanel>
             </TabItem>

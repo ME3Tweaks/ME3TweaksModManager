@@ -762,6 +762,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 {
                     Result.ReloadMods = true;
                     Result.ModsToCheckForUpdates.AddRange(modList);
+
+                    // If only one mod was imported, highlight it on reload
+                    if (modList.Count == 1)
+                    {
+                        Result.ModToHighlightOnReload = modList[0];
+                    }
                 }
 
 
