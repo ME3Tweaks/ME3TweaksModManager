@@ -23,4 +23,21 @@ namespace ME3TweaksModManager.modmanager.converters
             return false; //don't need this
         }
     }
+
+    public class NonEqualIntVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is int inval && parameter is string str && int.TryParse(str, out int matchval))
+            {
+                return inval != matchval ? Visibility.Visible : Visibility.Collapsed;
+            }
+            return Visibility.Collapsed;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return false; //don't need this
+        }
+    }
 }
