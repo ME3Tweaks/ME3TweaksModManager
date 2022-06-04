@@ -113,7 +113,7 @@ The JSON format for a file update in a merge mod. The files property is an array
 
 This is the JSON format for an update to a specific export in a file. The changes property is an array of single export change objects. 
 
-The entryname must be the full instanced path for the entry you are trying to update, which means you must include all parent entry names, separated by a `.`. For example, if you are trying to update the `AdjustMouseSensitivity` function that is a child of the `BioPlayerInput`  export, your entry name must be `BioPlayerInput.AdjustMouseSensitivity`. This includes any object indexes. The full instanced path for an export can be seen at the "Currently loaded export" container in the Properties panel in Package Editor.
+The `entryname` must be the full instanced path for the entry you are trying to update, which means you must include all parent entry names, separated by a `.`. For example, if you are trying to update the `AdjustMouseSensitivity` function that is a child of the `BioPlayerInput`  export, your entry name must be `BioPlayerInput.AdjustMouseSensitivity`. This includes any object indexes. The full instanced path for an entry can be found in the Metadata tab of Package Editor in Legendary Explorer.
 
 You may have one of either a `propertyupdates`, a `scriptupdate`, or an `assetupdate` for an export. You may not have more than one. In other words, you may only update this export via one of the three available methods.
 
@@ -180,7 +180,7 @@ The format for an update to a function export. You must store your script in a p
 
 | Property Name  | Type   | Information                                                  |
 | -------------- | ------ | ------------------------------------------------------------ |
-| scriptfilename | string | The filename of a local plaintext file containing your script. File extension should be .uc. |
+| scriptfilename | string | The filename of a local plaintext file containing your script. File extension should be `.uc`. |
 
 **Example:**
 
@@ -197,11 +197,13 @@ The format for an update to a function export. You must store your script in a p
 
 ### `addtoclassorreplace` JSON format
 
-The format for adding or replacing members of a class (Enums, Structs, Variables, States, or Functions). If a member of the same name is found, it will be replaced. Otherwise it will be added to the class. You must store each member in a separate plaintext file, which will be embedded into your .m3m file. Your script files must be in the same folder as your manifest file.
+**Supported by moddesc 8.0 and above**
+
+The format for adding or replacing members of a class (Enums, Structs, Variables, States, or Functions). The `entryname` value must be the instanced full path of the class you are modifying. If a member of the same name is found, it will be replaced. Otherwise it will be added to the class. You must store each member in a separate plaintext file, which will be embedded into your .m3m file. Your script files must be in the same folder as your manifest file.
 
 | Property Name   | Type          | Information                                                                                            |
 | --------------- | ------------- | ------------------------------------------------------------------------------------------------------ |
-| scriptfilenames | array[string] | The filenames of local plaintext files containing one class member each. File extension should be .uc. |
+| scriptfilenames | array[string] | The filenames of local plaintext files containing one class member each. File extension should be `.uc`. |
 
 **Example:**
 
