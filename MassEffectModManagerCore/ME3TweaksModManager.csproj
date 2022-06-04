@@ -256,6 +256,9 @@
 		<Page Update="modmanager\usercontrols\PlotManagerUpdatePanel.xaml">
 		  <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
 		</Page>
+		<Page Update="modmanager\usercontrols\TextureInstallerPanel.xaml">
+		  <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+		</Page>
 		<Page Update="modmanager\usercontrols\TestArchiveGenerator.xaml">
 			<SubType>Designer</SubType>
 		</Page>

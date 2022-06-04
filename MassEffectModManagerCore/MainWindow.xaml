@@ -1286,6 +1286,10 @@
                         Name="InstallHeadMorph_MenuItem"
                         Click="RouteDebugCall" />
                     <MenuItem
+                        Header="Install .mem file"
+                        Name="InstallMEM_MenuItem"
+                        Click="RouteDebugCall" />
+                    <MenuItem
                         Header="{DynamicResource string_mEMVanillaDBViewer}"
                         Name="ShowMEMDB_MenuItem"
                         Click="RouteDebugCall" />
