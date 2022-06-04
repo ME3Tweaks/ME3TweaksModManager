@@ -57,9 +57,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
                         // Todo: Figure out how to make MEM take a game path
 
-
                         Debug.WriteLine(game);
                         MEMIPCHandler.InstallMEMFile(m.FileName, x => ActionText = x, x => PercentDone = x);
+                        Result.ReloadTargets = true;
                     }
                     runAndDoneDelegate?.Invoke();
                 };

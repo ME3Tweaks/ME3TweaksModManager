@@ -263,7 +263,9 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                     }
 
                     // ModDesc 8.0: Allow flattening output of multilist output.
-                    if (modForValidating.ModDescTargetVersion >= 8.0)
+                    // Backported to 7.0 125 build for EGM - it must work on 125 7.0 and above.
+                    if ((modForValidating.ModDescTargetVersion >= 7.0 && modForValidating.MinimumSupportedBuild >= 125)
+                        || modForValidating.ModDescTargetVersion >= 8.0)
                     {
                         if (properties.TryGetValue(@"FlattenMultiListOutput", out var multiListFlattentStr) && !string.IsNullOrWhiteSpace(multiListFlattentStr))
                         {
