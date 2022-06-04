@@ -197,6 +197,8 @@ The format for an update to a function export. You must store your script in a p
 
 ### `addtoclassorreplace` JSON format
 
+**Supported by moddesc 8.0 and above**
+
 The format for adding or replacing members of a class (Enums, Structs, Variables, States, or Functions). If a member of the same name is found, it will be replaced. Otherwise it will be added to the class. You must store each member in a separate plaintext file, which will be embedded into your .m3m file. Your script files must be in the same folder as your manifest file.
 
 | Property Name   | Type          | Information                                                                                            |
