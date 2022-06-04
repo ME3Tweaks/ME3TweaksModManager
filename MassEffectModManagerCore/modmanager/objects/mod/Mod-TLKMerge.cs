@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
+using LegendaryExplorerCore.Compression;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.TLK;
 using LegendaryExplorerCore.TLK.ME1;
@@ -18,7 +19,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
     public partial class Mod
     {
         /// <summary>
-        /// Coaleceses the TLK merges into groups by filename.
+        /// Coalesces the TLK merges into groups by filename.
         /// </summary>
         /// <returns></returns>
         public static Dictionary<string, List<string>> CoalesceTLKMergeFiles(List<string> filenames)
@@ -50,17 +51,52 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         {
             // Need to load file into memory
             string xmlContents;
+            var needsLzDecompress = false;
             var sourcePath = FilesystemInterposer.PathCombine(IsInArchive, ModPath, Mod.Game1EmbeddedTlkFolderName, tlkXmlName);
+            var lzSourcePath = FilesystemInterposer.PathCombine(IsInArchive, ModPath, Mod.Game1EmbeddedTlkFolderName, tlkXmlName + @".lzma");
             if (Archive != null)
             {
                 var ms = new MemoryStream();
-                Archive.ExtractFile(sourcePath, ms);
+                if (FilesystemInterposer.FileExists(lzSourcePath, Archive))
+                {
+                    // compressed
+                    Archive.ExtractFile(lzSourcePath, ms);
+                    needsLzDecompress = true;
+                }
+                else
+                {
+                    // non-compressed
+                    Archive.ExtractFile(sourcePath, ms);
+                }
                 ms.Position = 0;
+
+                // Mod Manager 8: Support .lzma file versions to reduce archive size.
+                if (needsLzDecompress)
+                {
+                    MemoryStream tempStream = new MemoryStream();
+                    LZMA.DecompressLZMAStream(ms, tempStream);
+                    ms = tempStream;
+                    ms.Position = 0;
+                }
+
                 xmlContents = new StreamReader(ms).ReadToEnd();
             }
             else
             {
-                xmlContents = File.ReadAllText(sourcePath);
+                if (File.Exists(lzSourcePath))
+                {
+                    // Decompress from disk
+                    using var diskStream = File.OpenRead(lzSourcePath);
+                    using var tempStream = new MemoryStream();
+                    LZMA.DecompressLZMAStream(diskStream, tempStream);
+                    tempStream.Position = 0;
+                    xmlContents = new StreamReader(tempStream).ReadToEnd();
+                }
+                else
+                {
+                    // Read from disk
+                    xmlContents = File.ReadAllText(sourcePath);
+                }
             }
 
             var tlkDoc = XDocument.Parse(xmlContents);
