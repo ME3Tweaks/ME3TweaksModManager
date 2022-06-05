@@ -10,6 +10,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.ME1.Unreal.UnhoodBytecode;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.Helpers;
@@ -23,6 +24,7 @@ using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.deployment;
 using ME3TweaksModManager.modmanager.objects.deployment.checks;
 using ME3TweaksModManager.modmanager.objects.mod;
+using ME3TweaksModManager.modmanager.objects.tlk;
 using ME3TweaksModManager.modmanager.windows;
 using ME3TweaksModManager.ui;
 using Microsoft.AppCenter.Analytics;
@@ -95,7 +97,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         private void AddModToDeploymentWrapper()
         {
             // Not very performant, but it works...
-            var m = M3LoadedMods.Instance.AllLoadedMods.Where(x => BackupService.GetBackupStatus(x.Game).BackedUp).Except(ModsInDeployment.Select(x => x.ModBeingDeployed)).OrderBy(x=>x.Game).ThenBy(x=>x.ModName).ToList();
+            var m = M3LoadedMods.Instance.AllLoadedMods.Where(x => BackupService.GetBackupStatus(x.Game).BackedUp).Except(ModsInDeployment.Select(x => x.ModBeingDeployed)).OrderBy(x => x.Game).ThenBy(x => x.ModName).ToList();
             ModSelectorDialog msd = new ModSelectorDialog(window, m);
             var result = msd.ShowDialog();
             if (result.HasValue && result.Value)
@@ -247,6 +249,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             foreach (var modBeingDeployed in modsBeingDeployed)
             {
                 var references = modBeingDeployed.GetAllRelativeReferences(true);
+
+                if (modBeingDeployed.ModDescTargetVersion >= 8.0)
+                {
+                    // ModDesc 8 / Mod Manager 8 uses a CompressedTLKMergeInfo file instead. Do not compress these files at all, it will be handled in a separate step.
+                    references = references.Where(x => !x.StartsWith(Mod.Game1EmbeddedTlkFolderName, StringComparison.CurrentCultureIgnoreCase)).ToList();
+                }
+
                 if (isMultiPack)
                 {
                     modRefMap[modBeingDeployed] = references.ToDictionary(x => x, x => $@"{M3Utilities.SanitizePath(modBeingDeployed.ModName)}\{x}");
@@ -378,6 +387,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             // Does not include AFC, TFC, or .BIK
             // Does not include moddesc.ini
             // Does not include any referenced image files under M3Images
+            // Does not include any GAME1_TLK_MERGE files if cmmver >= 8.0, since it uses a combined version
             currentDeploymentStep = M3L.GetString(M3L.string_compressedModItems);
 
             var compressItems = archiveMapping.Where(x => x.Value != null && ShouldBeSolidCompressed(x, archiveMappingToSourceMod[x.Key])).ToDictionary(p => p.Key, p => p.Value);
@@ -416,6 +426,55 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             var nocompressItems = archiveMapping.Where(x => x.Value != null && !ShouldBeSolidCompressed(x, archiveMappingToSourceMod[x.Key]) && !ShouldBeIndividualCompressed(x, archiveMappingToSourceMod[x.Key])).Reverse().ToDictionary(p => p.Key, p => p.Value);
 
             compressor.CompressFileDictionary(nocompressItems, archivePath);
+
+            void generatingCompressedFileProgress(uint done, uint total)
+            {
+                ProgressMax = total;
+                ProgressValue = done;
+                
+                // Todo: Combine this with the other update.
+                var now = DateTime.Now;
+                if ((now - lastPercentUpdateTime).Milliseconds > ModInstaller.PERCENT_REFRESH_COOLDOWN)
+                {
+                    //Don't update UI too often. Once per second is enough.
+                    var progValue = ProgressValue * 100.0 / ProgressMax;
+                    string percent = progValue.ToString(@"0.00");
+                    OperationText = $@"[{currentDeploymentStep}] {M3L.GetString(M3L.string_deploymentInProgress)} {percent}%";
+                    lastPercentUpdateTime = now;
+                }
+            }
+
+            // Pass 4: CompressedTLKMergeInfo
+            foreach (var modBeingDeployed in modsBeingDeployed.Where(x => x.Game.IsGame1()))
+            {
+                var references = modBeingDeployed.GetAllRelativeReferences(true);
+
+                if (modBeingDeployed.ModDescTargetVersion >= 8.0 && references.Any(x => x.StartsWith(Mod.Game1EmbeddedTlkFolderName)))
+                {
+                    // It needs a compression tlk merge file installed
+                    currentDeploymentStep = "Creating combined TLK merge file";
+                    var inputFolder = Path.Combine(modBeingDeployed.ModPath, Mod.Game1EmbeddedTlkFolderName);
+                    var compressedData = CompressedTLKMergeData.CreateCompressedTlkMergeFile(inputFolder, generatingCompressedFileProgress).GetBuffer();
+                    var mergeFileTemp = Path.Combine(M3Filesystem.GetTempPath(), Mod.Game1EmbeddedTlkCompressedFilename);
+                    File.WriteAllBytes(mergeFileTemp, compressedData);
+                    var inArchiveMergeFilePath = $@"{Mod.Game1EmbeddedTlkFolderName}\{Mod.Game1EmbeddedTlkCompressedFilename}";
+                    var inArchiveGame1TlkFolderPath = Mod.Game1EmbeddedTlkFolderName;
+                    if (isMultiPack)
+                    {
+                        inArchiveMergeFilePath = $@"{M3Utilities.SanitizePath(modBeingDeployed.ModName)}\{inArchiveMergeFilePath}";
+                        inArchiveGame1TlkFolderPath = $@"{M3Utilities.SanitizePath(modBeingDeployed.ModName)}\{inArchiveGame1TlkFolderPath}";
+                    }
+
+                    currentDeploymentStep = "Adding combined TLK merge file";
+                    compressor.CompressFileDictionary(new Dictionary<string, string>()
+                    {
+                        { inArchiveGame1TlkFolderPath, null }, // The folder - this is required to be added so it shows up in the archive filesystem table
+                        { inArchiveMergeFilePath, mergeFileTemp } // The actual file in the folder
+                    }, archivePath);
+                    File.Delete(mergeFileTemp);
+
+                }
+            }
 
             OperationText = M3L.GetString(M3L.string_deploymentSucceeded);
             M3Utilities.HighlightInExplorer(archivePath);
@@ -458,6 +517,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 return false; // Referenced image file should not be compressed.
             if (modRelPath == @"moddesc.ini")
                 return false; // moddesc.ini should not be compressed.
+            if (modBeingDeployed.ModDescTargetVersion >= 8.0 && fileMapping.Key.StartsWith(Mod.Game1EmbeddedTlkFolderName, StringComparison.CurrentCultureIgnoreCase))
+                return false; // ModDesc 8 / Mod Manager 8 uses a CompressedTLKMergeInfo file instead.
             return true;
         }
 

@@ -4,6 +4,8 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -32,6 +34,7 @@ using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.alternates;
 using ME3TweaksModManager.modmanager.objects.installer;
+using ME3TweaksModManager.modmanager.objects.tlk;
 using ME3TweaksModManager.modmanager.usercontrols.interfaces;
 using ME3TweaksModManager.ui;
 using Microsoft.AppCenter.Analytics;
@@ -852,28 +855,45 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
 
             // Stage: TLK merge (Game 1)
-            var allTLKMerges = installationJobs.Where(x => x.Game1TLKXmls != null).SelectMany(x => x.Game1TLKXmls).ToList();
-            if (allTLKMerges.Any())
+            if (InstallOptionsPackage.ModBeingInstalled.GetJob(ModJob.JobHeader.GAME1_EMBEDDED_TLK) != null)
             {
                 PackageCache pc = new PackageCache();
                 Percent = 0;
                 Action = M3L.GetString(M3L.string_updatingTLKFiles);
+
+                CompressedTLKMergeData compressedTlkData = null;
+                List<string> allTLKMerges = null;
+                if (InstallOptionsPackage.ModBeingInstalled.ModDescTargetVersion >= 8)
+                {
+                    // ModDesc 8 mods can use this feature
+                    compressedTlkData = InstallOptionsPackage.ModBeingInstalled.ReadCompressedTlkMergeFile();
+                }
+
+                // Legacy and fallback: Use raw files
+                if (compressedTlkData == null)
+                {
+                    allTLKMerges = installationJobs.Where(x => x.Game1TLKXmls != null).SelectMany(x => x.Game1TLKXmls).ToList();
+                }
+                
                 var gameMap = MELoadedFiles.GetFilesLoadedInGame(InstallOptionsPackage.InstallTarget.Game, gameRootOverride: InstallOptionsPackage.InstallTarget.TargetPath);
                 doneMerges = 0;
-                var mergeFiles = Mod.CoalesceTLKMergeFiles(allTLKMerges);
+
+                var mergeFiles = Mod.CoalesceTLKMergeFiles(allTLKMerges, compressedTlkData);
                 int totalTlkMerges = mergeFiles.Count;
                 PackageCache cache = new PackageCache();
-                foreach (var tlkFileMap in mergeFiles)
+
+                // 06/05/2022 Change to parallel
+                Parallel.ForEach(mergeFiles, new ParallelOptions() { MaxDegreeOfParallelism = Math.Clamp(Environment.ProcessorCount, 1, 4) }, tlkFileMap =>
                 {
                     for (int i = 0; i < tlkFileMap.Value.Count; i++)
                     {
                         var tlkXmlFile = tlkFileMap.Value[i];
-                        InstallOptionsPackage.ModBeingInstalled.InstallTLKMerge(tlkXmlFile, gameMap, i == tlkFileMap.Value.Count - 1, cache, InstallOptionsPackage.InstallTarget, InstallOptionsPackage.ModBeingInstalled, x => basegameCloudDBUpdates.Add(x));
+                        InstallOptionsPackage.ModBeingInstalled.InstallTLKMerge(tlkXmlFile, compressedTlkData, gameMap, i == tlkFileMap.Value.Count - 1, cache, InstallOptionsPackage.InstallTarget, InstallOptionsPackage.ModBeingInstalled, x => basegameCloudDBUpdates.Add(x));
                     }
 
                     Percent = (int)(doneMerges * 100.0 / totalTlkMerges);
-                    doneMerges++;
-                }
+                    Interlocked.Increment(ref doneMerges);
+                });
             }
 
             //Main installation step has completed

@@ -140,9 +140,24 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 
                 if (job.Game1TLKXmls != null)
                 {
-                    foreach (var tlkXml in job.Game1TLKXmls)
+                    bool usedCombinedFile = false;
+                    if (ModDescTargetVersion >= 8.0)
                     {
-                        references.Add($@"{Mod.Game1EmbeddedTlkFolderName}\{tlkXml}");
+                        var m3zaf = FilesystemInterposer.PathCombine(IsInArchive, ModPath, Mod.Game1EmbeddedTlkFolderName, Mod.Game1EmbeddedTlkCompressedFilename);
+                        if (FilesystemInterposer.FileExists(m3zaf, archive))
+                        { 
+                            // This file is referenced
+                            references.Add($@"{Mod.Game1EmbeddedTlkFolderName}\{Mod.Game1EmbeddedTlkCompressedFilename}");
+                            usedCombinedFile = true;
+                        }
+                    }
+
+                    if (!usedCombinedFile)
+                    {
+                        foreach (var tlkXml in job.Game1TLKXmls)
+                        {
+                            references.Add($@"{Mod.Game1EmbeddedTlkFolderName}\{tlkXml}");
+                        }
                     }
                 }
             }

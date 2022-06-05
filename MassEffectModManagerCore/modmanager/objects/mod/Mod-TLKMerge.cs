@@ -13,6 +13,7 @@ using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.me3tweakscoreextended;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.objects.tlk;
 
 namespace ME3TweaksModManager.modmanager.objects.mod
 {
@@ -22,9 +23,19 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         /// Coalesces the TLK merges into groups by filename.
         /// </summary>
         /// <returns></returns>
-        public static Dictionary<string, List<string>> CoalesceTLKMergeFiles(List<string> filenames)
+        public static Dictionary<string, List<string>> CoalesceTLKMergeFiles(IReadOnlyList<string> filenames, CompressedTLKMergeData compressTlkMergeData)
         {
+            // Input values can be null.
+            if (filenames == null && compressTlkMergeData == null)
+                throw new Exception(@"CoalesceTLKMergeFiles() must have a non null parameter!");
+
             var dict = new Dictionary<string, List<string>>();
+
+            if (filenames == null)
+            {
+                // The guard at start of method will ensure compressed data is never null
+                filenames = compressTlkMergeData.GetFileListing();
+            }
 
             foreach (var tlkM in filenames)
             {
@@ -42,55 +53,80 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         }
 
         /// <summary>
+        /// Loads the CompressedTLKMergeData file for the mod. Returns null if one isn't found or the game this mod is for doesn't support that feature
+        /// </summary>
+        /// <returns></returns>
+        public CompressedTLKMergeData ReadCompressedTlkMergeFile()
+        {
+            if (!Game.IsGame1())
+                return null; // Other games don't use this feature
+
+
+            if (Archive != null)
+            {
+                // Read from archive
+                var archivePath = FilesystemInterposer.PathCombine(true, ModPath, Game1EmbeddedTlkFolderName, Game1EmbeddedTlkCompressedFilename);
+                var ms = new MemoryStream();
+                if (FilesystemInterposer.FileExists(archivePath, Archive))
+                {
+                    Archive.ExtractFile(archivePath, ms);
+                    ms.Position = 0;
+                    return CompressedTLKMergeData.ReadCompressedTlkMergeFile(ms, true);
+                }
+                else
+                {
+                    var diskPath = Path.Combine(ModPath, Game1EmbeddedTlkFolderName, Game1EmbeddedTlkCompressedFilename);
+                    if (File.Exists(diskPath))
+                    {
+                        using var compressedStream = File.OpenRead(Path.Combine(ModPath, Game1EmbeddedTlkFolderName, Game1EmbeddedTlkCompressedFilename));
+                        return CompressedTLKMergeData.ReadCompressedTlkMergeFile(compressedStream, true);
+                    }
+                }
+            }
+            else
+            {
+                // Read from disk
+                var combinedDiskPath = Path.Combine(ModPath, Game1EmbeddedTlkFolderName, Game1EmbeddedTlkCompressedFilename);
+                if (File.Exists(combinedDiskPath))
+                {
+                    using var m3zaf = File.OpenRead(combinedDiskPath);
+                    return CompressedTLKMergeData.ReadCompressedTlkMergeFile(m3zaf, true);
+                }
+            }
+
+            return null; // No compressed merge file was found.
+        }
+
+        /// <summary>
         /// Installs a TLK merge. Returns null if OK, otherwise returns an error string.
         /// </summary>
         /// <param name="tlkXmlName"></param>
         /// <param name="gameFileMapping"></param>
         /// <returns></returns>
-        public string InstallTLKMerge(string tlkXmlName, Dictionary<string, string> gameFileMapping, bool savePackage, PackageCache cache, GameTargetWPF target, Mod modBeingInstalled, Action<BasegameFileRecord> addCloudDBEntry)
+        public string InstallTLKMerge(string tlkXmlName, CompressedTLKMergeData compressedTlkMergeData, Dictionary<string, string> gameFileMapping, bool savePackage, PackageCache cache, GameTargetWPF target, Mod modBeingInstalled, Action<BasegameFileRecord> addCloudDBEntry)
         {
             // Need to load file into memory
             string xmlContents;
-            var needsLzDecompress = false;
-            var sourcePath = FilesystemInterposer.PathCombine(IsInArchive, ModPath, Mod.Game1EmbeddedTlkFolderName, tlkXmlName);
-            var lzSourcePath = FilesystemInterposer.PathCombine(IsInArchive, ModPath, Mod.Game1EmbeddedTlkFolderName, tlkXmlName + @".lzma");
-            if (Archive != null)
+
+            if (compressedTlkMergeData != null)
             {
-                var ms = new MemoryStream();
-                if (FilesystemInterposer.FileExists(lzSourcePath, Archive))
-                {
-                    // compressed
-                    Archive.ExtractFile(lzSourcePath, ms);
-                    needsLzDecompress = true;
-                }
-                else
-                {
-                    // non-compressed
-                    Archive.ExtractFile(sourcePath, ms);
-                }
-                ms.Position = 0;
-
-                // Mod Manager 8: Support .lzma file versions to reduce archive size.
-                if (needsLzDecompress)
-                {
-                    MemoryStream tempStream = new MemoryStream();
-                    LZMA.DecompressLZMAStream(ms, tempStream);
-                    ms = tempStream;
-                    ms.Position = 0;
-                }
-
-                xmlContents = new StreamReader(ms).ReadToEnd();
+                // Load from the compressed TLK merge data file
+                var loadInfo = compressedTlkMergeData.GetFileInfo(tlkXmlName);
+                var compressedData = compressedTlkMergeData.LoadedCompressedData.AsSpan(loadInfo.dataStartOffset, loadInfo.compressedSize);
+                var decomp = new byte[loadInfo.decompressedSize];
+                LZMA.Decompress(compressedData, decomp);
+                xmlContents = new StreamReader(new MemoryStream(decomp)).ReadToEnd();
             }
             else
             {
-                if (File.Exists(lzSourcePath))
+                var sourcePath = FilesystemInterposer.PathCombine(IsInArchive, ModPath, Mod.Game1EmbeddedTlkFolderName, tlkXmlName);
+                if (Archive != null)
                 {
-                    // Decompress from disk
-                    using var diskStream = File.OpenRead(lzSourcePath);
-                    using var tempStream = new MemoryStream();
-                    LZMA.DecompressLZMAStream(diskStream, tempStream);
-                    tempStream.Position = 0;
-                    xmlContents = new StreamReader(tempStream).ReadToEnd();
+                    var ms = new MemoryStream();
+                    // non-compressed
+                    Archive.ExtractFile(sourcePath, ms);
+                    ms.Position = 0;
+                    xmlContents = new StreamReader(ms).ReadToEnd();
                 }
                 else
                 {

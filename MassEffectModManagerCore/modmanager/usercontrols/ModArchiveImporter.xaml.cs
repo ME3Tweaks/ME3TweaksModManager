@@ -219,7 +219,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 Application.Current.Dispatcher.Invoke(delegate { NoModSelectedText += M3L.GetString(M3L.string_interp_XfailedToLoadY, m.ModName, m.LoadFailedReason); });
             }
 
-            var archiveSize = ArchiveStream != null ? ArchiveStream.Length : new FileInfo(archive).Length;
+            var archiveSize = ArchiveStream?.Length ?? new FileInfo(archive).Length;
 
             // ModManager 8: Blacklisting files by size/hash
             string calculatedMD5 = null; // If we calc it here don't calc it later
@@ -265,7 +265,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 //might have embedded exe
                 if (archive.RepresentsFileArchive())
                 {
-                    SevenZipExtractor sve = new SevenZipExtractor(archive);
+                    // ADDED 'using' 06/04/2022 to make it dispose
+                    using SevenZipExtractor sve = new SevenZipExtractor(archive);
                     string embeddedExePath = null;
                     M3Log.Information(@"This file may contain a known exe-based mod.");
                     foreach (var importingInfo in knownModsOfThisSize)
@@ -893,7 +894,10 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         {
                             M3Log.Error(@"Could not delete existing mod directory.");
                             e.Result = ModImportResult.ERROR_COULD_NOT_DELETE_EXISTING_DIR;
-                            M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_dialogErrorOccuredDeletingExistingMod), M3L.GetString(M3L.string_errorDeletingExistingMod), MessageBoxButton.OK, MessageBoxImage.Error);
+                            Application.Current.Dispatcher.Invoke(() =>
+                            {
+                                M3L.ShowDialog(Window.GetWindow(this), M3L.GetString(M3L.string_dialogErrorOccuredDeletingExistingMod), M3L.GetString(M3L.string_errorDeletingExistingMod), MessageBoxButton.OK, MessageBoxImage.Error);
+                            });
                             abort = true;
                             return;
                         }

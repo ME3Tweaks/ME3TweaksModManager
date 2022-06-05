@@ -1554,7 +1554,7 @@
     <system:String x:Key="string_validation_modparsing_customdlcDotDotFound">CUSTOMDLC header destdirs contains a value that contains a directory separator character, which is not allowed.</system:String>
     <system:String x:Key="string_interp_validation_modparsing_modInstallsBlacklistedDestFile">{0}'s job {1} file target {2} installs a file that cannot be installed by Mod Manager as it has been specifically blacklisted. Installing this file poses a security risk or is known to likely harm a user's installation.</system:String>
     <!-- 0={ModName} 1={Header (BASEGAME, REBELLION, etc)} 2={Filename} -->
-    <system:String x:Key="string_interp_validation_modparsing_tlkMergeNoTlkXmlFound">Mod specifies {0} task header, but no xml file were found in the {1} directory. Remove this task header if you are not using it, or add valid xml files to the {1} directory.</system:String>
+    <system:String x:Key="string_interp_validation_modparsing_tlkMergeNoTlkXmlFound">Mod specifies {0} task header, but no xml files were found in the {1} directory. Remove this task header if you are not using it, or add valid xml files to the {1} directory.</system:String>
     <!-- 0={Header (GAME1_EMBEDDED_TLK)} 1={Embedded TLK Foldername} -->
     <system:String x:Key="string_interp_validation_modparsing_tlkMergeInvalidTlkXmlFilenames">The {0} header only supports the files in the {1} directory that contain at least 2 '.' characters; one for the extension, and at least one to split the package name from the export path. If the export is nested under packages, more '.' may be needed. Invalid value: {2}</system:String>
     <!-- 0={Header (BASEGAME, GAME1_TLK_MERGE, etc)} 1={Foldername} 2={Filepath} -->

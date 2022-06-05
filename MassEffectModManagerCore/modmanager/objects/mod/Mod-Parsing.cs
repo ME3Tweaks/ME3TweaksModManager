@@ -42,9 +42,14 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         public const string MergeModFolderName = @"MergeMods";
 
         /// <summary>
-        /// MergeMods folder. Do not change
+        /// The folder that contains the TLK files for the GAME1_EMBEDDED_TLK feature. DO NOT CHANGE.
         /// </summary>
         public const string Game1EmbeddedTlkFolderName = @"GAME1_EMBEDDED_TLK";
+
+        /// <summary>
+        /// The filename of the combined compressed TLK info for moddesc > 8 GAME1_EMBEDDED_TLK
+        /// </summary>
+        public const string Game1EmbeddedTlkCompressedFilename = @"CombinedTLKMergeData.m3za";
 
         /// <summary>
         /// The numerical ID for a mod on the respective game's NexusMods page. This is automatically parsed from the ModWebsite if this is not explicitly set and the ModWebsite attribute is a nexusmods url.
@@ -1912,7 +1917,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         }
 
         /// <summary>
-        /// Prepares the LELAUNCHER mod job and finalizes loading of the mod.
+        /// Prepares the Game1TLKMerge mod job
         /// </summary>
         /// <param name="jobSubdirectory"></param>
         private bool ParseGame1TLKMerges()
@@ -1923,33 +1928,48 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             var sourceDirectory = FilesystemInterposer.PathCombine(IsInArchive, ModPath, Mod.Game1EmbeddedTlkFolderName).Replace('/', '\\');
             if (FilesystemInterposer.DirectoryExists(sourceDirectory, Archive))
             {
-                var files = FilesystemInterposer.DirectoryGetFiles(sourceDirectory, @"*.xml", SearchOption.TopDirectoryOnly, Archive).Select(x => x.Substring((ModPath.Length > 0 ? (ModPath.Length + 1) : 0) + jobDirLength).TrimStart('\\')).ToList();
-                if (!files.Any())
+                if (ModDescTargetVersion >= 8.0)
                 {
-                    M3Log.Error($@"Mod specifies {ModJob.JobHeader.GAME1_EMBEDDED_TLK} task header, but no xml file were found in the {Mod.Game1EmbeddedTlkFolderName} directory. Remove this task header if you are not using it, or add valid xml files to the {Mod.Game1EmbeddedTlkFolderName} directory.");
-                    LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_tlkMergeNoTlkXmlFound, ModJob.JobHeader.GAME1_EMBEDDED_TLK, Mod.Game1EmbeddedTlkFolderName, Mod.Game1EmbeddedTlkFolderName);
-                    ValidMod = false;
-                    return false;
+                    // Check for compressed data
+                    var m3zaf = FilesystemInterposer.PathCombine(IsInArchive, ModPath, Mod.Game1EmbeddedTlkFolderName, Mod.Game1EmbeddedTlkCompressedFilename);
+                    if (FilesystemInterposer.FileExists(m3zaf, Archive))
+                    {
+                        // We make a new list but we don't populate it as this is used in things like file referencers which would be wrong for the combined file
+                        // This variable being populated though will indicate there ARE game1tlk xml files in the mod
+                        headerJob.Game1TLKXmls ??= new List<string>();
+                    }
                 }
 
-                foreach (var file in files)
+                if (headerJob.Game1TLKXmls == null)
                 {
-                    if (file.Count(x => x == '.') < 2)
+                    var files = FilesystemInterposer.DirectoryGetFiles(sourceDirectory, @"*.xml", SearchOption.TopDirectoryOnly, Archive).Select(x => x.Substring((ModPath.Length > 0 ? (ModPath.Length + 1) : 0) + jobDirLength).TrimStart('\\')).ToList();
+                    if (!files.Any())
                     {
-                        M3Log.Error($@"The {ModJob.JobHeader.GAME1_EMBEDDED_TLK} header only supports the files in the {Mod.Game1EmbeddedTlkFolderName} directory that contain at least 2 '.' characters; one for the extension, and at least one to split the package name from the export path. If the export is nested under packages, more '.' may be needed. Invalid value: {file}");
-                        LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_tlkMergeInvalidTlkXmlFilenames, ModJob.JobHeader.GAME1_EMBEDDED_TLK, Mod.Game1EmbeddedTlkFolderName, file);
+                        M3Log.Error($@"Mod specifies {ModJob.JobHeader.GAME1_EMBEDDED_TLK} task header, but no xmls file were found in the {Mod.Game1EmbeddedTlkFolderName} directory. Remove this task header if you are not using it, or add valid xml files to the {Mod.Game1EmbeddedTlkFolderName} directory.");
+                        LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_tlkMergeNoTlkXmlFound, ModJob.JobHeader.GAME1_EMBEDDED_TLK, Mod.Game1EmbeddedTlkFolderName, Mod.Game1EmbeddedTlkFolderName);
                         ValidMod = false;
                         return false;
                     }
 
-                    headerJob.Game1TLKXmls ??= new List<string>(files.Count);
-                    headerJob.Game1TLKXmls.Add(Path.GetFileName(file));
+                    foreach (var file in files)
+                    {
+                        if (file.Count(x => x == '.') < 2)
+                        {
+                            M3Log.Error($@"The {ModJob.JobHeader.GAME1_EMBEDDED_TLK} header only supports the files in the {Mod.Game1EmbeddedTlkFolderName} directory that contain at least 2 '.' characters; one for the extension, and at least one to split the package name from the export path. If the export is nested under packages, more '.' may be needed. Invalid value: {file}");
+                            LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_tlkMergeInvalidTlkXmlFilenames, ModJob.JobHeader.GAME1_EMBEDDED_TLK, Mod.Game1EmbeddedTlkFolderName, file);
+                            ValidMod = false;
+                            return false;
+                        }
+
+                        headerJob.Game1TLKXmls ??= new List<string>(files.Count);
+                        headerJob.Game1TLKXmls.Add(Path.GetFileName(file));
+                    }
                 }
             }
             else
             {
-                M3Log.Error($@"Mod specifies {ModJob.JobHeader.GAME1_EMBEDDED_TLK} task header, but no xml file were found in the {Mod.Game1EmbeddedTlkFolderName} directory. Remove this task header if you are not using it, or add valid xml files to the {Mod.Game1EmbeddedTlkFolderName} directory.");
-                LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_tlkMergeNoTlkXmlFound, ModJob.JobHeader.GAME1_EMBEDDED_TLK, Mod.Game1EmbeddedTlkFolderName, Mod.Game1EmbeddedTlkFolderName);
+                M3Log.Error($@"Mod specifies {ModJob.JobHeader.GAME1_EMBEDDED_TLK} task header, but the {Mod.Game1EmbeddedTlkFolderName} directory was not found. Remove this task header if you are not using it.");
+                LoadFailedReason = $"Mod specifies {ModJob.JobHeader.GAME1_EMBEDDED_TLK} task header, but the {Mod.Game1EmbeddedTlkFolderName} directory was not found. Remove this task header if you are not using it.";
                 ValidMod = false;
                 return false;
             }
