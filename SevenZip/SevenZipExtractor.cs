@@ -40,7 +40,25 @@ namespace SevenZip
         private uint? _filesCount;
         private bool? _isSolid;
         private bool _opened;
+#if DEBUG
+        private bool __disposed;
+        private bool _disposed
+        {
+            get => __disposed;
+            set
+            {
+                // For debug tracing
+                if (value && !__disposed)
+                {
+                    Debug.WriteLine(@"Disposing archive");
+                }
+                __disposed = value;
+            }
+        }
+#else
         private bool _disposed;
+#endif
+
         private InArchiveFormat _format = (InArchiveFormat)(-1);
         private ReadOnlyCollection<ArchiveFileInfo> _archiveFileInfoCollection;
         private ReadOnlyCollection<ArchiveProperty> _archiveProperties;
@@ -59,7 +77,7 @@ namespace SevenZip
             _fileName = filename;
         }
 
-        #region Constructors
+#region Constructors
         /// <summary>
         /// General initialization function.
         /// </summary>
@@ -252,9 +270,9 @@ namespace SevenZip
             Init(archiveStream);
         }
 
-        #endregion
+#endregion
 
-        #region Properties
+#region Properties
 
         /// <summary>
         /// Gets or sets archive full file name
@@ -351,7 +369,7 @@ namespace SevenZip
         /// Gets or sets the value indicating whether to preserve the directory structure of extracted files.
         /// </summary>
         public bool PreserveDirectoryStructure { get; set; }
-        #endregion                
+#endregion
 
         /// <summary>
         /// Checked whether the class was disposed.
@@ -367,7 +385,7 @@ namespace SevenZip
             RecreateInstanceIfNeeded();
         }
 
-        #region Core private functions
+#region Core private functions
 
         private ArchiveOpenCallback GetArchiveOpenCallback()
         {
@@ -487,7 +505,7 @@ namespace SevenZip
                         var data = new PropVariant();
                         try
                         {
-                            #region Getting archive items data
+#region Getting archive items data
 
                             for (uint i = 0; i < _filesCount; i++)
                             {
@@ -530,9 +548,9 @@ namespace SevenZip
                                 }
                             }
 
-                            #endregion
+#endregion
 
-                            #region Getting archive properties
+#region Getting archive properties
 
                             uint numProps = _archive.GetNumberOfArchiveProperties();
                             var archProps = new List<ArchiveProperty>((int)numProps);
@@ -573,7 +591,7 @@ namespace SevenZip
                                 _isSolid = true;
                             }
 
-                            #endregion
+#endregion
                         }
                         catch (Exception)
                         {
@@ -696,7 +714,7 @@ namespace SevenZip
             callback.Progressing -= ProgressingEventProxy;
             callback.FileExists -= FileExistsEventProxy;
         }
-        #endregion        
+#endregion
 
 
         /// <summary>
@@ -721,7 +739,7 @@ namespace SevenZip
 
 
 
-        #region IDisposable Members
+#region IDisposable Members
 
         private void CommonDispose(bool disposeStreams = true)
         {
@@ -811,11 +829,11 @@ namespace SevenZip
             GC.SuppressFinalize(this);
         }
 
-        #endregion
+#endregion
 
-        #region Core public Members
+#region Core public Members
 
-        #region Events
+#region Events
 
         /// <summary>
         /// Occurs when a new file is going to be unpacked.
@@ -850,7 +868,7 @@ namespace SevenZip
         /// </summary>
         public event EventHandler<FileOverwriteEventArgs> FileExists;
 
-        #region Event proxies
+#region Event proxies
         /// <summary>
         /// Event proxy for FileExtractionStarted.
         /// </summary>
@@ -900,10 +918,10 @@ namespace SevenZip
         {
             OnEvent(FileExists, e, true);
         }
-        #endregion
-        #endregion
+#endregion
+#endregion
 
-        #region Properties
+#region Properties
         /// <summary>
         /// Gets the collection of ArchiveFileInfo with all information about files in the archive
         /// </summary>
@@ -962,7 +980,7 @@ namespace SevenZip
                 return _volumeFileNames;
             }
         }
-        #endregion
+#endregion
 
         /// <summary>
         /// Performs the archive integrity test.
@@ -1011,7 +1029,7 @@ namespace SevenZip
             return true;
         }
 
-        #region ExtractFile overloads
+#region ExtractFile overloads
         /// <summary>
         /// Unpacks the file by its name to the specified stream.
         /// </summary>
@@ -1117,9 +1135,9 @@ namespace SevenZip
             OnEvent(ExtractionFinished, EventArgs.Empty, false);
             ThrowUserException();
         }
-        #endregion
+#endregion
 
-        #region ExtractFiles overloads
+#region ExtractFiles overloads
 
         /// <summary>
         /// Unpacks files by their indices to the specified directory.
@@ -1150,7 +1168,7 @@ namespace SevenZip
             }
             InitArchiveFileData(false);
 
-            #region Indexes stuff
+#region Indexes stuff
 
             var uindexes = new uint[indexes.Length];
             for (int i = 0; i < indexes.Length; i++)
@@ -1176,7 +1194,7 @@ namespace SevenZip
                 uindexes = SolidIndexes(uindexes);
             }
 
-            #endregion
+#endregion
 
             try
             {
@@ -1337,7 +1355,7 @@ namespace SevenZip
             }
         }
 
-        #endregion
+#endregion
 
         /// <summary>
         /// Unpacks the whole archive to the specified directory.
@@ -1398,11 +1416,11 @@ namespace SevenZip
             ThrowUserException();
         }
 
-        #endregion
+#endregion
 
 
 
-        #region LZMA SDK functions
+#region LZMA SDK functions
 
         internal static byte[] GetLzmaProperties(Stream inStream, out long outSize)
         {
@@ -1475,7 +1493,7 @@ namespace SevenZip
             }
         }
 
-        #endregion
+#endregion
 
         /// <summary>
         /// M3: Return backing stream. Use only for re-opening archive that was disposed. May return null somehow...

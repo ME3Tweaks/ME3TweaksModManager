@@ -83,10 +83,12 @@ namespace SevenZip
         {
             if (!_inArchives.ContainsKey(user))
             {
+                //Debug.WriteLine(@"Adding archive to static inAcrhives");
                 _inArchives.Add(user, new Dictionary<InArchiveFormat, IInArchive>());
             }
             if (!_inArchives[user].ContainsKey(format))
             {
+                //Debug.WriteLine(@"Adding archive FORMAT to static inArchives");
                 _inArchives[user].Add(format, null);
                 _totalUsers++;
             }
@@ -371,7 +373,12 @@ namespace SevenZip
                                 Marshal.ReleaseComObject(_inArchives[user][archiveFormat]);
                             }
                             catch (InvalidComObjectException) { }
-                            _inArchives[user].Remove(archiveFormat);
+
+                            var preCount = _inArchives[user].Count;
+                            _inArchives[user].Remove(archiveFormat); // This isn't properly removing things!
+                            var postCount = _inArchives[user].Count;
+                            if (preCount != postCount + 1)
+                                Debug.WriteLine(@"FAILED TO REMOVE!");
                             _totalUsers--;
                             if (_inArchives[user].Count == 0)
                             {
@@ -424,6 +431,7 @@ namespace SevenZip
         {
             lock (_syncRoot)
             {
+                // The library has loaded the object and format but it doesn't point to anything yet
                 if (_inArchives[user][format] == null)
                 {
                     //var sp = new SecurityPermission(SecurityPermissionFlag.UnmanagedCode);
