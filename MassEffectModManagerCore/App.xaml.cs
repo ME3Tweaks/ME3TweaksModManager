@@ -73,6 +73,12 @@ namespace ME3TweaksModManager
 #else
         public static bool IsDebug => false;
 #endif
+
+        /// <summary>
+        /// If the application is exiting due to SingleInstance - don't do cleanup
+        /// </summary>
+        public static bool SingleInstanceExit = false;
+
         /// <summary>
         /// The highest version of ModDesc that this version of Mod Manager can support.
         /// </summary>
@@ -165,6 +171,7 @@ namespace ME3TweaksModManager
                                 Xceed.Wpf.Toolkit.MessageBox.Show(null, $"Updater shim missing!\nThe swapper executable should have been located at:\n{updaterExe}\n\nPlease report this to ME3Tweaks.", @"Error updating", MessageBoxButton.OK, MessageBoxImage.Error); //do not localize
                             }
 
+                            SingleInstanceExit = true;
                             Application.Current.Dispatcher.Invoke(Application.Current.Shutdown);
                             return;
                         }
@@ -212,7 +219,9 @@ namespace ME3TweaksModManager
                     //OnInstanceInvoked will be raised on the first instance
 
                     // Kill this new loading instance.
+                    SingleInstanceExit = true;
                     Current.Shutdown();
+                    return;
                 }
 
 
@@ -265,6 +274,7 @@ namespace ME3TweaksModManager
                     NexusDomainHandler.LoadExternalHandlers();
                     if (CommandLinePending.PendingNXMLink != null && NexusDomainHandler.HandleExternalLink(CommandLinePending.PendingNXMLink))
                     {
+                        // Externally handled
                         M3Log.Information(@"Exiting application");
                         Environment.Exit(0);
                         return; // Nothing else to do
@@ -639,17 +649,24 @@ namespace ME3TweaksModManager
         {
             if (e.ApplicationExitCode == 0)
             {
-                try
+                if (!SingleInstanceExit)
                 {
-                    M3Utilities.DeleteFilesAndFoldersRecursively(M3Filesystem.GetModDownloadCacheDirectory(), false);
-                    M3Log.Information(@"Deleted mod download cache");
+                    try
+                    {
+                        M3Utilities.DeleteFilesAndFoldersRecursively(M3Filesystem.GetModDownloadCacheDirectory(), false);
+                        M3Log.Information(@"Deleted mod download cache");
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($@"EXCEPTION DELETING THE DOWNLOAD CACHE!: {ex.Message}");
+                    }
+                    M3Log.Information(@"Application exiting normally");
                 }
-                catch (Exception ex)
+                else
                 {
-                    Debug.WriteLine($@"EXCEPTION DELETING THE DOWNLOAD CACHE!: {ex.Message}");
+                    M3Log.Information(@"Application exiting (duplicate instance)");
                 }
 
-                M3Log.Information(@"Application exiting normally");
                 Log.CloseAndFlush();
             }
 
