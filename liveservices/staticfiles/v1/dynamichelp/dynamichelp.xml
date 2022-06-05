@@ -1,101 +1,102 @@
 <localizations>
   <nonlocalizedhelpmenudefinition name="changelogs">
     <list localizedtitle="true">
-      <helpitem title="ME3Tweaks Mod Manager 8.0 BETA (Build 125)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/275" />
-      <helpitem title="ME3Tweaks Mod Manager 7.0.6 (Build 124)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/281" />
-      <helpitem title="ME3Tweaks Mod Manager 7.0.5 (Build 123)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/266" />
-      <helpitem title="ME3Tweaks Mod Manager 7.0.4 (Build 122)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/262" />
-      <helpitem title="ME3Tweaks Mod Manager 7.0.3 (Build 121)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/246" />
-      <helpitem title="ME3Tweaks Mod Manager 7.0.2 BETA 4 (Build 120)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/241" />
-      <helpitem title="ME3Tweaks Mod Manager 7.0.1 BETA 3 (Build 119)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/240" />
-      <helpitem title="ME3Tweaks Mod Manager 7.0 BETA (Build 118)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/7.0.0.118" />
+      <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 8.0 BETA (Build 126)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/275" />
+      <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 7.0.7 (Build 125)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/298" />
+      <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 7.0.6 (Build 124)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/281" />
+      <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 7.0.5 (Build 123)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/266" />
+      <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 7.0.4 (Build 122)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/262" />
+      <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 7.0.3 (Build 121)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/246" />
+      <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 7.0.2 BETA 4 (Build 120)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/241" />
+      <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 7.0.1 BETA 3 (Build 119)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/240" />
+      <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 7.0 BETA (Build 118)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/7.0.0.118" />
       <list title="Older changelogs" sort="low">
         <list title="Mod Manager 6.3">
-              <helpitem title="ME3Tweaks Mod Manager 6.3 (Build 117)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.3.0.117" />
+              <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 6.3 (Build 117)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.3.0.117" />
         </list>
         <list title="Mod Manager 6.2">
-          <helpitem title="ME3Tweaks Mod Manager 6.2.2 (Build 116)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.2.2.116" />
-          <helpitem title="ME3Tweaks Mod Manager 6.2.1 (Build 115)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.2.1.115" />
-          <helpitem title="ME3Tweaks Mod Manager 6.2 (Build 114)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.2.0.114" />
+          <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 6.2.2 (Build 116)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.2.2.116" />
+          <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 6.2.1 (Build 115)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.2.1.115" />
+          <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 6.2 (Build 114)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.2.0.114" />
         </list>
         <list title="Mod Manager 6.1">
-          <helpitem title="ME3Tweaks Mod Manager 6.1.5 (Build 113)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.1.5.113" />
-          <helpitem title="ME3Tweaks Mod Manager 6.1.4 (Build 112)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.1.4.112" />
-          <helpitem title="ME3Tweaks Mod Manager 6.1.3 (Build 111)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.1.3.111" />
-          <helpitem title="ME3Tweaks Mod Manager 6.1.2 (Build 110)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.1.2.110" />
-          <helpitem title="ME3Tweaks Mod Manager 6.1.1 (Build 109)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.1.1.109" />
-          <helpitem title="ME3Tweaks Mod Manager 6.1 (Build 108)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.1.0.108" />
+          <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 6.1.5 (Build 113)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.1.5.113" />
+          <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 6.1.4 (Build 112)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.1.4.112" />
+          <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 6.1.3 (Build 111)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.1.3.111" />
+          <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 6.1.2 (Build 110)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.1.2.110" />
+          <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 6.1.1 (Build 109)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.1.1.109" />
+          <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 6.1 (Build 108)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.1.0.108" />
         </list>
         <list title="Mod Manager 6.0">
-          <helpitem title="ME3Tweaks Mod Manager 6.0.2 (Build 107)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.0.2.107" />
-          <helpitem title="ME3Tweaks Mod Manager 6.0.1 (Build 106)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.0.1.106" />
-          <helpitem title="ME3Tweaks Mod Manager 6.0 (Build 105)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.0.0.105" />
-          <helpitem title="ME3Tweaks Mod Manager 6.0 Preview 5 (Build 104)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.0.0.104" />
-          <helpitem title="ME3Tweaks Mod Manager 6.0 Preview 4 (Build 103)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.0.0.103" />
-          <helpitem title="ME3Tweaks Mod Manager 6.0 Preview 3 (Build 102)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.0.0.102" />
-          <helpitem title="ME3Tweaks Mod Manager 6.0 Preview 2 (Build 101)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.0.0.101" />
-          <helpitem title="ME3Tweaks Mod Manager 6.0 Preview (Build 100)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.0.0.100" />
+          <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 6.0.2 (Build 107)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.0.2.107" />
+          <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 6.0.1 (Build 106)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.0.1.106" />
+          <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 6.0 (Build 105)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.0.0.105" />
+          <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 6.0 Preview 5 (Build 104)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.0.0.104" />
+          <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 6.0 Preview 4 (Build 103)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.0.0.103" />
+          <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 6.0 Preview 3 (Build 102)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.0.0.102" />
+          <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 6.0 Preview 2 (Build 101)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.0.0.101" />
+          <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 6.0 Preview (Build 100)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.0.0.100" />
         </list>
         <list title="Mod Manager 5.1">
-          <helpitem title="Mod Manager 5.1.9 (Build 97)" url="https://github.com/ME3Tweaks/ME3ModManager/releases/tag/5.1.9.0" />
-          <helpitem title="Mod Manager 5.1.8 (Build 96)" url="https://github.com/ME3Tweaks/ME3ModManager/releases/tag/5.1.8" />
-          <helpitem title="Mod Manager 5.1.7 (Build 95)" url="https://github.com/ME3Tweaks/ME3ModManager/releases/tag/5.1.7" />
-          <helpitem title="Mod Manager 5.1.6 (Build 94)" url="https://github.com/ME3Tweaks/ME3ModManager/releases/tag/5.1.6.0" />
-          <helpitem title="Mod Manager 5.1.5 (Build 93)" url="https://github.com/Mgamerz/me3modmanager/pull/74" />
-          <helpitem title="Mod Manager 5.1.4 (Build 92)" url="https://github.com/Mgamerz/me3modmanager/pull/73" />
-          <helpitem title="Mod Manager 5.1.3 (Build 91)" url="https://github.com/Mgamerz/me3modmanager/pull/71" />
-          <helpitem title="Mod Manager 5.1.2 (Build 90)" url="https://github.com/Mgamerz/me3modmanager/pull/70" />
-          <helpitem title="Mod Manager 5.1.1 (Build 89)" url="https://github.com/Mgamerz/me3modmanager/pull/69" />
-          <helpitem title="Mod Manager 5.1 (Build 88)" url="https://github.com/Mgamerz/me3modmanager/pull/67" />
-          <helpitem title="Mod Manager 5.1 Beta 6 (Build 87)" url="https://github.com/Mgamerz/me3modmanager/pull/66" />
-          <helpitem title="Mod Manager 5.1 Beta 5 (Build 86)**" url="https://github.com/Mgamerz/me3modmanager/releases/tag/5.1.0.5" tooltip="This build was withdrawn after reports of JNI startup errors on update." />
-          <helpitem title="Mod Manager 5.1 Beta 4 (Build 85)" url="https://github.com/Mgamerz/me3modmanager/pull/65" />
+          <helpitem icon="Regular_Clipboard" title="Mass Effect 3 Mod Manager 5.1.9 (Build 97)" url="https://github.com/ME3Tweaks/ME3ModManager/releases/tag/5.1.9.0" />
+          <helpitem icon="Regular_Clipboard" title="Mass Effect 3 Mod Manager 5.1.8 (Build 96)" url="https://github.com/ME3Tweaks/ME3ModManager/releases/tag/5.1.8" />
+          <helpitem icon="Regular_Clipboard" title="Mass Effect 3 Mod Manager 5.1.7 (Build 95)" url="https://github.com/ME3Tweaks/ME3ModManager/releases/tag/5.1.7" />
+          <helpitem icon="Regular_Clipboard" title="Mass Effect 3 Mod Manager 5.1.6 (Build 94)" url="https://github.com/ME3Tweaks/ME3ModManager/releases/tag/5.1.6.0" />
+          <helpitem icon="Regular_Clipboard" title="Mass Effect 3 Mod Manager 5.1.5 (Build 93)" url="https://github.com/Mgamerz/me3modmanager/pull/74" />
+          <helpitem icon="Regular_Clipboard" title="Mass Effect 3 Mod Manager 5.1.4 (Build 92)" url="https://github.com/Mgamerz/me3modmanager/pull/73" />
+          <helpitem icon="Regular_Clipboard" title="Mass Effect 3 Mod Manager 5.1.3 (Build 91)" url="https://github.com/Mgamerz/me3modmanager/pull/71" />
+          <helpitem icon="Regular_Clipboard" title="Mass Effect 3 Mod Manager 5.1.2 (Build 90)" url="https://github.com/Mgamerz/me3modmanager/pull/70" />
+          <helpitem icon="Regular_Clipboard" title="Mass Effect 3 Mod Manager 5.1.1 (Build 89)" url="https://github.com/Mgamerz/me3modmanager/pull/69" />
+          <helpitem icon="Regular_Clipboard" title="Mass Effect 3 Mod Manager 5.1 (Build 88)" url="https://github.com/Mgamerz/me3modmanager/pull/67" />
+          <helpitem icon="Regular_Clipboard" title="Mass Effect 3 Mod Manager 5.1 Beta 6 (Build 87)" url="https://github.com/Mgamerz/me3modmanager/pull/66" />
+          <helpitem icon="Regular_Clipboard" title="Mass Effect 3 Mod Manager 5.1 Beta 5 (Build 86)**" url="https://github.com/Mgamerz/me3modmanager/releases/tag/5.1.0.5" tooltip="This build was withdrawn after reports of JNI startup errors on update." />
+          <helpitem icon="Regular_Clipboard" title="Mass Effect 3 Mod Manager 5.1 Beta 4 (Build 85)" url="https://github.com/Mgamerz/me3modmanager/pull/65" />
         </list>
         <list title="Mod Manager 5.0">
-          <helpitem title="Mod Manager 5.0.9 (Build 84)" url="https://github.com/Mgamerz/me3modmanager/releases/tag/5.0.9" />
-          <helpitem title="Mod Manager 5.0.8 (Build 83)" url="https://github.com/Mgamerz/me3modmanager/pull/63" />
-          <helpitem title="Mod Manager 5.0.7 MR2 (Build 82)" url="https://github.com/Mgamerz/me3modmanager/pull/59" />
-          <helpitem title="Mod Manager 5.0.7 MR1 (Build 82)" url="https://github.com/Mgamerz/me3modmanager/pull/58" />
-          <helpitem title="Mod Manager 5.0.7 (Build 82)" url="https://github.com/Mgamerz/me3modmanager/pull/57" />
-          <helpitem title="Mod Manager 5.0.6 (Build 81)" url="https://github.com/Mgamerz/me3modmanager/pull/56" />
-          <helpitem title="Mod Manager 5.0.5 (Build 80)" url="https://github.com/Mgamerz/me3modmanager/pull/54" />
-          <helpitem title="Mod Manager 5.0.4 (Build 79)" url="https://github.com/Mgamerz/me3modmanager/pull/53" />
-          <helpitem title="Mod Manager 5.0.3 (Build 78)" url="https://github.com/Mgamerz/me3modmanager/pull/51" />
-          <helpitem title="Mod Manager 5.0.2 (Build 77)" url="https://github.com/Mgamerz/me3modmanager/pull/50" />
-          <helpitem title="Mod Manager 5.0.1 (Build 76)" url="https://github.com/Mgamerz/me3modmanager/pull/49" />
-          <helpitem title="Mod Manager 5.0 MR1 (Build 75)" url="https://github.com/Mgamerz/me3modmanager/pull/47" />
-          <helpitem title="Mod Manager 5.0 (Build 75)" url="https://github.com/Mgamerz/me3modmanager/pull/45" />
+          <helpitem icon="Regular_Clipboard" title="Mass Effect 3 Mod Manager 5.0.9 (Build 84)" url="https://github.com/Mgamerz/me3modmanager/releases/tag/5.0.9" />
+          <helpitem icon="Regular_Clipboard" title="Mass Effect 3 Mod Manager 5.0.8 (Build 83)" url="https://github.com/Mgamerz/me3modmanager/pull/63" />
+          <helpitem icon="Regular_Clipboard" title="Mass Effect 3 Mod Manager 5.0.7 MR2 (Build 82)" url="https://github.com/Mgamerz/me3modmanager/pull/59" />
+          <helpitem icon="Regular_Clipboard" title="Mass Effect 3 Mod Manager 5.0.7 MR1 (Build 82)" url="https://github.com/Mgamerz/me3modmanager/pull/58" />
+          <helpitem icon="Regular_Clipboard" title="Mass Effect 3 Mod Manager 5.0.7 (Build 82)" url="https://github.com/Mgamerz/me3modmanager/pull/57" />
+          <helpitem icon="Regular_Clipboard" title="Mass Effect 3 Mod Manager 5.0.6 (Build 81)" url="https://github.com/Mgamerz/me3modmanager/pull/56" />
+          <helpitem icon="Regular_Clipboard" title="Mass Effect 3 Mod Manager 5.0.5 (Build 80)" url="https://github.com/Mgamerz/me3modmanager/pull/54" />
+          <helpitem icon="Regular_Clipboard" title="Mass Effect 3 Mod Manager 5.0.4 (Build 79)" url="https://github.com/Mgamerz/me3modmanager/pull/53" />
+          <helpitem icon="Regular_Clipboard" title="Mass Effect 3 Mod Manager 5.0.3 (Build 78)" url="https://github.com/Mgamerz/me3modmanager/pull/51" />
+          <helpitem icon="Regular_Clipboard" title="Mass Effect 3 Mod Manager 5.0.2 (Build 77)" url="https://github.com/Mgamerz/me3modmanager/pull/50" />
+          <helpitem icon="Regular_Clipboard" title="Mass Effect 3 Mod Manager 5.0.1 (Build 76)" url="https://github.com/Mgamerz/me3modmanager/pull/49" />
+          <helpitem icon="Regular_Clipboard" title="Mass Effect 3 Mod Manager 5.0 MR1 (Build 75)" url="https://github.com/Mgamerz/me3modmanager/pull/47" />
+          <helpitem icon="Regular_Clipboard" title="Mass Effect 3 Mod Manager 5.0 (Build 75)" url="https://github.com/Mgamerz/me3modmanager/pull/45" />
         </list>
         <list title="Mod Manager 4.5">
-          <helpitem title="Mod Manager 4.5.5 (Build 74)" url="https://github.com/Mgamerz/me3modmanager/releases/tag/4.5.5" />
-          <helpitem title="Mod Manager 4.5.4 MR1 (Build 73)" url="https://github.com/Mgamerz/me3modmanager/pull/44" />
-          <helpitem title="Mod Manager 4.5.4 (Build 72)" url="https://github.com/Mgamerz/me3modmanager/releases/tag/4.5.4" />
-          <helpitem title="Mod Manager 4.5.3 (Build 71)" url="https://github.com/Mgamerz/me3modmanager/releases/tag/4.5.3" />
-          <helpitem title="Mod Manager 4.5.2 (Build 70)" url="https://github.com/Mgamerz/me3modmanager/pull/40" />
-          <helpitem title="Mod Manager 4.5.1 MR1 (Build 69)" url="https://github.com/Mgamerz/me3modmanager/pull/39" />
-          <helpitem title="Mod Manager 4.5.1 (Build 69)" url="https://github.com/Mgamerz/me3modmanager/pull/38" />
-          <helpitem title="Mod Manager 4.5 MR1 (Build 68)" url="https://github.com/Mgamerz/me3modmanager/pull/37" />
-          <helpitem title="Mod Manager 4.5 (Build 68)" url="https://github.com/Mgamerz/me3modmanager/pull/35" />
+          <helpitem icon="Regular_Clipboard" title="Mass Effect 3 Mod Manager 4.5.5 (Build 74)" url="https://github.com/Mgamerz/me3modmanager/releases/tag/4.5.5" />
+          <helpitem icon="Regular_Clipboard" title="Mass Effect 3 Mod Manager 4.5.4 MR1 (Build 73)" url="https://github.com/Mgamerz/me3modmanager/pull/44" />
+          <helpitem icon="Regular_Clipboard" title="Mass Effect 3 Mod Manager 4.5.4 (Build 72)" url="https://github.com/Mgamerz/me3modmanager/releases/tag/4.5.4" />
+          <helpitem icon="Regular_Clipboard" title="Mass Effect 3 Mod Manager 4.5.3 (Build 71)" url="https://github.com/Mgamerz/me3modmanager/releases/tag/4.5.3" />
+          <helpitem icon="Regular_Clipboard" title="Mass Effect 3 Mod Manager 4.5.2 (Build 70)" url="https://github.com/Mgamerz/me3modmanager/pull/40" />
+          <helpitem icon="Regular_Clipboard" title="Mass Effect 3 Mod Manager 4.5.1 MR1 (Build 69)" url="https://github.com/Mgamerz/me3modmanager/pull/39" />
+          <helpitem icon="Regular_Clipboard" title="Mass Effect 3 Mod Manager 4.5.1 (Build 69)" url="https://github.com/Mgamerz/me3modmanager/pull/38" />
+          <helpitem icon="Regular_Clipboard" title="Mass Effect 3 Mod Manager 4.5 MR1 (Build 68)" url="https://github.com/Mgamerz/me3modmanager/pull/37" />
+          <helpitem icon="Regular_Clipboard" title="Mass Effect 3 Mod Manager 4.5 (Build 68)" url="https://github.com/Mgamerz/me3modmanager/pull/35" />
         </list>
         <list title="Mod Manager 4.4">
-          <helpitem title="Mod Manager 4.4.5 (Build 67)" url="https://github.com/Mgamerz/me3modmanager/pull/34" />
-          <helpitem title="Mod Manager 4.4.4 (Build 66)" url="https://github.com/Mgamerz/me3modmanager/pull/33" />
-          <helpitem title="Mod Manager 4.4.3 (Build 65)" url="https://github.com/Mgamerz/me3modmanager/pull/31" />
-          <helpitem title="Mod Manager 4.4.2 (Build 64)" url="https://github.com/Mgamerz/me3modmanager/pull/30" />
-          <helpitem title="Mod Manager 4.4.1 (Build 63)" url="https://github.com/Mgamerz/me3modmanager/pull/29" />
-          <helpitem title="Mod Manager 4.4 MR3 (Build 62)" url="https://github.com/Mgamerz/me3modmanager/pull/28" />
-          <helpitem title="Mod Manager 4.4 MR2 (Build 62)" url="https://github.com/Mgamerz/me3modmanager/pull/27" />
-          <helpitem title="Mod Manager 4.4 MR1 (Build 62)" url="https://github.com/Mgamerz/me3modmanager/pull/26" />
-          <helpitem title="Mod Manager 4.4 (Build 62)" url="https://github.com/Mgamerz/me3modmanager/pull/25" />
+          <helpitem icon="Regular_Clipboard" title="Mass Effect 3 Mod Manager 4.4.5 (Build 67)" url="https://github.com/Mgamerz/me3modmanager/pull/34" />
+          <helpitem icon="Regular_Clipboard" title="Mass Effect 3 Mod Manager 4.4.4 (Build 66)" url="https://github.com/Mgamerz/me3modmanager/pull/33" />
+          <helpitem icon="Regular_Clipboard" title="Mass Effect 3 Mod Manager 4.4.3 (Build 65)" url="https://github.com/Mgamerz/me3modmanager/pull/31" />
+          <helpitem icon="Regular_Clipboard" title="Mass Effect 3 Mod Manager 4.4.2 (Build 64)" url="https://github.com/Mgamerz/me3modmanager/pull/30" />
+          <helpitem icon="Regular_Clipboard" title="Mass Effect 3 Mod Manager 4.4.1 (Build 63)" url="https://github.com/Mgamerz/me3modmanager/pull/29" />
+          <helpitem icon="Regular_Clipboard" title="Mass Effect 3 Mod Manager 4.4 MR3 (Build 62)" url="https://github.com/Mgamerz/me3modmanager/pull/28" />
+          <helpitem icon="Regular_Clipboard" title="Mass Effect 3 Mod Manager 4.4 MR2 (Build 62)" url="https://github.com/Mgamerz/me3modmanager/pull/27" />
+          <helpitem icon="Regular_Clipboard" title="Mass Effect 3 Mod Manager 4.4 MR1 (Build 62)" url="https://github.com/Mgamerz/me3modmanager/pull/26" />
+          <helpitem icon="Regular_Clipboard" title="Mass Effect 3 Mod Manager 4.4 (Build 62)" url="https://github.com/Mgamerz/me3modmanager/pull/25" />
         </list>
         <list title="Mod Manager 4.3">
-          <helpitem title="Mod Manager 4.3.2 (Build 61)" url="https://github.com/Mgamerz/me3modmanager/releases/tag/4.3.2" />
-          <helpitem title="Mod Manager 4.3.1 (Build 60)" url="https://github.com/Mgamerz/me3modmanager/pull/24" />
-          <helpitem title="Mod Manager 4.3r2 (Build 59)" url="https://github.com/Mgamerz/me3modmanager/pull/23" />
-          <helpitem title="Mod Manager 4.3 (Build 59)" url="https://github.com/Mgamerz/me3modmanager/pull/22" />
+          <helpitem icon="Regular_Clipboard" title="Mass Effect 3 Mod Manager 4.3.2 (Build 61)" url="https://github.com/Mgamerz/me3modmanager/releases/tag/4.3.2" />
+          <helpitem icon="Regular_Clipboard" title="Mass Effect 3 Mod Manager 4.3.1 (Build 60)" url="https://github.com/Mgamerz/me3modmanager/pull/24" />
+          <helpitem icon="Regular_Clipboard" title="Mass Effect 3 Mod Manager 4.3r2 (Build 59)" url="https://github.com/Mgamerz/me3modmanager/pull/23" />
+          <helpitem icon="Regular_Clipboard" title="Mass Effect 3 Mod Manager 4.3 (Build 59)" url="https://github.com/Mgamerz/me3modmanager/pull/22" />
         </list>
         <list title="Mod Manager 4.2">
-          <helpitem title="Mod Manager 4.2.5 (Build 58)" url="https://github.com/Mgamerz/me3modmanager/pull/19" />
+          <helpitem icon="Regular_Clipboard" title="Mass Effect 3 Mod Manager 4.2.5 (Build 58)" url="https://github.com/Mgamerz/me3modmanager/pull/19" />
         </list>
       </list>
     </list>
