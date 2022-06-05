@@ -5,6 +5,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Media;
 using IniParser.Model;
+using LegendaryExplorerCore.Helpers;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.loaders;
@@ -12,6 +13,7 @@ using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.usercontrols.moddescinieditor;
 using ME3TweaksModManager.ui;
+using Microsoft.AppCenter.Crashes;
 
 namespace ME3TweaksModManager.modmanager.windows
 {
@@ -118,30 +120,41 @@ namespace ME3TweaksModManager.modmanager.windows
 
         private string SerializeData()
         {
+            string error = null;
             var ini = new IniData();
             foreach (var control in editorControls)
             {
-                if (control is LocalizationTaskEditorControl)
+                try
                 {
-                    if (IsLocalizationMod)
+                    if (control is LocalizationTaskEditorControl)
+                    {
+                        if (IsLocalizationMod)
+                        {
+                            control.Serialize(ini);
+                            continue;
+                        }
+                    }
+                    else if (control is MetadataEditorControl)
                     {
                         control.Serialize(ini);
                         continue;
                     }
-                }
-                else if (control is MetadataEditorControl)
-                {
-                    control.Serialize(ini);
-                    continue;
-                }
 
-                if (!IsLocalizationMod)
+                    if (!IsLocalizationMod)
+                    {
+                        control.Serialize(ini);
+                    }
+                }
+                catch (Exception e)
                 {
-                    control.Serialize(ini);
+                    M3Log.Exception(e, @"Error occurred serializing moddesc");
+                    Crashes.TrackError(e);
+                    error = e.FlattenException();
+                    break;
                 }
             }
 
-            return ini.ToString();
+            return error ?? ini.ToString();
         }
 
         // this should move into the control

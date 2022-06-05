@@ -96,6 +96,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
         {
             if (CustomDLCJob != null)
             {
+                // Todo: Check to make sure we don't have duplicate keys here - telemetry shows crash occurred due to duplicate source paths
+                // Also doesn't make sense to allow non-unique values anyways.
                 var srcDirs = CustomDLCParameters.ToDictionary(x => x.SourcePath, x => x.DestDLCName);
 
                 if (srcDirs.Any())
