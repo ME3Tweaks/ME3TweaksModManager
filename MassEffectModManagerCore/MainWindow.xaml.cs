@@ -2258,27 +2258,27 @@ namespace ME3TweaksModManager
             switch (game)
             {
                 case MEGame.ME1:
-                    ME1ASILoaderInstalled = M3Utilities.CheckIfBinkw32ASIIsInstalled(target);
+                    ME1ASILoaderInstalled = target.IsBinkBypassInstalled();;
                     ME1ASILoaderText = ME1ASILoaderInstalled ? binkInstalledText : binkNotInstalledText;
                     break;
                 case MEGame.ME2:
-                    ME2ASILoaderInstalled = M3Utilities.CheckIfBinkw32ASIIsInstalled(target);
+                    ME2ASILoaderInstalled = target.IsBinkBypassInstalled();;
                     ME2ASILoaderText = ME2ASILoaderInstalled ? binkInstalledText : binkNotInstalledText;
                     break;
                 case MEGame.ME3:
-                    ME3ASILoaderInstalled = M3Utilities.CheckIfBinkw32ASIIsInstalled(target);
+                    ME3ASILoaderInstalled = target.IsBinkBypassInstalled();;
                     ME3ASILoaderText = ME3ASILoaderInstalled ? binkInstalledText : binkNotInstalledText;
                     break;
                 case MEGame.LE1:
-                    LE1ASILoaderInstalled = M3Utilities.CheckIfBinkw32ASIIsInstalled(target);
+                    LE1ASILoaderInstalled = target.IsBinkBypassInstalled();;
                     LE1ASILoaderText = LE1ASILoaderInstalled ? binkInstalledText : binkNotInstalledText;
                     break;
                 case MEGame.LE2:
-                    LE2ASILoaderInstalled = M3Utilities.CheckIfBinkw32ASIIsInstalled(target);
+                    LE2ASILoaderInstalled = target.IsBinkBypassInstalled();;
                     LE2ASILoaderText = LE2ASILoaderInstalled ? binkInstalledText : binkNotInstalledText;
                     break;
                 case MEGame.LE3:
-                    LE3ASILoaderInstalled = M3Utilities.CheckIfBinkw32ASIIsInstalled(target);
+                    LE3ASILoaderInstalled = target.IsBinkBypassInstalled();
                     LE3ASILoaderText = LE3ASILoaderInstalled ? binkInstalledText : binkNotInstalledText;
                     break;
             }

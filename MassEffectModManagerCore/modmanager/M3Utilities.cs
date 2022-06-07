@@ -1033,29 +1033,6 @@ namespace ME3TweaksModManager.modmanager
             }
         }
 
-        private const string ME1ASILoaderHash = "30660f25ab7f7435b9f3e1a08422411a";
-        private const string ME2ASILoaderHash = "a5318e756893f6232284202c1196da13";
-        private const string ME3ASILoaderHash = "1acccbdae34e29ca7a50951999ed80d5";
-        private const string LEASILoaderHash = "2026e1cb78b5c7d95477395ac8c9979a"; // Will need changed as game is updated // bink 2005 by d00t
-
-        internal static bool CheckIfBinkw32ASIIsInstalled(GameTargetWPF target)
-        {
-            if (target == null) return false;
-            string binkPath = GetBinkFile(target);
-            string expectedHash = null;
-            if (target.Game == MEGame.ME1) expectedHash = ME1ASILoaderHash;
-            else if (target.Game == MEGame.ME2) expectedHash = ME2ASILoaderHash;
-            else if (target.Game == MEGame.ME3) expectedHash = ME3ASILoaderHash;
-            else if (target.Game.IsLEGame()) expectedHash = LEASILoaderHash;
-
-            if (File.Exists(binkPath))
-            {
-                return CalculateMD5(binkPath) == expectedHash;
-            }
-
-            return false;
-        }
-
         /// <summary>
         /// Gets a string value from the registry from the specified key and value name.
         /// </summary>
