@@ -8,6 +8,7 @@ using IniParser.Model;
 using LegendaryExplorerCore.Helpers;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.exceptions;
 using ME3TweaksModManager.modmanager.loaders;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.mod;
@@ -144,6 +145,13 @@ namespace ME3TweaksModManager.modmanager.windows
                     {
                         control.Serialize(ini);
                     }
+                }
+                catch (ModDescSerializerException e)
+                {
+                    // Specially thrown and handled
+                    M3Log.Exception(e, @"A handled error occurred serializing moddesc");
+                    error = e.FlattenException();
+                    break;
                 }
                 catch (Exception e)
                 {

@@ -1,9 +1,11 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using IniParser.Model;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCoreWPF.UI;
+using ME3TweaksModManager.modmanager.exceptions;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.ui;
 
@@ -96,8 +98,16 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
         {
             if (CustomDLCJob != null)
             {
-                // Todo: Check to make sure we don't have duplicate keys here - telemetry shows crash occurred due to duplicate source paths
-                // Also doesn't make sense to allow non-unique values anyways.
+                // Not the best implementation but it'll work
+                var sourceFoldersDup = CustomDLCParameters.GroupBy(x => x.SourcePath).Any(group => group.Count() > 1);
+                var destFoldersDup = CustomDLCParameters.GroupBy(x => x.DestDLCName).Any(group => group.Count() > 1);
+
+                if (sourceFoldersDup || destFoldersDup)
+                {
+                    // This will be handled in serializer
+                    throw new ModDescSerializerException("Source directories and destination directories for CustomDLC must be unique from each another.");
+                }
+
                 var srcDirs = CustomDLCParameters.ToDictionary(x => x.SourcePath, x => x.DestDLCName);
 
                 if (srcDirs.Any())
