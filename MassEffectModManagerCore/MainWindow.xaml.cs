@@ -145,11 +145,13 @@ namespace ME3TweaksModManager
             var result = Parser.Default.ParseArguments<Options>(args);
             if (result is Parsed<Options> parsedCommandLineArgs)
             {
+                if (parsedCommandLineArgs.Value.RelevantGame != null)
+                    CommandLinePending.PendingGame = parsedCommandLineArgs.Value.RelevantGame.Value;
                 if (parsedCommandLineArgs.Value.NXMLink != null)
                     CommandLinePending.PendingNXMLink = parsedCommandLineArgs.Value.NXMLink;
                 if (parsedCommandLineArgs.Value.AutoInstallModdescPath != null)
                     CommandLinePending.PendingAutoModInstallPath = parsedCommandLineArgs.Value.AutoInstallModdescPath;
-                if (parsedCommandLineArgs.Value.GameBoot != null)
+                if (parsedCommandLineArgs.Value.GameBoot)
                     CommandLinePending.PendingGameBoot = parsedCommandLineArgs.Value.GameBoot;
                 if (parsedCommandLineArgs.Value.AutoInstallASIGroupID > 0)
                     CommandLinePending.PendingInstallASIID = parsedCommandLineArgs.Value.AutoInstallASIGroupID;
