@@ -20,6 +20,7 @@ using System.Xml;
 using System.Xml.Linq;
 using AdonisUI;
 using CommandLine;
+using FontAwesome5;
 using LegendaryExplorerCore;
 using LegendaryExplorerCore.Coalesced;
 using LegendaryExplorerCore.GameFilesystem;
@@ -3088,6 +3089,13 @@ namespace ME3TweaksModManager
                     item.ModalText = M3Utilities.ConvertBrToNewline(item.ModalText);
                     m.Click += (o, eventArgs) => { new DynamicHelpItemModalWindow(item) { Owner = this }.ShowDialog(); };
                 }
+
+                // 06/05/2022 - Support a font awesome icon enumeration value
+                if (!string.IsNullOrWhiteSpace(item.FontAwesomeIconResource) && Enum.TryParse<EFontAwesomeIcon>(item.FontAwesomeIconResource, out var icon))
+                {
+                    m.Icon = new ImageAwesome() { Icon = icon };
+                }
+
 
                 dynamicMenuItems.Add(m);
 

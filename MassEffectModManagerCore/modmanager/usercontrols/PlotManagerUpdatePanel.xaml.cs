@@ -34,6 +34,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
     {
         private GameTargetWPF PlotManagerUpdateTarget;
 
+        public const string PLOT_MANAGER_UPDATE_FILENAME = @"PlotManagerUpdate.pmu";
+
         public PlotManagerUpdatePanel(GameTargetWPF target)
         {
             this.PlotManagerUpdateTarget = target ?? throw new Exception(@"Null target specified for PlotManagerUpdatePanel");
@@ -57,7 +59,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
                     var uiName = metaMaps[pmuDLCName]?.ModName ?? TPMIService.GetThirdPartyModInfo(pmuDLCName, target.Game)?.modname ?? pmuDLCName;
                     combinedNames.Add(uiName);
-                    var text = File.ReadAllLines(Path.Combine(M3Directories.GetDLCPath(target), pmuDLCName, target.Game.CookedDirName(), @"PlotManagerUpdate.pmu"));
+                    var text = File.ReadAllLines(Path.Combine(M3Directories.GetDLCPath(target), pmuDLCName, target.Game.CookedDirName(), PLOT_MANAGER_UPDATE_FILENAME));
                     foreach (var line in text)
                     {
                         if (line.StartsWith(@"public function bool F"))

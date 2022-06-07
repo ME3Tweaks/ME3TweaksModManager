@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
 using System.Windows.Input;
+using AdonisUI.Controls;
 using LegendaryExplorerCore.Coalesced;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
@@ -12,7 +13,11 @@ using ME3TweaksCoreWPF.Targets;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
+using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.ui;
+using MessageBoxButton = System.Windows.MessageBoxButton;
+using MessageBoxImage = System.Windows.MessageBoxImage;
+using MessageBoxResult = System.Windows.MessageBoxResult;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
@@ -68,6 +73,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private void InternalInstallME3Keybinds()
         {
+            if (!BackupService.GetBackupStatus(MEGame.ME3).BackedUp)
+            {
+                var result = M3L.ShowDialog(window, $"There is no backup of {MEGame.ME3} available. If you continue, you will be unable to take a game backup as the game will be modified. Are you sure you want to do this?", "Backup warning", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.No;
+                if (!result)
+                    return; // Don't proceed
+            }
+
             KeybindsInstallingME3 = true;
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"ME3KeybindsInstaller");
             nbw.DoWork += (await, b) =>
@@ -118,6 +130,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private void ResetME3Keybinds()
         {
+            if (!BackupService.GetBackupStatus(MEGame.ME3).BackedUp)
+            {
+                var result = M3L.ShowDialog(window, $"There is no backup of {MEGame.ME3} available. If you continue, you will be unable to take a game backup as the game will be modified. Are you sure you want to do this?", "Backup warning", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.No;
+                if (!result)
+                    return; // Don't proceed
+            }
+
             KeybindsInstallingME3 = true;
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"ME3KeybindsInstaller");
             nbw.DoWork += (await, b) =>

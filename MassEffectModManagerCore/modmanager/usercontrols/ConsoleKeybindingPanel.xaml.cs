@@ -17,15 +17,13 @@ using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Objects;
-using ME3TweaksCoreWPF;
+using ME3TweaksCore.Services.Backup;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.gameini;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
-using ME3TweaksModManager.modmanager.usercontrols.interfaces;
-using ME3TweaksModManager.modmanager.windows;
 using ME3TweaksModManager.ui;
 using Microsoft.AppCenter.Analytics;
 using PropertyChanged;
@@ -59,6 +57,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             LoadCommands();
         }
 
+        /// <summary>
+        /// Game-specific instance the keybinding logic for UI binding
+        /// </summary>
         [AddINotifyPropertyChangedInterface]
         public class KeybindingGame
         {
@@ -99,6 +100,17 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
             private void SetFullKey()
             {
+                // We do not have a 1:1 compiler for ME3/LE3
+                // ME1 uses ini that doesn't get backed up
+                // ME2 uses ini that is 1:1
+                // LE1/LE2 use coalesced ini that is 1:1
+                if (Game.IsGame3() && !BackupService.GetBackupStatus(Game).BackedUp)
+                {
+                    var result = M3L.ShowDialog(Application.Current.MainWindow, $"There is no backup of {Game} available. If you continue, you will be unable to take a game backup as the game will be modified. Are you sure you want to do this?", "Backup warning", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.No;
+                    if (!result)
+                        return; // Don't proceed
+                }
+
                 void keyPressed(string key)
                 {
                     if (key != null)
@@ -109,6 +121,17 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
             private void SetMiniKey()
             {
+                // We do not have a 1:1 compiler for ME3/LE3
+                // ME1 uses ini that doesn't get backed up
+                // ME2 uses ini that is 1:1
+                // LE1/LE2 use coalesced ini that is 1:1
+                if (Game.IsGame3() && !BackupService.GetBackupStatus(Game).BackedUp)
+                {
+                    var result = M3L.ShowDialog(Application.Current.MainWindow, $"There is no backup of {Game} available. If you continue, you will be unable to take a game backup as the game will be modified. Are you sure you want to do this?", "Backup warning", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.No;
+                    if (!result)
+                        return; // Don't proceed
+                }
+
                 void keyPressed(string key)
                 {
                     if (key != null)
@@ -119,6 +142,16 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
             private void ResetKeybinds()
             {
+                // We do not have a 1:1 compiler for ME3/LE3
+                // ME1 uses ini that doesn't get backed up
+                // ME2 uses ini that is 1:1
+                // LE1/LE2 use coalesced ini that is 1:1
+                if (Game.IsGame3() && !BackupService.GetBackupStatus(Game).BackedUp)
+                {
+                    var result = M3L.ShowDialog(Application.Current.MainWindow, $"There is no backup of {Game} available. If you continue, you will be unable to take a game backup as the game will be modified. Are you sure you want to do this?", "Backup warning", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.No;
+                    if (!result)
+                        return; // Don't proceed
+                }
                 SetKeyWithThread(@"Tilde", @"Tab", true);
             }
 

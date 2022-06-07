@@ -41,6 +41,7 @@ using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using Newtonsoft.Json;
 using SevenZip;
+using Extensions = WinCopies.Util.Extensions;
 using MemoryAnalyzer = ME3TweaksModManager.modmanager.memoryanalyzer.MemoryAnalyzer;
 using Mod = ME3TweaksModManager.modmanager.objects.mod.Mod;
 
@@ -176,10 +177,22 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private bool CheckForGameBackup()
         {
+            var hasBackup = BackupService.GetBackupStatus(InstallOptionsPackage.ModBeingInstalled.Game).BackedUp;
             var hasAnyGameModificationJobs = InstallOptionsPackage.ModBeingInstalled.InstallationJobs.Any(x => x.Header != ModJob.JobHeader.CUSTOMDLC && x.Header != ModJob.JobHeader.BALANCE_CHANGES);
+
+            // 06/06/2022 - Check for PlotSync since it modifies basegame file
+            if (!hasBackup && (InstallOptionsPackage.ModBeingInstalled.Game.IsGame1() || InstallOptionsPackage.ModBeingInstalled.Game.IsGame2()))
+            {
+                var custDlcJob = InstallOptionsPackage.ModBeingInstalled.GetJob(ModJob.JobHeader.CUSTOMDLC);
+                if (custDlcJob != null)
+                {
+                    hasAnyGameModificationJobs |= InstallOptionsPackage.ModBeingInstalled.GetAllInstallableFiles().Any(x => Path.GetFileName(x).Equals(PlotManagerUpdatePanel.PLOT_MANAGER_UPDATE_FILENAME, StringComparison.CurrentCultureIgnoreCase));
+                }
+            }
+
             if (!hasAnyGameModificationJobs) return true; //Backup not required for DLC-only mods. Or balance change jobs
-            var hasBackup = BackupService.GetGameBackupPath(InstallOptionsPackage.ModBeingInstalled.Game);
-            if (hasBackup == null)
+
+            if (!hasBackup)
             {
                 var installAnyways = M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_interp_dialog_noBackupForXInstallingY, InstallOptionsPackage.ModBeingInstalled.Game.ToGameName(), InstallOptionsPackage.ModBeingInstalled.ModName), M3L.GetString(M3L.string_noBackup), MessageBoxButton.YesNo, MessageBoxImage.Error);
                 return installAnyways == MessageBoxResult.Yes;
@@ -241,11 +254,28 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 return;
             }
 
-            InstallOptionsPackage.InstallTarget.InstallBinkBypass(); //Always install binkw32, don't bother checking if it is already ASI version.
-            if (InstallOptionsPackage.ModBeingInstalled.Game.IsLEGame())
+            InstallOptionsPackage.InstallTarget.InstallBinkBypass(); //Always install bink, don't bother checking if it is already ASI version.
+
+            // 06/06/2022 - Change to only install for Launcher if autoboot is on since bink 2007 fixes launcher dir for every game.
+            if (Settings.SkipLELauncher && InstallOptionsPackage.ModBeingInstalled.Game.IsLEGame())
             {
                 GameTargetWPF gt = new GameTargetWPF(MEGame.LELauncher, Path.Combine(Directory.GetParent(InstallOptionsPackage.InstallTarget.TargetPath).FullName, @"Launcher"), false, skipInit: true);
-                gt.InstallBinkBypass();
+                if (gt.IsValid && !gt.IsBinkBypassInstalled())
+                {
+                    // Bink isn't installed and it needs autoboot
+                    if (MUtilities.IsGameRunning(MEGame.LELauncher))
+                    {
+                        M3Log.Warning(@"LE Launcher bink bypass needs installed for autoboot but launcher is running - skipping install");
+                    }
+                    else
+                    {
+                        gt.InstallBinkBypass();
+                    }
+                }
+                else
+                {
+                    M3Log.Information(@"LE Launcher bink bypass is already installed - not installing for autoboot");
+                }
             }
 
             if (InstallOptionsPackage.ModBeingInstalled.Game == MEGame.ME2 && InstallOptionsPackage.ModBeingInstalled.GetJob(ModJob.JobHeader.ME2_RCWMOD) != null && installationJobs.Count == 1)
@@ -874,7 +904,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 {
                     allTLKMerges = installationJobs.Where(x => x.Game1TLKXmls != null).SelectMany(x => x.Game1TLKXmls).ToList();
                 }
-                
+
                 var gameMap = MELoadedFiles.GetFilesLoadedInGame(InstallOptionsPackage.InstallTarget.Game, gameRootOverride: InstallOptionsPackage.InstallTarget.TargetPath);
                 doneMerges = 0;
 
