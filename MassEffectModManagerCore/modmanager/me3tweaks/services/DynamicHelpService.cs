@@ -228,6 +228,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
         internal string ModalText;
         internal string ResourceName;
         internal string ResourceMD5;
+        internal string FontAwesomeIconResource;
         internal int ResourceSize;
         internal bool InheritsNLLocalizedTitle;
         internal List<SortableHelpElement> Children = new List<SortableHelpElement>();
@@ -237,6 +238,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
             this.Title = source.Attributes.GetNamedItem("title")?.InnerText;
             this.ToolTip = source.Attributes.GetNamedItem("tooltip")?.InnerText;
             this.URL = source.Attributes.GetNamedItem("url")?.InnerText;
+            this.FontAwesomeIconResource = source.Attributes.GetNamedItem("icon")?.InnerText;
             if (bool.TryParse(source.Attributes.GetNamedItem("localizedtitle")?.InnerText, out var ilt))
             {
                 this.InheritsNLLocalizedTitle = ilt;
