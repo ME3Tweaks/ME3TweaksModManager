@@ -21,7 +21,7 @@ namespace ME3TweaksModManager.Tests
             Console.WriteLine(@"Loading ASI Manager Manifest");
             ASIManager.LoadService(GlobalTest.CombinedServiceData["asimanifest"]);
 
-            var games = new[] { MEGame.ME1, MEGame.ME2, MEGame.ME3 };
+            var games = new[] { MEGame.ME1, MEGame.ME2, MEGame.ME3, MEGame.LE1, MEGame.LE2, MEGame.LE3 };
 
             foreach (var game in games)
             {
