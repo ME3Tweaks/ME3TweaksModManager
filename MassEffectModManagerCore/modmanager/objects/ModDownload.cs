@@ -164,7 +164,7 @@ namespace ME3TweaksModManager.modmanager.objects
                         M3Log.Error($@"File is blacklisted by ME3Tweaks: {ProtocolLink?.Domain} file {ProtocolLink.FileId}");
                         Initialized = true;
                         ProgressIndeterminate = false;
-                        OnModDownloadError?.Invoke(this, M3L.GetString(M3L.string_modBlacklistedMessage));
+                        OnModDownloadError?.Invoke(this, M3L.GetString(M3L.string_description_blacklistedMod));
                         return;
                     }
 

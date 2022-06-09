@@ -763,8 +763,6 @@
     <system:String x:Key="string_dialog_noModSiteDeployed">Mods missing modsite descriptor</system:String>
 
     <!-- Texture checks -->
-    <!-- The follow items are only for letting this localizer replace the correct strings! Remove them when done and make sure keys are identical to the stripped versions-->
-    <system:String x:Key="string_tfc">.tfc</system:String>
     <system:String x:Key="string_interp_cannotInstallTFCToBasegameLE1">Cannot install TFC {0} to /BIOGame/CookedPCConsole in LE1. Additional game TFCs must be added through a Custom DLC folder.</system:String>
     <!-- 0={Filepath} -->
 
@@ -2243,7 +2241,9 @@
     <system:String x:Key="string_tooltip_downloadThisMod">Download this mod</system:String>
     <system:String x:Key="string_tooltip_premiumRequiredForDownload">You must be a NexusMods Premium user to download directly within Mod Manager</system:String>
     <system:String x:Key="string_tooltip_nexusfilesqueryAllLE">Due to how NexusMods stores files, it is not possible to accurately detect which game a mod file is for.&#10;Use this option to search all LE files.</system:String>
+    <!-- Keep the &#10; - it's a new line-->
     <system:String x:Key="string_allLE">All LE</system:String>
+    <!-- Try to keep short if possible - this is on a pretty space-constrained area -->
     <system:String x:Key="string_searchRequiresAtLeastOneCategory">Search requires at least one category</system:String>
 
     <!-- Mod-NexusModsIntegration -->
@@ -2265,7 +2265,6 @@
     <system:String x:Key="string_downloadError">Download error</system:String>
     <system:String x:Key="string_interp_nexusModNotCompatible">{0} is not compatible with ME3Tweaks Mod Manager. If this is a texture mod, install it with ALOT Installer.</system:String>
     <!-- 0={Mod Name (on NexusMods)} -->
-    <system:String xml:space="preserve" x:Key="string_modBlacklistedMessage">The developers of ME3Tweaks Mod Manager have blacklisted this file for one of the following reasons:\n - The mod(s) in this file are known to not work and have been abandoned\n - The mod(s) in this file are destructive to the game for end users</system:String>
     <system:String xml:space="preserve" x:Key="string_interp_notEnoughFreeSpaceForDownload">There is not enough free space on {0} to download {1}.\n\nRequired space: {2}\nFree space: {3}</system:String>
     <!-- 0={Drive letter (C:\, D:\ etc)} 1={Mod downloaded filename} 2={Filesize (human readable)} 3={Free spaced (human readable)} -->
 
@@ -2313,7 +2312,7 @@
     <system:String x:Key="string_interp_mergefile_invalidEnumPropertyValue">'propertyvalue' for EnumProperty must have a '.' in it to separate the enum type from the enum value</system:String>
     <system:String xml:space="preserve" x:Key="string_interp_fileLibInitMergeMod1Script">FileLib for script update could not initialize, cannot merge script to {0}:\n{1}</system:String>
     <!-- 0={target entry InstancedFullPath} 1={newline split list of errors} -->
-    <system:String x:Key="string_interp_mergefile_noLocalizedFiles">Could not find any localized files to merge into for {0}. This merge has 'applytoallapplications' set to true, this flag makes changes only apply to localizations of a file</system:String>
+    <system:String x:Key="string_interp_mergefile_noLocalizedFiles">Could not find any localized files to merge into for {0}. This merge has 'applytoallapplications' set to true, which makes makes changes only be merged into localized versions of a file</system:String>
     <!-- 0={FileName} -->
     <system:String x:Key="string_interp_mergefile_errorCompilingClassAfterEdit">Error compiling class {0} after adding or replacing {1}: {2}</system:String>
     <!-- 0={targetExport InstancedFullPath} 1={Script Filename} 2={list of errors} -->

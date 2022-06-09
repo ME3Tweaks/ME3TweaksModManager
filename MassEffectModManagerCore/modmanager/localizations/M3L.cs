@@ -703,7 +703,6 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_interp_warningPackageForOtherGameFound = "string_interp_warningPackageForOtherGameFound";
 		public const string string_interp_dialog_noModSiteDeployed = "string_interp_dialog_noModSiteDeployed";
 		public const string string_dialog_noModSiteDeployed = "string_dialog_noModSiteDeployed";
-		public const string string_tfc = "string_tfc";
 		public const string string_interp_cannotInstallTFCToBasegameLE1 = "string_interp_cannotInstallTFCToBasegameLE1";
 		public const string string_deployment_squadmateOutfitMerge = "string_deployment_squadmateOutfitMerge";
 		public const string string_deployment_sqmIssuesDialogMessage = "string_deployment_sqmIssuesDialogMessage";
@@ -1758,7 +1757,6 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_cancelDownload = "string_cancelDownload";
 		public const string string_downloadError = "string_downloadError";
 		public const string string_interp_nexusModNotCompatible = "string_interp_nexusModNotCompatible";
-		public const string string_modBlacklistedMessage = "string_modBlacklistedMessage";
 		public const string string_interp_notEnoughFreeSpaceForDownload = "string_interp_notEnoughFreeSpaceForDownload";
 		public const string string_syncingPlotManager = "string_syncingPlotManager";
 		public const string string_interp_plotManagerSyncForX = "string_interp_plotManagerSyncForX";
