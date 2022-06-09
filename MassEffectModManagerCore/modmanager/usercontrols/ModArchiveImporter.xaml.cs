@@ -762,6 +762,10 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 if (b.Result is List<Mod> modList)
                 {
                     Result.ReloadMods = true;
+
+                    // Make sure we submit all items here - the filtering for update checks
+                    // will be handled by the updater system and this must be accurate or 
+                    // mod loader won't work properly since it scopes the reload
                     Result.ModsToCheckForUpdates.AddRange(modList);
 
                     // If only one mod was imported, highlight it on reload

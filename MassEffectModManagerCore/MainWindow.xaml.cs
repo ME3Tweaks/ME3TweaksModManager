@@ -1397,8 +1397,11 @@ namespace ME3TweaksModManager
 
             if (result.ReloadMods)
             {
-                // Full reload here, I think...
-                M3LoadedMods.Instance.LoadMods(result.ModToHighlightOnReload, result.ModsToCheckForUpdates.Any(), result.ModsToCheckForUpdates.ToList());
+                // Scope the reload if we are reloading for mod update checks (which means a mod was just imported and we are reloading that game(s))
+                var gamesToLoad = result.ModsToCheckForUpdates.Select(x => x.Game).Distinct().ToArray();
+                if (gamesToLoad.Length == 0)
+                    gamesToLoad = null;
+                M3LoadedMods.Instance.LoadMods(result.ModToHighlightOnReload, result.ModsToCheckForUpdates.Any(), result.ModsToCheckForUpdates.ToList(), gamesToLoad);
             }
 
             Task.Run(() =>
