@@ -344,7 +344,15 @@ namespace ME3TweaksModManager.modmanager.windows
         }
 
         public MEGame SelectedGame { get; set; }
+
+        /// <summary>
+        /// Selected right pane mod
+        /// </summary>
         public Mod SelectedInstallGroupMod { get; set; }
+
+        /// <summary>
+        /// Selected left pane mod
+        /// </summary>
         public Mod SelectedAvailableMod { get; set; }
 
         public void OnSelectedGameChanged()

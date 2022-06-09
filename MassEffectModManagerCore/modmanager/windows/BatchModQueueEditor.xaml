@@ -7,9 +7,11 @@
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" 
         xmlns:fa5="http://schemas.fontawesome.com/icons/"
         xmlns:helpers="clr-namespace:ME3TweaksModManager.modmanager.helpers"
+        xmlns:extensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         mc:Ignorable="d" 
-        WindowStartupLocation="CenterOwner" Title="{DynamicResource string_title_installGroupEditor}" Height="650" Width="1000">
+        WindowStartupLocation="CenterOwner" Title="{DynamicResource string_title_installGroupEditor}" 
+        Height="720" Width="1280">
     <Window.Style>
         <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}" />
     </Window.Style>
@@ -23,6 +25,7 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
+                <RowDefinition Height="200" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
@@ -117,10 +120,38 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-            <Button Grid.Row="5" Grid.Column="0" Margin="0,5,0,0" Grid.ColumnSpan="6" HorizontalAlignment="Right" Command="{Binding AddToInstallGroupCommand}">
+            <TextBox
+                    Grid.Row="5"
+                    Grid.ColumnSpan="6"
+                    Grid.Column="0"
+                    Name="ModDescription_TextBox"
+                    IsReadOnly="True"
+                    IsReadOnlyCaretVisible="False"
+                    HorizontalContentAlignment="Left"
+                    HorizontalAlignment="Stretch"
+                    Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
+                    TextWrapping="Wrap"
+                    VerticalScrollBarVisibility="Auto"
+                    AllowDrop="True"
+                    VerticalContentAlignment="Top"
+                    extensions:CursorSpotlightExtension.BackgroundBrush="Transparent"
+                    extensions:CursorSpotlightExtension.RelativeSpotlightSize="0"
+                    extensions:CursorSpotlightExtension.MaxBlurRadius="0">
+                <TextBox.Text>
+                    <PriorityBinding>
+                        <Binding
+                                Path="SelectedAvailableMod.DisplayedModDescription"
+                                Mode="OneWay" />
+                        <Binding
+                                Path="NoModSelectedText"
+                                Mode="OneWay" />
+                    </PriorityBinding>
+                </TextBox.Text>
+            </TextBox>
+            <Button Grid.Row="6" Grid.Column="0" Margin="0,5,0,0" Grid.ColumnSpan="6" HorizontalAlignment="Right" Command="{Binding AddToInstallGroupCommand}">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="{DynamicResource string_addModToInstallGroup}" />
-                    <fa5:ImageAwesome Icon="Solid_ArrowCircleRight" Height="12" Margin="5,0,0,0" Foreground="GreenYellow" />
+                    <fa5:ImageAwesome Icon="Solid_ArrowCircleRight" Height="12" Margin="5,0,0,0" Foreground="Green" />
                 </StackPanel>
             </Button>
         </Grid>
@@ -171,16 +202,47 @@
                         </StackPanel>
                     </Button>
                 </DockPanel>
-                <ListBox ItemsSource="{Binding ModsInGroup}" SelectedItem="{Binding SelectedInstallGroupMod}" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" BorderThickness="1" IsTextSearchEnabled="True" TextSearch.TextPath="ModName">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Horizontal">
-                                <Image Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16" Margin="0,0,5,0" />
-                                <TextBlock Text="{Binding ModName}" />
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <ListBox ItemsSource="{Binding ModsInGroup}" SelectedItem="{Binding SelectedInstallGroupMod}" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" BorderThickness="1" IsTextSearchEnabled="True" TextSearch.TextPath="ModName">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16" Margin="0,0,5,0" />
+                                    <TextBlock Text="{Binding ModName}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <TextBox
+                        Grid.Column="1"
+                        IsReadOnly="True"
+                        IsReadOnlyCaretVisible="False"
+                        HorizontalContentAlignment="Left"
+                        HorizontalAlignment="Stretch"
+                        Background="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}"
+                        TextWrapping="Wrap"
+                        VerticalScrollBarVisibility="Auto"
+                        BorderThickness="1"
+                        VerticalContentAlignment="Top"
+                        extensions:CursorSpotlightExtension.BackgroundBrush="Transparent"
+                        extensions:CursorSpotlightExtension.RelativeSpotlightSize="0"
+                        extensions:CursorSpotlightExtension.MaxBlurRadius="0">
+                        <TextBox.Text>
+                            <PriorityBinding>
+                                <Binding
+                                    Path="SelectedInstallGroupMod.DisplayedModDescription"
+                                    Mode="OneWay" />
+                                <Binding
+                                    Path="NoModSelectedText"
+                                    Mode="OneWay" />
+                            </PriorityBinding>
+                        </TextBox.Text>
+                    </TextBox>
+                </Grid>
             </DockPanel>
         </DockPanel>
     </DockPanel>
