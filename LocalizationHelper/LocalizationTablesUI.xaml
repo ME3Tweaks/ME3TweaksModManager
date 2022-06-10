@@ -67,13 +67,13 @@
                     <!-- This is used for data grid to get reference -->
                     <GridSplitter Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch"/>
                     <!--<TextBlock Text="Section" Grid.Column="0" Grid.Row="0" FontWeight="Bold" Margin="5,0,0,0"/>-->
-                    <ComboBox Grid.Column="0" Grid.Row="0" Margin="5,0,0,0" ItemsSource="{Binding LocalizationBranches}" SelectedItem="{Binding SelectedBranch}"/>
+                    <ComboBox Grid.Column="0" Grid.Row="0" Margin="5,0,0,0" ItemsSource="{Binding M3LocalizationBranches}" SelectedItem="{Binding M3SelectedBranch}"/>
                     <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="2">
                         <TextBlock Text="Strings" FontWeight="Bold"/>
                         <TextBlock Text="{Binding PleaseWaitString}" Visibility="{Binding LoadingVisibility}" Margin="5,0"/>
                     </StackPanel>
-                    <ListBox Grid.Row="1" Grid.Column="0" ItemsSource="{Binding LocalizationCategories}" 
-                         SelectedItem="{Binding SelectedCategory}" 
+                    <ListBox Grid.Row="1" Grid.Column="0" ItemsSource="{Binding M3LocalizationCategories}" 
+                         SelectedItem="{Binding M3SelectedCategory}" 
                          DisplayMemberPath="CategoryName" Margin="5,0,0,0">
                         <ListBox.ItemContainerStyle>
                             <Style TargetType="ListBoxItem">
@@ -86,7 +86,7 @@
                         </ListBox.ItemContainerStyle>
                     </ListBox>
                     <DataGrid Name="DataGridTable" Grid.Row="1" Grid.Column="2" 
-                          ItemsSource="{Binding SelectedCategory.LocalizedStringsForSection}" 
+                          ItemsSource="{Binding M3SelectedCategory.LocalizedStringsForSection}" 
                           AutoGenerateColumns="False" CanUserAddRows="false"
                           SelectedItem="{Binding SelectedDataGridItem}">
                         <DataGrid.Resources>
@@ -141,6 +141,103 @@
                                         <Setter Property="TextWrapping" Value="Wrap" />
                                         <Setter Property="AcceptsReturn" Value="False" />
                                     </Style>    
+                                </DataGridTextColumn.EditingElementStyle>
+                            </DataGridTextColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                </Grid>
+            </TabItem>
+            <TabItem Header="ME3TweaksCore">
+                <Grid Margin="0,5,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="230"/>
+                        <ColumnDefinition Width="5"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <FrameworkElement x:Name="DataContextReferenceCore" Visibility="Collapsed"/>
+                    <!-- This is used for data grid to get reference -->
+                    <GridSplitter Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch"/>
+                    <!--<TextBlock Text="Section" Grid.Column="0" Grid.Row="0" FontWeight="Bold" Margin="5,0,0,0"/>-->
+                    <ComboBox Grid.Column="0" Grid.Row="0" Margin="5,0,0,0" ItemsSource="{Binding M3CLocalizationBranches}" SelectedItem="{Binding M3CSelectedBranch}"/>
+                    <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="2">
+                        <TextBlock Text="Strings" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding PleaseWaitString}" Visibility="{Binding LoadingVisibility}" Margin="5,0"/>
+                    </StackPanel>
+                    <ListBox Grid.Row="1" Grid.Column="0" ItemsSource="{Binding M3CLocalizationCategories}" 
+                         SelectedItem="{Binding M3CSelectedCategory}" 
+                         DisplayMemberPath="CategoryName" Margin="5,0,0,0">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding HasChangedStrings}" Value="True">
+                                        <Setter Property="Background" Value="Orange" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                    </ListBox>
+                    <DataGrid Name="DataGridTableM3C" Grid.Row="1" Grid.Column="2" 
+                          ItemsSource="{Binding M3CSelectedCategory.LocalizedStringsForSection}" 
+                          AutoGenerateColumns="False" CanUserAddRows="false"
+                          SelectedItem="{Binding M3CSelectedDataGridItem}">
+                        <DataGrid.Resources>
+                            <!--<DataTemplate x:Key="LocTextEditorTemplate" >
+                                <TextBox Width="200" TextWrapping="Wrap" Text="Poop{Binding LocalizedStr}"/>
+                            </DataTemplate>-->
+                            <Style TargetType="{x:Type DataGridCell}">
+                                <Style.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Background" Value="Green"/>
+                                        <Setter Property="Foreground" Value="White"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                            <Style TargetType="{x:Type DataGridRow}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ChangedFromPrevious}" Value="True">
+                                        <Setter Property="Background" Value="LightCoral"/>
+                                        <Setter Property="Foreground" Value="White"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGrid.Resources>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Key" Binding="{Binding key}" IsReadOnly="True" Width="Auto"/>
+                            <DataGridCheckBoxColumn Header="Has NL" Binding="{Binding preservewhitespace}" Width="60"  IsReadOnly="True"/>
+                            <DataGridTextColumn Header="Notes" Binding="{Binding notes}" MaxWidth="250" IsReadOnly="True">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style>
+                                        <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
+                                        <Setter Property="TextBlock.TextAlignment" Value="Left"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="English" Binding="{Binding EnglishString}" MaxWidth="250" IsReadOnly="True">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style>
+                                        <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
+                                        <Setter Property="TextBlock.TextAlignment" Value="Left"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Localized" Binding="{Binding LocalizedStr}" MaxWidth="250" Visibility="{Binding CurrentLanguage, Converter={StaticResource NullVisibilityConverter}}">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
+                                        <Setter Property="TextBlock.TextAlignment" Value="Left"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                                <DataGridTextColumn.EditingElementStyle>
+                                    <Style TargetType="TextBox">
+                                        <Setter Property="TextWrapping" Value="Wrap" />
+                                        <Setter Property="AcceptsReturn" Value="False" />
+                                    </Style>
                                 </DataGridTextColumn.EditingElementStyle>
                             </DataGridTextColumn>
                         </DataGrid.Columns>

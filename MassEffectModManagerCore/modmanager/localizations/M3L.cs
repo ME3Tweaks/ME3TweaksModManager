@@ -151,8 +151,6 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_RandomizerforthefirstMassEffectgame = "string_RandomizerforthefirstMassEffectgame";
 		public const string string_me2r = "string_me2r";
 		public const string string_tooltip_me2r = "string_tooltip_me2r";
-		public const string string_ME3ExplorerME3TweaksFork = "string_ME3ExplorerME3TweaksFork";
-		public const string string_ME3ExplorerME3TweaksForkBeta = "string_ME3ExplorerME3TweaksForkBeta";
 		public const string string_LegendaryExplorerStable = "string_LegendaryExplorerStable";
 		public const string string_LegendaryExplorerBeta = "string_LegendaryExplorerBeta";
 		public const string string_ME3ExplorerME3TweaksForkTooltip = "string_ME3ExplorerME3TweaksForkTooltip";

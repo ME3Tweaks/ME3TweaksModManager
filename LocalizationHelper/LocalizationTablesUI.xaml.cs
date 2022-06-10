@@ -18,6 +18,7 @@ using Microsoft.Win32;
 using Newtonsoft.Json;
 using Octokit;
 using PropertyChanged;
+using Localization = ICSharpCode.AvalonEdit.Search.Localization;
 using Path = System.IO.Path;
 
 namespace LocalizationHelper
@@ -44,13 +45,11 @@ namespace LocalizationHelper
             Languages.Add(new LocalizationLanguage() { Selected = false, LangCode = "deu", FullName = "German" });
             Languages.Add(new LocalizationLanguage() { Selected = false, LangCode = "rus", FullName = "Russian" });
             Languages.Add(new LocalizationLanguage() { Selected = false, LangCode = "pol", FullName = "Polish" });
-            Languages.Add(new LocalizationLanguage()
-            { Selected = false, LangCode = "bra", FullName = "Portugeuse (Brazilian)" });
+            Languages.Add(new LocalizationLanguage() { Selected = false, LangCode = "bra", FullName = "Portugeuse (Brazilian)" });
 
-
-
-            //Load localizations
-            LoadLocalizations();
+            //Load M3 localizations
+            LoadLocalizations(true, @"ME3TweaksModManager", @"MassEffectModManagerCore/modmanager/localizations/", M3LocalizationBranches, M3LocalizationCategories);
+            LoadLocalizations(false, @"ME3TweaksCore", @"ME3TweaksCore/Localization/Dictionaries/", M3CLocalizationBranches, M3CLocalizationCategories);
         }
 
         public static LocalizationLanguage CurrentLanguage { get; set; }
@@ -89,7 +88,10 @@ namespace LocalizationHelper
 
         public string PleaseWaitString { get; set; } = "Please wait, starting up";
 
-        public ObservableCollectionExtended<string> LocalizationBranches { get; } =
+        public ObservableCollectionExtended<string> M3LocalizationBranches { get; } =
+            new ObservableCollectionExtended<string>();
+
+        public ObservableCollectionExtended<string> M3CLocalizationBranches { get; } =
             new ObservableCollectionExtended<string>();
 
         public ObservableCollectionExtended<LocalizedString> LocalizedTips { get; } =
@@ -98,25 +100,29 @@ namespace LocalizationHelper
         public ObservableCollectionExtended<LocalizedString> LocalizedTutorialService { get; } =
             new ObservableCollectionExtended<LocalizedString>();
 
-        public string SelectedBranch { get; set; }
+        public string M3SelectedBranch { get; set; }
+        public string M3CSelectedBranch { get; set; }
 
-        private void LoadLocalizations(string branch = null)
+        private void LoadLocalizations(bool fullLoad, string repo, string branchLocalizationPath,
+            ObservableCollectionExtended<string> branchDest,
+            ObservableCollectionExtended<LocalizationCategory> categoryDest,
+            string branch = null)
         {
             BackgroundWorker bw = new BackgroundWorker();
             bw.DoWork += (x, y) =>
             {
-                if (!LocalizationBranches.Any())
+                if (!branchDest.Any())
                 {
-                    PleaseWaitString = "Fetching remote localization branches";
+                    PleaseWaitString = $"Fetching remote localization branches for {repo}";
                     var ghclient = new GitHubClient(new ProductHeaderValue(@"ME3TweaksModManager"));
                     try
                     {
-                        var branches = ghclient.Repository.Branch.GetAll("ME3Tweaks", "ME3TweaksModManager").Result;
+                        var branches = ghclient.Repository.Branch.GetAll("ME3Tweaks", repo).Result;
                         var locbranches = branches.Where(x => /*x.Name.Contains("master") ||*/
                             x.Name.Contains("-localization"));
                         System.Windows.Application.Current.Dispatcher.Invoke(delegate
                         {
-                            LocalizationBranches.ReplaceAll(locbranches.Select(x => x.Name)
+                            branchDest.ReplaceAll(locbranches.Select(x => x.Name)
                                 .OrderByDescending(x => x));
                         });
                     }
@@ -131,16 +137,30 @@ namespace LocalizationHelper
                 }
 
                 string oldBuildBranch = null;
-                if (LocalizationBranches.Any())
+                if (branchDest.Any())
                 {
                     if (branch == null)
                     {
-                        branch = LocalizationBranches.First();
-                        SelectedBranch = branch;
-                        oldBranch = branch;
-                        if (LocalizationBranches.Count() > 1)
+                        branch = branchDest.First();
+
+                        // Todo: Make generic somehow, maybe with a callback?
+                        if (repo == @"ME3TweaksModManager")
                         {
-                            oldBuildBranch = LocalizationBranches[1];
+                            M3SelectedBranch = branch;
+                            m3oldBranch = branch;
+                            if (M3LocalizationBranches.Count() > 1)
+                            {
+                                oldBuildBranch = M3LocalizationBranches[1];
+                            }
+                        }
+                        else if (repo == @"ME3TweaksCore")
+                        {
+                            M3CSelectedBranch = branch;
+                            m3coldBranch = branch;
+                            if (M3CLocalizationBranches.Count() > 1)
+                            {
+                                oldBuildBranch = M3CLocalizationBranches[1];
+                            }
                         }
                     }
                 }
@@ -149,14 +169,13 @@ namespace LocalizationHelper
                     System.Windows.Application.Current.Dispatcher.Invoke(delegate
                     {
                         MessageBox.Show(
-                            "Could not find any branches on ME3TweaksModManager repo containing name 'localization'");
+                            $"Could not find any branches on {repo} repo containing name 'localization'");
                     });
                     return;
                 }
 
                 var dictionaries = new Dictionary<string, string>();
-                string endpoint =
-                    $"https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/{branch}/MassEffectModManagerCore/modmanager/localizations/"; //make dynamic, maybe with octokit.
+                string endpoint = $"https://raw.githubusercontent.com/ME3Tweaks/{repo}/{branch}/{branchLocalizationPath}"; //make dynamic, maybe with octokit.
                 WebClient client = new WebClient();
                 foreach (var lang in GlobalSupportedLanguages.Concat(new[] { "int" }))
                 {
@@ -169,10 +188,10 @@ namespace LocalizationHelper
 
                 if (oldBuildBranch != null)
                 {
-                    PleaseWaitString = $"Fetching {oldBuildBranch} int";
+                    PleaseWaitString = $"Fetching {repo} {oldBuildBranch} int";
 
                     endpoint =
-                        $"https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/{oldBuildBranch}/MassEffectModManagerCore/modmanager/localizations/"; //make dynamic, maybe with octokit.
+                        $"https://raw.githubusercontent.com/ME3Tweaks/{repo}/{oldBuildBranch}/{branchLocalizationPath}"; //make dynamic, maybe with octokit.
                     var url = endpoint + "int.xaml";
                     var dict = client.DownloadStringAwareOfEncoding(url);
                     dictionaries["int-prev"] = dict;
@@ -283,94 +302,101 @@ namespace LocalizationHelper
                 parseLocalizations(categories, dictionaries);
                 y.Result = categories;
 
-                //TIPS SERVICE
-                PleaseWaitString = $"Fetching Tips Service";
-
-                string tipsEndpoint = "https://me3tweaks.com/modmanager/services/tipsservice";
-                var wc = new System.Net.WebClient();
-                var tipsJson = wc.DownloadString(tipsEndpoint);
-                var jsonObj = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(tipsJson);
-                var locTips = new List<LocalizedString>();
-                for (int i = 0; i < jsonObj["int"].Count; i++)
+                if (fullLoad)
                 {
-                    LocalizedString ls = new LocalizedString()
+                    //TIPS SERVICE
+                    PleaseWaitString = $"Fetching Tips Service";
+
+                    string tipsEndpoint = "https://me3tweaks.com/modmanager/services/tipsservice";
+                    var wc = new System.Net.WebClient();
+                    var tipsJson = wc.DownloadString(tipsEndpoint);
+                    var jsonObj = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(tipsJson);
+                    var locTips = new List<LocalizedString>();
+                    for (int i = 0; i < jsonObj["int"].Count; i++)
                     {
-                        EnglishString = jsonObj["int"][i]
-                    };
+                        LocalizedString ls = new LocalizedString()
+                        {
+                            EnglishString = jsonObj["int"][i]
+                        };
+                        foreach (var lang in GlobalSupportedLanguages)
+                        {
+                            if (jsonObj.TryGetValue(lang, out var parsed))
+                            {
+                                if (parsed.Count <= i) continue; //skip
+                                ls.Localizations[lang] = parsed[i];
+                            }
+                        }
+
+                        locTips.Add(ls);
+                    }
+
+                    System.Windows.Application.Current.Dispatcher.Invoke(
+                        delegate { LocalizedTips.ReplaceAll(locTips); });
+
+                    //DYNAMIC HELP
+                    PleaseWaitString = $"Fetching Dynamic Help";
+
+                    endpoint =
+                        $"https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/{branch}/MassEffectModManagerCore/staticfiles/dynamichelp/latesthelp-localized.xml";
+                    var dynamicHelpXml = wc.DownloadString(endpoint);
+                    XDocument doc = XDocument.Parse(dynamicHelpXml);
+                    var intxml = doc.XPathSelectElement("/localizations/helpmenu[@lang='int']");
+                    dynamicHelpLocalizations["int"] = intxml.ToString();
+
+                    //Debug.WriteLine(doc.ToString());
                     foreach (var lang in GlobalSupportedLanguages)
                     {
-                        if (jsonObj.TryGetValue(lang, out var parsed))
+                        var langxml = doc.XPathSelectElement($"/localizations/helpmenu[@lang='{lang}']");
+                        if (langxml != null)
                         {
-                            if (parsed.Count <= i) continue; //skip
-                            ls.Localizations[lang] = parsed[i];
+                            dynamicHelpLocalizations[lang] = langxml.ToString();
                         }
                     }
 
-                    locTips.Add(ls);
-                }
+                    // TUTORIAL SERVICE
+                    PleaseWaitString = $"Fetching Tutorial Service";
 
-                System.Windows.Application.Current.Dispatcher.Invoke(delegate { LocalizedTips.ReplaceAll(locTips); });
-
-                //DYNAMIC HELP
-                PleaseWaitString = $"Fetching Dynamic Help";
-
-                endpoint =
-                    $"https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/{branch}/MassEffectModManagerCore/staticfiles/dynamichelp/latesthelp-localized.xml";
-                var dynamicHelpXml = wc.DownloadString(endpoint);
-                XDocument doc = XDocument.Parse(dynamicHelpXml);
-                var intxml = doc.XPathSelectElement("/localizations/helpmenu[@lang='int']");
-                dynamicHelpLocalizations["int"] = intxml.ToString();
-
-                //Debug.WriteLine(doc.ToString());
-                foreach (var lang in GlobalSupportedLanguages)
-                {
-                    var langxml = doc.XPathSelectElement($"/localizations/helpmenu[@lang='{lang}']");
-                    if (langxml != null)
+                    string tutorialEndpoint = "https://me3tweaks.com/modmanager/services/tutorialservice";
+                    wc.Dispose();
+                    wc = new System.Net.WebClient();
+                    var tutorialJson = wc.DownloadString(tutorialEndpoint);
+                    var TSjsonObj = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(tutorialJson);
+                    var locTutorial = new List<LocalizedString>();
+                    for (int i = 0; i < TSjsonObj.Count; i++)
                     {
-                        dynamicHelpLocalizations[lang] = langxml.ToString();
-                    }
-                }
-
-                // TUTORIAL SERVICE
-                PleaseWaitString = $"Fetching Tutorial Service";
-
-                string tutorialEndpoint = "https://me3tweaks.com/modmanager/services/tutorialservice";
-                wc.Dispose();
-                wc = new System.Net.WebClient();
-                var tutorialJson = wc.DownloadString(tutorialEndpoint);
-                var TSjsonObj = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(tutorialJson);
-                var locTutorial = new List<LocalizedString>();
-                for (int i = 0; i < TSjsonObj.Count; i++)
-                {
-                    LocalizedString ls = new LocalizedString()
-                    {
-                        EnglishString = TSjsonObj[i]["lang_int"]
-                    };
-                    foreach (var lang in GlobalSupportedLanguages)
-                    {
-                        if (TSjsonObj[i].TryGetValue($"lang_{lang}", out var parsed))
+                        LocalizedString ls = new LocalizedString()
                         {
-                            ls.Localizations[lang] = parsed;
+                            EnglishString = TSjsonObj[i]["lang_int"]
+                        };
+                        foreach (var lang in GlobalSupportedLanguages)
+                        {
+                            if (TSjsonObj[i].TryGetValue($"lang_{lang}", out var parsed))
+                            {
+                                ls.Localizations[lang] = parsed;
+                            }
                         }
+
+                        locTutorial.Add(ls);
                     }
 
-                    locTutorial.Add(ls);
+                    PleaseWaitString = "";
+
+                    System.Windows.Application.Current.Dispatcher.Invoke(delegate
+                    {
+                        LocalizedTutorialService.ReplaceAll(locTutorial);
+                        intViewer.Text = intxml.ToString();
+                    });
                 }
-
-                PleaseWaitString = "";
-
-                System.Windows.Application.Current.Dispatcher.Invoke(delegate
-                {
-                    LocalizedTutorialService.ReplaceAll(locTutorial);
-                    intViewer.Text = intxml.ToString();
-                });
             };
             bw.RunWorkerCompleted += (a, b) =>
             {
                 if (b.Error == null && b.Result is List<LocalizationCategory> categories)
                 {
                     LoadingVisibility = Visibility.Collapsed;
-                    LocalizationCategories.ReplaceAll(categories.OrderBy(x => x.CategoryName));
+                    App.Current.Dispatcher.Invoke(() =>
+                    {
+                        categoryDest.ReplaceAll(categories.OrderBy(x => x.CategoryName));
+                    });
 
                     autosaveTimer = new DispatcherTimer();
                     autosaveTimer.Tick += AutoSave;
@@ -383,23 +409,38 @@ namespace LocalizationHelper
 
 
         public DispatcherTimer autosaveTimer;
-        private string oldBranch = null;
+        private string m3oldBranch = null;
+        private string m3coldBranch = null;
         private Dictionary<string, string> dynamicHelpLocalizations = new Dictionary<string, string>();
 
-        public void OnSelectedBranchChanged()
+        public void OnM3SelectedBranchChanged()
         {
-            if (oldBranch != null)
+            if (m3oldBranch != null)
             {
-                if (SelectedBranch != null)
+                if (M3SelectedBranch != null)
                 {
-                    LoadLocalizations(SelectedBranch);
-                    oldBranch = SelectedBranch;
+                    LoadLocalizations(false, @"ME3TweaksModManager", @"MassEffectModManagerCore/modmanager/localizations/", M3LocalizationBranches, M3LocalizationCategories, M3SelectedBranch);
+                    m3oldBranch = M3SelectedBranch;
                 }
                 else
                 {
-                    LocalizationCategories.ClearEx();
-                    LocalizedTips.ClearEx();
-                    dynamicHelpLocalizations.Clear();
+                    M3LocalizationCategories.ClearEx();
+                }
+            }
+        }
+
+        public void OnM3CSelectedBranchChanged()
+        {
+            if (m3coldBranch != null)
+            {
+                if (M3CSelectedBranch != null)
+                {
+                    LoadLocalizations(false, @"ME3TweaksCore", @"ME3TweaksCore/Localization/Dictionaries/", M3CLocalizationBranches, M3CLocalizationCategories, M3CSelectedBranch);
+                    m3coldBranch = M3CSelectedBranch;
+                }
+                else
+                {
+                    M3CLocalizationCategories.ClearEx();
                 }
             }
         }
@@ -469,9 +510,13 @@ namespace LocalizationHelper
             return (preserveWhitespace, keyVal, text);
         }
 
-        public LocalizationCategory SelectedCategory { get; set; }
+        public LocalizationCategory M3SelectedCategory { get; set; }
+        public LocalizationCategory M3CSelectedCategory { get; set; }
 
-        public ObservableCollectionExtended<LocalizationCategory> LocalizationCategories { get; } =
+        public ObservableCollectionExtended<LocalizationCategory> M3LocalizationCategories { get; } =
+            new ObservableCollectionExtended<LocalizationCategory>();
+
+        public ObservableCollectionExtended<LocalizationCategory> M3CLocalizationCategories { get; } =
             new ObservableCollectionExtended<LocalizationCategory>();
 
         public ICommand SaveLocalizationCommand { get; set; }
@@ -519,7 +564,7 @@ namespace LocalizationHelper
 
         private bool CanAddLang()
         {
-            return LocalizationCategories != null && LocalizationCategories.Any();
+            return M3LocalizationCategories != null && M3LocalizationCategories.Any();
         }
 
         private void OpenAutosavesLocation()
@@ -666,7 +711,7 @@ namespace LocalizationHelper
 
 
                 //Wipe existing strings for that lang
-                foreach (var cat in LocalizationCategories)
+                foreach (var cat in M3LocalizationCategories)
                 {
                     foreach (var ls in cat.LocalizedStringsForSection)
                     {
@@ -679,7 +724,7 @@ namespace LocalizationHelper
                 localizationXamlDict[langCode] = File.ReadAllText(fname);
                 try
                 {
-                    parseLocalizations(LocalizationCategories.ToList(), localizationXamlDict);
+                    parseLocalizations(M3LocalizationCategories.ToList(), localizationXamlDict);
 
                     LocalizationLanguage locLang = Languages.FirstOrDefault(x => x.LangCode == langCode);
                     if (locLang == null)
@@ -708,7 +753,7 @@ namespace LocalizationHelper
 
         private bool CanSaveLocalization()
         {
-            if (!LocalizationCategories.Any()) return false;
+            if (!M3LocalizationCategories.Any()) return false;
             return true;
         }
 
@@ -717,7 +762,7 @@ namespace LocalizationHelper
             string lang = CurrentLanguage?.LangCode;
 
             // Check interpolations
-            foreach (var cat in LocalizationCategories)
+            foreach (var cat in M3LocalizationCategories)
             {
                 foreach (var str in cat.LocalizedStringsForSection)
                 {
@@ -747,7 +792,7 @@ namespace LocalizationHelper
             sb.AppendLine("\t\t\t\t\txmlns:system=\"clr-namespace:System;assembly=System.Runtime\">");
 
             bool isFirst = true;
-            foreach (var cat in LocalizationCategories)
+            foreach (var cat in M3LocalizationCategories)
             {
                 if (isFirst)
                 {
@@ -943,10 +988,10 @@ namespace LocalizationHelper
         {
 
             int indexOfCurrentCategory =
-                SelectedCategory != null ? LocalizationCategories.IndexOf(SelectedCategory) : 0;
+                M3SelectedCategory != null ? M3LocalizationCategories.IndexOf(M3SelectedCategory) : 0;
             Debug.WriteLine("Current cat index: " + indexOfCurrentCategory);
 
-            int numCategories = LocalizationCategories.Count(); //might need to +1 this
+            int numCategories = M3LocalizationCategories.Count(); //might need to +1 this
             string searchTerm = SearchText.ToLower();
             if (string.IsNullOrEmpty(searchTerm)) return;
             LocalizedString itemToHighlight = null;
@@ -955,10 +1000,10 @@ namespace LocalizationHelper
             {
                 bool found = false;
                 LocalizationCategory cat =
-                    LocalizationCategories[(i + indexOfCurrentCategory) % LocalizationCategories.Count()];
+                    M3LocalizationCategories[(i + indexOfCurrentCategory) % M3LocalizationCategories.Count()];
                 int startSearchIndex = 0;
                 int numToSearch = cat.LocalizedStringsForSection.Count();
-                if (i == 0 && cat == SelectedCategory && SelectedDataGridItem != null)
+                if (i == 0 && cat == M3SelectedCategory && SelectedDataGridItem != null)
                 {
                     startSearchIndex = cat.LocalizedStringsForSection.IndexOf(SelectedDataGridItem) + 1;
                     numToSearch -= startSearchIndex;
@@ -1013,7 +1058,7 @@ namespace LocalizationHelper
             }
             else
             {
-                SelectedCategory = catToHighlight;
+                M3SelectedCategory = catToHighlight;
                 SelectedDataGridItem = itemToHighlight;
                 DataGridTable.ScrollIntoView(SelectedDataGridItem);
             }
@@ -1038,9 +1083,9 @@ namespace LocalizationHelper
         private void ChangeLanguage(LocalizationLanguage ll)
         {
             CurrentLanguage = ll;
-            if (SelectedCategory != null)
+            if (M3SelectedCategory != null)
             {
-                foreach (var ls in SelectedCategory.LocalizedStringsForSection)
+                foreach (var ls in M3SelectedCategory.LocalizedStringsForSection)
                 {
                     ls.OnCurrentLanguageChanged();
                 }
