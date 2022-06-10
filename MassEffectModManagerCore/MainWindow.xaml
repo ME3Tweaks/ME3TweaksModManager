@@ -956,6 +956,77 @@
                         </MenuItem>
                     </MenuItem>
                     <MenuItem
+                        Header="Drag and Drop operations">
+                        <MenuItem.Icon>
+                            <fa5:ImageAwesome
+                                Style="{StaticResource EnableDisableImageStyle}"
+                                Icon="Solid_MousePointer"
+                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                Height="16"
+                                Width="16" />
+                        </MenuItem.Icon>
+                        <MenuItem
+                            ui:SharedUIBindings.GenerationLE="True"
+                            Header="Decompile Coalesced file (LE1/LE2)"
+                            Command="{Binding SyncPlotManagerCommand}"
+                            CommandParameter="{x:Static packages:MEGame.ME1}"
+                            ToolTip="{DynamicResource string_tooltip_syncPlotManager}">
+                            <MenuItem.Icon>
+                                <fa5:ImageAwesome
+                                    Style="{StaticResource EnableDisableImageStyle}"
+                                    Icon="Solid_BoxOpen"
+                                    Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                    Height="16"
+                                    Width="16" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem
+                            ui:SharedUIBindings.GenerationLE="True"
+                            Header="Compile Coalesced file (LE1/LE2)"
+                            Command="{Binding SyncPlotManagerCommand}"
+                            CommandParameter="{x:Static packages:MEGame.ME1}"
+                            ToolTip="{DynamicResource string_tooltip_syncPlotManager}">
+                            <MenuItem.Icon>
+                                <fa5:ImageAwesome
+                                    Style="{StaticResource EnableDisableImageStyle}"
+                                    Icon="Solid_Box"
+                                    Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                    Height="16"
+                                    Width="16" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem
+                            ui:SharedUIBindings.GenerationLE="True"
+                            Header="Decompile Coalesced file (ME3/LE3)"
+                            Command="{Binding SyncPlotManagerCommand}"
+                            CommandParameter="{x:Static packages:MEGame.ME1}"
+                            ToolTip="Decompile a Coalesced file to individual xml files for editing">
+                            <MenuItem.Icon>
+                                <fa5:ImageAwesome
+                                    Style="{StaticResource EnableDisableImageStyle}"
+                                    Icon="Solid_BoxOpen"
+                                    Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                    Height="16"
+                                    Width="16" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem
+                            ui:SharedUIBindings.GenerationLE="True"
+                            Header="Compile Coalesced file (ME3/LE3)"
+                            Command="{Binding SyncPlotManagerCommand}"
+                            CommandParameter="{x:Static packages:MEGame.ME1}"
+                            ToolTip="Compile a Coalesced from individual xml files">
+                            <MenuItem.Icon>
+                                <fa5:ImageAwesome
+                                    Style="{StaticResource EnableDisableImageStyle}"
+                                    Icon="Solid_Box"
+                                    Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                    Height="16"
+                                    Width="16" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </MenuItem>
+                    <MenuItem
                         Header="{DynamicResource string_Grantwriteaccesstogamedirectories}"
                         Command="{Binding GrantWriteAccessCommand}"
                         ToolTip="{DynamicResource string_Grantswritepermissionstogamedirectories}">

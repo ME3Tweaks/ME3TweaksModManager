@@ -8,6 +8,7 @@
              xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
              xmlns:alternates="clr-namespace:ME3TweaksModManager.modmanager.objects.alternates"
              xmlns:converters="clr-namespace:ME3TweaksModManager.modmanager.converters"
+             xmlns:ui="clr-namespace:ME3TweaksModManager.ui"
              mc:Ignorable="d"
              x:Name="AOS"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -16,199 +17,55 @@
     </UserControl.Resources>
     <Grid Margin="0"
           d:DataContext="{d:DesignInstance alternates:AlternateGroup}">
-        <!-- Single Selector -->
-        <DockPanel>
-            <DockPanel.Visibility>
-                <MultiBinding Converter="{StaticResource SingleModeAlternateVisibilityConverter}">
-                    <Binding Path="GroupName"/>
-                    <Binding Path="SelectedOption.IsHidden"/>
-                </MultiBinding>
-            </DockPanel.Visibility>
-            <CheckBox DockPanel.Dock="Left" 
-                      IsEnabled="{Binding SelectedOption.UIIsSelectable}"
-                      IsChecked="{Binding SelectedOption.UIIsSelected, Mode=TwoWay}"/>
-            <local:SingleAlternateOptionPanel DataContext="{Binding SelectedOption}" MouseUp="AlternateItem_MouseUp"/>
-        </DockPanel>
-
-        <!-- Multi Selector -->
-        <xctk:DropDownButton 
-            x:Name="DropDownButtonHost" IsOpen="{Binding IsDropdownOpen, ElementName=AOS, Mode=TwoWay}" Visibility="{Binding GroupName, Converter={StaticResource NullVisibilityConverter}}" HorizontalContentAlignment="Stretch" >
-            <DockPanel>
-                <TextBlock Text="{Binding GroupNameTitleText}" TextWrapping="Wrap" Visibility="{Binding GroupName, Converter={StaticResource NullVisibilityConverter}}" FontWeight="Bold" DockPanel.Dock="Top"/>
-                <local:SingleAlternateOptionPanel DataContext="{Binding SelectedOption}"/>
-            </DockPanel>
-            <xctk:DropDownButton.DropDownContent>
-                <ItemsControl ItemsSource="{Binding OtherOptions}" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}"
-                              HorizontalAlignment="Center">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <local:SingleAlternateOptionPanel DataContext="{Binding}" MouseUp="AlternateItem_MouseUp"/>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </xctk:DropDownButton.DropDownContent>
-            <xctk:DropDownButton.Resources>
-                <Style TargetType="xctk:DropDownButton" BasedOn="{StaticResource {x:Type xctk:DropDownButton}}">
-                    <Setter Property="DropDownContentBackground" Value="{StaticResource {x:Static adonisUi:Brushes.AccentInteractionBorderBrush}}" />
-                </Style>
-            </xctk:DropDownButton.Resources>
-        </xctk:DropDownButton>
-    </Grid>
-    <!--<Grid
-        Margin="0,0,0,5"
-        MouseUp="AlternateItem_MouseUp"
-        ToolTipService.IsEnabled="{Binding ImageBitmap, Converter={StaticResource NotNullToBoolConverter}}"
-        ToolTipService.InitialShowDelay="0"
-        ToolTipService.BetweenShowDelay="0">
-        <Grid.ToolTip>
-            <ToolTip
-                Placement="Right"
-                Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"
-                BorderThickness="0"
-                VerticalOffset="{Binding ImageHeight, Converter={StaticResource ImageTooltipVerticalOffsetConverter}}">
-                <DockPanel>
-                    <Image
-                        Source="{Binding ImageBitmap}"
-                        Height="{Binding ImageHeight}" />
+        <!-- Container for items-->
+        <Expander Style="{StaticResource StretchyExpander}">
+            <Expander.Header>
+                <!-- The selected item (or the single item) -->
+                <local:SingleAlternateOptionPanel DataContext="{Binding SelectedOption}" MouseUp="AlternateItem_MouseUp" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"/>
+            </Expander.Header>
+            <Expander.Content>
+                <!-- Single Selector -->
+                <DockPanel HorizontalAlignment="Stretch">
+                    <DockPanel.Visibility>
+                        <MultiBinding Converter="{StaticResource SingleModeAlternateVisibilityConverter}">
+                            <Binding Path="GroupName"/>
+                            <Binding Path="SelectedOption.IsHidden"/>
+                        </MultiBinding>
+                    </DockPanel.Visibility>
+                    <ItemsControl ItemsSource="{Binding OtherOptions}" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}"
+                                  HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <local:SingleAlternateOptionPanel Margin="36,0,0,0" DataContext="{Binding}" MouseUp="AlternateItem_MouseUp"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
                 </DockPanel>
-            </ToolTip>
-        </Grid.ToolTip>
-        <Grid.RowDefinitions>
-            <RowDefinition
-                Height="Auto" />
-            <RowDefinition
-                Height="Auto" />
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition
-                Width="25" />
-            <ColumnDefinition
-                Width="*" />
-            <ColumnDefinition
-                Width="Auto" />
-        </Grid.ColumnDefinitions>
-        <CheckBox
-            Grid.Row="0"
-            Grid.Column="0"
-            Grid.RowSpan="2"
-            IsEnabled="{Binding UIIsSelectable}"
-            IsChecked="{Binding IsSelected, Mode=TwoWay}"
 
-    Margin="5,0,0,0"
-            Visibility="{Binding GroupName, Converter={StaticResource NullVisibilityConverter}, ConverterParameter='Reversed'}"
-            DockPanel.Dock="Left"
-            VerticalContentAlignment="Center"
-            VerticalAlignment="Center"
-            Padding="0,0,5,0"
-            Opacity="{Binding CheckboxOpacity}" />
-        <RadioButton
-            Grid.Row="0"
-            Grid.Column="0"
-            Grid.RowSpan="2"
-            IsEnabled="{Binding UIIsSelectable}"
-            Margin="5,0,0,0"
-            IsChecked="{Binding IsSelected, Mode=TwoWay}"
-            GroupName="{Binding GroupName}"
-            Visibility="{Binding GroupName, Converter={StaticResource NullVisibilityConverter}}"
-            DockPanel.Dock="Left"
-            VerticalContentAlignment="Center"
-            VerticalAlignment="Center"
-            Padding="0,0,5,0"
-            Opacity="{Binding CheckboxOpacity}" />
-        <Grid
-            DockPanel.Dock="Top"
-            Background="Transparent"
-            Grid.Row="0"
-            Grid.Column="1">
-            <Grid.RowDefinitions>
-                <RowDefinition
-                    Height="Auto" />
-                <RowDefinition
-                    Height="Auto" />
-                <RowDefinition
-                    Height="Auto" />
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition
-                    Width="Auto" />
-                <ColumnDefinition
-                    Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <StackPanel
-                Orientation="Horizontal">
-                <TextBlock
-                    Text="{Binding FriendlyName}"
-                    VerticalAlignment="Center"
-                    DockPanel.Dock="Left"
-                    FontWeight="Bold"
-                    Opacity="{Binding TextOpacity}" />
-                <TextBlock
-                    Foreground="LimeGreen"
-                    Text="{Binding ApplicableAutoText, StringFormat=' - {0}'}"
-                    VerticalAlignment="Center"
-                    FontWeight="Bold"
-                    Visibility="{Binding UIRequired, Converter={StaticResource BoolToVisibilityConverter}}"
-                    Opacity="{Binding TextOpacity}" />
-                <TextBlock
-                    Foreground="Red"
-                    Text="{Binding NotApplicableAutoText, StringFormat=' - {0}'}"
-                    VerticalAlignment="Center"
-                    FontWeight="Bold"
-                    Visibility="{Binding UINotApplicable, Converter={StaticResource BoolToVisibilityConverter}}"
-                    Opacity="{Binding TextOpacity}" />
-            </StackPanel>
-            <TextBlock
-                Text="{Binding GroupName, Converter={StaticResource LocalizationConverter}, ConverterParameter='string_interp_optionGroupX'}"
-                FontSize="10"
-                Foreground="{Binding GroupName, Converter={StaticResource GroupNameToColorConverter}}"
-                Grid.Row="1"
-                Grid.Column="0"
-                Visibility="{Binding GroupName, Converter={StaticResource NullVisibilityConverter}}" />
-            <TextBlock
-                Grid.Row="2"
-                Grid.Column="0"
-                Grid.ColumnSpan="2"
-                DockPanel.Dock="Bottom"
-                Text="{Binding Description}"
-                VerticalAlignment="Center"
-                HorizontalAlignment="Left"
-                TextWrapping="Wrap"
-                Foreground="{DynamicResource {x:Static adonisUi:Brushes.SlightlyDimmedForegroundBrush}}"
-                MaxWidth="410"
-                FontSize="11"
-                Padding="0,0,20,0"
-                Opacity="{Binding TextOpacity}" />
-        </Grid>
-        <DockPanel
-            Grid.RowSpan="2"
-            Grid.Row="0"
-            Grid.Column="2"
-            Background="Transparent">
-            <fa5:ImageAwesome
-                Icon="Solid_Image"
-                Height="16"
-                Margin="10,0"
-                Opacity="0.75"
-                VerticalAlignment="Center"
-                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
-                Visibility="{Binding ImageBitmap, Converter={StaticResource NullVisibilityConverter}}" />
-        </DockPanel>
-        <Grid.Style>
-            <Style
-                TargetType="{x:Type Grid}">
-                <Style.Triggers>
-                    <Trigger
-                        Property="IsMouseOver"
-                        Value="True">
-                        <Setter
-                            Property="Background"
-                            Value="{DynamicResource {x:Static adonisUi:Brushes.HoverBackgroundBrush}}" />
-                        <Setter
-                            Property="Cursor"
-                            Value="Hand" />
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
-        </Grid.Style>
-    </Grid>-->
+                <!-- Multi Selector --><!--
+                <xctk:DropDownButton 
+            x:Name="DropDownButtonHost" IsOpen="{Binding IsDropdownOpen, ElementName=AOS, Mode=TwoWay}" Visibility="{Binding GroupName, Converter={StaticResource NullVisibilityConverter}}" HorizontalContentAlignment="Stretch" >
+                    <DockPanel>
+                        <TextBlock Text="{Binding GroupNameTitleText}" TextWrapping="Wrap" Visibility="{Binding GroupName, Converter={StaticResource NullVisibilityConverter}}" FontWeight="Bold" DockPanel.Dock="Top"/>
+                        <local:SingleAlternateOptionPanel DataContext="{Binding SelectedOption}"/>
+                    </DockPanel>
+                    <xctk:DropDownButton.DropDownContent>
+                        <ItemsControl ItemsSource="{Binding OtherOptions}" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}"
+                              HorizontalAlignment="Center">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <local:SingleAlternateOptionPanel DataContext="{Binding}" MouseUp="AlternateItem_MouseUp"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </xctk:DropDownButton.DropDownContent>
+                    <xctk:DropDownButton.Resources>
+                        <Style TargetType="xctk:DropDownButton" BasedOn="{StaticResource {x:Type xctk:DropDownButton}}">
+                            <Setter Property="DropDownContentBackground" Value="{StaticResource {x:Static adonisUi:Brushes.AccentInteractionBorderBrush}}" />
+                        </Style>
+                    </xctk:DropDownButton.Resources>
+                </xctk:DropDownButton>-->
+            </Expander.Content>
+        </Expander>
+    </Grid>
 </UserControl>

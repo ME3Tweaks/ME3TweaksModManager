@@ -12,6 +12,8 @@
              ToolTipService.IsEnabled="{Binding ImageBitmap, Converter={StaticResource NotNullToBoolConverter}}"
              ToolTipService.InitialShowDelay="0"
              ToolTipService.BetweenShowDelay="0"
+             HorizontalContentAlignment="Stretch"
+             HorizontalAlignment="Stretch"
              MouseLeave="SAOP_MouseLeave">
     <UserControl.Resources>
         <converters:GroupNameToColorConverter
@@ -22,8 +24,10 @@
     <!-- DataContext is the AlternateOption object itself!-->
     <Border
         Name="BorderElement"
-        Padding="5,3">
-        <DockPanel>
+        Padding="5,3"
+        HorizontalAlignment="Stretch">
+        <DockPanel HorizontalAlignment="Stretch">
+            <!-- Image if any -->
             <fa5:ImageAwesome
                 Icon="Solid_Image"
                 Height="16"
@@ -39,6 +43,7 @@
                            FontSize="13"
                            FontWeight="Bold" 
                            TextAlignment="Left" 
+                           TextWrapping="Wrap"
                            Opacity="{Binding TextOpacity}"/>
 
 
@@ -55,6 +60,7 @@
                     Foreground="LimeGreen"
                     Text="{Binding ApplicableAutoText}"
                     VerticalAlignment="Center"
+                    TextWrapping="Wrap"
                     FontWeight="Bold" />
             </StackPanel>
             <!-- Not applicable -->
@@ -68,6 +74,7 @@
                 <TextBlock
                     Text="{Binding NotApplicableAutoText}"
                     VerticalAlignment="Center"
+                    TextWrapping="Wrap"
                     FontWeight="Bold" />
             </StackPanel>
             <!-- Depends On requirements -->
@@ -81,10 +88,12 @@
                 <TextBlock
                     Text="{Binding DependsOnText}"
                     VerticalAlignment="Center"
+                    TextWrapping="Wrap"
                     FontWeight="Bold" />
             </StackPanel>
             <TextBlock Text="{Binding Description}" 
                        TextWrapping="Wrap" 
+                       HorizontalAlignment="Stretch"
                        IsEnabled="{Binding UIIsSelectable}"
                        Opacity="{Binding TextOpacity}"/>
 

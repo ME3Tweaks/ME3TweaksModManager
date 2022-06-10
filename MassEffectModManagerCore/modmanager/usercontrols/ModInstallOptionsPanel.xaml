@@ -41,13 +41,17 @@
             BorderThickness="0"
             Padding="0"
             Focusable="False"
+            HorizontalContentAlignment="Stretch"
+            HorizontalAlignment="Stretch"
             BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1BorderBrush}}">
             <ItemsControl
+                HorizontalContentAlignment="Stretch"
+                HorizontalAlignment="Stretch"
                 ItemsSource="{Binding AlternateGroups}">
                 <ItemsControl.Resources>
                     <DataTemplate
                         DataType="{x:Type alternates:AlternateGroup}">
-                        <modinstaller:AlternateOptionSelector />
+                        <modinstaller:AlternateOptionSelector  HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"/>
                         <!-- DataContext is the AlternateGroup -->
                     </DataTemplate>
                 </ItemsControl.Resources>
