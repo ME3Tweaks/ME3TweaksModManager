@@ -196,15 +196,16 @@ namespace ME3TweaksModManager.modmanager.windows
                         }
 
                         //Migrate ME3Explorer, if found
-                        var me3explorerDir = Path.Combine(dataDir, @"ME3Explorer");
-                        if (Directory.Exists(me3explorerDir))
-                        {
-                            M3Log.Information(@"Migrating ME3Explorer tool");
-                            var externalToolsME3ExplorerDir = Path.Combine(dataDir, @"ExternalTools", @"ME3Explorer");
-                            Directory.CreateDirectory(Path.Combine(dataDir, @"ExternalTools"));
-                            Directory.Move(me3explorerDir, externalToolsME3ExplorerDir);
-                            M3Log.Information(@"Migrated ME3Explorer to ExternalTools");
-                        }
+                        // Disabled 06/09/2022 - Well beyond date of this being useful
+                        //var me3explorerDir = Path.Combine(dataDir, @"ME3Explorer");
+                        //if (Directory.Exists(me3explorerDir))
+                        //{
+                        //    M3Log.Information(@"Migrating ME3Explorer tool");
+                        //    var externalToolsME3ExplorerDir = Path.Combine(dataDir, @"ExternalTools", @"ME3Explorer");
+                        //    Directory.CreateDirectory(Path.Combine(dataDir, @"ExternalTools"));
+                        //    Directory.Move(me3explorerDir, externalToolsME3ExplorerDir);
+                        //    M3Log.Information(@"Migrated ME3Explorer to ExternalTools");
+                        //}
 
                         //Migrate cached modmaker mods
                         var modmakerCacheDir = Path.Combine(dataDir, @"modmaker", @"cache");

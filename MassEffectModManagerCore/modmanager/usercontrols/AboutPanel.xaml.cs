@@ -67,7 +67,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 
                 // M3 version
                 new LibraryCredit(@"WPF Extended Toolkit*", @"https://github.com/dotnetprojects/WpfExtendedToolkit", M3L.GetString(M3L.string_library_wpftoolkitextended)),
-                new LibraryCredit(@"LegendaryExplorerCore", @"https://github.com/ME3Tweaks/ME3Explorer", M3L.GetString(M3L.string_library_LegendaryExplorerCore)),
+                new LibraryCredit(@"LegendaryExplorerCore", @"https://github.com/ME3Tweaks/LegendaryExplorer", M3L.GetString(M3L.string_library_LegendaryExplorerCore)),
                 new LibraryCredit(@"AuthenticodeExaminer", @"https://github.com/vcsjones/AuthenticodeExaminer", M3L.GetString(M3L.string_library_authenticodeexaminer)),
                 new LibraryCredit(@"CliWrap", @"https://github.com/Tyrrrz/CliWrap", M3L.GetString(M3L.string_library_cliwrap)),
                 new LibraryCredit(@"CommandLineParser", @"https://github.com/commandlineparser/commandline", M3L.GetString(M3L.string_library_commandlineparser)),

@@ -82,8 +82,6 @@
     <system:String x:Key="string_RandomizerforthefirstMassEffectgame">Randomizer for the first Mass Effect game</system:String>
     <system:String x:Key="string_me2r">Mass Effect 2 Randomizer</system:String>
     <system:String x:Key="string_tooltip_me2r">Randomizer for Mass Effect 2</system:String>
-    <system:String x:Key="string_ME3ExplorerME3TweaksFork">ME3Explorer - ME3Tweaks Fork (Stable)</system:String>
-    <system:String x:Key="string_ME3ExplorerME3TweaksForkBeta">ME3Explorer - ME3Tweaks Fork (Nightly)</system:String>
     <system:String x:Key="string_LegendaryExplorerStable">Legendary Explorer (Stable)</system:String>
     <system:String x:Key="string_LegendaryExplorerBeta">Legendary Explorer (Nightly)</system:String>
     <system:String x:Key="string_ME3ExplorerME3TweaksForkTooltip" xml:space="preserve">Toolset for developing Mass Effect (OT + LE) mods.&#10;This is the stable version, which is typically a few months old</system:String>
@@ -630,7 +628,7 @@
     <system:String x:Key="string_error_foundImportedByDesriptor">The moddesc.ini for this mod is marked with the 'importedbybuild' descriptor. This descriptor only is used for mods that were imported using the Third Party Importing Service - as this mod is being deployed, it is considered official, and thus this descriptor must be removed before deployment.</system:String>
     <system:String x:Key="string_interp_error_foundCustTexturesTFCRef">{0} {1} uses TFC name {2}. This TFC name is used when replacing textures with the outdated ME3Explorer texturing tools and is a common source of broken textures. Compact your TFC to a new name using ME3Explorer's TFC Compactor tool.</system:String>
     <!-- 0={FilePath} 1={Texture Export Path} 2={Texture Cache Name} -->
-    <system:String x:Key="string_interp_error_foundTexturesMEMTFCRef">{0} {1} uses TFC name {2}. This TFC name is used by MEM when installing textures and cannot be used in deployment or it will create conflicts. Compact your TFC to a new name using ME3Explorer's TFC Compactor tool.</system:String>
+    <system:String x:Key="string_interp_error_foundTexturesMEMTFCRef">{0} {1} uses TFC name {2}. This TFC name is used by MEM when installing textures and cannot be used in deployment or it will create conflicts. Compact your TFC to a new name using Legendary Explorer's TFC Compactor tool.</system:String>
     <!-- 0={FilePath} 1={Texture Export Path} 2={Texture Cache Name} -->
     <system:String x:Key="string_deploymentBlockedUntilAboveItemsAreFixed">Deployment blocked until above items are fixed</system:String>
     <system:String x:Key="string_male">male</system:String>
