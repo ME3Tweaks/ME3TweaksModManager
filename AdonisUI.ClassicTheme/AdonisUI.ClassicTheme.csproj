@@ -29,4 +29,10 @@
   <ItemGroup>
     <ProjectReference Include="..\AdonisUI\AdonisUI.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="DefaultStyles\StretchyExpander.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+  </ItemGroup>
 </Project>
