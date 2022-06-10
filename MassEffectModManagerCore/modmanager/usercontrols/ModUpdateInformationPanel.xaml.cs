@@ -222,10 +222,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {
-                if (b.Error != null)
-                {
-                    M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
-                }
                 Analytics.TrackEvent(@"Updated mod", new Dictionary<string, string>()
                 {
                     {@"Type", @"ModMaker"},
@@ -287,10 +283,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {
-                if (b.Error != null)
-                {
-                    M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
-                }
                 Analytics.TrackEvent(@"Updated mod", new Dictionary<string, string>()
                 {
                     {@"Type", @"Classic"},

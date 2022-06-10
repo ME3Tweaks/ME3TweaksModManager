@@ -264,15 +264,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {
-                if (b.Error != null)
-                {
-                    M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
-                }
                 TaskbarHelper.SetProgressState(TaskbarProgressBarState.NoProgress);
                 Analytics.TrackEvent(@"Uploaded mod to updater service", new Dictionary<string, string>()
                 {
                     {@"Result", b.Result?.ToString() },
-                    {@"Mod", mod.ModName +@" "+mod.ModVersionString }
+                    {@"Mod", $@"{mod.ModName} {mod.ModVersionString}" }
                 });
                 OperationInProgress = false;
             };
@@ -311,18 +307,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {
-                if (b.Error != null)
-                {
-                    M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
-                }
                 M3Log.Information(@"Auth checked");
                 OperationInProgress = false;
-                authCompletedCallback?.Invoke(b.Result);
+                authCompletedCallback?.Invoke(b.Error == null ? b.Result : false);
             };
             OperationInProgress = true;
             nbw.RunWorkerAsync();
-
-
         }
 
         private enum UploadModResult

@@ -1123,7 +1123,7 @@ namespace ME3TweaksModManager
 
         private void CheckSelectedModForUpdate()
         {
-            BackgroundWorker bw = new BackgroundWorker();
+            NamedBackgroundWorker bw = new NamedBackgroundWorker(nameof(CheckSelectedModForUpdate));
             bw.DoWork += (a, b) => { ModUpdater.Instance.CheckModsForUpdates(new List<Mod>(new[] { SelectedMod })); };
             bw.RunWorkerAsync();
 
@@ -1131,7 +1131,7 @@ namespace ME3TweaksModManager
 
         private void RestoreSelectedMod()
         {
-            BackgroundWorker bw = new BackgroundWorker();
+            NamedBackgroundWorker bw = new NamedBackgroundWorker(nameof(RestoreSelectedMod));
             bw.DoWork += (a, b) => { ModUpdater.Instance.CheckModsForUpdates(new List<Mod>(new[] { SelectedMod }), true); };
             bw.RunWorkerAsync();
         }
@@ -2683,7 +2683,7 @@ namespace ME3TweaksModManager
                 ReleaseBusyControl();
                 if (b.Data is Mod failedmod)
                 {
-                    BackgroundWorker bw = new BackgroundWorker();
+                    NamedBackgroundWorker bw = new NamedBackgroundWorker(nameof(FailedMods_LinkClick));
                     bw.DoWork += (a, b) => { ModUpdater.Instance.CheckModsForUpdates(new List<Mod>(new Mod[] { failedmod }), true); };
                     bw.RunWorkerAsync();
                 }
@@ -2835,8 +2835,7 @@ namespace ME3TweaksModManager
             {
                 if (b.Error != null)
                 {
-                    M3Log.Error(@"Exception occurred in NetworkFetch thread: " + b.Error.Message);
-                    M3Log.Error(b.Error.StackTrace);
+                    // Log is handled in internal class
                 }
                 else if (b.Result is int i)
                 {
@@ -3313,12 +3312,6 @@ namespace ME3TweaksModManager
                                 };
                                 nbw.RunWorkerCompleted += (a, b) =>
                                 {
-                                    if (b.Error != null)
-                                    {
-                                        M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
-                                        task.FinishedUIText = M3L.GetString(M3L.string_failedToCompileCoalescedFile);
-                                    }
-
                                     BackgroundTaskEngine.SubmitJobCompletion(task);
                                 };
                                 nbw.RunWorkerAsync();
@@ -3345,10 +3338,6 @@ namespace ME3TweaksModManager
                                     };
                                     nbw.RunWorkerCompleted += (a, b) =>
                                     {
-                                        if (b.Error != null)
-                                        {
-                                            M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
-                                        }
                                         BackgroundTaskEngine.SubmitJobCompletion(task);
                                     };
                                     nbw.RunWorkerAsync();
@@ -3426,11 +3415,6 @@ namespace ME3TweaksModManager
                                         };
                                         nbw.RunWorkerCompleted += (a, b) =>
                                         {
-                                            if (b.Error != null)
-                                            {
-                                                M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
-                                            }
-
                                             if (failedToCompileCoalesced) task.FinishedUIText = M3L.GetString(M3L.string_errorCompilingCoalesced);
                                             BackgroundTaskEngine.SubmitJobCompletion(task);
                                         };
@@ -3466,10 +3450,6 @@ namespace ME3TweaksModManager
                                             nbw.DoWork += (a, b) => { TLKTranspiler.CompileTLKManifest(file, rootElement, errorCompilingTLK); };
                                             nbw.RunWorkerCompleted += (a, b) =>
                                             {
-                                                if (b.Error != null)
-                                                {
-                                                    M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
-                                                }
                                                 if (failedToCompileTLK) task.FinishedUIText = M3L.GetString(M3L.string_compilingFailed);
                                                 BackgroundTaskEngine.SubmitJobCompletion(task);
                                             };
@@ -3483,10 +3463,6 @@ namespace ME3TweaksModManager
                                             nbw.DoWork += (a, b) => { TLKTranspiler.CompileTLKManifestStrings(file, rootElement, errorCompilingTLK); };
                                             nbw.RunWorkerCompleted += (a, b) =>
                                             {
-                                                if (b.Error != null)
-                                                {
-                                                    M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
-                                                }
                                                 if (failedToCompileTLK) task.FinishedUIText = M3L.GetString(M3L.string_compilingFailed);
                                                 BackgroundTaskEngine.SubmitJobCompletion(task);
                                             };
@@ -3500,10 +3476,6 @@ namespace ME3TweaksModManager
                                         nbw.DoWork += (a, b) => { TLKTranspiler.CompileTLKME3Explorer(file, rootElement, errorCompilingTLK); };
                                         nbw.RunWorkerCompleted += (a, b) =>
                                         {
-                                            if (b.Error != null)
-                                            {
-                                                M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
-                                            }
                                             if (failedToCompileTLK) task.FinishedUIText = M3L.GetString(M3L.string_compilingFailed);
                                             BackgroundTaskEngine.SubmitJobCompletion(task);
                                         };
@@ -3532,10 +3504,6 @@ namespace ME3TweaksModManager
                                 };
                                 nbw.RunWorkerCompleted += (a, b) =>
                                 {
-                                    if (b.Error != null)
-                                    {
-                                        M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
-                                    }
                                     BackgroundTaskEngine.SubmitJobCompletion(task);
                                 };
                                 nbw.RunWorkerAsync();

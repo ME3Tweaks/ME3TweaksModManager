@@ -221,10 +221,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {
-                if (b.Error != null)
-                {
-                    M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
-                }
                 OperationInProgress = false;
                 ClearMixinHandler();
                 if (failedApplications.Count > 0)
@@ -517,10 +513,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {
-                if (b.Error != null)
-                {
-                    M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
-                }
                 OperationInProgress = false;
                 ClearMixinHandler();
                 if (failedApplications.Count > 0)

@@ -68,12 +68,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             nbw.DoWork += GatherTelemetryDataBGThread;
             nbw.RunWorkerCompleted += (a, b) =>
             {
-                if (b.Error != null)
+                if (b.Error == null)
                 {
-                    M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
+                    List<TelemetryPackage> list = (List<TelemetryPackage>)b.Result;
+                    TelemetryPackages.ReplaceAll(list);
                 }
-                List<TelemetryPackage> list = (List<TelemetryPackage>)b.Result;
-                TelemetryPackages.ReplaceAll(list);
             };
             nbw.RunWorkerAsync();
         }
@@ -114,7 +113,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
             public void SubmitPackage()
             {
-                BackgroundWorker bw = new BackgroundWorker();
+                NamedBackgroundWorker bw = new NamedBackgroundWorker(nameof(SubmitPackage));
                 bw.DoWork += async (a, b) =>
                 {
                     TelemetrySubmissionInProgress = true;

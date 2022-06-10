@@ -61,10 +61,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {
-                if (b.Error != null)
-                {
-                    M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
-                }
                 if (b.Error == null && b.Result is List<M3OnlineContent.ServerModMakerModInfo> topMods)
                 {
                     TopMods.ReplaceAll(topMods);
@@ -229,12 +225,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {
-                if (b.Error != null)
-                {
-                    M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
-                }
                 CompileInProgress = false;
-                if (!KeepOpenWhenThreadFinishes && b.Result is Mod m)
+                if (!KeepOpenWhenThreadFinishes && b.Error == null && b.Result is Mod m)
                 {
                     OnClosing(new DataEventArgs(m));
                 }

@@ -159,10 +159,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 };
                 nbw.RunWorkerCompleted += (a, b) =>
                 {
-                    if (b.Error != null)
-                    {
-                        M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
-                    }
                     RestoreAllBasegameInProgress = false;
                     if (SelectedTarget.Game == MEGame.ME3 || SelectedTarget.Game.IsLEGame())
                     {
@@ -295,7 +291,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         private void PopulateUI()
         {
             if (SelectedTarget == null || SelectedTarget.Game == MEGame.Unknown) return; // Do not populate anything
-            BackgroundWorker bw = new BackgroundWorker();
+            NamedBackgroundWorker bw = new NamedBackgroundWorker($@"InstallationInformation-{nameof(PopulateUI)}");
             bw.DoWork += (a, b) =>
             {
                 bool deleteConfirmationCallback(InstalledDLCMod mod)

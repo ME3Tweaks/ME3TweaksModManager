@@ -40,7 +40,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 if (b.Error != null)
                 {
-                    M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
+                    // Logging is handled in nbw
                     Result.Error = b.Error;
                 }
                 BackgroundTaskEngine.SubmitJobCompletion(BGTask);

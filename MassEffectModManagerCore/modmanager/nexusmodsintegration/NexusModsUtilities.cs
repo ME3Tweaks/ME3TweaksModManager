@@ -217,12 +217,7 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {
-                if (b.Error != null)
-                {
-                    M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
-                }
-
-                if (b.Result is bool val)
+                if (b.Error == null && b.Result is bool val)
                 {
                     newEndorsementStatusCallback?.Invoke(val);
                 }

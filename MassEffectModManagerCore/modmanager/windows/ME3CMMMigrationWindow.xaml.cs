@@ -369,10 +369,6 @@ namespace ME3TweaksModManager.modmanager.windows
             };
             nbw.RunWorkerCompleted += (a, b) =>
                 {
-                    if (b.Error != null)
-                    {
-                        M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
-                    }
                     M3Log.Information(@"Migration has completed.");
                     M3L.ShowDialog(null, M3L.GetString(M3L.string_dialog_me3cmmMigrationCompleted));
                     Close();

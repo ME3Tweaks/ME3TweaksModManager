@@ -108,11 +108,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 ActionText = null;
                 M3Log.Information(@"Archive scan thread exited");
-                if (b.Error != null)
-                {
-                    M3Log.Error($@"Exception occurred in {nbw.Name} thread:");
-                    M3Log.Error(b.Error.StackTrace);
-                }
 
                 if (CompressedMods.Count > 0)
                 {
@@ -754,12 +749,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             nbw.DoWork += ExtractModsBackgroundThread;
             nbw.RunWorkerCompleted += (a, b) =>
             {
-                if (b.Error != null)
-                {
-                    M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
-                }
                 TaskRunning = false;
-                if (b.Result is List<Mod> modList)
+                if (b.Error == null && b.Result is List<Mod> modList)
                 {
                     Result.ReloadMods = true;
 

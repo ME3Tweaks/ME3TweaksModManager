@@ -334,10 +334,6 @@ namespace ME3TweaksModManager.modmanager.loaders
             bw.RunWorkerCompleted += (a, b) =>
             {
                 ModsLoaded = true;
-                if (b.Error != null)
-                {
-                    M3Log.Error(@"Exception occurred in ModLoader thread: " + b.Error.Message);
-                }
                 IsLoadingMods = false;
                 if (b.Result is Mod m)
                 {

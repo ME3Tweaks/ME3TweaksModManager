@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using LegendaryExplorerCore.Helpers;
+using ME3TweaksCore.Helpers;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
@@ -473,7 +474,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public override void OnPanelVisible()
         {
             InitializeComponent();
-            BackgroundWorker bw = new BackgroundWorker();
+            NamedBackgroundWorker bw = new NamedBackgroundWorker(@"FetchAndLaunchToolPanelVersion");
             #region callbacks
             void failedToDownload(string failureMessage)
             {

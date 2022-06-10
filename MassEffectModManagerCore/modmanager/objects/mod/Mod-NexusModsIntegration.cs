@@ -132,7 +132,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             {
                 if (b.Error != null)
                 {
-                    M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
+                    // Log handled internally by nbw
                 }
                 else if (b.Result is string endorsementFailedReason)
                 {

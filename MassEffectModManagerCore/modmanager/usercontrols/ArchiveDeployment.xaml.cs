@@ -176,7 +176,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
                     if (b.Error != null)
                     {
-                        M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
+                        // Logged internally by nbw
                     }
                     else if (ModsInDeployment.Count == 1)
                     {
@@ -620,11 +620,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {
-                if (b.Error != null)
-                {
-                    M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
-                }
-
                 DeploymentBlocked = emc.DeploymentChecklistItems.Any(x => x.DeploymentBlocking);
                 if (DeploymentBlocked)
                 {

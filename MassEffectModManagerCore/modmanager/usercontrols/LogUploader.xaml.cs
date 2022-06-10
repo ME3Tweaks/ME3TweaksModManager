@@ -142,13 +142,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {
-                if (b.Error != null)
-                {
-                    M3Log.Error($@"Exception occurred in {nbw.Name} thread: {b.Error.Message}");
-                }
-
                 TaskbarHelper.SetProgressState(TaskbarProgressBarState.NoProgress);
-                if (b.Result is string response)
+                if (b.Error == null && b.Result is string response)
                 {
                     if (response.StartsWith(@"http"))
                     {
