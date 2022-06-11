@@ -1010,7 +1010,9 @@
     <system:String x:Key="string_selectModsToImportIntoModManagerLibrary">Select mods to import into Mod Manager library</system:String>
     <system:String x:Key="string_noCompatibleModsFoundInArchive">No compatible mods found in archive</system:String>
     <system:String xml:space="preserve" x:Key="string_executableModsMustBeValidatedByME3Tweaks">Executable installer based mods must be validated by ME3Tweaks before they can be imported into Mod Manager. This is to prevent breaking third party mods.\n\nThis executable has not been validated. Check for a ME3Tweaks Mod Manager compatible version from the download page, or ask the developer to make a ME3Tweaks Mod Manager compatible version.</system:String>
-    <system:String x:Key="string_noCompatibleModsFoundInArchiveExtended">No compatible mods found in archive. If this is a texture mod, you must install it with ALOT Installer. If this is a known Mod Manager mod, please come to the ME3Tweaks Discord from the Help menu.</system:String>
+    <system:String x:Key="string_noCompatibleModsFoundInArchiveOTExtended">No compatible mods found in archive. If this is a texture mod, you must install it with ALOT Installer. If this is a known Mod Manager mod, please come to the ME3Tweaks Discord from the Help menu.</system:String>
+    <system:String x:Key="string_noCompatibleModsFoundInArchiveLEExtended">No compatible mods found in archive. If this is a texture mod, you must install it with Mass Effect Modder. If this is a known Mod Manager mod, please come to the ME3Tweaks Discord from the Help menu.</system:String>
+    <system:String x:Key="string_noCompatibleModsFoundInArchiveBothGensExtended">No compatible mods found in archive. If this is a texture mod, you must install it with ALOT Installer (OT) or Mass Effect Modder (LE). If this is a known Mod Manager mod, please come to the ME3Tweaks Discord from the Help menu.</system:String>
     <system:String x:Key="string_interp_scanningX">Scanning {0}</system:String>
     <!-- 0 = filename -->
     <system:String x:Key="string_interp_openingX">Opening {0}</system:String>

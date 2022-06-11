@@ -891,7 +891,9 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_selectModsToImportIntoModManagerLibrary = "string_selectModsToImportIntoModManagerLibrary";
 		public const string string_noCompatibleModsFoundInArchive = "string_noCompatibleModsFoundInArchive";
 		public const string string_executableModsMustBeValidatedByME3Tweaks = "string_executableModsMustBeValidatedByME3Tweaks";
-		public const string string_noCompatibleModsFoundInArchiveExtended = "string_noCompatibleModsFoundInArchiveExtended";
+		public const string string_noCompatibleModsFoundInArchiveOTExtended = "string_noCompatibleModsFoundInArchiveOTExtended";
+		public const string string_noCompatibleModsFoundInArchiveLEExtended = "string_noCompatibleModsFoundInArchiveLEExtended";
+		public const string string_noCompatibleModsFoundInArchiveBothGensExtended = "string_noCompatibleModsFoundInArchiveBothGensExtended";
 		public const string string_interp_scanningX = "string_interp_scanningX";
 		public const string string_interp_openingX = "string_interp_openingX";
 		public const string string_interp_XfailedToLoadY = "string_interp_XfailedToLoadY";
