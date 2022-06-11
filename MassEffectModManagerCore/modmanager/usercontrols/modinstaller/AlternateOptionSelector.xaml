@@ -14,35 +14,60 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         <converters:SingleModeAlternateVisibilityConverter x:Key="SingleModeAlternateVisibilityConverter"/>
-    </UserControl.Resources>
-    <Grid Margin="0"
-          d:DataContext="{d:DesignInstance alternates:AlternateGroup}">
-        <!-- Container for items-->
-        <Expander Style="{StaticResource StretchyExpander}">
-            <Expander.Header>
-                <!-- The selected item (or the single item) -->
-                <local:SingleAlternateOptionPanel DataContext="{Binding SelectedOption}" MouseUp="AlternateItem_MouseUp" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"/>
-            </Expander.Header>
-            <Expander.Content>
-                <!-- Single Selector -->
-                <DockPanel HorizontalAlignment="Stretch">
-                    <DockPanel.Visibility>
-                        <MultiBinding Converter="{StaticResource SingleModeAlternateVisibilityConverter}">
-                            <Binding Path="GroupName"/>
-                            <Binding Path="SelectedOption.IsHidden"/>
-                        </MultiBinding>
-                    </DockPanel.Visibility>
-                    <ItemsControl ItemsSource="{Binding OtherOptions}" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}"
-                                  HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <local:SingleAlternateOptionPanel Margin="36,0,0,0" DataContext="{Binding}" MouseUp="AlternateItem_MouseUp"/>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </DockPanel>
 
-                <!-- Multi Selector --><!--
+        <DataTemplate x:Key="SingleGroupTemplate" DataType="{x:Type alternates:AlternateGroup}">
+            <DockPanel>
+                <CheckBox DockPanel.Dock="Left" Margin="4,0,0,0" IsChecked="{Binding SelectedOption.UIIsSelected}"/>
+                <local:SingleAlternateOptionPanel Margin="1,0,0,0" DataContext="{Binding SelectedOption}" MouseUp="AlternateItem_MouseUp"/>
+            </DockPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="MultiGroupTemplate" DataType="{x:Type alternates:AlternateGroup}">
+            <Expander Style="{StaticResource StretchyExpander}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+                <Expander.Header>
+                    <DockPanel>
+                        <TextBlock DockPanel.Dock="Top" Text="{Binding GroupNameTitleText}" TextWrapping="Wrap" Visibility="{Binding GroupName, Converter={StaticResource NullVisibilityConverter}}" FontWeight="Bold"/>
+                        <!-- The selected item (or the single item) -->
+                        <local:SingleAlternateOptionPanel DataContext="{Binding SelectedOption}" MouseUp="AlternateItem_MouseUp" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"/>
+                    </DockPanel>
+                </Expander.Header>
+                <Expander.Content>
+                    <DockPanel HorizontalAlignment="Stretch">
+                        <ItemsControl ItemsSource="{Binding OtherOptions}" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}"
+                                      HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <local:SingleAlternateOptionPanel Margin="36,0,0,0" 
+                                                                      DataContext="{Binding}" 
+                                                                      MouseUp="AlternateItem_MouseUp"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </DockPanel>
+                </Expander.Content>
+            </Expander>
+        </DataTemplate>
+    </UserControl.Resources>
+    <ContentControl Content="{Binding }"
+                    d:DataContext="{d:DesignInstance alternates:AlternateGroup}"
+                    HorizontalAlignment="Stretch" 
+                    HorizontalContentAlignment="Stretch">
+        <ContentControl.Style>
+            <Style TargetType="{x:Type ContentControl}">
+                <Setter Property="ContentTemplate" Value="{StaticResource SingleGroupTemplate}" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsMultiSelector}" Value="True">
+                        <Setter Property="ContentTemplate" Value="{StaticResource MultiGroupTemplate}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </ContentControl.Style>
+    </ContentControl>
+    <!-- Container for items-->
+
+
+    <!-- Multi Selector -->
+    <!--
                 <xctk:DropDownButton 
             x:Name="DropDownButtonHost" IsOpen="{Binding IsDropdownOpen, ElementName=AOS, Mode=TwoWay}" Visibility="{Binding GroupName, Converter={StaticResource NullVisibilityConverter}}" HorizontalContentAlignment="Stretch" >
                     <DockPanel>
@@ -65,7 +90,4 @@
                         </Style>
                     </xctk:DropDownButton.Resources>
                 </xctk:DropDownButton>-->
-            </Expander.Content>
-        </Expander>
-    </Grid>
 </UserControl>
