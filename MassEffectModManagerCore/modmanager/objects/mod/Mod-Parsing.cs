@@ -11,6 +11,7 @@ using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
+using ME3TweaksCore.Objects;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.gameini;
@@ -236,10 +237,10 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 var localizationJob = InstallationJobs.FirstOrDefault(x => x.Header == ModJob.JobHeader.LOCALIZATION);
                 if (localizationJob != null)
                 {
-                    var nameStr = RequiredDLC.First(); //Localization jobs, if valid, will always have something here.
-                    var tpmi = TPMIService.GetThirdPartyModInfo(nameStr, Game);
-                    if (tpmi != null) nameStr += $@" ({tpmi.modname})";
-                    sb.AppendLine(M3L.GetString(M3L.string_interp_addsTheFollowingLocalizationsToX, nameStr));
+                    var dlcReq = RequiredDLC.First().DLCFolderName; //Localization jobs, if valid, will always have something here.
+                    var tpmi = TPMIService.GetThirdPartyModInfo(dlcReq, Game);
+                    if (tpmi != null) dlcReq += $@" ({tpmi.modname})";
+                    sb.AppendLine(M3L.GetString(M3L.string_interp_addsTheFollowingLocalizationsToX, dlcReq));
                     foreach (var l in localizationJob.FilesToInstall)
                     {
                         var langCode = l.Key.Substring(l.Key.Length - 7, 3);
@@ -266,8 +267,15 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     sb.AppendLine(M3L.GetString(M3L.string_modparsing_requiresTheFollowingDLCToInstall));
                     foreach (var reqDLC in RequiredDLC)
                     {
-                        string name = TPMIService.GetThirdPartyModInfo(reqDLC, Game)?.modname ?? reqDLC;
-                        sb.AppendLine($@" - {name}");
+                        string name = TPMIService.GetThirdPartyModInfo(reqDLC.DLCFolderName, Game)?.modname ?? reqDLC.DLCFolderName;
+                        if (reqDLC.MinVersion != null)
+                        {
+                            sb.AppendLine($@" - {name} ({reqDLC.MinVersion})");
+                        }
+                        else
+                        {
+                            sb.AppendLine($@" - {name}");
+                        }
                     }
                 }
 
@@ -276,7 +284,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     sb.AppendLine(M3L.GetString(M3L.string_interp_singleRequiredDLC));
                     foreach (var reqDLC in OptionalSingleRequiredDLC)
                     {
-                        string name = TPMIService.GetThirdPartyModInfo(reqDLC, Game)?.modname ?? reqDLC;
+                        string name = TPMIService.GetThirdPartyModInfo(reqDLC.DLCFolderName, Game)?.modname ?? reqDLC.DLCFolderName;
                         sb.AppendLine($@" - {name}");
                     }
                 }
@@ -301,11 +309,16 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         public List<string> IncompatibleDLC = new List<string>();
         public int ModClassicUpdateCode { get; set; }
         public string LoadFailedReason { get; set; }
-        public List<string> RequiredDLC = new List<string>();
+
+        /// <summary>
+        /// List of DLC requirements for this mod to be able to install
+        /// </summary>
+        public List<DLCRequirement> RequiredDLC = new List<DLCRequirement>();
+
         /// <summary>
         /// List of DLC, of which at least one must be installed
         /// </summary>
-        public List<string> OptionalSingleRequiredDLC = new List<string>();
+        public List<DLCRequirement> OptionalSingleRequiredDLC = new List<DLCRequirement>();
         private List<string> AdditionalDeploymentFolders = new List<string>();
         private List<string> AdditionalDeploymentFiles = new List<string>();
         public string ModPath { get; private set; }
@@ -1402,7 +1415,8 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 
             #region LOCALIZATION MODS (6.1+) (ME2/3 ONLY)
 
-            var localizationFilesStr = (Game >= MEGame.ME2 && ModDescTargetVersion >= 6.1) ? iniData[ModJob.JobHeader.LOCALIZATION.ToString()][@"files"] : null;
+            // 06/11/2022 - Change from >= ME2 to IsGame2() and IsGame3()
+            var localizationFilesStr = ((Game.IsGame2() || Game.IsGame3()) && ModDescTargetVersion >= 6.1) ? iniData[ModJob.JobHeader.LOCALIZATION.ToString()][@"files"] : null;
             if (localizationFilesStr != null)
             {
                 if (InstallationJobs.Any())
@@ -1479,7 +1493,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 
                 localizationJob.LocalizationFilesStrRaw = localizationFilesStr;
                 InstallationJobs.Add(localizationJob);
-                RequiredDLC.Add(destDlc); //Add DLC requirement.
+                RequiredDLC.Add(new DLCRequirement() {DLCFolderName = destDlc}); //Add DLC requirement.
             }
             #endregion
 
@@ -1553,7 +1567,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                         case MEGame.ME1:
                             if (Enum.TryParse(reqDLCss, out ModJob.JobHeader header1) && ModJob.GetHeadersToDLCNamesMap(MEGame.ME1).TryGetValue(header1, out var foldername1))
                             {
-                                list.Add(foldername1);
+                                list.Add(new DLCRequirement() {DLCFolderName = foldername1});
                                 M3Log.Information(@"Adding DLC requirement to mod: " + foldername1, Settings.LogModStartup);
                                 continue;
                             }
@@ -1561,7 +1575,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                         case MEGame.ME2:
                             if (Enum.TryParse(reqDLCss, out ModJob.JobHeader header2) && ModJob.GetHeadersToDLCNamesMap(MEGame.ME2).TryGetValue(header2, out var foldername2))
                             {
-                                list.Add(foldername2);
+                                list.Add(new DLCRequirement() { DLCFolderName = foldername2 });
                                 M3Log.Information(@"Adding DLC requirement to mod: " + foldername2, Settings.LogModStartup);
                                 continue;
                             }
@@ -1569,7 +1583,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                         case MEGame.ME3:
                             if (Enum.TryParse(reqDLCss, out ModJob.JobHeader header3) && ModJob.GetHeadersToDLCNamesMap(MEGame.ME3).TryGetValue(header3, out var foldername3))
                             {
-                                list.Add(foldername3);
+                                list.Add(new DLCRequirement() { DLCFolderName = foldername3 });
                                 M3Log.Information(@"Adding DLC requirement to mod: " + foldername3, Settings.LogModStartup);
                                 continue;
                             }
@@ -1598,7 +1612,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                         }
                     }
                     M3Log.Information(@"Adding DLC requirement to mod: " + reqDLCss, Settings.LogModStartup);
-                    list.Add(reqDLCss);
+                    list.Add(DLCRequirement.ParseRequirement(reqDLCss, ModDescTargetVersion >= 8.0));
                 }
             }
 

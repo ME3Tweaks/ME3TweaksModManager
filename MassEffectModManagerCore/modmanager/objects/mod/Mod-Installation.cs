@@ -4,9 +4,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using LegendaryExplorerCore.GameFilesystem;
+using LegendaryExplorerCore.ME1.Unreal.UnhoodBytecode;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.GameFilesystem;
+using ME3TweaksCore.Objects;
 using ME3TweaksCoreWPF;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.diagnostics;
@@ -437,23 +439,25 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         /// </summary>
         /// <param name="gameTarget">Target to validate against</param>
         /// <returns>List of missing DLC modules, or an empty list if none</returns>
-        internal List<string> ValidateRequiredModulesAreInstalled(GameTargetWPF gameTarget)
+        internal List<DLCRequirement> ValidateRequiredModulesAreInstalled(GameTargetWPF gameTarget)
         {
             if (gameTarget.Game != Game)
             {
                 throw new Exception(@"Cannot validate a mod against a gametarget that is not for its game");
             }
 
-            var requiredDLC = RequiredDLC.Select(x =>
-            {
-                if (Enum.TryParse(x, out ModJob.JobHeader parsedHeader) && ModJob.GetHeadersToDLCNamesMap(Game).TryGetValue(parsedHeader, out var dlcname))
-                {
-                    return dlcname;
-                }
-                return x;
-            });
+            List<DLCRequirement> failedReqs = new List<DLCRequirement>();
             var installedDLC = gameTarget.GetInstalledDLC();
-            return requiredDLC.Except(installedDLC).ToList();
+
+            foreach (var req in RequiredDLC)
+            {
+                if (!req.IsRequirementMet(gameTarget, installedDLC))
+                {
+                    failedReqs.Add(req);
+                }
+            }
+
+            return failedReqs;
         }
 
         /// <summary>
@@ -470,19 +474,16 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 
             if (OptionalSingleRequiredDLC.Any())
             {
-
-                var requiredAnyDLC = OptionalSingleRequiredDLC.Select(x =>
-                {
-                    if (Enum.TryParse(x, out ModJob.JobHeader parsedHeader) && ModJob.GetHeadersToDLCNamesMap(Game)
-                        .TryGetValue(parsedHeader, out var dlcname))
-                    {
-                        return dlcname;
-                    }
-
-                    return x;
-                });
                 var installedDLC = gameTarget.GetInstalledDLC();
-                return installedDLC.FirstOrDefault(x => requiredAnyDLC.Contains(x)) != null;
+
+                foreach (var req in OptionalSingleRequiredDLC)
+                {
+                    if (req.IsRequirementMet(gameTarget, installedDLC))
+                    {
+                        return true;
+                    }
+                }
+                return false;
             }
 
             return true;

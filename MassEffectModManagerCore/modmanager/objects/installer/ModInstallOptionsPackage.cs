@@ -23,7 +23,7 @@ namespace ME3TweaksModManager.modmanager.objects.installer
         /// </summary>
         public Mod ModBeingInstalled { get; init; }
         /// <summary>
-        /// ME2/ME3 only: Should packages be resaved as compressed
+        /// ME2/ME3 only: Should packages be resaved as compressed. This does nothing for other games
         /// </summary>
         public bool CompressInstalledPackages { get; init; }
         /// <summary>

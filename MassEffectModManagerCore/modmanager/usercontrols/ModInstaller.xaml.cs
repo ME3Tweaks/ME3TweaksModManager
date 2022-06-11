@@ -20,6 +20,7 @@ using LegendaryExplorerCore.Unreal;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.NativeMods;
+using ME3TweaksCore.Objects;
 using ME3TweaksCore.Services.Backup;
 using ME3TweaksCore.Services.BasegameFileIdentification;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
@@ -1412,6 +1413,42 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         InstallationCancelled = true;
                     }
                 }
+                else if (e.Result is (ModInstallCompletedStatus dlcCode, List<DLCRequirement> failReqs))
+                {
+                    telemetryResult = dlcCode;
+                    // A DLC requirement failed
+                    string dlcText = "";
+                    foreach (var dlc in failReqs)
+                    {
+                        var info = TPMIService.GetThirdPartyModInfo(dlc.DLCFolderName, InstallOptionsPackage.ModBeingInstalled.Game);
+                        if (info != null)
+                        {
+                            dlcText += $"\n - {info.modname} ({dlc.DLCFolderName})"; //Do not localize
+                        }
+                        else
+                        {
+                            dlcText += $"\n - {dlc.DLCFolderName}"; //Do not localize
+                        }
+
+                        if (dlc.MinVersion != null)
+                        {
+                            dlcText += $" (minimum version: {dlc.MinVersion})";
+                        }
+
+                        // Show dialog
+                        if (dlcCode == ModInstallCompletedStatus.INSTALL_FAILED_REQUIRED_DLC_MISSING)
+                        {
+                            M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogRequiredContentMissing, dlcText), M3L.GetString(M3L.string_requiredContentMissing), MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                        else if (dlcCode == ModInstallCompletedStatus.INSTALL_FAILED_SINGLEREQUIRED_DLC_MISSING)
+                        {
+                            M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_error_singleRequiredDlcMissing, InstallOptionsPackage.ModBeingInstalled.ModName, dlcText), M3L.GetString(M3L.string_requiredContentMissing), MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                    }
+
+                    InstallationCancelled = true;
+
+                }
                 else if (e.Result is (ModInstallCompletedStatus result, List<string> items))
                 {
                     telemetryResult = result;
@@ -1419,47 +1456,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     M3Log.Warning(@"Installation failed with status " + result.ToString());
                     switch (result)
                     {
-                        case ModInstallCompletedStatus.INSTALL_FAILED_REQUIRED_DLC_MISSING:
-                            {
-                                string dlcText = "";
-                                foreach (var dlc in items)
-                                {
-                                    var info = TPMIService.GetThirdPartyModInfo(dlc, InstallOptionsPackage.ModBeingInstalled.Game);
-                                    if (info != null)
-                                    {
-                                        dlcText += $"\n - {info.modname} ({dlc})"; //Do not localize
-                                    }
-                                    else
-                                    {
-                                        dlcText += $"\n - {dlc}"; //Do not localize
-                                    }
-                                }
-
-                                InstallationCancelled = true;
-                                M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogRequiredContentMissing, dlcText), M3L.GetString(M3L.string_requiredContentMissing), MessageBoxButton.OK, MessageBoxImage.Error);
-                            }
-
-                            break;
-                        case ModInstallCompletedStatus.INSTALL_FAILED_SINGLEREQUIRED_DLC_MISSING:
-                            {
-                                string dlcText = "";
-                                foreach (var dlc in items)
-                                {
-                                    var info = TPMIService.GetThirdPartyModInfo(dlc, InstallOptionsPackage.ModBeingInstalled.Game);
-                                    if (info != null)
-                                    {
-                                        dlcText += $"\n - {info.modname} ({dlc})"; //Do not localize
-                                    }
-                                    else
-                                    {
-                                        dlcText += $"\n - {dlc}"; //Do not localize
-                                    }
-                                }
-
-                                InstallationCancelled = true;
-                                M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_error_singleRequiredDlcMissing, InstallOptionsPackage.ModBeingInstalled.ModName, dlcText), M3L.GetString(M3L.string_requiredContentMissing), MessageBoxButton.OK, MessageBoxImage.Error);
-                            }
-                            break;
                         case ModInstallCompletedStatus.INSTALL_FAILED_COULD_NOT_DELETE_EXISTING_FOLDER:
                             // Will only be one item in this list
                             var tpmi = TPMIService.GetThirdPartyModInfo(Path.GetFileName(items[0]), InstallOptionsPackage.ModBeingInstalled.Game);

@@ -80,9 +80,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
         public override void OnLoaded(object sender, RoutedEventArgs e)
         {
             if (HasLoaded) return;
-            if (EditingMod.Game >= MEGame.ME2)
+            if (EditingMod.Game.IsGame2() || EditingMod.Game.IsGame3())
             {
-                TargetMod = EditingMod?.RequiredDLC.FirstOrDefault();
+                TargetMod = EditingMod?.RequiredDLC.FirstOrDefault()?.DLCFolderName;
                 LocalizationJob = EditingMod?.GetJob(ModJob.JobHeader.LOCALIZATION);
                 if (LocalizationJob != null)
                 {

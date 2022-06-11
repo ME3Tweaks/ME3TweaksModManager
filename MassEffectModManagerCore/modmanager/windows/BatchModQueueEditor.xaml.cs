@@ -138,7 +138,7 @@ namespace ME3TweaksModManager.modmanager.windows
 
                 // These items MUST be installed first or this mod simply won't install.
                 // Official DLC is not counted as mod manager cannot install those.
-                depends.HardDependencies = mod.RequiredDLC.Where(x => !MEDirectories.OfficialDLC(mod.Game).Contains(x)).ToList();
+                depends.HardDependencies = mod.RequiredDLC.Where(x => !MEDirectories.OfficialDLC(mod.Game).Contains(x.DLCFolderName)).Select(x=>x.DLCFolderName).ToList();
                 depends.DependencyDLCs = mod.GetAutoConfigs().ToList(); // These items must be installed prior to install or options will be unavailable to the user.
                 var custDlcJob = mod.GetJob(ModJob.JobHeader.CUSTOMDLC);
                 if (custDlcJob != null)
