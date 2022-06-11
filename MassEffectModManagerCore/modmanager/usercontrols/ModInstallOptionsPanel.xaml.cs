@@ -15,6 +15,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.objects.exceptions;
 using ME3TweaksModManager.modmanager.objects.installer;
 
@@ -267,7 +268,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
             catch (CircularDependencyException)
             {
-
+                // uh oh
+                M3Log.Warning(@"Circular dependency detected in logic for mod alternates");
             }
             // Done calculating options
 
@@ -276,7 +278,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 if (o.GroupName != null)
                 {
-                    // Deselect so UI doesn't show selected. This is only really for single mode since we dont' use 'IsSelected' in multi mode
+                    // Deselect so UI doesn't show selected.
                     foreach (var v in o.AlternateOptions)
                     {
                         if (o.SelectedOption != v)
@@ -344,7 +346,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private void SortOptions()
         {
-            // ModDesc 8: Sorting option disable?
+            // ModDesc 8: Sorting option disable
             if (ModBeingInstalled.SortAlternateOptions)
             {
                 var remainingOptionsToSort = new List<AlternateGroup>(AlternateGroups);
@@ -479,7 +481,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 if (group.IsMultiSelector)
                 {
                     // Multi mode
-                    if (group.SelectedOption.UINotApplicable) return false; // Option must be selectable by user in order for it to be chosen by multi selector
+
+                    // 06/11/2022 - Change to only 8.0 or higher to prevent breaking old mods that abused the group not having a default
+                    // option picked
+                    // NEEDS A BIT MORE VALIDATION ON PASSING OPTIONS THROUGH
+                    if (group.SelectedOption.UINotApplicable && ModBeingInstalled.ModDescTargetVersion >= 8.0) return false; // Option must be selectable by user in order for it to be chosen by multi selector
                 }
                 else
                 {
@@ -492,23 +498,45 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private void BeginInstallingMod()
         {
+            // Set the 'SelectedOption' on groups to have UIIsSelected = true so the enumeration works
+            // This makes sure at most one option is set - (MM7 backcompat from 8.0 means there might be a state
+            // where one option is not chosen due to use of radioboxes with autos...)
+            foreach (var v in AlternateGroups.Where(x => x.IsMultiSelector))
+            {
+                if (v.SelectedOption != null && !v.SelectedOption.UINotApplicable)
+                {
+                    v.SelectedOption.UIIsSelected = true;
+                }
+
+                foreach (var e in v.OtherOptions)
+                    e.UIIsSelected = false;
+            }
+
+
             // Create a map of jobs to headers based on the selection options.
+            // Makes sure this is done from the InstallationJobs header so it's in MODDESC order and not UI order
+            // This means the UI should change the selection states of alternates
             var optionsMap = new Dictionary<ModJob.JobHeader, List<AlternateOption>>();
 
+            M3Log.Information(@"Building list of alternates to pass to mod installer - they will apply in order", Settings.LogModInstallation);
             foreach (var job in ModBeingInstalled.InstallationJobs)
             {
                 optionsMap[job.Header] = new List<AlternateOption>();
                 foreach (var alt in job.AlternateFiles.Where(x => x.UIIsSelected))
+                {
+                    M3Log.Information($@"Adding alternate file to install package {job.Header} {alt.FriendlyName}", Settings.LogModInstallation);
                     optionsMap[job.Header].Add(alt);
+                }
                 if (job.Header == ModJob.JobHeader.CUSTOMDLC)
                 {
                     // Custom DLC: add alternate dlc option.
                     foreach (var alt in job.AlternateDLCs.Where(x => x.UIIsSelected))
+                    {
+                        M3Log.Information($@"Adding alternate dlc to install package {job.Header} {alt.FriendlyName}", Settings.LogModInstallation);
                         optionsMap[job.Header].Add(alt);
-
+                    }
                 }
             }
-
 
             ModInstallOptionsPackage moip = new ModInstallOptionsPackage()
             {

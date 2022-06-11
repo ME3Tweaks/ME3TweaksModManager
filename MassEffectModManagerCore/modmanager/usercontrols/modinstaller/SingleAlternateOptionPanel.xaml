@@ -106,7 +106,6 @@
                     <!-- IsSelected background -->
                     <MultiDataTrigger>
                         <MultiDataTrigger.Conditions>
-                            <Condition Binding="{Binding ShowMouseoverHighlightOnMain, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:AlternateOptionSelector}}}" Value="True"  />
                             <Condition Binding="{Binding UIIsSelected}" Value="true" />
                         </MultiDataTrigger.Conditions>
                         <Setter
@@ -116,7 +115,6 @@
                     <!-- Mouseover -->
                     <MultiDataTrigger>
                         <MultiDataTrigger.Conditions>
-                            <Condition Binding="{Binding ShowMouseoverHighlightOnMain, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:AlternateOptionSelector}}}" Value="True"  />
                             <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=IsMouseOver}" Value="true" />
                             <Condition Binding="{Binding UIIsSelectable}" Value="true" />
                         </MultiDataTrigger.Conditions>

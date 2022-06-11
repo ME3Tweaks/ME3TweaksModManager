@@ -74,7 +74,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols.modinstaller
                     group.SelectedOption = newItem;
                     group.SelectedOption.UIIsSelected = true;
 
-                    IsDropdownOpen = false; // Multi mode
+                    group.UIIsDropdownOpen = false; // Multi mode
                     if (element.ToolTip is ToolTip tp)
                         tp.IsOpen = false; // Close the tooltip
                     group.SelectedOption.RaiseIsSelectedChanged(); // Raise the event on the newly selected option so logic that depends on it will fire.

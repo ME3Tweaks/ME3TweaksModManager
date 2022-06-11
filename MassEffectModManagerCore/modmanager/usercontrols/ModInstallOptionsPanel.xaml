@@ -51,7 +51,7 @@
                 <ItemsControl.Resources>
                     <DataTemplate
                         DataType="{x:Type alternates:AlternateGroup}">
-                        <modinstaller:AlternateOptionSelector  HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"/>
+                        <modinstaller:AlternateOptionSelector HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"/>
                         <!-- DataContext is the AlternateGroup -->
                     </DataTemplate>
                 </ItemsControl.Resources>
