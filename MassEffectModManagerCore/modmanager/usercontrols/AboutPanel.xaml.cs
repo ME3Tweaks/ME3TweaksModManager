@@ -81,7 +81,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 new LibraryCredit(@"SSH.NET", @"https://github.com/sshnet/SSH.NET", M3L.GetString(M3L.string_library_sshnet)),
                 new LibraryCredit(@"WatsonWebsocket", @"https://github.com/jchristn/WatsonWebsocket", M3L.GetString(M3L.string_library_watsonwebsocket)),
                 new LibraryCredit(@"SingleInstanceCore", @"https://github.com/soheilkd/SingleInstanceCore", M3L.GetString(M3L.string_enablesSingleinstancingOfAnApplication)),
-                new LibraryCredit(@"RoboSharp*", @"https://github.com/tjscience/RoboSharp", M3L.GetString(M3L.string_wrapperForRobycopyCommandInCSharp)),
+                new LibraryCredit(@"RoboSharp*", @"https://github.com/tjscience/RoboSharp", M3L.GetString(M3L.string_wrapperForRobocopyCommandInCSharp)),
             };
 
 

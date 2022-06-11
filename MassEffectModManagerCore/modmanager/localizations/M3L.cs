@@ -1271,7 +1271,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_library_ntfsstreams = "string_library_ntfsstreams";
 		public const string string_tooltip_runningOnX = "string_tooltip_runningOnX";
 		public const string string_enablesSingleinstancingOfAnApplication = "string_enablesSingleinstancingOfAnApplication";
-		public const string string_wrapperForRobycopyCommandInCSharp = "string_wrapperForRobycopyCommandInCSharp";
+		public const string string_wrapperForRobocopyCommandInCSharp = "string_wrapperForRobycopyCommandInCSharp";
 		public const string string_interp_byXVersionY = "string_interp_byXVersionY";
 		public const string string_installedOutdated = "string_installedOutdated";
 		public const string string_updateASI = "string_updateASI";

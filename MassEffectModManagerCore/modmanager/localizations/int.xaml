@@ -1324,7 +1324,7 @@
     <!-- 0={FriendlyName} -->
     <system:String x:Key="string_interp_altfile_multilistIdNINotIntegerOrMissing">Alternate File ({0}) specifies operation OP_NOINSTALL_MULTILISTFILES but does not specify the MultiListId attribute, or it could not be parsed to an integer.</system:String>
     <!-- 0={FriendlyName} -->
-    <system:String x:Key="string_interp_altfile_installToNotGuaranteedCustomDLC">Alternate file ({0}) in-mod target (ModFile) does not appear to target a DLC target this mod will (always) install: {1}</system:String>
+    <system:String x:Key="string_interp_altfile_installToNotGuaranteedCustomDLC">Alternate file ({0}) in-mod target (ModFile) does not appear to target a DLC target this mod will always install: {1}</system:String>
     <!-- 0={FriendlyName} 1={File path} -->
     <system:String x:Key="string_interp_validation_altfile_flattentNotTrueOrFalse">Alternate File ({0}) specifies 'FlattenMultiListOutput' descriptor, but the value is not 'true' or 'false': {1}</system:String>
     <!-- 0={Alternate FriendlyName} 1={invalid value} -->
@@ -1599,7 +1599,7 @@
     <system:String x:Key="string_tooltip_runningOnX">Running on {0}</system:String>
     <!-- 0 = netcore3.1, net5-windows8.0, etc. Version string of .NET -->
     <system:String x:Key="string_enablesSingleinstancingOfAnApplication">Enables single-instancing of an application</system:String>
-    <system:String x:Key="string_wrapperForRobycopyCommandInCSharp">Wrapper for robycopy command in C#</system:String>
+    <system:String x:Key="string_wrapperForRobocopyCommandInCSharp">Wrapper for robocopy command in C#</system:String>
 
 
     <!-- ASI Manager Panel -->
