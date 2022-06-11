@@ -50,6 +50,11 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         public bool IsMultiSelector => AlternateOptions.Count > 1;
 
         /// <summary>
+        /// MULTI MODE ONLY - Binding for Expander Expanded variable
+        /// </summary>
+        public bool UIIsDropdownOpen { get; set; }
+
+        /// <summary>
         /// Creates an option group with multiple options (dropdown selector mode)
         /// </summary>
         /// <param name="options"></param>
