@@ -104,9 +104,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 // ME1 uses ini that doesn't get backed up
                 // ME2 uses ini that is 1:1
                 // LE1/LE2 use coalesced ini that is 1:1
-                if (Game.IsGame3() && !BackupService.GetBackupStatus(Game).BackedUp)
+                if (!BackupService.GetBackupStatus(Game).BackedUp)
                 {
-                    var result = M3L.ShowDialog(Application.Current.MainWindow, $"There is no backup of {Game} available. If you continue, you will be unable to take a game backup as the game will be modified. Are you sure you want to do this?", "Backup warning", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.No;
+                    var result = M3L.ShowDialog(Application.Current.MainWindow, M3L.GetString(M3L.string_interp_noBackupMessage, Game), M3L.GetString(M3L.string_backupWarning), MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.No;
                     if (!result)
                         return; // Don't proceed
                 }
@@ -125,9 +125,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 // ME1 uses ini that doesn't get backed up
                 // ME2 uses ini that is 1:1
                 // LE1/LE2 use coalesced ini that is 1:1
-                if (Game.IsGame3() && !BackupService.GetBackupStatus(Game).BackedUp)
+                if (!BackupService.GetBackupStatus(Game).BackedUp)
                 {
-                    var result = M3L.ShowDialog(Application.Current.MainWindow, $"There is no backup of {Game} available. If you continue, you will be unable to take a game backup as the game will be modified. Are you sure you want to do this?", "Backup warning", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.No;
+                    var result = M3L.ShowDialog(Application.Current.MainWindow, M3L.GetString(M3L.string_interp_noBackupMessage, Game), M3L.GetString(M3L.string_backupWarning), MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.No;
                     if (!result)
                         return; // Don't proceed
                 }
@@ -146,9 +146,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 // ME1 uses ini that doesn't get backed up
                 // ME2 uses ini that is 1:1
                 // LE1/LE2 use coalesced ini that is 1:1
-                if (Game.IsGame3() && !BackupService.GetBackupStatus(Game).BackedUp)
+                if (!BackupService.GetBackupStatus(Game).BackedUp)
                 {
-                    var result = M3L.ShowDialog(Application.Current.MainWindow, $"There is no backup of {Game} available. If you continue, you will be unable to take a game backup as the game will be modified. Are you sure you want to do this?", "Backup warning", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.No;
+                    var result = M3L.ShowDialog(Application.Current.MainWindow, M3L.GetString(M3L.string_interp_noBackupMessage, Game), M3L.GetString(M3L.string_backupWarning), MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.No;
                     if (!result)
                         return; // Don't proceed
                 }

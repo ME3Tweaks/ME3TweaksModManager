@@ -2261,23 +2261,23 @@ namespace ME3TweaksModManager
             switch (game)
             {
                 case MEGame.ME1:
-                    ME1ASILoaderInstalled = target.IsBinkBypassInstalled();;
+                    ME1ASILoaderInstalled = target.IsBinkBypassInstalled();
                     ME1ASILoaderText = ME1ASILoaderInstalled ? binkInstalledText : binkNotInstalledText;
                     break;
                 case MEGame.ME2:
-                    ME2ASILoaderInstalled = target.IsBinkBypassInstalled();;
+                    ME2ASILoaderInstalled = target.IsBinkBypassInstalled();
                     ME2ASILoaderText = ME2ASILoaderInstalled ? binkInstalledText : binkNotInstalledText;
                     break;
                 case MEGame.ME3:
-                    ME3ASILoaderInstalled = target.IsBinkBypassInstalled();;
+                    ME3ASILoaderInstalled = target.IsBinkBypassInstalled();
                     ME3ASILoaderText = ME3ASILoaderInstalled ? binkInstalledText : binkNotInstalledText;
                     break;
                 case MEGame.LE1:
-                    LE1ASILoaderInstalled = target.IsBinkBypassInstalled();;
+                    LE1ASILoaderInstalled = target.IsBinkBypassInstalled();
                     LE1ASILoaderText = LE1ASILoaderInstalled ? binkInstalledText : binkNotInstalledText;
                     break;
                 case MEGame.LE2:
-                    LE2ASILoaderInstalled = target.IsBinkBypassInstalled();;
+                    LE2ASILoaderInstalled = target.IsBinkBypassInstalled();
                     LE2ASILoaderText = LE2ASILoaderInstalled ? binkInstalledText : binkNotInstalledText;
                     break;
                 case MEGame.LE3:
@@ -3097,9 +3097,17 @@ namespace ME3TweaksModManager
                 // 06/05/2022 - Support a font awesome icon enumeration value
                 if (!string.IsNullOrWhiteSpace(item.FontAwesomeIconResource) && Enum.TryParse<EFontAwesomeIcon>(item.FontAwesomeIconResource, out var icon))
                 {
-                    m.Icon = new ImageAwesome() { Icon = icon };
-                }
+                    var ia = new ImageAwesome()
+                    {
+                        Icon = icon,
+                        Height=16,
+                        Width=16,
+                        Style = (Style)FindResource(@"EnableDisableImageStyle")
+                    };
+                    ia.SetResourceReference(ImageAwesome.ForegroundProperty, AdonisUI.Brushes.ForegroundBrush);
 
+                    m.Icon = ia;
+                }
 
                 dynamicMenuItems.Add(m);
 

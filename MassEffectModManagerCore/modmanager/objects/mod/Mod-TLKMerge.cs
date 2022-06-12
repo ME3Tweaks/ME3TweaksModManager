@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using LegendaryExplorerCore.Compression;
+using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.TLK;
 using LegendaryExplorerCore.TLK.ME1;
@@ -95,6 +96,29 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             }
 
             return null; // No compressed merge file was found.
+        }
+
+        /// <summary>
+        /// Returns list of files to modify mapped to the list of TLK xml filenames to read to use as an update source of that file
+        /// </summary>
+        /// <returns></returns>
+        public Dictionary<string, List<string>> PrepareTLKMerge(out CompressedTLKMergeData compressedTlkData)
+        {
+            compressedTlkData = null;
+            List<string> allTLKMerges = null;
+            if (ModDescTargetVersion >= 8)
+            {
+                // ModDesc 8 mods can use this feature
+                compressedTlkData = ReadCompressedTlkMergeFile();
+            }
+
+            // Legacy and fallback: Use raw files
+            if (compressedTlkData == null)
+            {
+                allTLKMerges = InstallationJobs.Where(x => x.Game1TLKXmls != null).SelectMany(x => x.Game1TLKXmls).ToList();
+            }
+
+            return Mod.CoalesceTLKMergeFiles(allTLKMerges, compressedTlkData);
         }
 
         /// <summary>

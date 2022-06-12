@@ -893,23 +893,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 Action = M3L.GetString(M3L.string_updatingTLKFiles);
 
                 CompressedTLKMergeData compressedTlkData = null;
-                List<string> allTLKMerges = null;
-                if (InstallOptionsPackage.ModBeingInstalled.ModDescTargetVersion >= 8)
-                {
-                    // ModDesc 8 mods can use this feature
-                    compressedTlkData = InstallOptionsPackage.ModBeingInstalled.ReadCompressedTlkMergeFile();
-                }
-
-                // Legacy and fallback: Use raw files
-                if (compressedTlkData == null)
-                {
-                    allTLKMerges = installationJobs.Where(x => x.Game1TLKXmls != null).SelectMany(x => x.Game1TLKXmls).ToList();
-                }
-
+                var mergeFiles = InstallOptionsPackage.ModBeingInstalled.PrepareTLKMerge(out compressedTlkData);
                 var gameMap = MELoadedFiles.GetFilesLoadedInGame(InstallOptionsPackage.InstallTarget.Game, gameRootOverride: InstallOptionsPackage.InstallTarget.TargetPath);
                 doneMerges = 0;
-
-                var mergeFiles = Mod.CoalesceTLKMergeFiles(allTLKMerges, compressedTlkData);
                 int totalTlkMerges = mergeFiles.Count;
                 PackageCache cache = new PackageCache();
 
@@ -1432,7 +1418,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
                         if (dlc.MinVersion != null)
                         {
-                            dlcText += $" (minimum version: {dlc.MinVersion})";
+                            dlcText += @" " + M3L.GetString(M3L.string_interp_minVersionAppend, dlc.MinVersion);
                         }
 
                         // Show dialog

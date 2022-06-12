@@ -75,7 +75,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             if (!BackupService.GetBackupStatus(MEGame.ME3).BackedUp)
             {
-                var result = M3L.ShowDialog(window, $"There is no backup of {MEGame.ME3} available. If you continue, you will be unable to take a game backup as the game will be modified. Are you sure you want to do this?", "Backup warning", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.No;
+                var result = M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_noBackupMessage, MEGame.ME3), M3L.GetString(M3L.string_backupWarning), MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.No;
                 if (!result)
                     return; // Don't proceed
             }
@@ -132,7 +132,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             if (!BackupService.GetBackupStatus(MEGame.ME3).BackedUp)
             {
-                var result = M3L.ShowDialog(window, $"There is no backup of {MEGame.ME3} available. If you continue, you will be unable to take a game backup as the game will be modified. Are you sure you want to do this?", "Backup warning", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.No;
+                var result = M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_noBackupMessage, MEGame.ME3), M3L.GetString(M3L.string_backupWarning), MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.No;
                 if (!result)
                     return; // Don't proceed
             }

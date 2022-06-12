@@ -14,6 +14,7 @@ using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.objects.alternates;
 using ME3TweaksModManager.modmanager.objects.installer;
+using ME3TweaksModManager.modmanager.objects.tlk;
 using SevenZip;
 
 namespace ME3TweaksModManager.modmanager.objects.mod
@@ -506,7 +507,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         /// Gets a list of all files that *may* be installed by a mod.
         /// </summary>
         /// <returns></returns>
-        public List<string> GetAllInstallableFiles()
+        public List<string> GetAllInstallableFiles(bool includeModifable = false)
         {
             var list = new List<string>();
 
@@ -516,6 +517,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 {
                     // Basegame, Official DLC
                     list.AddRange(job.FilesToInstall.Keys);
+
                 }
                 else if (job.Header == ModJob.JobHeader.CUSTOMDLC)
                 {
@@ -524,6 +526,17 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                         var dlcSourceDir = Path.Combine(ModPath, cdlcDir.Key);
                         var files = Directory.GetFiles(dlcSourceDir, @"*", SearchOption.AllDirectories).Select(x => x.Substring(dlcSourceDir.Length + 1));
                         list.AddRange(files.Select(x => $@"{MEDirectories.GetDLCPath(Game, @"")}\{cdlcDir.Value}\{x}")); // do not localize
+                    }
+                }
+                else if (job.Header == ModJob.JobHeader.GAME1_EMBEDDED_TLK)
+                {
+                    if (job.Game1TLKXmls != null)
+                    {
+                        // We need to check the files
+                        CompressedTLKMergeData data = null;
+                        var map = PrepareTLKMerge(out data);
+
+                        list.AddRange(map.Keys.Select(x=>$@"{x}{(Game == MEGame.ME1 ? @".sfm" : @".pcc")}")); // do not localize
                     }
                 }
 

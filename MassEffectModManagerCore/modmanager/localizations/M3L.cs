@@ -452,6 +452,15 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_synchronizedEmails = "string_synchronizedEmails";
 		public const string string_installingBinkASILoader = "string_installingBinkASILoader";
 		public const string string_installedBinkASILoader = "string_installedBinkASILoader";
+		public const string string_seeWhatsInstalled = "string_seeWhatsInstalled";
+		public const string string_dragAndDropOperations = "string_dragAndDropOperations";
+		public const string string_decompileCoalescedFileLE1LE2 = "string_decompileCoalescedFileLE1LE2";
+		public const string string_compileCoalescedFileLE1LE2 = "string_compileCoalescedFileLE1LE2";
+		public const string string_decompileCoalescedFileME3LE3 = "string_decompileCoalescedFileME3LE3";
+		public const string string_tooltip_decompileCoalGame3 = "string_tooltip_decompileCoalGame3";
+		public const string string_compileCoalescedFileME3LE3 = "string_compileCoalescedFileME3LE3";
+		public const string string_tooltip_compileCoalGame3 = "string_tooltip_compileCoalGame3";
+		public const string string_installMemFile = "string_installMemFile";
 		public const string string_loadingME3TweaksServices = "string_loadingME3TweaksServices";
 		public const string string_refreshingME3TweaksServices = "string_refreshingME3TweaksServices";
 		public const string string_loadedME3TweaksServices = "string_loadedME3TweaksServices";
@@ -529,6 +538,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_interp_errorApplyingMergeModXY = "string_interp_errorApplyingMergeModXY";
 		public const string string_updatingTLKFiles = "string_updatingTLKFiles";
 		public const string string_applyingMergemods = "string_applyingMergemods";
+		public const string string_interp_minVersionAppend = "string_interp_minVersionAppend";
 		public const string string_previewPanelTitle = "string_previewPanelTitle";
 		public const string string_selectYourLanguage = "string_selectYourLanguage";
 		public const string string_howToChangeLanguage = "string_howToChangeLanguage";
@@ -718,6 +728,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_deployment_basegameFullFileWarning = "string_deployment_basegameFullFileWarning";
 		public const string string_deployment_unusedExtraFileTypeFound = "string_deployment_unusedExtraFileTypeFound";
 		public const string string_deployment_nexusUpdaterServiceInfo = "string_deployment_nexusUpdaterServiceInfo";
+		public const string string_interp_compressedTlkDataInfo = "string_interp_compressedTlkDataInfo";
 		public const string string_deployment_tlkIssueLangPackageNotFound = "string_deployment_tlkIssueLangPackageNotFound";
 		public const string string_deployment_tlkIssueLangPackageWrongNumTLKExports = "string_deployment_tlkIssueLangPackageWrongNumTLKExports";
 		public const string string_deployment_tlkIssueLangPackageMismatchedMaleFemaleCount = "string_deployment_tlkIssueLangPackageMismatchedMaleFemaleCount";
@@ -1239,6 +1250,10 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_interp_validation_modparsing_leLauncherDirNotFound = "string_interp_validation_modparsing_leLauncherDirNotFound";
 		public const string string_interp_validation_modparsing_nonUniqueSortIndex = "string_interp_validation_modparsing_nonUniqueSortIndex";
 		public const string string_interp_validation_modparsing_cannotDependOnOfficialLEDLC = "string_interp_validation_modparsing_cannotDependOnOfficialLEDLC";
+		public const string string_interp_validation_modparsing_hardcodedDirNotFound = "string_interp_validation_modparsing_hardcodedDirNotFound";
+		public const string string_interp_validation_modparsing_improperPackedFile = "string_interp_validation_modparsing_improperPackedFile";
+		public const string string_interp_noBackupMessage = "string_interp_noBackupMessage";
+		public const string string_backupWarning = "string_backupWarning";
 		public const string string_tooltip_hello = "string_tooltip_hello";
 		public const string string_tooltip_softwareDevelopedWithLoveByME3Tweaks = "string_tooltip_softwareDevelopedWithLoveByME3Tweaks";
 		public const string string_libraries = "string_libraries";
@@ -1271,7 +1286,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_library_ntfsstreams = "string_library_ntfsstreams";
 		public const string string_tooltip_runningOnX = "string_tooltip_runningOnX";
 		public const string string_enablesSingleinstancingOfAnApplication = "string_enablesSingleinstancingOfAnApplication";
-		public const string string_wrapperForRobocopyCommandInCSharp = "string_wrapperForRobycopyCommandInCSharp";
+		public const string string_wrapperForRobocopyCommandInCSharp = "string_wrapperForRobocopyCommandInCSharp";
 		public const string string_interp_byXVersionY = "string_interp_byXVersionY";
 		public const string string_installedOutdated = "string_installedOutdated";
 		public const string string_updateASI = "string_updateASI";

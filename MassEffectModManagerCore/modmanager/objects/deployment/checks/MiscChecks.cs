@@ -15,6 +15,7 @@ using Newtonsoft.Json;
 using ME3TweaksModManager.modmanager.objects.mod.merge.v1;
 using ME3TweaksModManager.modmanager.objects.mod.merge;
 using ME3TweaksModManager.modmanager.objects.alternates;
+using ME3TweaksModManager.modmanager.objects.mod;
 
 namespace ME3TweaksModManager.modmanager.objects.deployment.checks
 {
@@ -216,8 +217,8 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
             item.ItemText = M3L.GetString(M3L.string_checkingForMiscellaneousIssues);
             var referencedFiles = item.ModToValidateAgainst.GetAllRelativeReferences(false);
 
+            // Check for metacmms
             var metacmms = referencedFiles.Where(x => Path.GetFileName(x) == @"_metacmm.txt").ToList();
-
             if (metacmms.Any())
             {
                 foreach (var m in metacmms)
@@ -369,6 +370,18 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
             if (item.ModToValidateAgainst.NexusModID > 0 && !item.ModToValidateAgainst.IsME3TweaksUpdatable && !NexusUpdaterService.IsModWhitelisted(item.ModToValidateAgainst))
             {
                 item.AddInfoWarning(M3L.GetString(M3L.string_deployment_nexusUpdaterServiceInfo, item.ModToValidateAgainst.ModName, item.ModToValidateAgainst.Game));
+            }
+            #endregion
+
+            #region Check for m3za so user doesn't forget
+            // Check for compressed m3za
+            if (item.ModToValidateAgainst.Game.IsGame1() && item.ModToValidateAgainst.GetJob(ModJob.JobHeader.GAME1_EMBEDDED_TLK) != null && item.ModToValidateAgainst.ModDescTargetVersion >= 8.0)
+            {
+                var m3zaFile = Path.Combine(item.ModToValidateAgainst.ModPath, Mod.Game1EmbeddedTlkFolderName, Mod.Game1EmbeddedTlkCompressedFilename);
+                if (File.Exists(m3zaFile))
+                {
+                    item.AddInfoWarning(M3L.GetString(M3L.string_interp_compressedTlkDataInfo, ModJob.JobHeader.GAME1_EMBEDDED_TLK, Mod.Game1EmbeddedTlkCompressedFilename));
+                }
             }
             #endregion
 

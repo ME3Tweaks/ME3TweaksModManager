@@ -6,8 +6,10 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms.Design;
 using LegendaryExplorerCore.Compression;
 using LegendaryExplorerCore.Helpers;
+using ME3TweaksModManager.modmanager.objects.mod;
 using Microsoft.AppCenter.Ingestion.Models;
 
 namespace ME3TweaksModManager.modmanager.objects.tlk
@@ -145,6 +147,15 @@ namespace ME3TweaksModManager.modmanager.objects.tlk
         public static MemoryStream CreateCompressedTlkMergeFile(string inputDirectory, Action<uint, uint> compressingCallback = null)
         {
             MemoryStream ms = new MemoryStream();
+
+            // Use existing file it exists
+            var existingFile = Path.Combine(inputDirectory, Mod.Game1EmbeddedTlkCompressedFilename);
+            if (File.Exists(existingFile))
+            {
+                using var f = File.OpenRead(existingFile);
+                f.CopyTo(ms);
+                return ms;
+            }
 
             // Contains position for start of offset data (long long)
             Dictionary<string, long> headerOffsetMap = new Dictionary<string, long>();

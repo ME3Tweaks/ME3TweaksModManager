@@ -409,6 +409,15 @@
     <system:String x:Key="string_synchronizedEmails">Synchronized Emails</system:String>
     <system:String x:Key="string_installingBinkASILoader">Installing Bink ASI loader</system:String>
     <system:String x:Key="string_installedBinkASILoader">Installed Bink ASI loader</system:String>
+    <system:String x:Key="string_seeWhatsInstalled">See what's installed</system:String>
+    <system:String x:Key="string_dragAndDropOperations">Drag and Drop operations</system:String>
+    <system:String x:Key="string_decompileCoalescedFileLE1LE2">Decompile Coalesced file (LE1/LE2)</system:String>
+    <system:String x:Key="string_compileCoalescedFileLE1LE2">Compile Coalesced file (LE1/LE2)</system:String>
+    <system:String x:Key="string_decompileCoalescedFileME3LE3">Decompile Coalesced file (ME3/LE3)</system:String>
+    <system:String x:Key="string_tooltip_decompileCoalGame3">Decompile a Coalesced file to individual xml files for editing</system:String>
+    <system:String x:Key="string_compileCoalescedFileME3LE3">Compile Coalesced file (ME3/LE3)</system:String>
+    <system:String x:Key="string_tooltip_compileCoalGame3">Compile a Coalesced from individual xml files</system:String>
+    <system:String x:Key="string_installMemFile">Install .mem file</system:String>
 
     <!-- M3 Service Loaders -->
     <system:String x:Key="string_loadingME3TweaksServices">Loading ME3Tweaks services</system:String>
@@ -513,6 +522,9 @@
     <!-- 0={mergeMod.MergeModFilename} 1={ex.Message} -->
     <system:String x:Key="string_updatingTLKFiles">Updating TLK files</system:String>
     <system:String x:Key="string_applyingMergemods">Applying mergemods</system:String>
+    <system:String x:Key="string_interp_minVersionAppend">(minimum version: {0})</system:String>
+    <!-- 0={Version string 0.1.2.3} -->
+    <!-- The follow items are only for letting this localizer replace the correct strings! Remove them when done and make sure keys are identical to the stripped versions-->
 
     <!-- Welcome panel -->
     <system:String x:Key="string_previewPanelTitle">Welcome to ME3Tweaks Mod Manager</system:String>
@@ -789,6 +801,9 @@
     <!-- 0={ext} 1={file} -->
     <system:String x:Key="string_deployment_nexusUpdaterServiceInfo">{0} ({1}) is not enrolled into the NexusMods Updater Service whitelist. In order for this mod to check for updates, it must be enrolled in the updater service (due to design of NexusMods API). You can enroll this mod on the ME3Tweaks Discord, in the #nexusupdate-rules channel.</system:String>
     <!-- 0={Mod name} 1={game (ME1/ME2... etc)} -->
+
+    <system:String x:Key="string_interp_compressedTlkDataInfo">This mod uses the {0} task header. A compressed version of the xml files was detected ({1}); this file will be used in deployment instead of individual xml files. If this is not what you intended, remove the compressed file and Mod Manager will serialize a new one on deployment.</system:String>
+    <!-- 0 = GAME1_EMBEDDED_TLK, 1 = filepath - both of these values are hardcoded and will never change unless something gets refactored, which it hopefully never will -->
 
     <!-- Language checks -->
     <system:String x:Key="string_deployment_tlkIssueLangPackageNotFound">Localized TLK package {0} was not found. Users who play the game with their language/voiceover set to {1} ({2}) will have blank strings from this mod. See the Mod Manager documentation for more information.</system:String>
@@ -1564,6 +1579,15 @@
     <!-- 0={Alternate FriendlyName} 1={SortIndex value} 2={other friendlyname} -->
     <system:String x:Key="string_interp_validation_modparsing_cannotDependOnOfficialLEDLC">Legendary Edition mods targeting moddesc 8.0 or higher cannot mark official vanilla DLC as a dependency, as Mod Manager does not support these DLC being removed. Remove vanilla DLC items from 'requireddlc'. Invalid value: {0}</system:String>
     <!-- 0={Invalid sort index integer} -->
+    <system:String x:Key="string_interp_validation_modparsing_hardcodedDirNotFound">Mod specifies {0} task header, but the {1} directory was not found. Remove this task header if you are not using it.</system:String>
+    <!-- 0={Task header} 1={Foldername} -->
+    <system:String x:Key="string_interp_validation_modparsing_improperPackedFile">Mod has file is improperly stored in the archive: {0}. Mods must be deployed from Mod Manager to properly work.</system:String>
+    <!-- 0={File path} -->
+
+    <!-- Shared NO BACKUP -->
+    <system:String x:Key="string_interp_noBackupMessage">There is no backup of {0} available. If you continue, you will be unable to take a game backup as the game will be modified. Are you sure you want to do this?</system:String>
+    <!-- 0={Game (ME1/ME2...)} -->
+    <system:String x:Key="string_backupWarning">Backup warning</system:String>
 
     <!-- About Panel -->
     <system:String x:Key="string_tooltip_hello">Hello!</system:String>

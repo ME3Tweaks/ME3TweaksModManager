@@ -14,14 +14,8 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             Stream sourceStream;
             if (IsInArchive)
             {
-                // Check archive lists it as Store. If any other format we will not load this mod as it was improperly deployed
-                var storageType = Archive.GetStorageTypeOfFile(fullPath);
-                if (storageType != @"Copy")
-                {
-                    M3Log.Error($@"Mod has merge that is in an archive, but the storage type is not listed as 'Copy'. Mod Manager will not load mods from archive that contain merge mods that were not deployed using Mod Manager.");
-                    LoadFailedReason = $@"This mod has a merge mod that is in the archive, but the storage type is not listed as 'Copy'. Mod Manager will not load mods from archive that contain merge mods that were not deployed using Mod Manager.";
+                if (!CheckNonSolidArchiveFile(fullPath))
                     return null;
-                }
 
                 // Load from archive
                 sourceStream = new MemoryStream();

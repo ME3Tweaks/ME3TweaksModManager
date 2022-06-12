@@ -788,14 +788,8 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     // File exists
                     if (Archive != null)
                     {
-                        // Check archive lists it as Store. If any other format we will not load this mod as it was improperly deployed
-                        var storageType = Archive.GetStorageTypeOfFile(fullPath);
-                        if (storageType != @"Copy")
-                        {
-                            M3Log.Error($@"Mod has banner image that is in an archive, but the storage type is not listed as 'Copy'. Mod Manager will not load mods from archive that list images that were not deployed using Mod Manager.");
-                            LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_bannerUsedButNotDeployedWithM3);
+                        if (!CheckNonSolidArchiveFile(fullPath))
                             return;
-                        }
 
                         // If we are loading from archive we must load it here while the archive stream is still available
                         LoadBannerImage();
@@ -1493,7 +1487,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 
                 localizationJob.LocalizationFilesStrRaw = localizationFilesStr;
                 InstallationJobs.Add(localizationJob);
-                RequiredDLC.Add(new DLCRequirement() {DLCFolderName = destDlc}); //Add DLC requirement.
+                RequiredDLC.Add(new DLCRequirement() { DLCFolderName = destDlc }); //Add DLC requirement.
             }
             #endregion
 
@@ -1567,7 +1561,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                         case MEGame.ME1:
                             if (Enum.TryParse(reqDLCss, out ModJob.JobHeader header1) && ModJob.GetHeadersToDLCNamesMap(MEGame.ME1).TryGetValue(header1, out var foldername1))
                             {
-                                list.Add(new DLCRequirement() {DLCFolderName = foldername1});
+                                list.Add(new DLCRequirement() { DLCFolderName = foldername1 });
                                 M3Log.Information(@"Adding DLC requirement to mod: " + foldername1, Settings.LogModStartup);
                                 continue;
                             }
@@ -1948,6 +1942,9 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     var m3zaf = FilesystemInterposer.PathCombine(IsInArchive, ModPath, Mod.Game1EmbeddedTlkFolderName, Mod.Game1EmbeddedTlkCompressedFilename);
                     if (FilesystemInterposer.FileExists(m3zaf, Archive))
                     {
+                        if (IsInArchive && !CheckNonSolidArchiveFile(m3zaf))
+                            return false; // Error handled in guard
+
                         // We make a new list but we don't populate it as this is used in things like file referencers which would be wrong for the combined file
                         // This variable being populated though will indicate there ARE game1tlk xml files in the mod
                         headerJob.Game1TLKXmls ??= new List<string>();
@@ -1983,11 +1980,27 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             else
             {
                 M3Log.Error($@"Mod specifies {ModJob.JobHeader.GAME1_EMBEDDED_TLK} task header, but the {Mod.Game1EmbeddedTlkFolderName} directory was not found. Remove this task header if you are not using it.");
-                LoadFailedReason = $"Mod specifies {ModJob.JobHeader.GAME1_EMBEDDED_TLK} task header, but the {Mod.Game1EmbeddedTlkFolderName} directory was not found. Remove this task header if you are not using it.";
+                LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_hardcodedDirNotFound, ModJob.JobHeader.GAME1_EMBEDDED_TLK, Mod.Game1EmbeddedTlkFolderName);
                 ValidMod = false;
                 return false;
             }
             InstallationJobs.Add(headerJob);
+            return true;
+        }
+
+        private bool CheckNonSolidArchiveFile(string path)
+        {
+            if (!IsInArchive)
+                throw new Exception(@"Guarded check: Called CheckNonSolidArchiveFile() when there is no backing archive!");
+
+            var storageType = Archive.GetStorageTypeOfFile(path);
+            if (storageType != @"Copy")
+            {
+                M3Log.Error($@"Mod has file is improperly stored in the archive: {path}. Mods must be deployed from Mod Manager to properly work.");
+                LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_improperPackedFile, path);
+                return false;
+            }
+
             return true;
         }
 

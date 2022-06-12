@@ -53,6 +53,16 @@
                 Text="{Binding InstallOptionsPackage.ModBeingInstalled.ModName}"
                 TextWrapping="Wrap"
                 TextAlignment="Center" />
+            <TextBlock
+                Visibility="{Binding InstallOptionsPackage.ModBeingInstalled.IsInArchive, Converter={StaticResource BoolToVisibilityConverter}}"
+                HorizontalAlignment="Center"
+                FontSize="12"
+                FontWeight="Light"
+                MaxWidth="200"
+                Margin="0,10,0,0"
+                Text="Mods installed directly from archive will not appear in the mod library"
+                TextWrapping="Wrap"
+                TextAlignment="Center" />
         </StackPanel>
     </Grid>
 </usercontrols:MMBusyPanelBase>
