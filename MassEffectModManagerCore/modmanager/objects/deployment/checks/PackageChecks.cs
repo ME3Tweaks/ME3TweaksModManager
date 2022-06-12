@@ -61,7 +61,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
 
                         var relativePath = f.Substring(item.ModToValidateAgainst.ModPath.Length + 1);
                         M3Log.Information($@"Checking package and name references in {relativePath}");
-                        var package = MEPackageHandler.OpenMEPackage(Path.Combine(item.ModToValidateAgainst.ModPath, f));
+                        using var package = MEPackageHandler.OpenMEPackage(Path.Combine(item.ModToValidateAgainst.ModPath, f));
                         EntryChecker.CheckReferences(item, package, M3L.GetString, relativePath);
                     });
 

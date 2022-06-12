@@ -68,7 +68,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                 {
                     var relativePath = f.Substring(item.ModToValidateAgainst.ModPath.Length + 1);
                     M3Log.Information(@"Checking file for broken textures: " + f);
-                    var package = MEPackageHandler.OpenMEPackage(f);
+                    using var package = MEPackageHandler.UnsafePartialLoad(f, x=> x.IsTexture() && !x.IsDefaultObject); // 06/12/2022 - Use unsafe partial load to increase performance
                     if (package.Game != item.ModToValidateAgainst.Game)
                         continue; // Don't bother checking this
                     var textures = package.Exports.Where(x => x.IsTexture() && !x.IsDefaultObject).ToList();
