@@ -21,7 +21,7 @@ namespace ME3TweaksModManager.modmanager.objects
         /// <param name="packagePath"></param>
         /// <param name="openIfNotInCache">Open the specified package if it is not in the cache, and add it to the cache</param>
         /// <returns></returns>
-        public override IMEPackage GetCachedPackage(string packagePath, bool openIfNotInCache = true)
+        public override IMEPackage GetCachedPackage(string packagePath, bool openIfNotInCache = true, Func<string, IMEPackage> openPackageMethod = null)
         {
             // Cannot look up null paths
             if (packagePath == null)
@@ -59,7 +59,7 @@ namespace ME3TweaksModManager.modmanager.objects
                     if (File.Exists(packagePath))
                     {
                         //Log.Information($@"RelativePackageCache load: {packagePath}");
-                        package = MEPackageHandler.OpenMEPackage(packagePath, forceLoadFromDisk: true);
+                        package = openPackageMethod?.Invoke(packagePath) ?? MEPackageHandler.OpenMEPackage(packagePath, forceLoadFromDisk: true);
                         Cache[packagePath] = package;
                         return package;
                     }
