@@ -27,10 +27,10 @@
             </Style>
         </DockPanel.Resources>
         <TextBlock Text="{Binding DCI.DialogMessage}" TextWrapping="Wrap" DockPanel.Dock="Top" Margin="0,5,0,5"/>
-        <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft" DockPanel.Dock="Bottom" Margin="0,5,0,0">
-            <Button FlowDirection="LeftToRight" Click="CopyItemsToClipBoard_Click" Content="{DynamicResource string_copyItemsToClipboard}" Padding="7,5"/>
-            <TextBlock FlowDirection="LeftToRight" Text="{Binding StatusText}" Margin="8,0,0,0" Visibility="Collapsed" VerticalAlignment="Center"/>
-        </StackPanel>
+        <DockPanel DockPanel.Dock="Bottom" Margin="0,5,0,0">
+            <Button DockPanel.Dock="Right" FlowDirection="LeftToRight" Click="CopyItemsToClipBoard_Click" Content="{DynamicResource string_copyItemsToClipboard}" Padding="7,5"/>
+            <TextBlock Text="{Binding StatusText}" Margin="8,0,0,0" VerticalAlignment="Center"/>
+        </DockPanel>
         <ListBox HorizontalAlignment="Stretch" 
                  ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
                  AlternationCount="2" 
@@ -62,7 +62,15 @@
                                     </Style>
                                 </fa5:ImageAwesome.Style>
                             </fa5:ImageAwesome>
-                            <TextBlock Text="{Binding Message}" TextWrapping="Wrap"/>
+                            <fa5:ImageAwesome Width="16" DockPanel.Dock="Left" 
+                                              Icon="Solid_Wrench"
+                                              Cursor="Hand"
+                                              ToolTip="Click to open in Legendary Explorer Nightly"
+                                              MouseLeftButtonUp="OpenInLEX_Click"
+                                              Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                              Margin="5,0,5,0" 
+                                              Visibility="{Binding Message.Openable, Converter={StaticResource NullVisibilityConverter}}"/>
+                            <TextBlock Text="{Binding Message.Message}" TextWrapping="Wrap"/>
                         </DockPanel>
                         <DockPanel.Style>
                             <Style TargetType="DockPanel">
