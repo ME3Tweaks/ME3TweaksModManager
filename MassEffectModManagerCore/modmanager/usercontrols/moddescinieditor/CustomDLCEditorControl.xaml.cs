@@ -125,8 +125,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
 
                 foreach (var p in CustomDLCJob.ParameterMap)
                 {
-                    //sourcedirs, destdirs was already serialized, skip them
-                    if (!string.IsNullOrWhiteSpace(p.Value) && p.Key == @"incompatiblecustomdlc" || p.Key == @"requiredcustomdlc" || p.Key==@"outdatedcustomdlc")
+                    // sourcedirs and destdirs was serialized above
+                    // Add any extra keys here that are not sourcedirs or destdirs that need serialized
+                    if (!string.IsNullOrWhiteSpace(p.Value) && (p.Key == @"incompatiblecustomdlc" || p.Key == @"requiredcustomdlc" || p.Key == @"outdatedcustomdlc"))
                     {
                         ini[@"CUSTOMDLC"][p.Key] = p.Value;
                     }
