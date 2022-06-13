@@ -6,11 +6,15 @@ using ME3TweaksModManager.modmanager.localizations;
 using Microsoft.AppCenter.Crashes;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using LegendaryExplorerCore.GameFilesystem;
+using LegendaryExplorerCore.Misc;
+using LegendaryExplorerCore.Unreal.ObjectInfo;
 using ME3TweaksModManager.modmanager.objects.mod;
 
 namespace ME3TweaksModManager.modmanager.objects.deployment.checks
@@ -46,10 +50,21 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
 
             try
             {
+                // Load heavy-lookups into cache
+                // Use postload since most shipped files will check these
+                var game = item.ModToValidateAgainst.Game;
+
+                // Max 100 blank packages
+                using PackageCache localCache = new PackageCache() { CacheMaxSize = 100};
+                
                 Parallel.ForEach(referencedFiles,
                     new ParallelOptions()
                     {
+#if DEBUG
+                        MaxDegreeOfParallelism = 1
+#else
                         MaxDegreeOfParallelism = Math.Max(3, Environment.ProcessorCount)
+#endif
                     },
                     f =>
                     //foreach (var f in referencedFiles)
@@ -63,6 +78,23 @@ namespace ME3TweaksModManager.modmanager.objects.deployment.checks
                         M3Log.Information($@"Checking package and name references in {relativePath}");
                         using var package = MEPackageHandler.OpenMEPackage(Path.Combine(item.ModToValidateAgainst.ModPath, f));
                         EntryChecker.CheckReferences(item, package, M3L.GetString, relativePath);
+
+                        // Todo: Check for bad properties?
+
+#if DEBUG
+                        // Maybe enable in 8.1 - import resolution needs improvement
+                        var localDirFiles = Directory.GetFiles(Directory.GetParent(package.FilePath).FullName);
+                        foreach (var import in package.Imports)
+                        {
+                            if (GlobalUnrealObjectInfo.IsAKnownNativeClass(import.InstancedFullPath, game))
+                                continue; // Don't bother looking up since it'll never be found
+                            var resolved = EntryImporter.CanResolveImport(import, null, localCache, @"INT", localDirFiles);
+                            if (!resolved)
+                            {
+                                item.AddInfoWarning($@"Legendary Explorer Core could not resolve import: {import.UIndex} {import.InstancedFullPath} in {relativePath}", new LEXOpenable(import));
+                            }
+                        }
+#endif
                     });
 
                 // Check mergemod references
