@@ -794,37 +794,35 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
             foreach (var addedDLCFolder in addedDLCFolders)
             {
+                // Write metacmm files
                 M3Log.Information(@"Writing _metacmm file for " + addedDLCFolder);
-                var metacmm = Path.Combine(addedDLCFolder, @"_metacmm.txt");
+
+                // Collect data for meta cmm
                 InstallOptionsPackage.ModBeingInstalled.HumanReadableCustomDLCNames.TryGetValue(Path.GetFileName(addedDLCFolder), out var assignedDLCName);
-                var metaOutLines = new List<string>();
-
-                // Write out MetaCMM Classic
-                metaOutLines.Add(assignedDLCName ?? InstallOptionsPackage.ModBeingInstalled.ModName);
-                metaOutLines.Add(InstallOptionsPackage.ModBeingInstalled.ModVersionString);
-                metaOutLines.Add(App.BuildNumber.ToString());
-                metaOutLines.Add(Guid.NewGuid().ToString()); // This is not used in Mod Manager 6
-
-                // Write MetaCMM Extended
-                if (InstallOptionsPackage.ModBeingInstalled.IncompatibleDLC.Any())
+                var alternates = InstallOptionsPackage.SelectedOptions.SelectMany(x => x.Value);
+                IEnumerable<string> optionsChosen = alternates.Where(x => !string.IsNullOrWhiteSpace(x.FriendlyName)).Select(x =>
                 {
-                    metaOutLines.Add($@"{MetaCMM.PrefixIncompatibleDLC}{string.Join(';', InstallOptionsPackage.ModBeingInstalled.IncompatibleDLC)}");
-                }
+                    if (x.GroupName != null) return $@"{x.GroupName}: {x.FriendlyName}";
+                    return x.FriendlyName;
+                });
 
-                var alternates = InstallOptionsPackage.SelectedOptions.SelectMany(x => x.Value).ToList();
-                if (alternates.Any())
+                // Build meta cmm
+                var metacmmPath = Path.Combine(addedDLCFolder, @"_metacmm.txt");
+
+                MetaCMM metacmm = new MetaCMM()
                 {
-                    // I hope this covers all cases. Mods targeting moddesc 6 or lower don't need friendlyname or description, but virtually all of them did
-                    // as MM4/5 autonaming was ugly
-                    var entries = alternates.Where(x => !string.IsNullOrWhiteSpace(x.FriendlyName)).Select(x =>
-                    {
-                        if (x.GroupName != null) return $@"{x.GroupName}: {x.FriendlyName}";
-                        return x.FriendlyName;
-                    });
-                    metaOutLines.Add($@"{MetaCMM.PrefixOptionsSelectedOnInstall}{string.Join(';', entries)}");
-                }
+                    ModdescSourcePath = InstallOptionsPackage.ModBeingInstalled.ModDescPath,
+                    ModName = assignedDLCName ?? InstallOptionsPackage.ModBeingInstalled.ModName,
+                    Version = InstallOptionsPackage.ModBeingInstalled.ModVersionString,
+                };
 
-                File.WriteAllLines(metacmm, metaOutLines);
+                // Metacmm uses observable collections because in some apps it's binded to the interface
+                metacmm.RequiredDLC.ReplaceAll(InstallOptionsPackage.ModBeingInstalled.RequiredDLC);
+                metacmm.IncompatibleDLC.ReplaceAll(InstallOptionsPackage.ModBeingInstalled.IncompatibleDLC);
+                metacmm.OptionsSelectedAtInstallTime.ReplaceAll(optionsChosen);
+
+                // Write it out to disk
+                metacmm.WriteMetaCMM(metacmmPath, App.BuildNumber.ToString());
             }
 
             //Stage: SFAR Installation
