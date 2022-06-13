@@ -16,6 +16,10 @@
             FontWeight="Bold"
             Text="{StaticResource string_prepareModForDistribution}"
             TextAlignment="Center" />
+        <TextBlock
+            Text="Mod Manager mods must be deployed from Mod Manager to properly work for end-users."
+            TextWrapping="Wrap"
+            TextAlignment="Center" />
         <Button
             HorizontalAlignment="Center"
             Margin="0,5"
