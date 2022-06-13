@@ -131,6 +131,11 @@ namespace ME3TweaksModManager
         private bool SuppressFilterMods;
 
         /// <summary>
+        /// Used to prevent duplicate opening/closing animations for the 'visit mod web site' panel. True = fully open, False = fully closed
+        /// </summary>
+        private bool WebsitePanelStatus;
+
+        /// <summary>
         /// Single-instance argument handling
         /// </summary>
         /// <param name="args"></param>
@@ -556,21 +561,6 @@ namespace ME3TweaksModManager
             else if (e.PropertyName == nameof(Settings.OneTimeMessage_ModListIsNotListOfInstalledMods))
                 ClipperHelper.ShowHideVerticalContent(OneTimeMessagePanel_HowToManageMods, Settings.OneTimeMessage_ModListIsNotListOfInstalledMods);
 
-        }
-
-        private void ShowHideSlideup(FrameworkElement panelToMove, bool show)
-        {
-            Application.Current.Dispatcher.Invoke(delegate
-            {
-                Storyboard sb = this.FindResource(show ? @"OpenWebsitePanel" : @"CloseWebsitePanel") as Storyboard;
-                if (sb.IsSealed)
-                {
-                    sb = sb.Clone();
-                }
-
-                Storyboard.SetTarget(sb, panelToMove);
-                sb.Begin();
-            });
         }
 
         public ICommand OpenASIManagerCommand { get; set; }
@@ -2637,7 +2627,15 @@ namespace ME3TweaksModManager
 
         private void SetWebsitePanelVisibility(bool open)
         {
-            ClipperHelper.ShowHideVerticalContent(VisitWebsitePanel, open);
+            if (open != WebsitePanelStatus)
+            {
+                void done()
+                {
+                    WebsitePanelStatus = open;
+                }
+
+                ClipperHelper.ShowHideVerticalContent(VisitWebsitePanel, open, completionDelegate: done);
+            }
         }
 
         private void RequestNavigate(object sender, RequestNavigateEventArgs e)

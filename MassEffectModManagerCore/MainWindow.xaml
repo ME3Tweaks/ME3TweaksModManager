@@ -2053,21 +2053,20 @@
                             FontWeight="Bold"
                             Height="18" />
                     </DockPanel>
-                    <StackPanel
-                        Name="VisitWebsitePanel"
-                        DockPanel.Dock="Bottom"
+                    <ui:Clipper
                         HorizontalAlignment="Center"
-                        Height="0">
-                        <TextBlock
-                            ToolTip="{Binding SelectedMod.ModWebsite}">
-              <Hyperlink
-                                RequestNavigate="RequestNavigate"
-                                NavigateUri="{Binding SelectedMod.ModWebsite}">
-                <TextBlock
-                                    Text="{Binding VisitWebsiteText}" />
-              </Hyperlink>
-            </TextBlock>
-                    </StackPanel>
+                        VerticalAlignment="Bottom"
+                        Constraint="Width"
+                        DockPanel.Dock="Bottom">
+                        <TextBlock ToolTip="{Binding SelectedMod.ModWebsite}" 
+                                   ui:Clipper.WidthFraction="1" 
+                                   ui:Clipper.HeightFraction="1" 
+                                   Name="VisitWebsitePanel" HorizontalAlignment="Center" VerticalAlignment="Bottom">
+                          <Hyperlink RequestNavigate="RequestNavigate" NavigateUri="{Binding SelectedMod.ModWebsite}">
+                            <TextBlock Text="{Binding VisitWebsiteText}" />
+                          </Hyperlink>
+                        </TextBlock>
+                    </ui:Clipper>
                     <Image
                         Source="{Binding SelectedMod.BannerBitmap}"
                         Visibility="{Binding SelectedMod.BannerBitmap, Converter={StaticResource NullVisibilityConverter}}"
