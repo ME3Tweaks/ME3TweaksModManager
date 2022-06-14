@@ -981,12 +981,13 @@
                                 Height="16"
                                 Width="16" />
                         </MenuItem.Icon>
-                        <MenuItem
+                        <!-- LE1 LE2 -->
+                            <MenuItem
                             ui:SharedUIBindings.GenerationLE="True"
                             Header="{DynamicResource string_decompileCoalescedFileLE1LE2}"
-                            Command="{Binding SyncPlotManagerCommand}"
-                            CommandParameter="{x:Static packages:MEGame.ME1}"
-                            ToolTip="{DynamicResource string_tooltip_syncPlotManager}">
+                            ToolTip="{DynamicResource string_tooltip_decompileCoalGameLE1LE2}"
+                            Command="{Binding DecompileCoalescedCommand}"
+                            CommandParameter="{StaticResource FalseValue}">
                             <MenuItem.Icon>
                                 <fa5:ImageAwesome
                                     Style="{StaticResource EnableDisableImageStyle}"
@@ -999,9 +1000,9 @@
                         <MenuItem
                             ui:SharedUIBindings.GenerationLE="True"
                             Header="{DynamicResource string_compileCoalescedFileLE1LE2}"
-                            Command="{Binding SyncPlotManagerCommand}"
-                            CommandParameter="{x:Static packages:MEGame.ME1}"
-                            ToolTip="{DynamicResource string_tooltip_syncPlotManager}">
+                            ToolTip="{DynamicResource string_tooltip_compileCoalGameLE1LE2}"
+                            Command="{Binding CompileCoalescedCommand}"
+                            CommandParameter="{StaticResource FalseValue}">
                             <MenuItem.Icon>
                                 <fa5:ImageAwesome
                                     Style="{StaticResource EnableDisableImageStyle}"
@@ -1011,12 +1012,13 @@
                                     Width="16" />
                             </MenuItem.Icon>
                         </MenuItem>
+                        <!-- GAME 3 -->
                         <MenuItem
                             ui:SharedUIBindings.GenerationLE="True"
-                            Header="{DynamicResource string_decompileCoalescedFileME3LE3}"
-                            Command="{Binding SyncPlotManagerCommand}"
-                            CommandParameter="{x:Static packages:MEGame.ME1}"
-                            ToolTip="{DynamicResource string_tooltip_decompileCoalGame3}">
+                            Header="{DynamicResource string_decompileCoalescedFileGame3}"
+                            ToolTip="{DynamicResource string_tooltip_decompileCoalGame3}"
+                            Command="{Binding DecompileCoalescedCommand}"
+                            CommandParameter="{StaticResource TrueValue}">
                             <MenuItem.Icon>
                                 <fa5:ImageAwesome
                                     Style="{StaticResource EnableDisableImageStyle}"
@@ -1028,10 +1030,10 @@
                         </MenuItem>
                         <MenuItem
                             ui:SharedUIBindings.GenerationLE="True"
-                            Header="{DynamicResource string_compileCoalescedFileME3LE3}"
-                            Command="{Binding SyncPlotManagerCommand}"
-                            CommandParameter="{x:Static packages:MEGame.ME1}"
-                            ToolTip="{DynamicResource string_tooltip_compileCoalGame3}">
+                            Header="{DynamicResource string_compileCoalescedFileGame3}"
+                            ToolTip="{DynamicResource string_tooltip_compileCoalGame3}"
+                            Command="{Binding CompileCoalescedCommand}"
+                            CommandParameter="{StaticResource TrueValue}">
                             <MenuItem.Icon>
                                 <fa5:ImageAwesome
                                     Style="{StaticResource EnableDisableImageStyle}"
@@ -1982,7 +1984,7 @@
                                                     Value="{DynamicResource string_noModsInTheLibraryHeader}" />
                                                 <Style.Triggers>
                                                     <DataTrigger
-                                                        Binding="{Binding StartedUp}"
+                                                        Binding="{Binding LoadedOnce, Source={x:Static loaders:M3LoadedMods.Instance}}"
                                                         Value="False">
                                                         <Setter
                                                             Property="Text"
@@ -2009,7 +2011,7 @@
                                                     Value="{DynamicResource string_noModsInLibraryDescription}" />
                                                 <Style.Triggers>
                                                     <DataTrigger
-                                                        Binding="{Binding StartedUp}"
+                                                        Binding="{Binding LoadedOnce, Source={x:Static loaders:M3LoadedMods.Instance}}"
                                                         Value="False">
                                                         <Setter
                                                             Property="Text"

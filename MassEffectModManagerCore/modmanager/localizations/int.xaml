@@ -411,12 +411,17 @@
     <system:String x:Key="string_installedBinkASILoader">Installed Bink ASI loader</system:String>
     <system:String x:Key="string_seeWhatsInstalled">See what's installed</system:String>
     <system:String x:Key="string_dragAndDropOperations">Drag and Drop operations</system:String>
+
     <system:String x:Key="string_decompileCoalescedFileLE1LE2">Decompile Coalesced file (LE1/LE2)</system:String>
     <system:String x:Key="string_compileCoalescedFileLE1LE2">Compile Coalesced file (LE1/LE2)</system:String>
-    <system:String x:Key="string_decompileCoalescedFileME3LE3">Decompile Coalesced file (ME3/LE3)</system:String>
+    <system:String x:Key="string_decompileCoalescedFileGame3">Decompile Coalesced file (ME3/LE3)</system:String>
+    <system:String x:Key="string_compileCoalescedFileGame3">Compile Coalesced file (ME3/LE3)</system:String>
+
     <system:String x:Key="string_tooltip_decompileCoalGame3">Decompile a Coalesced file to individual xml files for editing</system:String>
-    <system:String x:Key="string_compileCoalescedFileME3LE3">Compile Coalesced file (ME3/LE3)</system:String>
-    <system:String x:Key="string_tooltip_compileCoalGame3">Compile a Coalesced from individual xml files</system:String>
+    <system:String x:Key="string_tooltip_decompileCoalGameLE1LE2">Decompile a Coalesced file to individual ini files for editing</system:String>
+    <system:String x:Key="string_tooltip_compileCoalGame3">Compile an ME3/LE3 Coalesced from individual xml files</system:String>
+    <system:String x:Key="string_tooltip_compileCoalGameLE1LE2">Compile a LE1/LE2 Coalesced from individual ini files</system:String>
+    
     <system:String x:Key="string_installMemFile">Install .mem file</system:String>
 
     <!-- M3 Service Loaders -->

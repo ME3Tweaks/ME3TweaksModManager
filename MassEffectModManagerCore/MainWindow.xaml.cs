@@ -67,6 +67,7 @@ using Pathoschild.FluentNexus.Models;
 using M3OnlineContent = ME3TweaksModManager.modmanager.me3tweaks.services.M3OnlineContent;
 using MemoryAnalyzer = ME3TweaksModManager.modmanager.memoryanalyzer.MemoryAnalyzer;
 using Mod = ME3TweaksModManager.modmanager.objects.mod.Mod;
+using XCopy = ME3TweaksCore.Helpers.XCopy;
 
 namespace ME3TweaksModManager
 {
@@ -592,6 +593,8 @@ namespace ME3TweaksModManager
         public ICommand GrantWriteAccessCommand { get; set; }
         public ICommand AutoTOCCommand { get; set; }
         public ICommand SyncPlotManagerCommand { get; set; }
+        public RelayCommand CompileCoalescedCommand { get; set; }
+        public RelayCommand DecompileCoalescedCommand { get; set; }
         public ICommand AutoTOCLECommand { get; set; }
         public ICommand ConsoleKeyKeybinderCommand { get; set; }
         public ICommand LoginToNexusCommand { get; set; }
@@ -662,6 +665,126 @@ namespace ME3TweaksModManager
             OpenTutorialCommand = new GenericCommand(OpenTutorial, () => TutorialService.ServiceLoaded);
             OpenASIManagerCommand = new GenericCommand(OpenASIManager, NetworkThreadNotRunning);
             NexusModsFileSearchCommand = new GenericCommand(OpenNexusSearch); // no conditions for this
+            CompileCoalescedCommand = new RelayCommand(CompileCoalesced); // no conditions for this
+            DecompileCoalescedCommand = new RelayCommand(DecompileCoalesced); // no conditions for this
+
+        }
+
+        private void DecompileCoalesced(object obj)
+        {
+            if (obj is bool game3)
+            {
+                var task = BackgroundTaskEngine.SubmitBackgroundJob(@"UserCoalDecompile", "Decompiling Coalesced file", "Decompiled Coalesced file");
+                OpenFileDialog ofd = new OpenFileDialog()
+                {
+                    Title = "Select Coalesced file",
+                    Filter = @"Coalesced file|*.bin",
+                };
+                if (game3)
+                {
+                    ofd.Title += @" (" + "Game 3" +@")";
+                }
+                else
+                {
+                    ofd.Title += @" (" + "LE1/LE2" +@")";
+                }
+                var result = ofd.ShowDialog(this);
+                if (result.HasValue && result.Value)
+                {
+                    Task.Run(() =>
+                    {
+                        var dir = Directory.GetParent(ofd.FileName).FullName;
+                        if (game3)
+                        {
+                            // Game 3
+                            CoalescedConverter.ConvertToXML(ofd.FileName, dir);
+                        }
+                        else
+                        {
+                            // LE1/LE2
+                            LECoalescedConverter.Unpack(ofd.FileName, dir);
+                        }
+
+                        TelemetryInterposer.TrackEvent(@"Decompiled Coalesced (menu)");
+                        M3Utilities.HighlightInExplorer(dir);
+                        BackgroundTaskEngine.SubmitJobCompletion(task);
+                    }).ContinueWithOnUIThread(x =>
+                    {
+                        if (x.Exception != null)
+                        {
+                            M3Log.Exception(x.Exception, @"Error decompiling coalesced file:");
+                            task.FinishedUIText = "Error decompiling Coalesced file";
+                            BackgroundTaskEngine.SubmitJobCompletion(task);
+                            M3L.ShowDialog(this, $"An error occurred decompiling the Coalesced file:\n{x.Exception.Message}", "Error decompiling", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                    });
+
+                }
+                else
+                {
+                    task.FinishedUIText = "Aborted decompiling Coalesced file";
+                }
+            }
+        }
+
+        private void CompileCoalesced(object obj)
+        {
+            if (obj is bool game3)
+            {
+                var task = BackgroundTaskEngine.SubmitBackgroundJob(@"UserCoalCompile", "Compiling Coalesced file", "Compiled Coalesced file");
+                OpenFileDialog ofd = new OpenFileDialog()
+                {
+                    Title = "Select Coalesced manifest file",
+                };
+                if (game3)
+                {
+                    ofd.Filter = "Game 3 Coalesced Manifest" + @"|*.xml";
+                }
+                else
+                {
+                    ofd.Filter = "LE1/LE2 Coalesced Manifest" + @"|mele.extractedbin";
+                }
+
+                var result = ofd.ShowDialog(this);
+                if (result.HasValue && result.Value)
+                {
+                    Task.Run(() =>
+                    {
+                        var containingDir = Directory.GetParent(ofd.FileName).FullName;
+                        if (game3)
+                        {
+                            // Game 3
+                            var dest = Path.Combine(containingDir, Path.GetFileNameWithoutExtension(ofd.FileName) + @".bin");
+                            CoalescedConverter.ConvertToBin(ofd.FileName, dest);
+                            M3Utilities.HighlightInExplorer(dest);
+                        }
+                        else
+                        {
+                            // LE1/LE2
+                            var dest = LECoalescedConverter.GetDestinationPathFromManifest(ofd.FileName);
+                            LECoalescedConverter.Pack(containingDir, dest); // takes the directory
+                            M3Utilities.HighlightInExplorer(dest);
+                        }
+                        TelemetryInterposer.TrackEvent(@"Compiled Coalesced (menu)");
+                        BackgroundTaskEngine.SubmitJobCompletion(task);
+                    }).ContinueWithOnUIThread(x =>
+                    {
+                        if (x.Exception != null)
+                        {
+                            M3Log.Exception(x.Exception, @"Error compiling coalesced file:");
+                            task.FinishedUIText = "Error compiling Coalesced file";
+                            BackgroundTaskEngine.SubmitJobCompletion(task);
+                            M3L.ShowDialog(this, $"An error occurred compiling the Coalesced file:\n{x.Exception.Message}", "Error compiling", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                    });
+
+                }
+                else
+                {
+                    task.FinishedUIText = "Aborted compiling Coalesced file";
+                    BackgroundTaskEngine.SubmitJobCompletion(task);
+                }
+            }
         }
 
         private void CloseSearchBox()
@@ -1148,7 +1271,7 @@ namespace ME3TweaksModManager
             var result = m.ShowDialog(this);
             if (result.Value)
             {
-                Analytics.TrackEvent(@"User opened mod archive for import", new Dictionary<string, string> { { @"Method", @"Manual file selection" }, { @"Filename", Path.GetFileName(m.FileName) } });
+                TelemetryInterposer.TrackEvent(@"User opened mod archive for import", new Dictionary<string, string> { { @"Method", @"Manual file selection" }, { @"Filename", Path.GetFileName(m.FileName) } });
                 var archiveFile = m.FileName;
                 M3Log.Information(@"Opening archive user selected: " + archiveFile);
                 openModImportUI(archiveFile);
@@ -1423,7 +1546,7 @@ namespace ME3TweaksModManager
 
                     control.Close += (a, b) => { ReleaseBusyControl(); };
                     ShowBusyControl(control);
-                    Analytics.TrackEvent($@"Launched {result.PanelToOpen}", new Dictionary<string, string>()
+                    TelemetryInterposer.TrackEvent($@"Launched {result.PanelToOpen}", new Dictionary<string, string>()
                     {
                         {@"Invocation method", @"Installation Information"}
                     });
@@ -1653,7 +1776,7 @@ namespace ME3TweaksModManager
                         break;
                 }
 
-                Analytics.TrackEvent(@"Launched game", new Dictionary<string, string>()
+                TelemetryInterposer.TrackEvent(@"Launched game", new Dictionary<string, string>()
                 {
                     {@"Game", game.ToString()},
                     {@"Screen resolution", resolution}
@@ -1719,7 +1842,7 @@ namespace ME3TweaksModManager
                 args.Add(@"REG_SZ");
                 args.Add(@"/d");
                 args.Add($"{target.TargetPath.TrimEnd('\\')}\\\\"); // do not localize
-                // ^ Strip ending slash. Then append it to make sure there is ending slash. Reg will interpret final \ as an escape, so we do \\ (as documented on ss64)
+                                                                    // ^ Strip ending slash. Then append it to make sure there is ending slash. Reg will interpret final \ as an escape, so we do \\ (as documented on ss64)
                 args.Add(@"/f");
 
                 return M3Utilities.RunProcess(exe, args, waitForProcess: true, requireAdmin: true);
@@ -1896,7 +2019,7 @@ namespace ME3TweaksModManager
 
                     if (failureReason == null)
                     {
-                        Analytics.TrackEvent(@"Attempted to add game target", new Dictionary<string, string>()
+                        TelemetryInterposer.TrackEvent(@"Attempted to add game target", new Dictionary<string, string>()
                             {
                                 {@"Game", pendingTarget.Game.ToString()},
                                 {@"Result", @"Success"},
@@ -1908,7 +2031,7 @@ namespace ME3TweaksModManager
                     }
                     else
                     {
-                        Analytics.TrackEvent(@"Attempted to add game target", new Dictionary<string, string>()
+                        TelemetryInterposer.TrackEvent(@"Attempted to add game target", new Dictionary<string, string>()
                             {
                                 {@"Game", pendingTarget.Game.ToString()},
                                 {@"Result", @"Failed, " + failureReason},
@@ -2039,7 +2162,7 @@ namespace ME3TweaksModManager
                     Application.Current.Dispatcher.Invoke(delegate { result = M3L.ShowDialog(this, M3L.GetString(M3L.string_dialogUACPreConsent), M3L.GetString(M3L.string_someTargetsKeysWriteProtected), MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes; });
                     if (result)
                     {
-                        Analytics.TrackEvent(@"Granting write permissions", new Dictionary<string, string>() { { @"Granted?", @"Yes" } });
+                        TelemetryInterposer.TrackEvent(@"Granting write permissions", new Dictionary<string, string>() { { @"Granted?", @"Yes" } });
                         try
                         {
                             M3Utilities.EnableWritePermissionsToFolders(targetsNeedingUpdate.Select(x => x.TargetPath).ToList());
@@ -2052,12 +2175,12 @@ namespace ME3TweaksModManager
                     else
                     {
                         M3Log.Warning(@"User denied permission to grant write permissions");
-                        Analytics.TrackEvent(@"Granting write permissions", new Dictionary<string, string>() { { @"Granted?", @"No" } });
+                        TelemetryInterposer.TrackEvent(@"Granting write permissions", new Dictionary<string, string>() { { @"Granted?", @"No" } });
                     }
                 }
                 else
                 {
-                    Analytics.TrackEvent(@"Granting write permissions", new Dictionary<string, string>() { { @"Granted?", @"Implicit" } });
+                    TelemetryInterposer.TrackEvent(@"Granting write permissions", new Dictionary<string, string>() { { @"Granted?", @"Implicit" } });
                     M3Utilities.EnableWritePermissionsToFolders(targetsNeedingUpdate.Select(x => x.TargetPath).ToList());
                 }
             }
@@ -3165,7 +3288,7 @@ namespace ME3TweaksModManager
         {
             if (tool != null)
             {
-                Analytics.TrackEvent(@"Launched external tool", new Dictionary<string, string>()
+                TelemetryInterposer.TrackEvent(@"Launched external tool", new Dictionary<string, string>()
                 {
                     {@"Tool name", tool},
                     {@"Arguments", arguments}
@@ -3178,7 +3301,7 @@ namespace ME3TweaksModManager
 
         private void OpenASIManager()
         {
-            Analytics.TrackEvent(@"Launched ASI Manager", new Dictionary<string, string>()
+            TelemetryInterposer.TrackEvent(@"Launched ASI Manager", new Dictionary<string, string>()
             {
                 {@"Invocation method", @"Menu"}
             });
@@ -3208,7 +3331,7 @@ namespace ME3TweaksModManager
                             SelectedGameTarget.UpdateLODs(Settings.AutoUpdateLODs2K);
                         }
 
-                        Analytics.TrackEvent(@"Changed to non-active target", new Dictionary<string, string>()
+                        TelemetryInterposer.TrackEvent(@"Changed to non-active target", new Dictionary<string, string>()
                         {
                             {@"New target", SelectedGameTarget.Game.ToString()},
                             {@"ALOT Installed", SelectedGameTarget.TextureModded.ToString()}

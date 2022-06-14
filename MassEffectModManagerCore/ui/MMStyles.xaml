@@ -159,4 +159,8 @@
     <system:String x:Key="le3gameiconpath">/images/gameicons/LE3_Icon.ico</system:String>
     <system:String x:Key="lelaunchergameiconpath">/images/gameicons/LEL_Icon.ico</system:String>
     <system:String x:Key="unknowngameiconpath">/images/gameicons/Unknown_48.ico</system:String>
+
+    <!-- Bools in xaml -->
+    <system:Boolean x:Key="FalseValue">False</system:Boolean>
+    <system:Boolean x:Key="TrueValue">True</system:Boolean>
 </ResourceDictionary>

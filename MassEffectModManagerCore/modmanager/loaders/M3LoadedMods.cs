@@ -57,6 +57,11 @@ namespace ME3TweaksModManager.modmanager.loaders
         public bool IsLoadingMods { get; private set; } = true; // This makes the spinner activate while program is starting up.
 
         /// <summary>
+        /// If the mod library has completed the first load
+        /// </summary>
+        public bool LoadedOnce { get; private set; }
+
+        /// <summary>
         /// If the mods list has been loaded. Mod loading does not occur immediately on application boot.
         /// </summary>
         public bool ModsLoaded { get; private set; }
@@ -335,6 +340,7 @@ namespace ME3TweaksModManager.modmanager.loaders
             {
                 ModsLoaded = true;
                 IsLoadingMods = false;
+                LoadedOnce = true;
                 if (b.Result is Mod m)
                 {
                     SelectModCallback?.Invoke(m);
