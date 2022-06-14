@@ -566,7 +566,7 @@ namespace LocalizationHelper
                     lang.Selected = false;
                 }
                 locLang.Selected = true;
-                CurrentLanguage = locLang;
+                ChangeLanguage(locLang);
             }
         }
 
