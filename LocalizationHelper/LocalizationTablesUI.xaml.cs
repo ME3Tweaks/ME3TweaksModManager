@@ -62,10 +62,18 @@ namespace LocalizationHelper
                 string lang = CurrentLanguage?.LangCode;
 
                 if (lang == null) return; // Do nothing
-                var sb = CreateXamlDocument();
 
-                var locSavePath = Path.Combine(GetAppDataFolder(), $"{lang}.xaml");
+                // Save M3
+                var sb = CreateXamlDocument(false);
+                var locSavePath = Path.Combine(GetAppDataFolder(), $"m3-{lang}.xaml");
                 File.WriteAllText(locSavePath, sb);
+
+                // Save M3C
+                sb = CreateXamlDocument(true);
+                locSavePath = Path.Combine(GetAppDataFolder(), $"m3c-{lang}.xaml");
+                locSavePath = Path.Combine(GetAppDataFolder(), $"m3c-{lang}.xaml");
+                File.WriteAllText(locSavePath, sb);
+
             }
             catch
             {
@@ -533,13 +541,13 @@ namespace LocalizationHelper
         {
             OpenAutosaveDirCommand = new GenericCommand(OpenAutosavesLocation);
             AddLangCommand = new GenericCommand(AddLanguage, CanAddLang);
-            SaveLocalizationCommand = new GenericCommand(SaveLocalization, CanSaveLocalization);
-            CopyLocalizationCommand = new GenericCommand(CopyLocalization, CanSaveLocalization);
-            LoadLocalizationCommand = new GenericCommand(LoadLocalization, CanSaveLocalization);
-            SaveTipsLocalizationCommand = new GenericCommand(SaveTipsLocalization, CanSaveLocalization);
-            SaveTutorialLocalizationCommand = new GenericCommand(SaveTutorialLocalization, CanSaveLocalization);
-            LoadLocalizedHelpMenuCommand = new GenericCommand(LoadLocalizedHelpMenu, CanSaveLocalization);
-            SaveLocalizedHelpMenuCommand = new GenericCommand(SaveLocalizedHelpMenu, CanSaveLocalization);
+            SaveLocalizationCommand = new RelayCommand(SaveLocalization, CanSaveLocalization);
+            CopyLocalizationCommand = new RelayCommand(CopyLocalization, CanSaveLocalization);
+            LoadLocalizationCommand = new RelayCommand(LoadLocalization, CanSaveLocalization);
+            SaveTipsLocalizationCommand = new GenericCommand(SaveTipsLocalization, CanAddLang);
+            SaveTutorialLocalizationCommand = new GenericCommand(SaveTutorialLocalization, CanAddLang);
+            LoadLocalizedHelpMenuCommand = new GenericCommand(LoadLocalizedHelpMenu, CanAddLang);
+            SaveLocalizedHelpMenuCommand = new GenericCommand(SaveLocalizedHelpMenu, CanAddLang);
         }
 
         private void AddLanguage()
@@ -564,7 +572,7 @@ namespace LocalizationHelper
 
         private bool CanAddLang()
         {
-            return M3LocalizationCategories != null && M3LocalizationCategories.Any();
+            return M3LocalizationCategories != null && M3LocalizationCategories.Any() && M3CLocalizationCategories != null && M3CLocalizationCategories.Any();
         }
 
         private void OpenAutosavesLocation()
@@ -677,92 +685,105 @@ namespace LocalizationHelper
             }
         }
 
-        private void CopyLocalization()
+        private void CopyLocalization(object obj)
         {
             string lang = CurrentLanguage?.LangCode;
 
-            var sb = CreateXamlDocument();
-            Clipboard.SetText(sb);
-            MessageBox.Show(
-                $"The contents for the {lang}.xaml file have been copied to your clipboard. Paste into the github editor to update it, then submit a pull request. Once the request is approved, it will be reflected in this program's interface.");
+            if (obj is bool m3core)
+            {
+                var sb = CreateXamlDocument(m3core);
+                Clipboard.SetText(sb);
+                MessageBox.Show(
+                    $"The contents for the {(m3core ? "ME3TweaksCore" : "ME3Tweaks Mod Manager")} {lang}.xaml file have been copied to your clipboard. Paste into the github editor to update it, then submit a pull request. Once the request is approved, it will be reflected in this program's interface.");
+            }
         }
 
         /// <summary>
         /// Opens a file
         /// </summary>
-        private void LoadLocalization()
+        private void LoadLocalization(object obj)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog()
+            if (obj is bool m3core)
             {
-                Title = "Select [lang].xaml file",
-                Filter = "Xaml files|*.xaml"
-            };
-            if (openFileDialog.ShowDialog() == true)
-            {
-                var fname = openFileDialog.FileName;
-                var langCode = Path.GetFileNameWithoutExtension(fname).ToLower();
-                if (langCode.Length != 3)
+                OpenFileDialog openFileDialog = new OpenFileDialog()
                 {
-                    MessageBox.Show(
-                        "Filename must be XXX.xaml, with XXX being your language code. The file selected does not match this system.");
-                    return;
-                }
+                    Title = "Select [lang].xaml file",
+                    Filter = "Xaml files|*.xaml"
+                };
 
-
-
-                //Wipe existing strings for that lang
-                foreach (var cat in M3LocalizationCategories)
+                var categories = m3core ? M3CLocalizationCategories : M3CLocalizationCategories;
+                if (openFileDialog.ShowDialog() == true)
                 {
-                    foreach (var ls in cat.LocalizedStringsForSection)
+                    var fname = openFileDialog.FileName;
+                    var langCode = Path.GetFileNameWithoutExtension(fname).ToLower();
+                    if (langCode.Length != 3)
                     {
-                        ls.Localizations.Remove(langCode);
-                    }
-                }
-
-                //Load lang from file
-                var localizationXamlDict = new Dictionary<string, string>();
-                localizationXamlDict[langCode] = File.ReadAllText(fname);
-                try
-                {
-                    parseLocalizations(M3LocalizationCategories.ToList(), localizationXamlDict);
-
-                    LocalizationLanguage locLang = Languages.FirstOrDefault(x => x.LangCode == langCode);
-                    if (locLang == null)
-                    {
-                        locLang = new LocalizationLanguage()
-                        { Selected = false, FullName = langCode, LangCode = langCode };
-                        Languages.Add(locLang);
+                        MessageBox.Show(
+                            "Filename must be XXX.xaml, with XXX being your language code. The file selected does not match this system.");
+                        return;
                     }
 
-                    foreach (var lang in Languages)
+                    //Wipe existing strings for that lang
+                    foreach (var cat in categories)
                     {
-                        lang.Selected = false;
+                        foreach (var ls in cat.LocalizedStringsForSection)
+                        {
+                            ls.Localizations.Remove(langCode);
+                        }
                     }
 
-                    locLang.Selected = true;
-                    CurrentLanguage = locLang;
-                    MessageBox.Show("Loaded localization for " + langCode + ".");
-                }
-                catch (Exception e)
-                {
-                    MessageBox.Show(this,
-                        $"Loading localization file {langCode}.xaml failed: {e.Message}. Contact Mgamerz and provide file being loaded");
+                    //Load lang from file
+                    var localizationXamlDict = new Dictionary<string, string>();
+                    localizationXamlDict[langCode] = File.ReadAllText(fname);
+                    try
+                    {
+                        parseLocalizations(categories.ToList(), localizationXamlDict);
+
+                        LocalizationLanguage locLang = Languages.FirstOrDefault(x => x.LangCode == langCode);
+                        if (locLang == null)
+                        {
+                            locLang = new LocalizationLanguage()
+                            { Selected = false, FullName = langCode, LangCode = langCode };
+                            Languages.Add(locLang);
+                        }
+
+                        foreach (var lang in Languages)
+                        {
+                            lang.Selected = false;
+                        }
+
+                        locLang.Selected = true;
+                        CurrentLanguage = locLang;
+                        MessageBox.Show($"Loaded {(m3core ? "ME3TweaksCore" : "ME3Tweaks Mod Manager")} localization for {langCode}.");
+                    }
+                    catch (Exception e)
+                    {
+                        MessageBox.Show(this,
+                            $"Loading {(m3core ? "ME3TweaksCore" : "ME3Tweaks Mod Manager")} localization file {langCode}.xaml failed: {e.Message}. Contact Mgamerz and provide file being loaded");
+                    }
                 }
             }
         }
 
-        private bool CanSaveLocalization()
+        private bool CanSaveLocalization(object obj)
         {
-            if (!M3LocalizationCategories.Any()) return false;
-            return true;
+            if (obj is bool m3core)
+            {
+                if (!m3core && M3LocalizationCategories.Any()) return true;
+                if (m3core && M3CLocalizationCategories.Any()) return true;
+                return false;
+            }
+
+            return false;
         }
 
-        private string CreateXamlDocument()
+        private string CreateXamlDocument(bool m3core)
         {
             string lang = CurrentLanguage?.LangCode;
+            var categories = m3core ? M3CLocalizationCategories : M3LocalizationCategories;
 
             // Check interpolations
-            foreach (var cat in M3LocalizationCategories)
+            foreach (var cat in categories)
             {
                 foreach (var str in cat.LocalizedStringsForSection)
                 {
@@ -791,8 +812,9 @@ namespace LocalizationHelper
             sb.AppendLine("\t\t\t\t\txmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"");
             sb.AppendLine("\t\t\t\t\txmlns:system=\"clr-namespace:System;assembly=System.Runtime\">");
 
+            // the if debug statements strip out extra comments and whitespace in the generated document.
             bool isFirst = true;
-            foreach (var cat in M3LocalizationCategories)
+            foreach (var cat in categories)
             {
                 if (isFirst)
                 {
@@ -800,10 +822,14 @@ namespace LocalizationHelper
                 }
                 else
                 {
+#if DEBUG
                     sb.AppendLine(); //blank line
+#endif
                 }
 
+#if DEBUG
                 sb.AppendLine($"\t<!-- {cat.CategoryName} -->");
+#endif
                 foreach (var str in cat.LocalizedStringsForSection)
                 {
                     if (str.LocalizedStr == null) continue; //don't even bother
@@ -815,11 +841,15 @@ namespace LocalizationHelper
 
                     line += $">{str.LocalizedStr.Trim()}</system:String>";
                     sb.AppendLine(line);
+#if DEBUG
+                    // This reduces output size for non-english localizations since they are built off the INT version.
+                    // We don't need these comments
                     if (!string.IsNullOrWhiteSpace(str.notes))
                     {
                         line = $"\t<!-- {str.notes} -->";
                         sb.AppendLine(line);
                     }
+#endif
                 }
             }
 
@@ -874,28 +904,31 @@ namespace LocalizationHelper
             return (true, null);
         }
 
-        private void SaveLocalization()
+        private void SaveLocalization(object obj)
         {
-            string lang = CurrentLanguage?.LangCode;
-
-            var sb = CreateXamlDocument();
-
-            SaveFileDialog saveFileDialog = new SaveFileDialog()
+            if (obj is bool m3core)
             {
-                Title = "Save localization file",
-                Filter = "Xaml files|*.xaml",
-                FileName = $"{lang}.xaml"
-            };
-            if (saveFileDialog.ShowDialog() == true)
-            {
-                if (Path.GetFileNameWithoutExtension(saveFileDialog.FileName).Length != 3)
+                string lang = CurrentLanguage?.LangCode;
+
+                var sb = CreateXamlDocument(m3core);
+
+                SaveFileDialog saveFileDialog = new SaveFileDialog()
                 {
-                    MessageBox.Show($"Filename must match localization 3 character name ({lang}).");
-                    return;
-                }
+                    Title = $"Save {(m3core ? "ME3TweaksCore" : "ME3Tweaks Mod Manager")} localization file",
+                    Filter = "Xaml files|*.xaml",
+                    FileName = $"{lang}.xaml"
+                };
+                if (saveFileDialog.ShowDialog() == true)
+                {
+                    if (Path.GetFileNameWithoutExtension(saveFileDialog.FileName).Length != 3)
+                    {
+                        MessageBox.Show($"Filename must match localization 3 character name ({lang}).");
+                        return;
+                    }
 
-                File.WriteAllText(saveFileDialog.FileName, sb);
-                MessageBox.Show($"Saved.");
+                    File.WriteAllText(saveFileDialog.FileName, sb);
+                    MessageBox.Show($"Saved.");
+                }
             }
         }
 
@@ -1086,6 +1119,13 @@ namespace LocalizationHelper
             if (M3SelectedCategory != null)
             {
                 foreach (var ls in M3SelectedCategory.LocalizedStringsForSection)
+                {
+                    ls.OnCurrentLanguageChanged();
+                }
+            }
+            if (M3CSelectedCategory != null)
+            {
+                foreach (var ls in M3CSelectedCategory.LocalizedStringsForSection)
                 {
                     ls.OnCurrentLanguageChanged();
                 }

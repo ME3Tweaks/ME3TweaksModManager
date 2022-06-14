@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LocalizationHelper"
+        xmlns:system="clr-namespace:System;assembly=System.Runtime"
         mc:Ignorable="d"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         Height="650" 
@@ -11,6 +12,9 @@
     <Window.Resources>
         <local:TabVisibilityBarConverter x:Key="TabVisibilityBarConverter"/>
         <local:NullVisibilityConverter x:Key="NullVisibilityConverter"/>
+        <!-- Bools in xaml -->
+        <system:Boolean x:Key="FalseValue">False</system:Boolean>
+        <system:Boolean x:Key="TrueValue">True</system:Boolean>
     </Window.Resources>
     <DockPanel>
         <FrameworkElement x:Name="ProxyElement" Visibility="Collapsed"/>
@@ -30,22 +34,33 @@
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
 
+            <!-- M3 -->
             <StatusBarItem DockPanel.Dock="Right" HorizontalAlignment="Right" Visibility="{Binding SelectedTabIndex, Converter={StaticResource TabVisibilityBarConverter}, ConverterParameter='0'}">
                 <StackPanel Orientation="Horizontal">
-                    <Button Content="Add language" HorizontalAlignment="Right" Padding="7,4" VerticalAlignment="Center" Command="{Binding AddLangCommand}"/>
-                    <Button Content="Open autosave dir" HorizontalAlignment="Right" Padding="7,4" VerticalAlignment="Center" Command="{Binding OpenAutosaveDirCommand}" Margin="5,0"/>
-                    <Button Content="Copy localization" HorizontalAlignment="Right" Padding="7,4" VerticalAlignment="Center" Command="{Binding CopyLocalizationCommand}" />
-                    <Button Content="Load localization" HorizontalAlignment="Right" Padding="7,4" VerticalAlignment="Center" Command="{Binding LoadLocalizationCommand}"  Margin="5,0"/>
-                    <Button Content="Save localization" HorizontalAlignment="Right" Padding="7,4" VerticalAlignment="Center" Command="{Binding SaveLocalizationCommand}" />
+                    <Button Content="Add language" HorizontalAlignment="Right" Padding="7,4" VerticalAlignment="Center" Command="{Binding AddLangCommand}" CommandParameter="{StaticResource FalseValue}"/>
+                    <Button Content="Open autosave dir" HorizontalAlignment="Right" Padding="7,4" VerticalAlignment="Center" Command="{Binding OpenAutosaveDirCommand}" CommandParameter="{StaticResource FalseValue}" Margin="5,0"/>
+                    <Button Content="Copy localization" HorizontalAlignment="Right" Padding="7,4" VerticalAlignment="Center" Command="{Binding CopyLocalizationCommand}" CommandParameter="{StaticResource FalseValue}" />
+                    <Button Content="Load localization" HorizontalAlignment="Right" Padding="7,4" VerticalAlignment="Center" Command="{Binding LoadLocalizationCommand}" CommandParameter="{StaticResource FalseValue}"  Margin="5,0"/>
+                    <Button Content="Save localization" HorizontalAlignment="Right" Padding="7,4" VerticalAlignment="Center" Command="{Binding SaveLocalizationCommand}" CommandParameter="{StaticResource FalseValue}" />
                 </StackPanel>
             </StatusBarItem>
-            <StatusBarItem  DockPanel.Dock="Right" HorizontalAlignment="Right" Visibility="{Binding SelectedTabIndex, Converter={StaticResource TabVisibilityBarConverter}, ConverterParameter='1'}">
+            <!-- M3C -->
+            <StatusBarItem DockPanel.Dock="Right" HorizontalAlignment="Right" Visibility="{Binding SelectedTabIndex, Converter={StaticResource TabVisibilityBarConverter}, ConverterParameter='1'}">
+                <StackPanel Orientation="Horizontal">
+                    <Button Content="Add language" HorizontalAlignment="Right" Padding="7,4" VerticalAlignment="Center" Command="{Binding AddLangCommand}" CommandParameter="{StaticResource TrueValue}"/>
+                    <Button Content="Open autosave dir" HorizontalAlignment="Right" Padding="7,4" VerticalAlignment="Center" Command="{Binding OpenAutosaveDirCommand}" CommandParameter="{StaticResource TrueValue}" Margin="5,0"/>
+                    <Button Content="Copy localization" HorizontalAlignment="Right" Padding="7,4" VerticalAlignment="Center" Command="{Binding CopyLocalizationCommand}" CommandParameter="{StaticResource TrueValue}" />
+                    <Button Content="Load localization" HorizontalAlignment="Right" Padding="7,4" VerticalAlignment="Center" Command="{Binding LoadLocalizationCommand}" CommandParameter="{StaticResource TrueValue}"  Margin="5,0"/>
+                    <Button Content="Save localization" HorizontalAlignment="Right" Padding="7,4" VerticalAlignment="Center" Command="{Binding SaveLocalizationCommand}" CommandParameter="{StaticResource TrueValue}" />
+                </StackPanel>
+            </StatusBarItem>
+            <StatusBarItem  DockPanel.Dock="Right" HorizontalAlignment="Right" Visibility="{Binding SelectedTabIndex, Converter={StaticResource TabVisibilityBarConverter}, ConverterParameter='2'}">
                 <Button Content="Save language values to .txt" HorizontalAlignment="Right" Padding="7,4" VerticalAlignment="Center" Command="{Binding SaveTipsLocalizationCommand}" />
             </StatusBarItem>
-            <StatusBarItem DockPanel.Dock="Right" HorizontalAlignment="Right"  Visibility="{Binding SelectedTabIndex, Converter={StaticResource TabVisibilityBarConverter}, ConverterParameter='2'}">
+            <StatusBarItem DockPanel.Dock="Right" HorizontalAlignment="Right"  Visibility="{Binding SelectedTabIndex, Converter={StaticResource TabVisibilityBarConverter}, ConverterParameter='3'}">
                 <Button Content="Save dynamic help xml file" HorizontalAlignment="Right" Padding="7,4" VerticalAlignment="Center" Command="{Binding SaveLocalizedHelpMenuCommand}" />
             </StatusBarItem>
-            <StatusBarItem  DockPanel.Dock="Right" HorizontalAlignment="Right" Visibility="{Binding SelectedTabIndex, Converter={StaticResource TabVisibilityBarConverter}, ConverterParameter='3'}">
+            <StatusBarItem  DockPanel.Dock="Right" HorizontalAlignment="Right" Visibility="{Binding SelectedTabIndex, Converter={StaticResource TabVisibilityBarConverter}, ConverterParameter='4'}">
                 <Button Content="Save language values to .txt" HorizontalAlignment="Right" Padding="7,4" VerticalAlignment="Center" Command="{Binding SaveTutorialLocalizationCommand}" />
             </StatusBarItem>
             <Grid/>
