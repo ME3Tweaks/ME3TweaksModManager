@@ -30,10 +30,11 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="120" />
-                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Text="{DynamicResource string_dLCFolderNameColon}" Grid.Row="0" Grid.Column="0" />
                             <TextBlock Text="{DynamicResource string_nameColon}" Grid.Row="1" Grid.Column="0" />
@@ -54,6 +55,9 @@
                             <TextBlock Text="{Binding MountFlagHR}" Grid.Row="7" Grid.Column="1" />
                             <TextBlock Text="{Binding ModuleNumber}" Grid.Row="8" Grid.Column="1" />
                             <Button Grid.Column="1" Grid.Row="9" HorizontalAlignment="Right" Content="{Binding SubmitText}" Command="{Binding SubmitCommand}" Margin="0,4,0,2" />
+                            <TextBlock Grid.Row="9" Grid.Column="0" Margin="0,0,0,0" Grid.ColumnSpan="2" MaxWidth="400" TextAlignment="Left" HorizontalAlignment="Left" VerticalAlignment="Center"
+                                       TextWrapping="Wrap" Text="Telemetry submitted. ME3Tweaks will review and approve the submission for inclusion in the database." 
+                                       Visibility="{Binding TelemetrySubmitted, Converter={StaticResource BoolToVisibilityConverter}}" />
                         </Grid>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>

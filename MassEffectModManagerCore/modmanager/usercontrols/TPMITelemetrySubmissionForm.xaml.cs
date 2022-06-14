@@ -100,7 +100,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             public string SubmitText { get; set; } = M3L.GetString(M3L.string_submitToME3Tweaks);
 
             internal bool TelemetrySubmissionInProgress { get; set; }
-            private bool TelemetrySubmitted { get; set; }
+
+            /// <summary>
+            /// If telemetry was submitted
+            /// </summary>
+            public bool TelemetrySubmitted { get; private set; }
 
             private bool CanSubmitPackage() => !TelemetrySubmitted && !TelemetrySubmissionInProgress;
 

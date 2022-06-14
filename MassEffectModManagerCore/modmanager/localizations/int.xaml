@@ -1188,7 +1188,7 @@
     <system:String x:Key="string_submitted">Submitted</system:String>
     <system:String x:Key="string_me1MountFlagsNotSupportedInM3">ME1 does not support mount flags in Mod Manager currently</system:String>
     <system:String x:Key="string_mE3TweaksTPMISubmission">ME3Tweaks TPMI submission</system:String>
-    <system:String x:Key="string_telemetryPanelHeader">Submitting your mod information to the Third Party Mod Identification database allows ME3Tweaks to provide better services to the modding scene.</system:String>
+    <system:String x:Key="string_telemetryPanelHeader">Submitting your mod information to the Third Party Mod Identification database allows ME3Tweaks to provide better services to the modding scene. This panel is only for initial data submissions; for corrections and updates, please post on the ME3Tweaks Discord's #mod_database_updates channel.</system:String>
     <system:String x:Key="string_dLCFolderNameColon">DLC folder name:</system:String>
     <system:String x:Key="string_nameColon">Name:</system:String>
     <system:String x:Key="string_gameColon">Game:</system:String>
