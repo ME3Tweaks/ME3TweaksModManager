@@ -2060,7 +2060,7 @@
                         DockPanel.Dock="Bottom">
                         <TextBlock ToolTip="{Binding SelectedMod.ModWebsite}" 
                                    ui:Clipper.WidthFraction="1" 
-                                   ui:Clipper.HeightFraction="1" 
+                                   ui:Clipper.HeightFraction="0" 
                                    Name="VisitWebsitePanel" HorizontalAlignment="Center" VerticalAlignment="Bottom">
                           <Hyperlink RequestNavigate="RequestNavigate" NavigateUri="{Binding SelectedMod.ModWebsite}">
                             <TextBlock Text="{Binding VisitWebsiteText}" />
