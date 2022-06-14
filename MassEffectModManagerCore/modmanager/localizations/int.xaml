@@ -998,11 +998,9 @@
     <system:String  x:Key="string_textures">Textures</system:String>
     <system:String  x:Key="string_manageTextures">Install textures with ALOT Installer</system:String>
     <system:String xml:space="preserve" x:Key="string_tooltip_manageTextures">Textures for the original trilogy are installed using ALOT Installer.&#10;Texture mods must be installed last</system:String>
-
     <system:String  x:Key="string_manageTexturesLE">Install textures with Mass Effect Modder</system:String>
     <system:String xml:space="preserve" x:Key="string_tooltip_manageTexturesLE">Textures for Legendary Edition are installed using Mass Effect Modder.&#10;Texture mods must be installed last or they will not work properly</system:String>
-
-<system:String  x:Key="string_filesInstalledInSession">Files installed in session:</system:String>
+    <system:String  x:Key="string_filesInstalledInSession">Files installed in session:</system:String>
     <system:String  x:Key="string_interp_textureInstallationDate">Texture installation - {0}</system:String>
     <!-- 0 = date -->
     <system:String  x:Key="string_interp_versioningInfoX">Texture installation - {0}</system:String>
@@ -1013,6 +1011,7 @@
     <system:String x:Key="string_cannotShowModifiedBasegameFilesTextureModded">Cannot show modified basegame files on a texture modded target as all files will be modified</system:String>
     <system:String x:Key="string_showInstalledOptions">Show installed options</system:String>
     <system:String x:Key="string_hideInstalledOptions">Hide installed options</system:String>
+    <system:String x:Key="string_noTextureModsAreInstalled">No texture mods are installed</system:String>
 
     <!-- Log uploader-->
     <system:String x:Key="string_selectALogToView">Select a log to view on log viewing service</system:String>
