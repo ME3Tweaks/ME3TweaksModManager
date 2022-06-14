@@ -431,7 +431,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 ProgressMax = total;
                 ProgressValue = done;
-                
+
                 // Todo: Combine this with the other update.
                 var now = DateTime.Now;
                 if ((now - lastPercentUpdateTime).Milliseconds > ModInstaller.PERCENT_REFRESH_COOLDOWN)
@@ -452,7 +452,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 if (modBeingDeployed.ModDescTargetVersion >= 8.0 && references.Any(x => x.StartsWith(Mod.Game1EmbeddedTlkFolderName)))
                 {
                     // It needs a compression tlk merge file installed
-                    currentDeploymentStep = "Creating combined TLK merge file";
+                    currentDeploymentStep = M3L.GetString(M3L.string_creatingCombinedTLKMergeFile);
                     var inputFolder = Path.Combine(modBeingDeployed.ModPath, Mod.Game1EmbeddedTlkFolderName);
                     var compressedData = CompressedTLKMergeData.CreateCompressedTlkMergeFile(inputFolder, generatingCompressedFileProgress).GetBuffer();
                     var mergeFileTemp = Path.Combine(M3Filesystem.GetTempPath(), Mod.Game1EmbeddedTlkCompressedFilename);
@@ -465,7 +465,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         inArchiveGame1TlkFolderPath = $@"{M3Utilities.SanitizePath(modBeingDeployed.ModName)}\{inArchiveGame1TlkFolderPath}";
                     }
 
-                    currentDeploymentStep = "Adding combined TLK merge file";
+                    currentDeploymentStep = M3L.GetString(M3L.string_addingCombinedTLKMergeFile);
                     compressor.CompressFileDictionary(new Dictionary<string, string>()
                     {
                         { inArchiveGame1TlkFolderPath, null }, // The folder - this is required to be added so it shows up in the archive filesystem table

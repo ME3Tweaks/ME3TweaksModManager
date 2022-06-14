@@ -115,7 +115,7 @@
             </ItemsControl>
             <TextBlock
                 Margin="0,5,0,0"
-                Text="DLC mod control"
+                Text="{DynamicResource string_mde_dlcModControl}"
                 DockPanel.Dock="Top"
                 FontWeight="Bold" />
             <moddescinieditor:DescriptorEditorItemsControl

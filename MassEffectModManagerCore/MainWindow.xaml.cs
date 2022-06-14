@@ -674,19 +674,19 @@ namespace ME3TweaksModManager
         {
             if (obj is bool game3)
             {
-                var task = BackgroundTaskEngine.SubmitBackgroundJob(@"UserCoalDecompile", "Decompiling Coalesced file", "Decompiled Coalesced file");
+                var task = BackgroundTaskEngine.SubmitBackgroundJob(@"UserCoalDecompile", M3L.GetString(M3L.string_decompilingCoalescedFile), M3L.GetString(M3L.string_decompiledCoalescedFile));
                 OpenFileDialog ofd = new OpenFileDialog()
                 {
-                    Title = "Select Coalesced file",
+                    Title = M3L.GetString(M3L.string_selectCoalescedFile),
                     Filter = @"Coalesced file|*.bin",
                 };
                 if (game3)
                 {
-                    ofd.Title += @" (" + "Game 3" +@")";
+                    ofd.Title += @" (ME3/LE3)";
                 }
                 else
                 {
-                    ofd.Title += @" (" + "LE1/LE2" +@")";
+                    ofd.Title += @" (LE1/LE2)";
                 }
                 var result = ofd.ShowDialog(this);
                 if (result.HasValue && result.Value)
@@ -713,16 +713,16 @@ namespace ME3TweaksModManager
                         if (x.Exception != null)
                         {
                             M3Log.Exception(x.Exception, @"Error decompiling coalesced file:");
-                            task.FinishedUIText = "Error decompiling Coalesced file";
+                            task.FinishedUIText = M3L.GetString(M3L.string_errorDecompilingCoalescedFile);
                             BackgroundTaskEngine.SubmitJobCompletion(task);
-                            M3L.ShowDialog(this, $"An error occurred decompiling the Coalesced file:\n{x.Exception.Message}", "Error decompiling", MessageBoxButton.OK, MessageBoxImage.Error);
+                            M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_errorDecompilingCoalescedFile, x.Exception.Message), M3L.GetString(M3L.string_errorDecompiling), MessageBoxButton.OK, MessageBoxImage.Error);
                         }
                     });
 
                 }
                 else
                 {
-                    task.FinishedUIText = "Aborted decompiling Coalesced file";
+                    task.FinishedUIText = M3L.GetString(M3L.string_abortedDecompilingCoalescedFile);
                 }
             }
         }
@@ -731,18 +731,18 @@ namespace ME3TweaksModManager
         {
             if (obj is bool game3)
             {
-                var task = BackgroundTaskEngine.SubmitBackgroundJob(@"UserCoalCompile", "Compiling Coalesced file", "Compiled Coalesced file");
+                var task = BackgroundTaskEngine.SubmitBackgroundJob(@"UserCoalCompile", M3L.GetString(M3L.string_compilingCoalescedFile), M3L.GetString(M3L.string_compiledCoalescedFile));
                 OpenFileDialog ofd = new OpenFileDialog()
                 {
-                    Title = "Select Coalesced manifest file",
+                    Title = M3L.GetString(M3L.string_selectCoalescedManifestFile),
                 };
                 if (game3)
                 {
-                    ofd.Filter = "Game 3 Coalesced Manifest" + @"|*.xml";
+                    ofd.Filter = M3L.GetString(M3L.string_game3CoalescedManifest) + @"|*.xml";
                 }
                 else
                 {
-                    ofd.Filter = "LE1/LE2 Coalesced Manifest" + @"|mele.extractedbin";
+                    ofd.Filter = M3L.GetString(M3L.string_lE1LE2CoalescedManifest) + @"|mele.extractedbin";
                 }
 
                 var result = ofd.ShowDialog(this);
@@ -772,16 +772,16 @@ namespace ME3TweaksModManager
                         if (x.Exception != null)
                         {
                             M3Log.Exception(x.Exception, @"Error compiling coalesced file:");
-                            task.FinishedUIText = "Error compiling Coalesced file";
+                            task.FinishedUIText = M3L.GetString(M3L.string_errorCompilingCoalescedFile);
                             BackgroundTaskEngine.SubmitJobCompletion(task);
-                            M3L.ShowDialog(this, $"An error occurred compiling the Coalesced file:\n{x.Exception.Message}", "Error compiling", MessageBoxButton.OK, MessageBoxImage.Error);
+                            M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_errorCompilingCoalescedFile, x.Exception.Message), M3L.GetString(M3L.string_errorCompiling), MessageBoxButton.OK, MessageBoxImage.Error);
                         }
                     });
 
                 }
                 else
                 {
-                    task.FinishedUIText = "Aborted compiling Coalesced file";
+                    task.FinishedUIText = M3L.GetString(M3L.string_abortedCompilingCoalescedFile);
                     BackgroundTaskEngine.SubmitJobCompletion(task);
                 }
             }

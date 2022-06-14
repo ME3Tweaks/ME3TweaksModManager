@@ -24,7 +24,7 @@ namespace ME3TweaksModManager.modmanager.helpers
             #region callbacks
             void failedToDownload(string failureMessage)
             {
-                MessageBox.Show(w, $"Legendary Explorer failed to download: {failureMessage}");
+                MessageBox.Show(w, M3L.GetString(M3L.string_interp_lexNightlyFailedToDownload, failureMessage));
                 launchCompleted?.Invoke();
             }
             void launchTool(string exe)

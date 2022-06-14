@@ -6,6 +6,7 @@ using IniParser.Model;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.exceptions;
+using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.ui;
 
@@ -105,7 +106,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
                 if (sourceFoldersDup || destFoldersDup)
                 {
                     // This will be handled in serializer
-                    throw new ModDescSerializerException("Source directories and destination directories for CustomDLC must be unique from each another.");
+                    throw new ModDescSerializerException(M3L.GetString(M3L.string_mde_validation_customDLCUniqueNames));
                 }
 
                 var srcDirs = CustomDLCParameters.ToDictionary(x => x.SourcePath, x => x.DestDLCName);

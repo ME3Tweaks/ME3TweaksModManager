@@ -411,18 +411,32 @@
     <system:String x:Key="string_installedBinkASILoader">Installed Bink ASI loader</system:String>
     <system:String x:Key="string_seeWhatsInstalled">See what's installed</system:String>
     <system:String x:Key="string_dragAndDropOperations">Drag and Drop operations</system:String>
-
     <system:String x:Key="string_decompileCoalescedFileLE1LE2">Decompile Coalesced file (LE1/LE2)</system:String>
     <system:String x:Key="string_compileCoalescedFileLE1LE2">Compile Coalesced file (LE1/LE2)</system:String>
     <system:String x:Key="string_decompileCoalescedFileGame3">Decompile Coalesced file (ME3/LE3)</system:String>
     <system:String x:Key="string_compileCoalescedFileGame3">Compile Coalesced file (ME3/LE3)</system:String>
-
     <system:String x:Key="string_tooltip_decompileCoalGame3">Decompile a Coalesced file to individual xml files for editing</system:String>
     <system:String x:Key="string_tooltip_decompileCoalGameLE1LE2">Decompile a Coalesced file to individual ini files for editing</system:String>
     <system:String x:Key="string_tooltip_compileCoalGame3">Compile an ME3/LE3 Coalesced from individual xml files</system:String>
     <system:String x:Key="string_tooltip_compileCoalGameLE1LE2">Compile a LE1/LE2 Coalesced from individual ini files</system:String>
-    
     <system:String x:Key="string_installMemFile">Install .mem file</system:String>
+    <system:String x:Key="string_selectCoalescedFile">Select Coalesced file</system:String>
+    <system:String x:Key="string_errorDecompilingCoalescedFile">Error decompiling Coalesced file</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_errorDecompilingCoalescedFile">An error occurred decompiling the Coalesced file:\n{0}</system:String>
+    <!-- 0={Exception Message} -->
+    <system:String x:Key="string_errorDecompiling">Error decompiling</system:String>
+    <system:String x:Key="string_abortedDecompilingCoalescedFile">Aborted decompiling Coalesced file</system:String>
+    <system:String x:Key="string_selectCoalescedManifestFile">Select Coalesced manifest file</system:String>
+    <system:String x:Key="string_game3CoalescedManifest">ME3/LE3 Coalesced Manifest</system:String>
+    <system:String x:Key="string_lE1LE2CoalescedManifest">LE1/LE2 Coalesced Manifest</system:String>
+    <system:String x:Key="string_errorCompilingCoalescedFile">Error compiling Coalesced file</system:String>
+    <system:String xml:space="preserve" x:Key="string_interp_errorCompilingCoalescedFile">An error occurred compiling the Coalesced file:\n{0}</system:String>
+    <!-- 0={Exception Message} -->
+    <system:String x:Key="string_errorCompiling">Error compiling</system:String>
+    <system:String x:Key="string_abortedCompilingCoalescedFile">Aborted compiling Coalesced file</system:String>
+
+    <!-- LEX Launcher -->
+    <system:String x:Key="string_interp_lexNightlyFailedToDownload">Legendary Explorer Nightly failed to download: {0}</system:String>
 
     <!-- M3 Service Loaders -->
     <system:String x:Key="string_loadingME3TweaksServices">Loading ME3Tweaks services</system:String>
@@ -529,7 +543,7 @@
     <system:String x:Key="string_applyingMergemods">Applying mergemods</system:String>
     <system:String x:Key="string_interp_minVersionAppend">(minimum version: {0})</system:String>
     <!-- 0={Version string 0.1.2.3} -->
-    <!-- The follow items are only for letting this localizer replace the correct strings! Remove them when done and make sure keys are identical to the stripped versions-->
+    <system:String x:Key="string_notice_directModsDontGoToLibrary">Mods installed directly from archive will not appear in the mod library</system:String>
 
     <!-- Welcome panel -->
     <system:String x:Key="string_previewPanelTitle">Welcome to ME3Tweaks Mod Manager</system:String>
@@ -776,6 +790,10 @@
     <!-- 0={package file path} 1={Package game (ME1/2/3...)} 2={ModBeingDeployed.Game (ME1/2/3...} -->
     <system:String x:Key="string_interp_dialog_noModSiteDeployed">The following mods don't have a modsite descriptor set and are not in the Third Party Mod Info database. Mods without the modsite descriptor will not be entered into the database; as such other mods may use your mount ID.\n{0}</system:String>
     <system:String x:Key="string_dialog_noModSiteDeployed">Mods missing modsite descriptor</system:String>
+    <system:String x:Key="string_deplolymentPanelSubheading">Mod Manager mods must be deployed from Mod Manager to properly work for end-users.</system:String>
+    <system:String x:Key="string_creatingCombinedTLKMergeFile">Creating combined TLK merge file</system:String>
+    <system:String x:Key="string_addingCombinedTLKMergeFile">Adding combined TLK merge file</system:String>
+    <system:String x:Key="string_tooltip_clickToLEX">Click to open in Legendary Explorer Nightly</system:String>
 
     <!-- Texture checks -->
     <system:String x:Key="string_interp_cannotInstallTFCToBasegameLE1">Cannot install TFC {0} to /BIOGame/CookedPCConsole in LE1. Additional game TFCs must be added through a Custom DLC folder.</system:String>
@@ -1201,6 +1219,7 @@
     <system:String x:Key="string_interp_errorSubmittingModInformation">Error submitting mod information: {0}</system:String>
     <!-- 0={Error message} -->
     <system:String x:Key="string_errorSubmitting">Error submitting</system:String>
+    <system:String x:Key="string_tpmi_reviewMessage">Telemetry submitted. ME3Tweaks will review and approve the submission for inclusion in the database.</system:String>
 
     <!-- Messageboxes -->
     <system:String x:Key="string_no">No</system:String>
@@ -2255,7 +2274,9 @@
     <system:String x:Key="string_tooltip_removeAlternate">Remove alternate</system:String>
     <system:String x:Key="string_tooltip_moveAlternateUp">Move alternate up</system:String>
     <system:String x:Key="string_tooltip_moveAlternateDown">Move alternate down</system:String>
-
+    <system:String x:Key="string_mde_validation_customDLCUniqueNames">Source directories and destination directories for CustomDLC must be unique from each another.</system:String>
+    <system:String x:Key="string_mde_dlcModControl">DLC mod control</system:String>
+    <!-- As in "Use these options to control what DLC mods your mod will install"-->
 
     <!-- Nexus File Search -->
     <system:String x:Key="string_nexusModsFileSearch">NexusMods File Search</system:String>

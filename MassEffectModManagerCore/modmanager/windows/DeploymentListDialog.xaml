@@ -1,88 +1,153 @@
-﻿<Window x:Class="ME3TweaksModManager.modmanager.windows.DeploymentListDialog"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d"
-        WindowStartupLocation="CenterOwner"
-        DataContext="{Binding RelativeSource={RelativeSource Self}}"
-        xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
-        xmlns:fa5="http://schemas.fontawesome.com/icons/"
-        Title="{Binding DCI.DialogTitle}"
-        Width="640" Height="480">
+﻿<Window
+    x:Class="ME3TweaksModManager.modmanager.windows.DeploymentListDialog" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    WindowStartupLocation="CenterOwner"
+    DataContext="{Binding RelativeSource={RelativeSource Self}}" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:fa5="http://schemas.fontawesome.com/icons/"
+    Title="{Binding DCI.DialogTitle}"
+    Width="640"
+    Height="480">
     <Window.Style>
-        <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
+        <Style
+            TargetType="Window"
+            BasedOn="{StaticResource {x:Type Window}}" />
     </Window.Style>
-    <DockPanel Margin="5" LastChildFill="True">
+    <DockPanel
+        Margin="5"
+        LastChildFill="True">
         <DockPanel.Resources>
-            <Style x:Key="CustomListViewItemStyle" TargetType="{x:Type ListViewItem}">
+            <Style
+                x:Key="CustomListViewItemStyle"
+                TargetType="{x:Type ListViewItem}">
                 <Style.Triggers>
-                    <Trigger Property="ItemsControl.AlternationIndex" Value="0">
-                        <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"/>
+                    <Trigger
+                        Property="ItemsControl.AlternationIndex"
+                        Value="0">
+                        <Setter
+                            Property="Background"
+                            Value="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" />
                     </Trigger>
-                    <Trigger Property="ItemsControl.AlternationIndex" Value="1">
-                        <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"/>
+                    <Trigger
+                        Property="ItemsControl.AlternationIndex"
+                        Value="1">
+                        <Setter
+                            Property="Background"
+                            Value="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}" />
                     </Trigger>
                 </Style.Triggers>
             </Style>
         </DockPanel.Resources>
-        <TextBlock Text="{Binding DCI.DialogMessage}" TextWrapping="Wrap" DockPanel.Dock="Top" Margin="0,5,0,5"/>
-        <DockPanel DockPanel.Dock="Bottom" Margin="0,5,0,0">
-            <Button DockPanel.Dock="Right" FlowDirection="LeftToRight" Click="CopyItemsToClipBoard_Click" Content="{DynamicResource string_copyItemsToClipboard}" Padding="7,5"/>
-            <TextBlock Text="{Binding StatusText}" Margin="8,0,0,0" VerticalAlignment="Center"/>
+        <TextBlock
+            Text="{Binding DCI.DialogMessage}"
+            TextWrapping="Wrap"
+            DockPanel.Dock="Top"
+            Margin="0,5,0,5" />
+        <DockPanel
+            DockPanel.Dock="Bottom"
+            Margin="0,5,0,0">
+            <Button
+                DockPanel.Dock="Right"
+                FlowDirection="LeftToRight"
+                Click="CopyItemsToClipBoard_Click"
+                Content="{DynamicResource string_copyItemsToClipboard}"
+                Padding="7,5" />
+            <TextBlock
+                Text="{Binding StatusText}"
+                Margin="8,0,0,0"
+                VerticalAlignment="Center" />
         </DockPanel>
-        <ListBox HorizontalAlignment="Stretch" 
-                 ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
-                 AlternationCount="2" 
-                 HorizontalContentAlignment="Stretch"
-                 BorderThickness="1" 
-                 BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1BorderBrush}}"
-                 ItemsSource="{Binding Messages}">
+        <ListBox
+            HorizontalAlignment="Stretch"
+            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+            AlternationCount="2"
+            HorizontalContentAlignment="Stretch"
+            BorderThickness="1"
+            BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1BorderBrush}}"
+            ItemsSource="{Binding Messages}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <DockPanel>
-                        <DockPanel Margin="0,5,5,5">
-                            <fa5:ImageAwesome Width="16" DockPanel.Dock="Left" Margin="5,0,5,0">
+                        <DockPanel
+                            Margin="0,5,5,5">
+                            <fa5:ImageAwesome
+                                Width="16"
+                                DockPanel.Dock="Left"
+                                Margin="5,0,5,0">
                                 <fa5:ImageAwesome.Style>
-                                    <Style TargetType="fa5:ImageAwesome">
+                                    <Style
+                                        TargetType="fa5:ImageAwesome">
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding Severity}" Value="SIGNIFICANTISSUE">
-                                                <Setter Property="Icon" Value="Solid_ExclamationTriangle" />
-                                                <Setter Property="Foreground" Value="Orange" />
+                                            <DataTrigger
+                                                Binding="{Binding Severity}"
+                                                Value="SIGNIFICANTISSUE">
+                                                <Setter
+                                                    Property="Icon"
+                                                    Value="Solid_ExclamationTriangle" />
+                                                <Setter
+                                                    Property="Foreground"
+                                                    Value="Orange" />
                                             </DataTrigger>
-                                            <DataTrigger Binding="{Binding Severity}" Value="INFO">
-                                                <Setter Property="Icon" Value="Solid_InfoCircle" />
-                                                <Setter Property="Foreground" Value="DodgerBlue" />
+                                            <DataTrigger
+                                                Binding="{Binding Severity}"
+                                                Value="INFO">
+                                                <Setter
+                                                    Property="Icon"
+                                                    Value="Solid_InfoCircle" />
+                                                <Setter
+                                                    Property="Foreground"
+                                                    Value="DodgerBlue" />
                                             </DataTrigger>
-                                            <DataTrigger Binding="{Binding Severity}" Value="BLOCKING">
-                                                <Setter Property="Icon" Value="Solid_TimesCircle" />
-                                                <Setter Property="Foreground" Value="Red" />
+                                            <DataTrigger
+                                                Binding="{Binding Severity}"
+                                                Value="BLOCKING">
+                                                <Setter
+                                                    Property="Icon"
+                                                    Value="Solid_TimesCircle" />
+                                                <Setter
+                                                    Property="Foreground"
+                                                    Value="Red" />
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
                                 </fa5:ImageAwesome.Style>
                             </fa5:ImageAwesome>
-                            <fa5:ImageAwesome Width="16" DockPanel.Dock="Left" 
-                                              Icon="Solid_Wrench"
-                                              Cursor="Hand"
-                                              ToolTip="Click to open in Legendary Explorer Nightly"
-                                              MouseLeftButtonUp="OpenInLEX_Click"
-                                              Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
-                                              Margin="5,0,5,0" 
-                                              Visibility="{Binding Message.Openable, Converter={StaticResource NullVisibilityConverter}}"/>
-                            <TextBlock Text="{Binding Message.Message}" TextWrapping="Wrap"/>
+                            <fa5:ImageAwesome
+                                Width="16"
+                                DockPanel.Dock="Left"
+                                Icon="Solid_Wrench"
+                                Cursor="Hand"
+                                ToolTip="{DynamicResource string_tooltip_clickToLEX}"
+                                MouseLeftButtonUp="OpenInLEX_Click"
+                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                Margin="5,0,5,0"
+                                Visibility="{Binding Message.Openable, Converter={StaticResource NullVisibilityConverter}}" />
+                            <TextBlock
+                                Text="{Binding Message.Message}"
+                                TextWrapping="Wrap" />
                         </DockPanel>
                         <DockPanel.Style>
-                            <Style TargetType="DockPanel">
+                            <Style
+                                TargetType="DockPanel">
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Severity}" Value="SIGNIFICANTISSUE">
-                                        <Setter Property="Background" Value="#22FFA500" />
+                                    <DataTrigger
+                                        Binding="{Binding Severity}"
+                                        Value="SIGNIFICANTISSUE">
+                                        <Setter
+                                            Property="Background"
+                                            Value="#22FFA500" />
                                     </DataTrigger>
-                                    <DataTrigger Binding="{Binding Severity}" Value="INFO">
-                                        <Setter Property="Background" Value="#221E90FF" />
+                                    <DataTrigger
+                                        Binding="{Binding Severity}"
+                                        Value="INFO">
+                                        <Setter
+                                            Property="Background"
+                                            Value="#221E90FF" />
                                     </DataTrigger>
-                                    <DataTrigger Binding="{Binding Severity}" Value="BLOCKING">
-                                        <Setter Property="Background" Value="#22FF0000" />
+                                    <DataTrigger
+                                        Binding="{Binding Severity}"
+                                        Value="BLOCKING">
+                                        <Setter
+                                            Property="Background"
+                                            Value="#22FF0000" />
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
@@ -91,9 +156,15 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
             <ListBox.ItemContainerStyle>
-                <Style TargetType="ListBoxItem" BasedOn="{StaticResource ListBoxItemStyle}">
-                    <Setter Property="Padding" Value="0"/>
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                <Style
+                    TargetType="ListBoxItem"
+                    BasedOn="{StaticResource ListBoxItemStyle}">
+                    <Setter
+                        Property="Padding"
+                        Value="0" />
+                    <Setter
+                        Property="HorizontalContentAlignment"
+                        Value="Stretch" />
                 </Style>
             </ListBox.ItemContainerStyle>
         </ListBox>
