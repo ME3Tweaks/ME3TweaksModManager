@@ -134,7 +134,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                             fs.Close();
                             SetAuthorized(true);
                             mainwindow.RefreshNexusStatus();
-                            Analytics.TrackEvent(@"Authenticated to NexusMods");
+                            TelemetryInterposer.TrackEvent(@"Authenticated to NexusMods");
                         }
                         else
                         {

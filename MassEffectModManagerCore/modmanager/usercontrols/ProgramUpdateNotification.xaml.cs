@@ -218,7 +218,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 else
                 {
                     M3Log.Error(@"Error downloading update: " + updateFile.errorMessage);
-                    Analytics.TrackEvent(@"Error downloading update",
+                    TelemetryInterposer.TrackEvent(@"Error downloading update",
                         new Dictionary<string, string>() { { @"Error message", updateFile.errorMessage } });
                     errorMessage = updateFile.errorMessage;
                 }

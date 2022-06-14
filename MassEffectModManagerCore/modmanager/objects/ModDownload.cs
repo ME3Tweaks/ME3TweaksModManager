@@ -1,20 +1,19 @@
-﻿using System;
+﻿using LegendaryExplorerCore.Helpers;
+using ME3TweaksCore.Helpers;
+using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.helpers;
+using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.me3tweaks.services;
+using ME3TweaksModManager.modmanager.nexusmodsintegration;
+using ME3TweaksModManager.ui;
+using Pathoschild.FluentNexus.Models;
+using PropertyChanged;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using LegendaryExplorerCore.Helpers;
-using ME3TweaksModManager.modmanager.diagnostics;
-using ME3TweaksModManager.modmanager.helpers;
-using ME3TweaksModManager.modmanager.localizations;
-using ME3TweaksModManager.modmanager.me3tweaks;
-using ME3TweaksModManager.modmanager.me3tweaks.services;
-using ME3TweaksModManager.modmanager.nexusmodsintegration;
-using ME3TweaksModManager.ui;
-using Microsoft.AppCenter.Analytics;
-using Pathoschild.FluentNexus.Models;
-using PropertyChanged;
 using M3OnlineContent = ME3TweaksModManager.modmanager.me3tweaks.services.M3OnlineContent;
 using MemoryAnalyzer = ME3TweaksModManager.modmanager.memoryanalyzer.MemoryAnalyzer;
 
@@ -103,7 +102,7 @@ namespace ME3TweaksModManager.modmanager.objects
                         OnModDownloadError?.Invoke(this, downloadResult.errorMessage);
                     }
                     // Download didn't work!
-                    Analytics.TrackEvent(@"NXM Download", new Dictionary<string, string>()
+                    TelemetryInterposer.TrackEvent(@"NXM Download", new Dictionary<string, string>()
                     {
                         {@"Domain", ProtocolLink?.Domain},
                         {@"File", ModFile?.Name},
@@ -112,7 +111,7 @@ namespace ME3TweaksModManager.modmanager.objects
                 }
                 else
                 {
-                    Analytics.TrackEvent(@"NXM Download", new Dictionary<string, string>()
+                    TelemetryInterposer.TrackEvent(@"NXM Download", new Dictionary<string, string>()
                     {
                         {@"Domain", ProtocolLink?.Domain},
                         {@"File", ModFile?.Name},

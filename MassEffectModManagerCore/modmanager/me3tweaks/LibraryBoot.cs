@@ -33,18 +33,23 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
                 // We will manually load auxiliary services
                 LoadAuxiliaryServices = false,
                 RunOnUiThreadDelegate = action => Application.Current.Dispatcher.Invoke(action),
-                TrackEventCallback = (eventName, properties) => { Analytics.TrackEvent(eventName, properties); },
-                TrackErrorCallback = (eventName, properties) => { Crashes.TrackError(eventName, properties); },
+                // This uses just EnableTelemetry as it uses the queue system which will check if the telemetry witholding gate has been witheld.
+                TrackEventCallback = (eventName, properties) => { if (Settings.EnableTelemetry) { App.SubmitAnalyticTelemetryEvent(eventName, properties); } },
+                // This uses CanSendTelemetry to ensure gating any bootup telemetry
+                TrackErrorCallback = (eventName, properties) => { if (Settings.CanSendTelemetry) { Crashes.TrackError(eventName, properties); } },
                 UploadErrorLogCallback = (e, data) =>
                 {
-                    var attachments = new List<ErrorAttachmentLog>();
-                    string log = LogCollector.CollectLatestLog(MCoreFilesystem.GetLogDir(), true);
-                    if (log != null && log.Length < FileSize.MebiByte * 7)
+                    if (Settings.CanSendTelemetry)
                     {
-                        attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, @"applog.txt"));
-                    }
+                        var attachments = new List<ErrorAttachmentLog>();
+                        string log = LogCollector.CollectLatestLog(MCoreFilesystem.GetLogDir(), true);
+                        if (log != null && log.Length < FileSize.MebiByte * 7)
+                        {
+                            attachments.Add(ErrorAttachmentLog.AttachmentWithText(log, @"applog.txt"));
+                        }
 
-                    Crashes.TrackError(e, data);
+                        Crashes.TrackError(e, data);
+                    }
                 },
                 CanFetchContentThrottleCheck =M3OnlineContent.CanFetchContentThrottleCheck,
                 LECPackageSaveFailedCallback = x => M3Log.Error($@"Error saving package: {x}"),

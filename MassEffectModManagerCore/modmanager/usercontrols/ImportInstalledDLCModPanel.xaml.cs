@@ -119,7 +119,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
                     if (b.Error == null && b.Result != null)
                     {
-                        Analytics.TrackEvent(@"Imported a mod from game installation", new Dictionary<string, string>()
+                        TelemetryInterposer.TrackEvent(@"Imported a mod from game installation", new Dictionary<string, string>()
                         {
                             {@"Game", SelectedTarget.Game.ToString()},
                             {@"Folder", SelectedDLCFolder.DLCFolderName}
@@ -206,7 +206,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             var m = new Mod(moddescPath, MEGame.ME3);
             e.Result = m;
             M3Log.Information(@"Mod import complete.");
-            Analytics.TrackEvent(@"Imported already installed mod", new Dictionary<string, string>()
+            TelemetryInterposer.TrackEvent(@"Imported already installed mod", new Dictionary<string, string>()
             {
                 {@"Mod name", m.ModName},
                 {@"Game", SelectedTarget.Game.ToString()},

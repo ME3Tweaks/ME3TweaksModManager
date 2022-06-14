@@ -11,6 +11,7 @@ using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
+using ME3TweaksCore.Helpers;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
@@ -294,7 +295,7 @@ namespace ME3TweaksModManager.modmanager.windows
             var savePath = getSaveName(GroupName);
             File.WriteAllText(savePath, sb.ToString());
             SavedPath = savePath;
-            Analytics.TrackEvent(@"Saved Batch Group", new Dictionary<string, string>()
+            TelemetryInterposer.TrackEvent(@"Saved Batch Group", new Dictionary<string, string>()
             {
                 {@"Group name", GroupName},
                 {@"Group size", ModsInGroup.Count.ToString()},

@@ -222,7 +222,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {
-                Analytics.TrackEvent(@"Updated mod", new Dictionary<string, string>()
+                TelemetryInterposer.TrackEvent(@"Updated mod", new Dictionary<string, string>()
                 {
                     {@"Type", @"ModMaker"},
                     {@"ModName", mui.mod.ModName},
@@ -283,7 +283,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             };
             nbw.RunWorkerCompleted += (a, b) =>
             {
-                Analytics.TrackEvent(@"Updated mod", new Dictionary<string, string>()
+                TelemetryInterposer.TrackEvent(@"Updated mod", new Dictionary<string, string>()
                 {
                     {@"Type", @"Classic"},
                     {@"ModName", ui.mod.ModName},

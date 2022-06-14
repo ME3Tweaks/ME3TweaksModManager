@@ -100,7 +100,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             //Check Auth
             OperationInProgress = true;
             SettingsSubtext = M3L.GetString(M3L.string_validatingSettings);
-            Analytics.TrackEvent(@"Saving/authenticating to updater service", new Dictionary<string, string>()
+            TelemetryInterposer.TrackEvent(@"Saving/authenticating to updater service", new Dictionary<string, string>()
             {
                 {@"Username", Username },
                 {@"LZMAPath", LZMAStoragePath },
@@ -265,7 +265,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             nbw.RunWorkerCompleted += (a, b) =>
             {
                 TaskbarHelper.SetProgressState(TaskbarProgressBarState.NoProgress);
-                Analytics.TrackEvent(@"Uploaded mod to updater service", new Dictionary<string, string>()
+                TelemetryInterposer.TrackEvent(@"Uploaded mod to updater service", new Dictionary<string, string>()
                 {
                     {@"Result", b.Result?.ToString() },
                     {@"Mod", $@"{mod.ModName} {mod.ModVersionString}" }

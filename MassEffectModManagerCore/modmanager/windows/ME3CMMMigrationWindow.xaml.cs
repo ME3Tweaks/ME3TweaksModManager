@@ -360,7 +360,7 @@ namespace ME3TweaksModManager.modmanager.windows
                     M3Log.Error(@"Error in migration: " + e.Message);
                     Crashes.TrackError(e);
                 }
-                Analytics.TrackEvent(@"ME3CMM Migration", new Dictionary<string, string>()
+                TelemetryInterposer.TrackEvent(@"ME3CMM Migration", new Dictionary<string, string>()
                 {
                     {@"Migrated", migrated.ToString()},
                     {@"Cleaned up", cleanup.ToString()},

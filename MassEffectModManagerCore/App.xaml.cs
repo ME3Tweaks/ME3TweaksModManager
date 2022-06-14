@@ -391,7 +391,7 @@ namespace ME3TweaksModManager
         private static List<(string, Dictionary<string, string>)> QueuedTelemetryItems = new List<(string, Dictionary<string, string>)>();
 
         /// <summary>
-        /// Submits a telemetry event. Queues them if the first run panel has not shown yet.
+        /// Submits a telemetry event. Queues them if the first run panel has not shown yet. All calls to TrackEvent should route through here to respect user settings.
         /// </summary>
         /// <param name="name"></param>
         /// <param name="data"></param>
@@ -399,6 +399,7 @@ namespace ME3TweaksModManager
         {
             if (!Settings.ShowedPreviewPanel && QueuedTelemetryItems != null)
             {
+                // Queue a telemetry item until the panel has closed
                 QueuedTelemetryItems.Add((name, data));
             }
             else
@@ -417,7 +418,7 @@ namespace ME3TweaksModManager
             {
                 foreach (var v in QueuedTelemetryItems)
                 {
-                    Analytics.TrackEvent(v.Item1, v.Item2);
+                    TelemetryInterposer.TrackEvent(v.Item1, v.Item2);
                 }
             }
 

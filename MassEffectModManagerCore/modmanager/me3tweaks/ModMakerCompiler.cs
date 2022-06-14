@@ -15,6 +15,7 @@ using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.TLK.ME2ME3;
+using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Services;
 using ME3TweaksCore.Services.Backup;
 using ME3TweaksModManager.modmanager.diagnostics;
@@ -24,6 +25,7 @@ using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.usercontrols;
 using Microsoft.AppCenter.Analytics;
+using StringStructParser = ME3TweaksModManager.modmanager.helpers.StringStructParser;
 
 namespace ME3TweaksModManager.modmanager.me3tweaks
 {
@@ -119,7 +121,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
                 Debug.WriteLine($@"Progress at end of coalesceds: {OverallProgressValue}");
                 finalizeModdesc(xmlDoc, mod);
                 MixinHandler.AttemptResetMemoryManager();
-                Analytics.TrackEvent(@"Downloaded ModMaker Mod", new Dictionary<string, string>()
+                TelemetryInterposer.TrackEvent(@"Downloaded ModMaker Mod", new Dictionary<string, string>()
                 {
                     {@"Code", code.ToString() },
                     {@"Mod Name", modName }

@@ -164,7 +164,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
                 if (hasAnyImproperlyPackedMods)
                 {
-                    Analytics.TrackEvent(@"Detected improperly packed M3 mod v2", new Dictionary<string, string>()
+                    TelemetryInterposer.TrackEvent(@"Detected improperly packed M3 mod v2", new Dictionary<string, string>()
                     {
                         {@"Archive name", Path.GetFileName(filepath)}
                     });
@@ -561,7 +561,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         else
                         {
                             M3Log.Error(@"Server moddesc was not valid for this mod. This shouldn't occur. Please report to Mgamerz.");
-                            Analytics.TrackEvent(@"Invalid servermoddesc detected", new Dictionary<string, string>()
+                            TelemetryInterposer.TrackEvent(@"Invalid servermoddesc detected", new Dictionary<string, string>()
                                 {
                                     {@"moddesc.ini name", importingInfo.servermoddescname ?? transform.PostTransformModdesc}
                                 });
@@ -642,7 +642,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     else
                     {
                         M3Log.Information(@"ME3Tweaks does not have additional version information for this file.");
-                        Analytics.TrackEvent(@"Non Mod Manager Mod Dropped", new Dictionary<string, string>()
+                        TelemetryInterposer.TrackEvent(@"Non Mod Manager Mod Dropped", new Dictionary<string, string>()
                             {
                                 {@"Filename", Path.GetFileName(filepath)},
                                 {@"MD5", md5}
@@ -658,7 +658,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 {
                     //Try straight up TPMI import?
                     M3Log.Warning($@"No importing information is available for file with hash {md5}. No mods could be found.");
-                    Analytics.TrackEvent(@"Non Mod Manager Mod Dropped", new Dictionary<string, string>()
+                    TelemetryInterposer.TrackEvent(@"Non Mod Manager Mod Dropped", new Dictionary<string, string>()
                         {
                             {@"Filename", Path.GetFileName(filepath)},
                             {@"MD5", md5}

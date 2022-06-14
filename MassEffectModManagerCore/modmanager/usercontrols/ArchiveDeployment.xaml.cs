@@ -51,7 +51,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public ArchiveDeployment(Mod mod)
         {
             M3Log.Information($@"Initiating deployment for mod {mod.ModName} {mod.ModVersionString}");
-            Analytics.TrackEvent(@"Started deployment panel for mod", new Dictionary<string, string>()
+            TelemetryInterposer.TrackEvent(@"Started deployment panel for mod", new Dictionary<string, string>()
             {
                 { @"Mod name" , $@"{mod.ModName} {mod.ParsedModVersion}"}
             });
@@ -180,14 +180,14 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     }
                     else if (ModsInDeployment.Count == 1)
                     {
-                        Analytics.TrackEvent(@"Deployed mod", new Dictionary<string, string>()
+                        TelemetryInterposer.TrackEvent(@"Deployed mod", new Dictionary<string, string>()
                         {
                             { @"Mod name" , $@"{ModsInDeployment[0].ModBeingDeployed.ModName} {ModsInDeployment[0].ModBeingDeployed.ParsedModVersion}"}
                         });
                     }
                     else
                     {
-                        Analytics.TrackEvent(@"Deployed multipack of mods", new Dictionary<string, string>()
+                        TelemetryInterposer.TrackEvent(@"Deployed multipack of mods", new Dictionary<string, string>()
                         {
                             { @"Included mods" , string.Join(';', ModsInDeployment.Select(x=>$@"{x.ModBeingDeployed.ModName} {x.ModBeingDeployed.ParsedModVersion}"))}
                         });

@@ -82,7 +82,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                                 if (num <= 0)
                                 {
                                     M3Log.Error($@"Skipping plot manager update: Conditional {num} is not a valid number for use. Values must be greater than 0 and less than 2 billion.");
-                                    Analytics.TrackEvent(@"Bad plot manager function", new Dictionary<string, string>() {
+                                    TelemetryInterposer.TrackEvent(@"Bad plot manager function", new Dictionary<string, string>() {
                                         { @"FunctionName", $@"F{currentFuncNum}" },
                                         { @"DLCName", pmuDLCName }
                                     });
@@ -92,7 +92,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                                 else if (num.ToString().Length != currentFuncNum.Length)
                                 {
                                     M3Log.Error($@"Skipping plot manager update: Conditional {currentFuncNum} is not a valid number for use. Values must not contain leading zeros");
-                                    Analytics.TrackEvent(@"Bad plot manager function", new Dictionary<string, string>() {
+                                    TelemetryInterposer.TrackEvent(@"Bad plot manager function", new Dictionary<string, string>() {
                                         { @"FunctionName", $@"F{currentFuncNum}" },
                                         { @"DLCName", pmuDLCName }
                                     });
@@ -103,7 +103,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                             else
                             {
                                 M3Log.Error($@"Skipping plot manager update: Conditional {currentFuncNum} is not a valid number for use. Values must be greater than 0 and less than 2 billion.");
-                                Analytics.TrackEvent(@"Bad plot manager function", new Dictionary<string, string>() {
+                                TelemetryInterposer.TrackEvent(@"Bad plot manager function", new Dictionary<string, string>() {
                                     { @"FunctionName", $@"F{currentFuncNum}" },
                                     { @"DLCName", pmuDLCName }
                                 });

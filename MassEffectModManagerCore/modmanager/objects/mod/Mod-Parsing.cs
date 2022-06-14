@@ -11,6 +11,7 @@ using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
+using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Objects;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksModManager.modmanager.diagnostics;
@@ -23,6 +24,7 @@ using Microsoft.AppCenter.Analytics;
 using PropertyChanged;
 using SevenZip;
 using MemoryAnalyzer = ME3TweaksModManager.modmanager.memoryanalyzer.MemoryAnalyzer;
+using StringStructParser = ME3TweaksModManager.modmanager.helpers.StringStructParser;
 
 namespace ME3TweaksModManager.modmanager.objects.mod
 {
@@ -1763,7 +1765,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     // Ensure there is at least one silo. If there isn't, then the mod will never validate
                     if (!siloScopes.AllowedSilos.Any())
                     {
-                        Analytics.TrackEvent(@"Mod has no scoped silos", new Dictionary<string, string>(){
+                        TelemetryInterposer.TrackEvent(@"Mod has no scoped silos", new Dictionary<string, string>(){
                             {@"Mod name", ModName},
                             {@"Mod version", ModVersionString},
                         });
@@ -1806,7 +1808,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     {
                         if (!siloScopes.AllowedSilos.Any(silo => f.StartsWith(silo, StringComparison.InvariantCultureIgnoreCase)))
                         {
-                            Analytics.TrackEvent(@"Mod attempts to install outside of header silos", new Dictionary<string, string>()
+                            TelemetryInterposer.TrackEvent(@"Mod attempts to install outside of header silos", new Dictionary<string, string>()
                                 {
                                     {@"Mod name", ModName},
                                     {@"Header", job.Header.ToString()},
@@ -1827,7 +1829,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                         {
                             if (siloScopes.DisallowedSilos.Any(silo => f.StartsWith(silo, StringComparison.InvariantCultureIgnoreCase)))
                             {
-                                Analytics.TrackEvent(@"Mod attempts to install outside of header silos", new Dictionary<string, string>()
+                                TelemetryInterposer.TrackEvent(@"Mod attempts to install outside of header silos", new Dictionary<string, string>()
                                 {
                                     {@"Mod name", ModName},
                                     {@"Header", job.Header.ToString()},
@@ -1849,7 +1851,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                         {
                             if (siloScopes.DisallowedFileSilos.Any(silo => silo.Equals(f, StringComparison.InvariantCultureIgnoreCase)))
                             {
-                                Analytics.TrackEvent(@"Mod attempts to install disallowed file", new Dictionary<string, string>()
+                                TelemetryInterposer.TrackEvent(@"Mod attempts to install disallowed file", new Dictionary<string, string>()
                                 {
                                     {@"Mod name", ModName},
                                     {@"Header", job.Header.ToString()},

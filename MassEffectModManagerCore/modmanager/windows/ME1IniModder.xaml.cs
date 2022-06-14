@@ -8,6 +8,7 @@ using System.Windows.Data;
 using System.Windows.Threading;
 using System.Xml.Linq;
 using LegendaryExplorerCore.Misc;
+using ME3TweaksCore.Helpers;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.meim;
@@ -28,7 +29,7 @@ namespace ME3TweaksModManager.modmanager.windows
 
         public ME1IniModder()
         {
-            Analytics.TrackEvent(@"Launched MEIM");
+            TelemetryInterposer.TrackEvent(@"Launched MEIM");
             DataContext = this;
             InitializeComponent();
 
@@ -234,7 +235,7 @@ public event PropertyChangedEventHandler PropertyChanged;
                             M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_propertyNotSaved, prop.FriendlyPropertyName, validation), M3L.GetString(M3L.string_errorSavingProperties), MessageBoxButton.OK, MessageBoxImage.Error);
                         }
                     }
-                    Analytics.TrackEvent(@"Saved game config in MEIM");
+                    TelemetryInterposer.TrackEvent(@"Saved game config in MEIM");
                     File.WriteAllText(configFileBeingUpdated, ini.ToString());
                     ShowMessage(M3L.GetString(M3L.string_saved));
                 }

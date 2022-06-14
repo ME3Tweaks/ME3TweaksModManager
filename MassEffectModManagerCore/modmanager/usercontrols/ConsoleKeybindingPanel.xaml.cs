@@ -431,7 +431,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     if (Game.IsGame3()) SetME3ConsoleKeybinds(consoleKeyStr, typeKeyStr);
                     if (Game is MEGame.LE1 or MEGame.LE2) SetLE1LE2ConsoleKeybinds(consoleKeyStr, typeKeyStr);
 
-                    Analytics.TrackEvent($@"Set {Game} Console Keys", new Dictionary<string, string>()
+                    TelemetryInterposer.TrackEvent($@"Set {Game} Console Keys", new Dictionary<string, string>()
                     {
                         {@"Full Console Key", consoleKeyStr },
                         {@"Mini Console Key", typeKeyStr }

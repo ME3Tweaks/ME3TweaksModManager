@@ -94,7 +94,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             Action<string> currentTaskUpdateCallback = null, Action<bool> setPercentVisibilityCallback = null, Action<int> setPercentTaskDone = null, Action<string> resultingExecutableStringCallback = null,
             Action<Exception, string, string> errorExtractingCallback = null)
         {
-            Analytics.TrackEvent(@"Downloading new external tool", new Dictionary<string, string>()
+            TelemetryInterposer.TrackEvent(@"Downloading new external tool", new Dictionary<string, string>()
             {
                 {@"Tool name", Path.GetFileName(executable)},
                 {@"Version", version.ToString()}
@@ -235,7 +235,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             #endregion
 
             if (latestRelease == null || downloadLink == null) return;
-            Analytics.TrackEvent(@"Downloading new external tool", new Dictionary<string, string>()
+            TelemetryInterposer.TrackEvent(@"Downloading new external tool", new Dictionary<string, string>()
             {
                 {@"Tool name", Path.GetFileName(executable)},
                 {@"Version", latestRelease.TagName}
@@ -365,7 +365,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
 
             Action = M3L.GetString(M3L.string_interp_launching, toolToUiString(tool));
-            Analytics.TrackEvent(@"Launching tool", new Dictionary<string, string>()
+            TelemetryInterposer.TrackEvent(@"Launching tool", new Dictionary<string, string>()
             {
                 {@"Tool name", Path.GetFileName(localExecutable) }
             });

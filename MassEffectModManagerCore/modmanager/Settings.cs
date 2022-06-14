@@ -282,6 +282,11 @@ namespace ME3TweaksModManager.modmanager
             set => SetProperty(ref _showedPreviewPanel, value);
         }
 
+        /// <summary>
+        /// This option should be used to gate telemetry submissions; only after the onboarding dialog has shown will we allow telemetry data to be submitted.
+        /// </summary>
+        public static bool CanSendTelemetry => ShowedPreviewPanel && EnableTelemetry;
+
         private static bool _logModMakerCompiler;
         public static bool LogModMakerCompiler
         {

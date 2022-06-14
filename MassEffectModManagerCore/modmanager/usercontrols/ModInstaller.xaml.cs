@@ -1079,7 +1079,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     if (section == null)
                     {
                         M3Log.Error($@"RCW section is null! We didn't find {rcwS.SectionName}");
-                        Analytics.TrackEvent(@"RCW Section Null", new Dictionary<string, string>
+                        TelemetryInterposer.TrackEvent(@"RCW Section Null", new Dictionary<string, string>
                         {
                             {@"MissingSection", rcwS.SectionName},
                             {@"InFile", rcwF.FileName}
@@ -1516,7 +1516,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 telemetryInfo[@"Alternate Options Selected"] = alternateOptionsPicked;
             }
 
-            Analytics.TrackEvent(@"Installed a mod", telemetryInfo);
+            TelemetryInterposer.TrackEvent(@"Installed a mod", telemetryInfo);
             OnClosing(DataEventArgs.Empty);
         }
 

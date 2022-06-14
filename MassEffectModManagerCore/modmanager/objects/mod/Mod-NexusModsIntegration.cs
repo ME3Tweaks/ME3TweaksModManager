@@ -121,7 +121,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 
                 checkedEndorsementStatus = false;
                 IsEndorsed = GetEndorsementStatus().Result ?? false;
-                Analytics.TrackEvent(@"Set endorsement for mod", new Dictionary<string, string>
+                TelemetryInterposer.TrackEvent(@"Set endorsement for mod", new Dictionary<string, string>
                 {
                     {@"Endorsed", endorse.ToString() },
                     {@"Succeeded", telemetryOverride ?? (endorse == IsEndorsed).ToString() }

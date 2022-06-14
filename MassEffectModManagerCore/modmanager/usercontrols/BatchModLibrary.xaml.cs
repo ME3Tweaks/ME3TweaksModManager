@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Input;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
+using ME3TweaksCore.Helpers;
 using ME3TweaksCoreWPF;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksCoreWPF.UI;
@@ -86,7 +87,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private void InstallGroup()
         {
-            Analytics.TrackEvent(@"Installing Batch Group", new Dictionary<string, string>()
+            TelemetryInterposer.TrackEvent(@"Installing Batch Group", new Dictionary<string, string>()
             {
                 {@"Group name", SelectedBatchQueue.QueueName},
                 {@"Group size", SelectedBatchQueue.ModsToInstall.Count.ToString()},

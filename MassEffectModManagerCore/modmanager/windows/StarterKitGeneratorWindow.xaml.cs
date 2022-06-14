@@ -18,6 +18,7 @@ using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.TLK;
 using LegendaryExplorerCore.TLK.ME1;
+using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Objects;
 using ME3TweaksCore.Services.ThirdPartyModIdentification;
 using ME3TweaksCoreWPF.UI;
@@ -429,7 +430,7 @@ namespace ME3TweaksModManager.modmanager.windows
                     if (turnOnDevMode == MessageBoxResult.Yes)
                     {
                         Settings.DeveloperMode = true;
-                        Analytics.TrackEvent(@"Turned on developer mode after starter kit");
+                        TelemetryInterposer.TrackEvent(@"Turned on developer mode after starter kit");
                         //Settings.Save();
                     }
                 }
