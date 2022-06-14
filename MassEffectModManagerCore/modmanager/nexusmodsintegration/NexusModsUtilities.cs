@@ -208,7 +208,7 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
 
                 var newStatus = GetEndorsementStatusForFile(gamedomain, fileid).Result;
 
-                Analytics.TrackEvent(@"Set endorsement for mod", new Dictionary<string, string>
+                TelemetryInterposer.TrackEvent(@"Set endorsement for mod", new Dictionary<string, string>
                 {
                     {@"Endorsed", endorse.ToString()},
                     {@"Succeeded", telemetryOverride ?? (endorse == newStatus).ToString()}
