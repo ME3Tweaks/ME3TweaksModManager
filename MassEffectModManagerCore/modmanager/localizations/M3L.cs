@@ -475,6 +475,10 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_interp_errorCompilingCoalescedFile = "string_interp_errorCompilingCoalescedFile";
 		public const string string_errorCompiling = "string_errorCompiling";
 		public const string string_abortedCompilingCoalescedFile = "string_abortedCompilingCoalescedFile";
+		public const string string_interp_decompressingFname = "string_interp_decompressingFname";
+		public const string string_interp_decompressedFname = "string_interp_decompressedFname";
+		public const string string_interp_decompressingFnamePercent = "string_interp_decompressingFnamePercent";
+		public const string string_interp_failedToDecompressFname = "string_interp_failedToDecompressFname";
 		public const string string_interp_lexNightlyFailedToDownload = "string_interp_lexNightlyFailedToDownload";
 		public const string string_loadingME3TweaksServices = "string_loadingME3TweaksServices";
 		public const string string_refreshingME3TweaksServices = "string_refreshingME3TweaksServices";
@@ -554,6 +558,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_updatingTLKFiles = "string_updatingTLKFiles";
 		public const string string_applyingMergemods = "string_applyingMergemods";
 		public const string string_interp_minVersionAppend = "string_interp_minVersionAppend";
+		public const string string_notice_directModsDontGoToLibrary = "string_notice_directModsDontGoToLibrary";
 		public const string string_previewPanelTitle = "string_previewPanelTitle";
 		public const string string_selectYourLanguage = "string_selectYourLanguage";
 		public const string string_howToChangeLanguage = "string_howToChangeLanguage";
@@ -729,6 +734,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_deplolymentPanelSubheading = "string_deplolymentPanelSubheading";
 		public const string string_creatingCombinedTLKMergeFile = "string_creatingCombinedTLKMergeFile";
 		public const string string_addingCombinedTLKMergeFile = "string_addingCombinedTLKMergeFile";
+		public const string string_tooltip_clickToLEX = "string_tooltip_clickToLEX";
 		public const string string_interp_cannotInstallTFCToBasegameLE1 = "string_interp_cannotInstallTFCToBasegameLE1";
 		public const string string_deployment_squadmateOutfitMerge = "string_deployment_squadmateOutfitMerge";
 		public const string string_deployment_sqmIssuesDialogMessage = "string_deployment_sqmIssuesDialogMessage";
@@ -891,6 +897,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_cannotShowModifiedBasegameFilesTextureModded = "string_cannotShowModifiedBasegameFilesTextureModded";
 		public const string string_showInstalledOptions = "string_showInstalledOptions";
 		public const string string_hideInstalledOptions = "string_hideInstalledOptions";
+		public const string string_noTextureModsAreInstalled = "string_noTextureModsAreInstalled";
 		public const string string_selectALogToView = "string_selectALogToView";
 		public const string string_collectingLogInformation = "string_collectingLogInformation";
 		public const string string_interp_serverRejectedTheUpload = "string_interp_serverRejectedTheUpload";
@@ -1053,6 +1060,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_moduleNumberColon = "string_moduleNumberColon";
 		public const string string_interp_errorSubmittingModInformation = "string_interp_errorSubmittingModInformation";
 		public const string string_errorSubmitting = "string_errorSubmitting";
+		public const string string_tpmi_reviewMessage = "string_tpmi_reviewMessage";
 		public const string string_no = "string_no";
 		public const string string_ok = "string_ok";
 		public const string string_yes = "string_yes";
@@ -1768,6 +1776,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_tooltip_moveAlternateUp = "string_tooltip_moveAlternateUp";
 		public const string string_tooltip_moveAlternateDown = "string_tooltip_moveAlternateDown";
 		public const string string_mde_validation_customDLCUniqueNames = "string_mde_validation_customDLCUniqueNames";
+		public const string string_mde_dlcModControl = "string_mde_dlcModControl";
 		public const string string_nexusModsFileSearch = "string_nexusModsFileSearch";
 		public const string string_description_nexusModsFileSearch = "string_description_nexusModsFileSearch";
 		public const string string_search = "string_search";

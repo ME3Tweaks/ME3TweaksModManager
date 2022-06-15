@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms.Design;
 using LegendaryExplorerCore.Compression;
 using LegendaryExplorerCore.Helpers;
+using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.objects.mod;
 using Microsoft.AppCenter.Ingestion.Models;
 
@@ -67,22 +68,48 @@ namespace ME3TweaksModManager.modmanager.objects.tlk
         }
 
         /// <summary>
-        /// Fetches a text file out of the archive
+        /// Fetches a file out of the archive and writes it to the specified stream
         /// </summary>
         /// <param name="fileName"></param>
         /// <param name="compressedStream"></param>
         /// <returns></returns>
-        public string DecompressTextFile(string fileName, Stream compressedStream)
+        public void DecompressFileToStream(string fileName, Stream compressedStream, Stream outStream)
         {
             // This is probably terrible in terms of allocations
             var info = CompressedInfo[fileName];
             compressedStream.Seek(info.dataStartOffset, SeekOrigin.Begin);
             byte[] compressed = compressedStream.ReadToBuffer(info.compressedSize);
-            byte[] result = new byte[info.decompressedSize];
-            LZMA.Decompress(compressed, result);
-            return new StreamReader(new MemoryStream(result)).ReadToEnd();
+            var result = DecompressFile(info, compressed.AsSpan());
+            outStream.Write(result, 0, result.Length);
         }
 
+        /// <summary>
+        /// Fetches a file out of the archive and writes it to the specified stream
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="compressedStream"></param>
+        /// <returns></returns>
+        public void DecompressFileToStream(string fileName, byte[] compressedDataBlock, Stream outStream)
+        {
+            // This is probably terrible in terms of allocations
+            var info = CompressedInfo[fileName];
+            var compressed = compressedDataBlock.AsSpan(info.dataStartOffset, info.compressedSize);
+            var result = DecompressFile(info, compressed);
+            outStream.Write(result, 0, result.Length);
+        }
+
+        /// <summary>
+        /// Decompresses data from the specified span encoded in LZMA format.
+        /// </summary>
+        /// <returns></returns>
+        public byte[] DecompressFile(TLKMergeCompressedInfo info, Span<byte> compressedData)
+        {
+            var outData = new byte[info.decompressedSize];
+            LZMA.Decompress(compressedData, outData);
+            return outData;
+        }
+
+        #region TEXT FILES
         /// <summary>
         /// Fetches a text file out of the archive
         /// </summary>
@@ -94,10 +121,21 @@ namespace ME3TweaksModManager.modmanager.objects.tlk
             // This is probably terrible in terms of allocations
             var info = CompressedInfo[fileName];
             var compressed = compressedData.AsSpan(info.dataStartOffset, info.compressedSize);
-            var outData = new byte[info.decompressedSize];
-            var result = LZMA.Decompress(compressed, outData);
+            return DecompressTextFile(info, compressed);
+        }
+
+        /// <summary>
+        /// Decompresses text data from the specified span encoded in LZMA format.
+        /// </summary>
+        /// <returns></returns>
+        public string DecompressTextFile(TLKMergeCompressedInfo info, Span<byte> compressedData)
+        {
+            var result = DecompressFile(info, compressedData);
             return new StreamReader(new MemoryStream(result)).ReadToEnd();
         }
+        #endregion
+
+
 
         /// <summary>
         /// Reads a compressed tlk merge data stream. Does NOT decompress the data - this only reads the header info
@@ -226,6 +264,40 @@ namespace ME3TweaksModManager.modmanager.objects.tlk
         public TLKMergeCompressedInfo GetFileInfo(string file)
         {
             return CompressedInfo[file];
+        }
+
+
+        /// <summary>
+        /// Decompresses the archive to disk at the specified location
+        /// </summary>
+        /// <param name="outputDirectory"></param>
+        /// <returns>true if successful, false if any errors occurred</returns>
+        public bool DecompressArchiveToDisk(string outputDirectory, byte[] compressedDataBlock, Action<int, int> progressCallback = null)
+        {
+            try
+            {
+                if (!Directory.Exists(outputDirectory))
+                    Directory.CreateDirectory(outputDirectory);
+                int done = 0;
+                int total = CompressedInfo.Count;
+                foreach (var fileInfo in CompressedInfo)
+                {
+                    var outF = Path.Combine(outputDirectory, fileInfo.Key);
+                    using var outS = File.Open(outF, FileMode.Create, FileAccess.Write);
+                    M3Log.Information($@"M3ZA: Decompressing {fileInfo.Key} to {outF}");
+                    DecompressFileToStream(fileInfo.Key, compressedDataBlock, outS);
+                    done++;
+                    progressCallback?.Invoke(done, total);
+                }
+
+                return true;
+            }
+            catch (IOException e)
+            {
+                M3Log.Exception(e, $@"Error decompressing archive to disk at {outputDirectory}:");
+            }
+
+            return false;
         }
     }
 }

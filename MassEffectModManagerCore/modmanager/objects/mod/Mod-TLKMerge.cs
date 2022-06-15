@@ -137,6 +137,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 // Load from the compressed TLK merge data file
                 var loadInfo = compressedTlkMergeData.GetFileInfo(tlkXmlName);
                 var compressedData = compressedTlkMergeData.LoadedCompressedData.AsSpan(loadInfo.dataStartOffset, loadInfo.compressedSize);
+                compressedTlkMergeData.DecompressTextFile(loadInfo, compressedData);
                 var decomp = new byte[loadInfo.decompressedSize];
                 LZMA.Decompress(compressedData, decomp);
                 xmlContents = new StreamReader(new MemoryStream(decomp)).ReadToEnd();

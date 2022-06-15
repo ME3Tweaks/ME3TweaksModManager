@@ -434,6 +434,14 @@
     <!-- 0={Exception Message} -->
     <system:String x:Key="string_errorCompiling">Error compiling</system:String>
     <system:String x:Key="string_abortedCompilingCoalescedFile">Aborted compiling Coalesced file</system:String>
+    <system:String x:Key="string_interp_decompressingFname">Decompressing {0}</system:String>
+    <!-- 0={Filename} -->
+    <system:String x:Key="string_interp_decompressedFname">Decompressed {0}</system:String>
+    <!-- 0={Filename} -->
+    <system:String x:Key="string_interp_decompressingFnamePercent">Decompressing {0} {1}%</system:String>
+    <!-- 0={Filename} 1={percent} -->
+    <system:String x:Key="string_interp_failedToDecompressFname">Failed to decompress {0}</system:String>
+    <!-- 0={Filename} -->
 
     <!-- LEX Launcher -->
     <system:String x:Key="string_interp_lexNightlyFailedToDownload">Legendary Explorer Nightly failed to download: {0}</system:String>
