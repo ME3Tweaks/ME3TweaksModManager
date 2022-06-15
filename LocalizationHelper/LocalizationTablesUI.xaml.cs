@@ -345,7 +345,7 @@ namespace LocalizationHelper
                     PleaseWaitString = $"Fetching Dynamic Help";
 
                     endpoint =
-                        $"https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/{branch}/MassEffectModManagerCore/staticfiles/dynamichelp/latesthelp-localized.xml";
+                        $"https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/staticfiles/liveservices/staticfiles/v1/dynamichelp/dynamichelp.xml";
                     var dynamicHelpXml = wc.DownloadString(endpoint);
                     XDocument doc = XDocument.Parse(dynamicHelpXml);
                     var intxml = doc.XPathSelectElement("/localizations/helpmenu[@lang='int']");
@@ -716,6 +716,8 @@ namespace LocalizationHelper
                 {
                     var fname = openFileDialog.FileName;
                     var langCode = Path.GetFileNameWithoutExtension(fname).ToLower();
+                    if (langCode.StartsWith("m3c-")) langCode = langCode.Substring(4); // Remove autosave m3c-
+                    if (langCode.StartsWith("m3-")) langCode = langCode.Substring(3); // Remove autosave m3-
                     if (langCode.Length != 3)
                     {
                         MessageBox.Show(
