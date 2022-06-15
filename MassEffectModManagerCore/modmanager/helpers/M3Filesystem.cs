@@ -210,5 +210,15 @@ namespace ME3TweaksModManager.modmanager.helpers
         {
             return Directory.CreateDirectory(Path.Combine(GetTempPath(), @"UpdaterServiceStaging")).FullName;
         }
+
+        public static string GetModDescUpdaterServiceFile()
+        {
+            return Path.Combine(MCoreFilesystem.GetME3TweaksServicesCache(), @"moddescupdaterservice.json");
+        }
+
+        internal static string GetModDescUpdaterServiceFolder()
+        {
+            return Directory.CreateDirectory(Path.Combine(MCoreFilesystem.GetME3TweaksServicesCache(), @"moddescupdaterservice")).FullName;
+        }
     }
 }

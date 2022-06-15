@@ -159,6 +159,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
         public static string FetchThirdPartyModdesc(string name)
         {
             using var wc = new ShortTimeoutWebClient();
+            M3Log.Information($@"Fetching online moddesc: {name}");
             string moddesc = WebClientExtensions.DownloadStringAwareOfEncoding(wc, ThirdPartyModDescURL + name);
             return moddesc;
         }

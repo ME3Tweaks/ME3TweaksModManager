@@ -98,6 +98,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.online
         public const string TPI_SERVICE_KEY = @"thirdpartyimportingservice";
         public const string NEXUS_UPDATER_SERVICE_KEY = @"nexusupdaterservice";
         public const string DYNAMIC_HELP_SERVICE_KEY = @"dynamichelp";
+        public const string MODDESC_UPDATER_SERVICE_KEY = @"moddescupdaterservice";
 
 
         // Mod Manager specific service loaders
@@ -109,7 +110,8 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.online
             { TIPS_SERVICE_KEY, TipsService.LoadService },
             { NEXUS_UPDATER_SERVICE_KEY, NexusUpdaterService.LoadService },
             { MCoreServiceLoader.ASI_MANIFEST_KEY, ASIManager.LoadService }, // Mod Manager controls loading this service so we use it here.
-            { DYNAMIC_HELP_SERVICE_KEY, DynamicHelpService.LoadService } // This just loads the xml document. The UI must update after init
+            { DYNAMIC_HELP_SERVICE_KEY, DynamicHelpService.LoadService }, // This just loads the xml document. The UI must update after init
+            { MODDESC_UPDATER_SERVICE_KEY, ModDescUpdaterService.LoadService } 
             // Live Localization? (This is done by startup manifest right?)
         };
 

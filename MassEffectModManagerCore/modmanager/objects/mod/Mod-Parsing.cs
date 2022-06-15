@@ -374,8 +374,21 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 return;
             }
 
-            ms.Position = 0;
-            string iniText = new StreamReader(ms).ReadToEnd();
+            // 06/14/2022 - ME3Tweaks Moddesc Updates 
+            // This is for mods that might break when used on Mod Manager 8.0 and above due to alternate logic change
+            var moddescHash = MUtilities.CalculateMD5(ms); //resets pos to 0
+            string updatedIni = null;
+            if (ModDescUpdaterService.HasHash(moddescHash))
+            {
+                updatedIni = ModDescUpdaterService.FetchUpdatedModdesc(moddescHash);
+                if (updatedIni != null)
+                {
+                    M3Log.Information(@"This moddesc is being updated by ME3Tweaks ModDesc Updater Service");
+                }
+            }
+                
+            string iniText = updatedIni ?? new StreamReader(ms).ReadToEnd();
+            
             ModPath = Path.GetDirectoryName(moddescArchiveEntry.FileName);
             Archive = archive;
             ArchivePath = archive.FileName;
