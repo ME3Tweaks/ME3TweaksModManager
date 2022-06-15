@@ -94,9 +94,6 @@ namespace ME3TweaksModManager
             @"Windows 11 (not EOL versions)"
         };
 
-        [DllImport(@"kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        static extern bool SetDllDirectory(string lpPathName);
-
         public static string BuildDate;
         public static bool IsSigned;
 
@@ -118,7 +115,6 @@ namespace ME3TweaksModManager
         public App() : base()
         {
             ExecutableLocation = Process.GetCurrentProcess().MainModule.FileName;
-
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 
