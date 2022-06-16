@@ -617,7 +617,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 }
             }
 
-            bool bgTrackingLocalOnly = InstallOptionsPackage.ModBeingInstalled.ModModMakerID != 0; // only locally track modmaker mods
             var basegameFilesInstalled = new List<string>();
             var basegameCloudDBUpdates = new List<BasegameFileRecord>();
             void FileInstalledIntoSFARCallback(Dictionary<string, Mod.InstallSourceFile> sfarMapping, string targetPath)
@@ -1004,13 +1003,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         files.Add(entry);
                     }
                     BasegameFileIdentificationService.AddLocalBasegameIdentificationEntries(files);
-
-                    if (Settings.EnableTelemetry && !bgTrackingLocalOnly)
-                    {
-                        // Submit for global telemetry
-                        string output = JsonConvert.SerializeObject(files);
-                        await @"https://me3tweaks.com/modmanager/services/basegamefileid".PostStringAsync(output);
-                    }
                 }
                 catch (Exception ex)
                 {
