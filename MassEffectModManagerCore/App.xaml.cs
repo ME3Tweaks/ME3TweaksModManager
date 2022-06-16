@@ -25,6 +25,7 @@ using ME3TweaksCore.Helpers;
 using ME3TweaksModManager.modmanager;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
+using ME3TweaksModManager.modmanager.me3tweaks.services;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.tutorial;
 using ME3TweaksModManager.modmanager.windows;
@@ -346,7 +347,7 @@ namespace ME3TweaksModManager
                     // If option is not selected the items will be discarded
                 }
 
-                if (Settings.Language != @"int" && SupportedLanguages.Contains(Settings.Language))
+                if (Settings.Language != @"int" && M3Localization.SupportedLanguages.Contains(Settings.Language))
                 {
                     InitialLanguage = Settings.Language;
                 }
@@ -469,11 +470,6 @@ namespace ME3TweaksModManager
         /// If the application is running on an AMD processor; use for 'requireamdprocessor' flag
         /// </summary>
         public static bool IsRunningOnAMD;
-
-        /// <summary>
-        /// The internal language codes that Mod Manager supports for UI localization (this does not mean they are implemented!)
-        /// </summary>
-        public static string[] SupportedLanguages = { @"int", @"pol", @"rus", @"deu", @"fra", @"bra", @"esn", @"kor" };
 
         public static int BuildNumber = Assembly.GetEntryAssembly().GetName().Version.Revision;
         public static bool BootingUpdate;

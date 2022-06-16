@@ -36,7 +36,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.online
             var hasUpdatedLocalization = M3OnlineContent.HasUpdatedLocalization(App.CurrentLanguage);
             if (hasUpdatedLocalization.HasValue)
             {
-                window.SetApplicationLanguage(App.CurrentLanguage, false); //Force update of localization
+                window.SetApplicationLanguageAsync(App.CurrentLanguage, false); //Force update of localization
             }
         }
 

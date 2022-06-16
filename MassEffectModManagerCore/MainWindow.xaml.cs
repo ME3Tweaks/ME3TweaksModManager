@@ -286,6 +286,7 @@ namespace ME3TweaksModManager
             //Change language if not INT
             if (App.InitialLanguage != @"int")
             {
+                // Sync version
                 SetApplicationLanguage(App.InitialLanguage, true);
             }
 
@@ -435,6 +436,10 @@ namespace ME3TweaksModManager
             }
         }
 
+        /// <summary>
+        /// Updates the Nexus Login status
+        /// </summary>
+        /// <param name="languageUpdateOnly">If we should only update the language text instead of a full update of API keys</param>
         public async void RefreshNexusStatus(bool languageUpdateOnly = false)
         {
             if (NexusModsUtilities.HasAPIKey)
@@ -3889,64 +3894,94 @@ namespace ME3TweaksModManager
             //{
             //    lang = @"kor";
             //}
-            SetApplicationLanguage(lang, false);
+            SetApplicationLanguageAsync(lang, false);
         }
 
         /// <summary>
-        /// Sets the UI language. This will save the settings if it is not startup.
+        /// Sets the UI language synchronously, typically before we have a way to schedule onto the UI thread (e.g. UI thread has not started)
         /// </summary>
         /// <param name="lang"></param>
         /// <param name="startup"></param>
         /// <param name="forcedDictionary"></param>
         public void SetApplicationLanguage(string lang, bool startup, ResourceDictionary forcedDictionary = null)
         {
-
             M3Log.Information(@"Setting language to " + lang);
-            Application.Current.Dispatcher.Invoke(async () =>
+            M3Localization.InternalSetLanguage(lang, forcedDictionary, startup).Wait();
+            RefreshMainUIStrings(lang, startup);
+        }
+
+        /// <summary>
+        /// Sets the UI language on a background thread.
+        /// </summary>
+        /// <param name="lang"></param>
+        /// <param name="startup"></param>
+        /// <param name="forcedDictionary"></param>
+        public void SetApplicationLanguageAsync(string lang, bool startup, ResourceDictionary forcedDictionary = null)
+        {
+            //Application.Current.Dispatcher.Invoke(async () =>
+            //{
+            //Set language.
+            Stopwatch sw = new Stopwatch();
+            Task.Run(() =>
             {
-                //Set language.
-                Task.Run(async () => { await M3OnlineContent.InternalSetLanguage(lang, forcedDictionary, startup); }).Wait();
-
-                App.CurrentLanguage = Settings.Language = lang;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NoModSelectedText))); // Update localized tip shown
-                RefreshNexusStatus(true);
-                try
-                {
-                    var localizedHelpItems = DynamicHelpService.GetHelpItems(lang);
-                    setDynamicHelpMenu(localizedHelpItems);
-                }
-                catch (Exception e)
-                {
-                    M3Log.Error(@"Could not set localized dynamic help: " + e.Message);
-                }
-
-                if (SelectedMod != null)
-                {
-                    // This will force strings to update
-                    var sm = SelectedMod;
-                    SelectedMod = null;
-                    SelectedMod = sm;
-                }
-
-                if (!startup)
-                {
-                    if (forcedDictionary == null)
-                    {
-                        //Settings.Save(); //save this language option
-                    }
-                    await AuthToNexusMods(languageUpdateOnly: true); //this call will immediately return
-                    M3LoadedMods.Instance.FailedMods.RaiseBindableCountChanged();
-                    CurrentOperationText = M3L.GetString(M3L.string_setLanguageToX);
-                    VisitWebsiteText = (SelectedMod != null && SelectedMod.ModWebsite != Mod.DefaultWebsite) ? M3L.GetString(M3L.string_interp_visitSelectedModWebSite, SelectedMod.ModName) : "";
-                }
+                sw.Start();
+                M3Localization.InternalSetLanguage(lang, forcedDictionary, startup).Wait();
+            }).ContinueWithOnUIThread(x =>
+            {
+                // Debug.WriteLine($@"ChangeLangAsync time: {sw.ElapsedMilliseconds}ms");
+                RefreshMainUIStrings(lang, startup);
+                // Debug.WriteLine($@"ChangeLangAsync time post-ui refresh: {sw.ElapsedMilliseconds}ms");
             });
         }
+
+        /// <summary>
+        /// Triggers UI strings to rebind when a language change has occurred
+        /// </summary>
+        /// <param name="startup"></param>
+        /// <param name="lang"></param>
+        private void RefreshMainUIStrings(string lang, bool startup)
+        {
+            App.CurrentLanguage = Settings.Language = lang;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NoModSelectedText))); // Update localized tip shown
+            RefreshNexusStatus(true);
+            try
+            {
+                var localizedHelpItems = DynamicHelpService.GetHelpItems(lang);
+                setDynamicHelpMenu(localizedHelpItems);
+            }
+            catch (Exception e)
+            {
+                M3Log.Error(@"Could not set localized dynamic help: " + e.Message);
+            }
+
+            if (SelectedMod != null)
+            {
+                // This will force strings to update
+                var sm = SelectedMod;
+                SelectedMod = null;
+                SelectedMod = sm;
+            }
+
+            if (!startup)
+            {
+                //if (forcedDictionary == null)
+                //{
+                //Settings.Save(); //save this language option
+                //}
+
+                AuthToNexusMods(languageUpdateOnly: true).Wait(); //this call will immediately return
+                M3LoadedMods.Instance.FailedMods.RaiseBindableCountChanged();
+                CurrentOperationText = M3L.GetString(M3L.string_setLanguageToX);
+                VisitWebsiteText = (SelectedMod != null && SelectedMod.ModWebsite != Mod.DefaultWebsite) ? M3L.GetString(M3L.string_interp_visitSelectedModWebSite, SelectedMod.ModName) : "";
+            }
+        }
+
 
         private void LoadExternalLocalizationDictionary(string filepath)
         {
             string filename = Path.GetFileNameWithoutExtension(filepath);
             string extension = Path.GetExtension(filepath);
-            if (App.SupportedLanguages.Contains(filename) && extension == @".xaml" && Settings.DeveloperMode)
+            if (M3Localization.SupportedLanguages.Contains(filename) && extension == @".xaml" && Settings.DeveloperMode)
             {
                 //Load external dictionary
                 try

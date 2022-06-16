@@ -89,18 +89,17 @@ namespace ME3TweaksModManager.modmanager.windows
                 {
                     tutorialStep.UIString = tutorialStep.UIString.Replace(@"\n", "\n"); //do not localize
                 }
+
+                tutorialStep.UIImagePath = Path.Combine(M3Filesystem.GetTutorialServiceCache(), tutorialStep.imagename);
 #if DEBUG
-                tutorialStep.UIImagePath = Path.Combine(@"C:\ProgramData\ME3TweaksModManager\ME3TweaksServicesCache\tutorialservice\new", tutorialStep.imagename);
                 if (!File.Exists(tutorialStep.UIImagePath))
                 {
                     Debug.WriteLine($@"File not found for tutorial: {tutorialStep.UIImagePath}");
                 }
                 else
                 {
-                    Debug.WriteLine($@"OK -- File not found for tutorial: {tutorialStep.UIImagePath}");
+                    Debug.WriteLine($@"OK -- File found for tutorial: {tutorialStep.UIImagePath}");
                 }
-#else
-                tutorialStep.UIImagePath = Path.Combine(M3Filesystem.GetTutorialServiceCache(), tutorialStep.imagename);
 #endif
             }
         }

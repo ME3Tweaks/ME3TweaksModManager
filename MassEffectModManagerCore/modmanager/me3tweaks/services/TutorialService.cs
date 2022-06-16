@@ -134,7 +134,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
             //Debug.WriteLine(@"TouchupTutorial() DISABLED IN THIS DEBUG BUILD (see TutorialService.cs!)");
             //return; // DONT DO ANYTHING, TESTIN
 #endif
-
+            M3Log.Information(@"TutorialService: Running Touchup");
             var fileRootPath = M3Filesystem.GetTutorialServiceCache();
             foreach (var step in Database)
             {

@@ -116,7 +116,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private void ChangeLanguage(string lang)
         {
-            mainwindow.SetApplicationLanguage(lang, false);
+            mainwindow.SetApplicationLanguageAsync(lang, false);
             SetAuthorized(IsAuthorized);
             //Settings.Save();
         }
