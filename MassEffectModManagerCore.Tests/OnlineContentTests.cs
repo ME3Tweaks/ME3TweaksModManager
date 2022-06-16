@@ -34,7 +34,6 @@ namespace ME3TweaksModManager.Tests
 
 
             BasegameFileIdentificationService.LoadService(GlobalTest.CombinedServiceData[MCoreServiceLoader.BGFI_SERVICE_KEY]);
-            Assert.AreNotEqual(0, BasegameFileIdentificationService.GetAllServerEntries().Count, "FetchBasegameIdentificationServiceManifest failed: No items were parsed, the list is empty!");
 
             var startupManifest = M3OnlineContent.FetchOnlineStartupManifest(true);
             Assert.AreNotEqual(0, startupManifest.Count, "FetchOnlineStartupManifest failed: No items were parsed, the list is empty!");
