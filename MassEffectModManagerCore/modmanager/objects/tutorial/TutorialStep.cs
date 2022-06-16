@@ -42,11 +42,14 @@ namespace ME3TweaksModManager.modmanager.objects.tutorial
         {
             set
             {
-                Application.Current.Dispatcher.Invoke(() =>
+                if (!string.IsNullOrWhiteSpace(value))
                 {
-                    // Must be done on UI thread.
-                    internaltextcolor = (SolidColorBrush)new BrushConverter().ConvertFromString(value);
-                });
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        // Must be done on UI thread.
+                        internaltextcolor = (SolidColorBrush)new BrushConverter().ConvertFromString(value);
+                    });
+                }
             }
         }
 

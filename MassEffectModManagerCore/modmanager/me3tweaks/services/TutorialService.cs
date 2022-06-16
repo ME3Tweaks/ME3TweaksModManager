@@ -68,11 +68,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
         {
             // Online first
 
-#if DEBUG
-            if (false)
-#else 
             if (serviceData != null)
-#endif
             {
                 try
                 {
@@ -135,8 +131,8 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
         public static void TouchupTutorial()
         {
 #if DEBUG
-            Debug.WriteLine(@"TouchupTutorial() DISABLED IN THIS DEBUG BUILD (see TutorialService.cs!)");
-            return; // DONT DO ANYTHING, TESTIN
+            //Debug.WriteLine(@"TouchupTutorial() DISABLED IN THIS DEBUG BUILD (see TutorialService.cs!)");
+            //return; // DONT DO ANYTHING, TESTIN
 #endif
 
             var fileRootPath = M3Filesystem.GetTutorialServiceCache();
