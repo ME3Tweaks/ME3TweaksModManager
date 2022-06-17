@@ -29,7 +29,7 @@ namespace LocalizationHelper
     public partial class LocalizationTablesUI : Window, INotifyPropertyChanged
     {
         public Visibility LoadingVisibility { get; set; } = Visibility.Visible;
-        private string[] FullySupportedLangs = { "deu", "rus", "pol", "bra" };
+        private string[] FullySupportedLangs = { "deu", "rus", "pol", "bra", "ita", "fra" };
 
         public List<string> GlobalSupportedLanguages = new List<string>();
 
@@ -45,7 +45,8 @@ namespace LocalizationHelper
             Languages.Add(new LocalizationLanguage() { Selected = false, LangCode = "deu", FullName = "German" });
             Languages.Add(new LocalizationLanguage() { Selected = false, LangCode = "rus", FullName = "Russian" });
             Languages.Add(new LocalizationLanguage() { Selected = false, LangCode = "pol", FullName = "Polish" });
-            Languages.Add(new LocalizationLanguage() { Selected = false, LangCode = "bra", FullName = "Portugeuse (Brazilian)" });
+            Languages.Add(new LocalizationLanguage() { Selected = false, LangCode = "ita", FullName = "Italian" });
+            Languages.Add(new LocalizationLanguage() { Selected = false, LangCode = "fra", FullName = "French" });
 
             //Load M3 localizations
             LoadLocalizations(true, @"ME3TweaksModManager", @"MassEffectModManagerCore/modmanager/localizations/", M3LocalizationBranches, M3LocalizationCategories);
@@ -190,8 +191,16 @@ namespace LocalizationHelper
                     PleaseWaitString = $"Fetching {branch} {lang}";
 
                     var url = endpoint + lang + ".xaml";
-                    var dict = client.DownloadStringAwareOfEncoding(url);
-                    dictionaries[lang] = dict;
+                    try
+                    {
+
+                        var dict = client.DownloadStringAwareOfEncoding(url);
+                        dictionaries[lang] = dict;
+                    }
+                    catch (Exception e)
+                    {
+                        dictionaries[lang] = "";
+                    }
                 }
 
                 if (oldBuildBranch != null)
@@ -553,8 +562,8 @@ namespace LocalizationHelper
         private void AddLanguage()
         {
             var result = PromptDialog.Prompt(this, "Enter a 3 letter language code for your new language.",
-                "Enter lang code").Replace(" ", "");
-            if (result.Length != 3)
+                "Enter lang code")?.Replace(" ", "");
+            if (result == null || result.Length != 3)
                 return;
             LocalizationLanguage locLang = Languages.FirstOrDefault(x => x.LangCode == result);
             if (locLang == null)
