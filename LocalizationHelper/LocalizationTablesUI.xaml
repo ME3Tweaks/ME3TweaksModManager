@@ -87,7 +87,9 @@
                         <TextBlock Text="Strings" FontWeight="Bold"/>
                         <TextBlock Text="{Binding PleaseWaitString}" Visibility="{Binding LoadingVisibility}" Margin="5,0"/>
                     </StackPanel>
-                    <ListBox Grid.Row="1" Grid.Column="0" ItemsSource="{Binding M3LocalizationCategories}" 
+                    <ListBox 
+                        Name="M3CategoriesListBox"
+                        Grid.Row="1" Grid.Column="0" ItemsSource="{Binding M3LocalizationCategories}" 
                          SelectedItem="{Binding M3SelectedCategory}" 
                          DisplayMemberPath="CategoryName" Margin="5,0,0,0">
                         <ListBox.ItemContainerStyle>
@@ -96,6 +98,9 @@
                                     <DataTrigger Binding="{Binding HasChangedStrings}" Value="True">
                                         <Setter Property="Background" Value="Orange" />
                                     </DataTrigger>
+                                    <Trigger Property="IsSelected" Value="True" >
+                                        <Setter Property="FontWeight" Value="Bold" />
+                                    </Trigger>
                                 </Style.Triggers>
                             </Style>
                         </ListBox.ItemContainerStyle>
@@ -184,7 +189,9 @@
                         <TextBlock Text="Strings" FontWeight="Bold"/>
                         <TextBlock Text="{Binding PleaseWaitString}" Visibility="{Binding LoadingVisibility}" Margin="5,0"/>
                     </StackPanel>
-                    <ListBox Grid.Row="1" Grid.Column="0" ItemsSource="{Binding M3CLocalizationCategories}" 
+                    <ListBox 
+                        Name="M3CCategoriesListBox"
+                        Grid.Row="1" Grid.Column="0" ItemsSource="{Binding M3CLocalizationCategories}" 
                          SelectedItem="{Binding M3CSelectedCategory}" 
                          DisplayMemberPath="CategoryName" Margin="5,0,0,0">
                         <ListBox.ItemContainerStyle>
@@ -193,6 +200,9 @@
                                     <DataTrigger Binding="{Binding HasChangedStrings}" Value="True">
                                         <Setter Property="Background" Value="Orange" />
                                     </DataTrigger>
+                                    <Trigger Property="IsSelected" Value="True" >
+                                        <Setter Property="FontWeight" Value="Bold" />
+                                    </Trigger>
                                 </Style.Triggers>
                             </Style>
                         </ListBox.ItemContainerStyle>
@@ -200,7 +210,7 @@
                     <DataGrid Name="DataGridTableM3C" Grid.Row="1" Grid.Column="2" 
                           ItemsSource="{Binding M3CSelectedCategory.LocalizedStringsForSection}" 
                           AutoGenerateColumns="False" CanUserAddRows="false"
-                          SelectedItem="{Binding M3CSelectedDataGridItem}">
+                          SelectedItem="{Binding SelectedDataGridItemM3C}">
                         <DataGrid.Resources>
                             <!--<DataTemplate x:Key="LocTextEditorTemplate" >
                                 <TextBox Width="200" TextWrapping="Wrap" Text="Poop{Binding LocalizedStr}"/>

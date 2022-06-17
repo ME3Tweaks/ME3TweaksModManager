@@ -396,7 +396,7 @@ namespace LocalizationHelper
                         locTutorial.Add(ls);
                     }
 
-                    PleaseWaitString = "";
+                    PleaseWaitString = "Loading editor";
 
                     System.Windows.Application.Current.Dispatcher.Invoke(delegate
                     {
@@ -414,7 +414,7 @@ namespace LocalizationHelper
                     {
                         categoryDest.ReplaceAll(categories.OrderBy(x => x.CategoryName));
                     });
-
+                    PleaseWaitString = "";
                     autosaveTimer = new DispatcherTimer();
                     autosaveTimer.Tick += AutoSave;
                     autosaveTimer.Interval = new TimeSpan(0, 1, 0);
@@ -1022,6 +1022,7 @@ namespace LocalizationHelper
 #pragma warning restore
 
         public LocalizedString SelectedDataGridItem { get; set; }
+        public LocalizedString SelectedDataGridItemM3C { get; set; }
 
         public string SearchText { get; set; } = "";
 
@@ -1030,12 +1031,14 @@ namespace LocalizationHelper
 
         private void Find_Clicked(object sender, RoutedEventArgs e)
         {
-
-            int indexOfCurrentCategory =
-                M3SelectedCategory != null ? M3LocalizationCategories.IndexOf(M3SelectedCategory) : 0;
+            var m3core = SelectedTabIndex == 1;
+            var categories = m3core ? M3CLocalizationCategories : M3LocalizationCategories;
+            var currentcategory = m3core ? M3CSelectedCategory : M3SelectedCategory;
+            var currentSelectedItem = m3core ? SelectedDataGridItemM3C : SelectedDataGridItem;
+            int indexOfCurrentCategory = currentcategory != null ? categories.IndexOf(currentcategory) : 0;
             Debug.WriteLine("Current cat index: " + indexOfCurrentCategory);
 
-            int numCategories = M3LocalizationCategories.Count(); //might need to +1 this
+            int numCategories = categories.Count(); //might need to +1 this
             string searchTerm = SearchText.ToLower();
             if (string.IsNullOrEmpty(searchTerm)) return;
             LocalizedString itemToHighlight = null;
@@ -1043,13 +1046,12 @@ namespace LocalizationHelper
             for (int i = 0; i < numCategories; i++)
             {
                 bool found = false;
-                LocalizationCategory cat =
-                    M3LocalizationCategories[(i + indexOfCurrentCategory) % M3LocalizationCategories.Count()];
+                LocalizationCategory cat = categories[(i + indexOfCurrentCategory) % categories.Count()];
                 int startSearchIndex = 0;
                 int numToSearch = cat.LocalizedStringsForSection.Count();
-                if (i == 0 && cat == M3SelectedCategory && SelectedDataGridItem != null)
+                if (i == 0 && cat == currentcategory && currentSelectedItem != null)
                 {
-                    startSearchIndex = cat.LocalizedStringsForSection.IndexOf(SelectedDataGridItem) + 1;
+                    startSearchIndex = cat.LocalizedStringsForSection.IndexOf(currentSelectedItem) + 1;
                     numToSearch -= startSearchIndex;
                 }
 
@@ -1080,7 +1082,7 @@ namespace LocalizationHelper
                     }
 
                     //Lang
-                    if (CurrentLanguage.Contains(ls, searchTerm))
+                    if (CurrentLanguage != null && CurrentLanguage.Contains(ls, searchTerm))
                     {
                         //found
                         found = true;
@@ -1102,9 +1104,20 @@ namespace LocalizationHelper
             }
             else
             {
-                M3SelectedCategory = catToHighlight;
-                SelectedDataGridItem = itemToHighlight;
-                DataGridTable.ScrollIntoView(SelectedDataGridItem);
+                if (m3core)
+                {
+                    M3CSelectedCategory = catToHighlight;
+                    SelectedDataGridItemM3C = itemToHighlight;
+                    M3CCategoriesListBox.ScrollIntoView(catToHighlight);
+                    DataGridTableM3C.ScrollIntoView(SelectedDataGridItemM3C);
+                }
+                else
+                {
+                    M3SelectedCategory = catToHighlight;
+                    SelectedDataGridItem = itemToHighlight;
+                    M3CategoriesListBox.ScrollIntoView(catToHighlight);
+                    DataGridTable.ScrollIntoView(SelectedDataGridItem);
+                }
             }
         }
 
