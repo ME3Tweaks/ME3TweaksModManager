@@ -518,10 +518,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     }
                 }
 
-                if (SelectedTarget != null && !SelectedTarget.TextureModded)
+                if (SelectedTarget != null)
                 {
-                    // Only populate basegame files if not texture modded.
-                    // All texture modded games will have all basegame files modified and tagged
+                    // 06/16/2022 - Change from not populating at all if texture modded
+                    // to filtering out package files and tfc files since they will all be modified.
+
                     SelectedTarget?.PopulateModifiedBasegameFiles(restoreBasegamefileConfirmationCallback,
                         restoreSfarConfirmationCallback,
                         notifyStartingSfarRestoreCallback,

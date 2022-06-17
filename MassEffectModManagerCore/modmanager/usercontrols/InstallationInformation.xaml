@@ -252,18 +252,16 @@
                             Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type UserControl}}, Path=RestoreAllModifiedBasegame}"
                             ToolTip="{DynamicResource string_willAttemptToRestoreAllModifiedBasegameUnpackedFiles}" />
                     </DockPanel>
+                    <DockPanel
+                        DockPanel.Dock="Bottom"
+                        LastChildFill="False"
+                        Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}">
+                        <TextBlock Padding="7,3" Text="Package files and TFC files are not shown because this game is texture modded. All packages file are modified and TFCs cannot be modified when the game has been texture modded."
+                                   TextWrapping="Wrap"/>
+                    </DockPanel>
                     <Grid>
-                        <TextBlock
-                            Text="{DynamicResource string_cannotShowModifiedBasegameFilesTextureModded}"
-                            Visibility="{Binding TextureModded, Converter={StaticResource BoolToVisibilityConverter}}"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Width="300"
-                            TextWrapping="Wrap"
-                            TextAlignment="Center" />
                         <ItemsControl
                             ItemsSource="{Binding ModifiedBasegameFilesView}"
-                            Visibility="{Binding TextureModded, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}"
                             HorizontalContentAlignment="Stretch"
                             HorizontalAlignment="Stretch"
                             AlternationCount="2"

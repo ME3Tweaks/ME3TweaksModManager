@@ -1313,25 +1313,30 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         private void ModInstallationCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             var telemetryResult = ModInstallCompletedStatus.NO_RESULT_CODE;
-            if (InstallOptionsPackage.ModBeingInstalled.Game.IsGame1() || InstallOptionsPackage.ModBeingInstalled.Game.IsGame2())
+            
+            // Only make changes if user didn't cancel
+            if (!InstallationCancelled)
             {
-                Result.TargetsToPlotManagerSync.Add(InstallOptionsPackage.InstallTarget);
-            }
-            if (InstallOptionsPackage.ModBeingInstalled.Game == MEGame.ME3 || InstallOptionsPackage.ModBeingInstalled.Game.IsLEGame())
-            {
-                Result.TargetsToAutoTOC.Add(InstallOptionsPackage.InstallTarget);
-            }
+                if (InstallOptionsPackage.ModBeingInstalled.Game.IsGame1() || InstallOptionsPackage.ModBeingInstalled.Game.IsGame2())
+                {
+                    Result.TargetsToPlotManagerSync.Add(InstallOptionsPackage.InstallTarget);
+                }
 
-            if (InstallOptionsPackage.ModBeingInstalled.Game.IsGame3())
-            {
-                Result.TargetsToSquadmateMergeSync.Add(InstallOptionsPackage.InstallTarget);
-            }
+                if (InstallOptionsPackage.ModBeingInstalled.Game == MEGame.ME3 || InstallOptionsPackage.ModBeingInstalled.Game.IsLEGame())
+                {
+                    Result.TargetsToAutoTOC.Add(InstallOptionsPackage.InstallTarget);
+                }
 
-            if (InstallOptionsPackage.ModBeingInstalled.Game.IsGame2())
-            {
-                Result.TargetsToEmailMergeSync.Add(InstallOptionsPackage.InstallTarget);
-            }
+                if (InstallOptionsPackage.ModBeingInstalled.Game.IsGame3())
+                {
+                    Result.TargetsToSquadmateMergeSync.Add(InstallOptionsPackage.InstallTarget);
+                }
 
+                if (InstallOptionsPackage.ModBeingInstalled.Game.IsGame2())
+                {
+                    Result.TargetsToEmailMergeSync.Add(InstallOptionsPackage.InstallTarget);
+                }
+            }
 
             if (e.Error != null)
             {
