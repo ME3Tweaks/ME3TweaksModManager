@@ -256,8 +256,10 @@
                         DockPanel.Dock="Bottom"
                         LastChildFill="False"
                         Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}">
-                        <TextBlock Padding="7,3" Text="Package files and TFC files are not shown because this game is texture modded. All packages file are modified and TFCs cannot be modified when the game has been texture modded."
-                                   TextWrapping="Wrap"/>
+                        <TextBlock
+                            Padding="7,3"
+                            Text="{DynamicResource string_textureModded_packagesAndTFCsHidden}"
+                            TextWrapping="Wrap" />
                     </DockPanel>
                     <Grid>
                         <ItemsControl

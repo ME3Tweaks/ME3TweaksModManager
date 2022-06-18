@@ -898,6 +898,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_showInstalledOptions = "string_showInstalledOptions";
 		public const string string_hideInstalledOptions = "string_hideInstalledOptions";
 		public const string string_noTextureModsAreInstalled = "string_noTextureModsAreInstalled";
+		public const string string_textureModded_packagesAndTFCsHidden = "string_textureModded_packagesAndTFCsHidden";
 		public const string string_selectALogToView = "string_selectALogToView";
 		public const string string_collectingLogInformation = "string_collectingLogInformation";
 		public const string string_interp_serverRejectedTheUpload = "string_interp_serverRejectedTheUpload";
@@ -1871,5 +1872,6 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_nxm_domainsMustBeSpecified = "string_nxm_domainsMustBeSpecified";
 		public const string string_nxm_interp_alreadyHandledByM3 = "string_nxm_interp_alreadyHandledByM3";
 		public const string string_checkAll = "string_checkAll";
+		public const string string_massEffectModderFiles = "string_massEffectModderFiles";
 	}
 }

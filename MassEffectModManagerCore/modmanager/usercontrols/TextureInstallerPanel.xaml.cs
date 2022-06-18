@@ -41,7 +41,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             OpenFileDialog m = new OpenFileDialog
             {
                 Title = @"Select texture file (.mem)",
-                Filter = "Mass Effect Modder files" + @"|*.mem"
+                Filter = M3L.GetString(M3L.string_massEffectModderFiles) + @"|*.mem"
             };
 
             var result = m.ShowDialog();

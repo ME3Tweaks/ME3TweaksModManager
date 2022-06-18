@@ -1020,6 +1020,7 @@
     <system:String x:Key="string_showInstalledOptions">Show installed options</system:String>
     <system:String x:Key="string_hideInstalledOptions">Hide installed options</system:String>
     <system:String x:Key="string_noTextureModsAreInstalled">No texture mods are installed</system:String>
+    <system:String x:Key="string_textureModded_packagesAndTFCsHidden">Package files and TFC files are not shown because this game is texture modded. All packages file are modified and TFCs cannot be modified when the game has been texture modded.</system:String>
 
     <!-- Log uploader-->
     <system:String x:Key="string_selectALogToView">Select a log to view on log viewing service</system:String>
@@ -2448,4 +2449,7 @@
     <system:String x:Key="string_checkAll">Check all</system:String>
     <!-- As in "Check all the checkboxes", similar to 'select all' -->
 
+    <!-- Texture Installer Panel -->
+    <system:String x:Key="string_massEffectModderFiles">Mass Effect Modder files</system:String>
+    <!-- Mass Effect Modder is a proper noun so it probably shouldn't be localized. THis is prefix to a filter so its like Mass Effect Modder Files|*.mem -->
 </ResourceDictionary>
