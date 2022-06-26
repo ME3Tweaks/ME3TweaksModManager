@@ -463,7 +463,7 @@ namespace LocalizationHelper
         }
 
         /// <summary>
-        /// Parses a dictionary of 
+        /// Parses a dictionary of localization strings
         /// </summary>
         /// <param name="categories">List of categories to apply localizations to</param>
         /// <param name="langToXamlMap">map of languageCode to Xaml document text</param>
@@ -471,6 +471,15 @@ namespace LocalizationHelper
         {
             foreach (var lang in langToXamlMap.Keys)
             {
+                if (lang != "INT")
+                {
+                    // Clear all values first
+                    foreach (var v in categories.SelectMany(x=>x.LocalizedStringsForSection))
+                    {
+                        v.Localizations[lang] = null; // CLEAR
+                    }
+                }
+
                 var langLines = Regex.Split(langToXamlMap[lang], "\r\n|\r|\n");
                 int numBlankLines = 0;
                 for (int i = 3; i < langLines.Length - 2; i++) // star at line 3 and skip forward
@@ -720,7 +729,7 @@ namespace LocalizationHelper
                     Filter = "Xaml files|*.xaml"
                 };
 
-                var categories = m3core ? M3CLocalizationCategories : M3CLocalizationCategories;
+                var categories = m3core ? M3CLocalizationCategories : M3LocalizationCategories;
                 if (openFileDialog.ShowDialog() == true)
                 {
                     var fname = openFileDialog.FileName;
