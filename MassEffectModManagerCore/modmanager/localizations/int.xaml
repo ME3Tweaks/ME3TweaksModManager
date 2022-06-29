@@ -1280,7 +1280,6 @@
     <!-- 0={Alternate FriendlyName} -->
     <system:String x:Key="string_validation_alt_dependsMissingNotMetAction">Alternate {0} uses DependsOnKeys but does not define the DependsOnNotMetAction attribute. This attribute is required.</system:String>
     <!-- 0={Alternate FriendlyName} -->
-    <system:String x:Key="string_DependsActions">, dependsActions,</system:String>
     <system:String x:Key="string_validation_alt_dependsOnKeyReferencesMissingAlternate">Alternate {0} specifies a DependsOnKey value '{1}' that is not defined by any Alternate in this mod.</system:String>
     <!-- 0={Alternate FriendlyName} 1={dependsOnKey.Key} -->
     <system:String xml:space="preserve" x:Key="string_alt_groupRequiresDepends">Requires {0} option: {1}\n</system:String>
