@@ -2369,7 +2369,7 @@
     <system:String x:Key="string_interp_mergefile_invalidEnumPropertyValue">'propertyvalue' for EnumProperty must have a '.' in it to separate the enum type from the enum value</system:String>
     <system:String xml:space="preserve" x:Key="string_interp_fileLibInitMergeMod1Script">FileLib for script update could not initialize, cannot merge script to {0}:\n{1}</system:String>
     <!-- 0={target entry InstancedFullPath} 1={newline split list of errors} -->
-    <system:String x:Key="string_interp_mergefile_noLocalizedFiles">Could not find any localized files to merge into for {0}. This merge has 'applytoallapplications' set to true, which makes makes changes only be merged into localized versions of a file</system:String>
+    <system:String x:Key="string_interp_mergefile_noLocalizedFiles">Could not find any localized files to merge into for {0}. This merge has 'applytoallapplications' set to true, which makes changes only be merged into localized versions of a file</system:String>
     <!-- 0={FileName} -->
     <system:String x:Key="string_interp_mergefile_errorCompilingClassAfterEdit">Error compiling class {0} after adding or replacing {1}: {2}</system:String>
     <!-- 0={targetExport InstancedFullPath} 1={Script Filename} 2={list of errors} -->
