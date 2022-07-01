@@ -181,7 +181,7 @@
 	<system:String x:Key="string_restoringDLC">Восстановление DLC</system:String>
 	<system:String x:Key="string_uninstallingALOT">Удаление ALOT</system:String>
 	<system:String x:Key="string_modding">Моддинг</system:String>
-	<system:String x:Key="string_mE3TweaksModMaker">ME3Tweals ModMaker</system:String>
+	<system:String x:Key="string_mE3TweaksModMaker">ME3Tweaks ModMaker</system:String>
 	<system:String x:Key="string_mixins">Mixins</system:String>
 	<system:String x:Key="string_mergingMods">Объединение модов</system:String>
 	<system:String x:Key="string_deployingModsTo7z">Преобразование модов в .7z</system:String>
