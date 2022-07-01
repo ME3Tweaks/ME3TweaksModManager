@@ -2206,7 +2206,8 @@ namespace ME3TweaksModManager
         {
             DPIScaling.SetScalingFactor(this);
 #if PRERELEASE
-            MessageBox.Show(M3L.GetString(M3L.string_prereleaseNotice));
+            // MessageBox.Show(M3L.GetString(M3L.string_prereleaseNotice));
+            MessageBox.Show("This is a beta build of ME3Tweaks Mod Manager. Mods deployed using this build will not be supported by ME3Tweaks, but you are encouraged to use it and report issues on the Discord.");
 #endif
             if (App.BootingUpdate)
             {
