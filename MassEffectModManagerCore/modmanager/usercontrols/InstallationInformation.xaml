@@ -255,6 +255,7 @@
                     <DockPanel
                         DockPanel.Dock="Bottom"
                         LastChildFill="False"
+                        Visibility="{Binding TextureModded, Converter={StaticResource BoolToVisibilityConverter}}"
                         Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}">
                         <TextBlock
                             Padding="7,3"
