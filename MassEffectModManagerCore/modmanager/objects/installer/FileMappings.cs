@@ -39,6 +39,6 @@ namespace ME3TweaksModManager.modmanager.objects.installer
     {
         public ModJob Job { get; init; } 
         public string SFARPath { get; init; }
-        public Dictionary<string, Mod.InstallSourceFile> SFARInstallationMapping { get; } = new();
+        public Dictionary<string, Mod.InstallSourceFile> SFARInstallationMapping { get; init; } = new();
     }
 }

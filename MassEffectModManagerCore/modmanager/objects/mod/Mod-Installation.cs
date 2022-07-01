@@ -249,8 +249,13 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                             else
                             {
                                 //Packed
-                                var SfarMapping = new SFARFileMapping() { Job = job, SFARPath = sfarPath };
                                 buildInstallationQueue(job, installationMapping, true);
+                                var SfarMapping = new SFARFileMapping()
+                                {
+                                    Job = job,
+                                    SFARPath = sfarPath,
+                                    SFARInstallationMapping = installationMapping
+                                };
                                 installmapping.SFARJobs.Add(SfarMapping);
                             }
                         }
@@ -536,7 +541,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                         CompressedTLKMergeData data = null;
                         var map = PrepareTLKMerge(out data);
 
-                        list.AddRange(map.Keys.Select(x=>$@"{x}{(Game == MEGame.ME1 ? @".sfm" : @".pcc")}")); // do not localize
+                        list.AddRange(map.Keys.Select(x => $@"{x}{(Game == MEGame.ME1 ? @".sfm" : @".pcc")}")); // do not localize
                     }
                 }
 
