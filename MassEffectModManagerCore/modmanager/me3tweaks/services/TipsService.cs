@@ -109,8 +109,8 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
         /// <returns></returns>
         public static string GetTip(string language)
         {
-            if (!ServiceLoaded || Database == null) return null;
-            if (Database.TryGetValue(language, out var tips))
+            if (!ServiceLoaded || Database == null || Database.Count == 0) return null;
+            if (Database.TryGetValue(language, out var tips) && tips.Any())
             {
                 return tips.RandomElement();
             }

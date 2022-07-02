@@ -1390,8 +1390,6 @@
     <system:String x:Key="string_restored">Restored</system:String>
     <system:String x:Key="string_restore">Restore</system:String>
     <system:String x:Key="string_restoring">Restoring</system:String>
-    <system:String x:Key="string_interp_asiStatus">This installation has {0} ASI mod(s) installed</system:String>
-    <!-- 0={installedASIs.Count} -->
     <system:String x:Key="string_thisInstallationHasNoASIModsInstalled">This installation has no ASI mods installed</system:String>
     <system:String x:Key="string_bypassInstalledASIAndDLCModsWillBeAbleToLoad">Bypass installed. ASI and DLC mods will be able to load</system:String>
     <system:String x:Key="string_bypassNotInstalledASIAndDLCModsWillBeUnableToLoad">Bypass not installed. ASI and DLC mods will be unable to load</system:String>

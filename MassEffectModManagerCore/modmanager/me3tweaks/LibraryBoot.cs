@@ -60,7 +60,8 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
                 GenerateModifiedFileObjectDelegate = ModifiedFileObjectWPF.GenerateModifiedFileObjectWPF,
                 GenerateKnownInstalledASIModDelegate = KnownInstalledASIModWPF.GenerateKnownInstalledASIModWPF,
                 GenerateUnknownInstalledASIModDelegate = UnknownInstalledASIModWPF.GenerateUnknownInstalledASIModWPF,
-                BetaMode = Settings.BetaMode
+                BetaMode = Settings.BetaMode,
+                InitialLanguage = App.InitialLanguage
             };
         }
 
