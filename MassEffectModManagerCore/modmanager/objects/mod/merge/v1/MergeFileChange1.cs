@@ -166,53 +166,46 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
 
             PropertyCollection operatingCollection = properties;
 
-            int i = 0;
-            while (i < propKeys.Length - 1)
+            for (int i = 0; i < propKeys.Length - 1; i++)
             {
-                var matchingProp = operatingCollection.FirstOrDefault(x => x.Name.Instanced == propKeys[i]);
-                if (matchingProp is StructProperty sp)
+                (NameReference propNameRef, int arrayIdx) = ParsePropName(propKeys[i]);
+
+                if (operatingCollection.GetProp<StructProperty>(propNameRef, arrayIdx) is StructProperty sp)
                 {
                     operatingCollection = sp.Properties;
                 }
-
-                // ARRAY PROPERTIES NOT SUPPORTED
-                i++;
+                else
+                {
+                    throw new Exception($"Property not found: {string.Join('.', propKeys[..(i + 1)])}");
+                }
             }
 
             M3Log.Information($@"Applying property update: {PropertyName} -> {PropertyValue}");
+            (NameReference propName, int propArrayIdx) = ParsePropName(propKeys[^1]);
             switch (PropertyType)
             {
                 case @"FloatProperty":
-                    FloatProperty fp = new FloatProperty(float.Parse(PropertyValue, CultureInfo.InvariantCulture), propKeys.Last());
+                    var fp = new FloatProperty(float.Parse(PropertyValue, CultureInfo.InvariantCulture), propName){ StaticArrayIndex = propArrayIdx };
                     operatingCollection.AddOrReplaceProp(fp);
                     break;
                 case @"IntProperty":
-                    IntProperty ip = new IntProperty(int.Parse(PropertyValue), propKeys.Last());
+                    var ip = new IntProperty(int.Parse(PropertyValue), propName) { StaticArrayIndex = propArrayIdx };
                     operatingCollection.AddOrReplaceProp(ip);
                     break;
                 case @"BoolProperty":
-                    BoolProperty bp = new BoolProperty(bool.Parse(PropertyValue), propKeys.Last());
+                    var bp = new BoolProperty(bool.Parse(PropertyValue), propName) { StaticArrayIndex = propArrayIdx };
                     operatingCollection.AddOrReplaceProp(bp);
                     break;
                 case @"NameProperty":
-                    var index = 0;
-                    var baseName = PropertyValue;
-                    var indexIndex = PropertyValue.IndexOf(@"|", StringComparison.InvariantCultureIgnoreCase);
-                    if (indexIndex > 0)
-                    {
-                        baseName = baseName.Substring(0, indexIndex);
-                        index = int.Parse(baseName.Substring(indexIndex + 1));
-                    }
-
-                    NameProperty np = new NameProperty(new NameReference(baseName, index), PropertyName);
+                    var np = new NameProperty(NameReference.FromInstancedString(PropertyValue), propName) { StaticArrayIndex = propArrayIdx };
                     operatingCollection.AddOrReplaceProp(np);
                     break;
                 case @"ObjectProperty":
                     // This does not support porting in, only relinking existing items
-                    ObjectProperty op = new ObjectProperty(0, PropertyName);
+                    var op = new ObjectProperty(0, propName) { StaticArrayIndex = propArrayIdx };
                     if (PropertyValue != null && PropertyValue != @"M3M_NULL") //M3M_NULL is a keyword for setting it to null to satisfy the schema
                     {
-                        var entry = package.FindEntry(PropertyValue);
+                        IEntry entry = package.FindEntry(PropertyValue);
                         if (entry == null)
                             throw new Exception(M3L.GetString(M3L.string_interp_mergefile_failedToUpdateObjectPropertyItemNotInPackage, PropertyName, PropertyValue, PropertyValue, package.FilePath));
                         op.Value = entry.UIndex;
@@ -220,19 +213,51 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                     operatingCollection.AddOrReplaceProp(op);
                     break;
                 case @"EnumProperty":
-                    var enumInfo = PropertyValue.Split('.');
-                    EnumProperty ep = new EnumProperty(enumInfo[0], mfc.OwningMM.Game, PropertyName);
-                    ep.Value = NameReference.FromInstancedString(enumInfo[1]);
+                    string[] enumInfo = PropertyValue.Split('.');
+                    var ep = new EnumProperty(NameReference.FromInstancedString(enumInfo[0]), mfc.OwningMM.Game, propName)
+                    {
+                        Value = NameReference.FromInstancedString(enumInfo[1]),
+                        StaticArrayIndex = propArrayIdx
+                    };
                     operatingCollection.AddOrReplaceProp(ep);
                     break;
                 case @"StrProperty":
-                    var sp = new StrProperty(PropertyValue, propKeys.Last());
+                    var sp = new StrProperty(PropertyValue, propName) { StaticArrayIndex = propArrayIdx };
                     operatingCollection.AddOrReplaceProp(sp);
+                    break;
+                case @"StringRefProperty":
+                    ReadOnlySpan<char> strRefPropValue = PropertyValue;
+                    if (strRefPropValue.Length > 0 && strRefPropValue[0] == '$')
+                    {
+                        strRefPropValue = strRefPropValue[1..];
+                    }
+                    var srp = new StringRefProperty(int.Parse(strRefPropValue), propName) { StaticArrayIndex = propArrayIdx };
+                    operatingCollection.AddOrReplaceProp(srp);
                     break;
                 default:
                     throw new Exception(M3L.GetString(M3L.string_interp_mergefile_unsupportedPropertyType, PropertyType));
             }
             return true;
+
+            static (NameReference propNameString, int arrayIdx) ParsePropName(string unparsed)
+            {
+                string propNameString = unparsed;
+                int arrayIdx = 0;
+                int openbracketIdx = propNameString.IndexOf('[');
+                if (openbracketIdx != -1)
+                {
+                    if (propNameString[^1] is ']')
+                    {
+                        arrayIdx = int.Parse(propNameString.AsSpan()[(openbracketIdx + 1)..^1]);
+                        propNameString = propNameString[..openbracketIdx];
+                    }
+                    else
+                    {
+                        throw new Exception($"Incomplete static array index in propertyname: {unparsed}");
+                    }
+                }
+                return (NameReference.FromInstancedString(propNameString), arrayIdx);
+            }
         }
 
         public void Validate()
