@@ -921,7 +921,7 @@
 	<system:String x:Key="string_tooltip_installsCustomKeybindsOfYourDesignIntoTheGame">Устанавливает пользовательские привязки клавиш в вашу конфигурацию игры</system:String>
 	<system:String x:Key="string_originIngameOverlayDisabler">Выключатель внутриигрового оверлея Origin</system:String>
 	<system:String x:Key="string_tooltip_oigDisabler">Устанавливает файл, принудительно отключающий внутриигровой оверлей Origin</system:String>
-	<system:String x:Key="string_selectMod">Выберите мод</system:String>
+	<system:String x:Key="string_selectMod">Выбрать мод</system:String>
 	<system:String x:Key="string_noTarget">Нет целевых игр</system:String>
 	<system:String x:Key="string_cannotInstallToThisGame">Невозможно установить в данную игру</system:String>
 	<system:String x:Key="string_checkingTutorialAssets">Проверка ресурсов обучения</system:String>
@@ -1120,7 +1120,7 @@
 	<system:String x:Key="string_unselectAll">Отменить выбор</system:String>
 	<system:String x:Key="string_selectAll">Выбрать все</system:String>
 	<system:String x:Key="string_selectAModOnTheLeftToViewItsDescription">Выберите мод слева для просмотра его описания</system:String>
-	<system:String x:Key="string_selectModsToImportIntoModManagerLibrary">Выберите моды для импорта в библиотеку Mod Manager</system:String>
+	<system:String x:Key="string_selectModsToImportIntoModManagerLibrary">Выбрать моды для импорта в библиотеку Mod Manager</system:String>
 	<system:String x:Key="string_noCompatibleModsFoundInArchive">В архиве не обнаружено совместимых модов</system:String>
 	<system:String x:Key="string_executableModsMustBeValidatedByME3Tweaks" xml:space="preserve">Моды в формате установочного файла должны пройти валидацию ME3Tweaks перед импортом в Mod Manager. Это сделано для предотвращения повреждения сторонних модов.\n\nЭтот установщик не прошел валидацию. Проверьте наличие совместимой с ME3Tweaks Mod Manager версии на странице мода или обратитесь за необходимой версией к разработчику.</system:String>
 	<system:String x:Key="string_noCompatibleModsFoundInArchiveOTExtended">В архиве не обнаружено совместимых модов. Если это текстурны моды, его требуется устанавливать через ALOT Installer. Если это известный мод для Mod Manager, пожалуйста обратитесь на ME3Tweaks Discord через меню Справка.</system:String>
@@ -1133,7 +1133,7 @@
 	<system:String x:Key="string_interp_readingX">Чтение {0}</system:String>
 	<system:String x:Key="string_queryingThirdPartyImportingService">Запрос Сервиса Импорта Сторонних Модов</system:String>
 	<system:String x:Key="string_gettingAdditionalInformationAboutFileFromME3Tweaks">Получение дополнительной информации о файле от ME3Tweaks</system:String>
-	<system:String x:Key="string_selectModsToImportOrInstall">Выберите моды для импорта или установки</system:String>
+	<system:String x:Key="string_selectModsToImportOrInstall">Выбрать моды для импорта или установки</system:String>
 	<system:String x:Key="string_errorUnableToDeleteExistingModDirectory">Ошибка: Невозможно удалить директорию существующего мода</system:String>
 	<system:String x:Key="string_interp_dialogImportingModWillDeleteExistingMod" xml:space="preserve">Импорт данного мода удалит директорию существующего мода из библиотеки модов:\n{0}\n\nПродолжить?</system:String>
 	<system:String x:Key="string_modAlreadyExists">Мод уже существует</system:String>
@@ -1487,7 +1487,7 @@
 	<system:String x:Key="string_compile">Компиляция</system:String>
 	<system:String x:Key="string_selectAModMakerXmlFile">Выберите файл ModMaker XML</system:String>
 	<system:String x:Key="string_useLocalFileInstead">Использовать локальный файл</system:String>
-	<system:String x:Key="string_selectModMakerModXmlFile">Выберите файл XML мода ModMaker</system:String>
+	<system:String x:Key="string_selectModMakerModXmlFile">Выбрать XML-файл мода ModMaker</system:String>
 	<system:String x:Key="string_modMakerXMLFiles">Файлы ModMaker XML</system:String>
 	<system:String x:Key="string_tooltip_addControllerSupportMixinsDetailed" xml:space="preserve">Добавляет Mixins для гарантии надлежащей работы функционала Controller Mod, такого как корректная работа поворота камеры, если мод изменяет одинаковые файлы с другими модами контроллера.&#10;Не выбирайте этот пункт, если вы не используете мод Controller Support. При использовании данной опции, устанавливайте данный мод ПОСЛЕ установки мода Controller Support.</system:String>
 	<system:String x:Key="string_addControllerSupportMixinsIfNecessary">Добавить Controller Support Mixins, если необходимо</system:String>
