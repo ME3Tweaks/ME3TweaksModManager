@@ -197,7 +197,15 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                     operatingCollection.AddOrReplaceProp(bp);
                     break;
                 case @"NameProperty":
-                    var np = new NameProperty(NameReference.FromInstancedString(PropertyValue), propName) { StaticArrayIndex = propArrayIdx };
+                    var index = 0;
+                    var baseName = PropertyValue;
+                    var indexIndex = PropertyValue.IndexOf(@"|", StringComparison.InvariantCultureIgnoreCase);
+                    if (indexIndex > 0)
+                    {
+                        baseName = baseName.Substring(0, indexIndex);
+                        index = int.Parse(baseName.Substring(indexIndex + 1));
+                    }
+                    var np = new NameProperty(new NameReference(baseName, index), propName) { StaticArrayIndex = propArrayIdx };
                     operatingCollection.AddOrReplaceProp(np);
                     break;
                 case @"ObjectProperty":
@@ -248,7 +256,8 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                 {
                     if (propNameString[^1] is ']')
                     {
-                        arrayIdx = int.Parse(propNameString.AsSpan()[(openbracketIdx + 1)..^1]);
+                        ReadOnlySpan<char> indexSpan = propNameString.AsSpan()[(openbracketIdx + 1)..^1];
+                        arrayIdx = int.Parse(indexSpan);
                         propNameString = propNameString[..openbracketIdx];
                     }
                     else
