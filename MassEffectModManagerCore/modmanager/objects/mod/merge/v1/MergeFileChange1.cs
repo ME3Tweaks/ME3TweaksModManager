@@ -12,8 +12,7 @@ using LegendaryExplorerCore.Unreal.BinaryConverters;
 using LegendaryExplorerCore.UnrealScript;
 using LegendaryExplorerCore.UnrealScript.Compiling.Errors;
 using ME3TweaksCore.GameFilesystem;
-using ME3TweaksCoreWPF;
-using ME3TweaksCoreWPF.Targets;
+using ME3TweaksCore.Targets;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.localizations;
 using Newtonsoft.Json;
@@ -33,7 +32,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
         [JsonIgnore] public MergeFile1 Parent;
         [JsonIgnore] public MergeMod1 OwningMM => Parent.OwningMM;
 
-        public void ApplyChanges(IMEPackage package, MergeAssetCache1 assetsCache, Mod installingMod, GameTargetWPF gameTarget)
+        public void ApplyChanges(IMEPackage package, MergeAssetCache1 assetsCache, Mod installingMod, GameTarget gameTarget)
         {
             // APPLY PROPERTY UPDATES
             M3Log.Information($@"Merging changes into {EntryName}");
@@ -46,7 +45,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                 var props = export.GetProperties();
                 foreach (var pu in PropertyUpdates)
                 {
-                    pu.ApplyUpdate(package, props, this);
+                    pu.ApplyUpdate(package, props, export, assetsCache, gameTarget);
                 }
                 export.WriteProperties(props);
             }
@@ -55,7 +54,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
             AssetUpdate?.ApplyUpdate(package, export, installingMod);
 
             // APPLY SCRIPT UDPATE
-            ScriptUpdate?.ApplyUpdate(package, export, assetsCache, installingMod, gameTarget);
+            ScriptUpdate?.ApplyUpdate(package, export, assetsCache, gameTarget);
 
             // APPLY SEQUENCE SKIP UPDATE
             SequenceSkipUpdate?.ApplyUpdate(package, export, installingMod);
@@ -107,7 +106,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
             AddToClassOrReplace?.Validate();
         }
 
-        public static FileLib GetFileLibForMerge(IMEPackage package, ExportEntry targetExport, MergeAssetCache1 assetsCache, GameTargetWPF gameTarget)
+        public static FileLib GetFileLibForMerge(IMEPackage package, ExportEntry targetExport, MergeAssetCache1 assetsCache, GameTarget gameTarget)
         {
             if (assetsCache.FileLibs.TryGetValue(package.FilePath, out FileLib fl))
             {
@@ -160,7 +159,10 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
         [JsonProperty(@"propertyvalue")]
         public string PropertyValue { get; set; }
 
-        public bool ApplyUpdate(IMEPackage package, PropertyCollection properties, MergeFileChange1 mfc)
+        [JsonProperty(@"propertyasset")]
+        public string PropertyAsset { get; set; }
+
+        public bool ApplyUpdate(IMEPackage package, PropertyCollection properties, ExportEntry targetExport, MergeAssetCache1 assetsCache, GameTarget gameTarget)
         {
             var propKeys = PropertyName.Split('.');
 
@@ -222,7 +224,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                     break;
                 case @"EnumProperty":
                     string[] enumInfo = PropertyValue.Split('.');
-                    var ep = new EnumProperty(NameReference.FromInstancedString(enumInfo[0]), mfc.OwningMM.Game, propName)
+                    var ep = new EnumProperty(NameReference.FromInstancedString(enumInfo[0]), gameTarget.Game, propName)
                     {
                         Value = NameReference.FromInstancedString(enumInfo[1]),
                         StaticArrayIndex = propArrayIdx
@@ -242,6 +244,23 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                     var srp = new StringRefProperty(int.Parse(strRefPropValue), propName) { StaticArrayIndex = propArrayIdx };
                     operatingCollection.AddOrReplaceProp(srp);
                     break;
+                case @"ArrayProperty":
+                {
+                    FileLib fl = MergeFileChange1.GetFileLibForMerge(package, targetExport, assetsCache, gameTarget);
+                    var log = new MessageLog();
+                    Property prop = UnrealScriptCompiler.CompileProperty(PropertyName, PropertyValue, targetExport, fl, log);
+                    if (prop is null || log.HasErrors)
+                    {
+                        M3Log.Error($@"Error compiling property '{PropertyName}' in {targetExport.InstancedFullPath}:");
+                        foreach (var l in log.AllErrors)
+                        {
+                            M3Log.Error(l.Message);
+                        }
+                        throw new Exception($"Error compiling property '{PropertyName}' in {targetExport.InstancedFullPath}:\n{string.Join(Environment.NewLine, log.AllErrors)}");
+                    }
+                    operatingCollection.AddOrReplaceProp(prop);
+                    break;
+                }
                 default:
                     throw new Exception(M3L.GetString(M3L.string_interp_mergefile_unsupportedPropertyType, PropertyType));
             }
@@ -354,12 +373,12 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
         [JsonIgnore] public MergeFileChange1 Parent;
         [JsonIgnore] public MergeMod1 OwningMM => Parent.OwningMM;
 
-        public bool ApplyUpdate(IMEPackage package, ExportEntry targetExport, MergeAssetCache1 assetsCache, Mod installingMod, GameTargetWPF gameTarget)
+        public bool ApplyUpdate(IMEPackage package, ExportEntry targetExport, MergeAssetCache1 assetsCache, GameTarget gameTarget)
         {
             FileLib fl = MergeFileChange1.GetFileLibForMerge(package, targetExport, assetsCache, gameTarget);
 
             (_, MessageLog log) = UnrealScriptCompiler.CompileFunction(targetExport, ScriptText, fl);
-            if (log.AllErrors.Any())
+            if (log.HasErrors)
             {
                 M3Log.Error($@"Error compiling function {targetExport.InstancedFullPath}:");
                 foreach (var l in log.AllErrors)
@@ -394,7 +413,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
         [JsonIgnore] public MergeFileChange1 Parent;
         [JsonIgnore] public MergeMod1 OwningMM => Parent.OwningMM;
 
-        public bool ApplyUpdate(IMEPackage package, ExportEntry targetExport, MergeAssetCache1 assetsCache, GameTargetWPF gameTarget)
+        public bool ApplyUpdate(IMEPackage package, ExportEntry targetExport, MergeAssetCache1 assetsCache, GameTarget gameTarget)
         {
             FileLib fl = MergeFileChange1.GetFileLibForMerge(package, targetExport, assetsCache, gameTarget);
 
@@ -402,14 +421,13 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
             {
                 MessageLog log = UnrealScriptCompiler.AddOrReplaceInClass(targetExport, Scripts[i], fl);
 
-                if (log.AllErrors.Any())
+                if (log.HasErrors)
                 {
                     M3Log.Error($@"Error adding/replacing '{ScriptFileNames[i]}' to {targetExport.InstancedFullPath}:");
                     foreach (var l in log.AllErrors)
                     {
                         M3Log.Error(l.Message);
                     }
-                    //Todo: localize this message
                     throw new Exception(M3L.GetString(M3L.string_interp_mergefile_errorCompilingClassAfterEdit, targetExport.InstancedFullPath, ScriptFileNames[i], string.Join(Environment.NewLine, log.AllErrors)));
                 }
 

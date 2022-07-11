@@ -5,14 +5,10 @@ using System.IO;
 using System.Linq;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
-using LegendaryExplorerCore.Packages.CloningImportingAndRelinking;
 using ME3TweaksCore.Objects;
-using ME3TweaksCoreWPF;
-using ME3TweaksCoreWPF.Targets;
+using ME3TweaksCore.Targets;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.localizations;
-using ME3TweaksModManager.modmanager.windows;
-using Microsoft.Win32;
 using Newtonsoft.Json;
 
 namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
@@ -41,7 +37,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
         }
 
 
-        public void ApplyChanges(GameTargetWPF gameTarget, CaseInsensitiveDictionary<string> loadedFiles, Mod associatedMod, ref int numMergesCompleted, int numTotalMerges, Action<int, int, string, string> mergeProgressDelegate = null)
+        public void ApplyChanges(GameTarget gameTarget, CaseInsensitiveDictionary<string> loadedFiles, Mod associatedMod, ref int numMergesCompleted, int numTotalMerges, Action<int, int, string, string> mergeProgressDelegate = null)
         {
             var targetFiles = new SortedSet<string>();
             if (ApplyToAllLocalizations)
@@ -61,7 +57,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                 foreach (var l in localizations)
                 {
                     var targetname = $@"{targetnameBase}_{l.FileCode}{targetExtension}";
-                    hasOneFile |= addMergeTarget(targetname, loadedFiles, targetFiles, mergeProgressDelegate, ref numMergesCompleted, ref numTotalMerges);
+                    hasOneFile |= AddMergeTarget(targetname, loadedFiles, targetFiles, mergeProgressDelegate, ref numMergesCompleted, ref numTotalMerges);
                 }
 
                 if (!hasOneFile)
@@ -71,18 +67,18 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
             }
             else
             {
-                addMergeTarget(FileName, loadedFiles, targetFiles, mergeProgressDelegate, ref numMergesCompleted, ref numTotalMerges);
+                AddMergeTarget(FileName, loadedFiles, targetFiles, mergeProgressDelegate, ref numMergesCompleted, ref numTotalMerges);
             }
 
-            MergeAssetCache1 mac = new MergeAssetCache1();
-            foreach (var f in targetFiles)
+            var mac = new MergeAssetCache1();
+            foreach (string f in targetFiles)
             {
                 M3Log.Information($@"Opening package {f}");
 #if DEBUG
-                Stopwatch sw = Stopwatch.StartNew();
+                var sw = Stopwatch.StartNew();
 #endif
                 // Open as memorystream as we need to hash this file for tracking
-                using MemoryStream ms = new MemoryStream(File.ReadAllBytes(f));
+                using var ms = new MemoryStream(File.ReadAllBytes(f));
 
                 var existingMD5 = M3Utilities.CalculateMD5(ms);
                 var package = MEPackageHandler.OpenMEPackageFromStream(ms, f);
@@ -116,19 +112,16 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
             }
         }
 
-        private bool addMergeTarget(string fileName, CaseInsensitiveDictionary<string> loadedFiles, SortedSet<string> targetFiles, Action<int, int, string, string> mergeProgressDelegate, ref int numMergesCompleted, ref int numTotalMerges)
+        private static bool AddMergeTarget(string fileName, CaseInsensitiveDictionary<string> loadedFiles, SortedSet<string> targetFiles, Action<int, int, string, string> mergeProgressDelegate, ref int numMergesCompleted, ref int numTotalMerges)
         {
-            if (loadedFiles.TryGetValue(fileName, out var fullpath))
+            if (loadedFiles.TryGetValue(fileName, out string fullpath))
             {
                 targetFiles.Add(fullpath);
                 return true;
             }
-            else
-            {
-                M3Log.Warning($@"File not found in game: {fileName}, skipping...");
-                numMergesCompleted++;
-                mergeProgressDelegate?.Invoke(numMergesCompleted, numTotalMerges, null, null);
-            }
+            M3Log.Warning($@"File not found in game: {fileName}, skipping...");
+            numMergesCompleted++;
+            mergeProgressDelegate?.Invoke(numMergesCompleted, numTotalMerges, null, null);
             return false;
         }
 
