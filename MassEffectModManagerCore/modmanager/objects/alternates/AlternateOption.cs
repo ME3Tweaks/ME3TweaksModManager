@@ -541,7 +541,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                         // Check if referencing self
                         if (dependskey.Key == OptionKey)
                         {
-                            M3Log.Error($@"Alternate {FriendlyName} references itself in its own DependsOnKeys list, which is not supported. Key value: {key}");
+                            M3Log.Error($@"Alternate {FriendlyName} references itself in its own DependsOnKeys list, which is not supported. OptionKey value: {key}");
                             LoadFailedReason = M3L.GetString(M3L.string_validation_alt_dependsSelfReference, FriendlyName, key);
                             return false;
                         }

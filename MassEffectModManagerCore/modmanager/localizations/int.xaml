@@ -1274,7 +1274,7 @@
     <!-- 0={Alternate FriendlyName} 1={invalid value} -->
     <system:String x:Key="string_validation_alt_dependsKeysMissingPlusMinus">Alternate {0} has a value in its DependsOnKeys list that does not start with +/-: {1}. Values must start with a +/-.</system:String>
     <!-- 0={Alternate FriendlyName} 1={key} -->
-    <system:String x:Key="string_validation_alt_dependsSelfReference">Alternate {0} references itself in its own DependsOnKeys list, which is not supported. Key value: {1}</system:String>
+    <system:String x:Key="string_validation_alt_dependsSelfReference">Alternate {0} references its own 'OptionKey' in its DependsOnKeys list, which is not supported. Invalid value: {1}</system:String>
     <!-- 0={Alternate FriendlyName} 1={key} -->
     <system:String x:Key="string_validation_alt_dependsMissingAction">Alternate {0} uses DependsOnKeys but does not define the DependsOnMetAction attribute. This attribute is required.</system:String>
     <!-- 0={Alternate FriendlyName} -->
