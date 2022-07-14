@@ -853,8 +853,6 @@
     <system:String x:Key="string_backupsMustBeCreatedFresh">Backups must be created from a fresh, unmodified copy of the game. Modified backups are not supported.</system:String>
     <system:String x:Key="string_backUp">Back up</system:String>
     <system:String xml:space="preserve" x:Key="string_backupsAreUsedToRestoreYourGame">Backups are used to restore your game files and are an important step in the modding process. To unlink a backup and make modding tools forget about it, click the 'Unlink backup' button. To restore from backup, use the Restore option in the Backup &amp; Restore menu, or click the Manage Target button from the main window.&#10;&#10;Backups are also used for as a file source for certain operations. Some advanced features require a backup as an unmodified file must be available.</system:String>
-    <system:String x:Key="string_interp_cannotBackupGameWhileRunning">Cannot backup {0} while it is running.</system:String>
-    <!-- 0 = game name-->
     <system:String x:Key="string_validatingBackupSource">Validating backup source</system:String>
     <system:String x:Key="string_waitingForUserInput">Waiting for user input</system:String>
     <system:String x:Key="string_selectBackupDestination">Select backup destination (must be empty)</system:String>
