@@ -5,14 +5,10 @@ using System.IO;
 using System.Linq;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
-using LegendaryExplorerCore.Packages.CloningImportingAndRelinking;
 using ME3TweaksCore.Objects;
-using ME3TweaksCoreWPF;
-using ME3TweaksCoreWPF.Targets;
+using ME3TweaksCore.Targets;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.localizations;
-using ME3TweaksModManager.modmanager.windows;
-using Microsoft.Win32;
 using Newtonsoft.Json;
 
 namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
@@ -49,7 +45,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
         /// <param name="mergeWeightDelegate">Callback to submit completed weight for progress tracking</param>
         /// <param name="mergeStatusDelegate">Callback to submit a new text string to display</param>
         /// <exception cref="Exception"></exception>
-        public void ApplyChanges(GameTargetWPF gameTarget, CaseInsensitiveDictionary<string> loadedFiles, Mod associatedMod,  Action<int> mergeWeightDelegate, Action<string, string> addTrackedFileDelegate = null)
+        public void ApplyChanges(GameTarget gameTarget, CaseInsensitiveDictionary<string> loadedFiles, Mod associatedMod, Action<int> mergeWeightDelegate, Action<string, string> addTrackedFileDelegate = null)
         {
             var targetFiles = new SortedSet<string>();
             if (ApplyToAllLocalizations)
@@ -82,15 +78,15 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                 addMergeTarget(FileName, loadedFiles, targetFiles, mergeWeightDelegate);
             }
 
-            MergeAssetCache1 mac = new MergeAssetCache1();
-            foreach (var f in targetFiles)
+            var mac = new MergeAssetCache1();
+            foreach (string f in targetFiles)
             {
                 M3Log.Information($@"Opening package {f}");
 #if DEBUG
-                Stopwatch sw = Stopwatch.StartNew();
+                var sw = Stopwatch.StartNew();
 #endif
                 // Open as memorystream as we need to hash this file for tracking
-                using MemoryStream ms = new MemoryStream(File.ReadAllBytes(f));
+                using var ms = new MemoryStream(File.ReadAllBytes(f));
 
                 var existingMD5 = M3Utilities.CalculateMD5(ms);
                 var package = MEPackageHandler.OpenMEPackageFromStream(ms, f);
@@ -124,23 +120,20 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                     // Add to basegame database.
                     addTrackedFileDelegate?.Invoke(existingMD5, f);
                 }
-                
+
             }
         }
 
         private bool addMergeTarget(string fileName, CaseInsensitiveDictionary<string> loadedFiles,
             SortedSet<string> targetFiles, Action<int> mergeWeightDelegate)
         {
-            if (loadedFiles.TryGetValue(fileName, out var fullpath))
+            if (loadedFiles.TryGetValue(fileName, out string fullpath))
             {
                 targetFiles.Add(fullpath);
                 return true;
             }
-            else
-            {
-                M3Log.Warning($@"File not found in game: {fileName}, skipping...");
-                mergeWeightDelegate?.Invoke(GetMergeWeightSingle()); // Skip this weight
-            }
+            M3Log.Warning($@"File not found in game: {fileName}, skipping...");
+            mergeWeightDelegate?.Invoke(GetMergeWeightSingle()); // Skip this weight
             return false;
         }
 

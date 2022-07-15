@@ -13,8 +13,7 @@ using LegendaryExplorerCore.Unreal.BinaryConverters;
 using LegendaryExplorerCore.UnrealScript;
 using LegendaryExplorerCore.UnrealScript.Compiling.Errors;
 using ME3TweaksCore.GameFilesystem;
-using ME3TweaksCoreWPF;
-using ME3TweaksCoreWPF.Targets;
+using ME3TweaksCore.Targets;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.localizations;
 using Newtonsoft.Json;
@@ -37,7 +36,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
         [JsonIgnore] public MergeFile1 Parent;
         [JsonIgnore] public MergeMod1 OwningMM => Parent.OwningMM;
 
-        public void ApplyChanges(IMEPackage package, MergeAssetCache1 assetsCache, Mod installingMod, GameTargetWPF gameTarget, Action<int> addMergeWeightCompletion)
+        public void ApplyChanges(IMEPackage package, MergeAssetCache1 assetsCache, Mod installingMod, GameTarget gameTarget, Action<int> addMergeWeightCompletion)
         {
             // APPLY PROPERTY UPDATES
             M3Log.Information($@"Merging changes into {EntryName}");
@@ -50,7 +49,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                 var props = export.GetProperties();
                 foreach (var pu in PropertyUpdates)
                 {
-                    pu.ApplyUpdate(package, props, this, addMergeWeightCompletion);
+                    pu.ApplyUpdate(package, props, export, assetsCache, gameTarget, addMergeWeightCompletion);
                 }
                 export.WriteProperties(props);
             }
@@ -86,7 +85,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
             {
                 throw new Exception(M3L.GetString(M3L.string_interp_mergefile_notPropertyExportConfigFlag, export.InstancedFullPath, package.FilePath));
             }
-            
+
             addMergeWeightCompleted?.Invoke(MergeFileChange1.WEIGHT_DISABLECONFIGUPDATE);
         }
 
@@ -113,7 +112,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
             AddToClassOrReplace?.Validate();
         }
 
-        public static FileLib GetFileLibForMerge(IMEPackage package, ExportEntry targetExport, MergeAssetCache1 assetsCache, GameTargetWPF gameTarget)
+        public static FileLib GetFileLibForMerge(IMEPackage package, ExportEntry targetExport, MergeAssetCache1 assetsCache, GameTarget gameTarget)
         {
             if (assetsCache.FileLibs.TryGetValue(package.FilePath, out FileLib fl))
             {
@@ -198,38 +197,44 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
         [JsonProperty(@"propertyvalue")]
         public string PropertyValue { get; set; }
 
-        public bool ApplyUpdate(IMEPackage package, PropertyCollection properties, MergeFileChange1 mfc, Action<int> addMergeWeightCompleted)
+        [JsonProperty(@"propertyasset")]
+        public string PropertyAsset { get; set; }
+        //         public bool ApplyUpdate(IMEPackage package, PropertyCollection properties, ExportEntry targetExport, MergeAssetCache1 assetsCache, GameTarget gameTarget)
+        public bool ApplyUpdate(IMEPackage package, PropertyCollection properties, ExportEntry targetExport, MergeAssetCache1 assetCache, GameTarget gameTarget, Action<int> addMergeWeightCompleted)
         {
             var propKeys = PropertyName.Split('.');
 
             PropertyCollection operatingCollection = properties;
 
-            int i = 0;
-            while (i < propKeys.Length - 1)
+            for (int i = 0; i < propKeys.Length - 1; i++)
             {
-                var matchingProp = operatingCollection.FirstOrDefault(x => x.Name.Instanced == propKeys[i]);
-                if (matchingProp is StructProperty sp)
+                (NameReference propNameRef, int arrayIdx) = ParsePropName(propKeys[i]);
+
+                if (operatingCollection.GetProp<StructProperty>(propNameRef, arrayIdx) is StructProperty sp)
                 {
                     operatingCollection = sp.Properties;
                 }
-
-                // ARRAY PROPERTIES NOT SUPPORTED
-                i++;
+                else
+                {
+                    // Print out the missing property not found by taking the first i+1 items in the key array.
+                    throw new Exception($"Property not found: {string.Join('.', propKeys.Take(i+1))}");
+                }
             }
 
             M3Log.Information($@"Applying property update: {PropertyName} -> {PropertyValue}");
+            (NameReference propName, int propArrayIdx) = ParsePropName(propKeys[^1]);
             switch (PropertyType)
             {
                 case @"FloatProperty":
-                    FloatProperty fp = new FloatProperty(float.Parse(PropertyValue, CultureInfo.InvariantCulture), propKeys.Last());
+                    var fp = new FloatProperty(float.Parse(PropertyValue, CultureInfo.InvariantCulture), propName) { StaticArrayIndex = propArrayIdx };
                     operatingCollection.AddOrReplaceProp(fp);
                     break;
                 case @"IntProperty":
-                    IntProperty ip = new IntProperty(int.Parse(PropertyValue), propKeys.Last());
+                    var ip = new IntProperty(int.Parse(PropertyValue), propName) { StaticArrayIndex = propArrayIdx };
                     operatingCollection.AddOrReplaceProp(ip);
                     break;
                 case @"BoolProperty":
-                    BoolProperty bp = new BoolProperty(bool.Parse(PropertyValue), propKeys.Last());
+                    var bp = new BoolProperty(bool.Parse(PropertyValue), propName) { StaticArrayIndex = propArrayIdx };
                     operatingCollection.AddOrReplaceProp(bp);
                     break;
                 case @"NameProperty":
@@ -241,16 +246,15 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                         baseName = baseName.Substring(0, indexIndex);
                         index = int.Parse(baseName.Substring(indexIndex + 1));
                     }
-
-                    NameProperty np = new NameProperty(new NameReference(baseName, index), PropertyName);
+                    var np = new NameProperty(new NameReference(baseName, index), propName) { StaticArrayIndex = propArrayIdx };
                     operatingCollection.AddOrReplaceProp(np);
                     break;
                 case @"ObjectProperty":
                     // This does not support porting in, only relinking existing items
-                    ObjectProperty op = new ObjectProperty(0, PropertyName);
+                    var op = new ObjectProperty(0, propName) { StaticArrayIndex = propArrayIdx };
                     if (PropertyValue != null && PropertyValue != @"M3M_NULL") //M3M_NULL is a keyword for setting it to null to satisfy the schema
                     {
-                        var entry = package.FindEntry(PropertyValue);
+                        IEntry entry = package.FindEntry(PropertyValue);
                         if (entry == null)
                             throw new Exception(M3L.GetString(M3L.string_interp_mergefile_failedToUpdateObjectPropertyItemNotInPackage, PropertyName, PropertyValue, PropertyValue, package.FilePath));
                         op.Value = entry.UIndex;
@@ -258,20 +262,70 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                     operatingCollection.AddOrReplaceProp(op);
                     break;
                 case @"EnumProperty":
-                    var enumInfo = PropertyValue.Split('.');
-                    EnumProperty ep = new EnumProperty(enumInfo[0], mfc.OwningMM.Game, PropertyName);
-                    ep.Value = NameReference.FromInstancedString(enumInfo[1]);
+                    string[] enumInfo = PropertyValue.Split('.');
+                    var ep = new EnumProperty(NameReference.FromInstancedString(enumInfo[0]), gameTarget.Game, propName)
+                    {
+                        Value = NameReference.FromInstancedString(enumInfo[1]),
+                        StaticArrayIndex = propArrayIdx
+                    };
                     operatingCollection.AddOrReplaceProp(ep);
                     break;
                 case @"StrProperty":
-                    var sp = new StrProperty(PropertyValue, propKeys.Last());
+                    var sp = new StrProperty(PropertyValue, propName) { StaticArrayIndex = propArrayIdx };
                     operatingCollection.AddOrReplaceProp(sp);
                     break;
+                case @"StringRefProperty":
+                    ReadOnlySpan<char> strRefPropValue = PropertyValue;
+                    if (strRefPropValue.Length > 0 && strRefPropValue[0] == '$')
+                    {
+                        strRefPropValue = strRefPropValue[1..];
+                    }
+                    var srp = new StringRefProperty(int.Parse(strRefPropValue), propName) { StaticArrayIndex = propArrayIdx };
+                    operatingCollection.AddOrReplaceProp(srp);
+                    break;
+                case @"ArrayProperty":
+                    {
+                        FileLib fl = MergeFileChange1.GetFileLibForMerge(package, targetExport, assetCache, gameTarget);
+                        var log = new MessageLog();
+                        Property prop = UnrealScriptCompiler.CompileProperty(PropertyName, PropertyValue, targetExport, fl, log);
+                        if (prop is null || log.HasErrors)
+                        {
+                            M3Log.Error($@"Error compiling property '{PropertyName}' in {targetExport.InstancedFullPath}:");
+                            foreach (var l in log.AllErrors)
+                            {
+                                M3Log.Error(l.Message);
+                            }
+                            throw new Exception($"Error compiling property '{PropertyName}' in {targetExport.InstancedFullPath}:\n{string.Join(Environment.NewLine, log.AllErrors)}");
+                        }
+                        operatingCollection.AddOrReplaceProp(prop);
+                        break;
+                    }
                 default:
                     throw new Exception(M3L.GetString(M3L.string_interp_mergefile_unsupportedPropertyType, PropertyType));
             }
             addMergeWeightCompleted?.Invoke(MergeFileChange1.WEIGHT_PROPERTYUPDATE);
             return true;
+
+            static (NameReference propNameString, int arrayIdx) ParsePropName(string unparsed)
+            {
+                string propNameString = unparsed;
+                int arrayIdx = 0;
+                int openbracketIdx = propNameString.IndexOf('[');
+                if (openbracketIdx != -1)
+                {
+                    if (propNameString[^1] is ']')
+                    {
+                        ReadOnlySpan<char> indexSpan = propNameString.AsSpan()[(openbracketIdx + 1)..^1];
+                        arrayIdx = int.Parse(indexSpan);
+                        propNameString = propNameString[..openbracketIdx];
+                    }
+                    else
+                    {
+                        throw new Exception($"Incomplete static array index in propertyname: {unparsed}");
+                    }
+                }
+                return (NameReference.FromInstancedString(propNameString), arrayIdx);
+            }
         }
 
         public void Validate()
@@ -359,12 +413,12 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
         [JsonIgnore] public MergeFileChange1 Parent;
         [JsonIgnore] public MergeMod1 OwningMM => Parent.OwningMM;
 
-        public bool ApplyUpdate(IMEPackage package, ExportEntry targetExport, MergeAssetCache1 assetsCache, Mod installingMod, GameTargetWPF gameTarget, Action<int> addMergeWeightCompleted)
+        public bool ApplyUpdate(IMEPackage package, ExportEntry targetExport, MergeAssetCache1 assetsCache, Mod installingMod, GameTarget gameTarget, Action<int> addMergeWeightCompleted)
         {
             FileLib fl = MergeFileChange1.GetFileLibForMerge(package, targetExport, assetsCache, gameTarget);
 
             (_, MessageLog log) = UnrealScriptCompiler.CompileFunction(targetExport, ScriptText, fl);
-            if (log.AllErrors.Any())
+            if (log.HasErrors)
             {
                 M3Log.Error($@"Error compiling function {targetExport.InstancedFullPath}:");
                 foreach (var l in log.AllErrors)
@@ -399,7 +453,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
         [JsonIgnore] public MergeFileChange1 Parent;
         [JsonIgnore] public MergeMod1 OwningMM => Parent.OwningMM;
 
-        public bool ApplyUpdate(IMEPackage package, ExportEntry targetExport, MergeAssetCache1 assetsCache, GameTargetWPF gameTarget, Action<int> addMergeWeightCompleted)
+        public bool ApplyUpdate(IMEPackage package, ExportEntry targetExport, MergeAssetCache1 assetsCache, GameTarget gameTarget, Action<int> addMergeWeightCompleted)
         {
             FileLib fl = MergeFileChange1.GetFileLibForMerge(package, targetExport, assetsCache, gameTarget);
 
@@ -408,14 +462,13 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                 Debug.WriteLine($"Updating {targetExport.InstancedFullPath}");
                 MessageLog log = UnrealScriptCompiler.AddOrReplaceInClass(targetExport, Scripts[i], fl);
 
-                if (log.AllErrors.Any())
+                if (log.HasErrors)
                 {
                     M3Log.Error($@"Error adding/replacing '{ScriptFileNames[i]}' to {targetExport.InstancedFullPath}:");
                     foreach (var l in log.AllErrors)
                     {
                         M3Log.Error(l.Message);
                     }
-                    //Todo: localize this message
                     throw new Exception(M3L.GetString(M3L.string_interp_mergefile_errorCompilingClassAfterEdit, targetExport.InstancedFullPath, ScriptFileNames[i], string.Join(Environment.NewLine, log.AllErrors)));
                 }
 
