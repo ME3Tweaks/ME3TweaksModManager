@@ -217,7 +217,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                 else
                 {
                     // Print out the missing property not found by taking the first i+1 items in the key array.
-                    throw new Exception($"Property not found: {string.Join('.', propKeys.Take(i+1))}");
+                    throw new Exception(M3L.GetString(M3L.string_interp_propertyNotFoundX, string.Join('.', propKeys.Take(i+1))));
                 }
             }
 
@@ -295,7 +295,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                             {
                                 M3Log.Error(l.Message);
                             }
-                            throw new Exception($"Error compiling property '{PropertyName}' in {targetExport.InstancedFullPath}:\n{string.Join(Environment.NewLine, log.AllErrors)}");
+                            throw new Exception(M3L.GetString(M3L.string_interp_errorCompilingPropertyXinYZ, PropertyName, targetExport.InstancedFullPath, string.Join(Environment.NewLine, log.AllErrors)));
                         }
                         operatingCollection.AddOrReplaceProp(prop);
                         break;
@@ -321,7 +321,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                     }
                     else
                     {
-                        throw new Exception($"Incomplete static array index in propertyname: {unparsed}");
+                        throw new Exception(M3L.GetString(M3L.string_interp_incompleteStaticArrayIndex, unparsed));
                     }
                 }
                 return (NameReference.FromInstancedString(propNameString), arrayIdx);
@@ -459,7 +459,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
 
             for (int i = 0; i < Scripts.Length; i++)
             {
-                Debug.WriteLine($"Updating {targetExport.InstancedFullPath}");
+                Debug.WriteLine(M3L.GetString(M3L.string_interp_updatingX, targetExport.InstancedFullPath));
                 MessageLog log = UnrealScriptCompiler.AddOrReplaceInClass(targetExport, Scripts[i], fl);
 
                 if (log.HasErrors)
