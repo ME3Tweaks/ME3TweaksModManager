@@ -25,6 +25,7 @@
     <converters1:LocalizationConverter x:Key="LocalizationConverter" />
     <converters1:PanelDimensionConverter x:Key="PanelDimensionConverter"/>
     <converters1:StringMatchToBoolConverter x:Key="StringMatchToBoolConverter"/>
+    <converters1:LanguageSupportedVisibilityConverter x:Key="LanguageSupportedVisibilityConverter"/>
     <converters1:GameToTextureModdedIconConverter x:Key="GameToTextureModdedIconConverter"/>
     <converters:GameTargetConverter x:Key="GameTargetConverter"/>
     <DataTemplate x:Key="TargetSelectorTemplate" DataType="{x:Type targets:GameTarget}">

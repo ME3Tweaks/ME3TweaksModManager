@@ -314,6 +314,7 @@
                                 </MenuItem.Icon>
                             </MenuItem>-->
                         <MenuItem
+                            Visibility="{Binding Converter={StaticResource LanguageSupportedVisibilityConverter}, ConverterParameter='deu'}"
                             IsChecked="{Binding Path=(modmanager:Settings.Language), Converter={StaticResource StringMatchToBoolConverter}, ConverterParameter='deu'}"
                             Name="LanguageDEU_MenuItem"
                             Header="Deutsch"
@@ -325,6 +326,7 @@
                             </MenuItem.Icon>
                         </MenuItem>
                         <MenuItem
+                            Visibility="{Binding Converter={StaticResource LanguageSupportedVisibilityConverter}, ConverterParameter='int'}"
                             IsChecked="{Binding Path=(modmanager:Settings.Language), Converter={StaticResource StringMatchToBoolConverter}, ConverterParameter='int'}"
                             Name="LanguageINT_MenuItem"
                             Header="English"
@@ -336,7 +338,7 @@
                             </MenuItem.Icon>
                         </MenuItem>
                         <MenuItem
-                            Visibility="Collapsed"
+                            Visibility="{Binding Converter={StaticResource LanguageSupportedVisibilityConverter}, ConverterParameter='kor'}"
                             IsChecked="{Binding Path=(modmanager:Settings.Language), Converter={StaticResource StringMatchToBoolConverter}, ConverterParameter='kor'}"
                             Name="LanguageKOR_MenuItem"
                             Header="한국어"
@@ -348,6 +350,7 @@
                             </MenuItem.Icon>
                         </MenuItem>
                         <MenuItem
+                            Visibility="{Binding Converter={StaticResource LanguageSupportedVisibilityConverter}, ConverterParameter='ita'}"
                             IsChecked="{Binding Path=(modmanager:Settings.Language), Converter={StaticResource StringMatchToBoolConverter}, ConverterParameter='ita'}"
                             Name="LanguageITA_MenuItem"
                             Header="Italiano"
@@ -376,6 +379,8 @@
                                 </MenuItem.Icon>
                             </MenuItem>-->
                         <MenuItem
+                            Visibility="{Binding Converter={StaticResource LanguageSupportedVisibilityConverter}, ConverterParameter='pol'}"
+
                             IsChecked="{Binding Path=(modmanager:Settings.Language), Converter={StaticResource StringMatchToBoolConverter}, ConverterParameter='pol'}"
                             Name="LanguagePOL_MenuItem"
                             Header="Polski"
@@ -387,6 +392,7 @@
                             </MenuItem.Icon>
                         </MenuItem>
                         <MenuItem
+                            Visibility="{Binding Converter={StaticResource LanguageSupportedVisibilityConverter}, ConverterParameter='bra'}"
                             IsChecked="{Binding Path=(modmanager:Settings.Language), Converter={StaticResource StringMatchToBoolConverter}, ConverterParameter='bra'}"
                             Name="LanguageBRA_MenuItem"
                             Header="Português"
@@ -398,6 +404,7 @@
                             </MenuItem.Icon>
                         </MenuItem>
                         <MenuItem
+                            Visibility="{Binding Converter={StaticResource LanguageSupportedVisibilityConverter}, ConverterParameter='rus'}"
                             IsChecked="{Binding Path=(modmanager:Settings.Language), Converter={StaticResource StringMatchToBoolConverter}, ConverterParameter='rus'}"
                             Name="LanguageRUS_MenuItem"
                             Header="Pусский"
