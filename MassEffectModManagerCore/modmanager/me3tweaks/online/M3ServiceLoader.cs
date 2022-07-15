@@ -88,7 +88,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.online
         /// </summary>
         public static FallbackLink CombinedServiceFetchURL = new FallbackLink()
         {
-            MainURL = @"https://me3tweaks.com/modmanager/services/combinedservicesfetch",
+            MainURL = @"https://me3tweaks.com/modmanager/services/combinedservicesfetch2",
             //FallbackURL = "",
         };
 
