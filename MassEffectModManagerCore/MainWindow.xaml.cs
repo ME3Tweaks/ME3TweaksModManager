@@ -2207,7 +2207,7 @@ namespace ME3TweaksModManager
             DPIScaling.SetScalingFactor(this);
 #if PRERELEASE
             // MessageBox.Show(M3L.GetString(M3L.string_prereleaseNotice));
-            MessageBox.Show("This is a beta build of ME3Tweaks Mod Manager. Mods deployed using this build will not be supported by ME3Tweaks, but you are encouraged to use it and report issues on the Discord.");
+            MessageBox.Show(M3L.GetString(M3L.string_betaBuildDialog));
 #endif
             if (App.BootingUpdate)
             {
@@ -3650,9 +3650,9 @@ namespace ME3TweaksModManager
                             break;
                         case @".json":
                             {
-                                var task = BackgroundTaskEngine.SubmitBackgroundJob("M3MCompile", "Compiling mergemod",
-                                    "Compiled mergemod");
-                                NamedBackgroundWorker nbw = new NamedBackgroundWorker("MergeModCompiler");
+                                var task = BackgroundTaskEngine.SubmitBackgroundJob(@"M3MCompile", M3L.GetString(M3L.string_compilingMergemod),
+                                    M3L.GetString(M3L.string_compiledMergemod));
+                                NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"MergeModCompiler");
                                 nbw.DoWork += (o, args) =>
                                 {
                                     MergeModLoader.SerializeManifest(file, 1);
@@ -3661,7 +3661,7 @@ namespace ME3TweaksModManager
                                 {
                                     if (args.Error != null)
                                     {
-                                        task.FinishedUIText = "Failed to compile mergemod";
+                                        task.FinishedUIText = M3L.GetString(M3L.string_failedToCompileMergemod);
                                         BackgroundTaskEngine.SubmitJobCompletion(task);
                                         M3Log.Error($@"Error compiling m3m mod file: {args.Error.Message}");
                                         M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_errorCompilingm3mX, args.Error.Message),

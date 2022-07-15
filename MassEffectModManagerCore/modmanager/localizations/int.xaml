@@ -442,6 +442,10 @@
     <!-- 0={Filename} 1={percent} -->
     <system:String x:Key="string_interp_failedToDecompressFname">Failed to decompress {0}</system:String>
     <!-- 0={Filename} -->
+    <system:String x:Key="string_betaBuildDialog">This is a beta build of ME3Tweaks Mod Manager. Mods deployed using this build will not be supported by ME3Tweaks, but you are encouraged to use it and report issues on the Discord.</system:String>
+    <system:String x:Key="string_compilingMergemod">Compiling mergemod</system:String>
+    <system:String x:Key="string_compiledMergemod">Compiled mergemod</system:String>
+    <system:String x:Key="string_failedToCompileMergemod">Failed to compile mergemod</system:String>
 
     <!-- LEX Launcher -->
     <system:String x:Key="string_interp_lexNightlyFailedToDownload">Legendary Explorer Nightly failed to download: {0}</system:String>

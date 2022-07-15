@@ -479,6 +479,10 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_interp_decompressedFname = "string_interp_decompressedFname";
 		public const string string_interp_decompressingFnamePercent = "string_interp_decompressingFnamePercent";
 		public const string string_interp_failedToDecompressFname = "string_interp_failedToDecompressFname";
+		public const string string_betaBuildDialog = "string_betaBuildDialog";
+		public const string string_compilingMergemod = "string_compilingMergemod";
+		public const string string_compiledMergemod = "string_compiledMergemod";
+		public const string string_failedToCompileMergemod = "string_failedToCompileMergemod";
 		public const string string_interp_lexNightlyFailedToDownload = "string_interp_lexNightlyFailedToDownload";
 		public const string string_loadingME3TweaksServices = "string_loadingME3TweaksServices";
 		public const string string_refreshingME3TweaksServices = "string_refreshingME3TweaksServices";
@@ -761,7 +765,6 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_backupsMustBeCreatedFresh = "string_backupsMustBeCreatedFresh";
 		public const string string_backUp = "string_backUp";
 		public const string string_backupsAreUsedToRestoreYourGame = "string_backupsAreUsedToRestoreYourGame";
-		public const string string_interp_cannotBackupGameWhileRunning = "string_interp_cannotBackupGameWhileRunning";
 		public const string string_validatingBackupSource = "string_validatingBackupSource";
 		public const string string_waitingForUserInput = "string_waitingForUserInput";
 		public const string string_selectBackupDestination = "string_selectBackupDestination";
@@ -1094,7 +1097,6 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_validation_alt_dependsSelfReference = "string_validation_alt_dependsSelfReference";
 		public const string string_validation_alt_dependsMissingAction = "string_validation_alt_dependsMissingAction";
 		public const string string_validation_alt_dependsMissingNotMetAction = "string_validation_alt_dependsMissingNotMetAction";
-		public const string string_DependsActions = "string_DependsActions";
 		public const string string_validation_alt_dependsOnKeyReferencesMissingAlternate = "string_validation_alt_dependsOnKeyReferencesMissingAlternate";
 		public const string string_alt_groupRequiresDepends = "string_alt_groupRequiresDepends";
 		public const string string_alt_singularRequiresDepends = "string_alt_singularRequiresDepends";
@@ -1154,7 +1156,6 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_restored = "string_restored";
 		public const string string_restore = "string_restore";
 		public const string string_restoring = "string_restoring";
-		public const string string_interp_asiStatus = "string_interp_asiStatus";
 		public const string string_thisInstallationHasNoASIModsInstalled = "string_thisInstallationHasNoASIModsInstalled";
 		public const string string_bypassInstalledASIAndDLCModsWillBeAbleToLoad = "string_bypassInstalledASIAndDLCModsWillBeAbleToLoad";
 		public const string string_bypassNotInstalledASIAndDLCModsWillBeUnableToLoad = "string_bypassNotInstalledASIAndDLCModsWillBeUnableToLoad";
