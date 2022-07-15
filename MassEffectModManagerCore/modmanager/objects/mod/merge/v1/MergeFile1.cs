@@ -40,8 +40,16 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
             }
         }
 
-
-        public void ApplyChanges(GameTargetWPF gameTarget, CaseInsensitiveDictionary<string> loadedFiles, Mod associatedMod, ref int numMergesCompleted, int numTotalMerges, Action<int, int, string, string> mergeProgressDelegate = null)
+        /// <summary>
+        /// Applies the changes this merge file describes
+        /// </summary>
+        /// <param name="gameTarget"></param>
+        /// <param name="loadedFiles"></param>
+        /// <param name="associatedMod"></param>
+        /// <param name="mergeWeightDelegate">Callback to submit completed weight for progress tracking</param>
+        /// <param name="mergeStatusDelegate">Callback to submit a new text string to display</param>
+        /// <exception cref="Exception"></exception>
+        public void ApplyChanges(GameTargetWPF gameTarget, CaseInsensitiveDictionary<string> loadedFiles, Mod associatedMod,  Action<int> mergeWeightDelegate, Action<string, string> addTrackedFileDelegate = null)
         {
             var targetFiles = new SortedSet<string>();
             if (ApplyToAllLocalizations)
@@ -61,7 +69,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                 foreach (var l in localizations)
                 {
                     var targetname = $@"{targetnameBase}_{l.FileCode}{targetExtension}";
-                    hasOneFile |= addMergeTarget(targetname, loadedFiles, targetFiles, mergeProgressDelegate, ref numMergesCompleted, ref numTotalMerges);
+                    hasOneFile |= addMergeTarget(targetname, loadedFiles, targetFiles, mergeWeightDelegate);
                 }
 
                 if (!hasOneFile)
@@ -71,7 +79,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
             }
             else
             {
-                addMergeTarget(FileName, loadedFiles, targetFiles, mergeProgressDelegate, ref numMergesCompleted, ref numTotalMerges);
+                addMergeTarget(FileName, loadedFiles, targetFiles, mergeWeightDelegate);
             }
 
             MergeAssetCache1 mac = new MergeAssetCache1();
@@ -91,7 +99,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
 #endif
                 foreach (var pc in MergeChanges)
                 {
-                    pc.ApplyChanges(package, mac, associatedMod, gameTarget);
+                    pc.ApplyChanges(package, mac, associatedMod, gameTarget, mergeWeightDelegate);
                 }
 
                 var track = package.IsModified;
@@ -111,12 +119,17 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                     M3Log.Information($@"Package {package.FilePath} was not modified. This change is likely already installed, not saving package");
                 }
 
-                numMergesCompleted++;
-                mergeProgressDelegate?.Invoke(numMergesCompleted, numTotalMerges, track ? existingMD5 : null, track ? f : null);
+                if (track)
+                {
+                    // Add to basegame database.
+                    addTrackedFileDelegate?.Invoke(existingMD5, f);
+                }
+                
             }
         }
 
-        private bool addMergeTarget(string fileName, CaseInsensitiveDictionary<string> loadedFiles, SortedSet<string> targetFiles, Action<int, int, string, string> mergeProgressDelegate, ref int numMergesCompleted, ref int numTotalMerges)
+        private bool addMergeTarget(string fileName, CaseInsensitiveDictionary<string> loadedFiles,
+            SortedSet<string> targetFiles, Action<int> mergeWeightDelegate)
         {
             if (loadedFiles.TryGetValue(fileName, out var fullpath))
             {
@@ -126,13 +139,35 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
             else
             {
                 M3Log.Warning($@"File not found in game: {fileName}, skipping...");
-                numMergesCompleted++;
-                mergeProgressDelegate?.Invoke(numMergesCompleted, numTotalMerges, null, null);
+                mergeWeightDelegate?.Invoke(GetMergeWeightSingle()); // Skip this weight
             }
             return false;
         }
 
         public int GetMergeCount() => ApplyToAllLocalizations ? GameLanguage.GetLanguagesForGame(OwningMM.Game).Length : 1;
+
+
+        /// <summary>
+        /// Gets the merge weight for a single file (not to all localizations)
+        /// </summary>
+        /// <returns></returns>
+        public int GetMergeWeightSingle()
+        {
+            var weight = 0;
+
+            foreach (var v in MergeChanges)
+            {
+                weight += v.GetMergeWeight();
+            }
+
+            return weight;
+        }
+
+        public int GetMergeWeight()
+        {
+            var multiplier = ApplyToAllLocalizations ? GameLanguage.GetLanguagesForGame(OwningMM.Game).Length : 1;
+            return multiplier * GetMergeWeightSingle();
+        }
 
 
         /// <summary>

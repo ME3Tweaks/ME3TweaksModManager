@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -20,6 +21,9 @@ using Newtonsoft.Json;
 
 namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
 {
+    /// <summary>
+    /// Describes a change to a single export (or at least specified by a single target if it depends on that export)
+    /// </summary>
     public class MergeFileChange1
     {
         [JsonProperty(@"entryname")] public string EntryName { get; set; }
@@ -33,7 +37,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
         [JsonIgnore] public MergeFile1 Parent;
         [JsonIgnore] public MergeMod1 OwningMM => Parent.OwningMM;
 
-        public void ApplyChanges(IMEPackage package, MergeAssetCache1 assetsCache, Mod installingMod, GameTargetWPF gameTarget)
+        public void ApplyChanges(IMEPackage package, MergeAssetCache1 assetsCache, Mod installingMod, GameTargetWPF gameTarget, Action<int> addMergeWeightCompletion)
         {
             // APPLY PROPERTY UPDATES
             M3Log.Information($@"Merging changes into {EntryName}");
@@ -46,31 +50,31 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                 var props = export.GetProperties();
                 foreach (var pu in PropertyUpdates)
                 {
-                    pu.ApplyUpdate(package, props, this);
+                    pu.ApplyUpdate(package, props, this, addMergeWeightCompletion);
                 }
                 export.WriteProperties(props);
             }
 
             // APPLY ASSET UPDATE
-            AssetUpdate?.ApplyUpdate(package, export, installingMod);
+            AssetUpdate?.ApplyUpdate(package, export, installingMod, addMergeWeightCompletion);
 
             // APPLY SCRIPT UDPATE
-            ScriptUpdate?.ApplyUpdate(package, export, assetsCache, installingMod, gameTarget);
+            ScriptUpdate?.ApplyUpdate(package, export, assetsCache, installingMod, gameTarget, addMergeWeightCompletion);
 
             // APPLY SEQUENCE SKIP UPDATE
-            SequenceSkipUpdate?.ApplyUpdate(package, export, installingMod);
+            SequenceSkipUpdate?.ApplyUpdate(package, export, installingMod, addMergeWeightCompletion);
 
             // APPLY ADD TO CLASS OR REPLACE
-            AddToClassOrReplace?.ApplyUpdate(package, export, assetsCache, gameTarget);
+            AddToClassOrReplace?.ApplyUpdate(package, export, assetsCache, gameTarget, addMergeWeightCompletion);
 
             // APPLY CONFIG FLAG REMOVAL
             if (DisableConfigUpdate)
             {
-                DisableConfigFlag(package, export, installingMod);
+                DisableConfigFlag(package, export, installingMod, addMergeWeightCompletion);
             }
         }
 
-        private void DisableConfigFlag(IMEPackage package, ExportEntry export, Mod installingMod)
+        private void DisableConfigFlag(IMEPackage package, ExportEntry export, Mod installingMod, Action<int> addMergeWeightCompleted)
         {
             if (ObjectBinary.From(export) is UProperty ob)
             {
@@ -82,6 +86,8 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
             {
                 throw new Exception(M3L.GetString(M3L.string_interp_mergefile_notPropertyExportConfigFlag, export.InstancedFullPath, package.FilePath));
             }
+            
+            addMergeWeightCompleted?.Invoke(MergeFileChange1.WEIGHT_DISABLECONFIGUPDATE);
         }
 
         public void SetupParent(MergeFile1 parent)
@@ -147,6 +153,38 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                 throw new Exception(M3L.GetString(M3L.string_interp_fileLibInitMergeMod1Script, targetExport.InstancedFullPath, string.Join(Environment.NewLine, fl.InitializationLog.AllErrors)));
             }
         }
+
+        /// <summary>
+        /// Get the weight of this merge change
+        /// </summary>
+        /// <returns></returns>
+        public int GetMergeWeight()
+        {
+            if (AssetUpdate != null)
+                return WEIGHT_ASSETUPDATE;
+            if (ScriptUpdate != null)
+                return WEIGHT_SCRIPTUPDATE;
+            if (AddToClassOrReplace != null)
+                return WEIGHT_SCRIPTUPDATE * AddToClassOrReplace.ScriptFileNames.Length;
+            if (SequenceSkipUpdate != null)
+                return WEIGHT_SEQSKIPUPDATE;
+            if (PropertyUpdates != null)
+                return WEIGHT_PROPERTYUPDATE;
+            if (DisableConfigUpdate)
+                return WEIGHT_DISABLECONFIGUPDATE;
+            Debug.WriteLine(@"Merge weight not calculated: All merge variables were null, does this calculation need updated?");
+            return 0;
+        }
+
+        internal const int WEIGHT_PROPERTYUPDATE = 2;
+
+        internal const int WEIGHT_DISABLECONFIGUPDATE = 1;
+
+        internal const int WEIGHT_SEQSKIPUPDATE = 2;
+
+        internal const int WEIGHT_SCRIPTUPDATE = 15;
+
+        internal const int WEIGHT_ASSETUPDATE = 7;
     }
 
     public class PropertyUpdate1
@@ -160,7 +198,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
         [JsonProperty(@"propertyvalue")]
         public string PropertyValue { get; set; }
 
-        public bool ApplyUpdate(IMEPackage package, PropertyCollection properties, MergeFileChange1 mfc)
+        public bool ApplyUpdate(IMEPackage package, PropertyCollection properties, MergeFileChange1 mfc, Action<int> addMergeWeightCompleted)
         {
             var propKeys = PropertyName.Split('.');
 
@@ -232,6 +270,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                 default:
                     throw new Exception(M3L.GetString(M3L.string_interp_mergefile_unsupportedPropertyType, PropertyType));
             }
+            addMergeWeightCompleted?.Invoke(MergeFileChange1.WEIGHT_PROPERTYUPDATE);
             return true;
         }
 
@@ -262,7 +301,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
         [JsonIgnore] public MergeFileChange1 Parent;
         [JsonIgnore] public MergeMod1 OwningMM => Parent.OwningMM;
 
-        public bool ApplyUpdate(IMEPackage package, ExportEntry targetExport, Mod installingMod)
+        public bool ApplyUpdate(IMEPackage package, ExportEntry targetExport, Mod installingMod, Action<int> addMergeWeightCompleted)
         {
             Stream binaryStream;
             string sourcePath = null;
@@ -296,7 +335,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
             {
                 throw new Exception(M3L.GetString(M3L.string_interp_mergefile_errorsOccurredMergingAsset, AssetName, EntryName, string.Join('\n', resultst.Select(x => x.Message))));
             }
-
+            addMergeWeightCompleted?.Invoke(MergeFileChange1.WEIGHT_ASSETUPDATE);
             return true;
         }
 
@@ -320,7 +359,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
         [JsonIgnore] public MergeFileChange1 Parent;
         [JsonIgnore] public MergeMod1 OwningMM => Parent.OwningMM;
 
-        public bool ApplyUpdate(IMEPackage package, ExportEntry targetExport, MergeAssetCache1 assetsCache, Mod installingMod, GameTargetWPF gameTarget)
+        public bool ApplyUpdate(IMEPackage package, ExportEntry targetExport, MergeAssetCache1 assetsCache, Mod installingMod, GameTargetWPF gameTarget, Action<int> addMergeWeightCompleted)
         {
             FileLib fl = MergeFileChange1.GetFileLibForMerge(package, targetExport, assetsCache, gameTarget);
 
@@ -333,9 +372,9 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                     M3Log.Error(l.Message);
                 }
 
-                throw new Exception(M3L.GetString(M3L.string_interp_mergefile_errorCompilingFunction, targetExport, string.Join(Environment.NewLine, log.AllErrors)));
+                throw new Exception(M3L.GetString(M3L.string_interp_mergefile_errorCompilingFunction, targetExport.InstancedFullPath, string.Join(Environment.NewLine, log.AllErrors)));
             }
-
+            addMergeWeightCompleted?.Invoke(MergeFileChange1.WEIGHT_SCRIPTUPDATE);
             return true;
         }
 
@@ -360,12 +399,13 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
         [JsonIgnore] public MergeFileChange1 Parent;
         [JsonIgnore] public MergeMod1 OwningMM => Parent.OwningMM;
 
-        public bool ApplyUpdate(IMEPackage package, ExportEntry targetExport, MergeAssetCache1 assetsCache, GameTargetWPF gameTarget)
+        public bool ApplyUpdate(IMEPackage package, ExportEntry targetExport, MergeAssetCache1 assetsCache, GameTargetWPF gameTarget, Action<int> addMergeWeightCompleted)
         {
             FileLib fl = MergeFileChange1.GetFileLibForMerge(package, targetExport, assetsCache, gameTarget);
 
             for (int i = 0; i < Scripts.Length; i++)
             {
+                Debug.WriteLine($"Updating {targetExport.InstancedFullPath}");
                 MessageLog log = UnrealScriptCompiler.AddOrReplaceInClass(targetExport, Scripts[i], fl);
 
                 if (log.AllErrors.Any())
@@ -390,6 +430,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                     M3Log.Error($@"Could not re-initialize FileLib after adding/replacing '{ScriptFileNames[i]}' to {targetExport.InstancedFullPath}.");
                     throw;
                 }
+                addMergeWeightCompleted?.Invoke(MergeFileChange1.WEIGHT_SCRIPTUPDATE);
             }
 
             return true;
@@ -419,7 +460,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
         [JsonIgnore] public MergeFileChange1 Parent;
         [JsonIgnore] public MergeMod1 OwningMM => Parent.OwningMM;
 
-        public bool ApplyUpdate(IMEPackage package, ExportEntry targetExport, Mod installingMod)
+        public bool ApplyUpdate(IMEPackage package, ExportEntry targetExport, Mod installingMod, Action<int> addMergeWeightCompleted)
         {
             if (M3Utilities.CalculateMD5(new MemoryStream(targetExport.Data)) == EntryMD5)
             {
@@ -431,6 +472,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                 M3Log.Warning(@"Target export MD5 is incorrect. This may be the wrong target export, or it may be already patched. We are reporting that the mod installed, in the event the target was updated.");
             }
 
+            addMergeWeightCompleted?.Invoke(MergeFileChange1.WEIGHT_SEQSKIPUPDATE);
             return true;
         }
 

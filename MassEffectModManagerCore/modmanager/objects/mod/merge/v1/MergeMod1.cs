@@ -110,7 +110,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
             return mm;
         }
 
-        public bool ApplyMergeMod(Mod associatedMod, GameTargetWPF target, ref int numTotalDone, int numTotalMerges, Action<int, int, string, string> mergeProgressDelegate = null)
+        public bool ApplyMergeMod(Mod associatedMod, GameTargetWPF target, Action<int> mergeWeightDelegate, Action<string, string> mergeStatusDelegate)
         {
             M3Log.Information($@"Applying {MergeModFilename}");
             var loadedFiles = MELoadedFiles.GetFilesLoadedInGame(target.Game, true, gameRootOverride: target.TargetPath);
@@ -126,14 +126,22 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
             int numDone = 0;
             foreach (var mf in FilesToMergeInto)
             {
-                mf.ApplyChanges(target, loadedFiles, associatedMod, ref numTotalDone, numTotalMerges, mergeProgressDelegate);
+                mf.ApplyChanges(target, loadedFiles, associatedMod, mergeWeightDelegate, mergeStatusDelegate);
                 numDone++;
             }
 
             return true;
         }
-
+        /// <summary>
+        /// Gets the number of files to merge into
+        /// </summary>
+        /// <returns></returns>
         public int GetMergeCount() => FilesToMergeInto.Sum(x => x.GetMergeCount());
+        /// <summary>
+        /// Gets the weight of changes for more accurate progress tracking
+        /// </summary>
+        /// <returns></returns>
+        public int GetMergeWeight() => FilesToMergeInto.Sum(x => x.GetMergeWeight());
         public void ExtractToFolder(string outputfolder)
         {
             // scripts and assets
