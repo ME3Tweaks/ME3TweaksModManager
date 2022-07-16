@@ -89,7 +89,7 @@
 	<system:String x:Key="string_validation_alt_invalidHiddenValue">Значением 'Hidden' в Alternate {0} может являться только 'true' или 'false'. Использованно недопустимое значение: {1}</system:String>
 	<system:String x:Key="string_validation_alt_dependsKeysMissingPlusMinus">Alternate {0} содержит значение в своем списке DependsOnKeys, которое не начинается c '+/-' символов: {1}. Значения должны начинаться с '+/-'.</system:String>
 	<system:String x:Key="string_validation_alt_dependsSelfReference">Alternate {0} ссылается на собственный 'OptionKey' в своем списке DependsOnKeys, что не поддерживается. Недопустимое значение: {1}</system:String>
-	<system:String x:Key="string_validation_alt_dependsMissingAction">Alternate {0} использует DependsOnKeys, но не задает атрибут DependsOnKeys. Данный атрибут необходим.</system:String>
+	<system:String x:Key="string_validation_alt_dependsMissingAction">Alternate {0} использует DependsOnKeys, но не задает атрибут DependsOnMetAction. Данный атрибут необходим.</system:String>
 	<system:String x:Key="string_validation_alt_dependsMissingNotMetAction">Alternate {0} использует DependsOnKeys, но не задает атрибут DependsOnNotMetAction. Данный атрибут необходим.</system:String>
 	<system:String x:Key="string_validation_alt_dependsOnKeyReferencesMissingAlternate">Alternate {0} задает значение DependsOnKey '{1}', не определенное  ни одним Alternate в данном моде.</system:String>
 	<system:String x:Key="string_alt_groupRequiresDepends" xml:space="preserve">Требуется опция {0}: {1}\n</system:String>
