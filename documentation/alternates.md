@@ -85,7 +85,7 @@ The altdlc descriptor only works on the CUSTOMDLC job.
 | DependsOnMetAction | String | The action to take when the DependsOnKeys condition is evaluates to true. See (#altdlc-dependson-system)[the DependsOn values] for what values can be put here. | If `DependsOnKeys` is specified | 8.0+ |
 | DependsOnActionNotMet | String | The action to take when the DependsOnKeys condition is evaluates to false. See (#altdlc-dependson-system)[the DependsOn values] for what values can be put here. | If `DependsOnKeys` is specified |  8.0+ |
 | SortIndex | Integer | The sorting index for this alternate. The value must be unique across ALL alternates. This is used to sort alternates displayed to the user. Values don't need to be in incremental order; values can be skipped. | No |  8.0+ |
-
+| Hidden | Boolean | Hides an option in the options selector. This is used in conjunction with the DependsOn system to allow you to depend on DLC being present or not present, by using the autos system that uses `ConditionalDLC` attributes. On options set to hidden, you typically use `OP_NOTHING` as it is only used to pivot. | No |  8.0+ |
 
 ### altdlc DependsOn system
 In ModDesc 8.0, the `DependsOn` system was added. This allows options to depend on one or more other options, either checked or unchecked (or a mix). When the conditons are _all_ met, the met action is performed; when not all dependent options are not in a matching state, the not met action is run. 
