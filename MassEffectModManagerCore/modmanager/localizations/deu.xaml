@@ -88,7 +88,7 @@
 	<system:String x:Key="string_validation_alt_cannotUseHiddenWithOptionGroup">Alternate {0} kann 'Hidden' nicht auf 'true' setzen, wenn 'OptionGroup' benutzt wird.</system:String>
 	<system:String x:Key="string_validation_alt_invalidHiddenValue">Der Wert für 'Hidden' in Alternate {0} ist nicht 'true' oder 'false'. Der angegebene ungültige Wert lautet: {1}</system:String>
 	<system:String x:Key="string_validation_alt_dependsKeysMissingPlusMinus">Alternate {0} hat einen Wert in seiner DependsOnKeys-Liste der nicht mit +/- beginnt: {1}. Werte müssen mit einem + oder - beginnen.</system:String>
-	<system:String x:Key="string_validation_alt_dependsSelfReference">Alternate {0} referenziert sich selbst in seiner eigenen DependsOnKeys-Liste. Dies wird nicht unterstützt. Schlüssel: {1}</system:String>
+	<system:String x:Key="string_validation_alt_dependsSelfReference">Alternate {0} referenziert seinen eigenen 'OptionKey' in seiner DependsOnKeys-Liste. Dies wird nicht unterstützt. Ungültiger Wert: {1}</system:String>
 	<system:String x:Key="string_validation_alt_dependsMissingAction">Alternate {0} benutzt DependsOnKeys aber definiert kein DependsOnMetAction-Attribut. Dieses Attribut ist erforderlich.</system:String>
 	<system:String x:Key="string_validation_alt_dependsMissingNotMetAction">Alternate {0} benutzt DependsOnKeys aber definiert kein DependsOnNotMetAction-Attribut. Dieses Attribut ist erforderlich.</system:String>
 	<system:String x:Key="string_validation_alt_dependsOnKeyReferencesMissingAlternate">Alternate {0} benutzt einen DependsOnKey-Wert '{1}' der von keinem Alternate dieses Mods definiert wird.</system:String>
@@ -119,7 +119,6 @@
 	<system:String x:Key="string_backupsMustBeCreatedFresh">Backups müssen von einer frischen, unmodifizierten Installation des Spielt erstellt werden. Backups von modifizierten Installationen werden nicht unterstützt.</system:String>
 	<system:String x:Key="string_backUp">Backup erstellen</system:String>
 	<system:String x:Key="string_backupsAreUsedToRestoreYourGame" xml:space="preserve">Backups können benutzt werden um deine Installation auf den ungemoddeten Zustand zurückzusetzen und sind ein wichtiger Schritt beim Modden. Um ein Backup zu entkoppeln und aus den Mod-Werkzeugen zu entfernen, klicke den 'Backup entkoppeln' Knopf. Um aus einem Backup wiederherzustellen, benutze den Ziel verwalten Knopf im Hauptfenster.&#10;&#10;Backups werden außerdem als Dateiquelle für bestimmte Programmfunktionen benutzt. Daher benötigen einige fortgeschrittene Optionen ein Backup als Quelle für unmodifizierte Dateien.</system:String>
-	<system:String x:Key="string_interp_cannotBackupGameWhileRunning">Kann kein Backup von {0} erstellen während es läuft.</system:String>
 	<system:String x:Key="string_validatingBackupSource">Überprüfe Backup-Quelle</system:String>
 	<system:String x:Key="string_waitingForUserInput">Warte auf Benutzereingabe</system:String>
 	<system:String x:Key="string_selectBackupDestination">Backup-Ziel wählen (muss ein leerer Ordner sein)</system:String>
@@ -1007,6 +1006,10 @@
 	<system:String x:Key="string_interp_decompressedFname">{0} wurde dekomprimiert</system:String>
 	<system:String x:Key="string_interp_decompressingFnamePercent">{0} wird dekomprimiert {1}%</system:String>
 	<system:String x:Key="string_interp_failedToDecompressFname">Dekomprimieren von {0} fehlgeschlagen</system:String>
+	<system:String x:Key="string_betaBuildDialog">Dies ist eine Beta-Version von ME3Tweaks Mod Manager. Mit dieser Version veröffentlichte Mods werden nicht von ME3Tweaks unterstützt, aber wir freuen uns wenn du sie benutzt und etwaige Fehler auf Discord meldest.</system:String>
+	<system:String x:Key="string_compilingMergemod">Zusammenführungsmod wird kompiliert</system:String>
+	<system:String x:Key="string_compiledMergemod">Zusammenführungsmod wurde kompiliert</system:String>
+	<system:String x:Key="string_failedToCompileMergemod">Kompilieren von Zusammenführungsmod fehlgeschlagen</system:String>
 	<system:String x:Key="string_dialog_missingConfigFileForMEIM">Mass Effect Config-Datei {0}.ini fehlt. Sie sollte sich in {1} befinden. Bitte starte das Spiel mindestens ein Mal, um die Standard-Dateien zu generieren.</system:String>
 	<system:String x:Key="string_interp_dialogConfigDirectoryMissing">Mass Effect Config-Ordner fehlt. Er sollte sich in {0} befinden. Bitte starte das Spiel mindestens ein Mal, um die Standard-Dateien zu generieren.</system:String>
 	<system:String x:Key="string_cannotRunMassEffectIniModder">Mass Effect Ini Modder kann nicht gestartet werden</system:String>
@@ -1052,6 +1055,10 @@
 	<system:String x:Key="string_interp_mergefile_noLocalizedFiles">Keine lokalisierten Dateien zum zusammenführen mit {0} gefunden. Die aktivierte Einstellung 'applytoallapplications' führt Änderungen nur mit lokalisierten Versionen einer Datei zusammen</system:String>
 	<system:String x:Key="string_interp_mergefile_errorCompilingClassAfterEdit">Fehler beim Kompilieren der Klasse {0} nach Hinzufügen oder Ersetzen von {1}: {2}</system:String>
 	<system:String x:Key="string_interp_mergefile_serialSizeMismatch">Zusammenführungsmod hat nicht die korrekte Länge; wude bis Position {0} felesen, aber der Zusammenführungsmod ist {1} Bytes lang</system:String>
+	<system:String x:Key="string_interp_propertyNotFoundX">Eigenschaft nicht gefunden: {0}</system:String>
+	<system:String x:Key="string_interp_errorCompilingPropertyXinYZ" xml:space="preserve">Fehler beim Kompilieren von Eigenschaft '{0}' in {1}:\n{2}</system:String>
+	<system:String x:Key="string_interp_incompleteStaticArrayIndex">Unvollständiger static array Index in propertyname: {0}</system:String>
+	<system:String x:Key="string_interp_updatingX">{0} wird aktualisiert</system:String>
 	<system:String x:Key="string_no">Nein</system:String>
 	<system:String x:Key="string_ok">OK</system:String>
 	<system:String x:Key="string_yes">Ja</system:String>
