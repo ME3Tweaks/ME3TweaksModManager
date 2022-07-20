@@ -8,15 +8,11 @@ using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.Objects;
-using ME3TweaksCoreWPF;
-using ME3TweaksCoreWPF.Targets;
+using ME3TweaksCore.Targets;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.localizations;
-using ME3TweaksModManager.modmanager.windows;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Schema;
 
 namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
 {
@@ -110,7 +106,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
             return mm;
         }
 
-        public bool ApplyMergeMod(Mod associatedMod, GameTargetWPF target, ref int numTotalDone, int numTotalMerges, Action<int, int, string, string> mergeProgressDelegate = null)
+        public bool ApplyMergeMod(Mod associatedMod, GameTarget target, Action<int> mergeWeightDelegate, Action<string, string> mergeStatusDelegate)
         {
             M3Log.Information($@"Applying {MergeModFilename}");
             var loadedFiles = MELoadedFiles.GetFilesLoadedInGame(target.Game, true, gameRootOverride: target.TargetPath);
@@ -126,19 +122,39 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
             int numDone = 0;
             foreach (var mf in FilesToMergeInto)
             {
-                mf.ApplyChanges(target, loadedFiles, associatedMod, ref numTotalDone, numTotalMerges, mergeProgressDelegate);
+                mf.ApplyChanges(target, loadedFiles, associatedMod, mergeWeightDelegate, mergeStatusDelegate);
                 numDone++;
             }
 
             return true;
         }
-
+        /// <summary>
+        /// Gets the number of files to merge into
+        /// </summary>
+        /// <returns></returns>
         public int GetMergeCount() => FilesToMergeInto.Sum(x => x.GetMergeCount());
+        /// <summary>
+        /// Gets the weight of changes for more accurate progress tracking
+        /// </summary>
+        /// <returns></returns>
+        public int GetMergeWeight() => FilesToMergeInto.Sum(x => x.GetMergeWeight());
         public void ExtractToFolder(string outputfolder)
         {
             // scripts and assets
             foreach (var mc in FilesToMergeInto.SelectMany(x => x.MergeChanges))
             {
+                if (mc.PropertyUpdates is not null)
+                {
+                    foreach (PropertyUpdate1 propertyUpdate in mc.PropertyUpdates)
+                    {
+                        if (!string.IsNullOrEmpty(propertyUpdate.PropertyAsset))
+                        {
+                            File.WriteAllText(Path.Combine(outputfolder, Path.GetFileName(propertyUpdate.PropertyAsset)), propertyUpdate.PropertyValue);
+                            propertyUpdate.PropertyValue = null;
+                        }
+                    }
+                }
+
                 if (mc.ScriptUpdate != null)
                 {
                     File.WriteAllText(Path.Combine(outputfolder, Path.GetFileName(mc.ScriptUpdate.ScriptFileName)), mc.ScriptUpdate.ScriptText);
@@ -156,7 +172,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                     {
                         File.WriteAllText(Path.Combine(outputfolder, Path.GetFileName(fileName)), script);
                     }
-                    mc.AddToClassOrReplace.Scripts = Array.Empty<string>();
+                    mc.AddToClassOrReplace.Scripts = null;
                 }
             }
 
@@ -225,6 +241,22 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
             {
                 foreach (var mc in fc.MergeChanges)
                 {
+                    if (mc.PropertyUpdates is not null)
+                    {
+                        foreach (PropertyUpdate1 propertyUpdate in mc.PropertyUpdates)
+                        {
+                            if (propertyUpdate.PropertyType is @"ArrayProperty")
+                            {
+                                var assetFilePath = Path.Combine(sourceDir, propertyUpdate.PropertyAsset);
+                                if (!File.Exists(assetFilePath))
+                                {
+                                    throw new Exception(M3L.GetString(M3L.string_interp_error_mergefile_scriptNotFoundX, propertyUpdate.PropertyAsset));
+                                }
+                                propertyUpdate.PropertyValue = File.ReadAllText(assetFilePath);
+                            }
+                        }
+                    }
+
                     if (mc.AssetUpdate?.AssetName != null)
                     {
                         if (!File.Exists(Path.Combine(sourceDir, mc.AssetUpdate.AssetName)))

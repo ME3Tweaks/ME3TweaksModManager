@@ -2207,7 +2207,7 @@ namespace ME3TweaksModManager
             DPIScaling.SetScalingFactor(this);
 #if PRERELEASE
             // MessageBox.Show(M3L.GetString(M3L.string_prereleaseNotice));
-            MessageBox.Show("This is a beta build of ME3Tweaks Mod Manager. Mods deployed using this build will not be supported by ME3Tweaks, but you are encouraged to use it and report issues on the Discord.");
+            MessageBox.Show(M3L.GetString(M3L.string_betaBuildDialog));
 #endif
             if (App.BootingUpdate)
             {
@@ -3228,8 +3228,8 @@ namespace ME3TweaksModManager
                     var ia = new ImageAwesome()
                     {
                         Icon = icon,
-                        Height=16,
-                        Width=16,
+                        Height = 16,
+                        Width = 16,
                         Style = (Style)FindResource(@"EnableDisableImageStyle")
                     };
                     ia.SetResourceReference(ImageAwesome.ForegroundProperty, AdonisUI.Brushes.ForegroundBrush);
@@ -3649,16 +3649,32 @@ namespace ME3TweaksModManager
                             }
                             break;
                         case @".json":
-                            try
                             {
-                                MergeModLoader.SerializeManifest(file, 1);
+                                var task = BackgroundTaskEngine.SubmitBackgroundJob(@"M3MCompile", M3L.GetString(M3L.string_compilingMergemod),
+                                    M3L.GetString(M3L.string_compiledMergemod));
+                                NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"MergeModCompiler");
+                                nbw.DoWork += (o, args) =>
+                                {
+                                    MergeModLoader.SerializeManifest(file, 1);
+                                };
+                                nbw.RunWorkerCompleted += (o, args) =>
+                                {
+                                    if (args.Error != null)
+                                    {
+                                        task.FinishedUIText = M3L.GetString(M3L.string_failedToCompileMergemod);
+                                        BackgroundTaskEngine.SubmitJobCompletion(task);
+                                        M3Log.Error($@"Error compiling m3m mod file: {args.Error.Message}");
+                                        M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_errorCompilingm3mX, args.Error.Message),
+                                            M3L.GetString(M3L.string_errorCompilingm3m), MessageBoxButton.OK,
+                                            MessageBoxImage.Error);
+                                    }
+                                    else
+                                    {
+                                        BackgroundTaskEngine.SubmitJobCompletion(task);
+                                    }
+                                };
+                                nbw.RunWorkerAsync();
                             }
-                            catch (Exception ex)
-                            {
-                                M3Log.Error($@"Error compiling m3m mod file: {ex.Message}");
-                                M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_errorCompilingm3mX, ex.Message), M3L.GetString(M3L.string_errorCompilingm3m), MessageBoxButton.OK, MessageBoxImage.Error);
-                            }
-
                             break;
                         case @".m3m":
                             try

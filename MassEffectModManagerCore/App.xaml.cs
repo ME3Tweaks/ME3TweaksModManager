@@ -355,11 +355,11 @@ namespace ME3TweaksModManager
                 {
                     //first boot?
                     var currentCultureLang = CultureInfo.InstalledUICulture.Name;
-                    if (currentCultureLang.StartsWith(@"de")) InitialLanguage = Settings.Language = @"deu";
-                    if (currentCultureLang.StartsWith(@"ru")) InitialLanguage = Settings.Language = @"rus";
-                    if (currentCultureLang.StartsWith(@"pl")) InitialLanguage = Settings.Language = @"pol";
-                    if (currentCultureLang.StartsWith(@"pt")) InitialLanguage = Settings.Language = @"bra";
-                    if (currentCultureLang.StartsWith(@"it")) InitialLanguage = Settings.Language = @"ita";
+                    if (IsLanguageSupported(@"deu") && currentCultureLang.StartsWith(@"de")) InitialLanguage = Settings.Language = @"deu";
+                    if (IsLanguageSupported(@"rus") && currentCultureLang.StartsWith(@"ru")) InitialLanguage = Settings.Language = @"rus";
+                    if (IsLanguageSupported(@"pol") && currentCultureLang.StartsWith(@"pl")) InitialLanguage = Settings.Language = @"pol";
+                    if (IsLanguageSupported(@"bra") && currentCultureLang.StartsWith(@"pt")) InitialLanguage = Settings.Language = @"bra";
+                    if (IsLanguageSupported(@"ita") && currentCultureLang.StartsWith(@"it")) InitialLanguage = Settings.Language = @"ita";
                     SubmitAnalyticTelemetryEvent(@"Auto set startup language", new Dictionary<string, string>() { { @"Language", InitialLanguage } });
                     M3Log.Information(@"This is a first boot. The system language code is " + currentCultureLang);
                 }
@@ -383,6 +383,22 @@ namespace ME3TweaksModManager
                 OnFatalCrash(e);
                 throw;
             }
+        }
+
+        /// <summary>
+        /// If a language localization is supported in M3 for use
+        /// </summary>
+        /// <param name="lang">The lang code</param>
+        /// <returns></returns>
+        public static bool IsLanguageSupported(string lang)
+        {
+            if (lang == @"deu") return true;
+            if (lang == @"rus") return true;
+            if (lang == @"pol") return true;
+            if (lang == @"ita") return true;
+            if (lang == @"int") return true; // Just in case
+            // if (lang == @"bra") return true; // Localization has not been updated since build 124
+            return false;
         }
 
         private static List<(string, Dictionary<string, string>)> QueuedTelemetryItems = new List<(string, Dictionary<string, string>)>();
@@ -701,7 +717,7 @@ namespace ME3TweaksModManager
         public int UpdateFromBuild { get; set; }
 
         [Option(@"update-boot",
-            HelpText = @"Indicates that the process should run in update mode for a single file .net core executable. The process will exit upon starting because the platform extraction process will have completed.")]
+            HelpText = @"Indicates that the process should run in update mode for a single file .net executable. The process will exit upon starting because the platform extraction process will have completed.")]
         public bool UpdateBoot { get; set; }
 
         [Option(@"upgrade-from-me3cmm",

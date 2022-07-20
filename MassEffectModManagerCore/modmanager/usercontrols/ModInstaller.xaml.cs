@@ -834,12 +834,22 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             var allMMs = installationJobs.SelectMany(x => x.MergeMods).ToList();
             allMMs.AddRange(installationJobs.SelectMany(x => x.AlternateFiles.Where(y => y.UIIsSelected && y.MergeMods != null).SelectMany(y => y.MergeMods)));
             var totalMerges = allMMs.Sum(x => x.GetMergeCount());
-            int doneMerges = 0;
-
-            void mergeProgressUpdate(int localDone, int localTotal, string originalmd5, string file)
+            var totalWeight = allMMs.Sum(x => x.GetMergeWeight());
+            var doneWeight = 0;
+            if (totalWeight == 0)
             {
-                //doneMerges++;
-                Percent = (int)(doneMerges * 100.0 / totalMerges);
+                Debug.WriteLine(@"Total weight is ZERO!");
+                totalWeight = 1;
+            }
+
+            void mergeWeightCompleted(int newWeightDone)
+            {
+                doneWeight += newWeightDone;
+                Percent = (int)(doneWeight * 100.0 / totalWeight);
+            }
+
+            void addBasegameTrackedFile(string originalmd5, string file)
+            {
                 if (file != null)
                 {
                     if (file.Contains(@"BioGame\CookedPC", StringComparison.InvariantCultureIgnoreCase))
@@ -856,15 +866,14 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     }
                 }
             }
+
+            Percent = 0;
             foreach (var mergeMod in allMMs)
             {
                 try
                 {
-                    Percent = (int)(doneMerges * 100.0 / totalMerges); // Make sure it's updated here so it gets to 0% on first install
                     Action = M3L.GetString(M3L.string_applyingMergemods);
-
-                    mergeMod.ApplyMergeMod(InstallOptionsPackage.ModBeingInstalled, InstallOptionsPackage.InstallTarget, ref doneMerges, totalMerges,
-                        mergeProgressUpdate);
+                    mergeMod.ApplyMergeMod(InstallOptionsPackage.ModBeingInstalled, InstallOptionsPackage.InstallTarget, mergeWeightCompleted, addBasegameTrackedFile);
                 }
                 catch (Exception ex)
                 {
@@ -892,7 +901,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 CompressedTLKMergeData compressedTlkData = null;
                 var mergeFiles = InstallOptionsPackage.ModBeingInstalled.PrepareTLKMerge(out compressedTlkData);
                 var gameMap = MELoadedFiles.GetFilesLoadedInGame(InstallOptionsPackage.InstallTarget.Game, gameRootOverride: InstallOptionsPackage.InstallTarget.TargetPath);
-                doneMerges = 0;
+                int doneMerges = 0;
                 int totalTlkMerges = mergeFiles.Count;
                 PackageCache cache = new PackageCache();
 

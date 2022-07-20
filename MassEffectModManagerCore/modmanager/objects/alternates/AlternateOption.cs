@@ -541,7 +541,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                         // Check if referencing self
                         if (dependskey.Key == OptionKey)
                         {
-                            M3Log.Error($@"Alternate {FriendlyName} references itself in its own DependsOnKeys list, which is not supported. Key value: {key}");
+                            M3Log.Error($@"Alternate {FriendlyName} references itself in its own DependsOnKeys list, which is not supported. OptionKey value: {key}");
                             LoadFailedReason = M3L.GetString(M3L.string_validation_alt_dependsSelfReference, FriendlyName, key);
                             return false;
                         }
@@ -669,7 +669,11 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 { @"DependsOnNotMetAction", new MDParameter(@"string", @"DependsOnNotMetAction", DependsOnNotMetAction != EDependsOnAction.ACTION_INVALID ? DependsOnNotMetAction.ToString() : "", dependsActions, "") }, // do not localize
 
                 // Sorting
-                { @"SortIndex", SortIndex > 0 ? SortIndex.ToString() : "" } // If not defined don't put into map
+                { @"SortIndex", SortIndex > 0 ? SortIndex.ToString() : "" }, // If not defined don't put into map
+
+                // DependsOn hidden - used for pivoting
+                { @"Hidden", new MDParameter(@"Hidden", IsHidden, false) }, // do not localize
+
             };
 
             // Merge the shared map into the parameter map

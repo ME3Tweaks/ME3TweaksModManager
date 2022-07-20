@@ -135,7 +135,8 @@ The format for a single property update for an export. You may have several of t
 | ------------- | ------ | ------------------------------------------------------------ |
 | propertyname  | string | The full name of the property. If updating a struct, include the name of the struct, separated by a '.'. For example, Offset.X to update X in the Offset StructProperty. |
 | propertytype  | string | The property type. The value must be the final property type to update, if this is part of a nested struct. Supported types are below. |
-| propertyvalue | string | The updated property value, <u>as a string</u>               |
+| propertyvalue | string | The updated property value, <u>as a string</u>. Not used if propertytype is ArrayProperty. |
+| propertyasset | string | The filename of a local plaintext file containing the array literal. Only used if propertytype is ArrayProperty. |
 
 **Supported Property Types:**
 
@@ -143,9 +144,10 @@ The format for a single property update for an export. You may have several of t
 - FloatProperty
 - IntProperty
 - StrProperty
-- NameProperty
-- EnumProperty - This is the same as ByteProperty(Enum). Pass in EnumType.Value as propertyvalue. Example: `FireMode.FireMode_FullAuto` for a FireMode enum
-- ObjectProperty - Does not support porting in, only relinking to existing objects. Pass in full instanced path as propertyvalue
+- NameProperty - Instanced names use a special format. Place the instance number after a '|'. For example, an instanced name that would appear in LEX as 'Foo_0' should here be written as "Foo|1".
+- EnumProperty - This is the same as ByteProperty(Enum). Pass in EnumType.Value as propertyvalue. Example: `FireMode.FireMode_FullAuto` for a FireMode enum.
+- ObjectProperty - Does not support porting in, only relinking to existing objects. Pass in full instanced path as propertyvalue.
+- ArrayProperty - Value is stored in a seperate file, specified by propertyasset. To get the value to put in that file, make your changes in LEX, then right-click on the property and select "Copy array literal (for mergemods)", then paste into your file.
 
 **Example:**
 
@@ -167,6 +169,11 @@ The format for a single property update for an export. You may have several of t
             "propertyname": "Tag",
             "propertytype": "NameProperty",
             "propertyvalue": "ActorTag_2"
+        },
+        {
+            "propertyname": "m_FootStepAttachments",
+            "propertytype": "ArrayProperty",
+            "propertyasset": "m_FootStepAttachments.uc"
         }
     ]
 }
