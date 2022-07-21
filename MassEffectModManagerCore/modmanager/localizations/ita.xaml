@@ -88,7 +88,7 @@
 	<system:String x:Key="string_validation_alt_cannotUseHiddenWithOptionGroup">L'alternato {0} non può impostare 'Hidden' a true quando si usa 'OptionGroup'.</system:String>
 	<system:String x:Key="string_validation_alt_invalidHiddenValue">Il valore 'Hidden' dell'alternato {0} può essere solo 'true' o 'false'. È stato inserito un valore invalido: {1}</system:String>
 	<system:String x:Key="string_validation_alt_dependsKeysMissingPlusMinus">L'alternato {0} ha un valore nella sua lista DependsOnKeys che non inizia con un +/-: {1}. I valori devono iniziare con un +/-.</system:String>
-	<system:String x:Key="string_validation_alt_dependsSelfReference">L'alternato {0} referenzia se stesso nella sua stessa lista DependsOnKeys, il che non è supportato. Valore chiave: {1}</system:String>
+	<system:String x:Key="string_validation_alt_dependsSelfReference">L'alternato {0} referenzia la sua stessa 'OptionKey' nella sua lista DependsOnKeys, il che non è supportato. Valore non valido: {1}</system:String>
 	<system:String x:Key="string_validation_alt_dependsMissingAction">L'alternato {0} usa DependOnKeys ma non definisce l'attributo DependsOnMetAction. Questo attributo è richiesto.</system:String>
 	<system:String x:Key="string_validation_alt_dependsMissingNotMetAction">L'alternato {0} usa DependOnKeys ma non definisce l'attributo DependsOnNotMetAction. Questo attributo è richiesto.</system:String>
 	<system:String x:Key="string_validation_alt_dependsOnKeyReferencesMissingAlternate">L'alternato {0} specifica un valore DependsOnKeys '{1}' che non è definito da nessun alternato in questa mod.</system:String>
@@ -119,7 +119,6 @@
 	<system:String x:Key="string_backupsMustBeCreatedFresh">I backup devono essere creati a partire da una copia del gioco fresca e senza modifiche. I backup modificati non sono supportati.</system:String>
 	<system:String x:Key="string_backUp">Esegui il backup</system:String>
 	<system:String x:Key="string_backupsAreUsedToRestoreYourGame" xml:space="preserve">I backup vengono utilizzati per ripristinare i tuoi file di gioco e sono un passaggio importante nel processo di modding. Per scollegare un backup e farlo dimenticare dagli strumenti di modding, clicca il pulsante 'Scollega backup'. Per ripristinare da un backup usa l'opzione Ripristina nel Backup&amp;menu Ripristina, o clicca il pulsante Gestisci Installazione dalla finestra principale.&#10;&#10;I backup sono anche usati come sorgenti di file per certe operazioni. Alcune funzionalità avanzate richiedono un backup, in quanto necessitano di un file non modificato.</system:String>
-	<system:String x:Key="string_interp_cannotBackupGameWhileRunning">Impossibile eseguire il backup di {0} mentre è in esecuzione.</system:String>
 	<system:String x:Key="string_validatingBackupSource">Validamento della sorgente del backup</system:String>
 	<system:String x:Key="string_waitingForUserInput">In attesa dell'input utente</system:String>
 	<system:String x:Key="string_selectBackupDestination">Seleziona la destinazione del backup (deve essere vuota)</system:String>
@@ -418,7 +417,6 @@
 	<system:String x:Key="string_restored">Ripristinato</system:String>
 	<system:String x:Key="string_restore">Ripristina</system:String>
 	<system:String x:Key="string_restoring">Ripristino in corso</system:String>
-	<system:String x:Key="string_interp_asiStatus">Questa installazione ha {0} mod ASI installate</system:String>
 	<system:String x:Key="string_thisInstallationHasNoASIModsInstalled">Questa installazione non ha mod ASI installate</system:String>
 	<system:String x:Key="string_bypassInstalledASIAndDLCModsWillBeAbleToLoad">Bypass installato. Le mod ASI e DLC saranno in grado di caricare</system:String>
 	<system:String x:Key="string_bypassNotInstalledASIAndDLCModsWillBeUnableToLoad">Bypass non installato. Le mod ASI e DLC non saranno in grado di caricare</system:String>
@@ -978,7 +976,7 @@
 	<system:String x:Key="string_interp_syncingPlotManagerForGame">Sincronizzazione del Plot Manager per {0}</system:String>
 	<system:String x:Key="string_interp_syncedPlotManagerForGame">Plot Manager per {0} sincronizzato</system:String>
 	<system:String x:Key="string_configurationToolsForSpecificMods">Strumenti di configurazione per mod specifiche</system:String>
-	<system:String x:Key="string_femShepVsBroShepCloneConfigurationUtility">FemShep vs BroShep: Utilità di Configurazione del Clone</system:String>
+	<system:String x:Key="string_femShepVsBroShepCloneConfigurationUtility">FemShep v BroShep: Utilità di Configurazione del Clone</system:String>
 	<system:String x:Key="string_tooltip_descriptionFemShepVsBroShepTool">Ti permette di configurare l'aspetto del clone in ME3/LE3</system:String>
 	<system:String x:Key="string_testEmailMerge">Test del Merge delle Email</system:String>
 	<system:String x:Key="string_installHeadmorph">Installa Headmorph</system:String>
@@ -1016,6 +1014,10 @@
 	<system:String x:Key="string_interp_decompressedFname">{0} decompresso</system:String>
 	<system:String x:Key="string_interp_decompressingFnamePercent">Decompressione di {0} {1}%</system:String>
 	<system:String x:Key="string_interp_failedToDecompressFname">Decompressione di {0} fallita</system:String>
+	<system:String x:Key="string_betaBuildDialog">Questa è una build beta di ME3Tweaks Mod Manager. Le mod distribuite con questa build non saranno supportate da ME3Tweaks, ma sei incoraggiato ad usarla e riportare problemi nel discord.</system:String>
+	<system:String x:Key="string_compilingMergemod">Compilazione mergemod</system:String>
+	<system:String x:Key="string_compiledMergemod">Mergemod compilata</system:String>
+	<system:String x:Key="string_failedToCompileMergemod">Compilazione mergemod fallita</system:String>
 	<system:String x:Key="string_dialog_missingConfigFileForMEIM">Il file di configurazione di Mass Effect {0}.ini è mancante. Dovrebbe trovarsi in {1}. Per favore avvia il gioco almeno una volta per generare i file di default.</system:String>
 	<system:String x:Key="string_interp_dialogConfigDirectoryMissing">La cartella di configurazione di Mass Effect è mancante. Dovrebbe trovarsi in {0}. Per favore avvia il gioco almeno una volta per generare i file di default.</system:String>
 	<system:String x:Key="string_cannotRunMassEffectIniModder">Impossibile avviare Mass Effect Ini Modder</system:String>
@@ -1061,6 +1063,10 @@
 	<system:String x:Key="string_interp_mergefile_noLocalizedFiles">Impossibile trovare alcun file localizzato da fondere dentro {0}. Questo merge ha 'applytoallapplications' impostato a true, che rende le modifiche applicabili solo alla versione localizzata di un file</system:String>
 	<system:String x:Key="string_interp_mergefile_errorCompilingClassAfterEdit">Errore durante la compilazione della classe {0} dopo aver aggiunto o sostituito {1}: {2}</system:String>
 	<system:String x:Key="string_interp_mergefile_serialSizeMismatch">La merge mod non era della lunghezza corretta; leggiamo dalla posizione {0} ma la merge mod è lunga {1} byte</system:String>
+	<system:String x:Key="string_interp_propertyNotFoundX">Proprietà non trovata: {0}</system:String>
+	<system:String x:Key="string_interp_errorCompilingPropertyXinYZ" xml:space="preserve">Errore durante la compilazione della proprietà '{0}' in {1}:\n{2}</system:String>
+	<system:String x:Key="string_interp_incompleteStaticArrayIndex">Indice di vettore statico incompleto in propertyname: {0}</system:String>
+	<system:String x:Key="string_interp_updatingX">Aggiornamento di {0}</system:String>
 	<system:String x:Key="string_no">No</system:String>
 	<system:String x:Key="string_ok">OK</system:String>
 	<system:String x:Key="string_yes">Sì</system:String>
