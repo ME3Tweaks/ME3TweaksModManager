@@ -119,10 +119,10 @@ namespace ME3TweaksModManager.modmanager.diagnostics
         public static ILogger CreateLogger()
         {
             return new LoggerConfiguration().WriteTo
-                .File(Path.Combine(MCoreFilesystem.GetLogDir(), @"modmanagerlog.txt"),
+                .File(Path.Combine(MCoreFilesystem.GetLogDir(), @"modmanagerlog-.txt"),
                                     rollingInterval: RollingInterval.Day,
                                     fileSizeLimitBytes: FileSize.MebiByte * 10, // 10 MB
-                                    shared: true, // Allow us to read log without closing it
+                                    // shared: true, // Allow us to read log without closing it // doesn't work in shared mode
                                     hooks: new CaptureFilePathHook()) // Allow us to capture current log path 
 #if DEBUG
                             .WriteTo.Debug()

@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -50,11 +51,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             var directory = new DirectoryInfo(MCoreFilesystem.GetLogDir());
             var logfiles = directory.GetFiles(@"modmanagerlog*.txt").OrderByDescending(f => f.LastWriteTime).ToList();
             AvailableLogs.Add(new LogItem(M3L.GetString(M3L.string_selectAnApplicationLog)) { Selectable = false });
-            AvailableLogs.AddRange(logfiles.Select(x => new LogItem(x.FullName)));
+            AvailableLogs.AddRange(logfiles.Select(x => new LogItem(x.FullName) { IsActiveLog = x.FullName.Equals(M3Log.CurrentLogFilePath, StringComparison.InvariantCultureIgnoreCase) }));
             SelectedLog = AvailableLogs.FirstOrDefault();
             var targets = mainwindow.InstallationTargets.Where(x => x.Selectable);
             DiagnosticTargets.Add(new GameTargetWPF(MEGame.Unknown, M3L.GetString(M3L.string_selectAGameTargetToGenerateDiagnosticsFor), false, true));
-            DiagnosticTargets.AddRange(targets.Where(x=>x.Game != MEGame.LELauncher));
+            DiagnosticTargets.AddRange(targets.Where(x => x.Game != MEGame.LELauncher));
             SelectedDiagnosticTarget = DiagnosticTargets.FirstOrDefault();
             //if (LogSelector_ComboBox.Items.Count > 0)
             //{
