@@ -138,7 +138,7 @@
 	<system:String x:Key="string_movies">Filmati</system:String>
 	<system:String x:Key="string_basegame">Gioco base</system:String>
 	<system:String x:Key="string_dialogInsufficientDiskSpace" xml:space="preserve">Non c'è abbastanza spazio libero in {0} per creare questo backup.\n\nSpazio libero: {1}\nSpazio richiesto: {2}</system:String>
-	<system:String x:Key="string_dialogBackupCannotBeSubdirectoryOfGame" xml:space="preserve">Un backup non può essere creato in una sottocartella del gioco.\n\nPercorso selezionato: {0}\nObiettivi in conflitto: {1}</system:String>
+	<system:String x:Key="string_dialogBackupCannotBeSubdirectoryOfGame" xml:space="preserve">Un backup non può essere creato in una sottocartella dell'installazione del gioco.\n\nPercorso selezionato: {0}\nObiettivi in conflitto: {1}</system:String>
 	<system:String x:Key="string_cannotCreateBackup">Impossibile creare un backup</system:String>
 	<system:String x:Key="string_someDlcNotInstalled">Alcuni DLC non sono installati</system:String>
 	<system:String x:Key="string_dialog_notAllDLCInstalled" xml:space="preserve">Questo obiettivo non ha tutti i DLC UFFICIALI installati. Assicurati di avere installato tutti i DLC UFFICALI che vuoi includere nel tuo backup, altrimenti un ripristino del gioco non li includerà tutti.\n\nIl seguente DLC non è installato:\n{0}\n\nNota che non ti servono tutti i DLC per un backup (come DLC che non hai acquistato), ma in ogni caso alcune funzionalità del Mod Manager dipendono sulla installazione di DLC specifici, come ME3Tweaks ModMaker.\n\nFare un backup di questo obiettivo?</system:String>
@@ -522,7 +522,7 @@
 	<system:String x:Key="string_tooltip_disableDLC" xml:space="preserve">Disabilita questa mod DLC dal caricamento.&#10;Questo non modifica nessun file e può essere fatto tranquillamente dopo che le mod delle texture sono state installate</system:String>
 	<system:String x:Key="string_tooltip_enableDLC" xml:space="preserve">Abilita questa mod DLC per caricarla in gioco</system:String>
 	<system:String x:Key="string_tooltip_deleteDLC" xml:space="preserve">Rimuove questa mod DLC dal gioco.&#10;Tieni premuto SHIFT per bypassare il dialogo di conferma (se non ci sono avvisi)</system:String>
-	<system:String x:Key="string_tooltip_openTargetInExplorer">Apre la cartella di questo gioco obiettivo nel File Explorer</system:String>
+	<system:String x:Key="string_tooltip_openTargetInExplorer">Apre la cartella di questa installazione del gioco nel File Explorer</system:String>
 	<system:String x:Key="string_other">Altro</system:String>
 	<system:String x:Key="string_extraDllsFound">Dll addizionali</system:String>
 	<system:String x:Key="string_noExtraDllsWereFound">Nessun file dll addizionale trovato</system:String>
@@ -594,12 +594,12 @@
 	<system:String x:Key="string_modManagerApplicationLog">Log dell'applicazione Mod Manager</system:String>
 	<system:String x:Key="string_applicationLogDescription">Il log dell'applicazione contiene dettagli su cosa è successo durante una sessione del Mod Manager e può essere usato per risolvere i problemi dell'applicazione. Se stai provando a capire perché è successo qualcosa nel Mod Manager seleziona un log dell'applicazione.</system:String>
 	<system:String x:Key="string_gameDiagnostic">Diagnostica del gioco</system:String>
-	<system:String x:Key="string_gameDiagnosticDescription">La diagnostica di un gioco raccoglie informazioni su un obiettivo specifico, inclusi dati sullo stato delle mod delle texture, DLC installati, versione del gioco, crash logs (se ce ne sono), problemi di texture e altro ancora. Se stai avendo un problema con il gioco, per favore selezionalo</system:String>
+	<system:String x:Key="string_gameDiagnosticDescription">La diagnostica di un gioco raccoglie informazioni su un'installazione del gioco specifica, inclusi dati sullo stato delle mod delle texture, DLC installati, versione del gioco, crash logs (se ce ne sono), problemi di texture e altro ancora. Se stai avendo un problema con il gioco, per favore selezionalo</system:String>
 	<system:String x:Key="string_tooltip_checkAllTexturesInGameDescription" xml:space="preserve">Selezionare questa opzione controlla tutte le texture del gioco.&#10;Il passaggio del controllo delle texture può richiedere alcuni minuti</system:String>
 	<system:String x:Key="string_fullTexturesCheck">Controllo totale delle texture</system:String>
 	<system:String x:Key="string_diagShareTheLink">Condividi il link risultante dal tuo log/diagnostica con il tuo recipiente. Se non sei sicuro/a di quale opzione scegliere, selezionane una da entrambe</system:String>
 	<system:String x:Key="string_selectAnApplicationLog">Seleziona un log dell'applicazione</system:String>
-	<system:String x:Key="string_selectAGameTargetToGenerateDiagnosticsFor">Seleziona un gioco come obiettivo da cui generare diagnostica</system:String>
+	<system:String x:Key="string_selectAGameTargetToGenerateDiagnosticsFor">Seleziona un'installazione del gioco da cui generare dati di diagnostica</system:String>
 	<system:String x:Key="string_compressingForUpload">Compressione per il caricamento</system:String>
 	<system:String x:Key="string_uploadingToME3Tweaks">Caricamento su ME3Tweaks</system:String>
 	<system:String x:Key="string_loadingME3TweaksServices">Caricamento dei servizi di ME3Tweaks</system:String>
@@ -1580,9 +1580,9 @@
 	<system:String x:Key="string_overlayDisablerNotInstalled">Disabilitatore dell'overlay non installato</system:String>
 	<system:String x:Key="string_installDisabler">Installa il disabilitatore</system:String>
 	<system:String x:Key="string_noTargetSelected">Nessun obiettivo selezionato</system:String>
-	<system:String x:Key="string_noOriginBasedGameTargets">Nessun gioco target basato su Origin</system:String>
+	<system:String x:Key="string_noOriginBasedGameTargets">Nessuna installazione di gioco basata su Origin</system:String>
 	<system:String x:Key="string_origin">Origin</system:String>
-	<system:String x:Key="string_oigPanelHeader" xml:space="preserve">L'overlay in gioco di Origin è famoso per causare importanti perdite di prestazioni nei giochi di Mass Effect. Nonostante possa essere disabilitato nelle impostazioni di Origin, questa impostazione non funziona per la versione Steam di Mass Effect 3. Puoi installare un file d3d9.dll facente da proxy che disabiliterà forzatamente l'overlay per il gioco selezionato.&#10;&#10;Usare altri proxy d3d9 come Reshade disabiliterà comunque l'overlay.</system:String>
+	<system:String x:Key="string_oigPanelHeader" xml:space="preserve">L'overlay in gioco di Origin è famoso per causare importanti perdite di prestazioni nei giochi di Mass Effect. Nonostante possa essere disabilitato nelle impostazioni di Origin, questa impostazione non funziona per la versione Steam di Mass Effect 3. Puoi installare un file d3d9.dll facente da proxy che disabiliterà forzatamente l'overlay per l'installazione del gioco selezionata.&#10;&#10;Usare altri proxy d3d9 come Reshade disabiliterà comunque l'overlay.</system:String>
 	<system:String x:Key="string_noOriginBasedTargetsInstalledForThisGame">Nessun obiettivo basato su Origin è installato per questo gioco</system:String>
 	<system:String x:Key="string_deployment_mergemodPackageCheckingReferences">Controllo dei riferimenti nelle mergemod [{0}/{1}]</system:String>
 	<system:String x:Key="string_syncingPlotManager">Sincronizzazione del Plot Manager</system:String>
@@ -1639,7 +1639,7 @@
 	<system:String x:Key="string_entireGameDirectoryWillBeDeleted">La cartella intera del gioco verrà eliminata. Se stai provando a fare un ripristino granulare inclusa la rimozione delle mod DLC o il ripristino di file/SFAR specifici, usa invece le opzioni di ripristino dal pulsante Gestisci Installazione</system:String>
 	<system:String x:Key="string_youMaySeeElevationPromptOnRestore">Potresti vedere una richiesta di permessi quando provi a ripristinare il tuo gioco. Questo è ME3Tweaks Mod Manager che consente al tuo account i permessi sulla nuova cartella del gioco dopo che la vecchia è stata eliminata.</system:String>
 	<system:String x:Key="string_dialog_restoringXWillDeleteGameDir" xml:space="preserve">Ripristinare {0} cancellerà completamente la cartella del gioco e poi copierà il backup nel percorso originale.\n\nCancellare questa installazione e ripristinarla dal backup?</system:String>
-	<system:String x:Key="string_gameTargetWillBeDeleted">Il gioco obiettivo sarà eliminato</system:String>
+	<system:String x:Key="string_gameTargetWillBeDeleted">L'installazione del gioco sarà eliminata</system:String>
 	<system:String x:Key="string_beta_useNewRestoreMethod">Usare il nuovo metodo di ripristino sperimentale? È più veloce ma non è ancora stato testato a pieno.</system:String>
 	<system:String x:Key="string_useBetaFeatureQuestion">Usare le funzionalità beta?</system:String>
 	<system:String x:Key="string_interp_copyingX">Copia di {0}</system:String>
