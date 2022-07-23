@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using ME3TweaksCore.Misc;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.mod;
@@ -62,7 +63,7 @@ namespace ME3TweaksModManager.modmanager.loaders
                     if (matchingServerMod != null)
                     {
                         var serverVer = Version.Parse(matchingServerMod.versionstr + @".0"); //can't have single digit version
-                        if (serverVer > mm.ParsedModVersion || restoreMode)
+                        if (ProperVersion.IsGreaterThan(serverVer, mm.ParsedModVersion) || restoreMode)
                         {
                             if (!restoreMode)
                             {
@@ -89,7 +90,7 @@ namespace ME3TweaksModManager.modmanager.loaders
                     {
                         if (Version.TryParse(matchingUpdateInfoForMod.versionstr, out var serverVer))
                         {
-                            if (serverVer > mm.ParsedModVersion)
+                            if (ProperVersion.IsGreaterThan(serverVer, mm.ParsedModVersion))
                             {
                                 // We need to make a clone in the event a mod uses duplicate code, such as Project Variety
                                 M3OnlineContent.NexusModUpdateInfo clonedInfo = new M3OnlineContent.NexusModUpdateInfo(matchingUpdateInfoForMod) { mod = mm };

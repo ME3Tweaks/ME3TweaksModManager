@@ -11,6 +11,7 @@ using System.Windows;
 using System.Windows.Input;
 using LegendaryExplorerCore.Helpers;
 using ME3TweaksCore.Helpers;
+using ME3TweaksCore.Misc;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
@@ -592,7 +593,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                             {
                                 Version serverVersion = new Version(latestRelease.TagName);
                                 Version localVersion = new Version($@"{fvi.FileMajorPart}.{fvi.FileMinorPart}.{fvi.FileBuildPart}.{fvi.FilePrivatePart}");
-                                if (serverVersion > localVersion)
+                                if (ProperVersion.IsGreaterThan(serverVersion,localVersion))
                                 {
                                     needsUpdated = true;
                                 }
@@ -649,7 +650,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                             Version localVersion =
                                 new Version(
                                     $@"{fvi.FileMajorPart}.{fvi.FileMinorPart}.{fvi.FileBuildPart}.{fvi.FilePrivatePart}");
-                            if (downloadVersion > localVersion)
+                            if (ProperVersion.IsGreaterThan(downloadVersion, localVersion))
                             {
                                 needsDownloading = true;
                             }
