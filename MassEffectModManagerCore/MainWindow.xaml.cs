@@ -65,6 +65,7 @@ using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using Microsoft.Win32;
 using Pathoschild.FluentNexus.Models;
+using Extensions = WinCopies.Util.Extensions;
 using M3OnlineContent = ME3TweaksModManager.modmanager.me3tweaks.services.M3OnlineContent;
 using MemoryAnalyzer = ME3TweaksModManager.modmanager.memoryanalyzer.MemoryAnalyzer;
 using Mod = ME3TweaksModManager.modmanager.objects.mod.Mod;
@@ -1385,7 +1386,8 @@ namespace ME3TweaksModManager
         /// Shows or queues the specified control
         /// </summary>
         /// <param name="control">Control to show or queue</param>
-        internal void ShowBusyControl(MMBusyPanelBase control)
+        /// <param name="swapImmediately">If the incoming panel should be shown immediately</param>
+        internal void ShowBusyControl(MMBusyPanelBase control, bool swapImmediately = false)
         {
             if (queuedUserControls.Count == 0 && !IsBusy)
             {
@@ -1394,7 +1396,35 @@ namespace ME3TweaksModManager
             }
             else
             {
-                queuedUserControls.Enqueue(control);
+                if (swapImmediately)
+                {
+                    M3Log.Information(@$"Immediately swapping to panel {control}");
+
+                    // Rebuild the queue list with our existing open panel at the front
+                    Queue<MMBusyPanelBase> rebuildQueue = new Queue<MMBusyPanelBase>();
+                    if (BusyContentM3 is SingleItemPanel2 spi && spi.Content is MMBusyPanelBase mmbpb)
+                    {
+                        rebuildQueue.Enqueue(mmbpb); // Add the current panel
+                    }
+
+                    while (queuedUserControls.TryDequeue(out var item))
+                    {
+                        rebuildQueue.Enqueue(item);
+                    }
+
+                    BusyContentM3 = new SingleItemPanel2(control);
+
+                    // Now rebuild the queue after we have shown our item
+                    while (rebuildQueue.TryDequeue(out var item))
+                    {
+                        queuedUserControls.Enqueue(item);
+                    }
+                }
+                else
+                {
+                    M3Log.Information(@$"Queueing panel {control}");
+                    queuedUserControls.Enqueue(control);
+                }
             }
         }
 
@@ -2322,6 +2352,15 @@ namespace ME3TweaksModManager
             ShowBusyControl(previewPanel);
         }
 
+        /// <summary>
+        /// Swaps to the incoming panel immediately, pushing the current one to the queue
+        /// </summary>
+        /// <param name="newPanel"></param>
+        internal void SwapPanelIfAny(MMBusyPanelBase newPanel)
+        {
+
+        }
+
         private void UpdateBinkStatus(MEGame game)
         {
             var target = GetCurrentTarget(game);
@@ -2879,7 +2918,7 @@ namespace ME3TweaksModManager
                                 {
                                     var updateAvailableDialog = new ProgramUpdateNotification();
                                     updateAvailableDialog.Close += (sender, args) => { ReleaseBusyControl(); };
-                                    ShowBusyControl(updateAvailableDialog);
+                                    ShowBusyControl(updateAvailableDialog, true);
                                 });
                             }
 #if !DEBUG
@@ -2898,7 +2937,7 @@ namespace ME3TweaksModManager
                                                 var updateAvailableDialog = new ProgramUpdateNotification(localmd5);
                                                 updateAvailableDialog.UpdateMessage = M3L.GetString(M3L.string_interp_minorUpdateAvailableMessage, App.BuildNumber.ToString());
                                                 updateAvailableDialog.Close += (sender, args) => { ReleaseBusyControl(); };
-                                                ShowBusyControl(updateAvailableDialog);
+                                                ShowBusyControl(updateAvailableDialog, true);
                                             });
                                         }
                                     }
