@@ -2352,15 +2352,6 @@ namespace ME3TweaksModManager
             ShowBusyControl(previewPanel);
         }
 
-        /// <summary>
-        /// Swaps to the incoming panel immediately, pushing the current one to the queue
-        /// </summary>
-        /// <param name="newPanel"></param>
-        internal void SwapPanelIfAny(MMBusyPanelBase newPanel)
-        {
-
-        }
-
         private void UpdateBinkStatus(MEGame game)
         {
             var target = GetCurrentTarget(game);
