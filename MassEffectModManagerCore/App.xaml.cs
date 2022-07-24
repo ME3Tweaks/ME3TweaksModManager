@@ -545,7 +545,7 @@ namespace ME3TweaksModManager
 #if DEBUG
                 version += @" DEBUG";
 #elif PRERELEASE
-                 version += " PRERELEASE";
+                 version += " Soak Test";
 #endif
                 // TODO CHANGE THIS
                 return $"{version}, Build {BuildNumber}";
@@ -560,7 +560,7 @@ namespace ME3TweaksModManager
 #if DEBUG
                 version += @" DEBUG";
 #elif PRERELEASE
-                 version += " PRERELEASE";
+                 version += " Soak Test";
 #endif
                 return $"ME3Tweaks Mod Manager {version} (Build {BuildNumber})";
             }
