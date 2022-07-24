@@ -161,7 +161,7 @@
                                     TextAlignment="Center" />
                             </StackPanel>
                         </Button>
-                        <Button
+                        <!--<Button
                             Grid.Row="1"
                             Grid.Column="4"
                             Margin="2"
@@ -173,7 +173,7 @@
                                     Text="Português"
                                     TextAlignment="Center" />
                             </StackPanel>
-                        </Button>
+                        </Button>-->
                         <Button
                             Grid.Row="1"
                             Grid.Column="5"

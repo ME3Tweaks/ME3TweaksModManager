@@ -65,6 +65,7 @@ using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using Microsoft.Win32;
 using Pathoschild.FluentNexus.Models;
+using Extensions = WinCopies.Util.Extensions;
 using M3OnlineContent = ME3TweaksModManager.modmanager.me3tweaks.services.M3OnlineContent;
 using MemoryAnalyzer = ME3TweaksModManager.modmanager.memoryanalyzer.MemoryAnalyzer;
 using Mod = ME3TweaksModManager.modmanager.objects.mod.Mod;
@@ -1385,7 +1386,8 @@ namespace ME3TweaksModManager
         /// Shows or queues the specified control
         /// </summary>
         /// <param name="control">Control to show or queue</param>
-        internal void ShowBusyControl(MMBusyPanelBase control)
+        /// <param name="swapImmediately">If the incoming panel should be shown immediately</param>
+        internal void ShowBusyControl(MMBusyPanelBase control, bool swapImmediately = false)
         {
             if (queuedUserControls.Count == 0 && !IsBusy)
             {
@@ -1394,7 +1396,35 @@ namespace ME3TweaksModManager
             }
             else
             {
-                queuedUserControls.Enqueue(control);
+                if (swapImmediately)
+                {
+                    M3Log.Information(@$"Immediately swapping to panel {control}");
+
+                    // Rebuild the queue list with our existing open panel at the front
+                    Queue<MMBusyPanelBase> rebuildQueue = new Queue<MMBusyPanelBase>();
+                    if (BusyContentM3 is SingleItemPanel2 spi && spi.Content is MMBusyPanelBase mmbpb)
+                    {
+                        rebuildQueue.Enqueue(mmbpb); // Add the current panel
+                    }
+
+                    while (queuedUserControls.TryDequeue(out var item))
+                    {
+                        rebuildQueue.Enqueue(item);
+                    }
+
+                    BusyContentM3 = new SingleItemPanel2(control);
+
+                    // Now rebuild the queue after we have shown our item
+                    while (rebuildQueue.TryDequeue(out var item))
+                    {
+                        queuedUserControls.Enqueue(item);
+                    }
+                }
+                else
+                {
+                    M3Log.Information(@$"Queueing panel {control}");
+                    queuedUserControls.Enqueue(control);
+                }
             }
         }
 
@@ -2207,7 +2237,7 @@ namespace ME3TweaksModManager
             DPIScaling.SetScalingFactor(this);
 #if PRERELEASE
             // MessageBox.Show(M3L.GetString(M3L.string_prereleaseNotice));
-            MessageBox.Show("This is a beta build of ME3Tweaks Mod Manager. Mods deployed using this build will not be supported by ME3Tweaks, but you are encouraged to use it and report issues on the Discord.");
+            // MessageBox.Show(M3L.GetString(M3L.string_betaBuildDialog));
 #endif
             if (App.BootingUpdate)
             {
@@ -2879,7 +2909,7 @@ namespace ME3TweaksModManager
                                 {
                                     var updateAvailableDialog = new ProgramUpdateNotification();
                                     updateAvailableDialog.Close += (sender, args) => { ReleaseBusyControl(); };
-                                    ShowBusyControl(updateAvailableDialog);
+                                    ShowBusyControl(updateAvailableDialog, true);
                                 });
                             }
 #if !DEBUG
@@ -2898,7 +2928,7 @@ namespace ME3TweaksModManager
                                                 var updateAvailableDialog = new ProgramUpdateNotification(localmd5);
                                                 updateAvailableDialog.UpdateMessage = M3L.GetString(M3L.string_interp_minorUpdateAvailableMessage, App.BuildNumber.ToString());
                                                 updateAvailableDialog.Close += (sender, args) => { ReleaseBusyControl(); };
-                                                ShowBusyControl(updateAvailableDialog);
+                                                ShowBusyControl(updateAvailableDialog, true);
                                             });
                                         }
                                     }
@@ -3228,8 +3258,8 @@ namespace ME3TweaksModManager
                     var ia = new ImageAwesome()
                     {
                         Icon = icon,
-                        Height=16,
-                        Width=16,
+                        Height = 16,
+                        Width = 16,
                         Style = (Style)FindResource(@"EnableDisableImageStyle")
                     };
                     ia.SetResourceReference(ImageAwesome.ForegroundProperty, AdonisUI.Brushes.ForegroundBrush);
@@ -3649,16 +3679,32 @@ namespace ME3TweaksModManager
                             }
                             break;
                         case @".json":
-                            try
                             {
-                                MergeModLoader.SerializeManifest(file, 1);
+                                var task = BackgroundTaskEngine.SubmitBackgroundJob(@"M3MCompile", M3L.GetString(M3L.string_compilingMergemod),
+                                    M3L.GetString(M3L.string_compiledMergemod));
+                                NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"MergeModCompiler");
+                                nbw.DoWork += (o, args) =>
+                                {
+                                    MergeModLoader.SerializeManifest(file, 1);
+                                };
+                                nbw.RunWorkerCompleted += (o, args) =>
+                                {
+                                    if (args.Error != null)
+                                    {
+                                        task.FinishedUIText = M3L.GetString(M3L.string_failedToCompileMergemod);
+                                        BackgroundTaskEngine.SubmitJobCompletion(task);
+                                        M3Log.Error($@"Error compiling m3m mod file: {args.Error.Message}");
+                                        M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_errorCompilingm3mX, args.Error.Message),
+                                            M3L.GetString(M3L.string_errorCompilingm3m), MessageBoxButton.OK,
+                                            MessageBoxImage.Error);
+                                    }
+                                    else
+                                    {
+                                        BackgroundTaskEngine.SubmitJobCompletion(task);
+                                    }
+                                };
+                                nbw.RunWorkerAsync();
                             }
-                            catch (Exception ex)
-                            {
-                                M3Log.Error($@"Error compiling m3m mod file: {ex.Message}");
-                                M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_errorCompilingm3mX, ex.Message), M3L.GetString(M3L.string_errorCompilingm3m), MessageBoxButton.OK, MessageBoxImage.Error);
-                            }
-
                             break;
                         case @".m3m":
                             try

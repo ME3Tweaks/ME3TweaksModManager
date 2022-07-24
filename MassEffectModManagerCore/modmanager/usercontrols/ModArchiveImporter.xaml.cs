@@ -139,17 +139,17 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         if (Settings.GenerationSettingLE && !Settings.GenerationSettingOT)
                         {
                             // Show LE string
-                            ActionText = M3L.GetString(M3L.string_noCompatibleModsFoundInArchiveLEExtended);
+                            NoModSelectedText = M3L.GetString(M3L.string_noCompatibleModsFoundInArchiveLEExtended);
                         }
                         else if (!Settings.GenerationSettingLE && Settings.GenerationSettingOT)
                         {
                             // Show OT string
-                            ActionText = M3L.GetString(M3L.string_noCompatibleModsFoundInArchiveOTExtended);
+                            NoModSelectedText = M3L.GetString(M3L.string_noCompatibleModsFoundInArchiveOTExtended);
                         }
                         else
                         {
                             // Show combined string
-                            ActionText = M3L.GetString(M3L.string_noCompatibleModsFoundInArchiveBothGensExtended);
+                            NoModSelectedText = M3L.GetString(M3L.string_noCompatibleModsFoundInArchiveBothGensExtended);
                         }
                     }
                 }

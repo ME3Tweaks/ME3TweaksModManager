@@ -14,6 +14,7 @@ using System.Xml;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.Helpers;
+using ME3TweaksCore.Misc;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
@@ -339,7 +340,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 CurrentActionText = M3L.GetString(M3L.string_checkingIfUpdaterServiceIsConfiguredForMod);
                 string validationUrl = $@"{UpdaterServiceCodeValidationEndpoint}?updatecode={mod.ModClassicUpdateCode}&updatexmlname={mod.UpdaterServiceServerFolderShortname}.xml";
-                string isBeingServed = wc.DownloadStringAwareOfEncoding(validationUrl);
+                string isBeingServed = WebClientExtensions.DownloadStringAwareOfEncoding(wc, validationUrl);
                 if (string.IsNullOrWhiteSpace(isBeingServed) || isBeingServed != @"true") //we don't parse for bool because it might have a different text that is not specifically true or false. It might
                                                                                           // have an error for example
                 {
@@ -365,7 +366,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             var latestVersionOnServer = M3OnlineContent.GetLatestVersionOfModOnUpdaterService(mod.ModClassicUpdateCode);
             if (latestVersionOnServer != null)
             {
-                if (latestVersionOnServer >= mod.ParsedModVersion)
+                if (ProperVersion.IsGreaterThanOrEqual(latestVersionOnServer, mod.ParsedModVersion))
                 {
                     bool cancel = false;
                     setTaskbarProgressState?.Invoke(TaskbarProgressBarState.Paused);

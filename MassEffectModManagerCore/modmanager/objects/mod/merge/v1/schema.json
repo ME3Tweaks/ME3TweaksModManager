@@ -255,12 +255,20 @@
                         "propertyname": "bIsCameraShakeEnabled",
                         "propertytype": "BoolProperty",
                         "propertyvalue": "True"
+                      },
+                      {
+                        "propertyname": "Ranks",
+                        "propertytype": "ArrayProperty",
+                        "propertyvalue": "RanksLiteral.uc"
                       }
                     ],
                     "required": [
                       "propertyname",
-                      "propertytype",
-                      "propertyvalue"
+                      "propertytype"
+                    ],
+                    "oneOf": [
+                      { "required": [ "propertyvalue" ] },
+                      { "required": [ "propertyasset" ] }
                     ],
                     "properties": {
                       "propertyname": {
@@ -270,7 +278,8 @@
                         "description": "The full name of the property. If updating a struct, include the name of the struct, separated by a '.'. For example, Offset.X to update X in the Offset StructProperty.",
                         "default": "",
                         "examples": [
-                          "bIsCameraShakeEnabled"
+                          "bIsCameraShakeEnabled",
+                          "Offset.X"
                         ]
                       },
                       "propertytype": {
@@ -288,9 +297,21 @@
                           "IntProperty",
                           "FloatProperty",
                           "EnumProperty",
-                          "StrProperty"
+                          "StrProperty",
+                          "StringRefProperty",
+                          "ArrayProperty"
                         ],
                         "type": "string"
+                      },
+                      "propertyasset": {
+                        "$id": "#/properties/files/items/properties/changes/items/properties/propertyupdates/items/properties/propertyasset",
+                        "type": "string",
+                        "title": "Property asset",
+                        "description": "The name of a plaintext file containing the array literal. It must be next to the .json file",
+                        "default": "",
+                        "examples": [
+                          "RanksLiteral.uc"
+                        ]
                       },
                       "propertyvalue": {
                         "$id": "#/properties/files/items/properties/changes/items/properties/propertyupdates/items/properties/propertyvalue",
@@ -305,6 +326,17 @@
                           null
                         ]
                       }
+                    },
+                    "if": {
+                      "properties": {
+                        "propertytype": { "const": "ArrayProperty" }
+                      }
+                    },
+                    "then": {
+                      "required": [ "propertyasset" ]
+                    },
+                    "else": {
+                      "required": [ "propertyvalue" ]
                     },
                     "additionalProperties": false
                   }

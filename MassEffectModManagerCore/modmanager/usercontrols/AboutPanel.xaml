@@ -92,11 +92,11 @@
 
                 <TextBlock Foreground="White" Grid.Row="9" Grid.Column="0" TextWrapping="Wrap" Text="Polish" TextAlignment="Center" FontWeight="Bold" Margin="0,5,0,0" />
                 <TextBlock Foreground="White" Grid.Row="9" Grid.Column="1" TextWrapping="Wrap" Text="Italian" TextAlignment="Center" FontWeight="Bold" Margin="0,5,0,0"/>
-                <TextBlock Foreground="White" Grid.Row="9" Grid.Column="2" TextWrapping="Wrap" Text="Portuguese" TextAlignment="Center" FontWeight="Bold" Margin="0,5,0,0" />
+                <!--<TextBlock Foreground="White" Grid.Row="9" Grid.Column="2" TextWrapping="Wrap" Text="Portuguese" TextAlignment="Center" FontWeight="Bold" Margin="0,5,0,0" />-->
 
                 <TextBlock Foreground="White" Grid.Row="10" Grid.Column="0" TextWrapping="Wrap" Text="circl3&#10;Sonashii&#10;ConfidenTi&#10;TheFellowJasper" TextAlignment="Center" />
-                <TextBlock Foreground="White" Grid.Row="10" Grid.Column="2" TextWrapping="Wrap" Text="Shaka" TextAlignment="Center" />
-                <TextBlock Foreground="White" Grid.Row="10" Grid.Column="1" TextWrapping="Wrap" Text="Krozt" TextAlignment="Center" />
+                <!--<TextBlock Foreground="White" Grid.Row="10" Grid.Column="2" TextWrapping="Wrap" Text="Shaka" TextAlignment="Center" />-->
+                <TextBlock Foreground="White" Grid.Row="10" Grid.Column="1" TextWrapping="Wrap" Text="Krozt&#10;Falcoman94" TextAlignment="Center" />
 
                 <TextBlock Text="Legendary Edition Bink Proxy" Foreground="White" Margin="0,15,0, 0" TextAlignment="Center" Grid.Row="11" Grid.ColumnSpan="3" FontWeight="Bold" FontSize="16" />
                 <TextBlock Text="By d00t" Foreground="White" TextAlignment="Center" Grid.Row="12" Grid.ColumnSpan="3" FontWeight="Bold"/>

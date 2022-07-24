@@ -442,6 +442,10 @@
     <!-- 0={Filename} 1={percent} -->
     <system:String x:Key="string_interp_failedToDecompressFname">Failed to decompress {0}</system:String>
     <!-- 0={Filename} -->
+    <system:String x:Key="string_betaBuildDialog">This is a beta build of ME3Tweaks Mod Manager. Mods deployed using this build will not be supported by ME3Tweaks, but you are encouraged to use it and report issues on the Discord.</system:String>
+    <system:String x:Key="string_compilingMergemod">Compiling mergemod</system:String>
+    <system:String x:Key="string_compiledMergemod">Compiled mergemod</system:String>
+    <system:String x:Key="string_failedToCompileMergemod">Failed to compile mergemod</system:String>
 
     <!-- LEX Launcher -->
     <system:String x:Key="string_interp_lexNightlyFailedToDownload">Legendary Explorer Nightly failed to download: {0}</system:String>
@@ -1273,7 +1277,7 @@
     <system:String x:Key="string_validation_alt_dependsKeysMissingPlusMinus">Alternate {0} has a value in its DependsOnKeys list that does not start with +/-: {1}. Values must start with a +/-.</system:String>
     <!-- 0={Alternate FriendlyName} 1={key} -->
     <system:String x:Key="string_validation_alt_dependsSelfReference">Alternate {0} references its own 'OptionKey' in its DependsOnKeys list, which is not supported. Invalid value: {1}</system:String>
-    <!-- 0={Alternate FriendlyName} 1={key} -->
+    <!-- 0={Alternate FriendlyName} 1={invalid value} -->
     <system:String x:Key="string_validation_alt_dependsMissingAction">Alternate {0} uses DependsOnKeys but does not define the DependsOnMetAction attribute. This attribute is required.</system:String>
     <!-- 0={Alternate FriendlyName} -->
     <system:String x:Key="string_validation_alt_dependsMissingNotMetAction">Alternate {0} uses DependsOnKeys but does not define the DependsOnNotMetAction attribute. This attribute is required.</system:String>
@@ -2371,6 +2375,14 @@
     <!-- 0={targetExport InstancedFullPath} 1={Script Filename} 2={list of errors} -->
     <system:String x:Key="string_interp_mergefile_serialSizeMismatch">Merge mod was not the correct length; we read to position {0}, but the merge mod is {1} bytes long</system:String>
     <!-- 0={number} 1={number}-->
+    <system:String x:Key="string_interp_propertyNotFoundX">Property not found: {0}</system:String>
+    <!-- 0={Property string In.This.Form} -->
+    <system:String xml:space="preserve" x:Key="string_interp_errorCompilingPropertyXinYZ">Error compiling property '{0}' in {1}:\n{2}</system:String>
+    <!-- 0={PropertyName} 1={full path of the export In.This.Form} 2={List of error messages separated line by line} -->
+    <system:String x:Key="string_interp_incompleteStaticArrayIndex">Incomplete static array index in propertyname: {0}</system:String>
+    <!-- 0={Name of property In.This.Form} -->
+    <system:String x:Key="string_interp_updatingX">Updating {0}</system:String>
+    <!-- 0={<A string>} -->
 
     <!-- Options Panel -->
     <system:String x:Key="string_me3tweaksModManagerOptions">ME3Tweaks Mod Manager Options</system:String>

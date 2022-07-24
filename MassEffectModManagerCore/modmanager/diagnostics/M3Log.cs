@@ -1,11 +1,25 @@
 ﻿using System;
 using System.IO;
+using System.Text;
+using LegendaryExplorerCore.Helpers;
 using ME3TweaksCore.Helpers;
 using Serilog;
-using Serilog.Sinks.RollingFile.Extension;
+using Serilog.Sinks.File;
 
 namespace ME3TweaksModManager.modmanager.diagnostics
 {
+    /// <summary>
+    /// Hook used to capture what log is currently being used
+    /// </summary>
+    public class CaptureFilePathHook : FileLifecycleHooks
+    {
+        public override Stream OnFileOpened(string path, Stream underlyingStream, Encoding encoding)
+        {
+            M3Log.CurrentLogFilePath = path;
+            return base.OnFileOpened(path, underlyingStream, encoding);
+        }
+    }
+
     /// <summary>
     /// Interposer used to prefix M3Log messages with their source component. Call only from M3 code
     /// </summary>
@@ -13,6 +27,10 @@ namespace ME3TweaksModManager.modmanager.diagnostics
     {
         private const string Prefix = @"M3";
 
+        /// <summary>
+        /// The path of the current log file
+        /// </summary>
+        public static string CurrentLogFilePath { get; internal set; }
         public static void Exception(Exception exception, string preMessage, bool fatal = false, bool condition = true)
         {
             if (condition)
@@ -100,9 +118,12 @@ namespace ME3TweaksModManager.modmanager.diagnostics
         /// <returns></returns>
         public static ILogger CreateLogger()
         {
-            return new LoggerConfiguration().WriteTo.SizeRollingFile(Path.Combine(MCoreFilesystem.GetLogDir(), @"modmanagerlog.txt"),
-                                    retainedFileDurationLimit: TimeSpan.FromDays(14),
-                                    fileSizeLimitBytes: 1024 * 1024 * 10) // 10MB  
+            return new LoggerConfiguration().WriteTo
+                .File(Path.Combine(MCoreFilesystem.GetLogDir(), @"modmanagerlog-.txt"),
+                                    rollingInterval: RollingInterval.Day,
+                                    fileSizeLimitBytes: FileSize.MebiByte * 10, // 10 MB
+                                    // shared: true, // Allow us to read log without closing it // doesn't work in shared mode
+                                    hooks: new CaptureFilePathHook()) // Allow us to capture current log path 
 #if DEBUG
                             .WriteTo.Debug()
 #endif

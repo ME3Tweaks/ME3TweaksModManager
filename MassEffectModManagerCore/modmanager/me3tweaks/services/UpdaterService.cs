@@ -15,6 +15,7 @@ using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
+using ME3TweaksCore.Misc;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
@@ -44,7 +45,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
             using var wc = new System.Net.WebClient();
             try
             {
-                string updatexml = wc.DownloadStringAwareOfEncoding(updateFinalRequest);
+                string updatexml = WebClientExtensions.DownloadStringAwareOfEncoding(wc, updateFinalRequest);
 
                 XElement rootElement = XElement.Parse(updatexml);
                 var modUpdateInfos = (from e in rootElement.Elements("mod")
@@ -140,7 +141,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
             try
             {
                 Debug.WriteLine(updateFinalRequest);
-                string updatexml = wc.DownloadStringAwareOfEncoding(updateFinalRequest);
+                string updatexml = WebClientExtensions.DownloadStringAwareOfEncoding(wc, updateFinalRequest);
 
                 XElement rootElement = XElement.Parse(updatexml);
 
@@ -174,7 +175,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
                     modUpdateInfo.ResolveVersionVar();
                     //Calculate update information
                     var matchingMod = modsToCheck.FirstOrDefault(x => x.ModClassicUpdateCode == modUpdateInfo.updatecode);
-                    if (matchingMod != null && (forceUpdateCheck || matchingMod.ParsedModVersion < modUpdateInfo.version))
+                    if (matchingMod != null && (forceUpdateCheck || ProperVersion.IsGreaterThan(modUpdateInfo.version, matchingMod.ParsedModVersion)))
                     {
                         // The following line is left so we know that it was at one point considered implemented.
                         // This prevents updating copies of the same mod in the library. Cause it's just kind of a bandwidth waste.

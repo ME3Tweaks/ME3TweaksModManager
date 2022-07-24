@@ -71,13 +71,14 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private void CloseInternal()
         {
+            M3Log.Information(@"Completing first run panel onboarding");
             if (Settings.EnableTelemetry)
             {
                 // Start app center
                 App.InitAppCenter();
             }
             App.FlushTelemetryItems(); // Push through any pending telemetry items
-
+            Result.ReloadMods = true; // User has now chosen their mod library
             OnClosing(new DataEventArgs(true));
             Settings.ShowedPreviewPanel = true;
             //Settings.Save();
