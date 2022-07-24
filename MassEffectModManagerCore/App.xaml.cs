@@ -98,6 +98,11 @@ namespace ME3TweaksModManager
         public static string BuildDate;
         public static bool IsSigned;
 
+        /// <summary>
+        /// If telemetry has been flushed after checking if it is enabled.
+        /// </summary>
+        public static bool FlushedTelemetry;
+
         public void OnInstanceInvoked(string[] args)
         {
             // Another exe was launched
@@ -410,7 +415,7 @@ namespace ME3TweaksModManager
         /// <param name="data"></param>
         public static void SubmitAnalyticTelemetryEvent(string name, Dictionary<string, string> data = null)
         {
-            if (!Settings.ShowedPreviewPanel && QueuedTelemetryItems != null)
+            if (!Settings.ShowedPreviewPanel && !FlushedTelemetry && QueuedTelemetryItems != null)
             {
                 // Queue a telemetry item until the panel has closed
                 QueuedTelemetryItems.Add((name, data));
@@ -427,6 +432,7 @@ namespace ME3TweaksModManager
         /// </summary>
         public static void FlushTelemetryItems()
         {
+            FlushedTelemetry = true;
             if (Settings.EnableTelemetry)
             {
                 foreach (var v in QueuedTelemetryItems)
