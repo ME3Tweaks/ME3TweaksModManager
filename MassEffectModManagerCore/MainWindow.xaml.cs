@@ -2207,7 +2207,7 @@ namespace ME3TweaksModManager
             DPIScaling.SetScalingFactor(this);
 #if PRERELEASE
             // MessageBox.Show(M3L.GetString(M3L.string_prereleaseNotice));
-            MessageBox.Show(M3L.GetString(M3L.string_betaBuildDialog));
+            // MessageBox.Show(M3L.GetString(M3L.string_betaBuildDialog));
 #endif
             if (App.BootingUpdate)
             {
