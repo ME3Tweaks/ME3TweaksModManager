@@ -96,5 +96,21 @@ namespace ME3TweaksModManager.modmanager.usercontrols.modinstaller
             //if (IsDropdownOpen)
             // e.Handled = true;
         }
+
+        // Fix for mouse wheel scrolling
+        private void HandleMouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
+        {
+            // This forces scrolling to bubble up
+            // cause expander eats it
+            if (!e.Handled)
+            {
+                e.Handled = true;
+                var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta);
+                eventArg.RoutedEvent = UIElement.MouseWheelEvent;
+                eventArg.Source = sender;
+                var parent = (((Control)sender).TemplatedParent ?? ((Control)sender).Parent) as UIElement;
+                parent.RaiseEvent(eventArg);
+            }
+        }
     }
 }

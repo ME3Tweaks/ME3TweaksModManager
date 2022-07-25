@@ -23,7 +23,9 @@
         </DataTemplate>
 
         <DataTemplate x:Key="MultiGroupTemplate" DataType="{x:Type alternates:AlternateGroup}">
-            <Expander Style="{StaticResource StretchyExpander}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" IsExpanded="{Binding UIIsDropdownOpen}">
+            <Expander Style="{StaticResource StretchyExpander}" 
+                      PreviewMouseWheel="HandleMouseWheel"
+                      HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" IsExpanded="{Binding UIIsDropdownOpen}">
                 <Expander.Header>
                     <DockPanel>
                         <TextBlock DockPanel.Dock="Top" Text="{Binding GroupNameTitleText}" TextWrapping="Wrap" Visibility="{Binding GroupName, Converter={StaticResource NullVisibilityConverter}}" FontWeight="Bold"/>
