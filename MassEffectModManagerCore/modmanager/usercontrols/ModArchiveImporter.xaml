@@ -73,6 +73,7 @@
                     Padding="7,5"
                     Command="{Binding CancelCommand}" />
                 <StackPanel
+                    Visibility="{Binding CanShowCompressPackages, Converter={StaticResource BoolToVisibilityConverter}}"
                     Orientation="Horizontal"
                     DockPanel.Dock="Right">
                     <CheckBox
@@ -127,6 +128,8 @@
                 </StackPanel>
                 <ListBox
                     Name="CompressedMods_ListBox"
+                    BorderThickness="0.25"
+                    Margin="0,0,0,1"
                     Grid.Column="0"
                     ItemsSource="{Binding CompressedMods}"
                     SelectionChanged="SelectedMod_Changed"

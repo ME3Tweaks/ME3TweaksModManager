@@ -47,6 +47,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public bool ArchiveScanned { get; set; }
         public bool TextureFilesImported { get; set; }
 
+        // LE games do not even show this option
+        public bool CanShowCompressPackages => CompressedMods.Any(x => x.Game.IsOTGame());
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Escape && CanCancel())
@@ -119,6 +121,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
                     ArchiveScanned = true;
                     TriggerPropertyChangedFor(nameof(CanCompressPackages));
+                    TriggerPropertyChangedFor(nameof(CanShowCompressPackages));
                 }
                 else if (TextureFilesImported)
                 {
