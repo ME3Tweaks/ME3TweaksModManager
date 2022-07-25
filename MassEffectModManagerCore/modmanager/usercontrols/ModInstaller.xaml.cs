@@ -211,6 +211,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 M3Log.Information(@"Mod installation logging is off. If you want to view the installation log, turn it on in the settings and apply the mod again.");
             }
+
+            InstallOptionsPackage.ModBeingInstalled.ReOpenArchiveIfNecessary();
+
             var installationJobs = InstallOptionsPackage.ModBeingInstalled.InstallationJobs;
             var gameDLCPath = M3Directories.GetDLCPath(InstallOptionsPackage.InstallTarget);
             if (gameDLCPath != null)

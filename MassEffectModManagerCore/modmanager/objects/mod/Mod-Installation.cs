@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.ME1.Unreal.UnhoodBytecode;
 using LegendaryExplorerCore.Misc;
@@ -37,15 +38,8 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     Debug.WriteLine(@">>> ARCHIVE IS DISPOSED");
                 }
 #endif
-                // Reopen archive if we need to
-                if (File.Exists(ArchivePath) && (Archive == null || Archive.IsDisposed()))
-                    Archive = new SevenZipExtractor(ArchivePath); //load archive file for inspection
-                else if (Archive != null && Archive.GetBackingStream() is SevenZip.ArchiveEmulationStreamProxy aesp && aesp.Source is MemoryStream ms)
-                {
-                    var isExe = ArchivePath.EndsWith(@".exe", StringComparison.InvariantCultureIgnoreCase);
-                    Archive = isExe ? new SevenZipExtractor(ms, InArchiveFormat.Nsis) : new SevenZipExtractor(ms);
-                    MemoryAnalyzer.AddTrackedMemoryItem($@"Re-opened SVE archive for {ModName}", new WeakReference(Archive));
-                }
+
+                ReOpenArchiveIfNecessary();
             }
 
             InstallMapping installmapping = new InstallMapping();
@@ -305,6 +299,43 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             return installmapping;
         }
 
+        /// <summary>
+        /// Attempts to re-open the archive file if this mod is in an archive. Will re-open if the current thread does not match
+        /// the one used to open the archive to help prevent issues.
+        /// </summary>
+        internal void ReOpenArchiveIfNecessary()
+        {
+            if (!IsInArchive)
+                return; // Cannot open archive if mod is not serialized from archive
+            if (Archive != null && !Archive.IsDisposed())
+            {
+                if (Archive.ThreadId == Thread.CurrentThread.ManagedThreadId)
+                {
+                    // We don't need to re-open this
+                    return;
+                }
+
+                // Needs closed and re-opened
+
+                Archive.DisposeObjectOnly();
+            }
+ 
+            // Reopen archive if we need to
+            if (File.Exists(ArchivePath) && (Archive == null || Archive.IsDisposed()))
+            {
+                Debug.WriteLine(@"Re-opening file-based SVE archive");
+                Archive = new SevenZipExtractor(ArchivePath); //load archive file for inspection
+            }
+            else if (Archive != null && Archive.GetBackingStream() is SevenZip.ArchiveEmulationStreamProxy aesp && aesp.Source is MemoryStream ms)
+            {
+                var isExe = ArchivePath.EndsWith(@".exe", StringComparison.InvariantCultureIgnoreCase);
+                Debug.WriteLine(@"Re-opening memory SVE archive");
+                ms.Position = 0; // Ensure position is 0
+                Archive = isExe ? new SevenZipExtractor(ms, InArchiveFormat.Nsis) : new SevenZipExtractor(ms);
+                MemoryAnalyzer.AddTrackedMemoryItem($@"Re-opened SVE archive for {ModName}", new WeakReference(Archive));
+            }
+        }
+
         private void buildInstallationQueue(ModJob job, CaseInsensitiveDictionary<InstallSourceFile> installationMapping, bool isSFAR)
         {
             M3Log.Information(@"Building installation queue for " + job.Header, Settings.LogModInstallation);
@@ -514,6 +545,8 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         /// <returns></returns>
         public List<string> GetAllInstallableFiles(bool includeModifable = false)
         {
+            ReOpenArchiveIfNecessary();
+
             var list = new List<string>();
 
             foreach (var job in InstallationJobs)
@@ -526,12 +559,20 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 }
                 else if (job.Header == ModJob.JobHeader.CUSTOMDLC)
                 {
+
+                    foreach (var cdlcDir in job.CustomDLCFolderMapping)
+                    {
+                        var dlcSourceDir = FilesystemInterposer.PathCombine(IsInArchive, ModPath, cdlcDir.Key);
+                        var files = FilesystemInterposer.DirectoryGetFiles(dlcSourceDir, @"*", SearchOption.AllDirectories, Archive).Select(x => x.Substring(dlcSourceDir.Length + 1));
+                        list.AddRange(files.Select(x => $@"{MEDirectories.GetDLCPath(Game, @"")}\{cdlcDir.Value}\{x}")); // do not localize
+                    }
+                    /*
                     foreach (var cdlcDir in job.CustomDLCFolderMapping)
                     {
                         var dlcSourceDir = Path.Combine(ModPath, cdlcDir.Key);
                         var files = Directory.GetFiles(dlcSourceDir, @"*", SearchOption.AllDirectories).Select(x => x.Substring(dlcSourceDir.Length + 1));
                         list.AddRange(files.Select(x => $@"{MEDirectories.GetDLCPath(Game, @"")}\{cdlcDir.Value}\{x}")); // do not localize
-                    }
+                    }*/
                 }
                 else if (job.Header == ModJob.JobHeader.GAME1_EMBEDDED_TLK)
                 {
@@ -579,8 +620,8 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 {
                     if (v.Operation == AlternateDLC.AltDLCOperation.OP_ADD_CUSTOMDLC || v.Operation == AlternateDLC.AltDLCOperation.OP_ADD_FOLDERFILES_TO_CUSTOMDLC)
                     {
-                        var dlcSourceDir = Path.Combine(ModPath, v.AlternateDLCFolder);
-                        var files = Directory.GetFiles(dlcSourceDir, @"*", SearchOption.AllDirectories).Select(x => x.Substring(dlcSourceDir.Length + 1));
+                        var dlcSourceDir = FilesystemInterposer.PathCombine(IsInArchive, ModPath, v.AlternateDLCFolder);
+                        var files = FilesystemInterposer.DirectoryGetFiles(dlcSourceDir, @"*", SearchOption.AllDirectories, Archive).Select(x => x.Substring(dlcSourceDir.Length + 1));
                         list.AddRange(files.Select(x => $@"{MEDirectories.GetDLCPath(Game, @"")}\{v.DestinationDLCFolder}\{x}")); //do not localize
                     }
 
