@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.objects.exceptions;
@@ -233,23 +234,66 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
             foreach (var job in ModBeingInstalled.InstallationJobs)
             {
-                // GROUP OPTIONS COME FIRST.
-                var alternateDLCGroups = job.AlternateDLCs.Where(x => x.GroupName != null).Select(x => x.GroupName).Distinct().ToList();
-                var alternateFileGroups = job.AlternateFiles.Where(x => x.GroupName != null).Select(x => x.GroupName).Distinct().ToList();
-
-                foreach (var adlcg in alternateDLCGroups)
+                // To respect dev ordering we must enumerate in order
+                List<AlternateOption> parsedOptions = new List<AlternateOption>();
+                // We don't allow optiongroups to cross dlc/files so we have to parse them separate.
+                for (int i = 0; i < job.AlternateDLCs.Count; i++)
                 {
-                    AlternateGroups.Add(new AlternateGroup(job.AlternateDLCs.Where(x => x.GroupName == adlcg).OfType<AlternateOption>().ToList()));
+                    var alt = job.AlternateDLCs[i];
+                    if (parsedOptions.Contains(alt))
+                        continue;
+                    if (alt.GroupName != null)
+                    {
+                        // Add the group
+                        AlternateGroups.Add(new AlternateGroup(new List<AlternateOption>(job.AlternateDLCs.Where(x=>x.GroupName == alt.GroupName)))); // Add multimode group
+                    }
+                    else
+                    { 
+                        // Add only the option
+                        AlternateGroups.Add(new AlternateGroup(alt)); // Add single mode group
+                    }
                 }
 
-                foreach (var afileg in alternateFileGroups)
+                for (int i = 0; i < job.AlternateFiles.Count; i++)
                 {
-                    AlternateGroups.Add(new AlternateGroup(job.AlternateFiles.Where(x => x.GroupName == afileg).OfType<AlternateOption>().ToList()));
+                    var alt = job.AlternateFiles[i];
+                    if (parsedOptions.Contains(alt))
+                        continue;
+                    if (alt.GroupName != null)
+                    {
+                        if (alt.GroupName != null)
+                        {
+                            // Add the group
+                            AlternateGroups.Add(new AlternateGroup(new List<AlternateOption>(job.AlternateFiles.Where(x => x.GroupName == alt.GroupName)))); // Add multimode group
+                        }
+                        else
+                        {
+                            // Add only the option
+                            AlternateGroups.Add(new AlternateGroup(alt)); // Add single mode group
+                        }
+                    }
+                    else
+                    {
+                        AlternateGroups.Add(new AlternateGroup(alt)); // Add single mode group
+                    }
                 }
 
-                // NON GROUP OPTIONS COME NEXT.
-                AlternateGroups.AddRange(job.AlternateDLCs.Where(x => x.GroupName == null).Select(x => new AlternateGroup(x)));
-                AlternateGroups.AddRange(job.AlternateFiles.Where(x => x.GroupName == null).Select(x => new AlternateGroup(x)));
+                //var alternateDLCGroups = job.AlternateDLCs.Where(x => x.GroupName != null).Select(x => x.GroupName).Distinct().ToList();
+                //var alternateFileGroups = job.AlternateFiles.Where(x => x.GroupName != null).Select(x => x.GroupName).Distinct().ToList();
+
+                //foreach (var adlcg in alternateDLCGroups)
+                //{
+                //    AlternateGroups.Add(new AlternateGroup(job.AlternateDLCs.Where(x => x.GroupName == adlcg).OfType<AlternateOption>().ToList()));
+                //}
+
+                //foreach (var afileg in alternateFileGroups)
+                //{
+                //    AlternateGroups.Add(new AlternateGroup(job.AlternateFiles.Where(x => x.GroupName == afileg).OfType<AlternateOption>().ToList()));
+                //}
+
+                //// NON GROUP OPTIONS COME NEXT.
+                //AlternateGroups.AddRange(job.AlternateDLCs.Where(x => x.GroupName == null).Select(x => new AlternateGroup(x)));
+                //AlternateGroups.AddRange(job.AlternateFiles.Where(x => x.GroupName == null).Select(x => new AlternateGroup(x)));
             }
 
             // Set the initial states
