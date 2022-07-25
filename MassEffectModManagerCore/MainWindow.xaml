@@ -1821,6 +1821,7 @@
                             VerticalAlignment="Bottom"
                             HorizontalAlignment="Center"
                             ui:Clipper.WidthFraction="1"
+                            ui:Clipper.HeightFraction="0"
                             Name="FailedModsPopupPanel"
                             ToolTip="{DynamicResource string_tooltip_someModsFailed}">
               <Hyperlink
