@@ -16,6 +16,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using CommandLine;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.objects.exceptions;
 using ME3TweaksModManager.modmanager.objects.installer;
@@ -321,6 +322,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 if (o.GroupName != null)
                 {
+#if DEBUG
+                    foreach (var v in o.AlternateOptions)
+                    {
+                        Debug.WriteLine($"{v.FriendlyName} UIIsSelected: {v.UIIsSelected}");
+                    }
+                    Debug.WriteLine("");
+#endif
                     // Deselect so UI doesn't show selected.
                     foreach (var v in o.AlternateOptions)
                     {
@@ -328,7 +336,17 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         {
                             v.UIIsSelected = false;
                         }
+                        else if (v.UIIsSelectable || v.IsAlways)
+                        {
+                            v.UIIsSelected = true;
+                        }
                     }
+#if DEBUG
+                    foreach (var v in o.AlternateOptions)
+                    {
+                        Debug.WriteLine($"{v.FriendlyName} UIIsSelected: {v.UIIsSelected}");
+                    }
+#endif
                 }
             }
 
@@ -457,7 +475,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
 
             // If none were passed in, we parse all of them.
-            optionsToUpdate ??=AlternateGroups.SelectMany(x => x.AlternateOptions).ToList();
+            optionsToUpdate ??= AlternateGroups.SelectMany(x => x.AlternateOptions).ToList();
 
             List<AlternateOption> secondPassOptions = new List<AlternateOption>();
             foreach (var v in optionsToUpdate)
@@ -480,6 +498,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 UpdateOptions(ref numAttemptsRemaining, mod, target, secondPassOptions.Distinct().ToList());
             }
 
+            secondPassOptions.Clear(); // We will reuse this
+
             if (initialSetup)
             {
                 foreach (var group in AlternateGroups.Where(x => x.IsMultiSelector))
@@ -488,6 +508,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     if (firstAutoForced != null)
                     {
                         group.SelectedOption = firstAutoForced;
+                        group.SelectedOption.UIIsSelected = true;
                     }
                     else
                     {
@@ -498,10 +519,22 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                             if (option != null)
                             {
                                 // This is a bad setup in moddesc!
+                                secondPassOptions.Add(group.SelectedOption);
+                                secondPassOptions.Add(option);
+                                secondPassOptions.AddRange(findOptionsDependentOn(option));
+                                group.SelectedOption.UIIsSelected = false;
                                 group.SelectedOption = option;
+                                option.UIIsSelected = true;
                             }
                         }
                     }
+                }
+
+                // Re-evaluate again if any default options were not selectable and were changed.
+                if (secondPassOptions.Any())
+                {
+                    Debug.WriteLine(@"Third re-evaluation pass");
+                    UpdateOptions(ref numAttemptsRemaining, mod, target, secondPassOptions.Distinct().ToList());
                 }
             }
         }
@@ -513,7 +546,19 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         /// <returns></returns>
         private List<AlternateOption> findOptionsDependentOn(AlternateOption alternateOption)
         {
-            return AlternateGroups.SelectMany(x => x.AlternateOptions).Where(x => x.DependsOnKeys.Any(x => x.Key == alternateOption.OptionKey)).ToList();
+            var allOptions = AlternateGroups.SelectMany(x => x.AlternateOptions).ToList();
+
+            Debug.WriteLine($"Matching on optionkey {alternateOption.OptionKey}");
+            foreach (var op in allOptions)
+            {
+                foreach (var k in op.DependsOnKeys)
+                {
+                    Debug.WriteLine($"{op.FriendlyName} | {k.Key} matches {alternateOption.OptionKey}: {k.Key == alternateOption.OptionKey}");
+                }
+            }
+
+            var results = allOptions.Where(x => x.DependsOnKeys.Any(x => x.Key == alternateOption.OptionKey)).ToList();
+            return results;
         }
 
 
