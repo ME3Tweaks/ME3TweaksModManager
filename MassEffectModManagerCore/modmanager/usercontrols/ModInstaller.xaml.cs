@@ -882,7 +882,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 {
                     // Error applying merge mod!
                     InstallationSucceeded = false;
-                    M3Log.Error($@"An error occurred installed mergemod {mergeMod.MergeModFilename}: {ex.Message}");
+                    M3Log.Error($@"An error occurred installing mergemod {mergeMod.MergeModFilename}: {ex.Message}");
                     M3Log.Error(ex.StackTrace);
                     e.Result = ModInstallCompletedStatus.INSTALL_FAILED_EXCEPTION_APPLYING_MERGE_MOD;
                     if (Application.Current != null)
@@ -891,6 +891,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     }
 
                     M3Log.Warning(@"<<<<<<< Aborting modinstaller");
+                    return;
                 }
             }
 
@@ -909,31 +910,60 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 PackageCache cache = new PackageCache();
 
                 // 06/05/2022 Change to parallel
+                Exception parallelException = null;
                 Parallel.ForEach(mergeFiles, new ParallelOptions() { MaxDegreeOfParallelism = Math.Clamp(Environment.ProcessorCount, 1, 4) }, tlkFileMap =>
                 {
+                    if (parallelException == null)
+                        return;
+
                     for (int i = 0; i < tlkFileMap.Value.Count; i++)
                     {
-                        var tlkXmlFile = tlkFileMap.Value[i];
-                        InstallOptionsPackage.ModBeingInstalled.InstallTLKMerge(tlkXmlFile, compressedTlkData, gameMap, i == tlkFileMap.Value.Count - 1, cache, InstallOptionsPackage.InstallTarget, InstallOptionsPackage.ModBeingInstalled, x => basegameCloudDBUpdates.Add(x));
+                        if (parallelException != null)
+                        {
+                            try
+                            {
+                                var tlkXmlFile = tlkFileMap.Value[i];
+                                InstallOptionsPackage.ModBeingInstalled.InstallTLKMerge(tlkXmlFile, compressedTlkData, gameMap, i == tlkFileMap.Value.Count - 1, cache, InstallOptionsPackage.InstallTarget, InstallOptionsPackage.ModBeingInstalled, x => basegameCloudDBUpdates.Add(x));
+                            }
+                            catch (Exception e)
+                            {
+                                parallelException = e;
+                                M3Log.Exception(e, $@"Error installing TLK merge file {tlkFileMap.Value[i]}");
+                            }
+                        }
                     }
 
                     Percent = (int)(doneMerges * 100.0 / totalTlkMerges);
                     Interlocked.Increment(ref doneMerges);
                 });
+
+                if (parallelException != null)
+                {
+                    // Handle exception in parallel tlk merge
+                    InstallationSucceeded = false;
+                    e.Result = ModInstallCompletedStatus.INSTALL_FAILED_EXCEPTION_IN_MOD_INSTALLER;
+                    if (Application.Current != null)
+                    {
+                        Application.Current.Dispatcher.Invoke(() => M3L.ShowDialog(mainwindow, $"An error occurred installing TLK merges: {parallelException.Message}", "Error installing TLK merge", MessageBoxButton.OK, MessageBoxImage.Error));
+                    }
+
+                    M3Log.Warning(@"<<<<<<< Aborting modinstaller");
+                    return;
+                }
             }
 
-            //Main installation step has completed
+            // Main installation step has completed
             M3Log.Information(@"Main stage of mod installation has completed");
             Percent = (int)(numdone * 100.0 / numFilesToInstall);
 
-            //Mark items read only
+            // Mark items read only
             foreach (var readonlytarget in mappedReadOnlyTargets)
             {
                 M3Log.Information(@"Setting file to read-only: " + readonlytarget);
                 File.SetAttributes(readonlytarget, File.GetAttributes(readonlytarget) | FileAttributes.ReadOnly);
             }
 
-            //Remove outdated custom DLC
+            // Remove outdated custom DLC
             foreach (var outdatedDLCFolder in InstallOptionsPackage.ModBeingInstalled.OutdatedCustomDLC)
             {
                 var outdatedDLCInGame = Path.Combine(gameDLCPath, outdatedDLCFolder);
@@ -944,7 +974,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 }
             }
 
-            //Install supporting ASI files if necessary
+            // Install supporting ASI files if necessary
             Action = M3L.GetString(M3L.string_installingSupportFiles);
             PercentVisibility = Visibility.Collapsed;
             if (InstallOptionsPackage.ModBeingInstalled.Game == MEGame.ME1)
@@ -1325,7 +1355,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         private void ModInstallationCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             var telemetryResult = ModInstallCompletedStatus.NO_RESULT_CODE;
-            
+
             // Only make changes if user didn't cancel
             if (!InstallationCancelled)
             {
@@ -1399,11 +1429,19 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     else if (mcis == ModInstallCompletedStatus.INSTALL_FAILED_AMD_PROCESSOR_REQUIRED)
                     {
                         InstallationCancelled = true;
-                        M3L.ShowDialog(window, @"This mod can only be installed on a system with an AMD processor.", M3L.GetString(M3L.string_cannotInstallMod), MessageBoxButton.OK, MessageBoxImage.Error);
+                        M3L.ShowDialog(window, "This mod can only be installed on a system with an AMD processor.", M3L.GetString(M3L.string_cannotInstallMod), MessageBoxButton.OK, MessageBoxImage.Error);
                     }
-                    else if (mcis == ModInstallCompletedStatus.INSTALL_FAILED_USER_CANCELED_MISSING_MODULES || mcis == ModInstallCompletedStatus.USER_CANCELED_INSTALLATION || mcis == ModInstallCompletedStatus.INSTALL_ABORTED_NOT_ENOUGH_SPACE)
+                    else if (mcis is ModInstallCompletedStatus.INSTALL_FAILED_USER_CANCELED_MISSING_MODULES or ModInstallCompletedStatus.USER_CANCELED_INSTALLATION or ModInstallCompletedStatus.INSTALL_ABORTED_NOT_ENOUGH_SPACE)
                     {
                         InstallationCancelled = true;
+                    }
+                    else
+                    {
+                        // Track unhandled results
+                        TelemetryInterposer.TrackEvent(@"Unhandled install result", new CaseInsensitiveDictionary<string>()
+                        {
+                            {@"Result name", mcis.ToString()}
+                        });
                     }
                 }
                 else if (e.Result is (ModInstallCompletedStatus dlcCode, List<DLCRequirement> failReqs))
