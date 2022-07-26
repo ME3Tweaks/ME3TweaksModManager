@@ -10,7 +10,9 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using LegendaryExplorerCore.Misc;
+using LegendaryExplorerCore.Helpers;
 using ME3TweaksCore.Helpers;
+using ME3TweaksCore.Misc;
 using ME3TweaksCore.Services.Backup;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.diagnostics;
@@ -36,7 +38,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public ObservableCollectionExtended<M3OnlineContent.ModUpdateInfo> UpdatableMods { get; } = new ObservableCollectionExtended<M3OnlineContent.ModUpdateInfo>();
 
         private List<Mod> updatedMods = new();
-
+        private bool RefreshContentsOnVisible = false;
         public bool OperationInProgress { get; set; }
 
         public ModUpdateInformationPanel(List<M3OnlineContent.ModUpdateInfo> modsWithUpdates)
@@ -371,6 +373,44 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public override void OnPanelVisible()
         {
             InitializeComponent();
+            if (RefreshContentsOnVisible)
+            {
+                foreach (var v in UpdatableMods.ToList()) // To list
+                {
+                    if (File.Exists(v.mod.ModDescPath))
+                    {
+                        var modVer = Mod.GetModVersionFromIni(v.mod.ModDescPath);
+                        if (modVer != null && ProperVersion.IsGreaterThan(modVer, v.mod.ParsedModVersion))
+                        {
+                            UpdatableMods.Remove(v); // Mod was updated.
+                        }
+                    }
+                }
+            }
+
+            RefreshContentsOnVisible = false;
+
+            // If a mod was imported via nxm and panel was swapped we should just not open the dialog any further
+            if (!UpdatableMods.Any())
+            {
+                // This is an ugly hack to delay it by a frame
+                Task.Run(() =>
+                {
+                    Thread.Sleep(1);
+                    return true;
+                }).ContinueWithOnUIThread(x =>
+                {
+                    CloseDialog();
+                });
+            }
+        }
+
+        /// <summary>
+        /// Indicates the panel should have contents updated on display
+        /// </summary>
+        public void RefreshContentsOnDisplay()
+        {
+            RefreshContentsOnVisible = true;
         }
     }
 }

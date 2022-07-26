@@ -201,17 +201,36 @@ namespace ME3TweaksModManager
                         {
                             // Open the file instead
                             fs.Dispose(); // Ensure it's closed
-                            openModImportUI(fs.Name); // Open the archive itself
+                            openModImportUI(fs.Name, priority: true); // Open the archive itself
                         }
                         else
                         {
-                            openModImportUI(ii.ModFile.FileName, ii.DownloadedStream);
+                            openModImportUI(ii.ModFile.FileName, ii.DownloadedStream, true);
                         }
-
                     }
                 }
             };
-            ShowBusyControl(mDownloader);
+            ShowBusyControl(mDownloader, ShouldShowNXMDownloadImmediately());
+        }
+
+        /// <summary>
+        /// When an NXM link is fetched, should the nxm panel take priority?
+        /// </summary>
+        /// <returns></returns>
+        private bool ShouldShowNXMDownloadImmediately()
+        {
+
+            if (BusyContentM3 is SingleItemPanel2 sip2)
+            {
+                if (sip2.Content is ModUpdateInformationPanel muip)
+                {
+                    muip.RefreshContentsOnDisplay();
+                    return true;
+                }
+            }
+
+            return false;
+
         }
 
         public string EndorseM3String { get; set; } = M3L.GetString(M3L.string_endorseME3TweaksModManagerOnNexusMods);
@@ -243,7 +262,7 @@ namespace ME3TweaksModManager
         /// <summary>
         /// If the next call to HandlePanelResult() should process BatchPanelResult
         /// </summary>
-        private bool HandleBatchPanelResult;
+        internal bool HandleBatchPanelResult;
 
         /// <summary>
         /// User controls that are queued for displaying when the previous one has closed.
@@ -1473,7 +1492,7 @@ namespace ME3TweaksModManager
         /// Returns true if there are any queued panels to show.
         /// </summary>
         /// <returns>True if there are any panels in the queue.</returns>
-        private bool HasQueuedPanel()
+        internal bool HasQueuedPanel()
         {
             return queuedUserControls.Count > 0;
         }
@@ -3759,7 +3778,7 @@ namespace ME3TweaksModManager
             }
         }
 
-        private void openModImportUI(string archiveFile, Stream archiveStream = null)
+        private void openModImportUI(string archiveFile, Stream archiveStream = null, bool priority = false)
         {
             M3Log.Information(@"Opening Mod Archive Importer for file " + archiveFile);
             var modInspector = new ModArchiveImporter(archiveFile, archiveStream);
@@ -3792,7 +3811,7 @@ namespace ME3TweaksModManager
 
             BatchPanelResult = new PanelResult();
             HandleBatchPanelResult = false;
-            ShowBusyControl(modInspector);
+            ShowBusyControl(modInspector, priority);
         }
 
         private void Window_DragOver(object sender, DragEventArgs e)
