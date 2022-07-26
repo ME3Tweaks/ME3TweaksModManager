@@ -115,6 +115,11 @@ namespace ME3TweaksModManager.modmanager.loaders
                         var modUpdatesNotificationDialog = new ModUpdateInformationPanel(updates);
                         modUpdatesNotificationDialog.Close += (sender, args) =>
                         {
+                            if (!mainWindow.HasQueuedPanel())
+                            {
+                                // No more batch panels so we should handle the result on Release
+                                mainWindow.HandleBatchPanelResult = true;
+                            }
                             mainWindow.ReleaseBusyControl();
                         };
                         mainWindow.ShowBusyControl(modUpdatesNotificationDialog);
