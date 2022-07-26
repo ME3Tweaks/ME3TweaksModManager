@@ -245,12 +245,15 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     if (alt.GroupName != null)
                     {
                         // Add the group
-                        AlternateGroups.Add(new AlternateGroup(new List<AlternateOption>(job.AlternateDLCs.Where(x=>x.GroupName == alt.GroupName)))); // Add multimode group
+                        var groupOptions = new List<AlternateOption>(job.AlternateDLCs.Where(x => x.GroupName == alt.GroupName));
+                        AlternateGroups.Add(new AlternateGroup(groupOptions)); // Add multimode group
+                        parsedOptions.AddRange(groupOptions);
                     }
                     else
-                    { 
+                    {
                         // Add only the option
                         AlternateGroups.Add(new AlternateGroup(alt)); // Add single mode group
+                        parsedOptions.Add(alt);
                     }
                 }
 
@@ -261,20 +264,16 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         continue;
                     if (alt.GroupName != null)
                     {
-                        if (alt.GroupName != null)
-                        {
-                            // Add the group
-                            AlternateGroups.Add(new AlternateGroup(new List<AlternateOption>(job.AlternateFiles.Where(x => x.GroupName == alt.GroupName)))); // Add multimode group
-                        }
-                        else
-                        {
-                            // Add only the option
-                            AlternateGroups.Add(new AlternateGroup(alt)); // Add single mode group
-                        }
+                        // Add the group
+                        var groupOptions = new List<AlternateOption>(job.AlternateFiles.Where(x => x.GroupName == alt.GroupName));
+                        AlternateGroups.Add(new AlternateGroup(groupOptions)); // Add multimode group
+                        parsedOptions.AddRange(groupOptions);
                     }
                     else
                     {
+                        // Add only the option
                         AlternateGroups.Add(new AlternateGroup(alt)); // Add single mode group
+                        parsedOptions.Add(alt);
                     }
                 }
 
