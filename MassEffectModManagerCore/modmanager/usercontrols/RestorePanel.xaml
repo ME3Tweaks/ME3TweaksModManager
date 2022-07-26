@@ -42,7 +42,12 @@
                                   AvailableTargets="{Binding AvailableRestoreTargets}" 
                                   SelectedGameTarget="{Binding RestoreTarget}" HorizontalContentAlignment="Stretch" 
                                   Visibility="{Binding BackupStatus.BackedUp, Converter={StaticResource BoolToVisibilityConverter}}"/>
-                            <Button Content="{Binding RestoreButtonText}" Padding="3,0" Command="{Binding RestoreButtonCommand}" Grid.Row="3" Grid.Column="3" Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"/>
+                            <Button Content="{Binding RestoreButtonText}" 
+                                    Visibility="{Binding BackupStatus.BackedUp, Converter={StaticResource BoolToVisibilityConverter}}"
+                                    Padding="3,0" Command="{Binding RestoreButtonCommand}" 
+                                    Grid.Row="3" 
+                                    Grid.Column="3" 
+                                    Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"/>
                             <ProgressBar IsIndeterminate="{Binding ProgressIndeterminate, FallbackValue=True}" Value="{Binding RestoreController.ProgressValue}" Height="6" Maximum="{Binding RestoreController.ProgressMax}" Visibility="{Binding RestoreController.RestoreInProgress, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}" Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="3" />
                             <TextBlock Text="{DynamicResource string_restoringTextureLODs}" TextWrapping="Wrap" Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="3" Visibility="{Binding WillRestoreTextureLODs, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}"/>
                         </Grid>
