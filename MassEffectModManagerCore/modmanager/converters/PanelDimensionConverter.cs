@@ -33,6 +33,11 @@ namespace ME3TweaksModManager.modmanager.converters
             if (values[0] is SingleItemPanel2 sip2 && sip2.Content is MMBusyPanelBase panel && !panel.DisableM3AutoSizer && values[1] is double windowDimension && parameter is string axis)
             {
                 var window = panel.window;
+                if (window == null)
+                {
+                    // Panel may have been swapped out.
+                    return double.NaN;
+                }
                 Size windowSize = new Size(window.ActualWidth, window.ActualHeight);
                 panel.Measure(windowSize); // Update DesiredSize.
 
