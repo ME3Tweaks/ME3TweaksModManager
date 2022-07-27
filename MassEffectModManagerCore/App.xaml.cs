@@ -34,6 +34,7 @@ using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using Serilog;
 using SingleInstanceCore;
+using WinCopies.Linq;
 
 namespace ME3TweaksModManager
 {
@@ -397,6 +398,7 @@ namespace ME3TweaksModManager
         /// <returns></returns>
         public static bool IsLanguageSupported(string lang)
         {
+            lang = lang.ToLower();
             if (lang == @"deu") return true;
             if (lang == @"rus") return true;
             if (lang == @"pol") return true;

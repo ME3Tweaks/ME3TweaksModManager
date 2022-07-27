@@ -96,6 +96,7 @@
                             Margin="0,5,0,0"
                             FontWeight="Bold" />
                         <Button
+                            Visibility="{Binding Converter={StaticResource LanguageSupportedVisibilityConverter}, ConverterParameter='deu'}"
                             Grid.Row="1"
                             Grid.Column="0"
                             Margin="2"
@@ -122,6 +123,7 @@
                             </StackPanel>
                         </Button>
                         <Button
+                            Visibility="{Binding Converter={StaticResource LanguageSupportedVisibilityConverter}, ConverterParameter='ita'}"
                             Grid.Row="1"
                             Grid.Column="2"
                             Margin="2"
@@ -149,6 +151,7 @@
                     </StackPanel>
                 </Button>-->
                         <Button
+                            Visibility="{Binding Converter={StaticResource LanguageSupportedVisibilityConverter}, ConverterParameter='pol'}"
                             Grid.Row="1"
                             Grid.Column="3"
                             Margin="2"
@@ -161,7 +164,8 @@
                                     TextAlignment="Center" />
                             </StackPanel>
                         </Button>
-                        <!--<Button
+                        <Button
+                            Visibility="{Binding Converter={StaticResource LanguageSupportedVisibilityConverter}, ConverterParameter='bra'}"
                             Grid.Row="1"
                             Grid.Column="4"
                             Margin="2"
@@ -173,8 +177,9 @@
                                     Text="Português"
                                     TextAlignment="Center" />
                             </StackPanel>
-                        </Button>-->
+                        </Button>
                         <Button
+                            Visibility="{Binding Converter={StaticResource LanguageSupportedVisibilityConverter}, ConverterParameter='rus'}"
                             Grid.Row="1"
                             Grid.Column="5"
                             Margin="2"
