@@ -37,60 +37,63 @@
                 VerticalAlignment="Center"
                 Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                 Visibility="{Binding ImageBitmap, Converter={StaticResource NullVisibilityConverter}}" />
-            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
                 <TextBlock Text="{Binding FriendlyName}" 
                            DockPanel.Dock="Top"
                            FontSize="13"
                            FontWeight="Bold" 
-                           TextAlignment="Left" 
                            TextWrapping="Wrap"
                            Opacity="{Binding TextOpacity}"/>
-
-
-            </StackPanel>
             <!-- Always applicable -->
-            <StackPanel 
+            <DockPanel 
                         DockPanel.Dock="Bottom"
-                        Orientation="Horizontal"
                         Margin="3,0,0,0"
                         Visibility="{Binding UIRequired, Converter={StaticResource BoolToVisibilityConverter}}"
                         Opacity="{Binding TextOpacity}">
-                <fa5:ImageAwesome Icon="Solid_CheckCircle" Height="12" Foreground="LimeGreen" VerticalAlignment="Center" Margin="0,1,3,0"/>
+                <fa5:ImageAwesome Icon="Solid_CheckCircle" Height="12" 
+                                  Foreground="LimeGreen" VerticalAlignment="Center" 
+                                  DockPanel.Dock="Left"
+                                  Margin="0,1,3,0"/>
                 <TextBlock
                     Foreground="LimeGreen"
                     Text="{Binding ApplicableAutoText}"
                     VerticalAlignment="Center"
                     TextWrapping="Wrap"
                     FontWeight="Bold" />
-            </StackPanel>
+            </DockPanel>
             <!-- Not applicable -->
-            <StackPanel 
+            <DockPanel 
                         DockPanel.Dock="Bottom"
-                        Orientation="Horizontal"
                         Margin="3,0,0,0"
                         Visibility="{Binding UINotApplicable, Converter={StaticResource BoolToVisibilityConverter}}"
                         Opacity="{Binding TextOpacity}">
-                <fa5:ImageAwesome Icon="Solid_TimesCircle" Height="12" Foreground="Red" VerticalAlignment="Center" Margin="0,1,3,0"/>
+                <fa5:ImageAwesome Icon="Solid_TimesCircle" 
+                                  Height="12" Foreground="Red" 
+                                  VerticalAlignment="Center" 
+                                  DockPanel.Dock="Left"
+                                  Margin="0,1,3,0"/>
                 <TextBlock
                     Text="{Binding NotApplicableAutoText}"
                     VerticalAlignment="Center"
                     TextWrapping="Wrap"
                     FontWeight="Bold" />
-            </StackPanel>
+            </DockPanel>
             <!-- Depends On requirements -->
-            <StackPanel 
+            <DockPanel 
                 DockPanel.Dock="Bottom"
-                Orientation="Horizontal"
                 Margin="3,0,0,0"
                 Visibility="{Binding DependsOnText, Converter={StaticResource NullVisibilityConverter}}"
                 Opacity="{Binding TextOpacity}">
-                <fa5:ImageAwesome Icon="Solid_InfoCircle" Height="12" Foreground="CornflowerBlue" VerticalAlignment="Center" Margin="0,1,3,0"/>
+                <fa5:ImageAwesome Icon="Solid_InfoCircle" 
+                                  Height="12" 
+                                  DockPanel.Dock="Left"
+                                  Foreground="CornflowerBlue" 
+                                  VerticalAlignment="Center" Margin="0,1,3,0"/>
                 <TextBlock
                     Text="{Binding DependsOnText}"
                     VerticalAlignment="Center"
                     TextWrapping="Wrap"
                     FontWeight="Bold" />
-            </StackPanel>
+            </DockPanel>
             <TextBlock Text="{Binding Description}" 
                        TextWrapping="Wrap" 
                        HorizontalAlignment="Stretch"

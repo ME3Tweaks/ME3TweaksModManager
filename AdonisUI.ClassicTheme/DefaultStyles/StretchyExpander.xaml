@@ -382,7 +382,7 @@
                                               HorizontalContentAlignment="Stretch"
                                               VerticalContentAlignment="Bottom"
                                               VerticalScrollBarVisibility="Hidden"
-                                              HorizontalScrollBarVisibility="Hidden">
+                                              HorizontalScrollBarVisibility="Disabled">
                                     <ScrollViewer.Height>
                                         <MultiBinding Converter="{adonisConverters:MathConverter}" ConverterParameter="x*y">
                                             <Binding Path="ActualHeight" ElementName="ExpandSite"/>
