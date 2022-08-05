@@ -571,7 +571,7 @@ namespace ME3TweaksModManager.modmanager.objects
                 optionKeys.AddRange(AlternateDLCs.Select(x => x.OptionKey));
             }
 
-            var duplicates = optionKeys.GroupBy(x => x).Where(g => g.Count() > 1).ToList();
+            var duplicates = optionKeys.GroupBy(x => x).Where(g => g.Count() > 1).Select(x=>x.Key).ToList();
             if (duplicates.Any())
             {
                 // On Moddesc 8.0 and higher this will cause the mod to fail to load
