@@ -117,7 +117,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
                     var apiKeyReceived = await NexusModsUtilities.SetupNexusLogin(x => Debug.WriteLine(x));
                     APIKeyText = apiKeyReceived;
-                    Application.Current.Dispatcher.Invoke(delegate { mainwindow.Activate(); });
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        // Make sure it's ? since it seems mainwindow can be null sometimes...
+                        mainwindow?.Activate();
+                    });
                 }
 
                 if (!string.IsNullOrWhiteSpace(APIKeyText))
