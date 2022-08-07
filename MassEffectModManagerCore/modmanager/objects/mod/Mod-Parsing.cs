@@ -386,9 +386,9 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     M3Log.Information(@"This moddesc is being updated by ME3Tweaks ModDesc Updater Service");
                 }
             }
-                
+
             string iniText = updatedIni ?? new StreamReader(ms).ReadToEnd();
-            
+
             ModPath = Path.GetDirectoryName(moddescArchiveEntry.FileName);
             Archive = archive;
             ArchivePath = archive.FileName;
@@ -1535,10 +1535,13 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 }
 
                 // Validate the sort orders being unique.
+                // OptionGroups must all have same sort index (or be undefined)
                 var indexedAlternates = allAlternates.Where(x => x.SortIndex > 0);
+
+                // 
                 foreach (var indexedAlternate in indexedAlternates)
                 {
-                    var collision = indexedAlternates.FirstOrDefault(x => x.SortIndex == indexedAlternate.SortIndex && x != indexedAlternate);
+                    var collision = indexedAlternates.FirstOrDefault(x => x.SortIndex == indexedAlternate.SortIndex && x != indexedAlternate && (x.GroupName == null || x.GroupName != indexedAlternate.GroupName));
                     if (collision != null)
                     {
                         M3Log.Error($@"Alternate {indexedAlternate.FriendlyName} specifies a non-unique sortindex value '{indexedAlternate.SortIndex}'. {collision.FriendlyName} also uses this sortindex value, these values must be unique.");
@@ -1546,6 +1549,31 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                         return;
                     }
                 }
+
+                var groupedIndexed = indexedAlternates.Where(x => x.GroupName != null).GroupBy(x => x.GroupName);
+                foreach (var groupPair in groupedIndexed.Where(x => x.Count() > 1)) // Only groups with multiple sortindices are counted, since if there is only one it'll always be valid.
+                {
+                    // Ensure all indices are the same or zero
+                    int setIndex = 0;
+                    foreach (var option in groupPair)
+                    {
+                        if (setIndex == 0)
+                        {
+                            setIndex = option.SortIndex;
+                        }
+                        else
+                        {
+                            if (setIndex != option.SortIndex)
+                            {
+                                // They mismatch
+                                M3Log.Error($@"Alternate {option.FriendlyName} specifies a 'sortindex' value that differs from another one in group '{option.GroupName}'. Alternate specifies sortindex {option.SortIndex}, but another specifies {setIndex}. 'sortindex' values in a group must all be the same, or only one defined.");
+                                LoadFailedReason = $"Alternate {option.FriendlyName} specifies a 'sortindex' value that differs from another one in group '{option.GroupName}'. Alternate specifies sortindex {option.SortIndex}, but another specifies {setIndex}. 'sortindex' values in a group must all be the same, or only one defined.";
+                                return;
+                            }
+                        }
+                    }
+                }
+
             }
             #endregion
 
