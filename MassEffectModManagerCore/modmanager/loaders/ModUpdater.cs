@@ -22,7 +22,7 @@ namespace ME3TweaksModManager.modmanager.loaders
         private ModUpdater() { }
         internal void CheckAllModsForUpdates()
         {
-            var updatableMods = M3LoadedMods.Instance.VisibleFilteredMods.Where(x => x.IsUpdatable).ToList();
+            var updatableMods = M3LoadedMods.Instance.AllLoadedMods.Where(x => x.IsUpdatable).ToList();
             if (updatableMods.Count > 0)
             {
                 CheckModsForUpdates(updatableMods);
