@@ -576,27 +576,23 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                         return false;
                     }
                     // ==========================================================
-
-                    // Read the sorting index
-                    if (properties.TryGetValue(@"SortIndex", out string sortIndexStr))
-                    {
-                        if (int.TryParse(sortIndexStr, out var sortIndex) && sortIndex > 0)
-                        {
-                            SortIndex = sortIndex;
-                        }
-                        else
-                        {
-                            // SortIndex collisions are also validated in a later pass
-                            M3Log.Error($@"Alternate {FriendlyName} specifies an invalid 'sortindex' attribute: {sortIndexStr}. Valid values are greater than 0 and less than {int.MaxValue}");
-                            LoadFailedReason = $@"Alternate {FriendlyName} specifies an invalid 'sortindex' attribute: {sortIndexStr}. Valid values are greater than 0 and less than {int.MaxValue}";
-                            return false;
-                        }
-
-                    }
-
-
                 }
 
+                // Read the sorting index
+                if (properties.TryGetValue(@"SortIndex", out string sortIndexStr))
+                {
+                    if (int.TryParse(sortIndexStr, out var sortIndex) && sortIndex > 0)
+                    {
+                        SortIndex = sortIndex;
+                    }
+                    else
+                    {
+                        // SortIndex collisions are also validated in a later pass
+                        M3Log.Error($@"Alternate {FriendlyName} specifies an invalid 'sortindex' attribute: {sortIndexStr}. Valid values are greater than 0 and less than {int.MaxValue}");
+                        LoadFailedReason = $@"Alternate {FriendlyName} specifies an invalid 'sortindex' attribute: {sortIndexStr}. Valid values are greater than 0 and less than {int.MaxValue}";
+                        return false;
+                    }
+                }
             }
 
             // Mod Manager 8 (not moddesc 8): FriendlyName, OptionGroup can't contain ; (it will mess up MetaCMM):
