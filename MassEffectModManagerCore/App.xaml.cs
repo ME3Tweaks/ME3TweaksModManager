@@ -401,7 +401,7 @@ namespace ME3TweaksModManager
             lang = lang.ToLower();
             if (lang == @"deu") return true;
             if (lang == @"rus") return true;
-            if (lang == @"pol") return true;
+            // if (lang == @"pol") return true; // Localization has not been updated since build 124
             if (lang == @"ita") return true;
             if (lang == @"int") return true; // Just in case
             // if (lang == @"bra") return true; // Localization has not been updated since build 124
