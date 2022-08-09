@@ -677,5 +677,10 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
 #endif
         }
+
+        private void FrameworkElement_OnRequestBringIntoView(object sender, RequestBringIntoViewEventArgs e)
+        {
+            e.Handled = true;
+        }
     }
 }

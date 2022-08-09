@@ -47,7 +47,8 @@
             <ItemsControl
                 HorizontalContentAlignment="Stretch"
                 HorizontalAlignment="Stretch"
-                ItemsSource="{Binding AlternateGroups}">
+                ItemsSource="{Binding AlternateGroups}"
+                RequestBringIntoView="FrameworkElement_OnRequestBringIntoView">
                 <ItemsControl.Resources>
                     <DataTemplate
                         DataType="{x:Type alternates:AlternateGroup}">
