@@ -10,7 +10,7 @@
     Title="ME3Tweaks Mod Manager"
     Height="730"
     Width="950"
-    MinHeight="730"
+    MinHeight="650"
     MinWidth="950"
     DataContext="{Binding RelativeSource={RelativeSource Self}}"
     Name="MainWindow_Ref">
