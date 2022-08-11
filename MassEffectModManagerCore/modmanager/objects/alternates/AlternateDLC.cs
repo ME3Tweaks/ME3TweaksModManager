@@ -56,7 +56,6 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         public PlusMinusKey[] DLCRequirementsForManual { get; }
 
         public override bool IsAlways => false; //AlternateDLC doesn't support this
-        public List<string> ConditionalDLC = new List<string>();
 
         /// <summary>
         /// Alternate DLC folder to process the operation from (as the source)
