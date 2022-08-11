@@ -559,7 +559,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
             DLCModsInstalled.ClearEx();
 
-            if (SelectedTarget != null && SelectedTarget.Game == MEGame.LELauncher)
+            if (SelectedTarget != null && SelectedTarget.Game == MEGame.LELauncher && SelectedTarget_TabControl != null)
             {
                 // Launcher can only select modified basegame files.
                 SelectedTarget_TabControl.SelectedItem = ModifiedBasegameFiles_Tab;
