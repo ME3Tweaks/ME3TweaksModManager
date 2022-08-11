@@ -1567,7 +1567,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                             {
                                 // They mismatch
                                 M3Log.Error($@"Alternate {option.FriendlyName} specifies a 'sortindex' value that differs from another one in group '{option.GroupName}'. Alternate specifies sortindex {option.SortIndex}, but another specifies {setIndex}. 'sortindex' values in a group must all be the same, or only one defined.");
-                                LoadFailedReason = $"Alternate {option.FriendlyName} specifies a 'sortindex' value that differs from another one in group '{option.GroupName}'. Alternate specifies sortindex {option.SortIndex}, but another specifies {setIndex}. 'sortindex' values in a group must all be the same, or only one defined.";
+                                LoadFailedReason = M3L.GetString(M3L.string_interp_validation_modparsing_sortIndexGroupUnique, option.FriendlyName, option.GroupName, option.SortIndex, setIndex);
                                 return;
                             }
                         }

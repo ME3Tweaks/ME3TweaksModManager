@@ -3099,7 +3099,7 @@ namespace ME3TweaksModManager
                         }
                         catch (Exception)
                         {
-                            task.FinishedUIText = "Failed to install bink ASI loader";
+                            task.FinishedUIText = M3L.GetString(M3L.string_failedToInstallBinkASILoader);
                         }
                         BackgroundTaskEngine.SubmitJobCompletion(task); // This is just so there's some visual feedback to the user
                     }

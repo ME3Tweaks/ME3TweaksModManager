@@ -325,7 +325,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 #if DEBUG
                     foreach (var v in o.AlternateOptions)
                     {
-                        Debug.WriteLine($"{v.FriendlyName} UIIsSelected: {v.UIIsSelected}");
+                        Debug.WriteLine($@"{v.FriendlyName} UIIsSelected: {v.UIIsSelected}");
                     }
                     Debug.WriteLine("");
 #endif
@@ -344,7 +344,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 #if DEBUG
                     foreach (var v in o.AlternateOptions)
                     {
-                        Debug.WriteLine($"{v.FriendlyName} UIIsSelected: {v.UIIsSelected}");
+                        Debug.WriteLine($@"{v.FriendlyName} UIIsSelected: {v.UIIsSelected}");
                     }
 #endif
                 }
@@ -548,14 +548,16 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             var allOptions = AlternateGroups.SelectMany(x => x.AlternateOptions).ToList();
 
-            Debug.WriteLine($"Matching on optionkey {alternateOption.OptionKey}");
+#if DEBUG
+            Debug.WriteLine($@"Matching on optionkey {alternateOption.OptionKey}");
             foreach (var op in allOptions)
             {
                 foreach (var k in op.DependsOnKeys)
                 {
-                    Debug.WriteLine($"{op.FriendlyName} | {k.Key} matches {alternateOption.OptionKey}: {k.Key == alternateOption.OptionKey}");
+                    Debug.WriteLine($@"{op.FriendlyName} | {k.Key} matches {alternateOption.OptionKey}: {k.Key == alternateOption.OptionKey}");
                 }
             }
+#endif
 
             var results = allOptions.Where(x => x.DependsOnKeys.Any(x => x.Key == alternateOption.OptionKey)).ToList();
             return results;

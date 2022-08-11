@@ -483,6 +483,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_compilingMergemod = "string_compilingMergemod";
 		public const string string_compiledMergemod = "string_compiledMergemod";
 		public const string string_failedToCompileMergemod = "string_failedToCompileMergemod";
+		public const string string_failedToInstallBinkASILoader = "string_failedToInstallBinkASILoader";
 		public const string string_interp_lexNightlyFailedToDownload = "string_interp_lexNightlyFailedToDownload";
 		public const string string_loadingME3TweaksServices = "string_loadingME3TweaksServices";
 		public const string string_refreshingME3TweaksServices = "string_refreshingME3TweaksServices";
@@ -1280,6 +1281,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_interp_validation_modparsing_cannotDependOnOfficialLEDLC = "string_interp_validation_modparsing_cannotDependOnOfficialLEDLC";
 		public const string string_interp_validation_modparsing_hardcodedDirNotFound = "string_interp_validation_modparsing_hardcodedDirNotFound";
 		public const string string_interp_validation_modparsing_improperPackedFile = "string_interp_validation_modparsing_improperPackedFile";
+		public const string string_interp_validation_modparsing_sortIndexGroupUnique = "string_interp_validation_modparsing_sortIndexGroupUnique";
 		public const string string_interp_noBackupMessage = "string_interp_noBackupMessage";
 		public const string string_backupWarning = "string_backupWarning";
 		public const string string_tooltip_hello = "string_tooltip_hello";

@@ -446,6 +446,7 @@
     <system:String x:Key="string_compilingMergemod">Compiling mergemod</system:String>
     <system:String x:Key="string_compiledMergemod">Compiled mergemod</system:String>
     <system:String x:Key="string_failedToCompileMergemod">Failed to compile mergemod</system:String>
+    <system:String x:Key="string_failedToInstallBinkASILoader">Failed to install bink ASI loader</system:String>
 
     <!-- LEX Launcher -->
     <system:String x:Key="string_interp_lexNightlyFailedToDownload">Legendary Explorer Nightly failed to download: {0}</system:String>
@@ -1614,6 +1615,8 @@
     <!-- 0={Task header} 1={Foldername} -->
     <system:String x:Key="string_interp_validation_modparsing_improperPackedFile">Mod has file that is improperly stored in the archive: {0}. Mods must be deployed from Mod Manager to properly work.</system:String>
     <!-- 0={File path} -->
+    <system:String x:Key="string_interp_validation_modparsing_sortIndexGroupUnique">Alternate {0} specifies a 'sortindex' value that differs from another one in group '{1}'. Alternate specifies sortindex {2}, but another specifies {3}. 'sortindex' values in a group must all be the same, or only one defined.</system:String>
+    <!-- 0={option FriendlyName} 1={option GroupName} 2={Option sortindex, integer} 3={Proper index, integer} -->
 
     <!-- Shared NO BACKUP -->
     <system:String x:Key="string_interp_noBackupMessage">There is no backup of {0} available. If you continue, you will be unable to take a game backup as the game will be modified. Are you sure you want to do this?</system:String>
