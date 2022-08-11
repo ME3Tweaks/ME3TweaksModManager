@@ -258,7 +258,23 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 return;
             }
 
-            InstallOptionsPackage.InstallTarget.InstallBinkBypass(); //Always install bink, don't bother checking if it is already ASI version.
+            if (!InstallOptionsPackage.InstallTarget.IsBinkBypassInstalled())
+            {
+                try
+                {
+                    InstallOptionsPackage.InstallTarget.InstallBinkBypass(true);
+                }
+                catch (Exception be)
+                {
+                    e.Result = ModInstallCompletedStatus.INSTALL_FAILED_EXCEPTION_IN_MOD_INSTALLER;
+                    if (Application.Current != null)
+                    {
+                        Application.Current.Dispatcher.Invoke(() => M3L.ShowDialog(mainwindow, $"An error occurred installing the bink bypass, which is required for full modding support: {be.Message}", "Error installing bink bypass", MessageBoxButton.OK, MessageBoxImage.Error));
+                    }
+                    M3Log.Information(@"<<<<<<< Exiting modinstaller");
+                    return;
+                }
+            }
 
             // 06/06/2022 - Change to only install for Launcher if autoboot is on since bink 2007 fixes launcher dir for every game.
             if (Settings.SkipLELauncher && InstallOptionsPackage.ModBeingInstalled.Game.IsLEGame())
@@ -273,7 +289,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     }
                     else
                     {
-                        gt.InstallBinkBypass();
+                        // If it fails to install we don't really care
+                        gt.InstallBinkBypass(false);
                     }
                 }
                 else

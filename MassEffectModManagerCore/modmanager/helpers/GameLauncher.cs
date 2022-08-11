@@ -120,7 +120,7 @@ namespace ME3TweaksModManager.modmanager.helpers
                 if (failedValidationReason == null)
                 {
                     // Ensure bypass is installed
-                    launcherTarget.InstallBinkBypass();
+                    launcherTarget.InstallBinkBypass(false); // If bink fails to install, whatever. Launcher may be running.
                 }
                 commandLineArgs.Add($@"-game"); // Autoboot dll
                 commandLineArgs.Add((target.Game.ToGameNum() - 3).ToString());

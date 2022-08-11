@@ -1963,7 +1963,7 @@ namespace ME3TweaksModManager
 
                 if (install)
                 {
-                    target.InstallBinkBypass();
+                    target.InstallBinkBypass(false);
                 }
                 else
                 {
@@ -3093,7 +3093,14 @@ namespace ME3TweaksModManager
                     {
                         M3Log.Information($@"Installing Bink Bypass (command line request) for {CommandLinePending.PendingGame.Value}");
                         var task = BackgroundTaskEngine.SubmitBackgroundJob(@"BinkInstallAutomated", M3L.GetString(M3L.string_installingBinkASILoader), M3L.GetString(M3L.string_installedBinkASILoader));
-                        t.InstallBinkBypass();
+                        try
+                        {
+                            t.InstallBinkBypass(true);
+                        }
+                        catch (Exception)
+                        {
+                            task.FinishedUIText = "Failed to install bink ASI loader";
+                        }
                         BackgroundTaskEngine.SubmitJobCompletion(task); // This is just so there's some visual feedback to the user
                     }
                     CommandLinePending.ClearGameDependencies();
