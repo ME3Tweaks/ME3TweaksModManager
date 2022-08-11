@@ -73,11 +73,13 @@
         </DockPanel>
         <TabControl
             DataContext="{Binding SelectedTarget}"
+            Name="SelectedTarget_TabControl"
             Padding="0"
             BorderThickness="1"
             Margin="0"
             VerticalAlignment="Stretch">
             <TabItem
+                Name="InstalledDLCMods_Tab"
                 Header="{DynamicResource string_installedDLCmods}"
                 Padding="0"
                 VerticalAlignment="Stretch"
@@ -226,6 +228,7 @@
             </TabItem>
             <TabItem
                 Header="{DynamicResource string_modifiedBasegameFiles}"
+                Name="ModifiedBasegameFiles_Tab"
                 Margin="0"
                 Padding="0"
                 VerticalAlignment="Stretch"
@@ -353,6 +356,7 @@
             </TabItem>
             <TabItem
                 Header="{DynamicResource string_modifiedDLCarchivesSFAR}"
+                Name="ModifiedSFARs_Tab"
                 Visibility="{Binding Game, Converter={StaticResource InstallationInformationTabVisibilityConverter}, ConverterParameter='SFAR'}"
                 Margin="0"
                 Padding="0">
@@ -470,6 +474,7 @@
             </TabItem>
             <TabItem
                 Header="{DynamicResource string_officialDLC}"
+                Name="OfficialDLC_Tab"
                 Margin="0"
                 Padding="0"
                 Visibility="{Binding Game, Converter={StaticResource InstallationInformationTabVisibilityConverter}, ConverterParameter='OfficialDLC'}">
@@ -522,6 +527,7 @@
             </TabItem>
             <TabItem
                 Header="{DynamicResource string_textures}"
+                Name="Textures_Tab"
                 Margin="0"
                 Padding="0"
                 Visibility="{Binding Game, Converter={StaticResource InstallationInformationTabVisibilityConverter}, ConverterParameter='Textures'}">
@@ -647,6 +653,7 @@
             </TabItem>
             <TabItem
                 Header="{DynamicResource string_other}"
+                Name="Other_Tab"
                 Margin="0"
                 Padding="0"
                 Visibility="{Binding Game, Converter={StaticResource InstallationInformationTabVisibilityConverter}, ConverterParameter='Other'}">
