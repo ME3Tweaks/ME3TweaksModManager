@@ -565,26 +565,27 @@ namespace ME3TweaksModManager.modmanager.objects
             }
 
             // Validate OptionKeys are all unique
-            var optionKeys = AlternateFiles.Select(x => x.OptionKey).ToList();
+            var options = new List<AlternateOption>();
+            options.AddRange(AlternateFiles);
             if (Header == JobHeader.CUSTOMDLC)
             {
-                optionKeys.AddRange(AlternateDLCs.Select(x => x.OptionKey));
+                options.AddRange(AlternateDLCs);
             }
 
-            var duplicates = optionKeys.GroupBy(x => x).Where(g => g.Count() > 1).Select(x=>x.Key).ToList();
+            var duplicates = options.GroupBy(x => x.OptionKey).Where(g => g.Count() > 1).ToList();
             if (duplicates.Any())
             {
                 // On Moddesc 8.0 and higher this will cause the mod to fail to load
                 if (modForValidating.ModDescTargetVersion >= 8.0)
                 {
-                    M3Log.Error($@"There are alternates with duplicate OptionKey values. This is due to them either having a duplicate OptionKey values set on them, or different options have the same FriendlyName value. The following values have duplicates: {string.Join(',', duplicates)}");
-                    failureReason = M3L.GetString(M3L.string_interp_validation_modjob_duplicateOptionKeys, string.Join(',', duplicates));
+                    M3Log.Error($@"There are alternates with duplicate OptionKey values. This is due to them either having a duplicate OptionKey values set on them, or different options have the same FriendlyName value. The following values have duplicate option keys: {string.Join(',', duplicates.SelectMany(x => x).Select(x => x.FriendlyName))}");
+                    failureReason = M3L.GetString(M3L.string_interp_validation_modjob_duplicateOptionKeys, string.Join(',', duplicates.SelectMany(x => x).Select(x => x.FriendlyName)));
                     return false;
                 }
                 else
                 {
                     // Moddesc 7.0 and below didn't have option keys, so there was no way to enforce unique option names.
-                    M3Log.Warning($@"There are alternates with duplicate OptionKey values. This is due to them either having a duplicate OptionKey values set on them, or different options have the same FriendlyName value. The following values have duplicates: {string.Join(',', duplicates)}. This may result in broken saved alternate choices!");
+                    M3Log.Warning($@"There are alternates with duplicate OptionKey values. This is due to them either having a duplicate OptionKey values set on them, or different options have the same FriendlyName value. The following alternates have duplicates option keys: {string.Join(',', duplicates.SelectMany(x => x).Select(x => x.FriendlyName))}. This may result in broken saved alternate choices!");
                 }
             }
 
