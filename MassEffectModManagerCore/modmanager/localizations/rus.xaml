@@ -1018,6 +1018,7 @@
 	<system:String x:Key="string_compilingMergemod">Компиляция mergemod</system:String>
 	<system:String x:Key="string_compiledMergemod">Mergemod скомпилирован</system:String>
 	<system:String x:Key="string_failedToCompileMergemod">Ошибка компиляции mergemod</system:String>
+	<system:String x:Key="string_failedToInstallBinkASILoader">Ошибка установки загрузчика bink ASI</system:String>
 	<system:String x:Key="string_dialog_missingConfigFileForMEIM">Файл настроек Mass Effect {0}.ini отсутствует. Он должен находиться в {1}. Пожалуйста, хотя бы однократно запустите игру, чтобы сгенерировать файлы по умолчанию.</system:String>
 	<system:String x:Key="string_interp_dialogConfigDirectoryMissing">Директория Mass Effect Config отсутствует. Она должна находиться в {0}. Пожалуйста, хотя бы однократно запустите игру, чтобы сгенерировать файлы по умолчанию.</system:String>
 	<system:String x:Key="string_cannotRunMassEffectIniModder">Невозможно запустить Mass Effect Ini Modder</system:String>
@@ -1381,6 +1382,7 @@
 	<system:String x:Key="string_interp_validation_modparsing_cannotDependOnOfficialLEDLC">Моды Legendary Edition, предназначенные для moddesc 8.0 или выше не могут указывать в зависимостях оригинальные DLC, так как Mod Manager не поддерживает удаление данных DLC. Удалите оригинальные DLC из списка 'requireddlc'. Недопустимое значение: {0}</system:String>
 	<system:String x:Key="string_interp_validation_modparsing_hardcodedDirNotFound">В моде указана заголовок задания {0}, но директория {1} не найдена. Удалите данные заголовок, если не используете его.</system:String>
 	<system:String x:Key="string_interp_validation_modparsing_improperPackedFile">Мод содержит файл, некорректно сохраненный в архиве: {0}. Моды должны быть преобразованы через Mod Manager для надлежащей работы.</system:String>
+	<system:String x:Key="string_interp_validation_modparsing_sortIndexGroupUnique">В Alternate {0} задано значение 'sortindex, не совпадающее с другим в группе '{1}'. В данном Alternate использовано значение sortindex {2}, но в другом задано {3}. Все значения 'sortindex' внутри группы должны совпадать или задаваться только одно.</system:String>
 	<system:String x:Key="string_interp_tlkmerge_couldNotFindExportInPackage">Экспорт для объединения TLK в пакетном файле {0} не найден. Данное объединение будет пропущено.</system:String>
 	<system:String x:Key="string_copiedModdesciniContentsToClipboard">Содержимое moddesc.ini скопировано в буфер</system:String>
 	<system:String x:Key="string_interp_failedToCopyModdescini">Не удалось скопировать содержимое moddesc.ini в буфер</system:String>
