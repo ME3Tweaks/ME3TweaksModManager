@@ -27,7 +27,6 @@
     <converters1:StringMatchToBoolConverter x:Key="StringMatchToBoolConverter"/>
     <converters1:LanguageSupportedVisibilityConverter x:Key="LanguageSupportedVisibilityConverter"/>
     <converters1:GameToTextureModdedIconConverter x:Key="GameToTextureModdedIconConverter"/>
-    <converters:GameTargetConverter x:Key="GameTargetConverter"/>
     <DataTemplate x:Key="TargetSelectorTemplate" DataType="{x:Type targets:GameTarget}">
         <DockPanel HorizontalAlignment="Stretch">
             <Image DockPanel.Dock="Left" Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16"/>

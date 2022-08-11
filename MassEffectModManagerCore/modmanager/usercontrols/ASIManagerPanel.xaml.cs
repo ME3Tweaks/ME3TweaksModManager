@@ -271,9 +271,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     {
                         asiGame.CurrentGameTargetWPF = asiGame.GameTargetsWPF.FirstOrDefault();
                     }
+                    index++;
                 }
 
-                index++;
             }
 
             UpdateSelectionTexts(null);
