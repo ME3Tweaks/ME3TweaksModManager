@@ -66,7 +66,7 @@ These properties should exist within the outermost set of curly braces in your m
 
 **Example:**
 
-```
+```json
 {
     "game": "LE3",
     "files": [
@@ -89,7 +89,7 @@ The JSON format for a file update in a merge mod. The files property is an array
 
 **Example:**
 
-```
+```json
 "files" : [
 	{
         "filename": "SFXGame.pcc",
@@ -151,8 +151,9 @@ The format for a single property update for an export. You may have several of t
 
 **Example:**
 
-```
-{ // This example would update three properties on the specified entry
+```json
+// This example would update three properties on the specified entry
+{ 
     "entryname": "Default__SFXCameraMode_CombatStorm",
     "propertyupdates": [
         {
