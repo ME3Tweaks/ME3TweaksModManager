@@ -16,6 +16,12 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
 
     partial class M3OnlineContent
     {
+        /// <summary>
+        /// URL where the documentation for moddesc lives
+        /// </summary>
+        public const string MODDESC_DOCUMENTATION_LINK = @"https://github.com/ME3Tweaks/ME3TweaksModManager/tree/staticfiles/documentation#readme";
+
+
         #region FALLBACKS
         /// <summary>
         /// Startup Manifest URLs

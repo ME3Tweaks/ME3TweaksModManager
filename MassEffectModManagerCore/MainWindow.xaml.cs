@@ -3914,7 +3914,7 @@ namespace ME3TweaksModManager
 
         private void Documentation_Click(object sender, RoutedEventArgs e)
         {
-            M3Utilities.OpenWebpage(@"https://github.com/ME3Tweaks/ME3TweaksModManager/tree/master/documentation");
+            M3Utilities.OpenWebpage(M3OnlineContent.MODDESC_DOCUMENTATION_LINK);
         }
 
         private void OpenMemoryAnalyzer_Click(object sender, RoutedEventArgs e)
