@@ -50,7 +50,7 @@ Some examples of questions that are easy for developers to answer but not for en
  - Do I need to unpack my DLC?
  - What is the install order of mods?
 
-Archive distribution in the Mass Effect Trilogy scene is the standard (for non-texture mods), as long as you have decent instructions.  This is the absolute bare minimum that I would say is acceptable for the end user. I have seen countless reports of broken games due to users installing mods wrong because the mods have complicated and very difficult to follow directions, such as using ME3Explorer to AutoTOC, which is a tool not designed for end users.
+Archive distribution in the Mass Effect Trilogy and Legendary Edition scene is the standard (for non-texture mods), as long as you have decent instructions.  This is the absolute bare minimum that I would say is acceptable for the end user. I have seen countless reports of broken games due to users installing mods wrong because the mods have complicated and very difficult to follow directions, such as using ME3Explorer to AutoTOC, which is a tool not designed for end users.
 
 
 **I do not think EXE installers are acceptable for use** for the following reasons:
@@ -64,9 +64,5 @@ Archive distribution in the Mass Effect Trilogy scene is the standard (for non-t
  - Installers in the scene typically force administrative rights which completely messed up modding tools because the permissions on the installed files are set to administrator only, even if they're placed in a directory that inherits permissions for user to modify. This is often very frustrating for users and wastes lots of their time
 
 M3 mods are mods that are designed to be able to be manually installed by users - if they choose to do so, but optimally are installed through M3. M3 facilitates checks and provides features to the end user such as library management, update checks, relevant mod information, modding rule enforcement and automatic configuration of mods based on the current game state. Deployment of a mod through M3 will make the file size smaller through optimized 7z compression settings designed for the types of files we work on in the scene, as well as perform sanity checks on your mod (such as for broken textures and audio).
-
-While you don't have to use it for your mod, all of the active developers in the scene encourage it's use because end users often don't know what they're doing.
-
-
 
 If you need assistance developing a moddesc.ini for your mod, please come to the [ME3Tweaks Discord](https://discord.gg/s8HA6dc).
