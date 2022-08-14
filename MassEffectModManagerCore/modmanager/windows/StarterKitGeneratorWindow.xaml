@@ -14,7 +14,7 @@
     MinHeight="650"
     MinWidth="875"
     DataContext="{Binding RelativeSource={RelativeSource Self}}"
-    Width="1175"
+    Width="1275"
     ContentRendered="StarterKit_ContentRendered">
     <Window.Style>
         <Style
@@ -159,6 +159,10 @@
                     Width="200" />
                 <ColumnDefinition
                     Width="*" />
+                <ColumnDefinition
+                    Width="5" />
+                <ColumnDefinition
+                    Width="200" />
                 <ColumnDefinition
                     Width="5" />
                 <ColumnDefinition
@@ -344,68 +348,38 @@
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
-                <!-- <RadioButton
-                    Name="ME1_RadioButton"
-                    Click="RadioButton_Click"
-                    Style="{StaticResource GameIcon}"
-                    BorderBrush="Red"
-                    Width="24"
-                    Height="24" >
-                    <RadioButton.Content>
-<Image Source="{Binding Game, Converter= Size=24}"/>
-                    </RadioButton.Content>
-                </RadioButton>
-                <RadioButton
-                    Name="ME2_RadioButton"
-                    Click="RadioButton_Click"
-                    Content="{StaticResource me2gameicon}"
-                    Style="{StaticResource GameIcon}"
-                    BorderBrush="Orange"
-                    Width="24"
-                    Height="24"
-                    Margin="5,0" />
-                <RadioButton
-                    Name="ME3_RadioButton"
-                    Click="RadioButton_Click"
-                    Content="{StaticResource me3gameicon}"
-                    Style="{StaticResource GameIcon}"
-                    BorderBrush="Green"
-                    Width="24"
-                    Height="24" />
-                <RadioButton
-                    Name="LE1_RadioButton"
-                    Click="RadioButton_Click"
-                    Content="{StaticResource le1gameicon}"
-                    Style="{StaticResource GameIcon}"
-                    BorderBrush="Red"
-                    Width="24"
-                    Height="24" />
-                <RadioButton
-                    Name="LE2_RadioButton"
-                    Click="RadioButton_Click"
-                    Content="{StaticResource le2gameicon}"
-                    Style="{StaticResource GameIcon}"
-                    BorderBrush="Orange"
-                    Width="24"
-                    Height="24"
-                    Margin="5,0" />
-                <RadioButton
-                    Name="LE3_RadioButton"
-                    Click="RadioButton_Click"
-                    Content="{StaticResource le3gameicon}"
-                    Style="{StaticResource GameIcon}"
-                    BorderBrush="Green"
-                    Width="24"
-                    Height="24" />-->
             </StackPanel>
+
+
+            <TextBlock Text="Features" Grid.Row="1" Grid.Column="4" FontWeight="Bold"/>
+            <DockPanel
+                VerticalAlignment="Top"
+                Grid.Column="4"
+                Grid.RowSpan="15"
+                Grid.Row="2">
+                <CheckBox Content="Startup file" DockPanel.Dock="Top"/>
+                <CheckBox Content="Squadmate outfit merge: Garrus" DockPanel.Dock="Top"/>
+                <CheckBox Content="Squadmate outfit merge: EDI" DockPanel.Dock="Top"/>
+                <CheckBox Content="Squadmate outfit merge: Liara" DockPanel.Dock="Top"/>
+                <CheckBox Content="Squadmate outfit merge: Javik" DockPanel.Dock="Top"/>
+                <CheckBox Content="Squadmate outfit merge: James" DockPanel.Dock="Top"/>
+                <CheckBox Content="Squadmate outfit merge: Kaidan" DockPanel.Dock="Top"/>
+                <CheckBox Content="Squadmate outfit merge: Ashley" DockPanel.Dock="Top"/>
+                <CheckBox Content="Blank 2DA file" DockPanel.Dock="Top"/>
+                <CheckBox Content="PlotManager (?)" DockPanel.Dock="Top"/>
+            </DockPanel>
+
+
+
+
             <TextBlock
                 Text="{DynamicResource string_existingKnownDLC}"
                 FontWeight="Bold"
                 DockPanel.Dock="Top"
                 Grid.Row="1"
-                Grid.Column="4" />
+                Grid.Column="6" />
             <DockPanel
-                Grid.Column="4"
+                Grid.Column="6"
                 Grid.RowSpan="15"
                 Grid.Row="2"
                 MinWidth="300">
@@ -467,6 +441,7 @@
                     </ListBox.ItemTemplate>
                 </ListBox>
             </DockPanel>
+
             <Button
                 Content="{DynamicResource string_generateStarterKit}"
                 Grid.Column="2"
