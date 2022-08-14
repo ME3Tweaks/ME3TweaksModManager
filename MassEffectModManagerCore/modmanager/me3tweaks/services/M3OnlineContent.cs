@@ -29,7 +29,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
         private static FallbackLink StartupManifestURL = new FallbackLink()
         {
             MainURL = @"https://me3tweaks.com/modmanager/updatecheck?currentversion=" + App.BuildNumber + @"&M3=true",
-            FallbackURL = @"https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/master/ME3TweaksModManager/staticfiles/startupmanifest.json"
+            FallbackURL = @"https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/staticfiles/liveservices/services/startupmanifest.json"
         };
 
         /// <summary>
