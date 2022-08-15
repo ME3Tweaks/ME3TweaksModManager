@@ -1,5 +1,6 @@
 ﻿using LegendaryExplorerCore.Coalesced;
 using LegendaryExplorerCore.Coalesced.Xml;
+using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
@@ -157,11 +158,20 @@ namespace ME3TweaksModManager.modmanager.starterkit
         #region Squadmate Merge
         public static string GenerateSquadmateMergeFiles(MEGame game, string henchName, string dlcFolderPath)
         {
+            // Setup
             var dlcName = Path.GetFileName(dlcFolderPath);
             var henchHumanName = GetHumanName(henchName);
             var cookedPath = Path.Combine(dlcFolderPath, game.CookedDirName());
             var sourcefiles = new List<string>();
+            var sourceBaseDir = BackupService.GetGameBackupPath(game);
+            if (sourceBaseDir == null || !Directory.Exists(sourceBaseDir))
+            {
+                M3Log.Warning($@"No backup available for {game}");
+                return $"No backup available for {game}, cannot generate squadmate merge files";
+            }
+            var sourceBaseFiles = MELoadedFiles.GetFilesLoadedInGame(game, true, gameRootOverride: sourceBaseDir);
 
+            // File list
             // Main
             sourcefiles.Add($@"BioH_{henchName}_00.pcc");
             sourcefiles.Add($@"BioH_{henchName}_00_Explore.pcc");
@@ -177,29 +187,21 @@ namespace ME3TweaksModManager.modmanager.starterkit
             sourcefiles.Add($@"BioH_{henchName}_00_Explore_LOC_ITA.pcc");
 
             // Step 1: Verify files
-            var sourceBaseDir = BackupService.GetGameBackupPath(game);
-            if (sourceBaseDir == null || !Directory.Exists(sourceBaseDir))
-            {
-                M3Log.Warning($@"No backup available for {game}");
-                return $"No backup available for {game}, cannot generate squadmate merge files";
-            }
 
-            var sourceBathPath = Path.Combine(sourceBaseDir, @"BioGame", @"CookedPCConsole");
             foreach (var f in sourcefiles)
             {
-                var path = Path.Combine(sourceBathPath, f);
-                if (!File.Exists(path))
+                if (!sourceBaseFiles.TryGetValue(f, out var _))
                 {
                     M3Log.Warning($@"Required file for squadmate merge not available in backup: {f}");
                     return $"Required file for squadmate merge not available in backup: {f}";
                 }
             }
-            
-            var isourcepath = Path.Combine(sourceBathPath, $"SFXHenchImages{henchHumanName}0.pcc");
-            if (!File.Exists(isourcepath))
+
+            var isourcefname = $"SFXHenchImages{henchHumanName}0.pcc";
+            if (!sourceBaseFiles.TryGetValue(isourcefname, out var _))
             {
-                M3Log.Warning($@"Required file for squadmate merge not available in backup: {isourcepath}");
-                return $"Required file for squadmate merge not available in backup: {isourcepath}";
+                M3Log.Warning($@"Required file for squadmate merge not available in backup: {isourcefname}");
+                return $"Required file for squadmate merge not available in backup: {isourcefname}";
             }
 
             M3Log.Information(@"Squadmate merge generator: all required source files found in backup");
@@ -207,8 +209,7 @@ namespace ME3TweaksModManager.modmanager.starterkit
             // Step 2: Copy files
             foreach (var f in sourcefiles)
             {
-                var path = Path.Combine(sourceBathPath, f);
-
+                var path = sourceBaseFiles[f];
                 var destFName = Path.GetFileName(f);
                 destFName = destFName.Replace(henchName, $"{henchName}_{dlcName}");
 
@@ -225,27 +226,32 @@ namespace ME3TweaksModManager.modmanager.starterkit
             }
 
             // Step 3: Add hench images package
-            var idestpath = Path.Combine(cookedPath, $@"SFXHenchImages_{dlcName}.pcc");
-            using var ipackage = MEPackageHandler.OpenMEPackage(isourcepath);
 
+            var idestpath = Path.Combine(cookedPath, $@"SFXHenchImages_{dlcName}.pcc");
+            using var ipackage = MEPackageHandler.OpenMEPackage(sourceBaseFiles[isourcefname]);
+            
             // Available
             var exp = ipackage.FindExport($@"GUI_Henchmen_Images.{henchHumanName}0");
             var t2d = new Texture2D(exp);
-            t2d.Replace(new Image(M3Utilities.ExtractInternalFileToStream(@"ME3TweaksModManager.modmanager.starterkit.henchimages.placeholder_available.png"), @".png"), exp.GetProperties(), isPackageStored: true);
+            var imageBytes = M3Utilities.ExtractInternalFileToStream(@"ME3TweaksModManager.modmanager.starterkit.henchimages.placeholder_available.png").GetBuffer();
+            t2d.Replace(Image.LoadFromFileMemory(imageBytes, 2, PixelFormat.ARGB), exp.GetProperties(), isPackageStored: true);
 
             // Chosen
             exp = ipackage.FindExport($"GUI_Henchmen_Images.{henchHumanName}0_locked");
             t2d = new Texture2D(exp);
-            t2d.Replace(new Image(M3Utilities.ExtractInternalFileToStream(@"ME3TweaksModManager.modmanager.starterkit.henchimages.placeholder_chosen.png"), @".png"), exp.GetProperties(), isPackageStored: true);
+            imageBytes = M3Utilities.ExtractInternalFileToStream(@"ME3TweaksModManager.modmanager.starterkit.henchimages.placeholder_silo.png").GetBuffer();
+            t2d.Replace(Image.LoadFromFileMemory(imageBytes, 2, PixelFormat.ARGB), exp.GetProperties(), isPackageStored: true);
 
             // Silouette
             exp = ipackage.FindExport($"GUI_Henchmen_Images.{henchHumanName}0Glow");
             t2d = new Texture2D(exp);
-            t2d.Replace(new Image(M3Utilities.ExtractInternalFileToStream(@"ME3TweaksModManager.modmanager.starterkit.henchimages.placeholder_silo.png"), @".png"), exp.GetProperties(), isPackageStored: true);
+            imageBytes = M3Utilities.ExtractInternalFileToStream(@"ME3TweaksModManager.modmanager.starterkit.henchimages.placeholder_chosen.png").GetBuffer();
+            t2d.Replace(Image.LoadFromFileMemory(imageBytes, 2, PixelFormat.ARGB), exp.GetProperties(), isPackageStored: true);
 
 
             ReplaceNameIfExists(ipackage, $@"GUI_Henchmen_Images", $@"GUI_Henchmen_Images_{dlcName}");
             ReplaceNameIfExists(ipackage, $@"SFXHenchImages{henchHumanName}0", $@"SFXHenchImages_{dlcName}");
+
             ipackage.Save(idestpath);
 
             // Step 4: Add squadmate outfit merge
@@ -265,7 +271,7 @@ namespace ME3TweaksModManager.modmanager.starterkit
             outfitMerge[@"outfits"] = outfits;
 
             var sqmFile = Path.Combine(cookedPath, "SquadmateMergeInfo.sqm");
-            var output = JsonConvert.SerializeObject(outfitMerge);
+            var output = JsonConvert.SerializeObject(outfitMerge, Formatting.Indented);
             File.WriteAllText(sqmFile, output);
             return null;
         }
