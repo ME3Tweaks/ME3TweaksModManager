@@ -11,11 +11,13 @@ using LegendaryExplorerCore.Unreal.Classes;
 using ME3TweaksCore.Targets;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
+using Microsoft.WindowsAPICodePack.NativeAPI.Consts;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -149,14 +151,48 @@ namespace ME3TweaksModManager.modmanager.starterkit
             {
                 Class = EntryImporter.EnsureClassIsInFile(package, "ObjectReferencer", rop)
             };
+            referencer.WriteProperty(new ArrayProperty<ObjectProperty>(@"ReferencedObjects"));
             package.AddExport(referencer);
             return referencer;
+        }
+
+        public static bool AddToObjectReferencer(IEntry entry)
+        {
+            var referencer = entry.FileRef.Exports.FirstOrDefault(x => x.ClassName == "ObjectReferencer");
+            if (referencer == null) return false;
+            var refs = referencer.GetProperty<ArrayProperty<ObjectProperty>>(@"ReferencedObjects") ?? new ArrayProperty<ObjectProperty>(@"ReferencedObjects");
+            refs.Add(new ObjectProperty(entry));
+            referencer.WriteProperty(refs);
+            return true;
         }
 
         #endregion
 
         #region Squadmate Merge
-        public static string GenerateSquadmateMergeFiles(MEGame game, string henchName, string dlcFolderPath)
+
+        /// <summary>
+        /// Generates the SquadmateOutfitMerge.sqm file from the listed dictionary of outfits.
+        /// </summary>
+        /// <param name="game">The game the merge is for</param>
+        /// <param name="outfits">The outfits</param>
+        /// <returns>Text ready to write to the .sqm file</returns>
+        public static string GenerateOutfitMergeText(MEGame game, List<Dictionary<string, object>> outfits)
+        {
+            var outfitMerge = new Dictionary<string, object>();
+            outfitMerge[@"game"] = game.ToString();
+            outfitMerge[@"outfits"] = outfits;
+            return JsonConvert.SerializeObject(outfitMerge, Formatting.Indented);
+        }
+
+        /// <summary>
+        /// Generates squadmate outfit merge files for the specified henchmen
+        /// </summary>
+        /// <param name="game">The game to generate for</param>
+        /// <param name="henchName">The internal name of the henchman</param>
+        /// <param name="dlcFolderPath">The path to the DLC folder root to modify</param>
+        /// <param name="outfits">The list of outfits to append to</param>
+        /// <returns>Error if failed, null if OK</returns>
+        public static string GenerateSquadmateMergeFiles(MEGame game, string henchName, string dlcFolderPath, List<Dictionary<string, object>> outfits)
         {
             // Setup
             var dlcName = Path.GetFileName(dlcFolderPath);
@@ -228,36 +264,67 @@ namespace ME3TweaksModManager.modmanager.starterkit
             // Step 3: Add hench images package
 
             var idestpath = Path.Combine(cookedPath, $@"SFXHenchImages_{dlcName}.pcc");
-            using var ipackage = MEPackageHandler.OpenMEPackage(sourceBaseFiles[isourcefname]);
-            
-            // Available
-            var exp = ipackage.FindExport($@"GUI_Henchmen_Images.{henchHumanName}0");
-            var t2d = new Texture2D(exp);
-            var imageBytes = M3Utilities.ExtractInternalFileToStream(@"ME3TweaksModManager.modmanager.starterkit.henchimages.placeholder_available.png").GetBuffer();
-            t2d.Replace(Image.LoadFromFileMemory(imageBytes, 2, PixelFormat.ARGB), exp.GetProperties(), isPackageStored: true);
+            if (File.Exists(idestpath))
+            {
+                // Edit existing package
+                using var ipackage = MEPackageHandler.OpenMEPackage(idestpath);
+                var texToClone = ipackage.Exports.FirstOrDefault(x => x.ClassName == @"Texture2D");
 
-            // Chosen
-            exp = ipackage.FindExport($"GUI_Henchmen_Images.{henchHumanName}0_locked");
-            t2d = new Texture2D(exp);
-            imageBytes = M3Utilities.ExtractInternalFileToStream(@"ME3TweaksModManager.modmanager.starterkit.henchimages.placeholder_silo.png").GetBuffer();
-            t2d.Replace(Image.LoadFromFileMemory(imageBytes, 2, PixelFormat.ARGB), exp.GetProperties(), isPackageStored: true);
+                // Available
+                var exp = EntryCloner.CloneEntry(texToClone);
+                AddToObjectReferencer(exp);
+                exp.ObjectName = new NameReference($"{henchHumanName}0", 0);
+                var t2d = new Texture2D(exp);
+                var imageBytes = M3Utilities.ExtractInternalFileToStream(@"ME3TweaksModManager.modmanager.starterkit.henchimages.placeholder_available.png").GetBuffer();
+                t2d.Replace(Image.LoadFromFileMemory(imageBytes, 2, PixelFormat.ARGB), exp.GetProperties(), isPackageStored: true);
 
-            // Silouette
-            exp = ipackage.FindExport($"GUI_Henchmen_Images.{henchHumanName}0Glow");
-            t2d = new Texture2D(exp);
-            imageBytes = M3Utilities.ExtractInternalFileToStream(@"ME3TweaksModManager.modmanager.starterkit.henchimages.placeholder_chosen.png").GetBuffer();
-            t2d.Replace(Image.LoadFromFileMemory(imageBytes, 2, PixelFormat.ARGB), exp.GetProperties(), isPackageStored: true);
+                // Silouette
+                exp = EntryCloner.CloneEntry(texToClone);
+                AddToObjectReferencer(exp);
+                exp.ObjectName = new NameReference($"{henchHumanName}0_locked", 0);
+                t2d = new Texture2D(exp);
+                imageBytes = M3Utilities.ExtractInternalFileToStream(@"ME3TweaksModManager.modmanager.starterkit.henchimages.placeholder_silo.png").GetBuffer();
+                t2d.Replace(Image.LoadFromFileMemory(imageBytes, 2, PixelFormat.ARGB), exp.GetProperties(), isPackageStored: true);
 
+                // Chosen
+                exp = EntryCloner.CloneEntry(texToClone);
+                AddToObjectReferencer(exp);
+                exp.ObjectName = new NameReference($"{henchHumanName}0Glow", 0);
+                t2d = new Texture2D(exp);
+                imageBytes = M3Utilities.ExtractInternalFileToStream(@"ME3TweaksModManager.modmanager.starterkit.henchimages.placeholder_chosen.png").GetBuffer();
+                t2d.Replace(Image.LoadFromFileMemory(imageBytes, 2, PixelFormat.ARGB), exp.GetProperties(), isPackageStored: true);
 
-            ReplaceNameIfExists(ipackage, $@"GUI_Henchmen_Images", $@"GUI_Henchmen_Images_{dlcName}");
-            ReplaceNameIfExists(ipackage, $@"SFXHenchImages{henchHumanName}0", $@"SFXHenchImages_{dlcName}");
+                ipackage.Save();
+            }
+            else
+            {
+                // Generate new package
+                using var ipackage = MEPackageHandler.OpenMEPackage(sourceBaseFiles[isourcefname]);
 
-            ipackage.Save(idestpath);
+                // Available
+                var exp = ipackage.FindExport($@"GUI_Henchmen_Images.{henchHumanName}0");
+                var t2d = new Texture2D(exp);
+                var imageBytes = M3Utilities.ExtractInternalFileToStream(@"ME3TweaksModManager.modmanager.starterkit.henchimages.placeholder_available.png").GetBuffer();
+                t2d.Replace(Image.LoadFromFileMemory(imageBytes, 2, PixelFormat.ARGB), exp.GetProperties(), isPackageStored: true);
 
-            // Step 4: Add squadmate outfit merge
-            Dictionary<string, object> outfitMerge = new Dictionary<string, object>();
-            outfitMerge[@"game"] = game.ToString();
-            var outfits = new List<Dictionary<string, object>>();
+                // Silouette
+                exp = ipackage.FindExport($"GUI_Henchmen_Images.{henchHumanName}0_locked");
+                t2d = new Texture2D(exp);
+                imageBytes = M3Utilities.ExtractInternalFileToStream(@"ME3TweaksModManager.modmanager.starterkit.henchimages.placeholder_silo.png").GetBuffer();
+                t2d.Replace(Image.LoadFromFileMemory(imageBytes, 2, PixelFormat.ARGB), exp.GetProperties(), isPackageStored: true);
+
+                // Chosen
+                exp = ipackage.FindExport($"GUI_Henchmen_Images.{henchHumanName}0Glow");
+                t2d = new Texture2D(exp);
+                imageBytes = M3Utilities.ExtractInternalFileToStream(@"ME3TweaksModManager.modmanager.starterkit.henchimages.placeholder_chosen.png").GetBuffer();
+                t2d.Replace(Image.LoadFromFileMemory(imageBytes, 2, PixelFormat.ARGB), exp.GetProperties(), isPackageStored: true);
+
+                ReplaceNameIfExists(ipackage, $@"GUI_Henchmen_Images", $@"GUI_Henchmen_Images_{dlcName}");
+                ReplaceNameIfExists(ipackage, $@"SFXHenchImages{henchHumanName}0", $@"SFXHenchImages_{dlcName}");
+                ipackage.Save(idestpath);
+            }
+
+            // Step 4: Add squadmate outfit merge to the list
             var outfit = new Dictionary<string, object>();
             outfit[@"henchname"] = henchName;
             outfit[@"henchpackage"] = $@"BioH_{henchName}_{dlcName}_00";
@@ -268,17 +335,12 @@ namespace ME3TweaksModManager.modmanager.starterkit
             outfit[@"descriptiontext0"] = 0;
             outfit[@"customtoken0"] = 0;
             outfits.Add(outfit);
-            outfitMerge[@"outfits"] = outfits;
 
-            var sqmFile = Path.Combine(cookedPath, "SquadmateMergeInfo.sqm");
-            var output = JsonConvert.SerializeObject(outfitMerge, Formatting.Indented);
-            File.WriteAllText(sqmFile, output);
             return null;
         }
 
         private static string GetHumanName(string henchName)
         {
-            if (henchName == "Prothean") return "Javik";
             if (henchName == "Marine") return "James";
             return henchName;
         }

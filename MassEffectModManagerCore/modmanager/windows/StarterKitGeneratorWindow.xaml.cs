@@ -14,6 +14,7 @@ using IniParser.Model;
 using LegendaryExplorerCore.Coalesced;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
+using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.TLK;
@@ -27,6 +28,7 @@ using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.loaders;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.mod;
+using ME3TweaksModManager.modmanager.squadmates;
 using ME3TweaksModManager.modmanager.starterkit;
 using ME3TweaksModManager.ui;
 using Microsoft.AppCenter.Analytics;
@@ -111,6 +113,8 @@ namespace ME3TweaksModManager.modmanager.windows
         public bool AddSquadmateMerge3Javik { get; set; }
         public bool AddSquadmateMerge3Ashley { get; set; }
         public bool AddSquadmateMerge3Kaidan { get; set; }
+        public bool AddSquadmateMerge3Tali { get; set; }
+
 
         #endregion
 
@@ -433,6 +437,7 @@ namespace ME3TweaksModManager.modmanager.windows
                 AddJavikSQM = AddSquadmateMerge3Javik,
                 AddKaidanSQM = AddSquadmateMerge3Kaidan,
                 AddLiaraSQM = AddSquadmateMerge3Liara,
+                AddTaliSQM = AddSquadmateMerge3Tali,
             };
 
             M3Log.Information(@"Generating a starter kit mod with the following options:");
@@ -443,6 +448,12 @@ namespace ME3TweaksModManager.modmanager.windows
             Task.Run(() =>
             {
                 FinishedCallback(CreateStarterKitMod(sko, s => { BusyText = s; }));
+            }).ContinueWithOnUIThread(x =>
+            {
+                if (x.Exception != null)
+                {
+                    M3L.ShowDialog(this, "Error generating mod", x.Exception.Message, MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             });
         }
 
@@ -693,40 +704,81 @@ namespace ME3TweaksModManager.modmanager.windows
             }
 
             // Generator needs to accept multiple outfit dictionaries
+            var outfits = new List<Dictionary<string, object>>();
+            string errorMessage = null;
             if (skOption.AddAshleySQM)
-                StarterKitAddins.GenerateSquadmateMergeFiles(skOption.ModGame, "Ashley", contentDirectory);
-            if (skOption.AddEDISQM)
-                StarterKitAddins.GenerateSquadmateMergeFiles(skOption.ModGame, "EDI", contentDirectory);
-            if (skOption.AddGarrusSQM)
-                StarterKitAddins.GenerateSquadmateMergeFiles(skOption.ModGame, "Garrus", contentDirectory);
-            if (skOption.AddKaidanSQM)
-                StarterKitAddins.GenerateSquadmateMergeFiles(skOption.ModGame, "Kaidan", contentDirectory);
-            if (skOption.AddJamesSQM)
-                StarterKitAddins.GenerateSquadmateMergeFiles(skOption.ModGame, "Marine", contentDirectory);
-            if (skOption.AddJavikSQM)
-                StarterKitAddins.GenerateSquadmateMergeFiles(skOption.ModGame, "Prothean", contentDirectory);
-            if (skOption.AddLiaraSQM)
-                StarterKitAddins.GenerateSquadmateMergeFiles(skOption.ModGame, "Liara", contentDirectory);
+            {
+                UITextCallback?.Invoke($@"{M3L.GetString(M3L.string_generatingMod)} - Ashley SQM");
+                errorMessage = StarterKitAddins.GenerateSquadmateMergeFiles(skOption.ModGame, "Ashley", contentDirectory, outfits);
+            }
+            if (errorMessage == null && skOption.AddEDISQM)
+            {
+                UITextCallback?.Invoke($@"{M3L.GetString(M3L.string_generatingMod)} - EDI SQM");
+                errorMessage = StarterKitAddins.GenerateSquadmateMergeFiles(skOption.ModGame, "EDI", contentDirectory, outfits);
+            }
+            if (errorMessage == null && skOption.AddGarrusSQM)
+            {
+                UITextCallback?.Invoke($@"{M3L.GetString(M3L.string_generatingMod)} - Garrus SQM");
+                errorMessage = StarterKitAddins.GenerateSquadmateMergeFiles(skOption.ModGame, "Garrus", contentDirectory, outfits);
+            }
+            if (errorMessage == null && skOption.AddKaidanSQM)
+            {
+                UITextCallback?.Invoke($@"{M3L.GetString(M3L.string_generatingMod)} - Kaidan SQM");
+                errorMessage = StarterKitAddins.GenerateSquadmateMergeFiles(skOption.ModGame, "Kaidan", contentDirectory, outfits);
+            }
+            if (errorMessage == null && skOption.AddJamesSQM)
+            {
+                UITextCallback?.Invoke($@"{M3L.GetString(M3L.string_generatingMod)} - James SQM");
+                errorMessage = StarterKitAddins.GenerateSquadmateMergeFiles(skOption.ModGame, "Marine", contentDirectory, outfits);
+            }
+            if (errorMessage == null && skOption.AddJavikSQM)
+            {
+                UITextCallback?.Invoke($@"{M3L.GetString(M3L.string_generatingMod)} - Javik SQM");
+                errorMessage = StarterKitAddins.GenerateSquadmateMergeFiles(skOption.ModGame, "Prothean", contentDirectory, outfits);
+            }
+            if (errorMessage == null && skOption.AddLiaraSQM)
+            {
+                UITextCallback?.Invoke($@"{M3L.GetString(M3L.string_generatingMod)} - Liara SQM");
+                errorMessage = StarterKitAddins.GenerateSquadmateMergeFiles(skOption.ModGame, "Liara", contentDirectory, outfits);
+            }
+            if (errorMessage == null && skOption.AddTaliSQM)
+            {
+                UITextCallback?.Invoke($@"{M3L.GetString(M3L.string_generatingMod)} - Tali SQM");
+                errorMessage = StarterKitAddins.GenerateSquadmateMergeFiles(skOption.ModGame, "Tali", contentDirectory, outfits);
+            }
+
+            if (errorMessage != null)
+            {
+                throw new Exception(errorMessage);
+            }
+
+            if (outfits.Any())
+            {
+                // Write the .sqm file
+                var sqmText = StarterKitAddins.GenerateOutfitMergeText(skOption.ModGame, outfits);
+                var sqmPath = Path.Combine(contentDirectory, skOption.ModGame.CookedDirName(), SQMOutfitMerge.SQUADMATE_MERGE_MANIFEST_FILE);
+                File.WriteAllText(sqmPath, sqmText);
+            }
 
             if (skOption.GenerateModdesc)
-                {
-                    IniData ini = new IniData();
-                    ini[@"ModManager"][@"cmmver"] = App.HighestSupportedModDesc.ToString(CultureInfo.InvariantCulture); //prevent commas
-                    ini[@"ModInfo"][@"game"] = skOption.ModGame.ToString();
-                    ini[@"ModInfo"][@"modname"] = skOption.ModName;
-                    ini[@"ModInfo"][@"moddev"] = skOption.ModDeveloper;
-                    ini[@"ModInfo"][@"moddesc"] = M3Utilities.ConvertNewlineToBr(skOption.ModDescription);
-                    ini[@"ModInfo"][@"modver"] = 1.0.ToString(CultureInfo.InvariantCulture);
-                    ini[@"ModInfo"][@"modsite"] = skOption.ModURL;
+            {
+                IniData ini = new IniData();
+                ini[@"ModManager"][@"cmmver"] = App.HighestSupportedModDesc.ToString(CultureInfo.InvariantCulture); //prevent commas
+                ini[@"ModInfo"][@"game"] = skOption.ModGame.ToString();
+                ini[@"ModInfo"][@"modname"] = skOption.ModName;
+                ini[@"ModInfo"][@"moddev"] = skOption.ModDeveloper;
+                ini[@"ModInfo"][@"moddesc"] = M3Utilities.ConvertNewlineToBr(skOption.ModDescription);
+                ini[@"ModInfo"][@"modver"] = 1.0.ToString(CultureInfo.InvariantCulture);
+                ini[@"ModInfo"][@"modsite"] = skOption.ModURL;
 
-                    ini[@"CUSTOMDLC"][@"sourcedirs"] = dlcFolderName;
-                    ini[@"CUSTOMDLC"][@"destdirs"] = dlcFolderName;
+                ini[@"CUSTOMDLC"][@"sourcedirs"] = dlcFolderName;
+                ini[@"CUSTOMDLC"][@"destdirs"] = dlcFolderName;
 
-                    var modDescPath = Path.Combine(modPath, @"moddesc.ini");
-                    new FileIniDataParser().WriteFile(modDescPath, ini, new UTF8Encoding(false));
-                    Mod m = new Mod(modDescPath, skOption.ModGame);
-                    return m;
-                }
+                var modDescPath = Path.Combine(modPath, @"moddesc.ini");
+                new FileIniDataParser().WriteFile(modDescPath, ini, new UTF8Encoding(false));
+                Mod m = new Mod(modDescPath, skOption.ModGame);
+                return m;
+            }
 
             return null;
         }
@@ -761,14 +813,14 @@ namespace ME3TweaksModManager.modmanager.windows
             /// If a startup file should be added after the mod has been generated
             /// </summary>
             public bool AddStartupFile { get; set; }
+            public bool AddAshleySQM { get; set; }
             public bool AddGarrusSQM { get; set; }
             public bool AddLiaraSQM { get; set; }
             public bool AddJamesSQM { get; set; }
             public bool AddEDISQM { get; set; }
             public bool AddKaidanSQM { get; set; }
-            public bool AddAshleySQM { get; set; }
             public bool AddJavikSQM { get; set; }
-
+            public bool AddTaliSQM { get; set; }
             #endregion
 
 

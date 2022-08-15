@@ -359,13 +359,14 @@
                 Grid.RowSpan="15"
                 Grid.Row="2">
                 <CheckBox Content="Startup file" DockPanel.Dock="Top" IsChecked="{Binding AddStartupFile}" Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Not_ME1'}"/>
+                <CheckBox Content="Squadmate outfit merge: Ashley" IsChecked="{Binding AddSquadmateMerge3Ashley}" DockPanel.Dock="Top" Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Game3'}"/>
                 <CheckBox Content="Squadmate outfit merge: Garrus" IsChecked="{Binding AddSquadmateMerge3Garrus}" DockPanel.Dock="Top" Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Game3'}"/>
                 <CheckBox Content="Squadmate outfit merge: EDI" IsChecked="{Binding AddSquadmateMerge3EDI}" DockPanel.Dock="Top" Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Game3'}"/>
-                <CheckBox Content="Squadmate outfit merge: Liara" IsChecked="{Binding AddSquadmateMerge3Liara}" DockPanel.Dock="Top" Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Game3'}"/>
                 <CheckBox Content="Squadmate outfit merge: Javik" IsChecked="{Binding AddSquadmateMerge3Javik}" DockPanel.Dock="Top" Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Game3'}"/>
                 <CheckBox Content="Squadmate outfit merge: James" IsChecked="{Binding AddSquadmateMerge3James}" DockPanel.Dock="Top" Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Game3'}"/>
                 <CheckBox Content="Squadmate outfit merge: Kaidan" IsChecked="{Binding AddSquadmateMerge3Kaidan}" DockPanel.Dock="Top" Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Game3'}"/>
-                <CheckBox Content="Squadmate outfit merge: Ashley" IsChecked="{Binding AddSquadmateMerge3Ashley}" DockPanel.Dock="Top" Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Game3'}"/>
+                <CheckBox Content="Squadmate outfit merge: Liara" IsChecked="{Binding AddSquadmateMerge3Liara}" DockPanel.Dock="Top" Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Game3'}"/>
+                <CheckBox Content="Squadmate outfit merge: Tali" IsChecked="{Binding AddSquadmateMerge3Tali}" DockPanel.Dock="Top" Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Game3'}"/>
                 <CheckBox Content="Blank 2DA file" DockPanel.Dock="Top" Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Game1'}"/>
                 <CheckBox Content="PlotManager (?)" DockPanel.Dock="Top" Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Game1'}"/>
             </DockPanel>
