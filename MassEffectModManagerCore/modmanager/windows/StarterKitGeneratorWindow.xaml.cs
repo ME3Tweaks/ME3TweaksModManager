@@ -27,6 +27,7 @@ using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.loaders;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.mod;
+using ME3TweaksModManager.modmanager.starterkit;
 using ME3TweaksModManager.ui;
 using Microsoft.AppCenter.Analytics;
 using MvvmValidation;
@@ -89,6 +90,31 @@ namespace ME3TweaksModManager.modmanager.windows
         public static GridLength VisibleRowHeight { get; } = new GridLength(25);
         public string BusyText { get; set; }
         public bool IsBusy { get; set; }
+
+        #region FEATURE FLAGS
+        // LE1, Game 2, Game 3
+        public bool AddStartupFile { get; set; }
+
+        // Game 1
+        // public bool AddBlank2DA { get; set; }
+
+        // ?? - For HenBagle
+        // public bool AddPlotManager { get; set; }
+
+
+
+        // Game 3
+        public bool AddSquadmateMerge3Garrus { get; set; }
+        public bool AddSquadmateMerge3Liara { get; set; }
+        public bool AddSquadmateMerge3EDI { get; set; }
+        public bool AddSquadmateMerge3James { get; set; }
+        public bool AddSquadmateMerge3Javik { get; set; }
+        public bool AddSquadmateMerge3Ashley { get; set; }
+        public bool AddSquadmateMerge3Kaidan { get; set; }
+
+        #endregion
+
+
         public string ModDescription { get; set; } = "";
 
         private string _modDeveloper;
@@ -397,6 +423,10 @@ namespace ME3TweaksModManager.modmanager.windows
                 ModMountPriority = ModMountPriority,
                 ModURL = ModURL,
                 ModModuleNumber = ModDLCModuleNumber,
+
+                // FEATURES MAP
+                AddStartupFile = AddStartupFile,
+
             };
 
             M3Log.Information(@"Generating a starter kit mod with the following options:");
@@ -650,6 +680,13 @@ namespace ME3TweaksModManager.modmanager.windows
                 }
             }
 
+            // ADDINS
+            if (skOption.AddStartupFile)
+            {
+                StarterKitAddins.AddStartupFile(skOption.ModGame, contentDirectory);
+            }
+
+
             if (skOption.GenerateModdesc)
             {
                 IniData ini = new IniData();
@@ -696,6 +733,16 @@ namespace ME3TweaksModManager.modmanager.windows
             /// Directory to place the DLC folder at. Set to null to use the mod library
             /// </summary>
             public string OutputFolderOverride { get; set; }
+
+
+            #region FEATURE OPTIONS
+            /// <summary>
+            /// If a startup file should be added after the mod has been generated
+            /// </summary>
+            public bool AddStartupFile { get; set; }
+
+            #endregion
+
 
             public override string ToString()
             {
@@ -756,6 +803,19 @@ namespace ME3TweaksModManager.modmanager.windows
                 SetGame(PendingGame.Value);
                 PendingGame = null;
             }
+        }
+
+        private void OnGameChanged()
+        {
+            // CLEAR ALL THE FLAGS
+            AddStartupFile = false;
+            AddSquadmateMerge3Ashley = false;
+            AddSquadmateMerge3EDI = false;
+            AddSquadmateMerge3Garrus = false;
+            AddSquadmateMerge3James = false;
+            AddSquadmateMerge3Javik = false;
+            AddSquadmateMerge3Kaidan = false;
+            AddSquadmateMerge3Liara = false;
         }
     }
 }
