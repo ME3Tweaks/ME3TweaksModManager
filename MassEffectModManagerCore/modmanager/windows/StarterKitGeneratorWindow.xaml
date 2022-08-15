@@ -6,6 +6,7 @@
     xmlns:ui="clr-namespace:ME3TweaksModManager.ui"
     xmlns:converters="clr-namespace:ME3TweaksModManager.modmanager.converters"
     xmlns:local="clr-namespace:ME3TweaksModManager.modmanager.windows"
+    xmlns:local2="clr-namespace:ME3TweaksModManager"
     xmlns:generic="clr-namespace:ME3TweaksModManager.modmanager.usercontrols.generic"
     Background="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}"
     WindowStartupLocation="CenterOwner"
@@ -447,6 +448,13 @@
                 Grid.Column="2"
                 Grid.Row="14"
                 Command="{Binding GenerateStarterKitCommand}"
+                BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1HighlightBorderBrush}}" />
+            <Button
+                Content="{DynamicResource string_debug}"
+                Grid.Column="1"
+                Grid.Row="15"
+                Click="DebugFill_Click"
+                Visibility="{x:Static local2:App.DebugOnlyVisibility}"
                 BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1HighlightBorderBrush}}" />
         </Grid>
     </xctk:BusyIndicator>
