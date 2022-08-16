@@ -20,6 +20,7 @@ using CommandLine;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.objects.exceptions;
 using ME3TweaksModManager.modmanager.objects.installer;
+using ME3TweaksModManager.modmanager.objects.batch;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
@@ -71,15 +72,23 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public bool InstallationCancelled { get; private set; }
 
         /// <summary>
-        /// If this is a batch mode install. In the event that all options are automatic this dialog is skipped
+        /// The associated batch mode mode. If this is not a batch install, this will be null.
         /// </summary>
-        public bool BatchMode { get; private set; }
-        public ModInstallOptionsPanel(Mod mod, GameTargetWPF gameTargetWPF, bool? installCompressed, bool batchMode)
+        public BatchMod BatchMod { get; private set; }
+
+        /// <summary>
+        /// If options should be recorded to the BatchMod object.
+        /// </summary>
+        private bool RecordBatchOptions { get; set; }
+
+        public ModInstallOptionsPanel(Mod mod, GameTargetWPF gameTargetWPF, bool? installCompressed, BatchMod batchMod, bool recordBatchOptions)
         {
             ModBeingInstalled = mod;
 
             if (!mod.IsInArchive)
             {
+                BatchMod = batchMod; // Never allow a compressed batch mod
+                RecordBatchOptions = batchMod != null && recordBatchOptions; // Must have a batch mod object
                 foreach (var alt in mod.GetAllAlternates())
                 {
                     if (!string.IsNullOrWhiteSpace(alt.ImageAssetName))
@@ -361,7 +370,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 // All available options were chosen already (compression would come from import dialog)
                 BeginInstallingMod();
             }
-            else if ((targets.Count == 1 || BatchMode) && AlternateGroups.Count == 0 && (BatchMode || Settings.PreferCompressingPackages || ModBeingInstalled.Game == MEGame.ME1 || ModBeingInstalled.Game.IsLEGame()))
+            else if ((targets.Count == 1 || BatchMod != null) && AlternateGroups.Count == 0 && (BatchMod != null || Settings.PreferCompressingPackages || ModBeingInstalled.Game == MEGame.ME1 || ModBeingInstalled.Game.IsLEGame()))
             {
                 // ME1 and LE can't compress. If user has elected to compress packages, and there are no alternates/additional targets, just begin installation
                 CompressInstalledPackages = Settings.PreferCompressingPackages && ModBeingInstalled.Game > MEGame.ME1;
@@ -635,6 +644,16 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 ModBeingInstalled = ModBeingInstalled,
                 SelectedOptions = optionsMap
             };
+
+            // Save batch options
+            if (BatchMod != null && RecordBatchOptions)
+            {
+                // Record them to the batch mod
+                BatchMod.ChosenOptions = optionsMap.SelectMany(x => x.Value).Select(x => x.OptionKey).ToList();
+                BatchMod.HasChosenOptions = true;
+                BatchMod.ChosenOptionsDesync = false;
+            }
+
             OnClosing(new DataEventArgs(moip));
         }
 

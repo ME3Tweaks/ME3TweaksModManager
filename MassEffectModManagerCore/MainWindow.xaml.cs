@@ -54,6 +54,7 @@ using ME3TweaksModManager.modmanager.merge.dlc;
 using ME3TweaksModManager.modmanager.merge.game2email;
 using ME3TweaksModManager.modmanager.nexusmodsintegration;
 using ME3TweaksModManager.modmanager.objects;
+using ME3TweaksModManager.modmanager.objects.batch;
 using ME3TweaksModManager.modmanager.objects.installer;
 using ME3TweaksModManager.modmanager.objects.mod.merge;
 using ME3TweaksModManager.modmanager.objects.tlk;
@@ -1062,13 +1063,27 @@ namespace ME3TweaksModManager
                         continueInstalling &= successful;
                         if (continueInstalling && queue.ModsToInstall.Count > modIndex)
                         {
-                            M3Log.Information($@"Installing batch mod [{modIndex}/{queue.ModsToInstall.Count}]: {queue.ModsToInstall[modIndex].ModName}");
-                            ApplyMod(queue.ModsToInstall[modIndex], target, batchMode: true, installCompressed: queue.InstallCompressed, installCompletedCallback: modInstalled);
+                            var bm = queue.ModsToInstall[modIndex];
+                            if (bm.Mod != null)
+                            {
+                                M3Log.Information($@"Installing batch mod [{modIndex}/{queue.ModsToInstall.Count}]: {queue.ModsToInstall[modIndex].Mod.ModName}");
+                                ApplyMod(bm.Mod, target, batchMod: bm, installCompressed: queue.InstallCompressed, installCompletedCallback: modInstalled, recordOptionsToBM: true);
+                            }
+                            else
+                            {
+                                M3Log.Warning($@"Skipping unavailable batch mod {bm.ModDescPath}");
+                            }
                             modIndex++;
                         }
                         else
                         {
                             //End
+                            var shouldSave = M3L.ShowDialog(this, "Save chosen options to this batch group?", "Save options", MessageBoxButton.YesNo) == MessageBoxResult.Yes;
+                            if (shouldSave)
+                            {
+                                M3Log.Information($@"Commiting batch queue with chosen options: {queue.BackingFilename}");
+                                queue.Save(true); // Commit the result
+                            }
                             HandleBatchPanelResult = true;
                         }
                     }
@@ -2159,12 +2174,12 @@ namespace ME3TweaksModManager
         /// <param name="batchMode">Causes ME3 autotoc to skip at end of install</param>
         /// <param name="installCompletedCallback">Callback when mod installation either succeeds for fails</param>
 
-        private void ApplyMod(Mod mod, GameTargetWPF forcedTarget = null, bool batchMode = false, bool? installCompressed = null, Action<bool> installCompletedCallback = null)
+        private void ApplyMod(Mod mod, GameTargetWPF forcedTarget = null, BatchMod batchMod = null, bool? installCompressed = null, Action<bool> installCompletedCallback = null, bool recordOptionsToBM = false)
         {
             if (!M3Utilities.IsGameRunning(mod.Game))
             {
                 BackgroundTask modInstallTask = BackgroundTaskEngine.SubmitBackgroundJob(@"ModInstall", M3L.GetString(M3L.string_interp_installingMod, mod.ModName), M3L.GetString(M3L.string_interp_installedMod, mod.ModName));
-                var modOptionsPicker = new ModInstallOptionsPanel(mod, forcedTarget ?? SelectedGameTarget, installCompressed, batchMode: batchMode);
+                var modOptionsPicker = new ModInstallOptionsPanel(mod, forcedTarget ?? SelectedGameTarget, installCompressed, batchMod: batchMod, recordOptionsToBM);
                 //var modInstaller = new ModInstaller(mod, forcedTarget ?? SelectedGameTarget, installCompressed, batchMode: batchMode);
                 modOptionsPicker.Close += (a, b) =>
                 {

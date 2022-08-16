@@ -208,8 +208,15 @@
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
-                                    <Image Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16" Margin="0,0,5,0" />
-                                    <TextBlock Text="{Binding ModName}" />
+                                    <StackPanel Orientation="Horizontal" Visibility="{Binding Mod, Converter={StaticResource NullVisibilityConverter}}">
+                                        <Image Source="{Binding Mod.Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16" Margin="0,0,5,0" />
+                                        <TextBlock Text="{Binding Mod.ModName}" />
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Visibility="{Binding Mod, Converter={StaticResource NullVisibilityConverter}, ConverterParameter='Reversed'}">
+                                        <fa5:FontAwesome Icon="Solid_Ban" Foreground="Red" Height="14" Margin="0,2,5,0"/>
+                                        <TextBlock Text="Mod not available:" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{Binding ModDescPath}" VerticalAlignment="Center"/>
+                                    </StackPanel>
                                 </StackPanel>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
@@ -231,7 +238,7 @@
                         <TextBox.Text>
                             <PriorityBinding>
                                 <Binding
-                                    Path="SelectedInstallGroupMod.DisplayedModDescription"
+                                    Path="SelectedInstallGroupMod.Mod.DisplayedModDescription"
                                     Mode="OneWay" />
                                 <Binding
                                     Path="NoModSelectedText"

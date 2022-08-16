@@ -14,11 +14,13 @@ using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.loaders;
 using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.objects.batch;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.usercontrols.interfaces;
 using ME3TweaksModManager.modmanager.windows;
 using ME3TweaksModManager.ui;
 using Microsoft.AppCenter.Analytics;
+using Newtonsoft.Json;
 using MemoryAnalyzer = ME3TweaksModManager.modmanager.memoryanalyzer.MemoryAnalyzer;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
@@ -29,7 +31,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
     public partial class BatchModLibrary : MMBusyPanelBase
     {
         public BatchLibraryInstallQueue SelectedBatchQueue { get; set; }
-        public Mod SelectedModInGroup { get; set; }
+        public BatchMod SelectedModInGroup { get; set; }
         public ObservableCollectionExtended<BatchLibraryInstallQueue> AvailableBatchQueues { get; } = new ObservableCollectionExtended<BatchLibraryInstallQueue>();
         public ObservableCollectionExtended<GameTargetWPF> InstallationTargetsForGroup { get; } = new ObservableCollectionExtended<GameTargetWPF>();
         public BatchModLibrary()
@@ -66,7 +68,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private void EditGroup()
         {
-            var editGroupUI = new BatchModQueueEditor(M3LoadedMods.Instance.AllLoadedMods.ToList(), mainwindow, SelectedBatchQueue);
+            var editGroupUI = new BatchModQueueEditor(mainwindow, SelectedBatchQueue);
             // Original code.
             editGroupUI.ShowDialog();
             var newPath = editGroupUI.SavedPath;
@@ -103,7 +105,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private void CreateNewGroup()
         {
-            var editGroupUI = new BatchModQueueEditor(M3LoadedMods.Instance.AllLoadedMods.ToList(), mainwindow);
+            var editGroupUI = new BatchModQueueEditor(mainwindow);
             editGroupUI.ShowDialog();
             var newPath = editGroupUI.SavedPath;
             if (newPath != null)
@@ -140,9 +142,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             foreach (var file in files)
             {
                 var extension = Path.GetExtension(file);
-                if (extension == @".biq" || extension == @".txt")
+                if (extension is @".biq2" or @".biq" or @".txt")
                 {
-                    var queue = BatchLibraryInstallQueue.ParseInstallQueue(file, M3LoadedMods.Instance.AllLoadedMods.ToList());
+                    var queue = BatchLibraryInstallQueue.ParseInstallQueue(file);
                     if (queue != null)
                     {
                         AvailableBatchQueues.Add(queue);
@@ -194,7 +196,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
             else
             {
-                ModDescriptionText = SelectedModInGroup.DisplayedModDescription;
+                ModDescriptionText = SelectedModInGroup.Mod?.DisplayedModDescription ?? "Mod not available for install";
             }
         }
 
@@ -203,70 +205,4 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public override double MaxWindowHeightPercent { get; set; } = 0.85;
     }
 
-    public class BatchLibraryInstallQueue : INotifyPropertyChanged
-    {
-        public bool InstallCompressed { get; set; }
-        /// <summary>
-        /// The name of the batch queue file. This does not include the path.
-        /// </summary>
-        public string BackingFilename { get; set; }
-        public ObservableCollectionExtended<Mod> ModsToInstall { get; } = new ObservableCollectionExtended<Mod>();
-        public ObservableCollectionExtended<string> ModsMissing { get; } = new ObservableCollectionExtended<string>();
-        public MEGame Game { get; private set; }
-        public string QueueName { get; private set; }
-        public string QueueDescription { get; private set; }
-
-        //Fody uses this property on weaving
-#pragma warning disable
-        public event PropertyChangedEventHandler PropertyChanged;
-#pragma warning restore
-        public static BatchLibraryInstallQueue ParseInstallQueue(string queueFile, List<Mod> allLoadedMods)
-        {
-            if (!File.Exists(queueFile)) return null;
-            BatchLibraryInstallQueue result = new BatchLibraryInstallQueue();
-            result.BackingFilename = Path.GetFileName(queueFile);
-            string[] lines = File.ReadAllLines(queueFile);
-            int line = 0;
-            if (Path.GetExtension(queueFile) == @".biq")
-            {
-                //New Mod Manager 6 format
-                if (Enum.TryParse<MEGame>(lines[line], out var game))
-                {
-                    result.Game = game;
-                    line++;
-                }
-            }
-            else
-            {
-                //Old Mod Manager 5 format. This code is only used for transition purposes
-                result.Game = MEGame.ME3;
-            }
-
-            result.QueueName = lines[line];
-            line++;
-            result.QueueDescription = lines[line];
-            line++;
-            while (line < lines.Length)
-            {
-                string moddescPath = lines[line];
-                var libraryRoot = M3Utilities.GetModDirectoryForGame(result.Game);
-                //workaround for 103/104 to 105: moddesc path's in biq were stored as full paths instead of relative. me3cmm is relative paths
-                var fullModdescPath = File.Exists(moddescPath) ? moddescPath : Path.Combine(libraryRoot, moddescPath);
-
-                Mod m = allLoadedMods.FirstOrDefault(x => x.ModDescPath.Equals(fullModdescPath, StringComparison.InvariantCultureIgnoreCase));
-                if (m != null)
-                {
-                    result.ModsToInstall.Add(m);
-                }
-                else
-                {
-                    result.ModsMissing.Add(moddescPath);
-                }
-                line++;
-            }
-
-            result.InstallCompressed = result.Game >= MEGame.ME2 && Settings.PreferCompressingPackages;
-            return result;
-        }
-    }
 }

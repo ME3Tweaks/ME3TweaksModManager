@@ -15,12 +15,15 @@ using ME3TweaksCore.Helpers;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.me3tweaks;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.alternates;
+using ME3TweaksModManager.modmanager.objects.batch;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.usercontrols;
 using ME3TweaksModManager.ui;
 using Microsoft.AppCenter.Analytics;
+using Newtonsoft.Json;
 using PropertyChanged;
 using WinCopies.Util;
 using MemoryAnalyzer = ME3TweaksModManager.modmanager.memoryanalyzer.MemoryAnalyzer;
@@ -33,9 +36,8 @@ namespace ME3TweaksModManager.modmanager.windows
     [AddINotifyPropertyChangedInterface]
     public partial class BatchModQueueEditor : Window
     {
-        private List<Mod> allMods;
         public ObservableCollectionExtended<Mod> VisibleFilteredMods { get; } = new ObservableCollectionExtended<Mod>();
-        public ObservableCollectionExtended<Mod> ModsInGroup { get; } = new ObservableCollectionExtended<Mod>();
+        public ObservableCollectionExtended<BatchMod> ModsInGroup { get; } = new ObservableCollectionExtended<BatchMod>();
 
         public MEGameSelector[] Games { get; init; }
 
@@ -47,12 +49,11 @@ namespace ME3TweaksModManager.modmanager.windows
         /// </summary>
         public string SavedPath;
 
-        public BatchModQueueEditor(List<Mod> allMods, Window owner = null, BatchLibraryInstallQueue queueToEdit = null)
+        public BatchModQueueEditor(Window owner = null, BatchLibraryInstallQueue queueToEdit = null)
         {
             MemoryAnalyzer.AddTrackedMemoryItem(@"Batch Mod Queue Editor", new WeakReference(this));
             Owner = owner;
             DataContext = this;
-            this.allMods = allMods;
             LoadCommands();
             Games = MEGameSelector.GetGameSelectorsIncludingLauncher().ToArray();
 
@@ -64,7 +65,7 @@ namespace ME3TweaksModManager.modmanager.windows
                 GroupName = queueToEdit.QueueName;
                 GroupDescription = queueToEdit.QueueDescription;
                 ModsInGroup.ReplaceAll(queueToEdit.ModsToInstall);
-                VisibleFilteredMods.RemoveRange(queueToEdit.ModsToInstall);
+                VisibleFilteredMods.RemoveRange(queueToEdit.ModsToInstall.Select(x => x.Mod));
             }
         }
 
@@ -131,7 +132,7 @@ namespace ME3TweaksModManager.modmanager.windows
             // This attempts to order mods by dependencies on others, with mods that have are not depended on being installed first
             // This REQUIRES mod developers to properly flag their alternates!
 
-            var dependencies = new List<ModDependencies>();
+            /*var dependencies = new List<ModDependencies>();
 
             foreach (var mod in ModsInGroup)
             {
@@ -139,9 +140,9 @@ namespace ME3TweaksModManager.modmanager.windows
 
                 // These items MUST be installed first or this mod simply won't install.
                 // Official DLC is not counted as mod manager cannot install those.
-                depends.HardDependencies = mod.RequiredDLC.Where(x => !MEDirectories.OfficialDLC(mod.Game).Contains(x.DLCFolderName)).Select(x=>x.DLCFolderName).ToList();
-                depends.DependencyDLCs = mod.GetAutoConfigs().ToList(); // These items must be installed prior to install or options will be unavailable to the user.
-                var custDlcJob = mod.GetJob(ModJob.JobHeader.CUSTOMDLC);
+                depends.HardDependencies = mod.Mod.RequiredDLC.Where(x => !MEDirectories.OfficialDLC(mod.Game).Contains(x.DLCFolderName)).Select(x => x.DLCFolderName).ToList();
+                depends.DependencyDLCs = mod.Mod.GetAutoConfigs().ToList(); // These items must be installed prior to install or options will be unavailable to the user.
+                var custDlcJob = mod.Mod.GetJob(ModJob.JobHeader.CUSTOMDLC);
                 if (custDlcJob != null)
                 {
                     var customDLCFolders = custDlcJob.CustomDLCFolderMapping.Keys.ToList();
@@ -149,13 +150,13 @@ namespace ME3TweaksModManager.modmanager.windows
                     depends.InstallableDLCFolders.ReplaceAll(customDLCFolders);
                 }
 
-                depends.mod = mod;
+                depends.mod = mod.Mod;
                 dependencies.Add(depends);
             }
 
             var fullList = dependencies;
 
-            List<Mod> finalOrder = new List<Mod>();
+            var finalOrder = new List<BatchMod>();
 
             // Mods with no dependencies go first.
             var noDependencyMods = dependencies.Where(x => x.HardDependencies.Count == 0 && x.DependencyDLCs.Count == 0).ToList();
@@ -178,11 +179,11 @@ namespace ME3TweaksModManager.modmanager.windows
 
             foreach (var m in finalOrder)
             {
-                var depend = fullList.Find(x => x.mod == m);
+                var depend = fullList.Find(x => x.mod == m.Mod);
                 depend.DebugPrint();
             }
 
-            ModsInGroup.ReplaceAll(finalOrder);
+            ModsInGroup.ReplaceAll(finalOrder);*/
 #endif
         }
 
@@ -257,21 +258,55 @@ namespace ME3TweaksModManager.modmanager.windows
             Mod m = SelectedAvailableMod;
             if (VisibleFilteredMods.Remove(m))
             {
-                ModsInGroup.Add(m);
+                ModsInGroup.Add(new BatchMod(m));
             }
         }
 
         private void RemoveFromInstallGroup()
         {
-            Mod m = SelectedInstallGroupMod;
-            if (ModsInGroup.Remove(m))
+            var m = SelectedInstallGroupMod;
+            if (ModsInGroup.Remove(m) && m.Mod != null)
             {
-                VisibleFilteredMods.Add(m);
+                VisibleFilteredMods.Add(m.Mod);
             }
         }
 
         private void SaveAndClose()
         {
+            SaveModern();
+            TelemetryInterposer.TrackEvent(@"Saved Batch Group", new Dictionary<string, string>()
+            {
+                {@"Group name", GroupName},
+                {@"Group size", ModsInGroup.Count.ToString()},
+                {@"Game", SelectedGame.ToString()}
+            });
+            Close();
+            //OnClosing(new DataEventArgs(savePath));
+        }
+
+        private void SaveModern()
+        {
+            var queue = new BatchLibraryInstallQueue();
+            queue.Game = SelectedGame;
+            queue.QueueName = GroupName;
+            queue.QueueDescription = M3Utilities.ConvertNewlineToBr(GroupDescription);
+            var mods = new List<BatchMod>();
+            foreach (var m in ModsInGroup)
+            {
+                mods.Add(m);
+            }
+            queue.ModsToInstall.ReplaceAll(mods);
+            SavedPath = queue.Save(true); // Todo: add warning if this overrides another object
+        }
+
+        /// <summary>
+        /// Unused - this is how MM8 (126) saved biq files. For reference only
+        /// </summary>
+        [Conditional(@"Debug")]
+        private void SaveLegacy()
+        {
+            throw new Exception(@"SaveLegacy() is no longer supported");
+            
             StringBuilder sb = new StringBuilder();
             sb.AppendLine(SelectedGame.ToString());
             sb.AppendLine(GroupName);
@@ -292,52 +327,13 @@ namespace ME3TweaksModManager.modmanager.windows
                 }
             }
 
-            var savePath = getSaveName(GroupName);
+            var savePath = "";// getSaveName(GroupName);
             File.WriteAllText(savePath, sb.ToString());
             SavedPath = savePath;
-            TelemetryInterposer.TrackEvent(@"Saved Batch Group", new Dictionary<string, string>()
-            {
-                {@"Group name", GroupName},
-                {@"Group size", ModsInGroup.Count.ToString()},
-                {@"Game", SelectedGame.ToString()}
-            });
-            Close();
-            //OnClosing(new DataEventArgs(savePath));
         }
 
-        private string getSaveName(string groupName)
-        {
-            var batchfolder = M3Filesystem.GetBatchInstallGroupsFolder();
-            var newFname = M3Utilities.SanitizePath(groupName);
-            if (string.IsNullOrWhiteSpace(newFname))
-            {
-                return getFirstGenericSavename(batchfolder);
-            }
-            var newPath = Path.Combine(batchfolder, newFname) + @".biq";
-            if (File.Exists(newPath))
-            {
-                return getFirstGenericSavename(batchfolder);
-            }
-
-            return newPath;
-        }
-
-        private string getFirstGenericSavename(string batchfolder)
-        {
-            string newFname = Path.Combine(batchfolder, @"batchinstaller-");
-            int i = 0;
-            while (true)
-            {
-                i++;
-                string nextGenericPath = newFname + i + @".biq";
-                if (!File.Exists(nextGenericPath))
-                {
-                    return nextGenericPath;
-                }
-            }
-        }
-
-        private bool CanSave() => ModsInGroup.Any() && !string.IsNullOrWhiteSpace(GroupName) && !string.IsNullOrWhiteSpace(GroupDescription);
+       
+        private bool CanSave() => ModsInGroup.Any() && ModsInGroup.All(x => x.Mod != null) && !string.IsNullOrWhiteSpace(GroupName) && !string.IsNullOrWhiteSpace(GroupDescription);
 
         private void CancelEditing()
         {
@@ -349,7 +345,7 @@ namespace ME3TweaksModManager.modmanager.windows
         /// <summary>
         /// Selected right pane mod
         /// </summary>
-        public Mod SelectedInstallGroupMod { get; set; }
+        public BatchMod SelectedInstallGroupMod { get; set; }
 
         /// <summary>
         /// Selected left pane mod
@@ -367,7 +363,7 @@ namespace ME3TweaksModManager.modmanager.windows
             // Update the filtered list
             if (SelectedGame != MEGame.Unknown)
             {
-                VisibleFilteredMods.ReplaceAll(allMods.Where(x => x.Game == SelectedGame));
+                VisibleFilteredMods.ReplaceAll(M3LoadedMods.Instance.AllLoadedMods.Where(x => x.Game == SelectedGame));
             }
             else
             {
