@@ -356,7 +356,11 @@ namespace ME3TweaksModManager.modmanager.starterkit
         #endregion
 
         #region Plot Manager 
-
+        public static void GenerateGame3Conditional(string dlcFolderPath)
+        {
+            CNDFile c = new CNDFile();
+            c.ToFile(Path.Combine(dlcFolderPath, MEGame.ME3.CookedDirName(), $"Conditionals_{Path.GetFileName(dlcFolderPath)}.cnd"));
+        }
         #endregion
 
         #region 2DA
