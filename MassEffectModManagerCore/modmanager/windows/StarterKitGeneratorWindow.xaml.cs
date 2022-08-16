@@ -239,8 +239,6 @@ namespace ME3TweaksModManager.modmanager.windows
             ME3MountFlags.ReplaceAll(flagset3.Select(x => new MountFlag((int)x, false)));
 
             PreviewTPMI.IsPreview = true;
-            SetupValidation();
-
             LoadCommands();
             InitializeComponent();
             Games = MEGameSelector.GetGameSelectors().ToArray();
@@ -874,6 +872,7 @@ namespace ME3TweaksModManager.modmanager.windows
 
         private void StarterKit_ContentRendered(object sender, EventArgs e)
         {
+            SetupValidation();
             if (PendingGame != null)
             {
                 if (Games.Any())
