@@ -1018,6 +1018,7 @@
 	<system:String x:Key="string_compilingMergemod">Compilazione mergemod</system:String>
 	<system:String x:Key="string_compiledMergemod">Mergemod compilata</system:String>
 	<system:String x:Key="string_failedToCompileMergemod">Compilazione mergemod fallita</system:String>
+	<system:String x:Key="string_failedToInstallBinkASILoader">Installazione di bink ASI loader fallita</system:String>
 	<system:String x:Key="string_dialog_missingConfigFileForMEIM">Il file di configurazione di Mass Effect {0}.ini è mancante. Dovrebbe trovarsi in {1}. Per favore avvia il gioco almeno una volta per generare i file di default.</system:String>
 	<system:String x:Key="string_interp_dialogConfigDirectoryMissing">La cartella di configurazione di Mass Effect è mancante. Dovrebbe trovarsi in {0}. Per favore avvia il gioco almeno una volta per generare i file di default.</system:String>
 	<system:String x:Key="string_cannotRunMassEffectIniModder">Impossibile avviare Mass Effect Ini Modder</system:String>
@@ -1381,6 +1382,7 @@
 	<system:String x:Key="string_interp_validation_modparsing_cannotDependOnOfficialLEDLC">Le mod per la Legendary Edition che hanno come obiettivo moddesc 8.0 o superiore non possono impostare DLC vanilla come dipendenze, in quanto Mod Manager non supporta la rimozione di questi DLC. Rimuovi i DLC vanilla da 'requireddlc'. Valore non valido: {0}</system:String>
 	<system:String x:Key="string_interp_validation_modparsing_hardcodedDirNotFound">La mod specifica il task header {0} ma la cartella {1} non è stata trovata. Rimuovi questo task header se non lo stai usando.</system:String>
 	<system:String x:Key="string_interp_validation_modparsing_improperPackedFile">La mod ha un file contenuto in modo errato nell'archivio: {0}. Le mod devono essere distribuite dal Mod Manger per funzionare correttamente.</system:String>
+	<system:String x:Key="string_interp_validation_modparsing_sortIndexGroupUnique">L'alternato {0} specifica un valore 'sortindex' che differisce da un altro nel gruppo '{1}'. L'alternato specifica il sortindex {2}, ma un altro specifica {3}. I valori 'sortindex' in un gruppo devono essere tutti uguali, o ne si deve definire solo uno.</system:String>
 	<system:String x:Key="string_interp_tlkmerge_couldNotFindExportInPackage">Impossibile trovare l'export nel package {0} per il merge TLK: {1} questo merge verrà saltato.</system:String>
 	<system:String x:Key="string_copiedModdesciniContentsToClipboard">Contenuto del file moddesc.ini copiato negli appunti</system:String>
 	<system:String x:Key="string_interp_failedToCopyModdescini">Impossibile copiare il testo di moddesc.ini negli appunti: {0}</system:String>
