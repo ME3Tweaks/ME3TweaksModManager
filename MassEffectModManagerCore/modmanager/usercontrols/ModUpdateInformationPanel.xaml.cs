@@ -96,10 +96,10 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         case 1:
                             domain = @"masseffect";
                             break;
-                        case 3:
+                        case 2:
                             domain = @"masseffect2";
                             break;
-                        case 2:
+                        case 3:
                             domain = @"masseffect3";
                             break;
                     }
