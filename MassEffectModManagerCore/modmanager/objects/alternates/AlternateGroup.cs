@@ -122,5 +122,32 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 o.IsSelectedChanged -= onAlternateSelectionChanged;
             }
         }
+
+        /// <summary>
+        /// Use this method to select an option in a group and raise the necessary events a selection brings
+        /// </summary>
+        /// <param name="newItem">The new item to select</param>
+        internal void SelectNewOption(AlternateOption newItem)
+        {
+            if (SelectedOption != newItem)
+            {
+                // Multi mode
+                SelectedOption.UIIsSelected = false;
+                SelectedOption.RaiseIsSelectedChanged(); // Raise that we are de-selecting this multi-option. This is so deselection logic occurs
+
+                SelectedOption = newItem;
+                SelectedOption.UIIsSelected = true;
+
+                UIIsDropdownOpen = false; // Multi mode
+                SelectedOption.RaiseIsSelectedChanged(); // Raise the event on the newly selected option so logic that depends on it will fire.
+            }
+
+            if (AlternateOptions.Count == 1 && !SelectedOption.IsAlways)
+            {
+                // Single mode
+                SelectedOption.UIIsSelected = !SelectedOption.UIIsSelected;
+                SelectedOption.RaiseIsSelectedChanged();
+            }
+        }
     }
 }

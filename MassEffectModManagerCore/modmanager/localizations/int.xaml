@@ -447,7 +447,9 @@
     <system:String x:Key="string_compiledMergemod">Compiled mergemod</system:String>
     <system:String x:Key="string_failedToCompileMergemod">Failed to compile mergemod</system:String>
     <system:String x:Key="string_failedToInstallBinkASILoader">Failed to install bink ASI loader</system:String>
-
+    <system:String x:Key="string_beta">Beta</system:String>
+    <!-- This is used for beta mode features. An example is a menu with heading of 'Beta'.-->
+    
     <!-- LEX Launcher -->
     <system:String x:Key="string_interp_lexNightlyFailedToDownload">Legendary Explorer Nightly failed to download: {0}</system:String>
 

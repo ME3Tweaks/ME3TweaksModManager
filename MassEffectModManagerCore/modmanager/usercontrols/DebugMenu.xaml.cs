@@ -34,7 +34,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             if (sender == nameof(MainWindow.StripCurrentTargetWithALOTMarker_MenuItem)) StripCurrentTargetALOTMarker_Click(window);
             if (sender == nameof(MainWindow.InstallHeadMorph_MenuItem)) InstallHeadMorphTest_Click(window);
             if (sender == nameof(MainWindow.ShowWelcomePanel_MenuItem)) ShowWelcomePanel_Click(window);
-            if (sender == nameof(MainWindow.InstallMEM_MenuItem)) DebugInstallTextureMod_Click(window);
 #endif
         }
 
@@ -189,13 +188,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 }
             }
         }
-
-        private static void DebugInstallTextureMod_Click(MainWindow mw)
-        {
-            TextureInstallerPanel tip = new TextureInstallerPanel();
-            mw.ShowBusyControl(tip);
-        }
-
 
         private static void DebugPrintInstallationQueue_Click(MainWindow mw)
         {

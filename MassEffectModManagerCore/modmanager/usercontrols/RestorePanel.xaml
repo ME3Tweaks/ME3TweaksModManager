@@ -38,13 +38,16 @@
                             <TextBlock Grid.Column="1" Grid.Row="0" FontWeight="Bold" Text="{Binding GameTitle}" />
                             <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding BackupStatus.BackupStatus}" />
                             <TextBlock Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="2" Text="{Binding BackupStatus.BackupLocationStatus}" />
-                            <usercontrols:TargetSelector Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" IsEnabled="{Binding CanOpenDropdown}"
+                            <usercontrols:TargetSelector Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2"
+                                                         IsEnabled="{Binding CanOpenDropdown}"
                                   AvailableTargets="{Binding AvailableRestoreTargets}" 
-                                  SelectedGameTarget="{Binding RestoreTarget}" HorizontalContentAlignment="Stretch" 
+                                  SelectedGameTarget="{Binding RestoreTarget}" 
+                                  HorizontalContentAlignment="Stretch" 
                                   Visibility="{Binding BackupStatus.BackedUp, Converter={StaticResource BoolToVisibilityConverter}}"/>
                             <Button Content="{Binding RestoreButtonText}" 
                                     Visibility="{Binding BackupStatus.BackedUp, Converter={StaticResource BoolToVisibilityConverter}}"
-                                    Padding="3,0" Command="{Binding RestoreButtonCommand}" 
+                                    Padding="3,0" 
+                                    Command="{Binding RestoreButtonCommand}" 
                                     Grid.Row="3" 
                                     Grid.Column="3" 
                                     Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"/>

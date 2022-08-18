@@ -1319,6 +1319,14 @@
                     </MenuItem>
                 </MenuItem>
                 <MenuItem
+                    Header="{DynamicResource string_beta}"
+                    Visibility="{Binding Path=(modmanager:Settings.BetaMode), Converter={StaticResource BoolToVisibilityConverter}}"
+                    Padding="4">
+                    <MenuItem
+                        Header="{DynamicResource string_installMemFile}"
+                        Command="{Binding InstallMEMFileCommand}" />
+                </MenuItem>
+                <MenuItem
                     Header="{DynamicResource string_debug}"
                     Visibility="{x:Static local:App.DebugOnlyVisibility}"
                     Padding="4">
@@ -1383,10 +1391,7 @@
                         Header="{DynamicResource string_installHeadmorph}"
                         Name="InstallHeadMorph_MenuItem"
                         Click="RouteDebugCall" />
-                    <MenuItem
-                        Header="{DynamicResource string_installMemFile}"
-                        Name="InstallMEM_MenuItem"
-                        Click="RouteDebugCall" />
+                    
                     <MenuItem
                         Header="{DynamicResource string_mEMVanillaDBViewer}"
                         Name="ShowMEMDB_MenuItem"

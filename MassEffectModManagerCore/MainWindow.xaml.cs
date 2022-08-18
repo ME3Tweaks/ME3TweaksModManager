@@ -642,6 +642,7 @@ namespace ME3TweaksModManager
         public ICommand NexusModsFileSearchCommand { get; set; }
         public ICommand SearchModsCommand { get; set; }
         public ICommand CloseModSearchBoxCommand { get; set; }
+        public ICommand InstallMEMFileCommand { get; set; }
         private void LoadCommands()
         {
             CloseModSearchBoxCommand = new GenericCommand(CloseSearchBox);
@@ -694,7 +695,12 @@ namespace ME3TweaksModManager
             NexusModsFileSearchCommand = new GenericCommand(OpenNexusSearch); // no conditions for this
             CompileCoalescedCommand = new RelayCommand(CompileCoalesced); // no conditions for this
             DecompileCoalescedCommand = new RelayCommand(DecompileCoalesced); // no conditions for this
+            InstallMEMFileCommand = new GenericCommand(InstallMEMFile, CanInstallMEMFile);
+        }
 
+        private bool CanInstallMEMFile()
+        {
+            return SelectedGameTarget != null && SelectedGameTarget.Game.IsLEGame() && !M3Utilities.IsGameRunning(SelectedGameTarget.Game);
         }
 
         private void DecompileCoalesced(object obj)
@@ -4220,6 +4226,16 @@ namespace ME3TweaksModManager
         {
             // Put other settings here as they are added.
             Settings.OneTimeMessage_ModListIsNotListOfInstalledMods = true;
+        }
+
+        private void InstallMEMFile()
+        {
+            TextureInstallerPanel tip = new TextureInstallerPanel();
+            tip.Close += (a, b) =>
+            {
+                ReleaseBusyControl();
+            };
+            ShowBusyControl(tip);
         }
     }
 }

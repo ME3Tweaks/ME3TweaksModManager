@@ -595,8 +595,14 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             return true;
         }
 
+        private bool IsInstallingMod;
+
         private void BeginInstallingMod()
         {
+            if (IsInstallingMod) // Prevents double calls to this method
+                return;
+            IsInstallingMod = true;
+
             // Set the 'SelectedOption' on groups to have UIIsSelected = true so the enumeration works
             // This makes sure at most one option is set - (MM7 backcompat from 8.0 means there might be a state
             // where one option is not chosen due to use of radioboxes with autos...)
@@ -671,6 +677,85 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             if (SelectedGameTarget != null)
             {
                 SetupOptions(true);
+                if (BatchMod != null /*&& !RecordBatchOptions*/ && BatchMod.HasChosenOptions && !BatchMod.ChosenOptionsDesync)
+                {
+                    // Install our option choices
+                    InstallBatchChosenOptions();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Installs batch mod options to the mod. If options are valid, the mod will immediately install
+        /// </summary>
+        /// <param name="chosenDefaultOptions">List of chosen options to set. If null we will make a list of the original selections (for backup and revert)</param>
+        private void InstallBatchChosenOptions(List<string> chosenDefaultOptions = null)
+        {
+            // 1. Store the original options
+            bool isReverting = chosenDefaultOptions != null;
+            if (chosenDefaultOptions == null)
+            {
+                chosenDefaultOptions ??= new List<string>();
+                foreach (var alt in AlternateGroups.SelectMany(x => x.AlternateOptions).Where(x => x.UIIsSelected))
+                {
+                    chosenDefaultOptions.Add(alt.OptionKey);
+                }
+            }
+
+            // 3. Set our selected options
+            foreach (var group in AlternateGroups) // For every group...
+            {
+                if (group.IsMultiSelector)
+                {
+                    // We only need to select one from multi
+                    var chosenOption = group.AlternateOptions.FirstOrDefault(option => BatchMod.ChosenOptions.Contains(option.OptionKey));
+                    if (chosenOption == null)
+                    {
+                        Debugger.Break();
+                    }
+                    group.SelectNewOption(chosenOption);
+                }
+                else
+                {
+                    // Single mode
+                    group.SelectedOption.UIIsSelected = BatchMod.ChosenOptions.Any(oKey => oKey == group.SelectedOption.OptionKey);
+                }
+            }
+
+            // 4. Validate
+            if (!isReverting)
+            {
+                bool valid = true;
+                foreach (var group in AlternateGroups) // For every group...
+                {
+                    if (group.IsMultiSelector)
+                    {
+                        valid &= group.AlternateOptions.Where(x => x.UIIsSelected).Count() == 1; // only one option can be selected
+                        if (BatchMod.Mod.ModDescTargetVersion >= 8)
+                        {
+                            valid &= !group.SelectedOption.UINotApplicable; // Chosen option must be applicable
+                        }
+                    }
+                    else
+                    {
+                        // ?
+                    }
+
+                    if (!valid)
+                        break;
+                }
+
+                if (!valid)
+                {
+                    // restore the originals
+                    M3Log.Error(@"Batch mod options are not valid, reverting");
+                    InstallBatchChosenOptions(chosenDefaultOptions);
+                }
+                else
+                {
+                    M3Log.Error(@"Batch mod options are valid, beginning install");
+                    BeginInstallingMod();
+                }
             }
         }
 

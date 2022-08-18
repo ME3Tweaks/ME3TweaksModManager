@@ -78,7 +78,7 @@ namespace ME3TweaksModManager.modmanager.objects
         /// <summary>
         /// If the user can select anything in the dropdown
         /// </summary>
-        public bool CanOpenDropdown => !RestoreController.RestoreInProgress && BackupStatus.BackedUp;
+        public bool CanOpenDropdown => RestoreController != null && !RestoreController.RestoreInProgress && BackupStatus.BackedUp;
 
         public string RestoreButtonText
         {
@@ -98,7 +98,7 @@ namespace ME3TweaksModManager.modmanager.objects
         public GameRestoreWrapper(MEGame game, IEnumerable<GameTargetWPF> availableTargets, MainWindow window)
         {
             this.window = window;
-            RestoreButtonCommand = new GenericCommand(BeginRestore, () => RestoreTarget != null);
+            RestoreButtonCommand = new GenericCommand(BeginRestore, () => RestoreTarget != null && RestoreController != null && !RestoreController.RestoreInProgress);
             BackupStatus = BackupService.GetBackupStatus(game);
             RestoreController = new GameRestore(game)
             {
