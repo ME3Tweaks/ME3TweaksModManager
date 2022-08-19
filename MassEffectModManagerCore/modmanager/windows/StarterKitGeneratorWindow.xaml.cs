@@ -101,11 +101,6 @@ namespace ME3TweaksModManager.modmanager.windows
         // Game 1
         // public bool AddBlank2DA { get; set; }
 
-        // ?? - For HenBagle
-        // public bool AddPlotManager { get; set; }
-
-
-
         // Game 3
         public bool AddSquadmateMerge3Garrus { get; set; }
         public bool AddSquadmateMerge3Liara { get; set; }

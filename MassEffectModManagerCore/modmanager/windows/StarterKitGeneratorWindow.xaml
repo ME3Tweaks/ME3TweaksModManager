@@ -104,6 +104,16 @@
     <xctk:BusyIndicator
         IsBusy="{Binding IsBusy}"
         BusyContent="{Binding BusyText}">
+        <xctk:BusyIndicator.ProgressBarStyle>
+            <!-- This makes it look like adonis and not standard wpf -->
+            <Style
+            TargetType="ProgressBar"
+            BasedOn="{StaticResource {x:Type ProgressBar}}">
+                <Setter Property="Height" Value="20"/>
+                <Setter Property="IsIndeterminate" Value="True"/>
+                <Setter Property="Margin" Value="4,4,4,4"/>
+            </Style>
+        </xctk:BusyIndicator.ProgressBarStyle>
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition

@@ -55,45 +55,65 @@ namespace ME3TweaksModManager.modmanager.starterkit
             CreateObjectReferencer(package);
             package.Save();
 
-            // Add it to coalesced so it gets used
-            var startupPackageProp = new CoalesceProperty("DLCStartupPackage", new CoalesceValue(Path.GetFileNameWithoutExtension(startupFName), CoalesceParseAction.AddUnique));
-            var configInfo = new CoalescedEntryInfo() { File = "BioEngine", Section = "Engine.StartupPackages", Property = startupPackageProp };
             if (game == MEGame.LE1)
             {
-                AddStartupCoalescedRefLE1(dlcFolderPath, startupFName);
+                // Add to autoload
+                AddAutoloadReferenceGame1(dlcFolderPath, @"Packages", @"GlobalPackage", Path.GetFileNameWithoutExtension(startupFName));
             }
-            else if (game.IsGame2())
+            else
             {
-                AddCoalescedEntryGame2(dlcName, cookedPath, configInfo);
-            }
-            else if (game.IsGame3())
-            {
-                AddCoalescedEntryGame3(dlcName, cookedPath, configInfo);
+                // Add it to coalesced so it gets used
+                AddCoalescedReference(game, dlcName, cookedPath, "BioEngine", "Engine.StartupPackages", "DLCStartupPackage", Path.GetFileNameWithoutExtension(startupFName), CoalesceParseAction.AddUnique);
             }
         }
 
 
         /// <summary>
-        /// Adds a LE1 coalcesed entry for a startup file. Startup files require at least Autoload v6
+        /// Adds an entry to Autoload.ini if it doesn't already exist
         /// </summary>
         /// <param name="dlcRootPath">The path of the DLC dir</param>
-        /// <param name="startupFName">The filename of the startup package</param>
-        private static void AddStartupCoalescedRefLE1(string dlcRootPath, string startupFName)
+        private static void AddAutoloadReferenceGame1(string dlcRootPath, string section, string key, string value, bool isIndexed = true)
         {
             // Load autoload
             var autoload = Path.Combine(dlcRootPath, "Autoload.ini");
             var ini = DuplicatingIni.LoadIni(autoload);
 
-            // Add globalpackage - may need adjusted if we generalize this code
-            var packageHeading = ini.GetSection("Packages");
-            packageHeading.SetSingleEntry("GlobalPackage1", Path.GetFileNameWithoutExtension(startupFName));
+            var packageHeading = ini.GetOrAddSection(section);
+            if (!isIndexed)
+            {
+                packageHeading.SetSingleEntry(key, value);
+            }
+            else
+            {
+                // Loop to find entry
+                int i = 0;
+                string indexedKey;
+                while (true)
+                {
+                    // Loop to find existing value or if not found just add it
+
+                    i++;
+                    indexedKey = $@"{key}{i}";
+                    var foundVal = packageHeading.GetValue(indexedKey);
+                    if (foundVal == null)
+                    {
+                        // Add it
+                        packageHeading.SetSingleEntry(indexedKey, value);
+                        break;
+                    }
+                    else
+                    {
+                        // Check it
+                        if (foundVal.Value == value)
+                            return; // Doesn't need added
+                    }
+
+                }
+            }
 
             // Reserialize
             File.WriteAllText(autoload, ini.ToString());
         }
-
-
-
         #endregion
 
         #region Squadmate Merge
@@ -289,47 +309,84 @@ namespace ME3TweaksModManager.modmanager.starterkit
             // Startup file
             var dlcName = Path.GetFileName(dlcFolderPath);
             var cookedPath = Path.Combine(dlcFolderPath, game.CookedDirName());
-            var startupFName = $"Startup{dlcName.Substring(3)}.pcc"; // "DLC|_"
-            var startupPackagePath = Path.Combine(cookedPath, startupFName);
-            if (!File.Exists(startupPackagePath))
-            {
-                // Generate startup file (it's required)
-                AddStartupFile(game, dlcFolderPath);
-            }
 
-            if (game.IsGame2())
-            {
-                // We need to add the conditionals
-                var plotManagerPackageName = AddConditionalsClass(startupPackagePath, dlcName);
-                AddCoalescedReference(game, dlcName, cookedPath, "BioEngine", "Engine.StartupPackages", "Package", plotManagerPackageName, CoalesceParseAction.AddUnique);
-
-                var bio2daPackageName = AddBio2DAGame2(game, dlcName, startupPackagePath);
-                AddCoalescedReference(game, dlcName, cookedPath, "BioEngine", "Engine.StartupPackages", "Package", bio2daPackageName, CoalesceParseAction.AddUnique);
-
-
-                // Must also add to biogame
-                AddCoalescedReference(game, dlcName, cookedPath, "BioGame", "SFXGame.BioWorldInfo", "ConditionalClasses", $"{plotManagerPackageName}.BioAutoConditionals", CoalesceParseAction.AddUnique);
-            }
-
-            // Generate the maps
-            var plotAutoPackageName = AddPlotManagerAuto(startupPackagePath, dlcName);
-
+            #region GAME 1
             if (game.IsGame1())
             {
-                // Add to the autoload?
+                // Plot Manager
+                var plotManName = $@"PlotManager{dlcName}";
+                var plotManF = Path.Combine(dlcFolderPath, game.CookedDirName(), $@"{plotManName}{game.PCPackageFileExtension()}");
+                if (File.Exists(plotManF))
+                {
+                    M3Log.Warning($@"PlotManager file {plotManF} already exists - not generating file or updating autoload");
+                }
+                else
+                {
+                    MEPackageHandler.CreateAndSavePackage(plotManF, game);
+                    // PlotManager needs added since it forces it into memory (in vanilla) for long enough to be referenced
+                    AddAutoloadReferenceGame1(dlcFolderPath, @"Packages", @"GlobalPackage", plotManName);
+                    AddAutoloadReferenceGame1(dlcFolderPath, @"Packages", @"PlotManagerConditionals", $"{AddConditionalsClass(plotManF, dlcName)}.BioAutoConditionals");
+                }
+
+                // Plot Manager Auto
+                var plotManAutoName = $@"PlotManagerAuto{dlcName}";
+                var plotManAutoF = Path.Combine(dlcFolderPath, game.CookedDirName(), $@"{plotManAutoName}{game.PCPackageFileExtension()}");
+                if (File.Exists(plotManAutoF))
+                {
+                    M3Log.Warning($@"PlotManager file {plotManF} already exists - not generating file or updating autoload");
+                }
+                else
+                {
+                    MEPackageHandler.CreateAndSavePackage(plotManAutoF, game);
+                    AddPlotManagerAuto(plotManAutoF, dlcName);
+                    AddAutoloadReferenceGame1(dlcFolderPath, @"Packages", @"PlotManagerStateTransitionMap", $"{plotManAutoName}.StateTransitionMap");
+                    AddAutoloadReferenceGame1(dlcFolderPath, @"Packages", @"PlotManagerConsequenceMap", $"{plotManAutoName}.ConsequenceMap");
+                    AddAutoloadReferenceGame1(dlcFolderPath, @"Packages", @"PlotManagerOutcomeMap", $"{plotManAutoName}.OutcomeMap");
+                    AddAutoloadReferenceGame1(dlcFolderPath, @"Packages", @"PlotManagerQuestMap", $"{plotManAutoName}.QuestMap");
+                    AddAutoloadReferenceGame1(dlcFolderPath, @"Packages", @"PlotManagerCodexMap", $"{plotManAutoName}.DataCodexMap");
+                }
             }
-            else
+            #endregion
+
+            #region GAME 2 and GAME 3
+            if (game.IsGame2() || game.IsGame3())
             {
+                var startupFName = $"Startup{dlcName.Substring(3)}.pcc"; // "DLC|_"
+                var startupPackagePath = Path.Combine(cookedPath, startupFName);
+                if (!File.Exists(startupPackagePath))
+                {
+                    // Generate startup file (it's required)
+                    AddStartupFile(game, dlcFolderPath);
+                }
+
+                if (game.IsGame2())
+                {
+                    // We need to add the conditionals
+                    var plotManagerPackageName = AddConditionalsClass(startupPackagePath, dlcName);
+                    AddCoalescedReference(game, dlcName, cookedPath, "BioEngine", "Engine.StartupPackages", "Package", plotManagerPackageName, CoalesceParseAction.AddUnique);
+
+                    var bio2daPackageName = AddBio2DAGame2(game, dlcName, startupPackagePath);
+                    AddCoalescedReference(game, dlcName, cookedPath, "BioEngine", "Engine.StartupPackages", "Package", bio2daPackageName, CoalesceParseAction.AddUnique);
+
+
+                    // Must also add to biogame
+                    AddCoalescedReference(game, dlcName, cookedPath, "BioGame", "SFXGame.BioWorldInfo", "ConditionalClasses", $"{plotManagerPackageName}.BioAutoConditionals", CoalesceParseAction.AddUnique);
+                }
+
+                // Generate the maps
+                var plotAutoPackageName = AddPlotManagerAuto(startupPackagePath, dlcName);
+
                 // Add to Coalesced
                 AddCoalescedReference(game, dlcName, cookedPath, "BioEngine", "Engine.StartupPackages", "Package", plotAutoPackageName, CoalesceParseAction.AddUnique);
-            }
 
-            if (game.IsGame3())
-            {
-                // Conditionals file
-                CNDFile c = new CNDFile();
-                c.ToFile(Path.Combine(dlcFolderPath, game.CookedDirName(), $@"Conditionals_{Path.GetFileName(dlcFolderPath)}.cnd"));
+                if (game.IsGame3())
+                {
+                    // Conditionals file
+                    CNDFile c = new CNDFile();
+                    c.ToFile(Path.Combine(dlcFolderPath, game.CookedDirName(), $@"Conditionals_{Path.GetFileName(dlcFolderPath)}.cnd"));
+                }
             }
+            #endregion
         }
 
         private static string AddBio2DAGame2(MEGame game, string dlcName, string startupPackagePath)
@@ -387,7 +444,7 @@ namespace ME3TweaksModManager.modmanager.starterkit
 
 
         /// <summary>
-        /// Adds BioAutoConditionals
+        /// Adds BioAutoConditionals class
         /// </summary>
         /// <param name="startupPackagePath"></param>
         /// <param name="dlcName"></param>
@@ -396,17 +453,33 @@ namespace ME3TweaksModManager.modmanager.starterkit
         {
             using var startupFile = MEPackageHandler.OpenMEPackage(startupPackagePath);
             var sfPlotExportName = $@"PlotManager{dlcName}";
-            var sfPlotExport = startupFile.FindExport(sfPlotExportName);
-            if (sfPlotExport == null)
+
+            ExportEntry sfPlotExport = null;
+            if (!startupFile.Game.IsGame1())
             {
-                // Create the export
-                sfPlotExport = ExportCreator.CreatePackageExport(startupFile, sfPlotExportName);
+                // Game 1 uses package root
+                sfPlotExport = startupFile.FindExport(sfPlotExportName);
+                if (sfPlotExport == null)
+                {
+                    // Create the export
+                    sfPlotExport = ExportCreator.CreatePackageExport(startupFile, sfPlotExportName);
+                }
             }
 
             var lib = new FileLib(startupFile);
             lib.Initialize();
             var scriptText = @"Class BioAutoConditionals extends BioConditionals; public function bool FTemplateFunction(BioWorldInfo bioWorld, int Argument){ local BioGlobalVariableTable gv; gv = bioWorld.GetGlobalVariables(); return TRUE; } defaultproperties { }";
             UnrealScriptCompiler.CompileClass(startupFile, scriptText, lib, parent: sfPlotExport);
+
+            if (startupFile.Game.IsGame1())
+            {
+                // Remove forcedexport flag on class and defaults
+                var classExp = startupFile.FindExport("BioAutoConditionals");
+                classExp.ExportFlags &= ~UnrealFlags.EExportFlags.ForcedExport;
+
+                classExp = startupFile.FindExport("Default__BioAutoConditionals");
+                classExp.ExportFlags &= ~UnrealFlags.EExportFlags.ForcedExport;
+            }
 
             if (startupFile.IsModified)
                 startupFile.Save();
@@ -422,51 +495,77 @@ namespace ME3TweaksModManager.modmanager.starterkit
         /// <returns>'PlotManagerAuto[DLCName]' for adding to startup packages</returns>
         private static string AddPlotManagerAuto(string startupPackagePath, string dlcName)
         {
-            using var startupFile = MEPackageHandler.OpenMEPackage(startupPackagePath);
-            var sfPlotExportName = $@"PlotManagerAuto{dlcName}";
-            var sfPlotExport = startupFile.FindExport(sfPlotExportName);
-            if (sfPlotExport == null)
+            using var packageFile = MEPackageHandler.OpenMEPackage(startupPackagePath);
+            CreateObjectReferencer(packageFile); // Ensures there is an object referencer available for use
+            ExportEntry sfPlotExport = null;
+            if (!packageFile.Game.IsGame1())
             {
-                // Create the export
-                sfPlotExport = ExportCreator.CreatePackageExport(startupFile, sfPlotExportName);
+                // In game 1 we use non-forced export and just make it a package file instead. At least thats how ME1 did it and Pinnacle Station for LE1
+                var sfPlotExportName = $@"PlotManagerAuto{dlcName}";
+                sfPlotExport = packageFile.FindExport(sfPlotExportName);
+                if (sfPlotExport == null)
+                {
+                    // Create the export
+                    sfPlotExport = ExportCreator.CreatePackageExport(packageFile, sfPlotExportName);
+                }
             }
-
             // Generate the map exports
-            AddToObjectReferencer(GeneratePlotManagerAutoExport(sfPlotExport, "DataCodexMap", "BioCodexMap", 2));
-            AddToObjectReferencer(GeneratePlotManagerAutoExport(sfPlotExport, "ConsequenceMap", "BioConsequenceMap", 1));
-            AddToObjectReferencer(GeneratePlotManagerAutoExport(sfPlotExport, "OutcomeMap", "BioOutcomeMap", 1));
-            AddToObjectReferencer(GeneratePlotManagerAutoExport(sfPlotExport, "QuestMap", "BioQuestMap", 4)); // Journal
-            AddToObjectReferencer(GeneratePlotManagerAutoExport(sfPlotExport, "StateTransitionMap", "BioStateEventMap", 1));
-            startupFile.Save();
+            AddToObjectReferencer(GeneratePlotManagerAutoExport(packageFile, sfPlotExport, "DataCodexMap", "BioCodexMap", 2));
+            var consequenceMapClass = packageFile.Game.IsGame1() ? "BioStateEventMap" : "BioConsequenceMap";
+            AddToObjectReferencer(GeneratePlotManagerAutoExport(packageFile, sfPlotExport, "ConsequenceMap", consequenceMapClass, 1));
+            AddToObjectReferencer(GeneratePlotManagerAutoExport(packageFile, sfPlotExport, "OutcomeMap", "BioOutcomeMap", 1));
+            AddToObjectReferencer(GeneratePlotManagerAutoExport(packageFile, sfPlotExport, "QuestMap", "BioQuestMap", 4)); // Journal
+            AddToObjectReferencer(GeneratePlotManagerAutoExport(packageFile, sfPlotExport, "StateTransitionMap", "BioStateEventMap", 1));
+            packageFile.Save();
 
-            return sfPlotExportName;
+            return sfPlotExport?.ObjectName.Name ?? Path.GetFileNameWithoutExtension(startupPackagePath);
         }
 
 
         /// <summary>
         /// Generates one of the plot manager auto exports
         /// </summary>
-        /// <param name="parent">The plot manager auto package export</param>
+        /// <param name="parent">The plot manager auto package export or null if at root (Game 1)</param>
         /// <param name="objectName">The name of the export</param>
         /// <param name="className">Name of class of export to generate</param>
         /// <param name="numZerosBinary">Number of 4 byte 0s to add as binary data (for empty binary)</param>
         /// <returns>The generated export</returns>
-        private static ExportEntry GeneratePlotManagerAutoExport(ExportEntry parent, string objectName, string className, int numZerosBinary)
+        private static ExportEntry GeneratePlotManagerAutoExport(IMEPackage package, ExportEntry parent, string objectName, string className, int numZerosBinary)
         {
             // Test if exists first - do not overwrite
-            var fulltest = $@"{parent.InstancedFullPath}.{objectName}";
-            var exp = parent.FileRef.FindExport(fulltest);
+            string fulltest;
+            if (parent == null)
+            {
+                fulltest = objectName;
+            }
+            else
+            {
+                fulltest = $@"{parent.InstancedFullPath}.{objectName}";
+            }
+
+            var exp = package.FindExport(fulltest);
             if (exp != null)
                 return exp; // Return existing
 
+
             // Generate it 
             var rop = new RelinkerOptionsPackage { ImportExportDependencies = true };
-            exp = new ExportEntry(parent.FileRef, parent, objectName)
-            { Class = EntryImporter.EnsureClassIsInFile(parent.FileRef, className, rop) };
+            exp = new ExportEntry(package, parent, objectName)
+            { Class = EntryImporter.EnsureClassIsInFile(package, className, rop) };
             exp.ObjectFlags |= UnrealFlags.EObjectFlags.Public | UnrealFlags.EObjectFlags.LoadForClient | UnrealFlags.EObjectFlags.LoadForServer | UnrealFlags.EObjectFlags.Standalone;
-            exp.ExportFlags |= UnrealFlags.EExportFlags.ForcedExport;
+
+            if (package.Game.IsGame1())
+            {
+                // Do not set as forced export
+                exp.ExportFlags &= ~UnrealFlags.EExportFlags.ForcedExport;
+            }
+            else
+            {
+                exp.ExportFlags |= UnrealFlags.EExportFlags.ForcedExport;
+            }
+
             exp.WriteBinary(new byte[4 * numZerosBinary]); // Blank data
-            parent.FileRef.AddExport(exp);
+            package.AddExport(exp);
             return exp;
         }
         #endregion
