@@ -96,6 +96,7 @@ namespace ME3TweaksModManager.modmanager.windows
         #region FEATURE FLAGS
         // LE1, Game 2, Game 3
         public bool AddStartupFile { get; set; }
+        public bool AddPlotManagerData { get; set; }
 
         // Game 1
         // public bool AddBlank2DA { get; set; }
@@ -428,6 +429,7 @@ namespace ME3TweaksModManager.modmanager.windows
 
                 // FEATURES MAP
                 AddStartupFile = AddStartupFile,
+                AddPlotManagerData = AddPlotManagerData,
                 AddAshleySQM = AddSquadmateMerge3Ashley,
                 AddGarrusSQM = AddSquadmateMerge3Garrus,
                 AddJamesSQM = AddSquadmateMerge3James,
@@ -450,7 +452,8 @@ namespace ME3TweaksModManager.modmanager.windows
             {
                 if (x.Exception != null)
                 {
-                    M3L.ShowDialog(this, "Error generating mod", x.Exception.Message, MessageBoxButton.OK, MessageBoxImage.Error);
+                    M3L.ShowDialog(this, x.Exception.Message, "Error generating mod", MessageBoxButton.OK, MessageBoxImage.Error);
+                    IsBusy = false;
                 }
             });
         }
@@ -698,7 +701,13 @@ namespace ME3TweaksModManager.modmanager.windows
             // ADDINS
             if (skOption.AddStartupFile)
             {
+                UITextCallback?.Invoke($@"{M3L.GetString(M3L.string_generatingMod)} - Startup file");
                 StarterKitAddins.AddStartupFile(skOption.ModGame, contentDirectory);
+            }
+            if (skOption.AddPlotManagerData)
+            {
+                UITextCallback?.Invoke($@"{M3L.GetString(M3L.string_generatingMod)} - PlotManager data");
+                StarterKitAddins.GeneratePlotData(skOption.ModGame, contentDirectory);
             }
 
             // Generator needs to accept multiple outfit dictionaries
@@ -811,6 +820,7 @@ namespace ME3TweaksModManager.modmanager.windows
             /// If a startup file should be added after the mod has been generated
             /// </summary>
             public bool AddStartupFile { get; set; }
+            public bool AddPlotManagerData { get; set; }
             public bool AddAshleySQM { get; set; }
             public bool AddGarrusSQM { get; set; }
             public bool AddLiaraSQM { get; set; }
@@ -888,6 +898,7 @@ namespace ME3TweaksModManager.modmanager.windows
         {
             // CLEAR ALL THE FLAGS
             AddStartupFile = false;
+            AddPlotManagerData = false;
             AddSquadmateMerge3Ashley = false;
             AddSquadmateMerge3EDI = false;
             AddSquadmateMerge3Garrus = false;
@@ -907,6 +918,7 @@ namespace ME3TweaksModManager.modmanager.windows
             ModInternalTLKID = 12345;
             ModDLCFolderName = @"DebugMod";
             ModDescription = @"Debug Description for mod";
+            ModDLCModuleNumber = 12345;
 #endif
         }
     }
