@@ -10,6 +10,7 @@ using LegendaryExplorerCore.Unreal.Classes;
 using LegendaryExplorerCore.UnrealScript;
 using Microsoft.WindowsAPICodePack.NativeAPI.Consts;
 using Newtonsoft.Json;
+using static LegendaryExplorerCore.Unreal.CNDFile;
 
 namespace ME3TweaksModManager.modmanager.starterkit
 {
@@ -383,6 +384,7 @@ namespace ME3TweaksModManager.modmanager.starterkit
                 {
                     // Conditionals file
                     CNDFile c = new CNDFile();
+                    c.ConditionalEntries = new List<ConditionalEntry>();
                     c.ToFile(Path.Combine(dlcFolderPath, game.CookedDirName(), $@"Conditionals_{Path.GetFileName(dlcFolderPath)}.cnd"));
                 }
             }
