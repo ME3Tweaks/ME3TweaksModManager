@@ -622,7 +622,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             // Makes sure this is done from the InstallationJobs header so it's in MODDESC order and not UI order
             // This means the UI should change the selection states of alternates
             var optionsMap = new Dictionary<ModJob.JobHeader, List<AlternateOption>>();
-
             M3Log.Information(@"Building list of alternates to pass to mod installer - they will apply in order", Settings.LogModInstallation);
             foreach (var job in ModBeingInstalled.InstallationJobs)
             {
@@ -648,7 +647,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 CompressInstalledPackages = CompressInstalledPackages,
                 InstallTarget = SelectedGameTarget,
                 ModBeingInstalled = ModBeingInstalled,
-                SelectedOptions = optionsMap
+                SelectedOptions = optionsMap,
+                SetME1ReadOnlyConfigFiles = AlternateGroups.SelectMany(x => x.AlternateOptions).OfType<ReadOnlyOption>().Any(x=>x.UIIsSelected) // ME1 Read only option
             };
 
             // Save batch options
