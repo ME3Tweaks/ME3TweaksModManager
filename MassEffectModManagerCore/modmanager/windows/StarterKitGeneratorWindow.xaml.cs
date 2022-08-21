@@ -28,6 +28,7 @@ using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.loaders;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.mod;
+using ME3TweaksModManager.modmanager.objects.starterkit;
 using ME3TweaksModManager.modmanager.squadmates;
 using ME3TweaksModManager.modmanager.starterkit;
 using ME3TweaksModManager.ui;
@@ -99,7 +100,7 @@ namespace ME3TweaksModManager.modmanager.windows
         public bool AddPlotManagerData { get; set; }
 
         // Game 1
-        // public bool AddBlank2DA { get; set; }
+        public ObservableCollectionExtended<Bio2DAOption> Selected2DAs { get; } = new();
 
         // Game 3
         public bool AddSquadmateMerge3Garrus { get; set; }
@@ -110,7 +111,6 @@ namespace ME3TweaksModManager.modmanager.windows
         public bool AddSquadmateMerge3Ashley { get; set; }
         public bool AddSquadmateMerge3Kaidan { get; set; }
         public bool AddSquadmateMerge3Tali { get; set; }
-
 
         #endregion
 
@@ -329,14 +329,28 @@ namespace ME3TweaksModManager.modmanager.windows
                 return RuleResult.Valid();
             });
             Validator.AddRequiredRule(() => ModInternalName, M3L.GetString(M3L.string_internalModNameCannotBeEmpty));
-
             #endregion        
         }
 
         public ICommand GenerateStarterKitCommand { get; set; }
+        public ICommand Select2DAsCommand { get; set; }
         private void LoadCommands()
         {
             GenerateStarterKitCommand = new GenericCommand(PrecheckStarterKitValues, ValidateInput);
+            Select2DAsCommand = new GenericCommand(Select2DAs, CanSelect2DAs);
+        }
+
+        private void Select2DAs()
+        {
+            var selector = new Bio2DAGeneratorSelector(Game);
+            selector.SetSelectedOptions(Selected2DAs.ToList());
+            selector.ShowDialog();
+            Selected2DAs.ReplaceAll(selector.GetSelected2DAs());
+        }
+
+        private bool CanSelect2DAs()
+        {
+            return true;
         }
 
         private void PrecheckStarterKitValues()
@@ -425,6 +439,7 @@ namespace ME3TweaksModManager.modmanager.windows
                 // FEATURES MAP
                 AddStartupFile = AddStartupFile,
                 AddPlotManagerData = AddPlotManagerData,
+                Blank2DAsToGenerate = Selected2DAs.ToList(),
                 AddAshleySQM = AddSquadmateMerge3Ashley,
                 AddGarrusSQM = AddSquadmateMerge3Garrus,
                 AddJamesSQM = AddSquadmateMerge3James,
@@ -705,6 +720,12 @@ namespace ME3TweaksModManager.modmanager.windows
                 StarterKitAddins.GeneratePlotData(skOption.ModGame, contentDirectory);
             }
 
+            if (skOption.Blank2DAsToGenerate.Any())
+            {
+                UITextCallback?.Invoke($@"{M3L.GetString(M3L.string_generatingMod)} - 2DAs");
+                StarterKitAddins.GenerateBlank2DAs(skOption.ModGame, contentDirectory, skOption.Blank2DAsToGenerate);
+            }
+
             // Generator needs to accept multiple outfit dictionaries
             var outfits = new List<Dictionary<string, object>>();
             string errorMessage = null;
@@ -816,6 +837,7 @@ namespace ME3TweaksModManager.modmanager.windows
             /// </summary>
             public bool AddStartupFile { get; set; }
             public bool AddPlotManagerData { get; set; }
+            public List<Bio2DAOption> Blank2DAsToGenerate { get; set; } = new();
             public bool AddAshleySQM { get; set; }
             public bool AddGarrusSQM { get; set; }
             public bool AddLiaraSQM { get; set; }
@@ -894,6 +916,7 @@ namespace ME3TweaksModManager.modmanager.windows
             // CLEAR ALL THE FLAGS
             AddStartupFile = false;
             AddPlotManagerData = false;
+            Selected2DAs.Clear();
             AddSquadmateMerge3Ashley = false;
             AddSquadmateMerge3EDI = false;
             AddSquadmateMerge3Garrus = false;

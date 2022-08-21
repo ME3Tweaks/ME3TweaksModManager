@@ -8,8 +8,10 @@ using LegendaryExplorerCore.Textures;
 using LegendaryExplorerCore.Unreal;
 using LegendaryExplorerCore.Unreal.Classes;
 using LegendaryExplorerCore.UnrealScript;
+using ME3TweaksModManager.modmanager.objects.starterkit;
 using Microsoft.WindowsAPICodePack.NativeAPI.Consts;
 using Newtonsoft.Json;
+using Pathoschild.FluentNexus.Models;
 using static LegendaryExplorerCore.Unreal.CNDFile;
 
 namespace ME3TweaksModManager.modmanager.starterkit
@@ -573,7 +575,51 @@ namespace ME3TweaksModManager.modmanager.starterkit
         #endregion
 
         #region 2DA
+        internal static void GenerateBlank2DAs(MEGame game, string dlcFolderPath, List<Bio2DAOption> blank2DAsToGenerate)
+        {
+            var dlcName = Path.GetFileName(dlcFolderPath);
+            var bPath = BackupService.GetGameBackupPath(game);
+            string cookedPath = null;
+            if (bPath != null)
+            {
+                cookedPath = MEDirectories.GetCookedPath(game, bPath);
+                if (!Directory.Exists(cookedPath))
+                {
+                    M3Log.Error($@"Backup directory doesn't exist, can't generate 2DAs: {cookedPath}");
+                    return;
+                }
+            }
+            else
+            {
+                M3Log.Error($@"Backup directory doesn't exist, can't generate 2DAs: {bPath}");
+                return;
+            }
 
+            foreach (var twoDARef in blank2DAsToGenerate)
+            {
+                // Open the source package, table only
+                M3Log.Information($@"Generating blank 2DA for {twoDARef.TemplateTable.EntryPath} from {Path.GetFileName(twoDARef.TemplateTable.FilePath)}");
+                var sourcePackage = MEPackageHandler.UnsafePartialLoad(twoDARef.TemplateTable.FilePath, x => x.UIndex == twoDARef.TemplateTable.EntryUIndex);
+                var sourceTable = sourcePackage.GetUExport(twoDARef.TemplateTable.EntryUIndex);
+
+                var sourceTableName = sourceTable.ObjectName;
+                var sourceTablePackage = sourceTable.Parent.ObjectName.Name;
+                // Todo: Figure out how to choose which name to use as destination path
+                // Maybe BIOG_2DA_|DLC_NAME_|Remainder ?
+                // The actual 
+
+                var newPackageName = $@"BIOG_2DA_{dlcName}_{sourceTablePackage.Substring(9)}";
+                var newPackagePath = Path.Combine(dlcFolderPath, game.CookedDirName(), $@"{newPackageName}{game.PCPackageFileExtension()}");
+                if (!File.Exists(newPackagePath))
+                {
+                    MEPackageHandler.CreateAndSavePackage(newPackagePath, game);
+                }
+
+                twoDARef.GenerateBlank2DA(sourceTable, newPackagePath);
+                AddAutoloadReferenceGame1(dlcFolderPath, @"Packages", @"2DA", newPackageName);
+            }
+
+        }
         #endregion
 
         #region Utility 
@@ -700,6 +746,7 @@ namespace ME3TweaksModManager.modmanager.starterkit
             referencer.WriteProperty(refs);
             return true;
         }
+
 
         #endregion
     }
