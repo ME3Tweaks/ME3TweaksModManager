@@ -195,6 +195,12 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     }
 
                     var talkFile = package.LocalTalkFiles.FirstOrDefault(x => x.UIndex == exp.UIndex);
+                    if (talkFile == null)
+                    {
+                        // It was not loaded with the package due to default load settings
+                        talkFile = new ME1TalkFile(exp);
+                    }
+
                     var strRefs = talkFile.StringRefs.ToList();
                     int numDone = 0;
                     foreach (var node in stringNodes)
