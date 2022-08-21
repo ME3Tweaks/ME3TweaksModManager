@@ -148,7 +148,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             return false;
         }
 
-        private bool ManifestASIIsSelected() => SelectedASIObject is ASIMod || SelectedASIObject is KnownInstalledASIMod;
+        private bool ManifestASIIsSelected() => SelectedASIObject is ASIMod || SelectedASIObject is IKnownInstalledASIMod;
 
         private void RefreshASIStates(MEGame gameToRefresh = MEGame.Unknown)
         {
