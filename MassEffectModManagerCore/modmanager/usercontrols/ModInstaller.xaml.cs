@@ -930,12 +930,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 Exception parallelException = null;
                 Parallel.ForEach(mergeFiles, new ParallelOptions() { MaxDegreeOfParallelism = Math.Clamp(Environment.ProcessorCount, 1, 4) }, tlkFileMap =>
                 {
-                    if (parallelException == null)
+                    if (parallelException != null)
                         return;
 
                     for (int i = 0; i < tlkFileMap.Value.Count; i++)
                     {
-                        if (parallelException != null)
+                        if (parallelException == null)
                         {
                             try
                             {
