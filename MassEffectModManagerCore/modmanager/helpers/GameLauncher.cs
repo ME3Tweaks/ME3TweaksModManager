@@ -19,7 +19,7 @@ namespace ME3TweaksModManager.modmanager.helpers
         /// Launches the game. This call is blocking as it may wait for Steam to run, so it should be run on a background thread.
         /// </summary>
         /// <param name="target"></param>
-        public static void LaunchGame(GameTargetWPF target)
+        public static void LaunchGame(GameTargetWPF target, string presuppliedArguments = null)
         {
             target.ReloadGameTarget(false);
 
@@ -89,7 +89,7 @@ namespace ME3TweaksModManager.modmanager.helpers
                 }
                 else if (target.GameSource.Contains(@"Origin") && target.RegistryActive && target.Game < MEGame.ME3 && Settings.LaunchGamesThroughOrigin) // Must be registry active or origin will run the wrong game.
                 {
-                    // ME2 seems to have lots of problems directly running due to it's licensing system
+                    // ME2 seems to have lots of problems directly running due to its licensing system
                     // We should try to run it through Origin to avoid this problem
 
                     var parFile = Path.Combine(exeDir, Path.GetFileNameWithoutExtension(exe) + @".par");
@@ -112,7 +112,7 @@ namespace ME3TweaksModManager.modmanager.helpers
                 }
             }
 
-            if (Settings.SkipLELauncher && target.Game.IsLEGame() && !MUtilities.IsGameRunning(MEGame.LELauncher))
+            if (presuppliedArguments == null && Settings.SkipLELauncher && target.Game.IsLEGame() && !MUtilities.IsGameRunning(MEGame.LELauncher))
             {
                 var launcherPath = Path.Combine(target.TargetPath, @"..", @"Launcher");
                 var launcherTarget = new GameTargetWPF(MEGame.LELauncher, launcherPath, false);
@@ -128,12 +128,19 @@ namespace ME3TweaksModManager.modmanager.helpers
             }
 
 #if DEBUG
-            if (target.Game.IsLEGame() && !target.Supported)
+            if (presuppliedArguments == null && target.Game.IsLEGame() && !target.Supported)
             {
                 commandLineArgs.Add(@"-NoHomeDir");
             }
 #endif
-            M3Utilities.RunProcess(exe, commandLineArgs, false, true, false, false, environmentVars);
+            if (presuppliedArguments != null)
+            {
+                M3Utilities.RunProcess(exe, presuppliedArguments, false, true, false, false, environmentVars);
+            }
+            else
+            {
+                M3Utilities.RunProcess(exe, commandLineArgs, false, true, false, false, environmentVars);
+            }
             Thread.Sleep(3500); // Keep task alive for a bit
         }
 

@@ -20,17 +20,11 @@
         <ResourceDictionary Source="pack://application:,,,/AdonisUI.ClassicTheme;component/DefaultStyles/DataGrid.xaml"/>
         <ResourceDictionary Source="pack://application:,,,/AdonisUI.ClassicTheme;component/DefaultStyles/DatePicker.xaml"/>
         <ResourceDictionary Source="pack://application:,,,/AdonisUI.ClassicTheme;component/DefaultStyles/Expander.xaml"/>
-        <!-- ME3Tweaks 06/09/2022 -->
-        <ResourceDictionary Source="pack://application:,,,/AdonisUI.ClassicTheme;component/DefaultStyles/StretchyExpander.xaml"/>
-        <!-- End ME3Tweaks -->
         <ResourceDictionary Source="pack://application:,,,/AdonisUI.ClassicTheme;component/DefaultStyles/GridSplitter.xaml"/>
         <ResourceDictionary Source="pack://application:,,,/AdonisUI.ClassicTheme;component/DefaultStyles/GroupBox.xaml"/>
         <ResourceDictionary Source="pack://application:,,,/AdonisUI.ClassicTheme;component/DefaultStyles/Hyperlink.xaml"/>
         <ResourceDictionary Source="pack://application:,,,/AdonisUI.ClassicTheme;component/DefaultStyles/Label.xaml"/>
         <ResourceDictionary Source="pack://application:,,,/AdonisUI.ClassicTheme;component/DefaultStyles/ListBox.xaml"/>
-        <!-- ME3Tweaks -->
-        <ResourceDictionary Source="pack://application:,,,/AdonisUI.ClassicTheme;component/DefaultStyles/ListBoxWithoutRippleStyle.xaml"/>
-        <!-- End ME3Tweaks -->
         <ResourceDictionary Source="pack://application:,,,/AdonisUI.ClassicTheme;component/DefaultStyles/ListView.xaml"/>
         <ResourceDictionary Source="pack://application:,,,/AdonisUI.ClassicTheme;component/DefaultStyles/Menu.xaml"/>
         <ResourceDictionary Source="pack://application:,,,/AdonisUI.ClassicTheme;component/DefaultStyles/MenuItem.xaml"/>
@@ -61,6 +55,11 @@
         <ResourceDictionary Source="pack://application:,,,/AdonisUI.ClassicTheme;component/NamedStyles/WindowButton.xaml"/>
         <ResourceDictionary Source="pack://application:,,,/AdonisUI.ClassicTheme;component/NamedStyles/WindowToggleButton.xaml" />
 
+        <!-- ME3Tweaks additions -->
+        <ResourceDictionary Source="pack://application:,,,/AdonisUI.ClassicTheme;component/DefaultStyles/StretchyExpander.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/AdonisUI.ClassicTheme;component/DefaultStyles/ListBoxWithoutRippleStyle.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/AdonisUI.ClassicTheme;component/NamedStyles/AccentSplitButton.xaml"/>
+        <!-- End ME3Tweaks -->
     </ResourceDictionary.MergedDictionaries>
 
 </ResourceDictionary>

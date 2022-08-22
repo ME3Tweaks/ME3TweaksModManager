@@ -34,5 +34,8 @@
     <Page Update="DefaultStyles\StretchyExpander.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
+    <Page Update="NamedStyles\AccentSplitButton.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
   </ItemGroup>
 </Project>

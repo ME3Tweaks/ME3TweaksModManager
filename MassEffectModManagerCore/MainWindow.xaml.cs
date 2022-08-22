@@ -59,6 +59,7 @@ using ME3TweaksModManager.modmanager.objects.installer;
 using ME3TweaksModManager.modmanager.objects.mod.merge;
 using ME3TweaksModManager.modmanager.objects.tlk;
 using ME3TweaksModManager.modmanager.squadmates;
+using ME3TweaksModManager.modmanager.telemetry;
 using ME3TweaksModManager.modmanager.usercontrols;
 using ME3TweaksModManager.modmanager.windows;
 using ME3TweaksModManager.ui;
@@ -610,6 +611,7 @@ namespace ME3TweaksModManager
         public ICommand RunGameConfigToolCommand { get; set; }
         public ICommand Binkw32Command { get; set; }
         public ICommand StartGameCommand { get; set; }
+        public ICommand SelectLaunchOptionsCommand { get; set; }
         public ICommand ShowinstallationInformationCommand { get; set; }
         public ICommand BackupCommand { get; set; }
         public ICommand DeployModCommand { get; set; }
@@ -655,6 +657,7 @@ namespace ME3TweaksModManager
             RunGameConfigToolCommand = new RelayCommand(RunGameConfigTool, CanRunGameConfigTool);
             Binkw32Command = new RelayCommand(ToggleBinkw32, CanToggleBinkw32);
             StartGameCommand = new GenericCommand(StartGame, CanStartGame);
+            SelectLaunchOptionsCommand = new GenericCommand(ShowLaunchOptions, CanStartGame);
             ShowinstallationInformationCommand = new GenericCommand(ShowInstallInfo, CanShowInstallInfo);
             BackupCommand = new GenericCommand(ShowBackupPane, ContentCheckNotInProgress);
             RestoreCommand = new GenericCommand(ShowRestorePane, ContentCheckNotInProgress);
@@ -696,6 +699,11 @@ namespace ME3TweaksModManager
             CompileCoalescedCommand = new RelayCommand(CompileCoalesced); // no conditions for this
             DecompileCoalescedCommand = new RelayCommand(DecompileCoalesced); // no conditions for this
             InstallMEMFileCommand = new GenericCommand(InstallMEMFile, CanInstallMEMFile);
+        }
+
+        private void ShowLaunchOptions()
+        {
+            new LaunchParametersDialog(this, SelectedGameTarget, null).ShowDialog();
         }
 
         private bool CanInstallMEMFile()
@@ -1750,14 +1758,14 @@ namespace ME3TweaksModManager
             InternalStartGame(SelectedGameTarget);
         }
 
-        private void InternalStartGame(GameTargetWPF target)
+        internal void InternalStartGame(GameTargetWPF target, string customArguments = null)
         {
             var game = target.Game.ToGameName();
             BackgroundTask gameLaunch = BackgroundTaskEngine.SubmitBackgroundJob(@"GameLaunch", M3L.GetString(M3L.string_interp_launching, game), M3L.GetString(M3L.string_interp_launched, game));
 
             try
             {
-                Task.Run(() => GameLauncher.LaunchGame(target))
+                Task.Run(() => GameLauncher.LaunchGame(target, customArguments))
                     .ContinueWith(x =>
                     {
                         if (x.Exception != null)
@@ -1783,85 +1791,7 @@ namespace ME3TweaksModManager
                 M3Log.Error(@"Error launching game: " + e.Message);
             }
 
-            //Detect screen resolution - useful info for scene modders
-            string resolution = @"Could not detect";
-            var iniFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"BioWare");
-            try
-            {
-                switch (target.Game)
-                {
-                    case MEGame.ME1:
-                        {
-                            iniFile = Path.Combine(iniFile, @"Mass Effect", @"Config", @"BIOEngine.ini");
-                            if (File.Exists(iniFile))
-                            {
-                                var dini = DuplicatingIni.LoadIni(iniFile);
-                                var section = dini.Sections.FirstOrDefault(x => x.Header == @"WinDrv.WindowsClient");
-                                if (section != null)
-                                {
-                                    var resx = section.Entries.FirstOrDefault(x => x.Key == @"StartupResolutionX");
-                                    var resy = section.Entries.FirstOrDefault(x => x.Key == @"StartupResolutionY");
-                                    if (resx != null && resy != null)
-                                    {
-                                        resolution = $@"{resx.Value}x{resy.Value}";
-                                    }
-                                }
-                            }
-                        }
-                        break;
-                    case MEGame.ME2:
-                    case MEGame.ME3:
-                        {
-                            iniFile = Path.Combine(iniFile, @"Mass Effect " + target.Game.ToGameNum(), @"BIOGame", @"Config", @"Gamersettings.ini");
-                            if (File.Exists(iniFile))
-                            {
-                                var dini = DuplicatingIni.LoadIni(iniFile);
-                                var section = dini.Sections.FirstOrDefault(x => x.Header == @"SystemSettings");
-                                if (section != null)
-                                {
-                                    var resx = section.Entries.FirstOrDefault(x => x.Key == @"ResX");
-                                    var resy = section.Entries.FirstOrDefault(x => x.Key == @"ResY");
-                                    if (resx != null && resy != null)
-                                    {
-                                        resolution = $@"{resx.Value}x{resy.Value}";
-                                    }
-                                }
-                            }
-                        }
-                        break;
-                    case MEGame.LE1:
-                    case MEGame.LE2:
-                    case MEGame.LE3:
-                        {
-                            iniFile = Path.Combine(target.TargetPath, @"BioGame", @"Config", @"Gamersettings.ini");
-                            if (File.Exists(iniFile))
-                            {
-                                var dini = DuplicatingIni.LoadIni(iniFile);
-                                var section = dini.Sections.FirstOrDefault(x => x.Header == @"SystemSettings");
-                                if (section != null)
-                                {
-                                    var resx = section.Entries.FirstOrDefault(x => x.Key == @"ResX");
-                                    var resy = section.Entries.FirstOrDefault(x => x.Key == @"ResY");
-                                    if (resx != null && resy != null)
-                                    {
-                                        resolution = $@"{resx.Value}x{resy.Value}";
-                                    }
-                                }
-                            }
-                        }
-                        break;
-                }
-
-                TelemetryInterposer.TrackEvent(@"Launched game", new Dictionary<string, string>()
-                {
-                    {@"Game", game.ToString()},
-                    {@"Screen resolution", resolution}
-                });
-            }
-            catch (Exception e)
-            {
-                M3Log.Error(@"Error trying to detect screen resolution: " + e.Message);
-            }
+            M3Telemetry.SubmitScreenResolutionInfo(target);
         }
 
         /// <summary>
@@ -4236,6 +4166,11 @@ namespace ME3TweaksModManager
                 ReleaseBusyControl();
             };
             ShowBusyControl(tip);
+        }
+
+        private void OnWindowLostFocus(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine(@"Window has lost focus");
         }
     }
 }

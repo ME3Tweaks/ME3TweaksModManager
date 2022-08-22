@@ -11,6 +11,8 @@ namespace AdonisUI
     {
         public static ComponentResourceKey AccentButton => new ComponentResourceKey(typeof(Styles), "AccentButton");
 
+        public static ComponentResourceKey AccentSplitButton => new ComponentResourceKey(typeof(Styles), "AccentSplitButton");
+
         public static ComponentResourceKey ToolbarButton => new ComponentResourceKey(typeof(Styles), "ToolbarButton");
 
         public static ComponentResourceKey AccentToolbarButton => new ComponentResourceKey(typeof(Styles), "AccentToolbarButton");
@@ -20,7 +22,7 @@ namespace AdonisUI
         public static ComponentResourceKey DefaultToAccentToggleButton => new ComponentResourceKey(typeof(Styles), "DefaultToAccentToggleButton");
 
         public static ComponentResourceKey AccentComboBox => new ComponentResourceKey(typeof(Styles), "AccentComboBox");
-        
+
         public static ComponentResourceKey AccentComboBoxItem => new ComponentResourceKey(typeof(Styles), "AccentComboBoxItem");
 
         public static ComponentResourceKey WindowButton => new ComponentResourceKey(typeof(Styles), "WindowButton");
@@ -30,9 +32,9 @@ namespace AdonisUI
         public static ComponentResourceKey WindowToggleButton => new ComponentResourceKey(typeof(Styles), "WindowToggleButton");
 
         public static ComponentResourceKey RippleListBoxItem => new ComponentResourceKey(typeof(Styles), "RippleListBoxItem");
-        
+
         public static ComponentResourceKey SelectableTextBlockTextBox => new ComponentResourceKey(typeof(Styles), "SelectableTextBlockTextBox");
-        
+
         public static ComponentResourceKey ToggleSwitch => new ComponentResourceKey(typeof(Styles), "ToggleSwitch");
     }
 }
