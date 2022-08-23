@@ -1589,7 +1589,6 @@
                             BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}"
                             ToolTip="{DynamicResource string_tooltip_applyThisModToTheGame}" />
                         <controls:SplitButton
-                            MinWidth="70"
                             Content="{DynamicResource string_startGame}"
                             Command="{Binding StartGameCommand}"
                             Margin="5,0,0,0"

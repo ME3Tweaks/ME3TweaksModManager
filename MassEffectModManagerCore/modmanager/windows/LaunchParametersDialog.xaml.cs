@@ -3,20 +3,8 @@ using ME3TweaksCore.Misc;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.objects.launcher;
-using PropertyChanged;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace ME3TweaksModManager.modmanager.windows
 {
@@ -69,7 +57,7 @@ namespace ME3TweaksModManager.modmanager.windows
         {
             CustomOptions.Clear();
             LanguageOptions.Clear();
-            
+
             // Global options
             CustomOptions.Add(new LauncherCustomParameter() { DisplayString = "Automatically resume last save", CommandLineText = @"-RESUME" });
 
@@ -96,9 +84,36 @@ namespace ME3TweaksModManager.modmanager.windows
 
                     break;
                 case MEGame.LE2:
+                    LanguageOptions.Add(new LauncherLanguageOption { DisplayString = @"English", LanguageString = @"INT" });
+                    LanguageOptions.Add(new LauncherLanguageOption { DisplayString = @"French", LanguageString = @"FRA" });
+                    LanguageOptions.Add(new LauncherLanguageOption { DisplayString = @"French text, English voiceover", LanguageString = @"FRE" });
+                    LanguageOptions.Add(new LauncherLanguageOption { DisplayString = @"German", LanguageString = @"DEU" });
+                    LanguageOptions.Add(new LauncherLanguageOption { DisplayString = @"German text, English voiceover", LanguageString = @"DEE" });
+                    LanguageOptions.Add(new LauncherLanguageOption { DisplayString = @"Italian", LanguageString = @"ITA" });
+                    LanguageOptions.Add(new LauncherLanguageOption { DisplayString = @"Italian text, English voiceover", LanguageString = @"ITE" });
+                    LanguageOptions.Add(new LauncherLanguageOption { DisplayString = @"Spanish text, English voiceover", LanguageString = @"ESN" });
+                    LanguageOptions.Add(new LauncherLanguageOption { DisplayString = @"Japanese text, English voiceover", LanguageString = @"JPN" });
+                    LanguageOptions.Add(new LauncherLanguageOption { DisplayString = @"Polish", LanguageString = @"POL" });
+                    LanguageOptions.Add(new LauncherLanguageOption { DisplayString = @"Polish text, English voiceover", LanguageString = @"POE" });
+                    LanguageOptions.Add(new LauncherLanguageOption { DisplayString = @"Russian text, English voiceover", LanguageString = @"RUS" });
+
+                    // LE2 has no unofficial localizations.
                     break;
                 case MEGame.LE3:
+                    LanguageOptions.Add(new LauncherLanguageOption { DisplayString = @"English", LanguageString = @"INT" });
+                    LanguageOptions.Add(new LauncherLanguageOption { DisplayString = @"French", LanguageString = @"FRA" });
+                    LanguageOptions.Add(new LauncherLanguageOption { DisplayString = @"French text, English voiceover", LanguageString = @"FRE" });
+                    LanguageOptions.Add(new LauncherLanguageOption { DisplayString = @"German", LanguageString = @"DEU" });
+                    LanguageOptions.Add(new LauncherLanguageOption { DisplayString = @"German text, English voiceover", LanguageString = @"DEE" });
+                    LanguageOptions.Add(new LauncherLanguageOption { DisplayString = @"Italian", LanguageString = @"ITA" });
+                    LanguageOptions.Add(new LauncherLanguageOption { DisplayString = @"Italian text, English voiceover", LanguageString = @"ITE" });
+                    LanguageOptions.Add(new LauncherLanguageOption { DisplayString = @"Spanish text, English voiceover", LanguageString = @"ESN" });
+                    LanguageOptions.Add(new LauncherLanguageOption { DisplayString = @"Japanese text, English voiceover", LanguageString = @"JPN" });
+                    LanguageOptions.Add(new LauncherLanguageOption { DisplayString = @"Polish text, English voiceover", LanguageString = @"POL" });
+                    LanguageOptions.Add(new LauncherLanguageOption { DisplayString = @"Russian text, English voiceover", LanguageString = @"RUS" });
                     break;
+
+                    // LE3 has no unofficial localizations.
             }
         }
 
@@ -115,12 +130,21 @@ namespace ME3TweaksModManager.modmanager.windows
 
         public void LaunchGame()
         {
-            string args = $" -game {LaunchPackage.Game.ToMEMGameNum()} -autoterminate -NoHomeDir -OVERRIDELANGUAGE={LaunchPackage.ChosenLanguage} -Subtitles={LaunchPackage.SubtitleSize}";
-            
-            // Custom options
-            foreach(var v in CustomOptions.Where(x => x.IsSelected))
+            string args = $" -game {LaunchPackage.Game.ToMEMGameNum()} -autoterminate -NoHomeDir -Subtitles {LaunchPackage.SubtitleSize} ";
+
+            if (LaunchPackage.Game == MEGame.LE3)
             {
-                args += $" {v.CommandLineText}";
+                args += $@"-language={LaunchPackage.ChosenLanguage}";
+            }
+            else
+            {
+                args += $@"-OVERRIDELANGUAGE={LaunchPackage.ChosenLanguage}";
+            }
+
+            // Custom options
+            foreach (var v in CustomOptions.Where(x => x.IsSelected))
+            {
+                args += $@" {v.CommandLineText}";
             }
 
             mainWindow.InternalStartGame(SelectedGameTarget, args);

@@ -7,8 +7,10 @@
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         mc:Ignorable="d"
         xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:fa5="http://schemas.fontawesome.com/icons/"
+        xmlns:launcher="clr-namespace:ME3TweaksModManager.modmanager.objects.launcher"
         WindowStartupLocation="CenterOwner"
         SizeToContent="WidthAndHeight"
+        ResizeMode="NoResize"
         Title="Game Launch Parameters" Height="300" Width="400">
     <Window.Style>
         <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
@@ -19,7 +21,7 @@
                 <GroupBox Header="Game language">
                     <ItemsControl ItemsSource="{Binding LanguageOptions}">
                         <ItemsControl.ItemTemplate>
-                            <DataTemplate DataType="LauncherLanguageOption">
+                            <DataTemplate DataType="launcher:LauncherLanguageOption">
                                 <RadioButton GroupName="LangOption" Content="{Binding UIDisplayString}" Checked="LanguageButtonSelected"/>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
