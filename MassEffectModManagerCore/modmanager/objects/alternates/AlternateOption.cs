@@ -237,7 +237,10 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
             {
                 if (_optionKey != null) return _optionKey;
                 // Generate one one based on the name of the alternate.
-                var data = Encoding.Unicode.GetBytes(FriendlyName);
+                var keydata = FriendlyName;
+                // 08/24/2022: 8.0.1 beta 2: Add group name to better differentiate key.
+                if (!string.IsNullOrWhiteSpace(GroupName)) keydata += GroupName;
+                var data = Encoding.Unicode.GetBytes(keydata);
 
                 _optionKey = Convert.ToHexString(Crc32.Hash(data));
                 return _optionKey;
