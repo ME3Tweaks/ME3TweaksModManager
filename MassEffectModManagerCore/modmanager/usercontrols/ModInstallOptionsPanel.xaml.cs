@@ -753,7 +753,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 }
                 else
                 {
-                    M3Log.Error(@"Batch mod options are valid, beginning install");
+                    M3Log.Information(@"Batch mod options are valid, beginning install");
                     BeginInstallingMod();
                 }
             }
