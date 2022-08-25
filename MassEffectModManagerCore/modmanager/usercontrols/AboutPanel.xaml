@@ -83,20 +83,20 @@
 
                 <TextBlock Text="{DynamicResource string_translators}" Foreground="White" Margin="0,15,0,10" TextAlignment="Center" Grid.Row="6" Grid.ColumnSpan="3" FontWeight="Bold" FontSize="16" />
                 <TextBlock Foreground="White" Grid.Row="7" Grid.Column="0" TextWrapping="Wrap" Text="English" TextAlignment="Center" FontWeight="Bold" />
-                <TextBlock Foreground="White" Grid.Row="7" Grid.Column="1" TextWrapping="Wrap" Text="Russian" TextAlignment="Center" FontWeight="Bold" />
-                <TextBlock Foreground="White" Grid.Row="7" Grid.Column="2" TextWrapping="Wrap" Text="German" TextAlignment="Center" FontWeight="Bold" />
+                <TextBlock Foreground="White" Grid.Row="7" Grid.Column="1" TextWrapping="Wrap" Text="Russian" TextAlignment="Center" FontWeight="Bold"  Visibility="{Binding Converter={StaticResource LanguageSupportedVisibilityConverter}, ConverterParameter='rus'}"/>
+                <TextBlock Foreground="White" Grid.Row="7" Grid.Column="2" TextWrapping="Wrap" Text="German" TextAlignment="Center" FontWeight="Bold"  Visibility="{Binding Converter={StaticResource LanguageSupportedVisibilityConverter}, ConverterParameter='deu'}"/>
 
                 <TextBlock Foreground="White" Grid.Row="8" Grid.Column="0" TextWrapping="Wrap" Text="Mgamerz" TextAlignment="Center" />
-                <TextBlock Foreground="White" Grid.Row="8" Grid.Column="1" TextWrapping="Wrap" Text="ArcViolon" TextAlignment="Center" />
-                <TextBlock Foreground="White" Grid.Row="8" Grid.Column="2" TextWrapping="Wrap" Text="HarHarLinks" TextAlignment="Center" />
+                <TextBlock Foreground="White" Grid.Row="8" Grid.Column="1" TextWrapping="Wrap" Text="ArcViolon" TextAlignment="Center"  Visibility="{Binding Converter={StaticResource LanguageSupportedVisibilityConverter}, ConverterParameter='rus'}"/>
+                <TextBlock Foreground="White" Grid.Row="8" Grid.Column="2" TextWrapping="Wrap" Text="HarHarLinks" TextAlignment="Center"  Visibility="{Binding Converter={StaticResource LanguageSupportedVisibilityConverter}, ConverterParameter='deu'}"/>
 
-                <TextBlock Foreground="White" Grid.Row="9" Grid.Column="0" TextWrapping="Wrap" Text="Polish" TextAlignment="Center" FontWeight="Bold" Margin="0,5,0,0" />
-                <TextBlock Foreground="White" Grid.Row="9" Grid.Column="1" TextWrapping="Wrap" Text="Italian" TextAlignment="Center" FontWeight="Bold" Margin="0,5,0,0"/>
+                <TextBlock Foreground="White" Grid.Row="9" Grid.Column="0" TextWrapping="Wrap" Text="Polish" TextAlignment="Center" FontWeight="Bold" Margin="0,5,0,0"  Visibility="{Binding Converter={StaticResource LanguageSupportedVisibilityConverter}, ConverterParameter='pol'}"/>
+                <TextBlock Foreground="White" Grid.Row="9" Grid.Column="1" TextWrapping="Wrap" Text="Italian" TextAlignment="Center" FontWeight="Bold" Margin="0,5,0,0"  Visibility="{Binding Converter={StaticResource LanguageSupportedVisibilityConverter}, ConverterParameter='ita'}"/>
                 <!--<TextBlock Foreground="White" Grid.Row="9" Grid.Column="2" TextWrapping="Wrap" Text="Portuguese" TextAlignment="Center" FontWeight="Bold" Margin="0,5,0,0" />-->
 
-                <TextBlock Foreground="White" Grid.Row="10" Grid.Column="0" TextWrapping="Wrap" Text="circl3&#10;Sonashii&#10;ConfidenTi&#10;TheFellowJasper" TextAlignment="Center" />
-                <!--<TextBlock Foreground="White" Grid.Row="10" Grid.Column="2" TextWrapping="Wrap" Text="Shaka" TextAlignment="Center" />-->
-                <TextBlock Foreground="White" Grid.Row="10" Grid.Column="1" TextWrapping="Wrap" Text="Krozt&#10;Falcoman94" TextAlignment="Center" />
+                <TextBlock Foreground="White" Grid.Row="10" Grid.Column="0" TextWrapping="Wrap" Text="circl3&#10;Sonashii&#10;ConfidenTi&#10;TheFellowJasper" TextAlignment="Center"  Visibility="{Binding Converter={StaticResource LanguageSupportedVisibilityConverter}, ConverterParameter='pol'}"/>
+                <TextBlock Foreground="White" Grid.Row="10" Grid.Column="2" TextWrapping="Wrap" Text="Shaka" TextAlignment="Center" Visibility="{Binding Converter={StaticResource LanguageSupportedVisibilityConverter}, ConverterParameter='bra'}"/>
+                <TextBlock Foreground="White" Grid.Row="10" Grid.Column="1" TextWrapping="Wrap" Text="Krozt&#10;Falcoman94" TextAlignment="Center"  Visibility="{Binding Converter={StaticResource LanguageSupportedVisibilityConverter}, ConverterParameter='ita'}"/>
 
                 <TextBlock Text="Legendary Edition Bink Proxy" Foreground="White" Margin="0,15,0, 0" TextAlignment="Center" Grid.Row="11" Grid.ColumnSpan="3" FontWeight="Bold" FontSize="16" />
                 <TextBlock Text="By d00t" Foreground="White" TextAlignment="Center" Grid.Row="12" Grid.ColumnSpan="3" FontWeight="Bold"/>
