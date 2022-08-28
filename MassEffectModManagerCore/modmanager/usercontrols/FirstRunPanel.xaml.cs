@@ -30,7 +30,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public FirstRunPanel()
         {
             DataContext = this;
-            LibraryDir = M3Utilities.GetModsDirectory();
+            LibraryDir = M3LoadedMods.GetCurrentModLibraryDirectory();
             LoadCommands();
         }
 

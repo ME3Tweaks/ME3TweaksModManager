@@ -1097,7 +1097,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks
             ini[@"ModInfo"][@"compiledagainst"] = modmakerServerVer;
             ini[@"ModInfo"][@"modsite"] = @"https://me3tweaks.com/modmaker/mods/" + code;
 
-            var outputDir = modPathOverride ?? Path.Combine(M3Utilities.GetME3ModsDirectory(), M3Utilities.SanitizePath(modName));
+            var outputDir = modPathOverride ?? Path.Combine(M3LoadedMods.GetME3ModsDirectory(), M3Utilities.SanitizePath(modName));
             M3Log.Information(@"Generating new mod directory: " + outputDir, Settings.LogModMakerCompiler);
             if (Directory.Exists(outputDir))
             {

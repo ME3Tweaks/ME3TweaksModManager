@@ -133,7 +133,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             NamedBackgroundWorker nbw = new NamedBackgroundWorker(@"MixinManager CompileAsNewModThread");
             List<string> failedApplications = new List<string>();
             var modname = NewModName;
-            var modpath = Path.Combine(M3Utilities.GetME3ModsDirectory(), M3Utilities.SanitizePath(modname));
+            var modpath = Path.Combine(M3LoadedMods.GetME3ModsDirectory(), M3Utilities.SanitizePath(modname));
             if (Directory.Exists(modpath))
             {
                 var result = M3L.ShowDialog(mainwindow,

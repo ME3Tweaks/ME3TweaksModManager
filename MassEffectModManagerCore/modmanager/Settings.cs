@@ -255,6 +255,9 @@ namespace ME3TweaksModManager.modmanager
         private static bool changingLODSetting;
 
         private static string _modLibraryPath;
+        /// <summary>
+        /// The path to the EXPLICITLY SET mod library. This value can be null; use the value from M3LoadedMods instead.
+        /// </summary>
         public static string ModLibraryPath
         {
             get => _modLibraryPath;

@@ -622,11 +622,8 @@ namespace ME3TweaksModManager
         /// <param name="e">Exception to process</param>
         static void OnDispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
-            if (!Crashes.IsEnabledAsync().Result)
-            {
-                M3Log.Fatal(@"ME3Tweaks Mod Manager has crashed! This is the exception that caused the crash:");
-                M3Log.Fatal(FlattenException(e.Exception));
-            }
+            MessageBox.Show(e.Exception.FlattenException());
+            M3Log.Exception(e.Exception, @"ME3Tweaks Mod Manager has crashed! This is the exception that caused the crash:", true);
         }
 
         /// <summary>

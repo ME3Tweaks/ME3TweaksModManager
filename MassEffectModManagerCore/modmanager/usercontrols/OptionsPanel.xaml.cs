@@ -19,7 +19,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
     {
         public OptionsPanel()
         {
-            LibraryDir = M3Utilities.GetModsDirectory();
+            LibraryDir = M3LoadedMods.GetCurrentModLibraryDirectory();
             LoadCommands();
         }
 

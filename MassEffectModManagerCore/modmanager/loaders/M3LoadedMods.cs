@@ -26,6 +26,60 @@ namespace ME3TweaksModManager.modmanager.loaders
     [AddINotifyPropertyChangedInterface]
     public class M3LoadedMods
     {
+        // Todo: rename to mod library
+
+        #region MOD LIBRARY PATHING
+        /// <summary>
+        /// Gets the mod library directory
+        /// </summary>
+        /// <returns></returns>
+        public static string GetCurrentModLibraryDirectory()
+        {
+            var libraryPath = Settings.ModLibraryPath;
+            if (Directory.Exists(libraryPath))
+            {
+                return libraryPath;
+            }
+            else
+            {
+                return Path.Combine(M3Utilities.GetMMExecutableDirectory(), @"mods");
+            }
+        }
+
+        public static string GetModDirectoryForGame(MEGame game)
+        {
+            if (game == MEGame.ME1) return GetME1ModsDirectory();
+            if (game == MEGame.ME2) return GetME2ModsDirectory();
+            if (game == MEGame.ME3) return GetME3ModsDirectory();
+            if (game == MEGame.LE1) return GetLE1ModsDirectory();
+            if (game == MEGame.LE2) return GetLE2ModsDirectory();
+            if (game == MEGame.LE3) return GetLE3ModsDirectory();
+            if (game == MEGame.LELauncher) return GetLELauncherModsDirectory();
+            return null;
+        }
+
+        internal static void EnsureModDirectories()
+        {
+            //Todo: Ensure these are not under any game targets.
+            Directory.CreateDirectory(GetME3ModsDirectory());
+            Directory.CreateDirectory(GetME2ModsDirectory());
+            Directory.CreateDirectory(GetME1ModsDirectory());
+            Directory.CreateDirectory(GetLE1ModsDirectory());
+            Directory.CreateDirectory(GetLE2ModsDirectory());
+            Directory.CreateDirectory(GetLE3ModsDirectory());
+            Directory.CreateDirectory(GetLELauncherModsDirectory());
+        }
+
+        public static string GetME3ModsDirectory() => Path.Combine(GetCurrentModLibraryDirectory(), @"ME3");
+        public static string GetME2ModsDirectory() => Path.Combine(GetCurrentModLibraryDirectory(), @"ME2");
+        public static string GetME1ModsDirectory() => Path.Combine(GetCurrentModLibraryDirectory(), @"ME1");
+        public static string GetLE3ModsDirectory() => Path.Combine(GetCurrentModLibraryDirectory(), @"LE3");
+        public static string GetLE2ModsDirectory() => Path.Combine(GetCurrentModLibraryDirectory(), @"LE2");
+        public static string GetLE1ModsDirectory() => Path.Combine(GetCurrentModLibraryDirectory(), @"LE1");
+        public static string GetLELauncherModsDirectory() => Path.Combine(GetCurrentModLibraryDirectory(), @"LELAUNCHER");
+
+        #endregion
+
         /// <summary>
         /// If the mod list hasn't actually booted once
         /// </summary>
@@ -171,7 +225,7 @@ namespace ME3TweaksModManager.modmanager.loaders
 
             try
             {
-                M3Utilities.EnsureModDirectories();
+                EnsureModDirectories();
             }
             catch (Exception e)
             {
@@ -224,17 +278,17 @@ namespace ME3TweaksModManager.modmanager.loaders
                 bool canAutoCheckForModUpdates = MOnlineContent.CanFetchContentThrottleCheck(); //This is here as it will fire before other threads can set this value used in this session.
                 ModsLoaded = false;
                 var uiTask = BackgroundTaskEngine.SubmitBackgroundJob(@"ModLoader", M3L.GetString(M3L.string_loadingMods), M3L.GetString(M3L.string_loadedMods));
-                M3Log.Information(@"Loading mods from mod library: " + M3Utilities.GetModsDirectory());
+                M3Log.Information(@"Loading mods from mod library: " + GetCurrentModLibraryDirectory());
 
-                var le3modDescsToLoad = Directory.GetDirectories(M3Utilities.GetLE3ModsDirectory()).Select(x => (game: MEGame.LE3, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
-                var le2modDescsToLoad = Directory.GetDirectories(M3Utilities.GetLE2ModsDirectory()).Select(x => (game: MEGame.LE2, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
-                var le1modDescsToLoad = Directory.GetDirectories(M3Utilities.GetLE1ModsDirectory()).Select(x => (game: MEGame.LE1, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
-                var me3modDescsToLoad = Directory.GetDirectories(M3Utilities.GetME3ModsDirectory()).Select(x => (game: MEGame.ME3, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
-                var me2modDescsToLoad = Directory.GetDirectories(M3Utilities.GetME2ModsDirectory()).Select(x => (game: MEGame.ME2, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
-                var me1modDescsToLoad = Directory.GetDirectories(M3Utilities.GetME1ModsDirectory()).Select(x => (game: MEGame.ME1, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
+                var le3modDescsToLoad = Directory.GetDirectories(GetLE3ModsDirectory()).Select(x => (game: MEGame.LE3, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
+                var le2modDescsToLoad = Directory.GetDirectories(GetLE2ModsDirectory()).Select(x => (game: MEGame.LE2, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
+                var le1modDescsToLoad = Directory.GetDirectories(GetLE1ModsDirectory()).Select(x => (game: MEGame.LE1, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
+                var me3modDescsToLoad = Directory.GetDirectories(GetME3ModsDirectory()).Select(x => (game: MEGame.ME3, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
+                var me2modDescsToLoad = Directory.GetDirectories(GetME2ModsDirectory()).Select(x => (game: MEGame.ME2, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
+                var me1modDescsToLoad = Directory.GetDirectories(GetME1ModsDirectory()).Select(x => (game: MEGame.ME1, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
 
                 // LE Launcher
-                var leLaunchermodDescsToLoad = Directory.GetDirectories(M3Utilities.GetLELauncherModsDirectory()).Select(x => (game: MEGame.LELauncher, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
+                var leLaunchermodDescsToLoad = Directory.GetDirectories(GetLELauncherModsDirectory()).Select(x => (game: MEGame.LELauncher, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
                 //var modDescsToLoad = leLaunchermodDescsToLoad.ToList();
 
                 List<(MEGame game, string path)> modDescsToLoad = new();

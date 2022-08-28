@@ -2821,7 +2821,7 @@ namespace ME3TweaksModManager
 
         private void OpenModsDirectory_Click(object sender, RoutedEventArgs e)
         {
-            M3Utilities.OpenExplorer(M3Utilities.GetModsDirectory());
+            M3Utilities.OpenExplorer(M3LoadedMods.GetCurrentModLibraryDirectory());
         }
 
         private const int STARTUP_FAIL_CRITICAL_FILES_MISSING = 1;
