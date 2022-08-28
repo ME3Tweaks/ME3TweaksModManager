@@ -17,7 +17,7 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         public BatchMod(Mod m)
         {
             Mod = m;
-            ModDescPath = m.ModDescPath.Substring(Settings.ModLibraryPath.Length + 1); // Make relative to root of library (global)
+            ModDescPath = m.ModDescPath.Substring(M3LoadedMods.GetCurrentModLibraryDirectory().Length + 1); // Make relative to root of library (global)
         }
 
         /// <summary>
@@ -67,7 +67,8 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         /// </summary>
         public void Init()
         {
-            var libraryRoot = Settings.ModLibraryPath; // biq2 stores relative to library root. biq stores to library root FOR GAME
+            var libraryRoot = M3LoadedMods.GetCurrentModLibraryDirectory(); // biq2 stores relative to library root. biq stores to library root FOR GAME
+
             var fullModdescPath = Path.Combine(libraryRoot, ModDescPath);
             if (File.Exists(fullModdescPath))
             {
