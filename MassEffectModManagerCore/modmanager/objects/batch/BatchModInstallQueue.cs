@@ -46,6 +46,16 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         [JsonProperty(@"description")]
         public string QueueDescription { get; internal set; }
 
+        private const int QUEUE_VERSION_TXT = 1;
+        private const int QUEUE_VERSION_BIQ= 2;
+        private const int QUEUE_VERSION_BIQ2 = 3;
+
+        /// <summary>
+        /// The version of the queue that was used when serializing it from disk. If not specified this will default to the latest
+        /// </summary>
+        [JsonIgnore]
+        public int QueueFormatVersion { get; set; } = QUEUE_VERSION_BIQ2;
+
         /// <summary>
         /// Mods that are part of the queue. This does not ensure they are available for use, check the properties
         /// </summary>
@@ -94,11 +104,13 @@ namespace ME3TweaksModManager.modmanager.objects.batch
                     result.Game = game;
                     line++;
                 }
+                result.QueueFormatVersion = QUEUE_VERSION_BIQ;
             }
             else
             {
                 //Old Mod Manager 5 format. This code is only used for transition purposes
                 result.Game = MEGame.ME3;
+                result.QueueFormatVersion = QUEUE_VERSION_TXT;
             }
 
             ParseLegacyQueue(result, lines, line);
@@ -116,6 +128,7 @@ namespace ME3TweaksModManager.modmanager.objects.batch
             {
                 var modernQueue = JsonConvert.DeserializeObject<BatchLibraryInstallQueue>(queueJson);
                 modernQueue.BackingFilename = queueFilename;
+                modernQueue.QueueFormatVersion = QUEUE_VERSION_BIQ2;
                 foreach (var mod in modernQueue.ModsToInstall)
                 {
                     mod.Init();
@@ -138,7 +151,6 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         private static void ParseLegacyQueue(BatchLibraryInstallQueue queue, string[] lines, int line)
         {
             M3Log.Information($@"Deserializing legacy queue");
-
             queue.QueueName = lines[line];
             line++;
             queue.QueueDescription = lines[line];

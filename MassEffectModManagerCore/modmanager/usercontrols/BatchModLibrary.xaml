@@ -71,10 +71,15 @@
         </DockPanel>
         <DockPanel
             Margin="4,0,0,0">
-            <TextBlock
-                Text="{DynamicResource string_groupInformation}"
-                FontWeight="Bold"
-                DockPanel.Dock="Top" />
+            <DockPanel Dock="Top">
+                <TextBlock
+                    Text="{Binding SelectedBatchQueue.QueueFormatVersion, StringFormat='Queue format version: {0}'}"
+                    DockPanel.Dock="Right" />
+                <TextBlock
+                    Text="{DynamicResource string_groupInformation}"
+                    FontWeight="Bold"
+                    HorizontalAlignment="Left" />
+            </DockPanel>
             <TextBlock
                 Text="{Binding SelectedBatchQueue.QueueDescription}"
                 DockPanel.Dock="Top"
@@ -101,8 +106,88 @@
                         ToolTip="{DynamicResource string_tooltip_targetToInstallThisModGroupTo}"
                         ShowTextureInfo="False" />
                 </DockPanel>
-                <TextBox
-                    DockPanel.Dock="Bottom"
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <ListBox
+                        Grid.Row="0"
+                    ItemsSource="{Binding SelectedBatchQueue.ModsToInstall}"
+                    SelectedItem="{Binding SelectedModInGroup}"
+                    HorizontalAlignment="Stretch"
+                    ScrollViewer.VerticalScrollBarVisibility="Visible"
+                    BorderThickness=".5">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <DockPanel>
+                                    <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" Visibility="{Binding Mod, Converter={StaticResource NullVisibilityConverter}}">
+                                        <Image
+                                        Source="{Binding SelectedBatchQueue.Game, RelativeSource={RelativeSource AncestorType={x:Type usercontrols:BatchModLibrary}} ,Converter={StaticResource GameToImageIconConverter}}"
+                                        Width="16"
+                                        Height="16"
+                                        Margin="0,0,5,0" />
+                                        <TextBlock
+                                        Text="{Binding Mod.ModName}"
+                                        Margin="0,0,3,0"
+                                        VerticalAlignment="Center" />
+                                        <Border
+                                        BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1BorderBrush}}"
+                                        Background="{DynamicResource {x:Static adonisUi:Brushes.MenuHeaderBackgroundBrush}}"
+                                        BorderThickness="1"
+                                        CornerRadius="2">
+                                            <TextBlock
+                                            Text="{Binding Mod.ModVersionString}"
+                                            FontStyle="Italic"
+                                            Padding="2,0" />
+                                        </Border>
+                                    </StackPanel>
+                                    <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" Visibility="{Binding Mod, Converter={StaticResource NullVisibilityConverter}, ConverterParameter='Reversed'}">
+                                        <fa5:FontAwesome Icon="Solid_Ban" Foreground="Red" Height="16" Margin="0,3,5,0" VerticalAlignment="Center"/>
+                                        <TextBlock Text="Mod not available:" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{Binding ModDescPath}" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                    <Border 
+                                        Visibility="{Binding Mod, Converter={StaticResource NullVisibilityConverter}}"
+                                        HorizontalAlignment="Right"
+                                        BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1BorderBrush}}"
+                                        BorderThickness="1"
+                                        CornerRadius="2">
+                                        <TextBlock
+                                            Text="{Binding OptionsRecordedString}"
+                                            FontStyle="Italic"
+                                            Padding="2,0" />
+                                        <Border.Style>
+                                            <Style
+                                                TargetType="Border">
+                                                <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.MenuHeaderBackgroundBrush}}"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger
+                                                        Binding="{Binding ChosenOptionsDesync}"
+                                                        Value="True">
+                                                        <Setter
+                                                            Property="Background"
+                                                            Value="Red" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                    </Border>
+                                </DockPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                        <ListBox.ItemContainerStyle>
+                            <Style
+                                TargetType="ListBoxItem"
+                                BasedOn="{StaticResource ListBoxItemStyle}">
+                                <Setter
+                                    Property="HorizontalContentAlignment"
+                                    Value="Stretch" />
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                    </ListBox>
+                    <TextBox
+                        Grid.Row="1"
                     IsReadOnly="True"
                     IsReadOnlyCaretVisible="False"
                     HorizontalContentAlignment="Left"
@@ -114,48 +199,9 @@
                     extensions:CursorSpotlightExtension.BackgroundBrush="Transparent"
                     extensions:CursorSpotlightExtension.RelativeSpotlightSize="0"
                     extensions:CursorSpotlightExtension.MaxBlurRadius="0"
-                    Text="{Binding ModDescriptionText}"></TextBox>
-                <ListBox
-                    ItemsSource="{Binding SelectedBatchQueue.ModsToInstall}"
-                    SelectedItem="{Binding SelectedModInGroup}"
-                    HorizontalAlignment="Stretch"
-                    DockPanel.Dock="Top"
-                    ScrollViewer.VerticalScrollBarVisibility="Visible"
-                    BorderThickness=".5">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel
-                                Orientation="Horizontal">
-                                <StackPanel Orientation="Horizontal" Visibility="{Binding Mod, Converter={StaticResource NullVisibilityConverter}}">
-                                    <Image
-                                        Source="{Binding SelectedBatchQueue.Game, RelativeSource={RelativeSource AncestorType={x:Type usercontrols:BatchModLibrary}} ,Converter={StaticResource GameToImageIconConverter}}"
-                                        Width="16"
-                                        Height="16"
-                                        Margin="0,0,5,0" />
-                                    <TextBlock
-                                        Text="{Binding Mod.ModName}"
-                                        Margin="0,0,3,0"
-                                        VerticalAlignment="Center" />
-                                    <Border
-                                        BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1BorderBrush}}"
-                                        Background="{DynamicResource {x:Static adonisUi:Brushes.MenuHeaderBackgroundBrush}}"
-                                        BorderThickness="1"
-                                        CornerRadius="2">
-                                        <TextBlock
-                                            Text="{Binding Mod.ModVersionString}"
-                                            FontStyle="Italic"
-                                            Padding="2,0" />
-                                    </Border>
-                                </StackPanel>
-                                <StackPanel Orientation="Horizontal" Visibility="{Binding Mod, Converter={StaticResource NullVisibilityConverter}, ConverterParameter='Reversed'}">
-                                    <fa5:FontAwesome Icon="Solid_Ban" Foreground="Red" Height="16" Margin="0,3,5,0" VerticalAlignment="Center"/>
-                                    <TextBlock Text="Mod not available:" Margin="0,0,5,0" VerticalAlignment="Center"/>
-                                    <TextBlock Text="{Binding ModDescPath}" VerticalAlignment="Center"/>
-                                </StackPanel>
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
+                    Text="{Binding ModDescriptionText}"/>
+
+                </Grid>
             </DockPanel>
         </DockPanel>
     </DockPanel>

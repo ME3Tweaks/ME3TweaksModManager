@@ -1089,7 +1089,7 @@ namespace ME3TweaksModManager
                             }
                             modIndex++;
                         }
-                        else
+                        else if (continueInstalling && queue.ModsToInstall.Count == modIndex)
                         {
                             //End
                             var shouldSave = M3L.ShowDialog(this, "Save chosen options to this batch group?", "Save options", MessageBoxButton.YesNo) == MessageBoxResult.Yes;
@@ -1098,6 +1098,11 @@ namespace ME3TweaksModManager
                                 M3Log.Information($@"Commiting batch queue with chosen options: {queue.BackingFilename}");
                                 queue.Save(true); // Commit the result
                             }
+                            HandleBatchPanelResult = true;
+                        }
+                        else
+                        {
+                            // Install failed or was aborted
                             HandleBatchPanelResult = true;
                         }
                     }
