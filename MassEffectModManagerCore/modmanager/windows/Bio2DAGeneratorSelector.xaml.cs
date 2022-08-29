@@ -1,27 +1,31 @@
-﻿using LegendaryExplorerCore.GameFilesystem;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.starterkit;
 using System.Windows;
+using LegendaryExplorerCore.Helpers;
+using Microsoft.WindowsAPICodePack.COMNative.MediaDevices;
 
 namespace ME3TweaksModManager.modmanager.windows
 {
     /// <summary>
     /// Interaction logic for Bio2DAGeneratorSelector.xaml
     /// </summary>
+    [AddINotifyPropertyChangedInterface]
     public partial class Bio2DAGeneratorSelector : Window
     {
         public ObservableCollectionExtended<Bio2DAOption> Bio2DAOptions { get; } = new();
         public MEGame Game { get; private set; }
-
+        public bool IsLoading { get; set; }
         public Bio2DAGeneratorSelector(MEGame game)
         {
             Game = game;
             InitializeComponent();
-            LoadOptions();
         }
 
-        private void LoadOptions()
+        private List<Bio2DAOption> LoadOptions()
         {
             var bPath = BackupService.GetGameBackupPath(Game);
             string cookedPath = null;
@@ -31,14 +35,16 @@ namespace ME3TweaksModManager.modmanager.windows
                 if (!Directory.Exists(cookedPath))
                 {
                     BackupNotAvailable();
-                    return;
+                    return null;
                 }
             }
             else
             {
                 BackupNotAvailable();
-                return;
+                return null;
             }
+
+            var twoDAs = new List<Bio2DAOption>();
 
             string[] searchFiles = { @"Engine.pcc", @"SFXGame.pcc", @"EntryMenu.pcc" };
             foreach (var twoDAF in searchFiles)
@@ -47,16 +53,19 @@ namespace ME3TweaksModManager.modmanager.windows
                 using var p = MEPackageHandler.UnsafePartialLoad(Path.Combine(cookedPath, twoDAF), x => !x.IsDefaultObject && x.ClassName is @"Bio2DA" or @"Bio2DANumberedRows");
                 foreach (var twoDA in p.Exports.Where(x => x.IsDataLoaded()))
                 {
-                    Bio2DAOptions.Add(new Bio2DAOption(twoDA.ObjectName, new LEXOpenable(twoDA)));
+                    twoDAs.Add(new Bio2DAOption(twoDA.ObjectName, new LEXOpenable(twoDA)));
                 }
             }
-            Bio2DAOptions.Sort(x => x.Title);
+            return twoDAs;
         }
 
         private void BackupNotAvailable()
         {
-            M3L.ShowDialog(this, "There is no backup available to query 2DAs from.", "Backup unavailable", MessageBoxButton.OK, MessageBoxImage.Error);
-            Close();
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                M3L.ShowDialog(this, "There is no backup available to query 2DAs from.", "Backup unavailable", MessageBoxButton.OK, MessageBoxImage.Error);
+                Close();
+            });
         }
 
         public void SetSelectedOptions(List<Bio2DAOption> optionsToSelect)
@@ -76,6 +85,28 @@ namespace ME3TweaksModManager.modmanager.windows
         private void Close_Click(object sender, RoutedEventArgs e)
         {
             Close();
+        }
+
+        private void Bio2DAGeneratorSelector_OnContentRendered(object sender, EventArgs e)
+        {
+            Task.Run(() =>
+            {
+                IsLoading = true;
+                return LoadOptions();
+            }).ContinueWithOnUIThread(x =>
+            {
+                IsLoading = false;
+                if (x.Exception == null)
+                {
+                    Bio2DAOptions.AddRange(x.Result);
+                    Bio2DAOptions.Sort(x => x.Title);
+                }
+                else
+                {
+                    M3L.ShowDialog(this, $"Error reading 2DA tables from game: {x.Exception.Message}", "Error reading tables", MessageBoxButton.OK, MessageBoxImage.Error);
+                    Close();
+                }
+            });
         }
     }
 }

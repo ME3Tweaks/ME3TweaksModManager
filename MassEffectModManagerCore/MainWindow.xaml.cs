@@ -657,7 +657,7 @@ namespace ME3TweaksModManager
             RunGameConfigToolCommand = new RelayCommand(RunGameConfigTool, CanRunGameConfigTool);
             Binkw32Command = new RelayCommand(ToggleBinkw32, CanToggleBinkw32);
             StartGameCommand = new GenericCommand(StartGame, CanStartGame);
-            SelectLaunchOptionsCommand = new GenericCommand(ShowLaunchOptions, CanStartGame);
+            SelectLaunchOptionsCommand = new GenericCommand(ShowLaunchOptions, CanShowLaunchOptions);
             ShowinstallationInformationCommand = new GenericCommand(ShowInstallInfo, CanShowInstallInfo);
             BackupCommand = new GenericCommand(ShowBackupPane, ContentCheckNotInProgress);
             RestoreCommand = new GenericCommand(ShowRestorePane, ContentCheckNotInProgress);
@@ -699,6 +699,11 @@ namespace ME3TweaksModManager
             CompileCoalescedCommand = new RelayCommand(CompileCoalesced); // no conditions for this
             DecompileCoalescedCommand = new RelayCommand(DecompileCoalesced); // no conditions for this
             InstallMEMFileCommand = new GenericCommand(InstallMEMFile, CanInstallMEMFile);
+        }
+
+        private bool CanShowLaunchOptions()
+        {
+            return CanStartGame() && SelectedGameTarget.Game.IsLEGame();
         }
 
         private void ShowLaunchOptions()

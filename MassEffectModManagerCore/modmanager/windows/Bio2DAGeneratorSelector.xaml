@@ -5,8 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ME3TweaksModManager.modmanager.windows"
         xmlns:starterkit="clr-namespace:ME3TweaksModManager.modmanager.objects.starterkit"
+        xmlns:fa5="http://schemas.fontawesome.com/icons/"
+        xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
         mc:Ignorable="d"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
+        ContentRendered="Bio2DAGeneratorSelector_OnContentRendered"
         Title="Bio2DA Selector" Height="450" Width="800">
     <Window.Style>
         <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
@@ -17,17 +20,23 @@
         <DockPanel DockPanel.Dock="Bottom" Margin="0,5,5,5">
             <Button Content="OK" DockPanel.Dock="Right"  Padding="20,5" HorizontalAlignment="Right" Click="Close_Click"/>
         </DockPanel>
-        <ScrollViewer
+        <Grid>
+            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Center" Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}">
+                <fa5:ImageAwesome Icon="Solid_Spinner" Spin="True" SpinDuration="1" Width="16" Height="16" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Margin="5,0" />
+                <TextBlock Text="Loading" VerticalAlignment="Center"/>
+            </StackPanel>
+            <ScrollViewer
             HorizontalScrollBarVisibility="Disabled">
-            <ItemsControl ItemsSource="{Binding Bio2DAOptions}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="{x:Type starterkit:Bio2DAOption}">
-                        <CheckBox FontWeight="Bold"  IsChecked="{Binding IsSelected}">
-                            <TextBlock Text="{Binding Title}" FontWeight="Bold"/>
-                        </CheckBox>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </ScrollViewer>
+                <ItemsControl ItemsSource="{Binding Bio2DAOptions}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type starterkit:Bio2DAOption}">
+                            <CheckBox FontWeight="Bold"  IsChecked="{Binding IsSelected}">
+                                <TextBlock Text="{Binding Title}" FontWeight="Bold"/>
+                            </CheckBox>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Grid>
     </DockPanel>
 </Window>
