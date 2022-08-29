@@ -1,7 +1,6 @@
-﻿using ME3TweaksModManager.modmanager.objects.mod;
+﻿using System.Diagnostics;
+using ME3TweaksModManager.modmanager.objects.mod;
 using Newtonsoft.Json;
-using PropertyChanged;
-using WinCopies.Util;
 
 namespace ME3TweaksModManager.modmanager.objects.batch
 {
@@ -17,8 +16,9 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         public BatchMod(Mod m)
         {
             Mod = m;
-            ModDescPath = m.ModDescPath.Substring(Settings.ModLibraryPath.Length + 1); // Make relative to root of library (global)
+            ModDescPath = m.ModDescPath.Substring(M3LoadedMods.GetCurrentModLibraryDirectory().Length + 1); // Make relative to root of library (global)
         }
+
 
         /// <summary>
         /// The matching mod in the library
@@ -31,6 +31,12 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         /// </summary>
         [JsonProperty(@"moddescpath")]
         public string ModDescPath { get; set; }
+
+        /// <summary>
+        /// When this batch mod was last configured
+        /// </summary>
+        [JsonProperty(@"configurationtime")]
+        public DateTime ConfigurationTime { get; set; }
 
         /// <summary>
         /// The hash of the moddesc.ini file - if the one on disk does not match this, options must (should?) be rechosen
@@ -51,10 +57,16 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         public bool ModMissing => Mod == null;
 
         /// <summary>
-        /// List of chosen option keys
+        /// List of user selections, in order
         /// </summary>
-        [JsonProperty(@"chosenoptions")]
-        public List<string> ChosenOptions { get; set; }
+        [JsonProperty(@"userchosenoptions")]
+        public List<PlusMinusKey> UserChosenOptions { get; set; }
+
+        /// <summary>
+        /// List of all chosen options before mod should install. If this list doesn't match it means the underlying game state differs to a degree that a different option was automatically chosen
+        /// </summary>
+        [JsonProperty(@"allchosenoptions")]
+        public List<string> AllChosenOptionsForValidation { get; set; }
 
         /// <summary>
         /// If options have been chosen for this mod - even if there are none.
@@ -63,11 +75,26 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         public bool HasChosenOptions { get; set; }
 
         /// <summary>
+        /// The UI bound string to show if options were chosen or not
+        /// </summary>
+        [JsonIgnore]
+        public string OptionsRecordedString
+        {
+            get
+            {
+                if (!HasChosenOptions) return "Not configured";
+                if (ChosenOptionsDesync) return "Reconfiguration required";
+                return $"Configured {ConfigurationTime:d}";
+            }
+        }
+
+        /// <summary>
         /// Initializes and associates a mod with this object
         /// </summary>
         public void Init()
         {
-            var libraryRoot = Settings.ModLibraryPath; // biq2 stores relative to library root. biq stores to library root FOR GAME
+            var libraryRoot = M3LoadedMods.GetCurrentModLibraryDirectory(); // biq2 stores relative to library root. biq stores to library root FOR GAME
+
             var fullModdescPath = Path.Combine(libraryRoot, ModDescPath);
             if (File.Exists(fullModdescPath))
             {
@@ -77,6 +104,10 @@ namespace ME3TweaksModManager.modmanager.objects.batch
                     Mod = m;
                     var localHash = M3Utilities.CalculateMD5(Mod.ModDescPath);
                     ChosenOptionsDesync = ModDescHash != null && localHash != ModDescHash;
+                    if (ChosenOptionsDesync)
+                    {
+                        Debugger.Break();
+                    }
                 }
                 else
                 {

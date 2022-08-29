@@ -392,7 +392,7 @@ namespace ME3TweaksModManager.modmanager.windows
                 if (result == MessageBoxResult.No) return;
             }
 
-            var outputDirectory = Path.Combine(M3Utilities.GetModDirectoryForGame(Game), M3Utilities.SanitizePath(ModName));
+            var outputDirectory = Path.Combine(M3LoadedMods.GetModDirectoryForGame(Game), M3Utilities.SanitizePath(ModName));
             if (Directory.Exists(outputDirectory))
             {
                 var result = M3L.ShowDialog(this, M3L.GetString(M3L.string_interp_dialogWillDeleteExistingMod, outputDirectory), M3L.GetString(M3L.string_modAlreadyExists), MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No);
@@ -557,7 +557,7 @@ namespace ME3TweaksModManager.modmanager.windows
             //nbw.DoWork += (sender, args) =>
             //{
             var dlcFolderName = $@"DLC_MOD_{skOption.ModDLCFolderNameSuffix}";
-            var modPath = skOption.OutputFolderOverride ?? Path.Combine(M3Utilities.GetModDirectoryForGame(skOption.ModGame), M3Utilities.SanitizePath(skOption.ModName));
+            var modPath = skOption.OutputFolderOverride ?? Path.Combine(M3LoadedMods.GetModDirectoryForGame(skOption.ModGame), M3Utilities.SanitizePath(skOption.ModName));
             if (skOption.OutputFolderOverride == null && Directory.Exists(modPath))
             {
                 M3Utilities.DeleteFilesAndFoldersRecursively(modPath);

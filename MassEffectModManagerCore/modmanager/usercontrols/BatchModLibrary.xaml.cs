@@ -145,7 +145,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 if (extension is @".biq2" or @".biq" or @".txt")
                 {
                     var queue = BatchLibraryInstallQueue.ParseInstallQueue(file);
-                    if (queue != null)
+                    if (queue != null && queue.Game.IsEnabledGeneration())
                     {
                         AvailableBatchQueues.Add(queue);
                         if (file == pathToHighlight)

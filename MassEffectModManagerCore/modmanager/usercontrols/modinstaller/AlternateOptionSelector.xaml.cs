@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Xml.Linq;
 using ME3TweaksModManager.modmanager.objects.alternates;
 using PropertyChanged;
 using Xceed.Wpf.Toolkit;
@@ -62,15 +63,15 @@ namespace ME3TweaksModManager.modmanager.usercontrols.modinstaller
         {
             var element = (FrameworkElement)sender;
             var newItem = (AlternateOption)element.DataContext;
-            if (!newItem.UIIsSelectable) return; // Do nothing. This option is not selectable.
             if (DataContext is AlternateGroup group)
             {
-                var prevItem = group.SelectedOption;
-                group.SelectNewOption(newItem);
-                if (group.SelectedOption != prevItem && element.ToolTip is ToolTip tp)
+                group.TrySelectOption(newItem);
+                if (element?.ToolTip is ToolTip tp)
                     tp.IsOpen = false; // Close the tooltip
             }
         }
+
+        
 
         private void DropdownButton_OnPreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {

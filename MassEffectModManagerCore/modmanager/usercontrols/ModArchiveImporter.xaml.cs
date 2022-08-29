@@ -821,7 +821,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                             ProgressMaximum = 100;
                             ProgressIndeterminate = false;
                             ActionText = M3L.GetString(M3L.string_insufficientDiskSpaceToExtractSelectedMods); //localize me
-                            M3Utilities.DriveFreeBytes(M3Utilities.GetModsDirectory(), out var freeSpace);
+                            M3Utilities.DriveFreeBytes(M3LoadedMods.GetCurrentModLibraryDirectory(), out var freeSpace);
                             M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_dialogNotEnoughFreeSpaceToExtract, FileSize.FormatSize(requiredSpace), FileSize.FormatSize(freeSpace)), M3L.GetString(M3L.string_insufficientDiskSpace), MessageBoxButton.OK, MessageBoxImage.Error);
                             return; //Don't do anything.
                         }
@@ -846,7 +846,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
             //get total size requirement
             long requiredDiskSpace = mods.Sum(x => x.SizeRequiredtoExtract);
-            if (M3Utilities.DriveFreeBytes(M3Utilities.GetModsDirectory(), out var freespaceBytes))
+            if (M3Utilities.DriveFreeBytes(M3LoadedMods.GetCurrentModLibraryDirectory(), out var freespaceBytes))
             {
                 requiredDiskSpace = (long)(requiredDiskSpace * 1.05); //5% buffer
                 M3Log.Information($@"Selected mods require: {FileSize.FormatSize(requiredDiskSpace)}");
@@ -861,7 +861,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
             else
             {
-                M3Log.Error(@"Unable to get amount of free space for mod library directory disk! We will continue anyways. Path: " + M3Utilities.GetModsDirectory());
+                M3Log.Error(@"Unable to get amount of free space for mod library directory disk! We will continue anyways. Path: " + M3LoadedMods.GetCurrentModLibraryDirectory());
             }
 
 
@@ -874,7 +874,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 ProgressMaximum = 100;
                 ProgressIndeterminate = true;
                 //Ensure directory
-                var modDirectory = M3Utilities.GetModDirectoryForGame(mod.Game);
+                var modDirectory = M3LoadedMods.GetModDirectoryForGame(mod.Game);
                 var sanitizedPath = Path.Combine(modDirectory, M3Utilities.SanitizePath(mod.ModName));
 
 

@@ -36,6 +36,19 @@ namespace ME3TweaksModManager.modmanager.objects
         public PlusMinusKey() { }
 
         /// <summary>
+        /// Constructor that sets a positive/negative with a value.
+        /// </summary>
+        /// <param name="isPlus"></param>
+        /// <param name="key"></param>
+        public PlusMinusKey(bool isPlus, string key)
+        {
+            IsPlus = isPlus;
+            Key = key;
+        }
+
+
+
+        /// <summary>
         /// Constructor that takes a full string value and parses it out
         /// </summary>
         /// <param name="fullValue">Full value including an optional +/- prefix</param>

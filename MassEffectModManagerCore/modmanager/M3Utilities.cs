@@ -30,19 +30,7 @@ namespace ME3TweaksModManager.modmanager
     {
         public static string GetMMExecutableDirectory() => Path.GetDirectoryName(App.ExecutableLocation);
 
-        public static string GetModsDirectory()
-        {
-            var libraryPath = Settings.ModLibraryPath;
-            if (Directory.Exists(libraryPath))
-            {
-                return libraryPath;
-            }
-            else
-            {
-                return Path.Combine(GetMMExecutableDirectory(), "mods");
-            }
-        }
-
+        
         private static readonly string MEMendFileMarker = "ThisIsMEMEndOfFile";
         /// <summary>
         /// Checks if the specified file has been tagged as part of an ALOT Installation. This is not the version marker.
@@ -629,30 +617,6 @@ namespace ME3TweaksModManager.modmanager
             return result;
         }
 
-        public static string GetModDirectoryForGame(MEGame game)
-        {
-            if (game == MEGame.ME1) return GetME1ModsDirectory();
-            if (game == MEGame.ME2) return GetME2ModsDirectory();
-            if (game == MEGame.ME3) return GetME3ModsDirectory();
-            if (game == MEGame.LE1) return GetLE1ModsDirectory();
-            if (game == MEGame.LE2) return GetLE2ModsDirectory();
-            if (game == MEGame.LE3) return GetLE3ModsDirectory();
-            if (game == MEGame.LELauncher) return GetLELauncherModsDirectory();
-            return null;
-        }
-
-        internal static void EnsureModDirectories()
-        {
-            //Todo: Ensure these are not under any game targets.
-            Directory.CreateDirectory(GetME3ModsDirectory());
-            Directory.CreateDirectory(GetME2ModsDirectory());
-            Directory.CreateDirectory(GetME1ModsDirectory());
-            Directory.CreateDirectory(GetLE1ModsDirectory());
-            Directory.CreateDirectory(GetLE2ModsDirectory());
-            Directory.CreateDirectory(GetLE3ModsDirectory());
-            Directory.CreateDirectory(GetLELauncherModsDirectory());
-        }
-
         public static string CalculateMD5(string filename)
         {
             try
@@ -719,14 +683,6 @@ namespace ME3TweaksModManager.modmanager
 
         public static string ConvertNewlineToBr(string str) => str?.Replace("\r\n", "<br>")?.Replace("\n", "<br>");
 
-
-        public static string GetME3ModsDirectory() => Path.Combine(GetModsDirectory(), "ME3");
-        public static string GetME2ModsDirectory() => Path.Combine(GetModsDirectory(), "ME2");
-        public static string GetME1ModsDirectory() => Path.Combine(GetModsDirectory(), "ME1");
-        public static string GetLE3ModsDirectory() => Path.Combine(GetModsDirectory(), "LE3");
-        public static string GetLE2ModsDirectory() => Path.Combine(GetModsDirectory(), "LE2");
-        public static string GetLE1ModsDirectory() => Path.Combine(GetModsDirectory(), "LE1");
-        public static string GetLELauncherModsDirectory() => Path.Combine(GetModsDirectory(), "LELAUNCHER");
 
         public static void OpenWebpage(string uri)
         {

@@ -46,6 +46,16 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         [JsonProperty(@"description")]
         public string QueueDescription { get; internal set; }
 
+        private const int QUEUE_VERSION_TXT = 1;
+        private const int QUEUE_VERSION_BIQ= 2;
+        private const int QUEUE_VERSION_BIQ2 = 3;
+
+        /// <summary>
+        /// The version of the queue that was used when serializing it from disk. If not specified this will default to the latest
+        /// </summary>
+        [JsonIgnore]
+        public int QueueFormatVersion { get; set; } = QUEUE_VERSION_BIQ2;
+
         /// <summary>
         /// Mods that are part of the queue. This does not ensure they are available for use, check the properties
         /// </summary>
@@ -72,6 +82,7 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         public static BatchLibraryInstallQueue ParseInstallQueue(string queueFile)
         {
             if (!File.Exists(queueFile)) return null;
+            M3Log.Information($@"Parsing batch queue file {queueFile}");
             var queueFilename = Path.GetFileName(queueFile);
 
             var extension = Path.GetExtension(queueFile);
@@ -93,11 +104,13 @@ namespace ME3TweaksModManager.modmanager.objects.batch
                     result.Game = game;
                     line++;
                 }
+                result.QueueFormatVersion = QUEUE_VERSION_BIQ;
             }
             else
             {
                 //Old Mod Manager 5 format. This code is only used for transition purposes
                 result.Game = MEGame.ME3;
+                result.QueueFormatVersion = QUEUE_VERSION_TXT;
             }
 
             ParseLegacyQueue(result, lines, line);
@@ -111,13 +124,22 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         /// <returns></returns>
         private static BatchLibraryInstallQueue ParseModernQueue(string queueFilename, string queueJson)
         {
-            var modernQueue = JsonConvert.DeserializeObject<BatchLibraryInstallQueue>(queueJson);
-            modernQueue.BackingFilename = queueFilename;
-            foreach (var mod in modernQueue.ModsToInstall)
+            try
             {
-                mod.Init();
+                var modernQueue = JsonConvert.DeserializeObject<BatchLibraryInstallQueue>(queueJson);
+                modernQueue.BackingFilename = queueFilename;
+                modernQueue.QueueFormatVersion = QUEUE_VERSION_BIQ2;
+                foreach (var mod in modernQueue.ModsToInstall)
+                {
+                    mod.Init();
+                }
+                return modernQueue;
             }
-            return modernQueue;
+            catch (Exception e)
+            {
+                M3Log.Exception(e, @"Failure reading modern batch queue:");
+                return null;
+            }
         }
 
         /// <summary>
@@ -128,6 +150,7 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         /// <param name="line"></param>
         private static void ParseLegacyQueue(BatchLibraryInstallQueue queue, string[] lines, int line)
         {
+            M3Log.Information($@"Deserializing legacy queue");
             queue.QueueName = lines[line];
             line++;
             queue.QueueDescription = lines[line];
@@ -135,11 +158,14 @@ namespace ME3TweaksModManager.modmanager.objects.batch
             while (line < lines.Length)
             {
                 string moddescPath = lines[line];
-                var libraryRoot = M3Utilities.GetModDirectoryForGame(queue.Game);
+                var libraryRoot = M3LoadedMods.GetModDirectoryForGame(queue.Game);
                 //workaround for 103/104 to 105: moddesc path's in biq were stored as full paths instead of relative. me3cmm is relative paths
                 var fullModdescPath = File.Exists(moddescPath) ? moddescPath : Path.Combine(libraryRoot, moddescPath);
 
-                var batchMod = new BatchMod() { ModDescPath = moddescPath };
+                var batchMod = new BatchMod()
+                {
+                    ModDescPath = $@"{queue.Game}\{moddescPath}" // 08/25/2022 -> This is for conversion from biq to biq2 which uses library root instead
+                };
                 Mod m = M3LoadedMods.Instance.AllLoadedMods.FirstOrDefault(x => x.ModDescPath.Equals(fullModdescPath, StringComparison.InvariantCultureIgnoreCase));
                 if (m != null)
                 {

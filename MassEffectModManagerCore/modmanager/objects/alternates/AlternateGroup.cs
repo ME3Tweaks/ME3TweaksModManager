@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Xml.Linq;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksModManager.modmanager.localizations;
 using PropertyChanged;
@@ -53,6 +55,8 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
         /// MULTI MODE ONLY - Binding for Expander Expanded variable
         /// </summary>
         public bool UIIsDropdownOpen { get; set; }
+
+        private Action<AlternateOption> OnUserSelectedOption;
 
         /// <summary>
         /// Creates an option group with multiple options (dropdown selector mode)
@@ -107,12 +111,15 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
             }
         }
 
-        internal void SetIsSelectedChangeHandler(EventHandler onAlternateSelectionChanged)
+        internal void SetIsSelectedChangeHandlers(EventHandler onAlternateSelectionChanged, Action<AlternateOption> onOptionChangedByUser)
         {
             foreach (var o in AlternateOptions)
             {
                 o.IsSelectedChanged += onAlternateSelectionChanged;
             }
+
+            // Used to record order of options chosen by user for batch installation.
+            OnUserSelectedOption = onOptionChangedByUser;
         }
 
         public void RemoveIsSelectedChangeHandler(EventHandler onAlternateSelectionChanged)
@@ -140,6 +147,7 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
 
                 UIIsDropdownOpen = false; // Multi mode
                 SelectedOption.RaiseIsSelectedChanged(); // Raise the event on the newly selected option so logic that depends on it will fire.
+                OnUserSelectedOption?.Invoke(newItem);
             }
 
             if (AlternateOptions.Count == 1 && !SelectedOption.IsAlways)
@@ -147,7 +155,26 @@ namespace ME3TweaksModManager.modmanager.objects.alternates
                 // Single mode
                 SelectedOption.UIIsSelected = !SelectedOption.UIIsSelected;
                 SelectedOption.RaiseIsSelectedChanged();
+                OnUserSelectedOption?.Invoke(SelectedOption);
             }
+        }
+
+        public bool TrySelectOption(AlternateOption newItem, bool? shouldSetToTrue = null)
+        {
+            if (!newItem.UIIsSelectable) return false; // Do nothing. This option is not selectable.
+            SelectNewOption(newItem);
+
+            if (shouldSetToTrue != null)
+            {
+                // Validation
+                if (newItem.UIIsSelected != shouldSetToTrue.Value)
+                {
+                    M3Log.Warning($@"Automatic selection for {newItem.FriendlyName} yielded incorrect result; result should be {shouldSetToTrue.Value} for selection but it was {newItem.UIIsSelected}");
+                    return false; // The end result was wrong!
+                }
+            }
+
+            return true;
         }
     }
 }

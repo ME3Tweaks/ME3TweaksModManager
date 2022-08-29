@@ -62,7 +62,7 @@ namespace ME3TweaksModManager.modmanager.windows
                         M3Log.Information(@"Step 1: Migrate mods");
                         MigratingModsTask.SetInProgress();
 
-                        var targetModLibrary = M3Utilities.GetModsDirectory();
+                        var targetModLibrary = M3LoadedMods.GetCurrentModLibraryDirectory();
 
                         targetModLibrary = Path.Combine(targetModLibrary, @"ME3");
                         if (!Directory.Exists(targetModLibrary))

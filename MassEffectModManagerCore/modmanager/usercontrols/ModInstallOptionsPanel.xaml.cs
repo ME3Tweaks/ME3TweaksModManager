@@ -15,12 +15,14 @@ using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Input;
 using CommandLine;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.objects.exceptions;
 using ME3TweaksModManager.modmanager.objects.installer;
 using ME3TweaksModManager.modmanager.objects.batch;
+using Serilog.Filters;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
@@ -35,18 +37,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public bool CompressInstalledPackages { get; set; }
         public GenericCommand InstallCommand { get; private set; }
 
-
         private readonly ReadOnlyOption me1ConfigReadOnlyOption = new ReadOnlyOption();
 
-        /// <summary>
-        /// All configurable options to display to the user.
-        /// </summary>
-        //public ObservableCollectionExtended<object> AllAlternateOptions { get; } = new ObservableCollectionExtended<object>();
-
-        /// <summary>
-        /// Alternate options that don't have a group assigned to them
-        /// </summary>
-        //public ObservableCollectionExtended<AlternateOption> AlternateOptions { get; } = new ObservableCollectionExtended<AlternateOption>();
         /// <summary>
         /// All alternate options to show to the user (groups can have 1 or more items)
         /// </summary>
@@ -80,6 +72,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         /// If options should be recorded to the BatchMod object.
         /// </summary>
         private bool RecordBatchOptions { get; set; }
+
+        /// <summary>
+        /// The order in which options were chosen by the user when recording options
+        /// </summary>
+        private List<PlusMinusKey> InOrderRecordedOptions { get; set; } = new();
 
         public ModInstallOptionsPanel(Mod mod, GameTargetWPF gameTargetWPF, bool? installCompressed, BatchMod batchMod, bool recordBatchOptions)
         {
@@ -308,7 +305,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             // Set the initial states
             foreach (AlternateGroup o in AlternateGroups)
             {
-                o.SetIsSelectedChangeHandler(OnAlternateSelectionChanged);
+                o.SetIsSelectedChangeHandlers(OnAlternateSelectionChanged, OnAlternateOptionChangedByUser);
                 internalSetupInitialSelection(o);
             }
 
@@ -447,6 +444,15 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
                 AlternateGroups.ReplaceAll(newOptions);
             }
+        }
+
+        /// <summary>
+        /// Records an option being selected by a user through the click handler
+        /// </summary>
+        /// <param name="newSelectedOption">The option that was changed by the user</param>
+        private void OnAlternateOptionChangedByUser(AlternateOption newSelectedOption)
+        {
+            InOrderRecordedOptions.Add(new PlusMinusKey(newSelectedOption.UIIsSelected, newSelectedOption.OptionKey));
         }
 
         private void OnAlternateSelectionChanged(object sender, EventArgs data)
@@ -648,14 +654,16 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 InstallTarget = SelectedGameTarget,
                 ModBeingInstalled = ModBeingInstalled,
                 SelectedOptions = optionsMap,
-                SetME1ReadOnlyConfigFiles = AlternateGroups.SelectMany(x => x.AlternateOptions).OfType<ReadOnlyOption>().Any(x=>x.UIIsSelected) // ME1 Read only option
+                SetME1ReadOnlyConfigFiles = AlternateGroups.SelectMany(x => x.AlternateOptions).OfType<ReadOnlyOption>().Any(x => x.UIIsSelected) // ME1 Read only option
             };
 
             // Save batch options
             if (BatchMod != null && RecordBatchOptions)
             {
                 // Record them to the batch mod
-                BatchMod.ChosenOptions = optionsMap.SelectMany(x => x.Value).Select(x => x.OptionKey).ToList();
+                BatchMod.UserChosenOptions = InOrderRecordedOptions;
+                BatchMod.AllChosenOptionsForValidation = optionsMap.SelectMany(x => x.Value).Select(x => x.OptionKey).ToList();
+                BatchMod.ConfigurationTime = DateTime.Now;
                 BatchMod.HasChosenOptions = true;
                 BatchMod.ChosenOptionsDesync = false;
             }
@@ -689,71 +697,109 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         /// Installs batch mod options to the mod. If options are valid, the mod will immediately install
         /// </summary>
         /// <param name="chosenDefaultOptions">List of chosen options to set. If null we will make a list of the original selections (for backup and revert)</param>
-        private void InstallBatchChosenOptions(List<string> chosenDefaultOptions = null)
+        private void InstallBatchChosenOptions(List<PlusMinusKey> chosenDefaultOptions = null)
         {
             // 1. Store the original options
-            bool isReverting = chosenDefaultOptions != null;
+            bool isReverting = chosenDefaultOptions != null; // If incoming options are already selected then this is a reversion due to below code
+
             if (chosenDefaultOptions == null)
             {
-                chosenDefaultOptions ??= new List<string>();
+                chosenDefaultOptions ??= new List<PlusMinusKey>();
                 foreach (var alt in AlternateGroups.SelectMany(x => x.AlternateOptions).Where(x => x.UIIsSelected))
                 {
-                    chosenDefaultOptions.Add(alt.OptionKey);
+                    chosenDefaultOptions.Add(new PlusMinusKey(true, alt.OptionKey));
                 }
             }
 
-            // 3. Set our selected options
-            foreach (var group in AlternateGroups) // For every group...
+            bool hadSelectionFailure = false;
+            if (!isReverting)
             {
-                if (group.IsMultiSelector)
+                // Install our options
+
+                // Enumerate every chosen option and select them in order
+                foreach (var option in BatchMod.UserChosenOptions)
                 {
-                    // We only need to select one from multi
-                    var chosenOption = group.AlternateOptions.FirstOrDefault(option => BatchMod.ChosenOptions.Contains(option.OptionKey));
-                    if (chosenOption == null)
+                    // Find group and key
+                    foreach (var group in AlternateGroups) // For every group...
                     {
-                        Debugger.Break();
+                        var matching = group.AlternateOptions.FirstOrDefault(x => x.OptionKey == option.Key);
+                        if (matching != null)
+                        {
+                            hadSelectionFailure |= !group.TrySelectOption(matching, option.IsPlus);
+                            if (hadSelectionFailure)
+                            {
+                                M3Log.Error($@"Failed to select option {matching.OptionKey}, it was not selectable, this batch mod's configuration is not valid. We will revert to defaults.");
+                                break;
+                            }
+                        }
                     }
-                    group.SelectNewOption(chosenOption);
-                }
-                else
-                {
-                    // Single mode
-                    group.SelectedOption.UIIsSelected = BatchMod.ChosenOptions.Any(oKey => oKey == group.SelectedOption.OptionKey);
+                    if (hadSelectionFailure)
+                    {
+                        break;
+                    }
                 }
             }
 
-            // 4. Validate
+            if (hadSelectionFailure)
+            {
+                M3Log.Error(@"Reverting to default mod options");
+                InstallBatchChosenOptions(chosenDefaultOptions);
+                return;
+            }
+
+            // 8.0.1 beta 1 version
+            /*   if (false)
+               {
+                   // 3. Set our selected options
+                   foreach (var group in AlternateGroups) // For every group...
+                   {
+                       if (group.IsMultiSelector)
+                       {
+                           // We only need to select one from multi
+                           var chosenOption =
+                               group.AlternateOptions.FirstOrDefault(option =>
+                                   BatchMod.UserChosenOptions.Contains(option.OptionKey));
+                           if (chosenOption == null)
+                           {
+                               Debugger.Break();
+                           }
+
+                           group.SelectNewOption(chosenOption);
+                       }
+                       else
+                       {
+                           // Single mode
+                           group.SelectedOption.UIIsSelected =
+                               BatchMod.UserChosenOptions.Any(oKey => oKey == group.SelectedOption.OptionKey);
+                       }
+                   }
+
+            */
+
+
+            // 4. Validate that the selected options match the ones we know about in the batchmod object
             if (!isReverting)
             {
                 bool valid = true;
-                foreach (var group in AlternateGroups) // For every group...
+                var allChosenOptionsInPanel = ModBeingInstalled.GetAllAlternates().Where(x => x.UIIsSelected).Select(x => x.OptionKey).ToList();
+                var difference = allChosenOptionsInPanel.Except(BatchMod.AllChosenOptionsForValidation).ToList();
+                if (difference.Any())
                 {
-                    if (group.IsMultiSelector)
-                    {
-                        valid &= group.AlternateOptions.Where(x => x.UIIsSelected).Count() == 1; // only one option can be selected
-                        if (BatchMod.Mod.ModDescTargetVersion >= 8)
-                        {
-                            valid &= !group.SelectedOption.UINotApplicable; // Chosen option must be applicable
-                        }
-                    }
-                    else
-                    {
-                        // ?
-                    }
-
-                    if (!valid)
-                        break;
+                    M3Log.Error($@"The list of chosen options does not match the configured list - the underlying game state has changed. This mod requires reconfiguration.");
+                    M3Log.Error($@"Keys that are configured for selection: {string.Join(',', BatchMod.AllChosenOptionsForValidation)}");
+                    M3Log.Error($@"Keys that were selected in this install just now: {string.Join(',', allChosenOptionsInPanel)}");
+                    valid = false;
                 }
 
                 if (!valid)
                 {
                     // restore the originals
                     M3Log.Error(@"Batch mod options are not valid, reverting");
-                    InstallBatchChosenOptions(chosenDefaultOptions);
+                    InstallBatchChosenOptions(chosenDefaultOptions); // REVERT
                 }
                 else
                 {
-                    M3Log.Error(@"Batch mod options are valid, beginning install");
+                    M3Log.Information(@"Batch mod options are valid, beginning install");
                     BeginInstallingMod();
                 }
             }

@@ -311,7 +311,7 @@ namespace ME3TweaksModManager.modmanager.windows
             sb.AppendLine(SelectedGame.ToString());
             sb.AppendLine(GroupName);
             sb.AppendLine(M3Utilities.ConvertNewlineToBr(GroupDescription));
-            var libraryRoot = M3Utilities.GetModDirectoryForGame(SelectedGame);
+            var libraryRoot = M3LoadedMods.GetModDirectoryForGame(SelectedGame);
             foreach (var m in ModsInGroup)
             {
                 sb.AppendLine(m.ModDescPath.Substring(libraryRoot.Length + 1)); //STORE RELATIVE!

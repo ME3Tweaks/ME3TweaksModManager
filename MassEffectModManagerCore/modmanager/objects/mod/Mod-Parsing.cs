@@ -325,9 +325,22 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         private List<string> AdditionalDeploymentFiles = new List<string>();
         public string ModPath { get; private set; }
         public SevenZipExtractor Archive;
+        /// <summary>
+        /// The full path to the moddesc.ini file
+        /// </summary>
         public string ModDescPath => FilesystemInterposer.PathCombine(IsInArchive, ModPath, @"moddesc.ini");
+        
+        /// <summary>
+        /// If this mod was was loaded from archive or from disk
+        /// </summary>
         public bool IsInArchive { get; }
+        /// <summary>
+        /// The minimum build number that this mod is allowed to load on
+        /// </summary>
         public int MinimumSupportedBuild { get; set; }
+        /// <summary>
+        /// If this mod was loaded using an autobuilt moddesc based on the DLC name in TPMI (ME3 only)
+        /// </summary>
         public bool IsVirtualized { get; private set; }
         public string OriginalArchiveHash { get; private set; }
         public string PostInstallToolLaunch { get; private set; }

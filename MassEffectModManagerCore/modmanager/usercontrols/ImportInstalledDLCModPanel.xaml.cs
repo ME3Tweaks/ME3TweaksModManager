@@ -71,7 +71,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
             //Check free space.
             var sourceDir = Path.Combine(M3Directories.GetDLCPath(SelectedTarget), SelectedDLCFolder.DLCFolderName);
-            var library = M3Utilities.GetModDirectoryForGame(SelectedTarget.Game);
+            var library = M3LoadedMods.GetModDirectoryForGame(SelectedTarget.Game);
             if (M3Utilities.DriveFreeBytes(library, out var freeBytes))
             {
                 //Check enough space
@@ -161,7 +161,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
 
 
-            var library = M3Utilities.GetModDirectoryForGame(SelectedTarget.Game);
+            var library = M3LoadedMods.GetModDirectoryForGame(SelectedTarget.Game);
             var destinationName = M3Utilities.SanitizePath(ModNameText);
             var modFolder = Path.Combine(library, destinationName);
             var copyDestination = Path.Combine(modFolder, SelectedDLCFolder.DLCFolderName);
