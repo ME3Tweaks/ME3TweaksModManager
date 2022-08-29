@@ -98,8 +98,12 @@ namespace ME3TweaksModManager.modmanager.windows
                 IsLoading = false;
                 if (x.Exception == null)
                 {
-                    Bio2DAOptions.AddRange(x.Result);
-                    Bio2DAOptions.Sort(x => x.Title);
+                    if (x.Result != null)
+                    {
+                        // Result is null if there was an error
+                        Bio2DAOptions.AddRange(x.Result);
+                        Bio2DAOptions.Sort(x => x.Title);
+                    }
                 }
                 else
                 {
