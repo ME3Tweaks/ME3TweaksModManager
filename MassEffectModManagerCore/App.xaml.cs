@@ -622,7 +622,12 @@ namespace ME3TweaksModManager
         /// <param name="e">Exception to process</param>
         static void OnDispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
-            MessageBox.Show(e.Exception.FlattenException());
+            if (Settings.BetaMode)
+            {
+                // Don't show this to users who are not on beta.
+                MessageBox.Show(e.Exception.FlattenException());
+            }
+
             M3Log.Exception(e.Exception, @"ME3Tweaks Mod Manager has crashed! This is the exception that caused the crash:", true);
         }
 
