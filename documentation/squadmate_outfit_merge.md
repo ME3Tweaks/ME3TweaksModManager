@@ -3,6 +3,8 @@
 ## Adding outfits to squadmates in Mass Effect 3 (OT + LE)
 Outfits for squadmates are controlled by a file named `BioP_Global` in Mass Effect 2 and Mass Effect 3. This file defines how to stream in squadmates. Combined with edits to your DLC ini/coalesced files, you can add squadmate outfits.
 
+Note: Due to casual outfits not being able to changed in-game with a UI, this feature does not cover those. Your mod will still need to ship a \_NC file override if you wish to also change that character's casual (such as EDI or Tali).
+
 ### The Problem
 Since this is all controlled by a single file, multiple mods cannot add outfits and both work together, as it is full-file replacement.
 
