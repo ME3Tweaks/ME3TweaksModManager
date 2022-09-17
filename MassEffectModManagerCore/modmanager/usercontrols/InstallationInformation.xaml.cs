@@ -548,6 +548,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     nbw.RunWorkerAsync();
                 }
             };
+            bw.RunWorkerCompleted += (a, b) => { DataIsLoading = false; };
+            DataIsLoading = true;
             bw.RunWorkerAsync();
         }
 
@@ -636,6 +638,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         }
 
         public string ShowInstalledOptionsText { get; private set; } = M3L.GetString(M3L.string_showInstalledOptions);
+
+        /// <summary>
+        /// If data is populating into the interface still
+        /// </summary>
+        public bool DataIsLoading { get; set; }
 
         private void ToggleShowingInstallOptions_Click(object sender, RoutedEventArgs e)
         {
