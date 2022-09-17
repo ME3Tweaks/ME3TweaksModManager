@@ -22,7 +22,10 @@
                     <ItemsControl ItemsSource="{Binding LanguageOptions}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate DataType="launcher:LauncherLanguageOption">
-                                <RadioButton GroupName="LangOption" Content="{Binding UIDisplayString}" Checked="LanguageButtonSelected"/>
+                                <RadioButton GroupName="LangOption" 
+                                             IsChecked="{Binding UIIsSelected}"
+                                             Content="{Binding UIDisplayString}" 
+                                             Checked="LanguageButtonSelected"/>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>

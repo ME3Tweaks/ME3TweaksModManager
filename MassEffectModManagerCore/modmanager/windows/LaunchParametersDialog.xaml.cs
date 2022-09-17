@@ -49,8 +49,11 @@ namespace ME3TweaksModManager.modmanager.windows
 
         private void LoadPackage(LaunchOptionsPackage package)
         {
-            LaunchPackage = package ?? new LaunchOptionsPackage() { Game = SelectedGameTarget.Game };
+            LaunchPackage = package ?? new LaunchOptionsPackage() { Game = SelectedGameTarget.Game, ChosenLanguage = @"INT"};
             LoadLanguagesAndOptions();
+
+            var chosenLang = LanguageOptions.FirstOrDefault(x => x.LanguageString == LaunchPackage.ChosenLanguage);
+            if (chosenLang != null) chosenLang.UIIsSelected = true;
         }
 
         private void LoadLanguagesAndOptions()

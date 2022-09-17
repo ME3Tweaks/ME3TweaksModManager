@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace ME3TweaksModManager.modmanager.objects.launcher
 {
+    /// <summary>
+    /// UI-binding for radio buttons in launcher options
+    /// </summary>
     [AddINotifyPropertyChangedInterface]
     public class LauncherLanguageOption
     {
@@ -26,5 +29,10 @@ namespace ME3TweaksModManager.modmanager.objects.launcher
         /// String to show in the UI
         /// </summary>
         public string UIDisplayString => $@"{LanguageString} - {DisplayString}";
+
+        /// <summary>
+        /// If the language is selected (checked)
+        /// </summary>
+        public bool UIIsSelected { get; set; }
     }
 }
