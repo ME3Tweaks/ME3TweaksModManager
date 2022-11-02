@@ -74,6 +74,7 @@
                     Watermark="{Binding WatermarkText}"
                     Grid.Row="1"
                     IsEnabled="{Binding ManualMode}"
+                    PasswordChanged="APIKeyChanged"
                     Text="{Binding APIKeyText, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                     Margin="0,5,0,0" />
                 <Button

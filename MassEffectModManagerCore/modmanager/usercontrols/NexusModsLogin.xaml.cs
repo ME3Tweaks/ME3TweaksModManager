@@ -187,7 +187,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             mainwindow.RefreshNexusStatus();
         }
 
-        private bool CanUnlinkWithNexus() => !IsAuthorizing && !string.IsNullOrWhiteSpace(APIKeyText);
+        private bool CanUnlinkWithNexus() => !IsAuthorizing && NexusModsUtilities.HasAPIKey;
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
@@ -219,6 +219,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 M3Log.Error(@"Error getting current API Key: " + e.Message);
                 SetAuthorized(false);
             }
+        }
+
+        private void APIKeyChanged(object sender, RoutedEventArgs e)
+        {
+            APIKeyText = APIBox.Password;
         }
     }
 }
