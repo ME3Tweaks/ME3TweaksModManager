@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using LegendaryExplorerCore.GameFilesystem;
@@ -108,7 +109,8 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
 
         public bool ApplyMergeMod(Mod associatedMod, GameTarget target, Action<int> mergeWeightDelegate, Action<string, string> mergeStatusDelegate)
         {
-            M3Log.Information($@"Applying {MergeModFilename}");
+            M3Log.Information($@"Applying {MergeModFilename}.");
+            Debug.WriteLine($@"Expected weight: {GetMergeWeight()}");
             var loadedFiles = MELoadedFiles.GetFilesLoadedInGame(target.Game, true, gameRootOverride: target.TargetPath);
 
             if (target.Game == MEGame.LE2)

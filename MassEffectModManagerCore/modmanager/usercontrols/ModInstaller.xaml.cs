@@ -853,7 +853,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             //Stage: Merge Mods
             var allMMs = installationJobs.SelectMany(x => x.MergeMods).ToList();
             allMMs.AddRange(installationJobs.SelectMany(x => x.AlternateFiles.Where(y => y.UIIsSelected && y.MergeMods != null).SelectMany(y => y.MergeMods)));
-            var totalMerges = allMMs.Sum(x => x.GetMergeCount());
             var totalWeight = allMMs.Sum(x => x.GetMergeWeight());
             var doneWeight = 0;
             if (totalWeight == 0)
@@ -866,6 +865,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 doneWeight += newWeightDone;
                 Percent = (int)(doneWeight * 100.0 / totalWeight);
+#if DEBUG
+                if (Percent > 100)
+                {
+                    Debug.WriteLine(@"Percent calculation is wrong!");
+                    Debugger.Break();
+                }
+#endif
             }
 
             void addBasegameTrackedFile(string originalmd5, string file)

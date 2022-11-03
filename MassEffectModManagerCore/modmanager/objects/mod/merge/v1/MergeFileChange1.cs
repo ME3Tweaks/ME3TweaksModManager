@@ -168,7 +168,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
             if (SequenceSkipUpdate != null)
                 return WEIGHT_SEQSKIPUPDATE;
             if (PropertyUpdates != null)
-                return WEIGHT_PROPERTYUPDATE;
+                return WEIGHT_PROPERTYUPDATE * PropertyUpdates.Count;
             if (DisableConfigUpdate)
                 return WEIGHT_DISABLECONFIGUPDATE;
             Debug.WriteLine(@"Merge weight not calculated: All merge variables were null, does this calculation need updated?");

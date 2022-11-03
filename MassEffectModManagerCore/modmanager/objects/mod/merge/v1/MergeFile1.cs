@@ -153,11 +153,13 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                 weight += v.GetMergeWeight();
             }
 
+            Debug.WriteLine($@"Single merge weight for {FileName}: weight");
             return weight;
         }
 
         public int GetMergeWeight()
         {
+            // Merge weight is the number of files to merge multiplied by the amount of a single merge
             var multiplier = ApplyToAllLocalizations ? GameLanguage.GetLanguagesForGame(OwningMM.Game).Length : 1;
             return multiplier * GetMergeWeightSingle();
         }
