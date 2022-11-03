@@ -1840,14 +1840,14 @@
                             ui:Clipper.HeightFraction="0"
                             Name="FailedModsPopupPanel"
                             ToolTip="{DynamicResource string_tooltip_someModsFailed}">
-              <Hyperlink
+                            <Hyperlink
                                 RequestNavigate="FailedMods_LinkClick"
                                 NavigateUri="internal://trigger"
                                 Foreground="Red">
-                <TextBlock
+                                <TextBlock
                                     Text="{Binding FailedModsString}" />
-              </Hyperlink>
-            </TextBlock>
+                            </Hyperlink>
+                        </TextBlock>
                     </ui:Clipper>
                     <ui:Clipper
                         HorizontalAlignment="Center"
