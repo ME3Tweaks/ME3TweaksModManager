@@ -16,7 +16,7 @@
         <converters:SingleModeAlternateVisibilityConverter x:Key="SingleModeAlternateVisibilityConverter"/>
 
         <DataTemplate x:Key="SingleGroupTemplate" DataType="{x:Type alternates:AlternateGroup}">
-            <DockPanel>
+            <DockPanel Visibility="{Binding SelectedOption.IsHidden, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Not'}">
                 <CheckBox DockPanel.Dock="Left" Margin="4,0,0,0" IsChecked="{Binding SelectedOption.UIIsSelected}" IsEnabled="{Binding SelectedOption.UIIsSelectable}"/>
                 <local:SingleAlternateOptionPanel Margin="1,0,0,0" DataContext="{Binding SelectedOption}" MouseUp="AlternateItem_MouseUp"/>
             </DockPanel>
