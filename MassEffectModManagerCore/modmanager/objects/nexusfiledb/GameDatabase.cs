@@ -12,6 +12,9 @@ using M3OnlineContent = ME3TweaksModManager.modmanager.me3tweaks.services.M3Onli
 
 namespace ME3TweaksModManager.modmanager.objects.nexusfiledb
 {
+    /// <summary>
+    /// NexusMods File Database
+    /// </summary>
     public class GameDatabase
     {
         private static bool EnsureCheckedThisSession = false;
@@ -48,10 +51,10 @@ namespace ME3TweaksModManager.modmanager.objects.nexusfiledb
 
         private static void DownloadDB(string nexusDBPath)
         {
-            var downloadResult = M3OnlineContent.DownloadME3TweaksStaticAsset(@"nexusfiledb.zip");
+            var downloadResult = M3OnlineContent.DownloadToMemory(@"https://github.com/ME3Tweaks/ME3TweaksAssets/releases/download/nexusfiledb/nexusfiledb.zip");
             if (downloadResult.errorMessage == null)
             {
-                downloadResult.download.WriteToFile(nexusDBPath);
+                downloadResult.result.WriteToFile(nexusDBPath);
                 EnsureCheckedThisSession = true;
             }
         }

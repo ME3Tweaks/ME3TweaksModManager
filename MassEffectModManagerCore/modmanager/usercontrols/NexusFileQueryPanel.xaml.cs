@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -17,7 +18,8 @@ using ME3TweaksModManager.modmanager.nexusmodsintegration;
 using ME3TweaksModManager.modmanager.objects.nexusfiledb;
 using ME3TweaksModManager.ui;
 using Pathoschild.FluentNexus.Models;
-using PropertyChanged;
+using WinCopies.Util;
+using Mod = ME3TweaksModManager.modmanager.objects.mod.Mod;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
@@ -26,6 +28,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
     /// </summary>
     public partial class NexusFileQueryPanel : MMBusyPanelBase, INotifyPropertyChanged
     {
+        /// <summary>
+        /// Mod being checked
+        /// </summary>
+        private Mod QueryingMod;
+
         /// <summary>
         /// If the database loaded or not
         /// </summary>
@@ -70,8 +77,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         public ObservableCollectionExtended<string> AllSearchableNames { get; } = new ObservableCollectionExtended<string>();
 
-        public NexusFileQueryPanel()
+        public NexusFileQueryPanel(Mod mod = null)
         {
+            QueryingMod = mod;
             FileCategories = new ObservableCollectionExtended<FileCategory>(Enum.GetValues<FileCategory>());
             LoadCommands();
         }
@@ -183,7 +191,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                                 var fails = instances.Where(x => !db.ModFileInfos.ContainsKey(x.ModID)).ToList();
 #endif
 
-                                instances = instances.Where(x => db.ModFileInfos[x.FileID].LEGames != null && 
+                                instances = instances.Where(x => db.ModFileInfos[x.FileID].LEGames != null &&
                                                                  (db.ModFileInfos[x.FileID].LEGames.Contains(MEGame.LE1) && SearchLE1 ||
                                                                   db.ModFileInfos[x.FileID].LEGames.Contains(MEGame.LE2) && SearchLE2 ||
                                                                   db.ModFileInfos[x.FileID].LEGames.Contains(MEGame.LE3) && SearchLE3)
@@ -219,6 +227,94 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             });
 
         }
+
+        private void PerformSearchAgainstMod()
+        {
+            Results.ClearEx();
+            var categories = CategoryOptionsCBL.GetSelectedItems().OfType<FileCategory>().ToList();
+            var searchGames = new List<string>();
+
+            if (QueryingMod.Game == MEGame.ME1) searchGames.Add(@"masseffect");
+            if (QueryingMod.Game == MEGame.ME2) searchGames.Add(@"masseffect2");
+            if (QueryingMod.Game == MEGame.ME3) searchGames.Add(@"masseffect3");
+            if (QueryingMod.Game == MEGame.LE1) searchGames.Add(@"masseffectlegendaryedition");
+            if (QueryingMod.Game == MEGame.LE2) searchGames.Add(@"masseffectlegendaryedition");
+            if (QueryingMod.Game == MEGame.LE3) searchGames.Add(@"masseffectlegendaryedition");
+
+            var isLEGame = QueryingMod.Game.IsLEGame();
+
+            QueryInProgress = true;
+            Task.Run(() =>
+            {
+
+                try
+                {
+                    foreach (var domain in searchGames)
+                    {
+                        // Map of name
+                        var db = LoadedDatabases[domain];
+                        var reverseDB = db.NameTable.ToDictionary(x => x.Value, x => x.Key, StringComparer.InvariantCultureIgnoreCase);
+
+                        var filesToSearch = QueryingMod.GetAllInstallableFiles().Select(x => Path.GetFileName(x)).Distinct().ToList();
+
+                        foreach (var f in filesToSearch)
+                        {
+                            if (f.EndsWith(@".ini", StringComparison.InvariantCultureIgnoreCase))
+                                continue; // this will be in like every mod
+                            if (f.EndsWith(@".dlc", StringComparison.InvariantCultureIgnoreCase))
+                                continue; // this will be in like every mod
+
+                            Debug.WriteLine($@"Finding {f}");
+                            if (reverseDB.TryGetValue(f, out var foundFile))
+                            {
+                                // Found
+                                var instances = db.FileInstances[foundFile].Where(x => categories.Contains(db.ModFileInfos[x.FileID].Category));
+
+                                if (isLEGame)
+                                {
+                                    // We need to filter to game
+#if DEBUG
+                                    // var fails = instances.Where(x => !db.ModFileInfos.ContainsKey(x.ModID)).ToList();
+#endif
+
+                                    instances = instances.Where(x => db.ModFileInfos[x.FileID].LEGames != null &&
+                                                                     (db.ModFileInfos[x.FileID].LEGames.Contains(MEGame.LE1) && QueryingMod.Game == MEGame.LE1 ||
+                                                                      db.ModFileInfos[x.FileID].LEGames.Contains(MEGame.LE2) && QueryingMod.Game == MEGame.LE2 ||
+                                                                      db.ModFileInfos[x.FileID].LEGames.Contains(MEGame.LE3) && QueryingMod.Game == MEGame.LE3)
+                                                                     && db.ModFileInfos[x.FileID].LEGames.Length == 1
+                                                                     && x.ModID  != QueryingMod.NexusModID); // Only one game allowed in a result
+                                }
+
+                                //Application.Current.Dispatcher.Invoke(() =>
+                                //{
+                                Results.AddRange(instances.Select(x => new SearchedItemResult()
+                                {
+                                    Instance = x,
+                                    Domain = domain,
+                                    Filename = db.NameTable[x.FilenameId],
+                                    AssociatedDB = db
+                                }).ToList()); // We do tolist because it forces all items to be added at once
+                            }
+                        }
+                    }
+
+                    StatusText = M3L.GetString(M3L.string_interp_resultsCount, Results.Count);
+                    QueryInProgress = false;
+
+                    //foreach (var res in Results)
+                    //{
+                    //    Debug.WriteLine($"{res.Instance.ModID} {res.Instance.FileID}");
+                    //}
+                }
+                catch (Exception e)
+                {
+                    M3Log.Error($@"Could not perform search: {e.Message}");
+                    QueryInProgress = false;
+                }
+            });
+
+        }
+
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
@@ -271,6 +367,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }).ContinueWithOnUIThread(x =>
             {
                 CategoryOptionsCBL.SetSelectedItems(Enum.GetValues<FileCategory>().Where(x => x != FileCategory.Archived && x!= FileCategory.Old && x!= FileCategory.Update && x != FileCategory.Deleted).OfType<object>());
+#if DEBUG
+                // Debug mode only for now
+                if (QueryingMod != null)
+                {
+                    PerformSearchAgainstMod();
+                }
+#endif
             });
         }
 

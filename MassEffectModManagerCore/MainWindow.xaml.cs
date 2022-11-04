@@ -893,7 +893,7 @@ namespace ME3TweaksModManager
 
         private void OpenNexusSearch()
         {
-            var nexusSearchPanel = new NexusFileQueryPanel();
+            var nexusSearchPanel = new NexusFileQueryPanel(SelectedMod);
             nexusSearchPanel.Close += (a, b) =>
             {
                 ReleaseBusyControl();
