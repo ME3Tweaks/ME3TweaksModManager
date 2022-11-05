@@ -88,8 +88,14 @@
                                     FontWeight="Bold"
                                     FontSize="14" />
                             </DockPanel>
-                            <TextBlock
-                                Text="{Binding ModBeingDeployed.ModVersionString, Converter={StaticResource LocalizationConverter}, ConverterParameter='string_interp_versionX'}" />
+                            <TextBlock>
+                                <TextBlock.Text>
+                                    <MultiBinding StringFormat="{}{0} | {1}">
+                                        <Binding Path="ModBeingDeployed.ModVersionString" Converter="{StaticResource LocalizationConverter}" ConverterParameter="string_interp_versionX" />
+                                        <Binding Path="ModBeingDeployed.Game" />
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
                             <TextBlock
                                 Text="{DynamicResource string_deploymentChecklist}"
                                 FontWeight="Bold" />
