@@ -251,8 +251,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 }
 
 
-                SortedSet<string> autoConfigs = new SortedSet<string>();
-
+                SortedSet<string> autoConfigs = GetAutoConfigs();
                 if (autoConfigs.Count > 0)
                 {
                     sb.AppendLine(M3L.GetString(M3L.string_modparsing_configCanChangeIfOtherDLCFound));
