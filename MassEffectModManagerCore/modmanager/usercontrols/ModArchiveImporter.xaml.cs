@@ -1053,6 +1053,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public ICommand ImportModsCommand { get; set; }
         public ICommand CancelCommand { get; set; }
         public ICommand InstallModCommand { get; set; }
+        public ICommand SelectAllCommand { get; set; }
+        public ICommand UnselectAllCommand { get; set; }
 
         public string InstallModText
         {
@@ -1077,6 +1079,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             ImportModsCommand = new GenericCommand(BeginImportingMods, CanImportMods);
             CancelCommand = new GenericCommand(Cancel, CanCancel);
             InstallModCommand = new GenericCommand(InstallCompressedMod, CanInstallCompressedMod);
+            UnselectAllCommand = new GenericCommand(() => checkAll(false), CanCancel);
+            SelectAllCommand = new GenericCommand(() => checkAll(true), CanCancel);
         }
 
         public enum ModImportResult
@@ -1090,11 +1094,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         private bool CanInstallCompressedMod()
         {
             //This will have to pass some sort of validation code later.
-            return IsPanelOpen && CompressedMods_ListBox != null 
-                               && CompressedMods_ListBox.SelectedItem is Mod cm 
-                               && cm.ExeExtractionTransform == null 
+            return IsPanelOpen && CompressedMods_ListBox != null
+                               && CompressedMods_ListBox.SelectedItem is Mod cm
+                               && cm.ExeExtractionTransform == null
                                && cm.ValidMod
-                               && !TaskRunning /*&& !CompressPackages*/ 
+                               && !TaskRunning /*&& !CompressPackages*/
                                && mainwindow != null // Might happen if app is closing or panel closed?
                                && mainwindow.InstallationTargets.Any(x => x.Game == cm.Game);
         }
@@ -1132,16 +1136,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             InitializeComponent();
             InspectArchiveFile(ArchiveFilePath);
-        }
-
-        private void CheckAll_Click(object sender, RoutedEventArgs e)
-        {
-            checkAll(true);
-        }
-
-        private void UncheckAll_Click(object sender, RoutedEventArgs e)
-        {
-            checkAll(false);
         }
 
         private void checkAll(bool check)

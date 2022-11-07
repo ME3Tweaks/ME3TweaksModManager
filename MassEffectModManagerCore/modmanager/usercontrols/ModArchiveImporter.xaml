@@ -113,14 +113,14 @@
                         <Button
                             DockPanel.Dock="Left"
                             Content="{DynamicResource string_unselectAll}"
-                            Click="UncheckAll_Click"
+                            Command="{Binding UnselectAllCommand}"
                             FontSize="10"
                             Height="16"
                             Padding="5,2" />
                         <Button
                             HorizontalAlignment="Right"
                             Content="{DynamicResource string_selectAll}"
-                            Click="CheckAll_Click"
+                            Command="{Binding SelectAllCommand}"
                             FontSize="10"
                             Height="16"
                             Padding="5,2" />

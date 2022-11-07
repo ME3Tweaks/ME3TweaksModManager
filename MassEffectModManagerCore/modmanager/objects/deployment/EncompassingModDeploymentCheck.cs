@@ -59,6 +59,7 @@ namespace ME3TweaksModManager.modmanager.objects.deployment
             MetadataChecks.AddMetadataChecks(this);
             LanguageChecks.AddLanguageChecks(this);
             PackageChecks.AddPackageChecks(this);
+            AudioChecks.AddAudioChecks(this);
             TextureChecks.AddTextureChecks(this);
             MiscChecks.AddMiscChecks(this);
         }
