@@ -16,7 +16,6 @@ using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.mod;
 using Microsoft.AppCenter.Crashes;
 using Microsoft.WindowsAPICodePack.Dialogs;
-using PropertyChanged;
 
 namespace ME3TweaksModManager.modmanager.loaders
 {
@@ -163,6 +162,18 @@ namespace ME3TweaksModManager.modmanager.loaders
         /// </summary>
         private Window window { get; init; }
 
+        /// <summary>
+        /// The bottom left loading task. Can be null.
+        /// </summary>
+        private BackgroundTask LoadingTask { get; set; }
+
+        private void OnNumModsLoadedChanged()
+        {
+            if (LoadingTask != null && NumTotalMods > 0)
+            {
+                BackgroundTaskEngine.SubmitBackgroundTaskUpdate(LoadingTask, M3L.GetString(M3L.string_loadingMods) + $@" {Math.Round(NumModsLoaded * 100.0f/NumTotalMods)}%");
+            }
+        }
 
         public static void InitializeModLoader(MainWindow window, Action<Mod> selectedModCallback)
         {
@@ -277,7 +288,7 @@ namespace ME3TweaksModManager.modmanager.loaders
             {
                 bool canAutoCheckForModUpdates = MOnlineContent.CanFetchContentThrottleCheck(); //This is here as it will fire before other threads can set this value used in this session.
                 ModsLoaded = false;
-                var uiTask = BackgroundTaskEngine.SubmitBackgroundJob(@"ModLoader", M3L.GetString(M3L.string_loadingMods), M3L.GetString(M3L.string_loadedMods));
+                LoadingTask = BackgroundTaskEngine.SubmitBackgroundJob(@"ModLoader", M3L.GetString(M3L.string_loadingMods), M3L.GetString(M3L.string_loadedMods));
                 M3Log.Information(@"Loading mods from mod library: " + GetCurrentModLibraryDirectory());
 
                 var le3modDescsToLoad = Directory.GetDirectories(GetLE3ModsDirectory()).Select(x => (game: MEGame.LE3, path: Path.Combine(x, @"moddesc.ini"))).Where(x => File.Exists(x.path));
@@ -375,7 +386,8 @@ namespace ME3TweaksModManager.modmanager.loaders
                     }
                 }
 
-                BackgroundTaskEngine.SubmitJobCompletion(uiTask);
+                BackgroundTaskEngine.SubmitJobCompletion(LoadingTask);
+                LoadingTask = null;
                 //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NoModSelectedText)));
 
                 NumTotalMods = 0; // we are no longer loading so set this to zero.
