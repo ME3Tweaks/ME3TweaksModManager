@@ -1,4 +1,6 @@
-﻿using LegendaryExplorerCore.Coalesced;
+﻿using System.Diagnostics;
+using IniParser.Model;
+using LegendaryExplorerCore.Coalesced;
 using LegendaryExplorerCore.Coalesced.Xml;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Helpers;
@@ -8,7 +10,10 @@ using LegendaryExplorerCore.Textures;
 using LegendaryExplorerCore.Unreal;
 using LegendaryExplorerCore.Unreal.Classes;
 using LegendaryExplorerCore.UnrealScript;
+using LegendaryExplorerCore.UnrealScript.Compiling.Errors;
+using ME3TweaksCore.Helpers;
 using ME3TweaksModManager.modmanager.objects.starterkit;
+using ME3TweaksModManager.modmanager.windows;
 using Microsoft.WindowsAPICodePack.NativeAPI.Consts;
 using Newtonsoft.Json;
 using Pathoschild.FluentNexus.Models;
@@ -30,6 +35,11 @@ namespace ME3TweaksModManager.modmanager.starterkit
     /// </summary>
     internal class StarterKitAddins
     {
+        #region RESOURCES
+        private const string LE3ModSettingsClassTextAsset = @"ME3TweaksModManager.modmanager.starterkit.scripts.SFXGUIData_ModSettings.uc";
+        #endregion
+
+
         #region STARTUP FILE
         /// <summary>
         /// Generates a startup file for the specified game
@@ -749,5 +759,148 @@ namespace ME3TweaksModManager.modmanager.starterkit
 
 
         #endregion
+
+        #region LE3 Mod Settings Menu
+        public static void AddModSettingsMenu(MEGame game, string dlcFolderPath, List<Action<IniData>> moddescAddinDelegates)
+        {
+            if (game != MEGame.LE3)
+                return; // Do nothing. Maybe in future this will be something that can be used.
+
+            var dlcName = Path.GetFileName(dlcFolderPath);
+            var cookedPath = Path.Combine(dlcFolderPath, game.CookedDirName());
+
+            // GuiData contains the class that mod settings menu will dynamic load
+            var guiDataFName = $@"SFXGUIData_{dlcName}.pcc";
+            var guiDataPackagePath = Path.Combine(cookedPath, guiDataFName);
+            if (!File.Exists(guiDataPackagePath))
+            {
+                // Generate GuiData package
+                using var package = MEPackageHandler.CreateAndOpenPackage(guiDataPackagePath, game, true);
+                CreateObjectReferencer(package);
+                package.Save();
+            }
+
+            // Create package (this is not in above in case it already exists for some reason...)
+            var className = $@"SFXGUIData_ModSettings_{dlcName}";
+            string modSettingsClassPath = $@"SFXGameContent.{className}";
+            using var guiDataPackage = MEPackageHandler.OpenMEPackage(guiDataPackagePath);
+            var testPath = guiDataPackage.FindExport(modSettingsClassPath);
+            if (testPath == null)
+            {
+                // Does not contain the export, we need to create it.
+
+                var container = guiDataPackage.FindExport(@"SFXGameContent");
+                if (container != null && container.ClassName == @"Package")
+                {
+                    M3Log.Information(@"Found existing SFXGameContent in GUIData package, using that as parent");
+                }
+                else if (container != null)
+                {
+                    M3Log.Error($@"We found SFXGameContent in {guiDataPackagePath} but it is not a Package export! This is not supported");
+                    return;
+                }
+                else
+                {
+                    container = ExportCreator.CreatePackageExport(guiDataPackage, @"SFXGameContent");
+                }
+
+                var settingsData = guiDataPackage.FindExport(@"Settings_Data");
+                if (settingsData != null && settingsData.ClassName == @"Package")
+                {
+                    M3Log.Information(@"Found existing Settings_Data in GUIData package, using that as parent");
+                }
+                else if (settingsData != null)
+                {
+                    M3Log.Error($@"We found Settings_Data in {guiDataPackagePath} but it is not a Package export! This is not supported");
+                    return;
+                }
+                else
+                {
+                    settingsData = ExportCreator.CreatePackageExport(guiDataPackage, @"Settings_Data");
+                }
+
+
+                // Compile the classes
+                var fileLib = new FileLib(guiDataPackage);
+                if (!fileLib.Initialize())
+                {
+                    M3Log.Error($@"Error intitializing filelib for sfxguidata package: {fileLib.InitializationLog.AllErrors.Select(msg => msg.ToString())}");
+                    return;
+                }
+
+                // 1. Parent class
+                (_, MessageLog log1) = UnrealScriptCompiler.CompileClass(guiDataPackage, new StreamReader(M3Utilities.ExtractInternalFileToStream(LE3ModSettingsClassTextAsset)).ReadToEnd(), fileLib, parent: settingsData);
+                if (log1.HasErrors)
+                {
+                    M3Log.Error($@"Failed to compile SFXGUIData_ModSettings for sfxguidata package: {fileLib.InitializationLog.AllErrors.Select(msg => msg.ToString())}");
+                    return;
+                }
+
+                // 2. Our custom class
+                (_, MessageLog log2) = UnrealScriptCompiler.CompileClass(guiDataPackage, GetCustomLE3ModSettingsClassText(dlcName), fileLib, parent: container);
+                if (log2.HasErrors)
+                {
+                    M3Log.Error($@"Failed to compile {className} for sfxguidata package: {fileLib.InitializationLog.AllErrors.Select(msg => msg.ToString())}");
+                    return;
+                }
+
+                guiDataPackage.Save();
+            }
+
+            if (game == MEGame.LE3)
+            {
+                MountFile mf = new MountFile(Path.Combine(dlcFolderPath, game.CookedDirName(), @"mount.dlc"));
+                // Add the dynamic load mapping for our class.
+                Dictionary<string, string> dlm = new CaseInsensitiveDictionary<string>
+                {
+                    { @"ObjectName", modSettingsClassPath},
+                    { @"SeekFreePackageName", Path.GetFileNameWithoutExtension(guiDataFName)}
+                };
+                AddCoalescedReference(game, dlcName, cookedPath, @"BioEngine", @"sfxgame.sfxengine", @"dynamicloadmapping", StringStructParser.BuildCommaSeparatedSplitValueList(dlm, dlm.Keys.ToArray()), CoalesceParseAction.AddUnique);
+
+                // Add BioUI references so our menu loads
+                AddCoalescedReference(game, dlcName, cookedPath, @"BioUI", modSettingsClassPath, @"confirmationmessageatextoverride", @"247370", CoalesceParseAction.New);
+                AddCoalescedReference(game, dlcName, cookedPath, @"BioUI", modSettingsClassPath, @"m_sratext", @"247370", CoalesceParseAction.New);
+                AddCoalescedReference(game, dlcName, cookedPath, @"BioUI", modSettingsClassPath, @"m_srbtext", @"576055", CoalesceParseAction.New);
+                AddCoalescedReference(game, dlcName, cookedPath, @"BioUI", modSettingsClassPath, @"m_srtitle", @"3248043", CoalesceParseAction.New); // Point to mod TLK ID?
+
+                // Add root menu reference to our menu
+                Dictionary<string, string> msmr = new CaseInsensitiveDictionary<string>
+                {
+                    { @"SubMenuClassName", modSettingsClassPath},
+                    { @"ChoiceEntry", StringStructParser.BuildCommaSeparatedSplitValueList(new CaseInsensitiveDictionary<string>()
+                    {
+                        {@"srChoiceName", mf.TLKID.ToString()}, // These strings need added to the TLK
+                        {@"srChoiceDescription", "3248042"}, // These strings need added to the TLK
+                    })},
+                    { @"Images[0]", modSettingsClassPath},
+                };
+                AddCoalescedReference(game, dlcName, cookedPath, @"BioUI", @"sfxgamecontent.sfxguidata_modsettings_root", @"modsettingitemarray", StringStructParser.BuildCommaSeparatedSplitValueList(msmr, @"SubMenuClassName", @"Images[0]"), CoalesceParseAction.AddUnique);
+
+
+                // Mod has a dependency on LE3 Comm Patch so we add that to the moddesc
+                moddescAddinDelegates.Add(x =>
+                {
+                    var reqDlc = x[@"ModInfo"][@"requireddlc"];
+                    if (!string.IsNullOrWhiteSpace(reqDlc)) reqDlc += @";";
+                    reqDlc += @"DLC_MOD_LE3Patch;DLC_MOD_Framework";
+                    x[@"ModInfo"][@"requireddlc"] = reqDlc;
+                });
+            }
+        }
+
+        #endregion
+
+        /// <summary>
+        /// The class text for the custom menu class, split to its own func for clarity
+        /// </summary>
+        /// <param name="dlcName"></param>
+        /// <returns></returns>
+        private static string GetCustomLE3ModSettingsClassText(string dlcName)
+        {
+            return $@"Class SFXGUIData_ModSettings_{dlcName} extends SFXGUIData_ModSettings editinlinenew perobjectconfig config(UI); defaultproperties {{ }}";
+        }
+
+        // Might need to port TLK Handler from ME2R...
     }
 }

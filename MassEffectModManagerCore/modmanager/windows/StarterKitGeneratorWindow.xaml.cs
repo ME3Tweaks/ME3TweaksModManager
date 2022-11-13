@@ -103,6 +103,7 @@ namespace ME3TweaksModManager.modmanager.windows
         public ObservableCollectionExtended<Bio2DAOption> Selected2DAs { get; } = new();
 
         // Game 3
+        public bool AddModSettingsMenuData { get; set; } = true; // LE3 only
         public bool AddSquadmateMerge3Garrus { get; set; }
         public bool AddSquadmateMerge3Liara { get; set; }
         public bool AddSquadmateMerge3EDI { get; set; }
@@ -439,6 +440,7 @@ namespace ME3TweaksModManager.modmanager.windows
                 // FEATURES MAP
                 AddStartupFile = AddStartupFile,
                 AddPlotManagerData = AddPlotManagerData,
+                AddModSettingsMenu = AddModSettingsMenuData,
                 Blank2DAsToGenerate = Selected2DAs.ToList(),
                 AddAshleySQM = AddSquadmateMerge3Ashley,
                 AddGarrusSQM = AddSquadmateMerge3Garrus,
@@ -709,6 +711,7 @@ namespace ME3TweaksModManager.modmanager.windows
             }
 
             // ADDINS
+            List<Action<IniData>> moddescAddinDelegates = new List<Action<IniData>>();
             if (skOption.AddStartupFile)
             {
                 UITextCallback?.Invoke($@"{M3L.GetString(M3L.string_generatingMod)} - Startup file");
@@ -718,6 +721,12 @@ namespace ME3TweaksModManager.modmanager.windows
             {
                 UITextCallback?.Invoke($@"{M3L.GetString(M3L.string_generatingMod)} - PlotManager data");
                 StarterKitAddins.GeneratePlotData(skOption.ModGame, contentDirectory);
+            }
+
+            if (skOption.AddModSettingsMenu)
+            {
+                UITextCallback?.Invoke($@"{M3L.GetString(M3L.string_generatingMod)} - Mod Settings Menu");
+                StarterKitAddins.AddModSettingsMenu(skOption.ModGame, contentDirectory, moddescAddinDelegates);
             }
 
             if (skOption.Blank2DAsToGenerate.Any())
@@ -797,6 +806,11 @@ namespace ME3TweaksModManager.modmanager.windows
                 ini[@"CUSTOMDLC"][@"sourcedirs"] = dlcFolderName;
                 ini[@"CUSTOMDLC"][@"destdirs"] = dlcFolderName;
 
+                foreach (var v in moddescAddinDelegates)
+                {
+                    v.Invoke(ini);
+                }
+
                 var modDescPath = Path.Combine(modPath, @"moddesc.ini");
                 new FileIniDataParser().WriteFile(modDescPath, ini, new UTF8Encoding(false));
                 Mod m = new Mod(modDescPath, skOption.ModGame);
@@ -837,6 +851,7 @@ namespace ME3TweaksModManager.modmanager.windows
             /// </summary>
             public bool AddStartupFile { get; set; }
             public bool AddPlotManagerData { get; set; }
+            public bool AddModSettingsMenu { get; set; }
             public List<Bio2DAOption> Blank2DAsToGenerate { get; set; } = new();
             public bool AddAshleySQM { get; set; }
             public bool AddGarrusSQM { get; set; }
@@ -915,6 +930,7 @@ namespace ME3TweaksModManager.modmanager.windows
         {
             // CLEAR ALL THE FLAGS
             AddStartupFile = false;
+            AddModSettingsMenuData = false;
             AddPlotManagerData = false;
             Selected2DAs.Clear();
             AddSquadmateMerge3Ashley = false;

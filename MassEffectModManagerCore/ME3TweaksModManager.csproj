@@ -107,6 +107,7 @@
 		<None Remove="modmanager\starterkit\henchimages\placeholder_available.png" />
 		<None Remove="modmanager\starterkit\henchimages\placeholder_chosen.png" />
 		<None Remove="modmanager\starterkit\henchimages\placeholder_silo.png" />
+		<None Remove="modmanager\starterkit\scripts\SFXGUIData_ModSettings.uc" />
 		<None Remove="modmanager\starterkit\StarterKitTLK.xml" />
 		<None Remove="modmanager\toolicons\alot_32.png" />
 		<None Remove="modmanager\toolicons\alot_big.png" />
@@ -166,6 +167,7 @@
 		<EmbeddedResource Include="modmanager\starterkit\Default_DLC_MOD_StarterKit.bin" />
 		<EmbeddedResource Include="modmanager\starterkit\henchimages\placeholder_available.png" />
 		<EmbeddedResource Include="modmanager\starterkit\henchimages\placeholder_chosen.png" />
+		<EmbeddedResource Include="modmanager\starterkit\scripts\SFXGUIData_ModSettings.uc" />
     <EmbeddedResource Include="updater\ME3CMM.exe" />
 		<EmbeddedResource Include="updater\ME3TweaksUpdater.exe" />
 	</ItemGroup>
