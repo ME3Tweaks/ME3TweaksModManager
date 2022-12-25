@@ -130,6 +130,11 @@ namespace ME3TweaksModManager.modmanager.helpers
         /// <returns></returns>
         public static string GetModDownloadCacheDirectory()
         {
+            // Mod Manager 8.0.1: Support custom Mod Download Cache folder
+            if (Settings.ModDownloadCacheFolder != null && Directory.Exists(Settings.ModDownloadCacheFolder))
+            {
+                return Settings.ModDownloadCacheFolder;
+            }
             return Directory.CreateDirectory(Path.Combine(MCoreFilesystem.GetAppDataFolder(), @"downloadedmodscache")).FullName;
         }
 

@@ -9,6 +9,7 @@
     xmlns:local2="clr-namespace:ME3TweaksModManager"
     xmlns:starterkitobjects="clr-namespace:ME3TweaksModManager.modmanager.objects.starterkit"
     xmlns:generic="clr-namespace:ME3TweaksModManager.modmanager.usercontrols.generic"
+    xmlns:helpers="clr-namespace:ME3TweaksModManager.modmanager.helpers"
     Background="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}"
     WindowStartupLocation="CenterOwner"
     Title="{DynamicResource string_title_starterkit}"
@@ -339,7 +340,7 @@
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
-                        <DataTemplate DataType="helpers:MEGameSelector">
+                        <DataTemplate DataType="{x:Type helpers:MEGameSelector}">
                             <Button Click="GameIcon_Click" Padding="2" Margin="2,0">
                                 <Button.Style>
                                     <Style TargetType="Button"  BasedOn="{StaticResource {x:Type Button}}">
@@ -410,6 +411,10 @@
                 Grid.RowSpan="15"
                 Grid.Row="2"
                 MinWidth="300">
+                <xctk:WatermarkTextBox
+                    DockPanel.Dock="Bottom"
+                    Watermark="{DynamicResource string_typeToFilter}"
+                    Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}"/>
                 <ListBox
                     Name="CustomDLCMountsListBox"
                     BorderThickness="1"

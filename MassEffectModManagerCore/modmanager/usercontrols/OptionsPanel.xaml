@@ -31,12 +31,14 @@
                         Text="{DynamicResource string_modLibraryLocation}"
                         TextAlignment="Center"
                         FontSize="16"
+                        TextWrapping="Wrap"
                         Margin="0,5,0,0"
                         FontWeight="Bold" />
                     <TextBlock
                         DockPanel.Dock="Top"
                         Text="{DynamicResource string_description_modsImportedAreStoredInLibrary}"
                         TextAlignment="Left"
+                        TextWrapping="Wrap"
                         Margin="0,5,0,0" />
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -51,6 +53,7 @@
                             Margin="0,0,2,0"
                             IsReadOnly="True"
                             IsReadOnlyCaretVisible="False"
+                            IsEnabled="False"
                             Text="{Binding LibraryDir}"
                             Foreground="{DynamicResource {x:Static adonisUi:Brushes.SlightlyDimmedForegroundBrush}}" />
                         <Button
@@ -58,6 +61,45 @@
                             Grid.Column="1"
                             Command="{Binding ChangeLibraryDirCommand}" />
                     </Grid>
+
+                </DockPanel>
+                <DockPanel
+                    DockPanel.Dock="Top">
+                    <TextBlock
+                        DockPanel.Dock="Top"
+                        Text="NexusMods download folder"
+                        TextAlignment="Center"
+                        FontSize="16"
+                        Margin="0,5,0,0"
+                        FontWeight="Bold" />
+                    <TextBlock
+                        DockPanel.Dock="Top"
+                        TextWrapping="Wrap"
+                        Text="You can specify a custom location to store downloaded mod archives in. These archives are not necessary to keep once a mod is imported into the mod library. If you don't specify one, a temporary directory is used on the C:\ drive and mod downloads will be deleted every time the application closes."
+                        TextAlignment="Left"
+                        Margin="0,5,0,0" />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition
+                                Width="1*" />
+                            <ColumnDefinition
+                                Width="100" />
+                        </Grid.ColumnDefinitions>
+                        <xctk:WatermarkTextBox
+                            Watermark="Default: Temporary download cache"
+                            SnapsToDevicePixels="True"
+                            Margin="0,0,2,0"
+                            IsReadOnly="True"
+                            IsEnabled="False"
+                            IsReadOnlyCaretVisible="False"
+                            Text="{Binding NexusModsDownloadCache}"
+                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.SlightlyDimmedForegroundBrush}}" />
+                        <Button
+                            Content="Configure"
+                            Grid.Column="1"
+                            Command="{Binding ChangeNexusModsDownloadCacheCommand}" />
+                    </Grid>
+
                 </DockPanel>
                 <Grid
                     DockPanel.Dock="Top"

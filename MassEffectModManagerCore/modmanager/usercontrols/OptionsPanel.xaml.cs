@@ -7,6 +7,7 @@ using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.ui;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using PropertyChanged;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
@@ -20,18 +21,22 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public OptionsPanel()
         {
             LibraryDir = M3LoadedMods.GetCurrentModLibraryDirectory();
+            NexusModsDownloadCache = Settings.ModDownloadCacheFolder;
             LoadCommands();
         }
 
 
         public string LibraryDir { get; set; }
+        public string NexusModsDownloadCache { get; set; }
         public ICommand CloseCommand { get; set; }
         public ICommand ChangeLibraryDirCommand { get; set; }
+        public ICommand ChangeNexusModsDownloadCacheCommand { get; set; }
 
         private void LoadCommands()
         {
             CloseCommand = new GenericCommand(() => OnClosing(DataEventArgs.Empty));
             ChangeLibraryDirCommand = new GenericCommand(ChangeLibraryDir);
+            ChangeNexusModsDownloadCacheCommand = new GenericCommand(ChangeNexusModsDownloadCacheDir);
         }
 
         private void ChangeLibraryDir()
@@ -43,6 +48,33 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 LibraryDir = Settings.ModLibraryPath;
             }
         }
+
+        private void ChangeNexusModsDownloadCacheDir()
+        {
+            var choseTempCache = M3L.ShowDialog(window,
+                "Specify a custom directory to download to, or use the temporary cache (default)?",
+                "Choose cache type", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No,
+                yesContent: "Custom directory", "Temporary cache") == MessageBoxResult.No;
+            if (choseTempCache)
+            {
+                Settings.ModDownloadCacheFolder = NexusModsDownloadCache = null;
+            }
+            else
+            {
+                CommonOpenFileDialog m = new CommonOpenFileDialog
+                {
+                    IsFolderPicker = true,
+                    EnsurePathExists = true,
+                    Title = "Select NexusMods download directory"
+                };
+                if (m.ShowDialog(window) == CommonFileDialogResult.Ok)
+                {
+                    Settings.ModDownloadCacheFolder = NexusModsDownloadCache = m.FileName;
+
+                }
+            }
+        }
+
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
         {
