@@ -893,7 +893,7 @@ namespace ME3TweaksModManager
 
         private void OpenNexusSearch()
         {
-            var nexusSearchPanel = new NexusFileQueryPanel(SelectedMod);
+            var nexusSearchPanel = new NexusFileQueryPanel();
             nexusSearchPanel.Close += (a, b) =>
             {
                 ReleaseBusyControl();
@@ -1097,7 +1097,7 @@ namespace ME3TweaksModManager
                         else if (continueInstalling && queue.ModsToInstall.Count == modIndex)
                         {
                             //End
-                            var shouldSave = M3L.ShowDialog(this, "Save chosen options to this batch group?", "Save options", MessageBoxButton.YesNo) == MessageBoxResult.Yes;
+                            var shouldSave = M3L.ShowDialog(this, M3L.GetString(M3L.string_saveChosenOptionsToThisBatchGroup), M3L.GetString(M3L.string_saveOptions), MessageBoxButton.YesNo) == MessageBoxResult.Yes;
                             if (shouldSave)
                             {
                                 M3Log.Information($@"Commiting batch queue with chosen options: {queue.BackingFilename}");

@@ -1,12 +1,5 @@
 ﻿<Window
-    x:Class="ME3TweaksModManager.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-    xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" 
-    xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:fa5="http://schemas.fontawesome.com/icons/" xmlns:packages="clr-namespace:LegendaryExplorerCore.Packages;assembly=LegendaryExplorerCore" xmlns:loaders="clr-namespace:ME3TweaksModManager.modmanager.loaders" xmlns:modmanager="clr-namespace:ME3TweaksModManager.modmanager"
-    xmlns:local="clr-namespace:ME3TweaksModManager"
-    xmlns:ui="clr-namespace:ME3TweaksModManager.ui" xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols" xmlns:objects="clr-namespace:ME3TweaksModManager.modmanager.objects" xmlns:mod="clr-namespace:ME3TweaksModManager.modmanager.objects.mod" xmlns:controls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
+    x:Class="ME3TweaksModManager.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:fa5="http://schemas.fontawesome.com/icons/" xmlns:packages="clr-namespace:LegendaryExplorerCore.Packages;assembly=LegendaryExplorerCore" xmlns:loaders="clr-namespace:ME3TweaksModManager.modmanager.loaders" xmlns:modmanager="clr-namespace:ME3TweaksModManager.modmanager" xmlns:local="clr-namespace:ME3TweaksModManager" xmlns:ui="clr-namespace:ME3TweaksModManager.ui" xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols" xmlns:objects="clr-namespace:ME3TweaksModManager.modmanager.objects" xmlns:mod="clr-namespace:ME3TweaksModManager.modmanager.objects.mod" xmlns:controls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
     mc:Ignorable="d"
     Closing="ModManagerWindow_Closing"
     ContentRendered="ModManager_ContentRendered"
@@ -387,7 +380,6 @@
                             </MenuItem>-->
                         <MenuItem
                             Visibility="{Binding Converter={StaticResource LanguageSupportedVisibilityConverter}, ConverterParameter='pol'}"
-
                             IsChecked="{Binding Path=(modmanager:Settings.Language), Converter={StaticResource StringMatchToBoolConverter}, ConverterParameter='pol'}"
                             Name="LanguagePOL_MenuItem"
                             Header="Polski"
@@ -996,7 +988,7 @@
                                 Width="16" />
                         </MenuItem.Icon>
                         <!-- LE1 LE2 -->
-                            <MenuItem
+                        <MenuItem
                             ui:SharedUIBindings.GenerationLE="True"
                             Header="{DynamicResource string_decompileCoalescedFileLE1LE2}"
                             ToolTip="{DynamicResource string_tooltip_decompileCoalGameLE1LE2}"
@@ -1396,7 +1388,6 @@
                         Header="{DynamicResource string_installHeadmorph}"
                         Name="InstallHeadMorph_MenuItem"
                         Click="RouteDebugCall" />
-                    
                     <MenuItem
                         Header="{DynamicResource string_mEMVanillaDBViewer}"
                         Name="ShowMEMDB_MenuItem"
@@ -1593,10 +1584,13 @@
                             Command="{Binding StartGameCommand}"
                             Margin="5,0,0,0"
                             Style="{DynamicResource {x:Static adonisUi:Styles.AccentSplitButton}}"
-                            ToolTip="{DynamicResource string_tooltip_launchCurrentlySelectedTarget}" >
+                            ToolTip="{DynamicResource string_tooltip_launchCurrentlySelectedTarget}">
                             <controls:SplitButton.SplitMenu>
-                                <ContextMenu MinWidth="{Binding PlacementTarget.ActualWidth, RelativeSource={RelativeSource Self}}">
-                                    <MenuItem Header="Select launch options" Command="{Binding SelectLaunchOptionsCommand}"/>
+                                <ContextMenu
+                                    MinWidth="{Binding PlacementTarget.ActualWidth, RelativeSource={RelativeSource Self}}">
+                                    <MenuItem
+                                        Header="{DynamicResource string_selectLaunchOptions}"
+                                        Command="{Binding SelectLaunchOptionsCommand}" />
                                 </ContextMenu>
                             </controls:SplitButton.SplitMenu>
                         </controls:SplitButton>
@@ -1833,14 +1827,14 @@
                             ui:Clipper.HeightFraction="0"
                             Name="FailedModsPopupPanel"
                             ToolTip="{DynamicResource string_tooltip_someModsFailed}">
-                            <Hyperlink
+              <Hyperlink
                                 RequestNavigate="FailedMods_LinkClick"
                                 NavigateUri="internal://trigger"
                                 Foreground="Red">
-                                <TextBlock
+                <TextBlock
                                     Text="{Binding FailedModsString}" />
-                            </Hyperlink>
-                        </TextBlock>
+              </Hyperlink>
+            </TextBlock>
                     </ui:Clipper>
                     <ui:Clipper
                         HorizontalAlignment="Center"
@@ -2077,14 +2071,20 @@
                         VerticalAlignment="Bottom"
                         Constraint="Width"
                         DockPanel.Dock="Bottom">
-                        <TextBlock ToolTip="{Binding SelectedMod.ModWebsite}" 
-                                   ui:Clipper.WidthFraction="1" 
-                                   ui:Clipper.HeightFraction="0" 
-                                   Name="VisitWebsitePanel" HorizontalAlignment="Center" VerticalAlignment="Bottom">
-                          <Hyperlink RequestNavigate="RequestNavigate" NavigateUri="{Binding SelectedMod.ModWebsite}">
-                            <TextBlock Text="{Binding VisitWebsiteText}" />
-                          </Hyperlink>
-                        </TextBlock>
+                        <TextBlock
+                            ToolTip="{Binding SelectedMod.ModWebsite}"
+                            ui:Clipper.WidthFraction="1"
+                            ui:Clipper.HeightFraction="0"
+                            Name="VisitWebsitePanel"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Bottom">
+              <Hyperlink
+                                RequestNavigate="RequestNavigate"
+                                NavigateUri="{Binding SelectedMod.ModWebsite}">
+                <TextBlock
+                                    Text="{Binding VisitWebsiteText}" />
+              </Hyperlink>
+            </TextBlock>
                     </ui:Clipper>
                     <Image
                         Source="{Binding SelectedMod.BannerBitmap}"
