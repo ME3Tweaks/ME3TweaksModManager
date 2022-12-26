@@ -449,8 +449,11 @@
     <system:String x:Key="string_failedToInstallBinkASILoader">Failed to install bink ASI loader</system:String>
     <system:String x:Key="string_beta">Beta</system:String>
     <!-- This is used for beta mode features. An example is a menu with heading of 'Beta'.-->
-    
-    <!-- LEX Launcher -->
+    <system:String x:Key="string_selectLaunchOptions">Select launch options</system:String>
+    <system:String x:Key="string_saveChosenOptionsToThisBatchGroup">Save chosen options to this batch group?</system:String>
+    <system:String x:Key="string_saveOptions">Save options</system:String>
+
+<!-- LEX Launcher -->
     <system:String x:Key="string_interp_lexNightlyFailedToDownload">Legendary Explorer Nightly failed to download: {0}</system:String>
 
     <!-- M3 Service Loaders -->

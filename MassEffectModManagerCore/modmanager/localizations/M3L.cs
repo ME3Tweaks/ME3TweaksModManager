@@ -484,6 +484,10 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_compiledMergemod = "string_compiledMergemod";
 		public const string string_failedToCompileMergemod = "string_failedToCompileMergemod";
 		public const string string_failedToInstallBinkASILoader = "string_failedToInstallBinkASILoader";
+		public const string string_beta = "string_beta";
+		public const string string_selectLaunchOptions = "string_selectLaunchOptions";
+		public const string string_saveChosenOptionsToThisBatchGroup = "string_saveChosenOptionsToThisBatchGroup";
+		public const string string_saveOptions = "string_saveOptions";
 		public const string string_interp_lexNightlyFailedToDownload = "string_interp_lexNightlyFailedToDownload";
 		public const string string_loadingME3TweaksServices = "string_loadingME3TweaksServices";
 		public const string string_refreshingME3TweaksServices = "string_refreshingME3TweaksServices";
