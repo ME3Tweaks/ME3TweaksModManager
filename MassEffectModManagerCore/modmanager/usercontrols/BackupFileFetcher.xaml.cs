@@ -320,13 +320,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             nbw.RunWorkerCompleted += (a, b) =>
             {
                 LoadingInProgress = false;
-                Task.Run(() =>
-                {
-                    Thread.Sleep(1);
-                }).ContinueWithOnUIThread(x =>
-                {
-                    TriggerResize();
-                });
+                TriggerResizeNextFrame();
             };
             nbw.RunWorkerAsync();
         }
