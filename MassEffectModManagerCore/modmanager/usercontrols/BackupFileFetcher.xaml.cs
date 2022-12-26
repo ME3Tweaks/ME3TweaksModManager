@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -318,6 +320,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             nbw.RunWorkerCompleted += (a, b) =>
             {
                 LoadingInProgress = false;
+                Task.Run(() =>
+                {
+                    Thread.Sleep(1);
+                }).ContinueWithOnUIThread(x =>
+                {
+                    TriggerResize();
+                });
             };
             nbw.RunWorkerAsync();
         }
