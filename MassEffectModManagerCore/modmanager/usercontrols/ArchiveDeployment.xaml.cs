@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using LegendaryExplorerCore.GameFilesystem;
@@ -98,7 +99,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             // Not very performant, but it works...
             var m = M3LoadedMods.Instance.AllLoadedMods.Where(x => BackupService.GetBackupStatus(x.Game).BackedUp).Except(ModsInDeployment.Select(x => x.ModBeingDeployed)).OrderBy(x => x.Game).ThenBy(x => x.ModName).ToList();
-            ModSelectorDialog msd = new ModSelectorDialog(window, m);
+            ModSelectorDialog msd = new ModSelectorDialog(window, m, M3L.GetString(M3L.string_addModsToDeployment),
+                M3L.GetString(M3L.string_description_addSelectedModsToDeployment),
+                M3L.GetString(M3L.string_addSelectedModsToDeployment))
+            {
+                SelectionMode = SelectionMode.Extended // Can select multiple
+            };
             var result = msd.ShowDialog();
             if (result.HasValue && result.Value)
             {

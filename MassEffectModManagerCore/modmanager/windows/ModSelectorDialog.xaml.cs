@@ -2,6 +2,8 @@
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Forms.VisualStyles;
 using LegendaryExplorerCore.Gammtek.Extensions.Collections.Generic;
 using LegendaryExplorerCore.Misc;
 using ME3TweaksCoreWPF.UI;
@@ -17,17 +19,25 @@ namespace ME3TweaksModManager.modmanager.windows
     {
         public ObservableCollectionExtended<Mod> AvailableMods { get; } = new ObservableCollectionExtended<Mod>();
         public List<Mod> SelectedMods { get; } = new List<Mod>();
+        public string DialogCaption { get; set; }
+        public string AcceptButtonText { get; set; }
 
-        public ModSelectorDialog(Window owner, List<Mod> shownMods)
+        public ModSelectorDialog(Window owner, List<Mod> shownMods, string windowTitle, string selectorCaption, string acceptButtonText)
         {
+            Title = windowTitle;
+            DialogCaption = selectorCaption;
+            AcceptButtonText = acceptButtonText;
             Owner = owner;
             AvailableMods.ReplaceAll(shownMods);
             LoadCommands();
             InitializeComponent();
         }
 
+
+
         public GenericCommand CommitModsCommand { get; set; }
         public GenericCommand CancelCommand { get; set; }
+        public SelectionMode SelectionMode { get; set; }
 
         private void LoadCommands()
         {

@@ -111,9 +111,16 @@
                 VerticalAlignment="Center" />
             <Button
                 Content="{DynamicResource string_close}"
-                DockPanel.Dock="Bottom"
+                DockPanel.Dock="Right"
                 HorizontalAlignment="Right"
                 Click="ClosePanel" />
+            <Button
+                Content="Compare against loaded mod"
+                DockPanel.Dock="Right"
+                HorizontalAlignment="Right"
+                Margin="5,0"
+                Command="{Binding CompareAgainstModCommand}" />
+            
         </DockPanel>
         <Grid
             HorizontalAlignment="Stretch">
