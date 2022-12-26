@@ -765,42 +765,42 @@ namespace ME3TweaksModManager.modmanager.windows
             if (skOption.AddAshleySQM)
             {
                 UITextCallback?.Invoke($@"{M3L.GetString(M3L.string_generatingMod)} - Ashley SQM");
-                errorMessage = StarterKitAddins.GenerateSquadmateMergeFiles(skOption.ModGame, "Ashley", contentDirectory, outfits);
+                errorMessage = StarterKitAddins.GenerateSquadmateMergeFiles(skOption.ModGame, @"Ashley", contentDirectory, outfits);
             }
             if (errorMessage == null && skOption.AddEDISQM)
             {
                 UITextCallback?.Invoke($@"{M3L.GetString(M3L.string_generatingMod)} - EDI SQM");
-                errorMessage = StarterKitAddins.GenerateSquadmateMergeFiles(skOption.ModGame, "EDI", contentDirectory, outfits);
+                errorMessage = StarterKitAddins.GenerateSquadmateMergeFiles(skOption.ModGame, @"EDI", contentDirectory, outfits);
             }
             if (errorMessage == null && skOption.AddGarrusSQM)
             {
                 UITextCallback?.Invoke($@"{M3L.GetString(M3L.string_generatingMod)} - Garrus SQM");
-                errorMessage = StarterKitAddins.GenerateSquadmateMergeFiles(skOption.ModGame, "Garrus", contentDirectory, outfits);
+                errorMessage = StarterKitAddins.GenerateSquadmateMergeFiles(skOption.ModGame, @"Garrus", contentDirectory, outfits);
             }
             if (errorMessage == null && skOption.AddKaidanSQM)
             {
                 UITextCallback?.Invoke($@"{M3L.GetString(M3L.string_generatingMod)} - Kaidan SQM");
-                errorMessage = StarterKitAddins.GenerateSquadmateMergeFiles(skOption.ModGame, "Kaidan", contentDirectory, outfits);
+                errorMessage = StarterKitAddins.GenerateSquadmateMergeFiles(skOption.ModGame, @"Kaidan", contentDirectory, outfits);
             }
             if (errorMessage == null && skOption.AddJamesSQM)
             {
                 UITextCallback?.Invoke($@"{M3L.GetString(M3L.string_generatingMod)} - James SQM");
-                errorMessage = StarterKitAddins.GenerateSquadmateMergeFiles(skOption.ModGame, "Marine", contentDirectory, outfits);
+                errorMessage = StarterKitAddins.GenerateSquadmateMergeFiles(skOption.ModGame, @"Marine", contentDirectory, outfits);
             }
             if (errorMessage == null && skOption.AddJavikSQM)
             {
                 UITextCallback?.Invoke($@"{M3L.GetString(M3L.string_generatingMod)} - Javik SQM");
-                errorMessage = StarterKitAddins.GenerateSquadmateMergeFiles(skOption.ModGame, "Prothean", contentDirectory, outfits);
+                errorMessage = StarterKitAddins.GenerateSquadmateMergeFiles(skOption.ModGame, @"Prothean", contentDirectory, outfits);
             }
             if (errorMessage == null && skOption.AddLiaraSQM)
             {
                 UITextCallback?.Invoke($@"{M3L.GetString(M3L.string_generatingMod)} - Liara SQM");
-                errorMessage = StarterKitAddins.GenerateSquadmateMergeFiles(skOption.ModGame, "Liara", contentDirectory, outfits);
+                errorMessage = StarterKitAddins.GenerateSquadmateMergeFiles(skOption.ModGame, @"Liara", contentDirectory, outfits);
             }
             if (errorMessage == null && skOption.AddTaliSQM)
             {
                 UITextCallback?.Invoke($@"{M3L.GetString(M3L.string_generatingMod)} - Tali SQM");
-                errorMessage = StarterKitAddins.GenerateSquadmateMergeFiles(skOption.ModGame, "Tali", contentDirectory, outfits);
+                errorMessage = StarterKitAddins.GenerateSquadmateMergeFiles(skOption.ModGame, @"Tali", contentDirectory, outfits);
             }
 
             if (errorMessage != null)

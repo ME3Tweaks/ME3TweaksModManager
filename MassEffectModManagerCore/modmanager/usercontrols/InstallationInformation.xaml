@@ -195,11 +195,12 @@
                                                 FontSize="10"
                                                 VerticalAlignment="Center" />
                                             <DockPanel
+                                                IsEnabled="{Binding IsBeingOperatedOn, Converter={StaticResource BoolEnabledConverter}, ConverterParameter='Not'}"
                                                 Background="Transparent"
                                                 Grid.Row="0"
                                                 Grid.Column="1">
                                                 <Button
-                                                    Content="{DynamicResource string_delete}"
+                                                    Content="{Binding DeleteText}"
                                                     Foreground="{Binding TextColor}"
                                                     Command="{Binding DeleteCommand}"
                                                     CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type TabControl}}, Path=DataContext}"
