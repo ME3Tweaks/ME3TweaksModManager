@@ -1,11 +1,5 @@
 ﻿<usercontrols:MMBusyPanelBase
-    x:Class="ME3TweaksModManager.modmanager.usercontrols.NexusFileQueryPanel" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:fa5="http://schemas.fontawesome.com/icons/" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
-    xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
-    xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-    xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
-    xmlns:ui="clr-namespace:ME3TweaksModManager.ui"
-    xmlns:generic="clr-namespace:ME3TweaksModManager.modmanager.usercontrols.generic"
+    x:Class="ME3TweaksModManager.modmanager.usercontrols.NexusFileQueryPanel" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:fa5="http://schemas.fontawesome.com/icons/" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:b="http://schemas.microsoft.com/xaml/behaviors" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols" xmlns:ui="clr-namespace:ME3TweaksModManager.ui" xmlns:generic="clr-namespace:ME3TweaksModManager.modmanager.usercontrols.generic"
     mc:Ignorable="d"
     MinWidth="700"
     MinHeight="550"
@@ -77,14 +71,14 @@
                     DockPanel.Dock="Left"
                     ToolTip="{DynamicResource string_tooltip_nexusfilesqueryAllLE}"
                     Content="{DynamicResource string_allLE}"
-                    IsChecked="{Binding SearchLE}" 
+                    IsChecked="{Binding SearchLE}"
                     Margin="0,0,5,0" />
                 <generic:CheckBoxComboBox
                     x:Name="CategoryOptionsCBL"
-                    HorizontalAlignment="Right" 
+                    HorizontalAlignment="Right"
                     DockPanel.Dock="Right"
                     NoItemsSelectedText="{DynamicResource string_searchRequiresAtLeastOneCategory}"
-                    ItemsSource="{Binding FileCategories, RelativeSource={RelativeSource FindAncestor, AncestorType=usercontrols:NexusFileQueryPanel}}"/>
+                    ItemsSource="{Binding FileCategories, RelativeSource={RelativeSource FindAncestor, AncestorType=usercontrols:NexusFileQueryPanel}}" />
             </DockPanel>
             <ComboBox
                 Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}"
@@ -115,12 +109,11 @@
                 HorizontalAlignment="Right"
                 Click="ClosePanel" />
             <Button
-                Content="Compare against loaded mod"
+                Content="{DynamicResource string_compareAgainstLoadedMod}"
                 DockPanel.Dock="Right"
                 HorizontalAlignment="Right"
                 Margin="5,0"
                 Command="{Binding CompareAgainstModCommand}" />
-            
         </DockPanel>
         <Grid
             HorizontalAlignment="Stretch">
@@ -135,7 +128,7 @@
                     Height="32"
                     Margin="5"
                     HorizontalAlignment="Center"
-                    Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>
+                    Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
                 <TextBlock
                     Text="{Binding BusyStatusText}"
                     TextAlignment="Center"
@@ -151,37 +144,48 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate
                         DataType="{x:Type usercontrols:NexusFileQueryPanel+SearchedItemResult}">
-                        <Grid Name="ResultContainer">
+                        <Grid
+                            Name="ResultContainer">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="52"/>
-                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition
+                                    Width="52" />
+                                <ColumnDefinition
+                                    Width="*" />
                             </Grid.ColumnDefinitions>
-                            <StackPanel Grid.Column="0" ToolTip="{Binding DownloadModText}">
+                            <StackPanel
+                                Grid.Column="0"
+                                ToolTip="{Binding DownloadModText}">
                                 <Image
-                                Source="{Binding GameIconSource}"
-                                Width="48"
-                                VerticalAlignment="Top"
-                                 />
-                                <Button Cursor="Hand"
-                                        Background="Transparent"
-                                        BorderThickness="0"
-                                        Command="{Binding DownloadModCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type usercontrols:NexusFileQueryPanel}}}" 
-                                        CommandParameter="{Binding}">
-                                    <fa5:ImageAwesome Icon="Solid_Download" Width="12" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>
+                                    Source="{Binding GameIconSource}"
+                                    Width="48"
+                                    VerticalAlignment="Top" />
+                                <Button
+                                    Cursor="Hand"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Command="{Binding DownloadModCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type usercontrols:NexusFileQueryPanel}}}"
+                                    CommandParameter="{Binding}">
+                                    <fa5:ImageAwesome
+                                        Icon="Solid_Download"
+                                        Width="12"
+                                        Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
                                 </Button>
                             </StackPanel>
                             <DockPanel
                                 Grid.Column="1"
                                 Margin="0,2">
-                                <DockPanel Dock="Top">
-                                    <TextBlock Margin="0,0,5,0" DockPanel.Dock="Right">
+                                <DockPanel
+                                    Dock="Top">
+                                    <TextBlock
+                                        Margin="0,0,5,0"
+                                        DockPanel.Dock="Right">
                                         <TextBlock.Text>
                                             <MultiBinding
-                                            StringFormat="{}{0} · {1:d}">
+                                                StringFormat="{}{0} · {1:d}">
                                                 <Binding
-                                                Path="FileInfo.Category" />
+                                                    Path="FileInfo.Category" />
                                                 <Binding
-                                                Path="FileInfo.UploadDate" />
+                                                    Path="FileInfo.UploadDate" />
                                             </MultiBinding>
                                         </TextBlock.Text>
                                     </TextBlock>
@@ -189,39 +193,48 @@
                                         FontWeight="Bold"
                                         Padding="0"
                                         Margin="0,-2,0,0">
-                                        <Hyperlink
+                    <Hyperlink
                                             NavigateUri="http://www.google.com"
                                             RequestNavigate="Hyperlink_RequestNavigate">
-                                            <TextBlock
+                      <TextBlock
                                                 Text="{Binding ModName}" />
-                                        </Hyperlink>
-                                    </TextBlock>
+                    </Hyperlink>
+                  </TextBlock>
                                 </DockPanel>
-                                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
-                                    <fa5:ImageAwesome Icon="Solid_Play" Width="10" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Margin="2,0,4,0"/>
-                                    <TextBlock 
-                                ToolTip="{Binding Instance.FileID}"
-                                DockPanel.Dock="Top">
+                                <StackPanel
+                                    DockPanel.Dock="Top"
+                                    Orientation="Horizontal">
+                                    <fa5:ImageAwesome
+                                        Icon="Solid_Play"
+                                        Width="10"
+                                        Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                        Margin="2,0,4,0" />
+                                    <TextBlock
+                                        ToolTip="{Binding Instance.FileID}"
+                                        DockPanel.Dock="Top">
                                         <TextBlock.Text>
                                             <MultiBinding
-                                    StringFormat="{}{0} (Version {1})">
+                                                StringFormat="{}{0} (Version {1})">
                                                 <Binding
-                                        Path="ModFileTitle" />
+                                                    Path="ModFileTitle" />
                                                 <Binding
-                                        Path="FileInfo.Version" />
+                                                    Path="FileInfo.Version" />
                                             </MultiBinding>
                                         </TextBlock.Text>
                                     </TextBlock>
                                 </StackPanel>
-                                <TextBlock Text="{Binding FileInfo.Description}" DockPanel.Dock="Top" TextWrapping="Wrap"/>
+                                <TextBlock
+                                    Text="{Binding FileInfo.Description}"
+                                    DockPanel.Dock="Top"
+                                    TextWrapping="Wrap" />
                                 <TextBlock>
                                     <TextBlock.Text>
                                         <MultiBinding
-                                        StringFormat="{}{0} - {1}">
+                                            StringFormat="{}{0} - {1}">
                                             <Binding
-                                            Path="FullPath" />
+                                                Path="FullPath" />
                                             <Binding
-                                            Path="Instance.Size" />
+                                                Path="Instance.Size" />
                                         </MultiBinding>
                                     </TextBlock.Text>
                                 </TextBlock>
@@ -231,8 +244,13 @@
                             <!--<Trigger Property="ItemsControl.AlternationIndex" Value="0">
                                 <Setter Property="Background" Value="{x:Static adonisUi:Brushes.Layer1BackgroundBrush}" TargetName="ResultContainer"/>
                             </Trigger>-->
-                            <Trigger Property="ItemsControl.AlternationIndex" Value="1">
-                                <Setter Property="Background" Value="#22000000" TargetName="ResultContainer"/>
+                            <Trigger
+                                Property="ItemsControl.AlternationIndex"
+                                Value="1">
+                                <Setter
+                                    Property="Background"
+                                    Value="#22000000"
+                                    TargetName="ResultContainer" />
                             </Trigger>
                         </DataTemplate.Triggers>
                     </DataTemplate>

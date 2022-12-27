@@ -1,14 +1,11 @@
 ﻿using System.Windows;
 using System.Windows.Input;
 using ME3TweaksCoreWPF.UI;
-using ME3TweaksModManager.modmanager.diagnostics;
-using ME3TweaksModManager.modmanager.loaders;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.ui;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using Microsoft.WindowsAPICodePack.Dialogs;
-using PropertyChanged;
 
 namespace ME3TweaksModManager.modmanager.usercontrols
 {
@@ -52,9 +49,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         private void ChangeNexusModsDownloadCacheDir()
         {
             var choseTempCache = M3L.ShowDialog(window,
-                "Specify a custom directory to download to, or use the temporary cache (default)?",
-                "Choose cache type", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No,
-                yesContent: "Custom directory", "Temporary cache") == MessageBoxResult.No;
+                M3L.GetString(M3L.string_dialog_selectDownloadCacheType),
+                M3L.GetString(M3L.string_chooseCacheType), MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No,
+                yesContent: M3L.GetString(M3L.string_customDirectory), M3L.GetString(M3L.string_temporaryCache)) == MessageBoxResult.No;
             if (choseTempCache)
             {
                 Settings.ModDownloadCacheFolder = NexusModsDownloadCache = null;
@@ -65,7 +62,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 {
                     IsFolderPicker = true,
                     EnsurePathExists = true,
-                    Title = "Select NexusMods download directory"
+                    Title = M3L.GetString(M3L.string_selectNexusModsDownloadDirectory)
                 };
                 if (m.ShowDialog(window) == CommonFileDialogResult.Ok)
                 {

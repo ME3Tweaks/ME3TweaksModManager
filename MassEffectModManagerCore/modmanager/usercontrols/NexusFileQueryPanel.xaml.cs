@@ -71,8 +71,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         private void SearchAgainstMod()
         {
             ModSelectorDialog msd = new ModSelectorDialog(window, M3LoadedMods.Instance.AllLoadedMods.ToList(),
-                "Select mod to compare against database",
-                "Select a mod to search all installable files against the ones in the database.", "Select mod")
+                M3L.GetString(M3L.string_selectModToCompareAgainstDatabase),
+                M3L.GetString(M3L.string_nfqp_selectModDialogText), M3L.GetString(M3L.string_selectMod))
             {
                 SelectionMode = SelectionMode.Single
             };

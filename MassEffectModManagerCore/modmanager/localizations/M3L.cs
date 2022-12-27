@@ -1818,6 +1818,9 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_tooltip_nexusfilesqueryAllLE = "string_tooltip_nexusfilesqueryAllLE";
 		public const string string_allLE = "string_allLE";
 		public const string string_searchRequiresAtLeastOneCategory = "string_searchRequiresAtLeastOneCategory";
+		public const string string_selectModToCompareAgainstDatabase = "string_selectModToCompareAgainstDatabase";
+		public const string string_nfqp_selectModDialogText = "string_nfqp_selectModDialogText";
+		public const string string_compareAgainstLoadedMod = "string_compareAgainstLoadedMod";
 		public const string string_dialog_cannotEndorseNonDownloadedMod = "string_dialog_cannotEndorseNonDownloadedMod";
 		public const string string_dialog_cannotEndorseUntil15min = "string_dialog_cannotEndorseUntil15min";
 		public const string string_dialog_mustBePremiumUserToDownload = "string_dialog_mustBePremiumUserToDownload";
@@ -1873,6 +1876,15 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_applicationTheme = "string_applicationTheme";
 		public const string string_doubleClickModInLibraryToInstall = "string_doubleClickModInLibraryToInstall";
 		public const string string_description_doubleClickModInLibraryToInstall = "string_description_doubleClickModInLibraryToInstall";
+		public const string string_nexusModsDownloadFolder = "string_nexusModsDownloadFolder";
+		public const string string_description_nexusModsDownloadFolder = "string_description_nexusModsDownloadFolder";
+		public const string string_defaultTemporaryDownloadCache = "string_defaultTemporaryDownloadCache";
+		public const string string_configure = "string_configure";
+		public const string string_dialog_selectDownloadCacheType = "string_dialog_selectDownloadCacheType";
+		public const string string_chooseCacheType = "string_chooseCacheType";
+		public const string string_customDirectory = "string_customDirectory";
+		public const string string_temporaryCache = "string_temporaryCache";
+		public const string string_selectNexusModsDownloadDirectory = "string_selectNexusModsDownloadDirectory";
 		public const string string_noItemsSelected = "string_noItemsSelected";
 		public const string string_interp_invalidHenchNameSquadmateNameValueIsCaseSensitive = "string_interp_invalidHenchNameSquadmateNameValueIsCaseSensitive";
 		public const string string_interp_errorCompilingConditionalFunction = "string_interp_errorCompilingConditionalFunction";
@@ -1911,5 +1923,10 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_size = "string_size";
 		public const string string_customOptions = "string_customOptions";
 		public const string string_automaticallyResumeLastSave = "string_automaticallyResumeLastSave";
+		public const string string_thereIsNoBackupAvailableToQuery2DAsFrom = "string_thereIsNoBackupAvailableToQuery2DAsFrom";
+		public const string string_2da_errorReading2DAs = "string_2da_errorReading2DAs";
+		public const string string_errorReadingTables = "string_errorReadingTables";
+		public const string string_bio2DASelector = "string_bio2DASelector";
+		public const string string_select2DATablesForBlank = "string_select2DATablesForBlank";
 	}
 }

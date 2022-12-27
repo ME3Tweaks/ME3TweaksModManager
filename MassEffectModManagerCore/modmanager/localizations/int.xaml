@@ -2316,7 +2316,7 @@
     <system:String x:Key="string_mde_dlcModControl">DLC mod control</system:String>
     <!-- As in "Use these options to control what DLC mods your mod will install"-->
 
-    <!-- Nexus File Search -->
+    <!-- Nexus File Search (Query) -->
     <system:String x:Key="string_nexusModsFileSearch">NexusMods File Search</system:String>
     <system:String x:Key="string_description_nexusModsFileSearch">You can search for files contained in mods on NexusMods for the Mass Effect trilogy games with NexusMods File Search. The database is regularly updated and maintained by ME3Tweaks.</system:String>
     <system:String x:Key="string_search">Search</system:String>
@@ -2333,6 +2333,9 @@
     <system:String x:Key="string_allLE">All LE</system:String>
     <!-- Try to keep short if possible - this is on a pretty space-constrained area -->
     <system:String x:Key="string_searchRequiresAtLeastOneCategory">Search requires at least one category</system:String>
+    <system:String x:Key="string_selectModToCompareAgainstDatabase">Select mod to compare against database</system:String>
+    <system:String x:Key="string_nfqp_selectModDialogText">Select a mod to search all installable files against the ones in the database.</system:String>
+    <system:String x:Key="string_compareAgainstLoadedMod">Compare against loaded mod</system:String>
 
     <!-- Mod-NexusModsIntegration -->
     <system:String x:Key="string_dialog_cannotEndorseNonDownloadedMod">You cannot endorse a mod that you have not downloaded from NexusMods.</system:String> 
@@ -2430,6 +2433,15 @@
     <system:String x:Key="string_applicationTheme">Application theme</system:String>
     <system:String x:Key="string_doubleClickModInLibraryToInstall">Double click mod in library to install</system:String>
     <system:String x:Key="string_description_doubleClickModInLibraryToInstall">When double clicking a mod in the mod library list, perform the same action as pressing 'Apply Mod'. If the correct game is not currently the installation target, the current active one will be used. For mods that don't have options this will immediately trigger an installation.</system:String>
+    <system:String x:Key="string_nexusModsDownloadFolder">NexusMods download folder</system:String>
+    <system:String x:Key="string_description_nexusModsDownloadFolder">You can specify a custom location to store downloaded mod archives in. These archives are not necessary to keep once a mod is imported into the mod library. If you don't specify one, a temporary directory is used on the C:\ drive and mod downloads will be deleted every time the application closes.</system:String>
+    <system:String x:Key="string_defaultTemporaryDownloadCache">Default: Temporary download cache</system:String>
+    <system:String x:Key="string_configure">Configure</system:String>
+    <system:String x:Key="string_dialog_selectDownloadCacheType">Specify a custom directory to download to, or use the temporary cache (default)?</system:String>
+    <system:String x:Key="string_chooseCacheType">Choose cache type</system:String>
+    <system:String x:Key="string_customDirectory">Custom directory</system:String>
+    <system:String x:Key="string_temporaryCache">Temporary cache</system:String>
+    <system:String x:Key="string_selectNexusModsDownloadDirectory">Select NexusMods download directory</system:String>
 
 
     <!-- Check Box Combo Box Control -->
@@ -2498,4 +2510,13 @@
     <system:String x:Key="string_size">Size:</system:String>
     <system:String x:Key="string_customOptions">Custom options</system:String>
     <system:String x:Key="string_automaticallyResumeLastSave">Automatically resume last save</system:String>
+
+    <!-- Bio2DA Selector Dialog -->
+    <system:String x:Key="string_thereIsNoBackupAvailableToQuery2DAsFrom">There is no backup available to query 2DAs from.</system:String>
+    <system:String x:Key="string_2da_errorReading2DAs">Error reading 2DA tables from game: {0}</system:String>
+    <!-- 0={Error message} -->
+    <system:String x:Key="string_errorReadingTables">Error reading tables</system:String>
+    <system:String x:Key="string_bio2DASelector">Bio2DA Selector</system:String>
+    <system:String x:Key="string_select2DATablesForBlank">Select 2DA tables to generate blank versions of for your mod.</system:String>
+
 </ResourceDictionary>
