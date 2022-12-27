@@ -907,6 +907,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_hideInstalledOptions = "string_hideInstalledOptions";
 		public const string string_noTextureModsAreInstalled = "string_noTextureModsAreInstalled";
 		public const string string_textureModded_packagesAndTFCsHidden = "string_textureModded_packagesAndTFCsHidden";
+		public const string string_loading = "string_loading";
 		public const string string_selectALogToView = "string_selectALogToView";
 		public const string string_collectingLogInformation = "string_collectingLogInformation";
 		public const string string_interp_serverRejectedTheUpload = "string_interp_serverRejectedTheUpload";
@@ -1386,6 +1387,21 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_dialog_warnMustBeDeployedForFullFeatures = "string_dialog_warnMustBeDeployedForFullFeatures";
 		public const string string_deploymentInfo = "string_deploymentInfo";
 		public const string string_le3dlcFolderNamesMP = "string_le3dlcFolderNamesMP";
+		public const string string_features = "string_features";
+		public const string string_startupFile = "string_startupFile";
+		public const string string_plotManagerData = "string_plotManagerData";
+		public const string string_modSettingsMenuStub = "string_modSettingsMenuStub";
+		public const string string_squadmateOutfitMergeAshley = "string_squadmateOutfitMergeAshley";
+		public const string string_squadmateOutfitMergeGarrus = "string_squadmateOutfitMergeGarrus";
+		public const string string_squadmateOutfitMergeEDI = "string_squadmateOutfitMergeEDI";
+		public const string string_squadmateOutfitMergeJavik = "string_squadmateOutfitMergeJavik";
+		public const string string_squadmateOutfitMergeJames = "string_squadmateOutfitMergeJames";
+		public const string string_squadmateOutfitMergeKaidan = "string_squadmateOutfitMergeKaidan";
+		public const string string_squadmateOutfitMergeLiara = "string_squadmateOutfitMergeLiara";
+		public const string string_squadmateOutfitMergeTali = "string_squadmateOutfitMergeTali";
+		public const string string_blank2DAs = "string_blank2DAs";
+		public const string string_select2DAsToAdd = "string_select2DAsToAdd";
+		public const string string_errorGeneratingMod = "string_errorGeneratingMod";
 		public const string string_dialogCouldNotSetDataToClipboard = "string_dialogCouldNotSetDataToClipboard";
 		public const string string_errorCopyingDataToClipboard = "string_errorCopyingDataToClipboard";
 		public const string string_copyItemsToClipboard = "string_copyItemsToClipboard";
@@ -1610,6 +1626,11 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_tooltip_targetToInstallThisModGroupTo = "string_tooltip_targetToInstallThisModGroupTo";
 		public const string string_deleteGroup = "string_deleteGroup";
 		public const string string_interp_deleteTheSelectedBatchQueue = "string_interp_deleteTheSelectedBatchQueue";
+		public const string string_modNotAvailableForInstall = "string_modNotAvailableForInstall";
+		public const string string_modNotAvailable = "string_modNotAvailable";
+		public const string string_notConfigured = "string_notConfigured";
+		public const string string_reconfigurationRequired = "string_reconfigurationRequired";
+		public const string string_interp_configuredTimestamp = "string_interp_configuredTimestamp";
 		public const string string_importAnInstalledDLCMod = "string_importAnInstalledDLCMod";
 		public const string string_description_importFromGameToModManager = "string_description_importFromGameToModManager";
 		public const string string_modsInstalledByManagedSolutionCannotBeImported = "string_modsInstalledByManagedSolutionCannotBeImported";
@@ -1884,5 +1905,11 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_nxm_interp_alreadyHandledByM3 = "string_nxm_interp_alreadyHandledByM3";
 		public const string string_checkAll = "string_checkAll";
 		public const string string_massEffectModderFiles = "string_massEffectModderFiles";
+		public const string string_gameLaunchParameters = "string_gameLaunchParameters";
+		public const string string_gameLanguage = "string_gameLanguage";
+		public const string string_subtitles = "string_subtitles";
+		public const string string_size = "string_size";
+		public const string string_customOptions = "string_customOptions";
+		public const string string_automaticallyResumeLastSave = "string_automaticallyResumeLastSave";
 	}
 }

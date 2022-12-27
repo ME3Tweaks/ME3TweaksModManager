@@ -1,6 +1,5 @@
-﻿<usercontrols:MMBusyPanelBase xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:targets="clr-namespace:ME3TweaksCore.Targets;assembly=ME3TweaksCore" xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols" xmlns:converters="clr-namespace:ME3TweaksModManager.modmanager.converters" xmlns:targets1="clr-namespace:ME3TweaksCoreWPF.Targets;assembly=ME3TweaksCoreWPF" xmlns:gametarget="clr-namespace:ME3TweaksModManager.modmanager.objects.gametarget" xmlns:objects="clr-namespace:ME3TweaksCore.Objects;assembly=ME3TweaksCore"
-                              xmlns:fa5="http://schemas.fontawesome.com/icons/"
-                              x:Class="ME3TweaksModManager.modmanager.usercontrols.InstallationInformation"
+﻿<usercontrols:MMBusyPanelBase xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:targets="clr-namespace:ME3TweaksCore.Targets;assembly=ME3TweaksCore" xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols" xmlns:converters="clr-namespace:ME3TweaksModManager.modmanager.converters" xmlns:targets1="clr-namespace:ME3TweaksCoreWPF.Targets;assembly=ME3TweaksCoreWPF" xmlns:gametarget="clr-namespace:ME3TweaksModManager.modmanager.objects.gametarget" xmlns:objects="clr-namespace:ME3TweaksCore.Objects;assembly=ME3TweaksCore" xmlns:fa5="http://schemas.fontawesome.com/icons/"
+    x:Class="ME3TweaksModManager.modmanager.usercontrols.InstallationInformation"
     mc:Ignorable="d"
     d:DesignHeight="550"
     DataContext="{Binding RelativeSource={RelativeSource Self}}"
@@ -34,42 +33,51 @@
         <DockPanel
             DockPanel.Dock="Bottom">
             <TextBlock
-                    Text="{Binding BackupLocationString}"
-                    DockPanel.Dock="Top"
-                    HorizontalAlignment="Right"
-                    TextAlignment="Right"
-                    Foreground="Gray"
-                    VerticalAlignment="Center" />
+                Text="{Binding BackupLocationString}"
+                DockPanel.Dock="Top"
+                HorizontalAlignment="Right"
+                TextAlignment="Right"
+                Foreground="Gray"
+                VerticalAlignment="Center" />
             <Button
-                        DockPanel.Dock="Right"
-                        Content="{DynamicResource string_close}"
-                        Padding="9,5"
-                        Margin="3,0,0,0"
-                        VerticalAlignment="Bottom"
-                        Command="{Binding CloseCommand}"
-                        HorizontalAlignment="Right" />
+                DockPanel.Dock="Right"
+                Content="{DynamicResource string_close}"
+                Padding="9,5"
+                Margin="3,0,0,0"
+                VerticalAlignment="Bottom"
+                Command="{Binding CloseCommand}"
+                HorizontalAlignment="Right" />
             <Button
-                        DockPanel.Dock="Right"
-                        Content="{DynamicResource string_openInExplorer}"
-                        ToolTip="{DynamicResource string_tooltip_openTargetInExplorer}"
-                        Padding="5"
-                        VerticalAlignment="Bottom"
-                        Click="OpenInExplorer_Click"
-                        HorizontalAlignment="Right" />
+                DockPanel.Dock="Right"
+                Content="{DynamicResource string_openInExplorer}"
+                ToolTip="{DynamicResource string_tooltip_openTargetInExplorer}"
+                Padding="5"
+                VerticalAlignment="Bottom"
+                Click="OpenInExplorer_Click"
+                HorizontalAlignment="Right" />
             <Button
-                        DockPanel.Dock="Right"
-                        Content="{DynamicResource string_removeTargetFromM3}"
-                        Padding="5"
-                        Margin="3,0"
-                        VerticalAlignment="Bottom"
-                        Command="{Binding RemoveTargetCommand}"
-                        HorizontalAlignment="Right"
-                        ToolTip="{Binding SelectedTarget.RemoveTargetTooltipText}" />
-
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="3,0,0,0" Visibility="{Binding DataIsLoading, Converter={StaticResource BoolToVisibilityConverter}}">
-                <fa5:ImageAwesome Icon="Solid_Spinner" Height="16"
-                                          Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Spin="True"/>
-                <TextBlock Text="Loading" VerticalAlignment="Center" Margin="3,0,0,0"/>
+                DockPanel.Dock="Right"
+                Content="{DynamicResource string_removeTargetFromM3}"
+                Padding="5"
+                Margin="3,0"
+                VerticalAlignment="Bottom"
+                Command="{Binding RemoveTargetCommand}"
+                HorizontalAlignment="Right"
+                ToolTip="{Binding SelectedTarget.RemoveTargetTooltipText}" />
+            <StackPanel
+                Orientation="Horizontal"
+                HorizontalAlignment="Left"
+                Margin="3,0,0,0"
+                Visibility="{Binding DataIsLoading, Converter={StaticResource BoolToVisibilityConverter}}">
+                <fa5:ImageAwesome
+                    Icon="Solid_Spinner"
+                    Height="16"
+                    Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                    Spin="True" />
+                <TextBlock
+                    Text="{DynamicResource string_loading}"
+                    VerticalAlignment="Center"
+                    Margin="3,0,0,0" />
             </StackPanel>
         </DockPanel>
         <TabControl

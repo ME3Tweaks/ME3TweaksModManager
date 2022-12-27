@@ -453,7 +453,7 @@
     <system:String x:Key="string_saveChosenOptionsToThisBatchGroup">Save chosen options to this batch group?</system:String>
     <system:String x:Key="string_saveOptions">Save options</system:String>
 
-<!-- LEX Launcher -->
+    <!-- LEX Launcher -->
     <system:String x:Key="string_interp_lexNightlyFailedToDownload">Legendary Explorer Nightly failed to download: {0}</system:String>
 
     <!-- M3 Service Loaders -->
@@ -1029,6 +1029,7 @@
     <system:String x:Key="string_hideInstalledOptions">Hide installed options</system:String>
     <system:String x:Key="string_noTextureModsAreInstalled">No texture mods are installed</system:String>
     <system:String x:Key="string_textureModded_packagesAndTFCsHidden">Package files and TFC files are not shown because this game is texture modded. All packages file are modified and TFCs cannot be modified when the game has been texture modded.</system:String>
+    <system:String x:Key="string_loading">Loading</system:String>
 
     <!-- Log uploader-->
     <system:String x:Key="string_selectALogToView">Select a log to view on log viewing service</system:String>
@@ -1740,10 +1741,25 @@
     <system:String x:Key="string_dialog_warnMustBeDeployedForFullFeatures">Mods will throw a warning when they are being opened for import/install but were not deployed through Mod Manager. Mods that use image features will not load at all if not deployed through Mod Manager. When you're ready to distribute your mod, ensure you deploy it through the Mod Utils menu when in developer mode.</system:String>
     <system:String x:Key="string_deploymentInfo">Deployment info</system:String>
     <system:String x:Key="string_le3dlcFolderNamesMP">DLC mod foldername cannot contain case sensitive string 'MP' due to code in DLC loader for LE3</system:String>
+    <system:String x:Key="string_features">Features</system:String>
+    <system:String x:Key="string_startupFile">Startup file</system:String>
+    <system:String x:Key="string_plotManagerData">PlotManager data</system:String>
+    <system:String x:Key="string_modSettingsMenuStub">Mod Settings Menu stub</system:String>
+    <system:String x:Key="string_squadmateOutfitMergeAshley">Squadmate outfit merge: Ashley</system:String>
+    <!-- These are starter kit options -->
+    <system:String x:Key="string_squadmateOutfitMergeGarrus">Squadmate outfit merge: Garrus</system:String>
+    <system:String x:Key="string_squadmateOutfitMergeEDI">Squadmate outfit merge: EDI</system:String>
+    <system:String x:Key="string_squadmateOutfitMergeJavik">Squadmate outfit merge: Javik</system:String>
+    <system:String x:Key="string_squadmateOutfitMergeJames">Squadmate outfit merge: James</system:String>
+    <system:String x:Key="string_squadmateOutfitMergeKaidan">Squadmate outfit merge: Kaidan</system:String>
+    <system:String x:Key="string_squadmateOutfitMergeLiara">Squadmate outfit merge: Liara</system:String>
+    <system:String x:Key="string_squadmateOutfitMergeTali">Squadmate outfit merge: Tali</system:String>
+    <system:String x:Key="string_blank2DAs">Blank 2DAs:</system:String>
+    <!-- Shown above the list of selected 2DAs tables -->
+    <system:String x:Key="string_select2DAsToAdd">Select 2DAs to add</system:String>
+    <system:String x:Key="string_errorGeneratingMod">Error generating mod</system:String>
 
-
-
-<!-- List Dialog -->
+    <!-- List Dialog -->
     <system:String xml:space="preserve" x:Key="string_dialogCouldNotSetDataToClipboard">Could not set data to clipboard:\n</system:String>
     <system:String x:Key="string_errorCopyingDataToClipboard">Error copying data to clipboard</system:String>
     <system:String x:Key="string_copyItemsToClipboard">Copy items to clipboard</system:String>
@@ -2055,7 +2071,14 @@
     <system:String x:Key="string_deleteGroup">Delete group</system:String>
     <system:String x:Key="string_interp_deleteTheSelectedBatchQueue">Delete the '{0}' install group?</system:String>
     <!-- 0={Name of a user-defined batch installation queue/group} -->
+    <system:String x:Key="string_modNotAvailableForInstall">Mod not available for install</system:String>
+    <system:String x:Key="string_modNotAvailable">Mod not available:</system:String>
 
+    <!-- Batch Mod class -->
+    <system:String x:Key="string_notConfigured">Not configured</system:String>
+    <system:String x:Key="string_reconfigurationRequired">Reconfiguration required</system:String>
+    <system:String x:Key="string_interp_configuredTimestamp">Configured {0}</system:String>
+    <!-- 0={time, e.g. 12-01-2022} -->
 
     <!-- Import Installed DLC Mod Panel -->
     <system:String x:Key="string_importAnInstalledDLCMod">Import an installed DLC mod</system:String>
@@ -2467,4 +2490,12 @@
     <!-- Texture Installer Panel -->
     <system:String x:Key="string_massEffectModderFiles">Mass Effect Modder files</system:String>
     <!-- Mass Effect Modder is a proper noun so it probably shouldn't be localized. This is prefix to a filter so its like Mass Effect Modder Files|*.mem -->
+
+    <!-- Launch Parameters Dialog -->
+    <system:String x:Key="string_gameLaunchParameters">Game Launch Parameters</system:String>
+    <system:String x:Key="string_gameLanguage">Game language</system:String>
+    <system:String x:Key="string_subtitles">Subtitles</system:String>
+    <system:String x:Key="string_size">Size:</system:String>
+    <system:String x:Key="string_customOptions">Custom options</system:String>
+    <system:String x:Key="string_automaticallyResumeLastSave">Automatically resume last save</system:String>
 </ResourceDictionary>

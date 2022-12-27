@@ -1,15 +1,5 @@
 ﻿<ui:ValidatableWindowBase
-    x:Class="ME3TweaksModManager.modmanager.windows.StarterKitGeneratorWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-    xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
-    xmlns:packages="clr-namespace:LegendaryExplorerCore.Packages;assembly=LegendaryExplorerCore"
-    xmlns:ui="clr-namespace:ME3TweaksModManager.ui"
-    xmlns:converters="clr-namespace:ME3TweaksModManager.modmanager.converters"
-    xmlns:local="clr-namespace:ME3TweaksModManager.modmanager.windows"
-    xmlns:local2="clr-namespace:ME3TweaksModManager"
-    xmlns:starterkitobjects="clr-namespace:ME3TweaksModManager.modmanager.objects.starterkit"
-    xmlns:generic="clr-namespace:ME3TweaksModManager.modmanager.usercontrols.generic"
-    xmlns:helpers="clr-namespace:ME3TweaksModManager.modmanager.helpers"
+    x:Class="ME3TweaksModManager.modmanager.windows.StarterKitGeneratorWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:packages="clr-namespace:LegendaryExplorerCore.Packages;assembly=LegendaryExplorerCore" xmlns:ui="clr-namespace:ME3TweaksModManager.ui" xmlns:converters="clr-namespace:ME3TweaksModManager.modmanager.converters" xmlns:local="clr-namespace:ME3TweaksModManager.modmanager.windows" xmlns:local2="clr-namespace:ME3TweaksModManager" xmlns:starterkitobjects="clr-namespace:ME3TweaksModManager.modmanager.objects.starterkit" xmlns:generic="clr-namespace:ME3TweaksModManager.modmanager.usercontrols.generic" xmlns:helpers="clr-namespace:ME3TweaksModManager.modmanager.helpers"
     Background="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}"
     WindowStartupLocation="CenterOwner"
     Title="{DynamicResource string_title_starterkit}"
@@ -109,11 +99,17 @@
         <xctk:BusyIndicator.ProgressBarStyle>
             <!-- This makes it look like adonis and not standard wpf -->
             <Style
-            TargetType="ProgressBar"
-            BasedOn="{StaticResource {x:Type ProgressBar}}">
-                <Setter Property="Height" Value="20"/>
-                <Setter Property="IsIndeterminate" Value="True"/>
-                <Setter Property="Margin" Value="4,4,4,4"/>
+                TargetType="ProgressBar"
+                BasedOn="{StaticResource {x:Type ProgressBar}}">
+                <Setter
+                    Property="Height"
+                    Value="20" />
+                <Setter
+                    Property="IsIndeterminate"
+                    Value="True" />
+                <Setter
+                    Property="Margin"
+                    Value="4,4,4,4" />
             </Style>
         </xctk:BusyIndicator.ProgressBarStyle>
         <Grid>
@@ -307,7 +303,7 @@
                 Grid.Row="10"
                 Grid.Column="2"
                 ItemJoinString=" "
-                ItemsSource="{Binding DisplayedMountFlags, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:StarterKitGeneratorWindow}}}"/>
+                ItemsSource="{Binding DisplayedMountFlags, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:StarterKitGeneratorWindow}}}" />
             <xctk:WatermarkTextBox
                 Name="ModDescription_TextBox"
                 Grid.Row="11"
@@ -333,18 +329,28 @@
                 Orientation="Horizontal"
                 Grid.Column="1"
                 Grid.Row="14">
-                <ItemsControl ItemsSource="{Binding Games}">
+                <ItemsControl
+                    ItemsSource="{Binding Games}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <StackPanel Orientation="Horizontal"/>
+                            <StackPanel
+                                Orientation="Horizontal" />
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
-                        <DataTemplate DataType="{x:Type helpers:MEGameSelector}">
-                            <Button Click="GameIcon_Click" Padding="2" Margin="2,0">
+                        <DataTemplate
+                            DataType="{x:Type helpers:MEGameSelector}">
+                            <Button
+                                Click="GameIcon_Click"
+                                Padding="2"
+                                Margin="2,0">
                                 <Button.Style>
-                                    <Style TargetType="Button"  BasedOn="{StaticResource {x:Type Button}}">
-                                        <Setter Property="Opacity" Value="1"/>
+                                    <Style
+                                        TargetType="Button"
+                                        BasedOn="{StaticResource {x:Type Button}}">
+                                        <Setter
+                                            Property="Opacity"
+                                            Value="1" />
                                         <Style.Triggers>
                                             <DataTrigger
                                                 Binding="{Binding IsSelected}"
@@ -356,50 +362,97 @@
                                         </Style.Triggers>
                                     </Style>
                                 </Button.Style>
-                                <Image Width="24" Source="{Binding Path=., Converter={StaticResource GameToImageIconConverter}, ConverterParameter=24}"/>
+                                <Image
+                                    Width="24"
+                                    Source="{Binding Path=., Converter={StaticResource GameToImageIconConverter}, ConverterParameter=24}" />
                             </Button>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </StackPanel>
-
-
-            <TextBlock Text="Features" Grid.Row="1" Grid.Column="4" FontWeight="Bold"/>
+            <TextBlock
+                Text="{DynamicResource string_features}"
+                Grid.Row="1"
+                Grid.Column="4"
+                FontWeight="Bold" />
             <DockPanel
                 VerticalAlignment="Top"
                 Grid.Column="4"
                 Grid.RowSpan="15"
                 Grid.Row="2">
-                <CheckBox Content="Startup file" DockPanel.Dock="Top" IsChecked="{Binding AddStartupFile}" Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Not_ME1'}"/>
-                <CheckBox Content="PlotManager data" IsChecked="{Binding AddPlotManagerData}" DockPanel.Dock="Top"/>
-                <CheckBox Content="Mod Settings Menu stub" IsChecked="{Binding AddModSettingsMenuData}" DockPanel.Dock="Top" Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='LE3'}" />
-
-                <DockPanel DockPanel.Dock="Top" Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Game3'}">
-                    <CheckBox Content="Squadmate outfit merge: Ashley" IsChecked="{Binding AddSquadmateMerge3Ashley}" DockPanel.Dock="Top" />
-                    <CheckBox Content="Squadmate outfit merge: Garrus" IsChecked="{Binding AddSquadmateMerge3Garrus}" DockPanel.Dock="Top" />
-                    <CheckBox Content="Squadmate outfit merge: EDI" IsChecked="{Binding AddSquadmateMerge3EDI}" DockPanel.Dock="Top" />
-                    <CheckBox Content="Squadmate outfit merge: Javik" IsChecked="{Binding AddSquadmateMerge3Javik}" DockPanel.Dock="Top" />
-                    <CheckBox Content="Squadmate outfit merge: James" IsChecked="{Binding AddSquadmateMerge3James}" DockPanel.Dock="Top" />
-                    <CheckBox Content="Squadmate outfit merge: Kaidan" IsChecked="{Binding AddSquadmateMerge3Kaidan}" DockPanel.Dock="Top" />
-                    <CheckBox Content="Squadmate outfit merge: Liara" IsChecked="{Binding AddSquadmateMerge3Liara}" DockPanel.Dock="Top" />
-                    <CheckBox Content="Squadmate outfit merge: Tali" IsChecked="{Binding AddSquadmateMerge3Tali}" DockPanel.Dock="Top" />
+                <CheckBox
+                    Content="{DynamicResource string_startupFile}"
+                    DockPanel.Dock="Top"
+                    IsChecked="{Binding AddStartupFile}"
+                    Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Not_ME1'}" />
+                <CheckBox
+                    Content="{DynamicResource string_plotManagerData}"
+                    IsChecked="{Binding AddPlotManagerData}"
+                    DockPanel.Dock="Top" />
+                <CheckBox
+                    Content="{DynamicResource string_modSettingsMenuStub}"
+                    IsChecked="{Binding AddModSettingsMenuData}"
+                    DockPanel.Dock="Top"
+                    Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='LE3'}" />
+                <DockPanel
+                    DockPanel.Dock="Top"
+                    Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Game3'}">
+                    <CheckBox
+                        Content="{DynamicResource string_squadmateOutfitMergeAshley}"
+                        IsChecked="{Binding AddSquadmateMerge3Ashley}"
+                        DockPanel.Dock="Top" />
+                    <CheckBox
+                        Content="{DynamicResource string_squadmateOutfitMergeGarrus}"
+                        IsChecked="{Binding AddSquadmateMerge3Garrus}"
+                        DockPanel.Dock="Top" />
+                    <CheckBox
+                        Content="{DynamicResource string_squadmateOutfitMergeEDI}"
+                        IsChecked="{Binding AddSquadmateMerge3EDI}"
+                        DockPanel.Dock="Top" />
+                    <CheckBox
+                        Content="{DynamicResource string_squadmateOutfitMergeJavik}"
+                        IsChecked="{Binding AddSquadmateMerge3Javik}"
+                        DockPanel.Dock="Top" />
+                    <CheckBox
+                        Content="{DynamicResource string_squadmateOutfitMergeJames}"
+                        IsChecked="{Binding AddSquadmateMerge3James}"
+                        DockPanel.Dock="Top" />
+                    <CheckBox
+                        Content="{DynamicResource string_squadmateOutfitMergeKaidan}"
+                        IsChecked="{Binding AddSquadmateMerge3Kaidan}"
+                        DockPanel.Dock="Top" />
+                    <CheckBox
+                        Content="{DynamicResource string_squadmateOutfitMergeLiara}"
+                        IsChecked="{Binding AddSquadmateMerge3Liara}"
+                        DockPanel.Dock="Top" />
+                    <CheckBox
+                        Content="{DynamicResource string_squadmateOutfitMergeTali}"
+                        IsChecked="{Binding AddSquadmateMerge3Tali}"
+                        DockPanel.Dock="Top" />
                 </DockPanel>
-                <DockPanel DockPanel.Dock="Top" Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Game1'}">
-                    <TextBlock DockPanel.Dock="Top" Text="Blank 2DAs:" FontWeight="Bold"/>
-                    <Button DockPanel.Dock="Bottom" Content="Select 2DAs to add" Command="{Binding Select2DAsCommand}" />
-                    <ItemsControl ItemsSource="{Binding Selected2DAs}" >
+                <DockPanel
+                    DockPanel.Dock="Top"
+                    Visibility="{Binding Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Game1'}">
+                    <TextBlock
+                        DockPanel.Dock="Top"
+                        Text="{DynamicResource string_blank2DAs}"
+                        FontWeight="Bold" />
+                    <Button
+                        DockPanel.Dock="Bottom"
+                        Content="{DynamicResource string_select2DAsToAdd}"
+                        Command="{Binding Select2DAsCommand}" />
+                    <ItemsControl
+                        ItemsSource="{Binding Selected2DAs}">
                         <ItemsControl.ItemTemplate>
-                            <DataTemplate DataType="{x:Type starterkitobjects:Bio2DAOption}">
-                                <TextBlock Text="{Binding Title}"/>
+                            <DataTemplate
+                                DataType="{x:Type starterkitobjects:Bio2DAOption}">
+                                <TextBlock
+                                    Text="{Binding Title}" />
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
                 </DockPanel>
             </DockPanel>
-
-
-
-
             <TextBlock
                 Text="{DynamicResource string_existingKnownDLC}"
                 FontWeight="Bold"
@@ -414,7 +467,7 @@
                 <xctk:WatermarkTextBox
                     DockPanel.Dock="Bottom"
                     Watermark="{DynamicResource string_typeToFilter}"
-                    Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}"/>
+                    Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}" />
                 <ListBox
                     Name="CustomDLCMountsListBox"
                     BorderThickness="1"
@@ -473,7 +526,6 @@
                     </ListBox.ItemTemplate>
                 </ListBox>
             </DockPanel>
-
             <Button
                 Content="{DynamicResource string_generateStarterKit}"
                 Grid.Column="2"

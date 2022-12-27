@@ -196,7 +196,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
             else
             {
-                ModDescriptionText = SelectedModInGroup.Mod?.DisplayedModDescription ?? "Mod not available for install";
+                ModDescriptionText = SelectedModInGroup.Mod?.DisplayedModDescription ?? M3L.GetString(M3L.string_modNotAvailableForInstall);
             }
         }
 

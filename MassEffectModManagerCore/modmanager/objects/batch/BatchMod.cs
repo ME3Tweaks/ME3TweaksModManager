@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.mod;
 using Newtonsoft.Json;
 
@@ -82,9 +83,9 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         {
             get
             {
-                if (!HasChosenOptions) return "Not configured";
-                if (ChosenOptionsDesync) return "Reconfiguration required";
-                return $"Configured {ConfigurationTime:d}";
+                if (!HasChosenOptions) return M3L.GetString(M3L.string_notConfigured);
+                if (ChosenOptionsDesync) return M3L.GetString(M3L.string_reconfigurationRequired);
+                return M3L.GetString(M3L.string_interp_configuredTimestamp, string.Format(@"d", ConfigurationTime));
             }
         }
 

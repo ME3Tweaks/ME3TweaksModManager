@@ -2,6 +2,7 @@
 using ME3TweaksCore.Misc;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksCoreWPF.UI;
+using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.launcher;
 using System.Windows;
 using System.Windows.Controls;
@@ -49,7 +50,7 @@ namespace ME3TweaksModManager.modmanager.windows
 
         private void LoadPackage(LaunchOptionsPackage package)
         {
-            LaunchPackage = package ?? new LaunchOptionsPackage() { Game = SelectedGameTarget.Game, ChosenLanguage = @"INT"};
+            LaunchPackage = package ?? new LaunchOptionsPackage() { Game = SelectedGameTarget.Game, ChosenLanguage = @"INT" };
             LoadLanguagesAndOptions();
 
             var chosenLang = LanguageOptions.FirstOrDefault(x => x.LanguageString == LaunchPackage.ChosenLanguage);
@@ -62,7 +63,7 @@ namespace ME3TweaksModManager.modmanager.windows
             LanguageOptions.Clear();
 
             // Global options
-            CustomOptions.Add(new LauncherCustomParameter() { DisplayString = "Automatically resume last save", CommandLineText = @"-RESUME" });
+            CustomOptions.Add(new LauncherCustomParameter() { DisplayString = M3L.GetString(M3L.string_automaticallyResumeLastSave), CommandLineText = @"-RESUME" });
 
             switch (LaunchPackage.Game)
             {
@@ -133,7 +134,7 @@ namespace ME3TweaksModManager.modmanager.windows
 
         public void LaunchGame()
         {
-            string args = $" -game {LaunchPackage.Game.ToMEMGameNum()} -autoterminate -NoHomeDir -Subtitles {LaunchPackage.SubtitleSize} ";
+            string args = $@" -game {LaunchPackage.Game.ToMEMGameNum()} -autoterminate -NoHomeDir -Subtitles {LaunchPackage.SubtitleSize} ";
 
             if (LaunchPackage.Game == MEGame.LE3)
             {
