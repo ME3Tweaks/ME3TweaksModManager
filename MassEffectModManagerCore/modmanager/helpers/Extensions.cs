@@ -12,6 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using Flurl.Http;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksModManager.modmanager.diagnostics;
 using SevenZip;
@@ -1317,6 +1318,17 @@ namespace ME3TweaksModManager.modmanager.helpers
             }
             var encoding = WebUtils.GetEncodingFrom(webClient.ResponseHeaders, new UTF8Encoding(false));
             return encoding.GetString(rawData).Normalize();
+        }
+
+        /// <summary>
+        /// Blocking call that posts JSON data to the specified endpoint. Returns text.
+        /// </summary>
+        /// <param name="endpoint"></param>
+        /// <param name="json"></param>
+        /// <returns></returns>
+        public static string PostJsonWithStringresult(string endpoint, object json)
+        {
+            return endpoint.PostJsonAsync(json).ReceiveString().Result;
         }
 
         private static bool StartsWith(this byte[] thisArray, byte[] otherArray)
