@@ -842,7 +842,6 @@
     <!-- 0={ext} 1={file} -->
     <system:String x:Key="string_deployment_nexusUpdaterServiceInfo">{0} ({1}) is not enrolled into the NexusMods Updater Service whitelist. In order for this mod to check for updates, it must be enrolled in the updater service (due to design of NexusMods API). You can enroll this mod on the ME3Tweaks Discord, in the #nexusupdate-rules channel.</system:String>
     <!-- 0={Mod name} 1={game (ME1/ME2... etc)} -->
-
     <system:String x:Key="string_interp_compressedTlkDataInfo">This mod uses the {0} task header. A compressed version of the xml files was detected ({1}); this file will be used in deployment instead of individual xml files. If this is not what you intended, remove the compressed file and Mod Manager will serialize a new one on deployment.</system:String>
     <!-- 0 = GAME1_EMBEDDED_TLK, 1 = filepath - both of these values are hardcoded and will never change unless something gets refactored, which it hopefully never will -->
 
@@ -1852,6 +1851,10 @@
     <!-- 0=FilesToDeleteUIString -->
     <system:String x:Key="string_interp_XfilesWillBeDownloaded">{0} file(s) will be downloaded ({1})</system:String>
     <!-- 0=applicableUpdates.Count 1=TotalBytesHR -->
+    <system:String x:Key="string_interp_indexingForUpdatesXY">Indexing {0} for updates {1}%</system:String>
+    <!-- 0={Mod name} 1={Integer} -->
+    <system:String x:Key="string_interp_calculatingUpdateDeltaXY">Calculating update delta for {0} {1}%</system:String>
+    <!-- 0={Mod name} 1={Integer} -->
 
     <!-- Mixin Class-->
     <system:String x:Key="string_interp_appliesToX">Applies to file {0}</system:String>

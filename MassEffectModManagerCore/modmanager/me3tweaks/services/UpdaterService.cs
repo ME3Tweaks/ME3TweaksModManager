@@ -194,7 +194,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
                         foreach (var v in references)
                         {
                             updateStatusCallback?.Invoke(
-                                $"Indexing {modUpdateInfo.mod.ModName} for updates {(int)(i * 100 / total)}%");
+                                M3L.GetString(M3L.string_interp_indexingForUpdatesXY, modUpdateInfo.mod.ModName, (int)(i * 100 / total)));
                             i++;
                             var fpath = Path.Combine(matchingMod.ModPath, v);
                             if (fpath.RepresentsPackageFilePath())
@@ -243,7 +243,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
                         {
                             M3Log.Information($@"Checking {serverFile.relativefilepath} for update applicability");
                             updateStatusCallback?.Invoke(
-                                $"Calculating update delta for {modUpdateInfo.mod.ModName} {(int)(i * 100 / total)}%");
+                                M3L.GetString(M3L.string_interp_calculatingUpdateDeltaXY, modUpdateInfo.mod.ModName, (int)(i * 100 / total)));
                             i++;
 
                             bool calculatedOp = false;
@@ -508,7 +508,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
             //            foreach (var v in references)
             //            {
             //                updateStatusCallback?.Invoke(
-            //                    $"Indexing {modUpdateInfo.mod.ModName} for updates {(int)(i * 100 / total)}%");
+            //                    M3L.GetString(M3L.string_interp_indexingForUpdatesXY, modUpdateInfo.mod.ModName, (int)(i * 100 / total)));
             //                i++;
             //                var fpath = Path.Combine(matchingMod.ModPath, v);
             //                if (fpath.RepresentsPackageFilePath())
@@ -557,7 +557,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
             //            {
             //                M3Log.Information($@"Checking {serverFile.relativefilepath} for update applicability");
             //                updateStatusCallback?.Invoke(
-            //                    $"Calculating update delta for {modUpdateInfo.mod.ModName} {(int)(i * 100 / total)}%");
+            //                    M3L.GetString(M3L.string_interp_calculatingUpdateDeltaXY, modUpdateInfo.mod.ModName, (int)(i * 100 / total)));
             //                i++;
 
             //                bool calculatedOp = false;
@@ -956,7 +956,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
                 updatecode = source.updatecode;
                 versionstr = source.versionstr;
             }
-            
+
             public bool Equals(ModUpdateInfo other)
             {
                 return Equals(mod, other.mod);

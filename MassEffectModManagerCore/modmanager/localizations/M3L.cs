@@ -1465,6 +1465,8 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_nexusModsUpdateInstructions = "string_nexusModsUpdateInstructions";
 		public const string string_interp_XfilesWillBeDeleted = "string_interp_XfilesWillBeDeleted";
 		public const string string_interp_XfilesWillBeDownloaded = "string_interp_XfilesWillBeDownloaded";
+		public const string string_interp_indexingForUpdatesXY = "string_interp_indexingForUpdatesXY";
+		public const string string_interp_calculatingUpdateDeltaXY = "string_interp_calculatingUpdateDeltaXY";
 		public const string string_interp_appliesToX = "string_interp_appliesToX";
 		public const string string_interp_partOfX = "string_interp_partOfX";
 		public const string string_interp_versionX = "string_interp_versionX";
