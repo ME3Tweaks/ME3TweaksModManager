@@ -6,7 +6,9 @@
                     xmlns:targets="clr-namespace:ME3TweaksCore.Targets;assembly=ME3TweaksCore"
                     xmlns:converters1="clr-namespace:ME3TweaksModManager.modmanager.converters"
                     xmlns:helpers="clr-namespace:ME3TweaksModManager.modmanager.helpers"
-                    xmlns:converters="clr-namespace:ME3TweaksCoreWPF.Converters;assembly=ME3TweaksCoreWPF">
+                    xmlns:converters="clr-namespace:ME3TweaksCoreWPF.Converters;assembly=ME3TweaksCoreWPF"
+                    xmlns:nativeMods="clr-namespace:ME3TweaksCore.NativeMods;assembly=ME3TweaksCore"
+                    xmlns:batch="clr-namespace:ME3TweaksModManager.modmanager.objects.batch">
     <converters1:GameToImageIconConverter x:Key="GameToImageIconConverter"/>
     <converters1:BootTargetSourceVisibilityConverter x:Key="BootTargetSourceVisibilityConverter"/>
     <converters1:GameIconVisibilityConverter x:Key="GameIconVisibilityConverter"/>
@@ -27,17 +29,7 @@
     <converters1:StringMatchToBoolConverter x:Key="StringMatchToBoolConverter"/>
     <converters1:LanguageSupportedVisibilityConverter x:Key="LanguageSupportedVisibilityConverter"/>
     <converters1:GameToTextureModdedIconConverter x:Key="GameToTextureModdedIconConverter"/>
-    <DataTemplate x:Key="TargetSelectorTemplate" DataType="{x:Type targets:GameTarget}">
-        <DockPanel HorizontalAlignment="Stretch">
-            <Image DockPanel.Dock="Left" Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16"/>
-            <Image DockPanel.Dock="Left" Source="{Binding TargetBootIcon, TargetNullValue={x:Null}}" Width="12" Height="16" RenderOptions.BitmapScalingMode="HighQuality" Margin="3,0,0,0" Visibility="{Binding Converter={StaticResource BootTargetSourceVisibilityConverter}}"/>
-            <TextBlock Text="{Binding TargetPath}" Margin="3,0,0,0" HorizontalAlignment="Stretch" DockPanel.Dock="Left"/>
-            <DockPanel ToolTip="{DynamicResource string_thisTargetHasBeenTextureModded}"  DockPanel.Dock="Right" Margin="3,0,0,0" Visibility="{Binding TextureModded, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}">
-                <TextBlock Text="{Binding ALOTVersion}" DockPanel.Dock="Right"/>
-                <Image Source="/modmanager/toolicons/alot_32.png" Width="16" Height="16" RenderOptions.BitmapScalingMode="HighQuality" HorizontalAlignment="Right" Margin="3,0,0,0" VerticalAlignment="Bottom"/>
-            </DockPanel>
-        </DockPanel>
-    </DataTemplate>
+
     <Style x:Key="TargetSelectorContainerStyle" TargetType="ComboBoxItem" BasedOn="{StaticResource {x:Type ComboBoxItem}}">
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
         <Setter Property="IsEnabled" Value="{Binding Selectable}" />
@@ -124,6 +116,13 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <!-- ListBox - stretch full width -->
+    <Style x:Key="StretchNoPaddingStyle" TargetType="ListBoxItem" BasedOn="{StaticResource ListBoxItemStyle}">
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        <Setter Property="Padding" Value="0"/>
+    </Style>
+    <!-- Storyboards -->
     <Storyboard x:Key="OpenWebsitePanel" Storyboard.TargetProperty="(FrameworkElement.Height)">
         <DoubleAnimation To="20" Duration="0:0:0.25">
             <DoubleAnimation.EasingFunction>
@@ -163,4 +162,39 @@
     <!-- Bools in xaml -->
     <system:Boolean x:Key="FalseValue">False</system:Boolean>
     <system:Boolean x:Key="TrueValue">True</system:Boolean>
+
+    <!-- Data templates -->
+    <DataTemplate DataType="{x:Type nativeMods:ASIMod}">
+        <Grid Margin="3" HorizontalAlignment="Stretch">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Path=LatestVersion.Name}" />
+            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=LatestVersion.Version, StringFormat='v{0}'}" HorizontalAlignment="Right" />
+            <TextBlock Grid.Row="1" Grid.Column="0" Opacity="0.6" Text="{Binding Path=LatestVersion.Author}" />
+            <TextBlock Grid.Row="1" Grid.Column="1" Text="{DynamicResource string_notInstalled}"/>
+        </Grid>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type batch:BatchASIMod}">
+        <DockPanel HorizontalAlignment="Stretch">
+            <Image DockPanel.Dock="Left" Source="/images/asi.png" Width="16" Height="16" RenderOptions.BitmapScalingMode="HighQuality" Margin="0,0,5,0" VerticalAlignment="Bottom"/>
+            <TextBlock  Text="{Binding Path=AssociatedMod.Name}" />
+        </DockPanel>
+    </DataTemplate>
+    <DataTemplate x:Key="TargetSelectorTemplate" DataType="{x:Type targets:GameTarget}">
+        <DockPanel HorizontalAlignment="Stretch">
+            <Image DockPanel.Dock="Left" Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16"/>
+            <Image DockPanel.Dock="Left" Source="{Binding TargetBootIcon, TargetNullValue={x:Null}}" Width="12" Height="16" RenderOptions.BitmapScalingMode="HighQuality" Margin="3,0,0,0" Visibility="{Binding Converter={StaticResource BootTargetSourceVisibilityConverter}}"/>
+            <TextBlock Text="{Binding TargetPath}" Margin="3,0,0,0" HorizontalAlignment="Stretch" DockPanel.Dock="Left"/>
+            <DockPanel ToolTip="{DynamicResource string_thisTargetHasBeenTextureModded}"  DockPanel.Dock="Right" Margin="3,0,0,0" Visibility="{Binding TextureModded, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}">
+                <TextBlock Text="{Binding ALOTVersion}" DockPanel.Dock="Right"/>
+                <Image Source="/modmanager/toolicons/alot_32.png" Width="16" Height="16" RenderOptions.BitmapScalingMode="HighQuality" HorizontalAlignment="Right" Margin="3,0,0,0" VerticalAlignment="Bottom"/>
+            </DockPanel>
+        </DockPanel>
+    </DataTemplate>
 </ResourceDictionary>

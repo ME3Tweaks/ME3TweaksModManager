@@ -1086,7 +1086,8 @@ namespace ME3TweaksModManager
                             if (bm.Mod != null)
                             {
                                 M3Log.Information($@"Installing batch mod [{modIndex}/{queue.ModsToInstall.Count}]: {queue.ModsToInstall[modIndex].Mod.ModName}");
-                                ApplyMod(bm.Mod, target, batchMod: bm, installCompressed: queue.InstallCompressed, installCompletedCallback: modInstalled, recordOptionsToBM: true);
+                                bm.UseSavedOptions = queue.UseSavedOptions;
+                                ApplyMod(bm.Mod, target, batchMod: bm, installCompressed: queue.InstallCompressed, installCompletedCallback: modInstalled);
                             }
                             else
                             {
@@ -1096,14 +1097,14 @@ namespace ME3TweaksModManager
                         }
                         else if (continueInstalling && queue.ModsToInstall.Count == modIndex)
                         {
-                            //End
-                            var shouldSave = M3L.ShowDialog(this, M3L.GetString(M3L.string_saveChosenOptionsToThisBatchGroup), M3L.GetString(M3L.string_saveOptions), MessageBoxButton.YesNo) == MessageBoxResult.Yes;
-                            if (shouldSave)
+                            if (queue.ASIModsToInstall.Any())
                             {
-                                M3Log.Information($@"Commiting batch queue with chosen options: {queue.BackingFilename}");
-                                queue.Save(true); // Commit the result
+                                ShowRunAndDone(() => InstallBatchASIs(target, queue), "Installing ASI mods", "Installed ASI mods", () => FinishBatchInstall(queue));
                             }
-                            HandleBatchPanelResult = true;
+                            else
+                            {
+                                FinishBatchInstall(queue);
+                            }
                         }
                         else
                         {
@@ -1116,6 +1117,29 @@ namespace ME3TweaksModManager
                 }
             };
             ShowBusyControl(batchLibrary);
+        }
+
+        private void FinishBatchInstall(BatchLibraryInstallQueue queue)
+        {
+            //End
+            var shouldSave = M3L.ShowDialog(this, M3L.GetString(M3L.string_saveChosenOptionsToThisBatchGroup), M3L.GetString(M3L.string_saveOptions), MessageBoxButton.YesNo) == MessageBoxResult.Yes;
+            if (shouldSave)
+            {
+                M3Log.Information($@"Commiting batch queue with chosen options: {queue.BackingFilename}");
+                queue.Save(true); // Commit the result
+            }
+            HandleBatchPanelResult = true;
+        }
+
+        private void InstallBatchASIs(GameTarget target, BatchLibraryInstallQueue queue)
+        {
+            foreach (var asi in queue.ASIModsToInstall)
+            {
+                if (asi.AssociatedMod != null)
+                {
+                    ASIManager.InstallASIToTarget(asi.AssociatedMod, target);
+                }
+            }
         }
 
         private void OpenMixinManagerPanel()
@@ -1663,13 +1687,14 @@ namespace ME3TweaksModManager
             });
         }
 
-        private void ShowRunAndDone(Action action, string startStr, string endStr)
+        private void ShowRunAndDone(Action action, string startStr, string endStr, Action finishAction = null)
         {
             BackgroundTask task = null;
             var runAndDone = new RunAndDonePanel(action, startStr, endStr);
             runAndDone.Close += (a, b) =>
             {
                 ReleaseBusyControl();
+                finishAction?.Invoke();
             };
             ShowBusyControl(runAndDone);
         }
@@ -2112,20 +2137,24 @@ namespace ME3TweaksModManager
             return true;
         }
 
+
         /// <summary>
         /// Applies a mod to the current or forced target. This method is asynchronous, it must run on the UI thread but it will immediately yield once the installer begins.
         /// </summary>
         /// <param name="mod">Mod to install</param>
         /// <param name="forcedTarget">Forced target to install to</param>
-        /// <param name="batchMode">Causes ME3 autotoc to skip at end of install</param>
+        /// <param name="batchMod"></param>
+        /// <param name="installCompressed"></param>
         /// <param name="installCompletedCallback">Callback when mod installation either succeeds for fails</param>
-
-        private void ApplyMod(Mod mod, GameTargetWPF forcedTarget = null, BatchMod batchMod = null, bool? installCompressed = null, Action<bool> installCompletedCallback = null, bool recordOptionsToBM = false)
+        /// <param name="recordOptionsToBM">If options chosen should be saved back to the BatchMod object</param>
+        /// <param name="useSavedBatchOptions">If options saved in the BatchMod object should be used</param>
+        private void ApplyMod(Mod mod, GameTargetWPF forcedTarget = null, BatchMod batchMod = null,
+            bool? installCompressed = null, Action<bool> installCompletedCallback = null)
         {
             if (!M3Utilities.IsGameRunning(mod.Game))
             {
                 BackgroundTask modInstallTask = BackgroundTaskEngine.SubmitBackgroundJob(@"ModInstall", M3L.GetString(M3L.string_interp_installingMod, mod.ModName), M3L.GetString(M3L.string_interp_installedMod, mod.ModName));
-                var modOptionsPicker = new ModInstallOptionsPanel(mod, forcedTarget ?? SelectedGameTarget, installCompressed, batchMod: batchMod, recordOptionsToBM);
+                var modOptionsPicker = new ModInstallOptionsPanel(mod, forcedTarget ?? SelectedGameTarget, installCompressed, batchMod: batchMod);
                 //var modInstaller = new ModInstaller(mod, forcedTarget ?? SelectedGameTarget, installCompressed, batchMode: batchMode);
                 modOptionsPicker.Close += (a, b) =>
                 {

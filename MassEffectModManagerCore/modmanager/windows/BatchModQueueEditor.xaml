@@ -1,5 +1,6 @@
 ﻿<Window
     x:Class="ME3TweaksModManager.modmanager.windows.BatchModQueueEditor" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:fa5="http://schemas.fontawesome.com/icons/" xmlns:helpers="clr-namespace:ME3TweaksModManager.modmanager.helpers" xmlns:extensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+    xmlns:batch="clr-namespace:ME3TweaksModManager.modmanager.objects.batch"
     DataContext="{Binding RelativeSource={RelativeSource Self}}"
     mc:Ignorable="d"
     WindowStartupLocation="CenterOwner"
@@ -60,48 +61,6 @@
                 Text="{DynamicResource string_game}"
                 FontWeight="Bold"
                 Grid.ColumnSpan="6" />
-            <!--<RadioButton Grid.Column="0" Grid.Row="1" Click="ME1_Clicked" Name="ME1_RadioButton">
-                <StackPanel Orientation="Horizontal">
-                    <Image 
-                        Source="{ui:MippedIcon Source={StaticResource me1gameiconpath}, Size=32}"
-                           Width="32" Height="32" Margin="0,0,5,0" />
-                </StackPanel>
-            </RadioButton>
-            <RadioButton Grid.Row="1" Grid.Column="1" Margin="5,0" Click="ME2_Clicked" Name="ME2_RadioButton">
-                <StackPanel Orientation="Horizontal">
-                    <Image 
-                        Source="{ui:MippedIcon Source={StaticResource me2gameiconpath}, Size=32}"
-                           Width="32" Height="32" Margin="0,0,5,0" />
-                </StackPanel>
-            </RadioButton>
-            <RadioButton Grid.Row="1" Grid.Column="2" Click="ME3_Clicked" Name="ME3_RadioButton">
-                <StackPanel Orientation="Horizontal">
-                    <Image 
-                           Source="{ui:MippedIcon Source={StaticResource me3gameiconpath}, Size=32}"
-                           Width="32" Height="32" Margin="0,0,5,0" />
-                </StackPanel>
-            </RadioButton>
-            <RadioButton Grid.Row="1"  Grid.Column="3" Click="LE1_Clicked" Name="LE1_RadioButton">
-                <StackPanel Orientation="Horizontal">
-                    <Image 
-                           Source="{ui:MippedIcon Source={StaticResource le1gameiconpath}, Size=32}"
-                           Width="32" Height="32" Margin="0,0,5,0" />
-                </StackPanel>
-            </RadioButton>
-            <RadioButton Grid.Row="1" Grid.Column="4" Margin="5,0" Click="LE2_Clicked" Name="LE2_RadioButton">
-                <StackPanel Orientation="Horizontal">
-                    <Image                          
-                        Source="{ui:MippedIcon Source={StaticResource le2gameiconpath}, Size=32}"
-                        Width="32" Height="32" Margin="0,0,5,0" />
-                </StackPanel>
-            </RadioButton>
-            <RadioButton Grid.Row="1" Grid.Column="5" Click="LE3_Clicked" Name="LE3_RadioButton">
-                <StackPanel Orientation="Horizontal">
-                    <Image                            
-                        Source="{ui:MippedIcon Source={StaticResource le3gameiconpath}, Size=32}"
-                        Width="32" Height="32" Margin="0,0,5,0" />
-                </StackPanel>
-            </RadioButton>-->
             <ItemsControl
                 ItemsSource="{Binding Games}"
                 Grid.Row="1"
@@ -151,32 +110,52 @@
                 Grid.Column="0"
                 Grid.ColumnSpan="6"
                 Margin="0,10,0,0" />
-            <ListBox
+            <TabControl 
+                SelectedIndex="{Binding SelectedTabIndex}"
                 Grid.Row="4"
                 Grid.Column="0"
                 Grid.ColumnSpan="6"
-                SelectionMode="Extended"
-                ItemsSource="{Binding VisibleFilteredMods}"
-                SelectedItem="{Binding SelectedAvailableMod}"
-                Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
-                BorderThickness="1"
-                IsTextSearchEnabled="True"
-                TextSearch.TextPath="ModName">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel
+                Margin="0"
+                Padding="0">
+                <TabItem Header="Content mods" Margin="0" Padding="0">
+                    <ListBox
+                        Margin="-8"
+                        SelectionMode="Extended"
+                        ItemsSource="{Binding VisibleFilteredMods}"
+                        SelectedItem="{Binding SelectedAvailableMod}"
+                        Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
+                        BorderThickness="1"
+                        IsTextSearchEnabled="True"
+                        TextSearch.TextPath="ModName">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel
                             Orientation="Horizontal">
-                            <Image
+                                    <Image
                                 Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}, ConverterParameter=16}"
                                 Width="16"
                                 Height="16"
                                 Margin="0,0,5,0" />
-                            <TextBlock
+                                    <TextBlock
                                 Text="{Binding ModName}" />
-                        </StackPanel>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </TabItem>
+                <TabItem Header="ASI mods">
+                    <ListBox BorderThickness="1"
+                             Margin="-8"
+                             IsTextSearchEnabled="True"
+                             TextSearch.TextPath="Name"
+                             Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
+                             ItemContainerStyle="{StaticResource StretchNoPaddingStyle}" 
+                             ItemsSource="{Binding VisibleFilteredASIMods}" 
+                             HorizontalContentAlignment="Stretch" 
+                             SelectedItem="{Binding SelectedAvailableASIMod}"/>
+                </TabItem>
+            </TabControl>
+
             <TextBox
                 Grid.Row="5"
                 Grid.ColumnSpan="6"
@@ -191,18 +170,8 @@
                 VerticalContentAlignment="Top"
                 extensions:CursorSpotlightExtension.BackgroundBrush="Transparent"
                 extensions:CursorSpotlightExtension.RelativeSpotlightSize="0"
-                extensions:CursorSpotlightExtension.MaxBlurRadius="0">
-                <TextBox.Text>
-                    <PriorityBinding>
-                        <Binding
-                            Path="SelectedAvailableMod.DisplayedModDescription"
-                            Mode="OneWay" />
-                        <Binding
-                            Path="NoModSelectedText"
-                            Mode="OneWay" />
-                    </PriorityBinding>
-                </TextBox.Text>
-            </TextBox>
+                extensions:CursorSpotlightExtension.MaxBlurRadius="0"
+                Text="{Binding AvailableModText}"/>
             <Button
                 Grid.Row="6"
                 Grid.Column="0"
@@ -347,8 +316,8 @@
                         BorderThickness="1"
                         IsTextSearchEnabled="True"
                         TextSearch.TextPath="ModName">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
+                        <ListBox.Resources>
+                            <DataTemplate DataType="{x:Type batch:BatchMod}">
                                 <StackPanel
                                     Orientation="Horizontal">
                                     <StackPanel
@@ -380,7 +349,7 @@
                                     </StackPanel>
                                 </StackPanel>
                             </DataTemplate>
-                        </ListBox.ItemTemplate>
+                        </ListBox.Resources>
                     </ListBox>
                     <TextBox
                         Grid.Column="1"
@@ -400,6 +369,9 @@
                             <PriorityBinding>
                                 <Binding
                                     Path="SelectedInstallGroupMod.Mod.DisplayedModDescription"
+                                    Mode="OneWay" />
+                                <Binding
+                                    Path="SelectedInstallGroupMod.AssociatedMod.Description"
                                     Mode="OneWay" />
                                 <Binding
                                     Path="NoModSelectedText"

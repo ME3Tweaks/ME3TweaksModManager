@@ -2,6 +2,7 @@
     x:Class="ME3TweaksModManager.modmanager.usercontrols.BatchModLibrary"
     DataContext="{Binding RelativeSource={RelativeSource Self}}" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     mc:Ignorable="d" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:extensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI" xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols" xmlns:ui="clr-namespace:ME3TweaksModManager.ui" xmlns:fa5="http://schemas.fontawesome.com/icons/"
+    xmlns:batch="clr-namespace:ME3TweaksModManager.modmanager.objects.batch"
     MinHeight="550">
     <DockPanel>
         <TextBlock
@@ -53,8 +54,8 @@
                 TextSearch.TextPath="QueueName"
                 Width="180"
                 MinHeight="280">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
+                <ListBox.Resources>
+                    <DataTemplate DataType="{x:Type batch:BatchLibraryInstallQueue}">
                         <StackPanel
                             Orientation="Horizontal">
                             <Image
@@ -66,7 +67,7 @@
                                 Text="{Binding QueueName}" />
                         </StackPanel>
                     </DataTemplate>
-                </ListBox.ItemTemplate>
+                </ListBox.Resources>
             </ListBox>
         </DockPanel>
         <DockPanel
@@ -116,13 +117,13 @@
                     </Grid.RowDefinitions>
                     <ListBox
                         Grid.Row="0"
-                        ItemsSource="{Binding SelectedBatchQueue.ModsToInstall}"
+                        ItemsSource="{Binding SelectedBatchQueue.AllModsToInstall}"
                         SelectedItem="{Binding SelectedModInGroup}"
                         HorizontalAlignment="Stretch"
                         ScrollViewer.VerticalScrollBarVisibility="Visible"
                         BorderThickness=".5">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
+                        <ListBox.Resources>
+                            <DataTemplate DataType="{x:Type batch:BatchMod}">
                                 <DockPanel>
                                     <StackPanel
                                         DockPanel.Dock="Left"
@@ -196,7 +197,7 @@
                                     </Border>
                                 </DockPanel>
                             </DataTemplate>
-                        </ListBox.ItemTemplate>
+                        </ListBox.Resources>
                         <ListBox.ItemContainerStyle>
                             <Style
                                 TargetType="ListBoxItem"

@@ -60,6 +60,7 @@
 	</ItemGroup>
 	<ItemGroup>
 		<None Remove="appicon.ico" />
+		<None Remove="images\asi.png" />
 	  <None Remove="images\darktheme.png" />
 		<None Remove="images\dvd.png" />
 		<None Remove="images\gameicons\Unknown_48.ico" />
@@ -142,6 +143,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<Resource Include="images\asi.png" />
 		<EmbeddedResource Include="modmanager\asi\AutoTOC_LE-v2.0.asi" />
 		<EmbeddedResource Include="modmanager\asi\BalanceChangesReplacer-v3.0.asi" />
 		<EmbeddedResource Include="modmanager\asi\LE1AutoloadEnabler-v1.0.asi" />

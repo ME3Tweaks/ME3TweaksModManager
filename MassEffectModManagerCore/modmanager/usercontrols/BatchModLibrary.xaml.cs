@@ -31,7 +31,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
     public partial class BatchModLibrary : MMBusyPanelBase
     {
         public BatchLibraryInstallQueue SelectedBatchQueue { get; set; }
-        public BatchMod SelectedModInGroup { get; set; }
+        public object SelectedModInGroup { get; set; }
         public ObservableCollectionExtended<BatchLibraryInstallQueue> AvailableBatchQueues { get; } = new ObservableCollectionExtended<BatchLibraryInstallQueue>();
         public ObservableCollectionExtended<GameTargetWPF> InstallationTargetsForGroup { get; } = new ObservableCollectionExtended<GameTargetWPF>();
         public BatchModLibrary()
@@ -89,6 +89,23 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private void InstallGroup()
         {
+            // Has user saved options before?
+            if (SelectedBatchQueue.ModsToInstall.Any(x => x.HasChosenOptions))
+            {
+
+                if (SelectedBatchQueue.ModsToInstall.Any(x => x.ChosenOptionsDesync || !x.HasChosenOptions))
+                {
+                    M3L.ShowDialog(window,
+                        "Mods in this batch queue have been modified since it was last saved. You will need to re-select mod options during installation.",
+                        "Batch Queue Desync", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+                else
+                {
+                    SelectedBatchQueue.UseSavedOptions = M3L.ShowDialog(window, "Use previously saved mod options?", "Saved options found",
+                                            MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes;
+                }
+            }
+
             TelemetryInterposer.TrackEvent(@"Installing Batch Group", new Dictionary<string, string>()
             {
                 {@"Group name", SelectedBatchQueue.QueueName},
@@ -196,7 +213,19 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
             else
             {
-                ModDescriptionText = SelectedModInGroup.Mod?.DisplayedModDescription ?? M3L.GetString(M3L.string_modNotAvailableForInstall);
+                if (SelectedModInGroup is BatchMod bm)
+                {
+                    ModDescriptionText = bm.Mod?.DisplayedModDescription ?? M3L.GetString(M3L.string_modNotAvailableForInstall);
+
+                }
+                else if (SelectedModInGroup is BatchASIMod bam)
+                {
+                    ModDescriptionText = bam.AssociatedMod?.Description ?? M3L.GetString(M3L.string_modNotAvailableForInstall);
+                }
+                else
+                {
+                    ModDescriptionText = @"This batch mod type is not yet implemented";
+                }
             }
         }
 

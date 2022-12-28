@@ -47,7 +47,7 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         public string QueueDescription { get; internal set; }
 
         private const int QUEUE_VERSION_TXT = 1;
-        private const int QUEUE_VERSION_BIQ= 2;
+        private const int QUEUE_VERSION_BIQ = 2;
         private const int QUEUE_VERSION_BIQ2 = 3;
 
         /// <summary>
@@ -63,6 +63,18 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         public ObservableCollectionExtended<BatchMod> ModsToInstall { get; } = new ObservableCollectionExtended<BatchMod>();
 
         /// <summary>
+        /// ASI mods that are part of the queue.
+        /// </summary>
+        [JsonProperty(@"asimods")]
+        public ObservableCollectionExtended<BatchASIMod> ASIModsToInstall { get; } = new ObservableCollectionExtended<BatchASIMod>();
+
+        /// <summary>
+        /// Only used for UI binding!
+        /// </summary>
+        [JsonIgnore]
+        public ObservableCollectionExtended<object> AllModsToInstall { get; } = new ObservableCollectionExtended<object>();
+
+        /// <summary>
         /// USED FOR SAVING/LOADING FILE FROM DISK
         /// </summary>
         //public List<BatchMod> SerializedMods { get; internal set; }
@@ -72,6 +84,12 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         /// </summary>
         [JsonIgnore]
         public bool InstallCompressed { get; set; }
+
+        /// <summary>
+        /// If the installer should use the saved options or ignore them
+        /// </summary>
+        [JsonIgnore]
+        public bool UseSavedOptions { get; set; }
 
         /// <summary>
         /// Reads a batch file from disk and parses it
@@ -133,6 +151,15 @@ namespace ME3TweaksModManager.modmanager.objects.batch
                 {
                     mod.Init();
                 }
+                foreach (var mod in modernQueue.ASIModsToInstall)
+                {
+                    mod.AssociateASIObject(modernQueue.Game);
+                }
+
+                // Populate the full list of mods for UI binding
+                modernQueue.AllModsToInstall.AddRange(modernQueue.ModsToInstall);
+                modernQueue.AllModsToInstall.AddRange(modernQueue.ASIModsToInstall);
+
                 return modernQueue;
             }
             catch (Exception e)

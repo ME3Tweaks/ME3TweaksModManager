@@ -69,23 +69,17 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public BatchMod BatchMod { get; private set; }
 
         /// <summary>
-        /// If options should be recorded to the BatchMod object.
-        /// </summary>
-        private bool RecordBatchOptions { get; set; }
-
-        /// <summary>
         /// The order in which options were chosen by the user when recording options
         /// </summary>
         private List<PlusMinusKey> InOrderRecordedOptions { get; set; } = new();
 
-        public ModInstallOptionsPanel(Mod mod, GameTargetWPF gameTargetWPF, bool? installCompressed, BatchMod batchMod, bool recordBatchOptions)
+        public ModInstallOptionsPanel(Mod mod, GameTargetWPF gameTargetWPF, bool? installCompressed, BatchMod batchMod)
         {
             ModBeingInstalled = mod;
 
             if (!mod.IsInArchive)
             {
                 BatchMod = batchMod; // Never allow a compressed batch mod
-                RecordBatchOptions = batchMod != null && recordBatchOptions; // Must have a batch mod object
                 foreach (var alt in mod.GetAllAlternates())
                 {
                     if (!string.IsNullOrWhiteSpace(alt.ImageAssetName))
@@ -657,8 +651,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 SetME1ReadOnlyConfigFiles = AlternateGroups.SelectMany(x => x.AlternateOptions).OfType<ReadOnlyOption>().Any(x => x.UIIsSelected) // ME1 Read only option
             };
 
-            // Save batch options
-            if (BatchMod != null && RecordBatchOptions)
+            // Save batch options to the object in the event the user wants to save the options.
+            if (BatchMod != null)
             {
                 // Record them to the batch mod
                 BatchMod.UserChosenOptions = InOrderRecordedOptions;
@@ -685,7 +679,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             if (SelectedGameTarget != null)
             {
                 SetupOptions(true);
-                if (BatchMod != null /*&& !RecordBatchOptions*/ && BatchMod.HasChosenOptions && !BatchMod.ChosenOptionsDesync)
+                if (BatchMod != null && BatchMod.UseSavedOptions && BatchMod.HasChosenOptions && !BatchMod.ChosenOptionsDesync)
                 {
                     // Install our option choices
                     InstallBatchChosenOptions();
