@@ -143,8 +143,9 @@ namespace ME3TweaksModManager
         /// <summary>
         /// Single-instance argument handling
         /// </summary>
-        /// <param name="args"></param>
-        internal void HandleInstanceArguments(string[] args)
+        /// <param name="args">Command line arguments passed</param>
+        /// <returns>True if window should be brought to the foreground, false otherwise</returns>
+        internal bool HandleInstanceArguments(string[] args)
         {
             // Fix pass through in debug mode which uses a .dll arg
             if (args.Any() && args[0].EndsWith(@".dll"))
@@ -167,8 +168,14 @@ namespace ME3TweaksModManager
                     CommandLinePending.PendingInstallASIID = parsedCommandLineArgs.Value.AutoInstallASIGroupID;
                 if (parsedCommandLineArgs.Value.AutoInstallBink != false)
                     CommandLinePending.PendingInstallBink = parsedCommandLineArgs.Value.AutoInstallBink;
-                handleInitialPending();
+                if (parsedCommandLineArgs.Value.StopSignalingAutoboot)
+                    CommandLinePending.PendingStopAutoboot = parsedCommandLineArgs.Value.StopSignalingAutoboot;
+                if (parsedCommandLineArgs.Value.StartSignalingAutoboot)
+                    CommandLinePending.PendingStartAutoboot = parsedCommandLineArgs.Value.StartSignalingAutoboot;
+                return handleInitialPending();
             }
+
+            return false;
         }
 
         private void showNXMDownloader(string nxmLink)
@@ -1870,7 +1877,7 @@ namespace ME3TweaksModManager
         private bool CanStartGame()
         {
             //Todo: Check if this is origin game and if target will boot
-            return SelectedGameTarget != null && SelectedGameTarget.Selectable /*&& SelectedGameTarget.RegistryActive*/;
+            return SelectedGameTarget != null && SelectedGameTarget.Selectable /*&& SelectedGameTarget.RegistryActive*/ && !GameLauncher.SignalingAutoboot;
         }
 
         private bool CanToggleBinkw32(object obj)
@@ -3028,10 +3035,27 @@ namespace ME3TweaksModManager
             bw.RunWorkerAsync();
         }
 
-        private void handleInitialPending()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>If the main window should be brought to the foreground or not.</returns>
+        private bool handleInitialPending()
         {
+            bool shouldBringToFG = false;
+
             // Will do nothing if there's something else that needs done.
             AttemptPendingGameBoot();
+
+            if (CommandLinePending.PendingStartAutoboot)
+            {
+                M3Log.Information(@"Legendary Edition Launcher is ready for autoboot");
+                GameLauncher.Autoboot();
+            }
+            if (CommandLinePending.PendingStopAutoboot)
+            {
+                M3Log.Information(@"Stopping autoboot signaling");
+                GameLauncher.SignalingAutoboot = false;
+            }
 
             if (CommandLinePending.PendingGame is { } testGame && !testGame.IsLEGame() && !testGame.IsOTGame())
             {
@@ -3043,11 +3067,13 @@ namespace ME3TweaksModManager
             {
                 if (CommandLinePending.PendingNXMLink != null)
                 {
+                    shouldBringToFG = true;
                     showNXMDownloader(CommandLinePending.PendingNXMLink);
                 }
 
                 if (CommandLinePending.PendingInstallBink && CommandLinePending.PendingGame != null)
                 {
+                    shouldBringToFG = true;
                     CommandLinePending.PendingInstallBink = false;
                     GameTargetWPF t = GetCurrentTarget(CommandLinePending.PendingGame.Value);
                     if (t != null)
@@ -3069,6 +3095,7 @@ namespace ME3TweaksModManager
 
                 if (CommandLinePending.PendingInstallASIID > 0 && CommandLinePending.PendingGame != null)
                 {
+                    shouldBringToFG = true;
                     var game = CommandLinePending.PendingGame.Value;
                     if (!game.IsOTGame() && !game.IsLEGame())
                     {
@@ -3087,6 +3114,7 @@ namespace ME3TweaksModManager
 
                 if (CommandLinePending.PendingAutoModInstallPath != null && File.Exists(CommandLinePending.PendingAutoModInstallPath))
                 {
+                    shouldBringToFG = true;
                     Mod m = new Mod(CommandLinePending.PendingAutoModInstallPath, MEGame.Unknown);
                     if (m.ValidMod)
                     {
@@ -3115,6 +3143,7 @@ namespace ME3TweaksModManager
 
             //App.PendingGameBoot = null; // this is not cleared here as it will be used at end of applymod above
             CommandLinePending.PendingNXMLink = null;
+            return shouldBringToFG;
         }
 
         /// <summary>

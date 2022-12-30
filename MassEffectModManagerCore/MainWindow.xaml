@@ -1389,6 +1389,10 @@
                         Name="ShowWelcomePanel_MenuItem"
                         Click="RouteDebugCall" />
                     <MenuItem
+                        Header="Autoboot LE2 test"
+                        Name="AutobootLE2_MenuItem"
+                        Click="RouteDebugCall" />
+                    <MenuItem
                         Header="{DynamicResource string_showBackupNag}"
                         Name="ShowBackupNag_MenuItem"
                         Click="RouteDebugCall" />
