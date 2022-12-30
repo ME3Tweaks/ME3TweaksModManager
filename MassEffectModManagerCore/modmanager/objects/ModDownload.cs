@@ -10,10 +10,13 @@ using Pathoschild.FluentNexus.Models;
 using PropertyChanged;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Markup;
 using M3OnlineContent = ME3TweaksModManager.modmanager.me3tweaks.services.M3OnlineContent;
 using MemoryAnalyzer = ME3TweaksModManager.modmanager.memoryanalyzer.MemoryAnalyzer;
 
@@ -87,7 +90,6 @@ namespace ME3TweaksModManager.modmanager.objects
                 }
 
                 var downloadUri = DownloadLinks[0].Uri;
-
                 var downloadResult = M3OnlineContent.DownloadToStream(downloadUri.ToString(), OnDownloadProgress, null, true, DownloadedStream, cancellationToken);
                 if (downloadResult.errorMessage != null)
                 {
@@ -111,6 +113,36 @@ namespace ME3TweaksModManager.modmanager.objects
                 }
                 else
                 {
+                    // Verify
+                    ProgressIndeterminate = true;
+                    DownloadStatus = "Verifying download";
+                    try
+                    {
+                        // Todo: If verification fails, should we let user try to continue anyways?
+
+                        var hash = M3Utilities.CalculateMD5(DownloadedStream);
+                        var matchingHashedFiles = NexusModsUtilities.MD5Search(ProtocolLink.Domain, hash);
+                        if (matchingHashedFiles.All(x => x.Mod.ModID != ProtocolLink.ModId))
+                        {
+                            // Our hash does not match
+                            M3Log.Error(@"Download failed: File does not appear to match file on NexusMods");
+                            OnModDownloadError?.Invoke(this, "File did not verify, download may be corrupt.");
+                            TelemetryInterposer.TrackEvent(@"NXM Download", new Dictionary<string, string>()
+                            {
+                                {@"Domain", ProtocolLink?.Domain},
+                                {@"File", ModFile?.Name},
+                                {@"Result", @"Corrupt download"},
+                            });
+
+                            return;
+                        }
+                        M3Log.Information(@"File verified OK, nexus MD5 search returned correct result (NexusMods: Please make MD5 available as part of download API! This is a ridiculous way of verifying files)");
+                    }
+                    catch (Exception ex)
+                    {
+                        M3Log.Warning($@"An error occurred while attempting to verify the file: {ex.Message}. Skipping verification for this download.");
+                    }
+
                     TelemetryInterposer.TrackEvent(@"NXM Download", new Dictionary<string, string>()
                     {
                         {@"Domain", ProtocolLink?.Domain},

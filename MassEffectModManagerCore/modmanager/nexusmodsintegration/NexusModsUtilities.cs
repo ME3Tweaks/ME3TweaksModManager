@@ -445,5 +445,17 @@ namespace ME3TweaksModManager.modmanager.nexusmodsintegration
             var client = NexusModsUtilities.GetClient();
             return client.ModFiles.GetContentPreview(file.ContentPreviewLink).Result;
         }
+
+        /// <summary>
+        /// Searches for a mod file by MD5.
+        /// </summary>
+        /// <param name="hash"></param>
+        /// <exception cref="NotImplementedException"></exception>
+        public static ModHashResult[] MD5Search(string domain, string hash)
+        {
+            if (NexusModsUtilities.UserInfo == null) return null;
+            var client = NexusModsUtilities.GetClient();
+            return client.Mods.GetModsByFileHash(domain, hash).Result;
+        }
     }
 }
