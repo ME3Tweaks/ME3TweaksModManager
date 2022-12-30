@@ -46,7 +46,7 @@ namespace ME3TweaksModManager.modmanager.objects.starterkit
         /// <param name="destPackagePath"></param>
         public void GenerateBlank2DA(ExportEntry sourceTable, string destPackagePath)
         {
-            var newObjectName = $"{sourceTable.ObjectName}_part";
+            var newObjectName = $@"{sourceTable.ObjectName}_part";
             var index = 1;
             var nameRef = new NameReference(newObjectName, index);
 

@@ -31,12 +31,14 @@
                         Text="{DynamicResource string_modLibraryLocation}"
                         TextAlignment="Center"
                         FontSize="16"
+                        TextWrapping="Wrap"
                         Margin="0,5,0,0"
                         FontWeight="Bold" />
                     <TextBlock
                         DockPanel.Dock="Top"
                         Text="{DynamicResource string_description_modsImportedAreStoredInLibrary}"
                         TextAlignment="Left"
+                        TextWrapping="Wrap"
                         Margin="0,5,0,0" />
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -51,12 +53,50 @@
                             Margin="0,0,2,0"
                             IsReadOnly="True"
                             IsReadOnlyCaretVisible="False"
+                            IsEnabled="False"
                             Text="{Binding LibraryDir}"
                             Foreground="{DynamicResource {x:Static adonisUi:Brushes.SlightlyDimmedForegroundBrush}}" />
                         <Button
                             Content="{DynamicResource string_browse}"
                             Grid.Column="1"
                             Command="{Binding ChangeLibraryDirCommand}" />
+                    </Grid>
+                </DockPanel>
+                <DockPanel
+                    DockPanel.Dock="Top">
+                    <TextBlock
+                        DockPanel.Dock="Top"
+                        Text="{DynamicResource string_nexusModsDownloadFolder}"
+                        TextAlignment="Center"
+                        FontSize="16"
+                        Margin="0,5,0,0"
+                        FontWeight="Bold" />
+                    <TextBlock
+                        DockPanel.Dock="Top"
+                        TextWrapping="Wrap"
+                        Text="{DynamicResource string_description_nexusModsDownloadFolder}"
+                        TextAlignment="Left"
+                        Margin="0,5,0,0" />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition
+                                Width="1*" />
+                            <ColumnDefinition
+                                Width="100" />
+                        </Grid.ColumnDefinitions>
+                        <xctk:WatermarkTextBox
+                            Watermark="{DynamicResource string_defaultTemporaryDownloadCache}"
+                            SnapsToDevicePixels="True"
+                            Margin="0,0,2,0"
+                            IsReadOnly="True"
+                            IsEnabled="False"
+                            IsReadOnlyCaretVisible="False"
+                            Text="{Binding NexusModsDownloadCache}"
+                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.SlightlyDimmedForegroundBrush}}" />
+                        <Button
+                            Content="{DynamicResource string_configure}"
+                            Grid.Column="1"
+                            Command="{Binding ChangeNexusModsDownloadCacheCommand}" />
                     </Grid>
                 </DockPanel>
                 <Grid

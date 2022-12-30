@@ -154,6 +154,13 @@ namespace ME3TweaksModManager.modmanager
             set => SetProperty(ref _selectedFilters, value);
         }
 
+        private static string _modDownloadCacheFolder;
+        public static string ModDownloadCacheFolder
+        {
+            get => _modDownloadCacheFolder;
+            set => SetProperty(ref _modDownloadCacheFolder, value);
+        }
+
         private static string _lastSelectedTarget;
         public static string LastSelectedTarget
         {
@@ -348,6 +355,7 @@ namespace ME3TweaksModManager.modmanager
             SelectedFilters = LoadSettingString(settingsIni, "ModManager", "SelectedFilters", null);
             ModMakerControllerModOption = LoadSettingBool(settingsIni, "ModMaker", "AutoAddControllerMixins", false);
             ModMakerAutoInjectCustomKeybindsOption = LoadSettingBool(settingsIni, "ModMaker", "AutoInjectCustomKeybinds", false);
+            ModDownloadCacheFolder = LoadSettingString(settingsIni, "ModManager", "ModDownloadCacheFolder", null);
 
 
             UpdaterServiceUsername = LoadSettingString(settingsIni, "UpdaterService", "Username", null);
@@ -549,6 +557,7 @@ namespace ME3TweaksModManager.modmanager
                 SaveSettingString(settingsIni, "ModManager", "SelectedFilters", SelectedFilters);
                 SaveSettingBool(settingsIni, "ModManager", "DoubleClickModInstall", DoubleClickModInstall);
                 SaveSettingBool(settingsIni, "ModManager", "ShowModListNotInstalledModsMessage", OneTimeMessage_ModListIsNotListOfInstalledMods);
+                SaveSettingString(settingsIni, "ModManager", "ModDownloadCacheFolder", ModDownloadCacheFolder);
 
                 SaveSettingBool(settingsIni, "ModMaker", "AutoAddControllerMixins", ModMakerControllerModOption);
                 SaveSettingBool(settingsIni, "ModMaker", "AutoInjectCustomKeybinds", ModMakerAutoInjectCustomKeybindsOption);

@@ -63,7 +63,7 @@ namespace ME3TweaksModManager.modmanager.windows
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
-                M3L.ShowDialog(this, "There is no backup available to query 2DAs from.", "Backup unavailable", MessageBoxButton.OK, MessageBoxImage.Error);
+                M3L.ShowDialog(this, M3L.GetString(M3L.string_thereIsNoBackupAvailableToQuery2DAsFrom), M3L.GetString(M3L.string_backupUnavailable), MessageBoxButton.OK, MessageBoxImage.Error);
                 Close();
             });
         }
@@ -107,7 +107,7 @@ namespace ME3TweaksModManager.modmanager.windows
                 }
                 else
                 {
-                    M3L.ShowDialog(this, $"Error reading 2DA tables from game: {x.Exception.Message}", "Error reading tables", MessageBoxButton.OK, MessageBoxImage.Error);
+                    M3L.ShowDialog(this, M3L.GetString(M3L.string_2da_errorReading2DAs, x.Exception.Message), M3L.GetString(M3L.string_errorReadingTables), MessageBoxButton.OK, MessageBoxImage.Error);
                     Close();
                 }
             });

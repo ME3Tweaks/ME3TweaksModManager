@@ -16,6 +16,7 @@ using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.nexusmodsintegration;
 using ME3TweaksModManager.modmanager.objects.nexusfiledb;
+using ME3TweaksModManager.modmanager.windows;
 using ME3TweaksModManager.ui;
 using Pathoschild.FluentNexus.Models;
 using WinCopies.Util;
@@ -67,6 +68,17 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             AllSearchableNames.ReplaceAll(newNames);
         }
 
+        private void SearchAgainstMod()
+        {
+            ModSelectorDialog msd = new ModSelectorDialog(window, M3LoadedMods.Instance.AllLoadedMods.ToList(),
+                M3L.GetString(M3L.string_selectModToCompareAgainstDatabase),
+                M3L.GetString(M3L.string_nfqp_selectModDialogText), M3L.GetString(M3L.string_selectMod))
+            {
+                SelectionMode = SelectionMode.Single
+            };
+            msd.ShowDialog();
+        }
+
         public void OnSearchME1Changed() { UpdateFilters(); }
         public void OnSearchME2Changed() { UpdateFilters(); }
         public void OnSearchME3Changed() { UpdateFilters(); }
@@ -77,20 +89,21 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         public ObservableCollectionExtended<string> AllSearchableNames { get; } = new ObservableCollectionExtended<string>();
 
-        public NexusFileQueryPanel(Mod mod = null)
+        public NexusFileQueryPanel()
         {
-            QueryingMod = mod;
             FileCategories = new ObservableCollectionExtended<FileCategory>(Enum.GetValues<FileCategory>());
             LoadCommands();
         }
 
         public RelayCommand DownloadModCommand { get; private set; }
         public GenericCommand SearchCommand { get; set; }
+        public GenericCommand CompareAgainstModCommand { get; set; }
 
         private void LoadCommands()
         {
             DownloadModCommand = new RelayCommand(DownloadMod, CanDownloadMod);
             SearchCommand = new GenericCommand(PerformSearch, CanSearch);
+            CompareAgainstModCommand = new GenericCommand(SearchAgainstMod);
         }
 
 
@@ -98,7 +111,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public ObservableCollectionExtended<FileCategory> FileCategories { get; }
         public ObservableCollectionExtended<FileCategory> SelectedFileCategories { get; } = new ObservableCollectionExtended<FileCategory>(Enum.GetValues<FileCategory>()); // all by default
 
-        private bool CanSearch() => !QueryInProgress && !string.IsNullOrWhiteSpace(SearchTerm) && (SearchME1 || SearchME2 || SearchME3 ||SearchLE1 || SearchLE2 || SearchLE3 ||SearchLE) && HasCategory();
+        private bool CanSearch() => !QueryInProgress && !string.IsNullOrWhiteSpace(SearchTerm) && (SearchME1 || SearchME2 || SearchME3 || SearchLE1 || SearchLE2 || SearchLE3 || SearchLE) && HasCategory();
 
         private bool HasCategory()
         {
@@ -282,7 +295,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                                                                       db.ModFileInfos[x.FileID].LEGames.Contains(MEGame.LE2) && QueryingMod.Game == MEGame.LE2 ||
                                                                       db.ModFileInfos[x.FileID].LEGames.Contains(MEGame.LE3) && QueryingMod.Game == MEGame.LE3)
                                                                      && db.ModFileInfos[x.FileID].LEGames.Length == 1
-                                                                     && x.ModID  != QueryingMod.NexusModID); // Only one game allowed in a result
+                                                                     && x.ModID != QueryingMod.NexusModID); // Only one game allowed in a result
                                 }
 
                                 //Application.Current.Dispatcher.Invoke(() =>
@@ -366,7 +379,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 BusyStatusText = M3L.GetString(M3L.string_searching);
             }).ContinueWithOnUIThread(x =>
             {
-                CategoryOptionsCBL.SetSelectedItems(Enum.GetValues<FileCategory>().Where(x => x != FileCategory.Archived && x!= FileCategory.Old && x!= FileCategory.Update && x != FileCategory.Deleted).OfType<object>());
+                CategoryOptionsCBL.SetSelectedItems(Enum.GetValues<FileCategory>().Where(x => x != FileCategory.Archived && x != FileCategory.Old && x != FileCategory.Update && x != FileCategory.Deleted).OfType<object>());
 #if DEBUG
                 // Debug mode only for now
                 if (QueryingMod != null)

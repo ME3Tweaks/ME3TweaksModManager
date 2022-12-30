@@ -60,6 +60,7 @@
 	</ItemGroup>
 	<ItemGroup>
 		<None Remove="appicon.ico" />
+		<None Remove="images\asi.png" />
 	  <None Remove="images\darktheme.png" />
 		<None Remove="images\dvd.png" />
 		<None Remove="images\gameicons\Unknown_48.ico" />
@@ -142,6 +143,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<Resource Include="images\asi.png" />
 		<EmbeddedResource Include="modmanager\asi\AutoTOC_LE-v2.0.asi" />
 		<EmbeddedResource Include="modmanager\asi\BalanceChangesReplacer-v3.0.asi" />
 		<EmbeddedResource Include="modmanager\asi\LE1AutoloadEnabler-v1.0.asi" />
@@ -189,7 +191,7 @@
 		<PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="2.2.1" />
 		<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
 		<PackageReference Include="MvvmValidation" Version="3.1.2" />
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
 		<PackageReference Include="Newtonsoft.Json.Schema" Version="3.0.14" />
 		<PackageReference Include="Octokit" Version="2.0.1" />
 		<PackageReference Include="Pathoschild.FluentNexus" Version="1.0.5" />

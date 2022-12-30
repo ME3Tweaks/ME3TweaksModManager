@@ -449,7 +449,10 @@
     <system:String x:Key="string_failedToInstallBinkASILoader">Failed to install bink ASI loader</system:String>
     <system:String x:Key="string_beta">Beta</system:String>
     <!-- This is used for beta mode features. An example is a menu with heading of 'Beta'.-->
-    
+    <system:String x:Key="string_selectLaunchOptions">Select launch options</system:String>
+    <system:String x:Key="string_saveChosenOptionsToThisBatchGroup">Save chosen options to this batch group?</system:String>
+    <system:String x:Key="string_saveOptions">Save options</system:String>
+
     <!-- LEX Launcher -->
     <system:String x:Key="string_interp_lexNightlyFailedToDownload">Legendary Explorer Nightly failed to download: {0}</system:String>
 
@@ -839,7 +842,6 @@
     <!-- 0={ext} 1={file} -->
     <system:String x:Key="string_deployment_nexusUpdaterServiceInfo">{0} ({1}) is not enrolled into the NexusMods Updater Service whitelist. In order for this mod to check for updates, it must be enrolled in the updater service (due to design of NexusMods API). You can enroll this mod on the ME3Tweaks Discord, in the #nexusupdate-rules channel.</system:String>
     <!-- 0={Mod name} 1={game (ME1/ME2... etc)} -->
-
     <system:String x:Key="string_interp_compressedTlkDataInfo">This mod uses the {0} task header. A compressed version of the xml files was detected ({1}); this file will be used in deployment instead of individual xml files. If this is not what you intended, remove the compressed file and Mod Manager will serialize a new one on deployment.</system:String>
     <!-- 0 = GAME1_EMBEDDED_TLK, 1 = filepath - both of these values are hardcoded and will never change unless something gets refactored, which it hopefully never will -->
 
@@ -1026,6 +1028,7 @@
     <system:String x:Key="string_hideInstalledOptions">Hide installed options</system:String>
     <system:String x:Key="string_noTextureModsAreInstalled">No texture mods are installed</system:String>
     <system:String x:Key="string_textureModded_packagesAndTFCsHidden">Package files and TFC files are not shown because this game is texture modded. All packages file are modified and TFCs cannot be modified when the game has been texture modded.</system:String>
+    <system:String x:Key="string_loading">Loading</system:String>
 
     <!-- Log uploader-->
     <system:String x:Key="string_selectALogToView">Select a log to view on log viewing service</system:String>
@@ -1737,10 +1740,25 @@
     <system:String x:Key="string_dialog_warnMustBeDeployedForFullFeatures">Mods will throw a warning when they are being opened for import/install but were not deployed through Mod Manager. Mods that use image features will not load at all if not deployed through Mod Manager. When you're ready to distribute your mod, ensure you deploy it through the Mod Utils menu when in developer mode.</system:String>
     <system:String x:Key="string_deploymentInfo">Deployment info</system:String>
     <system:String x:Key="string_le3dlcFolderNamesMP">DLC mod foldername cannot contain case sensitive string 'MP' due to code in DLC loader for LE3</system:String>
+    <system:String x:Key="string_features">Features</system:String>
+    <system:String x:Key="string_startupFile">Startup file</system:String>
+    <system:String x:Key="string_plotManagerData">PlotManager data</system:String>
+    <system:String x:Key="string_modSettingsMenuStub">Mod Settings Menu stub</system:String>
+    <system:String x:Key="string_squadmateOutfitMergeAshley">Squadmate outfit merge: Ashley</system:String>
+    <!-- These are starter kit options -->
+    <system:String x:Key="string_squadmateOutfitMergeGarrus">Squadmate outfit merge: Garrus</system:String>
+    <system:String x:Key="string_squadmateOutfitMergeEDI">Squadmate outfit merge: EDI</system:String>
+    <system:String x:Key="string_squadmateOutfitMergeJavik">Squadmate outfit merge: Javik</system:String>
+    <system:String x:Key="string_squadmateOutfitMergeJames">Squadmate outfit merge: James</system:String>
+    <system:String x:Key="string_squadmateOutfitMergeKaidan">Squadmate outfit merge: Kaidan</system:String>
+    <system:String x:Key="string_squadmateOutfitMergeLiara">Squadmate outfit merge: Liara</system:String>
+    <system:String x:Key="string_squadmateOutfitMergeTali">Squadmate outfit merge: Tali</system:String>
+    <system:String x:Key="string_blank2DAs">Blank 2DAs:</system:String>
+    <!-- Shown above the list of selected 2DAs tables -->
+    <system:String x:Key="string_select2DAsToAdd">Select 2DAs to add</system:String>
+    <system:String x:Key="string_errorGeneratingMod">Error generating mod</system:String>
 
-
-
-<!-- List Dialog -->
+    <!-- List Dialog -->
     <system:String xml:space="preserve" x:Key="string_dialogCouldNotSetDataToClipboard">Could not set data to clipboard:\n</system:String>
     <system:String x:Key="string_errorCopyingDataToClipboard">Error copying data to clipboard</system:String>
     <system:String x:Key="string_copyItemsToClipboard">Copy items to clipboard</system:String>
@@ -1833,6 +1851,10 @@
     <!-- 0=FilesToDeleteUIString -->
     <system:String x:Key="string_interp_XfilesWillBeDownloaded">{0} file(s) will be downloaded ({1})</system:String>
     <!-- 0=applicableUpdates.Count 1=TotalBytesHR -->
+    <system:String x:Key="string_interp_indexingForUpdatesXY">Indexing {0} for updates {1}%</system:String>
+    <!-- 0={Mod name} 1={Integer} -->
+    <system:String x:Key="string_interp_calculatingUpdateDeltaXY">Calculating update delta for {0} {1}%</system:String>
+    <!-- 0={Mod name} 1={Integer} -->
 
     <!-- Mixin Class-->
     <system:String x:Key="string_interp_appliesToX">Applies to file {0}</system:String>
@@ -2052,7 +2074,14 @@
     <system:String x:Key="string_deleteGroup">Delete group</system:String>
     <system:String x:Key="string_interp_deleteTheSelectedBatchQueue">Delete the '{0}' install group?</system:String>
     <!-- 0={Name of a user-defined batch installation queue/group} -->
+    <system:String x:Key="string_modNotAvailableForInstall">Mod not available for install</system:String>
+    <system:String x:Key="string_modNotAvailable">Mod not available:</system:String>
 
+    <!-- Batch Mod class -->
+    <system:String x:Key="string_notConfigured">Not configured</system:String>
+    <system:String x:Key="string_reconfigurationRequired">Reconfiguration required</system:String>
+    <system:String x:Key="string_interp_configuredTimestamp">Configured {0}</system:String>
+    <!-- 0={time, e.g. 12-01-2022} -->
 
     <!-- Import Installed DLC Mod Panel -->
     <system:String x:Key="string_importAnInstalledDLCMod">Import an installed DLC mod</system:String>
@@ -2290,7 +2319,7 @@
     <system:String x:Key="string_mde_dlcModControl">DLC mod control</system:String>
     <!-- As in "Use these options to control what DLC mods your mod will install"-->
 
-    <!-- Nexus File Search -->
+    <!-- Nexus File Search (Query) -->
     <system:String x:Key="string_nexusModsFileSearch">NexusMods File Search</system:String>
     <system:String x:Key="string_description_nexusModsFileSearch">You can search for files contained in mods on NexusMods for the Mass Effect trilogy games with NexusMods File Search. The database is regularly updated and maintained by ME3Tweaks.</system:String>
     <system:String x:Key="string_search">Search</system:String>
@@ -2307,6 +2336,9 @@
     <system:String x:Key="string_allLE">All LE</system:String>
     <!-- Try to keep short if possible - this is on a pretty space-constrained area -->
     <system:String x:Key="string_searchRequiresAtLeastOneCategory">Search requires at least one category</system:String>
+    <system:String x:Key="string_selectModToCompareAgainstDatabase">Select mod to compare against database</system:String>
+    <system:String x:Key="string_nfqp_selectModDialogText">Select a mod to search all installable files against the ones in the database.</system:String>
+    <system:String x:Key="string_compareAgainstLoadedMod">Compare against loaded mod</system:String>
 
     <!-- Mod-NexusModsIntegration -->
     <system:String x:Key="string_dialog_cannotEndorseNonDownloadedMod">You cannot endorse a mod that you have not downloaded from NexusMods.</system:String> 
@@ -2404,6 +2436,15 @@
     <system:String x:Key="string_applicationTheme">Application theme</system:String>
     <system:String x:Key="string_doubleClickModInLibraryToInstall">Double click mod in library to install</system:String>
     <system:String x:Key="string_description_doubleClickModInLibraryToInstall">When double clicking a mod in the mod library list, perform the same action as pressing 'Apply Mod'. If the correct game is not currently the installation target, the current active one will be used. For mods that don't have options this will immediately trigger an installation.</system:String>
+    <system:String x:Key="string_nexusModsDownloadFolder">NexusMods download folder</system:String>
+    <system:String x:Key="string_description_nexusModsDownloadFolder">You can specify a custom location to store downloaded mod archives in. These archives are not necessary to keep once a mod is imported into the mod library. If you don't specify one, a temporary directory is used on the C:\ drive and mod downloads will be deleted every time the application closes.</system:String>
+    <system:String x:Key="string_defaultTemporaryDownloadCache">Default: Temporary download cache</system:String>
+    <system:String x:Key="string_configure">Configure</system:String>
+    <system:String x:Key="string_dialog_selectDownloadCacheType">Specify a custom directory to download to, or use the temporary cache (default)?</system:String>
+    <system:String x:Key="string_chooseCacheType">Choose cache type</system:String>
+    <system:String x:Key="string_customDirectory">Custom directory</system:String>
+    <system:String x:Key="string_temporaryCache">Temporary cache</system:String>
+    <system:String x:Key="string_selectNexusModsDownloadDirectory">Select NexusMods download directory</system:String>
 
 
     <!-- Check Box Combo Box Control -->
@@ -2464,4 +2505,21 @@
     <!-- Texture Installer Panel -->
     <system:String x:Key="string_massEffectModderFiles">Mass Effect Modder files</system:String>
     <!-- Mass Effect Modder is a proper noun so it probably shouldn't be localized. This is prefix to a filter so its like Mass Effect Modder Files|*.mem -->
+
+    <!-- Launch Parameters Dialog -->
+    <system:String x:Key="string_gameLaunchParameters">Game Launch Parameters</system:String>
+    <system:String x:Key="string_gameLanguage">Game language</system:String>
+    <system:String x:Key="string_subtitles">Subtitles</system:String>
+    <system:String x:Key="string_size">Size:</system:String>
+    <system:String x:Key="string_customOptions">Custom options</system:String>
+    <system:String x:Key="string_automaticallyResumeLastSave">Automatically resume last save</system:String>
+
+    <!-- Bio2DA Selector Dialog -->
+    <system:String x:Key="string_thereIsNoBackupAvailableToQuery2DAsFrom">There is no backup available to query 2DAs from.</system:String>
+    <system:String x:Key="string_2da_errorReading2DAs">Error reading 2DA tables from game: {0}</system:String>
+    <!-- 0={Error message} -->
+    <system:String x:Key="string_errorReadingTables">Error reading tables</system:String>
+    <system:String x:Key="string_bio2DASelector">Bio2DA Selector</system:String>
+    <system:String x:Key="string_select2DATablesForBlank">Select 2DA tables to generate blank versions of for your mod.</system:String>
+
 </ResourceDictionary>

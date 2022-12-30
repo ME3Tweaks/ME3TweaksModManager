@@ -89,7 +89,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.online
         public static FallbackLink CombinedServiceFetchURL = new FallbackLink()
         {
             MainURL = @"https://me3tweaks.com/modmanager/services/combinedservicesfetch",
-            FallbackURL = "https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/staticfiles/liveservices/services/combinedservices.json",
+            FallbackURL = @"https://raw.githubusercontent.com/ME3Tweaks/ME3TweaksModManager/staticfiles/liveservices/services/combinedservices.json",
         };
 
         public const string TIPS_SERVICE_KEY = @"tipsservice";

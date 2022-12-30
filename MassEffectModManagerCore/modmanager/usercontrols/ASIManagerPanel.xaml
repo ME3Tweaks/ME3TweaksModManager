@@ -16,22 +16,7 @@
                        MaxWidth="1000"
                        mc:Ignorable="d">
     <UserControl.Resources>
-        <DataTemplate DataType="{x:Type nativeMods:ASIMod}">
-            <Grid Margin="3" HorizontalAlignment="Stretch">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Path=LatestVersion.Name}" />
-                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=LatestVersion.Version, StringFormat='v{0}'}" HorizontalAlignment="Right" />
-                <TextBlock Grid.Row="1" Grid.Column="0" Opacity="0.6" Text="{Binding Path=LatestVersion.Author}" />
-                <TextBlock Grid.Row="1" Grid.Column="1" Text="{DynamicResource string_notInstalled}"/>
-            </Grid>
-        </DataTemplate>
+        <!-- The main ASI template is in the MMStyles.xaml file -->
         <DataTemplate DataType="{x:Type nativeMods1:KnownInstalledASIModWPF}">
             <Border Background="{Binding BackgroundColor}" BorderThickness="2,1">
                 <Grid Margin="3" HorizontalAlignment="Stretch">
@@ -63,10 +48,6 @@
                 </Grid>
             </Border>
         </DataTemplate>
-        <Style x:Key="StretchNoPaddingStyle" TargetType="ListBoxItem" BasedOn="{StaticResource ListBoxItemStyle}">
-            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-            <Setter Property="Padding" Value="0"/>
-        </Style>
         <Style x:Key="TabItemStyle" TargetType="TabItem" BasedOn="{StaticResource {x:Type TabItem}}">
             <Setter Property="IsEnabled" Value="{Binding Path=IsEnabled}"/>
         </Style>

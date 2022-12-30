@@ -484,6 +484,10 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_compiledMergemod = "string_compiledMergemod";
 		public const string string_failedToCompileMergemod = "string_failedToCompileMergemod";
 		public const string string_failedToInstallBinkASILoader = "string_failedToInstallBinkASILoader";
+		public const string string_beta = "string_beta";
+		public const string string_selectLaunchOptions = "string_selectLaunchOptions";
+		public const string string_saveChosenOptionsToThisBatchGroup = "string_saveChosenOptionsToThisBatchGroup";
+		public const string string_saveOptions = "string_saveOptions";
 		public const string string_interp_lexNightlyFailedToDownload = "string_interp_lexNightlyFailedToDownload";
 		public const string string_loadingME3TweaksServices = "string_loadingME3TweaksServices";
 		public const string string_refreshingME3TweaksServices = "string_refreshingME3TweaksServices";
@@ -903,6 +907,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_hideInstalledOptions = "string_hideInstalledOptions";
 		public const string string_noTextureModsAreInstalled = "string_noTextureModsAreInstalled";
 		public const string string_textureModded_packagesAndTFCsHidden = "string_textureModded_packagesAndTFCsHidden";
+		public const string string_loading = "string_loading";
 		public const string string_selectALogToView = "string_selectALogToView";
 		public const string string_collectingLogInformation = "string_collectingLogInformation";
 		public const string string_interp_serverRejectedTheUpload = "string_interp_serverRejectedTheUpload";
@@ -1382,6 +1387,21 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_dialog_warnMustBeDeployedForFullFeatures = "string_dialog_warnMustBeDeployedForFullFeatures";
 		public const string string_deploymentInfo = "string_deploymentInfo";
 		public const string string_le3dlcFolderNamesMP = "string_le3dlcFolderNamesMP";
+		public const string string_features = "string_features";
+		public const string string_startupFile = "string_startupFile";
+		public const string string_plotManagerData = "string_plotManagerData";
+		public const string string_modSettingsMenuStub = "string_modSettingsMenuStub";
+		public const string string_squadmateOutfitMergeAshley = "string_squadmateOutfitMergeAshley";
+		public const string string_squadmateOutfitMergeGarrus = "string_squadmateOutfitMergeGarrus";
+		public const string string_squadmateOutfitMergeEDI = "string_squadmateOutfitMergeEDI";
+		public const string string_squadmateOutfitMergeJavik = "string_squadmateOutfitMergeJavik";
+		public const string string_squadmateOutfitMergeJames = "string_squadmateOutfitMergeJames";
+		public const string string_squadmateOutfitMergeKaidan = "string_squadmateOutfitMergeKaidan";
+		public const string string_squadmateOutfitMergeLiara = "string_squadmateOutfitMergeLiara";
+		public const string string_squadmateOutfitMergeTali = "string_squadmateOutfitMergeTali";
+		public const string string_blank2DAs = "string_blank2DAs";
+		public const string string_select2DAsToAdd = "string_select2DAsToAdd";
+		public const string string_errorGeneratingMod = "string_errorGeneratingMod";
 		public const string string_dialogCouldNotSetDataToClipboard = "string_dialogCouldNotSetDataToClipboard";
 		public const string string_errorCopyingDataToClipboard = "string_errorCopyingDataToClipboard";
 		public const string string_copyItemsToClipboard = "string_copyItemsToClipboard";
@@ -1445,6 +1465,8 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_nexusModsUpdateInstructions = "string_nexusModsUpdateInstructions";
 		public const string string_interp_XfilesWillBeDeleted = "string_interp_XfilesWillBeDeleted";
 		public const string string_interp_XfilesWillBeDownloaded = "string_interp_XfilesWillBeDownloaded";
+		public const string string_interp_indexingForUpdatesXY = "string_interp_indexingForUpdatesXY";
+		public const string string_interp_calculatingUpdateDeltaXY = "string_interp_calculatingUpdateDeltaXY";
 		public const string string_interp_appliesToX = "string_interp_appliesToX";
 		public const string string_interp_partOfX = "string_interp_partOfX";
 		public const string string_interp_versionX = "string_interp_versionX";
@@ -1606,6 +1628,11 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_tooltip_targetToInstallThisModGroupTo = "string_tooltip_targetToInstallThisModGroupTo";
 		public const string string_deleteGroup = "string_deleteGroup";
 		public const string string_interp_deleteTheSelectedBatchQueue = "string_interp_deleteTheSelectedBatchQueue";
+		public const string string_modNotAvailableForInstall = "string_modNotAvailableForInstall";
+		public const string string_modNotAvailable = "string_modNotAvailable";
+		public const string string_notConfigured = "string_notConfigured";
+		public const string string_reconfigurationRequired = "string_reconfigurationRequired";
+		public const string string_interp_configuredTimestamp = "string_interp_configuredTimestamp";
 		public const string string_importAnInstalledDLCMod = "string_importAnInstalledDLCMod";
 		public const string string_description_importFromGameToModManager = "string_description_importFromGameToModManager";
 		public const string string_modsInstalledByManagedSolutionCannotBeImported = "string_modsInstalledByManagedSolutionCannotBeImported";
@@ -1793,6 +1820,9 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_tooltip_nexusfilesqueryAllLE = "string_tooltip_nexusfilesqueryAllLE";
 		public const string string_allLE = "string_allLE";
 		public const string string_searchRequiresAtLeastOneCategory = "string_searchRequiresAtLeastOneCategory";
+		public const string string_selectModToCompareAgainstDatabase = "string_selectModToCompareAgainstDatabase";
+		public const string string_nfqp_selectModDialogText = "string_nfqp_selectModDialogText";
+		public const string string_compareAgainstLoadedMod = "string_compareAgainstLoadedMod";
 		public const string string_dialog_cannotEndorseNonDownloadedMod = "string_dialog_cannotEndorseNonDownloadedMod";
 		public const string string_dialog_cannotEndorseUntil15min = "string_dialog_cannotEndorseUntil15min";
 		public const string string_dialog_mustBePremiumUserToDownload = "string_dialog_mustBePremiumUserToDownload";
@@ -1848,6 +1878,15 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_applicationTheme = "string_applicationTheme";
 		public const string string_doubleClickModInLibraryToInstall = "string_doubleClickModInLibraryToInstall";
 		public const string string_description_doubleClickModInLibraryToInstall = "string_description_doubleClickModInLibraryToInstall";
+		public const string string_nexusModsDownloadFolder = "string_nexusModsDownloadFolder";
+		public const string string_description_nexusModsDownloadFolder = "string_description_nexusModsDownloadFolder";
+		public const string string_defaultTemporaryDownloadCache = "string_defaultTemporaryDownloadCache";
+		public const string string_configure = "string_configure";
+		public const string string_dialog_selectDownloadCacheType = "string_dialog_selectDownloadCacheType";
+		public const string string_chooseCacheType = "string_chooseCacheType";
+		public const string string_customDirectory = "string_customDirectory";
+		public const string string_temporaryCache = "string_temporaryCache";
+		public const string string_selectNexusModsDownloadDirectory = "string_selectNexusModsDownloadDirectory";
 		public const string string_noItemsSelected = "string_noItemsSelected";
 		public const string string_interp_invalidHenchNameSquadmateNameValueIsCaseSensitive = "string_interp_invalidHenchNameSquadmateNameValueIsCaseSensitive";
 		public const string string_interp_errorCompilingConditionalFunction = "string_interp_errorCompilingConditionalFunction";
@@ -1880,5 +1919,16 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_nxm_interp_alreadyHandledByM3 = "string_nxm_interp_alreadyHandledByM3";
 		public const string string_checkAll = "string_checkAll";
 		public const string string_massEffectModderFiles = "string_massEffectModderFiles";
+		public const string string_gameLaunchParameters = "string_gameLaunchParameters";
+		public const string string_gameLanguage = "string_gameLanguage";
+		public const string string_subtitles = "string_subtitles";
+		public const string string_size = "string_size";
+		public const string string_customOptions = "string_customOptions";
+		public const string string_automaticallyResumeLastSave = "string_automaticallyResumeLastSave";
+		public const string string_thereIsNoBackupAvailableToQuery2DAsFrom = "string_thereIsNoBackupAvailableToQuery2DAsFrom";
+		public const string string_2da_errorReading2DAs = "string_2da_errorReading2DAs";
+		public const string string_errorReadingTables = "string_errorReadingTables";
+		public const string string_bio2DASelector = "string_bio2DASelector";
+		public const string string_select2DATablesForBlank = "string_select2DATablesForBlank";
 	}
 }

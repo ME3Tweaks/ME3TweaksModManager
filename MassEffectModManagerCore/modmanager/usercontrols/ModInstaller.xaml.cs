@@ -80,10 +80,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         /// <summary>
         /// Initializes the Mod Installer panel.
         /// </summary>
-        /// <param name="modBeingInstalled">The mod to install</param>
-        /// <param name="InstallOptionsPackage.InstallTarget">The default selected game target</param>
-        /// <param name="installCompressed">If the checkbox for install compressed should be selected. Set to null to use the mod default</param>
-        /// <param name="batchMode"></param>
+        /// <param name="package">The installation options package</param>
         public ModInstaller(ModInstallOptionsPackage package)
         {
             MemoryAnalyzer.AddTrackedMemoryItem(@"Mod Installer", new WeakReference(this));

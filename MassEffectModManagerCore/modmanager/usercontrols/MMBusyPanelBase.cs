@@ -1,10 +1,13 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
+using LegendaryExplorerCore.Helpers;
 using ME3TweaksModManager.modmanager.memoryanalyzer;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.usercontrols.interfaces;
@@ -92,6 +95,20 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 sip2.TriggerResize();
             }
+        }
+
+        /// <summary>
+        /// Triggers a resize after a 1ms delay, which should make it resize on the next frame.
+        /// </summary>
+        protected void TriggerResizeNextFrame()
+        {
+            Task.Run(() =>
+            {
+                Thread.Sleep(1);
+            }).ContinueWithOnUIThread(x =>
+            {
+                TriggerResize();
+            });
         }
 
         public virtual double MaxWindowWidthPercent { get; set; }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -8,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using IniParser;
 using IniParser.Model;
@@ -34,6 +36,7 @@ using ME3TweaksModManager.modmanager.starterkit;
 using ME3TweaksModManager.ui;
 using Microsoft.AppCenter.Analytics;
 using MvvmValidation;
+using static ME3TweaksModManager.modmanager.usercontrols.BackupFileFetcher;
 using MemoryAnalyzer = ME3TweaksModManager.modmanager.memoryanalyzer.MemoryAnalyzer;
 
 namespace ME3TweaksModManager.modmanager.windows
@@ -93,6 +96,24 @@ namespace ME3TweaksModManager.modmanager.windows
         public static GridLength VisibleRowHeight { get; } = new GridLength(25);
         public string BusyText { get; set; }
         public bool IsBusy { get; set; }
+
+        public string FilterText { get; set; }
+        public void OnFilterTextChanged()
+        {
+            CustomDLCMountsForGame.Refresh();
+        }
+
+        public ObservableCollectionExtended<ThirdPartyModInfo> ListedEntries { get; } = new();
+        public ICollectionView CustomDLCMountsForGame => CollectionViewSource.GetDefaultView(ListedEntries);
+        private bool FilterTMPIEntries(object obj)
+        {
+            if (!string.IsNullOrWhiteSpace(FilterText) && obj is ThirdPartyModInfo tpmi)
+            {
+                return tpmi.StarterKitString.Contains(FilterText, StringComparison.InvariantCultureIgnoreCase);
+            }
+            return true;
+        }
+
 
         #region FEATURE FLAGS
         // LE1, Game 2, Game 3
@@ -175,7 +196,8 @@ namespace ME3TweaksModManager.modmanager.windows
                 if (res.IsValid)
                 {
                     PreviewTPMI.mountpriority = value.ToString();
-                    CustomDLCMountsForGame.SortDescending(x => x.MountPriorityInt);
+                    ListedEntries.SortDescending(x => x.MountPriorityInt);
+                    FilterTMPIEntries(null);
                     CustomDLCMountsListBox?.ScrollIntoView(PreviewTPMI);
                 }
             }
@@ -217,7 +239,6 @@ namespace ME3TweaksModManager.modmanager.windows
         //private readonly List<MountFlag> ME1MountFlags = new List<MountFlag>();
         private readonly List<MountFlag> ME2MountFlags = new List<MountFlag>();
         private readonly List<MountFlag> ME3MountFlags = new List<MountFlag>();
-        public ObservableCollectionExtended<ThirdPartyModInfo> CustomDLCMountsForGame { get; } = new ObservableCollectionExtended<ThirdPartyModInfo>();
 
         // Doesn't change so you can bind to this
         public MEGameSelector[] Games { get; init; }
@@ -228,6 +249,8 @@ namespace ME3TweaksModManager.modmanager.windows
             M3Log.Information(@"Opening Starter Kit window");
 
             PendingGame = Game;
+            CustomDLCMountsForGame.Filter = FilterTMPIEntries;
+
 
             var flagset2 = Enum.GetValues<EME2MountFileFlag>();
             ME2MountFlags.ReplaceAll(flagset2.Select(x => new MountFlag((int)x, true)));
@@ -464,7 +487,7 @@ namespace ME3TweaksModManager.modmanager.windows
             {
                 if (x.Exception != null)
                 {
-                    M3L.ShowDialog(this, x.Exception.Message, "Error generating mod", MessageBoxButton.OK, MessageBoxImage.Error);
+                    M3L.ShowDialog(this, x.Exception.Message, M3L.GetString(M3L.string_errorGeneratingMod), MessageBoxButton.OK, MessageBoxImage.Error);
                     IsBusy = false;
                 }
             });
@@ -526,24 +549,25 @@ namespace ME3TweaksModManager.modmanager.windows
                 if (Game.IsGame1())
                 {
                     DisplayedMountFlags.ClearEx();
-                    CustomDLCMountsForGame.ReplaceAll(TPMIService.GetThirdPartyModInfos(Game).Values.Where(x => !x.IsOutdated));
+                    ListedEntries.ReplaceAll(TPMIService.GetThirdPartyModInfos(Game).Values.Where(x => !x.IsOutdated));
                 }
 
                 if (Game.IsGame2())
                 {
                     DisplayedMountFlags.ReplaceAll(ME2MountFlags);
-                    CustomDLCMountsForGame.ReplaceAll(TPMIService.GetThirdPartyModInfos(Game).Values.Where(x => !x.IsOutdated));
+                    ListedEntries.ReplaceAll(TPMIService.GetThirdPartyModInfos(Game).Values.Where(x => !x.IsOutdated));
                 }
 
                 if (Game.IsGame3())
                 {
                     DisplayedMountFlags.ReplaceAll(ME3MountFlags);
                     MountSelector.SetSelectedItems(new MountFlag[] { new MountFlag(EME3MountFileFlag.LoadsInSingleplayer) });
-                    CustomDLCMountsForGame.ReplaceAll(TPMIService.GetThirdPartyModInfos(Game).Values.Where(x => !x.IsOutdated));
+                    ListedEntries.ReplaceAll(TPMIService.GetThirdPartyModInfos(Game).Values.Where(x => !x.IsOutdated));
                 }
 
-                CustomDLCMountsForGame.Insert(0, PreviewTPMI);
-                CustomDLCMountsForGame.SortDescending(x => x.MountPriorityInt);
+                ListedEntries.Insert(0, PreviewTPMI);
+                ListedEntries.SortDescending(x => x.MountPriorityInt);
+                FilterTMPIEntries(null);
                 CustomDLCMountsListBox.ScrollIntoView(PreviewTPMI);
             }
             catch (Exception e)
@@ -741,42 +765,42 @@ namespace ME3TweaksModManager.modmanager.windows
             if (skOption.AddAshleySQM)
             {
                 UITextCallback?.Invoke($@"{M3L.GetString(M3L.string_generatingMod)} - Ashley SQM");
-                errorMessage = StarterKitAddins.GenerateSquadmateMergeFiles(skOption.ModGame, "Ashley", contentDirectory, outfits);
+                errorMessage = StarterKitAddins.GenerateSquadmateMergeFiles(skOption.ModGame, @"Ashley", contentDirectory, outfits);
             }
             if (errorMessage == null && skOption.AddEDISQM)
             {
                 UITextCallback?.Invoke($@"{M3L.GetString(M3L.string_generatingMod)} - EDI SQM");
-                errorMessage = StarterKitAddins.GenerateSquadmateMergeFiles(skOption.ModGame, "EDI", contentDirectory, outfits);
+                errorMessage = StarterKitAddins.GenerateSquadmateMergeFiles(skOption.ModGame, @"EDI", contentDirectory, outfits);
             }
             if (errorMessage == null && skOption.AddGarrusSQM)
             {
                 UITextCallback?.Invoke($@"{M3L.GetString(M3L.string_generatingMod)} - Garrus SQM");
-                errorMessage = StarterKitAddins.GenerateSquadmateMergeFiles(skOption.ModGame, "Garrus", contentDirectory, outfits);
+                errorMessage = StarterKitAddins.GenerateSquadmateMergeFiles(skOption.ModGame, @"Garrus", contentDirectory, outfits);
             }
             if (errorMessage == null && skOption.AddKaidanSQM)
             {
                 UITextCallback?.Invoke($@"{M3L.GetString(M3L.string_generatingMod)} - Kaidan SQM");
-                errorMessage = StarterKitAddins.GenerateSquadmateMergeFiles(skOption.ModGame, "Kaidan", contentDirectory, outfits);
+                errorMessage = StarterKitAddins.GenerateSquadmateMergeFiles(skOption.ModGame, @"Kaidan", contentDirectory, outfits);
             }
             if (errorMessage == null && skOption.AddJamesSQM)
             {
                 UITextCallback?.Invoke($@"{M3L.GetString(M3L.string_generatingMod)} - James SQM");
-                errorMessage = StarterKitAddins.GenerateSquadmateMergeFiles(skOption.ModGame, "Marine", contentDirectory, outfits);
+                errorMessage = StarterKitAddins.GenerateSquadmateMergeFiles(skOption.ModGame, @"Marine", contentDirectory, outfits);
             }
             if (errorMessage == null && skOption.AddJavikSQM)
             {
                 UITextCallback?.Invoke($@"{M3L.GetString(M3L.string_generatingMod)} - Javik SQM");
-                errorMessage = StarterKitAddins.GenerateSquadmateMergeFiles(skOption.ModGame, "Prothean", contentDirectory, outfits);
+                errorMessage = StarterKitAddins.GenerateSquadmateMergeFiles(skOption.ModGame, @"Prothean", contentDirectory, outfits);
             }
             if (errorMessage == null && skOption.AddLiaraSQM)
             {
                 UITextCallback?.Invoke($@"{M3L.GetString(M3L.string_generatingMod)} - Liara SQM");
-                errorMessage = StarterKitAddins.GenerateSquadmateMergeFiles(skOption.ModGame, "Liara", contentDirectory, outfits);
+                errorMessage = StarterKitAddins.GenerateSquadmateMergeFiles(skOption.ModGame, @"Liara", contentDirectory, outfits);
             }
             if (errorMessage == null && skOption.AddTaliSQM)
             {
                 UITextCallback?.Invoke($@"{M3L.GetString(M3L.string_generatingMod)} - Tali SQM");
-                errorMessage = StarterKitAddins.GenerateSquadmateMergeFiles(skOption.ModGame, "Tali", contentDirectory, outfits);
+                errorMessage = StarterKitAddins.GenerateSquadmateMergeFiles(skOption.ModGame, @"Tali", contentDirectory, outfits);
             }
 
             if (errorMessage != null)
@@ -886,7 +910,8 @@ namespace ME3TweaksModManager.modmanager.windows
             if (int.TryParse(ModMountPriority_TextBox.Text, out var val) && val > MinMountForGame && val < MaxMountForGame)
             {
                 PreviewTPMI.mountpriority = val.ToString();
-                CustomDLCMountsForGame.SortDescending(x => x.MountPriorityInt);
+                ListedEntries.SortDescending(x => x.MountPriorityInt);
+                FilterTMPIEntries(null);
                 CustomDLCMountsListBox?.ScrollIntoView(PreviewTPMI);
             }
             Validator.Validate(nameof(ModMountPriority));

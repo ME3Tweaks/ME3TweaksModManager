@@ -75,7 +75,7 @@ namespace ME3TweaksModManager.modmanager.objects
         {
             Task.Run(() =>
             {
-                if (ProgressMaximum < DOWNLOAD_TO_MEMORY_SIZE_CAP)
+                if (ProgressMaximum < DOWNLOAD_TO_MEMORY_SIZE_CAP && Settings.ModDownloadCacheFolder == null) // Mod Manager 8.0.1: If cache is set, always download to disk    
                 {
                     DownloadedStream = new MemoryStream();
                     MemoryAnalyzer.AddTrackedMemoryItem(@"NXM Download MemoryStream", new WeakReference(DownloadedStream));

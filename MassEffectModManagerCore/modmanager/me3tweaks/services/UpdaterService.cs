@@ -8,6 +8,8 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Xml.Linq;
 using LegendaryExplorerCore.Compression;
@@ -21,16 +23,16 @@ using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.mod;
 using Microsoft.AppCenter.Crashes;
+using Newtonsoft.Json;
 using PropertyChanged;
 
 namespace ME3TweaksModManager.modmanager.me3tweaks.services
 {
-    //Localizable(false) //do not remove for localizer!
     public partial class M3OnlineContent
     {
-        public const string UpdaterServiceManifestEndpoint = "https://me3tweaks.com/mods/getlatest_batch"; //2 = debug
-        public const string UpdaterServiceCodeValidationEndpoint = "https://me3tweaks.com/mods/latestxml/updatecodevalidation";
-        private const string UpdateStorageRoot = "https://me3tweaks.com/mods/updates/";
+        public const string UpdaterServiceManifestEndpoint = @"https://me3tweaks.com/mods/updatecheck"; //2 = debug
+        public const string UpdaterServiceCodeValidationEndpoint = @"https://me3tweaks.com/mods/latestxml/updatecodevalidation";
+        private const string UpdateStorageRoot = @"https://me3tweaks.com/mods/updates/";
 
 
         /// <summary>
@@ -41,17 +43,23 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
         public static Version GetLatestVersionOfModOnUpdaterService(int updatecode)
         {
             if (updatecode <= 0) return null; //invalid
-            string updateFinalRequest = UpdaterServiceManifestEndpoint + "?classicupdatecode[]=" + updatecode;
-            using var wc = new System.Net.WebClient();
+            string updateFinalRequest = UpdaterServiceManifestEndpoint;
+
+            // Setup json variables
+            var requestData = new Dictionary<string, object>(); // Converted to json and posted to the server
+            var classicUpdates = new List<int>(); // list of update codes
+            requestData[@"classic"] = classicUpdates;
+            classicUpdates.Add(updatecode);
+
             try
             {
-                string updatexml = WebClientExtensions.DownloadStringAwareOfEncoding(wc, updateFinalRequest);
+                var updatexml = WebClientExtensions.PostJsonWithStringresult(UpdaterServiceManifestEndpoint, requestData);
 
                 XElement rootElement = XElement.Parse(updatexml);
-                var modUpdateInfos = (from e in rootElement.Elements("mod")
+                var modUpdateInfos = (from e in rootElement.Elements(@"mod")
                                       select new ModUpdateInfo
                                       {
-                                          versionstr = (string)e.Attribute("version")
+                                          versionstr = (string)e.Attribute(@"version")
                                       }).ToList();
                 if (modUpdateInfos.Count == 1 && Version.TryParse(modUpdateInfos[0].versionstr, out var ver))
                 {
@@ -60,7 +68,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
             }
             catch (Exception e)
             {
-                M3Log.Error("Unable to fetch latest version of mod on updater service: " + e.Message);
+                M3Log.Error($@"Unable to fetch latest version of mod on updater service: {e.Message}");
             }
             return null;
         }
@@ -74,98 +82,77 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
         public static List<ModUpdateInfo> CheckForModUpdates(List<Mod> modsToCheck, bool forceUpdateCheck, Action<string> updateStatusCallback = null)
         {
             string updateFinalRequest = UpdaterServiceManifestEndpoint;
-            bool first = true;
+
+            // Setup json variables
+            var requestData = new Dictionary<string, object>(); // Converted to json and posted to the server
+            var modmakerUpdates = new List<int>(); // list of IDs
+            var classicUpdates = new List<int>(); // list of update codes
+            var nexusUpdates = new Dictionary<int, List<int>>(); // GameId -> nexus id for that domain
+            requestData[@"modmaker"] = modmakerUpdates;
+            requestData[@"classic"] = classicUpdates;
+            requestData[@"nexus"] = nexusUpdates;
+
+            // Enumerate and build the data to submit for update checks.
             foreach (var mod in modsToCheck)
             {
                 if (mod.ModModMakerID > 0)
                 {
-                    //Modmaker style
-                    if (first)
+                    // ModMaker mod update
+                    if (!modmakerUpdates.Contains(mod.ModModMakerID))
                     {
-                        updateFinalRequest += "?";
-                        first = false;
+                        modmakerUpdates.Add(mod.ModModMakerID);
                     }
-                    else
-                    {
-                        updateFinalRequest += "&";
-                    }
-
-                    updateFinalRequest += "modmakerupdatecode[]=" + mod.ModModMakerID;
-
                 }
                 else if (mod.ModClassicUpdateCode > 0)
                 {
-                    //Classic style
-                    if (first)
+                    //Classic mod update
+                    if (!classicUpdates.Contains(mod.ModClassicUpdateCode))
                     {
-                        updateFinalRequest += "?";
-                        first = false;
+                        classicUpdates.Add(mod.ModClassicUpdateCode);
                     }
-                    else
-                    {
-                        updateFinalRequest += "&";
-                    }
-                    updateFinalRequest += "classicupdatecode[]=" + mod.ModClassicUpdateCode;
                 }
                 else if (mod.NexusModID > 0 && mod.NexusUpdateCheck)
                 {
-                    //Nexus style
-                    if (first)
+                    // NexusMods update check
+                    if (!nexusUpdates.TryGetValue(mod.Game.ToGameNum(), out var list))
                     {
-                        updateFinalRequest += "?";
-                        first = false;
+                        list = new List<int>();
+                        nexusUpdates[mod.Game.ToGameNum()] = list;
                     }
-                    else
+
+                    if (!list.Contains(mod.NexusModID))
                     {
-                        updateFinalRequest += "&";
+                        list.Add(mod.NexusModID);
                     }
-                    updateFinalRequest += "nexusupdatecode[]=" + mod.Game.ToGameNum() + "-" + mod.NexusModID;
                 }
-                //else if (mod.NexusModID > 0)
-                //{
-                //    //Classic style
-                //    if (first)
-                //    {
-                //        updateFinalRequest += "?";
-                //        first = false;
-                //    }
-                //    else
-                //    {
-                //        updateFinalRequest += "&";
-                //    }
-                //    updateFinalRequest += "nexusupdatecode[]=" + mod.ModClassicUpdateCode;
-                //}
             }
 
-            using var wc = new System.Net.WebClient();
             try
             {
-                Debug.WriteLine(updateFinalRequest);
-                string updatexml = WebClientExtensions.DownloadStringAwareOfEncoding(wc, updateFinalRequest);
-
+                var updatexml = WebClientExtensions.PostJsonWithStringresult(UpdaterServiceManifestEndpoint, requestData);
                 XElement rootElement = XElement.Parse(updatexml);
 
                 #region classic mods
 
                 var modUpdateInfos = new List<ModUpdateInfo>();
-                var classicUpdateInfos = (from e in rootElement.Elements("mod")
+                var classicUpdateInfos = (from e in rootElement.Elements(@"mod")
                                           select new ModUpdateInfo
                                           {
-                                              changelog = (string)e.Attribute("changelog"),
-                                              versionstr = (string)e.Attribute("version"),
-                                              updatecode = (int)e.Attribute("updatecode"),
-                                              serverfolder = (string)e.Attribute("folder"),
-                                              sourceFiles = (from f in e.Elements("sourcefile")
+                                              changelog = (string)e.Attribute(@"changelog"),
+                                              versionstr = (string)e.Attribute(@"version"),
+                                              updatecode = (int)e.Attribute(@"updatecode"),
+                                              serverfolder = (string)e.Attribute(@"folder"),
+                                              sourceFiles = (from f in e.Elements(@"sourcefile")
                                                              select new SourceFile
                                                              {
-                                                                 lzmahash = (string)f.Attribute("lzmahash"),
-                                                                 hash = (string)f.Attribute("hash"),
-                                                                 size = (int)f.Attribute("size"),
-                                                                 lzmasize = (int)f.Attribute("lzmasize"),
+                                                                 lzmahash = (string)f.Attribute(@"lzmahash"),
+                                                                 hash = (string)f.Attribute(@"hash"),
+                                                                 size = (int)f.Attribute(@"size"),
+                                                                 lzmasize = (int)f.Attribute(@"lzmasize"),
                                                                  relativefilepath = f.Value,
-                                                                 timestamp = (Int64?)f.Attribute("timestamp") ?? (Int64)0
+                                                                 timestamp = (Int64?)f.Attribute(@"timestamp") ?? (Int64)0
                                                              }).ToList(),
-                                              blacklistedFiles = e.Elements("blacklistedfile").Select(x => x.Value).ToList()
+                                              blacklistedFiles = e.Elements(@"blacklistedfile").Select(x => x.Value).ToList()
                                           }).ToList();
 
                 // CALCULATE UPDATE DELTA
@@ -198,7 +185,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
                         {
                             // The mod failed to load. We should just index everything the
                             // references will not be dfully parsed.
-                            var localFiles = Directory.GetFiles(matchingMod.ModPath, "*", SearchOption.AllDirectories);
+                            var localFiles = Directory.GetFiles(matchingMod.ModPath, @"*", SearchOption.AllDirectories);
                             references = localFiles.Select(x => x.Substring(matchingMod.ModPath.Length + 1)).ToList();
                         }
                         int total = references.Count;
@@ -207,7 +194,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
                         foreach (var v in references)
                         {
                             updateStatusCallback?.Invoke(
-                                $"Indexing {modUpdateInfo.mod.ModName} for updates {(int)(i * 100 / total)}%");
+                                M3L.GetString(M3L.string_interp_indexingForUpdatesXY, modUpdateInfo.mod.ModName, (int)(i * 100 / total)));
                             i++;
                             var fpath = Path.Combine(matchingMod.ModPath, v);
                             if (fpath.RepresentsPackageFilePath())
@@ -217,7 +204,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
                                 if (qPackage.IsCompressed)
                                 {
                                     M3Log.Information(
-                                        $" >> Decompressing compressed package for update comparison check: {fpath}",
+                                        $@" >> Decompressing compressed package for update comparison check: {fpath}",
                                         Settings.LogModUpdater);
                                     try
                                     {
@@ -256,7 +243,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
                         {
                             M3Log.Information($@"Checking {serverFile.relativefilepath} for update applicability");
                             updateStatusCallback?.Invoke(
-                                $"Calculating update delta for {modUpdateInfo.mod.ModName} {(int)(i * 100 / total)}%");
+                                M3L.GetString(M3L.string_interp_calculatingUpdateDeltaXY, modUpdateInfo.mod.ModName, (int)(i * 100 / total)));
                             i++;
 
                             bool calculatedOp = false;
@@ -288,7 +275,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
                                 if (existingFilesThatMatchServerHash.Any())
                                 {
                                     M3Log.Information(
-                                        $" >> Server file can be cloned from local file {existingFilesThatMatchServerHash[0].Value.RelativeFilepath} as it has same hash",
+                                        $@" >> Server file can be cloned from local file {existingFilesThatMatchServerHash[0].Value.RelativeFilepath} as it has same hash",
                                         Settings.LogModUpdater);
                                     modUpdateInfo.cloneOperations[serverFile] =
                                         existingFilesThatMatchServerHash[0]
@@ -298,14 +285,14 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
                                 {
                                     // we don't have file hashed (new file)
                                     M3Log.Information(
-                                        $" >> Applicable for updates, File does not exist locally",
+                                        @" >> Applicable for updates, File does not exist locally",
                                         Settings.LogModUpdater);
                                     modUpdateInfo.applicableUpdates.Add(serverFile);
                                 }
                                 else
                                 {
                                     // Existing file has wrong hash
-                                    M3Log.Information($" >> Applicable for updates, hash has changed",
+                                    M3Log.Information(@" >> Applicable for updates, hash has changed",
                                         Settings.LogModUpdater);
                                     modUpdateInfo.applicableUpdates.Add(serverFile);
                                 }
@@ -327,7 +314,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
                         modUpdateInfo.applicableUpdates.Sort(x => x.relativefilepath);
 
                         //Files to remove calculation
-                        var modFiles = Directory.GetFiles(modBasepath, "*", SearchOption.AllDirectories)
+                        var modFiles = Directory.GetFiles(modBasepath, @"*", SearchOption.AllDirectories)
                             .Select(x => x.Substring(modBasepath.Length + 1)).ToList();
 
                         var additionalFilesToDelete = modFiles.Except(
@@ -347,14 +334,14 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
 
                 #region modmaker mods
 
-                var modmakerModUpdateInfos = (from e in rootElement.Elements("modmakermod")
+                var modmakerModUpdateInfos = (from e in rootElement.Elements(@"modmakermod")
                                               select new ModMakerModUpdateInfo
                                               {
-                                                  ModMakerId = (int)e.Attribute("id"),
-                                                  versionstr = (string)e.Attribute("version"),
-                                                  PublishDate = DateTime.ParseExact((string)e.Attribute("publishdate"), "yyyy-MM-dd",
+                                                  ModMakerId = (int)e.Attribute(@"id"),
+                                                  versionstr = (string)e.Attribute(@"version"),
+                                                  PublishDate = DateTime.ParseExact((string)e.Attribute(@"publishdate"), @"yyyy-MM-dd",
                                                       CultureInfo.InvariantCulture),
-                                                  changelog = (string)e.Attribute("changelog")
+                                                  changelog = (string)e.Attribute(@"changelog")
                                               }).ToList();
                 modUpdateInfos.AddRange(modmakerModUpdateInfos);
 
@@ -362,14 +349,14 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
 
                 #region Nexus Mod Third Party
 
-                var nexusModsUpdateInfo = (from e in rootElement.Elements("nexusmod")
+                var nexusModsUpdateInfo = (from e in rootElement.Elements(@"nexusmod")
                                            select new NexusModUpdateInfo
                                            {
-                                               NexusModsId = (int)e.Attribute("id"),
-                                               GameId = (int)e.Attribute("game"),
-                                               versionstr = (string)e.Attribute("version"),
-                                               UpdatedTime = DateTimeOffset.FromUnixTimeSeconds((long)e.Attribute("updated_timestamp")).DateTime,
-                                               changelog = (string)e.Attribute("changelog") // This will be null if not set
+                                               NexusModsId = (int)e.Attribute(@"id"),
+                                               GameId = (int)e.Attribute(@"game"),
+                                               versionstr = (string)e.Attribute(@"version"),
+                                               UpdatedTime = DateTimeOffset.FromUnixTimeSeconds((long)e.Attribute(@"updated_timestamp")).DateTime,
+                                               changelog = (string)e.Attribute(@"changelog") // This will be null if not set
                                            }).ToList();
                 modUpdateInfos.AddRange(nexusModsUpdateInfo);
 
@@ -379,12 +366,326 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
             }
             catch (Exception e)
             {
-                M3Log.Error("Error checking for mod updates: " + App.FlattenException(e));
+                M3Log.Error($@"Error checking for mod updates: {App.FlattenException(e)}");
                 Crashes.TrackError(e, new Dictionary<string, string>()
                 {
-                    {"Update check URL", updateFinalRequest}
+                    {@"Update check URL", updateFinalRequest}
                 });
             }
+
+            // OLD URL-ENCODED METHOD
+            //string updateFinalRequest = UpdaterServiceManifestEndpoint;
+            //bool first = true;
+            //foreach (var mod in modsToCheck)
+            //{
+            //    if (mod.ModModMakerID > 0)
+            //    {
+            //        //Modmaker style
+            //        if (first)
+            //        {
+            //            updateFinalRequest += "?";
+            //            first = false;
+            //        }
+            //        else
+            //        {
+            //            updateFinalRequest += "&";
+            //        }
+
+            //        updateFinalRequest += "modmakerupdatecode[]=" + mod.ModModMakerID;
+
+            //    }
+            //    else if (mod.ModClassicUpdateCode > 0)
+            //    {
+            //        //Classic style
+            //        if (first)
+            //        {
+            //            updateFinalRequest += "?";
+            //            first = false;
+            //        }
+            //        else
+            //        {
+            //            updateFinalRequest += "&";
+            //        }
+            //        updateFinalRequest += "classicupdatecode[]=" + mod.ModClassicUpdateCode;
+            //    }
+            //    else if (mod.NexusModID > 0 && mod.NexusUpdateCheck)
+            //    {
+            //        //Nexus style
+            //        if (first)
+            //        {
+            //            updateFinalRequest += "?";
+            //            first = false;
+            //        }
+            //        else
+            //        {
+            //            updateFinalRequest += "&";
+            //        }
+            //        updateFinalRequest += "nexusupdatecode[]=" + mod.Game.ToGameNum() + "-" + mod.NexusModID;
+            //    }
+            //    //else if (mod.NexusModID > 0)
+            //    //{
+            //    //    //Classic style
+            //    //    if (first)
+            //    //    {
+            //    //        updateFinalRequest += "?";
+            //    //        first = false;
+            //    //    }
+            //    //    else
+            //    //    {
+            //    //        updateFinalRequest += "&";
+            //    //    }
+            //    //    updateFinalRequest += "nexusupdatecode[]=" + mod.ModClassicUpdateCode;
+            //    //}
+            //}
+
+            //using var wc = new System.Net.WebClient();
+            //try
+            //{
+            //    Debug.WriteLine(updateFinalRequest);
+            //    string updatexml = WebClientExtensions.DownloadStringAwareOfEncoding(wc, updateFinalRequest);
+
+            //    XElement rootElement = XElement.Parse(updatexml);
+
+            //    #region classic mods
+
+            //    var modUpdateInfos = new List<ModUpdateInfo>();
+            //    var classicUpdateInfos = (from e in rootElement.Elements("mod")
+            //                              select new ModUpdateInfo
+            //                              {
+            //                                  changelog = (string)e.Attribute("changelog"),
+            //                                  versionstr = (string)e.Attribute("version"),
+            //                                  updatecode = (int)e.Attribute("updatecode"),
+            //                                  serverfolder = (string)e.Attribute("folder"),
+            //                                  sourceFiles = (from f in e.Elements("sourcefile")
+            //                                                 select new SourceFile
+            //                                                 {
+            //                                                     lzmahash = (string)f.Attribute("lzmahash"),
+            //                                                     hash = (string)f.Attribute("hash"),
+            //                                                     size = (int)f.Attribute("size"),
+            //                                                     lzmasize = (int)f.Attribute("lzmasize"),
+            //                                                     relativefilepath = f.Value,
+            //                                                     timestamp = (Int64?)f.Attribute("timestamp") ?? (Int64)0
+            //                                                 }).ToList(),
+            //                                  blacklistedFiles = e.Elements("blacklistedfile").Select(x => x.Value).ToList()
+            //                              }).ToList();
+
+            //    // CALCULATE UPDATE DELTA
+            //    CaseInsensitiveDictionary<USFileInfo> hashMap = new CaseInsensitiveDictionary<USFileInfo>(); //Used to rename files
+            //    foreach (var modUpdateInfo in classicUpdateInfos)
+            //    {
+            //        modUpdateInfo.ResolveVersionVar();
+            //        //Calculate update information
+            //        var matchingMod = modsToCheck.FirstOrDefault(x => x.ModClassicUpdateCode == modUpdateInfo.updatecode);
+            //        if (matchingMod != null && (forceUpdateCheck || ProperVersion.IsGreaterThan(modUpdateInfo.version, matchingMod.ParsedModVersion)))
+            //        {
+            //            // The following line is left so we know that it was at one point considered implemented.
+            //            // This prevents updating copies of the same mod in the library. Cause it's just kind of a bandwidth waste.
+            //            //modsToCheck.Remove(matchingMod); //This makes it so we don't feed in multiple same-mods. For example, nexus check on 3 Project Variety downloads
+            //            modUpdateInfo.mod = matchingMod;
+            //            modUpdateInfo.SetLocalizedInfo();
+            //            string modBasepath = matchingMod.ModPath;
+            //            double i = 0;
+            //            List<string> references = null;
+            //            try
+            //            {
+            //                references = matchingMod.GetAllRelativeReferences(true);
+            //            }
+            //            catch
+            //            {
+            //                // There's an error. Underlying disk state may have changed since we originally loaded the mod
+            //            }
+
+            //            if (references == null || !matchingMod.ValidMod)
+            //            {
+            //                // The mod failed to load. We should just index everything the
+            //                // references will not be dfully parsed.
+            //                var localFiles = Directory.GetFiles(matchingMod.ModPath, "*", SearchOption.AllDirectories);
+            //                references = localFiles.Select(x => x.Substring(matchingMod.ModPath.Length + 1)).ToList();
+            //            }
+            //            int total = references.Count;
+
+            //            // Index existing files
+            //            foreach (var v in references)
+            //            {
+            //                updateStatusCallback?.Invoke(
+            //                    M3L.GetString(M3L.string_interp_indexingForUpdatesXY, modUpdateInfo.mod.ModName, (int)(i * 100 / total)));
+            //                i++;
+            //                var fpath = Path.Combine(matchingMod.ModPath, v);
+            //                if (fpath.RepresentsPackageFilePath())
+            //                {
+            //                    // We need to make sure it's decompressed
+            //                    var qPackage = MEPackageHandler.QuickOpenMEPackage(fpath);
+            //                    if (qPackage.IsCompressed)
+            //                    {
+            //                        M3Log.Information(
+            //                            $" >> Decompressing compressed package for update comparison check: {fpath}",
+            //                            Settings.LogModUpdater);
+            //                        try
+            //                        {
+            //                            qPackage = MEPackageHandler.OpenMEPackage(fpath);
+            //                            MemoryStream tStream = new MemoryStream();
+            //                            tStream = qPackage.SaveToStream(false);
+            //                            hashMap[v] = new USFileInfo()
+            //                            {
+            //                                MD5 = M3Utilities.CalculateMD5(tStream),
+            //                                CompressedMD5 = M3Utilities.CalculateMD5(fpath),
+            //                                Filesize = tStream.Length,
+            //                                RelativeFilepath = v
+            //                            };
+            //                        }
+            //                        catch (Exception e)
+            //                        {
+            //                            // Don't put in hashmap. It died
+            //                            M3Log.Error($@"Exception trying to decompress package {fpath}: {e.Message}");
+            //                        }
+
+            //                        continue;
+            //                    }
+            //                }
+
+            //                hashMap[v] = new USFileInfo()
+            //                {
+            //                    MD5 = M3Utilities.CalculateMD5(fpath),
+            //                    Filesize = new FileInfo(fpath).Length,
+            //                    RelativeFilepath = v
+            //                };
+            //            }
+
+            //            i = 0;
+            //            total = modUpdateInfo.sourceFiles.Count;
+            //            foreach (var serverFile in modUpdateInfo.sourceFiles)
+            //            {
+            //                M3Log.Information($@"Checking {serverFile.relativefilepath} for update applicability");
+            //                updateStatusCallback?.Invoke(
+            //                    M3L.GetString(M3L.string_interp_calculatingUpdateDeltaXY, modUpdateInfo.mod.ModName, (int)(i * 100 / total)));
+            //                i++;
+
+            //                bool calculatedOp = false;
+            //                if (hashMap.TryGetValue(serverFile.relativefilepath, out var indexInfo))
+            //                {
+            //                    if (indexInfo.MD5 == serverFile.hash)
+            //                    {
+            //                        M3Log.Information(@" >> File is up to date", Settings.LogModUpdater);
+            //                        calculatedOp = true;
+            //                    }
+            //                    else if (indexInfo.CompressedMD5 != null && indexInfo.CompressedMD5 == serverFile.hash)
+            //                    {
+            //                        M3Log.Information(@" >> Compressed package file is up to date",
+            //                            Settings.LogModUpdater);
+            //                        calculatedOp = true;
+            //                    }
+            //                }
+
+            //                if (!calculatedOp)
+            //                {
+            //                    // File is missing or hash was wrong. We should try to map it to another existing file
+            //                    // to save bandwidth
+            //                    var existingFilesThatMatchServerHash =
+            //                        hashMap.Where(x =>
+            //                                x.Value.MD5 == serverFile.hash || (x.Value.CompressedMD5 != null &&
+            //                                                                   x.Value.CompressedMD5 ==
+            //                                                                   serverFile.hash))
+            //                            .ToList();
+            //                    if (existingFilesThatMatchServerHash.Any())
+            //                    {
+            //                        M3Log.Information(
+            //                            $" >> Server file can be cloned from local file {existingFilesThatMatchServerHash[0].Value.RelativeFilepath} as it has same hash",
+            //                            Settings.LogModUpdater);
+            //                        modUpdateInfo.cloneOperations[serverFile] =
+            //                            existingFilesThatMatchServerHash[0]
+            //                                .Value; // Server file can be sourced from the value
+            //                    }
+            //                    else if (indexInfo == null)
+            //                    {
+            //                        // we don't have file hashed (new file)
+            //                        M3Log.Information(
+            //                            $" >> Applicable for updates, File does not exist locally",
+            //                            Settings.LogModUpdater);
+            //                        modUpdateInfo.applicableUpdates.Add(serverFile);
+            //                    }
+            //                    else
+            //                    {
+            //                        // Existing file has wrong hash
+            //                        M3Log.Information($" >> Applicable for updates, hash has changed",
+            //                            Settings.LogModUpdater);
+            //                        modUpdateInfo.applicableUpdates.Add(serverFile);
+            //                    }
+            //                }
+            //            }
+
+            //            foreach (var blacklistedFile in modUpdateInfo.blacklistedFiles)
+            //            {
+            //                var blLocalFile = Path.Combine(modBasepath, blacklistedFile);
+            //                if (File.Exists(blLocalFile))
+            //                {
+            //                    M3Log.Information(@"Blacklisted file marked for deletion: " + blLocalFile);
+            //                    modUpdateInfo.filesToDelete.Add(blLocalFile);
+            //                }
+            //            }
+
+
+            //            // alphabetize files
+            //            modUpdateInfo.applicableUpdates.Sort(x => x.relativefilepath);
+
+            //            //Files to remove calculation
+            //            var modFiles = Directory.GetFiles(modBasepath, "*", SearchOption.AllDirectories)
+            //                .Select(x => x.Substring(modBasepath.Length + 1)).ToList();
+
+            //            var additionalFilesToDelete = modFiles.Except(
+            //                modUpdateInfo.sourceFiles.Select(x => x.relativefilepath),
+            //                StringComparer.InvariantCultureIgnoreCase).Distinct().ToList();
+            //            modUpdateInfo.filesToDelete.AddRange(
+            //                additionalFilesToDelete); //Todo: Add security check here to prevent malicious 
+
+
+            //            modUpdateInfo.TotalBytesToDownload = modUpdateInfo.applicableUpdates.Sum(x => x.lzmasize);
+            //        }
+            //    }
+
+            //    modUpdateInfos.AddRange(classicUpdateInfos);
+
+            //    #endregion
+
+            //    #region modmaker mods
+
+            //    var modmakerModUpdateInfos = (from e in rootElement.Elements("modmakermod")
+            //                                  select new ModMakerModUpdateInfo
+            //                                  {
+            //                                      ModMakerId = (int)e.Attribute("id"),
+            //                                      versionstr = (string)e.Attribute("version"),
+            //                                      PublishDate = DateTime.ParseExact((string)e.Attribute("publishdate"), "yyyy-MM-dd",
+            //                                          CultureInfo.InvariantCulture),
+            //                                      changelog = (string)e.Attribute("changelog")
+            //                                  }).ToList();
+            //    modUpdateInfos.AddRange(modmakerModUpdateInfos);
+
+            //    #endregion
+
+            //    #region Nexus Mod Third Party
+
+            //    var nexusModsUpdateInfo = (from e in rootElement.Elements("nexusmod")
+            //                               select new NexusModUpdateInfo
+            //                               {
+            //                                   NexusModsId = (int)e.Attribute("id"),
+            //                                   GameId = (int)e.Attribute("game"),
+            //                                   versionstr = (string)e.Attribute("version"),
+            //                                   UpdatedTime = DateTimeOffset.FromUnixTimeSeconds((long)e.Attribute("updated_timestamp")).DateTime,
+            //                                   changelog = (string)e.Attribute("changelog") // This will be null if not set
+            //                               }).ToList();
+            //    modUpdateInfos.AddRange(nexusModsUpdateInfo);
+
+            //    #endregion
+
+            //    return modUpdateInfos;
+            //}
+            //catch (Exception e)
+            //{
+            //    M3Log.Error("Error checking for mod updates: " + App.FlattenException(e));
+            //    Crashes.TrackError(e, new Dictionary<string, string>()
+            //    {
+            //        {"Update check URL", updateFinalRequest}
+            //    });
+            //}
 
             return null;
         }
@@ -655,7 +956,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
                 updatecode = source.updatecode;
                 versionstr = source.versionstr;
             }
-            
+
             public bool Equals(ModUpdateInfo other)
             {
                 return Equals(mod, other.mod);

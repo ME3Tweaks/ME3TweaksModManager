@@ -1,97 +1,90 @@
-﻿<Window x:Class="ME3TweaksModManager.modmanager.windows.BatchModQueueEditor" 
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" 
-        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" 
-        xmlns:fa5="http://schemas.fontawesome.com/icons/"
-        xmlns:helpers="clr-namespace:ME3TweaksModManager.modmanager.helpers"
-        xmlns:extensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
-        DataContext="{Binding RelativeSource={RelativeSource Self}}"
-        mc:Ignorable="d" 
-        WindowStartupLocation="CenterOwner" Title="{DynamicResource string_title_installGroupEditor}" 
-        Height="720" Width="1280">
+﻿<Window
+    x:Class="ME3TweaksModManager.modmanager.windows.BatchModQueueEditor" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:fa5="http://schemas.fontawesome.com/icons/" xmlns:helpers="clr-namespace:ME3TweaksModManager.modmanager.helpers" xmlns:extensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+    xmlns:batch="clr-namespace:ME3TweaksModManager.modmanager.objects.batch"
+    DataContext="{Binding RelativeSource={RelativeSource Self}}"
+    mc:Ignorable="d"
+    WindowStartupLocation="CenterOwner"
+    Title="{DynamicResource string_title_installGroupEditor}"
+    Height="720"
+    Width="1280">
     <Window.Style>
-        <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}" />
+        <Style
+            TargetType="Window"
+            BasedOn="{StaticResource {x:Type Window}}" />
     </Window.Style>
-    <DockPanel Margin="5">
-        <TextBlock Text="{DynamicResource string_title_installGroupEditor}" FontSize="20" FontWeight="Bold" DockPanel.Dock="Top" TextAlignment="Center" />
-        <TextBlock Text="{DynamicResource string_moveModsToRightSideToAdd}" TextAlignment="Center" DockPanel.Dock="Top" Margin="0,0,0,10" />
-        <Grid DockPanel.Dock="Left">
+    <DockPanel
+        Margin="5">
+        <TextBlock
+            Text="{DynamicResource string_title_installGroupEditor}"
+            FontSize="20"
+            FontWeight="Bold"
+            DockPanel.Dock="Top"
+            TextAlignment="Center" />
+        <TextBlock
+            Text="{DynamicResource string_moveModsToRightSideToAdd}"
+            TextAlignment="Center"
+            DockPanel.Dock="Top"
+            Margin="0,0,0,10" />
+        <Grid
+            DockPanel.Dock="Left">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-                <RowDefinition Height="200" />
-                <RowDefinition Height="Auto" />
+                <RowDefinition
+                    Height="Auto" />
+                <RowDefinition
+                    Height="Auto" />
+                <RowDefinition
+                    Height="Auto" />
+                <RowDefinition
+                    Height="Auto" />
+                <RowDefinition
+                    Height="*" />
+                <RowDefinition
+                    Height="200" />
+                <RowDefinition
+                    Height="Auto" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="50" />
-                <ColumnDefinition Width="50" />
-                <ColumnDefinition Width="50" />
-                <ColumnDefinition Width="50" />
-                <ColumnDefinition Width="50" />
-                <ColumnDefinition Width="50" />
+                <ColumnDefinition
+                    Width="50" />
+                <ColumnDefinition
+                    Width="50" />
+                <ColumnDefinition
+                    Width="50" />
+                <ColumnDefinition
+                    Width="50" />
+                <ColumnDefinition
+                    Width="50" />
+                <ColumnDefinition
+                    Width="50" />
             </Grid.ColumnDefinitions>
-            <TextBlock Text="{DynamicResource string_game}" FontWeight="Bold" Grid.ColumnSpan="6" />
-            <!--<RadioButton Grid.Column="0" Grid.Row="1" Click="ME1_Clicked" Name="ME1_RadioButton">
-                <StackPanel Orientation="Horizontal">
-                    <Image 
-                        Source="{ui:MippedIcon Source={StaticResource me1gameiconpath}, Size=32}"
-                           Width="32" Height="32" Margin="0,0,5,0" />
-                </StackPanel>
-            </RadioButton>
-            <RadioButton Grid.Row="1" Grid.Column="1" Margin="5,0" Click="ME2_Clicked" Name="ME2_RadioButton">
-                <StackPanel Orientation="Horizontal">
-                    <Image 
-                        Source="{ui:MippedIcon Source={StaticResource me2gameiconpath}, Size=32}"
-                           Width="32" Height="32" Margin="0,0,5,0" />
-                </StackPanel>
-            </RadioButton>
-            <RadioButton Grid.Row="1" Grid.Column="2" Click="ME3_Clicked" Name="ME3_RadioButton">
-                <StackPanel Orientation="Horizontal">
-                    <Image 
-                           Source="{ui:MippedIcon Source={StaticResource me3gameiconpath}, Size=32}"
-                           Width="32" Height="32" Margin="0,0,5,0" />
-                </StackPanel>
-            </RadioButton>
-            <RadioButton Grid.Row="1"  Grid.Column="3" Click="LE1_Clicked" Name="LE1_RadioButton">
-                <StackPanel Orientation="Horizontal">
-                    <Image 
-                           Source="{ui:MippedIcon Source={StaticResource le1gameiconpath}, Size=32}"
-                           Width="32" Height="32" Margin="0,0,5,0" />
-                </StackPanel>
-            </RadioButton>
-            <RadioButton Grid.Row="1" Grid.Column="4" Margin="5,0" Click="LE2_Clicked" Name="LE2_RadioButton">
-                <StackPanel Orientation="Horizontal">
-                    <Image                          
-                        Source="{ui:MippedIcon Source={StaticResource le2gameiconpath}, Size=32}"
-                        Width="32" Height="32" Margin="0,0,5,0" />
-                </StackPanel>
-            </RadioButton>
-            <RadioButton Grid.Row="1" Grid.Column="5" Click="LE3_Clicked" Name="LE3_RadioButton">
-                <StackPanel Orientation="Horizontal">
-                    <Image                            
-                        Source="{ui:MippedIcon Source={StaticResource le3gameiconpath}, Size=32}"
-                        Width="32" Height="32" Margin="0,0,5,0" />
-                </StackPanel>
-            </RadioButton>-->
-
-            <ItemsControl ItemsSource="{Binding Games}" Grid.Row="1" Grid.ColumnSpan="6">
+            <TextBlock
+                Text="{DynamicResource string_game}"
+                FontWeight="Bold"
+                Grid.ColumnSpan="6" />
+            <ItemsControl
+                ItemsSource="{Binding Games}"
+                Grid.Row="1"
+                Grid.ColumnSpan="6">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <StackPanel Orientation="Horizontal"/>
+                        <StackPanel
+                            Orientation="Horizontal" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="helpers:MEGameSelector">
-                        <Button Click="GameIcon_Click" Padding="2" Margin="2,0">
+                    <DataTemplate
+                        DataType="helpers:MEGameSelector">
+                        <Button
+                            Click="GameIcon_Click"
+                            Padding="2"
+                            Margin="2,0">
                             <Button.Style>
-                                <Style TargetType="Button"  BasedOn="{StaticResource {x:Type Button}}">
-                                    <Setter Property="Opacity" Value="1"/>
+                                <Style
+                                    TargetType="Button"
+                                    BasedOn="{StaticResource {x:Type Button}}">
+                                    <Setter
+                                        Property="Opacity"
+                                        Value="1" />
                                     <Style.Triggers>
                                         <DataTrigger
                                             Binding="{Binding IsSelected}"
@@ -103,80 +96,173 @@
                                     </Style.Triggers>
                                 </Style>
                             </Button.Style>
-                            <Image Width="24" Source="{Binding Path=., Converter={StaticResource GameToImageIconConverter}, ConverterParameter=24}"/>
+                            <Image
+                                Width="24"
+                                Source="{Binding Path=., Converter={StaticResource GameToImageIconConverter}, ConverterParameter=24}" />
                         </Button>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
-            <TextBlock Text="{DynamicResource string_availableModsForGroup}" FontWeight="Bold" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="6" Margin="0,10,0,0" />
-            <ListBox Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="6" SelectionMode="Extended" ItemsSource="{Binding VisibleFilteredMods}" SelectedItem="{Binding SelectedAvailableMod}" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" BorderThickness="1" IsTextSearchEnabled="True" TextSearch.TextPath="ModName">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Orientation="Horizontal">
-                            <Image Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}, ConverterParameter=16}" Width="16" Height="16" Margin="0,0,5,0" />
-                            <TextBlock Text="{Binding ModName}" />
-                        </StackPanel>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
+            <TextBlock
+                Text="{DynamicResource string_availableModsForGroup}"
+                FontWeight="Bold"
+                Grid.Row="2"
+                Grid.Column="0"
+                Grid.ColumnSpan="6"
+                Margin="0,10,0,0" />
+            <TabControl 
+                SelectedIndex="{Binding SelectedTabIndex}"
+                Grid.Row="4"
+                Grid.Column="0"
+                Grid.ColumnSpan="6"
+                Margin="0"
+                Padding="0">
+                <TabItem Header="Content mods" Margin="0" Padding="0">
+                    <ListBox
+                        Margin="-8"
+                        SelectionMode="Extended"
+                        ItemsSource="{Binding VisibleFilteredMods}"
+                        SelectedItem="{Binding SelectedAvailableMod}"
+                        Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
+                        BorderThickness="1"
+                        IsTextSearchEnabled="True"
+                        TextSearch.TextPath="ModName">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel
+                            Orientation="Horizontal">
+                                    <Image
+                                Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}, ConverterParameter=16}"
+                                Width="16"
+                                Height="16"
+                                Margin="0,0,5,0" />
+                                    <TextBlock
+                                Text="{Binding ModName}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </TabItem>
+                <TabItem Header="ASI mods">
+                    <ListBox BorderThickness="1"
+                             Margin="-8"
+                             IsTextSearchEnabled="True"
+                             TextSearch.TextPath="Name"
+                             Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
+                             ItemContainerStyle="{StaticResource StretchNoPaddingStyle}" 
+                             ItemsSource="{Binding VisibleFilteredASIMods}" 
+                             HorizontalContentAlignment="Stretch" 
+                             SelectedItem="{Binding SelectedAvailableASIMod}"/>
+                </TabItem>
+            </TabControl>
+
             <TextBox
-                    Grid.Row="5"
-                    Grid.ColumnSpan="6"
-                    Grid.Column="0"
-                    IsReadOnly="True"
-                    IsReadOnlyCaretVisible="False"
-                    HorizontalContentAlignment="Left"
-                    HorizontalAlignment="Stretch"
-                    Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
-                    TextWrapping="Wrap"
-                    VerticalScrollBarVisibility="Auto"
-                    VerticalContentAlignment="Top"
-                    extensions:CursorSpotlightExtension.BackgroundBrush="Transparent"
-                    extensions:CursorSpotlightExtension.RelativeSpotlightSize="0"
-                    extensions:CursorSpotlightExtension.MaxBlurRadius="0">
-                <TextBox.Text>
-                    <PriorityBinding>
-                        <Binding
-                                Path="SelectedAvailableMod.DisplayedModDescription"
-                                Mode="OneWay" />
-                        <Binding
-                                Path="NoModSelectedText"
-                                Mode="OneWay" />
-                    </PriorityBinding>
-                </TextBox.Text>
-            </TextBox>
-            <Button Grid.Row="6" Grid.Column="0" Margin="0,5,0,0" Grid.ColumnSpan="6" HorizontalAlignment="Right" Command="{Binding AddToInstallGroupCommand}">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="{DynamicResource string_addModToInstallGroup}" />
-                    <fa5:ImageAwesome Icon="Solid_ArrowCircleRight" Height="12" Margin="5,0,0,0" Foreground="Green" />
+                Grid.Row="5"
+                Grid.ColumnSpan="6"
+                Grid.Column="0"
+                IsReadOnly="True"
+                IsReadOnlyCaretVisible="False"
+                HorizontalContentAlignment="Left"
+                HorizontalAlignment="Stretch"
+                Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
+                TextWrapping="Wrap"
+                VerticalScrollBarVisibility="Auto"
+                VerticalContentAlignment="Top"
+                extensions:CursorSpotlightExtension.BackgroundBrush="Transparent"
+                extensions:CursorSpotlightExtension.RelativeSpotlightSize="0"
+                extensions:CursorSpotlightExtension.MaxBlurRadius="0"
+                Text="{Binding AvailableModText}"/>
+            <Button
+                Grid.Row="6"
+                Grid.Column="0"
+                Margin="0,5,0,0"
+                Grid.ColumnSpan="6"
+                HorizontalAlignment="Right"
+                Command="{Binding AddToInstallGroupCommand}">
+                <StackPanel
+                    Orientation="Horizontal">
+                    <TextBlock
+                        Text="{DynamicResource string_addModToInstallGroup}" />
+                    <fa5:ImageAwesome
+                        Icon="Solid_ArrowCircleRight"
+                        Height="12"
+                        Margin="5,0,0,0"
+                        Foreground="Green" />
                 </StackPanel>
             </Button>
         </Grid>
-        <DockPanel Margin="10,0,0,0">
-            <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="0,5,0,0">
-                <Button Content="{DynamicResource string_cancelEditing}" Margin="5,0" Command="{Binding CancelCommand}" />
-                <Button Content="{DynamicResource string_saveGroup}" Command="{Binding SaveAndCloseCommand}" />
+        <DockPanel
+            Margin="10,0,0,0">
+            <StackPanel
+                Orientation="Horizontal"
+                DockPanel.Dock="Bottom"
+                HorizontalAlignment="Right"
+                Margin="0,5,0,0">
+                <Button
+                    Content="{DynamicResource string_cancelEditing}"
+                    Margin="5,0"
+                    Command="{Binding CancelCommand}" />
+                <Button
+                    Content="{DynamicResource string_saveGroup}"
+                    Command="{Binding SaveAndCloseCommand}" />
             </StackPanel>
-            <Grid DockPanel.Dock="Bottom">
+            <Grid
+                DockPanel.Dock="Bottom">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
+                    <RowDefinition
+                        Height="Auto" />
+                    <RowDefinition
+                        Height="Auto" />
+                    <RowDefinition
+                        Height="Auto" />
+                    <RowDefinition
+                        Height="Auto" />
                 </Grid.RowDefinitions>
-                <TextBlock Text="{DynamicResource string_groupName}" FontWeight="Bold" Grid.Row="0" Grid.Column="0" />
-                <xctk:WatermarkTextBox Watermark="{DynamicResource string_groupName}" Grid.Row="1" Grid.Column="0" Text="{Binding GroupName, UpdateSourceTrigger=PropertyChanged}" />
-                <TextBlock Text="{DynamicResource string_groupDescription}" FontWeight="Bold" Grid.Row="2" Grid.Column="0" />
-                <xctk:WatermarkTextBox Watermark="{DynamicResource string_groupDescription}" Grid.Row="3" Grid.Column="0" Height="55" Text="{Binding GroupDescription, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBlock
+                    Text="{DynamicResource string_groupName}"
+                    FontWeight="Bold"
+                    Grid.Row="0"
+                    Grid.Column="0" />
+                <xctk:WatermarkTextBox
+                    Watermark="{DynamicResource string_groupName}"
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Text="{Binding GroupName, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBlock
+                    Text="{DynamicResource string_groupDescription}"
+                    FontWeight="Bold"
+                    Grid.Row="2"
+                    Grid.Column="0" />
+                <xctk:WatermarkTextBox
+                    Watermark="{DynamicResource string_groupDescription}"
+                    Grid.Row="3"
+                    Grid.Column="0"
+                    Height="55"
+                    Text="{Binding GroupDescription, UpdateSourceTrigger=PropertyChanged}" />
             </Grid>
             <DockPanel>
-                <TextBlock Text="{DynamicResource string_modsInInstallGroup}" FontWeight="Bold" DockPanel.Dock="Top" />
-                <TextBlock Text="{DynamicResource string_directionsInstallGroupEditor}" TextWrapping="Wrap" DockPanel.Dock="Top" />
-                <DockPanel DockPanel.Dock="Bottom">
-                    <Button DockPanel.Dock="Left" Command="{Binding RemoveFromInstallGroupCommand}">
-                        <StackPanel Orientation="Horizontal">
-                            <fa5:ImageAwesome Icon="Solid_ArrowCircleLeft" Height="12" Margin="0,0,5,0" Foreground="Red" />
-                            <TextBlock Text="{DynamicResource string_removeModFromInstallGroup}" />
+                <TextBlock
+                    Text="{DynamicResource string_modsInInstallGroup}"
+                    FontWeight="Bold"
+                    DockPanel.Dock="Top" />
+                <TextBlock
+                    Text="{DynamicResource string_directionsInstallGroupEditor}"
+                    TextWrapping="Wrap"
+                    DockPanel.Dock="Top" />
+                <DockPanel
+                    DockPanel.Dock="Bottom">
+                    <Button
+                        DockPanel.Dock="Left"
+                        Command="{Binding RemoveFromInstallGroupCommand}">
+                        <StackPanel
+                            Orientation="Horizontal">
+                            <fa5:ImageAwesome
+                                Icon="Solid_ArrowCircleLeft"
+                                Height="12"
+                                Margin="0,0,5,0"
+                                Foreground="Red" />
+                            <TextBlock
+                                Text="{DynamicResource string_removeModFromInstallGroup}" />
                         </StackPanel>
                     </Button>
                     <!-- This is not really reliable because modders don't properly use the autos system -->
@@ -186,40 +272,84 @@
                             <TextBlock Text="Autosort (experimental)" />
                         </StackPanel>
                     </Button>-->
-                    <Button DockPanel.Dock="Right" Margin="5,0,0,0" Command="{Binding MoveDownCommand}">
-                        <StackPanel Orientation="Horizontal">
-                            <fa5:ImageAwesome Icon="Solid_ArrowCircleDown" Height="12" Margin="0,0,5,0" Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
-                            <TextBlock Text="{DynamicResource string_moveDown}" />
+                    <Button
+                        DockPanel.Dock="Right"
+                        Margin="5,0,0,0"
+                        Command="{Binding MoveDownCommand}">
+                        <StackPanel
+                            Orientation="Horizontal">
+                            <fa5:ImageAwesome
+                                Icon="Solid_ArrowCircleDown"
+                                Height="12"
+                                Margin="0,0,5,0"
+                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
+                            <TextBlock
+                                Text="{DynamicResource string_moveDown}" />
                         </StackPanel>
                     </Button>
-                    <Button HorizontalAlignment="Right" Command="{Binding MoveUpCommand}">
-                        <StackPanel Orientation="Horizontal">
-                            <fa5:ImageAwesome Icon="Solid_ArrowCircleUp" Height="12" Margin="0,0,5,0" Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
-                            <TextBlock Text="{DynamicResource string_moveUp}" />
+                    <Button
+                        HorizontalAlignment="Right"
+                        Command="{Binding MoveUpCommand}">
+                        <StackPanel
+                            Orientation="Horizontal">
+                            <fa5:ImageAwesome
+                                Icon="Solid_ArrowCircleUp"
+                                Height="12"
+                                Margin="0,0,5,0"
+                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
+                            <TextBlock
+                                Text="{DynamicResource string_moveUp}" />
                         </StackPanel>
                     </Button>
                 </DockPanel>
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition
+                            Width="*" />
+                        <ColumnDefinition
+                            Width="*" />
                     </Grid.ColumnDefinitions>
-                    <ListBox ItemsSource="{Binding ModsInGroup}" SelectedItem="{Binding SelectedInstallGroupMod}" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" BorderThickness="1" IsTextSearchEnabled="True" TextSearch.TextPath="ModName">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Orientation="Horizontal">
-                                    <StackPanel Orientation="Horizontal" Visibility="{Binding Mod, Converter={StaticResource NullVisibilityConverter}}">
-                                        <Image Source="{Binding Mod.Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16" Margin="0,0,5,0" />
-                                        <TextBlock Text="{Binding Mod.ModName}" />
+                    <ListBox
+                        ItemsSource="{Binding ModsInGroup}"
+                        SelectedItem="{Binding SelectedInstallGroupMod}"
+                        Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
+                        BorderThickness="1"
+                        IsTextSearchEnabled="True"
+                        TextSearch.TextPath="ModName">
+                        <ListBox.Resources>
+                            <DataTemplate DataType="{x:Type batch:BatchMod}">
+                                <StackPanel
+                                    Orientation="Horizontal">
+                                    <StackPanel
+                                        Orientation="Horizontal"
+                                        Visibility="{Binding Mod, Converter={StaticResource NullVisibilityConverter}}">
+                                        <Image
+                                            Source="{Binding Mod.Game, Converter={StaticResource GameToImageIconConverter}}"
+                                            Width="16"
+                                            Height="16"
+                                            Margin="0,0,5,0" />
+                                        <TextBlock
+                                            Text="{Binding Mod.ModName}" />
                                     </StackPanel>
-                                    <StackPanel Orientation="Horizontal" Visibility="{Binding Mod, Converter={StaticResource NullVisibilityConverter}, ConverterParameter='Reversed'}">
-                                        <fa5:FontAwesome Icon="Solid_Ban" Foreground="Red" Height="14" Margin="0,2,5,0"/>
-                                        <TextBlock Text="Mod not available:" Margin="0,0,5,0" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{Binding ModDescPath}" VerticalAlignment="Center"/>
+                                    <StackPanel
+                                        Orientation="Horizontal"
+                                        Visibility="{Binding Mod, Converter={StaticResource NullVisibilityConverter}, ConverterParameter='Reversed'}">
+                                        <fa5:FontAwesome
+                                            Icon="Solid_Ban"
+                                            Foreground="Red"
+                                            Height="14"
+                                            Margin="0,2,5,0" />
+                                        <TextBlock
+                                            Text="{DynamicResource string_modNotAvailable}"
+                                            Margin="0,0,5,0"
+                                            VerticalAlignment="Center" />
+                                        <TextBlock
+                                            Text="{Binding ModDescPath}"
+                                            VerticalAlignment="Center" />
                                     </StackPanel>
                                 </StackPanel>
                             </DataTemplate>
-                        </ListBox.ItemTemplate>
+                        </ListBox.Resources>
                     </ListBox>
                     <TextBox
                         Grid.Column="1"
@@ -239,6 +369,9 @@
                             <PriorityBinding>
                                 <Binding
                                     Path="SelectedInstallGroupMod.Mod.DisplayedModDescription"
+                                    Mode="OneWay" />
+                                <Binding
+                                    Path="SelectedInstallGroupMod.AssociatedMod.Description"
                                     Mode="OneWay" />
                                 <Binding
                                     Path="NoModSelectedText"
