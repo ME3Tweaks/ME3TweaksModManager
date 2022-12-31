@@ -168,10 +168,6 @@ namespace ME3TweaksModManager
                     CommandLinePending.PendingInstallASIID = parsedCommandLineArgs.Value.AutoInstallASIGroupID;
                 if (parsedCommandLineArgs.Value.AutoInstallBink != false)
                     CommandLinePending.PendingInstallBink = parsedCommandLineArgs.Value.AutoInstallBink;
-                if (parsedCommandLineArgs.Value.StopSignalingAutoboot)
-                    CommandLinePending.PendingStopAutoboot = parsedCommandLineArgs.Value.StopSignalingAutoboot;
-                if (parsedCommandLineArgs.Value.StartSignalingAutoboot)
-                    CommandLinePending.PendingStartAutoboot = parsedCommandLineArgs.Value.StartSignalingAutoboot;
                 return handleInitialPending();
             }
 
@@ -1902,7 +1898,7 @@ namespace ME3TweaksModManager
         private bool CanStartGame()
         {
             //Todo: Check if this is origin game and if target will boot
-            return SelectedGameTarget != null && SelectedGameTarget.Selectable /*&& SelectedGameTarget.RegistryActive*/ && !GameLauncher.SignalingAutoboot;
+            return SelectedGameTarget != null && SelectedGameTarget.Selectable /*&& SelectedGameTarget.RegistryActive*/;
         }
 
         private bool CanToggleBinkw32(object obj)
@@ -2161,7 +2157,7 @@ namespace ME3TweaksModManager
             if (!M3Utilities.IsGameRunning(mod.Game))
             {
                 BackgroundTask modInstallTask = BackgroundTaskEngine.SubmitBackgroundJob(@"ModInstall", M3L.GetString(M3L.string_interp_installingMod, mod.ModName), M3L.GetString(M3L.string_interp_installedMod, mod.ModName));
-                var modOptionsPicker = new ModInstallOptionsPanel(mod, forcedTarget ?? SelectedGameTarget, installCompressed, batchMod: batchMod);
+                var modOptionsPicker = new ModInstallOptionsPanel(mod, forcedTarget ?? SelectedGameTarget, installCompressed, batchMod);
                 //var modInstaller = new ModInstaller(mod, forcedTarget ?? SelectedGameTarget, installCompressed, batchMode: batchMode);
                 modOptionsPicker.Close += (a, b) =>
                 {
@@ -3074,17 +3070,6 @@ namespace ME3TweaksModManager
 
             // Will do nothing if there's something else that needs done.
             AttemptPendingGameBoot();
-
-            if (CommandLinePending.PendingStartAutoboot)
-            {
-                M3Log.Information(@"Legendary Edition Launcher is ready for autoboot");
-                GameLauncher.Autoboot();
-            }
-            if (CommandLinePending.PendingStopAutoboot)
-            {
-                M3Log.Information(@"Stopping autoboot signaling");
-                GameLauncher.SignalingAutoboot = false;
-            }
 
             if (CommandLinePending.PendingGame is { } testGame && !testGame.IsLEGame() && !testGame.IsOTGame())
             {

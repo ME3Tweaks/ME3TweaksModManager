@@ -1,20 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
+using System.IO.Pipes;
 using System.Threading;
 using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.Helpers;
+using ME3TweaksCore.Services;
 using ME3TweaksCoreWPF;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.diagnostics;
+using ME3TweaksModManager.modmanager.localizations;
 
 namespace ME3TweaksModManager.modmanager.helpers
 {
     public static class GameLauncher
     {
+        private const string AUTOBOOT_KEY_NAME = @"LEAutobootArgs"; // DO NOT CHANGE - USED FOR AUTOBOOT IN BINK DLL
+
         /// <summary>
         /// Launches the game. This call is blocking as it may wait for Steam to run, so it should be run on a background thread.
         /// </summary>
@@ -120,11 +126,17 @@ namespace ME3TweaksModManager.modmanager.helpers
                 if (failedValidationReason == null)
                 {
                     // Ensure bypass is installed
+#if DEBUG
                     launcherTarget.InstallBinkBypass(false); // If bink fails to install, whatever. Launcher may be running.
+#else
+                    // In release mode we will always install bink bypass
+                    launcherTarget.InstallBinkBypass(false); // If bink fails to install, whatever. Launcher may be running.
+#endif
                 }
                 commandLineArgs.Add($@"-game"); // Autoboot dll
                 commandLineArgs.Add((target.Game.ToGameNum() - 3).ToString());
                 commandLineArgs.Add(@"-autoterminate");
+
             }
 
 #if DEBUG
@@ -133,15 +145,25 @@ namespace ME3TweaksModManager.modmanager.helpers
                 commandLineArgs.Add(@"-NoHomeDir");
             }
 #endif
+
             if (presuppliedArguments != null)
             {
+                WriteLEAutobootValue(presuppliedArguments);
                 M3Utilities.RunProcess(exe, presuppliedArguments, false, true, false, false, environmentVars);
             }
             else
             {
+                WriteLEAutobootValue(string.Join(@" ", commandLineArgs));
                 M3Utilities.RunProcess(exe, commandLineArgs, false, true, false, false, environmentVars);
             }
+
             Thread.Sleep(3500); // Keep task alive for a bit
+        }
+
+        private static void WriteLEAutobootValue(string bootArgs)
+        {
+            // a space must precede the arguments - I'm too lazy to fix the terrible cmdline C++ code I wrote 
+            MSharedSettings.WriteSettingString(AUTOBOOT_KEY_NAME, @" " + bootArgs);
         }
 
         /// <summary>

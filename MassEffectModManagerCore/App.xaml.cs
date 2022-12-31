@@ -112,8 +112,11 @@ namespace ME3TweaksModManager
             {
                 if (Current.MainWindow is MainWindow mw)
                 {
-                    mw.HandleInstanceArguments(args);
-                    mw.Activate();
+                    if (mw.HandleInstanceArguments(args))
+                    {
+                        // Bring to front
+                        mw.Activate();
+                    }
                 }
             });
 
@@ -751,7 +754,5 @@ namespace ME3TweaksModManager
 
         [Option(@"installbink", HelpText = "Instructs Mod Manager to automatically install the bink asi loader to the specified game")]
         public bool AutoInstallBink { get; set; }
-
-
     }
 }
