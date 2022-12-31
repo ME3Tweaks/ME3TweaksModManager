@@ -77,50 +77,60 @@ namespace TestArchiveGenerator
             var md5 = CalculateMD5(inputArchivePath);
 
             string fnamenoExt = $"{Path.GetFileNameWithoutExtension(inputArchivePath)}";
-            string ext = Path.GetExtension(inputArchivePath);
-            if (ext == ".rar") ext = ".zip";
-            var fullname = Path.Combine(Directory.GetParent(inputArchivePath).FullName, fnamenoExt + ext);
 
-            var extractionStaging = tempPath ?? Path.Combine(Path.GetTempPath(), "BlankMMArchive");
-            if (Directory.Exists(extractionStaging)) DeleteFilesAndFoldersRecursively(extractionStaging);
-            Directory.CreateDirectory(extractionStaging);
-            SevenZipExtractor archive = new SevenZipExtractor(inputArchivePath);
-            Console.WriteLine("Extracting archive...");
-            archive.ExtractArchive(extractionStaging);
-            var files = Directory.GetFiles(extractionStaging, "*", SearchOption.AllDirectories);
-            int expectedModCount = 0;
-            foreach (var file in files)
+            if (fnamenoExt.Length <= 128)
             {
-                if (Path.GetFileName(file) != "moddesc.ini")
+                string ext = Path.GetExtension(inputArchivePath);
+                if (ext == ".rar") ext = ".zip";
+                var fullname = Path.Combine(Directory.GetParent(inputArchivePath).FullName, fnamenoExt + ext);
+
+                var extractionStaging = tempPath ?? Path.Combine(Path.GetTempPath(), "BlankMMArchive");
+                if (Directory.Exists(extractionStaging)) DeleteFilesAndFoldersRecursively(extractionStaging);
+                Directory.CreateDirectory(extractionStaging);
+                SevenZipExtractor archive = new SevenZipExtractor(inputArchivePath);
+                Console.WriteLine("Extracting archive...");
+                archive.ExtractArchive(extractionStaging);
+                var files = Directory.GetFiles(extractionStaging, "*", SearchOption.AllDirectories);
+                int expectedModCount = 0;
+                foreach (var file in files)
                 {
-                    var extension = Path.GetExtension(file);
-                    if (extension == ".m3m")
+                    if (Path.GetFileName(file) != "moddesc.ini")
                     {
-                        // Wipe out asset files, since we test cases don't actually use these and they consume disk space.
-                        zeroMergeModAssets(file);
+                        var extension = Path.GetExtension(file);
+                        if (extension == ".m3m")
+                        {
+                            // Wipe out asset files, since we test cases don't actually use these and they consume disk space.
+                            zeroMergeModAssets(file);
+                        }
+                        else
+                        {
+                            //write blank with guid
+                            File.WriteAllText(file, @"blank");
+                        }
                     }
                     else
                     {
-                        //write blank with guid
-                        File.WriteAllText(file, @"blank");
+                        expectedModCount++;
                     }
                 }
-                else
-                {
-                    expectedModCount++;
-                }
-            }
 
-            if (expectedModCount == 0) expectedModCount = 1;
-            fullname = $"{Path.GetFileNameWithoutExtension(inputArchivePath)}-{expectedModCount}-{size}-{md5}{ext}";
-            Console.WriteLine("Creating blank archive " + inputArchivePath + " -> " + fullname);
-            SevenZipCompressor svc = new SevenZipCompressor();
-            // Do not compress any files.
-            svc.CompressionLevel = CompressionLevel.None;
-            svc.CompressionMode = CompressionMode.Create;
-            svc.CompressionMethod = CompressionMethod.Copy;
-            svc.CompressDirectory(extractionStaging, Path.Combine(outputPath, fullname));
-            DeleteFilesAndFoldersRecursively(extractionStaging);
+                if (expectedModCount == 0) expectedModCount = 1;
+                fullname = $"{Path.GetFileNameWithoutExtension(inputArchivePath)}-{expectedModCount}-{size}-{md5}{ext}";
+
+                // Name can't be too long.
+                Console.WriteLine("Creating blank archive " + inputArchivePath + " -> " + fullname);
+                SevenZipCompressor svc = new SevenZipCompressor();
+                // Do not compress any files.
+                svc.CompressionLevel = CompressionLevel.None;
+                svc.CompressionMode = CompressionMode.Create;
+                svc.CompressionMethod = CompressionMethod.Copy;
+                svc.CompressDirectory(extractionStaging, Path.Combine(outputPath, fullname));
+                DeleteFilesAndFoldersRecursively(extractionStaging);
+            }
+            else
+            {
+                Console.WriteLine("Filename is too long - skipping");
+            }
         }
 
         private static void zeroMergeModAssets(string file)
