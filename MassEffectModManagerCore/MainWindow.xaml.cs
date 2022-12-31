@@ -3120,7 +3120,7 @@ namespace ME3TweaksModManager
                         GameTargetWPF t = GetCurrentTarget(CommandLinePending.PendingGame.Value);
                         if (t != null)
                         {
-                            if (ASIManager.InstallASIToTargetByGroupID(CommandLinePending.PendingInstallASIID, @"Automated command line request", t))
+                            if (ASIManager.InstallASIToTargetByGroupID(CommandLinePending.PendingInstallASIID, @"Automated command line request", t, includeHiddenASIs: true))
                             {
                                 CurrentOperationText = "Installed ASI mod by command line request";
                             }
