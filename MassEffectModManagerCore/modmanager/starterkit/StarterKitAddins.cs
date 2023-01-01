@@ -56,7 +56,8 @@ namespace ME3TweaksModManager.modmanager.starterkit
             M3Log.Information($@"Adding startup file to {dlcFolderPath}. Game: {game}");
             var dlcName = Path.GetFileName(dlcFolderPath);
             var cookedPath = Path.Combine(dlcFolderPath, game.CookedDirName());
-            var startupFName = $"Startup{dlcName.Substring(3)}.pcc"; // "DLC|_"
+            var startupFName = GetStartupFilename(game, dlcName);
+
             var startupPackagePath = Path.Combine(cookedPath, startupFName);
             if (File.Exists(startupPackagePath))
             {
@@ -65,7 +66,7 @@ namespace ME3TweaksModManager.modmanager.starterkit
             }
 
             using var package = MEPackageHandler.CreateAndOpenPackage(startupPackagePath, game, true);
-            CreateObjectReferencer(package);
+            CreateObjectReferencer(package, true);
             package.Save();
 
             if (game == MEGame.LE1)
@@ -76,8 +77,18 @@ namespace ME3TweaksModManager.modmanager.starterkit
             else
             {
                 // Add it to coalesced so it gets used
-                AddCoalescedReference(game, dlcName, cookedPath, "BioEngine", "Engine.StartupPackages", "DLCStartupPackage", Path.GetFileNameWithoutExtension(startupFName), CoalesceParseAction.AddUnique);
+                AddCoalescedReference(game, dlcName, cookedPath, "BioEngine", "Engine.StartupPackages", "DLCStartupPackage", Path.GetFileNameWithoutExtension(startupFName).StripUnrealLocalization(), CoalesceParseAction.AddUnique);
             }
+        }
+
+        private static string GetStartupFilename(MEGame game, string dlcName)
+        {
+            var startupFName = $@"Startup{dlcName.Substring(3)}.pcc"; // "DLC|_"
+            if (game.IsGame3())
+            {
+                startupFName = $@"Startup{dlcName.Substring(3)}_INT.pcc"; // "DLC|_" // Required for plot manager to work properly for some reason.
+            }
+            return startupFName;
         }
 
 
@@ -364,7 +375,7 @@ namespace ME3TweaksModManager.modmanager.starterkit
             #region GAME 2 and GAME 3
             if (game.IsGame2() || game.IsGame3())
             {
-                var startupFName = $"Startup{dlcName.Substring(3)}.pcc"; // "DLC|_"
+                var startupFName = GetStartupFilename(game, dlcName);
                 var startupPackagePath = Path.Combine(cookedPath, startupFName);
                 if (!File.Exists(startupPackagePath))
                 {
@@ -376,28 +387,32 @@ namespace ME3TweaksModManager.modmanager.starterkit
                 {
                     // We need to add the conditionals
                     var plotManagerPackageName = AddConditionalsClass(startupPackagePath, dlcName);
-                    AddCoalescedReference(game, dlcName, cookedPath, "BioEngine", "Engine.StartupPackages", "Package", plotManagerPackageName, CoalesceParseAction.AddUnique);
+                    AddCoalescedReference(game, dlcName, cookedPath, @"BioEngine", "Engine.StartupPackages", "Package", plotManagerPackageName, CoalesceParseAction.AddUnique);
 
                     var bio2daPackageName = AddBio2DAGame2(game, dlcName, startupPackagePath);
-                    AddCoalescedReference(game, dlcName, cookedPath, "BioEngine", "Engine.StartupPackages", "Package", bio2daPackageName, CoalesceParseAction.AddUnique);
+                    AddCoalescedReference(game, dlcName, cookedPath, @"BioEngine", "Engine.StartupPackages", "Package", bio2daPackageName, CoalesceParseAction.AddUnique);
 
 
                     // Must also add to biogame
-                    AddCoalescedReference(game, dlcName, cookedPath, "BioGame", "SFXGame.BioWorldInfo", "ConditionalClasses", $"{plotManagerPackageName}.BioAutoConditionals", CoalesceParseAction.AddUnique);
+                    AddCoalescedReference(game, dlcName, cookedPath, @"BioGame", "SFXGame.BioWorldInfo", "ConditionalClasses", $"{plotManagerPackageName}.BioAutoConditionals", CoalesceParseAction.AddUnique);
                 }
 
                 // Generate the maps
                 var plotAutoPackageName = AddPlotManagerAuto(startupPackagePath, dlcName);
 
                 // Add to Coalesced
-                AddCoalescedReference(game, dlcName, cookedPath, "BioEngine", "Engine.StartupPackages", "Package", plotAutoPackageName, CoalesceParseAction.AddUnique);
+                AddCoalescedReference(game, dlcName, cookedPath, @"BioEngine", "Engine.StartupPackages", "Package", plotAutoPackageName, CoalesceParseAction.AddUnique);
 
                 if (game.IsGame3())
                 {
+                    // Additional coalesced entry
+                    // Should include localization of _INT
+                    AddCoalescedReference(game, dlcName, cookedPath, @"BioEngine", "Engine.StartupPackages", "dlcstartuppackagename", Path.GetFileNameWithoutExtension(startupPackagePath), CoalesceParseAction.AddUnique);
+
                     // Conditionals file
                     CNDFile c = new CNDFile();
                     c.ConditionalEntries = new List<ConditionalEntry>();
-                    c.ToFile(Path.Combine(dlcFolderPath, game.CookedDirName(), $@"Conditionals_{Path.GetFileName(dlcFolderPath)}.cnd"));
+                    c.ToFile(Path.Combine(dlcFolderPath, game.CookedDirName(), $@"Conditionals{Path.GetFileName(dlcFolderPath)}.cnd"));
                 }
             }
             #endregion
@@ -510,7 +525,7 @@ namespace ME3TweaksModManager.modmanager.starterkit
         private static string AddPlotManagerAuto(string startupPackagePath, string dlcName)
         {
             using var packageFile = MEPackageHandler.OpenMEPackage(startupPackagePath);
-            CreateObjectReferencer(packageFile); // Ensures there is an object referencer available for use
+            CreateObjectReferencer(packageFile, true); // Ensures there is an object referencer available for use
             ExportEntry sfPlotExport = null;
             if (!packageFile.Game.IsGame1())
             {
@@ -727,16 +742,34 @@ namespace ME3TweaksModManager.modmanager.starterkit
         /// </summary>
         /// <param name="package">Package to operate on</param>
         /// <returns>Export of an export referencer</returns>
-        public static ExportEntry CreateObjectReferencer(IMEPackage package)
+        public static ExportEntry CreateObjectReferencer(IMEPackage package, bool isStartupPackage)
         {
-            var referencer = package.Exports.FirstOrDefault(x => x.ClassName == "ObjectReferencer");
+            var referencer = package.Exports.FirstOrDefault(x => x.ClassName == @"ObjectReferencer");
             if (referencer != null) return referencer;
 
             var rop = new RelinkerOptionsPackage() { Cache = new PackageCache() };
-            referencer = new ExportEntry(package, 0, package.GetNextIndexedName("ObjectReferencer"), properties: new PropertyCollection() { new ArrayProperty<ObjectProperty>("ReferencedObjects") })
+            if (package.Game.IsGame2())
             {
-                Class = EntryImporter.EnsureClassIsInFile(package, "ObjectReferencer", rop)
-            };
+                // 2 just uses objectreferencer
+                referencer = new ExportEntry(package, 0, package.GetNextIndexedName(@"ObjectReferencer"), properties: new PropertyCollection() { new ArrayProperty<ObjectProperty>("ReferencedObjects") })
+                {
+                    Class = EntryImporter.EnsureClassIsInFile(package, @"ObjectReferencer", rop)
+                };
+            }
+            else
+            {
+                // 3 uses both ObjectReferencer for normal packages and CombinedStartupReferencer for startup files
+                // Startup files do not work if they use ObjectReferencer
+                referencer = new ExportEntry(package, 0, package.GetNextIndexedName(isStartupPackage ? @"CombinedStartupReferencer" : @"ObjectReferencer"), properties: new PropertyCollection() { new ArrayProperty<ObjectProperty>("ReferencedObjects") })
+                {
+                    Class = EntryImporter.EnsureClassIsInFile(package, @"ObjectReferencer", rop)
+                };
+                if (isStartupPackage)
+                {
+                    referencer.indexValue = 0;
+                }
+            }
+
             referencer.WriteProperty(new ArrayProperty<ObjectProperty>(@"ReferencedObjects"));
             package.AddExport(referencer);
             return referencer;
@@ -749,7 +782,7 @@ namespace ME3TweaksModManager.modmanager.starterkit
         /// <returns>If object reference was added</returns>
         public static bool AddToObjectReferencer(IEntry entry)
         {
-            var referencer = entry.FileRef.Exports.FirstOrDefault(x => x.ClassName == "ObjectReferencer");
+            var referencer = entry.FileRef.Exports.FirstOrDefault(x => x.ClassName == @"ObjectReferencer");
             if (referencer == null) return false;
             var refs = referencer.GetProperty<ArrayProperty<ObjectProperty>>(@"ReferencedObjects") ?? new ArrayProperty<ObjectProperty>(@"ReferencedObjects");
             refs.Add(new ObjectProperty(entry));
@@ -776,7 +809,7 @@ namespace ME3TweaksModManager.modmanager.starterkit
             {
                 // Generate GuiData package
                 using var package = MEPackageHandler.CreateAndOpenPackage(guiDataPackagePath, game, true);
-                CreateObjectReferencer(package);
+                CreateObjectReferencer(package, false);
                 package.Save();
             }
 
