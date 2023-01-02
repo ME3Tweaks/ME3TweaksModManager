@@ -106,7 +106,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 // LE1/LE2 use coalesced ini that is 1:1
                 if (!BackupService.GetBackupStatus(Game).BackedUp)
                 {
-                    var result = M3L.ShowDialog(Application.Current.MainWindow, M3L.GetString(M3L.string_interp_noBackupMessage, Game), M3L.GetString(M3L.string_backupWarning), MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.No;
+                    // Ask user if they want to edit game without a backup.
+                    var result = M3L.ShowDialog(Application.Current.MainWindow, M3L.GetString(M3L.string_interp_noBackupMessage, Game), M3L.GetString(M3L.string_backupWarning), MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.Yes;
                     if (!result)
                         return; // Don't proceed
                 }
@@ -148,7 +149,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 // LE1/LE2 use coalesced ini that is 1:1
                 if (!BackupService.GetBackupStatus(Game).BackedUp)
                 {
-                    var result = M3L.ShowDialog(Application.Current.MainWindow, M3L.GetString(M3L.string_interp_noBackupMessage, Game), M3L.GetString(M3L.string_backupWarning), MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.No;
+                    // Ask user if they want to edit game without a backup.
+                    var result = M3L.ShowDialog(Application.Current.MainWindow, M3L.GetString(M3L.string_interp_noBackupMessage, Game), M3L.GetString(M3L.string_backupWarning), MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.Yes;
                     if (!result)
                         return; // Don't proceed
                 }
