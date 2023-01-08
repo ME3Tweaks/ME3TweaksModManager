@@ -14,6 +14,7 @@ using ME3TweaksCoreWPF;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.localizations;
+using Pathoschild.FluentNexus.Models;
 
 namespace ME3TweaksModManager.modmanager.helpers
 {
@@ -93,29 +94,6 @@ namespace ME3TweaksModManager.modmanager.helpers
                         }
                     }
                 }
-                else if (target.GameSource.Contains(@"Origin") && target.RegistryActive && target.Game < MEGame.ME3 && Settings.LaunchGamesThroughOrigin) // Must be registry active or origin will run the wrong game.
-                {
-                    // ME2 seems to have lots of problems directly running due to its licensing system
-                    // We should try to run it through Origin to avoid this problem
-
-                    var parFile = Path.Combine(exeDir, Path.GetFileNameWithoutExtension(exe) + @".par");
-                    if (target.Game == MEGame.ME2 && File.Exists(parFile))
-                    {
-                        var fInfo = new FileInfo(exe);
-                        if (fInfo.Length < 5 * FileSize.MebiByte)
-                        {
-                            // Does this executable need swapped? MassEffect2.exe does not seem to reliably run through Origin and just exits early for some reason
-
-                        }
-                        var parContents = PARTools.DecodePAR(File.ReadAllBytes(parFile));
-                        var contentIds = parContents[@"Base"].GetValue(@"ContentId")?.Value;
-
-                        if (!string.IsNullOrWhiteSpace(contentIds))
-                        {
-                            exe = $@"origin://launchgame/{contentIds}";
-                        }
-                    }
-                }
             }
 
             if (presuppliedArguments == null && Settings.SkipLELauncher && target.Game.IsLEGame() && !MUtilities.IsGameRunning(MEGame.LELauncher))
@@ -148,16 +126,54 @@ namespace ME3TweaksModManager.modmanager.helpers
 
             if (presuppliedArguments != null)
             {
+                // We were passed in arguments to use
                 WriteLEAutobootValue(presuppliedArguments);
-                M3Utilities.RunProcess(exe, presuppliedArguments, false, true, false, false, environmentVars);
+                RunGame(target, exe, presuppliedArguments, null, environmentVars);
             }
             else
             {
+                // We use the generated command line arguments as none were passed in
                 WriteLEAutobootValue(string.Join(@" ", commandLineArgs));
-                M3Utilities.RunProcess(exe, commandLineArgs, false, true, false, false, environmentVars);
+                RunGame(target, exe, null, commandLineArgs, environmentVars);
+                //M3Utilities.RunProcess(exe, commandLineArgs, false, true, false, false, environmentVars);
             }
 
             Thread.Sleep(3500); // Keep task alive for a bit
+        }
+
+        private static void RunGame(GameTargetWPF target, string exe, string commandLineArgsString, List<string> commandLineArgsList, Dictionary<string, string> environmentVars)
+        {
+            // If the game source is steam and it's LE, we can use Link2EA as they all require EA app to run.
+            // Technically this can also be done for ME3 but I'm not going to bother changing launch code for it
+            if (target.GameSource.Contains(@"Steam") && target.Game.IsLEGame() || target.Game == MEGame.LELauncher)
+            {
+                // Experimental: Use Link2EA to boot without EA sign in
+                var link2EA = RegistryHandler.GetRegistryString(@"HKEY_CLASSES_ROOT\link2ea\shell\open\command", "");
+                if (link2EA != null)
+                {
+                    // We found Link2EA
+                    var splitStr = link2EA.Split('"')
+                        .Select((element, index) => index % 2 == 0  // If even index
+                            ? element.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)  // Split the item
+                            : new string[] { element })  // Keep the entire item
+                        .SelectMany(element => element).ToList();
+                    exe = splitStr[0];
+                    commandLineArgsString = @"link2ea://launchgame/1328670?platform=steam&theme=met"; // The id of what to run.
+                }
+            }
+
+            if (commandLineArgsString != null)
+            {
+                M3Utilities.RunProcess(exe, commandLineArgsString, false, true, false, false, environmentVars);
+            }
+            else if (commandLineArgsList != null)
+            {
+                M3Utilities.RunProcess(exe, commandLineArgsList, false, true, false, false, environmentVars);
+            }
+            else
+            {
+                M3Utilities.RunProcess(exe, @"", false, true, false, false, environmentVars);
+            }
         }
 
         private static void WriteLEAutobootValue(string bootArgs)
