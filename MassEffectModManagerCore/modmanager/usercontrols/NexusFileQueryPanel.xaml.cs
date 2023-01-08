@@ -77,6 +77,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 SelectionMode = SelectionMode.Single
             };
             msd.ShowDialog();
+
+            if (msd.SelectedMods.Any())
+            {
+                QueryingMod = msd.SelectedMods[0];
+                PerformSearchAgainstMod();
+            }
         }
 
         public void OnSearchME1Changed() { UpdateFilters(); }
@@ -103,7 +109,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             DownloadModCommand = new RelayCommand(DownloadMod, CanDownloadMod);
             SearchCommand = new GenericCommand(PerformSearch, CanSearch);
-            CompareAgainstModCommand = new GenericCommand(SearchAgainstMod);
+            CompareAgainstModCommand = new GenericCommand(SearchAgainstMod, () => QPLoaded);
         }
 
 
@@ -343,7 +349,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 OnClosing(new DataEventArgs(nxmlink));
             }
         }
-
 
         public override void OnPanelVisible()
         {
