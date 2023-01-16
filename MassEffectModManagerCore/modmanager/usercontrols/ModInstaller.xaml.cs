@@ -931,7 +931,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
                 // 06/05/2022 Change to parallel
                 Exception parallelException = null;
-                Parallel.ForEach(mergeFiles, new ParallelOptions() { MaxDegreeOfParallelism = Math.Clamp(Environment.ProcessorCount, 1, 4) }, tlkFileMap =>
+                // 01/15/2023 - If in archive you must run in single thread or library may crash app or other errors.
+                var maxThreads = InstallOptionsPackage.ModBeingInstalled.IsInArchive ? 1 : 4; // If in archive we can only do one job at a time (7z library is not multi-thread safe)
+                Parallel.ForEach(mergeFiles, new ParallelOptions() { MaxDegreeOfParallelism = Math.Clamp(Environment.ProcessorCount, 1, maxThreads) }, tlkFileMap =>
                 {
                     if (parallelException != null)
                         return;
