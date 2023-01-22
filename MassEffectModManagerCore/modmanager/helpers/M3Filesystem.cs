@@ -89,11 +89,6 @@ namespace ME3TweaksModManager.modmanager.helpers
             return Path.Combine(GetNexusModsCache(), @"othernexushandlers.json");
         }
 
-        internal static string GetBatchInstallGroupsFolder()
-        {
-            return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), @"batchmodqueues")).FullName;
-        }
-
         internal static string GetME3TweaksServicesCache()
         {
             return Directory.CreateDirectory(Path.Combine(GetAppDataFolder(), @"ME3TweaksServicesCache")).FullName;

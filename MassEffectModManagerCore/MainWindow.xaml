@@ -1584,17 +1584,23 @@
                             BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}"
                             ToolTip="{DynamicResource string_tooltip_applyThisModToTheGame}" />
                         <controls:SplitButton
-                            Content="{DynamicResource string_startGame}"
+                            Content="{Binding SelectedLaunchOption.PackageTitle}"
                             Command="{Binding StartGameCommand}"
                             Margin="5,0,0,0"
                             Style="{DynamicResource {x:Static adonisUi:Styles.AccentSplitButton}}"
                             ToolTip="{DynamicResource string_tooltip_launchCurrentlySelectedTarget}">
                             <controls:SplitButton.SplitMenu>
-                                <ContextMenu
-                                    MinWidth="{Binding PlacementTarget.ActualWidth, RelativeSource={RelativeSource Self}}">
-                                    <MenuItem
-                                        Header="{DynamicResource string_selectLaunchOptions}"
-                                        Command="{Binding SelectLaunchOptionsCommand}" />
+                                <ContextMenu>
+                                    <MenuItem Header="Change current launch configuration" Command="{Binding ChangeCurrentLaunchConfigCommand}">
+                                        <MenuItem.Icon>
+                                            <fa5:ImageAwesome
+                                                Style="{StaticResource EnableDisableImageStyle}"
+                                                Icon="Solid_Rocket"
+                                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                                Height="16"
+                                                Width="16" />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
                                 </ContextMenu>
                             </controls:SplitButton.SplitMenu>
                         </controls:SplitButton>

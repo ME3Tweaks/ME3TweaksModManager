@@ -14,6 +14,7 @@ using ME3TweaksCoreWPF;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.localizations;
+using ME3TweaksModManager.modmanager.objects.launcher;
 using Pathoschild.FluentNexus.Models;
 
 namespace ME3TweaksModManager.modmanager.helpers
@@ -21,6 +22,26 @@ namespace ME3TweaksModManager.modmanager.helpers
     public static class GameLauncher
     {
         private const string AUTOBOOT_KEY_NAME = @"LEAutobootArgs"; // DO NOT CHANGE - USED FOR AUTOBOOT IN BINK DLL
+
+
+        public static void LaunchGame(GameTargetWPF target, LaunchOptionsPackage LaunchPackage)
+        {
+            if (!target.Game.IsLEGame()) return;
+
+            string args = $@" -game {LaunchPackage.Game.ToMEMGameNum()} -autoterminate -Subtitles {LaunchPackage.SubtitleSize} ";
+            if (LaunchPackage.Game == MEGame.LE3)
+            {
+                args += $@"-language={LaunchPackage.ChosenLanguage}";
+            }
+            else
+            {
+                args += $@"-OVERRIDELANGUAGE={LaunchPackage.ChosenLanguage}";
+            }
+
+            // Custom options
+            args += @" " + LaunchPackage.CustomExtraArgs;
+            LaunchGame(target, args);
+        }
 
         /// <summary>
         /// Launches the game. This call is blocking as it may wait for Steam to run, so it should be run on a background thread.
@@ -96,7 +117,7 @@ namespace ME3TweaksModManager.modmanager.helpers
                 }
             }
 
-            if (presuppliedArguments == null && Settings.SkipLELauncher && target.Game.IsLEGame() && !MUtilities.IsGameRunning(MEGame.LELauncher))
+            if (Settings.SkipLELauncher && target.Game.IsLEGame() && !MUtilities.IsGameRunning(MEGame.LELauncher))
             {
                 var launcherPath = Path.Combine(target.TargetPath, @"..", @"Launcher");
                 var launcherTarget = new GameTargetWPF(MEGame.LELauncher, launcherPath, false);
@@ -118,7 +139,7 @@ namespace ME3TweaksModManager.modmanager.helpers
             }
 
 #if DEBUG
-            if (presuppliedArguments == null && target.Game.IsLEGame() && !target.Supported)
+            if (target.Game.IsLEGame() && !target.Supported)
             {
                 commandLineArgs.Add(@"-NoHomeDir");
             }
@@ -145,7 +166,7 @@ namespace ME3TweaksModManager.modmanager.helpers
         {
             // If the game source is steam and it's LE, we can use Link2EA as they all require EA app to run.
             // Technically this can also be done for ME3 but I'm not going to bother changing launch code for it
-            if (target.GameSource.Contains(@"Steam") && target.Game.IsLEGame() || target.Game == MEGame.LELauncher)
+            if (target.GameSource.Contains(@"Steam") && target.Game == MEGame.ME3 || target.Game.IsLEGame() || target.Game == MEGame.LELauncher)
             {
                 // Experimental: Use Link2EA to boot without EA sign in
                 var link2EA = RegistryHandler.GetRegistryString(@"HKEY_CLASSES_ROOT\link2ea\shell\open\command", "");
@@ -158,7 +179,10 @@ namespace ME3TweaksModManager.modmanager.helpers
                             : new string[] { element })  // Keep the entire item
                         .SelectMany(element => element).ToList();
                     exe = splitStr[0];
-                    commandLineArgsString = @"link2ea://launchgame/1328670?platform=steam&theme=met"; // The id of what to run.
+
+                    var theme = target.Game == MEGame.ME3 ? @"me3" : @"met";
+                    var gameId = target.Game == MEGame.ME3 ? 1238020 : 1328670; // Game IDs
+                    commandLineArgsString = $@"link2ea://launchgame/{gameId}?platform=steam&theme={theme}"; // The id of what to run.
                 }
             }
 

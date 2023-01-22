@@ -13,9 +13,11 @@ using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects;
+using ME3TweaksModManager.modmanager.objects.launcher;
 using ME3TweaksModManager.modmanager.objects.mod;
 using Microsoft.AppCenter.Crashes;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using Newtonsoft.Json;
 
 namespace ME3TweaksModManager.modmanager.loaders
 {
@@ -67,8 +69,19 @@ namespace ME3TweaksModManager.modmanager.loaders
             Directory.CreateDirectory(GetLE2ModsDirectory());
             Directory.CreateDirectory(GetLE3ModsDirectory());
             Directory.CreateDirectory(GetLELauncherModsDirectory());
+
+            // Mod Manager 8.0.1: Begin moving data that is portable across M3 installs to the library
+            Directory.CreateDirectory(GetBatchInstallGroupsDirectory());
+            Directory.CreateDirectory(GetLaunchOptionsDirectory());
         }
 
+        public static string GetBatchInstallGroupsDirectory() => Path.Combine(GetCurrentModLibraryDirectory(), @"BatchModQueues");
+        /// <summary>
+        /// Mod Manager 8 (and 8.0.1 beta prior to 1/8/2023) stored this in ProgramData
+        /// </summary>
+        /// <returns></returns>
+        public static string GetBatchInstallGroupsDirectoryPre801() => Path.Combine(M3Filesystem.GetAppDataFolder(), @"batchmodqueues");
+        public static string GetLaunchOptionsDirectory() => Path.Combine(GetCurrentModLibraryDirectory(), @"LaunchOptions");
         public static string GetME3ModsDirectory() => Path.Combine(GetCurrentModLibraryDirectory(), @"ME3");
         public static string GetME2ModsDirectory() => Path.Combine(GetCurrentModLibraryDirectory(), @"ME2");
         public static string GetME1ModsDirectory() => Path.Combine(GetCurrentModLibraryDirectory(), @"ME1");
@@ -171,7 +184,7 @@ namespace ME3TweaksModManager.modmanager.loaders
         {
             if (LoadingTask != null && NumTotalMods > 0)
             {
-                BackgroundTaskEngine.SubmitBackgroundTaskUpdate(LoadingTask, M3L.GetString(M3L.string_loadingMods) + $@" {Math.Round(NumModsLoaded * 100.0f/NumTotalMods)}%");
+                BackgroundTaskEngine.SubmitBackgroundTaskUpdate(LoadingTask, M3L.GetString(M3L.string_loadingMods) + $@" {Math.Round(NumModsLoaded * 100.0f / NumTotalMods)}%");
             }
         }
 
@@ -499,6 +512,47 @@ namespace ME3TweaksModManager.modmanager.loaders
             AllGamesHidden = !oneVisible;
             VisibleFilteredMods.ReplaceAll(allMods);
             VisibleFilteredMods.Sort(x => x.ModName);
+        }
+
+        // LAUNCH OPTIONS ---------------------------
+        // Technically only kind of mods - this is mod library though, 
+        // and these are stored in the library folder
+
+        /// <summary>
+        /// List of game filters that are applied to the VisibleFilteredMods collection view.
+        /// </summary>
+        public ObservableCollectionExtended<LaunchOptionsPackage> AllLaunchOptions { get; } = new();
+
+        /// <summary>
+        /// Reloads the list of user-made launch options
+        /// </summary>
+        public void LoadLaunchOptions()
+        {
+            AllLaunchOptions.ClearEx();
+            var launchDir = GetLaunchOptionsDirectory();
+            if (Directory.Exists(launchDir))
+            {
+                var launcherOptions = Directory.GetFiles(launchDir, @"*" + LaunchOptionsPackage.FILE_EXTENSION, SearchOption.TopDirectoryOnly);
+                foreach (var launchOption in launcherOptions)
+                {
+                    M3Log.Information($@"Parsing launch option package {launchOption}");
+                    AllLaunchOptions.Add(JsonConvert.DeserializeObject<LaunchOptionsPackage>(File.ReadAllText(launchOption)));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the default 'Start game' option - will have IsCustomOption = true set on it
+        /// </summary>
+        /// <returns></returns>
+        public static LaunchOptionsPackage GetDefaultLaunchOptionsPackage(MEGame game = MEGame.Unknown)
+        {
+            return new LaunchOptionsPackage()
+            {
+                IsCustomOption = true,
+                PackageTitle = M3L.GetString(M3L.string_startGame),
+                Game = game
+            };
         }
     }
 }
