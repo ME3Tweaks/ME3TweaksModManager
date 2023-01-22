@@ -1,4 +1,5 @@
-﻿using LegendaryExplorerCore.Misc;
+﻿using System.Text.RegularExpressions;
+using LegendaryExplorerCore.Misc;
 using ME3TweaksCore.Misc;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksCoreWPF.UI;
@@ -6,6 +7,8 @@ using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.launcher;
 using System.Windows;
 using System.Windows.Controls;
+using Newtonsoft.Json;
+using Pathoschild.FluentNexus.Models;
 
 namespace ME3TweaksModManager.modmanager.windows
 {
@@ -15,14 +18,12 @@ namespace ME3TweaksModManager.modmanager.windows
     [AddINotifyPropertyChangedInterface]
     public partial class LaunchParametersDialog : Window
     {
-        public GameTargetWPF SelectedGameTarget { get; }
+        //public GameTargetWPF SelectedGameTarget { get; }
 
         /// <summary>
-        /// The loaded launch package
+        /// The package that was used to initialize the window
         /// </summary>
         public LaunchOptionsPackage LaunchPackage { get; set; }
-
-        private MainWindow mainWindow;
 
         /// <summary>
         /// List of languages that are supported by this game
@@ -35,13 +36,43 @@ namespace ME3TweaksModManager.modmanager.windows
 
         #region Commands
         public GenericCommand LaunchGameCommand { get; private set; }
+        public GenericCommand SavePackageCommand { get; private set; }
+
+        /// <summary>
+        /// The parameter set name shown in the UI
+        /// </summary>
+        public string ParameterSetName { get; set; }
+
+        /// <summary>
+        /// The current language string
+        /// </summary>
+        public string ChosenLanguage { get; set; } = @"INT";
+
+        /// <summary>
+        /// The current subtitle size
+        /// </summary>
+        public int SubtitleSize { get; set; } = 20;
+
+        /// <summary>
+        /// The list of custom arguments to supply, if any
+        /// </summary>
+        public string CustomArguments { get; set; }
+
+        /// <summary>
+        /// Game this dialog is for editing
+        /// </summary>
+        public MEGame Game { get; set; }
+
+        /// <summary>
+        /// Internal GUID for identifying the package
+        /// </summary>
+        private Guid PackageGuid { get; set; }
         #endregion
 
-        public LaunchParametersDialog(MainWindow window, GameTargetWPF selectedGameTarget, LaunchOptionsPackage package)
+        public LaunchParametersDialog(Window window, MEGame game, LaunchOptionsPackage package)
         {
-            mainWindow = window;
             Owner = window;
-            SelectedGameTarget = selectedGameTarget;
+            Game = game;
 
             LoadPackage(package);
             LoadCommands();
@@ -50,7 +81,9 @@ namespace ME3TweaksModManager.modmanager.windows
 
         private void LoadPackage(LaunchOptionsPackage package)
         {
-            LaunchPackage = package ?? new LaunchOptionsPackage() { Game = SelectedGameTarget.Game, ChosenLanguage = @"INT" };
+            LaunchPackage = package ?? new LaunchOptionsPackage() { Game = Game, ChosenLanguage = @"INT", PackageTitle = "Start Game (Custom)"};
+            PackageGuid = LaunchPackage.PackageGuid == Guid.Empty ? Guid.NewGuid() : LaunchPackage.PackageGuid; // Keep existing guid if found
+            ParameterSetName = LaunchPackage.PackageTitle;
             LoadLanguagesAndOptions();
 
             var chosenLang = LanguageOptions.FirstOrDefault(x => x.LanguageString == LaunchPackage.ChosenLanguage);
@@ -63,7 +96,10 @@ namespace ME3TweaksModManager.modmanager.windows
             LanguageOptions.Clear();
 
             // Global options
-            CustomOptions.Add(new LauncherCustomParameter() { DisplayString = M3L.GetString(M3L.string_automaticallyResumeLastSave), CommandLineText = @"-RESUME" });
+            CustomOptions.Add(new LauncherCustomParameter() { DisplayString = M3L.GetString(M3L.string_automaticallyResumeLastSave), ToolTip = "Instructs game to automatically attempt to resume the last savegame", CommandLineText = @"-RESUME", SaveKey = LauncherCustomParameter.KEY_AUTORESUME, IsSelected = LaunchPackage.AutoResumeSave});
+#if DEBUG
+            CustomOptions.Add(new LauncherCustomParameter() { DisplayString = @"Enable process minidumps", ToolTip = @"This should only be visible in debug builds", CommandLineText = @"-enableminidumps", SaveKey = LauncherCustomParameter.KEY_MINIDUMPS, IsSelected = LaunchPackage.EnableMinidumps});
+#endif
 
             switch (LaunchPackage.Game)
             {
@@ -123,46 +159,54 @@ namespace ME3TweaksModManager.modmanager.windows
 
         private void LoadCommands()
         {
-            LaunchGameCommand = new GenericCommand(LaunchGame, CanLaunchGame);
+            SavePackageCommand = new GenericCommand(SavePackage, CanSavePackage);
         }
 
-        private bool CanLaunchGame()
+        private bool CanSavePackage()
         {
-            //if (string.IsNullOrWhiteSpace(GetGameLang())) return false;
-            return true;
+            if (string.IsNullOrWhiteSpace(ParameterSetName)) return false;
+            if (ParameterSetName.Length > 30) return false;
+            return Regex.IsMatch(ParameterSetName,
+                    @"\A(?!(?:COM[0-9]|CON|LPT[0-9]|NUL|PRN|AUX|com[0-9]|con|lpt[0-9]|nul|prn|aux)|\s|[\.]{2,})[^\\\/:*""?<>|]{1,254}(?<![\s\.])\z");
         }
 
-        public void LaunchGame()
+        private void SavePackage()
         {
-            string args = $@" -game {LaunchPackage.Game.ToMEMGameNum()} -autoterminate -NoHomeDir -Subtitles {LaunchPackage.SubtitleSize} ";
+            var package = new LaunchOptionsPackage();
+            package.SetLatestVersion();
+            package.Game = Game;
+            package.PackageTitle = ParameterSetName;
 
-            if (LaunchPackage.Game == MEGame.LE3)
+            // Language + Subtitle
+            package.ChosenLanguage = ChosenLanguage;
+            package.SubtitleSize = SubtitleSize;
+            package.PackageGuid = PackageGuid;
+            // Custom arguments
+            foreach (var custOption in CustomOptions)
             {
-                args += $@"-language={LaunchPackage.ChosenLanguage}";
-            }
-            else
-            {
-                args += $@"-OVERRIDELANGUAGE={LaunchPackage.ChosenLanguage}";
-            }
-
-            // Custom options
-            foreach (var v in CustomOptions.Where(x => x.IsSelected))
-            {
-                args += $@" {v.CommandLineText}";
+                // Map the keys into the package for save
+                package.SetOption(custOption.SaveKey, custOption.IsSelected);
             }
 
-            mainWindow.InternalStartGame(SelectedGameTarget, args);
+            package.CustomExtraArgs = CustomArguments;
+
+            var outPath = Path.Combine(M3LoadedMods.GetLaunchOptionsDirectory(), $@"{Game}-{ParameterSetName}") + LaunchOptionsPackage.FILE_EXTENSION;
+            var m3lText = JsonConvert.SerializeObject(package, Formatting.Indented);
+            File.WriteAllText(outPath, m3lText);
+            package.FilePath = outPath;
+            LaunchPackage = package; // Set this so the calling window can access and assign it
+            Close();
         }
 
         private void SubtitleSizeButton_Click(object sender, RoutedEventArgs e)
         {
             if (sender == SubSizeUp)
             {
-                LaunchPackage.SubtitleSize++;
+                SubtitleSize++;
             }
-            if (sender == SubSizeDown && LaunchPackage.SubtitleSize > 1)
+            if (sender == SubSizeDown && SubtitleSize > 1)
             {
-                LaunchPackage.SubtitleSize--;
+                SubtitleSize--;
             }
         }
 
@@ -170,7 +214,7 @@ namespace ME3TweaksModManager.modmanager.windows
         {
             if (sender is RadioButton rb && rb.DataContext is LauncherLanguageOption llo)
             {
-                LaunchPackage.ChosenLanguage = llo.LanguageString;
+                ChosenLanguage = llo.LanguageString;
             }
         }
     }

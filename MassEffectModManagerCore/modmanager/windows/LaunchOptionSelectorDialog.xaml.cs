@@ -1,0 +1,101 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
+using LegendaryExplorerCore.Misc;
+using ME3TweaksCoreWPF.UI;
+using ME3TweaksModManager.modmanager.objects.launcher;
+using Microsoft.WindowsAPICodePack.PortableDevices.EventSystem;
+using Pathoschild.FluentNexus.Models;
+
+namespace ME3TweaksModManager.modmanager.windows
+{
+    /// <summary>
+    /// Interaction logic for LaunchOptionSelectorDialog.xaml
+    /// </summary>
+    [AddINotifyPropertyChangedInterface]
+    public partial class LaunchOptionSelectorDialog : Window
+    {
+        public MEGame Game { get; set; }
+        public LaunchOptionsPackage ChosenOption { get; set; }
+
+        public ObservableCollectionExtended<LaunchOptionsPackage> AvailableLaunchOptionsPackages { get; } = new();
+
+        public LaunchOptionSelectorDialog(MEGame game)
+        {
+            Game = game;
+            PopulatePackages();
+            LoadCommands();
+            InitializeComponent();
+        }
+
+        private void PopulatePackages()
+        {
+            // Reload the launch options.
+            M3LoadedMods.Instance.LoadLaunchOptions();
+
+            // Set our list
+            AvailableLaunchOptionsPackages.ClearEx();
+            AvailableLaunchOptionsPackages.Add(M3LoadedMods.GetDefaultLaunchOptionsPackage(Game));
+            AvailableLaunchOptionsPackages.AddRange(M3LoadedMods.Instance.AllLaunchOptions.Where(x => x.Game == Game));
+        }
+
+        private void LoadCommands()
+        {
+            SelectLaunchOptionCommand = new GenericCommand(SaveAndClose);
+            EditSelectedLaunchOptionCommand = new GenericCommand(EditOption, () => ChosenOption != null && !ChosenOption.IsCustomOption);
+            CreateNewLaunchOptionCommand = new GenericCommand(CreateNewLaunchOption);
+        }
+
+        private void EditOption()
+        {
+            LaunchParametersDialog lpd = new LaunchParametersDialog(null, Game, ChosenOption);
+            lpd.ShowDialog();
+            PopulatePackages();
+            ChosenOption = AvailableLaunchOptionsPackages.FirstOrDefault(x => x.PackageGuid == lpd.LaunchPackage.PackageGuid);
+        }
+
+        private void CreateNewLaunchOption()
+        {
+            LaunchParametersDialog lpd = new LaunchParametersDialog(null, Game, null);
+            lpd.ShowDialog();
+
+            var option = lpd.LaunchPackage;
+            PopulatePackages();
+            ChosenOption = AvailableLaunchOptionsPackages.FirstOrDefault(x => x.PackageGuid == option.PackageGuid);
+        }
+
+        public ICommand EditSelectedLaunchOptionCommand { get; set; }
+
+        public ICommand CreateNewLaunchOptionCommand { get; set; }
+
+        public ICommand SelectLaunchOptionCommand { get; set; }
+
+        private void SaveAndClose()
+        {
+            switch (Game)
+            {
+                case MEGame.LE1:
+                    Settings.SelectedLE1LaunchOption = ChosenOption.PackageGuid;
+                    break;
+                case MEGame.LE2:
+                    Settings.SelectedLE2LaunchOption = ChosenOption.PackageGuid;
+                    break;
+                case MEGame.LE3:
+                    Settings.SelectedLE3LaunchOption = ChosenOption.PackageGuid;
+                    break;
+            }
+
+            Close();
+        }
+    }
+}

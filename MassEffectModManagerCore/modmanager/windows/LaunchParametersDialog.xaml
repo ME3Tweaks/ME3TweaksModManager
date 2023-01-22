@@ -17,6 +17,25 @@
         Margin="5">
         <DockPanel
             DockPanel.Dock="Top">
+            <Grid
+                Margin="0,5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="16"/>
+                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Image
+                    Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}, ConverterParameter=16}"
+                    Width="16"
+                    Height="16" />
+                <TextBlock Grid.Column="1" Margin="3,0,0,0"  Text="Launch Parameters set name:"/>
+                <TextBox Grid.Column="2" Text="{Binding ParameterSetName, UpdateSourceTrigger=PropertyChanged}"/>
+            </Grid>
+
+        </DockPanel>
+        <DockPanel
+            DockPanel.Dock="Top">
+
             <StackPanel
                 Orientation="Vertical"
                 DockPanel.Dock="Left">
@@ -44,7 +63,7 @@
                             Text="{DynamicResource string_size}"
                             VerticalAlignment="Center" />
                         <TextBlock
-                            Text="{Binding LaunchPackage.SubtitleSize}"
+                            Text="{Binding SubtitleSize}"
                             FontWeight="Bold"
                             Margin="5,0"
                             VerticalAlignment="Center" />
@@ -80,23 +99,36 @@
             </StackPanel>
             <GroupBox
                 Header="{DynamicResource string_customOptions}">
-                <ItemsControl
+                <StackPanel>
+                    <ItemsControl
                     ItemsSource="{Binding CustomOptions}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <CheckBox
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <CheckBox
+                                ToolTip="{Binding ToolTip}"
                                 Content="{Binding DisplayString}"
                                 IsChecked="{Binding IsSelected}" />
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <DockPanel>
+                        <TextBlock DockPanel.Dock="Top" Text="Custom arguments:"/>
+                        <TextBox Text="{Binding CustomArguments, UpdateSourceTrigger=PropertyChanged}"/>
+                    </DockPanel>
+                </StackPanel>
             </GroupBox>
         </DockPanel>
         <Button
-            Height="26"
+            Margin="0,5,0,0"
             Content="{DynamicResource string_startGame}"
             Command="{Binding LaunchGameCommand}"
+            HorizontalAlignment="Right"/>
+        <Button
+            Margin="0,5,0,0"
+            Content="{DynamicResource string_save}"
+            Command="{Binding SavePackageCommand}"
             HorizontalAlignment="Right"
+            Padding="15,0"
             Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}" />
     </DockPanel>
 </Window>
