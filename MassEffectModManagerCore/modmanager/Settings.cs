@@ -325,6 +325,28 @@ namespace ME3TweaksModManager.modmanager
             set => SetProperty(ref _oneTimeMessageModListIsNotListOfInstalledMods, value);
         }
 
+        private static Guid _selectedLE1LaunchOption = Guid.Empty;
+        public static Guid SelectedLE1LaunchOption
+        {
+            get => _selectedLE1LaunchOption;
+            set => SetProperty(ref _selectedLE1LaunchOption, value);
+        }
+
+        private static Guid _selectedLE2LaunchOption = Guid.Empty;
+        public static Guid SelectedLE2LaunchOption
+        {
+            get => _selectedLE2LaunchOption;
+            set => SetProperty(ref _selectedLE2LaunchOption, value);
+        }
+
+        private static Guid _selectedLE3LaunchOption = Guid.Empty;
+        public static Guid SelectedLE3LaunchOption
+        {
+            get => _selectedLE3LaunchOption;
+            set => SetProperty(ref _selectedLE3LaunchOption, value);
+        }
+
+
         public static readonly string SettingsPath = Path.Combine(M3Filesystem.GetAppDataFolder(), "settings.ini");
 
         public static void Load()
@@ -381,11 +403,30 @@ namespace ME3TweaksModManager.modmanager
             GenerationSettingLE = LoadSettingBool(settingsIni, "ModManager", "GenerationSettingLE", true);
             GenerationSettingOT = LoadSettingBool(settingsIni, "ModManager", "GenerationSettingOT", true);
 
+            SelectedLE1LaunchOption = LoadSettingGuid(settingsIni, "ModManager", "SelectedLE1LaunchOption", Guid.Empty);
+            SelectedLE2LaunchOption = LoadSettingGuid(settingsIni, "ModManager", "SelectedLE2LaunchOption", Guid.Empty);
+            SelectedLE3LaunchOption = LoadSettingGuid(settingsIni, "ModManager", "SelectedLE3LaunchOption", Guid.Empty);
+
+
             // Dismiss messages
             OneTimeMessage_ModListIsNotListOfInstalledMods = LoadSettingBool(settingsIni, "ModManager", "ShowModListNotInstalledModsMessage", true);
 
 
             Loaded = true;
+        }
+
+        private static Guid LoadSettingGuid(IniData ini, string section, string key, Guid defaultValue)
+        {
+            // This is stored as string but is parsed on load
+            if (ini == null) return defaultValue;
+            var value = LoadSettingString(ini, section, key, null);
+            if (value == null) return defaultValue;
+            if (Guid.TryParse(value, out var result))
+            {
+                return result;
+            }
+
+            return defaultValue;
         }
 
         private static bool LoadSettingBool(IniData ini, string section, string key, bool defaultValue)
@@ -399,10 +440,8 @@ namespace ME3TweaksModManager.modmanager
                 }
                 return boolValue;
             }
-            else
-            {
-                return defaultValue;
-            }
+
+            return defaultValue;
         }
 
         private static string LoadSettingString(IniData ini, string section, string key, string defaultValue)
@@ -413,14 +452,12 @@ namespace ME3TweaksModManager.modmanager
             {
                 return defaultValue;
             }
-            else
+         
+            if (ini[section][key] != defaultValue)
             {
-                if (ini[section][key] != defaultValue)
-                {
-                    LogSettingChanging(key, ini[section][key]);
-                }
-                return ini[section][key];
+                LogSettingChanging(key, ini[section][key]);
             }
+            return ini[section][key];
         }
 
         private static DateTime LoadSettingDateTime(IniData ini, string section, string key, DateTime defaultValue)
@@ -558,6 +595,10 @@ namespace ME3TweaksModManager.modmanager
                 SaveSettingBool(settingsIni, "ModManager", "DoubleClickModInstall", DoubleClickModInstall);
                 SaveSettingBool(settingsIni, "ModManager", "ShowModListNotInstalledModsMessage", OneTimeMessage_ModListIsNotListOfInstalledMods);
                 SaveSettingString(settingsIni, "ModManager", "ModDownloadCacheFolder", ModDownloadCacheFolder);
+                SaveSettingGuid(settingsIni, "ModManager", "SelectedLE1LaunchOption", SelectedLE1LaunchOption);
+                SaveSettingGuid(settingsIni, "ModManager", "SelectedLE2LaunchOption", SelectedLE2LaunchOption);
+                SaveSettingGuid(settingsIni, "ModManager", "SelectedLE3LaunchOption", SelectedLE3LaunchOption);
+
 
                 SaveSettingBool(settingsIni, "ModMaker", "AutoAddControllerMixins", ModMakerControllerModOption);
                 SaveSettingBool(settingsIni, "ModMaker", "AutoInjectCustomKeybinds", ModMakerAutoInjectCustomKeybindsOption);
@@ -581,6 +622,11 @@ namespace ME3TweaksModManager.modmanager
         private static void SaveSettingString(IniData settingsIni, string section, string key, string value)
         {
             settingsIni[section][key] = value;
+        }
+
+        private static void SaveSettingGuid(IniData settingsIni, string section, string key, Guid value)
+        {
+            settingsIni[section][key] = value.ToString();
         }
 
         private static void SaveSettingBool(IniData settingsIni, string section, string key, bool value)
