@@ -260,7 +260,7 @@ namespace ME3TweaksModManager.modmanager.windows
                             var queues = Directory.EnumerateFiles(modGroupsDir, @"*.txt").ToList();
                             foreach (var queue in queues)
                             {
-                                var biqDest = Path.Combine(M3Filesystem.GetBatchInstallGroupsFolder(), Path.GetFileName(queue));
+                                var biqDest = Path.Combine(M3LoadedMods.GetBatchInstallGroupsDirectory(), Path.GetFileName(queue));
                                 M3Log.Information($@"Migrating mod install group: {queue} -> {biqDest}");
                                 File.Move(queue, biqDest, true);
                                 M3Log.Information(@"Migrated " + Path.GetFileName(queue));

@@ -60,7 +60,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             var result = M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_interp_deleteTheSelectedBatchQueue, SelectedBatchQueue.QueueName), M3L.GetString(M3L.string_confirmDeletion), MessageBoxButton.YesNo, MessageBoxImage.Warning);
             if (result == MessageBoxResult.Yes)
             {
-                File.Delete(Path.Combine(M3Filesystem.GetBatchInstallGroupsFolder(), SelectedBatchQueue.BackingFilename));
+                File.Delete(Path.Combine(M3LoadedMods.GetBatchInstallGroupsDirectory(), SelectedBatchQueue.BackingFilename));
                 AvailableBatchQueues.Remove(SelectedBatchQueue);
                 SelectedBatchQueue = null;
             }
@@ -154,8 +154,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         private void parseBatchFiles(string pathToHighlight = null)
         {
             AvailableBatchQueues.ClearEx();
-            var batchDir = M3Filesystem.GetBatchInstallGroupsFolder();
-            var files = Directory.GetFiles(batchDir);
+            var batchDir = M3LoadedMods.GetBatchInstallGroupsDirectory();
+            var batchDirOld = M3LoadedMods.GetBatchInstallGroupsDirectoryPre801();
+            var files = Directory.GetFiles(batchDir).ToList();
+            if (Directory.Exists(batchDirOld))
+            {
+                files.AddRange(Directory.GetFileSystemEntries(batchDirOld));
+            }
             foreach (var file in files)
             {
                 var extension = Path.GetExtension(file);

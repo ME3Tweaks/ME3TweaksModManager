@@ -232,7 +232,7 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         /// <returns></returns>
         private string getSaveName(string groupName, bool canOverwrite)
         {
-            var batchfolder = M3Filesystem.GetBatchInstallGroupsFolder();
+            var batchfolder = M3LoadedMods.GetBatchInstallGroupsDirectory();
             var newFname = M3Utilities.SanitizePath(groupName);
             if (string.IsNullOrWhiteSpace(newFname))
             {
