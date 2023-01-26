@@ -737,12 +737,12 @@ namespace ME3TweaksModManager
             CompileCoalescedCommand = new RelayCommand(CompileCoalesced); // no conditions for this
             DecompileCoalescedCommand = new RelayCommand(DecompileCoalesced); // no conditions for this
             InstallMEMFileCommand = new GenericCommand(InstallMEMFile, CanInstallMEMFile);
-            ChangeCurrentLaunchConfigCommand = new GenericCommand(OpenLaunchOptionSelector, () => SelectedGameTarget?.Game.IsMEGame() ?? false);
+            ChangeCurrentLaunchConfigCommand = new GenericCommand(OpenLaunchOptionSelector, () => SelectedGameTarget?.Game.IsLEGame() ?? false);
         }
 
         private void OpenLaunchOptionSelector()
         {
-            if (SelectedGameTarget?.Game.IsMEGame() ?? false) // Nice and hard to read
+            if (SelectedGameTarget?.Game.IsLEGame() ?? false) // Nice and hard to read
             {
                 LaunchOptionSelectorDialog losd = new LaunchOptionSelectorDialog(this, SelectedGameTarget.Game);
                 losd.ShowDialog();
