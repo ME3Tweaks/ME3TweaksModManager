@@ -10,8 +10,9 @@
         mc:Ignorable="d"
         MinWidth="200"
         MinHeight="200"
+        WindowStartupLocation="CenterOwner"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
-        Title="Launch Option Selector" Height="450" Width="800">
+        Title="Launch Option Selector" Height="450" Width="600">
     <Window.Style>
         <Style
             TargetType="Window"

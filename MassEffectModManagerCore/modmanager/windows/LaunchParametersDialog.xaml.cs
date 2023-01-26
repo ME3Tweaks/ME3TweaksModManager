@@ -35,7 +35,7 @@ namespace ME3TweaksModManager.modmanager.windows
         public ObservableCollectionExtended<LauncherCustomParameter> CustomOptions { get; } = new();
 
         #region Commands
-        public GenericCommand LaunchGameCommand { get; private set; }
+        public GenericCommand DeletePackageCommand { get; private set; }
         public GenericCommand SavePackageCommand { get; private set; }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace ME3TweaksModManager.modmanager.windows
 
         private void LoadPackage(LaunchOptionsPackage package)
         {
-            LaunchPackage = package ?? new LaunchOptionsPackage() { Game = Game, ChosenLanguage = @"INT", PackageTitle = "Start Game (Custom)"};
+            LaunchPackage = package ?? new LaunchOptionsPackage() { Game = Game, ChosenLanguage = @"INT", PackageTitle = "Start Game (Custom)" };
             PackageGuid = LaunchPackage.PackageGuid == Guid.Empty ? Guid.NewGuid() : LaunchPackage.PackageGuid; // Keep existing guid if found
             ParameterSetName = LaunchPackage.PackageTitle;
             LoadLanguagesAndOptions();
@@ -94,11 +94,10 @@ namespace ME3TweaksModManager.modmanager.windows
         {
             CustomOptions.Clear();
             LanguageOptions.Clear();
-
             // Global options
-            CustomOptions.Add(new LauncherCustomParameter() { DisplayString = M3L.GetString(M3L.string_automaticallyResumeLastSave), ToolTip = "Instructs game to automatically attempt to resume the last savegame", CommandLineText = @"-RESUME", SaveKey = LauncherCustomParameter.KEY_AUTORESUME, IsSelected = LaunchPackage.AutoResumeSave});
+            CustomOptions.Add(new LauncherCustomParameter() { DisplayString = M3L.GetString(M3L.string_automaticallyResumeLastSave), ToolTip = "Instructs game to automatically attempt to resume the last savegame", CommandLineText = @"-RESUME", SaveKey = LauncherCustomParameter.KEY_AUTORESUME, IsSelected = LaunchPackage.AutoResumeSave });
 #if DEBUG
-            CustomOptions.Add(new LauncherCustomParameter() { DisplayString = @"Enable process minidumps", ToolTip = @"This should only be visible in debug builds", CommandLineText = @"-enableminidumps", SaveKey = LauncherCustomParameter.KEY_MINIDUMPS, IsSelected = LaunchPackage.EnableMinidumps});
+            CustomOptions.Add(new LauncherCustomParameter() { DisplayString = @"Enable process minidumps", ToolTip = @"This should only be visible in debug builds", CommandLineText = @"-enableminidumps", SaveKey = LauncherCustomParameter.KEY_MINIDUMPS, IsSelected = LaunchPackage.EnableMinidumps });
 #endif
 
             switch (LaunchPackage.Game)
@@ -155,11 +154,33 @@ namespace ME3TweaksModManager.modmanager.windows
 
                     // LE3 has no unofficial localizations.
             }
+
+            CustomArguments = LaunchPackage.CustomExtraArgs;
         }
 
         private void LoadCommands()
         {
             SavePackageCommand = new GenericCommand(SavePackage, CanSavePackage);
+            DeletePackageCommand = new GenericCommand(DeletePackage, CanDeletePackage);
+        }
+
+        private void DeletePackage()
+        {
+            var itemsToDelete = M3LoadedMods.Instance.AllLaunchOptions.Where(x => x.PackageGuid == PackageGuid && !x.IsCustomOption).ToList(); // Must make copy
+            foreach (var item in itemsToDelete)
+            {
+                M3Log.Information($@"Deleting LaunchOptionPackage {item}");
+                File.Delete(item.FilePath);
+                M3LoadedMods.Instance.AllLaunchOptions.Remove(item);
+            }
+
+            LaunchPackage = null;
+            Close();
+        }
+
+        private bool CanDeletePackage()
+        {
+            return LaunchPackage != null && !LaunchPackage.IsCustomOption;
         }
 
         private bool CanSavePackage()
@@ -192,6 +213,14 @@ namespace ME3TweaksModManager.modmanager.windows
 
             var outPath = Path.Combine(M3LoadedMods.GetLaunchOptionsDirectory(), $@"{Game}-{ParameterSetName}") + LaunchOptionsPackage.FILE_EXTENSION;
             var m3lText = JsonConvert.SerializeObject(package, Formatting.Indented);
+
+            // Remove existing package with current guid, if any
+            var itemsToDelete = M3LoadedMods.Instance.AllLaunchOptions.Where(x => x.PackageGuid == PackageGuid && x.FilePath != outPath);
+            foreach (var item in itemsToDelete)
+            {
+                File.Delete(item.FilePath);
+            }
+
             File.WriteAllText(outPath, m3lText);
             package.FilePath = outPath;
             LaunchPackage = package; // Set this so the calling window can access and assign it

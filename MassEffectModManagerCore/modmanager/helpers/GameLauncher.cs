@@ -38,6 +38,11 @@ namespace ME3TweaksModManager.modmanager.helpers
                 args += $@"-OVERRIDELANGUAGE={LaunchPackage.ChosenLanguage}";
             }
 
+            if (LaunchPackage.EnableMinidumps)
+            {
+                args += @" -enableminidumps";
+            }
+
             // Custom options
             args += @" " + LaunchPackage.CustomExtraArgs;
             LaunchGame(target, args);
@@ -166,7 +171,7 @@ namespace ME3TweaksModManager.modmanager.helpers
         {
             // If the game source is steam and it's LE, we can use Link2EA as they all require EA app to run.
             // Technically this can also be done for ME3 but I'm not going to bother changing launch code for it
-            if (target.GameSource.Contains(@"Steam") && target.Game == MEGame.ME3 || target.Game.IsLEGame() || target.Game == MEGame.LELauncher)
+            if (target.GameSource != null && target.GameSource.Contains(@"Steam") && (target.Game == MEGame.ME3 || target.Game.IsLEGame() || target.Game == MEGame.LELauncher))
             {
                 // Experimental: Use Link2EA to boot without EA sign in
                 var link2EA = RegistryHandler.GetRegistryString(@"HKEY_CLASSES_ROOT\link2ea\shell\open\command", "");

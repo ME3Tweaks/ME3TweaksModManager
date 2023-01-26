@@ -647,7 +647,6 @@ namespace ME3TweaksModManager
         public ICommand RunGameConfigToolCommand { get; set; }
         public ICommand Binkw32Command { get; set; }
         public ICommand StartGameCommand { get; set; }
-        public ICommand SelectLaunchOptionsCommand { get; set; }
         public ICommand ShowinstallationInformationCommand { get; set; }
         public ICommand BackupCommand { get; set; }
         public ICommand DeployModCommand { get; set; }
@@ -693,7 +692,6 @@ namespace ME3TweaksModManager
             RunGameConfigToolCommand = new RelayCommand(RunGameConfigTool, CanRunGameConfigTool);
             Binkw32Command = new RelayCommand(ToggleBinkw32, CanToggleBinkw32);
             StartGameCommand = new GenericCommand(StartGame, CanStartGame);
-            SelectLaunchOptionsCommand = new GenericCommand(ShowLaunchOptions, CanShowLaunchOptions);
             ShowinstallationInformationCommand = new GenericCommand(ShowInstallInfo, CanShowInstallInfo);
             BackupCommand = new GenericCommand(ShowBackupPane, ContentCheckNotInProgress);
             RestoreCommand = new GenericCommand(ShowRestorePane, ContentCheckNotInProgress);
@@ -746,20 +744,10 @@ namespace ME3TweaksModManager
         {
             if (SelectedGameTarget?.Game.IsMEGame() ?? false) // Nice and hard to read
             {
-                LaunchOptionSelectorDialog losd = new LaunchOptionSelectorDialog(SelectedGameTarget.Game);
+                LaunchOptionSelectorDialog losd = new LaunchOptionSelectorDialog(this, SelectedGameTarget.Game);
                 losd.ShowDialog();
                 UpdateSelectedLaunchOption();
             }
-        }
-
-        private bool CanShowLaunchOptions()
-        {
-            return CanStartGame() && SelectedGameTarget.Game.IsLEGame();
-        }
-
-        private void ShowLaunchOptions()
-        {
-            new LaunchParametersDialog(this, SelectedGameTarget.Game, null).ShowDialog();
         }
 
         private bool CanInstallMEMFile()

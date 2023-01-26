@@ -30,8 +30,9 @@ namespace ME3TweaksModManager.modmanager.windows
 
         public ObservableCollectionExtended<LaunchOptionsPackage> AvailableLaunchOptionsPackages { get; } = new();
 
-        public LaunchOptionSelectorDialog(MEGame game)
+        public LaunchOptionSelectorDialog(Window owner, MEGame game)
         {
+            Owner = owner;
             Game = game;
             PopulatePackages();
             LoadCommands();
@@ -58,15 +59,24 @@ namespace ME3TweaksModManager.modmanager.windows
 
         private void EditOption()
         {
-            LaunchParametersDialog lpd = new LaunchParametersDialog(null, Game, ChosenOption);
+            LaunchParametersDialog lpd = new LaunchParametersDialog(this, Game, ChosenOption);
             lpd.ShowDialog();
+
+            // Reload packages to locate the item by Guid
             PopulatePackages();
-            ChosenOption = AvailableLaunchOptionsPackages.FirstOrDefault(x => x.PackageGuid == lpd.LaunchPackage.PackageGuid);
+            if (lpd.LaunchPackage != null)
+            {
+                ChosenOption = AvailableLaunchOptionsPackages.FirstOrDefault(x => x.PackageGuid == lpd.LaunchPackage.PackageGuid);
+            }
+            else
+            {
+                ChosenOption = AvailableLaunchOptionsPackages.FirstOrDefault(); // This will be 'Start Game', which is always available.
+            }
         }
 
         private void CreateNewLaunchOption()
         {
-            LaunchParametersDialog lpd = new LaunchParametersDialog(null, Game, null);
+            LaunchParametersDialog lpd = new LaunchParametersDialog(this, Game, null);
             lpd.ShowDialog();
 
             var option = lpd.LaunchPackage;

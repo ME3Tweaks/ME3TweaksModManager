@@ -536,7 +536,9 @@ namespace ME3TweaksModManager.modmanager.loaders
                 foreach (var launchOption in launcherOptions)
                 {
                     M3Log.Information($@"Parsing launch option package {launchOption}");
-                    AllLaunchOptions.Add(JsonConvert.DeserializeObject<LaunchOptionsPackage>(File.ReadAllText(launchOption)));
+                    var lop = JsonConvert.DeserializeObject<LaunchOptionsPackage>(File.ReadAllText(launchOption));
+                    lop.FilePath = launchOption; // Set the path that was used to load this object
+                    AllLaunchOptions.Add(lop);
                 }
             }
         }

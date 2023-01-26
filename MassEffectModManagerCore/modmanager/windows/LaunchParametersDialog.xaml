@@ -120,9 +120,10 @@
         </DockPanel>
         <Button
             Margin="0,5,0,0"
-            Content="{DynamicResource string_startGame}"
-            Command="{Binding LaunchGameCommand}"
-            HorizontalAlignment="Right"/>
+            Content="{DynamicResource string_delete}"
+            Command="{Binding DeletePackageCommand}"
+            HorizontalAlignment="Right"
+            Padding="15,4" />
         <Button
             Margin="0,5,0,0"
             Content="{DynamicResource string_save}"
