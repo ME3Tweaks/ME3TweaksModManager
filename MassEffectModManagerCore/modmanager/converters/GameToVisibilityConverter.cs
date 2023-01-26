@@ -11,6 +11,7 @@ namespace ME3TweaksModManager.modmanager.converters
     [Localizable(false)]
     public class GameToVisibilityConverter : IValueConverter
     {
+        // This has some difficulty doing things like OTGame_LELauncher
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value is MEGame game && parameter is string gameStr)
@@ -30,7 +31,7 @@ namespace ME3TweaksModManager.modmanager.converters
                     {
                         if (inverted ^ parameterGame == game) continue; // OK, do not set to collapsed
                     }
-                    else if (splitparms[i].StartsWith("Game"))
+                    else if (splitparms[i].StartsWith(@"Game")) // Game1/Game2/Game3
                     {
                         var gameId = gameStr[^1];
                         switch (gameId)
@@ -46,11 +47,11 @@ namespace ME3TweaksModManager.modmanager.converters
                                 break;
                         }
                     }
-                    else if (splitparms[i] == "LEGame")
+                    else if (splitparms[i] == @"LEGame")
                     {
                         if (inverted ^ game.IsLEGame()) continue;
                     }
-                    else if (splitparms[i] == "OTGame")
+                    else if (splitparms[i] == @"OTGame")
                     {
                         if (inverted ^ game.IsOTGame()) continue;
                     }
