@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ME3TweaksModManager.modmanager.starterkit;
 
 namespace ME3TweaksModManager.modmanager.objects.starterkit
 {
@@ -63,6 +64,8 @@ namespace ME3TweaksModManager.modmanager.objects.starterkit
                 twoDA.ClearRows();
                 twoDA.Write2DAToExport();
                 newEntry.ObjectName = nameRef;
+                var objRef = StarterKitAddins.CreateObjectReferencer(p, false);
+                StarterKitAddins.AddToObjectReferencer(objRef);
             }
             if (p.IsModified)
                 p.Save();
