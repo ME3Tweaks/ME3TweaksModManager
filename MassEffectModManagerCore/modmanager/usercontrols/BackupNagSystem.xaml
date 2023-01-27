@@ -52,17 +52,15 @@
             <Button Content="{DynamicResource string_openBackupManager}" HorizontalAlignment="Right" Command="{Binding OpenBackupPanelCommand}" Padding="12,4" />
         </DockPanel>
         <StackPanel HorizontalAlignment="Right">
-            <TextBlock Text="{DynamicResource string_restores}" FontWeight="Bold" FontSize="14" />
+            <TextBlock Text="{DynamicResource string_modding}" FontWeight="Bold" FontSize="14" />
             <TextBlock Text="{DynamicResource string_restoringIndividualFiles}" />
-            <TextBlock Text="{DynamicResource string_restoringDLC}" />
             <TextBlock Text="{DynamicResource string_fullGameRestore}" />
-            <TextBlock Text="{DynamicResource string_uninstallingALOT}" />
+            <TextBlock Text="{DynamicResource string_mE3TweaksModMaker}" />
         </StackPanel>
         <StackPanel>
-            <TextBlock Text="{DynamicResource string_modding}" FontWeight="Bold" FontSize="14" HorizontalAlignment="Right" />
-            <TextBlock Text="{DynamicResource string_mE3TweaksModMaker}" HorizontalAlignment="Right" />
-            <TextBlock Text="{DynamicResource string_mixins}" HorizontalAlignment="Right" />
-            <TextBlock Text="{DynamicResource string_mergingMods}" HorizontalAlignment="Right" />
+            <TextBlock Text="{DynamicResource string_development}" FontWeight="Bold" FontSize="14" HorizontalAlignment="Right" />
+            <TextBlock Text="{DynamicResource string_blankModFeaturesStarterKit}" HorizontalAlignment="Right" />
+            <TextBlock Text="{DynamicResource string_advancedFeaturesInLEX}" HorizontalAlignment="Right" />
             <TextBlock Text="{DynamicResource string_deployingModsTo7z}" HorizontalAlignment="Right" />
         </StackPanel>
     </DockPanel>

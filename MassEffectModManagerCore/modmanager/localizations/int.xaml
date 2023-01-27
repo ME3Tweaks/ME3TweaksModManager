@@ -1916,18 +1916,18 @@
     <!-- 0= # of games not backed up. If your language uses plurality for values, attempt to make it work for both (like how this string uses game(s) to cover both cases of 1 and not 1) -->
     <system:String x:Key="string_allGamesBackedUp">All games backed up</system:String>
     <system:String x:Key="string_description_vanillaBackupRequired">ME3Tweaks Mod Manager requires unmodified game backups to perform certain actions.</system:String>
-    <system:String x:Key="string_description_missingBackupWillLimitFeatures">Without a backup of a game, the following features of Mod Manager will be disabled or have limited functionality for that game:</system:String>
+    <system:String x:Key="string_description_missingBackupWillLimitFeatures">Without a backup of a game, the following features will be disabled or have limited functionality for that game:</system:String>
     <system:String x:Key="string_openBackupManager">Open Backup Manager</system:String>
-    <system:String x:Key="string_restores">Restores</system:String>
-    <system:String x:Key="string_restoringIndividualFiles">Restoring individual files</system:String>
+    <system:String x:Key="string_modding">Modding</system:String>
+    <system:String x:Key="string_restoringIndividualFiles">Restoring individual files &amp; DLC</system:String>
     <system:String x:Key="string_restoringDLC">Restoring DLC</system:String>
     <system:String x:Key="string_uninstallingALOT">Uninstalling ALOT</system:String>
-    <system:String x:Key="string_modding">Modding</system:String>
+    <system:String x:Key="string_development">Development</system:String>
     <system:String x:Key="string_mE3TweaksModMaker">ME3Tweaks ModMaker</system:String>
     <!-- This is a proper noun. Do not change this string (simply copy it to your localization to ensure it is not blank) -->
-    <system:String x:Key="string_mixins">Mixins</system:String>
-    <system:String x:Key="string_mergingMods">Merging mods</system:String>
-    <system:String x:Key="string_deployingModsTo7z">Deploying mods to .7z</system:String>
+    <system:String x:Key="string_blankModFeaturesStarterKit">Blank mod generation with Starter Kit</system:String>
+    <system:String x:Key="string_deployingModsTo7z">Deploying mods for distribution</system:String>
+    <system:String x:Key="string_advancedFeaturesInLEX">Advanced features in Legendary Explorer</system:String>
 
     <!-- Console Key Keybinder -->
     <system:String x:Key="string_updatingKeybindsPleaseWait">Updating keybind(s), please wait</system:String>
