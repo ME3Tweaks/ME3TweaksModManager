@@ -153,14 +153,33 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private void parseBatchFiles(string pathToHighlight = null)
         {
-            AvailableBatchQueues.ClearEx();
-            var batchDir = M3LoadedMods.GetBatchInstallGroupsDirectory();
+            #region MIGRATION
+            // Mod Manager 8.0.1 moved these to the mod library
             var batchDirOld = M3LoadedMods.GetBatchInstallGroupsDirectoryPre801();
-            var files = Directory.GetFiles(batchDir).ToList();
             if (Directory.Exists(batchDirOld))
             {
-                files.AddRange(Directory.GetFileSystemEntries(batchDirOld));
+                var oldFiles = Directory.GetFiles(batchDirOld);
+                foreach (var f in oldFiles)
+                {
+                    M3Log.Information($@"Migrating batch queue {f} to library");
+                    try
+                    {
+                        File.Move(f, Path.Combine(M3LoadedMods.GetBatchInstallGroupsDirectory(), Path.GetFileName(f)),
+                            true);
+                    }
+                    catch (Exception ex)
+                    {
+                        M3Log.Exception(ex, @"Failed to migrate:");
+                    }
+                }
             }
+            #endregion
+
+
+            AvailableBatchQueues.ClearEx();
+            var batchDir = M3LoadedMods.GetBatchInstallGroupsDirectory();
+            var files = Directory.GetFiles(batchDir).ToList();
+
             foreach (var file in files)
             {
                 var extension = Path.GetExtension(file);
