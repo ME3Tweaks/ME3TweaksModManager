@@ -452,6 +452,12 @@
     <system:String x:Key="string_selectLaunchOptions">Select launch options</system:String>
     <system:String x:Key="string_saveChosenOptionsToThisBatchGroup">Save chosen options to this batch group?</system:String>
     <system:String x:Key="string_saveOptions">Save options</system:String>
+    <system:String x:Key="string_changeCurrentLaunchConfiguration">Change current launch configuration</system:String>
+    <system:String x:Key="string_launchConfigurationOptionsNotAvailableForThisGame">Launch configuration options not available for this game</system:String>
+    <system:String x:Key="string_installingASIMods">Installing ASI mods</system:String>
+    <system:String x:Key="string_installedASIMods">Installed ASI mods</system:String>
+    <system:String x:Key="string_installedASIModByCommandLineRequest">Installed ASI mod by command line request</system:String>
+    <system:String x:Key="string_failedToInstallASIModByCommandLineRequest">Failed to install ASI mod by command line request</system:String>
 
     <!-- LEX Launcher -->
     <system:String x:Key="string_interp_lexNightlyFailedToDownload">Legendary Explorer Nightly failed to download: {0}</system:String>
@@ -472,7 +478,7 @@
     <system:String x:Key="string_originalTrilogy">Original Trilogy</system:String>
     <system:String x:Key="string_legendaryEdition">Legendary Edition</system:String>
 
-    <!-- Global Styles --> 
+    <!-- Global Styles -->
     <system:String x:Key="string_thisTargetHasBeenTextureModded">This target has been texture modded</system:String>
 
     <!-- Mod Installer Panel -->
@@ -929,7 +935,7 @@
     <system:String x:Key="string_downloadFailed">Download failed</system:String>
     <system:String x:Key="string_error_cantDownloadNotEnoughInfoInStartupManifest">ME3Tweaks Mod Manager booted without network or could not fetch startup manifest - reboot application with network access to fetch required information to download this program</system:String>
     <system:String x:Key="string_error_netRuntimeMissing">The .NET {0} x64 Desktop runtime is not installed</system:String>
-    
+
     <!-- Failed mods panel -->
     <system:String x:Key="string_restoreFromME3Tweaks">Restore from ME3Tweaks</system:String>
     <system:String x:Key="string_theFollowingModsFailedToLoad">The following mods failed to load from the mod library. Select a mod to see why.</system:String>
@@ -1262,7 +1268,7 @@
     <system:String x:Key="string_manuallyEnterAPIKey">Manually enter API key</system:String>
     <system:String x:Key="string_yourAPIKeyWillAppearHere">Your API key will appear here</system:String>
     <system:String x:Key="string_configureDownloadWithManager">Configure 'Download with Manager'</system:String>
-    
+
     <!-- Mod install options -->
     <system:String x:Key="string_debugEnumerateOptions">Debug: Enumerate options</system:String>
     <system:String x:Key="string_circularDependencyDialogMessage">A circular dependency was detected. Please notify the developer of the options you attempted to select so they can fix this.</system:String>
@@ -1887,6 +1893,8 @@
     <system:String x:Key="string_removeModFromInstallGroup">Remove mod from install group</system:String>
     <system:String x:Key="string_moveDown">Move down</system:String>
     <system:String x:Key="string_moveUp">Move up</system:String>
+    <system:String x:Key="string_contentMods">Content mods</system:String>
+    <system:String x:Key="string_aSIMods">ASI mods</system:String>
 
     <!-- Backup File Fetcher (Devs only) -->
     <system:String x:Key="string_selectDestinationLocation">Select destination location</system:String>
@@ -2008,7 +2016,7 @@
     <system:String x:Key="string_manifestsStoragePath">Manifests storage path</system:String>
     <system:String x:Key="string_interp_updaterServiceDeltaMessageHeader">The following delta will be applied to the ME3Tweaks Updater Service for {0}:</system:String>
     <!-- 0=ModName -->
-    <system:String x:Key="string_interp_updaterServiceDeltaConfirmationHeader">The following delta will be applied to the ME3Tweaks Updater Service for {0}:</system:String> 
+    <system:String x:Key="string_interp_updaterServiceDeltaConfirmationHeader">The following delta will be applied to the ME3Tweaks Updater Service for {0}:</system:String>
     <!-- 0=Mod name -->
     <system:String xml:space="preserve" x:Key="string_nnFilesToUploadToServern">\n\nFiles to upload to server:\n -</system:String>
     <!-- ensure you do not change any positions of the \n or the -! -->
@@ -2077,6 +2085,10 @@
     <!-- 0={Name of a user-defined batch installation queue/group} -->
     <system:String x:Key="string_modNotAvailableForInstall">Mod not available for install</system:String>
     <system:String x:Key="string_modNotAvailable">Mod not available:</system:String>
+    <system:String x:Key="string_tooltip_batchQueueDesync">Mods in this batch queue have been modified since it was last saved. You will need to re-select mod options during installation.</system:String>
+    <system:String x:Key="string_batchQueueDesync">Batch Queue Desync</system:String>
+    <system:String x:Key="string_usePreviouslySavedModOptionsQuestion">Use previously saved mod options?</system:String>
+    <system:String x:Key="string_savedOptionsFound">Saved options found</system:String>
 
     <!-- Batch Mod class -->
     <system:String x:Key="string_notConfigured">Not configured</system:String>
@@ -2147,8 +2159,8 @@
 
     <!-- Intro Tutorial -->
     <system:String x:Key="string_next">Next</system:String>
-	<system:String x:Key="string_previous">Previous</system:String>
-	<system:String x:Key="string_skipTutorial">Skip tutorial</system:String>
+    <system:String x:Key="string_previous">Previous</system:String>
+    <system:String x:Key="string_skipTutorial">Skip tutorial</system:String>
     <system:String  x:Key="string_title_quickTutorial">ME3Tweaks Mod Manager Tutorial</system:String>
     <system:String x:Key="string_reloadTutorial">Reload tutorial</system:String>
 
@@ -2193,7 +2205,7 @@
     <system:String x:Key="string_collectingME3SessionLog">Collecting ME3 session log</system:String>
     <system:String x:Key="string_gettingTextureInfo">Getting texture mod installation info</system:String>
 
-<!-- Origin in-game overlay disabler-->
+    <!-- Origin in-game overlay disabler-->
     <system:String x:Key="string_overlayDisablerInstalled">Overlay disabler installed</system:String>
     <system:String x:Key="string_uninstallDisabler">Uninstall disabler</system:String>
     <system:String x:Key="string_otherD3d9dllInstalledOverlayDisabled">Other d3d9.dll installed, overlay disabled</system:String>
@@ -2342,8 +2354,8 @@
     <system:String x:Key="string_compareAgainstLoadedMod">Compare against loaded mod</system:String>
 
     <!-- Mod-NexusModsIntegration -->
-    <system:String x:Key="string_dialog_cannotEndorseNonDownloadedMod">You cannot endorse a mod that you have not downloaded from NexusMods.</system:String> 
-    <system:String x:Key="string_dialog_cannotEndorseUntil15min">You cannot endorse a mod until at least 15 minutes after downloading it.</system:String> 
+    <system:String x:Key="string_dialog_cannotEndorseNonDownloadedMod">You cannot endorse a mod that you have not downloaded from NexusMods.</system:String>
+    <system:String x:Key="string_dialog_cannotEndorseUntil15min">You cannot endorse a mod until at least 15 minutes after downloading it.</system:String>
 
     <!-- Mod Download -->
     <system:String x:Key="string_dialog_mustBePremiumUserToDownload">Cannot download file: You must be a premium subscriber to NexusMods to use direct download links.</system:String>
@@ -2362,6 +2374,8 @@
     <!-- 0={Mod Name (on NexusMods)} -->
     <system:String xml:space="preserve" x:Key="string_interp_notEnoughFreeSpaceForDownload">There is not enough free space on {0} to download {1}.\n\nRequired space: {2}\nFree space: {3}</system:String>
     <!-- 0={Drive letter (C:\, D:\ etc)} 1={Mod downloaded filename} 2={Filesize (human readable)} 3={Free spaced (human readable)} -->
+    <system:String x:Key="string_verifyingDownload">Verifying download</system:String>
+    <system:String x:Key="string_fileDidNotVerifyDownloadMayBeCorrupt">File did not verify, download may be corrupt.</system:String>
 
     <!-- Plot Manager Sync Panel -->
     <system:String x:Key="string_syncingPlotManager">Syncing Plot Manager</system:String>
@@ -2507,6 +2521,13 @@
     <system:String x:Key="string_massEffectModderFiles">Mass Effect Modder files</system:String>
     <!-- Mass Effect Modder is a proper noun so it probably shouldn't be localized. This is prefix to a filter so its like Mass Effect Modder Files|*.mem -->
 
+    <!-- Launch Option Selector Dialog -->
+    <system:String x:Key="string_launchOptionSelector">Launch Option Selector</system:String>
+    <system:String x:Key="string_selectLaunchOption">Select launch option</system:String>
+    <system:String x:Key="string_createNewLaunchOption">Create new launch option</system:String>
+    <system:String x:Key="string_editSelectedLaunchOption">Edit selected launch option</system:String>
+    <system:String x:Key="string_title_selectLaunchOption">Select a launch option to use when starting the game from Mod Manager.</system:String>
+
     <!-- Launch Parameters Dialog -->
     <system:String x:Key="string_gameLaunchParameters">Game Launch Parameters</system:String>
     <system:String x:Key="string_gameLanguage">Game language</system:String>
@@ -2514,6 +2535,11 @@
     <system:String x:Key="string_size">Size:</system:String>
     <system:String x:Key="string_customOptions">Custom options</system:String>
     <system:String x:Key="string_automaticallyResumeLastSave">Automatically resume last save</system:String>
+    <system:String x:Key="string_launchParametersSetName">Launch Parameters set name:</system:String>
+    <system:String x:Key="string_customArguments">Custom arguments:</system:String>
+    <system:String x:Key="string_startGameCustom">Start Game (Custom)</system:String>
+    <system:String x:Key="string_tooltip_autoResume">Instructs game to automatically attempt to resume the last savegame</system:String>
+
 
     <!-- Bio2DA Selector Dialog -->
     <system:String x:Key="string_thereIsNoBackupAvailableToQuery2DAsFrom">There is no backup available to query 2DAs from.</system:String>

@@ -1591,7 +1591,10 @@
                             ToolTip="{DynamicResource string_tooltip_launchCurrentlySelectedTarget}">
                             <controls:SplitButton.SplitMenu>
                                 <ContextMenu>
-                                    <MenuItem Header="Change current launch configuration" Command="{Binding ChangeCurrentLaunchConfigCommand}" Visibility="{Binding SelectedGameTarget.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='LEGame'}">
+                                    <MenuItem
+                                        Header="{DynamicResource string_changeCurrentLaunchConfiguration}"
+                                        Command="{Binding ChangeCurrentLaunchConfigCommand}"
+                                        Visibility="{Binding SelectedGameTarget.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='LEGame'}">
                                         <MenuItem.Icon>
                                             <fa5:ImageAwesome
                                                 Style="{StaticResource EnableDisableImageStyle}"
@@ -1601,7 +1604,10 @@
                                                 Width="16" />
                                         </MenuItem.Icon>
                                     </MenuItem>
-                                    <MenuItem Header="Launch configuration options not available for this game" IsEnabled="False"  Visibility="{Binding SelectedGameTarget.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Not_LEGame'}">
+                                    <MenuItem
+                                        Header="{DynamicResource string_launchConfigurationOptionsNotAvailableForThisGame}"
+                                        IsEnabled="False"
+                                        Visibility="{Binding SelectedGameTarget.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='Not_LEGame'}">
                                         <MenuItem.Icon>
                                             <fa5:ImageAwesome
                                                 Style="{StaticResource EnableDisableImageStyle}"

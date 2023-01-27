@@ -1151,8 +1151,8 @@ namespace ME3TweaksModManager
                         {
                             if (queue.ASIModsToInstall.Any())
                             {
-                                ShowRunAndDone(() => InstallBatchASIs(target, queue), "Installing ASI mods",
-                                    "Installed ASI mods", () => FinishBatchInstall(queue));
+                                ShowRunAndDone(() => InstallBatchASIs(target, queue), M3L.GetString(M3L.string_installingASIMods),
+                                    M3L.GetString(M3L.string_installedASIMods), () => FinishBatchInstall(queue));
                             }
                             else
                             {
@@ -1883,16 +1883,16 @@ namespace ME3TweaksModManager
             try
             {
                 Task.Run(() =>
+                {
+                    if (target.Game.IsLEGame())
                     {
-                        if (target.Game.IsLEGame())
-                        {
-                            GameLauncher.LaunchGame(target, SelectedLaunchOption);
-                        }
-                        else
-                        {
-                            GameLauncher.LaunchGame(target, customArguments);
-                        }
-                    })
+                        GameLauncher.LaunchGame(target, SelectedLaunchOption);
+                    }
+                    else
+                    {
+                        GameLauncher.LaunchGame(target, customArguments);
+                    }
+                })
                     .ContinueWith(x =>
                     {
                         if (x.Exception != null)
@@ -3278,11 +3278,11 @@ namespace ME3TweaksModManager
                             if (ASIManager.InstallASIToTargetByGroupID(CommandLinePending.PendingInstallASIID,
                                     @"Automated command line request", t, includeHiddenASIs: true))
                             {
-                                CurrentOperationText = "Installed ASI mod by command line request";
+                                CurrentOperationText = M3L.GetString(M3L.string_installedASIModByCommandLineRequest);
                             }
                             else
                             {
-                                CurrentOperationText = "Failed to install ASI mod by command line request";
+                                CurrentOperationText = M3L.GetString(M3L.string_failedToInstallASIModByCommandLineRequest);
                             }
                         }
                     }

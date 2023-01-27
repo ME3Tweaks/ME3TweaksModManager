@@ -115,7 +115,7 @@ namespace ME3TweaksModManager.modmanager.objects
                 {
                     // Verify
                     ProgressIndeterminate = true;
-                    DownloadStatus = "Verifying download";
+                    DownloadStatus = M3L.GetString(M3L.string_verifyingDownload);
                     try
                     {
                         // Todo: If verification fails, should we let user try to continue anyways?
@@ -126,7 +126,7 @@ namespace ME3TweaksModManager.modmanager.objects
                         {
                             // Our hash does not match
                             M3Log.Error(@"Download failed: File does not appear to match file on NexusMods");
-                            OnModDownloadError?.Invoke(this, "File did not verify, download may be corrupt.");
+                            OnModDownloadError?.Invoke(this, M3L.GetString(M3L.string_fileDidNotVerifyDownloadMayBeCorrupt));
                             TelemetryInterposer.TrackEvent(@"NXM Download", new Dictionary<string, string>()
                             {
                                 {@"Domain", ProtocolLink?.Domain},

@@ -1,6 +1,5 @@
 ﻿<Window
-    x:Class="ME3TweaksModManager.modmanager.windows.BatchModQueueEditor" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:fa5="http://schemas.fontawesome.com/icons/" xmlns:helpers="clr-namespace:ME3TweaksModManager.modmanager.helpers" xmlns:extensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
-    xmlns:batch="clr-namespace:ME3TweaksModManager.modmanager.objects.batch"
+    x:Class="ME3TweaksModManager.modmanager.windows.BatchModQueueEditor" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:fa5="http://schemas.fontawesome.com/icons/" xmlns:helpers="clr-namespace:ME3TweaksModManager.modmanager.helpers" xmlns:extensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI" xmlns:batch="clr-namespace:ME3TweaksModManager.modmanager.objects.batch"
     DataContext="{Binding RelativeSource={RelativeSource Self}}"
     mc:Ignorable="d"
     WindowStartupLocation="CenterOwner"
@@ -110,14 +109,17 @@
                 Grid.Column="0"
                 Grid.ColumnSpan="6"
                 Margin="0,10,0,0" />
-            <TabControl 
+            <TabControl
                 SelectedIndex="{Binding SelectedTabIndex}"
                 Grid.Row="4"
                 Grid.Column="0"
                 Grid.ColumnSpan="6"
                 Margin="0"
                 Padding="0">
-                <TabItem Header="Content mods" Margin="0" Padding="0">
+                <TabItem
+                    Header="{DynamicResource string_contentMods}"
+                    Margin="0"
+                    Padding="0">
                     <ListBox
                         Margin="-8"
                         SelectionMode="Extended"
@@ -130,32 +132,33 @@
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel
-                            Orientation="Horizontal">
+                                    Orientation="Horizontal">
                                     <Image
-                                Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}, ConverterParameter=16}"
-                                Width="16"
-                                Height="16"
-                                Margin="0,0,5,0" />
+                                        Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}, ConverterParameter=16}"
+                                        Width="16"
+                                        Height="16"
+                                        Margin="0,0,5,0" />
                                     <TextBlock
-                                Text="{Binding ModName}" />
+                                        Text="{Binding ModName}" />
                                 </StackPanel>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
                 </TabItem>
-                <TabItem Header="ASI mods">
-                    <ListBox BorderThickness="1"
-                             Margin="-8"
-                             IsTextSearchEnabled="True"
-                             TextSearch.TextPath="Name"
-                             Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
-                             ItemContainerStyle="{StaticResource StretchNoPaddingStyle}" 
-                             ItemsSource="{Binding VisibleFilteredASIMods}" 
-                             HorizontalContentAlignment="Stretch" 
-                             SelectedItem="{Binding SelectedAvailableASIMod}"/>
+                <TabItem
+                    Header="{DynamicResource string_aSIMods}">
+                    <ListBox
+                        BorderThickness="1"
+                        Margin="-8"
+                        IsTextSearchEnabled="True"
+                        TextSearch.TextPath="Name"
+                        Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
+                        ItemContainerStyle="{StaticResource StretchNoPaddingStyle}"
+                        ItemsSource="{Binding VisibleFilteredASIMods}"
+                        HorizontalContentAlignment="Stretch"
+                        SelectedItem="{Binding SelectedAvailableASIMod}" />
                 </TabItem>
             </TabControl>
-
             <TextBox
                 Grid.Row="5"
                 Grid.ColumnSpan="6"
@@ -171,7 +174,7 @@
                 extensions:CursorSpotlightExtension.BackgroundBrush="Transparent"
                 extensions:CursorSpotlightExtension.RelativeSpotlightSize="0"
                 extensions:CursorSpotlightExtension.MaxBlurRadius="0"
-                Text="{Binding AvailableModText}"/>
+                Text="{Binding AvailableModText}" />
             <Button
                 Grid.Row="6"
                 Grid.Column="0"
@@ -317,7 +320,8 @@
                         IsTextSearchEnabled="True"
                         TextSearch.TextPath="ModName">
                         <ListBox.Resources>
-                            <DataTemplate DataType="{x:Type batch:BatchMod}">
+                            <DataTemplate
+                                DataType="{x:Type batch:BatchMod}">
                                 <StackPanel
                                     Orientation="Horizontal">
                                     <StackPanel

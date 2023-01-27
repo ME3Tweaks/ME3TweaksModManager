@@ -96,12 +96,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 if (SelectedBatchQueue.ModsToInstall.Any(x => x.ChosenOptionsDesync || !x.HasChosenOptions))
                 {
                     M3L.ShowDialog(window,
-                        "Mods in this batch queue have been modified since it was last saved. You will need to re-select mod options during installation.",
-                        "Batch Queue Desync", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        M3L.GetString(M3L.string_tooltip_batchQueueDesync),
+                        M3L.GetString(M3L.string_batchQueueDesync), MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
                 else
                 {
-                    SelectedBatchQueue.UseSavedOptions = M3L.ShowDialog(window, "Use previously saved mod options?", "Saved options found",
+                    SelectedBatchQueue.UseSavedOptions = M3L.ShowDialog(window, M3L.GetString(M3L.string_usePreviouslySavedModOptionsQuestion), M3L.GetString(M3L.string_savedOptionsFound),
                                             MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes;
                 }
             }

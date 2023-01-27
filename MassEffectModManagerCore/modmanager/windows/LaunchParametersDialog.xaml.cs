@@ -81,7 +81,7 @@ namespace ME3TweaksModManager.modmanager.windows
 
         private void LoadPackage(LaunchOptionsPackage package)
         {
-            LaunchPackage = package ?? new LaunchOptionsPackage() { Game = Game, ChosenLanguage = @"INT", PackageTitle = "Start Game (Custom)" };
+            LaunchPackage = package ?? new LaunchOptionsPackage() { Game = Game, ChosenLanguage = @"INT", PackageTitle = M3L.GetString(M3L.string_startGameCustom) };
             PackageGuid = LaunchPackage.PackageGuid == Guid.Empty ? Guid.NewGuid() : LaunchPackage.PackageGuid; // Keep existing guid if found
             ParameterSetName = LaunchPackage.PackageTitle;
             LoadLanguagesAndOptions();
@@ -95,7 +95,7 @@ namespace ME3TweaksModManager.modmanager.windows
             CustomOptions.Clear();
             LanguageOptions.Clear();
             // Global options
-            CustomOptions.Add(new LauncherCustomParameter() { DisplayString = M3L.GetString(M3L.string_automaticallyResumeLastSave), ToolTip = "Instructs game to automatically attempt to resume the last savegame", CommandLineText = @"-RESUME", SaveKey = LauncherCustomParameter.KEY_AUTORESUME, IsSelected = LaunchPackage.AutoResumeSave });
+            CustomOptions.Add(new LauncherCustomParameter() { DisplayString = M3L.GetString(M3L.string_automaticallyResumeLastSave), ToolTip = M3L.GetString(M3L.string_tooltip_autoResume), CommandLineText = @"-RESUME", SaveKey = LauncherCustomParameter.KEY_AUTORESUME, IsSelected = LaunchPackage.AutoResumeSave });
 #if DEBUG
             CustomOptions.Add(new LauncherCustomParameter() { DisplayString = @"Enable process minidumps", ToolTip = @"This should only be visible in debug builds", CommandLineText = @"-enableminidumps", SaveKey = LauncherCustomParameter.KEY_MINIDUMPS, IsSelected = LaunchPackage.EnableMinidumps });
 #endif
@@ -188,7 +188,7 @@ namespace ME3TweaksModManager.modmanager.windows
             if (string.IsNullOrWhiteSpace(ParameterSetName)) return false;
             if (ParameterSetName.Length > 30) return false;
             return Regex.IsMatch(ParameterSetName,
-                    @"\A(?!(?:COM[0-9]|CON|LPT[0-9]|NUL|PRN|AUX|com[0-9]|con|lpt[0-9]|nul|prn|aux)|\s|[\.]{2,})[^\\\/:*""?<>|]{1,254}(?<![\s\.])\z");
+                    @"\A(?!(?:COM[0-9]|CON|LPT[0-9]|NUL|PRN|AUX|com[0-9]|con|lpt[0-9]|nul|prn|aux)|\s|[\.]{2,})[^\\\/:*""?<>|]{1,254}(?<![\s\.])\z"); // do not localize
         }
 
         private void SavePackage()
