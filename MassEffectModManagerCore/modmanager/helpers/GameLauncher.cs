@@ -28,23 +28,45 @@ namespace ME3TweaksModManager.modmanager.helpers
         {
             if (!target.Game.IsLEGame()) return;
 
-            string args = $@" -game {LaunchPackage.Game.ToMEMGameNum()} -autoterminate -Subtitles {LaunchPackage.SubtitleSize} ";
-            if (LaunchPackage.Game == MEGame.LE3)
+            string args = @"";
+
+            if (Settings.SkipLELauncher) // Autoboot
             {
-                args += $@"-language={LaunchPackage.ChosenLanguage}";
-            }
-            else
-            {
-                args += $@"-OVERRIDELANGUAGE={LaunchPackage.ChosenLanguage}";
+                args += $@" -game {LaunchPackage.Game.ToMEMGameNum()} -autoterminate";
+
+                // Custom option is the vanilla launch - do not add any extra params
+                if (!LaunchPackage.IsCustomOption)
+                {
+                    args += $@" -Subtitles {LaunchPackage.SubtitleSize} ";
+                    if (LaunchPackage.Game == MEGame.LE3)
+                    {
+                        args += $@"-language={LaunchPackage.ChosenLanguage} ";
+                    }
+                    else
+                    {
+                        args += $@"-OVERRIDELANGUAGE={LaunchPackage.ChosenLanguage}";
+                    }
+
+                    if (LaunchPackage.EnableMinidumps)
+                    {
+                        args += @" -enableminidumps";
+                    }
+
+                    if (LaunchPackage.AutoResumeSave)
+                    {
+                        args += @" -RESUME";
+                    }
+
+                    if (LaunchPackage.NoForceFeedback)
+                    {
+                        args += @" -NOFORCEFEEDBACK";
+                    }
+
+                    // Custom options
+                    args += @" " + LaunchPackage.CustomExtraArgs;
+                }
             }
 
-            if (LaunchPackage.EnableMinidumps)
-            {
-                args += @" -enableminidumps";
-            }
-
-            // Custom options
-            args += @" " + LaunchPackage.CustomExtraArgs;
             LaunchGame(target, args);
         }
 
