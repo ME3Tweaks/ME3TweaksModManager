@@ -53,7 +53,7 @@ namespace ME3TweaksModManager.modmanager.windows
                 using var p = MEPackageHandler.UnsafePartialLoad(Path.Combine(cookedPath, twoDAF), x => !x.IsDefaultObject && !x.IsDefaultObject && x.ObjectName.Name != @"Default2DA" && x.ClassName is @"Bio2DA" or @"Bio2DANumberedRows");
                 foreach (var twoDA in p.Exports.Where(x => x.IsDataLoaded()))
                 {
-                    twoDAs.Add(new Bio2DAOption(twoDA.ObjectName, new LEXOpenable(twoDA)){IsSelected = true});
+                    twoDAs.Add(new Bio2DAOption(twoDA.ObjectName, new LEXOpenable(twoDA)));
                 }
             }
             return twoDAs;
@@ -73,7 +73,6 @@ namespace ME3TweaksModManager.modmanager.windows
             foreach (var v in Bio2DAOptions)
             {
                 v.IsSelected = optionsToSelect.Any(x => x.Title == v.Title);
-                v.IsSelected = true;
             }
         }
 

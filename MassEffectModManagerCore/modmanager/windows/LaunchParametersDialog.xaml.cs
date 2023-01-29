@@ -92,7 +92,7 @@ namespace ME3TweaksModManager.modmanager.windows
 
         private void LoadLanguagesAndOptions()
         {
-            CustomOptions.Clear();d 
+            CustomOptions.Clear(); 
             LanguageOptions.Clear();
             // Global options
             CustomOptions.Add(new LauncherCustomParameter() { DisplayString = M3L.GetString(M3L.string_automaticallyResumeLastSave), ToolTip = M3L.GetString(M3L.string_tooltip_autoResume), CommandLineText = @"-RESUME", SaveKey = LauncherCustomParameter.KEY_AUTORESUME, IsSelected = LaunchPackage.AutoResumeSave });
