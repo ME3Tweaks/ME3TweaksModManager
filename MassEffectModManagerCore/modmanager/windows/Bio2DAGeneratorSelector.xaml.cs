@@ -50,10 +50,10 @@ namespace ME3TweaksModManager.modmanager.windows
             foreach (var twoDAF in searchFiles)
             {
                 // We only unsafe load to speed up loading on slow backup paths
-                using var p = MEPackageHandler.UnsafePartialLoad(Path.Combine(cookedPath, twoDAF), x => !x.IsDefaultObject && x.ClassName is @"Bio2DA" or @"Bio2DANumberedRows");
+                using var p = MEPackageHandler.UnsafePartialLoad(Path.Combine(cookedPath, twoDAF), x => !x.IsDefaultObject && !x.IsDefaultObject && x.ObjectName.Name != @"Default2DA" && x.ClassName is @"Bio2DA" or @"Bio2DANumberedRows");
                 foreach (var twoDA in p.Exports.Where(x => x.IsDataLoaded()))
                 {
-                    twoDAs.Add(new Bio2DAOption(twoDA.ObjectName, new LEXOpenable(twoDA)));
+                    twoDAs.Add(new Bio2DAOption(twoDA.ObjectName, new LEXOpenable(twoDA)){IsSelected = true});
                 }
             }
             return twoDAs;
@@ -73,6 +73,7 @@ namespace ME3TweaksModManager.modmanager.windows
             foreach (var v in Bio2DAOptions)
             {
                 v.IsSelected = optionsToSelect.Any(x => x.Title == v.Title);
+                v.IsSelected = true;
             }
         }
 
