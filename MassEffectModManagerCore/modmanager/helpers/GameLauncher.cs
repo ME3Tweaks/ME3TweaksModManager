@@ -181,7 +181,10 @@ namespace ME3TweaksModManager.modmanager.helpers
             else
             {
                 // We use the generated command line arguments as none were passed in
-                WriteLEAutobootValue(string.Join(@" ", commandLineArgs));
+                if (target.Game.IsLEGame())
+                {
+                    WriteLEAutobootValue(string.Join(@" ", commandLineArgs));
+                }
                 RunGame(target, exe, null, commandLineArgs, environmentVars);
                 //M3Utilities.RunProcess(exe, commandLineArgs, false, true, false, false, environmentVars);
             }
@@ -230,7 +233,8 @@ namespace ME3TweaksModManager.modmanager.helpers
         private static void WriteLEAutobootValue(string bootArgs)
         {
             // a space must precede the arguments - I'm too lazy to fix the terrible cmdline C++ code I wrote 
-            MSharedSettings.WriteSettingString(AUTOBOOT_KEY_NAME, @" " + bootArgs);
+            MSharedSettings.WriteSettingString(AUTOBOOT_KEY_NAME, bootArgs);
+            M3Log.Information($@"Wrote autoboot command line: '{bootArgs}'");
         }
 
         /// <summary>
