@@ -361,7 +361,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 // All available options were chosen already (compression would come from import dialog)
                 BeginInstallingMod();
             }
-            else if ((targets.Count == 1 || BatchMod != null) && AlternateGroups.Count == 0 && (BatchMod != null || Settings.PreferCompressingPackages || ModBeingInstalled.Game == MEGame.ME1 || ModBeingInstalled.Game.IsLEGame()))
+            else if ((targets.Count == 1 || BatchMod != null) && AlternateGroups.Count == 0 && (BatchMod != null || Settings.PreferCompressingPackages || ModBeingInstalled.Game == MEGame.ME1 || ModBeingInstalled.Game.IsLEGame() || ModBeingInstalled.Game == MEGame.LELauncher))
             {
                 // ME1 and LE can't compress. If user has elected to compress packages, and there are no alternates/additional targets, just begin installation
                 CompressInstalledPackages = Settings.PreferCompressingPackages && ModBeingInstalled.Game > MEGame.ME1;
