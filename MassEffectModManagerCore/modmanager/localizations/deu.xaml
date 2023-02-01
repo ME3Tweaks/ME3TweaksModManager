@@ -1824,7 +1824,7 @@
 	<system:String x:Key="string_checkingIfUpdaterServiceIsConfiguredForMod">Prüfe ob der Aktualisierungsdienst für diese Mod konfiguriert ist</system:String>
 	<system:String x:Key="string_serverNotConfiguredForModContactMgamerz">Server ist nicht für diese Mod konfiguriert - kontaktiere Mgamerz</system:String>
 	<system:String x:Key="string_interp_errorCheckingUpdaterServiceConfiguration" xml:space="preserve">Fehler beim Überprüfen der Aktualisierungsdienst-Konfiguration:\n{0}</system:String>
-	<system:String x:Key="string_interp_dialog_serverVersionSameOrNewerThanLocal" xml:space="preserve">Die Version auf dem Server ist gleich oder höher als die Version die du hochlädst. Bist du sicher, dass diese Version hochgeladen werden soll? Clients die eine neuere oder die selbe Version des Mods haben, werden keine Aktualisierung sehen.\n\nLokale Version: {0}\nServer Version: {1}</system:String>
+	<system:String x:Key="string_interp_dialog_serverVersionSameOrNewerThanLocal" xml:space="preserve">Die Version auf dem Server ist gleich oder höher als die Version die du hochlädst. Bist du sicher, dass diese Version hochgeladen werden soll? Clients die eine neuere oder die selbe Version der Mod haben, werden keine Aktualisierung sehen.\n\nLokale Version: {0}\nServer Version: {1}</system:String>
 	<system:String x:Key="string_serverVersionSameOrNewerThanLocal">Server Version gleich oder neuer als lokale</system:String>
 	<system:String x:Key="string_uploadAbortedModOnServerIsSameOrNewerThanLocalOneBeingUploaded">Upload abgebrochen - Mod auf dem Server hat die gleiche oder neuere Version wie die hochgeladene</system:String>
 	<system:String x:Key="string_compressingModForUpdaterService">Komprimiere Mod für Aktualisierungsdienst</system:String>
@@ -1858,7 +1858,7 @@
 	<system:String x:Key="string_dialog_uploadAborted_foundCompressedPackage" xml:space="preserve">Die folgenden Pakete sind nativ komprimiert und können nicht hochgeladen werden. Paketdateien müssen unkomprimiert gespeichert werden, damit Endbenutzerinstanzen von Mod Manager verlässlich bestimmen kann, welche Dateien aktualisiert werden müssen. Speichere diese Pakete neu mit Legendary Explorer, um sie zu dekomprimieren.\n\n{0}</system:String>
 	<system:String x:Key="string_cannotUploadMod">Mod kann nicht hochgeladen werden</system:String>
 	<system:String x:Key="string_interp_uploadFailedX">Hochladen fehlgeschlagen: {0}</system:String>
-	<system:String x:Key="string_interp_dialog_updaterServiceUploadFailed">Hochladen von {0} zum ME3Tweaks Aktualisierungsdienst ist fehlgeschlagen: {1}. Der Mod ist möglicherweise in Teilen hochgeladen; du solltest es nocheinmal versuchen um erfolgreiches Hochladen sicherzustellen, da die Dateien nun nicht mit dem Online Manifest übereinstimmen. Wenn das Problem bestehen bleibt, kontaktiere bitte Mgamerz.</system:String>
+	<system:String x:Key="string_interp_dialog_updaterServiceUploadFailed">Hochladen von {0} zum ME3Tweaks Aktualisierungsdienst ist fehlgeschlagen: {1}. Die Mod ist möglicherweise in Teilen hochgeladen; du solltest es nocheinmal versuchen um erfolgreiches Hochladen sicherzustellen, da die Dateien nun nicht mit dem Online Manifest übereinstimmen. Wenn das Problem bestehen bleibt, kontaktiere bitte Mgamerz.</system:String>
 	<system:String x:Key="string_uploadFailed">Hochladen fehlgeschlagen</system:String>
 	<system:String x:Key="string_manifestUpdatedOnServer">Manifest auf Server aktualisiert</system:String>
 	<system:String x:Key="string_checkingBackup">Backup wird überprüft</system:String>
