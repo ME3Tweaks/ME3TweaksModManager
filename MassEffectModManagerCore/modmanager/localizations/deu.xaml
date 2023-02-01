@@ -173,17 +173,17 @@
 	<system:String x:Key="string_interp_XgamesNotBackedUp">{0} Spiel(e) haben kein Backup</system:String>
 	<system:String x:Key="string_allGamesBackedUp">Alle Spiele haben ein Backup</system:String>
 	<system:String x:Key="string_description_vanillaBackupRequired">ME3Tweaks Mod Manager benötigt unveränderte Spielbackups um gewisse Funktionen zu ermöglichen.</system:String>
-	<system:String x:Key="string_description_missingBackupWillLimitFeatures">Ohne ein Backup für ein Spiel stehen die folgenden Funktionen eingeschränkt oder gar nicht zur Verfügung:</system:String>
+	<system:String x:Key="string_description_missingBackupWillLimitFeatures">Ohne ein Backup für ein Spiel stehen die folgenden Funktionen eingeschränkt oder gar nicht für das Spiel zur Verfügung:</system:String>
 	<system:String x:Key="string_openBackupManager">Backup Manager öffnen</system:String>
-	<system:String x:Key="string_restores">Wiederherstellen</system:String>
-	<system:String x:Key="string_restoringIndividualFiles">Einzelne Dateien wiederherstellen</system:String>
+	<system:String x:Key="string_modding">Modden</system:String>
+	<system:String x:Key="string_restoringIndividualFiles">Einzelne Dateien und DLC wiederherstellen</system:String>
 	<system:String x:Key="string_restoringDLC">DLC wiederherstellen</system:String>
 	<system:String x:Key="string_uninstallingALOT">ALOT deinstallieren</system:String>
-	<system:String x:Key="string_modding">Modden</system:String>
+	<system:String x:Key="string_development">Entwicklung</system:String>
 	<system:String x:Key="string_mE3TweaksModMaker">ME3Tweaks ModMaker</system:String>
-	<system:String x:Key="string_mixins">Mixins</system:String>
-	<system:String x:Key="string_mergingMods">Mods zusammenfügen</system:String>
-	<system:String x:Key="string_deployingModsTo7z">Mods als .7z exportieren</system:String>
+	<system:String x:Key="string_blankModFeaturesStarterKit">Leere Mod-Generierung mit Starter Kit</system:String>
+	<system:String x:Key="string_deployingModsTo7z">Bereitstellung von Mods zur Verteilung</system:String>
+	<system:String x:Key="string_advancedFeaturesInLEX">Erweiterte Funktionen in Legendary Explorer</system:String>
 	<system:String x:Key="string_interp_backupStatusStoredAt">Backup gespeichert in {0}</system:String>
 	<system:String x:Key="string_gameHasNotBeenBackedUp">Kein Backup dieses Spiels wurde erstellt</system:String>
 	<system:String x:Key="string_backupUnavailable">Backup nicht verfügbar</system:String>
@@ -191,6 +191,9 @@
 	<system:String x:Key="string_backupNotVanilla">Backup ist nicht vanilla</system:String>
 	<system:String x:Key="string_interp_backupStatusNotVanilla" xml:space="preserve">Backup gespeichert in {0}\nBackup ist nicht vanilla und wird nicht benutzt</system:String>
 	<system:String x:Key="string_gameNotInstalledHasItBeenRunOnce">Das Spiel scheint nicht installiert zu sein, oder ist noch kein modifizierbares Ziel in Mod Manager.&#10;Falls das Spiel von Steam ist, starte es mindestens ein Mal</system:String>
+	<system:String x:Key="string_notConfigured">Nicht konfiguriert</system:String>
+	<system:String x:Key="string_reconfigurationRequired">Rekonfiguration wird benötigt</system:String>
+	<system:String x:Key="string_interp_configuredTimestamp">Konfiguriert {0}</system:String>
 	<system:String x:Key="string_batchModInstaller">Stapelinstallationsprogramm für Mods</system:String>
 	<system:String x:Key="string_description_batchModInstallerAllowsSerialInstall">Stapelinstallationsprogramm für Mods ermöglicht dir, eine Gruppe Mods auf einmal zu installieren</system:String>
 	<system:String x:Key="string_createANewInstallGroup">Neue Installationsgruppe erstellen</system:String>
@@ -201,6 +204,17 @@
 	<system:String x:Key="string_tooltip_targetToInstallThisModGroupTo">Ziel für das diese Modgruppe installiert werden soll</system:String>
 	<system:String x:Key="string_deleteGroup">Gruppe löschen</system:String>
 	<system:String x:Key="string_interp_deleteTheSelectedBatchQueue">Die Installationsgruppe '{0}' löschen?</system:String>
+	<system:String x:Key="string_modNotAvailableForInstall">Mod nicht für installation verfügbar</system:String>
+	<system:String x:Key="string_modNotAvailable">Mod nicht verfügbar:</system:String>
+	<system:String x:Key="string_tooltip_batchQueueDesync">Mods in dieser Stapelwarteschlange wurden seit dem letzten Speichern geändert. Die Mod-Optionen müssen während der Installation erneut ausgewählt werden</system:String>
+	<system:String x:Key="string_batchQueueDesync">Desynchronisierung der Stapelwarteschlange</system:String>
+	<system:String x:Key="string_usePreviouslySavedModOptionsQuestion">Zuvor gespeicherte Mod-Optionen verwenden?</system:String>
+	<system:String x:Key="string_savedOptionsFound">Gespeicherte Optionen gefunden</system:String>
+	<system:String x:Key="string_thereIsNoBackupAvailableToQuery2DAsFrom">Es ist kein Backup verfügbar, um 2DAs abzufragen.</system:String>
+	<system:String x:Key="string_2da_errorReading2DAs">Fehler beim Lesen der 2DA-Tabellen aus dem Spiel: {0}</system:String>
+	<system:String x:Key="string_errorReadingTables">Fehler beim Lesen von Tabellen</system:String>
+	<system:String x:Key="string_bio2DASelector">Bio2DA-Selektor</system:String>
+	<system:String x:Key="string_select2DATablesForBlank">Wähle 2DA-Tabellen aus, um leere Versionen für deine Mod zu generieren.</system:String>
 	<system:String x:Key="string_noItemsSelected">Nichts gewählt</system:String>
 	<system:String x:Key="string_checkAll">Alles auswählen</system:String>
 	<system:String x:Key="string_updatingKeybindsPleaseWait">Tastenbelegung wird gespeichert, bitte warten</system:String>
@@ -470,6 +484,8 @@
 	<system:String x:Key="string_removeModFromInstallGroup">Mod aus Installationsgruppe entfernen</system:String>
 	<system:String x:Key="string_moveDown">Hinunter schieben</system:String>
 	<system:String x:Key="string_moveUp">Hoch schieben</system:String>
+	<system:String x:Key="string_contentMods">Content Mods</system:String>
+	<system:String x:Key="string_aSIMods">ASI Mods</system:String>
 	<system:String x:Key="string_dialogRestoringFilesWhileAlotIsInstalledNotAllowed">Während Texturmods installiert sind können keine Dateien wiederhergestellt werden, da sonst Texturzeiger ungültig werden.</system:String>
 	<system:String x:Key="string_cannotRestoreSfarFiles">SFAR-Dateien können nicht wiederhergestellt werden</system:String>
 	<system:String x:Key="string_dialogRestoringFilesWhileAlotIsInstalledNotAllowedDevMode">Wenn Dateien wiederhergestellt werden während ein Texturmod installiert ist, werden Texturzeiger ungültig, was zu schwarzen Texturen und möglicherweise Spielabstürzen führt. Bitte stelle sicher, dass du weißt was du tust, bevor du fortfährst.</system:String>
@@ -544,6 +560,7 @@
 	<system:String x:Key="string_hideInstalledOptions">Installierte Optionen verstecken</system:String>
 	<system:String x:Key="string_noTextureModsAreInstalled">Keine Texturmods sind installiert</system:String>
 	<system:String x:Key="string_textureModded_packagesAndTFCsHidden">Paketdateien und TFC-Dateien werden nicht angezeigt, da keine Texturmods installiert sind. Alle Paketdateien sind modifiziert und TFCs können nicht modifiziert werden, wenn Texturmods installiert sind.</system:String>
+	<system:String x:Key="string_loading">Wird geladen</system:String>
 	<system:String x:Key="string_next">Weiter</system:String>
 	<system:String x:Key="string_previous">Zurück</system:String>
 	<system:String x:Key="string_skipTutorial">Tutorial überspringen</system:String>
@@ -559,6 +576,23 @@
 	<system:String x:Key="string_deployment_tlkIssueLangPackageNotFound">Lokalisiertes TLK-Paket {0} wurde nicht gefunden. Benutzer, die das Spiel mit Spracheinstellung/Tonausgabe auf {1} ({2}) spielen, werden leere Zeichenketten von diesem Mod sehen. Siehe die Mod Manager Dokumentation für mehr Informationen.</system:String>
 	<system:String x:Key="string_deployment_tlkIssueLangPackageWrongNumTLKExports">TLK-Paket {0} hat nur 1 BioTalkFile Export, doch es sollte 2 haben: eine für männlich, eine für weiblich.</system:String>
 	<system:String x:Key="string_deployment_tlkIssueLangPackageMismatchedMaleFemaleCount">TLK-Paket {0} hat unterschiedliche Anzahlen von Zeichenketten in den männlichen/weiblichen Exporten. Die Anzahl sollte übereinstimmen.</system:String>
+	<system:String x:Key="string_launchOptionSelector">Auswahl der Spielstartoptionen</system:String>
+	<system:String x:Key="string_selectLaunchOption">Wähle eine Startoption aus</system:String>
+	<system:String x:Key="string_createNewLaunchOption">Neue Startoption erstellen</system:String>
+	<system:String x:Key="string_editSelectedLaunchOption">Bearbeite ausgewählte Startoption</system:String>
+	<system:String x:Key="string_title_selectLaunchOption">Wählen Sie eine Startoption aus, die beim Starten des Spiels aus dem Mod-Manager verwendet werden soll.</system:String>
+	<system:String x:Key="string_gameLaunchParameters">Spielstartparameter</system:String>
+	<system:String x:Key="string_gameLanguage">Spielsprache</system:String>
+	<system:String x:Key="string_subtitles">Untertitel</system:String>
+	<system:String x:Key="string_size">Größe:</system:String>
+	<system:String x:Key="string_customOptions">Benutzerdefinierte Optionen</system:String>
+	<system:String x:Key="string_automaticallyResumeLastSave">Letzten Spielstand automatisch fortsetzen</system:String>
+	<system:String x:Key="string_launchParametersSetName">Name des Startparametersatzes:</system:String>
+	<system:String x:Key="string_customArguments">Benutzerdefinierte Argumente:</system:String>
+	<system:String x:Key="string_startGameCustom">Spiel Starten (Benutzerdefiniert)</system:String>
+	<system:String x:Key="string_tooltip_autoResume">Weist das Spiel an, automatisch zu versuchen, den zuletzt gespeicherten Spielstand fortzusetzen</system:String>
+	<system:String x:Key="string_noForceFeedback">Kein Force-Feedback</system:String>
+	<system:String x:Key="string_tooltip_disablesControllerVibration">Schaltet die Controllervibration aus</system:String>
 	<system:String x:Key="string_interp_lexNightlyFailedToDownload">Legendary Explorer Nightly konnte nicht heruntergeladen werden: {0}</system:String>
 	<system:String x:Key="string_licenseViewer">Lizenzen</system:String>
 	<system:String x:Key="string_dialogCouldNotSetDataToClipboard" xml:space="preserve">Daten konnten nicht in Zwischenablage geschrieben werden:\n</system:String>
@@ -811,7 +845,7 @@
 	<system:String x:Key="string_endorsedME3TweaksModManagerOnNexusMods">Du empfiehlst ME3Tweaks Mod Manager bei NexusMods :)</system:String>
 	<system:String x:Key="string_supportedFiles">Unterstützte Dateien</system:String>
 	<system:String x:Key="string_interp_XmodsFailedToLoad">Laden von {0} Mod(s) fehlgeschlagen</system:String>
-	<system:String x:Key="string_setLanguageToX">Sprache wurde auf Deutsch eingetellt</system:String>
+	<system:String x:Key="string_setLanguageToX">Sprache wurde auf Deutsch eingestellt</system:String>
 	<system:String x:Key="string_loadingMixins">Mixins werden geladen</system:String>
 	<system:String x:Key="string_loadedMixins">Mixins geladen</system:String>
 	<system:String x:Key="string_failedToUpdateMixinPackage">Aktualisieren des Mixin-Pakets fehlgeschlagen</system:String>
@@ -1010,6 +1044,16 @@
 	<system:String x:Key="string_compilingMergemod">Zusammenführungsmod wird kompiliert</system:String>
 	<system:String x:Key="string_compiledMergemod">Zusammenführungsmod wurde kompiliert</system:String>
 	<system:String x:Key="string_failedToCompileMergemod">Kompilieren von Zusammenführungsmod fehlgeschlagen</system:String>
+	<system:String x:Key="string_beta">Beta</system:String>
+	<system:String x:Key="string_selectLaunchOptions">Wähle Spielstartoptionen aus</system:String>
+	<system:String x:Key="string_saveChosenOptionsToThisBatchGroup">Ausgewählte Optionen in dieser Stapelgruppe speichern?</system:String>
+	<system:String x:Key="string_saveOptions">Auswahl Speichern</system:String>
+	<system:String x:Key="string_changeCurrentLaunchConfiguration">Derzeitige Spielstartkonfiguration bearbeiten</system:String>
+	<system:String x:Key="string_launchConfigurationOptionsNotAvailableForThisGame">Spielstartkonfiguration ist für dieses Spiel nicht verfügbar</system:String>
+	<system:String x:Key="string_installingASIMods">Installiere ASI Mods</system:String>
+	<system:String x:Key="string_installedASIMods">ASI Mods installiert</system:String>
+	<system:String x:Key="string_installedASIModByCommandLineRequest">ASI Mod durch Befehlszeilenanfrage installiert</system:String>
+	<system:String x:Key="string_failedToInstallASIModByCommandLineRequest">Installation von ASI Mod durch Befehlszeilenanfrage fehlgeschlagen</system:String>
 	<system:String x:Key="string_dialog_missingConfigFileForMEIM">Mass Effect Config-Datei {0}.ini fehlt. Sie sollte sich in {1} befinden. Bitte starte das Spiel mindestens ein Mal, um die Standard-Dateien zu generieren.</system:String>
 	<system:String x:Key="string_interp_dialogConfigDirectoryMissing">Mass Effect Config-Ordner fehlt. Er sollte sich in {0} befinden. Bitte starte das Spiel mindestens ein Mal, um die Standard-Dateien zu generieren.</system:String>
 	<system:String x:Key="string_cannotRunMassEffectIniModder">Mass Effect Ini Modder kann nicht gestartet werden</system:String>
@@ -1172,6 +1216,8 @@
 	<system:String x:Key="string_downloadError">Fehler beim Herunterladen</system:String>
 	<system:String x:Key="string_interp_nexusModNotCompatible">{0} ist nicht mit ME3Tweaks Mod Manager kompatibel. Wenn dies ein Texturmod ist, installiere ihn mit ALOT Installer.</system:String>
 	<system:String x:Key="string_interp_notEnoughFreeSpaceForDownload" xml:space="preserve">Es gibt nicht genügend freien Speicherplatz auf {0}, um {1} herunterzuladen.\n\nBenötigter Platz: {2}\nFreier Platz: {3}</system:String>
+	<system:String x:Key="string_verifyingDownload">Verifiziere Download</system:String>
+	<system:String x:Key="string_fileDidNotVerifyDownloadMayBeCorrupt">Datei konnte nicht verifiziert werden, download ist möglicherweise fehlerhaft.</system:String>
 	<system:String x:Key="string_preparingToInstall">Bereite Installation vor</system:String>
 	<system:String x:Key="string_interp_devModeAlotInstalledWarning" xml:space="preserve">Texturmods sind installiert und dieser Mod installiert Paketdateien. Fortsetzen der Installation dieses Mods wird wahrscheinlich aufgrund von ungültigen Texturzeigern und möglicherweise leeren Mips zu defekten Texturen oder Spielabstürzen führen. Außerdem befindet sich dadurch deine Installation in einem nicht unterstützten Zustand.\n\nInstallation von {0} fortsetzen? Du wurdest gewarnt.</system:String>
 	<system:String x:Key="string_brokenTexturesWarning">Warnung: Defekte Texturen</system:String>
@@ -1267,6 +1313,8 @@
 	<system:String x:Key="string_nexusModsUpdateInstructions">Für diesen Mod ist eine Aktualisierung auf NexusMods verfügbar. Zum Aktualisieren lade den Mod von NexusMods herunter und importiere ihn in Mod Manager.</system:String>
 	<system:String x:Key="string_interp_XfilesWillBeDeleted">{0} Datei(en) werden gelöscht</system:String>
 	<system:String x:Key="string_interp_XfilesWillBeDownloaded">{0} Datei(en) werden heruntergeladen ({1})</system:String>
+	<system:String x:Key="string_interp_indexingForUpdatesXY">Indexiere {0} für Updates {1}%</system:String>
+	<system:String x:Key="string_interp_calculatingUpdateDeltaXY">Berechne Update-Delta für {0} {1}%</system:String>
 	<system:String x:Key="string_interp_compressingX">{0} wird komprimiert</system:String>
 	<system:String x:Key="string_interp_compressedX">{0} wurde komprimiert</system:String>
 	<system:String x:Key="string_interp_vPatchingIntoAlternate">VPatche zu Alternative: {0}</system:String>
@@ -1483,6 +1531,9 @@
 	<system:String x:Key="string_interp_resultsCount">{0} Ergebnis(se)</system:String>
 	<system:String x:Key="string_tooltip_downloadThisMod">Diesen Mod herunterladen</system:String>
 	<system:String x:Key="string_tooltip_premiumRequiredForDownload">Du musst ein NexusMods Premiummitglied sein, um direkt in Mod Manager herunterladen zu können</system:String>
+	<system:String x:Key="string_selectModToCompareAgainstDatabase">Wähle eine Mod zum Vergleich mit der Datenbank aus</system:String>
+	<system:String x:Key="string_nfqp_selectModDialogText">Wähle eine Mod aus, um alle installierbaren Dateien mit denen in der Datenbank zu vergleichen.</system:String>
+	<system:String x:Key="string_compareAgainstLoadedMod">Mit geladender Mod vergleichen</system:String>
 	<system:String x:Key="string_authenticateToNexusMods">Mit NexusMods authentifizieren</system:String>
 	<system:String x:Key="string_interp_authenticatedAsX">Authentifiziert als {0}</system:String>
 	<system:String x:Key="string_checkingKey">Schlüssel wird überprüft...</system:String>
@@ -1532,6 +1583,15 @@
 	<system:String x:Key="string_logging">Ereignisprotokollierung</system:String>
 	<system:String x:Key="string_description_logging">Ereignisprotokollierung kann die Programmausführung verlangsamen, aber ist nützlich zur Problembehebung.</system:String>
 	<system:String x:Key="string_applicationTheme">Anwendungsfarbschema</system:String>
+	<system:String x:Key="string_nexusModsDownloadFolder">NexusMods Downloadordner</system:String>
+	<system:String x:Key="string_description_nexusModsDownloadFolder">Du kannst einen benutzerdefinierten Speicherort angeben, in dem heruntergeladene Mod-Archive gespeichert werden. Diese Archive müssen nicht aufbewahrt werden, sobald ein Mod in die Mod-Bibliothek importiert wurde. Wenn du keine angiebst, wird ein temporäres Verzeichnis auf dem Laufwerk C:\ verwendet und Mod-Downloads werden jedes Mal gelöscht, wenn die Anwendung geschlossen wird.</system:String>
+	<system:String x:Key="string_defaultTemporaryDownloadCache">Standard: Temporärer Download-Cache</system:String>
+	<system:String x:Key="string_configure">Konfigurieren</system:String>
+	<system:String x:Key="string_dialog_selectDownloadCacheType">Benutzerdefiniertes Verzeichnis zum Herunterladen angeben oder den temporären Cache verwenden (Standard)?</system:String>
+	<system:String x:Key="string_chooseCacheType">Cachetyp wählen</system:String>
+	<system:String x:Key="string_customDirectory">Benutzerdefiniertes Verzeichnis</system:String>
+	<system:String x:Key="string_temporaryCache">Temporärer Cache</system:String>
+	<system:String x:Key="string_selectNexusModsDownloadDirectory">Wähle das NexusMods-Downloadverzeichnis aus</system:String>
 	<system:String x:Key="string_overlayDisablerInstalled">Erzwungene Abschaltung von Origin im Spiel installiert</system:String>
 	<system:String x:Key="string_uninstallDisabler">Erzwungene Abschaltung von Origin im Spiel deinstallieren</system:String>
 	<system:String x:Key="string_otherD3d9dllInstalledOverlayDisabled">Andere d3d9.dll ist installiert, Origin im Spiel ist deaktiviert</system:String>
@@ -1594,7 +1654,8 @@
 	<system:String x:Key="string_error">Fehler!</system:String>
 	<system:String x:Key="string_fullGameRestore">Komplettes Spiel wiederherstellen</system:String>
 	<system:String x:Key="string_restoringTextureLODs">Wiederherstellen aus einem Backup wird deine Texturqualitätseinstellungen auf die Standardeinstellungen zurücksetzen. Starte das Spiel mit Mod Manager, damit immer die richtigen Textur-LODs eingestellt sind.</system:String>
-	<system:String x:Key="string_entireGameDirectoryWillBeDeleted">Der vollständige Spiel-Installationsordner wird gelöscht. Wenn du nur teilweise wiederherstellen willst, inklusive des Entfernen von DLC-Mods, wiederherstellen einzelner Dateien oder SFAR-Dateien, dann erreichst du stattdessen die Wiederherstellungsoptionen über den Ziel verwalten Knopf.</system:String>
+	<system:String x:Key="string_entireGameDirectoryWillBeDeletedOT">Das Spielverzeichnis wird zurückgesetzt, um dein Backup-Verzeichnis zu spiegeln, sowie deine LOD-Einstellungen (Level of Detail) für Texturen. Wenn du versuchst, eine granulare Wiederherstellung durchzuführen, einschließlich des Entfernens von DLC-Mods oder des Wiederherstellens bestimmter Dateien/SFARs, verwende stattdessen die Wiederherstellungsoptionen der Schaltfläche „Ziel verwalten“.</system:String>
+	<system:String x:Key="string_entireGameDirectoryWillBeDeletedLE">Das Spielverzeichnis wird zurückgesetzt, um dein Backup-Verzeichnis zu spiegeln. Wenn du versuchst, eine granulare Wiederherstellung durchzuführen, einschließlich des Entfernens von DLC-Mods oder des Wiederherstellens bestimmter Dateien, verwende stattdessen die Wiederherstellungsoptionen der Schaltfläche „Ziel verwalten“.</system:String>
 	<system:String x:Key="string_youMaySeeElevationPromptOnRestore">Eventuell wird dir beim Wiederherstellen eine Eingabeaufforderung für erhöhte Rechte angezeigt. Das liegt daran, dass ME3Tweaks Mod Manager deinem Benutzeraccount wieder die Rechte am neuen Spiel-Installationsordner erteilen muss, nachdem der alte Ordner gelöscht wurde.</system:String>
 	<system:String x:Key="string_dialog_restoringXWillDeleteGameDir" xml:space="preserve">Wiederherstellen von {0} wird den Spiel-Installationsordner vollständig löschen und dann das Backup an den ursprünglichen Ort kopieren.\n\nDiese Installation löschen und aus Backup wiederherstellen?</system:String>
 	<system:String x:Key="string_gameTargetWillBeDeleted">Spiel-Installationsziel wird gelöscht</system:String>
@@ -1652,6 +1713,21 @@
 	<system:String x:Key="string_enableDeveloperFeaturesQuestion">Entwicklerfunktionen einschalten?</system:String>
 	<system:String x:Key="string_dialog_warnMustBeDeployedForFullFeatures">Mods zeigen eine Warnung an, wenn sie zum Import/zur Installation geöffnet werden, jedoch nicht mit Mod Manager zur Veröffentlichung exportiert wurden. Mods, die neue Bilder-Funktionen benutzen, werden überhaupt nicht geladen, wenn sie nicht mit Mod Manager zur Veröffentlichung exportiert wurden. Wenn du bereit bist, deinen Mod zu veröffentlichen, stelle sicher, dass du im Entwicklermodus bist und ihn über das Mod-Werkzeuge-Menü veröffentlichst.</system:String>
 	<system:String x:Key="string_deploymentInfo">Veröffentlichungsinformationen</system:String>
+	<system:String x:Key="string_features">Funktionen</system:String>
+	<system:String x:Key="string_startupFile">Startup-Datei</system:String>
+	<system:String x:Key="string_plotManagerData">PlotManager-Daten</system:String>
+	<system:String x:Key="string_modSettingsMenuStub">Menü-Stummel für Mod-Einstellungen</system:String>
+	<system:String x:Key="string_squadmateOutfitMergeAshley">Squadmate-Outfit zusammenführung: Ashley</system:String>
+	<system:String x:Key="string_squadmateOutfitMergeGarrus">Squadmate-Outfit zusammenführung: Garrus</system:String>
+	<system:String x:Key="string_squadmateOutfitMergeEDI">Squadmate-Outfit zusammenführung: EDI</system:String>
+	<system:String x:Key="string_squadmateOutfitMergeJavik">Squadmate-Outfit zusammenführung: Javik</system:String>
+	<system:String x:Key="string_squadmateOutfitMergeJames">Squadmate-Outfit zusammenführung: James</system:String>
+	<system:String x:Key="string_squadmateOutfitMergeKaidan">Squadmate-Outfit zusammenführung: Kaiden</system:String>
+	<system:String x:Key="string_squadmateOutfitMergeLiara">Squadmate-Outfit zusammenführung: Liara</system:String>
+	<system:String x:Key="string_squadmateOutfitMergeTali">Squadmate-Outfit zusammenführung: Tali</system:String>
+	<system:String x:Key="string_blank2DAs">Leere 2DAs:</system:String>
+	<system:String x:Key="string_select2DAsToAdd">Wähle 2DAs zum Hinzufügen aus</system:String>
+	<system:String x:Key="string_errorGeneratingMod">Fehler bei der Generierung der Mod</system:String>
 	<system:String x:Key="string_interp_ssp_unopenedParenthsisFound">Fehler beim Parsen von klammergetrennter Liste: schließende Klammer gefunden, die nicht zu öffnender Klammer an Position {0} in String {1} passt</system:String>
 	<system:String x:Key="string_interp_ssp_unclosedParenthesisFound">Offene Klammer ohne passende schließende Klammer beim Parsen der klammergetrennten Liste in {0} gefunden</system:String>
 	<system:String x:Key="string_submitToME3Tweaks">An ME3Tweaks senden</system:String>
