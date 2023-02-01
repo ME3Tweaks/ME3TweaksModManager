@@ -18,7 +18,7 @@ namespace LocalizationHelper
 
         public bool Contains(LocalizationTablesUI.LocalizedString ls, string searchTerm)
         {
-            return false;
+            return ls != null && ls.LocalizedStr != null && ls.LocalizedStr.Contains(searchTerm, StringComparison.InvariantCultureIgnoreCase);
         }
     }
 }
