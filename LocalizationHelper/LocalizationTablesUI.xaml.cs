@@ -286,14 +286,15 @@ namespace LocalizationHelper
                         EnglishString = lineInfo.text
                     };
 
+                    // if (ls.key == "string_failedToInstallBinkASILoader") Debugger.Break();
+
                     if (oldStuff.TryGetValue(lineInfo.key, out var oldString))
                     {
-                        var oldValue = new XText(oldString).ToString();
-                        var newValue = new XText(lineInfo.text).ToString();
+                        // var oldValue = new XText(oldString).ToString();
+                        // var newValue = new XText(lineInfo.text).ToString();
                         XDocument newV = XDocument.Parse("<text>" + lineInfo.text + "</text>");
                         if (oldString != newV.Root.Value)
                         {
-                            if (ls.key == "string_modEndorsed") Debugger.Break();
                             //Debug.WriteLine("Changed: " + ls.key);
                             //Debug.WriteLine("  OLD: " + oldString);
                             //Debug.WriteLine("  NEW: " + lineInfo.text);
@@ -474,7 +475,7 @@ namespace LocalizationHelper
                 if (lang != "INT")
                 {
                     // Clear all values first
-                    foreach (var v in categories.SelectMany(x=>x.LocalizedStringsForSection))
+                    foreach (var v in categories.SelectMany(x => x.LocalizedStringsForSection))
                     {
                         v.Localizations[lang] = null; // CLEAR
                     }
@@ -953,14 +954,20 @@ namespace LocalizationHelper
         }
 
         [DebuggerDisplay("LocCat {CategoryName} with {LocalizedStringsForSection.Count} entries")]
-        [AddINotifyPropertyChangedInterface]
-        public class LocalizationCategory
+        public class LocalizationCategory : INotifyPropertyChanged
         {
             public string CategoryName { get; set; }
-            public bool HasChangedStrings => LocalizedStringsForSection.Any(x => x.ChangedFromPrevious);
+            public bool HasChangedStrings => LocalizedStringsForSection.Any(x => x.ChangedFromPrevious || x.LocalStringNotLocalized);
 
             public ObservableCollectionExtended<LocalizedString> LocalizedStringsForSection { get; } =
                 new ObservableCollectionExtended<LocalizedString>();
+
+            public void OnLanguageChanged()
+            {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(HasChangedStrings)));
+            }
+
+            public event PropertyChangedEventHandler PropertyChanged;
         }
 
         public class LocalizedString : INotifyPropertyChanged
@@ -1014,11 +1021,16 @@ namespace LocalizationHelper
             }
 
             public bool ChangedFromPrevious { get; set; }
+            public bool LocalStringNotLocalized
+            {
+                get { return LocalizationTablesUI.CurrentLanguage != null && string.IsNullOrWhiteSpace(LocalizedStr); }
+            }
 
             public void OnCurrentLanguageChanged()
             {
                 // Rebind
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LocalizedStr)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LocalStringNotLocalized)));
             }
 
 #pragma warning disable
@@ -1155,6 +1167,8 @@ namespace LocalizationHelper
                 {
                     ls.OnCurrentLanguageChanged();
                 }
+
+                M3SelectedCategory.OnLanguageChanged();
             }
             if (M3CSelectedCategory != null)
             {
@@ -1162,6 +1176,7 @@ namespace LocalizationHelper
                 {
                     ls.OnCurrentLanguageChanged();
                 }
+                M3CSelectedCategory.OnLanguageChanged();
             }
             foreach (var lts in LocalizedTutorialService)
             {
@@ -1172,6 +1187,12 @@ namespace LocalizationHelper
                 ltip.OnCurrentLanguageChanged();
             }
             LoadLocalizedHelpMenu();
+
+            // update all sections to accurately reflect the substrings.
+            foreach (var sect in M3LocalizationCategories.Concat(M3CLocalizationCategories))
+            {
+                sect.OnLanguageChanged(); // Refresh 
+            }
 
         }
     }
