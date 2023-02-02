@@ -2539,9 +2539,10 @@
     <system:String x:Key="string_customArguments">Custom arguments:</system:String>
     <system:String x:Key="string_startGameCustom">Start Game (Custom)</system:String>
     <system:String x:Key="string_tooltip_autoResume">Instructs game to automatically attempt to resume the last savegame</system:String>
+    <system:String x:Key="string_noForceFeedback">No force feedback</system:String>
+    <system:String x:Key="string_tooltip_disablesControllerVibration">Disables controller vibration</system:String>
 
-
-    <!-- Bio2DA Selector Dialog -->
+    <!-- Bio2DA Selector Dialog --> 
     <system:String x:Key="string_thereIsNoBackupAvailableToQuery2DAsFrom">There is no backup available to query 2DAs from.</system:String>
     <system:String x:Key="string_2da_errorReading2DAs">Error reading 2DA tables from game: {0}</system:String>
     <!-- 0={Error message} -->

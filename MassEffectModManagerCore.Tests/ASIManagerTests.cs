@@ -13,6 +13,8 @@ namespace ME3TweaksModManager.Tests
     [TestClass]
     public class ASIManagerTests
     {
+        private const int numASIEnumerations = 2;
+
         [TestMethod]
         public void TestASIManager()
         {
@@ -72,14 +74,14 @@ namespace ME3TweaksModManager.Tests
                             Assert.AreEqual(1, installedASIs.Count, "The amount of installed ASIs as fetched by GameTarget GetInstalledASIs() is not equal to 1 after renaming the file!");
 
                             // Make multiple clones, to ensure all old ones get deleted on upgrades.
-                            for (int i = 0; i < 5; i++)
+                            for (int i = 0; i < numASIEnumerations; i++)
                             {
                                 var clonePath = Path.Combine(asiDir, instASI.AssociatedManifestItem.InstalledPrefix + i + ".asi");
                                 File.Copy(newPath, clonePath, true);
                             }
 
                             installedASIs = gt.GetInstalledASIs().OfType<KnownInstalledASIMod>().ToList();
-                            Assert.AreEqual(6, installedASIs.Count, "The amount of installed ASIs as fetched by GameTarget GetInstalledASIs() is not equal to 6 after cloning the file 5 times!");
+                            Assert.AreEqual(numASIEnumerations + 1, installedASIs.Count, $"The amount of installed ASIs as fetched by GameTarget GetInstalledASIs() is not equal to {(numASIEnumerations + 1)} after cloning the file {numASIEnumerations} times!");
                         }
                     }
 

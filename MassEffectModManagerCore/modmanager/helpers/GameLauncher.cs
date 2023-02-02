@@ -28,23 +28,45 @@ namespace ME3TweaksModManager.modmanager.helpers
         {
             if (!target.Game.IsLEGame()) return;
 
-            string args = $@" -game {LaunchPackage.Game.ToMEMGameNum()} -autoterminate -Subtitles {LaunchPackage.SubtitleSize} ";
-            if (LaunchPackage.Game == MEGame.LE3)
+            string args = @"";
+
+            if (Settings.SkipLELauncher) // Autoboot
             {
-                args += $@"-language={LaunchPackage.ChosenLanguage}";
-            }
-            else
-            {
-                args += $@"-OVERRIDELANGUAGE={LaunchPackage.ChosenLanguage}";
+                args += $@" -game {LaunchPackage.Game.ToMEMGameNum()} -autoterminate";
+
+                // Custom option is the vanilla launch - do not add any extra params
+                if (!LaunchPackage.IsCustomOption)
+                {
+                    args += $@" -Subtitles {LaunchPackage.SubtitleSize} ";
+                    if (LaunchPackage.Game == MEGame.LE3)
+                    {
+                        args += $@"-language={LaunchPackage.ChosenLanguage} ";
+                    }
+                    else
+                    {
+                        args += $@"-OVERRIDELANGUAGE={LaunchPackage.ChosenLanguage}";
+                    }
+
+                    if (LaunchPackage.EnableMinidumps)
+                    {
+                        args += @" -enableminidumps";
+                    }
+
+                    if (LaunchPackage.AutoResumeSave)
+                    {
+                        args += @" -RESUME";
+                    }
+
+                    if (LaunchPackage.NoForceFeedback)
+                    {
+                        args += @" -NOFORCEFEEDBACK";
+                    }
+
+                    // Custom options
+                    args += @" " + LaunchPackage.CustomExtraArgs;
+                }
             }
 
-            if (LaunchPackage.EnableMinidumps)
-            {
-                args += @" -enableminidumps";
-            }
-
-            // Custom options
-            args += @" " + LaunchPackage.CustomExtraArgs;
             LaunchGame(target, args);
         }
 
@@ -159,7 +181,10 @@ namespace ME3TweaksModManager.modmanager.helpers
             else
             {
                 // We use the generated command line arguments as none were passed in
-                WriteLEAutobootValue(string.Join(@" ", commandLineArgs));
+                if (target.Game.IsLEGame())
+                {
+                    WriteLEAutobootValue(string.Join(@" ", commandLineArgs));
+                }
                 RunGame(target, exe, null, commandLineArgs, environmentVars);
                 //M3Utilities.RunProcess(exe, commandLineArgs, false, true, false, false, environmentVars);
             }
@@ -208,7 +233,8 @@ namespace ME3TweaksModManager.modmanager.helpers
         private static void WriteLEAutobootValue(string bootArgs)
         {
             // a space must precede the arguments - I'm too lazy to fix the terrible cmdline C++ code I wrote 
-            MSharedSettings.WriteSettingString(AUTOBOOT_KEY_NAME, @" " + bootArgs);
+            MSharedSettings.WriteSettingString(AUTOBOOT_KEY_NAME, bootArgs);
+            M3Log.Information($@"Wrote autoboot command line: '{bootArgs}'");
         }
 
         /// <summary>

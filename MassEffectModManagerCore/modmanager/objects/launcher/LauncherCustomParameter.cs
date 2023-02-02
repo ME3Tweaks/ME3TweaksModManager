@@ -17,7 +17,7 @@ namespace ME3TweaksModManager.modmanager.objects.launcher
         // Keys for the M3L package files
         public const string KEY_AUTORESUME = @"autoresume";
         public const string KEY_MINIDUMPS = @"enableminidumps";
-
+        public const string KEY_NOFORCEFEEDBACK = @"noforcefeedback";
 
         /// <summary>
         /// The string shown to the user

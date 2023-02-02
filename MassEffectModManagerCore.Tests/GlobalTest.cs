@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using LegendaryExplorerCore;
 using LegendaryExplorerCore.Packages;
+using ME3TweaksCore;
 using ME3TweaksCore.Services;
 using ME3TweaksModManager.modmanager;
 using ME3TweaksModManager.modmanager.me3tweaks.online;
@@ -41,12 +42,17 @@ namespace ME3TweaksModManager.Tests
                 //Utilities.ExtractInternalFile("MassEffectModManagerCore.bundleddlls.zlibwrapper.dll", Path.Combine(Utilities.GetDllDirectory(), "zlibwrapper.dll"), false, Assembly.GetAssembly(typeof(GameTarget)));
                 //SetDllDirectory(Utilities.GetDllDirectory());
                 FindTestData();
-                LegendaryExplorerCoreLib.InitLib(TaskScheduler.Default, null);
+                ME3TweaksCoreLibInitPackage package = new ME3TweaksCoreLibInitPackage()
+                {
+                    RunOnUiThreadDelegate = x => x(),
+                };
+                ME3TweaksCoreLib.Initialize(package);
+                // LegendaryExplorerCoreLib.InitLib(TaskScheduler.Default, null);
 
                 Analytics.SetEnabledAsync(false);
                 Crashes.SetEnabledAsync(false);
                 Settings.LogModStartup = true;
-                App.BuildNumber = 125; //THIS NEEDS TO BE UPDATED FOR EVERY MOD THAT TARGETS A NEWER RELEASE. Not really a convenient way to update it constantly though...
+                App.BuildNumber = 127; //THIS NEEDS TO BE UPDATED FOR EVERY MOD THAT TARGETS A NEWER RELEASE. Not really a convenient way to update it constantly though...
 #if !AZURE
                 Log.Logger = new LoggerConfiguration().WriteTo.Console().WriteTo.Debug().CreateLogger();
 #else

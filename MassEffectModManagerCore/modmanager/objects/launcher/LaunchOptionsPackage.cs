@@ -40,6 +40,12 @@ namespace ME3TweaksModManager.modmanager.objects.launcher
         public bool AutoResumeSave { get; set; }
 
         /// <summary>
+        /// If rumble should be enabled
+        /// </summary>
+        [JsonProperty(@"noforcefeedback")]
+        public bool NoForceFeedback { get; set; }
+
+        /// <summary>
         /// If minidumps should be created (LE only)
         /// </summary>
         [JsonProperty(@"enableminidumps")]
@@ -104,6 +110,9 @@ namespace ME3TweaksModManager.modmanager.objects.launcher
                     break;
                 case LauncherCustomParameter.KEY_MINIDUMPS:
                     EnableMinidumps = value;
+                    break;
+                case LauncherCustomParameter.KEY_NOFORCEFEEDBACK:
+                    NoForceFeedback = value;
                     break;
             }
         }

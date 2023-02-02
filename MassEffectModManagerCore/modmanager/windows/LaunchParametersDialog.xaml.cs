@@ -92,10 +92,11 @@ namespace ME3TweaksModManager.modmanager.windows
 
         private void LoadLanguagesAndOptions()
         {
-            CustomOptions.Clear();
+            CustomOptions.Clear(); 
             LanguageOptions.Clear();
             // Global options
             CustomOptions.Add(new LauncherCustomParameter() { DisplayString = M3L.GetString(M3L.string_automaticallyResumeLastSave), ToolTip = M3L.GetString(M3L.string_tooltip_autoResume), CommandLineText = @"-RESUME", SaveKey = LauncherCustomParameter.KEY_AUTORESUME, IsSelected = LaunchPackage.AutoResumeSave });
+            CustomOptions.Add(new LauncherCustomParameter() { DisplayString = M3L.GetString(M3L.string_noForceFeedback), ToolTip = M3L.GetString(M3L.string_tooltip_disablesControllerVibration), CommandLineText = @"-NOFORCEFEEDBACK", SaveKey = LauncherCustomParameter.KEY_NOFORCEFEEDBACK, IsSelected = LaunchPackage.NoForceFeedback });
 #if DEBUG
             CustomOptions.Add(new LauncherCustomParameter() { DisplayString = @"Enable process minidumps", ToolTip = @"This should only be visible in debug builds", CommandLineText = @"-enableminidumps", SaveKey = LauncherCustomParameter.KEY_MINIDUMPS, IsSelected = LaunchPackage.EnableMinidumps });
 #endif

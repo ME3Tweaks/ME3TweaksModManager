@@ -310,7 +310,16 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             DownloadAllCommand = new GenericCommand(DownloadAll, CanDownloadAll);
         }
 
-        private bool CanDownloadAll() => !OperationInProgress && UpdatableMods.Any(x => x.CanUpdate && (x.mod.ModClassicUpdateCode > 0 || x.mod.ModModMakerID > 0));
+        /// <summary>
+        /// If the download all button can be pressed
+        /// </summary>
+        /// <returns></returns>
+        private bool CanDownloadAll() => !OperationInProgress && ShowDownloadAllButton;
+
+        /// <summary>
+        /// If the download all button should be shown at all to the user
+        /// </summary>
+        public bool ShowDownloadAllButton => UpdatableMods.Any(x => x.CanUpdate && (x.mod.ModClassicUpdateCode > 0 || x.mod.ModModMakerID > 0));
 
         private void DownloadAll()
         {
