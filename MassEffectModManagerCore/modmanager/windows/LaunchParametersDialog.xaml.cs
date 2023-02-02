@@ -81,7 +81,7 @@ namespace ME3TweaksModManager.modmanager.windows
 
         private void LoadPackage(LaunchOptionsPackage package)
         {
-            LaunchPackage = package ?? new LaunchOptionsPackage() { Game = Game, ChosenLanguage = @"INT", PackageTitle = M3L.GetString(M3L.string_startGameCustom) };
+            LaunchPackage = package ?? new LaunchOptionsPackage() { Game = Game, ChosenLanguage = @"INT", PackageTitle = LaunchOptionsPackage.GetCustomTitle() };
             PackageGuid = LaunchPackage.PackageGuid == Guid.Empty ? Guid.NewGuid() : LaunchPackage.PackageGuid; // Keep existing guid if found
             ParameterSetName = LaunchPackage.PackageTitle;
             LoadLanguagesAndOptions();

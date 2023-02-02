@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using ME3TweaksModManager.modmanager.localizations;
+using Newtonsoft.Json;
 
 namespace ME3TweaksModManager.modmanager.objects.launcher
 {
@@ -116,5 +117,14 @@ namespace ME3TweaksModManager.modmanager.objects.launcher
                     break;
             }
         }
+
+        public void OnLanguageChanged()
+        {
+            if (IsCustomOption)
+                PackageTitle = GetDefaultTitle();
+        }
+
+        public static string GetDefaultTitle() => M3L.GetString(M3L.string_startGame);
+        public static string GetCustomTitle() => M3L.GetString(M3L.string_startGameCustom);
     }
 }

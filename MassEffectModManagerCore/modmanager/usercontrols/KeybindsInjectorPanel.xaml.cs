@@ -215,5 +215,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             if (game == MEGame.LE3) return Path.Combine(path, @"le3-bioinput.xml");
             return null;
         }
+
+        public override bool DisableM3AutoSizer { get; set; } = true;
     }
 }

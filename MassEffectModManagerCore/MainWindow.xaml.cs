@@ -4226,6 +4226,7 @@ namespace ME3TweaksModManager
             App.CurrentLanguage = Settings.Language = lang;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NoModSelectedText))); // Update localized tip shown
             RefreshNexusStatus(true);
+            SelectedLaunchOption?.OnLanguageChanged();
             try
             {
                 var localizedHelpItems = DynamicHelpService.GetHelpItems(lang);
