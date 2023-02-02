@@ -371,6 +371,14 @@ namespace LocalizationHelper
                         }
                     }
 
+                    var nonLocalizedelements = doc.XPathSelectElements($"/localizations/*[not(self::helpmenu)]");
+                    foreach (var section in nonLocalizedelements)
+                    {
+                        nonLocalizedHelpSections.Add(section.ToString());
+                    }
+
+
+
                     // TUTORIAL SERVICE
                     PleaseWaitString = $"Fetching Tutorial Service";
 
@@ -430,8 +438,8 @@ namespace LocalizationHelper
         private string m3oldBranch = null;
         private string m3coldBranch = null;
         private Dictionary<string, string> dynamicHelpLocalizations = new Dictionary<string, string>();
-
-        public void OnM3SelectedBranchChanged()
+        private List<string> nonLocalizedHelpSections = new List<string>();
+         public void OnM3SelectedBranchChanged()
         {
             if (m3oldBranch != null)
             {
@@ -606,13 +614,20 @@ namespace LocalizationHelper
             XDocument doc = new XDocument();
             var localizations = new XElement("localizations");
             doc.Add(localizations);
+
+            // Add the non-localized items first
+            foreach (var v in nonLocalizedHelpSections)
+            {
+                localizations.Add(XElement.Parse(v));
+            }
+
+
             try
             {
                 foreach (var v in dynamicHelpLocalizations)
                 {
                     if (v.Key == lang)
                     {
-
                         localizations.Add(XElement.Parse(localizedEditor.Text));
                     }
                     else
@@ -631,7 +646,7 @@ namespace LocalizationHelper
             {
                 Title = "Save latesthelp-localized.xml file",
                 Filter = "XML files|*.xml",
-                FileName = "latesthelp-localized.txt",
+                FileName = "latesthelp-localized.xml",
             };
             if (saveFileDialog.ShowDialog() == true)
             {
