@@ -1,7 +1,8 @@
 <localizations>
   <nonlocalizedhelpmenudefinition name="changelogs">
     <list localizedtitle="true">
-      <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 8.0 BETA (Build 126)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/275" />
+      <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 8.0.1 (Build 127)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/324" />
+      <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 8.0 (Build 126)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/275" />
       <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 7.0.7 (Build 125)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/298" />
       <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 7.0.6 (Build 124)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/281" />
       <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 7.0.5 (Build 123)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/266" />
@@ -101,7 +102,6 @@
       </list>
     </list>
   </nonlocalizedhelpmenudefinition>
-
 
   <helpmenu lang="int">
     <helpitem icon="Brands_Discord" title="ME3Tweaks Discord" url="https://discord.gg/s8HA6dc" tooltip="Chat server for quick support with ME3Tweaks products and services" />
