@@ -3,15 +3,17 @@
     <list localizedtitle="true">
       <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 8.0.1 (Build 127)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/324" />
       <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 8.0 (Build 126)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/275" />
-      <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 7.0.7 (Build 125)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/298" />
-      <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 7.0.6 (Build 124)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/281" />
-      <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 7.0.5 (Build 123)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/266" />
-      <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 7.0.4 (Build 122)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/262" />
-      <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 7.0.3 (Build 121)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/246" />
-      <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 7.0.2 BETA 4 (Build 120)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/241" />
-      <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 7.0.1 BETA 3 (Build 119)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/240" />
-      <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 7.0 BETA (Build 118)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/7.0.0.118" />
       <list title="Older changelogs" sort="low">
+        <list title="Mod Manager 7.0">
+          <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 7.0.7 (Build 125)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/298" />
+          <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 7.0.6 (Build 124)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/281" />
+          <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 7.0.5 (Build 123)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/266" />
+          <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 7.0.4 (Build 122)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/262" />
+          <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 7.0.3 (Build 121)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/246" />
+          <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 7.0.2 BETA 4 (Build 120)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/241" />
+          <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 7.0.1 BETA 3 (Build 119)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/issues/240" />
+          <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 7.0 BETA (Build 118)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/7.0.0.118" />
+        </list>
         <list title="Mod Manager 6.3">
               <helpitem icon="Regular_Clipboard" title="ME3Tweaks Mod Manager 6.3 (Build 117)" url="https://github.com/ME3Tweaks/ME3TweaksModManager/releases/tag/6.3.0.117" />
         </list>
