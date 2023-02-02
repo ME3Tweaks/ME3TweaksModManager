@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using LegendaryExplorerCore.Packages;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.NativeMods;
@@ -50,6 +51,12 @@ namespace ME3TweaksModManager.Tests
                         foreach (var sourceBool in sourceBools)
                         {
                             // INSTALL FROM SOURCE
+                            if (sourceBool == true)
+                            {
+                                // Slow it down a bit for server
+                                Thread.Sleep(1000);
+                            }
+
                             Console.WriteLine($@"Install source variable: {sourceBool}");
                             Assert.IsTrue(ASIManager.InstallASIToTarget(v, gt, sourceBool),
                                 $"Installation of ASI failed: {v.Name}");
