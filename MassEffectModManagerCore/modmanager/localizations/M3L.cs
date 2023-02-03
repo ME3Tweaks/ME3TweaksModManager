@@ -45,10 +45,10 @@ namespace ME3TweaksModManager.modmanager.localizations
             //{
             //    msgBox.Style = messageBoxStyle;
             //}
-            msgBox.YesButtonContent = GetString(string_yes);
-            msgBox.NoButtonContent = GetString(string_no);
-            msgBox.OkButtonContent = GetString(string_ok);
-            msgBox.CancelButtonContent = GetString(string_cancel);
+            msgBox.YesButtonContent = yesContent?? GetString(string_yes);
+            msgBox.NoButtonContent = noContent ?? GetString(string_no);
+            msgBox.OkButtonContent = okContent ?? GetString(string_ok);
+            msgBox.CancelButtonContent = cancelContent ?? GetString(string_cancel);
             msgBox.ShowDialog();
             return msgBox.MessageBoxResult;
         }
