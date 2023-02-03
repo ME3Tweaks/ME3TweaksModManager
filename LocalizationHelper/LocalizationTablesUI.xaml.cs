@@ -374,7 +374,7 @@ namespace LocalizationHelper
                     // TUTORIAL SERVICE
                     PleaseWaitString = $"Fetching Tutorial Service";
 
-                    string tutorialEndpoint = "https://me3tweaks.com/modmanager/services/tutorialservice";
+                    string tutorialEndpoint = "https://me3tweaks.com/modmanager/services/tutorialservice2";
                     wc.Dispose();
                     wc = new System.Net.WebClient();
                     var tutorialJson = wc.DownloadString(tutorialEndpoint);
