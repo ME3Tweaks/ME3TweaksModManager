@@ -595,6 +595,8 @@
 	<system:String x:Key="string_customArguments">Пользовательские аргументы:</system:String>
 	<system:String x:Key="string_startGameCustom">Запуск Игры (Пользовательский)</system:String>
 	<system:String x:Key="string_tooltip_autoResume">Включает в игре попытку автоматической загрузки последнего сохранения</system:String>
+	<system:String x:Key="string_noForceFeedback">Без обратной связи</system:String>
+	<system:String x:Key="string_tooltip_disablesControllerVibration">Отключает вибрацию контроллера</system:String>
 	<system:String x:Key="string_interp_lexNightlyFailedToDownload">Ошибка загрузки Legendary Explorer Nightly: {0}</system:String>
 	<system:String x:Key="string_licenseViewer">Licence Viewer</system:String>
 	<system:String x:Key="string_dialogCouldNotSetDataToClipboard" xml:space="preserve">Невозможно скопировать данные в буфер обмена:\n</system:String>
