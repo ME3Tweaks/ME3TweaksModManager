@@ -5,6 +5,7 @@
     Title="{DynamicResource string_title_quickTutorial}"
     DataContext="{Binding RelativeSource={RelativeSource Self}}"
     SizeToContent="WidthAndHeight"
+    WindowStartupLocation="CenterOwner"
     ResizeMode="NoResize">
     <Window.Style>
         <Style

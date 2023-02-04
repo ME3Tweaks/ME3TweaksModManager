@@ -955,7 +955,9 @@ namespace ME3TweaksModManager
 
         private void OpenTutorial()
         {
-            new IntroTutorial().Show();
+            var tutorial = new IntroTutorial(this);
+            tutorial.Show();
+            tutorial.Activate();
         }
 
         private void OpenOIGDisabler()
@@ -2472,7 +2474,9 @@ namespace ME3TweaksModManager
                 // if user speeds through, this might not be available yet. oh well
                 if (TutorialService.ServiceLoaded)
                 {
-                    new IntroTutorial().Show();
+                    var tutorial = new IntroTutorial(this);
+                    tutorial.Show();
+                    tutorial.Activate();
                 }
             };
             ShowBusyControl(previewPanel);

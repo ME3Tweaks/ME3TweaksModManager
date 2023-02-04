@@ -35,8 +35,9 @@ namespace ME3TweaksModManager.modmanager.windows
         public int CurrentStepIndex { get; set; }
 
 
-        public IntroTutorial()
+        public IntroTutorial(Window owner)
         {
+            Owner = owner;
             PrepareSteps();
 
             CurrentStep = TutorialSteps[0];
