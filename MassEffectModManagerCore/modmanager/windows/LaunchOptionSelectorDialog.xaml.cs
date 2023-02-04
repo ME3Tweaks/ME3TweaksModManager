@@ -92,6 +92,10 @@ namespace ME3TweaksModManager.modmanager.windows
 
         private void SaveAndClose()
         {
+            // If somehow null is set we don't do anything.
+            if (ChosenOption == null)
+                return;
+
             switch (Game)
             {
                 case MEGame.LE1:
