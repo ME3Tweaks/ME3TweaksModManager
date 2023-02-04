@@ -438,7 +438,7 @@ namespace ME3TweaksModManager
         public static void FlushTelemetryItems()
         {
             FlushedTelemetry = true;
-            if (Settings.EnableTelemetry)
+            if (Settings.EnableTelemetry && QueuedTelemetryItems != null)
             {
                 foreach (var v in QueuedTelemetryItems)
                 {
