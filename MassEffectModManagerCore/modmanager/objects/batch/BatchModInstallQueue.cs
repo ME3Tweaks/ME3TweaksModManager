@@ -177,7 +177,7 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         /// <param name="line"></param>
         private static void ParseLegacyQueue(BatchLibraryInstallQueue queue, string[] lines, int line)
         {
-            M3Log.Information($@"Deserializing legacy queue");
+            M3Log.Information(@"Deserializing legacy queue");
             queue.QueueName = lines[line];
             line++;
 
