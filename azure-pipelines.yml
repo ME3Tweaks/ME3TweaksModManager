@@ -30,11 +30,12 @@ steps: # Steps begin following this
   displayName: Checkout code
   fetchDepth: 1 # Only fetch the latest commit (faster)
   
-#- task: UseDotNet@2
-#  displayName: Install .NET 6.0 SDK
-#  inputs:
-#    packageType: 'sdk'
-#    version: '6.0.x' 
+# Mod Manager targets .NET 6
+- task: UseDotNet@2
+  displayName: Install .NET 6.0 SDK
+  inputs:
+    packageType: 'sdk'
+    version: '6.0.x' 
     
 # Required as LEC dual targets
 - task: UseDotNet@2
