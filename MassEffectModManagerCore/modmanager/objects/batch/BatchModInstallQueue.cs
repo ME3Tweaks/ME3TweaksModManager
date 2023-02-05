@@ -180,8 +180,14 @@ namespace ME3TweaksModManager.modmanager.objects.batch
             M3Log.Information($@"Deserializing legacy queue");
             queue.QueueName = lines[line];
             line++;
-            queue.QueueDescription = lines[line];
-            line++;
+
+            if (lines.Length >= line)
+            {
+                // Observed crash when deserializing this in telemetry
+                queue.QueueDescription = lines[line];
+                line++;
+            }
+
             while (line < lines.Length)
             {
                 string moddescPath = lines[line];
