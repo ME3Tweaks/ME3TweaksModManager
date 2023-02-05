@@ -92,17 +92,20 @@ namespace ME3TweaksModManager.modmanager.windows
 
         private void SaveAndClose()
         {
-            switch (Game)
+            if (ChosenOption != null)
             {
-                case MEGame.LE1:
-                    Settings.SelectedLE1LaunchOption = ChosenOption.PackageGuid;
-                    break;
-                case MEGame.LE2:
-                    Settings.SelectedLE2LaunchOption = ChosenOption.PackageGuid;
-                    break;
-                case MEGame.LE3:
-                    Settings.SelectedLE3LaunchOption = ChosenOption.PackageGuid;
-                    break;
+                switch (Game)
+                {
+                    case MEGame.LE1:
+                        Settings.SelectedLE1LaunchOption = ChosenOption.PackageGuid;
+                        break;
+                    case MEGame.LE2:
+                        Settings.SelectedLE2LaunchOption = ChosenOption.PackageGuid;
+                        break;
+                    case MEGame.LE3:
+                        Settings.SelectedLE3LaunchOption = ChosenOption.PackageGuid;
+                        break;
+                }
             }
 
             Close();
