@@ -111,7 +111,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 {@"Group name", SelectedBatchQueue.QueueName},
                 {@"Group size", SelectedBatchQueue.ModsToInstall.Count.ToString()},
-                {@"Game", SelectedBatchQueue.Game.ToString()}
+                {@"Game", SelectedBatchQueue.Game.ToString()},
+                {@"TargetPath", SelectedGameTarget?.TargetPath}
             });
             OnClosing(new DataEventArgs(SelectedBatchQueue));
         }
