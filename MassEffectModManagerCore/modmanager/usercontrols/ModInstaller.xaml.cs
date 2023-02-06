@@ -105,6 +105,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         /// </summary>
         public enum ModInstallCompletedStatus
         {
+            UNHANDLED_INSTALL_RESULT,
             INSTALL_SUCCESSFUL,
             USER_CANCELED_INSTALLATION,
             INSTALL_FAILED_USER_CANCELED_MISSING_MODULES,
@@ -1457,6 +1458,10 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     {
                         InstallationCancelled = true;
                     }
+                    else if (mcis is ModInstallCompletedStatus.INSTALL_SUCCESSFUL)
+                    {
+                        // This is handled below but is here for visual clarity.
+                    }
                     else
                     {
                         // Track unhandled results
@@ -1473,7 +1478,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     string dlcText = "";
                     foreach (var dlc in failReqs)
                     {
-                        var info = TPMIService.GetThirdPartyModInfo(dlc.DLCFolderName, InstallOptionsPackage.ModBeingInstalled.Game);
+                        var info = TPMIService.GetThirdPartyModInfo(dlc.DLCFolderName,
+                            InstallOptionsPackage.ModBeingInstalled.Game);
                         if (info != null)
                         {
                             dlcText += $"\n - {info.modname} ({dlc.DLCFolderName})"; //Do not localize
@@ -1487,16 +1493,16 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         {
                             dlcText += @" " + M3L.GetString(M3L.string_interp_minVersionAppend, dlc.MinVersion);
                         }
+                    }
 
-                        // Show dialog
-                        if (dlcCode == ModInstallCompletedStatus.INSTALL_FAILED_REQUIRED_DLC_MISSING)
-                        {
-                            M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogRequiredContentMissing, dlcText), M3L.GetString(M3L.string_requiredContentMissing), MessageBoxButton.OK, MessageBoxImage.Error);
-                        }
-                        else if (dlcCode == ModInstallCompletedStatus.INSTALL_FAILED_SINGLEREQUIRED_DLC_MISSING)
-                        {
-                            M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_error_singleRequiredDlcMissing, InstallOptionsPackage.ModBeingInstalled.ModName, dlcText), M3L.GetString(M3L.string_requiredContentMissing), MessageBoxButton.OK, MessageBoxImage.Error);
-                        }
+                    // Show dialog
+                    if (dlcCode == ModInstallCompletedStatus.INSTALL_FAILED_REQUIRED_DLC_MISSING)
+                    {
+                        M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogRequiredContentMissing, dlcText), M3L.GetString(M3L.string_requiredContentMissing), MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                    else if (dlcCode == ModInstallCompletedStatus.INSTALL_FAILED_SINGLEREQUIRED_DLC_MISSING)
+                    {
+                        M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_error_singleRequiredDlcMissing, InstallOptionsPackage.ModBeingInstalled.ModName, dlcText), M3L.GetString(M3L.string_requiredContentMissing), MessageBoxButton.OK, MessageBoxImage.Error);
                     }
 
                     InstallationCancelled = true;
