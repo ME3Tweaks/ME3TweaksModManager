@@ -466,7 +466,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     }
                     catch (CircularDependencyException)
                     {
-                        MessageBox.Show(M3L.GetString(M3L.string_circularDependencyDialogMessage), M3L.GetString(M3L.string_circularDependency), MessageBoxButton.OK, MessageBoxImage.Error);
+                        M3L.ShowDialog(window, M3L.GetString(M3L.string_circularDependencyDialogMessage), M3L.GetString(M3L.string_circularDependency), MessageBoxButton.OK, MessageBoxImage.Error);
                         InstallationCancelled = true;
                         OnClosing(DataEventArgs.Empty);
                     }
