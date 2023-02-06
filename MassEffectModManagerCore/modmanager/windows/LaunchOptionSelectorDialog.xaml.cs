@@ -81,7 +81,14 @@ namespace ME3TweaksModManager.modmanager.windows
 
             var option = lpd.LaunchPackage;
             PopulatePackages();
-            ChosenOption = AvailableLaunchOptionsPackages.FirstOrDefault(x => x.PackageGuid == option.PackageGuid);
+            if (option != null)
+            {
+                ChosenOption = AvailableLaunchOptionsPackages.FirstOrDefault(x => x.PackageGuid == option.PackageGuid);
+            }
+            else
+            {
+                ChosenOption = AvailableLaunchOptionsPackages.FirstOrDefault();
+            }
         }
 
         public ICommand EditSelectedLaunchOptionCommand { get; set; }
