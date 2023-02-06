@@ -1326,7 +1326,7 @@ namespace ME3TweaksModManager.modmanager.helpers
         /// <param name="endpoint"></param>
         /// <param name="json"></param>
         /// <returns></returns>
-        public static string PostJsonWithStringresult(string endpoint, object json)
+        public static string PostJsonWithStringResult(string endpoint, object json)
         {
             return endpoint.PostJsonAsync(json).ReceiveString().Result;
         }

@@ -53,7 +53,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
 
             try
             {
-                var updatexml = WebClientExtensions.PostJsonWithStringresult(UpdaterServiceManifestEndpoint, requestData);
+                var updatexml = WebClientExtensions.PostJsonWithStringResult(UpdaterServiceManifestEndpoint, requestData);
 
                 XElement rootElement = XElement.Parse(updatexml);
                 var modUpdateInfos = (from e in rootElement.Elements(@"mod")
@@ -130,7 +130,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
             string updatexml = "";
             try
             {
-                updatexml = WebClientExtensions.PostJsonWithStringresult(UpdaterServiceManifestEndpoint, requestData);
+                updatexml = WebClientExtensions.PostJsonWithStringResult(UpdaterServiceManifestEndpoint, requestData);
                 XElement rootElement = XElement.Parse(updatexml);
 
                 #region classic mods
@@ -362,7 +362,6 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
                 modUpdateInfos.AddRange(nexusModsUpdateInfo);
 
                 #endregion
-
                 return modUpdateInfos;
             }
             catch (Exception e)
@@ -372,6 +371,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
                 eparams[@"Update check URL"] = updateFinalRequest;
                 eparams[@"ModmakerRequests"] = string.Join(@",", modmakerUpdates);
                 eparams[@"ClassicRequests"] = string.Join(@",", classicUpdates);
+                eparams[@"InnerException"] = e.InnerException?.Message;
 
                 foreach (var game in nexusUpdates)
                 {
