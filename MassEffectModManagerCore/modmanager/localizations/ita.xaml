@@ -415,6 +415,7 @@
 	<system:String x:Key="string_downloadFailed">Download fallito</system:String>
 	<system:String x:Key="string_error_cantDownloadNotEnoughInfoInStartupManifest">ME3Tweaks Mod Manager è stato avviato offline o non è riuscito ad ottenere i manifesti di avvio - riavvia l'applicazione con accesso a internet per ottenere le informazioni necessarie a scaricare questo programma</system:String>
 	<system:String x:Key="string_error_netRuntimeMissing">Il .NET {0} x64 Desktop Runtime non è installato</system:String>
+	<system:String x:Key="string_interp_errorGettingStoragePathForToolX">Errore durante l'ottenimento del percorso di storage per {0}: {1}.</system:String>
 	<system:String x:Key="string_restoreFromME3Tweaks">Ripristina da ME3Tweaks</system:String>
 	<system:String x:Key="string_theFollowingModsFailedToLoad">Non si sono potute scaricare le seguenti mod dalla libreria. Seleziona una mod per vedere il perché.</system:String>
 	<system:String x:Key="string_failedMods">Mod fallite</system:String>
@@ -1216,6 +1217,7 @@
 	<system:String x:Key="string_deletingExistingModInLibrary">Eliminazione della mod esistente nella libreria</system:String>
 	<system:String x:Key="string_blacklistedMod">Mod in blacklist</system:String>
 	<system:String x:Key="string_description_blacklistedMod" xml:space="preserve">Gli sviluppatori di ME3Tweaks Mod Manager hanno messo questo file in blacklist per una delle seguenti ragioni:\n - La (o le) mod presente in questo file è famosa per non funzionare ed è stata abbandonata\n - La (o le) mod in questo file è distruttiva per l'utente finale</system:String>
+	<system:String x:Key="string_interp_errorCreatingModFolderX">C'è stato un errore durante la creazione della cartella per questa mod: {0}</system:String>
 	<system:String x:Key="string_dialog_mustBePremiumUserToDownload">Impossibile scaricare il file: devi essere un iscritto premium a NexusMods per usare i link a download diretto.</system:String>
 	<system:String x:Key="string_dialog_cannotDownloadDeletedFile">Impossibile scaricare file: Cancellato da NexusMods</system:String>
 	<system:String x:Key="string_interp_errorDownloadingModX">Errore nel download della mod: {0}</system:String>
@@ -1297,6 +1299,11 @@
 	<system:String x:Key="string_applyingMergemods">Applicamento delle mergemod</system:String>
 	<system:String x:Key="string_interp_minVersionAppend">(versione minima: {0})</system:String>
 	<system:String x:Key="string_notice_directModsDontGoToLibrary">Le mod installate direttamente da archivi non appariranno nella libreria delle mod</system:String>
+	<system:String x:Key="string_interp_errorInstallingBinkBypassX">C'è stato un errore durante l'installazione del bink bypass, il quale è richiesto per il supporto completo al modding: {0}</system:String>
+	<system:String x:Key="string_title_errorInstallingBinkBypass">Errore durante l'installazione del bink bypass</system:String>
+	<system:String x:Key="string_interp_errorInstallingTLKMergesX">C'è stato un errore durante l'installazione dei merge TLK: {0}</system:String>
+	<system:String x:Key="string_title_errorInstallingTLKMerge">Errore durante l'installazione dei merge TLK</system:String>
+	<system:String x:Key="string_modRequiresAMDProcessor">Questa mod può essere installata solo su un sistema con processore AMD.</system:String>
 	<system:String x:Key="string_addSelectedModsToDeployment">Aggiungi le mod selezionate per l'implementazione</system:String>
 	<system:String x:Key="string_description_addSelectedModsToDeployment">Seleziona le mod che desideri rilasciare. Puoi sleezionare multiple mod tenendo premuto il tasto Ctrl o Shift.</system:String>
 	<system:String x:Key="string_addModsToDeployment">Aggiungi mod all'implementazione</system:String>
