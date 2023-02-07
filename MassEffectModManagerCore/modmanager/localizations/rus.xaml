@@ -415,6 +415,7 @@
 	<system:String x:Key="string_downloadFailed">Загрузка не удалась</system:String>
 	<system:String x:Key="string_error_cantDownloadNotEnoughInfoInStartupManifest">ME3Tweaks Mod Manager загружен без доступа к сети, либо невозможна выгрузка загрузочного манифеста - перезагрузите программу с доступом к сети для выгрузки необходимой для скачивания программы информации</system:String>
 	<system:String x:Key="string_error_netRuntimeMissing">Библиотека .NET {0} x64 Desktop не установлена</system:String>
+	<system:String x:Key="string_interp_errorGettingStoragePathForToolX">Ошибка получения пути хранилища для {0}: {1}.</system:String>
 	<system:String x:Key="string_restoreFromME3Tweaks">Восстановить с ME3Tweaks</system:String>
 	<system:String x:Key="string_theFollowingModsFailedToLoad">Не удалось загрузить следующие моды из библиотеки. Выберите мод, чтобы узнать причину.</system:String>
 	<system:String x:Key="string_failedMods">Проблемные моды</system:String>
@@ -545,7 +546,7 @@
 	<system:String x:Key="string_installedASIs">Установленные ASI</system:String>
 	<system:String x:Key="string_tooltip_clickToOpenASIManager">Нажмите для открытия ASI Manager</system:String>
 	<system:String x:Key="string_manageASIsWithASIManager">Управление ASI через ASI Manager</system:String>
-	<system:String x:Key="string_binkw32DLCBypass">Binkw32 DLC Байпас</system:String>
+	<system:String x:Key="string_binkw32DLCBypass">Байпас Binkw32 DLC</system:String>
 	<system:String x:Key="string_dialog_restoringSFARWithoutBackup">Восстановление SFAR без архива лишь удалит нераспакованные файлы, поскольку не будет источника для копирования. Это приведет DLC в поврежденное состояние. Необходимо создать архив оригинальной игры для возможности корректного восстановления DLC SFAR.</system:String>
 	<system:String x:Key="string_backupNotAvailable">Архив недоступен</system:String>
 	<system:String x:Key="string_textures">Текстуры</system:String>
@@ -1216,6 +1217,7 @@
 	<system:String x:Key="string_deletingExistingModInLibrary">Удаление сушествующего мода из библиотеки</system:String>
 	<system:String x:Key="string_blacklistedMod">Мод из черного списка</system:String>
 	<system:String x:Key="string_description_blacklistedMod" xml:space="preserve">Разработчики ME3Tweaks Mod Manager внесли данный файл в черный список по одной из следующих причин:\n - Мод(ы) в данном файле не работает или заброшен\n - Мод(ы) в данном файле повреждает игру у конечных пользователей</system:String>
+	<system:String x:Key="string_interp_errorCreatingModFolderX">Произошла ошибка создания папки для данного мода: {0}</system:String>
 	<system:String x:Key="string_dialog_mustBePremiumUserToDownload">Невозможно скачать файл: Необходимо иметь премиум-подписку NexusMods для использования прямых ссылок.</system:String>
 	<system:String x:Key="string_dialog_cannotDownloadDeletedFile">Невозможно скачать файл: Удалено с NexusMods</system:String>
 	<system:String x:Key="string_interp_errorDownloadingModX">Ошибка загрузки мода: {0}</system:String>
@@ -1297,6 +1299,11 @@
 	<system:String x:Key="string_applyingMergemods">Применение mergemods</system:String>
 	<system:String x:Key="string_interp_minVersionAppend">(минимальная версия: {0})</system:String>
 	<system:String x:Key="string_notice_directModsDontGoToLibrary">Моды, установленные напрямую из архива не появятся в библиотеке модов</system:String>
+	<system:String x:Key="string_interp_errorInstallingBinkBypassX">Возникла ошибка установки байпаса bink, необходимого для полноценной поддержки моддинга: {0}</system:String>
+	<system:String x:Key="string_title_errorInstallingBinkBypass">Ошибка установки байпаса bink</system:String>
+	<system:String x:Key="string_interp_errorInstallingTLKMergesX">Возникла ошибка установки TLK-merge: {0}</system:String>
+	<system:String x:Key="string_title_errorInstallingTLKMerge">Ошибка установки TLK-merge</system:String>
+	<system:String x:Key="string_modRequiresAMDProcessor">Данный мод может быть установлен только на систему с процессором AMD.</system:String>
 	<system:String x:Key="string_addSelectedModsToDeployment">Добавить выбранные моды к преобразованию</system:String>
 	<system:String x:Key="string_description_addSelectedModsToDeployment">Выбрать моды для добавления к преобразованию. Вы можете выбрать несколько модов, зажав Control или Shift.</system:String>
 	<system:String x:Key="string_addModsToDeployment">Добавить моды к преобразованию</system:String>
