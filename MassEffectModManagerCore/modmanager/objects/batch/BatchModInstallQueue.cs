@@ -215,6 +215,7 @@ namespace ME3TweaksModManager.modmanager.objects.batch
                 line++;
             }
 
+            queue.AllModsToInstall.ReplaceAll(queue.ModsToInstall); // AllModsToInstall is what determines the UI list as it contains multiple object types.
             queue.InstallCompressed = queue.Game >= MEGame.ME2 && Settings.PreferCompressingPackages;
         }
 
