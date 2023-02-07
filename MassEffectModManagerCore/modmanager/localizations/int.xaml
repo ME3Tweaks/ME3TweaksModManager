@@ -935,6 +935,8 @@
     <system:String x:Key="string_downloadFailed">Download failed</system:String>
     <system:String x:Key="string_error_cantDownloadNotEnoughInfoInStartupManifest">ME3Tweaks Mod Manager booted without network or could not fetch startup manifest - reboot application with network access to fetch required information to download this program</system:String>
     <system:String x:Key="string_error_netRuntimeMissing">The .NET {0} x64 Desktop runtime is not installed</system:String>
+    <system:String x:Key="string_interp_errorGettingStoragePathForToolX">Error getting storage path for {0}: {1}.</system:String>
+    <!-- 0={tool name (e.g. Legendary Explorer, ALOT Installer)} 1={error message} -->
 
     <!-- Failed mods panel -->
     <system:String x:Key="string_restoreFromME3Tweaks">Restore from ME3Tweaks</system:String>

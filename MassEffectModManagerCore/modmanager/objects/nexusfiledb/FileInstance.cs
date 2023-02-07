@@ -10,7 +10,7 @@ namespace ME3TweaksModManager.modmanager.objects.nexusfiledb
     /// <summary>
     /// Instance of a mod file (e.g. file you can download). It's tied to a ModID
     /// </summary>
-    [DebuggerDisplay("ParentPathId {ParentPathID}, FName: {FilenameId} , FID: {FileID}")]
+    [DebuggerDisplay(@"ParentPathId {ParentPathID}, FName: {FilenameId} , FID: {FileID}")]
     public class FileInstance
     {
         /// <summary>

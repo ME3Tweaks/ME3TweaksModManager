@@ -83,7 +83,7 @@ namespace ME3TweaksModManager.modmanager.windows
             PopulatePackages();
             if (option != null)
             {
-                App.SubmitAnalyticTelemetryEvent("Created launch option", new Dictionary<string, string>()
+                App.SubmitAnalyticTelemetryEvent(@"Created launch option", new Dictionary<string, string>()
                 {
                     {@"Option name", ChosenOption?.PackageTitle},
                     {@"Option lang", ChosenOption?.ChosenLanguage},

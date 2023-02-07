@@ -520,7 +520,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             catch (Exception e)
             {
                 M3Log.Exception(e, @"Error getting path for tool:");
-                failedToDownloadCallback?.Invoke($"Error getting storage path for {tool}: {e.Message}.");
+                failedToDownloadCallback?.Invoke(M3L.GetString(M3L.string_interp_errorGettingStoragePathForToolX, tool, e.Message));
                 return;
             }
 

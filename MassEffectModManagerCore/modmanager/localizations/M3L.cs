@@ -830,6 +830,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_downloadFailed = "string_downloadFailed";
 		public const string string_error_cantDownloadNotEnoughInfoInStartupManifest = "string_error_cantDownloadNotEnoughInfoInStartupManifest";
 		public const string string_error_netRuntimeMissing = "string_error_netRuntimeMissing";
+		public const string string_interp_errorGettingStoragePathForToolX = "string_interp_errorGettingStoragePathForToolX";
 		public const string string_restoreFromME3Tweaks = "string_restoreFromME3Tweaks";
 		public const string string_theFollowingModsFailedToLoad = "string_theFollowingModsFailedToLoad";
 		public const string string_failedMods = "string_failedMods";

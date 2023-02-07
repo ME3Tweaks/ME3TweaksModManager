@@ -69,7 +69,7 @@ namespace ME3TweaksModManager.modmanager.helpers
 
             LaunchGame(target, args);
 
-            App.SubmitAnalyticTelemetryEvent("LE Game Launch", new Dictionary<string, string>()
+            App.SubmitAnalyticTelemetryEvent(@"LE Game Launch", new Dictionary<string, string>()
             {
                 {@"Game", target.Game.ToString()},
                 {@"LaunchConfig", (!LaunchPackage.IsCustomOption).ToString()},

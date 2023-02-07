@@ -15,7 +15,7 @@ namespace ME3TweaksModManager.modmanager.helpers
     /// All public members of <see cref="ConcurrentHashSet{T}"/> are thread-safe and may be used
     /// concurrently from multiple threads.
     /// </remarks>
-    [DebuggerDisplay("Count = {Count}")]
+    [DebuggerDisplay(@"Count = {Count}")]
     public class ConcurrentHashSet<T> : IReadOnlyCollection<T>, ICollection<T>
     {
         private const int DefaultCapacity = 31;
