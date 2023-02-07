@@ -825,7 +825,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                             ProgressValue = 0;
                             ProgressMaximum = 100;
                             ProgressIndeterminate = false;
-                            ActionText = M3L.GetString(M3L.string_insufficientDiskSpaceToExtractSelectedMods); //localize me
+                            ActionText = M3L.GetString(M3L.string_insufficientDiskSpaceToExtractSelectedMods);
                             M3Utilities.DriveFreeBytes(M3LoadedMods.GetCurrentModLibraryDirectory(), out var freeSpace);
                             M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_dialogNotEnoughFreeSpaceToExtract, FileSize.FormatSize(requiredSpace), FileSize.FormatSize(freeSpace)), M3L.GetString(M3L.string_insufficientDiskSpace), MessageBoxButton.OK, MessageBoxImage.Error);
                             return; //Don't do anything.
@@ -835,8 +835,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                             ProgressValue = 0;
                             ProgressMaximum = 100;
                             ProgressIndeterminate = false;
-                            ActionText = "Error extracting archive";
-                            M3L.ShowDialog(window, $"There was an error creating the folder for this mod: {e?.Message}", "Error extracting archive", MessageBoxButton.OK, MessageBoxImage.Error);
+                            ActionText = M3L.GetString(M3L.string_errorExtractingArchive);
+                            M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_errorCreatingModFolderX, e?.Message), M3L.GetString(M3L.string_errorExtractingArchive), MessageBoxButton.OK, MessageBoxImage.Error);
                             return; //Don't do anything.
                         }
                 }

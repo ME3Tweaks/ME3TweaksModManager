@@ -574,6 +574,11 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_applyingMergemods = "string_applyingMergemods";
 		public const string string_interp_minVersionAppend = "string_interp_minVersionAppend";
 		public const string string_notice_directModsDontGoToLibrary = "string_notice_directModsDontGoToLibrary";
+		public const string string_interp_errorInstallingBinkBypassX = "string_interp_errorInstallingBinkBypassX";
+		public const string string_title_errorInstallingBinkBypass = "string_title_errorInstallingBinkBypass";
+		public const string string_interp_errorInstallingTLKMergesX = "string_interp_errorInstallingTLKMergesX";
+		public const string string_title_errorInstallingTLKMerge = "string_title_errorInstallingTLKMerge";
+		public const string string_modRequiresAMDProcessor = "string_modRequiresAMDProcessor";
 		public const string string_previewPanelTitle = "string_previewPanelTitle";
 		public const string string_selectYourLanguage = "string_selectYourLanguage";
 		public const string string_howToChangeLanguage = "string_howToChangeLanguage";
@@ -986,6 +991,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_deletingExistingModInLibrary = "string_deletingExistingModInLibrary";
 		public const string string_blacklistedMod = "string_blacklistedMod";
 		public const string string_description_blacklistedMod = "string_description_blacklistedMod";
+		public const string string_interp_errorCreatingModFolderX = "string_interp_errorCreatingModFolderX";
 		public const string string_modupdatesavailable = "string_modupdatesavailable";
 		public const string string_downloadUpdate = "string_downloadUpdate";
 		public const string string_downloadUpdateFromNexusMods = "string_downloadUpdateFromNexusMods";
