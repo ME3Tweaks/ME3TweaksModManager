@@ -8,7 +8,7 @@ trigger:
 - M3Core
 
 pool:
-  vmImage: 'windows-latest'
+  vmImage: 'windows-2022'
 
 variables:
   solution: '**/*.sln'
@@ -30,17 +30,19 @@ steps: # Steps begin following this
   displayName: Checkout code
   fetchDepth: 1 # Only fetch the latest commit (faster)
   
+# Mod Manager targets .NET 6
 - task: UseDotNet@2
   displayName: Install .NET 6.0 SDK
   inputs:
     packageType: 'sdk'
     version: '6.0.x' 
-
-#- task: UseDotNet@2
-#  displayName: Install .NET Core 3.1 SDK
-#  inputs:
-#    packageType: 'sdk'
-#    version: '3.1.x' 
+    
+# Required as LEC dual targets
+- task: UseDotNet@2
+  displayName: Install .NET 7.0 SDK
+  inputs:
+    packageType: 'sdk'
+    version: '7.0.x' 
 
 - task: DotNetCoreCLI@2
   displayName: Build M3

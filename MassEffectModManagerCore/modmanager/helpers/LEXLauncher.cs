@@ -24,7 +24,10 @@ namespace ME3TweaksModManager.modmanager.helpers
             #region callbacks
             void failedToDownload(string failureMessage)
             {
-                MessageBox.Show(w, M3L.GetString(M3L.string_interp_lexNightlyFailedToDownload, failureMessage));
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    M3L.ShowDialog(w, M3L.GetString(M3L.string_interp_lexNightlyFailedToDownload, failureMessage));
+                });
                 launchCompleted?.Invoke();
             }
             void launchTool(string exe)

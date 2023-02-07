@@ -26,7 +26,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.editor
     /// <summary>
     /// A single parameter mapping that is used for various items in moddesc.ini 
     /// </summary>
-    [DebuggerDisplay("MDParameter {Key}={Value}")]
+    [DebuggerDisplay(@"MDParameter {Key}={Value}")]
     public class MDParameter
     {
         public MDParameter()

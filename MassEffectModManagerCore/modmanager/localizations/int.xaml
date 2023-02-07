@@ -568,6 +568,13 @@
     <system:String x:Key="string_interp_minVersionAppend">(minimum version: {0})</system:String>
     <!-- 0={Version string 0.1.2.3} -->
     <system:String x:Key="string_notice_directModsDontGoToLibrary">Mods installed directly from archive will not appear in the mod library</system:String>
+    <system:String x:Key="string_interp_errorInstallingBinkBypassX">An error occurred installing the bink bypass, which is required for full modding support: {0}</system:String>
+    <!-- 0={Error message} -->
+    <system:String x:Key="string_title_errorInstallingBinkBypass">Error installing bink bypass</system:String>
+    <system:String x:Key="string_interp_errorInstallingTLKMergesX">An error occurred installing TLK merges: {0}</system:String>
+    <!-- 0={Error message} -->
+    <system:String x:Key="string_title_errorInstallingTLKMerge">Error installing TLK merge</system:String>
+    <system:String x:Key="string_modRequiresAMDProcessor">This mod can only be installed on a system with an AMD processor.</system:String>
 
     <!-- Welcome panel -->
     <system:String x:Key="string_previewPanelTitle">Welcome to ME3Tweaks Mod Manager</system:String>
@@ -935,6 +942,8 @@
     <system:String x:Key="string_downloadFailed">Download failed</system:String>
     <system:String x:Key="string_error_cantDownloadNotEnoughInfoInStartupManifest">ME3Tweaks Mod Manager booted without network or could not fetch startup manifest - reboot application with network access to fetch required information to download this program</system:String>
     <system:String x:Key="string_error_netRuntimeMissing">The .NET {0} x64 Desktop runtime is not installed</system:String>
+    <system:String x:Key="string_interp_errorGettingStoragePathForToolX">Error getting storage path for {0}: {1}.</system:String>
+    <!-- 0={tool name (e.g. Legendary Explorer, ALOT Installer)} 1={error message} -->
 
     <!-- Failed mods panel -->
     <system:String x:Key="string_restoreFromME3Tweaks">Restore from ME3Tweaks</system:String>
@@ -1125,6 +1134,8 @@
     <system:String x:Key="string_deletingExistingModInLibrary">Deleting existing mod in library</system:String>
     <system:String x:Key="string_blacklistedMod">Blacklisted mod</system:String>
     <system:String xml:space="preserve" x:Key="string_description_blacklistedMod">The developers of ME3Tweaks Mod Manager have blacklisted this file for one of the following reasons:\n - The mod(s) in this file are known to not work and have been abandoned\n - The mod(s) in this file are destructive to the game for end users</system:String>
+    <system:String x:Key="string_interp_errorCreatingModFolderX">There was an error creating the folder for this mod: {0}</system:String>
+    <!-- 0={Error message} -->
 
     <!-- Mod updater -->
     <system:String x:Key="string_modupdatesavailable">Mod updates available</system:String>

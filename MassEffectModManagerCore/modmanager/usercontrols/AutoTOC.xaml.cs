@@ -41,7 +41,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public AutoTOC(Mod mod)
         {
             DataContext = this;
-            if (mod.Game != MEGame.ME3) throw new Exception(@"AutoTOC cannot be run on mods not designed for Mass Effect 3.");
+            if (mod.Game != MEGame.ME3 && !mod.Game.IsLEGame()) throw new Exception(@"AutoTOC cannot be run on mods not designed for Mass Effect 3/Legendary Edition games.");
             //this.modModeMod = mod;
         }
 

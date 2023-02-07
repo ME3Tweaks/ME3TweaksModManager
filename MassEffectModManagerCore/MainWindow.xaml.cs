@@ -1176,13 +1176,15 @@ namespace ME3TweaksModManager
 
         private void FinishBatchInstall(BatchLibraryInstallQueue queue)
         {
-            //End
-            var shouldSave = M3L.ShowDialog(this, M3L.GetString(M3L.string_saveChosenOptionsToThisBatchGroup),
-                M3L.GetString(M3L.string_saveOptions), MessageBoxButton.YesNo) == MessageBoxResult.Yes;
-            if (shouldSave)
+            if (!queue.UseSavedOptions)
             {
-                M3Log.Information($@"Commiting batch queue with chosen options: {queue.BackingFilename}");
-                queue.Save(true); // Commit the result
+                var shouldSave = M3L.ShowDialog(this, M3L.GetString(M3L.string_saveChosenOptionsToThisBatchGroup),
+                    M3L.GetString(M3L.string_saveOptions), MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes;
+                if (shouldSave)
+                {
+                    M3Log.Information($@"Commiting batch queue with chosen options: {queue.BackingFilename}");
+                    queue.Save(true); // Commit the result
+                }
             }
 
             HandleBatchPanelResult = true;
@@ -2250,6 +2252,10 @@ namespace ME3TweaksModManager
         {
             if (!M3Utilities.IsGameRunning(mod.Game))
             {
+                if (forcedTarget == null && SelectedGameTarget == null)
+                {
+                    Crashes.TrackError(new Exception(@"ApplyMod: target and selected target is null!"));
+                }
                 BackgroundTask modInstallTask = BackgroundTaskEngine.SubmitBackgroundJob(@"ModInstall",
                     M3L.GetString(M3L.string_interp_installingMod, mod.ModName),
                     M3L.GetString(M3L.string_interp_installedMod, mod.ModName));

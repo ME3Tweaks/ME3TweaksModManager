@@ -86,7 +86,7 @@ namespace ME3TweaksModManager.modmanager.objects.launcher
         }
 
         /// <summary>
-        /// If this is a custom option, for use in UI handling
+        /// If this is a custom option, for use in UI handling. The custom option denotes its different than the normal use case
         /// </summary>
         [JsonIgnore]
         public bool IsCustomOption { get; init; }

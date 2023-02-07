@@ -812,7 +812,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 case @"Decimal":
                     return @"Decimal";
                 case @"Oem3":
-                    return "Tilde"; //?
+                    return @"Tilde"; //?
                 default:
                     Debug.WriteLine(@"Unknown key: " + key);
                     break;

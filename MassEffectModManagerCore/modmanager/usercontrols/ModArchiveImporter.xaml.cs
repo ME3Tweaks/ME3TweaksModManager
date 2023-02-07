@@ -784,6 +784,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 }
 
 
+                Exception e = null;
                 long requiredSpace = 0;
                 ModImportResult result = ModImportResult.None;
                 if (b.Result is (long spaceRequired, ModImportResult res))
@@ -791,8 +792,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     result = res;
                     requiredSpace = spaceRequired;
                 }
-
-                if (b.Result is ModImportResult res2)
+                else if (b.Result is (Exception ex, ModImportResult res3))
+                {
+                    e = ex; // Used in diagnostics
+                    result = res3;
+                }
+                else if (b.Result is ModImportResult res2)
                 {
                     result = res2;
                 }
@@ -820,9 +825,18 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                             ProgressValue = 0;
                             ProgressMaximum = 100;
                             ProgressIndeterminate = false;
-                            ActionText = M3L.GetString(M3L.string_insufficientDiskSpaceToExtractSelectedMods); //localize me
+                            ActionText = M3L.GetString(M3L.string_insufficientDiskSpaceToExtractSelectedMods);
                             M3Utilities.DriveFreeBytes(M3LoadedMods.GetCurrentModLibraryDirectory(), out var freeSpace);
                             M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_dialogNotEnoughFreeSpaceToExtract, FileSize.FormatSize(requiredSpace), FileSize.FormatSize(freeSpace)), M3L.GetString(M3L.string_insufficientDiskSpace), MessageBoxButton.OK, MessageBoxImage.Error);
+                            return; //Don't do anything.
+                        }
+                    case ModImportResult.ERROR_COULD_NOT_CREATE_MOD_FOLDER:
+                        {
+                            ProgressValue = 0;
+                            ProgressMaximum = 100;
+                            ProgressIndeterminate = false;
+                            ActionText = M3L.GetString(M3L.string_errorExtractingArchive);
+                            M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_errorCreatingModFolderX, e?.Message), M3L.GetString(M3L.string_errorExtractingArchive), MessageBoxButton.OK, MessageBoxImage.Error);
                             return; //Don't do anything.
                         }
                 }
@@ -937,7 +951,16 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     }
                 }
 
-                Directory.CreateDirectory(sanitizedPath);
+                try
+                {
+                    Directory.CreateDirectory(sanitizedPath);
+                }
+                catch (Exception ex)
+                {
+                    M3Log.Exception(ex, @"Error creating mod library during extraction. Telemetry shows it may be related to this issue: https://stackoverflow.com/questions/61719649/directory-createdirectory-could-not-find-file-errors:");
+                    e.Result = (ex, ModImportResult.ERROR_COULD_NOT_CREATE_MOD_FOLDER);
+                    return;
+                }
 
                 ActionText = M3L.GetString(M3L.string_interp_extractingX, mod.ModName);
                 //Check if RCW mod
@@ -1088,7 +1111,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             USER_ABORTED_IMPORT, ERROR_COULD_NOT_DELETE_EXISTING_DIR,
             ERROR_INSUFFICIENT_DISK_SPACE,
             None,
-            ERROR_EXTRACTING_ARCHIVE
+            ERROR_EXTRACTING_ARCHIVE,
+            ERROR_COULD_NOT_CREATE_MOD_FOLDER
         }
 
         private bool CanInstallCompressedMod()

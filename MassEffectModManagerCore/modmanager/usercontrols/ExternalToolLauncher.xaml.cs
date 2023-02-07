@@ -511,7 +511,20 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             Action<Exception, string, string> errorExtractingCallback = null)
         {
             M3Log.Information($@"FetchAndLaunchTool() for {tool}");
-            var toolName = tool.Replace(@" ", "");
+
+            // This is to ensure we can create data directory
+            try
+            {
+                getToolStoragePath(tool);
+            }
+            catch (Exception e)
+            {
+                M3Log.Exception(e, @"Error getting path for tool:");
+                failedToDownloadCallback?.Invoke(M3L.GetString(M3L.string_interp_errorGettingStoragePathForToolX, tool, e.Message));
+                return;
+            }
+
+            // var toolName = tool.Replace(@" ", "");
             var localToolFolderName = getToolStoragePath(tool);
             var localExecutable = Path.Combine(localToolFolderName, toolNameToExeName(tool));
             bool needsDownloading = !File.Exists(localExecutable);
@@ -593,7 +606,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                             {
                                 Version serverVersion = new Version(latestRelease.TagName);
                                 Version localVersion = new Version($@"{fvi.FileMajorPart}.{fvi.FileMinorPart}.{fvi.FileBuildPart}.{fvi.FilePrivatePart}");
-                                if (ProperVersion.IsGreaterThan(serverVersion,localVersion))
+                                if (ProperVersion.IsGreaterThan(serverVersion, localVersion))
                                 {
                                     needsUpdated = true;
                                 }
@@ -695,13 +708,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             switch (toolname)
             {
                 case LegendaryExplorer:
-                {
-                    if (App.ServerManifest != null && App.ServerManifest.TryGetValue(@"legendaryexplorerstable_netversion", out var lexStableNetVersion) && int.TryParse(lexStableNetVersion, out netVersion))
                     {
-                        // Nothing here, we parsed it out
+                        if (App.ServerManifest != null && App.ServerManifest.TryGetValue(@"legendaryexplorerstable_netversion", out var lexStableNetVersion) && int.TryParse(lexStableNetVersion, out netVersion))
+                        {
+                            // Nothing here, we parsed it out
+                        }
+                        break;
                     }
-                    break;
-                }
                 case LegendaryExplorer_Beta:
                     {
                         if (App.ServerManifest != null && App.ServerManifest.TryGetValue(@"legendaryexplorernightly_netversion", out var lexBetaNetVersion) && int.TryParse(lexBetaNetVersion, out netVersion))
@@ -712,7 +725,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     }
             }
 
-            if (netVersion > 0 && !await M3Utilities.IsNetRuntimeInstalled(netVersion)) 
+            if (netVersion > 0 && !await M3Utilities.IsNetRuntimeInstalled(netVersion))
             {
                 return M3L.GetString(M3L.string_error_netRuntimeMissing, netVersion);
             }

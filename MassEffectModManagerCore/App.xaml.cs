@@ -33,6 +33,7 @@ using Microsoft.AppCenter;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using Serilog;
+using SevenZip;
 using SingleInstanceCore;
 using WinCopies.Linq;
 
@@ -87,11 +88,10 @@ namespace ME3TweaksModManager
         public const double HighestSupportedModDesc = 8.0;
 
         //Windows 8.1 Update 1
-        public static readonly Version MIN_SUPPORTED_OS = new Version(@"6.3.9600");
+        public static readonly Version MIN_SUPPORTED_OS = new Version(@"10.0.19044");
 
         internal static readonly string[] SupportedOperatingSystemVersions =
         {
-            @"Windows 8.1",
             @"Windows 10 (not EOL versions)",
             @"Windows 11 (not EOL versions)"
         };
@@ -380,8 +380,40 @@ namespace ME3TweaksModManager
                 }
                 catch (Exception e)
                 {
-                    M3Log.Error($@"Unable to delete temporary files directory {M3Filesystem.GetTempPath()}: {e.Message}");
+                    M3Log.Exception(e, $@"Unable to delete temporary files directory {M3Filesystem.GetTempPath()}:");
                 }
+
+
+                // 02/06/2023
+                // Trying to solve first boot 7z issues
+                try
+                {
+                    var sevenZpath = SevenZipLibraryManagerExt.DetermineLibraryFilePath();
+                    if (sevenZpath != null)
+                    {
+                        if (!File.Exists(sevenZpath))
+                        {
+                            SubmitAnalyticTelemetryEvent("7z dll not found", new Dictionary<string, string>()
+                            {
+                                {@"Library path", sevenZpath}
+                            });
+                            M3Log.Error($@"The 7z library path {sevenZpath} was not found. 7z probably won't work - maybe requires an app reboot");
+                        }
+                        else
+                        {
+                            M3Log.Information(@"7z library was located on disk");
+                        }
+                    }
+                    else
+                    {
+                        M3Log.Error(@"Unable to determine 7z library path using library code!");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    M3Log.Exception(ex, @"Unable to determine 7z library path:");
+                }
+
 
                 M3Log.Information(@"Mod Manager pre-UI startup has completed. The UI will now load.");
                 M3Log.Information(@"If the UI fails to start, it may be that a third party tool is injecting itself into Mod Manager, such as RivaTuner or Afterburner, and is corrupting the process.");

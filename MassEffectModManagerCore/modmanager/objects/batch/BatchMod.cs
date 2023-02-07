@@ -110,10 +110,10 @@ namespace ME3TweaksModManager.modmanager.objects.batch
                     Mod = m;
                     var localHash = M3Utilities.CalculateMD5(Mod.ModDescPath);
                     ChosenOptionsDesync = ModDescHash != null && localHash != ModDescHash;
-                    if (ChosenOptionsDesync)
-                    {
-                        Debugger.Break();
-                    }
+                    //if (ChosenOptionsDesync)
+                    //{
+                    //    Debugger.Break();
+                    //}
                 }
                 else
                 {

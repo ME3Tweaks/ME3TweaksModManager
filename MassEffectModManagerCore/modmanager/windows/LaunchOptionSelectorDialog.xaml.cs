@@ -81,7 +81,23 @@ namespace ME3TweaksModManager.modmanager.windows
 
             var option = lpd.LaunchPackage;
             PopulatePackages();
-            ChosenOption = AvailableLaunchOptionsPackages.FirstOrDefault(x => x.PackageGuid == option.PackageGuid);
+            if (option != null)
+            {
+                App.SubmitAnalyticTelemetryEvent(@"Created launch option", new Dictionary<string, string>()
+                {
+                    {@"Option name", ChosenOption?.PackageTitle},
+                    {@"Option lang", ChosenOption?.ChosenLanguage},
+                    {@"Subtitle size", ChosenOption?.SubtitleSize.ToString()},
+                    {@"Autoresume", ChosenOption?.AutoResumeSave.ToString()},
+                    {@"Disable Force Feedback", ChosenOption?.NoForceFeedback.ToString()},
+                    {@"Custom args", ChosenOption?.CustomExtraArgs}
+                });
+                ChosenOption = AvailableLaunchOptionsPackages.FirstOrDefault(x => x.PackageGuid == option.PackageGuid);
+            }
+            else
+            {
+                ChosenOption = AvailableLaunchOptionsPackages.FirstOrDefault();
+            }
         }
 
         public ICommand EditSelectedLaunchOptionCommand { get; set; }

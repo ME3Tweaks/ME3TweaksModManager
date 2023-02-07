@@ -20,6 +20,7 @@ using ME3TweaksModManager.modmanager.usercontrols.interfaces;
 using ME3TweaksModManager.modmanager.windows;
 using ME3TweaksModManager.ui;
 using Microsoft.AppCenter.Analytics;
+using Microsoft.AppCenter.Crashes;
 using Newtonsoft.Json;
 using MemoryAnalyzer = ME3TweaksModManager.modmanager.memoryanalyzer.MemoryAnalyzer;
 
@@ -110,7 +111,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 {@"Group name", SelectedBatchQueue.QueueName},
                 {@"Group size", SelectedBatchQueue.ModsToInstall.Count.ToString()},
-                {@"Game", SelectedBatchQueue.Game.ToString()}
+                {@"Game", SelectedBatchQueue.Game.ToString()},
+                {@"TargetPath", SelectedGameTarget?.TargetPath}
             });
             OnClosing(new DataEventArgs(SelectedBatchQueue));
         }
@@ -185,14 +187,27 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 var extension = Path.GetExtension(file);
                 if (extension is @".biq2" or @".biq" or @".txt")
                 {
-                    var queue = BatchLibraryInstallQueue.ParseInstallQueue(file);
-                    if (queue != null && queue.Game.IsEnabledGeneration())
+                    try
                     {
-                        AvailableBatchQueues.Add(queue);
-                        if (file == pathToHighlight)
+
+                        var queue = BatchLibraryInstallQueue.ParseInstallQueue(file);
+                        if (queue != null && queue.Game.IsEnabledGeneration())
                         {
-                            SelectedBatchQueue = queue;
+                            AvailableBatchQueues.Add(queue);
+                            if (file == pathToHighlight)
+                            {
+                                SelectedBatchQueue = queue;
+                            }
                         }
+                    }
+                    catch (Exception e)
+                    {
+                        M3Log.Exception(e, @"Error occurred parsing batch queue file:");
+                        Crashes.TrackError(new Exception(@"Error parsing batch queue file", e), new Dictionary<string, string>()
+                        {
+                            {@"Filename", file}
+                        });
+                        App.SubmitAnalyticTelemetryEvent("");
                     }
                 }
             }

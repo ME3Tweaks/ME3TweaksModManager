@@ -105,6 +105,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         /// </summary>
         public enum ModInstallCompletedStatus
         {
+            UNHANDLED_INSTALL_RESULT,
             INSTALL_SUCCESSFUL,
             USER_CANCELED_INSTALLATION,
             INSTALL_FAILED_USER_CANCELED_MISSING_MODULES,
@@ -266,7 +267,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     e.Result = ModInstallCompletedStatus.INSTALL_FAILED_EXCEPTION_IN_MOD_INSTALLER;
                     if (Application.Current != null)
                     {
-                        Application.Current.Dispatcher.Invoke(() => M3L.ShowDialog(mainwindow, $"An error occurred installing the bink bypass, which is required for full modding support: {be.Message}", "Error installing bink bypass", MessageBoxButton.OK, MessageBoxImage.Error));
+                        Application.Current.Dispatcher.Invoke(() => M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_interp_errorInstallingBinkBypassX, be.Message), M3L.GetString(M3L.string_title_errorInstallingBinkBypass), MessageBoxButton.OK, MessageBoxImage.Error));
                     }
                     M3Log.Information(@"<<<<<<< Exiting modinstaller");
                     return;
@@ -966,7 +967,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     e.Result = ModInstallCompletedStatus.INSTALL_FAILED_EXCEPTION_IN_MOD_INSTALLER;
                     if (Application.Current != null)
                     {
-                        Application.Current.Dispatcher.Invoke(() => M3L.ShowDialog(mainwindow, $"An error occurred installing TLK merges: {parallelException.Message}", "Error installing TLK merge", MessageBoxButton.OK, MessageBoxImage.Error));
+                        Application.Current.Dispatcher.Invoke(() => M3L.ShowDialog(mainwindow, M3L.GetString(M3L.string_interp_errorInstallingTLKMergesX, parallelException.Message), M3L.GetString(M3L.string_title_errorInstallingTLKMerge), MessageBoxButton.OK, MessageBoxImage.Error));
                     }
 
                     M3Log.Warning(@"<<<<<<< Aborting modinstaller");
@@ -1451,11 +1452,15 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     else if (mcis == ModInstallCompletedStatus.INSTALL_FAILED_AMD_PROCESSOR_REQUIRED)
                     {
                         InstallationCancelled = true;
-                        M3L.ShowDialog(window, "This mod can only be installed on a system with an AMD processor.", M3L.GetString(M3L.string_cannotInstallMod), MessageBoxButton.OK, MessageBoxImage.Error);
+                        M3L.ShowDialog(window, M3L.GetString(M3L.string_modRequiresAMDProcessor), M3L.GetString(M3L.string_cannotInstallMod), MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                     else if (mcis is ModInstallCompletedStatus.INSTALL_FAILED_USER_CANCELED_MISSING_MODULES or ModInstallCompletedStatus.USER_CANCELED_INSTALLATION or ModInstallCompletedStatus.INSTALL_ABORTED_NOT_ENOUGH_SPACE)
                     {
                         InstallationCancelled = true;
+                    }
+                    else if (mcis is ModInstallCompletedStatus.INSTALL_SUCCESSFUL)
+                    {
+                        // This is handled below but is here for visual clarity.
                     }
                     else
                     {
@@ -1473,7 +1478,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     string dlcText = "";
                     foreach (var dlc in failReqs)
                     {
-                        var info = TPMIService.GetThirdPartyModInfo(dlc.DLCFolderName, InstallOptionsPackage.ModBeingInstalled.Game);
+                        var info = TPMIService.GetThirdPartyModInfo(dlc.DLCFolderName,
+                            InstallOptionsPackage.ModBeingInstalled.Game);
                         if (info != null)
                         {
                             dlcText += $"\n - {info.modname} ({dlc.DLCFolderName})"; //Do not localize
@@ -1487,16 +1493,16 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         {
                             dlcText += @" " + M3L.GetString(M3L.string_interp_minVersionAppend, dlc.MinVersion);
                         }
+                    }
 
-                        // Show dialog
-                        if (dlcCode == ModInstallCompletedStatus.INSTALL_FAILED_REQUIRED_DLC_MISSING)
-                        {
-                            M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogRequiredContentMissing, dlcText), M3L.GetString(M3L.string_requiredContentMissing), MessageBoxButton.OK, MessageBoxImage.Error);
-                        }
-                        else if (dlcCode == ModInstallCompletedStatus.INSTALL_FAILED_SINGLEREQUIRED_DLC_MISSING)
-                        {
-                            M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_error_singleRequiredDlcMissing, InstallOptionsPackage.ModBeingInstalled.ModName, dlcText), M3L.GetString(M3L.string_requiredContentMissing), MessageBoxButton.OK, MessageBoxImage.Error);
-                        }
+                    // Show dialog
+                    if (dlcCode == ModInstallCompletedStatus.INSTALL_FAILED_REQUIRED_DLC_MISSING)
+                    {
+                        M3L.ShowDialog(window, M3L.GetString(M3L.string_dialogRequiredContentMissing, dlcText), M3L.GetString(M3L.string_requiredContentMissing), MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                    else if (dlcCode == ModInstallCompletedStatus.INSTALL_FAILED_SINGLEREQUIRED_DLC_MISSING)
+                    {
+                        M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_error_singleRequiredDlcMissing, InstallOptionsPackage.ModBeingInstalled.ModName, dlcText), M3L.GetString(M3L.string_requiredContentMissing), MessageBoxButton.OK, MessageBoxImage.Error);
                     }
 
                     InstallationCancelled = true;

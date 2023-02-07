@@ -53,7 +53,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
 
             try
             {
-                var updatexml = WebClientExtensions.PostJsonWithStringresult(UpdaterServiceManifestEndpoint, requestData);
+                var updatexml = WebClientExtensions.PostJsonWithStringResult(UpdaterServiceManifestEndpoint, requestData);
 
                 XElement rootElement = XElement.Parse(updatexml);
                 var modUpdateInfos = (from e in rootElement.Elements(@"mod")
@@ -127,9 +127,10 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
                 }
             }
 
+            string updatexml = "";
             try
             {
-                var updatexml = WebClientExtensions.PostJsonWithStringresult(UpdaterServiceManifestEndpoint, requestData);
+                updatexml = WebClientExtensions.PostJsonWithStringResult(UpdaterServiceManifestEndpoint, requestData);
                 XElement rootElement = XElement.Parse(updatexml);
 
                 #region classic mods
@@ -361,16 +362,24 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
                 modUpdateInfos.AddRange(nexusModsUpdateInfo);
 
                 #endregion
-
                 return modUpdateInfos;
             }
             catch (Exception e)
             {
                 M3Log.Error($@"Error checking for mod updates: {App.FlattenException(e)}");
-                Crashes.TrackError(e, new Dictionary<string, string>()
+                var eparams = new Dictionary<string, string>();
+                eparams[@"Update check URL"] = updateFinalRequest;
+                eparams[@"ModmakerRequests"] = string.Join(@",", modmakerUpdates);
+                eparams[@"ClassicRequests"] = string.Join(@",", classicUpdates);
+                eparams[@"InnerException"] = e.InnerException?.Message;
+
+                foreach (var game in nexusUpdates)
                 {
-                    {@"Update check URL", updateFinalRequest}
-                });
+                    eparams[$@"NexusRequestsGame{game.Key}"] = string.Join(@",", game.Value);
+                }
+                eparams[@"Response"] = updatexml;
+                Crashes.TrackError(e, eparams);
+
             }
 
             // OLD URL-ENCODED METHOD

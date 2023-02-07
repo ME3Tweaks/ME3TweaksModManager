@@ -11,6 +11,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AppCenter.Crashes;
 using WinCopies.Util;
 
 namespace ME3TweaksModManager.modmanager.objects.batch
@@ -99,7 +100,8 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         /// <returns></returns>
         public static BatchLibraryInstallQueue ParseInstallQueue(string queueFile)
         {
-            if (!File.Exists(queueFile)) return null;
+            // Check for size is commented out while we try to debug this problem
+            if (!File.Exists(queueFile) /*|| new FileInfo(queueFile).Length == 0*/) return null;
             M3Log.Information($@"Parsing batch queue file {queueFile}");
             var queueFilename = Path.GetFileName(queueFile);
 
@@ -165,6 +167,11 @@ namespace ME3TweaksModManager.modmanager.objects.batch
             catch (Exception e)
             {
                 M3Log.Exception(e, @"Failure reading modern batch queue:");
+                Crashes.TrackError(new Exception(@"Failed to read modern batch queue", e), new Dictionary<string, string>()
+                {
+                    {@"Filename", queueFilename},
+                    {@"Queue Text", queueJson}
+                });
                 return null;
             }
         }
@@ -177,11 +184,17 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         /// <param name="line"></param>
         private static void ParseLegacyQueue(BatchLibraryInstallQueue queue, string[] lines, int line)
         {
-            M3Log.Information($@"Deserializing legacy queue");
+            M3Log.Information(@"Deserializing legacy queue");
             queue.QueueName = lines[line];
             line++;
-            queue.QueueDescription = lines[line];
-            line++;
+
+            if (lines.Length >= line)
+            {
+                // Observed crash when deserializing this in telemetry
+                queue.QueueDescription = lines[line];
+                line++;
+            }
+
             while (line < lines.Length)
             {
                 string moddescPath = lines[line];
@@ -202,6 +215,7 @@ namespace ME3TweaksModManager.modmanager.objects.batch
                 line++;
             }
 
+            queue.AllModsToInstall.ReplaceAll(queue.ModsToInstall); // AllModsToInstall is what determines the UI list as it contains multiple object types.
             queue.InstallCompressed = queue.Game >= MEGame.ME2 && Settings.PreferCompressingPackages;
         }
 
