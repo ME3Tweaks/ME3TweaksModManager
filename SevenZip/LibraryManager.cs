@@ -11,6 +11,23 @@ namespace SevenZip
     using System.Text;
 
 
+    // BEGIN M3---------------------------------
+    // Add external accessor so we can try to debug the first-boot
+    // library problem.
+    // 02/06/2023
+    public static class SevenZipLibraryManagerExt
+    {
+        /// <summary>
+        /// External interface for getting library path.
+        /// </summary>
+        /// <returns></returns>
+        public static string DetermineLibraryFilePath()
+        {
+            return SevenZipLibraryManager.DetermineLibraryFilePath();
+        }
+    }
+    // END M3------------------------------------
+
     /// <summary>
     /// 7-zip library low-level wrapper.
     /// </summary>
@@ -33,7 +50,11 @@ namespace SevenZip
         /// </remarks>
         private static string _libraryFileName = DetermineLibraryFilePath();
 
-        private static string DetermineLibraryFilePath()
+        /// <summary>
+        /// Returns the lookup path for the 7z library.
+        /// </summary>
+        /// <returns></returns>
+        public static string DetermineLibraryFilePath()
         {
             //if (!string.IsNullOrEmpty(ConfigurationManager.AppSettings["7zLocation"]))
             //{
