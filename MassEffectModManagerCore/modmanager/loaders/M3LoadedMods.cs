@@ -264,7 +264,7 @@ namespace ME3TweaksModManager.modmanager.loaders
                 else
                 {
                     M3Log.Error(@"Unable to create mod library. Mod Manager will now exit.");
-                    Crashes.TrackError(new Exception(@"Unable to create mod library"), new Dictionary<string, string>() { { @"Executable location", App.ExecutableLocation } });
+                    Crashes.TrackError(new Exception(@"Unable to create mod library", e), new Dictionary<string, string>() { { @"Executable location", App.ExecutableLocation } });
                     M3L.ShowDialog(window, M3L.GetString(M3L.string_unableToCreateModLibrary), M3L.GetString(M3L.string_errorCreatingModLibrary), MessageBoxButton.OK, MessageBoxImage.Error);
                     Environment.Exit(1);
                 }
