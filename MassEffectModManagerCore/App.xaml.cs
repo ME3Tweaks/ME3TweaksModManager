@@ -85,7 +85,7 @@ namespace ME3TweaksModManager
         /// <summary>
         /// The highest version of ModDesc that this version of Mod Manager can support.
         /// </summary>
-        public const double HighestSupportedModDesc = 8.0;
+        public const double HighestSupportedModDesc = 8.1;
 
         //Windows 8.1 Update 1
         public static readonly Version MIN_SUPPORTED_OS = new Version(@"10.0.19044");

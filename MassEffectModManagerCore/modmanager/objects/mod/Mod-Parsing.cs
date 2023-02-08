@@ -312,6 +312,11 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         public string LoadFailedReason { get; set; }
 
         /// <summary>
+        /// If this mod makes use of the new bink encoder - this flag is used to help flag that bink is not installed when troubleshooting
+        /// </summary>
+        public bool RequiresEnhancedBink { get; set; }
+
+        /// <summary>
         /// List of DLC requirements for this mod to be able to install
         /// </summary>
         public List<DLCRequirement> RequiredDLC = new List<DLCRequirement>();
@@ -328,7 +333,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         /// The full path to the moddesc.ini file
         /// </summary>
         public string ModDescPath => FilesystemInterposer.PathCombine(IsInArchive, ModPath, @"moddesc.ini");
-        
+
         /// <summary>
         /// If this mod was was loaded from archive or from disk
         /// </summary>
@@ -830,7 +835,6 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             #region BASEGAME and OFFICIAL HEADERS
 
             var supportedOfficialHeaders = ModJob.GetSupportedNonCustomDLCHeaders(Game);
-
 
             //We must check against official headers
             //ME2 doesn't support anything but basegame.
@@ -1805,6 +1809,17 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 
             //What tool to launch post-install
             PostInstallToolLaunch = iniData[@"ModInfo"][@"postinstalltool"];
+
+            // Enhanced bink
+            if (ModDescTargetVersion >= 8.1 && (Game.IsLEGame() || Game == MEGame.LELauncher))
+            {
+                if (bool.TryParse(iniData[@"ModInfo"][@"requiresenhancedbink"], out var usesEnhancedBink))
+                {
+                    // Marks mod are requiring the enhanced bink
+                    RequiresEnhancedBink = usesEnhancedBink;
+                    M3Log.Information(@"This mod requires the enhanced bink2w64 dll", Settings.LogModStartup && usesEnhancedBink);
+                }
+            }
 
             // SECURITY CHECK
             #region TASK SILOING CHECK

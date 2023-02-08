@@ -256,7 +256,14 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 return;
             }
 
-            if (!InstallOptionsPackage.InstallTarget.IsBinkBypassInstalled())
+            var needsBinkInstalled = !InstallOptionsPackage.InstallTarget.IsBinkBypassInstalled();
+            if (!needsBinkInstalled && InstallOptionsPackage.ModBeingInstalled.RequiresEnhancedBink &&
+                !InstallOptionsPackage.InstallTarget.IsEnhancedBinkInstalled())
+            {
+                needsBinkInstalled = true;
+            }
+
+            if (needsBinkInstalled)
             {
                 try
                 {
@@ -837,6 +844,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 metacmm.RequiredDLC.ReplaceAll(InstallOptionsPackage.ModBeingInstalled.RequiredDLC);
                 metacmm.IncompatibleDLC.ReplaceAll(InstallOptionsPackage.ModBeingInstalled.IncompatibleDLC);
                 metacmm.OptionsSelectedAtInstallTime.ReplaceAll(optionsChosen);
+                metacmm.RequiresEnhancedBink = InstallOptionsPackage.ModBeingInstalled.RequiresEnhancedBink;
 
                 // Write it out to disk
                 metacmm.WriteMetaCMM(metacmmPath, App.BuildNumber.ToString());
