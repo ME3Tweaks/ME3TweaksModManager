@@ -104,8 +104,18 @@ namespace ME3TweaksModManager.modmanager.merge.game2email
         public static bool NeedsMergedGame2(GameTargetWPF target)
         {
             if (!target.Game.IsGame2()) return false;
-            var emailSupercedances = M3Directories.GetFileSupercedances(target, new[] { @".emm" });
-            return emailSupercedances.TryGetValue(EMAIL_MERGE_MANIFEST_FILE, out var infoList) && infoList.Count > 0;
+            try
+            {
+                var emailSupercedances = M3Directories.GetFileSupercedances(target, new[] { @".emm" });
+                return emailSupercedances.TryGetValue(EMAIL_MERGE_MANIFEST_FILE, out var infoList) &&
+                       infoList.Count > 0;
+            }
+            catch (Exception e)
+            {
+                M3Log.Exception(e, @"Error getting file supercedences:");
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -119,7 +129,7 @@ namespace ME3TweaksModManager.modmanager.merge.game2email
                 return; // Do not run on non-generated. It may be that a prior check determined this merge was not necessary 
 
             var loadedFiles = MELoadedFiles.GetFilesLoadedInGame(mergeDLC.Target.Game, gameRootOverride: mergeDLC.Target.TargetPath);
-            
+
             // File to base modifications on
             loadedFiles.TryGetValue(@"BioD_Nor_103Messages.pcc", out var pccFile);
             if (pccFile is null) return;
