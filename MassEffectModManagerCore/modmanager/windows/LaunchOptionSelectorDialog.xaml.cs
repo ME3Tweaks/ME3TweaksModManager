@@ -35,6 +35,22 @@ namespace ME3TweaksModManager.modmanager.windows
             Owner = owner;
             Game = game;
             PopulatePackages();
+
+            var matchGuid = Guid.NewGuid();
+            switch (Game)
+            {
+                case MEGame.LE1:
+                    matchGuid = Settings.SelectedLE1LaunchOption;
+                    break;
+                case MEGame.LE2:
+                    matchGuid = Settings.SelectedLE2LaunchOption;
+                    break;
+                case MEGame.LE3:
+                    matchGuid = Settings.SelectedLE3LaunchOption;
+                    break;
+            }
+            ChosenOption = AvailableLaunchOptionsPackages.FirstOrDefault(x => x.PackageGuid == matchGuid);
+
             LoadCommands();
             InitializeComponent();
         }
@@ -122,6 +138,10 @@ namespace ME3TweaksModManager.modmanager.windows
                         Settings.SelectedLE3LaunchOption = ChosenOption.PackageGuid;
                         break;
                 }
+
+                // Repopulate the list so the main window knows about the new option
+                // and doesn't use the old data
+                M3LoadedMods.Instance.LoadLaunchOptions();
             }
 
             Close();
