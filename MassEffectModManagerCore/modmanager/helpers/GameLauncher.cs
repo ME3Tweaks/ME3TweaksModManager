@@ -181,13 +181,16 @@ namespace ME3TweaksModManager.modmanager.helpers
             if (presuppliedArguments != null)
             {
                 // We were passed in arguments to use
-                WriteLEAutobootValue(presuppliedArguments);
+                if (target.Supported)
+                {
+                    WriteLEAutobootValue(presuppliedArguments);
+                }
                 RunGame(target, exe, presuppliedArguments, null, environmentVars);
             }
             else
             {
                 // We use the generated command line arguments as none were passed in
-                if (target.Game.IsLEGame())
+                if (target.Game.IsLEGame() && target.Supported)
                 {
                     WriteLEAutobootValue(string.Join(@" ", commandLineArgs));
                 }
