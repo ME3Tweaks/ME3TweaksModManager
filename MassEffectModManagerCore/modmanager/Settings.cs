@@ -66,11 +66,25 @@ namespace ME3TweaksModManager.modmanager
             set => SetProperty(ref _logModUpdater, value);
         }
 
+        private static bool _logBackupAndRestore;
+        public static bool LogBackupAndRestore
+        {
+            get => _logBackupAndRestore;
+            set => SetProperty(ref _logBackupAndRestore, value);
+        }
+
         private static bool _launchGamesThroughOrigin = false; //Affects only ME1/ME2. ME3 always uses origin.
         public static bool LaunchGamesThroughOrigin
         {
             get => _launchGamesThroughOrigin;
             set => SetProperty(ref _launchGamesThroughOrigin, value);
+        }
+
+        public static bool _useOptimizedTextureRestore;
+        public static bool UseOptimizedTextureRestore
+        {
+            get => _useOptimizedTextureRestore;
+            set => SetProperty(ref _useOptimizedTextureRestore, value);
         }
 
         private static bool _generationSettingOT = true;
@@ -385,6 +399,8 @@ namespace ME3TweaksModManager.modmanager
             UpdaterServiceManifestStoragePath = LoadSettingString(settingsIni, "UpdaterService", "ManifestStoragePath", null);
 
             LogModStartup = LoadSettingBool(settingsIni, "Logging", "LogModStartup", false);
+            LogModUpdater = LoadSettingBool(settingsIni, "Logging", "LogModUpdater", false);
+            LogBackupAndRestore = LoadSettingBool(settingsIni, "Logging", "LogBackupAndRestore", false);
             LogMixinStartup = LoadSettingBool(settingsIni, "Logging", "LogMixinStartup", false);
             EnableTelemetry = LoadSettingBool(settingsIni, "Logging", "EnableTelemetry", true);
             LogModInstallation = LoadSettingBool(settingsIni, "Logging", "LogModInstallation", false);
@@ -407,6 +423,8 @@ namespace ME3TweaksModManager.modmanager
             SelectedLE2LaunchOption = LoadSettingGuid(settingsIni, "ModManager", "SelectedLE2LaunchOption", Guid.Empty);
             SelectedLE3LaunchOption = LoadSettingGuid(settingsIni, "ModManager", "SelectedLE3LaunchOption", Guid.Empty);
 
+            // Debugging options - these have no UI.
+            UseOptimizedTextureRestore = LoadSettingBool(settingsIni, "ModManagerDebug", "UseOptimizedTextureRestore", true);
 
             // Dismiss messages
             OneTimeMessage_ModListIsNotListOfInstalledMods = LoadSettingBool(settingsIni, "ModManager", "ShowModListNotInstalledModsMessage", true);
@@ -452,7 +470,7 @@ namespace ME3TweaksModManager.modmanager
             {
                 return defaultValue;
             }
-         
+
             if (ini[section][key] != defaultValue)
             {
                 LogSettingChanging(key, ini[section][key]);
@@ -567,6 +585,9 @@ namespace ME3TweaksModManager.modmanager
 
                 SaveSettingBool(settingsIni, "Logging", "LogModStartup", LogModStartup);
                 SaveSettingBool(settingsIni, "Logging", "LogMixinStartup", LogMixinStartup);
+                SaveSettingBool(settingsIni, "Logging", "LogModUpdater", LogModUpdater);
+                SaveSettingBool(settingsIni, "Logging", "LogBackupAndRestore", LogBackupAndRestore);
+
                 SaveSettingBool(settingsIni, "Logging", "LogModMakerCompiler", LogModMakerCompiler);
                 SaveSettingBool(settingsIni, "Logging", "EnableTelemetry", EnableTelemetry);
                 SaveSettingString(settingsIni, "UpdaterService", "Username", UpdaterServiceUsername);
@@ -602,6 +623,10 @@ namespace ME3TweaksModManager.modmanager
 
                 SaveSettingBool(settingsIni, "ModMaker", "AutoAddControllerMixins", ModMakerControllerModOption);
                 SaveSettingBool(settingsIni, "ModMaker", "AutoInjectCustomKeybinds", ModMakerAutoInjectCustomKeybindsOption);
+
+                // Debug options
+                SaveSettingBool(settingsIni, "ModManagerDebug", "UseOptimizedTextureRestore", UseOptimizedTextureRestore);
+
 
                 File.WriteAllText(SettingsPath, settingsIni.ToString());
                 return SettingsSaveResult.SAVED;

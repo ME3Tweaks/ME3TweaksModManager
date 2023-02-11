@@ -15,6 +15,7 @@ using ME3TweaksCoreWPF;
 using ME3TweaksCoreWPF.Targets;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.localizations;
+using Microsoft.AppCenter.Crashes;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Pathoschild.FluentNexus.Models;
 using PropertyChanged;
@@ -102,6 +103,7 @@ namespace ME3TweaksModManager.modmanager.objects
             BackupStatus = BackupService.GetBackupStatus(game);
             RestoreController = new GameRestore(game)
             {
+                SetProgressIndeterminateCallback = (indeterminate) => ProgressIndeterminate = indeterminate,
                 BlockingErrorCallback = (message, title) =>
                 {
                     M3L.ShowDialog(window, title, message, MessageBoxButton.OK, MessageBoxImage.Error);
@@ -146,7 +148,15 @@ namespace ME3TweaksModManager.modmanager.objects
                 RestoreErrorCallback = (title, message) =>
                 {
                     M3L.ShowDialog(window, title, message, MessageBoxButton.OK, MessageBoxImage.Error);
-                }
+                },
+                GetRestoreEverythingString = (promptGame =>
+                {
+                    // Specific text for 'Manage Target' is M3 only
+                    if (promptGame.IsOTGame()) return M3L.GetString(M3L.string_entireGameDirectoryWillBeDeletedOT);
+                    return M3L.GetString(M3L.string_entireGameDirectoryWillBeDeletedLE);
+                }),
+                UseOptimizedTextureRestore = () => Settings.UseOptimizedTextureRestore,
+                ShouldLogEveryCopiedFile = () => Settings.LogBackupAndRestore,
             };
             AvailableRestoreTargets.AddRange(availableTargets);
             AvailableRestoreTargets.Add(new GameTargetWPF(game, M3L.GetString(M3L.string_restoreToCustomLocation), false, true));
@@ -158,6 +168,26 @@ namespace ME3TweaksModManager.modmanager.objects
             Task.Run(() =>
             {
                 RestoreController.PerformRestore(RestoreTarget, RestoreTarget.IsCustomOption ? null : RestoreTarget.TargetPath);
+            }).ContinueWith(x =>
+            {
+                if (x.Exception != null)
+                {
+                    M3Log.Exception(x.Exception, @"Error restoring game:");
+                    Crashes.TrackError(x.Exception, new Dictionary<string, string>()
+                    {
+                        {@"CustomOption", RestoreTarget.IsCustomOption.ToString()},
+                        {@"TargetPath", RestoreTarget.TargetPath},
+                    });
+                    // There was an error
+                    RestoreTarget.StripCmmVanilla(); // do this to ensure target can still attempt to load.
+                    RestoreController.SetRestoreInProgress(false);
+                    BackupService.RefreshBackupStatus(game: RestoreTarget.Game);
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        M3L.ShowDialog(window, $"Failed to restore game due to error: {x.Exception.Message}",
+                            M3L.GetString(M3L.string_fullGameRestore), MessageBoxButton.OK, MessageBoxImage.Error);
+                    });
+                }
             });
         }
     }
