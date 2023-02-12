@@ -242,6 +242,7 @@
 	<system:String x:Key="string_errorReadingCoalescedini">Fehler beim Lesen von Coalesced.ini</system:String>
 	<system:String x:Key="string_interp_gameNameFullConsole">{0} Vollbildkonsole</system:String>
 	<system:String x:Key="string_interp_gameNameMiniConsole">{0} Mini-Konsole</system:String>
+	<system:String x:Key="string_unbindKey">Belegung aufheben</system:String>
 	<system:String x:Key="string_testSquadmateMerge">Squadmitglieder-Merge testen</system:String>
 	<system:String x:Key="string_mMV1DEBUG">MMV1 DEBUG</system:String>
 	<system:String x:Key="string_buildMD5DB">MD5 DB erstellen</system:String>
@@ -1714,6 +1715,7 @@
 	<system:String x:Key="string_useBetaFeatureQuestion">Beta-Funktion benutzen?</system:String>
 	<system:String x:Key="string_interp_copyingX">{0} wird kopiert</system:String>
 	<system:String x:Key="string_interp_directoryNotEmptyWillDeleteEverything">Das gewählte Verzeichnis ist nicht leer: {0}. ALLE NICHT-SPIELDATEIEN UND -ORDNER IN DIESEM VERZEICHNIS WERDEN GELÖSCHT. Bist du sicher, dass du fortfahren willst?</system:String>
+	<system:String x:Key="string_interp_failedToRestoreGameDueToErrorX">Fehler beim Wiederherstellen des Spiels: {0}</system:String>
 	<system:String x:Key="string_interp_noBackupMessage">Es ist keine Sicherung von {0} verfügbar. Wenn du fortfährst, kannst du kein Spiel-Backup erstellen, da das Spiel modifiziert wird. Bist du sicher, dass du dies tun möchtest?</system:String>
 	<system:String x:Key="string_backupWarning">Backup Warnung</system:String>
 	<system:String x:Key="string_interp_invalidHenchNameSquadmateNameValueIsCaseSensitive">Ungültiger Begleitername: {0}. Dieser Wert unterscheidet zwischen Groß- und Kleinschreibung</system:String>
