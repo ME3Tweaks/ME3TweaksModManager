@@ -1065,6 +1065,7 @@ namespace ME3TweaksModManager.modmanager.localizations
 		public const string string_useBetaFeatureQuestion = "string_useBetaFeatureQuestion";
 		public const string string_interp_copyingX = "string_interp_copyingX";
 		public const string string_interp_directoryNotEmptyWillDeleteEverything = "string_interp_directoryNotEmptyWillDeleteEverything";
+		public const string string_interp_failedToRestoreGameDueToErrorX = "string_interp_failedToRestoreGameDueToErrorX";
 		public const string string_hashingFiles = "string_hashingFiles";
 		public const string string_creatingArchive = "string_creatingArchive";
 		public const string string_submitToME3Tweaks = "string_submitToME3Tweaks";

@@ -184,7 +184,7 @@ namespace ME3TweaksModManager.modmanager.objects
                     BackupService.RefreshBackupStatus(game: RestoreTarget.Game);
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        M3L.ShowDialog(window, $"Failed to restore game due to error: {x.Exception.Message}",
+                        M3L.ShowDialog(window, M3L.GetString(M3L.string_interp_failedToRestoreGameDueToErrorX, x.Exception.Message),
                             M3L.GetString(M3L.string_fullGameRestore), MessageBoxButton.OK, MessageBoxImage.Error);
                     });
                 }
