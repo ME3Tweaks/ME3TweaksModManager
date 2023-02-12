@@ -1978,6 +1978,7 @@
     <!-- 0={Game name (ME1/ME2, etc)} -->
     <system:String x:Key="string_interp_gameNameMiniConsole">{0} Mini Console</system:String>
     <!-- 0={Game name (ME1/ME2, etc)} -->
+    <system:String x:Key="string_unbindKey">Unbind key</system:String>
 
     <!-- Updater Service Panel -->
     <system:String x:Key="string_updaterService">Updater Service</system:String>
