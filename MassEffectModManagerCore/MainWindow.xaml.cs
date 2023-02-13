@@ -505,11 +505,11 @@ namespace ME3TweaksModManager
                 if (NexusModsUtilities.UserInfo != null)
                 {
                     NexusLoginInfoString = NexusModsUtilities.UserInfo.Name;
-                    //M3L.GetString(M3L.string_nexusLoggedIn);
                 }
 
                 //prevent reseting ui to not authorized
-                return;
+                // 02/13/2023 - is this what we really want? We want the UI to refresh right?
+                // return;
             }
 
             SetNexusNotAuthorizedUI();
