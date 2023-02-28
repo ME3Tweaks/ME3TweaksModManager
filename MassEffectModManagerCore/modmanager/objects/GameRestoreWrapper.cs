@@ -106,7 +106,10 @@ namespace ME3TweaksModManager.modmanager.objects
                 SetProgressIndeterminateCallback = (indeterminate) => ProgressIndeterminate = indeterminate,
                 BlockingErrorCallback = (message, title) =>
                 {
-                    M3L.ShowDialog(window, title, message, MessageBoxButton.OK, MessageBoxImage.Error);
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        M3L.ShowDialog(window, title, message, MessageBoxButton.OK, MessageBoxImage.Error);
+                    });
                 },
                 ConfirmationCallback = (message, title) =>
                 {
@@ -147,7 +150,10 @@ namespace ME3TweaksModManager.modmanager.objects
                 },
                 RestoreErrorCallback = (title, message) =>
                 {
-                    M3L.ShowDialog(window, title, message, MessageBoxButton.OK, MessageBoxImage.Error);
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        M3L.ShowDialog(window, title, message, MessageBoxButton.OK, MessageBoxImage.Error);
+                    });
                 },
                 GetRestoreEverythingString = (promptGame =>
                 {
