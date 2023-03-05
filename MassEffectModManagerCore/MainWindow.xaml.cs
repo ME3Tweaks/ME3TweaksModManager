@@ -2401,8 +2401,6 @@ namespace ME3TweaksModManager
             {
                 ME3TweaksCoreLib.Initialize(LibraryBoot.GetPackage());
                 LibraryBoot.AddM3SpecificFixes();
-                M3Log.Information(@"Ensuring default ASI assets are present");
-                M3Utilities.ExtractDefaultASIResources();
 
                 //debugMethod();
                 CurrentOperationText = M3L.GetString(M3L.string_loadingTargets);
