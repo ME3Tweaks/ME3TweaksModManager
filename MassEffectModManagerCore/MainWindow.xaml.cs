@@ -2411,7 +2411,7 @@ namespace ME3TweaksModManager
             {
                 if (x.Exception != null)
                 {
-                    Debug.WriteLine(@"Exception!");
+                    M3Log.Exception(x.Exception, @"An error occurred during startup: ");
                 }
 
                 IsEnabled = true;
