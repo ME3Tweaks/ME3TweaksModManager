@@ -242,6 +242,7 @@
 	<system:String x:Key="string_errorReadingCoalescedini">Errore nella lettura di Coalesced.ini</system:String>
 	<system:String x:Key="string_interp_gameNameFullConsole">Console completa di {0}</system:String>
 	<system:String x:Key="string_interp_gameNameMiniConsole">Mini Console di {0}</system:String>
+	<system:String x:Key="string_unbindKey">Dissocia tasto</system:String>
 	<system:String x:Key="string_testSquadmateMerge">Testa merge compagno di squadra</system:String>
 	<system:String x:Key="string_mMV1DEBUG">DEBUG MMV1</system:String>
 	<system:String x:Key="string_buildMD5DB">Builda MD5 DB</system:String>
@@ -1714,6 +1715,7 @@
 	<system:String x:Key="string_useBetaFeatureQuestion">Usare le funzionalità beta?</system:String>
 	<system:String x:Key="string_interp_copyingX">Copia di {0}</system:String>
 	<system:String x:Key="string_interp_directoryNotEmptyWillDeleteEverything">La cartella selezionata non è vuota: {0}. TUTTI I FILE NON DI GIOCO E LE CARTELLE PRESENTI IN QUESTA CARTELLA VERRANNO ELIMINATI. Sei sicuro di voler continuare?</system:String>
+	<system:String x:Key="string_interp_failedToRestoreGameDueToErrorX">Impossibile ripristinare il gioco a causa del seguente errore: {0}</system:String>
 	<system:String x:Key="string_interp_noBackupMessage">Non ci sono backup disponibili per {0}. Se continui sarai impossibilitato a farne dato che il gioco verrà modificato. Sei sicuro di volerlo fare?</system:String>
 	<system:String x:Key="string_backupWarning">Avviso per il backup</system:String>
 	<system:String x:Key="string_interp_invalidHenchNameSquadmateNameValueIsCaseSensitive">Nome del membro dell'equipaggio invalido: {0}. Il valore è case sensitive.</system:String>

@@ -781,6 +781,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private static Version me3tweaksToolGetLatestVersion(string tool)
         {
+            if (App.ServerManifest == null)
+                return null;
             switch (tool)
             {
                 case LegendaryExplorer_Beta:
@@ -796,6 +798,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
         private static string me3tweaksToolGetDownloadUrl(string tool)
         {
+            if (App.ServerManifest == null)
+                return null;
             switch (tool)
             {
                 case LegendaryExplorer_Beta:

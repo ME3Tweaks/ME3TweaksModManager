@@ -35,6 +35,22 @@ namespace ME3TweaksModManager.modmanager.windows
             Owner = owner;
             Game = game;
             PopulatePackages();
+
+            var matchGuid = Guid.NewGuid();
+            switch (Game)
+            {
+                case MEGame.LE1:
+                    matchGuid = Settings.SelectedLE1LaunchOption;
+                    break;
+                case MEGame.LE2:
+                    matchGuid = Settings.SelectedLE2LaunchOption;
+                    break;
+                case MEGame.LE3:
+                    matchGuid = Settings.SelectedLE3LaunchOption;
+                    break;
+            }
+            ChosenOption = AvailableLaunchOptionsPackages.FirstOrDefault(x => x.PackageGuid == matchGuid);
+
             LoadCommands();
             InitializeComponent();
         }
@@ -108,21 +124,24 @@ namespace ME3TweaksModManager.modmanager.windows
 
         private void SaveAndClose()
         {
-            // If somehow null is set we don't do anything.
-            if (ChosenOption == null)
-                return;
-
-            switch (Game)
+            if (ChosenOption != null)
             {
-                case MEGame.LE1:
-                    Settings.SelectedLE1LaunchOption = ChosenOption.PackageGuid;
-                    break;
-                case MEGame.LE2:
-                    Settings.SelectedLE2LaunchOption = ChosenOption.PackageGuid;
-                    break;
-                case MEGame.LE3:
-                    Settings.SelectedLE3LaunchOption = ChosenOption.PackageGuid;
-                    break;
+                switch (Game)
+                {
+                    case MEGame.LE1:
+                        Settings.SelectedLE1LaunchOption = ChosenOption.PackageGuid;
+                        break;
+                    case MEGame.LE2:
+                        Settings.SelectedLE2LaunchOption = ChosenOption.PackageGuid;
+                        break;
+                    case MEGame.LE3:
+                        Settings.SelectedLE3LaunchOption = ChosenOption.PackageGuid;
+                        break;
+                }
+
+                // Repopulate the list so the main window knows about the new option
+                // and doesn't use the old data
+                M3LoadedMods.Instance.LoadLaunchOptions();
             }
 
             Close();

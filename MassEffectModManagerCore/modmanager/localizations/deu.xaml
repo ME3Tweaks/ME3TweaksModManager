@@ -242,6 +242,7 @@
 	<system:String x:Key="string_errorReadingCoalescedini">Fehler beim Lesen von Coalesced.ini</system:String>
 	<system:String x:Key="string_interp_gameNameFullConsole">{0} Vollbildkonsole</system:String>
 	<system:String x:Key="string_interp_gameNameMiniConsole">{0} Mini-Konsole</system:String>
+	<system:String x:Key="string_unbindKey">Belegung aufheben</system:String>
 	<system:String x:Key="string_testSquadmateMerge">Squadmitglieder-Merge testen</system:String>
 	<system:String x:Key="string_mMV1DEBUG">MMV1 DEBUG</system:String>
 	<system:String x:Key="string_buildMD5DB">MD5 DB erstellen</system:String>
@@ -415,6 +416,7 @@
 	<system:String x:Key="string_downloadFailed">Herunterladen fehlgeschlagen</system:String>
 	<system:String x:Key="string_error_cantDownloadNotEnoughInfoInStartupManifest">ME3Tweaks Mod Manager wurde ohne Netzwerkzugriff gestartet oder konnte das startup manifest nicht laden - starte das Programm neu und mit Netzwerkzugriff, um für das Herunterladen dieses Programmes benötigte Informationen zu laden</system:String>
 	<system:String x:Key="string_error_netRuntimeMissing">Die .NET {0} x64 Desktop Laufzeitumgebung ist nicht installiert</system:String>
+	<system:String x:Key="string_interp_errorGettingStoragePathForToolX">Fehler beim Abrufen des Speicherpfads für {0}: {1}.</system:String>
 	<system:String x:Key="string_restoreFromME3Tweaks">Von ME3Tweaks wiederherstellen</system:String>
 	<system:String x:Key="string_theFollowingModsFailedToLoad">Die folgenden Mods konnten nicht aus der Bibliothek geladen werden. Klicke die Mods an um den Grund dafür zu finden.</system:String>
 	<system:String x:Key="string_failedMods">Fehlgeschlagene Mods</system:String>
@@ -584,7 +586,7 @@
 	<system:String x:Key="string_selectLaunchOption">Wähle eine Startoption aus</system:String>
 	<system:String x:Key="string_createNewLaunchOption">Neue Startoption erstellen</system:String>
 	<system:String x:Key="string_editSelectedLaunchOption">Bearbeite ausgewählte Startoption</system:String>
-	<system:String x:Key="string_title_selectLaunchOption">Wählen Sie eine Startoption aus, die beim Starten des Spiels aus dem Mod-Manager verwendet werden soll.</system:String>
+	<system:String x:Key="string_title_selectLaunchOption">Wähle eine Startoption aus, die beim Starten des Spiels aus dem Mod Manager verwendet werden soll.</system:String>
 	<system:String x:Key="string_gameLaunchParameters">Spielstartparameter</system:String>
 	<system:String x:Key="string_gameLanguage">Spielsprache</system:String>
 	<system:String x:Key="string_subtitles">Untertitel</system:String>
@@ -1216,6 +1218,7 @@
 	<system:String x:Key="string_deletingExistingModInLibrary">Existierender Mod wird aus der Bibliothek gelöscht</system:String>
 	<system:String x:Key="string_blacklistedMod">Gesperrter Mod</system:String>
 	<system:String x:Key="string_description_blacklistedMod" xml:space="preserve">Die Entwickler von ME3Tweaks Mod Manager haben diese Datei aus einer der folgenden Gründe gesperrt:\n - Der/die Mod(s) in dieser Datei funktionieren bekanntermaßen nicht und wurden von ihrem Autor aufgegeben\n - Der/die Mod(s) in dieser Datei sind destruktiv für das Spiel für Endbenutzer</system:String>
+	<system:String x:Key="string_interp_errorCreatingModFolderX">Beim Erstellen des Ordners für diese Mod ist ein Fehler aufgetreten: {0}</system:String>
 	<system:String x:Key="string_dialog_mustBePremiumUserToDownload">Datei kann nicht heruntergeladen werden: Du musst Premiummitglied bei NexusMods sein, um direct download links zu nutzen</system:String>
 	<system:String x:Key="string_dialog_cannotDownloadDeletedFile">Datei kann nicht heruntergeladen werden: von NexusMods gelöscht</system:String>
 	<system:String x:Key="string_interp_errorDownloadingModX">Fehler beim Herunterladen des Mods: {0}</system:String>
@@ -1297,6 +1300,11 @@
 	<system:String x:Key="string_applyingMergemods">Wende Mergemods an</system:String>
 	<system:String x:Key="string_interp_minVersionAppend">(Mindestversion: {0})</system:String>
 	<system:String x:Key="string_notice_directModsDontGoToLibrary">Direkt aus dem Archiv installierte Mods erscheinen nicht in der Mod-Bibliothek</system:String>
+	<system:String x:Key="string_interp_errorInstallingBinkBypassX">Beim Installieren der Bink-Umgehung ist ein Fehler aufgetreten, der für die vollständige Modding-Unterstützung erforderlich ist: {0}</system:String>
+	<system:String x:Key="string_title_errorInstallingBinkBypass">Fehler beim Installieren der Bink-Umgehung</system:String>
+	<system:String x:Key="string_interp_errorInstallingTLKMergesX">Beim Installieren von TLK-Merges ist ein Fehler aufgetreten: {0}</system:String>
+	<system:String x:Key="string_title_errorInstallingTLKMerge">Fehler beim Installieren von TLK-Merge</system:String>
+	<system:String x:Key="string_modRequiresAMDProcessor">Diese Mod kann nur auf einem System mit einem AMD-Prozessor installiert werden.</system:String>
 	<system:String x:Key="string_addSelectedModsToDeployment">Gewählte Mods zur Veröffentlichung hinzufügen</system:String>
 	<system:String x:Key="string_description_addSelectedModsToDeployment">Wähle Mods, die veröffentlich werden sollen. Du kannst mehrere Mods auf einmal auswählen, indem du die Steuerung- oder Shift-Taste gedrückt hältst.</system:String>
 	<system:String x:Key="string_addModsToDeployment">Mods zur Veröffentlichung hinzufügen</system:String>
@@ -1707,6 +1715,7 @@
 	<system:String x:Key="string_useBetaFeatureQuestion">Beta-Funktion benutzen?</system:String>
 	<system:String x:Key="string_interp_copyingX">{0} wird kopiert</system:String>
 	<system:String x:Key="string_interp_directoryNotEmptyWillDeleteEverything">Das gewählte Verzeichnis ist nicht leer: {0}. ALLE NICHT-SPIELDATEIEN UND -ORDNER IN DIESEM VERZEICHNIS WERDEN GELÖSCHT. Bist du sicher, dass du fortfahren willst?</system:String>
+	<system:String x:Key="string_interp_failedToRestoreGameDueToErrorX">Fehler beim Wiederherstellen des Spiels: {0}</system:String>
 	<system:String x:Key="string_interp_noBackupMessage">Es ist keine Sicherung von {0} verfügbar. Wenn du fortfährst, kannst du kein Spiel-Backup erstellen, da das Spiel modifiziert wird. Bist du sicher, dass du dies tun möchtest?</system:String>
 	<system:String x:Key="string_backupWarning">Backup Warnung</system:String>
 	<system:String x:Key="string_interp_invalidHenchNameSquadmateNameValueIsCaseSensitive">Ungültiger Begleitername: {0}. Dieser Wert unterscheidet zwischen Groß- und Kleinschreibung</system:String>

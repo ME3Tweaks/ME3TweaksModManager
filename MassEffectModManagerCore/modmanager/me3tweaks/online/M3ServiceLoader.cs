@@ -34,7 +34,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.online
             M3ServiceLoader.TouchupMixinPackage();
 
             var hasUpdatedLocalization = M3OnlineContent.HasUpdatedLocalization(App.CurrentLanguage);
-            if (hasUpdatedLocalization.HasValue)
+            if (hasUpdatedLocalization == true)
             {
                 window.SetApplicationLanguageAsync(App.CurrentLanguage, false); //Force update of localization
             }

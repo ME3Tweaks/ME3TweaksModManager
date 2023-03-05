@@ -19,6 +19,17 @@ namespace ME3TweaksModManager.modmanager.gameini
         {
             Inputfile = file;
             using FileStream fs = new FileStream(file, FileMode.Open);
+            ReadFromStream(fs);
+        }
+
+        public ME2Coalesced(Stream fs, string filePath = null)
+        {
+            Inputfile = filePath;
+            ReadFromStream(fs);
+        }
+
+        public void ReadFromStream(Stream fs)
+        {
             int unknownInt = fs.ReadInt32();
             if (unknownInt != 0x1E)
             {
@@ -59,14 +70,26 @@ namespace ME3TweaksModManager.modmanager.gameini
         {
             string outfile = outputfile ?? Inputfile;
             MemoryStream outStream = new MemoryStream();
+            SerializeToMemory(outStream);
+            File.WriteAllBytes(outfile, outStream.ToArray());
+            return true;
+        }
+
+        /// <summary>
+        /// Serializes this coalesced file to memory.
+        /// </summary>
+        /// <param name="outStream">The stream to write to</param>
+        /// <returns>True if successful, false otherwise (no case returns this)</returns>
+        public bool SerializeToMemory(MemoryStream outStream)
+        {
             outStream.WriteInt32(0x1E); //Unknown header but seems to just be 1E. Can't find any documentation on what this is.
             foreach (var file in Inis)
             {
                 //Console.WriteLine("Coalescing " + Path.GetFileName(file));
-                outStream.WriteStringLatin1(file.Key);
-                outStream.WriteStringLatin1(file.Value.ToString());
+                outStream.WriteUnrealStringLatin1(file.Key);
+                outStream.WriteUnrealStringLatin1(file.Value.ToString(false));
             }
-            File.WriteAllBytes(outfile, outStream.ToArray());
+
             return true;
         }
     }

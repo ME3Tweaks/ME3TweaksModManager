@@ -242,6 +242,7 @@
 	<system:String x:Key="string_errorReadingCoalescedini">Ошибка чтения Coalesced.ini</system:String>
 	<system:String x:Key="string_interp_gameNameFullConsole">{0} Полноразмерная Консоль</system:String>
 	<system:String x:Key="string_interp_gameNameMiniConsole">{0} Мини Консоль</system:String>
+	<system:String x:Key="string_unbindKey">Отвязать клавишу</system:String>
 	<system:String x:Key="string_testSquadmateMerge">Тест Squadmate Merge</system:String>
 	<system:String x:Key="string_mMV1DEBUG">Отладка MMV1</system:String>
 	<system:String x:Key="string_buildMD5DB">Создание базы данных MD5</system:String>
@@ -1714,6 +1715,7 @@
 	<system:String x:Key="string_useBetaFeatureQuestion">Использовать бета-функцию?</system:String>
 	<system:String x:Key="string_interp_copyingX">Копирование {0}</system:String>
 	<system:String x:Key="string_interp_directoryNotEmptyWillDeleteEverything">Выбранная директория не пуста: {0}. ВСЕ НЕИГРОВЫЕ ФАЙЛЫ И ПАПКИ В ЭТОЙ ДИРЕКТОРИИ БУДУТ УДАЛЕНЫ. Вы уверены, что хотите продолжить?</system:String>
+	<system:String x:Key="string_interp_failedToRestoreGameDueToErrorX">Не удалось восстановить игру из-за ошибки: {0}</system:String>
 	<system:String x:Key="string_interp_noBackupMessage">Отсутствуют доступные архивы {0}. Если продолжить, вы не сможете создать архив игры, так как игра будет модифицирована. Вы уверены, что хотите сделать это?</system:String>
 	<system:String x:Key="string_backupWarning">Предупреждение архивации</system:String>
 	<system:String x:Key="string_interp_invalidHenchNameSquadmateNameValueIsCaseSensitive">Неверное имя сопартийца: {0}. Значение чувствительно к регистру.</system:String>
