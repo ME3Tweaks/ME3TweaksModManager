@@ -146,7 +146,7 @@ The format for a single property update for an export. You may have several of t
 - StrProperty
 - NameProperty - Instanced names use a special format. Place the instance number after a '|'. For example, an instanced name that would appear in LEX as 'Foo_0' should here be written as "Foo|1".
 - EnumProperty - This is the same as ByteProperty(Enum). Pass in EnumType.Value as propertyvalue. Example: `FireMode.FireMode_FullAuto` for a FireMode enum.
-- ObjectProperty - Does not support porting in, only relinking to existing objects. Pass in full instanced path as propertyvalue.
+- ObjectProperty - Does not support porting in, only relinking to existing objects. Pass in full instanced path as propertyvalue. Use `M3M_NULL` to specify Null/0.
 - ArrayProperty - Value is stored in a seperate file, specified by propertyasset. To get the value to put in that file, make your changes in LEX, then right-click on the property and select "Copy array literal (for mergemods)", then paste into your file.
 
 **Example:**
