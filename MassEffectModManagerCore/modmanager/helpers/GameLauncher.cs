@@ -202,6 +202,7 @@ namespace ME3TweaksModManager.modmanager.helpers
         {
             // If the game source is steam and it's LE, we can use Link2EA as they all require EA app to run.
             // Technically this can also be done for ME3 but I'm not going to bother changing launch code for it
+            var usingEALink = false;
             if (target.GameSource != null && target.GameSource.Contains(@"Steam") && (target.Game == MEGame.ME3 || target.Game.IsLEGame() || target.Game == MEGame.LELauncher))
             {
                 // Experimental: Use Link2EA to boot without EA sign in
@@ -214,11 +215,12 @@ namespace ME3TweaksModManager.modmanager.helpers
                             ? element.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)  // Split the item
                             : new string[] { element })  // Keep the entire item
                         .SelectMany(element => element).ToList();
-                    exe = splitStr[0];
+                    exe = splitStr[0]; // Use EA Link
 
                     var theme = target.Game == MEGame.ME3 ? @"me3" : @"met";
-                    var gameId = target.Game == MEGame.ME3 ? 1238020 : 1328670; // Game IDs
+                    var gameId = target.Game == MEGame.ME3 ? 1238020 : 1328670; // Game IDs on steam
                     commandLineArgsString = $@"link2ea://launchgame/{gameId}?platform=steam&theme={theme}"; // The id of what to run.
+                    usingEALink = true;
                 }
             }
 
