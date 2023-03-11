@@ -195,7 +195,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 {
                     var result = M3L.ShowDialog(Application.Current.MainWindow,
                         M3L.GetString(M3L.string_interp_noBackupMessage, Game), M3L.GetString(M3L.string_backupWarning),
-                        MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.No;
+                        MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.Yes;
                     if (!result)
                         return; // Don't proceed
                 }
