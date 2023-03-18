@@ -408,62 +408,54 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             #region SET KEYS
 
             private static void SetIniBasedKeybinds(DuplicatingIni bioinput, string consoleKeyStr, string typeKeyStr,
-                bool wipeTypeKey = false, bool isFullWipe = false)
+                bool wipeTypeKey = false)
             {
                 var engineConsole = bioinput.GetSection(@"Engine.Console");
                 if (engineConsole != null)
                 {
-                    if (isFullWipe)
+
+                    // Setting values
+                    if (consoleKeyStr != null)
                     {
-                        // Wiping values
-                        engineConsole.RemoveAllNamedEntries(@"ConsoleKey");
-                        engineConsole.RemoveAllNamedEntries(@"TypeKey");
+                        var consoleKey = engineConsole.GetValue(@"ConsoleKey");
+                        if (consoleKey != null)
+                        {
+                            consoleKey.Value = consoleKeyStr;
+                        }
+                        else
+                        {
+                            engineConsole.Entries.Add(new DuplicatingIni.IniEntry(@"ConsoleKey", typeKeyStr));
+                        }
                     }
-                    else
+
+                    var typeKey = engineConsole.GetValue(@"TypeKey");
+                    if (wipeTypeKey && typeKey != null)
                     {
-                        // Setting values
-                        if (consoleKeyStr != null)
-                        {
-                            var consoleKey = engineConsole.GetValue(@"ConsoleKey");
-                            if (consoleKey != null)
-                            {
-                                consoleKey.Value = consoleKeyStr;
-                            }
-                            else
-                            {
-                                engineConsole.Entries.Add(new DuplicatingIni.IniEntry(@"ConsoleKey", typeKeyStr));
-                            }
-                        }
+                        engineConsole.Entries.Remove(typeKey);
+                    }
 
-                        var typeKey = engineConsole.GetValue(@"TypeKey");
-                        if (wipeTypeKey && typeKey != null)
+                    if (typeKeyStr != null)
+                    {
+                        if (typeKey != null)
                         {
-                            engineConsole.Entries.Remove(typeKey);
+                            typeKey.Value = typeKeyStr;
                         }
-
-                        if (typeKeyStr != null)
+                        else
                         {
-                            if (typeKey != null)
-                            {
-                                typeKey.Value = typeKeyStr;
-                            }
-                            else
-                            {
-                                //Create Typekey
-                                engineConsole.Entries.Add(new DuplicatingIni.IniEntry(@"TypeKey", typeKeyStr));
-                            }
+                            //Create Typekey
+                            engineConsole.Entries.Add(new DuplicatingIni.IniEntry(@"TypeKey", typeKeyStr));
                         }
                     }
                 }
             }
 
-            private void SetME1ConsoleKeybinds(string consoleKeyStr, string typeKeyStr, bool wipeTypeKey = false, bool isFullWipe = false)
+            private void SetME1ConsoleKeybinds(string consoleKeyStr, string typeKeyStr, bool wipeTypeKey = false)
             {
                 var iniFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"BioWare", @"Mass Effect", @"Config", @"BIOInput.ini");
                 if (File.Exists(iniFile))
                 {
                     var ini = DuplicatingIni.LoadIni(iniFile);
-                    SetIniBasedKeybinds(ini, consoleKeyStr, typeKeyStr, wipeTypeKey, isFullWipe: isFullWipe);
+                    SetIniBasedKeybinds(ini, consoleKeyStr, typeKeyStr, wipeTypeKey);
                     var wasReadOnly = M3Utilities.ClearReadOnly(iniFile);
                     File.WriteAllText(iniFile, ini.ToString());
                     if (wasReadOnly)
@@ -518,11 +510,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 }
             }
 
-            private void SetME2ConsoleKeybinds(string consoleKeyStr, string typeKeyStr, bool isFullWipe = false)
+            private void SetME2ConsoleKeybinds(string consoleKeyStr, string typeKeyStr)
             {
                 var me2c = ME2Coalesced.OpenFromTarget(SelectedTarget);
                 var bioinput = me2c.Inis.FirstOrDefault(x => Path.GetFileName(x.Key).Equals(@"BioInput.ini", StringComparison.InvariantCultureIgnoreCase));
-                SetIniBasedKeybinds(bioinput.Value, consoleKeyStr, typeKeyStr, isFullWipe: isFullWipe);
+                SetIniBasedKeybinds(bioinput.Value, consoleKeyStr, typeKeyStr);
                 me2c.Serialize();
             }
 
@@ -532,7 +524,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             /// <param name="target"></param>
             /// <param name="consoleKeyStr"></param>
             /// <param name="typeKeyStr"></param>
-            private void SetGame3ConsoleKeybinds(string consoleKeyStr = null, string typeKeyStr = null, bool isFullWipe = false)
+            private void SetGame3ConsoleKeybinds(string consoleKeyStr = null, string typeKeyStr = null)
             {
                 var coalPath = Path.Combine(SelectedTarget.TargetPath, @"BIOGame", @"CookedPCConsole", @"Coalesced.bin");
                 Dictionary<string, string> coalescedFilemapping = null;
@@ -551,38 +543,30 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 var coalFileDoc = XDocument.Parse(bioinputText);
                 var consolekey = coalFileDoc.XPathSelectElement(@"/CoalesceAsset/Sections/Section[@name='engine.console']/Property[@name='consolekey']");
                 var typekey = coalFileDoc.XPathSelectElement(@"/CoalesceAsset/Sections/Section[@name='engine.console']/Property[@name='typekey']");
-                if (isFullWipe)
+
+                if (consolekey != null && consoleKeyStr != null)
                 {
-                    consolekey?.Remove();
-                    typekey?.Remove();
+                    consolekey.Value = consoleKeyStr;
                 }
                 else
                 {
+                    var consoleElement =
+                        coalFileDoc.XPathSelectElement(@"/CoalesceAsset/Sections/Section[@name='engine.console']");
+                    var consoleKeyElement = new XElement(@"Property", consoleKeyStr);
+                    consoleKeyElement.SetAttributeValue(@"name", @"consolekey");
+                    consoleElement.Add(consoleKeyElement);
+                }
 
-                    if (consolekey != null && consoleKeyStr != null)
-                    {
-                        consolekey.Value = consoleKeyStr;
-                    }
-                    else
-                    {
-                        var consoleElement =
-                            coalFileDoc.XPathSelectElement(@"/CoalesceAsset/Sections/Section[@name='engine.console']");
-                        var consoleKeyElement = new XElement(@"Property", consoleKeyStr);
-                        consoleKeyElement.SetAttributeValue(@"name", @"consolekey");
-                        consoleElement.Add(consoleKeyElement);
-                    }
-
-                    if (typekey != null && typeKeyStr != null)
-                    {
-                        typekey.Value = typeKeyStr;
-                    }
-                    else
-                    {
-                        var consoleElement = coalFileDoc.XPathSelectElement(@"/CoalesceAsset/Sections/Section[@name='engine.console']");
-                        var consoleKeyElement = new XElement(@"Property", typeKeyStr);
-                        consoleKeyElement.SetAttributeValue(@"name", @"typekey");
-                        consoleElement.Add(consoleKeyElement);
-                    }
+                if (typekey != null && typeKeyStr != null)
+                {
+                    typekey.Value = typeKeyStr;
+                }
+                else
+                {
+                    var consoleElement = coalFileDoc.XPathSelectElement(@"/CoalesceAsset/Sections/Section[@name='engine.console']");
+                    var consoleKeyElement = new XElement(@"Property", typeKeyStr);
+                    consoleKeyElement.SetAttributeValue(@"name", @"typekey");
+                    consoleElement.Add(consoleKeyElement);
                 }
 
                 coalescedFilemapping[@"BioInput.xml"] = coalFileDoc.ToString();
