@@ -14,14 +14,17 @@
                 <TextBlock Text="{DynamicResource string_listeningForKeypress}" TextWrapping="Wrap" TextAlignment="Center" Foreground="DarkTurquoise" FontSize="28" />
                 <TextBlock Text="{DynamicResource string_pressAnyKeyOnYourKeyboardToAssignItFor}" TextWrapping="Wrap" TextAlignment="Center" Foreground="DarkTurquoise" FontSize="16" />
                 <TextBlock Text="{Binding KeyBeingAssigned}" TextWrapping="Wrap" TextAlignment="Center" Foreground="DarkTurquoise" FontSize="16" />
-                <Button Content="{DynamicResource string_cancelKeyAssignment}" HorizontalAlignment="Center" Margin="0,5,0,0" Click="CancelKeyAssignment_Click" />
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Content="{DynamicResource string_unbindKey}" Margin="0,5,5,0"  Click="UnbindKeyAssignment_Click" />
+                    <Button Content="{DynamicResource string_cancelKeyAssignment}" HorizontalAlignment="Center" Margin="0,5,0,0" Click="CancelKeyAssignment_Click" />
+                </StackPanel>
             </StackPanel>
         </StackPanel>
         <Button DockPanel.Dock="Bottom" Content="{DynamicResource string_close}" HorizontalAlignment="Right" Padding="7,4" Command="{Binding CloseCommand}" />
         <ScrollViewer>
             <ItemsControl ItemsSource="{Binding Games}">
                 <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="local:ConsoleKeybindingPanel+KeybindingGame">
+                    <DataTemplate DataType="{x:Type usercontrols:ConsoleKeybindingPanel+KeybindingGame}">
                         <DockPanel Margin="0,5,5,5">
                             <Image DockPanel.Dock="Left" 
                                    Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}, ConverterParameter=48}" 

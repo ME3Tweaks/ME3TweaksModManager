@@ -75,7 +75,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             public ICommand DefaultCommand { get; }
             public ICommand ChangeMiniKeyCommand { get; }
             public ICommand ChangeFullKeyCommand { get; }
-            public ICommand StripKeybindingsCommand { get; }
 
             public string FullConsoleKeyText { get; private set; }
             public string MiniConsoleKeyText { get; private set; }
@@ -85,7 +84,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             public string WhereKeysAreDefinedText { get; }
 
             public KeybindingGame(MEGame game, IEnumerable<GameTargetWPF> targets,
-                Action<Action<string>, string> beginListeningForKey)
+                Action<Action<string>, Action, string> beginListeningForKey)
             {
                 BeginListeningForKeyDelegate = beginListeningForKey;
                 Game = game;
@@ -94,70 +93,14 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 DefaultCommand = new GenericCommand(ResetKeybinds, CanResetKeybinds);
                 ChangeMiniKeyCommand = new GenericCommand(SetMiniKey, CanResetKeybinds);
                 ChangeFullKeyCommand = new GenericCommand(SetFullKey, CanResetKeybinds);
-                StripKeybindingsCommand = new GenericCommand(WipeKeybinds, CanResetKeybinds);
                 Targets.AddRange(targets);
                 SelectedTarget = Targets.FirstOrDefault();
                 LoadKeys();
             }
 
-            public Action<Action<string>, string> BeginListeningForKeyDelegate { get; }
+            public Action<Action<string>, Action, string> BeginListeningForKeyDelegate { get; }
 
             public string GameName => Game.ToGameName();
-
-            private void WipeKeybinds()
-            {
-                // We do not have a 1:1 compiler for ME3/LE3
-                // ME1 uses ini that doesn't get backed up
-                // ME2 uses ini that is 1:1
-                // LE1/LE2 use coalesced ini that is 1:1
-                if (!BackupService.GetBackupStatus(Game).BackedUp)
-                {
-                    // Ask user if they want to edit game without a backup.
-                    var result = M3L.ShowDialog(Application.Current.MainWindow,
-                        M3L.GetString(M3L.string_interp_noBackupMessage, Game), M3L.GetString(M3L.string_backupWarning),
-                        MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.Yes;
-                    if (!result)
-                        return; // Don't proceed
-                }
-
-                OperationInProgress = true;
-                FullConsoleKeyText = M3L.GetString(M3L.string_updatingKeybindsPleaseWait);
-                MiniConsoleKeyText = "";
-                NamedBackgroundWorker nbw = new NamedBackgroundWorker($@"{Game}-ConsoleKeySetterThread");
-                nbw.DoWork += (a, b) =>
-                {
-                    if (Game == MEGame.ME1) ClearME1ConsoleKeybinds();
-                    if (Game == MEGame.ME2) ClearME2ConsoleKeybinds();
-                    if (Game.IsGame3()) ClearGame3ConsoleKeybinds();
-                    if (Game is MEGame.LE1 or MEGame.LE2) ClearLE1LE2ConsoleKeybinds();
-
-                    TelemetryInterposer.TrackEvent($@"Wiped {Game} Console Keys");
-                    LoadKeys();
-                };
-                nbw.RunWorkerCompleted += (a, b) =>
-                {
-                    OperationInProgress = false;
-                    CommandManager.InvalidateRequerySuggested();
-                };
-                nbw.RunWorkerAsync();
-            }
-
-            private void ClearLE1LE2ConsoleKeybinds()
-            {
-            }
-
-            private void ClearGame3ConsoleKeybinds()
-            {
-                SetGame3ConsoleKeybinds(isFullWipe: true);
-            }
-
-            private void ClearME2ConsoleKeybinds()
-            {
-            }
-
-            private void ClearME1ConsoleKeybinds()
-            {
-            }
 
             private void SetFullKey()
             {
@@ -165,7 +108,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 // ME1 uses ini that doesn't get backed up
                 // ME2 uses ini that is 1:1
                 // LE1/LE2 use coalesced ini that is 1:1
-                if (!BackupService.GetBackupStatus(Game).BackedUp)
+                if (Game != MEGame.ME1 && !BackupService.GetBackupStatus(Game).BackedUp)
                 {
                     // Ask user if they want to edit game without a backup.
                     var result = M3L.ShowDialog(Application.Current.MainWindow,
@@ -181,7 +124,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         SetKeyWithThread(consoleKeyStr: key);
                 }
 
-                BeginListeningForKeyDelegate?.Invoke(keyPressed,
+                void unbindKey()
+                {
+                    SetKeyWithThread(consoleKeyStr: @""); // blank key value.
+                }
+
+                BeginListeningForKeyDelegate?.Invoke(keyPressed, unbindKey,
                     M3L.GetString(M3L.string_interp_gameNameFullConsole, Game.ToGameName()));
             }
 
@@ -206,7 +154,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         SetKeyWithThread(typeKeyStr: key);
                 }
 
-                BeginListeningForKeyDelegate?.Invoke(keyPressed,
+                void unbindKey()
+                {
+                    SetKeyWithThread(typeKeyStr: @""); // blank key value.
+                }
+
+
+                BeginListeningForKeyDelegate?.Invoke(keyPressed, unbindKey,
                     M3L.GetString(M3L.string_interp_gameNameMiniConsole, Game.ToGameName()));
             }
 
@@ -283,7 +237,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     if (engineConsole != null)
                     {
                         var consoleKey = engineConsole.GetValue(@"ConsoleKey");
-                        if (consoleKey == null)
+                        if (consoleKey == null || consoleKey.Value == @"")
                         {
                             FullConsoleKeyText = M3L.GetString(M3L.string_fullConsoleNotBoundToAKey);
                         }
@@ -293,7 +247,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         }
 
                         var typeKey = engineConsole.GetValue(@"TypeKey");
-                        if (typeKey == null)
+                        if (typeKey == null || typeKey.Value == @"")
                         {
                             MiniConsoleKeyText = M3L.GetString(M3L.string_miniConsoleNotBoundToAKey);
                         }
@@ -333,22 +287,22 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         var typekey =
                             coalFileDoc.XPathSelectElement(
                                 @"/CoalesceAsset/Sections/Section[@name='engine.console']/Property[@name='typekey']");
-                        if (consolekey != null)
-                        {
-                            FullConsoleKeyText = M3L.GetString(M3L.string_interp_fullConsoleBoundToX, consolekey.Value);
-                        }
-                        else
+                        if (consolekey == null || consolekey.Value == @"")
                         {
                             FullConsoleKeyText = M3L.GetString(M3L.string_fullConsoleNotBoundToAKey);
                         }
-
-                        if (typekey != null)
+                        else
                         {
-                            MiniConsoleKeyText = M3L.GetString(M3L.string_interp_miniConsoleBoundToX, typekey.Value);
+                            FullConsoleKeyText = M3L.GetString(M3L.string_interp_fullConsoleBoundToX, consolekey.Value);
+                        }
+
+                        if (typekey == null || typekey.Value == @"")
+                        {
+                            MiniConsoleKeyText = M3L.GetString(M3L.string_miniConsoleNotBoundToAKey);
                         }
                         else
                         {
-                            MiniConsoleKeyText = M3L.GetString(M3L.string_miniConsoleNotBoundToAKey);
+                            MiniConsoleKeyText = M3L.GetString(M3L.string_interp_miniConsoleBoundToX, typekey.Value);
                         }
                     }
                     catch (Exception e)
@@ -385,23 +339,23 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     if (engineSection != null)
                     {
                         var consolekey = engineSection.GetValue(@"ConsoleKey");
-                        if (consolekey != null)
-                        {
-                            FullConsoleKeyText = M3L.GetString(M3L.string_interp_fullConsoleBoundToX, consolekey.Value);
-                        }
-                        else
+                        if (consolekey == null || consolekey.Value == @"")
                         {
                             FullConsoleKeyText = M3L.GetString(M3L.string_fullConsoleNotBoundToAKey);
                         }
+                        else
+                        {
+                            FullConsoleKeyText = M3L.GetString(M3L.string_interp_fullConsoleBoundToX, consolekey.Value);
+                        }
 
                         var typekey = engineSection.GetValue(@"TypeKey");
-                        if (typekey != null)
+                        if (typekey == null || typekey.Value == @"")
                         {
-                            MiniConsoleKeyText = M3L.GetString(M3L.string_interp_miniConsoleBoundToX, typekey.Value);
+                            MiniConsoleKeyText = M3L.GetString(M3L.string_miniConsoleNotBoundToAKey);
                         }
                         else
                         {
-                            MiniConsoleKeyText = M3L.GetString(M3L.string_miniConsoleNotBoundToAKey);
+                            MiniConsoleKeyText = M3L.GetString(M3L.string_interp_miniConsoleBoundToX, typekey.Value);
                         }
 
                         #endregion
@@ -421,7 +375,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     if (engineConsole != null)
                     {
                         var consoleKey = engineConsole.Entries.FirstOrDefault(x => x.Key == @"ConsoleKey");
-                        if (consoleKey == null)
+                        if (consoleKey == null || consoleKey.Value == @"")
                         {
                             FullConsoleKeyText = M3L.GetString(M3L.string_fullConsoleNotBoundToAKey);
                         }
@@ -431,7 +385,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         }
 
                         var typeKey = engineConsole.Entries.FirstOrDefault(x => x.Key == @"TypeKey");
-                        if (typeKey == null)
+                        if (typeKey == null || typeKey.Value == @"")
                         {
                             MiniConsoleKeyText = M3L.GetString(M3L.string_miniConsoleNotBoundToAKey);
                         }
@@ -503,13 +457,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 }
             }
 
-            private void SetME1ConsoleKeybinds(string consoleKeyStr, string typeKeyStr, bool wipeTypeKey = false)
+            private void SetME1ConsoleKeybinds(string consoleKeyStr, string typeKeyStr, bool wipeTypeKey = false, bool isFullWipe = false)
             {
                 var iniFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"BioWare", @"Mass Effect", @"Config", @"BIOInput.ini");
                 if (File.Exists(iniFile))
                 {
                     var ini = DuplicatingIni.LoadIni(iniFile);
-                    SetIniBasedKeybinds(ini, consoleKeyStr, typeKeyStr, wipeTypeKey);
+                    SetIniBasedKeybinds(ini, consoleKeyStr, typeKeyStr, wipeTypeKey, isFullWipe: isFullWipe);
                     var wasReadOnly = M3Utilities.ClearReadOnly(iniFile);
                     File.WriteAllText(iniFile, ini.ToString());
                     if (wasReadOnly)
@@ -546,7 +500,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 nbw.RunWorkerAsync();
             }
 
-            private void SetLE1LE2ConsoleKeybinds(string consoleKeyStr, string typeKeyStr)
+            private void SetLE1LE2ConsoleKeybinds(string consoleKeyStr = null, string typeKeyStr = null)
             {
                 var cookedPath = M3Directories.GetCookedPath(SelectedTarget);
                 var langs = GameLanguage.GetLanguagesForGame(Game);
@@ -656,8 +610,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         //}
 
 
-        private void ListenForKey(Action<string> setKeyCallback, string listeningForKeyName)
+        private void ListenForKey(Action<string> setKeyCallback, Action wipeAssignmentAction, string listeningForKeyName)
         {
+            WipeAssignment = wipeAssignmentAction;
             KeyBeingAssigned = listeningForKeyName;
             IsListeningForKey = true;
             OnKeyPressed = setKeyCallback;
@@ -668,6 +623,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public string KeyBeingAssigned { get; set; }
 
         public Action<string> OnKeyPressed;
+
+        /// <summary>
+        /// Action to perform when the assignment is to be wiped instead.
+        /// </summary>
+        public Action WipeAssignment;
 
 
         public override void HandleKeyPress(object sender, KeyEventArgs e)
@@ -927,6 +887,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
 
             return null; //Not usable
+        }
+
+        private void UnbindKeyAssignment_Click(object sender, RoutedEventArgs e)
+        {
+            IsListeningForKey = false;
+            OnKeyPressed = null;
+            WipeAssignment?.Invoke();
         }
     }
 }
