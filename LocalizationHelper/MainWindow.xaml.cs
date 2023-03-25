@@ -604,7 +604,7 @@ namespace LocalizationHelper
                 var xmlS = Beautify(xmldoc);
 
                 if (xmlS.StartsWith("<?xml version=\"1.0\" encoding=\"utf-8\"?>"))
-                    xmlS =    xmlS.Substring("<?xml version=\"1.0\" encoding=\"utf-8\"?>".Length);
+                    xmlS = xmlS.Substring("<?xml version=\"1.0\" encoding=\"utf-8\"?>".Length);
                 xmlS = xmlS.Trim();
                 ResultTextBox.Text = xmlS;
             }
@@ -677,7 +677,14 @@ namespace LocalizationHelper
             var solutionroot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName).FullName).FullName).FullName).FullName).FullName;
             var M3folder = Path.Combine(solutionroot, "MassEffectModManagerCore");
 
-            string[] dirs =
+            var coreRoot = Path.Combine(solutionroot, "submodules", "ME3TweaksCore");
+            var rootLen = coreRoot.Length + 1;
+
+            // ME3TweaksCore
+            var m3coreRoot = Path.Combine(coreRoot, "ME3TweaksCore");
+            var m3coreWpfRoot = Path.Combine(coreRoot, "ME3TweaksCoreWPF");
+
+            string[] m3Dirs =
             {
                 Path.Combine(M3folder, "modmanager", "usercontrols"),
                 Path.Combine(M3folder, "modmanager", "objects"),
@@ -685,18 +692,37 @@ namespace LocalizationHelper
                 Path.Combine(M3folder, "modmanager", "helpers"),
             };
 
+            string[] m3cDirs =
+            {
+                m3coreRoot,
+                m3coreWpfRoot,
+            };
+
+            string[] dirs = LocalizingM3 ? m3Dirs : m3cDirs;
+
             int i = 0;
             foreach (var dir in dirs)
             {
                 var csFiles = Directory.GetFiles(dir, "*.cs", SearchOption.AllDirectories).ToList();
-                if (i == 0)
+                if (i == 0 && LocalizingM3)
                 {
                     csFiles.Add(Path.Combine(M3folder, "MainWindow.xaml.cs"));
                 }
 
+
+
                 i++;
                 foreach (var csFile in csFiles)
                 {
+                    if (!LocalizingM3)
+                    {
+                        if (csFile.Contains("ME3TweaksCore\\submodules", StringComparison.InvariantCultureIgnoreCase))
+                            continue; // this is not localized.
+
+                        var fname = Path.GetFileName(csFile);
+                        if (fname.Contains("AssemblyInfo") || fname.Contains("AssemblyAttributes") || fname.Contains("LocalizationStringKeys") || fname.Contains("LocalizationCore"))
+                            continue;
+                    }
                     Debug.WriteLine($" --------- FILE: {Path.GetFileName(csFile)} --------");
                     var regex = "([$@]*(\".+?\"))";
                     Regex r = new Regex(regex);

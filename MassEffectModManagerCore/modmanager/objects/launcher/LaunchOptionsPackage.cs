@@ -1,4 +1,5 @@
-﻿using ME3TweaksModManager.modmanager.localizations;
+﻿using System.Diagnostics;
+using ME3TweaksModManager.modmanager.localizations;
 using Newtonsoft.Json;
 
 namespace ME3TweaksModManager.modmanager.objects.launcher
@@ -8,6 +9,7 @@ namespace ME3TweaksModManager.modmanager.objects.launcher
     /// </summary>
 
     [AddINotifyPropertyChangedInterface]
+    [DebuggerDisplay(@"LaunchOptionsPackage {Game} | {PackageTitle} | {ChosenLanguage}")]
     public class LaunchOptionsPackage
     {
         /// <summary>

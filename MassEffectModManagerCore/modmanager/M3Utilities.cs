@@ -1793,11 +1793,6 @@ namespace ME3TweaksModManager.modmanager
             }
         }
 
-        public static void ExtractDefaultASIResources()
-        {
-            // TODO: EXTRACT DEFAULT EMBEDDED ASIS
-        }
-
         /// <summary>
         /// Opens the specified file with the default shell file handler. The file must exist on the filesystem.
         /// </summary>

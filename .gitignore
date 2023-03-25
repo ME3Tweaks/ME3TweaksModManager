@@ -338,7 +338,6 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
-/MassEffectModManagerCore/modmanager/APIKeys.cs
 /MassEffectModManagerCore/modmanager/APIKeysPrivate.cs
 /MassEffectModManagerCore.Tests/coverage.cobertura.xml 
 /MassEffectModManagerCore/Deployment
@@ -351,3 +350,4 @@ healthchecksdb
 /Stage/WinRelease/netcoreapp3.1
 /RoboSharp
 /LegendaryExplorer
+/Stage

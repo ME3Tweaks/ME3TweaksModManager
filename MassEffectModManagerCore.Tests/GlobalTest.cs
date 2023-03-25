@@ -147,5 +147,28 @@ namespace ME3TweaksModManager.Tests
         /// The cached combined services data
         /// </summary>
         public static JToken CombinedServiceData { get; set; }
+
+        public static void PrintDiff<T>(this T[] first, T[] second)
+        {
+            var max = Math.Min(first.Length, second.Length);
+
+            for (int i = 0; i < max; i++)
+            {
+                var val1 = first[i];
+                var val2 = second[i];
+
+                if (!val1.Equals(val2))
+                {
+                    Console.WriteLine($@"Difference at position {i}, first value: {val1}, second value {val2}");
+                    return;
+                }
+
+            }
+
+            // We hit the end
+            Console.WriteLine(
+                $@"Arrays are the same up the minimum length: first len {first.Length}, second len {second.Length}");
+
+        }
     }
 }

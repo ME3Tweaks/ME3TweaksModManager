@@ -122,6 +122,11 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
 
         internal static bool DownloadLocalization(string lang)
         {
+            if (App.ServerManifest == null)
+            {
+                M3Log.Error(@"Server manifest is null; cannot download localization");
+                return false;
+            }
             var livelocmd5 = App.ServerManifest[$@"livelocalization-{lang}"]; // this was checked previously
             var url = LocalizationEndpoint + $@"?lang={lang}&build={App.BuildNumber}";
             var result = M3OnlineContent.DownloadToMemory(url, hash: livelocmd5);

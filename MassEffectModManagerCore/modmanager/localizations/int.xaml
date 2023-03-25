@@ -1229,6 +1229,8 @@
     <!-- 0={File} -->
     <system:String x:Key="string_interp_directoryNotEmptyWillDeleteEverything">The selected directory is not empty: {0}. ALL NON-GAME FILES AND FOLDERS IN THIS DIRECTORY WILL BE DELETED. Are you sure you want to continue?</system:String>
     <!-- 0={Directory user chose} -->
+    <system:String x:Key="string_interp_failedToRestoreGameDueToErrorX">Failed to restore game due to error: {0}</system:String>
+    <!-- 0={Error message} -->
 
     <!-- Test archive generator-->
     <system:String x:Key="string_hashingFiles">Hashing files</system:String>
@@ -1976,6 +1978,7 @@
     <!-- 0={Game name (ME1/ME2, etc)} -->
     <system:String x:Key="string_interp_gameNameMiniConsole">{0} Mini Console</system:String>
     <!-- 0={Game name (ME1/ME2, etc)} -->
+    <system:String x:Key="string_unbindKey">Unbind key</system:String>
 
     <!-- Updater Service Panel -->
     <system:String x:Key="string_updaterService">Updater Service</system:String>

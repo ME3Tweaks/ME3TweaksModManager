@@ -190,11 +190,12 @@ namespace LocalizationHelper
                 {
                     PleaseWaitString = $"Fetching {branch} {lang}";
 
-                    var url = endpoint + lang + ".xaml";
+                    var url = endpoint + lang + $".xaml?random={DateTime.Now.Ticks}";
                     try
                     {
 
                         var dict = client.DownloadStringAwareOfEncoding(url);
+                        Debug.WriteLine(url);
                         dictionaries[lang] = dict;
                     }
                     catch (Exception e)
@@ -210,6 +211,7 @@ namespace LocalizationHelper
                     endpoint =
                         $"https://raw.githubusercontent.com/ME3Tweaks/{repo}/{oldBuildBranch}/{branchLocalizationPath}"; //make dynamic, maybe with octokit.
                     var url = endpoint + "int.xaml";
+                    Debug.WriteLine(url);
                     var dict = client.DownloadStringAwareOfEncoding(url);
                     dictionaries["int-prev"] = dict;
                 }
@@ -244,6 +246,7 @@ namespace LocalizationHelper
                         continue;
                     }
 
+                    Debug.WriteLine(line);
                     if (line.StartsWith("<!--") && line.EndsWith("-->"))
                     {
                         //Comment - parse
@@ -276,6 +279,8 @@ namespace LocalizationHelper
                         //line = line.
                         continue;
                     }
+
+                    
 
                     numBlankLines = 0;
                     var lineInfo = extractInfo(line);
@@ -652,7 +657,7 @@ namespace LocalizationHelper
             {
                 File.WriteAllText(saveFileDialog.FileName, doc.ToString());
                 MessageBox.Show(
-                    "Saved. Upload this file to github at MassEffectModManagerCore/staticfiles/dynamichelp/latesthelp-localized.xml on your localization's fork (on the localization branch) and create a pull request against the latest localization branch.");
+                    "Saved. Upload this file to github at ME3TweaksModManager/blob/staticfiles/liveservices/staticfiles/v1/dynamichelp/dynamichelp.xml on your localization's fork (on the localization branch) and create a pull request against the latest localization branch.");
             }
         }
 
