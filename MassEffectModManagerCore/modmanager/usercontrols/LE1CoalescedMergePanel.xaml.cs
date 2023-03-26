@@ -1,12 +1,16 @@
 ﻿using System.Diagnostics;
 using System.Text;
 using System.Windows.Input;
+using LegendaryExplorerCore.Coalesced;
+using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Helpers;
+using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages.CloningImportingAndRelinking;
 using LegendaryExplorerCore.Unreal;
 using LegendaryExplorerCore.Unreal.BinaryConverters;
 using LegendaryExplorerCore.UnrealScript;
 using LegendaryExplorerCore.UnrealScript.Compiling.Errors;
+using ME3TweaksCore.Config;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Services.BasegameFileIdentification;
@@ -40,9 +44,36 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public static bool RunCoalescedMerge(GameTargetWPF target)
         {
             M3Log.Information($@"Performing Coaleseced Merge for game: {target.TargetPath}");
-            var supercedances = M3Directories.GetFileSupercedances(target, new[] { COALESCED_MERGE_EXTENSION });
-            Dictionary<string, string> funcMap = new();
-            List<string> combinedNames = new List<string>();
+            var coalescedStream = M3Utilities.ExtractInternalFileToStream("ME3TweaksModManager.modmanager.merge.coalesced.LE1.Coalesced_INT.bin");
+            var coalescedAssets = CoalescedConverter.DecompileLE1LE2ToAssets(coalescedStream, @"Coalesced_INT.bin");
+
+            var dlcMountsInOrder = MELoadedDLC.GetDLCNamesInMountOrder(target.Game, target.TargetPath);
+            foreach (var dlc in dlcMountsInOrder)
+            {
+                var dlcCookedPath = Path.Combine(M3Directories.GetDLCPath(target), dlc, target.Game.CookedDirName());
+                var m3cds = Directory.GetFiles(dlcCookedPath, @"*" + COALESCED_MERGE_EXTENSION, SearchOption.TopDirectoryOnly)
+                    .Where(x => Path.GetFileName(x).StartsWith(COALESCED_MERGE_PREFIX)).ToList(); // Find CoalescedMerge-*.m3cd files
+
+                foreach (var m3cd in m3cds)
+                {
+                    M3Log.Information($@"Merging M3 Coalesced Delta {m3cd}");
+                    var m3cdasset = ConfigFileProxy.LoadIni(m3cd);
+                    ConfigMerge.PerformMerge(coalescedAssets, m3cdasset, target.Game);
+                }
+            }
+
+            // Combine the assets
+            var inis = new CaseInsensitiveDictionary<DuplicatingIni>();
+            foreach (var asset in coalescedAssets)
+            {
+                inis[asset.Key] = CoalesceAsset.ToIni(asset.Value);
+            }
+
+            // Write out the coalesced file
+            var coalPath = Path.Combine(M3Directories.GetCookedPath(target), @"Coalesced_INT.bin"); // Todo: Will need copied to other languages
+            var compiledStream = CoalescedConverter.CompileLE1LE2FromMemory(inis);
+            compiledStream.WriteToFile(coalPath);
+
 
             //if (supercedances.TryGetValue(@"PlotManagerUpdate.pmu", out var supercedanes))
             //{
