@@ -100,6 +100,7 @@
 		<None Remove="modmanager\meim\propertymaps\BioEngine.xml" />
 		<None Remove="modmanager\meim\propertymaps\BioGame.xml" />
 		<None Remove="modmanager\meim\propertymaps\BioParty.xml" />
+		<None Remove="modmanager\merge\coalesced\LE1\Coalesced_INT.bin" />
 		<None Remove="modmanager\nexusmodsintegration\nexusmods_icon.png" />
 		<None Remove="modmanager\objects\mod\merge\v1\schema.json" />
 		<None Remove="modmanager\starterkit\BlankTlkFile.pcc" />
@@ -263,6 +264,9 @@
 		<Page Update="modmanager\usercontrols\moddescinieditor\Game1TLKMergeEditorControl.xaml">
 		  <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
 		</Page>
+		<Page Update="modmanager\usercontrols\LE1CoalescedMergePanel.xaml">
+		  <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+		</Page>
 		<Page Update="modmanager\usercontrols\PlotManagerUpdatePanel.xaml">
 		  <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
 		</Page>
@@ -289,6 +293,9 @@
   <ItemGroup>
     <Folder Include="modmanager\objects\merge\email\" />
     <Folder Include="modmanager\squadmates\LE3\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="modmanager\merge\coalesced\LE1\Coalesced_INT.bin" />
   </ItemGroup>
 
 </Project>

@@ -1664,6 +1664,11 @@ namespace ME3TweaksModManager
                 SyncPlotManagerForTarget(v);
             }
 
+            foreach (var v in result.TargetsToCoalescedMerge)
+            {
+                MergeLE1CoalescedForTarget(v);
+            }
+
             // MERGE DLC
 
             // Todo: Persistence? That sounds miserable
@@ -4090,6 +4095,19 @@ namespace ME3TweaksModManager
                 ReleaseBusyControl();
             };
             ShowBusyControl(pmuUI);
+        }
+
+        private void MergeLE1CoalescedForTarget(GameTargetWPF target)
+        {
+            var task = BackgroundTaskEngine.SubmitBackgroundJob(@"MergeLE1Coalesced", "Merging coalesced files",
+                "Merged coalesced files");
+            var coalMergePanel = new LE1CoalescedMergePanel(target);
+            coalMergePanel.Close += (a, b) =>
+            {
+                BackgroundTaskEngine.SubmitJobCompletion(task);
+                ReleaseBusyControl();
+            };
+            ShowBusyControl(coalMergePanel);
         }
 
         private void RunAutoTOCOnGame(object obj)

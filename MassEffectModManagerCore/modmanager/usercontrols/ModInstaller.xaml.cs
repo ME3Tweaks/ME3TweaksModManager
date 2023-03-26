@@ -1395,6 +1395,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     Result.TargetsToPlotManagerSync.Add(InstallOptionsPackage.InstallTarget);
                 }
 
+                if (InstallOptionsPackage.ModBeingInstalled.Game == MEGame.LE1)
+                {
+                    Result.TargetsToCoalescedMerge.Add(InstallOptionsPackage.InstallTarget);
+                }
+
                 if (InstallOptionsPackage.ModBeingInstalled.Game == MEGame.ME3 || InstallOptionsPackage.ModBeingInstalled.Game.IsLEGame())
                 {
                     Result.TargetsToAutoTOC.Add(InstallOptionsPackage.InstallTarget);

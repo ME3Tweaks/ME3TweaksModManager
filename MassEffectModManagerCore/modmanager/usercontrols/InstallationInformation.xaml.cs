@@ -327,6 +327,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         Result.TargetsToPlotManagerSync.Add(SelectedTarget);
                     }
 
+                    if (SelectedTarget.Game == MEGame.LE1)
+                    {
+                        Result.TargetsToCoalescedMerge.Add(SelectedTarget); // Rebuild coalesced merge
+                    }
+
                     if (SelectedTarget.Game.IsGame2())
                     {
                         Result.TargetsToEmailMergeSync.Add(SelectedTarget);

@@ -1,0 +1,15 @@
+﻿<usercontrols:MMBusyPanelBase x:Class="ME3TweaksModManager.modmanager.usercontrols.LE1CoalescedMergePanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:fa5="http://schemas.fontawesome.com/icons/"
+             xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+             xmlns:usercontrols="clr-namespace:ME3TweaksModManager.modmanager.usercontrols"
+             mc:Ignorable="d" 
+             d:DesignHeight="200" d:DesignWidth="300">
+    <StackPanel VerticalAlignment="Center">
+        <fa5:ImageAwesome Icon="Solid_Spinner" Spin="True" SpinDuration="1" Width="32" Height="32" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Margin="10" />
+        <TextBlock HorizontalAlignment="Center" FontSize="16" FontWeight="Light" Text="Merging Coalesced files" TextWrapping="Wrap" TextAlignment="Center"/>
+    </StackPanel>
+</usercontrols:MMBusyPanelBase>
