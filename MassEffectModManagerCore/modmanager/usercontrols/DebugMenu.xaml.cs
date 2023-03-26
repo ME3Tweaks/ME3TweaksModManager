@@ -7,6 +7,7 @@ using ME3TweaksModManager.modmanager.gamemd5;
 using ME3TweaksModManager.modmanager.merge.dlc;
 using ME3TweaksModManager.modmanager.merge.game2email;
 using ME3TweaksModManager.modmanager.objects.mod;
+using ME3TweaksModManager.modmanager.save;
 using ME3TweaksModManager.modmanager.save.game2.UI;
 using ME3TweaksModManager.modmanager.squadmates;
 using SevenZip;
@@ -46,16 +47,21 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         {
             SaveSelectorUI ssui = new SaveSelectorUI();
             ssui.Show();
-
-            /*
-            OpenFileDialog ofd = new OpenFileDialog()
+            ssui.Closed += ((sender, args) =>
             {
-                Filter = @".ron",
-            };
-            if (ofd.ShowDialog().Value)
-            {
-                
-            }*/
+                if (ssui.SaveWasSelected && ssui.SelectedSaveFile != null)
+                {
+                    Task.Run(() =>
+                    {
+                        var task = BackgroundTaskEngine.SubmitBackgroundJob("HeadmorphInstall", "Installing headmorph",
+                            "Installed headmorph to save");
+                        HeadmorphInstaller.InstallHeadmorph(
+                            @"Z:\ModLibrary\LE3\Fanciful EDI Armor Variations\Headmorphs\AeonFlux.me3headmorph",
+                            ssui.SelectedSaveFile.SaveFilePath);
+                        BackgroundTaskEngine.SubmitJobCompletion(task);
+                    });
+                }
+            });
         }
 
 #if DEBUG

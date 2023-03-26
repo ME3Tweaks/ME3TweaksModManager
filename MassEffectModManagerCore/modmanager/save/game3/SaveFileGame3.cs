@@ -38,6 +38,14 @@ namespace ME3TweaksModManager.modmanager.save.game3
     [OriginalName("SFXSaveGame")]
     public class SaveFileGame3 : IUnrealSerializable, INotifyPropertyChanged, ISaveFile
     {
+
+        #region Bindable
+        public string BindableBaseLevelName => BaseLevelName;
+        // public Save.DifficultyOptions BindableDifficulty => Difficulty;
+        public DateTime BindableTimestamp => TimeStamp.ToDate();
+        public TimeSpan BindableTimePlayed => TimeSpan.FromSeconds(SecondsPlayed);
+        #endregion
+
         private Endian _Endian;
         private uint _Version;
         private uint _Checksum;
@@ -52,7 +60,7 @@ namespace ME3TweaksModManager.modmanager.save.game3
                 if (Version == 59) return MEGame.ME3; // Also LE3
                 return MEGame.Unknown;
             }
-        } 
+        }
         public string SaveFilePath { get; init; }
         #region Fields
         public int SaveNumber { get; set; }

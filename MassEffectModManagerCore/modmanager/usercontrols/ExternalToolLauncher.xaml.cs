@@ -43,6 +43,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
         public const string MER = @"Mass Effect Randomizer";
         public const string ME2R = @"Mass Effect 2 Randomizer";
         public const string FVBCCU = @"FVBCCU"; // Femshep vs BroShep Clone Configuration Utility
+        public const string TRILOGYSAVEEDITOR_CMD = @"Trilogy Save Editor (CLI)"; // For installing headmorphs
         private string tool;
 
         public static List<string> ToolsCheckedForUpdatesInThisSession = new List<string>();
@@ -444,6 +445,10 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     toolGithubOwner = @"Exkywor";
                     toolGithubRepoName = @"FSvBSCustomCloneConfigurator";
                     break;
+                case TRILOGYSAVEEDITOR_CMD:
+                    toolGithubOwner = @"KarlitosVII";
+                    toolGithubRepoName = @"trilogy-save-editor-cli";
+                    break;
             }
 
 
@@ -827,6 +832,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             if (toolname == MEM_LE_CMD) return @"MassEffectModderNoGui.exe";
             if (toolname == EGMSettingsLE) return @"EGMSettings.exe";
             if (toolname == FVBCCU) return @"FSvBSC3.exe";
+            if (toolname == TRILOGYSAVEEDITOR_CMD) return @"trilogy-save-editor-cli.exe";
             return toolname.Replace(@" ", @"") + @".exe";
         }
 
@@ -841,7 +847,9 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             MER,
             ME2R,
             ALOTInstaller,
-            FVBCCU
+            FVBCCU,
+            // Command line tools are not supported by this list as they are automatically called
+            // internally and cannot be done by mods.
         };
 
         internal static bool IsSupportedToolID(string toolId) => SupportedToolIDs.Contains(toolId);

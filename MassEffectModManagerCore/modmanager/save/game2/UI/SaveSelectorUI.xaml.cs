@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
@@ -94,8 +95,13 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
                 }
                 else
                 {
-                    // Load cache?
+                    // Load into cache
                     LoadSaveImageCache(sfname);
+                    if (LevelImageCache.TryGetValue(CurrentGame, out var cache2) && cache2.TryGetValue(sfname, out var cachedImage2))
+                    {
+                        CurrentSaveImage = cachedImage2;
+                    }
+
                 }
 
             }
@@ -103,6 +109,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
 
         private static CaseInsensitiveDictionary<string> ME3MapToTextureNames = new()
         {
+
             { @"Biop_Nor", @"GUI_SF_SaveLoad_Images.Elevators.LVL_NorCIC_512x256" },
             { @"Biop_ProEar", @"GUI_SF_SaveLoad_Images.ME3_images.LVL_Earth_512x256" },
             { @"Biop_ProMar", @"GUI_SF_SaveLoad_Images.ME3_images.LVL_Mars_512x256" },
@@ -145,7 +152,7 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
             { @"Biop_Lev004", @"GUI_LevSaveLoad_Images.SaveLoad.LVL_Lev004" },
 
             // Omega
-            { @"Biop_Omg000", @"BIOG_GUI_SAVE_GAME_ICONS.Textures.OmgMission01" },
+            //{ @"Biop_Omg000", @"BIOG_GUI_SAVE_GAME_ICONS.Textures.OmgMission01" },
             { @"Biop_Omg001", @"BIOG_GUI_SAVE_GAME_ICONS.Textures.OmgMission01" },
             { @"Biop_Omg02a", @"BIOG_GUI_SAVE_GAME_ICONS.Textures.OmgMission02" },
             { @"Biop_Omg003", @"BIOG_GUI_SAVE_GAME_ICONS.Textures.OmgMission03" },
@@ -178,10 +185,14 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
             return "";
         }
 
-        private void LoadSaveImageCache(string sfname)
+        private void LoadSaveImageCache(string mapName)
         {
             var imagePackages = new List<string>();
-            LevelImageCache[CurrentGame] = new CaseInsensitiveDictionary<BitmapSource>();
+            if (!LevelImageCache.TryGetValue(CurrentGame, out _))
+            {
+                // Initialize
+                LevelImageCache[CurrentGame] = new CaseInsensitiveDictionary<BitmapSource>();
+            }
             switch (CurrentGame)
             {
                 case MEGame.LE2:
@@ -197,6 +208,8 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
                     imagePackages.Add(@"SFXImages_SaveLoad_6.pcc");
                     break;
                 case MEGame.LE3:
+                    imagePackages.Add(@"SFXGUIData_ElevatorImages.pcc"); // Normandy, Citadel
+
                     imagePackages.Add(@"SFXImages_SaveLoad_1.pcc");
                     imagePackages.Add(@"SFXImages_SaveLoad_2.pcc");
                     imagePackages.Add(@"SFXImages_SaveLoad_3.pcc");
@@ -216,19 +229,39 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
             {
                 if (loadedFiles.TryGetValue(imagePackageName, out var imagePackagePath))
                 {
-                    // Todo: Change to unsafe partial load
-                    var package = MEPackageHandler.OpenMEPackage(imagePackagePath);
-                    foreach (var tex in package.Exports.Where(x => x.IsTexture()))
+                    var exportPath = ConvertLevelToImageName(CurrentGame, mapName);
+
+                    using var package = MEPackageHandler.UnsafePartialLoad(imagePackagePath, x =>
                     {
-                        if (CurrentGame.IsGame2() && !tex.ObjectName.Name.Contains(@"_IMG")) continue;
+                        if (x.InstancedFullPath.CaseInsensitiveEquals(exportPath))
+                        {
+  //                          Debug.WriteLine($"Loading {x.InstancedFullPath}");
+                            return true;
+                        }
+//                        Debug.WriteLine($"Not loading {x.InstancedFullPath}, needs {exportPath}");
+                        return false;
+                    });
+                    var tex = package.FindExport(exportPath);
+
+                    if (tex != null)
+                    {
+                        if (!tex.IsDataLoaded())
+                        {
+                            Debugger.Break();
+                        }
                         Texture2D t2d = new Texture2D(tex);
                         // NOTE: Set 'ClearAlpha' to false to make image support transparency!
-                        var bitmap = Image.convertRawToBitmapARGB(t2d.GetImageBytesForMip(t2d.GetTopMip(), t2d.Export.Game, true, out _), t2d.GetTopMip().width, t2d.GetTopMip().height, Image.getPixelFormatType(t2d.TextureFormat), true);
+                        var bitmap = Image.convertRawToBitmapARGB(
+                            t2d.GetImageBytesForMip(t2d.GetTopMip(), t2d.Export.Game, true, out _),
+                            t2d.GetTopMip().width, t2d.GetTopMip().height, Image.getPixelFormatType(t2d.TextureFormat),
+                            true);
                         //var bitmap = DDSImage.ToBitmap(imagebytes, fmt, mipToLoad.width, mipToLoad.height, CurrentLoadedExport.FileRef.Platform.ToString());
                         var memory = new MemoryStream(bitmap.Height * bitmap.Width * 4 + 54);
                         bitmap.Save(memory, ImageFormat.Bmp);
                         memory.Position = 0;
-                        LevelImageCache[CurrentGame][GetLevelNameFromTexturePath(tex.InstancedFullPath, CurrentGame)] = (BitmapSource)new ImageSourceConverter().ConvertFrom(memory);
+                        LevelImageCache[CurrentGame][GetLevelNameFromTexturePath(tex.InstancedFullPath, CurrentGame)] =
+                            (BitmapSource)new ImageSourceConverter().ConvertFrom(memory);
+                        break;
                     }
                 }
             }
@@ -246,7 +279,12 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
             {
                 var kvp = ME3MapToTextureNames.FirstOrDefault(x => x.Value.Equals(texInstancedFullPath, StringComparison.InvariantCultureIgnoreCase));
                 if (kvp.Key != null)
+                {
+                    // Workaround for duplicates
+                    if (kvp.Key == @"biop_Omg000")
+                        return @"biop_Omg001";
                     return kvp.Key;
+                }
             }
 
             return "";
@@ -272,66 +310,19 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
 
         private void LoadCommands()
         {
-            ImportHeadmorphCommand = new GenericCommand(StartImportingHeadMorph, CanImportHeadMorph);
+            SelectSaveCommand = new GenericCommand(SelectSave, CanSelectSave);
             //RefundHenchTalentsCommand = new GenericCommand(RefundHenchTalents, SaveIsSelected);
             //RefundPlayerTalentsCommand = new GenericCommand(RefundPlayerHenchTalents, SaveIsSelected);
             //RefundHenchPlayerTalentsCommand = new GenericCommand(RefundHenchPlayerTalents, SaveIsSelected);
         }
 
-        private void StartImportingHeadMorph()
+        private void SelectSave()
         {
-            OpenFileDialog ofd = new OpenFileDialog();
-
-            var result = ofd.ShowDialog();
-            if (result.HasValue && result.Value)
-            {
-                var extension = Path.GetExtension(ofd.FileName);
-                if (extension == @".ron")
-                {
-
-                }
-                else if (extension == @".me3headmorph")
-                {
-                    using var input = new MemoryStream(File.ReadAllBytes(ofd.FileName));
-                    var magic = input.ReadStringASCIINull();
-                    if (magic != @"GIBBEDMASSEFFECT3HEADMORPH")
-                        throw new Exception(@"Magic for this .me3headmorph file is incorrect. This is not a gibbed ME3 headmorph.");
-
-                    uint version = input.ReadUInt32();
-
-                    if (version != SelectedSaveFile.Version)
-                    {
-                        throw new Exception(@"This headmorph cannot apply to this save file, it is from a different version of the game.");
-                    }
-
-                    var reader = new UnrealStream(input, true, version);
-                    var morphHead = new MorphHead();
-                    morphHead.Serialize(reader);
-                    SelectedSaveFile.Proxy_PlayerRecord.SetMorphHead(morphHead);
-                    var sf = SelectedSaveFile as SaveFileGame3;
-                    var savePath = Directory.GetParent(sf.SaveFilePath).FullName;
-                    int i = 0;
-                    while (true)
-                    {
-                        var testPath = Path.Combine(savePath, $@"Save_{(i + sf.SaveNumber).ToString().PadLeft(4, '0')}.pcsav");
-                        if (!File.Exists(testPath))
-                        {
-                            savePath = testPath;
-                            break;
-                        }
-
-                        i++;
-                    }
-
-                    var ms = new MemoryStream();
-                    SaveFileGame3.Write(sf, ms);
-                    ms.WriteToFile(savePath);
-                    M3Log.Information($@"Installed headmorph {ofd.FileName} into save {savePath}");
-                }
-            }
+            SaveWasSelected = true;
+            Close();
         }
 
-        private bool CanImportHeadMorph()
+        private bool CanSelectSave()
         {
             return SaveIsSelected() && (SelectedSaveFile.Game.IsGame2() || SelectedSaveFile.Game.IsGame3());
         }
@@ -414,11 +405,8 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
         //            InternalRefundPoints(true, true);
         //        }
 
-        public GenericCommand ImportHeadmorphCommand { get; set; }
-
-        public GenericCommand RefundHenchPlayerTalentsCommand { get; set; }
-
-        public GenericCommand RefundHenchTalentsCommand { get; set; }
+        public GenericCommand SelectSaveCommand { get; set; }
+        public bool SaveWasSelected { get; set; }
 
         private bool SaveIsSelected() => SelectedSaveFile != null;
 

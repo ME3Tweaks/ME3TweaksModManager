@@ -96,7 +96,7 @@
                        TextAlignment="Center" 
                        FontSize="16"
                        Margin="0,0,0,5"/>
-                <Button Content="Install headmorph" Command="{Binding ImportHeadmorphCommand}"/>
+                <Button Content="Install headmorph" Command="{Binding SelectSaveCommand}"/>
             </StackPanel>
         </StackPanel>
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding LoadingSaves, Converter={StaticResource BoolToVisibilityConverter}}">
