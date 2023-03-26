@@ -273,6 +273,9 @@ namespace ME3TweaksModManager
         /// </summary>
         public string FailedModsString { get; set; }
 
+        /// <summary>
+        /// The string shown at the top left of the main window for the NexusMods status
+        /// </summary>
         public string NexusLoginInfoString { get; set; } // BLANK TO START = M3L.GetString(M3L.string_loginToNexusMods);
 
         /// <summary>
@@ -504,12 +507,10 @@ namespace ME3TweaksModManager
 
                 if (NexusModsUtilities.UserInfo != null)
                 {
+                    //prevent resetting ui to not authorized
                     NexusLoginInfoString = NexusModsUtilities.UserInfo.Name;
+                    return;
                 }
-
-                //prevent reseting ui to not authorized
-                // 02/13/2023 - is this what we really want? We want the UI to refresh right?
-                // return;
             }
 
             SetNexusNotAuthorizedUI();
