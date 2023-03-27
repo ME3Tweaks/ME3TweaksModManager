@@ -436,7 +436,7 @@ namespace ME3TweaksModManager.modmanager.windows
                 VisibleFilteredMods.ReplaceAll(M3LoadedMods.Instance.AllLoadedMods.Where(x => x.Game == SelectedGame));
                 if (SelectedGame != MEGame.LELauncher)
                 {
-                    VisibleFilteredASIMods.ReplaceAll(ASIManager.GetASIModsByGame(SelectedGame));
+                    VisibleFilteredASIMods.ReplaceAll(ASIManager.GetASIModsByGame(SelectedGame).Where(x => !x.IsHidden));
                 }
                 else
                 {
