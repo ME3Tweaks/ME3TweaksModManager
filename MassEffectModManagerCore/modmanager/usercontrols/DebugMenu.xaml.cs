@@ -55,9 +55,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     {
                         var task = BackgroundTaskEngine.SubmitBackgroundJob("HeadmorphInstall", "Installing headmorph",
                             "Installed headmorph to save");
-                        HeadmorphInstaller.InstallHeadmorph(
-                            @"Z:\ModLibrary\LE3\Fanciful EDI Armor Variations\Headmorphs\AeonFlux.me3headmorph",
-                            ssui.SelectedSaveFile.SaveFilePath);
+                        var installed = HeadmorphInstaller.InstallHeadmorph(@"Z:\ModLibrary\LE3\Fanciful EDI Armor Variations\Headmorphs\gamora.me3headmorph", ssui.SelectedSaveFile.SaveFilePath, task).Result;
                         BackgroundTaskEngine.SubmitJobCompletion(task);
                     });
                 }

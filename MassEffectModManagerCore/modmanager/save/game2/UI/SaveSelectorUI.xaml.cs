@@ -421,8 +421,13 @@ namespace ME3TweaksModManager.modmanager.save.game2.UI
                 Dictionary<string, List<ISaveFile>> charNameCareers = new Dictionary<string, List<ISaveFile>>();
                 foreach (var saveDir in saveDirs)
                 {
-                    foreach (var sf in Directory.GetFiles(saveDir, @"*.pcsav"))
+                    int numLoaded = 0;
+                    foreach (var sf in Directory.GetFiles(saveDir, @"*.pcsav").OrderByDescending(x=>new FileInfo(x).LastWriteTime))
                     {
+                        if (numLoaded > 50)
+                            break; // Don't load more
+                        numLoaded++;
+
                         using var saveFileS = File.OpenRead(sf);
                         var saveFile = SaveFileLoader.LoadSaveFile(saveFileS, sf);
                         if (!charNameCareers.TryGetValue(saveFile.Proxy_PlayerRecord.Proxy_FirstName, out var list))

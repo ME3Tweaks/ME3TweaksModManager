@@ -520,7 +520,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             // This is to ensure we can create data directory
             try
             {
-                getToolStoragePath(tool);
+                GetToolStoragePath(tool);
             }
             catch (Exception e)
             {
@@ -530,8 +530,8 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
 
             // var toolName = tool.Replace(@" ", "");
-            var localToolFolderName = getToolStoragePath(tool);
-            var localExecutable = Path.Combine(localToolFolderName, toolNameToExeName(tool));
+            var localToolFolderName = GetToolStoragePath(tool);
+            var localExecutable = Path.Combine(localToolFolderName, ToolNameToExeName(tool));
             bool needsDownloading = !File.Exists(localExecutable);
 
             if (!needsDownloading && ToolsCheckedForUpdatesInThisSession.Contains(tool))
@@ -766,7 +766,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             return false;
         }
 
-        private static string getToolStoragePath(string tool)
+        public static string GetToolStoragePath(string tool)
         {
             if (tool == MEM_CMD)
             {
@@ -824,7 +824,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             return true;
         }
 
-        private static string toolNameToExeName(string toolname)
+        public static string ToolNameToExeName(string toolname)
         {
             if (toolname == LegendaryExplorer_Beta) return @"LegendaryExplorer.exe";
             if (toolname == ME2R) return @"ME2Randomizer.exe";
