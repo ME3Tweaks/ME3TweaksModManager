@@ -158,6 +158,22 @@
                         HorizontalContentAlignment="Stretch"
                         SelectedItem="{Binding SelectedAvailableASIMod}" />
                 </TabItem>
+                <TabItem
+                    Header="Texture mods">
+                    <DockPanel>
+                        <Button HorizontalAlignment="Right" Margin="5,8,-8,-8" DockPanel.Dock="Bottom" Content="Locate custom file" Command="{Binding AddCustomMEMModCommand}"/>
+                        <ListBox
+                        BorderThickness="1"
+                        Margin="-8"
+                        IsTextSearchEnabled="True"
+                        TextSearch.TextPath="Name"
+                        Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
+                        ItemContainerStyle="{StaticResource StretchNoPaddingStyle}"
+                        ItemsSource="{Binding VisibleFilteredMEMMods}"
+                        HorizontalContentAlignment="Stretch"
+                        SelectedItem="{Binding SelectedAvailableMEMMod}" />
+                    </DockPanel>
+                </TabItem>
             </TabControl>
             <TextBox
                 Grid.Row="5"

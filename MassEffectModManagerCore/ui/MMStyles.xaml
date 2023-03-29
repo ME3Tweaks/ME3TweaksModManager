@@ -8,7 +8,8 @@
                     xmlns:helpers="clr-namespace:ME3TweaksModManager.modmanager.helpers"
                     xmlns:converters="clr-namespace:ME3TweaksCoreWPF.Converters;assembly=ME3TweaksCoreWPF"
                     xmlns:nativeMods="clr-namespace:ME3TweaksCore.NativeMods;assembly=ME3TweaksCore"
-                    xmlns:batch="clr-namespace:ME3TweaksModManager.modmanager.objects.batch">
+                    xmlns:batch="clr-namespace:ME3TweaksModManager.modmanager.objects.batch"
+                    xmlns:texture="clr-namespace:ME3TweaksModManager.modmanager.objects.mod.texture">
     <converters1:GameToImageIconConverter x:Key="GameToImageIconConverter"/>
     <converters1:BootTargetSourceVisibilityConverter x:Key="BootTargetSourceVisibilityConverter"/>
     <converters1:GameIconVisibilityConverter x:Key="GameIconVisibilityConverter"/>
@@ -184,6 +185,20 @@
         <DockPanel HorizontalAlignment="Stretch">
             <Image DockPanel.Dock="Left" Source="/images/asi.png" Width="16" Height="16" RenderOptions.BitmapScalingMode="HighQuality" Margin="0,0,5,0" VerticalAlignment="Bottom"/>
             <TextBlock  Text="{Binding Path=AssociatedMod.Name}" />
+        </DockPanel>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type texture:MEMMod}">
+        <DockPanel HorizontalAlignment="Stretch">
+            <fa5:ImageAwesome
+                DockPanel.Dock="Left"
+                Margin="3,3,5,3"
+                VerticalAlignment="Center"
+                Icon="Regular_FileAlt"
+                Foreground="{DynamicResource {x:Static adonisUi:Brushes.HyperlinkBrush}}"
+                Height="16"
+                Width="16"
+                RenderOptions.BitmapScalingMode="HighQuality" />
+            <TextBlock Text="{Binding Path=FilePath}" VerticalAlignment="Center" TextWrapping="Wrap"/>
         </DockPanel>
     </DataTemplate>
     <DataTemplate x:Key="TargetSelectorTemplate" DataType="{x:Type targets:GameTarget}">

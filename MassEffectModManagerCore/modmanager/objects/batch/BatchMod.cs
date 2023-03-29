@@ -89,6 +89,7 @@ namespace ME3TweaksModManager.modmanager.objects.batch
             }
         }
 
+        [JsonIgnore]
         /// <summary>
         /// If the saved options for this batch mod should be used by the installer
         /// </summary>

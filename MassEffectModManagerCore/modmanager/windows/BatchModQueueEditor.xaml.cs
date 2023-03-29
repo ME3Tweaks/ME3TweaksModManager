@@ -21,9 +21,11 @@ using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.alternates;
 using ME3TweaksModManager.modmanager.objects.batch;
 using ME3TweaksModManager.modmanager.objects.mod;
+using ME3TweaksModManager.modmanager.objects.mod.texture;
 using ME3TweaksModManager.modmanager.usercontrols;
 using ME3TweaksModManager.ui;
 using Microsoft.AppCenter.Analytics;
+using Microsoft.Win32;
 using Newtonsoft.Json;
 using PropertyChanged;
 using WinCopies.Util;
@@ -40,10 +42,11 @@ namespace ME3TweaksModManager.modmanager.windows
         // Tab constants
         private const int TAB_CONTENTMOD = 0;
         private const int TAB_ASIMOD = 1;
-        // private const int TAB_TEXTUREMOD = 2;
+        private const int TAB_TEXTUREMOD = 2;
 
         public ObservableCollectionExtended<Mod> VisibleFilteredMods { get; } = new ObservableCollectionExtended<Mod>();
         public ObservableCollectionExtended<ASIMod> VisibleFilteredASIMods { get; } = new ObservableCollectionExtended<ASIMod>();
+        public ObservableCollectionExtended<MEMMod> VisibleFilteredMEMMods { get; } = new ObservableCollectionExtended<MEMMod>();
 
         /// <summary>
         /// Contains both ASI (BatchASIMod) and Content mods (BatchMod)
@@ -84,7 +87,6 @@ namespace ME3TweaksModManager.modmanager.windows
             }
         }
 
-
         public ICommand CancelCommand { get; set; }
         public ICommand SaveAndCloseCommand { get; set; }
         public ICommand RemoveFromInstallGroupCommand { get; set; }
@@ -92,6 +94,7 @@ namespace ME3TweaksModManager.modmanager.windows
         public ICommand MoveUpCommand { get; set; }
         public ICommand MoveDownCommand { get; set; }
         public ICommand AutosortCommand { get; set; }
+        public ICommand AddCustomMEMModCommand { get; set; }
 
         private void LoadCommands()
         {
@@ -102,6 +105,37 @@ namespace ME3TweaksModManager.modmanager.windows
             MoveUpCommand = new GenericCommand(MoveUp, CanMoveUp);
             MoveDownCommand = new GenericCommand(MoveDown, CanMoveDown);
             AutosortCommand = new GenericCommand(Autosort, CanAutosort);
+            AddCustomMEMModCommand = new GenericCommand(ShowMEMSelector, CanAddMEMMod);
+        }
+
+        private void ShowMEMSelector()
+        {
+            OpenFileDialog ofd = new OpenFileDialog()
+            {
+                Filter = "MassEffectModder files (*.mem)|*.mem",
+                Title = "Select .mem file",
+            };
+
+            var result = ofd.ShowDialog();
+            if (result == true)
+            {
+                // User selected file
+                MEMMod m = new MEMMod()
+                {
+                    FilePath = ofd.FileName // Todo: Figure out relative pathing
+                };
+
+                m.ParseData();
+
+                // Todo: Make sure it's for the current game
+
+                VisibleFilteredMEMMods.Add(m); //Todo: Check no duplicates in left list (or existing already on right?)
+            }
+        }
+
+        private bool CanAddMEMMod()
+        {
+            return true;
         }
 
         private bool CanAutosort()
@@ -209,7 +243,7 @@ namespace ME3TweaksModManager.modmanager.windows
             if (SelectedTabIndex == TAB_CONTENTMOD) return SelectedAvailableMod != null;
             if (SelectedTabIndex == TAB_ASIMOD) return SelectedAvailableASIMod != null;
             return false;
-        } 
+        }
 
         private bool CanMoveUp()
         {
@@ -229,7 +263,7 @@ namespace ME3TweaksModManager.modmanager.windows
             if (SelectedInstallGroupMod is BatchMod)
             {
                 var index = ModsInGroup.IndexOf(SelectedInstallGroupMod);
-                if (index < ModsInGroup.Count - 1 && ModsInGroup[index+1] is BatchMod)
+                if (index < ModsInGroup.Count - 1 && ModsInGroup[index + 1] is BatchMod)
                 {
                     return true;
                 }
@@ -281,7 +315,14 @@ namespace ME3TweaksModManager.modmanager.windows
                     ModsInGroup.Add(new BatchASIMod(m));
                 }
             }
-
+            else if (SelectedTabIndex == TAB_TEXTUREMOD)
+            {
+                MEMMod m = SelectedAvailableMEMMod;
+                if (VisibleFilteredMEMMods.Remove(m))
+                {
+                    ModsInGroup.Add(new MEMMod(m));
+                }
+            }
         }
 
         private void RemoveContentModFromInstallGroup()
@@ -402,9 +443,15 @@ namespace ME3TweaksModManager.modmanager.windows
         public ASIMod SelectedAvailableASIMod { get; set; }
 
         /// <summary>
+        /// Selected left pane MEM mod
+        /// </summary>
+        public MEMMod SelectedAvailableMEMMod { get; set; }
+
+        /// <summary>
         /// The current selected tab. 0 = content mods, 1 = ASI mods - maybe 2 in future = texture mods?
         /// </summary>
         public int SelectedTabIndex { get; set; }
+
 
         public void OnSelectedAvailableModChanged()
         {
