@@ -1150,16 +1150,16 @@ namespace ME3TweaksModManager
 
                             modIndex++;
                         }
-                        else if (continueInstalling && queue.ModsToInstall.Count == modIndex)
+                        else if (continueInstalling && queue.ModsToInstall.Count == modIndex) // We are at the end of the content mod list
                         {
                             if (queue.ASIModsToInstall.Any())
                             {
                                 ShowRunAndDone(() => InstallBatchASIs(target, queue), M3L.GetString(M3L.string_installingASIMods),
-                                    M3L.GetString(M3L.string_installedASIMods), () => FinishBatchInstall(queue));
+                                    M3L.GetString(M3L.string_installedASIMods), () => HandleBatchTextureInstall(queue));
                             }
                             else
                             {
-                                FinishBatchInstall(queue);
+                                HandleBatchTextureInstall(queue);
                             }
                         }
                         else
@@ -1173,6 +1173,24 @@ namespace ME3TweaksModManager
                 }
             };
             ShowBusyControl(batchLibrary);
+        }
+
+        private void HandleBatchTextureInstall(BatchLibraryInstallQueue queue)
+        {
+            if (queue.TextureModsToInstall.Any())
+            {
+                TextureInstallerPanel tip = new TextureInstallerPanel(queue.TextureModsToInstall.Select(x => x.GetFilePathToMEM()).ToList());
+                tip.Close += (sender, args) =>
+                {
+                    FinishBatchInstall(queue);
+                };
+                ShowBusyControl(tip);
+            }
+            else
+            {
+                FinishBatchInstall(queue); // Advance to next step
+            }
+
         }
 
         private void FinishBatchInstall(BatchLibraryInstallQueue queue)
@@ -4446,12 +4464,13 @@ namespace ME3TweaksModManager
 
         private void InstallMEMFile()
         {
-            TextureInstallerPanel tip = new TextureInstallerPanel();
-            tip.Close += (a, b) =>
-            {
-                ReleaseBusyControl();
-            };
-            ShowBusyControl(tip);
+            // Todo: Fix me (lol i'll forget for sure)
+            //TextureInstallerPanel tip = new TextureInstallerPanel();
+            //tip.Close += (a, b) =>
+            //{
+            //    ReleaseBusyControl();
+            //};
+            //ShowBusyControl(tip);
         }
 
         private void OnWindowLostFocus(object sender, RoutedEventArgs e)

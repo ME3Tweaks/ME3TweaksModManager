@@ -82,6 +82,7 @@ namespace ME3TweaksModManager.modmanager.windows
                 GroupDescription = queueToEdit.QueueDescription;
                 ModsInGroup.ReplaceAll(queueToEdit.ModsToInstall);
                 ModsInGroup.AddRange(queueToEdit.ASIModsToInstall);
+                ModsInGroup.AddRange(queueToEdit.TextureModsToInstall);
                 VisibleFilteredMods.RemoveRange(queueToEdit.ModsToInstall.Select(x => x.Mod));
                 VisibleFilteredASIMods.RemoveRange(queueToEdit.ASIModsToInstall.Select(x => x.AssociatedMod?.OwningMod));
             }
@@ -119,6 +120,14 @@ namespace ME3TweaksModManager.modmanager.windows
             var result = ofd.ShowDialog();
             if (result == true)
             {
+
+                var memFileGame = ModFileFormats.GetGameMEMFileIsFor(ofd.FileName);
+                if (memFileGame != SelectedGame)
+                {
+                    M3L.ShowDialog(this, $"The selected .mem file is not for {SelectedGame} - it is for {memFileGame}. This .mem file cannot be used in this install group.", "Wrong game", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
                 // User selected file
                 MEMMod m = new MEMMod()
                 {
@@ -242,6 +251,7 @@ namespace ME3TweaksModManager.modmanager.windows
         {
             if (SelectedTabIndex == TAB_CONTENTMOD) return SelectedAvailableMod != null;
             if (SelectedTabIndex == TAB_ASIMOD) return SelectedAvailableASIMod != null;
+            if (SelectedTabIndex == TAB_TEXTUREMOD) return SelectedAvailableMEMMod != null;
             return false;
         }
 
@@ -336,6 +346,10 @@ namespace ME3TweaksModManager.modmanager.windows
             {
                 VisibleFilteredASIMods.Add(bai.AssociatedMod.OwningMod);
             }
+            else if (SelectedInstallGroupMod is MEMMod tai && ModsInGroup.Remove(tai))
+            {
+                VisibleFilteredMEMMods.Add(tai);
+            }
         }
 
         private void SaveAndClose()
@@ -373,6 +387,15 @@ namespace ME3TweaksModManager.modmanager.windows
                 asimods.Add(m);
             }
             queue.ASIModsToInstall.ReplaceAll(asimods);
+
+            // Texture mods
+            var texturemods = new List<MEMMod>();
+            foreach (var m in ModsInGroup.OfType<MEMMod>())
+            {
+                texturemods.Add(m);
+            }
+            queue.TextureModsToInstall.ReplaceAll(texturemods);
+
             SavedPath = queue.Save(true); // Todo: add warning if this overrides another object
         }
 

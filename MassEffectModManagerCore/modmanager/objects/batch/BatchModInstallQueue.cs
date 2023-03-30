@@ -11,6 +11,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ME3TweaksModManager.modmanager.objects.mod.texture;
 using Microsoft.AppCenter.Crashes;
 using WinCopies.Util;
 
@@ -68,6 +69,12 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         /// </summary>
         [JsonProperty(@"asimods")]
         public ObservableCollectionExtended<BatchASIMod> ASIModsToInstall { get; } = new ObservableCollectionExtended<BatchASIMod>();
+
+        /// <summary>
+        /// Texture mods that will install at the end of the installation.
+        /// </summary>
+        [JsonProperty(@"texturemods")]
+        public ObservableCollectionExtended<MEMMod> TextureModsToInstall { get; } = new ObservableCollectionExtended<MEMMod>();
 
         /// <summary>
         /// Only used for UI binding!
@@ -158,9 +165,16 @@ namespace ME3TweaksModManager.modmanager.objects.batch
                     mod.AssociateASIObject(modernQueue.Game);
                 }
 
+                foreach (var mod in modernQueue.TextureModsToInstall)
+                {
+                    // We don't have any init on this right now
+                    // Verify file exists?
+                }
+
                 // Populate the full list of mods for UI binding
                 modernQueue.AllModsToInstall.AddRange(modernQueue.ModsToInstall);
                 modernQueue.AllModsToInstall.AddRange(modernQueue.ASIModsToInstall);
+                modernQueue.AllModsToInstall.AddRange(modernQueue.TextureModsToInstall);
 
                 return modernQueue;
             }

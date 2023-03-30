@@ -191,7 +191,7 @@
         <DockPanel HorizontalAlignment="Stretch">
             <fa5:ImageAwesome
                 DockPanel.Dock="Left"
-                Margin="3,3,5,3"
+                Margin="0,0,5,0"
                 VerticalAlignment="Center"
                 Icon="Regular_FileAlt"
                 Foreground="{DynamicResource {x:Static adonisUi:Brushes.HyperlinkBrush}}"

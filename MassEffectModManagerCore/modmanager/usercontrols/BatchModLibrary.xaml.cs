@@ -16,6 +16,7 @@ using ME3TweaksModManager.modmanager.loaders;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.batch;
 using ME3TweaksModManager.modmanager.objects.mod;
+using ME3TweaksModManager.modmanager.objects.mod.texture;
 using ME3TweaksModManager.modmanager.usercontrols.interfaces;
 using ME3TweaksModManager.modmanager.windows;
 using ME3TweaksModManager.ui;
@@ -261,9 +262,13 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 {
                     ModDescriptionText = bam.AssociatedMod?.Description ?? M3L.GetString(M3L.string_modNotAvailableForInstall);
                 }
+                else if (SelectedModInGroup is MEMMod mm)
+                {
+                    ModDescriptionText = $"This texture mod modifies the following textures:\n{string.Join('\n', mm.GetModifiedExportNames())}";
+                }
                 else
                 {
-                    ModDescriptionText = @"This batch mod type is not yet implemented";
+                    ModDescriptionText = @"This batch mod type is not yet implemented"; // This doesn't need localized right now
                 }
             }
         }

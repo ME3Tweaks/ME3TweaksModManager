@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ME3TweaksCore.Helpers;
+using ME3TweaksModManager.modmanager.localizations;
 using Newtonsoft.Json;
 
 namespace ME3TweaksModManager.modmanager.objects.mod.texture
@@ -51,6 +52,12 @@ namespace ME3TweaksModManager.modmanager.objects.mod.texture
         public bool FileExists { get; set; }
 
         /// <summary>
+        /// The list of texture exports this MEM mod modifies. Cached the first time the list is used. 
+        /// </summary>
+        [JsonIgnore]
+        public List<string> ModifiedExportNames { get; set; }
+
+        /// <summary>
         /// Blank initialization constructor
         /// </summary>
         public MEMMod() { }
@@ -78,6 +85,36 @@ namespace ME3TweaksModManager.modmanager.objects.mod.texture
                 Game = ModFileFormats.GetGameMEMFileIsFor(filePath);
                 ModdedTextures = ModFileFormats.GetFileListForMEMFile(filePath);
             }
+        }
+
+        /// <summary>
+        /// Returns the list of modified export names. 
+        /// </summary>
+        /// <returns></returns>
+        public List<string> GetModifiedExportNames()
+        {
+            if (ModifiedExportNames != null) return ModifiedExportNames;
+            var memPath = GetFilePathToMEM();
+            if (File.Exists(memPath))
+            {
+                ModifiedExportNames = ModFileFormats.GetFileListForMEMFile(memPath).OrderBy(x=>x).ToList(); // Alphabetize
+            }
+            else
+            {
+                ModifiedExportNames = new List<string>();
+            }
+
+            return ModifiedExportNames;
+        }
+
+        /// <summary>
+        /// Gets the full path to the MEM file.
+        /// </summary>
+        /// <returns></returns>
+        public string GetFilePathToMEM()
+        {
+            if (PathIsRelativeToModLibrary == false) return FilePath;
+            return Path.Combine(M3LoadedMods.GetCurrentModLibraryDirectory(), FilePath);
         }
     }
 }

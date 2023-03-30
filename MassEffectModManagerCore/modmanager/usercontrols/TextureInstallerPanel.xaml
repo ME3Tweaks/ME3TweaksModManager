@@ -10,8 +10,8 @@
              DataContext="{Binding RelativeSource={RelativeSource Self}}"
              d:DesignHeight="450" d:DesignWidth="800">
     <StackPanel VerticalAlignment="Center">
-        <fa5:ImageAwesome Icon="Solid_Spinner" Spin="True" SpinDuration="1" Width="32" Height="32" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Margin="10" />
-        <TextBlock HorizontalAlignment="Center" FontSize="12" FontWeight="Light" Text="{Binding ActionText, Mode=OneWay}" TextWrapping="Wrap" TextAlignment="Center"/>
-        <TextBlock HorizontalAlignment="Center" FontSize="16" FontWeight="Light" Text="{Binding PercentDone, Mode=OneWay, StringFormat='{}{0}%'}" TextWrapping="Wrap" TextAlignment="Center"/>
+        <Image Source="/modmanager/toolicons/masseffectmodder_big.png" Width="128"/>
+        <TextBlock HorizontalAlignment="Center" FontSize="16" Text="{Binding ActionText, Mode=OneWay}" TextWrapping="Wrap" TextAlignment="Center"/>
+        <TextBlock HorizontalAlignment="Center" FontSize="16" Text="{Binding PercentDone, Mode=OneWay, StringFormat='{}{0}%'}" TextWrapping="Wrap" TextAlignment="Center"/>
     </StackPanel>
 </usercontrols:MMBusyPanelBase>
