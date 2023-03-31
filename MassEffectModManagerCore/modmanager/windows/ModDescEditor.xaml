@@ -118,6 +118,12 @@
                     x:Name="game1tlkmerge_editor_control" />
             </TabItem>
             <TabItem
+                Header="Textures"
+                Visibility="{Binding EditingMod.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='LEGame'}">
+                <moddescinieditor:TexturesEditorControl
+                    x:Name="textures_editor_control"/>
+            </TabItem>
+            <TabItem
                 Header="{DynamicResource string_resultingModdescini}"
                 x:Name="results_tab">
                 <DockPanel>
