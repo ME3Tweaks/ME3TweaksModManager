@@ -76,6 +76,15 @@ namespace ME3TweaksModManager.modmanager.objects.mod.texture
             FileExists = other.FileExists; // Should we do this...?
         }
 
+        public MEMMod(Mod mod, string memModIniStruct)
+        {
+            var parms = StringStructParser.GetCommaSplitValues(memModIniStruct);
+            FilePath = FilesystemInterposer.PathCombine(mod.IsInArchive, mod.ModPath, @"Textures", parms[@"Filename"]);
+            
+            
+            PartOfModdescMod = true;
+        }
+
         public void ParseData()
         {
             var filePath = PathIsRelativeToModLibrary ? Path.Combine(M3LoadedMods.GetCurrentModLibraryDirectory(), FilePath) : FilePath;
@@ -97,7 +106,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.texture
             var memPath = GetFilePathToMEM();
             if (File.Exists(memPath))
             {
-                ModifiedExportNames = ModFileFormats.GetFileListForMEMFile(memPath).OrderBy(x=>x).ToList(); // Alphabetize
+                ModifiedExportNames = ModFileFormats.GetFileListForMEMFile(memPath).OrderBy(x => x).ToList(); // Alphabetize
             }
             else
             {

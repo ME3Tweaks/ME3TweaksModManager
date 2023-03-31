@@ -20,6 +20,7 @@ using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.me3tweaks.services;
 using ME3TweaksModManager.modmanager.objects.alternates;
+using ME3TweaksModManager.modmanager.objects.mod.texture;
 using Microsoft.AppCenter.Analytics;
 using PropertyChanged;
 using SevenZip;
@@ -75,7 +76,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         /// <summary>
         /// Mapping of Custom DLC names to their human-readable versions.
         /// </summary>
-        public Dictionary<string, string> HumanReadableCustomDLCNames = new Dictionary<string, string>();
+        public Dictionary<string, string> HumanReadableCustomDLCNames = new Dictionary<string, string>(0);
         /// <summary>
         /// What game this mod can install to.
         /// </summary>
@@ -134,6 +135,11 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         /// List of files that will always be deleted locally when servicing an update on a client. This has mostly been deprecated for new mods.
         /// </summary>
         public ObservableCollectionExtended<string> UpdaterServiceBlacklistedFiles { get; } = new ObservableCollectionExtended<string>();
+
+        /// <summary>
+        /// A list of referenced texture mods under the Textures folder
+        /// </summary>
+        public List<MEMMod> TextureModReferences { get; set; } = new List<MEMMod>(0);
 
         /// <summary>
         /// If this mod can attempt to check for updates via Nexus. This being true doesn't mean it will - it requires whitelisting.
@@ -1591,6 +1597,24 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 }
 
             }
+            #endregion
+
+            #region Texture Mod References
+
+            if (ModDescTargetVersion >= 8.1)
+            {
+                var textureModsStruct = iniData[@"TEXTUREMODS"][@"files"];
+                if (!string.IsNullOrWhiteSpace(textureModsStruct))
+                {
+                    var tmSplit = StringStructParser.GetParenthesisSplitValues(textureModsStruct);
+                    foreach (var tm in tmSplit)
+                    {
+                        MEMMod mm = new MEMMod(this, tm);
+                        TextureModReferences.Add(mm);
+                    }
+                }
+            }
+
             #endregion
 
             #endregion
