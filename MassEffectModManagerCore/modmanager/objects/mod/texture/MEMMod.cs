@@ -14,6 +14,21 @@ namespace ME3TweaksModManager.modmanager.objects.mod.texture
     /// </summary>
     public class MEMMod
     {
+
+        /// <summary>
+        /// The header string
+        /// </summary>
+        public string DisplayString
+        {
+            get
+            {
+                if (!PathIsRelativeToModLibrary) return Path.GetFileName(FilePath);
+
+
+                return Path.GetFileName(FilePath);
+            }
+        }
+
         /// <summary>
         /// The path to the .mem file - can be relative or absolute
         /// </summary>

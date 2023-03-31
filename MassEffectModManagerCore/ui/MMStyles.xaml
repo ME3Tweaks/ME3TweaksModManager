@@ -189,16 +189,12 @@
     </DataTemplate>
     <DataTemplate DataType="{x:Type texture:MEMMod}">
         <DockPanel HorizontalAlignment="Stretch">
-            <fa5:ImageAwesome
-                DockPanel.Dock="Left"
-                Margin="0,0,5,0"
-                VerticalAlignment="Center"
-                Icon="Regular_FileAlt"
-                Foreground="{DynamicResource {x:Static adonisUi:Brushes.HyperlinkBrush}}"
-                Height="16"
+            <Image
+                Source="/modmanager/toolicons/masseffectmodder_32.png"
                 Width="16"
+                Margin="0,0,5,0"
                 RenderOptions.BitmapScalingMode="HighQuality" />
-            <TextBlock Text="{Binding Path=FilePath}" VerticalAlignment="Center" TextWrapping="Wrap"/>
+            <TextBlock Text="{Binding Path=DisplayString}" VerticalAlignment="Center" TextWrapping="Wrap"/>
         </DockPanel>
     </DataTemplate>
     <DataTemplate x:Key="TargetSelectorTemplate" DataType="{x:Type targets:GameTarget}">
