@@ -145,7 +145,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     {
                         var m3zaf = FilesystemInterposer.PathCombine(IsInArchive, ModPath, Mod.Game1EmbeddedTlkFolderName, Mod.Game1EmbeddedTlkCompressedFilename);
                         if (FilesystemInterposer.FileExists(m3zaf, archive))
-                        { 
+                        {
                             // This file is referenced
                             references.Add($@"{Mod.Game1EmbeddedTlkFolderName}\{Mod.Game1EmbeddedTlkCompressedFilename}");
                             usedCombinedFile = true;
@@ -165,6 +165,11 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             foreach (var additionalDeploymentDir in AdditionalDeploymentFolders)
             {
                 references.AddRange(FilesystemInterposer.DirectoryGetFiles(FilesystemInterposer.PathCombine(IsInArchive, ModPath, additionalDeploymentDir), "*", SearchOption.AllDirectories, archive).Select(x => (IsInArchive && ModPath.Length == 0) ? x : x.Substring(ModPath.Length + 1)).ToList());
+            }
+
+            foreach (var textureModRef in TextureModReferences)
+            {
+                references.Add(textureModRef.GetRelativePathToMEM());
             }
 
             // Banner Image

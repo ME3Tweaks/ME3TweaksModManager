@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using ME3TweaksCore.Helpers;
@@ -12,8 +14,9 @@ namespace ME3TweaksModManager.modmanager.objects.mod.texture
     /// <summary>
     /// Describes a MEMMod - currently only usable in BatchQueues
     /// </summary>
-    public class MEMMod
+    public class MEMMod : INotifyPropertyChanged
     {
+        private string _displayString;
 
         /// <summary>
         /// The header string
@@ -22,12 +25,16 @@ namespace ME3TweaksModManager.modmanager.objects.mod.texture
         {
             get
             {
+                if (_displayString != null) return _displayString;
                 if (!PathIsRelativeToModLibrary) return Path.GetFileName(FilePath);
-
-
                 return Path.GetFileName(FilePath);
             }
+            set => SetField(ref _displayString, value);
         }
+
+        [JsonIgnore]
+        public string Description { get; set; }
+
 
         /// <summary>
         /// The path to the .mem file - can be relative or absolute
@@ -93,10 +100,10 @@ namespace ME3TweaksModManager.modmanager.objects.mod.texture
 
         public MEMMod(Mod mod, string memModIniStruct)
         {
-            var parms = StringStructParser.GetCommaSplitValues(memModIniStruct);
-            FilePath = FilesystemInterposer.PathCombine(mod.IsInArchive, mod.ModPath, @"Textures", parms[@"Filename"]);
-            
-            
+            var parms = StringStructParser.GetCommaSplitValues(memModIniStruct, canBeCaseInsensitive: true);
+            FilePath = parms[@"Filename"]; // FilesystemInterposer.PathCombine(mod.IsInArchive, mod.ModPath, @"Textures", );
+            Description = parms[@"Description"];
+            DisplayString = parms[@"DisplayName"];
             PartOfModdescMod = true;
         }
 
@@ -139,6 +146,34 @@ namespace ME3TweaksModManager.modmanager.objects.mod.texture
         {
             if (PathIsRelativeToModLibrary == false) return FilePath;
             return Path.Combine(M3LoadedMods.GetCurrentModLibraryDirectory(), FilePath);
+        }
+
+        public string GetRelativePathToMEM()
+        {
+            if (!PathIsRelativeToModLibrary && !PartOfModdescMod) throw new Exception("Cannot get relative path to a mem file that is not marked as relative");
+
+            if (PartOfModdescMod)
+            {
+                return Mod.TEXTUREMOD_FOLDER_NAME + Path.DirectorySeparatorChar + FilePath; // Todo: Change to TEXTURES const
+            }
+            
+            // relative to root of the mod library.
+            return FilePath; // Todo: Validate this when we figure out how to handle this case
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        protected bool SetField<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
+        {
+            if (EqualityComparer<T>.Default.Equals(field, value)) return false;
+            field = value;
+            OnPropertyChanged(propertyName);
+            return true;
         }
     }
 }

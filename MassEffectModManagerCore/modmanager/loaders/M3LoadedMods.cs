@@ -15,6 +15,7 @@ using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects;
 using ME3TweaksModManager.modmanager.objects.launcher;
 using ME3TweaksModManager.modmanager.objects.mod;
+using ME3TweaksModManager.modmanager.objects.mod.texture;
 using Microsoft.AppCenter.Crashes;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Newtonsoft.Json;
@@ -136,6 +137,7 @@ namespace ME3TweaksModManager.modmanager.loaders
         /// FOR PROGRESS BARS
         /// </summary>
         public int NumModsLoaded { get; private set; }
+
         /// <summary>
         /// FOR PROGRESS BARS
         /// </summary>
@@ -556,5 +558,23 @@ namespace ME3TweaksModManager.modmanager.loaders
                 Game = game
             };
         }
+
+        /// <summary>
+        /// Returns a list of all ModDesc-owned MEM mods, optionally filtered by game. 
+        /// </summary>
+        /// <param name="game">The game to filter against</param>
+        /// <returns>A list of paired moddesc mods and a paired texture mod</returns>
+        public static List<M3MEMMod> GetAllModMEMs(MEGame game = MEGame.Unknown)
+        {
+            var mm = new List<M3MEMMod>();
+            foreach (var mod in M3LoadedMods.Instance.AllLoadedMods)
+            {
+                if (game != MEGame.Unknown && game != mod.Game) continue; // Skip over this non-matching game
+                mm.AddRange(mod.TextureModReferences.Select(x => new M3MEMMod() { ModdescMod = mod, TextureMod = x }));
+            }
+
+            return mm;
+        }
+        // 
     }
 }

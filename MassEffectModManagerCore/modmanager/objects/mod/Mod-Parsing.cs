@@ -46,6 +46,11 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         public const string MergeModFolderName = @"MergeMods";
 
         /// <summary>
+        /// Textures folder. Do not change
+        /// </summary>
+        public const string TEXTUREMOD_FOLDER_NAME = @"Textures";
+        
+        /// <summary>
         /// The folder that contains the TLK files for the GAME1_EMBEDDED_TLK feature. DO NOT CHANGE.
         /// </summary>
         public const string Game1EmbeddedTlkFolderName = @"GAME1_EMBEDDED_TLK";
@@ -292,6 +297,16 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     foreach (var reqDLC in OptionalSingleRequiredDLC)
                     {
                         string name = TPMIService.GetThirdPartyModInfo(reqDLC.DLCFolderName, Game)?.modname ?? reqDLC.DLCFolderName;
+                        sb.AppendLine($@" - {name}");
+                    }
+                }
+
+                if (TextureModReferences.Any())
+                {
+                    sb.AppendLine("This mod references texture mod files that can be installed after all other mods are installed:");
+                    foreach (var reference in TextureModReferences)
+                    {
+                        string name = reference.DisplayString;
                         sb.AppendLine($@" - {name}");
                     }
                 }
@@ -2111,6 +2126,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         }
 
         private static readonly string[] allowedConfigFilesME1 = { @"BIOCredits.ini", @"BioEditor.ini", @"BIOEngine.ini", @"BIOGame.ini", @"BIOGuiResources.ini", @"BIOInput.ini", @"BIOParty.in", @"BIOQA.ini" };
+
         private bool CheckAndCreateLegacyCoalescedJob()
         {
             var legacyCoalFile = FilesystemInterposer.PathCombine(IsInArchive, ModPath, @"Coalesced.bin");

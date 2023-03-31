@@ -9,7 +9,8 @@
                     xmlns:converters="clr-namespace:ME3TweaksCoreWPF.Converters;assembly=ME3TweaksCoreWPF"
                     xmlns:nativeMods="clr-namespace:ME3TweaksCore.NativeMods;assembly=ME3TweaksCore"
                     xmlns:batch="clr-namespace:ME3TweaksModManager.modmanager.objects.batch"
-                    xmlns:texture="clr-namespace:ME3TweaksModManager.modmanager.objects.mod.texture">
+                    xmlns:texture="clr-namespace:ME3TweaksModManager.modmanager.objects.mod.texture"
+                    xmlns:objects="clr-namespace:ME3TweaksModManager.modmanager.objects">
     <converters1:GameToImageIconConverter x:Key="GameToImageIconConverter"/>
     <converters1:BootTargetSourceVisibilityConverter x:Key="BootTargetSourceVisibilityConverter"/>
     <converters1:GameIconVisibilityConverter x:Key="GameIconVisibilityConverter"/>
@@ -195,6 +196,17 @@
                 Margin="0,0,5,0"
                 RenderOptions.BitmapScalingMode="HighQuality" />
             <TextBlock Text="{Binding Path=DisplayString}" VerticalAlignment="Center" TextWrapping="Wrap"/>
+        </DockPanel>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type objects:M3MEMMod}">
+        <DockPanel HorizontalAlignment="Stretch">
+            <Image
+                Source="/modmanager/toolicons/masseffectmodder_32.png"
+                Width="16"
+                Margin="0,0,5,0"
+                RenderOptions.BitmapScalingMode="HighQuality" />
+            <TextBlock DockPanel.Dock="Top" Text="{Binding Path=TextureMod.DisplayString}" VerticalAlignment="Center" TextWrapping="Wrap"/>
+            <TextBlock Text="{Binding Path=ModdescMod.ModName, StringFormat='▸{0}'}" VerticalAlignment="Center" TextWrapping="Wrap"/>
         </DockPanel>
     </DataTemplate>
     <DataTemplate x:Key="TargetSelectorTemplate" DataType="{x:Type targets:GameTarget}">

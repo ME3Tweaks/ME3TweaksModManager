@@ -10,7 +10,7 @@
         Margin="-8">
         <DockPanel>
             <TextBlock
-                Text="[TEXTURES]"
+                Text="[TEXTUREMODS]"
                 FontWeight="Bold"
                 DockPanel.Dock="Top" />
             <TextBlock

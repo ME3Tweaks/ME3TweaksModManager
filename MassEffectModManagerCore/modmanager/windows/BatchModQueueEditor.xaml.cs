@@ -46,7 +46,7 @@ namespace ME3TweaksModManager.modmanager.windows
 
         public ObservableCollectionExtended<Mod> VisibleFilteredMods { get; } = new ObservableCollectionExtended<Mod>();
         public ObservableCollectionExtended<ASIMod> VisibleFilteredASIMods { get; } = new ObservableCollectionExtended<ASIMod>();
-        public ObservableCollectionExtended<MEMMod> VisibleFilteredMEMMods { get; } = new ObservableCollectionExtended<MEMMod>();
+        public ObservableCollectionExtended<object> VisibleFilteredMEMMods { get; } = new ObservableCollectionExtended<object>();
 
         /// <summary>
         /// Contains both ASI (BatchASIMod) and Content mods (BatchMod)
@@ -135,8 +135,6 @@ namespace ME3TweaksModManager.modmanager.windows
                 };
 
                 m.ParseData();
-
-                // Todo: Make sure it's for the current game
 
                 VisibleFilteredMEMMods.Add(m); //Todo: Check no duplicates in left list (or existing already on right?)
             }
@@ -327,10 +325,17 @@ namespace ME3TweaksModManager.modmanager.windows
             }
             else if (SelectedTabIndex == TAB_TEXTUREMOD)
             {
-                MEMMod m = SelectedAvailableMEMMod;
+                object m = SelectedAvailableMEMMod;
                 if (VisibleFilteredMEMMods.Remove(m))
                 {
-                    ModsInGroup.Add(new MEMMod(m));
+                    if (m is MEMMod mm)
+                    {
+                        ModsInGroup.Add(new MEMMod(mm));
+                    }
+                    else if (m is M3MEMMod m3mm)
+                    {
+                        ModsInGroup.Add(new M3MEMMod() { TextureMod = new MEMMod(m3mm.TextureMod), ModdescMod = m3mm.ModdescMod });
+                    }
                 }
             }
         }
@@ -349,6 +354,10 @@ namespace ME3TweaksModManager.modmanager.windows
             else if (SelectedInstallGroupMod is MEMMod tai && ModsInGroup.Remove(tai))
             {
                 VisibleFilteredMEMMods.Add(tai);
+            }
+            else if (SelectedInstallGroupMod is M3MEMMod m3ai && ModsInGroup.Remove(m3ai))
+            {
+                VisibleFilteredMEMMods.Add(m3ai);
             }
         }
 
@@ -466,9 +475,9 @@ namespace ME3TweaksModManager.modmanager.windows
         public ASIMod SelectedAvailableASIMod { get; set; }
 
         /// <summary>
-        /// Selected left pane MEM mod
+        /// Selected left pane MEM mod. Can be MEMMod or M3MEMMod
         /// </summary>
-        public MEMMod SelectedAvailableMEMMod { get; set; }
+        public object SelectedAvailableMEMMod { get; set; }
 
         /// <summary>
         /// The current selected tab. 0 = content mods, 1 = ASI mods - maybe 2 in future = texture mods?
@@ -486,10 +495,17 @@ namespace ME3TweaksModManager.modmanager.windows
             AvailableModText = SelectedAvailableASIMod?.LatestVersion?.Description;
         }
 
+        public void OnSelectedAvailableTextureModChanged()
+        {
+            if (SelectedAvailableMEMMod is MEMMod mm) AvailableModText = mm.DisplayString;
+            if (SelectedAvailableMEMMod is M3MEMMod m3mm) AvailableModText = m3mm.GetDescription();
+        }
+
         public void OnSelectedTabIndexChanged()
         {
             if (SelectedTabIndex == TAB_CONTENTMOD) OnSelectedAvailableModChanged();
             if (SelectedTabIndex == TAB_ASIMOD) OnSelectedAvailableASIModChanged();
+            if (SelectedTabIndex == TAB_TEXTUREMOD) OnSelectedAvailableTextureModChanged();
         }
 
         public void OnSelectedGameChanged()
@@ -507,16 +523,19 @@ namespace ME3TweaksModManager.modmanager.windows
                 if (SelectedGame != MEGame.LELauncher)
                 {
                     VisibleFilteredASIMods.ReplaceAll(ASIManager.GetASIModsByGame(SelectedGame).Where(x => !x.IsHidden));
+                    VisibleFilteredMEMMods.ReplaceAll(M3LoadedMods.GetAllModMEMs(SelectedGame)); // Todo: Also add range from Textures folder of library itself.
                 }
                 else
                 {
                     VisibleFilteredASIMods.ClearEx();
+                    VisibleFilteredMEMMods.ClearEx();
                 }
             }
             else
             {
                 VisibleFilteredMods.ClearEx();
                 VisibleFilteredASIMods.ClearEx();
+                VisibleFilteredMEMMods.ClearEx();
             }
         }
 
@@ -541,7 +560,6 @@ namespace ME3TweaksModManager.modmanager.windows
             {
                 SelectedGame = newgame;
             }
-
         }
 
         private void GameIcon_Click(object sender, RoutedEventArgs e)
