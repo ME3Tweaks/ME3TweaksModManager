@@ -312,7 +312,9 @@ namespace ME3TweaksModManager.modmanager.windows
                 Mod m = SelectedAvailableMod;
                 if (VisibleFilteredMods.Remove(m))
                 {
-                    ModsInGroup.Add(new BatchMod(m));
+                    var index = ModsInGroup.FindLastIndex(x => x is BatchMod);
+                    index++; // if not found, it'll be -1. If found, we will want to insert after.
+                    ModsInGroup.Insert(index, new BatchMod(m)); // Put into specific position.
                 }
             }
             else if (SelectedTabIndex == TAB_ASIMOD)
