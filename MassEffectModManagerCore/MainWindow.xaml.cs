@@ -4495,10 +4495,5 @@ namespace ME3TweaksModManager
         {
             Debug.WriteLine(@"Window has lost focus");
         }
-
-        private void TSETool_Clicked(object sender, RoutedEventArgs e)
-        {
-
-        }
     }
 }

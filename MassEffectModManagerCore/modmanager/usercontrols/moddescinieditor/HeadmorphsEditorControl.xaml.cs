@@ -193,7 +193,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
             var modHeadmorphsFolder = Path.Combine(EditingMod.ModPath, Mod.HEADMORPHS_FOLDER_NAME);
             if (Directory.Exists(modHeadmorphsFolder))
             {
-                var morphFiles = Directory.GetFiles(modHeadmorphsFolder, @"*", SearchOption.TopDirectoryOnly).Where(x => IsHeadmorphFileType(x));
+                var morphFiles = Directory.GetFiles(modHeadmorphsFolder, @"*", SearchOption.TopDirectoryOnly).Where(x => IsHeadmorphFileType(EditingMod.Game, x));
                 foreach (var morphFile in morphFiles)
                 {
                     M3Headmorph mm = new M3Headmorph() { FileName = Path.GetFileName(morphFile), Title = Path.GetFileNameWithoutExtension(morphFile) };
@@ -203,11 +203,11 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor
             }
         }
 
-        private bool IsHeadmorphFileType(string filePath)
+        private bool IsHeadmorphFileType(MEGame game, string filePath)
         {
             var extension = Path.GetExtension(filePath);
-            if (extension == @".me3headmorph") return true; // Gibbed
-            // Is there ME2headmorphs?
+            if (game.IsGame2() && extension == @".me2headmorph") return true; // Gibbed
+            if (game.IsGame3() && extension == @".me3headmorph") return true; // Gibbed
             if (extension == @".ron") return true; // Trilogy Save Editor
             return false;
         }
