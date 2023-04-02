@@ -51,6 +51,7 @@ namespace ME3TweaksModManager.modmanager.windows
             editorControls.Add(game1tlkmerge_editor_control);
             editorControls.Add(lelauncher_editor_control);
             editorControls.Add(textures_editor_control);
+            editorControls.Add(headmorphs_editor_control);
         }
 
         private void LoadCommands()

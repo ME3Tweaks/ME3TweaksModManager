@@ -124,6 +124,12 @@
                     x:Name="textures_editor_control"/>
             </TabItem>
             <TabItem
+                Header="Headmorphs"
+                Visibility="{Binding EditingMod.Game, Converter={StaticResource GameToVisibilityConverter}, ConverterParameter='LEGame'}">
+                <moddescinieditor:HeadmorphsEditorControl
+                    x:Name="headmorphs_editor_control"/>
+            </TabItem>
+            <TabItem
                 Header="{DynamicResource string_resultingModdescini}"
                 x:Name="results_tab">
                 <DockPanel>

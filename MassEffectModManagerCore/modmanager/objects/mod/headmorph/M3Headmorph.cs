@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LegendaryExplorerCore.Misc;
 using ME3TweaksCore.Helpers;
+using ME3TweaksModManager.modmanager.objects.mod.editor;
 using ME3TweaksModManager.modmanager.objects.mod.interfaces;
+using Newtonsoft.Json;
 
 namespace ME3TweaksModManager.modmanager.objects.mod.headmorph
 {
@@ -69,7 +72,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.headmorph
             Title = parms[TITLE_PARM];
 
             Description = parms.ContainsKey(DESCRIPTION_PARM) ? parms[DESCRIPTION_PARM] : null;
-            if (ValidateImageParameter(mod, nameof(M3Headmorph), parms, IMAGE_PARM, false, false)) // Should headmorphs be installable directly from archive...?
+            if (parms.ContainsKey(IMAGE_PARM) && ValidateImageParameter(mod, nameof(M3Headmorph), parms, IMAGE_PARM, false, false)) // Should headmorphs be installable directly from archive...?
             {
                 ImageAsset = parms[IMAGE_PARM];
             }
@@ -93,6 +96,30 @@ namespace ME3TweaksModManager.modmanager.objects.mod.headmorph
             }
 
             return references;
+        }
+
+        /// <summary>
+        /// Parameter map, used for the moddesc.ini editor Contains a list of values in the alternate mapped to their string value
+        /// </summary>
+        [JsonIgnore]
+        public ObservableCollectionExtended<MDParameter> ParameterMap { get; } = new ObservableCollectionExtended<MDParameter>();
+
+        /// <summary>
+        /// List of all keys in the M3MEMMod struct that are publicly available for editing
+        /// </summary>
+        /// <param name="mod"></param>
+        public void BuildParameterMap(Mod mod)
+        {
+            var parameterDictionary = new Dictionary<string, object>()
+            {
+                // List of available parameters for this object
+                {FILENAME_PARM, FileName},
+                {TITLE_PARM, Title},
+                {DESCRIPTION_PARM, Description},
+                {IMAGE_PARM, ImageAsset},
+            };
+
+            ParameterMap.ReplaceAll(MDParameter.MapIntoParameterMap(parameterDictionary));
         }
     }
 }

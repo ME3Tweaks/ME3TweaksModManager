@@ -23,7 +23,7 @@
                                Visibility="{Binding Converter={StaticResource ExtendedTextureInfoVisibilityConverter}, 
                         ConverterParameter={x:Reference _TargetSelector}, 
                         FallbackValue=Visible}"/>
-                    <Image Source="{Binding Game, Converter={StaticResource GameToTextureModdedIconConverter}}" Width="16" Height="16" RenderOptions.BitmapScalingMode="HighQuality" HorizontalAlignment="Right" Margin="3,0,0,0" VerticalAlignment="Bottom" Visibility="{Binding TextureModded, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                    <Image Source="{Binding Game, Converter={StaticResource GameToTextureModdedIconConverter}}" Width="16" Height="16" RenderOptions.BitmapScalingMode="HighQuality" HorizontalAlignment="Right" Margin="3,0,1,0" VerticalAlignment="Bottom" Visibility="{Binding TextureModded, Converter={StaticResource BoolToVisibilityConverter}}"/>
                 </DockPanel>
                 <TextBlock Text="{Binding TargetPath}" Margin="3,0,0,0" HorizontalAlignment="Stretch"/>
             </DockPanel>

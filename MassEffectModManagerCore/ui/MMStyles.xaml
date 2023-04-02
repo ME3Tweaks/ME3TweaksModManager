@@ -209,6 +209,7 @@
             <TextBlock Text="{Binding Path=DisplayString}" VerticalAlignment="Center" TextWrapping="Wrap"/>
         </DockPanel>
     </DataTemplate>
+    <!-- Do not change to GameTargetWPF. Property lookups will still find it and we want to use base class due to m3c possibly passing around a non-wpf target. -->
     <DataTemplate x:Key="TargetSelectorTemplate" DataType="{x:Type targets:GameTarget}">
         <DockPanel HorizontalAlignment="Stretch">
             <Image DockPanel.Dock="Left" Source="{Binding Game, Converter={StaticResource GameToImageIconConverter}}" Width="16" Height="16"/>
@@ -216,6 +217,7 @@
             <TextBlock Text="{Binding TargetPath}" Margin="3,0,0,0" HorizontalAlignment="Stretch" DockPanel.Dock="Left"/>
             <DockPanel ToolTip="{DynamicResource string_thisTargetHasBeenTextureModded}"  DockPanel.Dock="Right" Margin="3,0,0,0" Visibility="{Binding TextureModded, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}">
                 <TextBlock Text="{Binding ALOTVersion}" DockPanel.Dock="Right"/>
+                <!-- IDK how this works properly but I'm not going to touch it-->
                 <Image Source="/modmanager/toolicons/alot_32.png" Width="16" Height="16" RenderOptions.BitmapScalingMode="HighQuality" HorizontalAlignment="Right" Margin="3,0,0,0" VerticalAlignment="Bottom"/>
             </DockPanel>
         </DockPanel>
