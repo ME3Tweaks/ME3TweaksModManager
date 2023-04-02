@@ -322,7 +322,7 @@
 
 //                if (md5check)
 //                {
-//                    var md5 = Utilities.CalculateMD5(fullpath);
+//                    var md5 = Utilities.CalculateHash(fullpath);
 //                    return info.Any(x => x.md5 == md5);
 //                }
 //                return true;
@@ -544,7 +544,7 @@
 //            string md5 = null;
 //            if (target.Game != MEGame.ME1 || !reverseME1)
 //            {
-//                md5 = Utilities.CalculateMD5(exe);
+//                md5 = Utilities.CalculateHash(exe);
 //            }
 
 //            switch (target.Game)

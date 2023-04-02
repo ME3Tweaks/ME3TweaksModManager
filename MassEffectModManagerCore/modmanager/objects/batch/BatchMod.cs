@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using ME3TweaksCore.Helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.mod;
 using Newtonsoft.Json;
@@ -109,7 +110,7 @@ namespace ME3TweaksModManager.modmanager.objects.batch
                 if (m != null)
                 {
                     Mod = m;
-                    var localHash = M3Utilities.CalculateMD5(Mod.ModDescPath);
+                    var localHash = MUtilities.CalculateHash(Mod.ModDescPath);
                     ChosenOptionsDesync = ModDescHash != null && localHash != ModDescHash;
                     //if (ChosenOptionsDesync)
                     //{
@@ -134,7 +135,7 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         {
             if (Mod != null)
             {
-                ModDescHash = M3Utilities.CalculateMD5(Mod.ModDescPath);
+                ModDescHash = MUtilities.CalculateHash(Mod.ModDescPath);
             }
         }
     }

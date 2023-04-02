@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
+using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Objects;
 using ME3TweaksCore.Targets;
 using ME3TweaksModManager.modmanager.diagnostics;
@@ -88,7 +89,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
                 // Open as memorystream as we need to hash this file for tracking
                 using var ms = new MemoryStream(File.ReadAllBytes(f));
 
-                var existingMD5 = M3Utilities.CalculateMD5(ms);
+                var existingMD5 = MUtilities.CalculateHash(ms);
                 var package = MEPackageHandler.OpenMEPackageFromStream(ms, f);
 #if DEBUG
                 Debug.WriteLine($@"Opening package {f} took {sw.ElapsedMilliseconds} ms");

@@ -239,7 +239,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             var blacklistings = BlacklistingService.GetBlacklistings(archiveSize);
             if (blacklistings.Any())
             {
-                calculatedMD5 = ArchiveStream != null ? M3Utilities.CalculateMD5(ArchiveStream) : M3Utilities.CalculateMD5(archive);
+                calculatedMD5 = ArchiveStream != null ? MUtilities.CalculateHash(ArchiveStream) : MUtilities.CalculateHash(archive);
                 if (blacklistings.Any(x => x.MD5 == calculatedMD5))
                 {
                     // This archive is blacklisted
@@ -509,7 +509,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             {
                 M3Log.Information(@"Querying third party importing service for information about this file: " + filepath);
                 currentOperationTextCallback?.Invoke(M3L.GetString(M3L.string_queryingThirdPartyImportingService));
-                var md5 = forcedMD5 ?? (archiveStream != null ? M3Utilities.CalculateMD5(archiveStream) : M3Utilities.CalculateMD5(filepath));
+                var md5 = forcedMD5 ?? (archiveStream != null ? MUtilities.CalculateHash(archiveStream) : MUtilities.CalculateHash(filepath));
                 var potentialImportinInfos = TPIService.GetImportingInfosBySize(archiveSize);
                 var importingInfo = potentialImportinInfos.FirstOrDefault(x => x.md5 == md5);
 

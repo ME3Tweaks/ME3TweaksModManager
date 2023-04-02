@@ -617,42 +617,6 @@ namespace ME3TweaksModManager.modmanager
             return result;
         }
 
-        public static string CalculateMD5(string filename)
-        {
-            try
-            {
-                Debug.WriteLine("Hashing file " + filename);
-                using var md5 = MD5.Create();
-                using var stream = File.OpenRead(filename);
-                var hash = md5.ComputeHash(stream);
-                return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
-            }
-            catch (IOException e)
-            {
-                M3Log.Error("I/O ERROR CALCULATING CHECKSUM OF FILE: " + filename);
-                M3Log.Error(App.FlattenException(e));
-                return "";
-            }
-        }
-
-        public static string CalculateMD5(Stream stream)
-        {
-            try
-            {
-                using var md5 = MD5.Create();
-                stream.Position = 0;
-                var hash = md5.ComputeHash(stream);
-                stream.Position = 0; // reset stream
-                return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
-            }
-            catch (Exception e)
-            {
-                M3Log.Error("I/O ERROR CALCULATING CHECKSUM OF STREAM");
-                M3Log.Error(App.FlattenException(e));
-                return "";
-            }
-        }
-
         /// <summary>
         /// Reads all lines from a file, attempting to do so even if the file is in use by another process
         /// </summary>

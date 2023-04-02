@@ -13,6 +13,7 @@ using LegendaryExplorerCore.Unreal.BinaryConverters;
 using LegendaryExplorerCore.UnrealScript;
 using LegendaryExplorerCore.UnrealScript.Compiling.Errors;
 using ME3TweaksCore.GameFilesystem;
+using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Targets;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.localizations;
@@ -592,7 +593,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.merge.v1
 
         public bool ApplyUpdate(IMEPackage package, ExportEntry targetExport, Mod installingMod, Action<int> addMergeWeightCompleted)
         {
-            if (M3Utilities.CalculateMD5(new MemoryStream(targetExport.Data)) == EntryMD5)
+            if (MUtilities.CalculateHash(new MemoryStream(targetExport.Data)) == EntryMD5)
             {
                 M3Log.Information($@"Applying sequence skip: Skipping {targetExport.InstancedFullPath} through on link {OutboundLinkNameToUse}");
                 SeqTools.SkipSequenceElement(targetExport, outboundLinkName: OutboundLinkNameToUse);

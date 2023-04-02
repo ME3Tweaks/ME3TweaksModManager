@@ -429,7 +429,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 
             // 06/14/2022 - ME3Tweaks Moddesc Updates 
             // This is for mods that might break when used on Mod Manager 8.0 and above due to alternate logic change
-            var moddescHash = MUtilities.CalculateMD5(ms); //resets pos to 0
+            var moddescHash = MUtilities.CalculateHash(ms); //resets pos to 0
             string updatedIni = null;
             if (ModDescUpdaterService.HasHash(moddescHash))
             {

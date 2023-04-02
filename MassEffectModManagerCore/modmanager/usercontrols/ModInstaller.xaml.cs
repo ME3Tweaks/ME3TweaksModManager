@@ -17,6 +17,7 @@ using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Unreal;
+using ME3TweaksCore.Config;
 using ME3TweaksCore.GameFilesystem;
 using ME3TweaksCore.Helpers;
 using ME3TweaksCore.NativeMods;
@@ -980,6 +981,15 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
                     M3Log.Warning(@"<<<<<<< Aborting modinstaller");
                     return;
+                }
+            }
+
+            // Stage: M3CD for LE2, LE3
+            if (InstallOptionsPackage.ModBeingInstalled.Game is MEGame.LE2 or MEGame.LE3)
+            {
+                foreach (var dlcFolderInstalled in addedDLCFolders)
+                {
+                    ConfigMerge.PerformDLCMerge(M3Directories.GetDLCPath(InstallOptionsPackage.InstallTarget), dlcFolderInstalled);
                 }
             }
 

@@ -69,7 +69,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.headmorph
             Title = parms[TITLE_PARM];
 
             Description = parms.ContainsKey(DESCRIPTION_PARM) ? parms[DESCRIPTION_PARM] : null;
-            if (ValidateImageParameter(mod, nameof(M3Headmorph), parms, IMAGE_PARM, false, false)) // Should headmorphs be installable directly from archive...?
+            if (parms.ContainsKey(IMAGE_PARM) && ValidateImageParameter(mod, nameof(M3Headmorph), parms, IMAGE_PARM, false, false)) // Should headmorphs be installable directly from archive...?
             {
                 ImageAsset = parms[IMAGE_PARM];
             }

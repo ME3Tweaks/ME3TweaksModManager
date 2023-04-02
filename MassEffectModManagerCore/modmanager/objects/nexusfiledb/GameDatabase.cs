@@ -4,6 +4,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using LegendaryExplorerCore.Helpers;
+using ME3TweaksCore.Helpers;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.me3tweaks;
 using Newtonsoft.Json;
@@ -33,7 +34,7 @@ namespace ME3TweaksModManager.modmanager.objects.nexusfiledb
                 var dbPath = Path.Combine(M3Filesystem.GetNexusModsCache(), @"nexusmodsdb.zip");
                 if (File.Exists(dbPath))
                 {
-                    md5 = M3Utilities.CalculateMD5(dbPath);
+                    md5 = MUtilities.CalculateHash(dbPath);
                 }
 
                 if (md5 == null && downloadIfNeverDownloaded)

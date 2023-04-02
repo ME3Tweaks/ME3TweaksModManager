@@ -16,7 +16,7 @@ namespace ME3TweaksModManager.me3tweakscoreextended
         public M3BasegameFileRecord(string fullfilepath, int size, GameTargetWPF gameTarget, Mod modBeingInstalled, string md5 = null)
         {
             this.file = fullfilepath.Substring(gameTarget.TargetPath.Length + 1);
-            this.hash = md5 ?? MUtilities.CalculateMD5(fullfilepath);
+            this.hash = md5 ?? MUtilities.CalculateHash(fullfilepath);
             this.game = gameTarget.Game.ToGameNum().ToString();
             this.size = size;
             this.source = modBeingInstalled.ModName + @" " + modBeingInstalled.ModVersionString;

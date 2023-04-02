@@ -132,7 +132,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
             }
 
             // PATCH UPDATE
-            localExecutableHash ??= M3Utilities.CalculateMD5(App.ExecutableLocation);
+            localExecutableHash ??= MUtilities.CalculateHash(App.ExecutableLocation);
             if (App.ServerManifest.TryGetValue(@"build_md5", out var destMd5))
             {
                 foreach (var item in App.ServerManifest.Where(x => x.Key.StartsWith(@"upd-") || x.Key.StartsWith(@"gh_upd-")))
@@ -275,7 +275,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
 
                 MemoryStream outStream = new MemoryStream();
                 JPatch.ApplyJPatch(currentBuildStream, patchStream, outStream, patchBuildProgress);
-                var calculatedHash = M3Utilities.CalculateMD5(outStream);
+                var calculatedHash = MUtilities.CalculateHash(outStream);
                 if (calculatedHash == expectedFinalHash)
                 {
                     M3Log.Information(@"Patch application successful: Writing new executable to disk");

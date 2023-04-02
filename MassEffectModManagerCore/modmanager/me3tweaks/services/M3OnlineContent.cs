@@ -204,7 +204,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
                 /*
                 //7-zip
                 string sevenZDLL = Utilities.Get7zDllPath();
-                if (!File.Exists(sevenZDLL) || Utilities.CalculateMD5(sevenZDLL) != @"72491c7b87a7c2dd350b727444f13bb4")
+                if (!File.Exists(sevenZDLL) || Utilities.CalculateHash(sevenZDLL) != @"72491c7b87a7c2dd350b727444f13bb4")
                 {
                     foreach (var staticurl in StaticFilesBaseEndpoints)
                     {

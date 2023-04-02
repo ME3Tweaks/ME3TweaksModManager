@@ -60,7 +60,7 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                           var destfile = Path.Combine(stagingPath, x);
 
                           M3Log.Information(@"Hashing " + sourcefile);
-                          var md5 = M3Utilities.CalculateMD5(sourcefile);
+                          var md5 = MUtilities.CalculateHash(sourcefile);
                           Directory.CreateDirectory(Directory.GetParent(destfile).FullName);
 
                           if (Path.GetExtension(destfile) == @".m3m")

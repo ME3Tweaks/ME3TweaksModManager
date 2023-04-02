@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using LegendaryExplorerCore.Helpers;
+using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Localization;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
@@ -109,7 +110,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
                     var locFile = M3Localization.GetCachedLocalizationFile(lang);
                     if (File.Exists(locFile))
                     {
-                        var md5 = M3Utilities.CalculateMD5(locFile);
+                        var md5 = MUtilities.CalculateHash(locFile);
                         M3Log.Information($@"Found server livelocalization. HasUpdatedLocalization({lang}) result: {md5 != livelocmd5}");
                         return md5 != livelocmd5;
                     }

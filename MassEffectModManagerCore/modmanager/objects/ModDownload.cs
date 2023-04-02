@@ -120,7 +120,7 @@ namespace ME3TweaksModManager.modmanager.objects
                     {
                         // Todo: If verification fails, should we let user try to continue anyways?
 
-                        var hash = M3Utilities.CalculateMD5(DownloadedStream);
+                        var hash = MUtilities.CalculateHash(DownloadedStream);
                         var matchingHashedFiles = NexusModsUtilities.MD5Search(ProtocolLink.Domain, hash);
                         if (matchingHashedFiles.All(x => x.Mod.ModID != ProtocolLink.ModId))
                         {

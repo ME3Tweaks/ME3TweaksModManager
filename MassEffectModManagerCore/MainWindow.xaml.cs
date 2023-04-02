@@ -3097,7 +3097,7 @@ namespace ME3TweaksModManager
                             {
                                 if (App.ServerManifest.TryGetValue(@"build_md5", out var md5) && !string.IsNullOrWhiteSpace(md5))
                                 {
-                                    var localmd5 = MUtilities.CalculateMD5(App.ExecutableLocation);
+                                    var localmd5 = MUtilities.CalculateHash(App.ExecutableLocation);
                                     if (localmd5 != md5)
                                     {
                                         //Update is available.
@@ -4414,7 +4414,7 @@ namespace ME3TweaksModManager
         /// </summary>
         private void ForceImports()
         {
-            var localmd5 = MUtilities.CalculateMD5(@"null");
+            var localmd5 = MUtilities.CalculateHash(@"null");
 
         }
 #endif

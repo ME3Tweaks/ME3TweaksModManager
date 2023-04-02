@@ -139,7 +139,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
             foreach (var step in Database)
             {
                 var imagePath = Path.Combine(fileRootPath, step.imagename);
-                bool download = !File.Exists(imagePath) || M3Utilities.CalculateMD5(imagePath) != step.imagemd5;
+                bool download = !File.Exists(imagePath) || MUtilities.CalculateHash(imagePath) != step.imagemd5;
                 if (download)
                 {
                     foreach (var endpoint in M3OnlineContent.StaticFileBaseEndpoints.GetAllLinks())

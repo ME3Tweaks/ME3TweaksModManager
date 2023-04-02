@@ -17,6 +17,7 @@ using LegendaryExplorerCore.Gammtek.Extensions;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
+using ME3TweaksCore.Helpers;
 using ME3TweaksCore.Misc;
 using ME3TweaksModManager.modmanager.diagnostics;
 using ME3TweaksModManager.modmanager.helpers;
@@ -214,8 +215,8 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
                                         tStream = qPackage.SaveToStream(false);
                                         hashMap[v] = new USFileInfo()
                                         {
-                                            MD5 = M3Utilities.CalculateMD5(tStream),
-                                            CompressedMD5 = M3Utilities.CalculateMD5(fpath),
+                                            MD5 = MUtilities.CalculateHash(tStream),
+                                            CompressedMD5 = MUtilities.CalculateHash(fpath),
                                             Filesize = tStream.Length,
                                             RelativeFilepath = v
                                         };
@@ -232,7 +233,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
 
                             hashMap[v] = new USFileInfo()
                             {
-                                MD5 = M3Utilities.CalculateMD5(fpath),
+                                MD5 = MUtilities.CalculateHash(fpath),
                                 Filesize = new FileInfo(fpath).Length,
                                 RelativeFilepath = v
                             };
@@ -536,8 +537,8 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
             //                            tStream = qPackage.SaveToStream(false);
             //                            hashMap[v] = new USFileInfo()
             //                            {
-            //                                MD5 = M3Utilities.CalculateMD5(tStream),
-            //                                CompressedMD5 = M3Utilities.CalculateMD5(fpath),
+            //                                MD5 = MUtilities.CalculateHash(tStream),
+            //                                CompressedMD5 = MUtilities.CalculateHash(fpath),
             //                                Filesize = tStream.Length,
             //                                RelativeFilepath = v
             //                            };
@@ -554,7 +555,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
 
             //                hashMap[v] = new USFileInfo()
             //                {
-            //                    MD5 = M3Utilities.CalculateMD5(fpath),
+            //                    MD5 = MUtilities.CalculateHash(fpath),
             //                    Filesize = new FileInfo(fpath).Length,
             //                    RelativeFilepath = v
             //                };
@@ -766,7 +767,7 @@ namespace ME3TweaksModManager.modmanager.me3tweaks.services
                         return;
                     }
 
-                    var decompressedMD5 = M3Utilities.CalculateMD5(decompressedStream);
+                    var decompressedMD5 = MUtilities.CalculateHash(decompressedStream);
                     if (decompressedMD5 != sourcefile.hash)
                     {
                         M3Log.Error($@"Decompressed file ({sourcefile.relativefilepath}) has the wrong hash. Expected: {sourcefile.hash}, got: {decompressedMD5}");
