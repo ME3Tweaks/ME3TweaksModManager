@@ -1182,6 +1182,7 @@ namespace ME3TweaksModManager
                 TextureInstallerPanel tip = new TextureInstallerPanel(queue.TextureModsToInstall.Select(x => x.GetFilePathToMEM()).ToList());
                 tip.Close += (sender, args) =>
                 {
+                    ReleaseBusyControl();
                     FinishBatchInstall(queue);
                 };
                 ShowBusyControl(tip);

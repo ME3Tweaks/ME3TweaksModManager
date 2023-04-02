@@ -44,6 +44,7 @@ namespace ME3TweaksModManager.modmanager.windows
         private const int TAB_ASIMOD = 1;
         private const int TAB_TEXTUREMOD = 2;
 
+        public string NoModSelectedText { get; } = M3L.GetString(M3L.string_selectAModOnTheLeftToViewItsDescription);
         public ObservableCollectionExtended<Mod> VisibleFilteredMods { get; } = new ObservableCollectionExtended<Mod>();
         public ObservableCollectionExtended<ASIMod> VisibleFilteredASIMods { get; } = new ObservableCollectionExtended<ASIMod>();
         public ObservableCollectionExtended<object> VisibleFilteredMEMMods { get; } = new ObservableCollectionExtended<object>();
@@ -85,6 +86,7 @@ namespace ME3TweaksModManager.modmanager.windows
                 ModsInGroup.AddRange(queueToEdit.TextureModsToInstall);
                 VisibleFilteredMods.RemoveRange(queueToEdit.ModsToInstall.Select(x => x.Mod));
                 VisibleFilteredASIMods.RemoveRange(queueToEdit.ASIModsToInstall.Select(x => x.AssociatedMod?.OwningMod));
+                VisibleFilteredMEMMods.RemoveRange(queueToEdit.TextureModsToInstall);
             }
         }
 
@@ -113,7 +115,7 @@ namespace ME3TweaksModManager.modmanager.windows
         {
             OpenFileDialog ofd = new OpenFileDialog()
             {
-                Filter = "MassEffectModder files (*.mem)|*.mem",
+                Filter = "MassEffectModder files (*.mem)|*.mem", // Todo: Localize this properly
                 Title = "Select .mem file",
             };
 
@@ -134,7 +136,7 @@ namespace ME3TweaksModManager.modmanager.windows
                     FilePath = ofd.FileName // Todo: Figure out relative pathing
                 };
 
-                m.ParseData();
+                m.ParseMEMData();
 
                 VisibleFilteredMEMMods.Add(m); //Todo: Check no duplicates in left list (or existing already on right?)
             }
@@ -263,6 +265,14 @@ namespace ME3TweaksModManager.modmanager.windows
                     return true;
                 }
             }
+            else if (SelectedInstallGroupMod is MEMMod)
+            {
+                var index = ModsInGroup.IndexOf(SelectedInstallGroupMod);
+                if (index > 0 && ModsInGroup[index - 1] is MEMMod)
+                {
+                    return true;
+                }
+            }
             return false;
         }
 
@@ -276,12 +286,20 @@ namespace ME3TweaksModManager.modmanager.windows
                     return true;
                 }
             }
+            else if (SelectedInstallGroupMod is MEMMod)
+            {
+                var index = ModsInGroup.IndexOf(SelectedInstallGroupMod);
+                if (index < ModsInGroup.Count - 1 && ModsInGroup[index + 1] is MEMMod)
+                {
+                    return true;
+                }
+            }
             return false;
         }
 
         private void MoveDown()
         {
-            if (SelectedInstallGroupMod is BatchMod)
+            if (SelectedInstallGroupMod is BatchMod || SelectedInstallGroupMod is MEMMod)
             {
                 var mod = SelectedInstallGroupMod;
                 var oldIndex = ModsInGroup.IndexOf(SelectedInstallGroupMod);
@@ -294,7 +312,7 @@ namespace ME3TweaksModManager.modmanager.windows
 
         private void MoveUp()
         {
-            if (SelectedInstallGroupMod is BatchMod)
+            if (SelectedInstallGroupMod is BatchMod || SelectedInstallGroupMod is MEMMod)
             {
                 var mod = SelectedInstallGroupMod;
                 var oldIndex = ModsInGroup.IndexOf(SelectedInstallGroupMod);
@@ -330,13 +348,13 @@ namespace ME3TweaksModManager.modmanager.windows
                 object m = SelectedAvailableMEMMod;
                 if (VisibleFilteredMEMMods.Remove(m))
                 {
-                    if (m is MEMMod mm)
+                    if (m is M3MEMMod m3mm) // M3MEMMMod must go first
+                    {
+                        ModsInGroup.Add(new M3MEMMod(m3mm));
+                    }
+                    else if (m is MEMMod mm)
                     {
                         ModsInGroup.Add(new MEMMod(mm));
-                    }
-                    else if (m is M3MEMMod m3mm)
-                    {
-                        ModsInGroup.Add(new M3MEMMod() { TextureMod = new MEMMod(m3mm.TextureMod), ModdescMod = m3mm.ModdescMod });
                     }
                 }
             }
@@ -353,13 +371,13 @@ namespace ME3TweaksModManager.modmanager.windows
             {
                 VisibleFilteredASIMods.Add(bai.AssociatedMod.OwningMod);
             }
-            else if (SelectedInstallGroupMod is MEMMod tai && ModsInGroup.Remove(tai))
-            {
-                VisibleFilteredMEMMods.Add(tai);
-            }
             else if (SelectedInstallGroupMod is M3MEMMod m3ai && ModsInGroup.Remove(m3ai))
             {
                 VisibleFilteredMEMMods.Add(m3ai);
+            }
+            else if (SelectedInstallGroupMod is MEMMod tai && ModsInGroup.Remove(tai))
+            {
+                VisibleFilteredMEMMods.Add(tai);
             }
         }
 
@@ -497,17 +515,20 @@ namespace ME3TweaksModManager.modmanager.windows
             AvailableModText = SelectedAvailableASIMod?.LatestVersion?.Description;
         }
 
-        public void OnSelectedAvailableTextureModChanged()
+        public void OnSelectedAvailableMEMModChanged()
         {
-            if (SelectedAvailableMEMMod is MEMMod mm) AvailableModText = mm.DisplayString;
-            if (SelectedAvailableMEMMod is M3MEMMod m3mm) AvailableModText = m3mm.GetDescription();
+            if (SelectedAvailableMEMMod is M3MEMMod m3mm)
+            {
+                AvailableModText = m3mm.GetDescription();
+            }
+            else if (SelectedAvailableMEMMod is MEMMod mm) AvailableModText = mm.DisplayString;
         }
 
         public void OnSelectedTabIndexChanged()
         {
             if (SelectedTabIndex == TAB_CONTENTMOD) OnSelectedAvailableModChanged();
             if (SelectedTabIndex == TAB_ASIMOD) OnSelectedAvailableASIModChanged();
-            if (SelectedTabIndex == TAB_TEXTUREMOD) OnSelectedAvailableTextureModChanged();
+            if (SelectedTabIndex == TAB_TEXTUREMOD) OnSelectedAvailableMEMModChanged();
         }
 
         public void OnSelectedGameChanged()
@@ -525,7 +546,7 @@ namespace ME3TweaksModManager.modmanager.windows
                 if (SelectedGame != MEGame.LELauncher)
                 {
                     VisibleFilteredASIMods.ReplaceAll(ASIManager.GetASIModsByGame(SelectedGame).Where(x => !x.IsHidden));
-                    VisibleFilteredMEMMods.ReplaceAll(M3LoadedMods.GetAllModMEMs(SelectedGame)); // Todo: Also add range from Textures folder of library itself.
+                    VisibleFilteredMEMMods.ReplaceAll(M3LoadedMods.GetAllM3ManagedMEMs(SelectedGame).Where(x => x.Game == SelectedGame));
                 }
                 else
                 {

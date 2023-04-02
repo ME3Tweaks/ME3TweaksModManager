@@ -50,30 +50,41 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                         references.Add(job.JobDirectory + @"\" + jobFile);
                     }
                 }
+
                 foreach (var dlc in job.AlternateDLCs)
                 {
                     if (dlc.HasRelativeFiles())
                     {
                         if (dlc.AlternateDLCFolder != null)
                         {
-                            var files = FilesystemInterposer.DirectoryGetFiles(FilesystemInterposer.PathCombine(IsInArchive, ModPath, dlc.AlternateDLCFolder), "*", SearchOption.AllDirectories, archive).Select(x => (IsInArchive && ModPath.Length == 0) ? x : x.Substring(ModPath.Length + 1)).ToList();
+                            var files = FilesystemInterposer
+                                .DirectoryGetFiles(
+                                    FilesystemInterposer.PathCombine(IsInArchive, ModPath, dlc.AlternateDLCFolder), "*",
+                                    SearchOption.AllDirectories, archive).Select(x =>
+                                    (IsInArchive && ModPath.Length == 0) ? x : x.Substring(ModPath.Length + 1))
+                                .ToList();
                             references.AddRange(files);
                         }
                         else if (dlc.MultiListSourceFiles != null)
                         {
                             foreach (var mf in dlc.MultiListSourceFiles)
                             {
-                                var relpath = Path.Combine(ModPath, dlc.MultiListRootPath, mf).Substring(ModPath.Length > 0 ? ModPath.Length + 1 : 0);
+                                var relpath = Path.Combine(ModPath, dlc.MultiListRootPath, mf)
+                                    .Substring(ModPath.Length > 0 ? ModPath.Length + 1 : 0);
                                 references.Add(relpath);
                             }
                         }
                     }
+
                     // Add the referenced image asset
                     if (dlc.ImageAssetName != null)
                     {
-                        references.Add(FilesystemInterposer.PathCombine(IsInArchive, ModImageAssetsPath, dlc.ImageAssetName).Substring(ModPath.Length + (ModPath.Length > 1 ? 1 : 0)));
+                        references.Add(FilesystemInterposer
+                            .PathCombine(IsInArchive, ModImageAssetsPath, dlc.ImageAssetName)
+                            .Substring(ModPath.Length + (ModPath.Length > 1 ? 1 : 0)));
                     }
                 }
+
                 foreach (var file in job.AlternateFiles)
                 {
                     if (file.HasRelativeFile())
@@ -94,15 +105,22 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                         {
                             foreach (var mf in file.MultiListSourceFiles)
                             {
-                                var relPath = FilesystemInterposer.PathCombine(IsInArchive, ModPath, file.MultiListRootPath, mf);
+                                var relPath = FilesystemInterposer.PathCombine(IsInArchive, ModPath,
+                                    file.MultiListRootPath, mf);
                                 //Should this be different from above AltFile?
                                 if (IsInArchive)
                                 {
-                                    references.Add(relPath.Substring(ModPath.Length + (ModPath.Length > 1 ? 1 : 0))); //substring so its relative to the path of the mod in the archive
+                                    references.Add(
+                                        relPath.Substring(ModPath.Length +
+                                                          (ModPath.Length > 1
+                                                              ? 1
+                                                              : 0))); //substring so its relative to the path of the mod in the archive
                                 }
                                 else
                                 {
-                                    references.Add(relPath.Substring(ModPath.Length + 1)); //chop off the root path of the moddesc.ini
+                                    references.Add(
+                                        relPath.Substring(ModPath.Length +
+                                                          1)); //chop off the root path of the moddesc.ini
                                 }
                             }
                         }
@@ -110,14 +128,21 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                         {
                             foreach (var mf in file.MergeMods)
                             {
-                                var relPath = FilesystemInterposer.PathCombine(IsInArchive, ModPath, Mod.MergeModFolderName, mf.MergeModFilename);
+                                var relPath = FilesystemInterposer.PathCombine(IsInArchive, ModPath,
+                                    Mod.MergeModFolderName, mf.MergeModFilename);
                                 if (IsInArchive)
                                 {
-                                    references.Add(relPath.Substring(ModPath.Length + (ModPath.Length > 1 ? 1 : 0))); //substring so its relative to the path of the mod in the archive
+                                    references.Add(
+                                        relPath.Substring(ModPath.Length +
+                                                          (ModPath.Length > 1
+                                                              ? 1
+                                                              : 0))); //substring so its relative to the path of the mod in the archive
                                 }
                                 else
                                 {
-                                    references.Add(relPath.Substring(ModPath.Length + 1)); //chop off the root path of the moddesc.ini
+                                    references.Add(
+                                        relPath.Substring(ModPath.Length +
+                                                          1)); //chop off the root path of the moddesc.ini
                                 }
                             }
                         }
@@ -126,9 +151,30 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     // Add the referenced image asset
                     if (file.ImageAssetName != null)
                     {
-                        references.Add(FilesystemInterposer.PathCombine(IsInArchive, ModImageAssetsPath, file.ImageAssetName).Substring(ModPath.Length + (ModPath.Length > 1 ? 1 : 0)));
+                        references.Add(FilesystemInterposer
+                            .PathCombine(IsInArchive, ModImageAssetsPath, file.ImageAssetName)
+                            .Substring(ModPath.Length + (ModPath.Length > 1 ? 1 : 0)));
                     }
                 }
+
+                // Add texture mod reference files
+                if (job.Header == ModJob.JobHeader.TEXTUREMODS)
+                {
+                    foreach (var textureModRef in job.TextureModReferences)
+                    {
+                        references.Add(textureModRef.GetRelativePathToMEM());
+                    }
+                }
+
+                // Add headmorph files
+                if (job.Header == ModJob.JobHeader.HEADMORPHS)
+                {
+                    foreach (var headmorphRef in job.HeadMorphFiles)
+                    {
+                        references.AddRange(headmorphRef.GetRelativeReferences(this));
+                    }
+                }
+
                 foreach (var customDLCmapping in job.CustomDLCFolderMapping)
                 {
                     references.AddRange(FilesystemInterposer.DirectoryGetFiles(FilesystemInterposer.PathCombine(IsInArchive, ModPath, customDLCmapping.Key), "*", SearchOption.AllDirectories, archive).Select(x => (IsInArchive && ModPath.Length == 0) ? x : x.Substring(ModPath.Length + 1)).ToList());
@@ -165,11 +211,6 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             foreach (var additionalDeploymentDir in AdditionalDeploymentFolders)
             {
                 references.AddRange(FilesystemInterposer.DirectoryGetFiles(FilesystemInterposer.PathCombine(IsInArchive, ModPath, additionalDeploymentDir), "*", SearchOption.AllDirectories, archive).Select(x => (IsInArchive && ModPath.Length == 0) ? x : x.Substring(ModPath.Length + 1)).ToList());
-            }
-
-            foreach (var textureModRef in TextureModReferences)
-            {
-                references.Add(textureModRef.GetRelativePathToMEM());
             }
 
             // Banner Image

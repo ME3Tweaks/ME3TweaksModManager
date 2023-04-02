@@ -14,6 +14,7 @@ using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.objects.alternates;
 using ME3TweaksModManager.modmanager.objects.mod;
 using ME3TweaksModManager.modmanager.objects.mod.editor;
+using ME3TweaksModManager.modmanager.objects.mod.headmorph;
 using ME3TweaksModManager.modmanager.objects.mod.merge;
 
 namespace ME3TweaksModManager.modmanager.objects
@@ -85,7 +86,11 @@ namespace ME3TweaksModManager.modmanager.objects
             LELAUNCHER,
 
             // GAME 1
-            GAME1_EMBEDDED_TLK // Embedded TLK files for merge
+            GAME1_EMBEDDED_TLK, // Embedded TLK files for merge
+
+            // LE-ONLY (8.1+)
+            TEXTUREMODS,
+            HEADMORPHS
         }
 
         /// <summary>
@@ -463,6 +468,16 @@ namespace ME3TweaksModManager.modmanager.objects
         public ObservableCollection<AlternateDLC> AlternateDLCs { get; } = new ObservableCollection<AlternateDLC>();
 
         /// <summary>
+        /// A list of referenced texture mods under the Textures folder
+        /// </summary>
+        public List<M3MEMMod> TextureModReferences { get; set; } = new(0);
+
+        /// <summary>
+        /// A list of referenced headmorph files under the HeadMorphs folder
+        /// </summary>
+        public List<M3Headmorph> HeadMorphFiles { get; set; } = new(0);
+
+        /// <summary>
         /// List of xml files in the Game1Tlk job directory. Ensure you check for null before accessing this variable.
         /// </summary>
         public List<string> Game1TLKXmls;
@@ -763,6 +778,8 @@ namespace ME3TweaksModManager.modmanager.objects
                 case JobHeader.ME1_CONFIG:
                 case JobHeader.ME2_RCWMOD:
                 case JobHeader.BALANCE_CHANGES:
+                case JobHeader.HEADMORPHS:
+                case JobHeader.TEXTUREMODS:
                     return false; // There are no scopes for these headers.
             }
 

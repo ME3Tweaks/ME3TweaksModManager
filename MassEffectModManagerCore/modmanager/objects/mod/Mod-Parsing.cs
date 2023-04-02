@@ -20,12 +20,12 @@ using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.localizations;
 using ME3TweaksModManager.modmanager.me3tweaks.services;
 using ME3TweaksModManager.modmanager.objects.alternates;
+using ME3TweaksModManager.modmanager.objects.mod.headmorph;
 using ME3TweaksModManager.modmanager.objects.mod.texture;
 using Microsoft.AppCenter.Analytics;
 using PropertyChanged;
 using SevenZip;
 using MemoryAnalyzer = ME3TweaksModManager.modmanager.memoryanalyzer.MemoryAnalyzer;
-using StringStructParser = ME3TweaksModManager.modmanager.helpers.StringStructParser;
 
 namespace ME3TweaksModManager.modmanager.objects.mod
 {
@@ -49,7 +49,12 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         /// Textures folder. Do not change
         /// </summary>
         public const string TEXTUREMOD_FOLDER_NAME = @"Textures";
-        
+
+        /// <summary>
+        /// Headmorphs folder. Do not change
+        /// </summary>
+        public const string HEADMORPHS_FOLDER_NAME = @"Headmorphs";
+
         /// <summary>
         /// The folder that contains the TLK files for the GAME1_EMBEDDED_TLK feature. DO NOT CHANGE.
         /// </summary>
@@ -142,11 +147,6 @@ namespace ME3TweaksModManager.modmanager.objects.mod
         public ObservableCollectionExtended<string> UpdaterServiceBlacklistedFiles { get; } = new ObservableCollectionExtended<string>();
 
         /// <summary>
-        /// A list of referenced texture mods under the Textures folder
-        /// </summary>
-        public List<MEMMod> TextureModReferences { get; set; } = new List<MEMMod>(0);
-
-        /// <summary>
         /// If this mod can attempt to check for updates via Nexus. This being true doesn't mean it will - it requires whitelisting.
         /// This essentially is only used to disable nexus update checks.
         /// </summary>
@@ -235,7 +235,10 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 {
                     sb.AppendLine(M3L.GetString(M3L.string_interp_modparsing_targetsModDesc, ModDescTargetVersion.ToString(CultureInfo.InvariantCulture)));
                 }
-                var modifiesList = InstallationJobs.Where(x => x.Header != ModJob.JobHeader.CUSTOMDLC && x.Header != ModJob.JobHeader.LOCALIZATION).Select(x => x.Header == ModJob.JobHeader.ME2_RCWMOD ? @"ME2 Coalesced.ini" : x.Header.ToString()).ToList();
+                var modifiesList = InstallationJobs.Where(x => x.Header != ModJob.JobHeader.CUSTOMDLC
+                                                               && x.Header != ModJob.JobHeader.LOCALIZATION
+                                                               && x.Header != ModJob.JobHeader.TEXTUREMODS
+                                                               && x.Header != ModJob.JobHeader.HEADMORPHS).Select(x => x.Header == ModJob.JobHeader.ME2_RCWMOD ? @"ME2 Coalesced.ini" : x.Header.ToString()).ToList();
                 if (modifiesList.Count > 0)
                 {
                     sb.AppendLine(M3L.GetString(M3L.string_interp_modparsing_modifies, string.Join(@", ", modifiesList)));
@@ -301,12 +304,24 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                     }
                 }
 
-                if (TextureModReferences.Any())
+                var texJob = GetJob(ModJob.JobHeader.TEXTUREMODS);
+                if (texJob != null && texJob.TextureModReferences.Any())
                 {
                     sb.AppendLine("This mod references texture mod files that can be installed after all other mods are installed:");
-                    foreach (var reference in TextureModReferences)
+                    foreach (var reference in texJob.TextureModReferences)
                     {
-                        string name = reference.DisplayString;
+                        string name = reference.Title;
+                        sb.AppendLine($@" - {name}");
+                    }
+                }
+
+                var headmorphJob = GetJob(ModJob.JobHeader.HEADMORPHS);
+                if (headmorphJob != null && headmorphJob.HeadMorphFiles.Any())
+                {
+                    sb.AppendLine("This mod can install the following headmorph files:");
+                    foreach (var reference in headmorphJob.HeadMorphFiles)
+                    {
+                        string name = reference.Title;
                         sb.AppendLine($@" - {name}");
                     }
                 }
@@ -546,6 +561,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
                 //Run in legacy mode (ME3CMM 1.0)
                 ModDescTargetVersion = 1.0;
             }
+
 
             if (parsedModCmmVer < 6.0)
             {
@@ -1625,17 +1641,56 @@ namespace ME3TweaksModManager.modmanager.objects.mod
 
             #region Texture Mod References
 
-            if (ModDescTargetVersion >= 8.1)
+            if (Game.IsLEGame() && ModDescTargetVersion >= 8.1)
             {
+                // Todo: Settings.LogModStartup for 8.1 moddesc ini changes
+
                 var textureModsStruct = iniData[@"TEXTUREMODS"][@"files"];
                 if (!string.IsNullOrWhiteSpace(textureModsStruct))
                 {
+                    ModJob texJob = new ModJob(ModJob.JobHeader.TEXTUREMODS, this);
                     var tmSplit = StringStructParser.GetParenthesisSplitValues(textureModsStruct);
                     foreach (var tm in tmSplit)
                     {
-                        MEMMod mm = new MEMMod(this, tm);
-                        TextureModReferences.Add(mm);
+                        var mm = new M3MEMMod(this, tm);
+                        if (mm.ValidationFailedReason != null)
+                        {
+                            // Mod fails to load due to validation failure
+                            LoadFailedReason = mm.ValidationFailedReason;
+                            return;
+                        }
+                        texJob.TextureModReferences.Add(mm);
                     }
+                    InstallationJobs.Add(texJob);
+                }
+            }
+
+            #endregion
+
+            #region Headmorphs
+            // This is LE only cause save files are a pain in the arse for OT
+            if (Game.IsLEGame() && ModDescTargetVersion >= 8.1)
+            {
+                var headmorphReferenceStruct = iniData[@"HEADMORPHS"][@"files"];
+                if (!string.IsNullOrWhiteSpace(headmorphReferenceStruct))
+                {
+                    ModJob headmorphJob = new ModJob(ModJob.JobHeader.TEXTUREMODS, this);
+
+                    var tmSplit = StringStructParser.GetParenthesisSplitValues(headmorphReferenceStruct);
+                    foreach (var tm in tmSplit)
+                    {
+                        var mm = new M3Headmorph(this, tm);
+                        if (mm.ValidationFailedReason != null)
+                        {
+                            // Mod fails to load due to validation failure
+                            LoadFailedReason = mm.ValidationFailedReason;
+                            return;
+                        }
+
+                        headmorphJob.HeadMorphFiles.Add(mm);
+                    }
+
+                    InstallationJobs.Add(headmorphJob);
                 }
             }
 
@@ -1858,7 +1913,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             //What tool to launch post-install
             PostInstallToolLaunch = iniData[@"ModInfo"][@"postinstalltool"];
 
-            // Enhanced bink
+            // Enhanced bink support
             if (ModDescTargetVersion >= 8.1 && (Game.IsLEGame() || Game == MEGame.LELauncher))
             {
                 if (bool.TryParse(iniData[@"ModInfo"][@"requiresenhancedbink"], out var usesEnhancedBink))
@@ -2106,7 +2161,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             return true;
         }
 
-        private bool CheckNonSolidArchiveFile(string path)
+        internal bool CheckNonSolidArchiveFile(string path)
         {
             if (!IsInArchive)
                 throw new Exception(@"Guarded check: Called CheckNonSolidArchiveFile() when there is no backing archive!");

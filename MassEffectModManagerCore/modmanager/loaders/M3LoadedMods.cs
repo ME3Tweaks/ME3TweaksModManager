@@ -564,17 +564,22 @@ namespace ME3TweaksModManager.modmanager.loaders
         /// </summary>
         /// <param name="game">The game to filter against</param>
         /// <returns>A list of paired moddesc mods and a paired texture mod</returns>
-        public static List<M3MEMMod> GetAllModMEMs(MEGame game = MEGame.Unknown)
+        public static List<M3MEMMod> GetAllM3ManagedMEMs(MEGame game = MEGame.Unknown)
         {
             var mm = new List<M3MEMMod>();
             foreach (var mod in M3LoadedMods.Instance.AllLoadedMods)
             {
                 if (game != MEGame.Unknown && game != mod.Game) continue; // Skip over this non-matching game
-                mm.AddRange(mod.TextureModReferences.Select(x => new M3MEMMod() { ModdescMod = mod, TextureMod = x }));
+                var job = mod.GetJob(ModJob.JobHeader.TEXTUREMODS);
+                if (job != null)
+                {
+                    mm.AddRange(job.TextureModReferences);
+                }
             }
+
+            // Todo: Add texture library lookup code.
 
             return mm;
         }
-        // 
     }
 }

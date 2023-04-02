@@ -11,6 +11,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LegendaryExplorerCore.Helpers;
 using ME3TweaksModManager.modmanager.objects.mod.texture;
 using Microsoft.AppCenter.Crashes;
 using WinCopies.Util;
@@ -73,8 +74,14 @@ namespace ME3TweaksModManager.modmanager.objects.batch
         /// <summary>
         /// Texture mods that will install at the end of the installation.
         /// </summary>
-        [JsonProperty(@"texturemods")]
+        [JsonIgnore] // This is built after deserialization
         public ObservableCollectionExtended<MEMMod> TextureModsToInstall { get; } = new ObservableCollectionExtended<MEMMod>();
+
+        /// <summary>
+        /// SERIALIZATION ONLY - Stores the list of MEM file paths befoer they are parsed into TextureModsToInstall
+        /// </summary>
+        [JsonProperty("texturemodfiles")]
+        public List<string> SerializeOnly_MEMFilePaths { get; set; }
 
         /// <summary>
         /// Only used for UI binding!
@@ -165,11 +172,27 @@ namespace ME3TweaksModManager.modmanager.objects.batch
                     mod.AssociateASIObject(modernQueue.Game);
                 }
 
-                foreach (var mod in modernQueue.TextureModsToInstall)
+                // Associate any M3-managed texture mods, otherwise use a basic MEMMod object.
+                if (modernQueue.SerializeOnly_MEMFilePaths != null)
                 {
-                    // We don't have any init on this right now
-                    // Verify file exists?
+                    foreach (var texModPath in modernQueue.SerializeOnly_MEMFilePaths)
+                    {
+                        var matchingM3Entry = M3LoadedMods.GetAllM3ManagedMEMs()
+                            .FirstOrDefault(x =>
+                                x.GetFilePathToMEM().CaseInsensitiveEquals(texModPath)); // Filepath the same!
+                        if (matchingM3Entry == null)
+                        {
+                            MEMMod m = new MEMMod(texModPath);
+                            modernQueue.TextureModsToInstall.Add(m);
+                        }
+                        else
+                        {
+                            modernQueue.TextureModsToInstall.Add(matchingM3Entry);
+                        }
+                    }
                 }
+
+                modernQueue.SerializeOnly_MEMFilePaths = null; // Remove this data as it's only used during serialization
 
                 // Populate the full list of mods for UI binding
                 modernQueue.AllModsToInstall.AddRange(modernQueue.ModsToInstall);
@@ -245,11 +268,15 @@ namespace ME3TweaksModManager.modmanager.objects.batch
                 m.PrepareForSave();
             }
 
+            SerializeOnly_MEMFilePaths = TextureModsToInstall.Select(x => x.GetFilePathToMEM()).ToList(); // Serialize the list
+
             // Commit
             var json = JsonConvert.SerializeObject(this, Formatting.Indented);
 
             var savePath = getSaveName(QueueName, canOverwrite);
             File.WriteAllText(savePath, json);
+
+            SerializeOnly_MEMFilePaths = null; // Clear
             return savePath;
         }
 

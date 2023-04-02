@@ -50,6 +50,7 @@ namespace ME3TweaksModManager.modmanager.windows
             editorControls.Add(localization_editor_control);
             editorControls.Add(game1tlkmerge_editor_control);
             editorControls.Add(lelauncher_editor_control);
+            editorControls.Add(textures_editor_control);
         }
 
         private void LoadCommands()
@@ -137,6 +138,11 @@ namespace ME3TweaksModManager.modmanager.windows
                         }
                     }
                     else if (control is MetadataEditorControl)
+                    {
+                        control.Serialize(ini);
+                        continue;
+                    }
+                    else if (control is TexturesEditorControl)
                     {
                         control.Serialize(ini);
                         continue;

@@ -15,37 +15,59 @@
                 DockPanel.Dock="Top" />
             <TextBlock
                 DockPanel.Dock="Top"
-                Text="{DynamicResource string_mde_localization}"
+                Text="ME3Tweaks Mod Manager can install texture mods, but for users to find them easier, you should declare them as part of your mod. Textures must be installed via Batch Installer currently.&#10;Texture mod files (.mem) must be placed under the 'Textures' folder at the root of your mod directory."
                 MaxWidth="700"
                 TextWrapping="Wrap"
                 HorizontalAlignment="Left"
                 TextAlignment="Left" />
             <Button
-                Command="{Binding SetToLocalizationModCommand}"
-                Content="{Binding SetToLocalizationModText}"
+                Command="{Binding AddTextureModsJobCommand}"
+                Visibility="{Binding TextureModsJob, Converter={StaticResource NullVisibilityConverter}, ConverterParameter='Reversed'}"
+                HorizontalAlignment="Left"
+                DockPanel.Dock="Top"
+                Margin="0,5,0,5" >
+                <StackPanel
+                    Orientation="Horizontal">
+                    <fa5:ImageAwesome
+                        Icon="Solid_Plus"
+                        Width="12"
+                        Height="12"
+                        Margin="0,0,5,0"
+                        Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
+                    <TextBlock
+                        Text="Add texture mod references task header" />
+                </StackPanel>
+            </Button>
+
+            <Button
+                Command="{Binding RemoveTextureModsJobCommand}"
+                Visibility="{Binding TextureModsJob, Converter={StaticResource NullVisibilityConverter}}"
+                HorizontalAlignment="Left"
+                DockPanel.Dock="Top"
+                Margin="0,5,0,5" >
+                <StackPanel
+                    Orientation="Horizontal">
+                    <fa5:ImageAwesome
+                        Icon="Solid_Times"
+                        Width="12"
+                        Height="12"
+                        Margin="0,0,5,0"
+                        Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
+                    <TextBlock
+                        Text="Remove all texture mod references task header" />
+                </StackPanel>
+            </Button>
+
+
+            <Button
+                Command="{Binding AutopopulateFilesCommand}"
+                Content="Autopopulate"
                 HorizontalAlignment="Left"
                 DockPanel.Dock="Top"
                 Margin="0,5,0,5" />
-            <DockPanel
-                DockPanel.Dock="Top"
-                Margin="0,5"
-                Visibility="{Binding LocalizationJob, Converter={StaticResource NullVisibilityConverter}}">
-                <TextBlock
-                    Text="{DynamicResource string_targetDLCName}"
-                    DockPanel.Dock="Left"
-                    Width="160" />
-                <TextBox
-                    Text="{Binding TargetMod}"
-                    Width="300"
-                    DockPanel.Dock="Left" />
-                <TextBlock
-                    Text="{Binding TPMIModName}"
-                    Margin="5,0,0,0"
-                    FontStyle="Italic" />
-            </DockPanel>
             <Button
-                Command="{Binding AddLocalizationFileCommand}"
-                Visibility="{Binding LocalizationJob, Converter={StaticResource NullVisibilityConverter}}"
+                Command="{Binding AddTextureModCommand}"
+                Visibility="{Binding TextureModsJob, Converter={StaticResource NullVisibilityConverter}}"
                 HorizontalAlignment="Left"
                 DockPanel.Dock="Top"
                 Margin="0,5,0,5">
@@ -59,13 +81,11 @@
                             Margin="0,0,5,0"
                             Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
                         <TextBlock
-                            Text="{DynamicResource string_addTLKFile}" />
+                            Text="Add texture mod" />
                     </StackPanel>
                 </Button.Content>
             </Button>
-            <moddescinieditor:DescriptorEditorItemsControl
-                Visibility="{Binding LocalizationJob, Converter={StaticResource NullVisibilityConverter}}"
-                ItemsSource="{Binding Files, UpdateSourceTrigger=PropertyChanged}" />
+            <moddescinieditor:TextureModItemControl/>
         </DockPanel>
     </ScrollViewer>
 </moddescinieditor:ModdescEditorControlBase>

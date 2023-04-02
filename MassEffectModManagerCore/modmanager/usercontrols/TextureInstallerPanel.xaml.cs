@@ -76,7 +76,6 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                     MEMIPCHandler.InstallMEMFiles(Game, GetMEMMFLPath(), x => ActionText = x, x => PercentDone = x);
                     Result.ReloadTargets = true;
                 }
-                OnClosing(DataEventArgs.Empty);
             };
 
             nbw.RunWorkerCompleted += (a, b) =>

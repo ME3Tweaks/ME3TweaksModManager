@@ -10,7 +10,15 @@ namespace ME3TweaksModManager.modmanager.objects.mod
     {
         private const double RequiredBannerAspectRatio = 12.3404255319; //580 x 47
         private const double RequiredAspectRatioTolerance = 0.08;
-        public const string ModImageAssetFolderName = @"M3Images";
+
+        /// <summary>
+        /// The images folder for a mod
+        /// </summary>
+        public const string ModImageAssetFolderName = @"M3Images"; // DO NOT CHANGE THIS VALUE
+
+        /// <summary>
+        /// Gets the full path to the image asset folder
+        /// </summary>
         public string ModImageAssetsPath => FilesystemInterposer.PathCombine(Archive != null, ModPath, ModImageAssetFolderName);
 
         /// <summary>

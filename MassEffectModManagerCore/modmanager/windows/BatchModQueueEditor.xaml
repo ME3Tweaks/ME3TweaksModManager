@@ -387,11 +387,17 @@
                         extensions:CursorSpotlightExtension.MaxBlurRadius="0">
                         <TextBox.Text>
                             <PriorityBinding>
+                                <!-- ModdescMod -->
                                 <Binding
                                     Path="SelectedInstallGroupMod.Mod.DisplayedModDescription"
                                     Mode="OneWay" />
+                                <!-- ASIMod -->
                                 <Binding
                                     Path="SelectedInstallGroupMod.AssociatedMod.Description"
+                                    Mode="OneWay" />
+                                <!-- MEMMod-->
+                                <Binding
+                                    Path="SelectedInstallGroupMod.UIDescription"
                                     Mode="OneWay" />
                                 <Binding
                                     Path="NoModSelectedText"
