@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO.Enumeration;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -195,38 +197,56 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                         File.WriteAllLines(@"D:\dlcNames.txt", dlcNames);
                         File.WriteAllLines(@"D:\mods.txt", xx);*/
 #endif
-                        var match = db.NameTable.FirstOrDefault(x =>
-                            x.Value.Equals(SearchTerm, StringComparison.InvariantCultureIgnoreCase));
-
-                        if (match.Key != 0)
+                        List<KeyValuePair<int, string>> fileSearchKeys = new List<KeyValuePair<int, string>>();
+                        if (SearchTerm.Contains(@"*"))
                         {
-                            // Found
-                            var instances = db.FileInstances[match.Key].Where(x => categories.Contains(db.ModFileInfos[x.FileID].Category));
+                            // Regex search oh god no please no
+                            fileSearchKeys.AddRange(db.NameTable.Where(x => FileSystemName.MatchesSimpleExpression(SearchTerm, x.Value)));
+                        }
+                        else
+                        {
+                            // Single file search
+                            fileSearchKeys.Add(db.NameTable.FirstOrDefault(x =>
+                                x.Value.Equals(SearchTerm, StringComparison.InvariantCultureIgnoreCase)));
+                        }
 
-                            if (domain == @"masseffectlegendaryedition" && !SearchLE)
+                        foreach (var match in fileSearchKeys)
+                        {
+                            if (match.Key != 0 && db.FileInstances.ContainsKey(match.Key))
                             {
-                                // We need to filter to game
+                                // Found
+                                var instances = db.FileInstances[match.Key]?.Where(x =>
+                                    categories.Contains(db.ModFileInfos[x.FileID].Category));
+
+                                if (domain == @"masseffectlegendaryedition" && !SearchLE)
+                                {
+                                    // We need to filter to game
 #if DEBUG
-                                var fails = instances.Where(x => !db.ModFileInfos.ContainsKey(x.ModID)).ToList();
+                                    var fails = instances.Where(x => !db.ModFileInfos.ContainsKey(x.ModID)).ToList();
 #endif
 
-                                instances = instances.Where(x => db.ModFileInfos[x.FileID].LEGames != null &&
-                                                                 (db.ModFileInfos[x.FileID].LEGames.Contains(MEGame.LE1) && SearchLE1 ||
-                                                                  db.ModFileInfos[x.FileID].LEGames.Contains(MEGame.LE2) && SearchLE2 ||
-                                                                  db.ModFileInfos[x.FileID].LEGames.Contains(MEGame.LE3) && SearchLE3)
-                                                                 && db.ModFileInfos[x.FileID].LEGames.Length == 1); // Only one game allowed in a result
-                            }
+                                    instances = instances.Where(x => db.ModFileInfos[x.FileID].LEGames != null &&
+                                                                     (db.ModFileInfos[x.FileID].LEGames
+                                                                          .Contains(MEGame.LE1) && SearchLE1 ||
+                                                                      db.ModFileInfos[x.FileID].LEGames
+                                                                          .Contains(MEGame.LE2) && SearchLE2 ||
+                                                                      db.ModFileInfos[x.FileID].LEGames
+                                                                          .Contains(MEGame.LE3) && SearchLE3)
+                                                                     && db.ModFileInfos[x.FileID].LEGames.Length ==
+                                                                     1); // Only one game allowed in a result
+                                }
 
-                            //Application.Current.Dispatcher.Invoke(() =>
-                            //{
-                            Results.AddRange(instances.Select(x => new SearchedItemResult()
-                            {
-                                Instance = x,
-                                Domain = domain,
-                                Filename = db.NameTable[x.FilenameId],
-                                AssociatedDB = db
-                            }).ToList()); // We do tolist because it forces all items to be added at once
-                            //});
+                                //Application.Current.Dispatcher.Invoke(() =>
+                                //{
+                                Results.AddRange(instances.Select(x => new SearchedItemResult()
+                                {
+                                    Instance = x,
+                                    Domain = domain,
+                                    Filename = db.NameTable[x.FilenameId],
+                                    AssociatedDB = db
+                                }).ToList()); // We do tolist because it forces all items to be added at once
+                                //});
+                            }
                         }
                     }
 
@@ -245,6 +265,12 @@ namespace ME3TweaksModManager.modmanager.usercontrols
                 }
             });
 
+        }
+
+        // https://stackoverflow.com/a/30300521
+        private static String WildCardToRegular(String value)
+        {
+            return @"^" + Regex.Escape(value).Replace(@"\*", @".*") + @"$";
         }
 
         private void PerformSearchAgainstMod()
