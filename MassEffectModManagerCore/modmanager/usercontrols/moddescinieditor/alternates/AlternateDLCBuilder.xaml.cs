@@ -3,6 +3,7 @@ using System.Linq;
 using System.Windows;
 using IniParser.Model;
 using LegendaryExplorerCore.Misc;
+using ME3TweaksCore.Helpers;
 using ME3TweaksCoreWPF.UI;
 using ME3TweaksModManager.modmanager.helpers;
 using ME3TweaksModManager.modmanager.objects;
@@ -18,24 +19,22 @@ namespace ME3TweaksModManager.modmanager.usercontrols.moddescinieditor.alternate
     {
         public override void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
         {
-            if (!HasLoaded)
+            if (HasLoaded) return;
+            AttachedJob = EditingMod?.GetJob(ModJob.JobHeader.CUSTOMDLC);
+            if (AttachedJob != null)
             {
-                AttachedJob = EditingMod?.GetJob(ModJob.JobHeader.CUSTOMDLC);
-                if (AttachedJob != null)
+                Alternates.ReplaceAll(AttachedJob.AlternateDLCs);
+                foreach (var a in Alternates)
                 {
-                    Alternates.ReplaceAll(AttachedJob.AlternateDLCs);
-                    foreach (var a in Alternates)
-                    {
-                        a.BuildParameterMap(EditingMod);
-                    }
+                    a.BuildParameterMap(EditingMod);
                 }
-                else
-                {
-                    Alternates.ClearEx();
-                }
-
-                HasLoaded = true;
             }
+            else
+            {
+                Alternates.ClearEx();
+            }
+
+            HasLoaded = true;
         }
 
         public override void Serialize(IniData ini)
