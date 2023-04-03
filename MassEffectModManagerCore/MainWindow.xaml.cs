@@ -680,6 +680,7 @@ namespace ME3TweaksModManager
         public ICommand SearchModsCommand { get; set; }
         public ICommand CloseModSearchBoxCommand { get; set; }
         public ICommand InstallMEMFileCommand { get; set; }
+        public ICommand TrilogySaveEditorCommand { get; set; }
 
         private void LoadCommands()
         {
@@ -739,6 +740,22 @@ namespace ME3TweaksModManager
             DecompileCoalescedCommand = new RelayCommand(DecompileCoalesced); // no conditions for this
             InstallMEMFileCommand = new GenericCommand(InstallMEMFile, CanInstallMEMFile);
             ChangeCurrentLaunchConfigCommand = new GenericCommand(OpenLaunchOptionSelector, () => SelectedGameTarget?.Game.IsLEGame() ?? false);
+            TrilogySaveEditorCommand = new GenericCommand(OpenTSE);
+        }
+
+        private void OpenTSE()
+        {
+            var tseExecutable = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                @"Trilogy Save Editor", @"trilogy-save-editor.exe");
+            if (File.Exists(tseExecutable))
+            {
+                M3Utilities.RunProcess(tseExecutable);
+            }
+            else
+            {
+                M3L.ShowDialog(this, "Trilogy Save Editor is not installed. Press OK to open the web page to download the installer.", "TSE not installed", MessageBoxButton.OK, MessageBoxImage.Warning);
+                M3Utilities.OpenWebpage(@"https://github.com/KarlitosVII/trilogy-save-editor/releases/latest");
+            }
         }
 
         private void OpenLaunchOptionSelector()

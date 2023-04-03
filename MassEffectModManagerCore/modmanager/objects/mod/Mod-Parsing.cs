@@ -1671,10 +1671,10 @@ namespace ME3TweaksModManager.modmanager.objects.mod
             // This is LE only cause save files are a pain in the arse for OT
             if (Game.IsLEGame() && ModDescTargetVersion >= 8.1)
             {
-                var headmorphReferenceStruct = iniData[@"HEADMORPHS"][@"files"];
+                var headmorphReferenceStruct = iniData[ModJob.JobHeader.HEADMORPHS.ToString()][@"files"];
                 if (!string.IsNullOrWhiteSpace(headmorphReferenceStruct))
                 {
-                    ModJob headmorphJob = new ModJob(ModJob.JobHeader.TEXTUREMODS, this);
+                    ModJob headmorphJob = new ModJob(ModJob.JobHeader.HEADMORPHS, this);
 
                     var tmSplit = StringStructParser.GetParenthesisSplitValues(headmorphReferenceStruct);
                     foreach (var tm in tmSplit)

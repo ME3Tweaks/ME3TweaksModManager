@@ -74,7 +74,7 @@ namespace ME3TweaksModManager.modmanager.objects.mod.interfaces
             if (!FilesystemInterposer.FileExists(fullPath, mod.Archive))
             {
                 M3Log.Error($@"{structName} references file asset {fileAsset}, but this file does not exist under the {fileFolderName} directory.");
-                ValidationFailedReason = $"{structName} references imageasset {fileAsset}, but this file does not exist under the {fileFolderName} directory.";
+                ValidationFailedReason = $"{structName} references file asset {fileAsset}, but this file does not exist under the {fileFolderName} directory.";
                 return false;
             }
 

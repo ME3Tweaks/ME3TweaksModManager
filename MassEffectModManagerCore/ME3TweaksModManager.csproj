@@ -237,6 +237,9 @@
   </ItemGroup>
 
   <ItemGroup>
+		<Compile Update="modmanager\usercontrols\moddescinieditor\HeadmorphsEditorControl.xaml.cs">
+		  <SubType>Code</SubType>
+		</Compile>
 		<Compile Update="modmanager\usercontrols\TestArchiveGenerator.xaml.cs">
 			<SubType>Code</SubType>
 		</Compile>
