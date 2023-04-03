@@ -745,16 +745,27 @@ namespace ME3TweaksModManager
 
         private void OpenTSE()
         {
-            var tseExecutable = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                @"Trilogy Save Editor", @"trilogy-save-editor.exe");
+            void notInstalled()
+            {
+                M3L.ShowDialog(this, "Trilogy Save Editor is not installed. Press OK to open the web page to download the installer.", "TSE not installed", MessageBoxButton.OK, MessageBoxImage.Warning);
+                M3Utilities.OpenWebpage(@"https://github.com/KarlitosVII/trilogy-save-editor/releases/latest");
+            }
+
+            var tseInstallPath = (string)Registry.GetValue(@"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Uninstall\{6A0B979E-271B-4E50-A4C3-487C8E584070}_is1", @"Inno Setup: App Path", null);
+            if (tseInstallPath == null)
+            {
+                notInstalled();
+                return;
+            }
+
+            var tseExecutable = Path.Combine(tseInstallPath, @"trilogy-save-editor.exe");
             if (File.Exists(tseExecutable))
             {
                 M3Utilities.RunProcess(tseExecutable);
             }
             else
             {
-                M3L.ShowDialog(this, "Trilogy Save Editor is not installed. Press OK to open the web page to download the installer.", "TSE not installed", MessageBoxButton.OK, MessageBoxImage.Warning);
-                M3Utilities.OpenWebpage(@"https://github.com/KarlitosVII/trilogy-save-editor/releases/latest");
+                notInstalled();
             }
         }
 
