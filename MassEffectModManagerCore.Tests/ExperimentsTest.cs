@@ -13,7 +13,10 @@ namespace ME3TweaksModManager.Tests
     [TestClass]
     public class ExperimentsTest
     {
+        // Do not run this on azure
+#if DEBUG
         [TestMethod]
+#endif
         public void RunExperimentTest()
         {
             GlobalTest.Init();
